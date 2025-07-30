@@ -51,7 +51,7 @@ const OUTPUT_DIR = join(CONTRACTS_ROOT, "scripts/hardhat/abi");
 const ABI_PATHS = {
   // onboarding
   system: `${ARTIFACTS_DIR}/contracts/system/IATKSystem.sol/IATKSystem.json`,
-  compliance: `${ARTIFACTS_DIR}/contracts/smart/interface/ISMARTCompliance.sol/ISMARTCompliance.json`,
+  compliance: `${ARTIFACTS_DIR}/contracts/system/compliance/IATKCompliance.sol/IATKCompliance.json`,
   identityRegistry: `${ARTIFACTS_DIR}/contracts/smart/interface/ISMARTIdentityRegistry.sol/ISMARTIdentityRegistry.json`,
   identityRegistryStorage: `${ARTIFACTS_DIR}/contracts/smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol/IERC3643IdentityRegistryStorage.json`,
   trustedIssuersRegistry: `${ARTIFACTS_DIR}/contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol/IERC3643TrustedIssuersRegistry.json`,
@@ -62,6 +62,7 @@ const ABI_PATHS = {
   equityFactory: `${ARTIFACTS_DIR}/contracts/assets/equity/IATKEquityFactory.sol/IATKEquityFactory.json`,
   fundFactory: `${ARTIFACTS_DIR}/contracts/assets/fund/IATKFundFactory.sol/IATKFundFactory.json`,
   stablecoinFactory: `${ARTIFACTS_DIR}/contracts/assets/stable-coin/IATKStableCoinFactory.sol/IATKStableCoinFactory.json`,
+  systemAccessManager: `${ARTIFACTS_DIR}/contracts/system/access-manager/IATKSystemAccessManager.sol/IATKSystemAccessManager.json`,
   // token
   accessManager: `${ARTIFACTS_DIR}/contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol/ISMARTTokenAccessManager.json`,
   identity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/ATKIdentityImplementation.sol/ATKIdentityImplementation.json`,
@@ -121,6 +122,7 @@ const AVAILABLE_ABIS = {
     "tokenFactoryRegistry",
     "complianceModuleRegistry",
     "systemAddonRegistry",
+    "systemAccessManager",
   ],
   tokenInfrastructure: ["accessManager", "identity", "contractIdentity"],
   assetTokens: ["deposit", "equity", "fund", "stablecoin", "bond"],

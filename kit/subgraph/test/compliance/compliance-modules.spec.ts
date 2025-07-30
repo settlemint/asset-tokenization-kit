@@ -1,6 +1,33 @@
 import { describe, expect, it } from "bun:test";
 import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
 
+interface ComplianceModule {
+  name: string;
+  typeId: string;
+  globalConfigs: Array<{
+    parameters: {
+      countries: number[];
+      addresses: string[];
+    };
+  }>;
+}
+
+interface ComplianceModulesResponse {
+  complianceModules: ComplianceModule[];
+}
+
+interface GlobalComplianceConfigResponse {
+  globalComplianceModuleConfigs: Array<{
+    complianceModule: {
+      name: string;
+    };
+    parameters: {
+      countries?: number[];
+      addresses?: string[];
+    };
+  }>;
+}
+
 describe("Compliance Modules", () => {
   it("should fetch a list of all compliance modules registered", async () => {
     const query = theGraphGraphql(
@@ -8,13 +35,20 @@ describe("Compliance Modules", () => {
         complianceModules(orderBy: name) {
           name
           typeId
-          countries
-          addresses
+          globalConfigs {
+            parameters {
+              countries
+              addresses
+            }
+          }
         }
     }
     `
     );
-    const response = await theGraphClient.request(query, {});
+    const response = await theGraphClient.request<ComplianceModulesResponse>(
+      query,
+      {}
+    );
     const complianceModules = response.complianceModules;
     expect(complianceModules.length).toBe(6);
 
@@ -22,85 +56,103 @@ describe("Compliance Modules", () => {
       {
         name: "Address BlockList Compliance Module",
         typeId: "AddressBlockListComplianceModule",
-        countries: [],
-        addresses: expect.any(Array),
+        globalConfigs: expect.any(Array),
       },
       {
         name: "Country AllowList Compliance Module",
         typeId: "CountryAllowListComplianceModule",
-        countries: [],
-        addresses: [],
+        globalConfigs: expect.any(Array),
       },
       {
         name: "Country BlockList Compliance Module",
         typeId: "CountryBlockListComplianceModule",
-        countries: [643],
-        addresses: [],
+        globalConfigs: expect.any(Array),
       },
       {
         name: "Identity AllowList Compliance Module",
         typeId: "IdentityAllowListComplianceModule",
-        countries: [],
-        addresses: [],
+        globalConfigs: expect.any(Array),
       },
       {
         name: "Identity BlockList Compliance Module",
         typeId: "IdentityBlockListComplianceModule",
-        countries: [],
-        addresses: expect.any(Array),
+        globalConfigs: expect.any(Array),
       },
       {
         name: "Identity Verification Module",
         typeId: "SMARTIdentityVerificationComplianceModule",
-        countries: [],
-        addresses: [],
+        globalConfigs: expect.any(Array),
       },
     ]);
   });
 
-  it("should receive the list of blocked countries", async () => {
+  it("should receive the list of blocked countries through global compliance configs", async () => {
     const query = theGraphGraphql(
       `query {
-        complianceModules(where: {countries_not: []}) {
-          name
-          countries
+        globalComplianceModuleConfigs(where: {parameters_: {countries_not: []}}) {
+          complianceModule {
+            name
+          }
+          parameters {
+            countries
+          }
         }
       }
     `
     );
-    const response = await theGraphClient.request(query, {});
-    expect(response.complianceModules).toEqual([
+    const response =
+      await theGraphClient.request<GlobalComplianceConfigResponse>(query, {});
+    expect(response.globalComplianceModuleConfigs).toEqual([
       {
-        name: "Country BlockList Compliance Module",
-        countries: [643],
+        complianceModule: {
+          name: "Country BlockList Compliance Module",
+        },
+        parameters: {
+          countries: [643],
+        },
       },
     ]);
   });
 
-  it("should receive the list of blocked addresses and identities", async () => {
+  it("should receive the list of blocked addresses and identities through global compliance configs", async () => {
     const query = theGraphGraphql(
       `query {
-        complianceModules(where: {addresses_not: []}) {
-          name
-          addresses
+        globalComplianceModuleConfigs(where: {parameters_: {addresses_not: []}}) {
+          complianceModule {
+            name
+          }
+          parameters {
+            addresses
+          }
         }
       }
     `
     );
-    const response = await theGraphClient.request(query, {});
+    const response =
+      await theGraphClient.request<GlobalComplianceConfigResponse>(query, {});
     const expected = [
       {
-        name: "Identity BlockList Compliance Module",
-        addresses: [expect.any(String)],
+        complianceModule: {
+          name: "Identity BlockList Compliance Module",
+        },
+        parameters: {
+          addresses: [expect.any(String)],
+        },
       },
       {
-        name: "Address BlockList Compliance Module",
-        addresses: [expect.any(String)],
+        complianceModule: {
+          name: "Address BlockList Compliance Module",
+        },
+        parameters: {
+          addresses: [expect.any(String)],
+        },
       },
     ];
 
-    expect(response.complianceModules).toHaveLength(expected.length);
-    expect(response.complianceModules).toEqual(
+    expect(response.globalComplianceModuleConfigs).toHaveLength(
+      expected.length
+    );
+    expect(response.globalComplianceModuleConfigs).toEqual(
       expect.arrayContaining(expected)
     );
   });

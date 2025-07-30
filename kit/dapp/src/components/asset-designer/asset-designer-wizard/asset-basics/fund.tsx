@@ -1,9 +1,9 @@
 import {
   commonFields,
   CommonFields,
-} from "@/components/asset-designer/asset-basics/common";
-import type { AssetDesignerFormInputData } from "@/components/asset-designer/shared-form";
-import { isRequiredField } from "@/components/asset-designer/shared-form";
+} from "@/components/asset-designer/asset-designer-wizard/asset-basics/common";
+import type { AssetDesignerFormInputData } from "@/components/asset-designer/asset-designer-wizard/shared-form";
+import { isRequiredField } from "@/components/asset-designer/asset-designer-wizard/shared-form";
 import {
   FormStepContent,
   FormStepSubmit,
@@ -34,7 +34,7 @@ export const FundBasics = withForm({
             children={(field) => (
               <field.NumberField
                 label={t("form.fields.managementFeeBps.label")}
-                postfix="bps"
+                endAddon="bps"
                 required={isRequiredField("managementFeeBps")}
               />
             )}

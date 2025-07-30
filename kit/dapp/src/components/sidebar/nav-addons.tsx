@@ -109,8 +109,8 @@ export function NavAddons() {
     <SidebarGroup>
       <SidebarGroupLabel>{t("addons")}</SidebarGroupLabel>
       <SidebarMenu>
-        <SidebarMenuSubButton
-          className="bg-accent text-primary-foreground shadow-dropdown shadow-inset hover:bg-accent-hover hover:text-primary-foreground"
+        <SidebarMenuButton
+          className="bg-accent text-primary-foreground shadow-dropdown shadow-inset hover:bg-accent-hover hover:text-primary-foreground my-2"
           onClick={() => {
             void navigate({
               to: "/addon-designer",
@@ -119,7 +119,7 @@ export function NavAddons() {
         >
           <PlusIcon className="mr-1 h-4 w-4" />
           <span>{t("addonDesigner")}</span>
-        </SidebarMenuSubButton>
+        </SidebarMenuButton>
         {addonCategories
           .filter((category) => category.addons.length > 0)
           .map((category) => {

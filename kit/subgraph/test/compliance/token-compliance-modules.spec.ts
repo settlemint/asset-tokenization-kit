@@ -1,50 +1,81 @@
 import { describe, expect, it } from "bun:test";
 import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
 
+interface TokenComplianceModule {
+  parameters: {
+    addresses?: string[];
+    countries?: number[];
+    encodedParams: string;
+    expression?: Array<{
+      nodeType: string;
+      index: number;
+      topicScheme?: {
+        name: string;
+        topicId: string;
+      } | null;
+    }>;
+  };
+  complianceModule: {
+    name: string;
+  };
+}
+
+interface Token {
+  name: string;
+  complianceModuleConfigs: TokenComplianceModule[];
+}
+
+interface TokensResponse {
+  tokens: Token[];
+}
+
 describe("Token Compliance Modules", () => {
   it("should receive the compliance modules for the assets", async () => {
     const query = theGraphGraphql(
       `query {
         tokens(where: {}) {
           name
-          tokenComplianceModules(where: {}) {
-            addresses
-            countries
-            encodedParams
-            expression {
-              nodeType
-              index
-              topicScheme {
-                name
-                topicId
+          complianceModuleConfigs(where: {}) {
+            parameters {
+              addresses
+              countries
+              encodedParams
+              expression {
+                nodeType
+                index
+                topicScheme {
+                  name
+                  topicId
+                }
               }
             }
             complianceModule {
               name
-              addresses
-              countries
             }
           }
         }
       }`
     );
-    const response = await theGraphClient.request(query, {});
+    const response = await theGraphClient.request<TokensResponse>(query, {});
 
     for (const token of response.tokens) {
       if (token.name === "Paused Stablecoin") {
         continue;
       }
 
-      const complianceModules = token.tokenComplianceModules;
+      const complianceModules = token.complianceModuleConfigs;
 
       const countryAllowListModule = complianceModules.find(
         (m) => m.complianceModule.name === "Country AllowList Compliance Module"
       );
       expect(countryAllowListModule).toBeDefined();
-      if (countryAllowListModule && countryAllowListModule.countries) {
-        expect(countryAllowListModule.countries.map(Number).sort()).toEqual(
-          [56, 528, 250, 276].sort()
-        );
+      if (
+        countryAllowListModule &&
+        countryAllowListModule.parameters.countries
+      ) {
+        expect(
+          countryAllowListModule.parameters.countries.map(Number).sort()
+        ).toEqual([56, 528, 250, 276].sort());
       }
 
       const identityBlockListModule = complianceModules.find(
@@ -59,11 +90,14 @@ describe("Token Compliance Modules", () => {
       expect(identityVerificationModule).toBeDefined();
 
       // Test the new expression-based identity verification
-      if (identityVerificationModule && identityVerificationModule.expression) {
+      if (
+        identityVerificationModule &&
+        identityVerificationModule.parameters.expression
+      ) {
         const expressionNodes = Array.isArray(
-          identityVerificationModule.expression
+          identityVerificationModule.parameters.expression
         )
-          ? identityVerificationModule.expression.sort(
+          ? identityVerificationModule.parameters.expression.sort(
               (a: any, b: any) => a.index - b.index
             )
           : [];
