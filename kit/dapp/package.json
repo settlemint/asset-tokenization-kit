@@ -146,7 +146,7 @@
     "currency-codes": "2.2.0",
     "date-fns": "4.1.0",
     "dnum": "2.15.0",
-    "drizzle-orm": "0.44.3",
+    "drizzle-orm": "0.44.4",
     "drizzle-zod": "0.8.2",
     "embla-carousel-react": "8.6.0",
     "graphql-request": "7.2.0",
