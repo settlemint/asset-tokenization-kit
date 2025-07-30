@@ -1,8 +1,6 @@
 import { BarChartComponent } from "@/components/charts/bar-chart";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
-import { orpc } from "@/orpc/orpc-client";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
 const chartConfig = {
@@ -35,12 +33,10 @@ const dataKeys = ["mint", "transfer", "burn", "clawback"];
 export function AssetActivityBarChart() {
   const { t } = useTranslation("stats");
 
-  // Fetch transaction data as activity proxy
-  const { data: _metrics } = useSuspenseQuery(
-    orpc.token.statsSystemTransactionHistory.queryOptions({ input: {} })
-  );
-
-  // No asset-specific activity data available, return empty for empty state
+  // TODO: Implement proper API endpoint for asset activity data
+  // See: https://linear.app/settlemint/issue/ENG-3559/create-api-endpoint-for-asset-activity-chart-data
+  // Current statsSystemTransactionHistory API only provides Transfer events without asset type grouping
+  // Need new endpoint that provides mint/burn/clawback events grouped by asset type
   const chartData: Array<{
     assetType: string;
     mint: number;
