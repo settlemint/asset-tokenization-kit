@@ -1,9 +1,6 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
-import {
-  TokenUnpauseInputSchema,
-  TokenUnpauseOutputSchema,
-} from "@/orpc/routes/token/routes/mutations/pause/token.unpause.schema";
-import { eventIterator } from "@orpc/server";
+import { TokenUnpauseInputSchema } from "@/orpc/routes/token/routes/mutations/pause/token.unpause.schema";
+import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 
 export const tokenUnpauseContract = baseContract
   .route({
@@ -14,4 +11,4 @@ export const tokenUnpauseContract = baseContract
     tags: ["token"],
   })
   .input(TokenUnpauseInputSchema)
-  .output(eventIterator(TokenUnpauseOutputSchema));
+  .output(TokenSchema);

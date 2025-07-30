@@ -7,11 +7,12 @@ import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTId
 import { ISMARTCompliance } from "../../contracts/smart/interface/ISMARTCompliance.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { ExpressionNode } from "../../contracts/smart/interface/structs/ExpressionNode.sol";
 
 /// @title MockIdentityRegistry
 /// @notice A mock identity registry that always returns true for isVerified
 contract MockIdentityRegistry {
-    function isVerified(address, uint256[] memory) external pure returns (bool) {
+    function isVerified(address, ExpressionNode[] memory) external pure returns (bool) {
         return true; // Always return true for testing
     }
 }

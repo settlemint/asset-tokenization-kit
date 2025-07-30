@@ -1,16 +1,15 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import { TokenForcedRecoverInputSchema } from "@/orpc/routes/token/routes/mutations/recovery/token.forced-recover.schema";
-import { MutationOutputSchema as TokenTransactionOutputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
-import { eventIterator } from "@orpc/server";
+import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 
 export const tokenForcedRecoverContract = baseContract
   .route({
     method: "POST",
     path: "/token/{contract}/forced-recover",
     description:
-      "Force recover tokens from a lost wallet to a new wallet (custodian only)",
+      "Force recover tokens from a specified address to the recipient",
     successDescription: "Tokens force recovered successfully",
     tags: ["token"],
   })
   .input(TokenForcedRecoverInputSchema)
-  .output(eventIterator(TokenTransactionOutputSchema));
+  .output(TokenSchema);

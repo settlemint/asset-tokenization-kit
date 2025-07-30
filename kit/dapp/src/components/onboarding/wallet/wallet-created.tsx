@@ -23,6 +23,7 @@ export function WalletCreated() {
     <OnboardingStepLayout
       title={t("onboarding:wallet.created-title")}
       description={t("onboarding:wallet.success-message")}
+      fullWidth={true}
       actions={
         <Button
           onClick={() => void completeStepAndNavigate(OnboardingStep.wallet)}

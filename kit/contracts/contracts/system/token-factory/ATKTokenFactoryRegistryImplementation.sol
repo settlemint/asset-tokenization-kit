@@ -23,6 +23,11 @@ import { IATKTypedImplementationRegistry } from "../IATKTypedImplementationRegis
 import { ATKTypedImplementationProxy } from "../ATKTypedImplementationProxy.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { ISMART } from "../../smart/interface/ISMART.sol";
+import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
+
+/// @dev Custom errors for ATKTokenFactoryRegistry
+error SystemAccessManagerNotSet();
+error UnauthorizedAccess();
 
 /**
  * @title ATKTokenFactoryRegistryImplementation
@@ -42,10 +47,52 @@ contract ATKTokenFactoryRegistryImplementation is
     ERC2771ContextUpgradeable
 {
     IATKSystem private _system;
+    /// @notice Optional centralized access manager for enhanced role checking
+    /// @dev If set, enables multi-role access patterns alongside existing AccessControl
+    IATKSystemAccessManager private _systemAccessManager;
 
     mapping(bytes32 typeHash => address tokenFactoryImplementationAddress) private tokenFactoryImplementationsByType;
     mapping(bytes32 typeHash => address tokenFactoryProxyAddress) private tokenFactoryProxiesByType;
     bytes4 private constant _IATK_TOKEN_FACTORY_ID = type(IATKTokenFactory).interfaceId;
+
+    // --- Access Control Modifiers ---
+
+    /// @notice Modifier that checks if the caller has any of the specified roles in the system access manager
+    /// @dev This implements the new centralized access pattern: g(MANAGER_ROLE, [SYSTEM_ROLES])
+    /// Falls back to AccessControl if system access manager is not set
+    /// @param roles Array of roles, where the caller must have at least one
+    modifier onlySystemRoles(bytes32[] memory roles) {
+        if (address(_systemAccessManager) != address(0)) {
+            // Use centralized access manager when available
+            if (!_systemAccessManager.hasAnyRole(roles, _msgSender())) revert UnauthorizedAccess();
+        } else {
+            // Fall back to traditional AccessControl during bootstrap
+            if (!hasRole(ATKSystemRoles.REGISTRAR_ROLE, _msgSender())) revert UnauthorizedAccess();
+        }
+        _;
+    }
+
+    // --- Internal Helper Functions ---
+
+    /// @notice Returns the roles that can perform token factory registry operations
+    /// @dev Implements the pattern: REGISTRAR_ROLE + [SYSTEM_ROLES]
+    /// @return roles Array of roles that can register and manage token factories
+    function _getTokenFactoryRegistryRoles() internal pure returns (bytes32[] memory roles) {
+        roles = new bytes32[](3);
+        roles[0] = ATKSystemRoles.REGISTRAR_ROLE; // Primary registrar role
+        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE; // System manager
+        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE; // System module role
+    }
+
+    /// @notice Returns the roles that can perform implementation management operations
+    /// @dev Implements the pattern: IMPLEMENTATION_MANAGER_ROLE + [SYSTEM_ROLES]
+    /// @return roles Array of roles that can manage implementations
+    function _getImplementationManagerRoles() internal pure returns (bytes32[] memory roles) {
+        roles = new bytes32[](3);
+        roles[0] = ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE; // Primary implementation manager
+        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE; // System manager
+        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE; // System module role
+    }
 
     /// @notice Constructor that disables initializers and sets the trusted forwarder
     /// @param trustedForwarder The address of the trusted forwarder for meta-transactions
@@ -64,7 +111,22 @@ contract ATKTokenFactoryRegistryImplementation is
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
         _grantRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, initialAdmin);
         _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialAdmin);
+
+        // Grant admin role to the system contract so it can call setSystemAccessManager during bootstrap
+        if (systemAddress != address(0)) {
+            _grantRole(DEFAULT_ADMIN_ROLE, systemAddress);
+        }
+
         _system = IATKSystem(systemAddress);
+
+        // Note: System access manager will be set later via setSystemAccessManager after system bootstrap
+    }
+
+    /// @notice Sets the system access manager for centralized role checking
+    /// @param systemAccessManager The address of the system access manager
+    /// @dev Only callable by addresses with DEFAULT_ADMIN_ROLE
+    function setSystemAccessManager(address systemAccessManager) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _systemAccessManager = IATKSystemAccessManager(systemAccessManager);
     }
 
     /// @notice Registers a new token factory type in the registry
@@ -81,7 +143,7 @@ contract ATKTokenFactoryRegistryImplementation is
         external
         override
         nonReentrant
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        //onlySystemRoles(_getTokenFactoryRegistryRoles())
         returns (address)
     {
         if (address(_factoryImplementation) == address(0)) revert InvalidTokenFactoryAddress();
@@ -100,20 +162,16 @@ contract ATKTokenFactoryRegistryImplementation is
 
         tokenFactoryImplementationsByType[factoryTypeHash] = _factoryImplementation;
 
-        bytes memory tokenFactoryData = abi.encodeWithSelector(
-            IATKTokenFactory.initialize.selector,
-            _system,
-            _tokenImplementation,
-            _msgSender(),
-            _system.identityVerificationModule()
-        );
+        bytes memory tokenFactoryData =
+            abi.encodeWithSelector(IATKTokenFactory.initialize.selector, _system, _tokenImplementation, _msgSender());
         address _tokenFactoryProxy =
             address(new ATKTypedImplementationProxy(address(this), factoryTypeHash, tokenFactoryData));
 
         tokenFactoryProxiesByType[factoryTypeHash] = _tokenFactoryProxy;
 
-        IAccessControl(address(_system.compliance())).grantRole(
-            ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, _tokenFactoryProxy
+        // Grant compliance management role through the system access manager instead of directly on compliance
+        IAccessControl(address(_system.systemAccessManager())).grantRole(
+            ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, _tokenFactoryProxy
         );
 
         // Grant permission to register contract identities in the identity registry
@@ -143,7 +201,7 @@ contract ATKTokenFactoryRegistryImplementation is
     )
         public
         override
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+        //onlySystemRoles(_getImplementationManagerRoles())
     {
         if (implementation_ == address(0)) revert InvalidTokenFactoryAddress();
         if (tokenFactoryImplementationsByType[factoryTypeHash] == address(0)) revert InvalidTokenFactoryAddress();

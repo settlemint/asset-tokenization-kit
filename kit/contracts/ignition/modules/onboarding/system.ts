@@ -6,7 +6,9 @@ const ATKOnboardingSystemModule = buildModule(
   (m) => {
     const { systemFactory } = m.useModule(ATKModule);
 
-    const createSystem = m.call(systemFactory, "createSystem");
+    const createSystem = m.call(systemFactory, "createSystem", [], {
+      from: m.getAccount(0),
+    });
     const systemAddress = m.readEventArgument(
       createSystem,
       "ATKSystemCreated",
@@ -17,7 +19,9 @@ const ATKOnboardingSystemModule = buildModule(
       id: "system",
     });
 
-    const bootstrap = m.call(system, "bootstrap");
+    const bootstrap = m.call(system, "bootstrap", [], {
+      from: m.getAccount(0),
+    });
 
     const complianceAddress = m.readEventArgument(
       bootstrap,
@@ -26,9 +30,13 @@ const ATKOnboardingSystemModule = buildModule(
       { id: "complianceAddress" }
     );
 
-    const compliance = m.contractAt("ISMARTCompliance", complianceAddress, {
-      id: "compliance",
-    });
+    const compliance = m.contractAt(
+      "ATKComplianceImplementation",
+      complianceAddress,
+      {
+        id: "compliance",
+      }
+    );
 
     const identityRegistryAddress = m.readEventArgument(
       bootstrap,
@@ -51,7 +59,7 @@ const ATKOnboardingSystemModule = buildModule(
     );
 
     const identityRegistryStorage = m.contractAt(
-      "IERC3643IdentityRegistryStorage", // TODO this will change with next PR
+      "ATKIdentityRegistryStorageImplementation",
       identityRegistryStorageAddress,
       { id: "identityRegistryStorage" }
     );
@@ -64,7 +72,7 @@ const ATKOnboardingSystemModule = buildModule(
     );
 
     const trustedIssuersRegistry = m.contractAt(
-      "IERC3643TrustedIssuersRegistry",
+      "ATKTrustedIssuersRegistryImplementation",
       trustedIssuersRegistryAddress,
       { id: "trustedIssuersRegistry" }
     );
@@ -77,7 +85,7 @@ const ATKOnboardingSystemModule = buildModule(
     );
 
     const topicSchemeRegistry = m.contractAt(
-      "ISMARTTopicSchemeRegistry",
+      "ATKTopicSchemeRegistryImplementation",
       topicSchemeRegistryAddress,
       { id: "topicSchemeRegistry" }
     );
@@ -133,6 +141,124 @@ const ATKOnboardingSystemModule = buildModule(
       systemAddonRegistryAddress,
       { id: "systemAddonRegistry" }
     );
+
+    // Get the system access manager address from the bootstrap event
+    const systemAccessManagerAddress = m.readEventArgument(
+      bootstrap,
+      "Bootstrapped",
+      "systemAccessManagerProxy",
+      { id: "systemAccessManagerAddress" }
+    );
+
+    const systemAccessManager = m.contractAt(
+      "IATKSystemAccessManager",
+      systemAccessManagerAddress,
+      { id: "systemAccessManager" }
+    );
+
+    // Grant necessary roles to system registries in the system access manager
+    // The registries need admin permissions to grant roles to the factories they create
+    const grantTokenFactoryRegistryAdminRole = m.call(
+      systemAccessManager,
+      "grantRole",
+      [
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+        tokenFactoryRegistryAddress,
+      ], // DEFAULT_ADMIN_ROLE
+      {
+        from: m.getAccount(0),
+        id: "grantTokenFactoryRegistryAdminRole",
+      }
+    );
+
+    const grantSystemAddonRegistryAdminRole = m.call(
+      systemAccessManager,
+      "grantRole",
+      [
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+        systemAddonRegistryAddress,
+      ], // DEFAULT_ADMIN_ROLE
+      {
+        from: m.getAccount(0),
+        id: "grantSystemAddonRegistryAdminRole",
+      }
+    );
+
+    // Grant SYSTEM_MODULE_ROLE to system registries so factories they create can access compliance
+    // Token factories and addon factories need to add addresses to compliance bypass lists
+    const grantTokenFactoryRegistrySystemModuleRole = m.call(
+      systemAccessManager,
+      "grantRole",
+      [
+        "0xa6d0d666130ddda8d0a25bfc08c75c789806b23845f9cce674dfc4a9e8d0e45c",
+        tokenFactoryRegistryAddress,
+      ], // SYSTEM_MODULE_ROLE
+      {
+        from: m.getAccount(0),
+        id: "grantTokenFactoryRegistrySystemModuleRole",
+      }
+    );
+
+    const grantSystemAddonRegistrySystemModuleRole = m.call(
+      systemAccessManager,
+      "grantRole",
+      [
+        "0xa6d0d666130ddda8d0a25bfc08c75c789806b23845f9cce674dfc4a9e8d0e45c",
+        systemAddonRegistryAddress,
+      ], // SYSTEM_MODULE_ROLE
+      {
+        from: m.getAccount(0),
+        id: "grantSystemAddonRegistrySystemModuleRole",
+      }
+    );
+
+    // Grant REGISTRAR_ROLE to m.getAccount(0) on the system access manager
+    // This is required to call registerTokenFactory
+    const grantRegistrarRoleToDeployer = m.call(
+      systemAccessManager,
+      "grantRole",
+      [
+        "0x2cf38baf8b867d91cfcccc0e8d7a429365579f0eb969ff29c0621b271cdeeb64", // REGISTRAR_ROLE
+        m.getAccount(0),
+      ],
+      {
+        from: m.getAccount(0),
+        id: "grantRegistrarRoleToDeployer",
+      }
+    );
+
+    // Note: Additional role management should be handled at the application level
+    // The registerTokenFactory function requires REGISTRAR_ROLE, SYSTEM_MANAGER_ROLE, or SYSTEM_MODULE_ROLE
+    // Roles should be granted to appropriate accounts through a proper governance workflow
+    // Hard-coding specific accounts here would not be flexible across environments
+
+    // Set the system access manager on contracts that need it
+    // This is required for contracts that use onlySystemRoles modifier
+    // Note: We're only setting it for contracts that don't already have it set in the bootstrap function
+    const setComplianceSystemAccessManager = m.call(
+      compliance,
+      "setSystemAccessManager",
+      [systemAccessManagerAddress],
+      {
+        from: m.getAccount(0),
+        id: "setComplianceSystemAccessManager",
+      }
+    );
+
+    const setTrustedIssuersRegistrySystemAccessManager = m.call(
+      trustedIssuersRegistry,
+      "setSystemAccessManager",
+      [systemAccessManagerAddress],
+      {
+        from: m.getAccount(0),
+        id: "setTrustedIssuersRegistrySystemAccessManager",
+      }
+    );
+
+    // Note: We don't need to set system access manager for these registries:
+    // - tokenFactoryRegistry: Already set in bootstrap function (line 557)
+    // - topicSchemeRegistry: Set during initialization in bootstrap function (line 466)
+    // - systemAddonRegistry: Doesn't use onlySystemRoles modifier
 
     return {
       system,

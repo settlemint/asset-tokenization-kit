@@ -80,10 +80,6 @@
     "description": "このアクションには追加の権限が必要です。必要な役割: {{requiredRoles}}",
     "title": "追加の権限が必要"
   },
-  "userNotCompliant": {
-    "description": "このトークンには追加の確認が必要です。欠落している確認: {{requiredClaimTopics}}",
-    "title": "確認が必要"
-  },
   "validation": {
     "description": "一部の情報が正しくないようです。ハイライトされたフィールドを確認して、もう一度お試しください。",
     "title": "入力を確認してください"

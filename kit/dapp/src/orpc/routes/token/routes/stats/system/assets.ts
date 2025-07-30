@@ -87,7 +87,7 @@ export const statsSystemAssets = authRouter.token.statsSystemAssets
     const response = await context.theGraphClient.query(ASSET_COUNT_QUERY, {
       input: {},
       output: AssetCountResponseSchema,
-      error: "Failed to fetch system asset count",
+      error: context.t("tokens:api.stats.assetCount.messages.failed"),
     });
 
     // Calculate metrics

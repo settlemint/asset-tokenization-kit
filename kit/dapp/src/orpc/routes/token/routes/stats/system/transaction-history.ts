@@ -17,7 +17,7 @@ const TRANSACTION_METRICS_QUERY = theGraphGraphql(`
     ) {
       eventsCount
     }
-    
+
     # Recent transactions in the specified time range
     recentTransactions: eventStats_collection(
       where: {
@@ -28,7 +28,7 @@ const TRANSACTION_METRICS_QUERY = theGraphGraphql(`
     ) {
       eventsCount
     }
-    
+
     # Transaction history over time for charting
     transactionHistory: eventStats_collection(
       where: {
@@ -133,7 +133,7 @@ export const statsSystemTransactionHistory =
             since: sinceTimestamp.toString(),
           },
           output: TransactionMetricsResponseSchema,
-          error: "Failed to fetch system transaction history",
+          error: context.t("tokens:api.stats.transactions.messages.failed"),
         }
       );
 

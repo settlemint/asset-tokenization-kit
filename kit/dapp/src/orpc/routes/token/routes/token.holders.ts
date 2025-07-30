@@ -72,7 +72,7 @@ export const holders = tokenRouter.token.holders
         id: context.token.id.toLowerCase(),
       },
       output: TokenHoldersResponseSchema,
-      error: "Failed to fetch token holders",
+      error: context.t("tokens:api.queries.holders.messages.failed"),
     });
 
     return response;

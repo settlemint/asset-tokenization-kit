@@ -271,7 +271,7 @@
       "otp": {
         "description": "Verwendet eine App wie Google Authenticator, um alle 30 Sekunden einen neuen Code zu generieren. Maximale Sicherheit für Ihre Vermögenswerte.",
         "summary": "Maximale Sicherheit",
-        "title": "Einmalpasswort (OTP)"
+        "title": "OTP"
       },
       "pin": {
         "description": "Ein 6-stelliger Code, den Sie zur Autorisierung von Transaktionen eingeben. Schnell und bequem für den täglichen Gebrauch.",
@@ -329,8 +329,9 @@
       "title": "PIN-Code einrichten"
     },
     "recovery-codes": {
-      "confirm": "Bestätigen, dass ich sie gespeichert habe",
+      "confirm": "Wallet-Einrichtung abschließen",
       "confirm-error": "Fehler beim Bestätigen der geheimen Codes",
+      "confirm-stored": "Confirm you stored your recovery keys in a safe place.",
       "copied-to-clipboard": "Geheime Codes in die Zwischenablage kopiert!",
       "copy-all": "Alles kopieren",
       "description": "Speichern Sie diese Codes an einem sicheren Ort",
@@ -355,5 +356,6 @@
     "setup-overview": "Ihr Weg nach vorne",
     "title": "Willkommen auf Ihrer digitalen Vermögensplattform",
     "welcome-back": "Willkommen zurück!"
-  }
+  },
+  "wallet-security.method-selector.otp.title": "OTP"
 }

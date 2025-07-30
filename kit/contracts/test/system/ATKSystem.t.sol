@@ -31,7 +31,6 @@ import { IATKCompliance } from "../../contracts/system/compliance/IATKCompliance
 // Import system errors
 import {
     SystemAlreadyBootstrapped,
-    IdentityVerificationModuleNotSet,
     ComplianceImplementationNotSet,
     IdentityRegistryImplementationNotSet,
     InvalidImplementationInterface
@@ -284,8 +283,7 @@ contract ATKSystemTest is Test {
         assertTrue(atkSystem.topicSchemeRegistry() != address(0));
         assertTrue(atkSystem.identityFactory() != address(0));
 
-        // Compliance module should be set
-        assertTrue(atkSystem.identityVerificationModule() != address(0));
+        // Compliance module should be set via compliance module registry
 
         // Admin should have default admin role
         assertTrue(IAccessControl(address(atkSystem)).hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
@@ -659,92 +657,8 @@ contract ATKSystemTest is Test {
 
     // --- Identity Verification Module Tests ---
 
-    function test_IdentityVerificationModule_InitialState() public view {
-        // Verify identity verification module is properly set during initialization
-        address moduleAddress = atkSystem.identityVerificationModule();
-        assertTrue(moduleAddress != address(0));
-        assertEq(moduleAddress, address(systemUtils.identityVerificationModule()));
-    }
-
-    function test_IdentityVerificationModule_GetterFunction() public view {
-        // Test the getter function returns the correct address
-        address expected = address(systemUtils.identityVerificationModule());
-        address actual = atkSystem.identityVerificationModule();
-        assertEq(actual, expected);
-    }
-
-    function test_Constructor_IdentityVerificationModule_ZeroAddress() public {
-        ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
-        SystemImplementations memory impls = _createAllImplementations();
-        impls.identityVerificationModule = address(0); // Zero address for identity verification module
-
-        bytes memory initData = abi.encodeWithSelector(
-            systemImplementation.initialize.selector,
-            admin,
-            impls.compliance,
-            impls.identityRegistry,
-            impls.identityRegistryStorage,
-            impls.trustedIssuersRegistry,
-            impls.topicSchemeRegistry,
-            impls.identityFactory,
-            impls.identity,
-            impls.contractIdentity,
-            impls.tokenAccessManager,
-            impls.identityVerificationModule,
-            impls.tokenFactoryRegistry,
-            impls.complianceModuleRegistry,
-            impls.addonRegistry,
-            impls.systemAccessManager
-        );
-        vm.expectRevert();
-        new ERC1967Proxy(address(systemImplementation), initData);
-    }
-
-    function test_IdentityVerificationModule_ValidAddress() public view {
-        // Test that the identity verification module is set correctly in the existing system
-        assertTrue(atkSystem.identityVerificationModule() != address(0));
-        assertEq(atkSystem.identityVerificationModule(), address(systemUtils.identityVerificationModule()));
-    }
-
-    function test_IdentityVerificationModule_AccessibleAfterBootstrap() public view {
-        // Test that the identity verification module is properly accessible after bootstrap
-        // The system in this test is already bootstrapped via SystemUtils
-
-        // Verify module is accessible
-        address moduleAddress = atkSystem.identityVerificationModule();
-        assertTrue(moduleAddress != address(0));
-        assertEq(moduleAddress, address(systemUtils.identityVerificationModule()));
-
-        // Verify it's the correct module type by checking interface support
-        assertTrue(
-            SMARTIdentityVerificationComplianceModule(moduleAddress).supportsInterface(
-                type(ISMARTComplianceModule).interfaceId
-            )
-        );
-    }
-
-    function test_IdentityVerificationModule_ConsistencyAcrossSystemOperations() public {
-        // Test that the identity verification module address remains consistent
-        // across different system operations
-
-        address initialModuleAddress = atkSystem.identityVerificationModule();
-
-        // Perform various system operations
-        vm.startPrank(admin);
-
-        // Update some implementations
-        ATKComplianceImplementation compImpl = _getComplianceImpl();
-        ATKIdentityRegistryImplementation idRegImpl = _getIdentityRegistryImpl();
-
-        ATKSystemImplementation(address(atkSystem)).setComplianceImplementation(address(compImpl));
-        ATKSystemImplementation(address(atkSystem)).setIdentityRegistryImplementation(address(idRegImpl));
-
-        vm.stopPrank();
-
-        // Verify identity verification module address hasn't changed
-        assertEq(atkSystem.identityVerificationModule(), initialModuleAddress);
-        assertEq(atkSystem.identityVerificationModule(), address(systemUtils.identityVerificationModule()));
-    }
+    // Note: IdentityVerificationModule tests removed as the functionality is now handled through compliance module
+    // registry
 
     function test_SystemInitialization_AllComponentsConfigured() public {
         // Test that all components are properly configured in the bootstrapped system
@@ -766,7 +680,7 @@ contract ATKSystemTest is Test {
         assertTrue(
             IATKTypedImplementationRegistry(address(atkSystem)).implementation(TOKEN_ACCESS_MANAGER) != address(0)
         );
-        assertTrue(atkSystem.identityVerificationModule() != address(0));
+        // Identity verification module is now handled through compliance module registry
         assertTrue(
             IATKTypedImplementationRegistry(address(atkSystem)).implementation(TOKEN_FACTORY_REGISTRY) != address(0)
         );

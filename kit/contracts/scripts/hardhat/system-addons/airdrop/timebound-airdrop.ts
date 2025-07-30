@@ -4,6 +4,7 @@ import { TimeBoundAirdrop } from "../../entities/airdrop/timebound-airdrop";
 import { Asset } from "../../entities/asset";
 import { atkDeployer } from "../../services/deployer";
 import { getAnvilTimeSeconds } from "../../utils/anvil";
+import { grantAirdropFactoryPermissions } from "./utils/permissions";
 
 export const createTimeBoundAirdrop = async (
   asset: Asset<any>,
@@ -11,13 +12,14 @@ export const createTimeBoundAirdrop = async (
 ) => {
   console.log("\n=== Creating timebound airdrop... ===\n");
 
+  // Grant necessary permissions to the timebound airdrop factory
+  await grantAirdropFactoryPermissions("timeBoundAirdropFactory");
+
   const timeBoundAirdropFactory =
     atkDeployer.getTimeBoundAirdropFactoryContract();
   const anvilTimeSeconds = await getAnvilTimeSeconds(owner);
-
-  // Set start time to 1 hour from now and end time to 30 days from start
-  const startTime = BigInt(anvilTimeSeconds + 60 * 60); // 1 hour from now
-  const endTime = BigInt(anvilTimeSeconds + 30 * 24 * 60 * 60 + 60 * 60); // 30 days + 1 hour from now
+  const startTime = BigInt(anvilTimeSeconds + 30 * 60); // 30 minutes in the future
+  const endTime = BigInt(anvilTimeSeconds + 60 * 24 * 60 * 60); // 60 days in the future
 
   const timeBoundAirdrop = new TimeBoundAirdrop(
     "Test TimeBound Airdrop",
@@ -39,5 +41,6 @@ export const createTimeBoundAirdrop = async (
   ]);
 
   await timeBoundAirdrop.waitUntilDeployed(transactionHash);
+
   return timeBoundAirdrop;
 };

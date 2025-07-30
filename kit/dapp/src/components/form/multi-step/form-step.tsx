@@ -6,7 +6,7 @@ export function FormStep({ children }: PropsWithChildren) {
 }
 
 export function FormStepTitle({ children }: PropsWithChildren) {
-  return <h2 className="text-xl font-semibold">{children}</h2>;
+  return <h2 className="text-2xl font-semibold -mt-2 mb-2">{children}</h2>;
 }
 
 export function FormStepSubtitle({ children }: PropsWithChildren) {
@@ -26,7 +26,12 @@ export function FormStepContent({
 }) {
   return (
     <div className="flex-1 overflow-y-auto min-h-0">
-      <div className={cn("space-y-6 pr-2 pb-24", !fullWidth && "max-w-3xl")}>
+      <div
+        className={cn(
+          "space-y-6 pr-2 pb-24",
+          fullWidth ? "w-full" : "max-w-3xl"
+        )}
+      >
         {children}
       </div>
     </div>

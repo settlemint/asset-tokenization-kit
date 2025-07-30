@@ -32,7 +32,6 @@ const CREATE_STABLECOIN_MUTATION = portalGraphql(`
     $name: String!
     $decimals: Int!
     $initialModulePairs: [ATKStableCoinFactoryImplementationATKStableCoinFactoryImplementationCreateStableCoinInitialModulePairsInput!]!
-    $requiredClaimTopics: [String!]!
     $verificationId: String
     $challengeResponse: String!
     $countryCode: Int!
@@ -45,7 +44,6 @@ const CREATE_STABLECOIN_MUTATION = portalGraphql(`
         name_: $name
         decimals_: $decimals
         initialModulePairs_: $initialModulePairs
-        requiredClaimTopics_: $requiredClaimTopics
         countryCode_: $countryCode
       }
       verificationId: $verificationId
@@ -56,15 +54,15 @@ const CREATE_STABLECOIN_MUTATION = portalGraphql(`
   }
 `);
 
-export const stablecoinCreateHandler = async function* (
+export const stablecoinCreateHandler = async (
   input: TokenCreateInput,
   context: TokenCreateContext
-) {
+) => {
   if (input.type !== AssetTypeEnum.stablecoin) {
     throw new Error("Invalid token type");
   }
 
-  yield* createToken(input, context, (creationFailedMessage, messages) => {
+  return createToken(input, context, () => {
     // Delete verification from input to avoid leaking it in the logs
     const { verification: _, ...otherInput } = input;
     return context.portalClient.mutate(
@@ -72,10 +70,8 @@ export const stablecoinCreateHandler = async function* (
       {
         ...otherInput,
         ...context.mutationVariables,
-        countryCode: 1, // TODO: should come from ui
       },
-      creationFailedMessage,
-      messages
+      "Failed to create stablecoin token"
     );
   });
 };

@@ -101,6 +101,11 @@ contract ATKBondTest is AbstractATKAssetTest {
         vm.label(address(fixedYieldScheduleFactory), "Yield Schedule Factory");
         IAccessControl(address(fixedYieldScheduleFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
 
+        // Grant SYSTEM_MODULE_ROLE to the factory so it can access compliance functions like addToBypassList
+        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
+            ATKSystemRoles.SYSTEM_MODULE_ROLE, address(fixedYieldScheduleFactory)
+        );
+
         vm.stopPrank();
 
         // Initialize identities
@@ -128,7 +133,6 @@ contract ATKBondTest is AbstractATKAssetTest {
             maturityDate,
             faceValue,
             address(underlyingAsset),
-            new uint256[](0),
             new SMARTComplianceModuleParamPair[](0)
         );
         vm.label(address(bond), "Bond");
@@ -142,7 +146,6 @@ contract ATKBondTest is AbstractATKAssetTest {
         uint256 maturityDate_,
         uint256 faceValue_,
         address underlyingAsset_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         internal
@@ -155,14 +158,7 @@ contract ATKBondTest is AbstractATKAssetTest {
             underlyingAsset: underlyingAsset_
         });
         address bondAddress = bondFactory.createBond(
-            name_,
-            symbol_,
-            decimals_,
-            cap_,
-            bondParams,
-            requiredClaimTopics_,
-            initialModulePairs_,
-            TestConstants.COUNTRY_CODE_US
+            name_, symbol_, decimals_, cap_, bondParams, initialModulePairs_, TestConstants.COUNTRY_CODE_US
         );
 
         result = IATKBond(bondAddress);
@@ -214,7 +210,6 @@ contract ATKBondTest is AbstractATKAssetTest {
                 maturityDate,
                 faceValue,
                 address(underlyingAsset),
-                new uint256[](0),
                 new SMARTComplianceModuleParamPair[](0)
             );
             assertEq(newBond.decimals(), decimalValues[i]);
@@ -236,7 +231,6 @@ contract ATKBondTest is AbstractATKAssetTest {
             19,
             CAP,
             bondParams,
-            new uint256[](0),
             new SMARTComplianceModuleParamPair[](0),
             TestConstants.COUNTRY_CODE_US
         );
@@ -562,7 +556,6 @@ contract ATKBondTest is AbstractATKAssetTest {
             maturityDate,
             faceValue,
             address(underlyingAsset),
-            new uint256[](0),
             new SMARTComplianceModuleParamPair[](0)
         );
 
@@ -615,7 +608,6 @@ contract ATKBondTest is AbstractATKAssetTest {
             maturityDate,
             faceValue,
             address(underlyingAsset),
-            new uint256[](0),
             new SMARTComplianceModuleParamPair[](0)
         );
 
@@ -689,7 +681,6 @@ contract ATKBondTest is AbstractATKAssetTest {
             maturityDate,
             faceValue,
             address(underlyingAsset),
-            new uint256[](0),
             new SMARTComplianceModuleParamPair[](0)
         );
 

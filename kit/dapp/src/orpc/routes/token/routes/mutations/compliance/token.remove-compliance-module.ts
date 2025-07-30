@@ -1,11 +1,11 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { read } from "../../token.read";
+import { call } from "@orpc/server";
 
 const TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
   mutation TokenRemoveComplianceModule(
@@ -37,13 +37,9 @@ export const tokenRemoveComplianceModule =
       })
     )
     .use(portalMiddleware)
-    .handler(async function* ({ input, context }) {
+    .handler(async ({ input, context }) => {
       const { contract, verification, moduleAddress } = input;
-      const { auth, t } = context;
-
-      // Generate messages using server-side translations
-      const { pendingMessage, successMessage, errorMessage } =
-        getMutationMessages(t, "tokens", "removeComplianceModule");
+      const { auth } = context;
 
       const sender = auth.user;
       const challengeResponse = await handleChallenge(sender, {
@@ -51,7 +47,7 @@ export const tokenRemoveComplianceModule =
         type: verification.verificationType,
       });
 
-      const transactionHash = yield* context.portalClient.mutate(
+      await context.portalClient.mutate(
         TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION,
         {
           address: contract,
@@ -59,12 +55,9 @@ export const tokenRemoveComplianceModule =
           moduleAddress,
           ...challengeResponse,
         },
-        errorMessage,
-        {
-          waitingForMining: pendingMessage,
-          transactionIndexed: successMessage,
-        }
+        context.t("tokens:api.mutations.compliance.messages.removeFailed")
       );
 
-      return getEthereumHash(transactionHash);
+      // Return updated token data
+      return await call(read, { tokenAddress: contract }, { context });
     });

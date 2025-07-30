@@ -60,7 +60,7 @@ export const statsSystemValue = authRouter.token.statsSystemValue
         systemId: context.system.address.toLowerCase(),
       },
       output: TotalValueResponseSchema,
-      error: "Failed to fetch system value",
+      error: context.t("tokens:api.stats.totalValue.messages.failed"),
     });
 
     // Extract total value, defaulting to "0" if no system stats

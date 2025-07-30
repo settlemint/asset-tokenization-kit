@@ -27,7 +27,6 @@ export function fetchToken(address: Address): Token {
       token.decimals
     );
     token.deployedInTransaction = Bytes.empty();
-    token.requiredClaimTopics = [];
     token.extensions = [];
     token.implementsERC3643 = false;
     token.implementsSMART = false;

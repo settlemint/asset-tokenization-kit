@@ -17,7 +17,7 @@ const TRANSACTION_COUNT_QUERY = theGraphGraphql(`
     ) {
       eventsCount
     }
-    
+
     # Recent transactions in the specified time range
     recentTransactions: eventStats_collection(
       where: {
@@ -99,7 +99,7 @@ export const statsSystemTransactionCount =
             since: sinceTimestamp.toString(),
           },
           output: TransactionCountResponseSchema,
-          error: "Failed to fetch system transaction count",
+          error: context.t("tokens:api.stats.transactionCount.messages.failed"),
         }
       );
 

@@ -83,6 +83,12 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
 
         // Grant DEPLOYER_ROLE to owner so they can create push airdrops
         IAccessControl(address(pushAirdropFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
+
+        // Grant SYSTEM_MODULE_ROLE to the factory so it can access compliance functions like addToBypassList
+        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
+            ATKSystemRoles.SYSTEM_MODULE_ROLE, address(pushAirdropFactory)
+        );
+
         vm.stopPrank();
 
         // Set up test user data using utility

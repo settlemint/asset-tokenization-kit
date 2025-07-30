@@ -9,6 +9,7 @@ import { ISMARTTokenAccessManager } from
     "../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { ExpressionNode, ExpressionType } from "../../../contracts/smart/interface/structs/ExpressionNode.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
 import { ISMARTIdentityRegistry } from "../../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 import { TestConstants } from "../../Constants.sol";
@@ -23,6 +24,7 @@ import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.so
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { SMARTIdentityVerificationComplianceModule } from
     "../../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
+import { ClaimExpressionUtils } from "../../utils/ClaimExpressionUtils.sol";
 
 abstract contract AbstractSMARTTest is Test {
     // --- State Variables ---
@@ -105,7 +107,7 @@ abstract contract AbstractSMARTTest is Test {
         modulePairs = new SMARTComplianceModuleParamPair[](2);
         modulePairs[0] = SMARTComplianceModuleParamPair({
             module: address(systemUtils.identityVerificationModule()),
-            params: abi.encode(requiredClaimTopics)
+            params: abi.encode(ClaimExpressionUtils.topicsToExpressionNodes(requiredClaimTopics))
         });
         modulePairs[1] =
             SMARTComplianceModuleParamPair({ module: address(mockComplianceModule), params: abi.encode("") });
@@ -214,6 +216,10 @@ abstract contract AbstractSMARTTest is Test {
     // =====================================================================
     //                      INITIALIZATION & BASIC TESTS
     // =====================================================================
+
+    function _topicsToExpressionNodes(uint256[] memory topics) internal pure returns (ExpressionNode[] memory) {
+        return ClaimExpressionUtils.topicsToExpressionNodes(topics);
+    }
 
     function test_InitialState() public view {
         require(address(token) != address(0), "Token not deployed");

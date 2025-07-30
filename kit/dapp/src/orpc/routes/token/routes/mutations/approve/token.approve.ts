@@ -1,11 +1,12 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
+import { tokenMiddleware } from "@/orpc/middlewares/system/token.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { read } from "../../token.read";
+import { call } from "@orpc/server";
 
 const TOKEN_APPROVE_MUTATION = portalGraphql(`
   mutation TokenApprove(
@@ -38,13 +39,10 @@ export const tokenApprove = tokenRouter.token.tokenApprove
       requiredRoles: TOKEN_PERMISSIONS.tokenApprove,
     })
   )
-  .handler(async function* ({ input, context }) {
+  .use(tokenMiddleware)
+  .handler(async ({ input, context }) => {
     const { contract, verification, spender, amount } = input;
-    const { auth, t } = context;
-
-    // Generate messages using server-side translations
-    const { pendingMessage, successMessage, errorMessage } =
-      getMutationMessages(t, "tokens", "approve");
+    const { auth } = context;
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -52,7 +50,7 @@ export const tokenApprove = tokenRouter.token.tokenApprove
       type: verification.verificationType,
     });
 
-    const transactionHash = yield* context.portalClient.mutate(
+    await context.portalClient.mutate(
       TOKEN_APPROVE_MUTATION,
       {
         address: contract,
@@ -61,12 +59,17 @@ export const tokenApprove = tokenRouter.token.tokenApprove
         amount: amount.toString(),
         ...challengeResponse,
       },
-      errorMessage,
-      {
-        waitingForMining: pendingMessage,
-        transactionIndexed: successMessage,
-      }
+      context.t("tokens:api.mutations.approve.messages.failed")
     );
 
-    return getEthereumHash(transactionHash);
+    // Return the updated token data using the read handler
+    return await call(
+      read,
+      {
+        tokenAddress: contract,
+      },
+      {
+        context,
+      }
+    );
   });

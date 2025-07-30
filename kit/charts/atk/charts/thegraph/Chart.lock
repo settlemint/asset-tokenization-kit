@@ -1,6 +1,0 @@
-dependencies:
-- name: graph-node
-  repository: http://graphops.github.io/launchpad-charts
-  version: 0.6.2
-digest: sha256:a9088563bfb6eae375a1123ffb09bece8c2a802844ce2b9895bf6ff41d7d947d
-generated: "2025-07-25T07:16:33.413746666Z"
