@@ -93,12 +93,9 @@ export const statsAssetTotalSupply = tokenRouter.token.statsAssetTotalSupply
     // tokenAddress is now validated as proper Ethereum address by schema
     const { tokenAddress, days } = input;
 
-    // Calculate the date range for queries with bounds validation
-    const maxDaysBack = 365;
-    const validatedDays = Math.min(Math.max(1, days), maxDaysBack);
-
+    // Calculate the date range for queries
     const since = new Date();
-    since.setDate(since.getDate() - validatedDays);
+    since.setDate(since.getDate() - days);
 
     // Validate timestamp is not too far in the past (blockchain inception)
     const minTimestamp = Math.floor(new Date("2015-07-30").getTime() / 1000); // Ethereum mainnet launch
@@ -135,7 +132,7 @@ export const statsAssetTotalSupply = tokenRouter.token.statsAssetTotalSupply
         message: "Failed to fetch token total supply history",
         data: {
           tokenAddress,
-          days: validatedDays,
+          days,
           error: error instanceof Error ? error.message : String(error),
         },
       });
