@@ -1,7 +1,7 @@
 import { Bytes } from "@graphprotocol/graph-ts";
 import {
+  ComplianceModule,
   ComplianceModuleParameters,
-  type ComplianceModule,
 } from "../../../generated/schema";
 import { getEncodedTypeId } from "../../type-identifier/type-identifier";
 import {

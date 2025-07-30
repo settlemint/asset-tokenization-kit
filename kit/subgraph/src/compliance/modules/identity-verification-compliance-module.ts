@@ -1,7 +1,7 @@
 import { Bytes, ethereum, store } from "@graphprotocol/graph-ts";
 import {
+  ComplianceModuleParameters,
   ExpressionNode,
-  type ComplianceModuleParameters,
 } from "../../../generated/schema";
 import { fetchTopicScheme } from "../../topic-scheme-registry/fetch/topic-scheme";
 import { getEncodedTypeId } from "../../type-identifier/type-identifier";
