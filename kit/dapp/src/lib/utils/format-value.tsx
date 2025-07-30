@@ -69,7 +69,7 @@ export interface FormatValueOptions {
  * Uses dnum for precision handling when the value is a string
  * Returns 0 for NaN values
  */
-function safeToNumber(value: unknown): number {
+export function safeToNumber(value: unknown): number {
   // If it's already a number, check for NaN
   if (typeof value === "number") {
     return Number.isNaN(value) ? 0 : value;

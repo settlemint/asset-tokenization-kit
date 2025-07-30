@@ -1,11 +1,12 @@
 import { AreaChartComponent } from "@/components/charts/area-chart";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
+import { safeToNumber } from "@/lib/utils/format-value";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { format } from "date-fns/format";
-import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 export interface TokenTotalSupplyAreaChartProps {
   tokenAddress: string;
@@ -16,6 +17,7 @@ export interface TokenTotalSupplyAreaChartProps {
  * Token Total Supply Area Chart Component
  *
  * Displays historical total supply data for a specific token using an area chart.
+ * Uses dnum for safe BigInt handling to prevent precision loss.
  */
 export function TokenTotalSupplyAreaChart({
   tokenAddress,
@@ -44,10 +46,10 @@ export function TokenTotalSupplyAreaChart({
           };
         }
 
-        // Transform the response data to chart format
+        // Transform the response data to chart format using safe conversion
         const transformedData = response.totalSupplyHistory.map((item) => ({
           timestamp: format(new Date(item.timestamp * 1000), "MMM dd"),
-          totalSupply: Number(BigInt(item.totalSupply)),
+          totalSupply: safeToNumber(item.totalSupply),
         }));
 
         // Configure chart colors and labels
@@ -109,6 +111,14 @@ export function TokenTotalSupplyAreaChart({
         nameKey="timestamp"
         showLegend={false}
         stacked={false}
+        tickFormatter={(value) => {
+          // Format Y-axis ticks with compact notation for better readability
+          const numValue = Number(value);
+          return new Intl.NumberFormat("en-US", {
+            notation: "compact",
+            maximumFractionDigits: 1,
+          }).format(numValue);
+        }}
       />
     </ComponentErrorBoundary>
   );
