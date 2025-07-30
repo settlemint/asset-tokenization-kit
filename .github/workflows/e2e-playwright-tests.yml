@@ -74,6 +74,58 @@ jobs:
         run: bunx playwright install --with-deps chromium
         working-directory: kit/e2e
 
+      - name: Reset dev environment (clean start)
+        run: |
+          bun run dev:reset
+
+      - name: Start dev server
+        run: |
+          echo "Starting dev server..."
+          nohup bun run dev > server.log 2>&1 &
+          echo "SERVER_PID=$!" >> $GITHUB_ENV
+          echo "Waiting 30 seconds for Next.js to initialize all routes..."
+          sleep 30
+          echo "Performing initial server check..."
+          curl -v http://localhost:${PORT}/ || echo "Initial check failed, will retry"
+          timeout_seconds=120
+          elapsed=0
+          success=false
+
+          while [ $elapsed -lt $timeout_seconds ]; do
+            echo "Checking server status (${elapsed}s elapsed)..."
+            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:${PORT}/ || echo "failed")
+
+            if [ "$status" = "200" ]; then
+              echo "Server is ready! Status: $status"
+              success=true
+              break
+            fi
+
+            if [ "$status" = "307" ]; then
+              echo "Server is ready (with redirect)! Status: $status"
+              success=true
+              break
+            fi
+
+            echo "Server not ready yet (status: $status). Recent logs:"
+            tail -n 10 server.log || true
+            sleep 15
+            elapsed=$((elapsed + 15))
+          done
+          if [ "$success" = false ]; then
+            echo "Server failed to start within $timeout_seconds seconds. Last server logs:"
+            cat server.log
+            echo "Attempting final direct check with verbose output:"
+            curl -v http://localhost:${PORT}/ || echo "Final check failed"
+            exit 1
+          fi
+
+          echo "Dev server is ready at http://localhost:${PORT}!"
+        working-directory: .
+        env:
+          PORT: ${{ env.PORT }}
+          HOST: ${{ env.HOST }}
+
       - name: Verify subgraph SystemFactory address
         run: |
             echo "Checking SystemFactory address in subgraph.yaml..."
@@ -91,12 +143,28 @@ jobs:
               echo "✅ SystemFactory address is correct: $ACTUAL_ADDRESS"
             fi
 
-      - name: Run UI Playwright tests with retries
+      # - name: Run API Playwright tests
+      #   id: playwright-api
+      #   run:
+      #     bun playwright test --config=playwright.api.config.ts
+      #     --project=api-tests --retries 2 --reporter=html
+      #   working-directory: kit/e2e
+      #   env:
+      #     CI: true
+
+      - name: Run UI Playwright tests
         id: playwright-ui
-        run: ./run-tests-with-retries.sh
+        # if: success() || steps.playwright-api.conclusion == 'failure'
+        run: |
+          bun playwright test --config=playwright.ui.config.ts --project=ui-tests --retries 2 --reporter=html
         working-directory: kit/e2e
         env:
           CI: true
+
+      - name: Stop dev server
+        if: always()
+        run: kill ${{ env.SERVER_PID }} || true
+        working-directory: kit/dapp
 
       - name: Upload test results
         if: always()
@@ -108,11 +176,6 @@ jobs:
             kit/e2e/test-results/
             kit/dapp/server.log
           retention-days: 1
-
-      - name: Results download URL
-        run: |
-          echo "Results for this run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-          echo "Results for this run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >> $GITHUB_STEP_SUMMARY
 
       - name: Docker compose logs on failure
         if: failure()
@@ -131,4 +194,3 @@ jobs:
             echo "--- Logs for service: $service ---"
             docker compose -p atk logs "$service" || true
           done
-
