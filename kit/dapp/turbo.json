@@ -20,7 +20,9 @@
     },
     "artifacts": {},
     "test": {
-      "dependsOn": ["codegen"]
+      "dependsOn": ["codegen"],
+      "outputs": ["coverage/**"],
+      "env": ["CI"]
     },
     "test:integration": {
       "dependsOn": ["codegen"]
