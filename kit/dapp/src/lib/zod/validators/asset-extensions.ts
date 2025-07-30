@@ -6,30 +6,7 @@
  * asset tokenization platform's various token capabilities and features.
  * @module AssetExtensionValidation
  */
-import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import type { ResultOf } from "@settlemint/sdk-thegraph";
 import { z } from "zod";
-
-/**
- * GraphQL fragment for type extraction only.
- * This fragment is used solely to derive the TokenExtension type from the GraphQL schema,
- * ensuring compile-time type safety between our TypeScript array and the GraphQL enum.
- */
-const _TOKEN_EXTENSIONS_TYPE_FRAGMENT = theGraphGraphql(`
-  fragment TokenExtensionsType on TokenFactory {
-    tokenExtensions
-  }
-`);
-
-/**
- * Type extracted from GraphQL schema for compile-time type safety.
- * This ensures our TypeScript array exactly matches the GraphQL TokenExtension enum.
- */
-type TokenExtensionFromGraphQL = NonNullable<
-  NonNullable<
-    ResultOf<typeof _TOKEN_EXTENSIONS_TYPE_FRAGMENT>
-  >["tokenExtensions"][0]
->;
 
 /**
  * Enum-like object for dot notation access to asset extensions.
@@ -64,7 +41,7 @@ export const AssetExtensionEnum = {
   PAUSABLE: "PAUSABLE",
   REDEEMABLE: "REDEEMABLE",
   YIELD: "YIELD",
-} as const satisfies Record<TokenExtensionFromGraphQL, string>;
+} as const;
 
 /**
  * Tuple of valid asset extensions for type-safe iteration.
@@ -86,9 +63,7 @@ export const AssetExtensionEnum = {
  * - `REDEEMABLE`: Token redemption capabilities
  * - `YIELD`: Yield/interest generation features
  */
-export const assetExtensions: TokenExtensionFromGraphQL[] = Object.values(
-  AssetExtensionEnum
-) as TokenExtensionFromGraphQL[];
+export const assetExtensions = Object.values(AssetExtensionEnum);
 
 /**
  * Creates a Zod schema that validates an asset extension.
