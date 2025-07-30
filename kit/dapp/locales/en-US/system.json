@@ -1,14 +1,12 @@
 {
   "addons": {
     "messages": {
-      "accessDenied": "Access denied for {{name}}",
       "allFailed": "Failed to register any addons",
       "allSuccess": "All {{count}} addons registered successfully",
       "alreadyExists": "Addon {{name}} already exists",
       "defaultError": "An error occurred during addon registration",
       "failed": "Failed to register {{name}}",
-      "invalidConfiguration": "Invalid configuration",
-      "invalidImplementation": "Invalid implementation provided",
+      "invalidConfiguration": "No addon registry found for system {{systemAddress}}",
       "partialSuccess": "{{successful}} of {{total}} addons registered successfully",
       "preparing": "Preparing to register addons",
       "progress": "Registering {{current}} of {{total}} addons",
@@ -42,6 +40,16 @@
       "failed": "Failed to register identity",
       "preparing": "Preparing to register identity",
       "success": "Identity registered successfully"
+    }
+  },
+  "complianceModule": {
+    "messages": {
+      "preparing": "Preparing to register compliance module",
+      "success": "Compliance module registered successfully",
+      "failed": "Failed to register compliance module",
+      "progress": "Registering {{current}} of {{total}} compliance modules",
+      "registering": "Registering {{name}}",
+      "registered": "{{name}} registered successfully"
     }
   }
 }

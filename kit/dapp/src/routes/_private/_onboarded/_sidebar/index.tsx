@@ -57,12 +57,12 @@ function Home() {
   const [systemAddress] = useSettings("SYSTEM_ADDRESS");
 
   // Get system details using the system address from settings
-  const { data: systemDetails, isLoading: isLoadingSystem } = useQuery({
-    ...orpc.system.read.queryOptions({
+  const { data: systemDetails, isLoading: isLoadingSystem } = useQuery(
+    orpc.system.read.queryOptions({
       input: { id: systemAddress ?? "" },
-    }),
-    enabled: Boolean(systemAddress),
-  });
+      enabled: Boolean(systemAddress),
+    })
+  );
 
   return (
     <div className="p-6 space-y-8">
@@ -74,7 +74,6 @@ function Home() {
             {JSON.stringify(
               {
                 wallet: user.wallet,
-                onboardingFinished: user.isOnboarded,
                 userId: user.id,
                 systemAddress: systemAddress,
               },

@@ -14,7 +14,7 @@ A Helm chart for the hasura components
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://hasura.github.io/helm-charts | graphql-engine | 0.8.0 |
+| https://hasura.github.io/helm-charts | graphql-engine | 0.9.0 |
 
 ## Values
 

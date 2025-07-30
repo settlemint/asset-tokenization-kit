@@ -140,7 +140,6 @@
     "initialLoading": "Preparing your factory workspace...",
     "noResultError": "The blockchain didn't return a factory address—let's try again",
     "defaultError": "Something unexpected happened. Let's try creating your factory again",
-    "systemNotBootstrapped": "The platform is still initializing. Give it a moment and try again",
     "transactionSubmitted": "Transaction sent! The blockchain is processing your request...",
     "factoryCreationCompleted": "Success! Your factory deployment is complete",
     "allFactoriesSucceeded": "Fantastic! All {{count}} factories are deployed and ready",

@@ -140,7 +140,8 @@ contract ATKTopicSchemeRegistryImplementation is
     function setSystemAccessManager(address systemAccessManager_) external {
         // Only allow current access manager's admin role to change the access manager
         if (address(_systemAccessManager) != address(0)) {
-            if (!_systemAccessManager.hasRole(0x00, _msgSender())) { // DEFAULT_ADMIN_ROLE = 0x00
+            if (!_systemAccessManager.hasRole(0x00, _msgSender())) {
+                // DEFAULT_ADMIN_ROLE = 0x00
                 revert UnauthorizedAccess();
             }
         } else {
@@ -173,9 +174,9 @@ contract ATKTopicSchemeRegistryImplementation is
     /// @return roles Array of roles that can manage topic schemes
     function _getClaimPolicyManagementRoles() internal pure returns (bytes32[] memory roles) {
         roles = new bytes32[](3);
-        roles[0] = ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE;  // Primary claim policy manager
-        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE;        // System manager has access to all
-        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE;         // System module role
+        roles[0] = ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE; // Primary claim policy manager
+        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE; // System manager has access to all
+        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE; // System module role
     }
 
     // --- Topic Scheme Management Functions ---
@@ -299,7 +300,11 @@ contract ATKTopicSchemeRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTTopicSchemeRegistry
-    function removeTopicScheme(string calldata name) external override onlySystemRoles(_getClaimPolicyManagementRoles()) {
+    function removeTopicScheme(string calldata name)
+        external
+        override
+        onlySystemRoles(_getClaimPolicyManagementRoles())
+    {
         if (bytes(name).length == 0) revert EmptyName();
 
         // Generate topicId from name
@@ -392,12 +397,7 @@ contract ATKTopicSchemeRegistryImplementation is
     /// @dev Supports ISMARTTopicSchemeRegistry and inherited interfaces
     /// @param interfaceId The interface identifier to check
     /// @return True if the interface is supported
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC165Upgradeable, IERC165)
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public view override(ERC165Upgradeable, IERC165) returns (bool) {
         return interfaceId == type(IATKTopicSchemeRegistry).interfaceId
             || interfaceId == type(ISMARTTopicSchemeRegistry).interfaceId || super.supportsInterface(interfaceId);
     }
@@ -414,24 +414,14 @@ contract ATKTopicSchemeRegistryImplementation is
     /// @notice Returns the calldata of the transaction, supporting meta-transactions
     /// @dev Overrides to support ERC2771 meta-transactions
     /// @return The calldata of the transaction
-    function _msgData()
-        internal
-        view
-        override(ERC2771ContextUpgradeable)
-        returns (bytes calldata)
-    {
+    function _msgData() internal view override(ERC2771ContextUpgradeable) returns (bytes calldata) {
         return ERC2771ContextUpgradeable._msgData();
     }
 
     /// @notice Returns the context suffix for meta-transactions
     /// @dev Overrides to support ERC2771 meta-transactions
     /// @return The context suffix
-    function _contextSuffixLength()
-        internal
-        view
-        override(ERC2771ContextUpgradeable)
-        returns (uint256)
-    {
+    function _contextSuffixLength() internal view override(ERC2771ContextUpgradeable) returns (uint256) {
         return ERC2771ContextUpgradeable._contextSuffixLength();
     }
 }

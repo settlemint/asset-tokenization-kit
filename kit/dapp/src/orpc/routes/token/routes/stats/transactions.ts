@@ -132,7 +132,7 @@ export const statsTransactions = authRouter.token.statsTransactions
           since: sinceTimestamp.toString(),
         },
         output: TransactionMetricsResponseSchema,
-        error: "Failed to fetch transaction metrics",
+        error: context.t("tokens:api.stats.transactions.messages.failed"),
       }
     );
 

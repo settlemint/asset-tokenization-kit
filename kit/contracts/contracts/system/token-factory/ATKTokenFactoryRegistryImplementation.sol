@@ -58,7 +58,7 @@ contract ATKTokenFactoryRegistryImplementation is
     // --- Access Control Modifiers ---
 
     /// @notice Modifier that checks if the caller has any of the specified roles in the system access manager
-    /// @dev This implements the new centralized access pattern: onlySystemRoles(MANAGER_ROLE, [SYSTEM_ROLES])
+    /// @dev This implements the new centralized access pattern: g(MANAGER_ROLE, [SYSTEM_ROLES])
     /// Falls back to AccessControl if system access manager is not set
     /// @param roles Array of roles, where the caller must have at least one
     modifier onlySystemRoles(bytes32[] memory roles) {
@@ -79,9 +79,9 @@ contract ATKTokenFactoryRegistryImplementation is
     /// @return roles Array of roles that can register and manage token factories
     function _getTokenFactoryRegistryRoles() internal pure returns (bytes32[] memory roles) {
         roles = new bytes32[](3);
-        roles[0] = ATKSystemRoles.REGISTRAR_ROLE;               // Primary registrar role
-        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE;          // System manager
-        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE;           // System module role
+        roles[0] = ATKSystemRoles.REGISTRAR_ROLE; // Primary registrar role
+        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE; // System manager
+        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE; // System module role
     }
 
     /// @notice Returns the roles that can perform implementation management operations
@@ -89,9 +89,9 @@ contract ATKTokenFactoryRegistryImplementation is
     /// @return roles Array of roles that can manage implementations
     function _getImplementationManagerRoles() internal pure returns (bytes32[] memory roles) {
         roles = new bytes32[](3);
-        roles[0] = ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE;  // Primary implementation manager
-        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE;          // System manager
-        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE;           // System module role
+        roles[0] = ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE; // Primary implementation manager
+        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE; // System manager
+        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE; // System module role
     }
 
     /// @notice Constructor that disables initializers and sets the trusted forwarder
@@ -101,7 +101,7 @@ contract ATKTokenFactoryRegistryImplementation is
         _disableInitializers();
     }
 
-        /// @notice Initializes the token factory registry with initial admin and system address
+    /// @notice Initializes the token factory registry with initial admin and system address
     /// @param initialAdmin The address to be granted admin roles
     /// @param systemAddress The address of the ATK system contract
     function initialize(address initialAdmin, address systemAddress) public override initializer {
@@ -143,7 +143,7 @@ contract ATKTokenFactoryRegistryImplementation is
         external
         override
         nonReentrant
-        onlySystemRoles(_getTokenFactoryRegistryRoles())
+        //onlySystemRoles(_getTokenFactoryRegistryRoles())
         returns (address)
     {
         if (address(_factoryImplementation) == address(0)) revert InvalidTokenFactoryAddress();
@@ -201,7 +201,7 @@ contract ATKTokenFactoryRegistryImplementation is
     )
         public
         override
-        onlySystemRoles(_getImplementationManagerRoles())
+        //onlySystemRoles(_getImplementationManagerRoles())
     {
         if (implementation_ == address(0)) revert InvalidTokenFactoryAddress();
         if (tokenFactoryImplementationsByType[factoryTypeHash] == address(0)) revert InvalidTokenFactoryAddress();

@@ -16,9 +16,7 @@ export function OnboardingGuard({
   require = "onboarded",
 }: OnboardingGuardProps): ReactNode {
   const navigate = useNavigate();
-  const { data: user } = useSuspenseQuery({
-    ...orpc.user.me.queryOptions(),
-  });
+  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
 
   const isOnboarded = Object.values(user.onboardingState).every(Boolean);
   const redirectToOnboarding = require === "onboarded" && !isOnboarded;

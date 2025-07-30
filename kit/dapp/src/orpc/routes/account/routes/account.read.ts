@@ -1,8 +1,12 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { publicRouter } from "@/orpc/procedures/public.router";
-import { AccountResponseSchema } from "@/orpc/routes/account/routes/account.read.schema";
-import { numericToAlpha2 } from "i18n-iso-countries";
+import {
+  AccountReadSchema,
+  AccountResponseSchema,
+} from "@/orpc/routes/account/routes/account.read.schema";
+import countries from "i18n-iso-countries";
 
 const READ_ACCOUNT_QUERY = theGraphGraphql(`
   query ReadAccountQuery($walletAddress: ID!) {
@@ -27,23 +31,19 @@ const READ_ACCOUNT_QUERY = theGraphGraphql(`
  *
  */
 export const read = publicRouter.account.read
+  .use(
+    offChainPermissionsMiddleware<typeof AccountReadSchema>({
+      requiredPermissions: { account: ["list"] },
+      alwaysAllowIf: (context, input) =>
+        input.wallet === context.auth?.user.wallet,
+    })
+  )
   .use(theGraphMiddleware)
   .handler(async ({ input, context, errors }) => {
     const { wallet } = input;
 
     if (!context.auth) {
       throw errors.UNAUTHORIZED();
-    }
-
-    // Check if user is accessing their own data or is an admin
-    if (
-      context.auth.user.wallet !== wallet &&
-      context.auth.user.role !== "admin"
-    ) {
-      throw errors.FORBIDDEN({
-        message:
-          "Access denied. You do not have permission to view this account.",
-      });
     }
 
     // Execute TheGraph query with type-safe parameters
@@ -65,7 +65,7 @@ export const read = publicRouter.account.read
     return {
       id: result.account.id,
       country: result.account.country
-        ? numericToAlpha2(result.account.country)
+        ? countries.numericToAlpha2(result.account.country)
         : undefined,
       identity: result.account.identity?.id,
       claims: result.account.identity?.claims.map((claim) => claim.name) ?? [],

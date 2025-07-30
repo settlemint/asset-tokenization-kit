@@ -112,7 +112,8 @@ contract ATKComplianceImplementation is
     // --- System Access Manager Functions ---
 
     /// @notice Sets the system access manager for enhanced role checking
-    /// @dev Only callable by accounts with DEFAULT_ADMIN_ROLE. Setting to address(0) disables centralized access control
+    /// @dev Only callable by accounts with DEFAULT_ADMIN_ROLE. Setting to address(0) disables centralized access
+    /// control
     /// @param systemAccessManager The address of the ATK system access manager, or address(0) to disable
     function setSystemAccessManager(address systemAccessManager) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _systemAccessManager = IATKSystemAccessManager(systemAccessManager);
@@ -133,7 +134,8 @@ contract ATKComplianceImplementation is
     // --- Bypass List Management Functions ---
 
     /// @notice Adds an address to the compliance bypass list
-    /// @dev Uses new multi-role access control. Can be called by COMPLIANCE_MANAGER_ROLE, SYSTEM_MANAGER_ROLE, or SYSTEM_MODULE_ROLE.
+    /// @dev Uses new multi-role access control. Can be called by COMPLIANCE_MANAGER_ROLE, SYSTEM_MANAGER_ROLE, or
+    /// SYSTEM_MODULE_ROLE.
     /// Bypassed addresses can bypass compliance checks in canTransfer function.
     /// @param account The address to add to the bypass list
     function addToBypassList(address account) external onlySystemAndComplianceManagerRoles() {
@@ -145,7 +147,8 @@ contract ATKComplianceImplementation is
     }
 
     /// @notice Removes an address from the compliance bypass list
-    /// @dev Uses new multi-role access control. Can be called by COMPLIANCE_MANAGER_ROLE, SYSTEM_MANAGER_ROLE, or SYSTEM_MODULE_ROLE.
+    /// @dev Uses new multi-role access control. Can be called by COMPLIANCE_MANAGER_ROLE, SYSTEM_MANAGER_ROLE, or
+    /// SYSTEM_MODULE_ROLE.
     /// @param account The address to remove from the bypass list
     function removeFromBypassList(address account) external onlySystemAndComplianceManagerRoles() {
         if (!_bypassedAddresses[account]) revert AddressNotOnBypassList(account);
@@ -155,7 +158,8 @@ contract ATKComplianceImplementation is
     }
 
     /// @notice Adds multiple addresses to the compliance bypass list in a single transaction
-    /// @dev Uses new multi-role access control. Can be called by COMPLIANCE_MANAGER_ROLE, SYSTEM_MANAGER_ROLE, or SYSTEM_MODULE_ROLE.
+    /// @dev Uses new multi-role access control. Can be called by COMPLIANCE_MANAGER_ROLE, SYSTEM_MANAGER_ROLE, or
+    /// SYSTEM_MODULE_ROLE.
     /// This is a gas-efficient way to add multiple addresses to the bypass list at once.
     /// @param accounts Array of addresses to add to the bypass list
     function addMultipleToBypassList(address[] calldata accounts)
@@ -178,7 +182,8 @@ contract ATKComplianceImplementation is
     }
 
     /// @notice Removes multiple addresses from the compliance bypass list in a single transaction
-    /// @dev Uses new multi-role access control. Can be called by COMPLIANCE_MANAGER_ROLE, SYSTEM_MANAGER_ROLE, or SYSTEM_MODULE_ROLE.
+    /// @dev Uses new multi-role access control. Can be called by COMPLIANCE_MANAGER_ROLE, SYSTEM_MANAGER_ROLE, or
+    /// SYSTEM_MODULE_ROLE.
     /// @param accounts Array of addresses to remove from the bypass list
     function removeMultipleFromBypassList(address[] calldata accounts)
         external

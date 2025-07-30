@@ -236,7 +236,8 @@ contract ATKTrustedIssuersRegistryImplementation is
     // --- System Access Manager Functions ---
 
     /// @notice Sets the system access manager for enhanced role checking
-    /// @dev Only callable by accounts with DEFAULT_ADMIN_ROLE. Setting to address(0) disables centralized access control
+    /// @dev Only callable by accounts with DEFAULT_ADMIN_ROLE. Setting to address(0) disables centralized access
+    /// control
     /// @param systemAccessManager The address of the ATK system access manager, or address(0) to disable
     function setSystemAccessManager(address systemAccessManager) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _systemAccessManager = IATKSystemAccessManager(systemAccessManager);
@@ -278,9 +279,9 @@ contract ATKTrustedIssuersRegistryImplementation is
     /// @return roles Array of roles that can manage trusted issuers and claim policies
     function _getClaimPolicyManagementRoles() internal pure returns (bytes32[] memory roles) {
         roles = new bytes32[](3);
-        roles[0] = ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE;  // Primary claim policy manager
-        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE;        // System manager
-        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE;         // System module role
+        roles[0] = ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE; // Primary claim policy manager
+        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE; // System manager
+        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE; // System module role
     }
 
     // --- Issuer Management Functions (REGISTRAR_ROLE required) ---

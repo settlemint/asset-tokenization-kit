@@ -18,6 +18,7 @@ export const commonFields: KeysOfUnion<AssetDesignerFormInputData>[] = [
   "symbol",
   "decimals",
   "isin",
+  "countryCode",
 ];
 
 export const CommonFields = withForm({
@@ -61,6 +62,17 @@ export const CommonFields = withForm({
             <field.TextField
               label={t("form.fields.isin.label")}
               required={isRequiredField("isin")}
+            />
+          )}
+        />
+        <form.AppField
+          name="countryCode"
+          children={(field) => (
+            <field.CountrySelectField
+              label={t("form.fields.countryCode.label")}
+              description={t("form.fields.countryCode.description")}
+              required={isRequiredField("countryCode")}
+              valueType="numeric"
             />
           )}
         />

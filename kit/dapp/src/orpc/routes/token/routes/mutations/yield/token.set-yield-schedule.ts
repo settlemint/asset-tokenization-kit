@@ -1,14 +1,13 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { getTransactionReceipt } from "@/orpc/helpers/transaction-receipt";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { withEventMeta } from "@orpc/server";
+import { read } from "../../token.read";
+import { call } from "@orpc/server";
 import { logger } from "better-auth";
 
 const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
@@ -63,15 +62,15 @@ const TOKEN_CREATE_YIELD_SCHEDULE_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
+export const setYieldSchedule = tokenRouter.token.setYieldSchedule
   .use(
     tokenPermissionMiddleware({
-      requiredRoles: TOKEN_PERMISSIONS.tokenSetYieldSchedule,
+      requiredRoles: TOKEN_PERMISSIONS.setYieldSchedule,
       requiredExtensions: ["YIELD"],
     })
   )
   .use(portalMiddleware)
-  .handler(async function* ({ input, context, errors }) {
+  .handler(async ({ input, context, errors }) => {
     const {
       contract,
       verification,
@@ -80,21 +79,14 @@ export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
       startTime,
       endTime,
     } = input;
-    const { auth, t } = context;
-
-    // Generate messages using server-side translations
-    const { pendingMessage, successMessage, errorMessage } =
-      getMutationMessages(t, "tokens", "setYieldSchedule");
+    const { auth } = context;
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
       code: verification.verificationCode,
       type: verification.verificationType,
     });
-
-    let transactionHash: string | undefined = undefined;
-
-    for await (const event of context.portalClient.mutate(
+    const transactionHash = await context.portalClient.mutate(
       TOKEN_CREATE_YIELD_SCHEDULE_MUTATION,
       {
         address: contract,
@@ -106,68 +98,32 @@ export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
         token: contract,
         ...challengeResponse,
       },
-      errorMessage,
-      {
-        waitingForMining: pendingMessage,
-        transactionIndexed: successMessage,
-      }
-    )) {
-      // Store the transaction hash from the first event
-      transactionHash = event.transactionHash;
-
-      // Yield all events except confirmed (we'll handle that after getting the system address)
-      if (event.status === "pending") {
-        yield withEventMeta(
-          {
-            status: event.status,
-            message: event.message,
-            result: undefined,
-          },
-          { id: transactionHash, retry: 1000 }
-        );
-      } else if (event.status === "failed") {
-        // Transform Portal event to ORPC event format with metadata
-        yield withEventMeta(
-          {
-            status: event.status,
-            message: event.message,
-            result: undefined,
-          },
-          { id: transactionHash, retry: 1000 }
-        );
-        return;
-      } else {
-        // Transaction is confirmed
-        break;
-      }
-    }
-
-    if (!transactionHash) {
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: errorMessage,
-        cause: new Error("Transaction hash not found"),
-      });
-    }
-
+      context.t("tokens:api.mutations.yield.messages.createScheduleFailed")
+    );
     let receipt: Awaited<ReturnType<typeof getTransactionReceipt>>;
     try {
       receipt = await getTransactionReceipt(transactionHash);
-
       // Check if transaction was successful
       if (receipt.status !== "Success") {
         throw errors.INTERNAL_SERVER_ERROR({
-          message: errorMessage,
-          cause: new Error(`Transaction failed with status: ${receipt.status}`),
+          message: context.t(
+            "tokens:api.mutations.yield.messages.transactionFailed"
+          ),
+          cause: new Error(
+            context.t(
+              "tokens:api.mutations.yield.messages.transactionFailedWithStatus",
+              { status: receipt.status }
+            )
+          ),
         });
       }
     } catch (error_) {
       const error = error_ as Error;
       throw errors.INTERNAL_SERVER_ERROR({
-        message: errorMessage,
+        message: context.t("tokens:api.mutations.yield.messages.receiptFailed"),
         cause: error.message,
       });
     }
-
     // Look for the last log entry which should contain the schedule created event
     logger.debug("Receipt logs:", receipt.logs);
     logger.debug("Receipt contractAddress:", receipt.contractAddress);
@@ -188,12 +144,18 @@ export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
     }
     if (!scheduleAddress) {
       throw errors.INTERNAL_SERVER_ERROR({
-        message: errorMessage,
-        cause: new Error("Schedule address not found"),
+        message: context.t(
+          "tokens:api.mutations.yield.messages.createScheduleFailed"
+        ),
+        cause: new Error(
+          context.t(
+            "tokens:api.mutations.yield.messages.scheduleAddressNotFound"
+          )
+        ),
       });
     }
-
-    const setScheduleTransactionHash = yield* context.portalClient.mutate(
+    // Now set the yield schedule with the created schedule address
+    await context.portalClient.mutate(
       TOKEN_SET_YIELD_SCHEDULE_MUTATION,
       {
         address: contract,
@@ -201,12 +163,9 @@ export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
         schedule: getEthereumAddress(scheduleAddress),
         ...challengeResponse,
       },
-      errorMessage,
-      {
-        waitingForMining: pendingMessage,
-        transactionIndexed: successMessage,
-      }
+      context.t("tokens:api.mutations.yield.messages.setScheduleFailed")
     );
 
-    return getEthereumHash(setScheduleTransactionHash);
+    // Return updated token data
+    return await call(read, { tokenAddress: contract }, { context });
   });

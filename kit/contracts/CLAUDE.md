@@ -51,6 +51,8 @@ information before attempting any task to understand the project.**
   - Standard contracts (ERC20, ERC721, etc.)
   - Upgradeable contracts library
   - Access control and security utilities
+  - **MCP Tool Available**: Use `mcp__OpenZeppelinSolidityContracts__solidity-*`
+    for quick generation
 
 - **OnChain ID** - Identity management framework
   - ERC-734/735 implementation

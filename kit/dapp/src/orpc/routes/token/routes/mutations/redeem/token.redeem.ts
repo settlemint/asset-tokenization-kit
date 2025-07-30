@@ -1,11 +1,14 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { getConditionalMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
+import { tokenMiddleware } from "@/orpc/middlewares/system/token.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { read } from "../../token.read";
+import { call } from "@orpc/server";
+import { from } from "dnum";
+import type { TokenRedeemOutput } from "./token.redeem.schema";
 
 const TOKEN_REDEEM_MUTATION = portalGraphql(`
   mutation TokenRedeem(
@@ -47,64 +50,50 @@ const TOKEN_REDEEM_ALL_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenRedeem = tokenRouter.token.tokenRedeem
+export const redeem = tokenRouter.token.redeem
   .use(
     tokenPermissionMiddleware({
-      requiredRoles: TOKEN_PERMISSIONS.tokenRedeem,
+      requiredRoles: TOKEN_PERMISSIONS.redeem,
       requiredExtensions: ["REDEEMABLE"],
     })
   )
   .use(portalMiddleware)
-  .handler(async function* ({ input, context, errors }) {
+  .use(tokenMiddleware)
+  .handler(async ({ input, context, errors }): Promise<TokenRedeemOutput> => {
     const { contract, verification, amount, redeemAll } = input;
-    const { auth, t } = context;
+    const { auth } = context;
 
     // Validate input parameters
     if (!redeemAll && !amount) {
       throw errors.INPUT_VALIDATION_FAILED({
-        message: "Either amount must be provided or redeemAll must be true",
+        message: context.t(
+          "tokens:api.mutations.redeem.messages.amountOrRedeemAllRequired"
+        ),
         data: { errors: ["Invalid redeem parameters"] },
       });
     }
 
-    // Generate messages using server-side translations
-    const { pendingMessage, successMessage, errorMessage } =
-      getConditionalMutationMessages(
-        t,
-        "tokens",
-        "redeem",
-        Boolean(redeemAll),
-        {
-          keys: {
-            preparing: redeemAll ? "preparingAll" : "preparing",
-            success: redeemAll ? "successAll" : "success",
-            failed: redeemAll ? "failedAll" : "failed",
-          },
-        }
-      );
+    const errorMessage = redeemAll
+      ? context.t("tokens:api.mutations.redeem.messages.redeemAllFailed")
+      : context.t("tokens:api.mutations.redeem.messages.failed");
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
       code: verification.verificationCode,
       type: verification.verificationType,
     });
-
     // Choose mutation based on whether we're redeeming all or a specific amount
-    const transactionHash = redeemAll
-      ? yield* context.portalClient.mutate(
+    const result = await (redeemAll
+      ? context.portalClient.mutate(
           TOKEN_REDEEM_ALL_MUTATION,
           {
             address: contract,
             from: sender.wallet,
             ...challengeResponse,
           },
-          errorMessage,
-          {
-            waitingForMining: pendingMessage,
-            transactionIndexed: successMessage,
-          }
+          errorMessage
         )
-      : yield* context.portalClient.mutate(
+      : context.portalClient.mutate(
           TOKEN_REDEEM_MUTATION,
           {
             address: contract,
@@ -112,12 +101,29 @@ export const tokenRedeem = tokenRouter.token.tokenRedeem
             amount: amount?.toString() ?? "",
             ...challengeResponse,
           },
-          errorMessage,
-          {
-            waitingForMining: pendingMessage,
-            transactionIndexed: successMessage,
-          }
-        );
+          errorMessage
+        ));
 
-    return getEthereumHash(transactionHash);
+    // Get updated token data
+    const updatedToken = await call(
+      read,
+      { tokenAddress: contract },
+      { context }
+    );
+
+    // Calculate redeemed amount
+    const amountRedeemed = redeemAll
+      ? from(0, updatedToken.decimals) // We don't know the exact amount for redeemAll
+      : from(amount ?? 0, updatedToken.decimals);
+
+    return {
+      txHash: result,
+      data: {
+        amountRedeemed,
+        redeemedAll: Boolean(redeemAll),
+        tokenName: updatedToken.name,
+        tokenSymbol: updatedToken.symbol,
+        totalRedeemedAmount: updatedToken.redeemable?.redeemedAmount,
+      },
+    };
   });

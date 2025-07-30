@@ -1,6 +1,9 @@
 import i18n, { fallbackLng } from "@/lib/i18n";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import type { TOptions } from "i18next";
 import { baseRouter } from "../../procedures/base.router";
+
+const logger = createLogger();
 
 /**
  * Context type provided by the i18n middleware
@@ -115,6 +118,10 @@ export const i18nMiddleware = baseRouter.middleware(
         options?: TOptions
       ) => unknown;
       const result = translate(key, options);
+      const translated = typeof result === "string" ? result : String(result);
+      if (translated === key) {
+        logger.warn(`Translation for key ${key} not found`);
+      }
       // TFunction can return string | object | null | detailed result
       // In our case, we're using it for simple string translations
       return typeof result === "string" ? result : String(result);

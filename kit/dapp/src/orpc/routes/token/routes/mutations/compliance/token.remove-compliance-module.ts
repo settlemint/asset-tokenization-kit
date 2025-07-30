@@ -1,11 +1,10 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { tokenRouter } from "@/orpc/procedures/token.router";
+import { portalRouter } from "@/orpc/procedures/portal.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { call } from "@orpc/server";
+import { read } from "../../token.read";
 
 const TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
   mutation TokenRemoveComplianceModule(
@@ -29,42 +28,33 @@ const TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenRemoveComplianceModule =
-  tokenRouter.token.tokenRemoveComplianceModule
-    .use(
-      tokenPermissionMiddleware({
-        requiredRoles: TOKEN_PERMISSIONS.tokenRemoveComplianceModule,
-      })
-    )
-    .use(portalMiddleware)
-    .handler(async function* ({ input, context }) {
-      const { contract, verification, moduleAddress } = input;
-      const { auth, t } = context;
+export const removeComplianceModule = portalRouter.token.removeComplianceModule
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.removeComplianceModule,
+    })
+  )
+  .handler(async ({ input, context }) => {
+    const { contract, verification, moduleAddress } = input;
+    const { auth } = context;
 
-      // Generate messages using server-side translations
-      const { pendingMessage, successMessage, errorMessage } =
-        getMutationMessages(t, "tokens", "removeComplianceModule");
-
-      const sender = auth.user;
-      const challengeResponse = await handleChallenge(sender, {
-        code: verification.verificationCode,
-        type: verification.verificationType,
-      });
-
-      const transactionHash = yield* context.portalClient.mutate(
-        TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION,
-        {
-          address: contract,
-          from: sender.wallet,
-          moduleAddress,
-          ...challengeResponse,
-        },
-        errorMessage,
-        {
-          waitingForMining: pendingMessage,
-          transactionIndexed: successMessage,
-        }
-      );
-
-      return getEthereumHash(transactionHash);
+    const sender = auth.user;
+    const challengeResponse = await handleChallenge(sender, {
+      code: verification.verificationCode,
+      type: verification.verificationType,
     });
+
+    await context.portalClient.mutate(
+      TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION,
+      {
+        address: contract,
+        from: sender.wallet,
+        moduleAddress,
+        ...challengeResponse,
+      },
+      context.t("tokens:api.mutations.compliance.messages.removeFailed")
+    );
+
+    // Return updated token data
+    return await call(read, { tokenAddress: contract }, { context });
+  });

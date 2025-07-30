@@ -1,6 +1,6 @@
 import { addonType, type AddonType } from "@/lib/zod/validators/addon-types";
+import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
 import { z } from "zod";
-import { MutationInputSchemaWithContract } from "../../common/schemas/mutation.schema";
 
 /**
  * Type alias for clarity in system context
@@ -45,7 +45,7 @@ const SystemAddonConfigSchema = z.object({
 /**
  * Input schema for system addon creation
  */
-export const SystemAddonCreateSchema = MutationInputSchemaWithContract.extend({
+export const SystemAddonCreateSchema = MutationInputSchema.extend({
   addons: z.union([SystemAddonConfigSchema, z.array(SystemAddonConfigSchema)]),
 });
 

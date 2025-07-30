@@ -98,7 +98,7 @@ export const statsTransactionCount = authRouter.token.statsTransactionCount
           since: sinceTimestamp.toString(),
         },
         output: TransactionCountResponseSchema,
-        error: "Failed to fetch transaction count",
+        error: context.t("tokens:api.stats.transactionCount.messages.failed"),
       }
     );
 

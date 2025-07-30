@@ -1,14 +1,10 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
+import { portalRouter } from "@/orpc/procedures/portal.router";
 import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
-import { read as readSystem } from "@/orpc/routes/system/routes/system.read";
 import { call } from "@orpc/server";
-import { alpha2ToNumeric } from "i18n-iso-countries";
+import countries from "i18n-iso-countries";
 
 const IDENTITY_REGISTER_MUTATION = portalGraphql(`
   mutation IdentityRegister(
@@ -35,32 +31,21 @@ const IDENTITY_REGISTER_MUTATION = portalGraphql(`
   }
 `);
 
-export const identityRegister = onboardedRouter.system.identityRegister
-  .use(theGraphMiddleware)
-  .use(portalMiddleware)
-  .handler(async function* ({ input, context, errors }) {
+export const identityRegister = portalRouter.system.identityRegister
+  .use(
+    blockchainPermissionsMiddleware({
+      requiredRoles: ["registrar"],
+      getAccessControl: ({ context }) => {
+        return context.system?.identityRegistry?.accessControl;
+      },
+    })
+  )
+  .handler(async ({ input, context, errors }) => {
     const { verification, country } = input;
-    const { auth, t } = context;
+    const { auth, system } = context;
     const sender = auth.user;
 
-    const [account, systemDetails] = await Promise.all([
-      call(
-        readAccount,
-        {
-          wallet: auth.user.wallet,
-        },
-        { context }
-      ),
-      call(
-        readSystem,
-        {
-          id: "default",
-        },
-        { context }
-      ),
-    ]);
-
-    if (!systemDetails.identityRegistry) {
+    if (!system?.identityRegistry) {
       const cause = new Error("Identity registry not found");
       throw errors.INTERNAL_SERVER_ERROR({
         message: cause.message,
@@ -68,38 +53,43 @@ export const identityRegister = onboardedRouter.system.identityRegister
       });
     }
 
+    const account = await call(
+      readAccount,
+      {
+        wallet: auth.user.wallet,
+      },
+      { context }
+    );
+
     if (!account.identity) {
       throw errors.NOT_FOUND({
         message: "No identity found for the current user",
       });
     }
 
-    const identityRegisterMessages = getMutationMessages(
-      t,
-      "system",
-      "identityRegister"
-    );
-
     const challengeResponse = await handleChallenge(sender, {
       code: verification.verificationCode,
       type: verification.verificationType,
     });
 
-    const transactionHash = yield* context.portalClient.mutate(
+    await context.portalClient.mutate(
       IDENTITY_REGISTER_MUTATION,
       {
-        address: systemDetails.identityRegistry,
+        address: system.identityRegistry.id,
         from: sender.wallet,
-        country: Number(alpha2ToNumeric(country) ?? "0"),
+        country: Number(countries.alpha2ToNumeric(country) ?? "0"),
         identity: account.identity,
         ...challengeResponse,
       },
-      identityRegisterMessages.errorMessage,
-      {
-        waitingForMining: identityRegisterMessages.pendingMessage,
-        transactionIndexed: identityRegisterMessages.successMessage,
-      }
+      "Failed to register identity"
     );
 
-    return getEthereumHash(transactionHash);
+    // Return the updated account data
+    return await call(
+      readAccount,
+      {
+        wallet: sender.wallet,
+      },
+      { context }
+    );
   });

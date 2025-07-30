@@ -3,7 +3,6 @@ import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-
 import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
-import { waitForStream } from "@/lib/utils/stream";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -25,9 +24,7 @@ export function IdentityCreate() {
   const { mutateAsync: createIdentity, isPending: isIdentityCreating } =
     useMutation(
       orpc.system.identityCreate.mutationOptions({
-        onSuccess: async (result) => {
-          await waitForStream(result, "identity creation");
-
+        onSuccess: async () => {
           // Refetch all relevant data
           await queryClient.invalidateQueries({
             queryKey: orpc.account.me.queryOptions().queryKey,

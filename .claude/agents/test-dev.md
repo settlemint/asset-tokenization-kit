@@ -80,6 +80,42 @@ testing. Use the @.claude/commands/test.md command to run tests.
     - Explain the purpose of each test suite
     - Include examples of how to test common patterns
 
+**Context7 Documentation Requirements**:
+
+Before implementing any test features, gather documentation for:
+
+```javascript
+// 1. Vitest
+const vitestId = await mcp__context7__resolve_library_id({
+  libraryName: "vitest",
+});
+await mcp__context7__get_library_docs({
+  context7CompatibleLibraryID: vitestId.libraryId,
+  topic: "mocking testing-library coverage",
+  tokens: 5000,
+});
+
+// 2. Foundry Forge Testing
+const foundryId = await mcp__context7__resolve_library_id({
+  libraryName: "foundry forge-test",
+});
+await mcp__context7__get_library_docs({
+  context7CompatibleLibraryID: foundryId.libraryId,
+  topic: "forge test fuzz invariant",
+  tokens: 5000,
+});
+
+// 3. React Testing Library
+const testingLibraryId = await mcp__context7__resolve_library_id({
+  libraryName: "testing-library",
+});
+await mcp__context7__get_library_docs({
+  context7CompatibleLibraryID: testingLibraryId.libraryId,
+  topic: "react user-event queries",
+  tokens: 3000,
+});
+```
+
 **Working Principles:**
 
 - **ALWAYS USE GEMINI-CLI FOR TEST PLANNING** before writing any tests:
@@ -297,20 +333,349 @@ mcp__linear__create_comment({
    - Update Linear with coverage metrics
 
 4. **Documentation Integration**:
-   - Work with doc-architect to document test patterns
+   - Work with documentation-expert to document test patterns
    - Include test examples in README files
    - Update CLAUDE.md with module-specific test approaches
 
-**Self-Learning Protocol:**
+**Learning & Pattern Updates:**
 
-Track effective test patterns:
+When you discover new testing patterns or strategies, collaborate with the
+documentation-expert agent to:
 
-1. **Test Patterns**: Reusable test structures for common scenarios
-2. **Mock Strategies**: Effective mocking approaches for different dependencies
-3. **Coverage Gaps**: Common areas that lack testing
-4. **Flaky Test Fixes**: Solutions for intermittent failures
+- Document patterns in the "Learned Test Patterns" section below
+- Share testing insights with other agents
+- Update project-wide conventions in CLAUDE.md
 
-Append learnings under "Learned Test Patterns".
+## ATK Project-Specific Testing Patterns
+
+### Vitest Configuration (DApp)
+
+- **Co-location**: Tests next to source files as `*.test.tsx` or `*.test.ts`
+- **Testing Library**: Use `@testing-library/react` for components
+- **Mocking**: `vi.fn()`, `vi.spyOn()`, `vi.mock()` for dependencies
+- **User Events**: `@testing-library/user-event` for interactions
+- **Coverage**: Configured in `vitest.config.ts`
+
+### Common Vitest Patterns
+
+```typescript
+// Component Test with TypeScript best practices
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, it, expect, vi } from "vitest";
+import type { ComponentProps } from "react";
+
+// Use discriminated unions for test scenarios
+type TestScenario =
+  | { type: "success"; data: User[] }
+  | { type: "error"; error: Error }
+  | { type: "loading" };
+
+describe("MyComponent", () => {
+  // Declare return types for test utilities
+  function renderComponent(
+    props: Partial<ComponentProps<typeof MyComponent>> = {}
+  ): void {
+    render(<MyComponent onClick={vi.fn()} {...props} />);
+  }
+
+  it("should handle user interaction", async () => {
+    const user = userEvent.setup();
+    const mockFn = vi.fn();
+
+    renderComponent({ onClick: mockFn });
+    await user.click(screen.getByRole("button"));
+
+    expect(mockFn).toHaveBeenCalledOnce();
+  });
+});
+```
+
+### Foundry Test Patterns (Contracts)
+
+- **File Naming**: `ContractName.t.sol` in `test/` directory
+- **Test Functions**: Prefix with `test_` or `testFuzz_`
+- **Setup**: Use `setUp()` function for initialization
+- **Utilities**: SystemUtils, TokenUtils, IdentityUtils, ClaimUtils
+
+### Common Foundry Patterns
+
+```solidity
+contract MyContractTest is Test {
+    MyContract public myContract;
+
+    function setUp() public {
+        myContract = new MyContract();
+    }
+
+    function test_BasicFunctionality() public {
+        assertEq(myContract.getValue(), expectedValue);
+    }
+
+    function testFuzz_NumericInput(uint256 amount) public {
+        vm.assume(amount > 0 && amount < type(uint256).max);
+        myContract.setValue(amount);
+        assertEq(myContract.getValue(), amount);
+    }
+}
+```
+
+### Test Organization
+
+- **Vitest**: Group with `describe` blocks, individual tests with `it`/`test`
+- **Foundry**: Separate contracts for different test aspects
+- **Mocks**: Create in `test/mocks/` for contracts, inline for React
+- **Test Data**: Constants at top of file or separate fixtures
+
+### Coverage Requirements
+
+- **DApp**: Run `npm run test -- --coverage`
+- **Contracts**: Run `forge coverage`
+- **Focus Areas**: Business logic, edge cases, error paths
+- **Exclude**: Generated code, interfaces, simple getters
+
+### Integration Test Patterns
+
+- **API Tests**: Mock ORPC context and middleware
+- **Contract Integration**: Test multi-contract interactions
+- **State Management**: Test TanStack Query/Store integration
+- **React Query Testing**: Follow TKDodo's best practices:
+  - Create fresh QueryClient for each test
+  - Disable retries in test environment
+  - Use MSW for mocking API responses
+  - Always await query completion
+  - Test loading, error, and success states
+  - Mock at the network level, not the hook level
+- **E2E Insights**: Use Playwright MCP to understand user flows
+
+### TypeScript Best Practices for Tests
+
+#### Type Imports
+
+```typescript
+// Always use type imports
+import type { User, ApiResponse } from "@/types";
+import type { Mock } from "vitest";
+```
+
+#### Test Data with Const Assertions
+
+```typescript
+// Use const assertions for test fixtures
+const TEST_USER = {
+  id: "123",
+  name: "Test User",
+  role: "admin",
+} as const;
+
+// Or create typed factories
+function createTestUser(overrides?: Partial<User>): User {
+  return {
+    id: "123",
+    name: "Test User",
+    email: "test@example.com",
+    ...overrides,
+  };
+}
+```
+
+#### Mock Types
+
+```typescript
+// Type your mocks properly
+const mockFetch = vi.fn<Parameters<typeof fetch>, ReturnType<typeof fetch>>();
+
+// Or use Mock type
+const mockHandler: Mock<[Request], Promise<Response>> = vi.fn();
+```
+
+#### Result Type Testing
+
+```typescript
+// Test Result types effectively
+type Result<T> = { ok: true; value: T } | { ok: false; error: Error };
+
+it("should handle errors with Result type", () => {
+  const result: Result<User> = getUserResult();
+
+  if (!result.ok) {
+    expect(result.error.message).toBe("User not found");
+  } else {
+    expect(result.value.name).toBe("John");
+  }
+});
+```
+
+#### Readonly Test Data
+
+```typescript
+// Use readonly for test constants
+const READONLY_CONFIG = {
+  readonly apiUrl: 'https://test.api',
+  readonly timeout: 5000,
+} as const;
+```
+
+## React Query Testing Patterns
+
+### Test Setup for React Query
+
+```typescript
+// test/utils/query.tsx
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { render } from "@testing-library/react";
+
+export function createTestQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false, // Disable retries in tests
+        staleTime: Infinity, // Prevent background refetches
+      },
+      mutations: {
+        retry: false,
+      },
+    },
+  });
+}
+
+export function renderWithQueryClient(ui: React.ReactElement) {
+  const testQueryClient = createTestQueryClient();
+  return render(
+    <QueryClientProvider client={testQueryClient}>{ui}</QueryClientProvider>
+  );
+}
+```
+
+### Testing Query Components
+
+```typescript
+import { waitFor, screen } from "@testing-library/react";
+import { renderWithQueryClient } from "@/test/utils";
+
+describe("TokenList", () => {
+  it("should display loading state initially", () => {
+    renderWithQueryClient(<TokenList />);
+    expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
+  });
+
+  it("should display tokens after loading", async () => {
+    renderWithQueryClient(<TokenList />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Token 1")).toBeInTheDocument();
+    });
+
+    expect(screen.queryByTestId("loading-spinner")).not.toBeInTheDocument();
+  });
+
+  it("should handle error state", async () => {
+    // Mock API to return error
+    server.use(
+      http.get("/api/tokens", () => {
+        return HttpResponse.error();
+      })
+    );
+
+    renderWithQueryClient(<TokenList />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/failed to load/i)).toBeInTheDocument();
+    });
+  });
+});
+```
+
+### Testing Mutations
+
+```typescript
+describe("CreateToken", () => {
+  it("should create token successfully", async () => {
+    const { user } = renderWithQueryClient(<CreateToken />);
+
+    // Fill form
+    await user.type(screen.getByLabelText(/name/i), "New Token");
+    await user.type(screen.getByLabelText(/symbol/i), "NTK");
+
+    // Submit
+    await user.click(screen.getByRole("button", { name: /create/i }));
+
+    // Wait for success
+    await waitFor(() => {
+      expect(screen.getByText(/created successfully/i)).toBeInTheDocument();
+    });
+
+    // Verify query invalidation
+    expect(screen.getByText("New Token")).toBeInTheDocument();
+  });
+});
+```
+
+### Testing Custom Hooks
+
+```typescript
+import { renderHook, waitFor } from "@testing-library/react";
+import { createWrapper } from "@/test/utils";
+
+describe("useUserTokens", () => {
+  it("should fetch user tokens", async () => {
+    const { result } = renderHook(() => useUserTokens("user123"), {
+      wrapper: createWrapper(),
+    });
+
+    // Initially loading
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.data).toBeUndefined();
+
+    // Wait for success
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
+
+    expect(result.current.data).toEqual({
+      tokens: expect.arrayContaining([
+        expect.objectContaining({ name: "Token 1" }),
+      ]),
+    });
+  });
+});
+```
+
+### MSW Setup for API Mocking
+
+```typescript
+// test/mocks/handlers.ts
+import { http, HttpResponse } from "msw";
+
+export const handlers = [
+  http.get("/api/tokens", () => {
+    return HttpResponse.json({
+      tokens: [
+        { id: "1", name: "Token 1", symbol: "TK1" },
+        { id: "2", name: "Token 2", symbol: "TK2" },
+      ],
+    });
+  }),
+
+  http.post("/api/tokens", async ({ request }) => {
+    const body = await request.json();
+    return HttpResponse.json({
+      id: "3",
+      ...body,
+    });
+  }),
+];
+```
+
+### Key React Query Testing Principles
+
+1. **Always use a fresh QueryClient** - Never share clients between tests
+2. **Disable retries** - Tests should fail fast
+3. **Use MSW for mocking** - Mock at the network level, not the hook level
+4. **Test all states** - Loading, error, and success
+5. **Await async operations** - Use waitFor for all async assertions
+6. **Test cache behavior** - Verify invalidations and updates
+7. **Mock time when needed** - For testing staleTime and cacheTime
 
 ## Learned Test Patterns
 
@@ -321,3 +686,34 @@ Append learnings under "Learned Test Patterns".
      Pattern: Reusable structure
      Example: Code snippet
      Tools: Helpful MCP tools -->
+
+## Parallel Execution Capabilities
+
+This agent excels at parallel test creation:
+
+### Parallel Partners
+
+- **react-dev**: Write tests alongside component development
+- **orpc-expert**: Create API tests during endpoint development
+- **solidity-expert**: Prepare test structure during contract work
+- **documentation-expert**: Document test patterns in parallel
+
+### Sequential Dependencies
+
+- **integration-tester** → Needs unit tests as foundation
+- **code-reviewer** → Reviews test coverage
+
+### Parallel Task Examples
+
+```markdown
+## PARALLEL EXECUTION - Test Creation
+
+Execute these simultaneously:
+
+- test-dev: Write unit tests for components
+- test-dev: Create API endpoint tests
+- test-dev: Develop contract test suite
+- documentation-expert: Document testing approach
+```
+
+Note: This agent can handle multiple test files in parallel efficiently.

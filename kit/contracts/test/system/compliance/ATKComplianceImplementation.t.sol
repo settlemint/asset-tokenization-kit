@@ -12,7 +12,8 @@ import { ISMART } from "../../../contracts/smart/interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
-import { ATKSystemAccessManagerImplementation } from "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
+import { ATKSystemAccessManagerImplementation } from
+    "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
 
 import { MockedComplianceModule } from "../../utils/mocks/MockedComplianceModule.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
@@ -123,8 +124,10 @@ contract ATKComplianceImplementationTest is Test {
         // Deploy system access manager
         address[] memory initialAdmins = new address[](1);
         initialAdmins[0] = admin;
-        ATKSystemAccessManagerImplementation accessManagerImpl = new ATKSystemAccessManagerImplementation(trustedForwarder);
-        bytes memory accessManagerInitData = abi.encodeWithSelector(accessManagerImpl.initialize.selector, initialAdmins);
+        ATKSystemAccessManagerImplementation accessManagerImpl =
+            new ATKSystemAccessManagerImplementation(trustedForwarder);
+        bytes memory accessManagerInitData =
+            abi.encodeWithSelector(accessManagerImpl.initialize.selector, initialAdmins);
         ERC1967Proxy accessManagerProxy = new ERC1967Proxy(address(accessManagerImpl), accessManagerInitData);
         systemAccessManager = ATKSystemAccessManagerImplementation(address(accessManagerProxy));
 

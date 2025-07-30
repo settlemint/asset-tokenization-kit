@@ -227,8 +227,14 @@ const ATKOnboardingSystemModule = buildModule(
       }
     );
 
+    // Note: Additional role management should be handled at the application level
+    // The registerTokenFactory function requires REGISTRAR_ROLE, SYSTEM_MANAGER_ROLE, or SYSTEM_MODULE_ROLE
+    // Roles should be granted to appropriate accounts through a proper governance workflow
+    // Hard-coding specific accounts here would not be flexible across environments
+
     // Set the system access manager on contracts that need it
     // This is required for contracts that use onlySystemRoles modifier
+    // Note: We're only setting it for contracts that don't already have it set in the bootstrap function
     const setComplianceSystemAccessManager = m.call(
       compliance,
       "setSystemAccessManager",
@@ -248,6 +254,11 @@ const ATKOnboardingSystemModule = buildModule(
         id: "setTrustedIssuersRegistrySystemAccessManager",
       }
     );
+
+    // Note: We don't need to set system access manager for these registries:
+    // - tokenFactoryRegistry: Already set in bootstrap function (line 557)
+    // - topicSchemeRegistry: Set during initialization in bootstrap function (line 466)
+    // - systemAddonRegistry: Doesn't use onlySystemRoles modifier
 
     return {
       system,

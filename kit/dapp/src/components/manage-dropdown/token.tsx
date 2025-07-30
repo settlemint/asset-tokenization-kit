@@ -21,14 +21,14 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, Loader2, Pause, Play } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useForm } from "@tanstack/react-form";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 /**
  * Verification form values for pause/unpause operations
@@ -52,42 +52,60 @@ export function ManageDropdown({ token }: ManageDropdownProps) {
   const isPaused = token.pausable.paused;
 
   // Pause mutation
-  const {
-    mutate: pauseToken,
-    isPending: isPausing,
-    isTracking: isTrackingPause,
-  } = useStreamingMutation({
-    mutationOptions: orpc.token.pause.mutationOptions(),
-    onSuccess: async () => {
-      // Invalidate token query to refresh the paused state
-      await queryClient.invalidateQueries({
-        queryKey: orpc.token.read.key({
-          input: { tokenAddress: token.id },
-        }),
-      });
-      setOpenAction(null);
-      form.reset();
-    },
-  });
+  const { mutate: pauseToken, isPending: isPausing } = useMutation(
+    orpc.token.pause.mutationOptions({
+      onSuccess: async (data) => {
+        // Invalidate token query to refresh the paused state
+        await queryClient.invalidateQueries({
+          queryKey: orpc.token.read.key({
+            input: { tokenAddress: token.id },
+          }),
+        });
+        setOpenAction(null);
+        form.reset();
+        toast.success(
+          t("actions.pause.messages.success", {
+            defaultValue: `Token '${data.name} (${data.symbol})' paused successfully`,
+            name: data.name,
+            symbol: data.symbol,
+          })
+        );
+      },
+      onError: (error) => {
+        toast.error(t("actions.pause.messages.error"), {
+          description: error.message,
+        });
+      },
+    })
+  );
 
   // Unpause mutation
-  const {
-    mutate: unpauseToken,
-    isPending: isUnpausing,
-    isTracking: isTrackingUnpause,
-  } = useStreamingMutation({
-    mutationOptions: orpc.token.unpause.mutationOptions(),
-    onSuccess: async () => {
-      // Invalidate token query to refresh the paused state
-      await queryClient.invalidateQueries({
-        queryKey: orpc.token.read.key({
-          input: { tokenAddress: token.id },
-        }),
-      });
-      setOpenAction(null);
-      form.reset();
-    },
-  });
+  const { mutate: unpauseToken, isPending: isUnpausing } = useMutation(
+    orpc.token.unpause.mutationOptions({
+      onSuccess: async (data) => {
+        // Invalidate token query to refresh the paused state
+        await queryClient.invalidateQueries({
+          queryKey: orpc.token.read.key({
+            input: { tokenAddress: token.id },
+          }),
+        });
+        setOpenAction(null);
+        form.reset();
+        toast.success(
+          t("actions.unpause.messages.success", {
+            defaultValue: `Token '${data.name} (${data.symbol})' resumed successfully`,
+            name: data.name,
+            symbol: data.symbol,
+          })
+        );
+      },
+      onError: (error) => {
+        toast.error(t("actions.unpause.messages.error"), {
+          description: error.message,
+        });
+      },
+    })
+  );
 
   const form = useForm({
     defaultValues: {
@@ -134,7 +152,6 @@ export function ManageDropdown({ token }: ManageDropdownProps) {
   );
 
   const isLoading = isPausing || isUnpausing;
-  const isTracking = isTrackingPause || isTrackingUnpause;
 
   const handleOpenAutoFocus = useCallback((e: Event) => {
     e.preventDefault();
@@ -242,7 +259,7 @@ export function ManageDropdown({ token }: ManageDropdownProps) {
                     pattern="[0-9]*"
                     maxLength={6}
                     placeholder="123456"
-                    disabled={isLoading || isTracking}
+                    disabled={isLoading}
                   />
                   <FieldDescription
                     description={t("common:verification.pincode.description")}
@@ -257,12 +274,12 @@ export function ManageDropdown({ token }: ManageDropdownProps) {
                 type="button"
                 variant="outline"
                 onClick={handleCancel}
-                disabled={isLoading || isTracking}
+                disabled={isLoading}
               >
                 {t("common:actions.cancel")}
               </Button>
-              <Button type="submit" disabled={isLoading || isTracking}>
-                {isLoading || isTracking ? (
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
                     {openAction === "pause"

@@ -1,11 +1,11 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
+import { read } from "@/orpc/routes/token/routes/token.read";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { call } from "@orpc/server";
 
 const TOKEN_RECOVER_ERC20_MUTATION = portalGraphql(`
   mutation TokenRecoverERC20(
@@ -33,20 +33,16 @@ const TOKEN_RECOVER_ERC20_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenRecoverERC20 = tokenRouter.token.tokenRecoverERC20
+export const recoverERC20 = tokenRouter.token.recoverERC20
   .use(
     tokenPermissionMiddleware({
-      requiredRoles: TOKEN_PERMISSIONS.tokenRecoverERC20,
+      requiredRoles: TOKEN_PERMISSIONS.recoverERC20,
     })
   )
   .use(portalMiddleware)
-  .handler(async function* ({ input, context }) {
+  .handler(async ({ input, context }) => {
     const { contract, verification, tokenAddress, recipient, amount } = input;
-    const { auth, t } = context;
-
-    // Generate messages using server-side translations
-    const { pendingMessage, successMessage, errorMessage } =
-      getMutationMessages(t, "tokens", "recoverERC20");
+    const { auth } = context;
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -54,7 +50,7 @@ export const tokenRecoverERC20 = tokenRouter.token.tokenRecoverERC20
       type: verification.verificationType,
     });
 
-    const transactionHash = yield* context.portalClient.mutate(
+    await context.portalClient.mutate(
       TOKEN_RECOVER_ERC20_MUTATION,
       {
         address: contract,
@@ -64,12 +60,9 @@ export const tokenRecoverERC20 = tokenRouter.token.tokenRecoverERC20
         amount: amount.toString(),
         ...challengeResponse,
       },
-      errorMessage,
-      {
-        waitingForMining: pendingMessage,
-        transactionIndexed: successMessage,
-      }
+      context.t("tokens:api.mutations.recovery.messages.recoverERC20Failed")
     );
 
-    return getEthereumHash(transactionHash);
+    // Return updated token data
+    return await call(read, { tokenAddress: contract }, { context });
   });
