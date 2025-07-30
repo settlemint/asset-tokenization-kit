@@ -6,7 +6,7 @@
  * @module ISOCountryCodeValidation
  */
 
-import countries, { getNames, getNumericCodes } from "i18n-iso-countries";
+import countries from "i18n-iso-countries";
 import { z } from "zod";
 
 // Preload supported locales
@@ -51,7 +51,7 @@ const validCountryCodes = Object.keys(getAlpha2Codes()) as [
  * Array of all valid ISO 3166-1 numeric country codes as strings.
  * Generated from the i18n-iso-countries library.
  */
-const validNumericCountryCodes = Object.keys(getNumericCodes()) as [
+const validNumericCountryCodes = Object.keys(countries.getNumericCodes()) as [
   string,
   ...string[],
 ];
@@ -174,7 +174,7 @@ export function getSupportedLocales(): SupportedLocale[] {
  * @returns Object with country codes as keys and country names as values
  */
 export function getCountries(locale: SupportedLocale = "en") {
-  return getNames(locale);
+  return countries.getNames(locale);
 }
 
 /**
@@ -189,7 +189,7 @@ export function getCountries(locale: SupportedLocale = "en") {
  * ```
  */
 export function getNumericCountries(locale: SupportedLocale = "en") {
-  const numericCodes = getNumericCodes();
+  const numericCodes = countries.getNumericCodes();
   const result: Record<string, string> = {};
 
   for (const [numeric, alpha2] of Object.entries(numericCodes)) {

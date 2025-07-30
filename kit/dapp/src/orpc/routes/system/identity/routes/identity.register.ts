@@ -1,12 +1,10 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { read } from "@/orpc/routes/account/routes/account.read";
-import { read as readSystem } from "@/orpc/routes/system/routes/system.read";
+import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
+import { portalRouter } from "@/orpc/procedures/portal.router";
+import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
 import { call } from "@orpc/server";
-import { alpha2ToNumeric } from "i18n-iso-countries";
+import countries from "i18n-iso-countries";
 
 const IDENTITY_REGISTER_MUTATION = portalGraphql(`
   mutation IdentityRegister(
@@ -33,38 +31,35 @@ const IDENTITY_REGISTER_MUTATION = portalGraphql(`
   }
 `);
 
-export const identityRegister = onboardedRouter.system.identityRegister
-  .use(theGraphMiddleware)
-  .use(portalMiddleware)
+export const identityRegister = portalRouter.system.identityRegister
+  .use(
+    blockchainPermissionsMiddleware({
+      requiredRoles: ["registrar"],
+      getAccessControl: ({ context }) => {
+        return context.system?.identityRegistry?.accessControl;
+      },
+    })
+  )
   .handler(async ({ input, context, errors }) => {
     const { verification, country } = input;
-    const { auth } = context;
+    const { auth, system } = context;
     const sender = auth.user;
 
-    const [account, systemDetails] = await Promise.all([
-      call(
-        read,
-        {
-          wallet: auth.user.wallet,
-        },
-        { context }
-      ),
-      call(
-        readSystem,
-        {
-          id: "default",
-        },
-        { context }
-      ),
-    ]);
-
-    if (!systemDetails.identityRegistry) {
+    if (!system?.identityRegistry) {
       const cause = new Error("Identity registry not found");
       throw errors.INTERNAL_SERVER_ERROR({
         message: cause.message,
         cause,
       });
     }
+
+    const account = await call(
+      readAccount,
+      {
+        wallet: auth.user.wallet,
+      },
+      { context }
+    );
 
     if (!account.identity) {
       throw errors.NOT_FOUND({
@@ -80,9 +75,9 @@ export const identityRegister = onboardedRouter.system.identityRegister
     await context.portalClient.mutate(
       IDENTITY_REGISTER_MUTATION,
       {
-        address: systemDetails.identityRegistry,
+        address: system.identityRegistry.id,
         from: sender.wallet,
-        country: Number(alpha2ToNumeric(country) ?? "0"),
+        country: Number(countries.alpha2ToNumeric(country) ?? "0"),
         identity: account.identity,
         ...challengeResponse,
       },
@@ -91,7 +86,7 @@ export const identityRegister = onboardedRouter.system.identityRegister
 
     // Return the updated account data
     return await call(
-      read,
+      readAccount,
       {
         wallet: sender.wallet,
       },

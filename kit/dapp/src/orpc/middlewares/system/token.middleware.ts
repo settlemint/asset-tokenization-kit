@@ -1,9 +1,7 @@
-import {
-  AccessControlFragment,
-  type AccessControlRoles,
-} from "@/lib/fragments/the-graph/access-control-fragment";
+import { AccessControlFragment } from "@/lib/fragments/the-graph/access-control-fragment";
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { isEthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
@@ -117,32 +115,7 @@ export const tokenMiddleware = baseRouter.middleware(
       });
     }
 
-    // Initialize with all roles set to false
-    const initialUserRoles: Record<AccessControlRoles, boolean> = {
-      admin: false,
-      registrar: false,
-      claimManager: false,
-      deployer: false,
-      storageModifier: false,
-      registryManager: false,
-      governance: false,
-      supplyManagement: false,
-      custodian: false,
-      emergency: false,
-      implementationManager: false,
-      bypassListManager: false,
-    };
-
-    const userRoles = Object.entries(token.accessControl ?? {}).reduce<
-      Record<AccessControlRoles, boolean>
-    >((acc, [role, accounts]) => {
-      const userHasRole = accounts.some(
-        (account) => account.id === auth.user.wallet
-      );
-      acc[role as AccessControlRoles] = userHasRole;
-      return acc;
-    }, initialUserRoles);
-
+    const userRoles = mapUserRoles(auth.user.wallet, token.accessControl);
     const tokenContext = TokenSchema.parse({
       ...token,
       userPermissions: {
@@ -163,16 +136,16 @@ export const tokenMiddleware = baseRouter.middleware(
             create: false,
             mint: false,
             pause: false,
-            tokenAddComplianceModule: false,
-            tokenApprove: false,
-            tokenForcedRecover: false,
-            tokenFreezeAddress: false,
-            tokenRecoverERC20: false,
-            tokenRecoverTokens: false,
-            tokenRedeem: false,
-            tokenRemoveComplianceModule: false,
-            tokenSetCap: false,
-            tokenSetYieldSchedule: false,
+            addComplianceModule: false,
+            approve: false,
+            forcedRecover: false,
+            freezeAddress: false,
+            recoverERC20: false,
+            recoverTokens: false,
+            redeem: false,
+            removeComplianceModule: false,
+            setCap: false,
+            setYieldSchedule: false,
             transfer: false,
             unpause: false,
           };

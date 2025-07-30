@@ -1,29 +1,18 @@
 import { kycProfiles } from "@/lib/db/schema";
+import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import {
-  and,
-  asc,
-  desc,
-  eq,
-  ilike,
-  or,
-  sql,
-  type AnyColumn,
-} from "drizzle-orm";
+import { asc, desc, ilike, or, sql, type AnyColumn } from "drizzle-orm";
 
 export const list = authRouter.user.kyc.list
+  .use(
+    offChainPermissionsMiddleware({
+      requiredPermissions: { kyc: ["list"] },
+    })
+  )
   .use(databaseMiddleware)
-  .handler(async ({ context, input, errors }) => {
-    const { userId, limit, offset, orderDirection, orderBy, search } = input;
-
-    // Check if user is accessing their own data or is an admin
-    if (context.auth.user.id !== userId && context.auth.user.role !== "admin") {
-      throw errors.FORBIDDEN({
-        message:
-          "Access denied. You do not have permission to view these KYC profiles.",
-      });
-    }
+  .handler(async ({ context, input }) => {
+    const { limit, offset, orderDirection, orderBy, search } = input;
 
     const order = orderDirection === "desc" ? desc : asc;
     const orderColumn =
@@ -31,17 +20,12 @@ export const list = authRouter.user.kyc.list
         | AnyColumn
         | undefined) ?? kycProfiles.createdAt;
 
-    const baseCondition = eq(kycProfiles.userId, userId);
-    const searchCondition = search
+    const whereCondition = search
       ? or(
           ilike(kycProfiles.firstName, `%${search}%`),
           ilike(kycProfiles.lastName, `%${search}%`)
         )
       : undefined;
-
-    const whereCondition = searchCondition
-      ? and(baseCondition, searchCondition)
-      : baseCondition;
 
     const [countResult] = await context.db
       .select({ count: sql<number>`count(*)::int` })
