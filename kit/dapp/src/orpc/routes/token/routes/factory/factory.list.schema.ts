@@ -29,10 +29,10 @@ export const TokenFactorySchema = z.object({
   hasTokens: z.boolean().describe("Whether the factory has created any tokens"),
 
   /**
-   * The extensions of the token factory
+   * The token extensions of the token factory
    */
-  extensions: assetExtensionArray().describe(
-    "The extensions of the token factory"
+  tokenExtensions: assetExtensionArray().describe(
+    "The token extensions of the token factory"
   ),
 });
 
