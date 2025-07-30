@@ -932,3 +932,27 @@ templates:
             address,uint256)
           handler: handleComplianceModuleRegistered
       file: ./src/compliance/compliance-module-registry.ts
+  - kind: ethereum
+    name: Compliance
+    network: settlemint
+    source:
+      abi: Compliance
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: Compliance
+          file: ../contracts/.generated/artifacts/contracts/system/compliance/IATKCompliance.sol/IATKCompliance.json
+      eventHandlers:
+        - event: GlobalComplianceModuleAdded(indexed address,indexed address,bytes)
+          handler: handleGlobalComplianceModuleAdded
+        - event: GlobalComplianceModuleRemoved(indexed address,indexed address)
+          handler: handleGlobalComplianceModuleRemoved
+        - event: GlobalComplianceModuleParametersUpdated(indexed address,indexed
+            address,bytes)
+          handler: handleGlobalComplianceModuleParametersUpdated
+      file: ./src/compliance/compliance.ts

@@ -221,7 +221,7 @@ contract ATKComplianceImplementation is
         _globalModuleIndex[module] = _globalComplianceModuleList.length; // Store index + 1
         _globalModuleParameters[module] = params;
 
-        emit GlobalComplianceModuleAdded(module, params, _msgSender());
+        emit GlobalComplianceModuleAdded(_msgSender(), module, params);
     }
 
     function removeGlobalComplianceModule(address module)
@@ -247,7 +247,7 @@ contract ATKComplianceImplementation is
         delete _globalModuleIndex[module]; // Clear the module's index
         delete _globalModuleParameters[module]; // Clear the module's parameters
 
-        emit GlobalComplianceModuleRemoved(module, _msgSender());
+        emit GlobalComplianceModuleRemoved(_msgSender(),module);
     }
 
     function setParametersForGlobalComplianceModule(address module, bytes calldata params)
@@ -259,7 +259,7 @@ contract ATKComplianceImplementation is
         }
         _validateModuleAndParams(module, params);
         _globalModuleParameters[module] = params;
-        emit GlobalComplianceModuleParametersUpdated(module, params, _msgSender());
+        emit GlobalComplianceModuleParametersUpdated(_msgSender(), module, params);
     }
 
     function getGlobalComplianceModules() external view returns (SMARTComplianceModuleParamPair[] memory) {

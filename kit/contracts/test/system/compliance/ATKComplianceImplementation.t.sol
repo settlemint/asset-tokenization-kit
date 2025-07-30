@@ -624,7 +624,7 @@ contract ATKComplianceImplementationTest is Test {
 
         vm.prank(complianceManager);
         vm.expectEmit(true, true, true, true);
-        emit IATKCompliance.GlobalComplianceModuleAdded(address(validModule), params, complianceManager);
+        emit IATKCompliance.GlobalComplianceModuleAdded(complianceManager, address(validModule), params);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), params);
 
         // Verify module was added
@@ -774,7 +774,7 @@ contract ATKComplianceImplementationTest is Test {
         // Update parameters
         vm.prank(complianceManager);
         vm.expectEmit(true, true, true, true);
-        emit IATKCompliance.GlobalComplianceModuleParametersUpdated(address(validModule), newParams, complianceManager);
+        emit IATKCompliance.GlobalComplianceModuleParametersUpdated(complianceManager, address(validModule), newParams);
         IATKCompliance(address(compliance)).setParametersForGlobalComplianceModule(address(validModule), newParams);
 
         // Verify parameters were updated

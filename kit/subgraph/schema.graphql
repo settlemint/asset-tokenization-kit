@@ -170,7 +170,7 @@ type VaultSigner @entity(immutable: false) {
 type Compliance @entity(immutable: false) {
   id: Bytes!
   account: Account!
-  globalComplianceModules: [GlobalComplianceModule!]! @derivedFrom(field: "compliance")
+  complianceModuleConfigs: [GlobalComplianceModuleConfig!]! @derivedFrom(field: "compliance")
 }
 
 # ==================================================
@@ -275,12 +275,11 @@ type ComplianceModule @entity(immutable: false) {
   account: Account!
   deployedInTransaction: Bytes!
   complianceModuleRegistry: ComplianceModuleRegistry
-  tokens: [TokenComplianceModule!]! @derivedFrom(field: "complianceModule")
-  addresses: [Bytes!]
-  countries: [Int!]
+  tokenConfigs: [TokenComplianceModuleConfig!]! @derivedFrom(field: "complianceModule")
+  globalConfigs: [GlobalComplianceModuleConfig!]! @derivedFrom(field: "complianceModule")
 }
 
-type GlobalComplianceModule @entity(immutable: false) {
+type GlobalComplianceModuleConfig @entity(immutable: false) {
   id: Bytes!
   compliance: Compliance!
   complianceModule: ComplianceModule!
@@ -388,7 +387,7 @@ type Token @entity(immutable: false) {
   # Claims
   basePriceClaim: IdentityClaim
   # Compliance
-  tokenComplianceModules: [TokenComplianceModule!]! @derivedFrom(field: "token")
+  complianceModuleConfigs: [TokenComplianceModuleConfig!]! @derivedFrom(field: "token")
   # Stats
   stats: TokenStatsState @derivedFrom(field: "token")
   distributionStats: TokenDistributionStatsState @derivedFrom(field: "token")
@@ -408,7 +407,7 @@ type TokenBalance @entity(immutable: false) {
   availableExact: BigInt!
 }
 
-type TokenComplianceModule @entity(immutable: false) {
+type TokenComplianceModuleConfig @entity(immutable: false) {
   id: Bytes!
   token: Token!
   complianceModule: ComplianceModule!

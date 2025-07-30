@@ -1,7 +1,7 @@
 import { Bytes, ethereum, store } from "@graphprotocol/graph-ts";
 import {
   ExpressionNode,
-  TokenComplianceModule,
+  type ComplianceModuleParameters,
 } from "../../../generated/schema";
 import { fetchTopicScheme } from "../../topic-scheme-registry/fetch/topic-scheme";
 import { getEncodedTypeId } from "../../type-identifier/type-identifier";
@@ -13,11 +13,11 @@ export function isIdentityVerificationComplianceModule(typeId: Bytes): boolean {
 }
 
 export function decodeExpressionParams(
-  data: Bytes,
-  tokenComplianceModule: TokenComplianceModule
+  complianceModuleParameters: ComplianceModuleParameters,
+  data: Bytes
 ): void {
   // Remove existing expression nodes for this compliance module
-  clearExpressionNodes(tokenComplianceModule);
+  clearExpressionNodes(complianceModuleParameters);
 
   if (data.length === 0) {
     return;
@@ -74,10 +74,10 @@ export function decodeExpressionParams(
     offset += 32;
 
     // Create ExpressionNode entity
-    const nodeId = tokenComplianceModule.id.concat(Bytes.fromI32(i));
+    const nodeId = complianceModuleParameters.id.concat(Bytes.fromI32(i));
 
     const expressionNode = new ExpressionNode(nodeId);
-    expressionNode.complianceModule = tokenComplianceModule.id;
+    expressionNode.parameters = complianceModuleParameters.id;
     expressionNode.index = i;
 
     // Set node type and link to TopicScheme for TOPIC nodes
@@ -99,7 +99,7 @@ export function decodeExpressionParams(
 }
 
 function clearExpressionNodes(
-  tokenComplianceModule: TokenComplianceModule
+  complianceModuleParameters: ComplianceModuleParameters
 ): void {
   // Load and remove existing expression nodes
   // This is a simplified approach - in a real implementation, you might want to
@@ -109,7 +109,7 @@ function clearExpressionNodes(
   // the index-based IDs to remove old nodes
   for (let i = 0; i < 100; i++) {
     // Assume max 100 nodes
-    const nodeId = tokenComplianceModule.id.concat(Bytes.fromI32(i));
+    const nodeId = complianceModuleParameters.id.concat(Bytes.fromI32(i));
     const nodeIdHex = nodeId.toHexString();
 
     if (ExpressionNode.load(nodeId) !== null) {

@@ -21,21 +21,21 @@ interface IATKCompliance is ISMARTCompliance {
     event AddressRemovedFromBypassList(address indexed account, address indexed manager);
 
     /// @notice Emitted when a global compliance module is added
+    /// @param sender The address that performed the addition
     /// @param module The module address that was added
     /// @param params The parameters configured for the module
-    /// @param adder The address that performed the addition
-    event GlobalComplianceModuleAdded(address indexed module, bytes params, address indexed adder);
+    event GlobalComplianceModuleAdded(address indexed sender, address indexed module, bytes params);
 
     /// @notice Emitted when a global compliance module is removed
+    /// @param sender The address that performed the removal
     /// @param module The module address that was removed
-    /// @param remover The address that performed the removal
-    event GlobalComplianceModuleRemoved(address indexed module, address indexed remover);
+    event GlobalComplianceModuleRemoved(address indexed sender, address indexed module);
 
     /// @notice Emitted when global compliance module parameters are updated
+    /// @param sender The address that performed the update
     /// @param module The module address whose parameters were updated
     /// @param params The new parameters
-    /// @param updater The address that performed the update
-    event GlobalComplianceModuleParametersUpdated(address indexed module, bytes params, address indexed updater);
+    event GlobalComplianceModuleParametersUpdated(address indexed sender, address indexed module, bytes params);
 
     // --- Custom Errors ---
     /// @notice Error thrown when trying to remove an address that is not on the bypass list.
