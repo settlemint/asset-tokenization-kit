@@ -1,4 +1,5 @@
-import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
+import { ComplianceModuleDetail } from "@/components/asset-designer/asset-designer-wizard/compliance-modules/compliance-module-detail";
+import { assetDesignerFormOptions } from "@/components/asset-designer/asset-designer-wizard/shared-form";
 import { ComplianceModulesGrid } from "@/components/compliance/compliance-modules-grid";
 import {
   FormStep,
@@ -10,7 +11,6 @@ import {
   FormStepTitle,
 } from "@/components/form/multi-step/form-step";
 
-import { ComplianceModuleDetail } from "@/components/asset-designer/compliance-modules/compliance-module-detail";
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
 import {
