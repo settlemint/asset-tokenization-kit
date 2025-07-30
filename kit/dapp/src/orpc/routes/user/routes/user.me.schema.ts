@@ -9,6 +9,7 @@
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { userRoles } from "@/lib/zod/validators/user-roles";
 import { verificationType } from "@/lib/zod/validators/verification-type";
+import { type TOKEN_FACTORY_PERMISSIONS } from "@/orpc/routes/token/routes/factory/factory.permissions";
 import { z } from "zod";
 
 const onboardingStateSchema = z.object({
@@ -41,6 +42,28 @@ const onboardingStateSchema = z.object({
 
 export type OnboardingState = z.infer<typeof onboardingStateSchema>;
 
+const userPermissionsSchema = z.object({
+  tokenFactory: z
+    .object({
+      actions: z.object(
+        (() => {
+          const actionsSchema: Record<
+            keyof typeof TOKEN_FACTORY_PERMISSIONS,
+            z.ZodType<boolean>
+          > = {
+            create: z
+              .boolean()
+              .describe("Whether the user can execute the create action"),
+          };
+          return actionsSchema;
+        })()
+      ),
+    })
+    .describe("The actions on the token the user is allowed to execute"),
+});
+
+export type UserPermissions = z.infer<typeof userPermissionsSchema>;
+
 export const UserSchema = z.object({
   id: z.string(),
 
@@ -57,11 +80,11 @@ export const UserSchema = z.object({
   email: z.email(),
 
   /**
-   * User's role in the system.
+   * User's role for offchain access control.
    * Determines access permissions and onboarding flow.
    * - admin: First user, can perform platform onboarding
-   * - issuer: Can issue assets
-   * - user: Standard user (investors)
+   * - issuer: Can see all users data
+   * - investor: Standard user
    */
   role: userRoles().default("investor"),
 
@@ -70,11 +93,6 @@ export const UserSchema = z.object({
    * Used for blockchain transactions and ownership verification.
    */
   wallet: ethereumAddress.nullable().describe("User's Ethereum wallet address"),
-
-  /**
-   * Whether the user has completed the onboarding process.
-   */
-  isOnboarded: z.boolean(),
 
   /**
    * User's first name from KYC profile.
@@ -127,6 +145,12 @@ export const UserMeSchema = z.object({
    * This is used to track the user's onboarding progress.
    */
   onboardingState: onboardingStateSchema,
+
+  /**
+   * User's permissions.
+   * This is used to track the user's permissions.
+   */
+  userPermissions: userPermissionsSchema,
 });
 
 /**

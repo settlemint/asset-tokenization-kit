@@ -1,4 +1,4 @@
-import type { SystemAddonType } from "@/orpc/routes/system/routes/system.addonCreate.schema";
+import type { SystemAddonType } from "@/orpc/routes/system/addon/routes/addon.create.schema";
 
 export function getAddonTypeFromTypeId(typeId: string): SystemAddonType {
   const mapping: Record<string, SystemAddonType> = {

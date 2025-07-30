@@ -1,4 +1,4 @@
-import type { SystemAddonType } from "@/orpc/routes/system/routes/system.addonCreate.schema";
+import type { SystemAddonType } from "@/orpc/routes/system/addon/routes/addon.create.schema";
 import type { LucideIcon } from "lucide-react";
 import { Globe, Package, PiggyBank } from "lucide-react";
 

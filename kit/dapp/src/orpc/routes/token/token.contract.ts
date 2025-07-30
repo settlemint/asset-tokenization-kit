@@ -50,16 +50,16 @@ export const tokenContract = {
   mint: tokenMintContract,
   burn: tokenBurnContract,
   transfer: tokenTransferContract,
-  tokenApprove: tokenApproveContract,
-  tokenRedeem: tokenRedeemContract,
-  tokenFreezeAddress: tokenFreezeAddressContract,
-  tokenRecoverTokens: tokenRecoverTokensContract,
-  tokenForcedRecover: tokenForcedRecoverContract,
-  tokenRecoverERC20: tokenRecoverERC20Contract,
-  tokenSetCap: tokenSetCapContract,
-  tokenSetYieldSchedule: tokenSetYieldScheduleContract,
-  tokenAddComplianceModule: tokenAddComplianceModuleContract,
-  tokenRemoveComplianceModule: tokenRemoveComplianceModuleContract,
+  approve: tokenApproveContract,
+  redeem: tokenRedeemContract,
+  freezeAddress: tokenFreezeAddressContract,
+  recoverTokens: tokenRecoverTokensContract,
+  forcedRecover: tokenForcedRecoverContract,
+  recoverERC20: tokenRecoverERC20Contract,
+  setCap: tokenSetCapContract,
+  setYieldSchedule: tokenSetYieldScheduleContract,
+  addComplianceModule: tokenAddComplianceModuleContract,
+  removeComplianceModule: tokenRemoveComplianceModuleContract,
 
   // Queries
   actions: tokenActionsContract,
@@ -82,15 +82,15 @@ export type TokenContractMutations =
   | "create"
   | "mint"
   | "pause"
-  | "tokenAddComplianceModule"
-  | "tokenApprove"
-  | "tokenForcedRecover"
-  | "tokenFreezeAddress"
-  | "tokenRecoverERC20"
-  | "tokenRecoverTokens"
-  | "tokenRedeem"
-  | "tokenRemoveComplianceModule"
-  | "tokenSetCap"
-  | "tokenSetYieldSchedule"
+  | "addComplianceModule"
+  | "approve"
+  | "forcedRecover"
+  | "freezeAddress"
+  | "recoverERC20"
+  | "recoverTokens"
+  | "redeem"
+  | "removeComplianceModule"
+  | "setCap"
+  | "setYieldSchedule"
   | "transfer"
   | "unpause";

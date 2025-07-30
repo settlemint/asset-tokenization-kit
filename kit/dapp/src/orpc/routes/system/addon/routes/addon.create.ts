@@ -17,11 +17,8 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import type { Context } from "@/orpc/context/context";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
+import { portalRouter } from "@/orpc/procedures/portal.router";
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
@@ -30,8 +27,9 @@ import { encodeFunctionData, getAddress } from "viem";
 import {
   type SystemAddonConfig,
   type SystemAddonCreateOutput,
+  type SystemAddonCreateSchema,
   getDefaultAddonImplementations,
-} from "./system.addonCreate.schema";
+} from "./addon.create.schema";
 
 const logger = createLogger();
 
@@ -155,66 +153,47 @@ function getImplementationAddress(addonConfig: SystemAddonConfig): string {
  * @throws {ORPCError} UNAUTHORIZED - If user is not authenticated
  * @throws {ORPCError} INTERNAL_SERVER_ERROR - If system not bootstrapped or transaction fails
  */
-export const addonCreate = onboardedRouter.system.addonCreate
-  .use(permissionsMiddleware({ system: ["create"] }))
-  .use(theGraphMiddleware)
-  .use(portalMiddleware)
-  .use(systemMiddleware)
-  .handler(async ({ input, context }) => {
-    const { contract, addons, verification } = input;
+export const addonCreate = portalRouter.system.addonCreate
+  .use(
+    blockchainPermissionsMiddleware<typeof SystemAddonCreateSchema>({
+      requiredRoles: ["registrar"],
+      getAccessControl: ({ context }) => {
+        return context.system?.systemAddonRegistry?.accessControl;
+      },
+    })
+  )
+  .handler(async ({ input, context, errors }) => {
+    const { addons, verification } = input;
     const sender = context.auth.user;
-    // const { t } = context; // Removed - using hardcoded messages
+    const { system } = context;
+
+    const contract = system?.systemAddonRegistry?.id;
+    if (!contract) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: `No addon registry found for system ${system?.address}`,
+      });
+    }
 
     // Normalize to array
     const addonList = Array.isArray(addons) ? addons : [addons];
 
     // Query existing system addons to check for duplicates
-    const existingAddonNames = new Set<string>();
-    try {
-      // Note: We would need to add systemAddons to the system middleware
-      // For now, we'll proceed without duplicate checking and let the contract handle it
-      logger.debug(
-        "System context available, proceeding with addon registration"
-      );
-    } catch (error) {
-      logger.debug(`Could not fetch existing addons: ${String(error)}`);
-    }
+    const existingAddonNames =
+      system?.systemAddons.map((addon) => addon.name) ?? [];
 
     const results: SystemAddonCreateOutput["results"] = [];
-
-    /**
-     * Checks if an error contains a specific pattern
-     */
-    function containsErrorPattern(error: unknown, pattern: string): boolean {
-      if (error instanceof Error) {
-        return (
-          error.message.includes(pattern) ||
-          (error.stack?.includes(pattern) ?? false)
-        );
-      }
-      if (typeof error === "string") {
-        return error.includes(pattern);
-      }
-      return false;
-    }
-
-    // Handle challenge once for all addon registrations
-    const challengeResponse = await handleChallenge(sender, {
-      code: verification.verificationCode,
-      type: verification.verificationType,
-    });
 
     // Process each addon using a generator pattern for batch operations
     for (const addonConfig of addonList) {
       const { type, name } = addonConfig;
 
       // Check if addon already exists (if we had that data)
-      if (existingAddonNames.has(name.toLowerCase())) {
+      if (existingAddonNames.includes(name)) {
         results.push({
           type,
           name,
           transactionHash: "",
-          error: "Addon already exists",
+          error: `Addon already exists: ${name}`,
         });
 
         continue; // Skip to next addon
@@ -233,6 +212,12 @@ export const addonCreate = onboardedRouter.system.addonCreate
           implementationAddress,
           initializationData,
           userWallet: sender.wallet,
+        });
+
+        // Every transaction needs a challenge response (can only be used once)
+        const challengeResponse = await handleChallenge(sender, {
+          code: verification.verificationCode,
+          type: verification.verificationType,
         });
 
         // Execute the addon registration transaction (reuse challenge response)
@@ -260,48 +245,10 @@ export const addonCreate = onboardedRouter.system.addonCreate
           implementations: { [implementationName]: implementationAddress },
         });
       } catch (error) {
-        // Handle any errors during addon registration
-        const errorMessage =
-          error instanceof Error ? error.message : "Addon registration failed";
-
-        // Enhanced error logging with more details
-        logger.error(`Addon registration failed for ${name}:`, {
-          error,
-          errorMessage,
-          errorStack: error instanceof Error ? error.stack : undefined,
-          addonConfig,
-          implementationAddress: (() => {
-            try {
-              return getImplementationAddress(addonConfig);
-            } catch (error_) {
-              return `Error getting implementation: ${error_ instanceof Error ? error_.message : String(error_)}`;
-            }
-          })(),
-          contract,
-          sender: sender.wallet,
-          userWallet: sender.wallet,
-          addonType: type,
-          addonName: name,
-        });
-
-        // Check for specific error patterns to provide better user feedback
-        let specificErrorMessage = errorMessage;
-        if (containsErrorPattern(error, "SystemAddonTypeAlreadyRegistered")) {
-          specificErrorMessage = `Addon already exists: ${name}`;
-        } else if (containsErrorPattern(error, "AccessControl")) {
-          specificErrorMessage = `Access denied for contract: ${contract}`;
-        } else if (containsErrorPattern(error, "Unauthorized")) {
-          specificErrorMessage = `Access denied for contract: ${contract}`;
-        } else if (containsErrorPattern(error, "implementation")) {
-          specificErrorMessage = "Invalid implementation address";
-        } else if (containsErrorPattern(error, "invalid")) {
-          specificErrorMessage = "Invalid addon configuration";
-        }
-
         results.push({
           type,
           name,
-          error: specificErrorMessage,
+          error: error instanceof Error ? error.message : String(error),
         });
       }
     }

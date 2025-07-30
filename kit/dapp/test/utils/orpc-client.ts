@@ -8,7 +8,9 @@ import type { RouterClient } from "@orpc/server";
 
 export type OrpcClient = RouterClient<typeof router>;
 
-export const getOrpcClient = (headers: Headers) => {
+export const getOrpcClient = (
+  headers: Headers
+): RouterClient<typeof router> => {
   const link = new RPCLink({
     url: "http://localhost:3000/api/rpc",
     headers: () => ({
@@ -21,5 +23,5 @@ export const getOrpcClient = (headers: Headers) => {
     ],
     // fetch: <-- provide fetch polyfill fetch if needed
   });
-  return createORPCClient(link) as RouterClient<typeof router>;
+  return createORPCClient(link);
 };

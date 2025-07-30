@@ -28,6 +28,7 @@
       "dependsOn": ["codegen"]
     },
     "lint": {
+      "dependsOn": ["codegen"],
       "inputs": [
         "src/**/*.{js,jsx,ts,tsx}",
         ".eslintrc*",

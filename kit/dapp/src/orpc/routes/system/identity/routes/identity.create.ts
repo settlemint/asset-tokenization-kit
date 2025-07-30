@@ -1,11 +1,7 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
-import { read } from "@/orpc/routes/account/routes/account.read";
-import { read as readSystem } from "@/orpc/routes/system/routes/system.read";
+import { portalRouter } from "@/orpc/procedures/portal.router";
+import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
 import { call, ORPCError } from "@orpc/server";
 
 const IDENTITY_CREATE_MUTATION = portalGraphql(`
@@ -30,38 +26,32 @@ const IDENTITY_CREATE_MUTATION = portalGraphql(`
   }
 `);
 
-export const identityCreate = onboardedRouter.system.identityCreate
-  .use(theGraphMiddleware)
-  .use(portalMiddleware)
-  .handler(async ({ input, context, errors }) => {
+export const identityCreate = portalRouter.system.identityCreate.handler(
+  async ({ input, context, errors }) => {
     const { verification } = input;
-    const { auth } = context;
+    const { auth, system } = context;
     const sender = auth.user;
 
-    // Parallel fetch of account and system details
-    const [account, systemDetails] = await Promise.all([
-      call(readAccount, {}, { context }).catch((error: unknown) => {
-        if (error instanceof ORPCError && error.status === 404) {
-          return null;
-        }
-        throw error;
-      }),
-      call(
-        readSystem,
-        {
-          id: "default",
-        },
-        { context }
-      ),
-    ]);
-
-    if (!systemDetails.identityFactory) {
+    if (!system?.identityFactory) {
       const cause = new Error("Identity factory not found");
       throw errors.INTERNAL_SERVER_ERROR({
         message: cause.message,
         cause,
       });
     }
+
+    const account = await call(
+      readAccount,
+      {
+        wallet: sender.wallet,
+      },
+      { context }
+    ).catch((error: unknown) => {
+      if (error instanceof ORPCError && error.status === 404) {
+        return null;
+      }
+      throw error;
+    });
 
     if (account?.identity) {
       throw errors.CONFLICT({
@@ -77,7 +67,7 @@ export const identityCreate = onboardedRouter.system.identityCreate
     await context.portalClient.mutate(
       IDENTITY_CREATE_MUTATION,
       {
-        address: systemDetails.identityFactory,
+        address: system.identityFactory.id,
         from: sender.wallet,
         ...challengeResponse,
       },
@@ -86,10 +76,11 @@ export const identityCreate = onboardedRouter.system.identityCreate
 
     // Return the updated account data
     return await call(
-      read,
+      readAccount,
       {
         wallet: sender.wallet,
       },
       { context }
     );
-  });
+  }
+);

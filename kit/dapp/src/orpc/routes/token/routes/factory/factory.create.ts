@@ -16,11 +16,9 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
+import { portalRouter } from "@/orpc/procedures/portal.router";
+import { TOKEN_FACTORY_PERMISSIONS } from "@/orpc/routes/token/routes/factory/factory.permissions";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import {
@@ -72,44 +70,34 @@ const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
  * @auth Required - User must be authenticated
  * @middleware portalMiddleware - Provides Portal GraphQL client
  * @middleware theGraphMiddleware - Provides TheGraph client
- * @param input.contract - The token factory registry contract address
  * @param input.factories - Single factory or array of factories to create
  * @param input.messages - Optional custom messages for localization
  * @returns {Promise<FactoryCreateOutput>} Creation summary with results for each factory
  * @throws {ORPCError} UNAUTHORIZED - If user is not authenticated
  * @throws {ORPCError} INTERNAL_SERVER_ERROR - If system not bootstrapped or transaction fails
- * @example
- * ```typescript
- * // Create a single bond factory
- * const result = await client.tokens.factoryCreate({
- *   contract: "0x123...",
- *   factories: {
- *     type: "bond",
- *     name: "Corporate Bonds"
- *   }
- * });
- *
- * // Create multiple factories
- * const result = await client.tokens.factoryCreate({
- *   contract: "0x123...",
- *   factories: [
- *     { type: "bond", name: "Corporate Bonds" },
- *     { type: "equity", name: "Common Stock" }
- *   ]
- * });
- * const successful = result.results.filter(r => !r.error).length;
- * console.log(`Created ${successful} factories`);
- * ```
  */
-export const factoryCreate = onboardedRouter.token.factoryCreate
-  .use(permissionsMiddleware({ system: ["create"] }))
-  .use(theGraphMiddleware)
-  .use(portalMiddleware)
-  .use(systemMiddleware)
+export const factoryCreate = portalRouter.token.factoryCreate
+  .use(
+    blockchainPermissionsMiddleware({
+      requiredRoles: TOKEN_FACTORY_PERMISSIONS.create,
+      getAccessControl: ({ context }) => {
+        const systemData = context.system;
+        return systemData?.tokenFactoryRegistry?.accessControl;
+      },
+    })
+  )
   .handler(async ({ input, context, errors }) => {
-    const { contract, factories, verification } = input;
+    const { factories, verification } = input;
     const sender = context.auth.user;
-    const { t } = context;
+    const { t, system } = context;
+
+    if (!system.tokenFactoryRegistry) {
+      const cause = new Error("Token factory registry not found");
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: cause.message,
+        cause,
+      });
+    }
 
     // Normalize to array
     const factoryList = Array.isArray(factories) ? factories : [factories];
@@ -130,30 +118,6 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
     }
 
     const results: FactoryCreateOutput["results"] = [];
-
-    /**
-     * Checks if an error contains a specific pattern
-     * @param error
-     * @param pattern
-     */
-    function containsErrorPattern(error: unknown, pattern: string): boolean {
-      if (error instanceof Error) {
-        return (
-          error.message.includes(pattern) ||
-          (error.stack?.includes(pattern) ?? false)
-        );
-      }
-      if (typeof error === "string") {
-        return error.includes(pattern);
-      }
-      return false;
-    }
-
-    // Handle challenge once for all factory creations
-    const challengeResponse = await handleChallenge(sender, {
-      code: verification.verificationCode,
-      type: verification.verificationType,
-    });
 
     // Process each factory using a generator pattern for batch operations
     for (const factory of factoryList) {
@@ -181,9 +145,15 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
       }
 
       try {
+        // Every request needs a challenge response (can only be used once)
+        const challengeResponse = await handleChallenge(sender, {
+          code: verification.verificationCode,
+          type: verification.verificationType,
+        });
+
         // Execute the factory creation transaction (reuse challenge response)
         const variables: VariablesOf<typeof CREATE_TOKEN_FACTORY_MUTATION> = {
-          address: contract,
+          address: system.tokenFactoryRegistry?.id,
           from: sender.wallet,
           factoryImplementation: factoryImplementation,
           tokenImplementation: tokenImplementation,
@@ -204,33 +174,10 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
           transactionHash,
         });
       } catch (error) {
-        // Check for specific error types
-        let errorMessage = t("tokens:api.factory.create.messages.failed", {
-          name,
-        });
-        let errorDetail = t("tokens:api.factory.create.messages.failed", {
-          name,
-        });
-
-        if (error instanceof Error) {
-          errorDetail = error.message;
-          // Check for SystemNotBootstrapped error
-          if (containsErrorPattern(error, "SystemNotBootstrapped")) {
-            errorMessage = t(
-              "tokens:api.factory.create.messages.systemNotBootstrapped"
-            );
-            // For critical errors like system not bootstrapped, throw proper error
-            throw errors.INTERNAL_SERVER_ERROR({
-              message: errorMessage,
-              cause: new Error(errorDetail),
-            });
-          }
-        }
-
         results.push({
           type,
           name,
-          error: errorDetail,
+          error: error instanceof Error ? error.message : String(error),
         });
       }
     }
