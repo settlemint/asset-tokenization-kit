@@ -2,15 +2,11 @@ import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { addonContract } from "@/orpc/routes/system/addon/addon.contract";
 import { complianceModuleContract } from "@/orpc/routes/system/compliance-module/compliance-module.contract";
 import { identityContract } from "@/orpc/routes/system/identity/identity.contract";
-import {
-  SystemCreateOutputSchema,
-  SystemCreateSchema,
-} from "@/orpc/routes/system/routes/system.create.schema";
+import { SystemCreateSchema } from "@/orpc/routes/system/routes/system.create.schema";
 import {
   SystemReadOutputSchema,
   SystemReadSchema,
 } from "@/orpc/routes/system/routes/system.read.schema";
-import { eventIterator } from "@orpc/server";
 import { z } from "zod";
 import { baseContract } from "../../procedures/base.contract";
 import { SystemSchema } from "./routes/system.list.schema";
@@ -31,8 +27,10 @@ const list = baseContract
   .route({
     method: "GET",
     path: "/systems",
-    description: "List the SMART systems",
-    successDescription: "List of SMART systems",
+    description:
+      "List all SMART systems deployed on the blockchain with their registry contracts and configuration",
+    successDescription:
+      "List of SMART systems with deployment details and registry addresses",
     tags: ["system"],
   })
   .input(ListSchema) // Standard list query parameters (pagination, filters, etc.)
@@ -54,12 +52,14 @@ const create = baseContract
   .route({
     method: "POST",
     path: "/systems",
-    description: "Create a new SMART system",
-    successDescription: "New SMART system created",
+    description:
+      "Deploy a new SMART system with identity registry, compliance engine, and token factory registry contracts",
+    successDescription:
+      "SMART system deployed successfully with all registry contracts and configuration",
     tags: ["system"],
   })
   .input(SystemCreateSchema)
-  .output(eventIterator(SystemCreateOutputSchema));
+  .output(SystemReadOutputSchema);
 
 /**
  * Contract definition for the system read endpoint.

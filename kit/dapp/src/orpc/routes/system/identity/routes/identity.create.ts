@@ -1,7 +1,5 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import { call, ORPCError } from "@orpc/server";
@@ -29,10 +27,18 @@ const IDENTITY_CREATE_MUTATION = portalGraphql(`
 `);
 
 export const identityCreate = portalRouter.system.identityCreate.handler(
-  async function* ({ input, context, errors }) {
+  async ({ input, context, errors }) => {
     const { verification } = input;
-    const { auth, t, system } = context;
+    const { auth, system } = context;
     const sender = auth.user;
+
+    if (!system?.identityFactory) {
+      const cause = new Error("Identity factory not found");
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: cause.message,
+        cause,
+      });
+    }
 
     const account = await call(readAccount, {}, { context }).catch(
       (error: unknown) => {
@@ -43,46 +49,34 @@ export const identityCreate = portalRouter.system.identityCreate.handler(
       }
     );
 
-    if (!system?.identityFactory) {
-      const cause = new Error("Identity factory not found");
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: cause.message,
-        cause,
-      });
-    }
-
     if (account?.identity) {
       throw errors.CONFLICT({
         message: "Identity already exists",
       });
     }
 
-    // Generate messages using server-side translations
-    const identityCreateMessages = getMutationMessages(
-      t,
-      "system",
-      "identityCreate"
-    );
-
     const challengeResponse = await handleChallenge(sender, {
       code: verification.verificationCode,
       type: verification.verificationType,
     });
 
-    const transactionHash = yield* context.portalClient.mutate(
+    await context.portalClient.mutate(
       IDENTITY_CREATE_MUTATION,
       {
         address: system.identityFactory.id,
         from: sender.wallet,
         ...challengeResponse,
       },
-      identityCreateMessages.errorMessage,
-      {
-        waitingForMining: identityCreateMessages.pendingMessage,
-        transactionIndexed: identityCreateMessages.successMessage,
-      }
+      "Failed to create identity"
     );
 
-    return getEthereumHash(transactionHash);
+    // Return the updated account data
+    return await call(
+      readAccount,
+      {
+        wallet: sender.wallet,
+      },
+      { context }
+    );
   }
 );

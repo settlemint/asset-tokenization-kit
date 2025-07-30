@@ -38,6 +38,7 @@ export function SecuritySuccess() {
     <OnboardingStepLayout
       title={t("wallet-security.method-selector.success")}
       description={t("wallet-security.method-selector.success-description")}
+      fullWidth={true}
       actions={
         <div className="flex gap-3 pt-4">
           <Button

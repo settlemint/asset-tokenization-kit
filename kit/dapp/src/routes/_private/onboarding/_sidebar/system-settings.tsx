@@ -44,13 +44,13 @@ function RouteComponent() {
   const { completeStepAndNavigate } = useOnboardingNavigation();
 
   // Get current base currency setting
-  const { data: currentBaseCurrency } = useQuery({
-    ...orpc.settings.read.queryOptions({
+  const { data: currentBaseCurrency } = useQuery(
+    orpc.settings.read.queryOptions({
       input: { key: "BASE_CURRENCY" },
-    }),
-    retry: false,
-    throwOnError: false,
-  });
+      retry: false,
+      throwOnError: false,
+    })
+  );
 
   const { mutateAsync: syncExchangeRates } = useMutation(
     orpc.exchangeRates.sync.mutationOptions()

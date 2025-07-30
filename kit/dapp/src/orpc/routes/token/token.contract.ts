@@ -40,27 +40,6 @@ import { tokenStatsTransactionHistoryContract } from "@/orpc/routes/token/routes
 import { tokenStatsTransactionsContract } from "@/orpc/routes/token/routes/stats/transactions.contract";
 import { tokenStatsValueContract } from "@/orpc/routes/token/routes/stats/value.contract";
 
-const tokenContractMutations = {
-  create: tokenCreateContract,
-  pause: tokenPauseContract,
-  unpause: tokenUnpauseContract,
-  mint: tokenMintContract,
-  burn: tokenBurnContract,
-  transfer: tokenTransferContract,
-  approve: tokenApproveContract,
-  redeem: tokenRedeemContract,
-  freezeAddress: tokenFreezeAddressContract,
-  recoverTokens: tokenRecoverTokensContract,
-  forcedRecover: tokenForcedRecoverContract,
-  recoverERC20: tokenRecoverERC20Contract,
-  setCap: tokenSetCapContract,
-  setYieldSchedule: tokenSetYieldScheduleContract,
-  addComplianceModule: tokenAddComplianceModuleContract,
-  removeComplianceModule: tokenRemoveComplianceModuleContract,
-} as const;
-
-export type TokenContractMutations = keyof typeof tokenContractMutations;
-
 export const tokenContract = {
   // Factory
   factoryCreate: factoryCreateContract,
@@ -69,7 +48,22 @@ export const tokenContract = {
   factoryPredictAddress: factoryPredictAddressContract,
 
   // Mutations
-  ...tokenContractMutations,
+  create: tokenCreateContract,
+  pause: tokenPauseContract,
+  unpause: tokenUnpauseContract,
+  mint: tokenMintContract,
+  burn: tokenBurnContract,
+  transfer: tokenTransferContract,
+  approve: tokenApproveContract,
+  redeem: tokenRedeemContract,
+  rreezeAddress: tokenFreezeAddressContract,
+  recoverTokens: tokenRecoverTokensContract,
+  rorcedRecover: tokenForcedRecoverContract,
+  recoverERC20: tokenRecoverERC20Contract,
+  setCap: tokenSetCapContract,
+  setYieldSchedule: tokenSetYieldScheduleContract,
+  addComplianceModule: tokenAddComplianceModuleContract,
+  removeComplianceModule: tokenRemoveComplianceModuleContract,
 
   // Queries
   actions: tokenActionsContract,
@@ -89,3 +83,22 @@ export const tokenContract = {
   statsActivityByAsset: tokenStatsActivityByAssetContract,
   statsTransactionHistory: tokenStatsTransactionHistoryContract,
 };
+
+// Extract mutation keys for permissions
+export type TokenContractMutations =
+  | "burn"
+  | "create"
+  | "mint"
+  | "pause"
+  | "addComplianceModule"
+  | "approve"
+  | "forcedRecover"
+  | "freezeAddress"
+  | "recoverERC20"
+  | "recoverTokens"
+  | "redeem"
+  | "removeComplianceModule"
+  | "setCap"
+  | "setYieldSchedule"
+  | "transfer"
+  | "unpause";

@@ -25,7 +25,7 @@ kit/charts/
 │   │   ├── observability/     # Monitoring stack
 │   │   ├── portal/            # API backend
 │   │   ├── support/           # Infrastructure services
-│   │   ├── thegraph/          # Blockchain indexing
+│   │   ├── graph-node/       # Blockchain indexing
 │   │   └── txsigner/          # Transaction signing service
 │   └── templates/             # Helm templates for umbrella chart
 ├── tools/                     # Deployment utilities
@@ -89,8 +89,8 @@ kit/charts/
 - **Purpose**: GraphQL API over PostgreSQL
 - **Features**: Real-time subscriptions, permissions
 
-#### Indexing (`thegraph`)
-- **Purpose**: Blockchain event indexing
+#### Indexing (`graph-node`)
+- **Purpose**: Blockchain event indexing with Graph Node
 - **Configuration**: Combined mode by default
 
 ### 4. Infrastructure
@@ -149,6 +149,68 @@ bun run helm:extract-env      # Generate .env files
      -f values-production.yaml \
      -n atk --create-namespace
    ```
+
+## Using Common Helpers
+
+**IMPORTANT**: The ATK umbrella chart provides common helper templates in `/atk/templates/_common-helpers.tpl` that should be used whenever possible to ensure consistency across all sub-charts.
+
+### Available Common Helpers
+
+Instead of defining your own helpers, use these common ATK helpers:
+
+```yaml
+# Basic chart helpers
+{{- include "atk.common.name" . }}           # Chart name
+{{- include "atk.common.fullname" . }}       # Full qualified name
+{{- include "atk.common.chart" . }}          # Chart name and version
+{{- include "atk.common.labels" . }}         # Standard labels
+{{- include "atk.common.selectorLabels" . }} # Selector labels
+{{- include "atk.common.serviceAccountName" . }} # Service account name
+
+# Image and secrets
+{{- include "atk.common.imagePullSecrets" . }} # Standard image pull secrets
+{{- include "atk.common.imagePullSecretsList" . }} # Secrets list format
+
+# Kubernetes compatibility
+{{- include "atk.common.capabilities.kubeVersion" . }} # Kubernetes version
+{{- include "atk.common.ingress.supportsIngressClassname" . }}
+{{- include "atk.common.ingress.supportsPathType" . }}
+```
+
+### Pattern for Sub-chart Helpers
+
+Wrap common helpers to maintain chart-specific naming while using shared logic:
+
+```yaml
+{{/*
+Chart-specific helper that uses common ATK helper
+*/}}
+{{- define "my-chart.name" -}}
+{{- include "atk.common.name" . }}
+{{- end }}
+```
+
+This pattern provides:
+- **Consistency**: All charts use identical label/naming logic
+- **Maintainability**: Changes to common patterns update all charts
+- **Flexibility**: Charts can override specific helpers if needed
+
+### Example: graph-node Implementation
+
+The `graph-node` chart demonstrates this pattern:
+
+```yaml
+# Uses common ATK helpers for consistency
+{{- define "graph-node.labels" -}}
+{{- include "atk.common.labels" . }}
+{{- end }}
+
+# Chart-specific helpers where needed
+{{- define "graph-node.image" -}}
+{{- $tag := .Values.image.tag | default .Chart.AppVersion }}
+{{- printf "%s:%s" .Values.image.repository $tag }}
+{{- end }}
+```
 
 ## Configuration Guidelines
 
@@ -377,7 +439,7 @@ kubectl get ingress -n atk
 ### With Frontend
 - Environment variables → dapp deployment
 - API endpoints → ingress configuration
-- GraphQL endpoints → hasura/thegraph
+- GraphQL endpoints → hasura/graph-node
 
 ### With Backend Services
 - Database schemas → postgresql init scripts

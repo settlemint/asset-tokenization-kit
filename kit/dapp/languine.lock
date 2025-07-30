@@ -1329,12 +1329,12 @@ files:
     assets.deploying-toast: de88bfdc00ad47c72c2de7461d99c084
     assets.deployment-warning: 6a7b986dadf85ed14c08b4414be61495
     assets.description: d87ac1a58f23916d54656000fd902c86
-    assets.failed-toast: 0217b7b3e8ceaafbb815a9fc5ed0fe43
     assets.descriptions.bond: 9eeac4a36524e0bfaa6a585152803c46
     assets.descriptions.deposit: 7743e579d85431998cd86c740561b9cb
     assets.descriptions.equity: 3b7cb1c2e7008febc1715b8b974b21df
     assets.descriptions.fund: b2e5dc94cd2df8e917b8e3e3abd1b649
     assets.descriptions.stablecoin: 4f0bb2c6818d91ae052ad9f34586e503
+    assets.failed-toast: 0217b7b3e8ceaafbb815a9fc5ed0fe43
     assets.info: 811367d0bff99f3a52e870d5a791b8cf
     assets.no-system: 27f9d7982b4c6e3045e9641216cd728f
     assets.select-all-asset-types: de6322ab756831f089554b0b326ed075
@@ -1504,7 +1504,7 @@ files:
     wallet-security.method-selector.generate-backup-codes: b325100e3b255d11d311aed3186f5fe8
     wallet-security.method-selector.otp.description: a42d1c0a4a0e9341b4e4e8b84d1e53eb
     wallet-security.method-selector.otp.summary: 5c62e7362e585b22f805a365e05061ed
-    wallet-security.method-selector.otp.title: e0ce0bde32be3ccc93308c1a4c989b98
+    wallet-security.method-selector.otp.title: d9d1e60e50119d9752001d4196ee6b3c
     wallet-security.method-selector.pin.description: 52456b6afbcc6933ee8732a60ba39feb
     wallet-security.method-selector.pin.summary: aa4cefb925ed68f86edd5552d9be4357
     wallet-security.method-selector.pin.title: 5708983f6d397a8613b27bc98b9ade13
@@ -1551,7 +1551,7 @@ files:
     wallet-security.pincode.submitting: 7f1650ee875e9a88e5b2c0899dbca37d
     wallet-security.pincode.success: 3250ebdc2eafcb2978ef2f2647c22ee7
     wallet-security.pincode.title: 427cfb01c28ad6f50496b891a50fc646
-    wallet-security.recovery-codes.confirm: 6c2ea37fe266ad359f3594ee49bb1b4a
+    wallet-security.recovery-codes.confirm: a8c682adee4abb5a35793e0506f312ce
     wallet-security.recovery-codes.confirm-error: dd9dd8140ad3f42854a48c40e4692e8e
     wallet-security.recovery-codes.copied-to-clipboard: 3d6d7339a9aef7f7cea697358298b290
     wallet-security.recovery-codes.copy-all: 4102a560377828212cd45be38b47413d
@@ -1565,6 +1565,7 @@ files:
     wallet-security.recovery-codes.title: c862c55168ba3dbd68750cdbfada2755
     wallet-security.recovery-codes.warning: 6881ae059898ccd365ed503372e18d85
     wallet-security.recovery-codes.your-recovery-codes: 423444332c829c09c6f5ee40fb0324e8
+    wallet-security\.method-selector\.otp\.title: d9d1e60e50119d9752001d4196ee6b3c
     welcome.complete-journey: 135df2707fef2ed79eb8b8d7293cfbd9
     welcome.continue-setup: 13f015604f24e66c9cfdd7c055dd8d42
     welcome.description: 8080a38c9962916eab9146a55c710881
@@ -2055,6 +2056,7 @@ files:
     bulkActions.duplicateMessage: bd81d582b5b135e5d8bdf22156942911
     columns.actions: 06df33001c1d7187fdd81ea1f5b277aa
     columns.contractAddress: 23a36672509f4b9cb7bd6bf756cd568a
+    columns.createdAt: 6e9a375edaa0f55f2b86e1f415a33172
     columns.decimals: 2b417805040de3a3df31c8fd3626b57c
     columns.name: 49ee3087348e8d44e1feda1917443987
     columns.paused: ec53a8c4f07baed5d8825072c89799be
@@ -2068,6 +2070,9 @@ files:
     details.fundInformation: 49cdc84690b56e3b5fd0ac6c8697cd5d
     details.holders: b099a5b6f9f22eac61e7e3176ff002c7
     details.tokenInformation: 3ec365dd533ddb7ef3d1c111186ce872
+    details.stateChange: 8a83ae1ac627c3920d2591ef77e8859e
+    details.currentState: c8c59626a85748cf1d7f517c25e57f01
+    details.targetState: b1e911b9930ab173591b9414bf7564c4
     emptyState.description: 43198125adbbc9360df3baa3c27b64a1
     emptyState.title: 9e3d4f57df7b2dd1a9ce1845a928c2ae
     events.actions.copyTransactionHash: b19e2d2127e7b4b400ee4636eb7e9bb8
@@ -2219,6 +2224,128 @@ files:
     tabs.tokenInformation: 5ae714b3f4c4b0a69cb389d676938b72
     tabs.underlyingAssets: d29ee78d99666a829835753176e75513
     tabs.yield: 97345487190c327e1e3ac998e4bf4d08
+    api.errors.InvalidSender: f178319f319632fd5c0aaf7d84ae82df
+    api.errors.InvalidReceiver: db4605ac5df85bdb3119cff2b1b05976
+    api.errors.InsufficientBalance: 2a4bdaf5fb21eedb59b3f916102cfc09
+    api.errors.InsufficientAllowance: 4ed0af4f489ae920bd5c83ff7d7c06df
+    api.errors.TokenFrozen: e3f35797ed9614d9ce107ae8b5e5a4ea
+    api.errors.WalletFrozen: fff342818448e9fb8a699d9567383bfb
+    api.errors.SelfTransfer: 28d535d186b088138e75d17e8312b702
+    api.errors.InvalidIdentity: 43a2c391a2e05034c6738b538b8529db
+    api.errors.ZeroAddress: 4c9d46ac4ecd7f46c143ac3f15a17db5
+    api.errors.ComplianceCheckFailed: c2a09bd8f4c0422358bd43052cfe6f11
+    api.errors.NonTransferable: dd10f3bee571ce3df4ae3e5f6195e4c4
+    api.errors.NotVerified: f0add6a6ff4715708437c11219b53f2c
+    api.errors.Paused: bd789d9d0a25aa56788d2dded14c276b
+    api.errors.OnlyOwner: dbc7b57bb8184261083ba1369eebbfe8
+    api.errors.OnlyAgent: fbd7b68373574f4452023a9285866dd1
+    api.errors.OnlySupplyManager: 9b777eae99dd873d3b96f097f5579715
+    api.errors.OnlyComplianceManager: 8d86a36880c872c2dd46d840dcf13f0e
+    api.errors.OnlyTokenAdmin: 563a42f1c5acfe2e8342387eb235025f
+    api.errors.ForcedTransferNotAllowed: f862499d51010bd9ba73cb226cdfbd18
+    api.errors.RecoveryNotAllowed: 977aca2666a678c9cb233922f392a3ff
+    api.errors.MaxSupplyReached: 085aedff8992c61edd1975c264047c7c
+    api.errors.AmountExceedsBalance: 36350cee0a72fa3eff352ace4d96a8f0
+    api.errors.AmountExceedsFrozenTokens: f8db08d6ab64d2ab0a847dc060dcbc0c
+    api.errors.NotEnoughFrozenTokens: f8ab408e9e925abd8e1f315fd12ed37c
+    api.errors.AlreadyFrozen: d03c9ae32b2eea0ebca2ae44f428dc0d
+    api.errors.NotFrozen: c8078ef6e15e2490c89ce15e9b131bcc
+    api.errors.ClaimNotFound: ac1a3bb3103cfc82420faa3d590a7f00
+    api.errors.ClaimNotValid: 064bfc7463a4685e69ca0eabcf9a83ef
+    api.errors.ClaimExpired: aa8858724158b770a3cd0cdbd0b5a506
+    api.errors.ClaimRevoked: 44ad7dfddb2db775b53a9fde33e5e1ad
+    api.errors.IdentityNotFound: 6c70697ff9d380c5817ec23876532609
+    api.errors.IdentityAlreadyExists: d3ec0dde5d0216239f2b52a0135ca497
+    api.errors.IdentityMismatch: 6818ffd7be6dc7e95753abf4954bc5d5
+    api.errors.BurnNotAllowed: 1193d610c186d8400b747ab0f8378245
+    api.errors.MintNotAllowed: 23db0cd56f10c0508e42eb779db0145f
+    api.errors.AlreadyPaused: c1c01a38ca8ea1e6f25c727abb8bf75c
+    api.errors.NotPaused: 79e9968caf2330e598c63457d063e6f8
+    api.errors.InvalidBatchLength: c5f67cb5a9413826b441761881c4e84e
+    api.errors.BatchOperationFailed: 5fdef0e2d757a5ff52dd45aa5998e199
+    api.errors.InvalidYieldSchedule: 637f6f598611042494d63f95325581dd
+    api.errors.YieldNotEnabled: 33ad2c23a0d140d6536ad374d3463218
+    api.errors.NoYieldAvailable: e7b0b85fb6fc6905b01810fe7fe458f1
+    api.errors.InvalidCollateral: b390b33e3388f208271de78b5ba1698b
+    api.errors.CollateralLocked: b22de0498ef5c697af00af99b0e15c0e
+    api.errors.BondNotMatured: 1de5328d0f92ee43910d5c9601aaff6c
+    api.errors.BondAlreadyMatured: a0114eeae479147928c37e869f44c6fd
+    api.errors.RedemptionNotAllowed: ebcba1640c0f8779136cc76ea9b7a643
+    api.errors.InvalidFaceValue: 635b4c712fe6fdd6ea403a0b449708a0
+    api.errors.InvalidMaturityDate: 8c2bf97c7a0caac2d6261514b6102b73
+    api.errors.ModuleNotFound: 10cf6fb8d27cd5c2af3f883601adb3cf
+    api.errors.ModuleAlreadyBound: 2802d2a079f209659e23a4a972325235
+    api.errors.ModuleBindingFailed: 0a1b60e25f9f7fdf72acc58111cdc335
+    api.errors.InvalidManagementFee: 5e56073a1b591b0a97c7ec4fae78728e
+    api.errors.FeeExceedsMaximum: 5342c29c9887358a122f189f8713ce0b
+    api.errors.InvalidTokenType: f75241b88888fba9bae1f5de7a3247bd
+    api.errors.ContractNotFound: 8e1a48e573e42efb5182bf26b1d5585d
+    api.errors.ContractUpgradeFailed: 235de2d0a8d71771fc49ef8abefb5970
+    api.errors.InvalidImplementation: 47423542d78519b3ea8e1be4dd02922c
+    api.errors.ProxyDeployFailed: 5b81ccbd1a1626aad22dd8059451118a
+    api.errors.FactoryNotDeployed: 6718b3115d831b23053a3cdba364ad66
+    api.errors.SystemNotBootstrapped: 26c5c73eefaafd0811991cac18250979
+    api.errors.InvalidConfiguration: 85265e940fbb820dd2475946e7bc48d9
+    api.errors.NetworkError: a8f22f7f01a21e5dbe2e41c5caecd298
+    api.errors.TransactionFailed: 7ff6de1a2d433b1b3c4d095103a59f00
+    api.errors.TransactionReverted: a6b5413cdc62e4ce5310fa845cd9cd54
+    api.errors.EstimationFailed: a1eea4afb9e574cddf74bc91fcb0ba18
+    api.errors.SignatureFailed: 11deaf3d79aac511b6165982eb45caf9
+    api.errors.NonceTooLow: 8fe69c45b5ab2ae222828b51bb07ec45
+    api.errors.ReplacementUnderpriced: d8d408718708c6e670bd607203766cbd
+    api.errors.UnknownError: 390c95fb109995a2a126d2edfdb287af
+    api.errors.ChainMismatch: ba82f2182b42224b3aef776f3c863e34
+    api.errors.WalletNotConnected: 60dc92753b45cdeb9279c8db9e96135b
+    api.errors.UserRejected: 4338af7dec874b3dc4d676d4f04193a3
+    api.queries.holders.messages.failed: ce25ae516a35ffddf39e3ea2d5159bc4
+    api.queries.events.messages.failed: 276dd2fe67fc0be0203db16f20c6ba09
+    api.queries.list.messages.failed: 6ececdc96f9db96a423b52f97ee88497
+    api.factory.read.messages.failed: cbb3146061a61ba685e594efdf710763
+    api.factory.list.messages.failed: 47c7e0cdcdeb1e7e835e882f9959c0df
+    api.factory.create.messages.failed: 3e049f9a30efe23939c0f51797a16f8d
+    api.factory.create.messages.batchFailed: 9c5a34bdc622f6669d5adb4571644488
+    api.factory.create.messages.alreadyExists: aa3addd3774a52d7a15026a077c2d130
+    api.factory.create.messages.systemNotBootstrapped: 402e92c25f77cfc4a4660f87adda61bb
+    api.factory.create.messages.completed: d9e6f738271efb06b3b76602cb9f2ac4
+    api.factory.create.messages.allSucceeded: 32f400dd51b6b73b4c220626fa73cd98
+    api.factory.create.messages.allSkipped: 7366ac188281430e02b79ce93758f561
+    api.factory.create.messages.mixedResults: 7c2983b67b778788876f78898cbeb428
+    api.factory.create.messages.successAndSkipped: 114d4f9780e3a02f6ce865407a6e7096
+    api.factory.create.messages.successAndFailed: c1dec5275bad478c14438318f41c7873
+    api.factory.create.messages.skippedAndFailed: c6ce22ba03a6a96aba50bcffed129234
+    api.factory.predict.messages.invalidType: f75241b88888fba9bae1f5de7a3247bd
+    api.factory.predict.fund.messages.failed: 9b06b433e1d646f1708c54eb703e1259
+    api.factory.predict.equity.messages.failed: de75485e71f82c29baab1a9eee65aec1
+    api.factory.predict.bond.messages.failed: 19db721663b736301f4b1ea72d03eb27
+    api.factory.predict.stablecoin.messages.failed: 5ed194868aadff89c70c537301cd8ef0
+    api.factory.predict.deposit.messages.failed: 7db4f00087290573c566f2bd07938a6e
+    api.mutations.create.messages.notFound: 599fd6a428a1d582e10f2946212ad7f3
+    api.mutations.create.messages.missingAfterCreation: d317e9b229c89cd6051ed75a8618c87b
+    api.mutations.create.messages.notFoundForTransaction: a4e7b0797ee5120f08179c869baa667f
+    api.mutations.create.messages.failed: 6a429870b3a4a2f74179a74f842a2fce
+    api.mutations.create.messages.nullObject: 3585f19e7c4c74a1f4c959a59e6f74ac
+    api.mutations.create.fund.messages.invalidType: f75241b88888fba9bae1f5de7a3247bd
+    api.mutations.create.fund.messages.failed: 50ba17c26b6b39ddb329893b014cd365
+    api.mutations.create.equity.messages.invalidType: f75241b88888fba9bae1f5de7a3247bd
+    api.mutations.create.equity.messages.failed: 656ced291a30add5f8e437d80693a2d4
+    api.mutations.create.bond.messages.invalidType: f75241b88888fba9bae1f5de7a3247bd
+    api.mutations.create.bond.messages.failed: 8bef7243adfea796fba5dd171c33f1fe
+    api.mutations.create.stablecoin.messages.invalidType: f75241b88888fba9bae1f5de7a3247bd
+    api.mutations.create.stablecoin.messages.failed: 62ba93d773bc6377301f53e3589fa33b
+    api.mutations.create.deposit.messages.invalidType: f75241b88888fba9bae1f5de7a3247bd
+    api.mutations.create.deposit.messages.failed: 01ea572036a0f7ec29ece96c94c3c3be
+    api.mutations.yield.messages.createScheduleFailed: 6ef8ad2f23c5b29662ba2ab1572ba1fb
+    api.mutations.yield.messages.transactionFailed: 3f864e377ad88afe0f99e0d1e16cec03
+    api.mutations.yield.messages.transactionFailedWithStatus: b38079990f71be0430bbd4cdc178149b
+    api.mutations.yield.messages.receiptFailed: 375943250b49109ae9c88410c2aae4a8
+    api.mutations.yield.messages.scheduleAddressNotFound: 0928994348c6a256fb2433dc28bf752b
+    api.mutations.yield.messages.setScheduleFailed: d9b9c4eca99b8ec70e25f9a183b53a5e
+    validation.mint.recipientRequired: ba9dd7a3f489bf5cc25119433c6dd125
+    validation.mint.amountRequired: 164d31b8f30bc1b2dc056003c0dcbc9c
+    validation.burn.addressRequired: ffdaefe9d6b9fc6cbaf8495183d4cd5f
+    validation.burn.amountRequired: 164d31b8f30bc1b2dc056003c0dcbc9c
+    validation.burn.batchDescription: 71870e7e378ea5198992b06003d9edba
+    validation.transfer.fromRequired: be8fbba2602453d5d17966ee8333e9f2
   locales/en-US/user.json:
     actions.createWallet.success: b88395946e210c0e477fd810ccc76ef3
     kyc.actions.delete.success: 0668b88fc70a39baa6bffd9e3e107169

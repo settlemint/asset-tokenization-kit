@@ -1,11 +1,10 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { tokenRouter } from "@/orpc/procedures/token.router";
+import { portalRouter } from "@/orpc/procedures/portal.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { call } from "@orpc/server";
+import { read } from "../../token.read";
 
 const TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
   mutation TokenRemoveComplianceModule(
@@ -29,20 +28,24 @@ const TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
   }
 `);
 
-export const removeComplianceModule = tokenRouter.token.removeComplianceModule
+export const removeComplianceModule = portalRouter.token.removeComplianceModule
   .use(
     tokenPermissionMiddleware({
       requiredRoles: TOKEN_PERMISSIONS.removeComplianceModule,
     })
   )
-  .use(portalMiddleware)
-  .handler(async function* ({ input, context }) {
-    const { contract, verification, moduleAddress } = input;
-    const { auth, t } = context;
+  .handler(async ({ input, context, errors }) => {
+    const { verification, moduleAddress } = input;
+    const { auth, system } = context;
 
-    // Generate messages using server-side translations
-    const { pendingMessage, successMessage, errorMessage } =
-      getMutationMessages(t, "tokens", "removeComplianceModule");
+    const contract = system?.complianceModuleRegistry?.id;
+    if (!contract) {
+      const cause = new Error("Compliance module registry not found");
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: cause.message,
+        cause,
+      });
+    }
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -50,7 +53,7 @@ export const removeComplianceModule = tokenRouter.token.removeComplianceModule
       type: verification.verificationType,
     });
 
-    const transactionHash = yield* context.portalClient.mutate(
+    await context.portalClient.mutate(
       TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION,
       {
         address: contract,
@@ -58,12 +61,9 @@ export const removeComplianceModule = tokenRouter.token.removeComplianceModule
         moduleAddress,
         ...challengeResponse,
       },
-      errorMessage,
-      {
-        waitingForMining: pendingMessage,
-        transactionIndexed: successMessage,
-      }
+      context.t("tokens:api.mutations.compliance.messages.removeFailed")
     );
 
-    return getEthereumHash(transactionHash);
+    // Return updated token data
+    return await call(read, { tokenAddress: contract }, { context });
   });

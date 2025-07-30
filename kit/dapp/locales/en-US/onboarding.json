@@ -331,6 +331,7 @@
     "recovery-codes": {
       "confirm": "Finish wallet setup",
       "confirm-error": "Failed to confirm secret codes",
+      "confirm-stored": "Confirm you stored your recovery keys in a safe place.",
       "copied-to-clipboard": "Secret codes copied to clipboard!",
       "copy-all": "Copy all",
       "description": "Save these codes somewhere safe",

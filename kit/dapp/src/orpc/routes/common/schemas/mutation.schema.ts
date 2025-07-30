@@ -50,21 +50,3 @@ export const MutationInputSchemaWithContract = MutationInputSchema.extend({
     "The address of the contract to call this function on"
   ),
 });
-
-export const MutationOutputStatusSchema = z.enum([
-  "pending",
-  "confirmed",
-  "failed",
-  "completed",
-]);
-
-export type MutationOutputStatus = z.infer<typeof MutationOutputStatusSchema>;
-
-export const MutationOutputSchema = z.object({
-  status: MutationOutputStatusSchema,
-  message: z.string(),
-  transactionHash: z.string().optional(),
-  result: z.string().optional(), // For compatibility with useStreamingMutation hook
-});
-
-export type MutationOutput = z.infer<typeof MutationOutputSchema>;

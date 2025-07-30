@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import { useAppForm } from "@/hooks/use-app-form";
-import { waitForStream } from "@/lib/utils/stream";
 import { addonTypes, type AddonType } from "@/lib/zod/validators/addon-types";
 import { AssetFactoryTypeIdEnum } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
@@ -42,11 +41,11 @@ export function SystemAddonsSelection() {
     | null
   >(null);
 
-  const { data: systemDetails } = useQuery({
-    ...orpc.system.read.queryOptions({
+  const { data: systemDetails } = useQuery(
+    orpc.system.read.queryOptions({
       input: { id: "default" },
-    }),
-  });
+    })
+  );
 
   // Check if bond factory is deployed
   const hasBondFactory = useMemo(
@@ -82,9 +81,7 @@ export function SystemAddonsSelection() {
   const { mutateAsync: createAddons, isPending: isAddonsCreating } =
     useMutation(
       orpc.system.addonCreate.mutationOptions({
-        onSuccess: async (result) => {
-          await waitForStream(result, "system addon deployment");
-
+        onSuccess: async () => {
           // Reset the skip setting since user deployed addons
           await updateSetting({
             key: "SYSTEM_ADDONS_SKIPPED",

@@ -1,9 +1,7 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
-import {
-  SystemAddonCreateOutputSchema,
-  SystemAddonCreateSchema,
-} from "@/orpc/routes/system/addon/routes/addon.create.schema";
-import { eventIterator } from "@orpc/server";
+import { SystemAddonCreateSchema } from "@/orpc/routes/system/addon/routes/addon.create.schema";
+import { SystemReadSchema } from "@/orpc/routes/system/routes/system.read.schema";
+
 /**
  * Contract definition for the system addon creation endpoint.
  *
@@ -20,12 +18,14 @@ const addonCreate = baseContract
   .route({
     method: "POST",
     path: "/systems/addons",
-    description: "Register system add-ons",
-    successDescription: "System add-ons registered successfully",
+    description:
+      "Register system add-ons to extend SMART system functionality with additional modules and features",
+    successDescription:
+      "System add-ons registered successfully with updated system configuration",
     tags: ["system"],
   })
   .input(SystemAddonCreateSchema)
-  .output(eventIterator(SystemAddonCreateOutputSchema));
+  .output(SystemReadSchema);
 
 export const addonContract = {
   addonCreate,

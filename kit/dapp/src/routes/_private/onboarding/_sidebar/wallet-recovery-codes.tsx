@@ -6,46 +6,45 @@ import {
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { authClient } from "@/lib/auth/auth.client";
 import { createFileRoute } from "@tanstack/react-router";
-import { defer } from "@tanstack/react-router";
 
 export const Route = createFileRoute(
   "/_private/onboarding/_sidebar/wallet-recovery-codes"
 )({
   validateSearch: createOnboardingSearchSchema(),
   beforeLoad: createOnboardingBeforeLoad(OnboardingStep.walletRecoveryCodes),
-  loader: () => {
-    // Start generating recovery codes immediately
-    const recoveryCodesPromise = authClient.secretCodes
-      .generate({
+  loader: async () => {
+    // Await the recovery codes generation
+    try {
+      const response = await authClient.secretCodes.generate({
         password: undefined,
-      })
-      .then((response) => {
-        // The response structure from better-auth client is { data, error }
-        if (response.error) {
-          throw new Error(
-            response.error.message || "Failed to generate recovery codes"
-          );
-        }
-        return response;
-      })
-      .catch((error: unknown) => {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "Failed to generate recovery codes";
-        // Return the error in a format we can handle
-        return {
+      });
+
+      // The response structure from better-auth client is { data, error }
+      if (response.error) {
+        throw new Error(
+          response.error.message || "Failed to generate recovery codes"
+        );
+      }
+
+      return {
+        recoveryCodesData: response,
+      };
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to generate recovery codes";
+
+      // Return the error in a format we can handle
+      return {
+        recoveryCodesData: {
           data: null,
           error: {
             message: errorMessage,
           },
-        };
-      });
-
-    // Return deferred promise for streaming
-    return {
-      recoveryCodesData: defer(recoveryCodesPromise),
-    };
+        },
+      };
+    }
   },
   component: WalletRecoveryCodesComponent,
 });

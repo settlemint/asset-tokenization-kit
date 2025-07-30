@@ -11,7 +11,7 @@ groups, async field dependencies, and ORPC integration.
   debouncing
 - **Collapsible Groups**: Steps can be organized into collapsible sidebar groups
 - **Async Field Dependencies**: Fields can show/hide based on async ORPC calls
-- **ORPC Integration**: Built-in support for streaming mutations at each step
+- **ORPC Integration**: Built-in support for mutations at each step
 - **Validation**: Step-level and field-level validation with Zod schemas
 - **Error Boundaries**: Comprehensive error handling with user-friendly messages
 - **Responsive Design**: Works on all screen sizes with flexible layouts
