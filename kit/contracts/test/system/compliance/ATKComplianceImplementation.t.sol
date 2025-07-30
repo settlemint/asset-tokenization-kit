@@ -695,7 +695,7 @@ contract ATKComplianceImplementationTest is Test {
         // Remove module
         vm.prank(complianceManager);
         vm.expectEmit(true, true, true, true);
-        emit IATKCompliance.GlobalComplianceModuleRemoved(address(validModule), complianceManager);
+        emit IATKCompliance.GlobalComplianceModuleRemoved(complianceManager, address(validModule));
         IATKCompliance(address(compliance)).removeGlobalComplianceModule(address(validModule));
 
         // Verify module was removed
