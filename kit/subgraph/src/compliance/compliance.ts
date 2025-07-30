@@ -5,12 +5,12 @@ import {
   GlobalComplianceModuleRemoved as GlobalComplianceModuleRemovedEvent,
 } from "../../generated/templates/Compliance/Compliance";
 import { fetchEvent } from "../event/fetch/event";
-import { fetchTokenComplianceModuleConfig } from "../token/fetch/token-compliance-module-config";
 import { fetchComplianceModule } from "./fetch/compliance-module";
 import {
   fetchComplianceModuleParameters,
   updateComplianceModuleParameters,
 } from "./fetch/compliance-module-parameters";
+import { fetchGlobalComplianceModuleConfig } from "./fetch/global-compliance-module-config";
 
 export function handleGlobalComplianceModuleAdded(
   event: GlobalComplianceModuleAddedEvent
@@ -18,7 +18,7 @@ export function handleGlobalComplianceModuleAdded(
   fetchEvent(event, "GlobalComplianceModuleAdded");
 
   let complianceModule = fetchComplianceModule(event.params.module);
-  let complianceModuleConfig = fetchTokenComplianceModuleConfig(
+  let complianceModuleConfig = fetchGlobalComplianceModuleConfig(
     event.address,
     event.params.module
   );
@@ -38,7 +38,7 @@ export function handleGlobalComplianceModuleRemoved(
 ): void {
   fetchEvent(event, "GlobalComplianceModuleRemoved");
 
-  let complianceModuleConfig = fetchTokenComplianceModuleConfig(
+  let complianceModuleConfig = fetchGlobalComplianceModuleConfig(
     event.address,
     event.params.module
   );
@@ -54,7 +54,7 @@ export function handleGlobalComplianceModuleParametersUpdated(
   fetchEvent(event, "GlobalComplianceModuleParametersUpdated");
 
   let complianceModule = fetchComplianceModule(event.params.module);
-  let complianceModuleConfig = fetchTokenComplianceModuleConfig(
+  let complianceModuleConfig = fetchGlobalComplianceModuleConfig(
     event.address,
     event.params.module
   );
