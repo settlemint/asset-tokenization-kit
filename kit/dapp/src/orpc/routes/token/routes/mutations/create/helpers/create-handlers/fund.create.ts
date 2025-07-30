@@ -72,7 +72,6 @@ export const fundCreateHandler = async (
       {
         ...otherInput,
         ...context.mutationVariables,
-        countryCode: 1, // TODO: should come from ui
       },
       "Failed to create fund token"
     );
