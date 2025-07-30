@@ -660,7 +660,7 @@ contract ATKSystemTest is Test {
     // Note: IdentityVerificationModule tests removed as the functionality is now handled through compliance module
     // registry
 
-    function test_SystemInitialization_AllComponentsConfigured() public {
+    function test_SystemInitialization_AllComponentsConfigured() public view {
         // Test that all components are properly configured in the bootstrapped system
         // Verify all components are properly set including identity verification module
         assertTrue(IATKTypedImplementationRegistry(address(atkSystem)).implementation(COMPLIANCE) != address(0));
