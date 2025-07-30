@@ -18,7 +18,7 @@ export type AssetClassSelectionInputData = z.input<
 export const assetClassSelectionFormOptions = formOptions({
   defaultValues: {
     step: "assetClass",
-  } as unknown as AssetClassSelectionInputData,
+  } as AssetClassSelectionInputData,
 });
 export const isRequiredField = (
   field: KeysOfUnion<AssetClassSelectionInputData>

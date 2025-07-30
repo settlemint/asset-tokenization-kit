@@ -30,16 +30,13 @@ export function AssetClassModal({ open, onOpenChange }: AssetClassModalProps) {
     },
     onSubmit: async (values) => {
       const parsedValues = AssetClassSelectionSchema.parse(values.value);
-
-      if (parsedValues.assetClass && parsedValues.assetType) {
-        await navigate({
-          to: "/asset-designer",
-          search: {
-            type: parsedValues.assetType,
-          },
-        });
-        onOpenChange(false);
-      }
+      await navigate({
+        to: "/asset-designer",
+        search: {
+          type: parsedValues.assetType,
+        },
+      });
+      onOpenChange(false);
     },
   });
 
