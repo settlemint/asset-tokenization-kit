@@ -8,7 +8,7 @@ import { handlePortalError } from "./portal-error-handling";
 const orpcErrors = createORPCErrorConstructorMap(CUSTOM_ERRORS);
 
 describe("handlePortalError", () => {
-  it("should throw PortalError with correct message and statusCode from ClientError with extensions", () => {
+  it("should throw orpc error with correct message and statusCode for graphql errors", () => {
     const clientError = new ClientError(
       {
         errors: [
@@ -37,7 +37,7 @@ describe("handlePortalError", () => {
     }
   });
 
-  it("throws default error if not a ClientError", () => {
+  it("throws portal error if not a graphql error", () => {
     const error = new Error("test");
     try {
       handlePortalError(error, orpcErrors);
@@ -46,7 +46,7 @@ describe("handlePortalError", () => {
       if (error instanceof ORPCError) {
         expect(error.message).toBe("test");
         expect(error.status).toBe(500);
-        expect(error.code).toBe("INTERNAL_SERVER_ERROR");
+        expect(error.code).toBe("PORTAL_ERROR");
       }
     }
   });
