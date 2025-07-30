@@ -9,7 +9,7 @@ import {
 } from "../utils/user";
 
 describe("Token create", () => {
-  test.skip("can create a token", async () => {
+  test("can create a token", async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
 
@@ -52,7 +52,7 @@ describe("Token create", () => {
     });
   });
 
-  test.skip("regular users cant create tokens", async () => {
+  test("regular users cant create tokens", async () => {
     const headers = await signInWithUser(DEFAULT_INVESTOR);
     const client = getOrpcClient(headers);
 

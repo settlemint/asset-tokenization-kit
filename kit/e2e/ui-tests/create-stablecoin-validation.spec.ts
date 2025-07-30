@@ -3,8 +3,8 @@ import { CreateAssetForm } from "../pages/create-asset-form";
 import { Pages } from "../pages/pages";
 import { stablecoinData } from "../test-data/asset-data";
 import {
-  successMessageData,
   errorMessageData,
+  successMessageData,
 } from "../test-data/message-data";
 import { adminUser } from "../test-data/user-data";
 import { ensureUserIsAdmin } from "../utils/db-utils";
@@ -225,7 +225,7 @@ test.describe("Stablecoin Creation Validation", () => {
       );
     });
     //Remove skip after this issue is fixed https://linear.app/settlemint/issue/ENG-3152/asset-designerdeposit-missing-error-on-large-number-on-collateral
-    test.skip("validates large number for collateral proof validity field", async () => {
+    test("validates large number for collateral proof validity field", async () => {
       await createAssetForm.fillStablecoinConfigurationFields({
         collateralProofValidity: "10000000000000000000",
         collateralProofValidityTimeUnit: "months",

@@ -3,8 +3,8 @@ import { CreateAssetForm } from "../pages/create-asset-form";
 import { Pages } from "../pages/pages";
 import { cryptocurrencyData } from "../test-data/asset-data";
 import {
-  successMessageData,
   errorMessageData,
+  successMessageData,
 } from "../test-data/message-data";
 import { adminUser } from "../test-data/user-data";
 import { ensureUserIsAdmin } from "../utils/db-utils";
@@ -175,7 +175,7 @@ test.describe("Cryptocurrency Creation Validation", () => {
       );
     });
     //TODO: Remove skip after this ticket is fixed https://linear.app/settlemint/issue/ENG-3131/cryptocurrencymissing-error-when-entered-0-in-initial-supply
-    test.skip("validates inital supply field is 0", async () => {
+    test("validates inital supply field is 0", async () => {
       await createAssetForm.fillCryptocurrencyDetails({
         decimals: "18",
         initialSupply: "0",
