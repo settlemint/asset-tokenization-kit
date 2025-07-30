@@ -104,37 +104,26 @@ export const statsAssetTotalSupply = tokenRouter.token.statsAssetTotalSupply
       Math.floor(since.getTime() / 1000)
     );
 
-    try {
-      // Fetch token total supply history from TheGraph
-      // tokenAddress is already validated and checksummed by ethereumAddress schema
-      const response = await context.theGraphClient.query(
-        TOKEN_TOTAL_SUPPLY_QUERY,
-        {
-          input: {
-            tokenId: tokenAddress.toLowerCase(),
-            since: sinceTimestamp.toString(),
-          },
-          output: TokenTotalSupplyResponseSchema,
-          error: "Failed to fetch token total supply history",
-        }
-      );
-
-      // Process the raw data into the expected output format
-      const totalSupplyHistory = processTotalSupplyHistoryData(
-        response.tokenStats_collection
-      );
-
-      return {
-        totalSupplyHistory,
-      };
-    } catch (error) {
-      throw new ORPCError("INTERNAL_SERVER_ERROR", {
-        message: "Failed to fetch token total supply history",
-        data: {
-          tokenAddress,
-          days,
-          error: error instanceof Error ? error.message : String(error),
+    // Fetch token total supply history from TheGraph
+    // tokenAddress is already validated and checksummed by ethereumAddress schema
+    const response = await context.theGraphClient.query(
+      TOKEN_TOTAL_SUPPLY_QUERY,
+      {
+        input: {
+          tokenId: tokenAddress.toLowerCase(),
+          since: sinceTimestamp.toString(),
         },
-      });
-    }
+        output: TokenTotalSupplyResponseSchema,
+        error: "Failed to fetch token total supply history",
+      }
+    );
+
+    // Process the raw data into the expected output format
+    const totalSupplyHistory = processTotalSupplyHistoryData(
+      response.tokenStats_collection
+    );
+
+    return {
+      totalSupplyHistory,
+    };
   });
