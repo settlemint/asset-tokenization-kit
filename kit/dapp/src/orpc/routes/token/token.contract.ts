@@ -34,6 +34,7 @@ import { tokenStatsSystemAssetsContract } from "@/orpc/routes/token/routes/stats
 import { tokenStatsSystemValueContract } from "@/orpc/routes/token/routes/stats/system/value.contract";
 import { tokenStatsSystemTransactionCountContract } from "@/orpc/routes/token/routes/stats/system/transaction-count.contract";
 import { tokenStatsSystemTransactionHistoryContract } from "@/orpc/routes/token/routes/stats/system/transaction-history.contract";
+import { tokenStatsAssetSupplyChangesContract } from "@/orpc/routes/token/routes/stats/[tokenAddress]/supply-changes.contract";
 import { tokenStatsAssetTotalSupplyContract } from "@/orpc/routes/token/routes/stats/[tokenAddress]/total-supply.contract";
 
 export const tokenContract = {
@@ -74,6 +75,7 @@ export const tokenContract = {
   statsSystemTransactionCount: tokenStatsSystemTransactionCountContract,
   statsSystemValue: tokenStatsSystemValueContract,
   statsAssetTotalSupply: tokenStatsAssetTotalSupplyContract,
+  statsAssetSupplyChanges: tokenStatsAssetSupplyChangesContract,
 };
 
 // Extract mutation keys for permissions

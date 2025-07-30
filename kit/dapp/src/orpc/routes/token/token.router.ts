@@ -18,6 +18,7 @@ import { recoverTokens } from "@/orpc/routes/token/routes/mutations/recovery/tok
 import { redeem } from "@/orpc/routes/token/routes/mutations/redeem/token.redeem";
 import { transfer } from "@/orpc/routes/token/routes/mutations/transfer/token.transfer";
 import { setYieldSchedule } from "@/orpc/routes/token/routes/mutations/yield/token.set-yield-schedule";
+import { statsAssetSupplyChanges } from "@/orpc/routes/token/routes/stats/[tokenAddress]/supply-changes";
 import { statsAssetTotalSupply } from "@/orpc/routes/token/routes/stats/[tokenAddress]/total-supply";
 import { statsSystemAssets } from "@/orpc/routes/token/routes/stats/system/assets";
 import { statsSystemTransactionCount } from "@/orpc/routes/token/routes/stats/system/transaction-count";
@@ -60,6 +61,7 @@ const routes = {
   statsSystemTransactionCount,
   statsSystemTransactionHistory,
   statsAssetTotalSupply,
+  statsAssetSupplyChanges,
 };
 
 export default routes;
