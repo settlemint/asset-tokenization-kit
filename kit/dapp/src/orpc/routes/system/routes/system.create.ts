@@ -278,24 +278,31 @@ export const create = onboardedRouter.system.create
       { context }
     );
 
-    // Grant deployer role to the initial admin
+    // Grant roles to the contracts
     if (systemDetails.systemAccessManager) {
-      const grantRoleChallengeResponse = await handleChallenge(sender, {
-        code: verification.verificationCode,
-        type: verification.verificationType,
-      });
+      const requiresAdminRole = [
+        systemDetails.tokenFactoryRegistry,
+        systemDetails.systemAddonRegistry,
+      ].filter((contract) => contract !== null);
 
-      await context.portalClient.mutate(
-        GRANT_ROLE_MUTATION,
-        {
-          address: systemDetails.systemAccessManager,
-          from: sender.wallet,
-          to: sender.wallet,
-          role: keccak256(toBytes("DEPLOYER_ROLE")),
-          ...grantRoleChallengeResponse,
-        },
-        "Failed to grant deployer role"
-      );
+      for (const contract of requiresAdminRole) {
+        const grantRoleChallengeResponse = await handleChallenge(sender, {
+          code: verification.verificationCode,
+          type: verification.verificationType,
+        });
+
+        await context.portalClient.mutate(
+          GRANT_ROLE_MUTATION,
+          {
+            address: systemDetails.systemAccessManager,
+            from: sender.wallet,
+            to: contract,
+            role: keccak256(toBytes("DEFAULT_ADMIN_ROLE")),
+            ...grantRoleChallengeResponse,
+          },
+          "Failed to grant default admin role"
+        );
+      }
     }
 
     // Return the complete system details
