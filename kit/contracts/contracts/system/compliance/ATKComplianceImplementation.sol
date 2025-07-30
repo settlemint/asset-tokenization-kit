@@ -83,11 +83,16 @@ contract ATKComplianceImplementation is
 
 
     // --- Constructor ---
+    /// @notice Constructor that sets up the trusted forwarder and disables initializers
+    /// @param trustedForwarder Address of the trusted forwarder for meta-transactions
     constructor(address trustedForwarder) ERC2771ContextUpgradeable(trustedForwarder) {
         _disableInitializers();
     }
 
     // --- Initializer ---
+    /// @notice Initializes the compliance contract with initial admin and bypass list manager admins
+    /// @param initialAdmin Address that will receive the DEFAULT_ADMIN_ROLE
+    /// @param initialBypassListManagerAdmins Array of addresses that will receive bypass list manager roles
     function initialize(
         address initialAdmin,
         address[] calldata initialBypassListManagerAdmins
@@ -203,12 +208,18 @@ contract ATKComplianceImplementation is
         }
     }
 
+    /// @notice Checks if an address is on the compliance bypass list
+    /// @param account The address to check
+    /// @return True if the address is on the bypass list, false otherwise
     function isBypassed(address account) external view returns (bool) {
         return _bypassedAddresses[account];
     }
 
     // --- Global Compliance Module Management Functions ---
 
+    /// @notice Adds a global compliance module that applies to all tokens
+    /// @param module Address of the compliance module to add
+    /// @param params ABI-encoded parameters for the module
     function addGlobalComplianceModule(address module, bytes calldata params)
         external
         onlyComplianceManagerRole()
@@ -229,6 +240,8 @@ contract ATKComplianceImplementation is
         emit GlobalComplianceModuleAdded(_msgSender(), module, params);
     }
 
+    /// @notice Removes a global compliance module
+    /// @param module Address of the compliance module to remove
     function removeGlobalComplianceModule(address module)
         external
         onlyComplianceManagerRole()
@@ -255,6 +268,9 @@ contract ATKComplianceImplementation is
         emit GlobalComplianceModuleRemoved(_msgSender(),module);
     }
 
+    /// @notice Updates the parameters for an existing global compliance module
+    /// @param module Address of the compliance module to update
+    /// @param params New ABI-encoded parameters for the module
     function setParametersForGlobalComplianceModule(address module, bytes calldata params)
         external
         onlyComplianceManagerRole()
@@ -267,6 +283,8 @@ contract ATKComplianceImplementation is
         emit GlobalComplianceModuleParametersUpdated(_msgSender(), module, params);
     }
 
+    /// @notice Returns all global compliance modules with their parameters
+    /// @return Array of module-parameter pairs for all global compliance modules
     function getGlobalComplianceModules() external view returns (SMARTComplianceModuleParamPair[] memory) {
         uint256 length = _globalComplianceModuleList.length;
         SMARTComplianceModuleParamPair[] memory modules = new SMARTComplianceModuleParamPair[](length);
@@ -286,6 +304,11 @@ contract ATKComplianceImplementation is
 
     // --- ISMARTCompliance Implementation (State-Changing) ---
 
+    /// @notice Called after a token transfer to update compliance module states
+    /// @param _token Address of the token contract
+    /// @param _from Address tokens were transferred from
+    /// @param _to Address tokens were transferred to
+    /// @param _amount Amount of tokens transferred
     function transferred(address _token, address _from, address _to, uint256 _amount) external virtual override {
         // First, call token-specific compliance modules
         SMARTComplianceModuleParamPair[] memory tokenModulePairs = ISMART(_token).complianceModules();
@@ -311,6 +334,10 @@ contract ATKComplianceImplementation is
         }
     }
 
+    /// @notice Called after tokens are created/minted to update compliance module states
+    /// @param _token Address of the token contract
+    /// @param _to Address tokens were created for
+    /// @param _amount Amount of tokens created
     function created(address _token, address _to, uint256 _amount) external virtual override {
         // First, call token-specific compliance modules
         SMARTComplianceModuleParamPair[] memory tokenModulePairs = ISMART(_token).complianceModules();
@@ -332,6 +359,10 @@ contract ATKComplianceImplementation is
         }
     }
 
+    /// @notice Called after tokens are destroyed/burned to update compliance module states
+    /// @param _token Address of the token contract
+    /// @param _from Address tokens were destroyed from
+    /// @param _amount Amount of tokens destroyed
     function destroyed(address _token, address _from, uint256 _amount) external virtual override {
         // First, call token-specific compliance modules
         SMARTComplianceModuleParamPair[] memory tokenModulePairs = ISMART(_token).complianceModules();
@@ -355,10 +386,15 @@ contract ATKComplianceImplementation is
 
     // --- ISMARTCompliance Implementation (View) ---
 
+    /// @notice Validates that a module and its parameters are valid
+    /// @param _module Address of the compliance module to validate
+    /// @param _params ABI-encoded parameters to validate
     function isValidComplianceModule(address _module, bytes calldata _params) external view virtual override {
         _validateModuleAndParams(_module, _params);
     }
 
+    /// @notice Validates that multiple modules and their parameters are valid
+    /// @param _pairs Array of module-parameter pairs to validate
     function areValidComplianceModules(SMARTComplianceModuleParamPair[] calldata _pairs)
         external
         view
@@ -374,6 +410,12 @@ contract ATKComplianceImplementation is
         }
     }
 
+    /// @notice Checks if a token transfer is compliant with all applicable modules
+    /// @param _token Address of the token contract
+    /// @param _from Address tokens would be transferred from
+    /// @param _to Address tokens would be transferred to
+    /// @param _amount Amount of tokens to transfer
+    /// @return True if the transfer is compliant, false otherwise
     function canTransfer(
         address _token,
         address _from,
@@ -419,6 +461,9 @@ contract ATKComplianceImplementation is
 
     // -- Internal Validation Function --
 
+    /// @notice Internal function to validate a compliance module and its parameters
+    /// @param _module Address of the compliance module to validate
+    /// @param _params ABI-encoded parameters to validate
     function _validateModuleAndParams(address _module, bytes calldata _params) private view {
         if (_module == address(0)) revert ZeroAddressNotAllowed();
 
@@ -435,6 +480,9 @@ contract ATKComplianceImplementation is
 
     // --- Overrides for ERC2771ContextUpgradeable ---
 
+    /// @notice Checks if the contract supports a given interface
+    /// @param interfaceId The interface identifier to check
+    /// @return True if the interface is supported, false otherwise
     function supportsInterface(bytes4 interfaceId)
         public
         view
@@ -446,6 +494,8 @@ contract ATKComplianceImplementation is
             || super.supportsInterface(interfaceId);
     }
 
+    /// @notice Returns the message sender, considering meta-transactions
+    /// @return sender The address of the message sender
     function _msgSender()
         internal
         view
@@ -456,6 +506,8 @@ contract ATKComplianceImplementation is
         return ERC2771ContextUpgradeable._msgSender();
     }
 
+    /// @notice Returns the message data, considering meta-transactions
+    /// @return The message data
     function _msgData()
         internal
         view
@@ -466,6 +518,8 @@ contract ATKComplianceImplementation is
         return ERC2771ContextUpgradeable._msgData();
     }
 
+    /// @notice Returns the context suffix length for meta-transactions
+    /// @return The length of the context suffix
     function _contextSuffixLength()
         internal
         view
