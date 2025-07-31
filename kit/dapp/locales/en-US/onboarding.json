@@ -139,7 +139,7 @@
     "deploying-toast": "Deploying system...",
     "deployment-details-description": "View the details of the system deployment",
     "deployment-details-title": "Deployment details",
-    "deployment-warning": "This action will deploy blockchain smart contracts and cannot be undone. Once deployed, the system will be permanently active on the blockchain. This step may take 2–3 minutes as the system deploys smart contracts on-chain. Please keep this tab open and don’t refresh.",
+    "deployment-warning": "Note: This step may take 2–3 minutes as the system deploys smart contracts on-chain. Please keep this tab open and don’t refresh.",
     "failed-toast": "Failed to deploy system: ",
     "identity-registry": "• Identity Registry for user verification",
     "identity-registry-description": "manages user identities on-chain",
