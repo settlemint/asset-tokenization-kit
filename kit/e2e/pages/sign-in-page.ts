@@ -10,27 +10,32 @@ export class SignInPage {
 
   async fillSignInForm(email: string, password: string): Promise<void> {
     const emailField = this.page.getByRole("textbox", { name: "Email" });
+    await emailField.waitFor({ state: "visible", timeout: 10000 });
     await emailField.click();
-    await emailField.focus();
     await emailField.clear();
-    await emailField.pressSequentially(email, { delay: 50 });
+    await emailField.pressSequentially(email, { delay: 100 });
 
     const passwordField = this.page.getByLabel("Password");
+    await passwordField.waitFor({ state: "visible", timeout: 10000 });
     await passwordField.click();
-    await passwordField.focus();
     await passwordField.clear();
-    await passwordField.pressSequentially(password, { delay: 50 });
+    await passwordField.pressSequentially(password, { delay: 100 });
   }
 
   async submitSignInForm(): Promise<void> {
-    await this.page.getByRole("button", { name: "Login" }).click();
+    const loginButton = this.page.getByRole("button", { name: "Login" });
+    await expect(loginButton).toBeEnabled({ timeout: 10000 });
+    await loginButton.click();
   }
 
   async clearForm(): Promise<void> {
     const emailField = this.page.getByRole("textbox", { name: "Email" });
-    await emailField.fill("");
+    await emailField.waitFor({ state: "visible", timeout: 10000 });
+    await emailField.clear();
+
     const passwordField = this.page.getByLabel("Password");
-    await passwordField.fill("");
+    await passwordField.waitFor({ state: "visible", timeout: 10000 });
+    await passwordField.clear();
   }
 
   async expectToStayOnSignInPage(): Promise<void> {

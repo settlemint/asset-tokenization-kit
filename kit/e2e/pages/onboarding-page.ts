@@ -597,11 +597,16 @@ export class OnboardingPage extends BasePage {
     await expect(
       this.page.getByRole("heading", { name: userName })
     ).toBeVisible({ timeout: 120000 });
-    const designAssetLink = this.page.locator('a[href="/asset-designer"]');
-    await expect(designAssetLink).toBeVisible({ timeout: 120000 });
-    await expect(
-      designAssetLink.getByRole("button", { name: "Design Asset" })
-    ).toBeVisible({ timeout: 120000 });
+
+    const assetDesignerButton = this.page.getByRole("button", {
+      name: "Asset designer",
+    });
+    await expect(assetDesignerButton).toBeVisible({ timeout: 120000 });
+
+    const addonDesignerButton = this.page.getByRole("button", {
+      name: "Addon designer",
+    });
+    await expect(addonDesignerButton).toBeVisible({ timeout: 120000 });
   }
 
   async setDateOfBirthDirectly(date: string): Promise<void> {

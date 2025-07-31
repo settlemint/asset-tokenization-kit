@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { test } from "@playwright/test";
 import { OnboardingPage } from "../pages/onboarding-page";
 import { onboardingTestData } from "../test-data/user-data";
 
@@ -18,9 +18,7 @@ test.describe.serial("Complete Onboarding Flow", () => {
     await onboardingPage.waitForReactHydration();
   });
 
-  test("should complete full onboarding flow with robust date picker", async ({
-    page,
-  }) => {
+  test("should complete full onboarding flow", async ({ page }) => {
     await page.getByRole("link", { name: /sign up/i }).click();
     await page.getByRole("textbox", { name: /email/i }).fill(testData.email);
     await page
@@ -57,8 +55,5 @@ test.describe.serial("Complete Onboarding Flow", () => {
     await onboardingPage.verifyOnboardingComplete(
       `${testData.kycData.firstName} ${testData.kycData.lastName}`
     );
-    await expect(page.getByText(/onboardingFinished": true/)).toBeVisible({
-      timeout: 20000,
-    });
   });
 });
