@@ -1,5 +1,5 @@
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
-import type { TokenExtensions } from "@/orpc/middlewares/system/token.middleware";
+import type { AssetExtension } from "@/lib/zod/validators/asset-extensions";
 import { baseRouter } from "@/orpc/procedures/base.router";
 
 /**
@@ -16,7 +16,7 @@ export function tokenPermissionMiddleware({
   requiredExtensions,
 }: {
   requiredRoles?: AccessControlRoles[];
-  requiredExtensions?: TokenExtensions[];
+  requiredExtensions?: AssetExtension[];
 } = {}) {
   return baseRouter.middleware(async ({ context, next, errors }) => {
     const { token } = context;
