@@ -62,11 +62,11 @@ library ATKSystemRoles {
     bytes32 public constant TOKEN_FACTORY_MODULE_ROLE = keccak256("TOKEN_FACTORY_MODULE_ROLE");
 
     /// @notice Role identifier for addresses that can manage the addon registry module
-    /// @dev Will be roleAdmin of ADDON_MODULE_ROLE
-    bytes32 public constant ADDON_REGISTRY_MODULE_ROLE = keccak256("ADDON_REGISTRY_MODULE_ROLE");
+    /// @dev Will be roleAdmin of ADDON_FACTORY_MODULE_ROLE
+    bytes32 public constant ADDON_FACTORY_REGISTRY_MODULE_ROLE = keccak256("ADDON_FACTORY_REGISTRY_MODULE_ROLE");
 
     /// @notice Role identifier for addresses that can manage the addon module
     /// @dev Will be able to add add-on instance contracts etc. to the allow list of compliance
-    bytes32 public constant ADDON_MODULE_ROLE = keccak256("ADDON_MODULE_ROLE");
+    bytes32 public constant ADDON_FACTORY_MODULE_ROLE = keccak256("ADDON_FACTORY_MODULE_ROLE");
 
 }

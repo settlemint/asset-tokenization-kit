@@ -91,7 +91,7 @@ contract ATKSystemAddonRegistryImplementation is
 
         addonProxiesByType[addonTypeHash] = _addonProxy;
 
-        IATKSystemAccessManager(_accessManager).grantRole(ATKSystemRoles.ADDON_MODULE_ROLE, _addonProxy);
+        IATKSystemAccessManager(_accessManager).grantRole(ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE, _addonProxy);
 
         (bool success, bytes memory data) =
             _addonProxy.staticcall(abi.encodeWithSelector(bytes4(keccak256("typeId()"))));

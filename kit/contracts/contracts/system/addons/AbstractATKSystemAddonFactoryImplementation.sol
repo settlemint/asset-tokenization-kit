@@ -21,6 +21,9 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 // Constants
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
+// Extensions
+import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
+
 /// @title Abstract Factory for Creating ATK System Addon Proxies
 /// @author SettleMint
 /// @notice This abstract contract provides common functionality for system addon factory implementations.
@@ -35,7 +38,7 @@ abstract contract AbstractATKSystemAddonFactoryImplementation is
     Initializable,
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
-    AccessControlUpgradeable,
+    ATKSystemAccessManaged,
     IWithTypeIdentifier
 {
     /// @notice Error thrown when a CREATE2 address is already deployed.
@@ -65,14 +68,11 @@ abstract contract AbstractATKSystemAddonFactoryImplementation is
 
     /// @notice Initializes the abstract airdrop factory.
     /// @dev Sets up access control and system address.
+    /// @param accessManager The address of the access manager
     /// @param systemAddress_ The address of the `IATKSystem` contract.
-    /// @param initialAdmin_ The address of the initial admin.
-    function _initializeAbstractSystemAddonFactory(address systemAddress_, address initialAdmin_) internal {
-        __AccessControl_init();
-
-        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin_);
-        _grantRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, initialAdmin_);
-        _grantRole(ATKSystemRoles.DEPLOYER_ROLE, initialAdmin_);
+    function _initializeAbstractSystemAddonFactory(address accessManager, address systemAddress_) internal {
+        __ATKSystemAccessManaged_init(accessManager);
+        __ERC165_init_unchained();
 
         _systemAddress = systemAddress_;
     }
@@ -120,7 +120,7 @@ abstract contract AbstractATKSystemAddonFactoryImplementation is
         address expectedAddress
     )
         internal
-        onlyRole(ATKSystemRoles.DEPLOYER_ROLE)
+        onlySystemRole(ATKSystemRoles.ADDON_MANAGER_ROLE)
         returns (address deployedAddress)
     {
         if (isFactorySystemAddon[expectedAddress]) {
@@ -165,7 +165,7 @@ abstract contract AbstractATKSystemAddonFactoryImplementation is
         public
         view
         virtual
-        override(AccessControlUpgradeable, ERC165Upgradeable)
+        override(ERC165Upgradeable)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
@@ -175,34 +175,8 @@ abstract contract AbstractATKSystemAddonFactoryImplementation is
     /// @dev Overridden from `Context` and `ERC2771Context` to correctly identify the transaction sender,
     /// accounting for meta-transactions if a trusted forwarder is used.
     /// @return The actual sender of the transaction (`msg.sender` or the relayed sender).
-    function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
-        return super._msgSender();
-    }
-
-    /// @notice Returns the calldata of the current transaction
-    /// @dev Overridden from `Context` and `ERC2771Context` to correctly retrieve the transaction data,
-    /// accounting for meta-transactions.
-    /// @return The actual transaction data (`msg.data` or the relayed data).
-    function _msgData()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (bytes calldata)
-    {
-        return super._msgData();
-    }
-
-    /// @notice Returns the length of the context suffix for meta-transactions
-    /// @dev Overridden from `ERC2771Context` to define the length of the suffix appended to `msg.data` for relayed
-    /// calls.
-    /// @return The length of the context suffix (typically 20 bytes for the sender's address).
-    function _contextSuffixLength()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (uint256)
-    {
-        return super._contextSuffixLength();
+    function _msgSender() internal view override(ERC2771ContextUpgradeable, ATKSystemAccessManaged) returns (address) {
+        return ERC2771ContextUpgradeable._msgSender();
     }
 
     /// @notice Creates a contract identity and registers it with the identity registry

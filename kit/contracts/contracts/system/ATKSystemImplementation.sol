@@ -353,7 +353,7 @@ contract ATKSystemImplementation is
     /// Reverts if any required implementation address (for compliance, identity registry, storage, trusted issuers,
     /// factory)
     /// is not set (i.e., is the zero address) before calling this function.
-    function bootstrap() external nonReentrant onlySystemRole(ATKSystemRoles.DEPLOYER_ROLE) {
+    function bootstrap() external nonReentrant onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE) {
         // Check if system is already bootstrapped.
         if (_bootstrapped) {
             revert SystemAlreadyBootstrapped();
@@ -468,20 +468,16 @@ contract ATKSystemImplementation is
             ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKSystemRoles.TOKEN_FACTORY_REGISTRY_MODULE_ROLE
         );
 
-        IATKSystemAccessManager(_accessManager).setRoleAdmin(
-            ATKSystemRoles.TOKEN_MANAGER_ROLE, ATKSystemRoles.TOKEN_FACTORY_REGISTRY_MODULE_ROLE
-        );
-
         IATKSystemAccessManager(_accessManager).grantRole(
             ATKSystemRoles.TOKEN_FACTORY_REGISTRY_MODULE_ROLE, localTokenFactoryRegistryProxy
         );
 
         IATKSystemAccessManager(_accessManager).setRoleAdmin(
-            ATKSystemRoles.ADDON_MODULE_ROLE, ATKSystemRoles.ADDON_REGISTRY_MODULE_ROLE
+            ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE, ATKSystemRoles.ADDON_FACTORY_REGISTRY_MODULE_ROLE
         );
 
         IATKSystemAccessManager(_accessManager).grantRole(
-            ATKSystemRoles.ADDON_REGISTRY_MODULE_ROLE, localAddonRegistryProxy
+            ATKSystemRoles.ADDON_FACTORY_REGISTRY_MODULE_ROLE, localAddonRegistryProxy
         );
 
 
