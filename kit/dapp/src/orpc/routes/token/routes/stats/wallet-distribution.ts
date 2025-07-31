@@ -2,113 +2,35 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { z } from "zod";
-import { type StatsWalletDistributionOutput } from "./wallet-distribution.schema";
 
 /**
- * GraphQL query to fetch token balances for wallet distribution calculation
- * Retrieves all non-zero balances for a specific token
+ * GraphQL query to fetch token distribution statistics from subgraph
+ * Retrieves pre-calculated distribution segments and holder counts
  */
-const TOKEN_BALANCES_QUERY = theGraphGraphql(`
-  query TokenBalancesForDistribution($tokenId: ID!) {
-    token(id: $tokenId) {
-      balances(where: { value_gt: "0" }) {
-        value
-        account {
-          id
-        }
-      }
+const TOKEN_DISTRIBUTION_STATS_QUERY = theGraphGraphql(`
+  query TokenDistributionStats($tokenId: ID!) {
+    tokenDistributionStatsState(id: $tokenId) {
+      balancesCountSegment1
+      balancesCountSegment2
+      balancesCountSegment3
+      balancesCountSegment4
+      balancesCountSegment5
     }
   }
 `);
 
 // Schema for the GraphQL response
-const TokenBalancesResponseSchema = z.object({
-  token: z
+const TokenDistributionStatsResponseSchema = z.object({
+  tokenDistributionStatsState: z
     .object({
-      balances: z.array(
-        z.object({
-          value: z.string(),
-          account: z.object({
-            id: z.string(),
-          }),
-        })
-      ),
+      balancesCountSegment1: z.number(),
+      balancesCountSegment2: z.number(),
+      balancesCountSegment3: z.number(),
+      balancesCountSegment4: z.number(),
+      balancesCountSegment5: z.number(),
     })
     .nullable(),
 });
-
-/**
- * Helper function to create dynamic distribution buckets based on percentage ranges
- * Creates 5 buckets: 0-2%, 2-10%, 10-20%, 20-40%, 40-100% of max value
- *
- * @param balances - Array of balance values as strings
- * @returns Array of distribution buckets with ranges and counts
- */
-export function createDistributionBuckets(
-  balances: { value: string; account: { id: string } }[]
-): StatsWalletDistributionOutput {
-  if (balances.length === 0) {
-    return { buckets: [], totalHolders: 0 };
-  }
-
-  // Convert string values to BigInt and sort by value
-  const sortedBalances = balances
-    .map((balance) => ({
-      value: BigInt(balance.value.split(".")[0] ?? "0"),
-      account: balance.account.id,
-    }))
-    .filter((b) => b.value > 0n) // Ensure only positive values
-    .sort((a, b) => (a.value > b.value ? -1 : a.value < b.value ? 1 : 0));
-
-  if (sortedBalances.length === 0) {
-    return { buckets: [], totalHolders: 0 };
-  }
-
-  // Calculate the maximum value
-  const maxValue = sortedBalances[0]?.value ?? 0n;
-
-  // Create 5 ranges from 0 to maxValue using percentages
-  const ranges = [
-    0n,
-    (maxValue * 2n) / 100n, // 2% of max
-    (maxValue * 10n) / 100n, // 10% of max
-    (maxValue * 20n) / 100n, // 20% of max
-    (maxValue * 40n) / 100n, // 40% of max
-    maxValue, // 100% of max
-  ];
-
-  // Create buckets for each range
-  const buckets: { range: string; count: number }[] = [];
-
-  for (let i = 0; i < ranges.length - 1; i++) {
-    const minValue = ranges[i];
-    const maxValue = ranges[i + 1];
-
-    // Skip if values are undefined (shouldn't happen with fixed ranges)
-    if (minValue === undefined || maxValue === undefined) {
-      continue;
-    }
-
-    // Count holders that fall within this specific range
-    const count = sortedBalances.filter((b) => {
-      if (i === ranges.length - 2) {
-        // Last bucket includes values equal to max
-        return b.value >= minValue && b.value <= maxValue;
-      }
-      return b.value >= minValue && b.value < maxValue;
-    }).length;
-
-    buckets.push({
-      range: `${minValue.toString()}-${maxValue.toString()}`,
-      count,
-    });
-  }
-
-  return {
-    buckets,
-    totalHolders: sortedBalances.length,
-  };
-}
 
 /**
  * Wallet distribution statistics route handler.
@@ -149,22 +71,35 @@ export const statsWalletDistribution = tokenRouter.token.statsWalletDistribution
   .handler(async ({ context, input }) => {
     // Token context is guaranteed by tokenRouter middleware
 
-    // Fetch token balances from TheGraph
-    const response = await context.theGraphClient.query(TOKEN_BALANCES_QUERY, {
-      input: {
-        tokenId: input.tokenAddress.toLowerCase(),
-      },
-      output: TokenBalancesResponseSchema,
-      error: "Failed to fetch token balance distribution",
-    });
-
-    // Process the balances into distribution buckets
-    const { buckets, totalHolders } = createDistributionBuckets(
-      response.token?.balances || []
+    // Fetch pre-calculated distribution stats from TheGraph
+    const response = await context.theGraphClient.query(
+      TOKEN_DISTRIBUTION_STATS_QUERY,
+      {
+        input: {
+          tokenId: input.tokenAddress.toLowerCase(),
+        },
+        output: TokenDistributionStatsResponseSchema,
+        error: "Failed to fetch token distribution statistics",
+      }
     );
 
+    const stats = response.tokenDistributionStatsState;
+
+    // Convert subgraph segments to API response format (handles null case with ??)
     return {
-      buckets,
-      totalHolders,
+      buckets: [
+        { range: "0-2%", count: stats?.balancesCountSegment1 ?? 0 },
+        { range: "2-10%", count: stats?.balancesCountSegment2 ?? 0 },
+        { range: "10-20%", count: stats?.balancesCountSegment3 ?? 0 },
+        { range: "20-40%", count: stats?.balancesCountSegment4 ?? 0 },
+        { range: "40-100%", count: stats?.balancesCountSegment5 ?? 0 },
+      ],
+      totalHolders: stats
+        ? stats.balancesCountSegment1 +
+          stats.balancesCountSegment2 +  
+          stats.balancesCountSegment3 +
+          stats.balancesCountSegment4 +
+          stats.balancesCountSegment5
+        : 0,
     };
   });
