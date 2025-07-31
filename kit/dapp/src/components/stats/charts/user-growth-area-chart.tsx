@@ -20,7 +20,7 @@ const dataKeys = ["users"];
  * Displays registered users in an area chart format.
  * Shows user growth over time using real API data.
  */
-export function UserGrowthChart() {
+export function UserGrowthAreaChart() {
   const { t } = useTranslation("stats");
 
   // Fetch and transform user growth data with select function

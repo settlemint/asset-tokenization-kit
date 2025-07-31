@@ -26,29 +26,29 @@ const TotalValueResponseSchema = z.object({
 });
 
 /**
- * Total value route handler.
+ * System value route handler.
  *
- * Fetches the total value of all assets in the system specifically for the Value Stats Widget.
+ * Fetches the total value of all assets in the system.
  * This is a lightweight endpoint optimized for frequent updates.
  *
  * The value is returned in the system's base currency and is
  * calculated by the subgraph based on token supplies and prices.
  *
  * Authentication: Required
- * Method: GET /token/stats/total-value
+ * Method: GET /token/stats/system/value
  *
- * @returns Promise<TotalValueMetrics> - Total value in base currency
+ * @returns Promise<SystemValueMetrics> - Total system value in base currency
  * @throws UNAUTHORIZED - If user is not authenticated
  * @throws INTERNAL_SERVER_ERROR - If TheGraph query fails
  *
  * @example
  * ```typescript
  * // Get the total system value
- * const { totalValue } = await orpc.token.statsTotalValue.query();
+ * const { totalValue } = await orpc.system.statsValue.query();
  * console.log(`Total system value: ${totalValue}`);
  * ```
  */
-export const statsTotalValue = authRouter.token.statsTotalValue
+export const statsValue = authRouter.system.statsValue
   .use(systemMiddleware)
   .use(theGraphMiddleware)
   .handler(async ({ context }) => {
