@@ -70,12 +70,9 @@ export function PincodeInput({ masked = true, ...props }: PincodeInputProps) {
       required
     >
       <InputOTPGroup>
-        <SlotComponent index={0} />
-        <SlotComponent index={1} />
-        <SlotComponent index={2} />
-        <SlotComponent index={3} />
-        <SlotComponent index={4} />
-        <SlotComponent index={5} />
+        {Array.from({ length: 6 }).map((_, index) => (
+          <SlotComponent key={index} index={index} className="size-8" />
+        ))}
       </InputOTPGroup>
     </InputOTP>
   );
