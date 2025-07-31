@@ -1,5 +1,6 @@
 import { Address } from "@graphprotocol/graph-ts";
 import { Compliance } from "../../../generated/schema";
+import { Compliance as ComplianceTemplate } from "../../../generated/templates";
 import { fetchAccount } from "../../account/fetch/account";
 
 export function fetchCompliance(address: Address): Compliance {
@@ -9,6 +10,7 @@ export function fetchCompliance(address: Address): Compliance {
     compliance = new Compliance(address);
     compliance.account = fetchAccount(address).id;
     compliance.save();
+    ComplianceTemplate.create(address);
   }
 
   return compliance;

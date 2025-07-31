@@ -1,4 +1,4 @@
-import { AssetDesignerStepSchema } from "@/components/asset-designer/steps";
+import { AssetDesignerStepSchema } from "@/components/asset-designer/asset-designer-wizard/steps";
 import { isRequiredFieldForZodIntersection } from "@/lib/utils/schema-field";
 import type { KeysOfUnion } from "@/lib/utils/union";
 import { TokenCreateSchema } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
@@ -15,7 +15,7 @@ export type AssetDesignerFormInputData = z.input<
 
 export const assetDesignerFormOptions = formOptions({
   defaultValues: {
-    step: "selectAssetType",
+    step: "assetBasics",
     verification: {
       verificationCode: "",
       verificationType: "two-factor",

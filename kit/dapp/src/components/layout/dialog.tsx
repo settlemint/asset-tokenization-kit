@@ -1,8 +1,7 @@
+import { AssetTokenizationKitLogo } from "@/components/asset-tokenization-kit-logo";
 import { LanguageSwitcher } from "@/components/language/language-switcher";
-import { Logo } from "@/components/logo/logo";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import type { ReactNode } from "react";
-import { useTranslation } from "react-i18next";
 
 interface DialogLayoutProps {
   children?: ReactNode;
@@ -12,24 +11,10 @@ interface DialogLayoutProps {
  *
  */
 export function DialogLayout({ children }: DialogLayoutProps) {
-  const { t } = useTranslation(["general"]);
-
   return (
     <div className="DialogLayout flex flex-col h-screen bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')] bg-no-repeat bg-cover">
       <div className="flex-shrink-0 flex justify-between items-center p-8">
-        <div className="flex w-full items-center gap-3">
-          <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
-            <Logo variant="icon" forcedColorMode="dark" />
-          </div>
-          <div className="flex flex-col text-foreground leading-none">
-            <span className="font-bold text-lg text-primary-foreground">
-              {t("general:appName")}
-            </span>
-            <span className="-mt-1 overflow-hidden truncate text-ellipsis text-md text-sm leading-snug text-primary-foreground dark:text-foreground">
-              {t("general:appDescription")}
-            </span>
-          </div>
-        </div>
+        <AssetTokenizationKitLogo className="text-primary-foreground" />
         <div className="flex gap-2">
           <LanguageSwitcher />
           <ThemeToggle />

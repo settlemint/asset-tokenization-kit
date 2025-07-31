@@ -25,7 +25,8 @@
       "disable": "Disable",
       "enable": "Enable",
       "next": "Next",
-      "submit": "Submit"
+      "submit": "Submit",
+      "leave": "Leave"
     },
     "description": "Configure your {{type}} by providing the basic information below.",
     "fields": {
@@ -84,6 +85,12 @@
       }
     },
     "title": "Create {{type}}"
+  },
+  "leave-confirmation": {
+    "title": "Leave asset designer?",
+    "description": "Your progress will be lost if you leave now. Any information you've entered won't be saved.",
+    "stay": "Stay",
+    "leave": "Leave"
   },
   "messages": {
     "comingSoon": "Coming soon!",
