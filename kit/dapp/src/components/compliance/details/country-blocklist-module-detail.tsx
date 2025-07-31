@@ -10,7 +10,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-export function CountryAllowlistModuleDetail({
+export function CountryBlocklistModuleDetail({
   typeId,
   module,
   isEnabled,
@@ -18,13 +18,13 @@ export function CountryAllowlistModuleDetail({
   onEnable,
   onDisable,
   onClose,
-}: ComplianceModuleDetailProps<"CountryAllowListComplianceModule">) {
+}: ComplianceModuleDetailProps<"CountryBlockListComplianceModule">) {
   const { t } = useTranslation(["compliance-modules", "form"]);
   const { getCountryByNumericCode } = useCountries();
 
   const config =
     complianceModuleConfig[
-      ComplianceTypeIdEnum.CountryAllowListComplianceModule
+      ComplianceTypeIdEnum.CountryBlockListComplianceModule
     ];
 
   // Convert numeric country codes to alpha2 codes for CountryMultiselect
@@ -90,7 +90,7 @@ export function CountryAllowlistModuleDetail({
                 <config.icon className="w-5 h-5" />
               </div>
               <h2 className="text-2xl font-semibold leading-none tracking-tight">
-                {t("modules.countryAllowList.title")}
+                {t("modules.countryBlockList.title")}
               </h2>
             </div>
             <div>
@@ -114,7 +114,7 @@ export function CountryAllowlistModuleDetail({
           </div>
           <div>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              {t("modules.countryAllowList.description")}
+              {t("modules.countryBlockList.description")}
             </p>
           </div>
           {isEnabled && (

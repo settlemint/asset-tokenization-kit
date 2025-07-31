@@ -1,9 +1,5 @@
 import MultipleSelector from "@/components/ui/multiselect";
-import {
-  getNumericCountryCode,
-  getSupportedLocales,
-} from "@/lib/zod/validators/iso-country-code";
-import countries from "i18n-iso-countries";
+import { useCountries } from "@/hooks/use-countries";
 import { useTranslation } from "react-i18next";
 
 interface CountryMultiselectProps {
@@ -15,20 +11,10 @@ export function CountryMultiselect({
   value,
   onChange,
 }: CountryMultiselectProps) {
-  const { i18n, t } = useTranslation("country-multiselect");
+  const { t } = useTranslation("country-multiselect");
+  const { getNumericCodeByName, getCountryOptions } = useCountries();
 
-  // TODO: duplicated in country field too, make it a hook?
-  // Map locale codes like "en-US" to "en" and fallback to "en" if not supported
-  const lang = i18n.language.split("-")[0];
-  const baseLocale = getSupportedLocales().find((l) => l === lang) ?? "en";
-
-  const countriesMap = countries.getNames(baseLocale, {
-    select: "official",
-  });
-  const countriesOptions = Object.entries(countriesMap).map(([, value]) => ({
-    value: value,
-    label: value,
-  }));
+  const countriesOptions = getCountryOptions("name");
 
   const valueOptions = value.map(({ name }) => {
     return {
@@ -41,7 +27,7 @@ export function CountryMultiselect({
     onChange(
       options.map((option) => ({
         name: option.value,
-        numericCode: getNumericCountryCode(option.value, baseLocale) ?? "",
+        numericCode: getNumericCodeByName(option.value) ?? "",
       }))
     );
   };
