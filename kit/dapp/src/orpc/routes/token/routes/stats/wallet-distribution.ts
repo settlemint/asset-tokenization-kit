@@ -44,7 +44,7 @@ const TokenBalancesResponseSchema = z.object({
  * @param balances - Array of balance values as strings
  * @returns Array of distribution buckets with ranges and counts
  */
-function createDistributionBuckets(
+export function createDistributionBuckets(
   balances: { value: string; account: { id: string } }[]
 ): StatsWalletDistributionOutput {
   if (balances.length === 0) {

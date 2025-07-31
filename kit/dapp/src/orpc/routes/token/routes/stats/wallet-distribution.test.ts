@@ -17,6 +17,7 @@ import {
   StatsWalletDistributionOutputSchema,
   type StatsWalletDistributionOutput,
 } from "./wallet-distribution.schema";
+import { createDistributionBuckets } from "./wallet-distribution";
 
 // Logger is mocked via vitest.config.ts alias
 
@@ -138,67 +139,6 @@ describe("Token Wallet Distribution Schema Validation", () => {
 });
 
 describe("Distribution Bucket Creation Logic", () => {
-  // Import the processing function from the module
-  // Note: In a real implementation, you'd export this function for testing
-  const createDistributionBuckets = (
-    balances: { value: string; account: { id: string } }[]
-  ): {
-    buckets: { range: string; count: number }[];
-    totalHolders: number;
-  } => {
-    if (balances.length === 0) {
-      return { buckets: [], totalHolders: 0 };
-    }
-
-    // Convert string values to numbers and sort by value
-    const sortedBalances = balances
-      .map((balance) => ({
-        value: Number.parseFloat(balance.value),
-        account: balance.account.id,
-      }))
-      .filter((b) => b.value > 0)
-      .sort((a, b) => b.value - a.value);
-
-    if (sortedBalances.length === 0) {
-      return { buckets: [], totalHolders: 0 };
-    }
-
-    const maxValue = Math.max(...sortedBalances.map((b) => b.value));
-    const ranges = [
-      0,
-      maxValue * 0.02,
-      maxValue * 0.1,
-      maxValue * 0.2,
-      maxValue * 0.4,
-      maxValue,
-    ];
-
-    const buckets: { range: string; count: number }[] = [];
-    for (let i = 0; i < ranges.length - 1; i++) {
-      const minValue = ranges[i];
-      const maxValue = ranges[i + 1];
-      if (minValue === undefined || maxValue === undefined) {
-        continue;
-      }
-
-      const count = sortedBalances.filter((b) => {
-        if (i === ranges.length - 2) {
-          return b.value >= minValue && b.value <= maxValue;
-        }
-        return b.value >= minValue && b.value < maxValue;
-      }).length;
-
-      buckets.push({
-        range: `${minValue.toFixed(0)}-${maxValue.toFixed(0)}`,
-        count,
-      });
-    }
-
-    return {
-      buckets,
-      totalHolders: sortedBalances.length,
-    };
-  };
 
   describe("createDistributionBuckets", () => {
     it("should create correct buckets for evenly distributed balances", () => {
