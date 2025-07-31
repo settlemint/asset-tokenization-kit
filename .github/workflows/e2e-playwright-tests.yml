@@ -177,6 +177,17 @@ jobs:
             kit/dapp/server.log
           retention-days: 1
 
+      - name: Send Slack notification
+        if: ${{ !cancelled() }}
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          webhook: ${{ env.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "${{ steps.playwright-ui.outcome == 'success' && ':white_check_mark: E2E UI Tests Passed' || ':x: E2E UI Tests Failed' }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run Details>"
+            }
+
       - name: Docker compose logs on failure
         if: failure()
         run: |
