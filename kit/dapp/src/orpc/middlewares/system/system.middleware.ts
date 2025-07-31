@@ -10,6 +10,10 @@ import {
   getEthereumAddress,
   type EthereumAddress,
 } from "@/lib/zod/validators/ethereum-address";
+import {
+  parseSystemComponent,
+  getComponentId,
+} from "@/orpc/helpers/system-component-helpers";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { read } from "@/orpc/routes/settings/routes/settings.read";
 import { call } from "@orpc/server";
@@ -239,39 +243,14 @@ export const getSystemContext = async (
     tokenFactories,
     systemAddons,
     complianceModules,
-    systemAccessManager: system.systemAccessManager
-      ? {
-          id: getEthereumAddress(
-            (system.systemAccessManager as { id: string }).id
-          ),
-          accessControl: (
-            system.systemAccessManager as { accessControl: AccessControl }
-          ).accessControl,
-        }
-      : null,
-    identityFactory: system.identityFactory
-      ? getEthereumAddress(system.identityFactory?.id)
-      : null,
-    tokenFactoryRegistry: system.tokenFactoryRegistry
-      ? getEthereumAddress(system.tokenFactoryRegistry.id)
-      : null,
-    complianceModuleRegistry: system.complianceModuleRegistry
-      ? getEthereumAddress(system.complianceModuleRegistry.id)
-      : null,
-    identityRegistryStorage: system.identityRegistryStorage
-      ? getEthereumAddress(system.identityRegistryStorage.id)
-      : null,
-    identityRegistry: system.identityRegistry
-      ? getEthereumAddress(system.identityRegistry.id)
-      : null,
-    trustedIssuersRegistry: system.trustedIssuersRegistry
-      ? getEthereumAddress(system.trustedIssuersRegistry.id)
-      : null,
-    topicSchemeRegistry: system.topicSchemeRegistry
-      ? getEthereumAddress(system.topicSchemeRegistry?.id)
-      : null,
-    systemAddonRegistry: system.systemAddonRegistry
-      ? getEthereumAddress(system.systemAddonRegistry.id)
-      : null,
+    systemAccessManager: parseSystemComponent(system.systemAccessManager),
+    identityFactory: getComponentId(system.identityFactory),
+    tokenFactoryRegistry: getComponentId(system.tokenFactoryRegistry),
+    complianceModuleRegistry: getComponentId(system.complianceModuleRegistry),
+    identityRegistryStorage: getComponentId(system.identityRegistryStorage),
+    identityRegistry: getComponentId(system.identityRegistry),
+    trustedIssuersRegistry: getComponentId(system.trustedIssuersRegistry),
+    topicSchemeRegistry: getComponentId(system.topicSchemeRegistry),
+    systemAddonRegistry: getComponentId(system.systemAddonRegistry),
   };
 };
