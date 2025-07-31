@@ -92,19 +92,19 @@ interface IATKCompliance is ISMARTCompliance {
     // --- Global Compliance Module Management Functions ---
 
     /// @notice Adds a global compliance module that applies to all tokens
-    /// @dev Only addresses with GLOBAL_COMPLIANCE_MANAGER_ROLE can call this function.
+    /// @dev Only addresses with COMPLIANCE_MANAGER_ROLE can call this function.
     /// This module will be executed in addition to token-specific modules for all compliance checks.
     /// @param module The address of the compliance module to add
     /// @param params The ABI-encoded parameters for the module
     function addGlobalComplianceModule(address module, bytes calldata params) external;
 
     /// @notice Removes a specific global compliance module
-    /// @dev Only addresses with GLOBAL_COMPLIANCE_MANAGER_ROLE can call this function.
+    /// @dev Only addresses with COMPLIANCE_MANAGER_ROLE can call this function.
     /// @param module The address of the compliance module to remove
     function removeGlobalComplianceModule(address module) external;
 
     /// @notice Updates parameters for an existing global compliance module
-    /// @dev Only addresses with GLOBAL_COMPLIANCE_MANAGER_ROLE can call this function.
+    /// @dev Only addresses with COMPLIANCE_MANAGER_ROLE can call this function.
     /// @param module The address of the compliance module to update
     /// @param params The new ABI-encoded parameters for the module
     function setParametersForGlobalComplianceModule(address module, bytes calldata params) external;

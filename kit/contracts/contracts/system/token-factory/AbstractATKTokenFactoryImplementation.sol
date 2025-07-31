@@ -19,6 +19,7 @@ import { ATKRoles } from "../../assets/ATKRoles.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.sol";
+import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
 
 /// @title ATKTokenFactory - Contract for managing token registries with role-based access control
 /// @author SettleMint
@@ -30,7 +31,7 @@ import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.s
 abstract contract AbstractATKTokenFactoryImplementation is
     ERC2771ContextUpgradeable,
     ERC165Upgradeable,
-    AccessControlUpgradeable,
+    ATKSystemAccessManaged,
     IATKTokenFactory,
     IWithTypeIdentifier
 {
@@ -61,31 +62,28 @@ abstract contract AbstractATKTokenFactoryImplementation is
     }
 
     /// @inheritdoc IATKTokenFactory
+    /// @param accessManager The address of the access manager
     /// @param systemAddress The address of the `IATKSystem` contract.
     /// @param tokenImplementation_ The initial address of the token implementation contract.
-    /// @param initialAdmin The address to be granted the DEFAULT_ADMIN_ROLE and DEPLOYER_ROLE.
     function initialize(
+        address accessManager,
         address systemAddress,
-        address tokenImplementation_,
-        address initialAdmin
+        address tokenImplementation_
     )
         public
         virtual
         override
         initializer
     {
-        if (initialAdmin == address(0)) {
-            revert InvalidTokenAddress(); // Re-using for admin address, consider a more specific error if needed
-        }
         if (
             tokenImplementation_ == address(0)
                 || !IERC165(tokenImplementation_).supportsInterface(type(ISMART).interfaceId)
         ) {
             revert InvalidImplementationAddress();
         }
-        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
-        _grantRole(ATKSystemRoles.DEPLOYER_ROLE, initialAdmin);
-        _grantRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, initialAdmin);
+
+        __ATKSystemAccessManaged_init(accessManager);
+        __ERC165_init_unchained();
 
         _tokenImplementation = tokenImplementation_;
         _systemAddress = systemAddress;
@@ -108,7 +106,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
     function updateTokenImplementation(address newImplementation)
         public
         virtual
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
     {
         if (newImplementation == address(0)) {
             revert InvalidImplementationAddress();
@@ -223,7 +221,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
     function _createAccessManager(bytes memory accessManagerSaltInputData)
         internal
         virtual
-        onlyRole(ATKSystemRoles.DEPLOYER_ROLE)
+        onlySystemRole(ATKSystemRoles.TOKEN_MANAGER_ROLE)
         returns (ISMARTTokenAccessManager)
     {
         // Calculate salt and creation code once
@@ -269,7 +267,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
         uint16 country
     )
         internal
-        onlyRole(ATKSystemRoles.DEPLOYER_ROLE)
+        onlySystemRole(ATKSystemRoles.TOKEN_MANAGER_ROLE)
         returns (address deployedAddress, address deployedTokenIdentityAddress)
     {
         // Combine calculation to reduce stack variables
@@ -378,7 +376,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
         public
         view
         virtual
-        override(AccessControlUpgradeable, ERC165Upgradeable, IERC165)
+        override(ERC165Upgradeable, IERC165)
         returns (bool)
     {
         return interfaceId == type(IATKTokenFactory).interfaceId || super.supportsInterface(interfaceId);
@@ -390,33 +388,9 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @dev Overrides the default implementation of _msgSender() to return the actual sender
     ///      instead of the forwarder address when using ERC2771 context.
     /// @return The address of the message sender
-    function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
-        return super._msgSender();
+    function _msgSender() internal view override(ERC2771ContextUpgradeable, ATKSystemAccessManaged) returns (address) {
+        return ERC2771ContextUpgradeable._msgSender();
     }
 
-    /// @notice Returns the calldata of the current message
-    /// @dev Overrides the default implementation of _msgData() to return the actual calldata
-    ///      instead of the forwarder calldata when using ERC2771 context.
-    /// @return The calldata of the message
-    function _msgData()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (bytes calldata)
-    {
-        return super._msgData();
-    }
 
-    /// @notice Returns the length of the context suffix in the calldata
-    /// @dev Overrides the default implementation of _contextSuffixLength() to return the actual suffix length
-    ///      instead of the forwarder suffix length when using ERC2771 context.
-    /// @return The length of the context suffix
-    function _contextSuffixLength()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (uint256)
-    {
-        return super._contextSuffixLength();
-    }
 }

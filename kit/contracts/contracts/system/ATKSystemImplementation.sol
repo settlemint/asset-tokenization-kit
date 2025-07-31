@@ -468,6 +468,10 @@ contract ATKSystemImplementation is
             ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKSystemRoles.TOKEN_FACTORY_REGISTRY_MODULE_ROLE
         );
 
+        IATKSystemAccessManager(_accessManager).setRoleAdmin(
+            ATKSystemRoles.TOKEN_MANAGER_ROLE, ATKSystemRoles.TOKEN_FACTORY_REGISTRY_MODULE_ROLE
+        );
+
         IATKSystemAccessManager(_accessManager).grantRole(
             ATKSystemRoles.TOKEN_FACTORY_REGISTRY_MODULE_ROLE, localTokenFactoryRegistryProxy
         );

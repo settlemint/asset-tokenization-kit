@@ -101,7 +101,7 @@ contract ATKTokenFactoryRegistryImplementation is
         tokenFactoryImplementationsByType[factoryTypeHash] = _factoryImplementation;
 
         bytes memory tokenFactoryData =
-            abi.encodeWithSelector(IATKTokenFactory.initialize.selector, _system, _tokenImplementation, _msgSender());
+            abi.encodeWithSelector(IATKTokenFactory.initialize.selector, _accessManager, _system, _tokenImplementation);
         address _tokenFactoryProxy =
             address(new ATKTypedImplementationProxy(address(this), factoryTypeHash, tokenFactoryData));
 
