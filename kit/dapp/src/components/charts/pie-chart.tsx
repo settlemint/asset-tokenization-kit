@@ -14,9 +14,10 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { PieChart as PieChartIcon } from "lucide-react";
-import type { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import { Cell, Pie, PieChart } from "recharts";
+import { ChartEmptyState } from "./chart-empty-state";
+import { ChartSkeleton } from "./chart-skeleton";
 
 interface PieChartProps {
   title: string;
@@ -27,6 +28,9 @@ interface PieChartProps {
   nameKey: string;
   className?: string;
   footer?: ReactNode;
+  isLoading?: boolean;
+  emptyMessage?: string;
+  emptyDescription?: string;
 }
 
 export function PieChartComponent({
@@ -37,32 +41,37 @@ export function PieChartComponent({
   dataKey,
   nameKey,
   footer,
+  className,
+  isLoading = false,
+  emptyMessage,
+  emptyDescription,
 }: PieChartProps) {
   // Filter data to only show non-zero values
-  const filteredData = data.filter((d) => Number(d[dataKey]) !== 0);
+  const filteredData = useMemo(
+    () => data.filter((d) => Number(d[dataKey]) !== 0),
+    [data, dataKey]
+  );
+
+  // Show loading state
+  if (isLoading) {
+    return <ChartSkeleton />;
+  }
 
   if (filteredData.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{title}</CardTitle>
-          {description && <CardDescription>{description}</CardDescription>}
-        </CardHeader>
-        <CardContent>
-          <div className="flex h-[200px] flex-col items-center justify-center gap-2 text-center">
-            <PieChartIcon className="h-8 w-8 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">
-              No data available
-            </span>
-          </div>
-        </CardContent>
-        {footer && <CardFooter>{footer}</CardFooter>}
-      </Card>
+      <ChartEmptyState
+        title={title}
+        description={description}
+        className={className}
+        footer={footer}
+        emptyMessage={emptyMessage}
+        emptyDescription={emptyDescription}
+      />
     );
   }
 
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}

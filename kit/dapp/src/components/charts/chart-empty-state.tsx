@@ -1,0 +1,84 @@
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { PieChart as PieChartIcon } from "lucide-react";
+import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
+
+interface ChartEmptyStateProps {
+  title: string;
+  description?: string;
+  className?: string;
+  footer?: ReactNode;
+  isLoading?: boolean;
+  emptyMessage?: string;
+  emptyDescription?: string;
+}
+
+export function ChartEmptyState({
+  title,
+  description,
+  className,
+  footer,
+  isLoading = false,
+  emptyMessage,
+  emptyDescription,
+}: ChartEmptyStateProps) {
+  const { t } = useTranslation("stats");
+
+  if (isLoading) {
+    return (
+      <Card className={className}>
+        <CardHeader>
+          <Skeleton className="h-6 w-48" />
+          {description && <Skeleton className="h-4 w-64" />}
+        </CardHeader>
+        <CardContent>
+          <div className="flex h-[200px] flex-col items-center justify-center gap-4">
+            <Skeleton className="h-32 w-32 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+          </div>
+        </CardContent>
+        {footer && (
+          <CardFooter>
+            <Skeleton className="h-4 w-full" />
+          </CardFooter>
+        )}
+      </Card>
+    );
+  }
+
+  return (
+    <Card className={className}>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        {description && <CardDescription>{description}</CardDescription>}
+      </CardHeader>
+      <CardContent>
+        <div className="flex h-[200px] flex-col items-center justify-center gap-2 text-center">
+          <PieChartIcon className="h-8 w-8 text-muted-foreground" />
+          <div className="space-y-1">
+            <span className="text-sm text-muted-foreground">
+              {emptyMessage ?? t("charts.common.noData")}
+            </span>
+            {(emptyDescription ?? t("charts.common.noDataDescription")) && (
+              <p className="text-xs text-muted-foreground/80">
+                {emptyDescription ?? t("charts.common.noDataDescription")}
+              </p>
+            )}
+          </div>
+        </div>
+      </CardContent>
+      {footer && <CardFooter>{footer}</CardFooter>}
+    </Card>
+  );
+}

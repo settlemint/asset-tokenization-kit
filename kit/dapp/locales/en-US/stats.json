@@ -1,5 +1,9 @@
 {
   "charts": {
+    "common": {
+      "noData": "No data available",
+      "noDataDescription": "There is currently no data to display for this chart"
+    },
     "assetActivity": {
       "description": "Asset transaction activity",
       "title": "Asset activity"

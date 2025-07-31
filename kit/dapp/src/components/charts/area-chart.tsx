@@ -11,8 +11,9 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { PieChart as PieChartIcon } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
+import { ChartEmptyState } from "./chart-empty-state";
+import { ChartSkeleton } from "./chart-skeleton";
 
 export type AreaChartData = Record<string, string | number>;
 
@@ -28,6 +29,9 @@ export interface AreaChartComponentProps {
   stacked?: boolean;
   className?: string;
   tickFormatter?: (value: string) => string;
+  isLoading?: boolean;
+  emptyMessage?: string;
+  emptyDescription?: string;
 }
 
 /**
@@ -53,6 +57,9 @@ export function AreaChartComponent({
   stacked = false,
   className,
   tickFormatter,
+  isLoading = false,
+  emptyMessage,
+  emptyDescription,
 }: AreaChartComponentProps) {
   // Simple formatter function - React Compiler will optimize this
   const legendFormatter = (value: string): string => {
@@ -60,23 +67,21 @@ export function AreaChartComponent({
     return typeof label === "string" ? label : value;
   };
 
+  // Show loading state
+  if (isLoading) {
+    return <ChartSkeleton />;
+  }
+
   // Show empty state if no data
   if (data.length === 0) {
     return (
-      <Card className={className}>
-        <CardHeader>
-          <CardTitle>{title}</CardTitle>
-          {description && <CardDescription>{description}</CardDescription>}
-        </CardHeader>
-        <CardContent>
-          <div className="flex h-[200px] flex-col items-center justify-center gap-2 text-center">
-            <PieChartIcon className="h-8 w-8 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">
-              No data available
-            </span>
-          </div>
-        </CardContent>
-      </Card>
+      <ChartEmptyState
+        title={title}
+        description={description}
+        className={className}
+        emptyMessage={emptyMessage}
+        emptyDescription={emptyDescription}
+      />
     );
   }
 
