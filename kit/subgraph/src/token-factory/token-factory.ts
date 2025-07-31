@@ -45,6 +45,7 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
   if (token.deployedInTransaction.equals(Bytes.empty())) {
     token.deployedInTransaction = event.transaction.hash;
   }
+  token.system = tokenFactory.system;
   token.tokenFactory = tokenFactory.id;
   token.type = getTokenType(tokenFactory);
   token.createdAt = event.block.timestamp;

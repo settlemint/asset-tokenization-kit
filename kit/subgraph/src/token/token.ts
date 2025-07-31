@@ -99,10 +99,17 @@ export function handleMintCompleted(event: MintCompleted): void {
   const amountDelta = toBigDecimal(event.params.amount, token.decimals);
 
   // Update system stats
-  updateSystemStatsForSupplyChange(token, amountDelta);
+  const totalSystemValueInBaseCurrency = updateSystemStatsForSupplyChange(
+    token,
+    amountDelta
+  );
 
   // Update token type stats
-  updateTokenTypeStatsForSupplyChange(token, amountDelta);
+  updateTokenTypeStatsForSupplyChange(
+    totalSystemValueInBaseCurrency,
+    token,
+    amountDelta
+  );
 
   // Update account stats
   updateAccountStatsForBalanceChange(event.params.to, token, amountDelta);

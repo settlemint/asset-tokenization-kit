@@ -86,10 +86,19 @@ export function handleClaimAdded(event: ClaimAdded): void {
     const token = fetchTokenByIdentity(identity);
     if (token) {
       const newPrice = getTokenBasePrice(identityClaim.id);
-      updateSystemStatsForPriceChange(token, BigDecimal.zero(), newPrice);
+      const totalSystemValueInBaseCurrency = updateSystemStatsForPriceChange(
+        token,
+        BigDecimal.zero(),
+        newPrice
+      );
 
       // Update token type stats for price change
-      updateTokenTypeStatsForPriceChange(token, BigDecimal.zero(), newPrice);
+      updateTokenTypeStatsForPriceChange(
+        totalSystemValueInBaseCurrency,
+        token,
+        BigDecimal.zero(),
+        newPrice
+      );
 
       // Update account stats for all token holders
       updateAccountStatsForAllTokenHolders(token, BigDecimal.zero(), newPrice);
@@ -123,10 +132,19 @@ export function handleClaimChanged(event: ClaimChanged): void {
     // Update system stats for price change
     if (token) {
       const newPrice = getTokenBasePrice(identityClaim.id);
-      updateSystemStatsForPriceChange(token, oldPrice, newPrice);
+      const totalSystemValueInBaseCurrency = updateSystemStatsForPriceChange(
+        token,
+        oldPrice,
+        newPrice
+      );
 
       // Update token type stats for price change
-      updateTokenTypeStatsForPriceChange(token, oldPrice, newPrice);
+      updateTokenTypeStatsForPriceChange(
+        totalSystemValueInBaseCurrency,
+        token,
+        oldPrice,
+        newPrice
+      );
 
       // Update account stats for all token holders
       updateAccountStatsForAllTokenHolders(token, oldPrice, newPrice);
@@ -155,7 +173,7 @@ export function handleClaimRemoved(event: ClaimRemoved): void {
 
     // Update system stats for price change (price goes to 0 when claim removed)
     if (token && oldPrice.notEqual(BigDecimal.zero())) {
-      updateSystemStatsForPriceChange(
+      const totalSystemValueInBaseCurrency = updateSystemStatsForPriceChange(
         token,
         oldPrice,
         BigDecimal.zero() // Price becomes 0 when claim is removed
@@ -163,6 +181,7 @@ export function handleClaimRemoved(event: ClaimRemoved): void {
 
       // Update token type stats for price change
       updateTokenTypeStatsForPriceChange(
+        totalSystemValueInBaseCurrency,
         token,
         oldPrice,
         BigDecimal.zero() // Price becomes 0 when claim is removed

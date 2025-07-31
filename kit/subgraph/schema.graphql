@@ -808,13 +808,17 @@ type EventStats
 
 # Persistent entity to store current token type state for efficient calculations
 type TokenTypeStatsState @entity(immutable: false) {
-  id: String! # Token type name
+  id: Bytes!
+   # System
+  system: System!
+  # Token type
   type: String!
-
   # Count of tokens of this type
   count: Int!
   # Total value of all tokens of this type in base currency
   totalValueInBaseCurrency: BigDecimal!
+  # Percentage of total supply (eg bonds take 8% of the total supply accross all types)
+  percentageOfTotalSupply: BigDecimal!
 }
 
 # Total count of tokens by type
@@ -822,6 +826,7 @@ type TokenTypeStatsData @entity(timeseries: true) {
   id: Int8!
   timestamp: Timestamp!
 
+  system: System!
   type: String!
 
   count: Int!
@@ -834,6 +839,7 @@ type TokenTypeStats
   id: Int8!
   timestamp: Timestamp!
 
+  system: System!
   type: String!
 
   count: Int! @aggregate(fn: "last", arg: "count")

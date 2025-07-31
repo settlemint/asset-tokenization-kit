@@ -44,7 +44,7 @@ export function getTokenBasePrice(basePriceClaim: Bytes | null): BigDecimal {
 export function updateSystemStatsForSupplyChange(
   token: Token,
   supplyDelta: BigDecimal
-): void {
+): BigDecimal {
   const systemAddress = getSystemAddress(token);
   const state = fetchSystemStatsState(systemAddress);
   const basePrice = getTokenBasePrice(token.basePriceClaim);
@@ -53,7 +53,7 @@ export function updateSystemStatsForSupplyChange(
   const valueDelta = supplyDelta.times(basePrice);
 
   if (valueDelta.equals(BigDecimal.zero())) {
-    return;
+    return state.totalValueInBaseCurrency;
   }
 
   // Update total value
@@ -64,6 +64,8 @@ export function updateSystemStatsForSupplyChange(
 
   // Create timeseries entry
   trackSystemStats(systemAddress, state.totalValueInBaseCurrency);
+
+  return state.totalValueInBaseCurrency;
 }
 
 /**
@@ -74,7 +76,7 @@ export function updateSystemStatsForPriceChange(
   token: Token,
   oldPrice: BigDecimal,
   newPrice: BigDecimal
-): void {
+): BigDecimal {
   const systemAddress = getSystemAddress(token);
   const state = fetchSystemStatsState(systemAddress);
 
@@ -84,7 +86,7 @@ export function updateSystemStatsForPriceChange(
   const valueDelta = newValue.minus(oldValue);
 
   if (valueDelta.equals(BigDecimal.zero())) {
-    return;
+    return state.totalValueInBaseCurrency;
   }
 
   // Update total value
@@ -95,6 +97,8 @@ export function updateSystemStatsForPriceChange(
 
   // Create timeseries entry
   trackSystemStats(systemAddress, state.totalValueInBaseCurrency);
+
+  return state.totalValueInBaseCurrency;
 }
 
 /**
