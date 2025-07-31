@@ -10,8 +10,9 @@ import { IdentityUtils } from "../utils/IdentityUtils.sol";
 import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 import { ISMARTCompliance } from "../../contracts/smart/interface/ISMARTCompliance.sol";
 import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
-import { ATKRoles } from "../../contracts/assets/ATKRoles.sol";
-import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
+import { ATKRoles as AssetATKRoles } from "../../contracts/assets/ATKRoles.sol";
+import { ATKRoles as SystemATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../contracts/system/ATKRoles.sol";
+import { ATKSystemImplementation } from "../../contracts/system/ATKSystemImplementation.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ATKForwarder } from "../../contracts/vendor/ATKForwarder.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
@@ -72,14 +73,11 @@ abstract contract AbstractATKAssetTest is Test {
 
         // Grant necessary roles to the owner in the system access manager
         vm.startPrank(platformAdmin);
-        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
-            ATKSystemRoles.DEPLOYER_ROLE, _owner
+        systemUtils.systemAccessManager().grantRole(
+            ATKPeopleRoles.TOKEN_MANAGER_ROLE, _owner
         );
-        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
-            ATKSystemRoles.TOKEN_MANAGER_ROLE, _owner
-        );
-        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
-            ATKSystemRoles.ADDON_MANAGER_ROLE, _owner
+        systemUtils.systemAccessManager().grantRole(
+            ATKPeopleRoles.ADDON_MANAGER_ROLE, _owner
         );
         vm.stopPrank();
     }

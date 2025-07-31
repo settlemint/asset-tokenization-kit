@@ -9,6 +9,7 @@ import { IATKXvPSettlementFactory } from "../../../contracts/addons/xvp/IATKXvPS
 import { IATKXvPSettlement } from "../../../contracts/addons/xvp/IATKXvPSettlement.sol";
 import { ERC20Mock } from "../../mocks/ERC20Mock.sol";
 import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../../contracts/system/ATKRoles.sol";
+import { ATKSystemImplementation } from "../../../contracts/system/ATKSystemImplementation.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 /// @title XvP Settlement Test
@@ -73,14 +74,9 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         );
 
         // Grant DEPLOYER_ROLE to users who need to create settlements
-        IAccessControl(address(factory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, admin);
-        IAccessControl(address(factory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, user1);
-        IAccessControl(address(factory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, user2);
-
-        // Grant SYSTEM_MODULE_ROLE to the factory so it can access compliance functions like addToBypassList
-        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
-            ATKSystemRoles.SYSTEM_MODULE_ROLE, address(factory)
-        );
+        systemUtils.systemAccessManager().grantRole(ATKPeopleRoles.ADDON_MANAGER_ROLE, admin);
+        systemUtils.systemAccessManager().grantRole(ATKPeopleRoles.ADDON_MANAGER_ROLE, user1);
+        systemUtils.systemAccessManager().grantRole(ATKPeopleRoles.ADDON_MANAGER_ROLE, user2);
 
         vm.stopPrank();
 
@@ -96,7 +92,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
     /// @notice Grant DEPLOYER_ROLE to a user so they can create settlements
     function grantDeployerRole(address user) internal {
         vm.prank(platformAdmin);
-        IAccessControl(address(factory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, user);
+        IAccessControl(address(factory)).grantRole(ATKPeopleRoles.ADDON_MANAGER_ROLE, user);
     }
 
     // ========================================================================
