@@ -79,7 +79,6 @@ export const statsWalletDistribution = tokenRouter.token.statsWalletDistribution
           tokenId: input.tokenAddress.toLowerCase(),
         },
         output: TokenDistributionStatsResponseSchema,
-        error: "Failed to fetch token distribution statistics",
       }
     );
 
@@ -96,7 +95,7 @@ export const statsWalletDistribution = tokenRouter.token.statsWalletDistribution
       ],
       totalHolders: stats
         ? stats.balancesCountSegment1 +
-          stats.balancesCountSegment2 +  
+          stats.balancesCountSegment2 +
           stats.balancesCountSegment3 +
           stats.balancesCountSegment4 +
           stats.balancesCountSegment5
