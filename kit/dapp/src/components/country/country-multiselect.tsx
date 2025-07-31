@@ -27,7 +27,7 @@ export function CountryMultiselect({
     onChange(
       options.map((option) => ({
         name: option.value,
-        numericCode: getNumericCodeByName(option.value) ?? "",
+        numericCode: getNumericCodeByName(option.value) ?? "0",
       }))
     );
   };
