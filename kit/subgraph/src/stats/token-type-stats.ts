@@ -5,7 +5,10 @@ import {
   TokenTypeStatsState,
 } from "../../generated/schema";
 import { fetchSystem } from "../system/fetch/system";
-import { getSystemAddress, getTokenBasePrice } from "./utils/stats-utils";
+import {
+  getTokenBasePrice,
+  getTokenSystemAddress,
+} from "../token/utils/token-utils";
 
 /**
  * State management for token type statistics
@@ -113,7 +116,7 @@ export function updateTokenTypeStatsForPriceChange(
  * Fetch or create TokenTypeStatsState
  */
 function fetchTokenTypeStatsState(token: Token): TokenTypeStatsState {
-  const system = getSystemAddress(token);
+  const system = getTokenSystemAddress(token);
   const id = system.concat(Bytes.fromUTF8(token.type));
   let state = TokenTypeStatsState.load(id);
 

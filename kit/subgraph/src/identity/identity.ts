@@ -13,17 +13,14 @@ import {
 } from "../../generated/templates/Identity/Identity";
 import { fetchEvent } from "../event/fetch/event";
 import { updateAccountStatsForPriceChange } from "../stats/account-stats";
-import {
-  getTokenBasePrice,
-  updateSystemStatsForPriceChange,
-} from "../stats/system-stats";
+import { updateSystemStatsForPriceChange } from "../stats/system-stats";
 import { updateTokenTypeStatsForPriceChange } from "../stats/token-type-stats";
 import {
   isCollateralClaim,
   updateCollateral,
 } from "../token-extensions/collateral/utils/collateral-utils";
 import { fetchTokenByIdentity } from "../token/fetch/token";
-import { updateBasePrice } from "../token/utils/token-utils";
+import { getTokenBasePrice, updateBasePrice } from "../token/utils/token-utils";
 import { fetchIdentity } from "./fetch/identity";
 import { fetchIdentityClaim } from "./fetch/identity-claim";
 import { decodeClaimValues } from "./utils/decode-claim";

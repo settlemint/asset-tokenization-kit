@@ -5,7 +5,10 @@ import {
   Token,
 } from "../../generated/schema";
 import { fetchSystem } from "../system/fetch/system";
-import { getSystemAddress, getTokenBasePrice } from "./utils/stats-utils";
+import {
+  getTokenBasePrice,
+  getTokenSystemAddress,
+} from "../token/utils/token-utils";
 
 /**
  * Update system stats when token supply changes (mint/burn)
@@ -15,7 +18,7 @@ export function updateSystemStatsForSupplyChange(
   token: Token,
   supplyDelta: BigDecimal
 ): BigDecimal {
-  const systemAddress = getSystemAddress(token);
+  const systemAddress = getTokenSystemAddress(token);
   const state = fetchSystemStatsState(systemAddress);
   const basePrice = getTokenBasePrice(token.basePriceClaim);
 
@@ -47,7 +50,7 @@ export function updateSystemStatsForPriceChange(
   oldPrice: BigDecimal,
   newPrice: BigDecimal
 ): BigDecimal {
-  const systemAddress = getSystemAddress(token);
+  const systemAddress = getTokenSystemAddress(token);
   const state = fetchSystemStatsState(systemAddress);
 
   // Calculate value delta
