@@ -2,6 +2,7 @@ import { FormLabel } from "@/components/form/tanstack-form";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useFieldContext } from "@/hooks/use-form-contexts";
+import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import {
@@ -17,6 +18,7 @@ interface RadioOption {
   description?: ReactNode;
   footer?: ReactNode;
   icon?: LucideIcon;
+  className?: string;
 }
 
 export function RadioField({
@@ -26,6 +28,7 @@ export function RadioField({
   options = [],
   variant = "default",
   onSelect,
+  className,
 }: {
   label?: string;
   description?: string;
@@ -33,16 +36,19 @@ export function RadioField({
   options?: RadioOption[];
   variant?: "default" | "card";
   onSelect?: (value: string) => void;
+  className?: string;
 }) {
   // The `Field` infers that it should have a `value` type of `string`
   const field = useFieldContext<string>();
 
-  const getGridColumns = () => {
+  const getGridClasses = () => {
     const optionCount = options.length;
-    if (optionCount <= 1) return "grid-cols-1";
-    if (optionCount === 2) return "grid-cols-2";
-
-    return "grid-cols-3"; // Use 3 columns for 3+ options
+    return cn(
+      "grid gap-4",
+      optionCount <= 1 && "grid-cols-1",
+      optionCount === 2 && "grid-cols-2",
+      optionCount >= 3 && "grid-cols-3"
+    );
   };
 
   const renderCardRadio = () => (
@@ -52,7 +58,7 @@ export function RadioField({
         field.handleChange(value);
         onSelect?.(value);
       }}
-      className={`grid ${getGridColumns()} gap-4`}
+      className={cn(getGridClasses(), className)}
     >
       {options.map((option) => (
         <div key={option.value} className="relative h-full">
@@ -97,6 +103,7 @@ export function RadioField({
         field.handleChange(value);
         onSelect?.(value);
       }}
+      className={className}
     >
       {options.map((option) => (
         <div key={option.value} className="flex items-center space-x-2">

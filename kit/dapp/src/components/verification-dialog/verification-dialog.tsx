@@ -4,6 +4,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -100,7 +101,7 @@ export function VerificationDialog({
             e.preventDefault();
             void form.handleSubmit();
           }}
-          className="space-y-6"
+          className="space-y-6 mb-4"
         >
           <form.Field name="code">
             {(field) => (
@@ -148,15 +149,15 @@ export function VerificationDialog({
             </div>
           )}
 
-          <div className="flex flex-col space-y-2">
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={handleClose}>
+              {t("verificationDialog.cancel")}
+            </Button>
+
             <form.Subscribe
               selector={(state) => state.errors}
               children={(errors) => (
-                <Button
-                  type="submit"
-                  disabled={Object.keys(errors).length > 0}
-                  className="w-full"
-                >
+                <Button type="submit" disabled={Object.keys(errors).length > 0}>
                   {t("verificationDialog.confirm")}
                 </Button>
               )}
@@ -169,23 +170,13 @@ export function VerificationDialog({
                 onClick={() => {
                   setUseOtp(!useOtp);
                 }}
-                className="w-full"
               >
                 {useOtp
                   ? t("verificationDialog.usePinInstead")
                   : t("verificationDialog.useAuthenticatorInstead")}
               </Button>
             )}
-
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              className="w-full"
-            >
-              {t("verificationDialog.cancel")}
-            </Button>
-          </div>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

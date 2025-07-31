@@ -1,33 +1,13 @@
 import { accessControlRoles } from "@/lib/zod/validators/access-control-roles";
+import { assetExtensionArray } from "@/lib/zod/validators/asset-extensions";
 import { assetType } from "@/lib/zod/validators/asset-types";
 import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
 import { decimals } from "@/lib/zod/validators/decimals";
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { timestamp } from "@/lib/zod/validators/timestamp";
-import type { TokenExtensions } from "@/orpc/middlewares/system/token.middleware";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { from } from "dnum";
 import { z } from "zod";
-
-/**
- * Available token extensions in the system
- *
- * These extensions define the various capabilities that can be added to a token contract.
- * Each extension grants specific capabilities within the token contract.
- *
- * @see {@link TokenExtensions} for the complete type definition
- */
-const EXTENSIONS: TokenExtensions[] = [
-  "ACCESS_MANAGED",
-  "BURNABLE",
-  "CAPPED",
-  "COLLATERAL",
-  "CUSTODIAN",
-  "HISTORICAL_BALANCES",
-  "PAUSABLE",
-  "REDEEMABLE",
-  "YIELD",
-];
 
 /**
  * Zod schema for token details with user permissions
@@ -62,9 +42,7 @@ export const RawTokenSchema = z.object({
   symbol: z.string().describe("The symbol of the token"),
   decimals: decimals(),
   totalSupply: z.string().describe("The total supply of the token as string"),
-  extensions: z
-    .array(z.enum(EXTENSIONS))
-    .describe("The extensions of the token"),
+  extensions: assetExtensionArray().describe("The extensions of the token"),
   implementsERC3643: z
     .boolean()
     .describe("Whether the token implements ERC3643"),
