@@ -14,6 +14,7 @@
     "xlint": "ct lint --chart-dirs . --check-version-increment=false --target-branch main --all",
     "compile": "helm template atk --output-dir dist --include-crds",
     "package:harbor": "bun run tools/package-harbor.ts",
+    "package:ecr": "bun run tools/package-ecr.ts",
     "package:pack": "helm package atk --destination .",
     "package:push:harbor": "helm push ./atk-*.tgz oci://harbor.settlemint.com/atk",
     "package:version": "bun run tools/package-version.ts",
