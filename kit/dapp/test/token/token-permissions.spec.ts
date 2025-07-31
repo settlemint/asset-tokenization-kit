@@ -39,7 +39,7 @@ describe("Token permissions", () => {
         addonManager: false,
         addonModule: false,
         addonRegistryModule: false,
-        admin: false,
+        admin: true,
         auditor: false,
         burner: false,
         bypassListManager: false,
