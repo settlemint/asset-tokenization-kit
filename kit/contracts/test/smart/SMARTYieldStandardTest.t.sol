@@ -45,7 +45,6 @@ contract SMARTYieldStandardTest is SMARTYieldTest {
         IAccessControl(accessManager).grantRole(SMARTYieldToken(tokenAddress).FORCED_TRANSFER_ROLE(), tokenIssuer);
         IAccessControl(accessManager).grantRole(SMARTYieldToken(tokenAddress).RECOVERY_ROLE(), tokenIssuer);
         IAccessControl(accessManager).grantRole(SMARTYieldToken(tokenAddress).PAUSER_ROLE(), tokenIssuer);
-        IAccessControl(accessManager).grantRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, tokenIssuer);
         vm.stopPrank();
 
         // 2. Create the token's on-chain identity

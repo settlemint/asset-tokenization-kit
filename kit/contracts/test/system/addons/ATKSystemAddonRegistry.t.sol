@@ -8,6 +8,7 @@ import { ATKSystemAddonRegistryImplementation } from
     "../../../contracts/system/addons/ATKSystemAddonRegistryImplementation.sol";
 import { IATKSystem } from "../../../contracts/system/IATKSystem.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { IATKSystemAccessManager } from "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
 import { IWithTypeIdentifier } from "../../../contracts/smart/interface/IWithTypeIdentifier.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../../contracts/system/ATKRoles.sol";
@@ -69,7 +70,7 @@ contract ATKSystemAddonRegistryTest is Test {
     }
 
     function test_Initialize() public view {
-        assertTrue(registry.hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(systemUtils.systemAccessManager().hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
     }
 
     function test_RegisterSystemAddon_Success() public {
@@ -88,8 +89,8 @@ contract ATKSystemAddonRegistryTest is Test {
 
         // check roles granted
         assertTrue(
-            IAccessControl(address(systemUtils.compliance())).hasRole(
-                ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, proxyAddress
+            systemUtils.systemAccessManager().hasRole(
+                ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE, proxyAddress
             )
         );
 
@@ -135,7 +136,7 @@ contract ATKSystemAddonRegistryTest is Test {
         bytes memory initData = abi.encodeWithSelector(mockAddon.initialize.selector, address(systemUtils.system()));
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user, ATKSystemRoles.REGISTRAR_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user, ATKPeopleRoles.SYSTEM_MANAGER_ROLE
             )
         );
         registry.registerSystemAddon("TestAddon", address(mockAddon), initData);
@@ -194,7 +195,7 @@ contract ATKSystemAddonRegistryTest is Test {
             abi.encodeWithSelector(
                 IAccessControl.AccessControlUnauthorizedAccount.selector,
                 user,
-                ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE
+                ATKPeopleRoles.SYSTEM_MANAGER_ROLE
             )
         );
         registry.setAddonImplementation(addonTypeHash, address(newMockAddon));

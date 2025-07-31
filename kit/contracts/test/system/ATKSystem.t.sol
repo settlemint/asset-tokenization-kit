@@ -307,21 +307,26 @@ contract ATKSystemTest is Test {
         atkSystem.bootstrap();
     }
 
-    function test_Bootstrap_OnlyDeployer() public {
-        // Test that bootstrap function requires DEPLOYER_ROLE
-        // Since the system is already bootstrapped, we test by checking role requirements
+    function test_Bootstrap_RoleVerification() public {
+        // Test role verification after bootstrap
+        // Since the system is already bootstrapped in setUp
 
-        // Verify admin has DEPLOYER_ROLE (should be granted during initialization)
-        assertTrue(IAccessControl(address(atkSystem)).hasRole(ATKSystemRoles.DEPLOYER_ROLE, admin));
+        // Verify admin has DEFAULT_ADMIN_ROLE (should be granted during initialization)
+        assertTrue(systemUtils.systemAccessManager().hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(systemUtils.systemAccessManager().hasRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE, admin));
 
-        // Verify user does not have DEPLOYER_ROLE
-        assertFalse(IAccessControl(address(atkSystem)).hasRole(ATKSystemRoles.DEPLOYER_ROLE, user));
+        // Verify user does not have DEFAULT_ADMIN_ROLE
+        assertFalse(systemUtils.systemAccessManager().hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, user));
+        assertFalse(systemUtils.systemAccessManager().hasRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE, user));
 
         // Since the system is already bootstrapped, calling bootstrap should revert with SystemAlreadyBootstrapped
-        // But the access control check happens first, so we can test that users without DEPLOYER_ROLE get access
-        // control errors
+        vm.prank(admin);
+        vm.expectRevert(SystemAlreadyBootstrapped.selector);
+        atkSystem.bootstrap();
+
+        // Also test with non-admin user
         vm.prank(user);
-        vm.expectRevert(); // Should revert due to lack of DEPLOYER_ROLE
+        vm.expectRevert(); // Should revert due to lack of permissions or already bootstrapped
         atkSystem.bootstrap();
     }
 

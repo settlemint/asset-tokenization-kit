@@ -20,8 +20,7 @@ import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { MockedComplianceModule } from "../../utils/mocks/MockedComplianceModule.sol";
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 import { SMARTToken } from "../examples/SMARTToken.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
-import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { ATKPeopleRoles, ATKSystemRoles } from "../../../contracts/system/ATKRoles.sol";
 import { SMARTIdentityVerificationComplianceModule } from
     "../../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
 import { ClaimExpressionUtils } from "../../utils/ClaimExpressionUtils.sol";
@@ -116,20 +115,6 @@ abstract contract AbstractSMARTTest is Test {
 
         assertNotEq(address(token), address(0), "Token not deployed");
         vm.label(address(token), "Token");
-
-        // Grant REGISTRAR_ROLE to the token contract on the Identity Registry
-        // Needed for custody address recovery
-        address registryAddress = address(systemUtils.identityRegistry());
-        address tokenAddress = address(token);
-
-        vm.prank(platformAdmin);
-        IAccessControl(payable(registryAddress)).grantRole(ATKSystemRoles.REGISTRAR_ROLE, tokenAddress);
-
-        // Verify the role was granted
-        assertTrue(
-            IAccessControl(payable(registryAddress)).hasRole(ATKSystemRoles.REGISTRAR_ROLE, tokenAddress),
-            "Token was not granted REGISTRAR_ROLE"
-        );
     }
 
     function _setupToken() internal virtual { }
@@ -209,7 +194,7 @@ abstract contract AbstractSMARTTest is Test {
         accessManager.grantRole(SMARTToken(tokenAddress).RECOVERY_ROLE(), tokenIssuer_);
         accessManager.grantRole(SMARTToken(tokenAddress).PAUSER_ROLE(), tokenIssuer_);
         accessManager.grantRole(SMARTToken(tokenAddress).CAP_MANAGEMENT_ROLE(), tokenIssuer_);
-        accessManager.grantRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, tokenIssuer_);
+        accessManager.grantRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, tokenIssuer_);
         vm.stopPrank();
     }
 

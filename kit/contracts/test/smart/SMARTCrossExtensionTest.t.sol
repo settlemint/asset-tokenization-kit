@@ -225,13 +225,6 @@ contract SMARTCrossExtensionTest is Test {
         // Grant necessary roles to owner
         _grantRoles();
 
-        // Grant REGISTRAR_ROLE to the token contract on the Identity Registry
-        // Needed for custody address recovery
-        address registryAddress = address(systemUtils.identityRegistry());
-        address tokenAddress = address(crossExtToken);
-
-        vm.prank(owner);
-        IAccessControl(payable(registryAddress)).grantRole(ATKSystemRoles.REGISTRAR_ROLE, tokenAddress);
     }
 
     function _setupTestIdentities() private {
@@ -535,8 +528,9 @@ contract SMARTCrossExtensionTest is Test {
 
     function _setupTokenIdentity() private {
         // Grant CLAIM_MANAGER_ROLE to owner on the token identity's access manager
-        vm.prank(owner);
-        IAccessControl(address(accessManager)).grantRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, owner);
+        // TODO: do we need this?
+        // vm.prank(owner);
+        // IAccessControl(address(accessManager)).grantRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, owner);
 
         // Issue a large collateral claim to the token to allow minting
         claimUtils.issueCollateralClaim(
