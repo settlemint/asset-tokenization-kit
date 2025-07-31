@@ -74,7 +74,7 @@ export const grantAirdropFactoryPermissions = async (
   // Grant SYSTEM_MODULE_ROLE to the factory
   const grantSystemModuleRoleHash = await withDecodedRevertReason(() =>
     systemAccessManagerContract.write.grantRole([
-      "0xa6d0d666130ddda8d0a25bfc08c75c789806b23845f9cce674dfc4a9e8d0e45c", // SYSTEM_MODULE_ROLE
+      ATKRoles.systemModuleRole,
       factoryAddress,
     ])
   );
@@ -86,7 +86,7 @@ export const grantAirdropFactoryPermissions = async (
   // Grant DEFAULT_ADMIN_ROLE to the factory
   const grantDefaultAdminRoleHash = await withDecodedRevertReason(() =>
     systemAccessManagerContract.write.grantRole([
-      "0x0000000000000000000000000000000000000000000000000000000000000000", // DEFAULT_ADMIN_ROLE
+      ATKRoles.defaultAdminRole,
       factoryAddress,
     ])
   );

@@ -63,12 +63,10 @@ export const stablecoinCreateHandler = async (
   }
 
   return createToken(input, context, () => {
-    // Delete verification from input to avoid leaking it in the logs
-    const { verification: _, ...otherInput } = input;
     return context.portalClient.mutate(
       CREATE_STABLECOIN_MUTATION,
       {
-        ...otherInput,
+        ...input,
         ...context.mutationVariables,
       },
       "Failed to create stablecoin token"

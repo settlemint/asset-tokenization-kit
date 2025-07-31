@@ -9,7 +9,7 @@ import {
 } from "../utils/user";
 
 describe("Token create", () => {
-  test.skip("can create a token", async () => {
+  test("can create a token", async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
 
@@ -18,7 +18,6 @@ describe("Token create", () => {
       name: `Test Stablecoin ${Date.now()}`,
       symbol: "TSTC",
       decimals: 18,
-      countryCode: "056",
     } as const;
 
     const result = await client.token.create({
@@ -27,6 +26,7 @@ describe("Token create", () => {
         verificationType: "pincode",
       },
       ...tokenData,
+      countryCode: "056",
     });
 
     // The create method now returns the complete token object directly
@@ -50,9 +50,9 @@ describe("Token create", () => {
       },
       totalSupply: from("0"),
     });
-  });
+  }, 10_0000);
 
-  test.skip("regular users cant create tokens", async () => {
+  test("regular users cant create tokens", async () => {
     const headers = await signInWithUser(DEFAULT_INVESTOR);
     const client = getOrpcClient(headers);
 
