@@ -1,5 +1,5 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
-import { SystemComplianceModuleCreateSchema } from "@/orpc/routes/system/compliance-module/routes/complianceModule.create.schema";
+import { SystemComplianceModuleCreateSchema } from "@/orpc/routes/system/compliance-module/routes/compliance-module.create.schema";
 import { SystemReadSchema } from "@/orpc/routes/system/routes/system.read.schema";
 
 const complianceModuleCreate = baseContract
