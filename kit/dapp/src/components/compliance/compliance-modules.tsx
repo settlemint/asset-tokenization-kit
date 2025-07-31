@@ -88,7 +88,7 @@ export function ComplianceModules({
       )}
 
       {/* Available modules section */}
-      {availableModules && (
+      {availableModules.length > 0 && (
         <div className="space-y-4">
           <div className="space-y-2">
             <h3 className="text-lg font-semibold">
