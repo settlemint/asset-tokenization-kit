@@ -1,45 +1,45 @@
 {
   "modules": {
     "addressBlockList": {
-      "description": "Block specific wallet addresses from accessing your asset. Useful for preventing known bad actors or sanctioned addresses from participating.",
-      "shortDescription": "Block specific wallet addresses from participating",
-      "title": "Address Block List"
+      "description": "Block specific wallet addresses from accessing your asset. Prevents sanctioned or problematic addresses from participating.",
+      "shortDescription": "Block specific wallet addresses",
+      "title": "Block Addresses"
     },
     "countryAllowList": {
-      "description": "Only allow investors from specific countries to access your asset. Ideal for region-specific compliance requirements and regulatory restrictions.",
-      "shortDescription": "Allow only specific countries to participate",
-      "title": "Country Allow List"
+      "description": "Allow investors only from specific countries. Helps meet regional compliance requirements.",
+      "shortDescription": "Allow specific countries only",
+      "title": "Country Allowlist"
     },
     "countryBlockList": {
-      "description": "Block investors from specific countries or jurisdictions. Essential for complying with sanctions and avoiding restricted markets.",
-      "shortDescription": "Block specific countries from participating",
-      "title": "Country Block List"
+      "description": "Block investors from specific countries or regions. Helps comply with sanctions and regulatory restrictions.",
+      "shortDescription": "Block specific countries",
+      "title": "Country Blocklist"
     },
     "identityAllowList": {
-      "description": "Only allow verified identities from your approved list to access the asset. Perfect for exclusive offerings and private placements.",
-      "shortDescription": "Allow only pre-approved verified identities",
-      "title": "Identity Allow List"
+      "description": "Allow only verified identities from your approved list. Works well for exclusive offerings and private sales.",
+      "shortDescription": "Allow approved identities only",
+      "title": "Identity Allowlist"
     },
     "identityBlockList": {
-      "description": "Block specific verified identities from accessing your asset. Useful for removing problematic investors while maintaining compliance.",
-      "shortDescription": "Block specific verified identities from access",
-      "title": "Identity Block List"
+      "description": "Block specific verified identities from accessing your asset. Remove problematic investors while staying compliant.",
+      "shortDescription": "Block specific identities",
+      "title": "Identity Blocklist"
     },
     "smartIdentityVerification": {
-      "description": "Require SMART protocol identity verification for all investors. Provides comprehensive KYC/AML compliance through decentralized identity verification.",
-      "shortDescription": "Require SMART protocol identity verification",
-      "title": "SMART Identity Verification"
+      "description": "Require identity verification for all investors. Provides KYC and AML compliance through the SMART protocol.",
+      "shortDescription": "Require identity verification",
+      "title": "Identity Verification"
     }
   },
-  "title": "Compliance Modules",
+  "title": "Compliance",
   "sections": {
     "enabled": {
-      "title": "Enabled Modules",
-      "description": "Modules that are currently enabled and active"
+      "title": "Enabled",
+      "description": "Currently enabled modules"
     },
     "available": {
-      "title": "Available Modules",
-      "description": "Modules that are available to be enabled"
+      "title": "Available",
+      "description": "Modules you can activate"
     }
   }
 }

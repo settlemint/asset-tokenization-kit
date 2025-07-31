@@ -23,7 +23,7 @@ export function getElementAtIndex<T>(elements: T[], index: number): T {
   return element;
 }
 
-export function arraysEqual(
+export function haveSameNumbers(
   first: (string | number)[],
   second: (string | number)[]
 ) {

@@ -10,7 +10,7 @@ import {
 const COMPLIANCE_MODULES_QUERY = theGraphGraphql(
   `
   query GetComplianceModules($registryAddress: String!) {
-    complianceModules(where: {complianceModuleRegistry: $registryAddress}) {
+    complianceModules(where: {complianceModuleRegistry: $registryAddress}) @fetchAll {
       id
       typeId
       name

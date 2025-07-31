@@ -4,7 +4,7 @@ import { CountryMultiselect } from "@/components/country/country-multiselect";
 import { Button } from "@/components/ui/button";
 import { useCountries } from "@/hooks/use-countries";
 import { encodeCountryParams } from "@/lib/compliance/encoding/encode-country-params";
-import { arraysEqual } from "@/lib/utils/array";
+import { haveSameNumbers } from "@/lib/utils/array";
 import { ArrowLeftIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -65,11 +65,11 @@ export function CountryRestrictionModuleDetail({
       typeId,
       module,
       values: [],
-      params: encodeCountryParams([]),
+      params: "",
     });
   };
 
-  const isInputChanged = !arraysEqual(
+  const isInputChanged = !haveSameNumbers(
     selectedCountries.map((c) => Number.parseInt(c.numericCode)),
     initialValues?.values ?? []
   );
