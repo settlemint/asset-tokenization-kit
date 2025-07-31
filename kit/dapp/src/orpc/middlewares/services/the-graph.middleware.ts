@@ -5,12 +5,33 @@
  * variable filtering, and schema validation for TheGraph queries.
  *
  * Key Features:
- * - Automatic pagination for list fields
+ * - Automatic pagination for list fields that include `first` and/or `skip` parameters
  * - Merge and filtering of complex GraphQL responses
  * - Integration with Zod for runtime type validation
  *
+ * IMPORTANT: This middleware requires queries to explicitly include pagination parameters
+ * (`first` and/or `skip`) on fields that should be paginated. It will NOT automatically
+ * add pagination to fields - it only handles the pagination loop for fields that already
+ * have these parameters.
+ *
  * @module TheGraphMiddleware
  * @category Middleware
+ * @example
+ * // Query must include first/skip for pagination to work
+ * const TOKENS_QUERY = gql`
+ *   query GetTokens {
+ *     tokens(first: 1000, skip: 0) {  # Required for pagination
+ *       id
+ *       name
+ *     }
+ *   }
+ * `;
+ *
+ * // The middleware will automatically fetch all pages
+ * const result = await theGraphClient.query(TOKENS_QUERY, {
+ *   output: TokenSchema
+ * });
+ * // result.tokens will contain ALL tokens, not just the first 1000
  */
 import { theGraphClient } from "@/lib/settlemint/the-graph";
 import { sortBy } from "es-toolkit";
@@ -498,6 +519,42 @@ export type ValidatedTheGraphClient = ReturnType<
   typeof createValidatedTheGraphClient
 >;
 
+/**
+ * TheGraph middleware that enhances GraphQL queries with automatic pagination support.
+ *
+ * This middleware intercepts GraphQL queries to TheGraph and automatically handles
+ * pagination for fields that include `first` and/or `skip` parameters.
+ *
+ * @remarks
+ * IMPORTANT: Queries must explicitly include `first` and/or `skip` parameters on fields
+ * that should be paginated. The middleware will NOT add these parameters automatically.
+ *
+ * @example
+ * // In your ORPC route:
+ * export const listTokens = systemProcedure
+ *   .use(theGraphMiddleware)  // Add the middleware
+ *   .input(z.object({ type: z.string().optional() }))
+ *   .query(async ({ context, input }) => {
+ *     // Query MUST include first/skip for pagination
+ *     const result = await context.theGraphClient.query(
+ *       gql`
+ *         query GetTokens($type: String) {
+ *           tokens(first: 1000, skip: 0, where: { type: $type }) {
+ *             id
+ *             name
+ *             totalSupply
+ *           }
+ *         }
+ *       `,
+ *       {
+ *         input: { type: input.type },
+ *         output: TokensSchema
+ *       }
+ *     );
+ *     // result.tokens contains ALL tokens (not just first 1000)
+ *     return result.tokens;
+ *   });
+ */
 export const theGraphMiddleware = baseRouter.middleware((options) => {
   const { context, next, errors } = options;
 
