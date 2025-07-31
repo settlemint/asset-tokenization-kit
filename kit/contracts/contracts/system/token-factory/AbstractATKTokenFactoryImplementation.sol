@@ -294,14 +294,14 @@ abstract contract AbstractATKTokenFactoryImplementation is
         deployedTokenIdentityAddress = _deployContractIdentity(deployedAddress, description, country);
 
         // Grant the factory the GOVERNANCE_ROLE to allow it to upgrade the onchain ID
-        ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.GOVERNANCE_ROLE, address(this));
+        ISMARTTokenAccessManager(accessManager).grantRole(ATKAssetRoles.GOVERNANCE_ROLE, address(this));
         ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.DEFAULT_ADMIN_ROLE, address(this));
 
         // Set the onchain ID on the token contract
         ISMART(deployedAddress).setOnchainID(deployedTokenIdentityAddress);
 
         bytes32[] memory roles = new bytes32[](2);
-        roles[0] = ATKRoles.GOVERNANCE_ROLE;
+        roles[0] = ATKAssetRoles.GOVERNANCE_ROLE;
         roles[1] = ATKRoles.DEFAULT_ADMIN_ROLE;
         ISMARTTokenAccessManager(accessManager).renounceMultipleRoles(roles, address(this));
 

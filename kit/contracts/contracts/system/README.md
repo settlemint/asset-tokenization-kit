@@ -372,7 +372,6 @@ The ATK System implements a comprehensive RBAC system:
 
 #### Token-Level Roles
 
-- **CLAIM_MANAGER_ROLE**: Manages identity claims
 - **BYPASS_LIST_MANAGER_ROLE**: Manages compliance bypass lists
 - **STORAGE_MODIFIER_ROLE**: Can modify identity storage
 - **REGISTRY_MANAGER_ROLE**: Manages registry bindings

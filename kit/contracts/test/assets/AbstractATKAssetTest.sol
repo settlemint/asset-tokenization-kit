@@ -10,7 +10,8 @@ import { IdentityUtils } from "../utils/IdentityUtils.sol";
 import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 import { ISMARTCompliance } from "../../contracts/smart/interface/ISMARTCompliance.sol";
 import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
-import { ATKRoles as AssetATKRoles } from "../../contracts/assets/ATKRoles.sol";
+import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
+
 import { ATKRoles as SystemATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../contracts/system/ATKRoles.sol";
 import { ATKSystemImplementation } from "../../contracts/system/ATKSystemImplementation.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
@@ -73,12 +74,10 @@ abstract contract AbstractATKAssetTest is Test {
 
         // Grant necessary roles to the owner in the system access manager
         vm.startPrank(platformAdmin);
-        systemUtils.systemAccessManager().grantRole(
-            ATKPeopleRoles.TOKEN_MANAGER_ROLE, _owner
-        );
-        systemUtils.systemAccessManager().grantRole(
-            ATKPeopleRoles.ADDON_MANAGER_ROLE, _owner
-        );
+        bytes32[] memory ownerRoles = new bytes32[](2);
+        ownerRoles[0] = ATKPeopleRoles.TOKEN_MANAGER_ROLE;
+        ownerRoles[1] = ATKPeopleRoles.ADDON_MANAGER_ROLE;
+        systemUtils.systemAccessManager().grantMultipleRoles(_owner, ownerRoles);
         vm.stopPrank();
     }
 
@@ -124,11 +123,10 @@ abstract contract AbstractATKAssetTest is Test {
 
     function _grantAllRoles(address accessManager, address wallet, address defaultAdmin) internal {
         vm.startPrank(defaultAdmin);
-        ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.GOVERNANCE_ROLE, wallet);
-        ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, wallet);
-        ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.CUSTODIAN_ROLE, wallet);
-        ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.EMERGENCY_ROLE, wallet);
-        ISMARTTokenAccessManager(accessManager).grantRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, wallet);
+        ISMARTTokenAccessManager(accessManager).grantRole(AssetATKAssetRoles.GOVERNANCE_ROLE, wallet);
+        ISMARTTokenAccessManager(accessManager).grantRole(AssetATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, wallet);
+        ISMARTTokenAccessManager(accessManager).grantRole(AssetATKAssetRoles.CUSTODIAN_ROLE, wallet);
+        ISMARTTokenAccessManager(accessManager).grantRole(AssetATKAssetRoles.EMERGENCY_ROLE, wallet);
         vm.stopPrank();
     }
 }
