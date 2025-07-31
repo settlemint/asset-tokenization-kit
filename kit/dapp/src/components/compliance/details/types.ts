@@ -1,5 +1,5 @@
 import {
-  ComplianceModulePair,
+  ComplianceModulePairInput,
   ComplianceParams,
   type ComplianceTypeId,
 } from "@/lib/zod/validators/compliance";
@@ -21,10 +21,10 @@ export interface ComplianceModuleDetailProps<T extends ComplianceTypeId> {
   initialValues?: Extract<ComplianceParams, { typeId: T }>;
 
   /** Callback when module is enabled with encoded parameters */
-  onEnable: (module: ComplianceModulePair) => void;
+  onEnable: (module: ComplianceModulePairInput) => void;
 
   /** Callback when module is disabled with encoded parameters */
-  onDisable: (module: ComplianceModulePair) => void;
+  onDisable: (module: ComplianceModulePairInput) => void;
 
   /** Callback to close the detail view */
   onClose: () => void;

@@ -3,26 +3,26 @@ import { Button } from "@/components/ui/button";
 import { getModuleConfig, isModuleEnabled } from "@/lib/compliance/utils";
 import {
   ComplianceTypeIdEnum,
-  type ComplianceModulePair,
-  type ComplianceModulePairArray,
+  type ComplianceModulePairInput,
+  type ComplianceModulePairInputArray,
   type ComplianceParams,
   type ComplianceTypeId,
 } from "@/lib/zod/validators/compliance";
 import { ComplianceModulesList } from "@/orpc/routes/system/compliance-module/routes/compliance-module.list.schema";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getAddress } from "viem";
+import { getAddress, type Address } from "viem";
 import { CountryAllowlistModuleDetail } from "./details/country-allowlist-module-detail";
 
 interface ComplianceModulesProps {
   /** Array of configured compliance modules with their current state */
   allModules: ComplianceModulesList;
   /** Array of configured compliance modules with their current state */
-  enabledModules: ComplianceModulePairArray;
+  enabledModules: ComplianceModulePairInputArray;
   /** Callback when a compliance module is enabled with encoded parameters */
-  onEnable: (modulePair: ComplianceModulePair) => void;
+  onEnable: (modulePair: ComplianceModulePairInput) => void;
   /** Callback when a compliance module is disabled with encoded parameters */
-  onDisable: (modulePair: ComplianceModulePair) => void;
+  onDisable: (modulePair: ComplianceModulePairInput) => void;
 }
 
 export function ComplianceModules({
@@ -34,19 +34,16 @@ export function ComplianceModules({
   const { t } = useTranslation(["compliance-modules", "form"]);
   const [activeModule, setActiveModule] = useState<{
     typeId: ComplianceTypeId;
-    module: string;
+    module: Address;
   } | null>(null);
 
   // Show detail view when a module is selected
   if (activeModule) {
-    const moduleConfig = allModules.find(
-      (m) => m.typeId === activeModule.typeId
-    );
     const isEnabled = isModuleEnabled(activeModule.typeId, enabledModules);
     const initialValues = isEnabled
       ? getModuleConfig(activeModule.typeId, enabledModules)
       : {
-          ...moduleConfig,
+          ...activeModule,
           values: [],
           params: "",
         };
@@ -56,7 +53,7 @@ export function ComplianceModules({
       [ComplianceTypeIdEnum.CountryAllowListComplianceModule]: (
         <CountryAllowlistModuleDetail
           typeId="CountryAllowListComplianceModule"
-          module={getAddress(activeModule.module)}
+          module={activeModule.module}
           isEnabled={isEnabled}
           initialValues={
             initialValues as Extract<
@@ -192,7 +189,12 @@ export function ComplianceModules({
             complianceTypeIds={enabledModules.map((module) => module.typeId)}
             onModuleSelect={(typeId) => {
               const module = enabledModules.find((m) => m.typeId === typeId);
-              if (module) setActiveModule(module);
+              if (module) {
+                setActiveModule({
+                  typeId,
+                  module: getAddress(module.module),
+                });
+              }
             }}
           />
         </div>
@@ -213,11 +215,12 @@ export function ComplianceModules({
             complianceTypeIds={allModules.map((module) => module.typeId)}
             onModuleSelect={(typeId) => {
               const module = allModules.find((m) => m.typeId === typeId);
-              if (module)
+              if (module) {
                 setActiveModule({
                   typeId,
                   module: module.id,
                 });
+              }
             }}
           />
         </div>

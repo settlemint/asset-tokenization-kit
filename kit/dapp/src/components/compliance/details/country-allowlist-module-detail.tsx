@@ -3,13 +3,13 @@ import type { ComplianceModuleDetailProps } from "@/components/compliance/detail
 import { CountryMultiselect } from "@/components/country/country-multiselect";
 import { Button } from "@/components/ui/button";
 import { encodeCountryParams } from "@/lib/compliance/encoding/encode-country-params";
+import { arraysEqual } from "@/lib/utils/array";
 import { ComplianceTypeIdEnum } from "@/lib/zod/validators/compliance";
 import { getSupportedLocales } from "@/lib/zod/validators/iso-country-code";
 import { getName } from "i18n-iso-countries";
 import { ArrowLeftIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { zeroHash } from "viem";
 
 export function CountryAllowlistModuleDetail({
   typeId,
@@ -29,18 +29,47 @@ export function CountryAllowlistModuleDetail({
     complianceModuleConfig[
       ComplianceTypeIdEnum.CountryAllowListComplianceModule
     ];
-  // Convert numeric country codes to alpha2 codes for CountryMultiselect
-  const initialCountries = initialValues?.values.map((numericCode) => {
-    const name = getName(numericCode, baseLocale);
-    return {
-      name: name ?? "",
-      numericCode: numericCode.toString(),
-    };
-  });
 
-  const [selectedCountries, setSelectedCountries] = useState<
-    { name: string; numericCode: string }[]
-  >(initialCountries ?? []);
+  // Convert numeric country codes to alpha2 codes for CountryMultiselect
+  const initialCountries =
+    initialValues?.values.map((numericCode) => {
+      const name = getName(numericCode, baseLocale);
+      return {
+        name: name ?? "",
+        numericCode: numericCode.toString(),
+      };
+    }) ?? [];
+
+  const [selectedCountries, setSelectedCountries] =
+    useState<{ name: string; numericCode: string }[]>(initialCountries);
+
+  const handleEnable = () => {
+    // Convert selected countries to numeric codes and encode
+    const numericCodes = selectedCountries.map(
+      (country) => country.numericCode
+    );
+    const encodedParams = encodeCountryParams(numericCodes);
+    onEnable({
+      typeId,
+      module,
+      values: numericCodes,
+      params: encodedParams,
+    });
+  };
+
+  const handleDisable = () => {
+    onDisable({
+      typeId,
+      module,
+      values: [],
+      params: "0x0",
+    });
+  };
+
+  const isInputChanged = !arraysEqual(
+    selectedCountries.map((c) => Number.parseInt(c.numericCode)),
+    initialValues?.values ?? []
+  );
 
   return (
     <div className="flex flex-col h-full">
@@ -58,24 +87,21 @@ export function CountryAllowlistModuleDetail({
 
       <div className="flex-1">
         <div className="flex flex-col items-start mb-6 space-y-6">
-          <div className="flex items-center justify-center space-x-4 mb-4">
-            <div>
-              <config.icon className="w-5 h-5" />
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center justify-center space-x-4 mb-4">
+              <div>
+                <config.icon className="w-5 h-5" />
+              </div>
+              <h2 className="text-2xl font-semibold leading-none tracking-tight">
+                {t("modules.countryAllowList.title")}
+              </h2>
             </div>
-            <h2 className="text-2xl font-semibold leading-none tracking-tight">
-              {t("modules.countryAllowList.title")}
-            </h2>
-            <div className="flex items-center gap-3">
+            <div>
               {isEnabled && (
                 <Button
                   variant="outline"
                   onClick={() => {
-                    onDisable({
-                      typeId,
-                      module,
-                      values: [],
-                      params: zeroHash,
-                    });
+                    handleDisable();
                     onClose();
                   }}
                 >
@@ -83,21 +109,7 @@ export function CountryAllowlistModuleDetail({
                 </Button>
               )}
               {!isEnabled && (
-                <Button
-                  onClick={() => {
-                    // Convert selected countries to numeric codes and encode
-                    const numericCodes = selectedCountries.map(
-                      (country) => country.numericCode
-                    );
-                    const encodedParams = encodeCountryParams(numericCodes);
-                    onEnable({
-                      typeId,
-                      module,
-                      values: numericCodes,
-                      params: encodedParams,
-                    });
-                  }}
-                >
+                <Button onClick={handleEnable}>
                   {t("form:buttons.enable")}
                 </Button>
               )}
@@ -108,12 +120,14 @@ export function CountryAllowlistModuleDetail({
               {t("modules.countryAllowList.description")}
             </p>
           </div>
-          <CountryMultiselect
-            value={selectedCountries}
-            onChange={(countries) => {
-              setSelectedCountries(countries);
-            }}
-          />
+          {isEnabled && (
+            <CountryMultiselect
+              value={selectedCountries}
+              onChange={(countries) => {
+                setSelectedCountries(countries);
+              }}
+            />
+          )}
         </div>
       </div>
 
@@ -122,18 +136,9 @@ export function CountryAllowlistModuleDetail({
           {t("form:buttons.back")}
         </Button>
         <Button
+          disabled={!isEnabled || !isInputChanged}
           onClick={() => {
-            // Convert selected countries to numeric codes and encode
-            const numericCodes = selectedCountries.map(
-              (country) => country.numericCode
-            );
-            const encodedParams = encodeCountryParams(numericCodes);
-            onEnable({
-              typeId,
-              module,
-              values: numericCodes,
-              params: encodedParams,
-            });
+            handleEnable();
             onClose();
           }}
         >

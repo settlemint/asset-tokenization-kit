@@ -1,5 +1,5 @@
 import {
-  ComplianceModulePairArray,
+  ComplianceModulePairInputArray,
   ComplianceTypeId,
 } from "@/lib/zod/validators/compliance";
 
@@ -9,7 +9,7 @@ import {
  */
 export const isModuleEnabled = (
   typeId: ComplianceTypeId,
-  modules: ComplianceModulePairArray
+  modules: ComplianceModulePairInputArray
 ): boolean => {
   return !!modules?.find((m) => m.typeId === typeId);
 };
@@ -20,7 +20,7 @@ export const isModuleEnabled = (
  */
 export const getModuleConfig = (
   typeId: ComplianceTypeId,
-  modules: ComplianceModulePairArray
+  modules: ComplianceModulePairInputArray
 ) => {
   return modules?.find((m) => m.typeId === typeId);
 };

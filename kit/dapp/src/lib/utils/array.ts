@@ -22,3 +22,20 @@ export function getElementAtIndex<T>(elements: T[], index: number): T {
   }
   return element;
 }
+
+export function arraysEqual(
+  first: (string | number)[],
+  second: (string | number)[]
+) {
+  if (first.length !== second.length) return false;
+
+  return first.every((value, index) => {
+    const secondArrValue = second[index];
+    if (!secondArrValue) return false;
+
+    const firstValue = Number.parseInt(value.toString());
+    const secondValue = Number.parseInt(secondArrValue.toString());
+
+    return firstValue === secondValue;
+  });
+}

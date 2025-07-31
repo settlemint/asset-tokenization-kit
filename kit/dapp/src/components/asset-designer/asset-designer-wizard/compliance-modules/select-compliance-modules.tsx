@@ -11,7 +11,7 @@ import {
 
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
-import { ComplianceModulePair } from "@/lib/zod/validators/compliance";
+import { ComplianceModulePairInput } from "@/lib/zod/validators/compliance";
 import { ComplianceModulesList } from "@/orpc/routes/system/compliance-module/routes/compliance-module.list.schema";
 import { useStore } from "@tanstack/react-store";
 import { useTranslation } from "react-i18next";
@@ -32,7 +32,7 @@ export const SelectComplianceModules = withForm({
       (state) => state.values.initialModulePairs
     );
 
-    const setModulePair = (modulePair: ComplianceModulePair) => {
+    const addModulePair = (modulePair: ComplianceModulePairInput) => {
       const modulePairsWithoutType = initialModulePairs?.filter(
         (pair) => pair.typeId !== modulePair.typeId
       );
@@ -41,7 +41,7 @@ export const SelectComplianceModules = withForm({
       });
     };
 
-    const removeModulePair = (modulePair: ComplianceModulePair) => {
+    const removeModulePair = (modulePair: ComplianceModulePairInput) => {
       form.setFieldValue("initialModulePairs", () => {
         return initialModulePairs?.filter(
           (pair) => pair.typeId !== modulePair.typeId
@@ -61,7 +61,7 @@ export const SelectComplianceModules = withForm({
           <ComplianceModules
             allModules={complianceModules}
             enabledModules={initialModulePairs}
-            onEnable={setModulePair}
+            onEnable={addModulePair}
             onDisable={removeModulePair}
           />
         </FormStepContent>

@@ -240,7 +240,7 @@ export type ComplianceParams = z.infer<ReturnType<typeof complianceParams>>;
  * Type representing a compliance module pair with typeId and params.
  * Used for token initialization and configuration.
  */
-export type ComplianceModulePair = z.input<
+export type ComplianceModulePairInput = z.input<
   ReturnType<typeof complianceModulePair>
 >;
 
@@ -248,30 +248,6 @@ export type ComplianceModulePair = z.input<
  * Type representing an array of compliance module pairs.
  * Used for the 'initialModulePairs' field in token creation schemas.
  */
-export type ComplianceModulePairArray = z.input<
+export type ComplianceModulePairInputArray = z.input<
   ReturnType<typeof complianceModulePairArray>
->;
-
-export type CountryAllowListValues = z.input<
-  ReturnType<typeof countryAllowListValues>
->;
-
-export type CountryBlockListValues = z.input<
-  ReturnType<typeof countryBlockListValues>
->;
-
-export type AddressBlockListValues = z.input<
-  ReturnType<typeof addressBlockListValues>
->;
-
-export type IdentityAllowListValues = z.input<
-  ReturnType<typeof identityAllowListValues>
->;
-
-export type IdentityBlockListValues = z.input<
-  ReturnType<typeof identityBlockListValues>
->;
-
-export type SmartIdentityVerificationValues = z.input<
-  ReturnType<typeof smartIdentityVerificationValues>
 >;
