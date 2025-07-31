@@ -1,3 +1,4 @@
+import { assetType } from "@/lib/zod/validators/asset-types";
 import { z } from "zod";
 
 /**
@@ -10,7 +11,7 @@ export const StatsAssetsInputSchema = z.object({}).strict();
  */
 export const StatsAssetsOutputSchema = z.object({
   totalAssets: z.number().int().min(0),
-  assetBreakdown: z.record(z.string(), z.number().int().min(0)),
+  assetBreakdown: z.record(assetType(), z.number().int().min(0)),
 });
 
 export type StatsAssetsInput = z.infer<typeof StatsAssetsInputSchema>;
