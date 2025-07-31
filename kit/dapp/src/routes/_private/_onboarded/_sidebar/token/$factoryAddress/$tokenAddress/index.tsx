@@ -1,8 +1,9 @@
+import { ChartSkeleton } from "@/components/charts/chart-skeleton";
 import { DetailGrid } from "@/components/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
-import { ChartSkeleton } from "@/components/stats/charts/chart-skeleton";
-import { TokenTotalSupplyAreaChart } from "@/components/stats/charts/token-total-supply-area-chart";
+import { AssetSupplyChangesAreaChart } from "@/components/stats/charts/asset-supply-changes-area-chart";
+import { AssetTotalSupplyAreaChart } from "@/components/stats/charts/asset-total-supply-area-chart";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
@@ -218,7 +219,13 @@ function RouteComponent() {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
           <Suspense fallback={<ChartSkeleton />}>
-            <TokenTotalSupplyAreaChart tokenAddress={asset.id} timeRange={30} />
+            <AssetTotalSupplyAreaChart assetAddress={asset.id} timeRange={30} />
+          </Suspense>
+          <Suspense fallback={<ChartSkeleton />}>
+            <AssetSupplyChangesAreaChart
+              assetAddress={asset.id}
+              timeRange={30}
+            />
           </Suspense>
         </div>
       </section>

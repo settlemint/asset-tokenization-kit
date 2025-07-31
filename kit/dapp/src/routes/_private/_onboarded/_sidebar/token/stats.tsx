@@ -1,7 +1,7 @@
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
+import { ChartSkeleton } from "@/components/charts/chart-skeleton";
 import { AssetActivityBarChart } from "@/components/stats/charts/asset-activity-bar-chart";
 import { AssetSupplyPieChart } from "@/components/stats/charts/asset-supply-pie-chart";
-import { ChartSkeleton } from "@/components/stats/charts/chart-skeleton";
 import { TransactionHistoryAreaChart } from "@/components/stats/charts/transaction-history-area-chart";
 import { UserGrowthAreaChart } from "@/components/stats/charts/user-growth-area-chart";
 import { AssetStatsWidget } from "@/components/stats/widgets/asset-stats-widget";
