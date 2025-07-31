@@ -143,10 +143,8 @@ contract ATKTokenFactoryRegistryImplementation is
         external
         override
         nonReentrant
-        returns (
-            //onlySystemRoles(_getTokenFactoryRegistryRoles())
-            address
-        )
+        //onlySystemRoles(_getTokenFactoryRegistryRoles())
+        returns (address)
     {
         if (address(_factoryImplementation) == address(0)) revert InvalidTokenFactoryAddress();
         _checkInterface(_factoryImplementation, _IATK_TOKEN_FACTORY_ID);
@@ -197,8 +195,13 @@ contract ATKTokenFactoryRegistryImplementation is
     /// @param factoryTypeHash The type hash of the factory to update
     /// @param implementation_ The new implementation contract address
     /// @dev Only callable by addresses with IMPLEMENTATION_MANAGER_ROLE
-    function setTokenFactoryImplementation(bytes32 factoryTypeHash, address implementation_) public override 
-    //onlySystemRoles(_getImplementationManagerRoles())
+    function setTokenFactoryImplementation(
+        bytes32 factoryTypeHash,
+        address implementation_
+    )
+        public
+        override
+        //onlySystemRoles(_getImplementationManagerRoles())
     {
         if (implementation_ == address(0)) revert InvalidTokenFactoryAddress();
         if (tokenFactoryImplementationsByType[factoryTypeHash] == address(0)) revert InvalidTokenFactoryAddress();

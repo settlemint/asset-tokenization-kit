@@ -113,6 +113,7 @@ export const statsTotalSupply = tokenRouter.token.statsTotalSupply
           since: sinceTimestamp.toString(),
         },
         output: StatsTotalSupplyResponseSchema,
+        error: "Failed to fetch token total supply history",
       }
     );
 

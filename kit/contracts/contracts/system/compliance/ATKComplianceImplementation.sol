@@ -17,16 +17,18 @@ import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SM
 import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
+
+
 /// @title ATK Compliance Contract Implementation
 /// @author SettleMint
-/// @notice This contract is the upgradeable logic implementation for the main compliance functionality within the ATK
-/// Protocol.
+/// @notice This contract is the upgradeable logic implementation for the main compliance functionality within the ATK Protocol.
 contract ATKComplianceImplementation is
     Initializable,
     ERC2771ContextUpgradeable,
     AccessControlUpgradeable,
     IATKCompliance
 {
+
     // --- Storage ---
     /// @notice Optional centralized access manager for enhanced role checking
     /// @dev If set, enables multi-role access patterns alongside existing AccessControl
@@ -51,9 +53,9 @@ contract ATKComplianceImplementation is
     /// @notice Modifier that checks if the caller has any of the specified roles in the system access manager
     modifier onlySystemAndComplianceManagerRoles() {
         bytes32[] memory roles = new bytes32[](3);
-        roles[0] = ATKSystemRoles.COMPLIANCE_MANAGER_ROLE; // Primary compliance manager
-        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE; // System manager
-        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE; // System module role
+        roles[0] = ATKSystemRoles.COMPLIANCE_MANAGER_ROLE;       // Primary compliance manager
+        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE;           // System manager
+        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE;            // System module role
 
         _onlySystemRoles(roles, _msgSender());
         _;
@@ -78,6 +80,7 @@ contract ATKComplianceImplementation is
         if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
         if (!_systemAccessManager.hasAnyRole(roles, sender)) revert UnauthorizedAccess();
     }
+
 
     // --- Constructor ---
     /// @notice Constructor that sets up the trusted forwarder and disables initializers
@@ -140,7 +143,7 @@ contract ATKComplianceImplementation is
     /// SYSTEM_MODULE_ROLE.
     /// Bypassed addresses can bypass compliance checks in canTransfer function.
     /// @param account The address to add to the bypass list
-    function addToBypassList(address account) external onlySystemAndComplianceManagerRoles {
+    function addToBypassList(address account) external onlySystemAndComplianceManagerRoles() {
         if (account == address(0)) revert ZeroAddressNotAllowed();
         if (_bypassedAddresses[account]) revert AddressAlreadyOnBypassList(account);
 
@@ -152,7 +155,7 @@ contract ATKComplianceImplementation is
     /// @dev Uses new multi-role access control. Can be called by COMPLIANCE_MANAGER_ROLE, SYSTEM_MANAGER_ROLE, or
     /// SYSTEM_MODULE_ROLE.
     /// @param account The address to remove from the bypass list
-    function removeFromBypassList(address account) external onlySystemAndComplianceManagerRoles {
+    function removeFromBypassList(address account) external onlySystemAndComplianceManagerRoles() {
         if (!_bypassedAddresses[account]) revert AddressNotOnBypassList(account);
 
         _bypassedAddresses[account] = false;
@@ -164,7 +167,10 @@ contract ATKComplianceImplementation is
     /// SYSTEM_MODULE_ROLE.
     /// This is a gas-efficient way to add multiple addresses to the bypass list at once.
     /// @param accounts Array of addresses to add to the bypass list
-    function addMultipleToBypassList(address[] calldata accounts) external onlySystemAndComplianceManagerRoles {
+    function addMultipleToBypassList(address[] calldata accounts)
+        external
+        onlySystemAndComplianceManagerRoles()
+    {
         uint256 accountsLength = accounts.length;
         for (uint256 i = 0; i < accountsLength;) {
             address account = accounts[i];
@@ -184,7 +190,10 @@ contract ATKComplianceImplementation is
     /// @dev Uses new multi-role access control. Can be called by COMPLIANCE_MANAGER_ROLE, SYSTEM_MANAGER_ROLE, or
     /// SYSTEM_MODULE_ROLE.
     /// @param accounts Array of addresses to remove from the bypass list
-    function removeMultipleFromBypassList(address[] calldata accounts) external onlySystemAndComplianceManagerRoles {
+    function removeMultipleFromBypassList(address[] calldata accounts)
+        external
+        onlySystemAndComplianceManagerRoles()
+    {
         uint256 accountsLength = accounts.length;
         for (uint256 i = 0; i < accountsLength;) {
             address account = accounts[i];
@@ -211,7 +220,10 @@ contract ATKComplianceImplementation is
     /// @notice Adds a global compliance module that applies to all tokens
     /// @param module Address of the compliance module to add
     /// @param params ABI-encoded parameters for the module
-    function addGlobalComplianceModule(address module, bytes calldata params) external onlyComplianceManagerRole {
+    function addGlobalComplianceModule(address module, bytes calldata params)
+        external
+        onlyComplianceManagerRole()
+    {
         // Validate module and parameters first
         _validateModuleAndParams(module, params);
 
@@ -230,7 +242,10 @@ contract ATKComplianceImplementation is
 
     /// @notice Removes a global compliance module
     /// @param module Address of the compliance module to remove
-    function removeGlobalComplianceModule(address module) external onlyComplianceManagerRole {
+    function removeGlobalComplianceModule(address module)
+        external
+        onlyComplianceManagerRole()
+    {
         uint256 index = _globalModuleIndex[module]; // This is index + 1
         if (index == 0) {
             revert GlobalModuleNotFound(module);
@@ -250,18 +265,15 @@ contract ATKComplianceImplementation is
         delete _globalModuleIndex[module]; // Clear the module's index
         delete _globalModuleParameters[module]; // Clear the module's parameters
 
-        emit GlobalComplianceModuleRemoved(_msgSender(), module);
+        emit GlobalComplianceModuleRemoved(_msgSender(),module);
     }
 
     /// @notice Updates the parameters for an existing global compliance module
     /// @param module Address of the compliance module to update
     /// @param params New ABI-encoded parameters for the module
-    function setParametersForGlobalComplianceModule(
-        address module,
-        bytes calldata params
-    )
+    function setParametersForGlobalComplianceModule(address module, bytes calldata params)
         external
-        onlyComplianceManagerRole
+        onlyComplianceManagerRole()
     {
         if (_globalModuleIndex[module] == 0) {
             revert GlobalModuleNotFound(module);
@@ -340,9 +352,7 @@ contract ATKComplianceImplementation is
         // Second, call global compliance modules
         uint256 globalModulesLength = _globalComplianceModuleList.length;
         for (uint256 i = 0; i < globalModulesLength;) {
-            ISMARTComplianceModule(_globalComplianceModuleList[i]).created(
-                _token, _to, _amount, _globalModuleParameters[_globalComplianceModuleList[i]]
-            );
+            ISMARTComplianceModule(_globalComplianceModuleList[i]).created(_token, _to, _amount, _globalModuleParameters[_globalComplianceModuleList[i]]);
             unchecked {
                 ++i;
             }
@@ -358,9 +368,7 @@ contract ATKComplianceImplementation is
         SMARTComplianceModuleParamPair[] memory tokenModulePairs = ISMART(_token).complianceModules();
         uint256 tokenModulePairsLength = tokenModulePairs.length;
         for (uint256 i = 0; i < tokenModulePairsLength;) {
-            ISMARTComplianceModule(tokenModulePairs[i].module).destroyed(
-                _token, _from, _amount, tokenModulePairs[i].params
-            );
+            ISMARTComplianceModule(tokenModulePairs[i].module).destroyed(_token, _from, _amount, tokenModulePairs[i].params);
             unchecked {
                 ++i;
             }
@@ -369,9 +377,7 @@ contract ATKComplianceImplementation is
         // Second, call global compliance modules
         uint256 globalModulesLength = _globalComplianceModuleList.length;
         for (uint256 i = 0; i < globalModulesLength;) {
-            ISMARTComplianceModule(_globalComplianceModuleList[i]).destroyed(
-                _token, _from, _amount, _globalModuleParameters[_globalComplianceModuleList[i]]
-            );
+            ISMARTComplianceModule(_globalComplianceModuleList[i]).destroyed(_token, _from, _amount, _globalModuleParameters[_globalComplianceModuleList[i]]);
             unchecked {
                 ++i;
             }

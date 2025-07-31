@@ -150,6 +150,7 @@ contract ATKComplianceImplementationTest is Test {
         vm.prank(admin);
         compliance.setSystemAccessManager(address(systemAccessManager));
 
+
         // Deploy mock token
         token = new MockATKToken(address(compliance));
 
@@ -630,8 +631,7 @@ contract ATKComplianceImplementationTest is Test {
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), params);
 
         // Verify module was added
-        SMARTComplianceModuleParamPair[] memory globalModules =
-            IATKCompliance(address(compliance)).getGlobalComplianceModules();
+        SMARTComplianceModuleParamPair[] memory globalModules = IATKCompliance(address(compliance)).getGlobalComplianceModules();
         assertEq(globalModules.length, 1);
         assertEq(globalModules[0].module, address(validModule));
         assertEq(globalModules[0].params, params);
@@ -641,7 +641,11 @@ contract ATKComplianceImplementationTest is Test {
         bytes memory params = abi.encode(uint256(500));
 
         vm.prank(unauthorizedUser);
-        vm.expectRevert(abi.encodeWithSelector(IATKCompliance.UnauthorizedAccess.selector));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IATKCompliance.UnauthorizedAccess.selector
+            )
+        );
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), params);
     }
 
@@ -695,8 +699,7 @@ contract ATKComplianceImplementationTest is Test {
         IATKCompliance(address(compliance)).removeGlobalComplianceModule(address(validModule));
 
         // Verify module was removed
-        SMARTComplianceModuleParamPair[] memory globalModules =
-            IATKCompliance(address(compliance)).getGlobalComplianceModules();
+        SMARTComplianceModuleParamPair[] memory globalModules = IATKCompliance(address(compliance)).getGlobalComplianceModules();
         assertEq(globalModules.length, 0);
     }
 
@@ -708,7 +711,11 @@ contract ATKComplianceImplementationTest is Test {
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), params);
 
         vm.prank(unauthorizedUser);
-        vm.expectRevert(abi.encodeWithSelector(IATKCompliance.UnauthorizedAccess.selector));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IATKCompliance.UnauthorizedAccess.selector
+            )
+        );
         IATKCompliance(address(compliance)).removeGlobalComplianceModule(address(validModule));
     }
 
@@ -738,8 +745,7 @@ contract ATKComplianceImplementationTest is Test {
         IATKCompliance(address(compliance)).removeGlobalComplianceModule(address(module2));
 
         // Verify remaining modules
-        SMARTComplianceModuleParamPair[] memory globalModules =
-            IATKCompliance(address(compliance)).getGlobalComplianceModules();
+        SMARTComplianceModuleParamPair[] memory globalModules = IATKCompliance(address(compliance)).getGlobalComplianceModules();
         assertEq(globalModules.length, 2);
 
         // Should have validModule and module3, but module3 should have moved to index 1 (swap-and-pop)
@@ -775,8 +781,7 @@ contract ATKComplianceImplementationTest is Test {
         IATKCompliance(address(compliance)).setParametersForGlobalComplianceModule(address(validModule), newParams);
 
         // Verify parameters were updated
-        SMARTComplianceModuleParamPair[] memory globalModules =
-            IATKCompliance(address(compliance)).getGlobalComplianceModules();
+        SMARTComplianceModuleParamPair[] memory globalModules = IATKCompliance(address(compliance)).getGlobalComplianceModules();
         assertEq(globalModules.length, 1);
         assertEq(globalModules[0].params, newParams);
     }
@@ -790,7 +795,11 @@ contract ATKComplianceImplementationTest is Test {
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), initialParams);
 
         vm.prank(unauthorizedUser);
-        vm.expectRevert(abi.encodeWithSelector(IATKCompliance.UnauthorizedAccess.selector));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IATKCompliance.UnauthorizedAccess.selector
+            )
+        );
         IATKCompliance(address(compliance)).setParametersForGlobalComplianceModule(address(validModule), newParams);
     }
 
@@ -818,14 +827,11 @@ contract ATKComplianceImplementationTest is Test {
 
         vm.prank(complianceManager);
         vm.expectRevert(abi.encodeWithSelector(ISMARTComplianceModule.InvalidParameters.selector, "Invalid params"));
-        IATKCompliance(address(compliance)).setParametersForGlobalComplianceModule(
-            address(invalidParamsModule), invalidParams
-        );
+        IATKCompliance(address(compliance)).setParametersForGlobalComplianceModule(address(invalidParamsModule), invalidParams);
     }
 
     function testGetGlobalComplianceModulesEmpty() public view {
-        SMARTComplianceModuleParamPair[] memory globalModules =
-            IATKCompliance(address(compliance)).getGlobalComplianceModules();
+        SMARTComplianceModuleParamPair[] memory globalModules = IATKCompliance(address(compliance)).getGlobalComplianceModules();
         assertEq(globalModules.length, 0);
     }
 
@@ -840,8 +846,7 @@ contract ATKComplianceImplementationTest is Test {
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(module2), params2);
         vm.stopPrank();
 
-        SMARTComplianceModuleParamPair[] memory globalModules =
-            IATKCompliance(address(compliance)).getGlobalComplianceModules();
+        SMARTComplianceModuleParamPair[] memory globalModules = IATKCompliance(address(compliance)).getGlobalComplianceModules();
         assertEq(globalModules.length, 2);
         assertEq(globalModules[0].module, address(validModule));
         assertEq(globalModules[0].params, params1);
@@ -1059,9 +1064,7 @@ contract ATKComplianceImplementationTest is Test {
         for (uint256 i = 0; i < 5; i++) {
             globalModules[i] = new MockedComplianceModule();
             vm.prank(complianceManager);
-            IATKCompliance(address(compliance)).addGlobalComplianceModule(
-                address(globalModules[i]), abi.encode(i * 100)
-            );
+            IATKCompliance(address(compliance)).addGlobalComplianceModule(address(globalModules[i]), abi.encode(i * 100));
         }
 
         // Measure gas for canTransfer with global modules
@@ -1104,8 +1107,7 @@ contract ATKComplianceImplementationTest is Test {
         vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), params);
 
-        SMARTComplianceModuleParamPair[] memory globalModules =
-            IATKCompliance(address(compliance)).getGlobalComplianceModules();
+        SMARTComplianceModuleParamPair[] memory globalModules = IATKCompliance(address(compliance)).getGlobalComplianceModules();
         assertEq(globalModules.length, 1);
         assertEq(globalModules[0].module, address(validModule));
         assertEq(globalModules[0].params, params);

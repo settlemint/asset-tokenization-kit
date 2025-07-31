@@ -46,7 +46,9 @@ contract CountryAllowListComplianceModuleTest is AbstractComplianceModuleTest {
         // A transfer to an address with no identity should revert.
         bytes memory params = abi.encode(new uint16[](0));
         vm.expectRevert(
-            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity unknown")
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity unknown"
+            )
         );
         module.canTransfer(address(smartToken), user1, user3, 100, params);
     }
@@ -55,7 +57,9 @@ contract CountryAllowListComplianceModuleTest is AbstractComplianceModuleTest {
         // Empty allow list means no countries are allowed, and users without identity are also blocked
         bytes memory params = abi.encode(new uint16[](0));
         vm.expectRevert(
-            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity unknown")
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity unknown"
+            )
         );
         module.canTransfer(address(smartToken), tokenIssuer, user3, 100, params); // user3 has no identity
     }
@@ -133,7 +137,9 @@ contract CountryAllowListComplianceModuleTest is AbstractComplianceModuleTest {
         // Transfer to user3 (no identity) should fail
         vm.prank(tokenIssuer);
         vm.expectRevert(
-            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity unknown")
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity unknown"
+            )
         );
         smartToken.transfer(user3, 100);
     }

@@ -26,82 +26,61 @@ bun run ci
 - `kit/subgraph/` - TheGraph indexing → Use **subgraph-dev**
 - `kit/dapp/src/orpc/` - API endpoints → Use **orpc-expert**
 
-## Enhanced Agent Orchestration System
+## Agent Orchestration Pattern
 
-### Orchestration Architecture
-
-**Dependency Matrix**: See `.claude/orchestration/agent-dependencies.yaml`
-**Context Management**: See `.claude/orchestration/context-management.ts`
-**Workflows**: See `.claude/orchestration/workflows/`
-
-### CRITICAL: Agent Communication Protocol
+### CRITICAL: Agent Communication Limitations
 
 **Sub-agents CANNOT invoke other agents** - Only main Claude orchestrates:
 
-- Agents return structured `AgentOutput` format (see context-management.ts)
-- Main Claude manages shared context and caching
-- Smart dependency resolution enables optimal parallelization
+- Agents return structured outputs with handoff information
+- Main Claude extracts findings and passes context between agents
+- Each agent must specify what the next agent needs
 
-### Enhanced Agent Routing
+### Agent Routing Protocol
 
 **For any implementation task:**
 
-1. **ALWAYS start with planner** for multi-step features
-2. **CHECK dependency matrix** for parallelization opportunities
-3. **USE workflow patterns** for common scenarios (bug-fix, feature-dev)
-4. **MAINTAIN shared context** across agent invocations
-5. **CACHE strategically** to reduce token usage
-6. **SELECT appropriate model** based on task complexity
+1. **ALWAYS start with planner** agent for multi-step features
+2. **FOLLOW the agent routing** specified by planner EXACTLY
+3. **USE ONLY the agents** explicitly recommended
+4. **EXTRACT and PASS context** between agent invocations
+5. **EXECUTE agents in PARALLEL** when tasks are independent
 
-### Structured Agent Return Format
+### Agent Return Format
 
-```typescript
-// See .claude/orchestration/context-management.ts for full interface
-interface AgentOutput {
-  taskCompletion: { status: 'completed' | 'blocked' | 'partial' }
-  summary: { primaryOutcome: string; confidenceLevel: 'high' | 'medium' | 'low' }
-  deliverables: { filesModified: [...], artifactsCreated: [...] }
-  contextHandoff: { readyForAgents: [...], sharedResources: [...] }
-  qualityGates: { tests: {...}, security: {...}, performance: {...} }
-  cacheKeys: { geminiAnalysis?: string, context7Docs?: string }
-}
-```
+Agents must return structured information:
 
-### Compressed Format (30% token reduction)
+```markdown
+## Task Completed: [Task Name]
 
-```yaml
-s: ✓  # status
-f: ["/path/file.ts:+45-12"]  # files modified
-n: ["orpc-expert:api_endpoints"]  # next agents
-c: ["gemini:abc123"]  # cache keys
+- Key findings: [What was discovered/implemented]
+- Output location: [Files created/modified]
+- Next agent needs: [Context for next specialist]
+- Blockers: [Any issues preventing completion]
 ```
 
 ### Available Specialized Agents
 
 **Core Development:**
 
-- **planner** (Opus): Tech lead, analyzes requirements, orchestrates teams
-- **solidity-expert** (Opus): Smart contract development and security
-- **react-dev** (Sonnet): React components with TanStack suite
-- **orpc-expert** (Sonnet): ORPC API endpoints and OpenAPI
-- **subgraph-dev** (Sonnet): TheGraph indexing and mappings
-- **database-expert** (Sonnet): PostgreSQL/Drizzle ORM optimization ⚡ NEW
-- **typescript-expert** (Sonnet): Advanced type system patterns ⚡ NEW
+- **planner**: Tech lead, analyzes requirements, orchestrates teams
+- **solidity-expert**: Smart contract development and security
+- **react-dev**: React components with TanStack suite
+- **orpc-expert**: ORPC API endpoints and OpenAPI
+- **subgraph-dev**: TheGraph indexing and mappings
 
 **Quality & Testing:**
 
-- **test-dev** (Sonnet): Vitest and Forge test creation
-- **integration-tester** (Sonnet): E2E testing with Playwright
-- **security-auditor** (Opus): Comprehensive security reviews
-- **code-reviewer** (Sonnet): Post-implementation review
+- **test-dev**: Vitest and Forge test creation
+- **integration-tester**: E2E testing with Playwright
+- **security-auditor**: Comprehensive security reviews
+- **code-reviewer**: Post-implementation review
 
 **Infrastructure & Optimization:**
 
 - **devops**: Helm charts and Kubernetes configs
 - **ci-cd-expert**: GitHub Actions and deployment pipelines
 - **performance-optimizer**: Full-stack performance tuning
-- **observability-expert**: Monitoring, logging, Sentry ⚡ NEW
-- **config-expert**: Environment and secret management ⚡ NEW
 
 **Specialized Support:**
 
@@ -112,187 +91,91 @@ c: ["gemini:abc123"]  # cache keys
 - **code-archaeologist**: Legacy code analysis
 - **team-configurator**: Multi-agent coordination
 
-### Smart Parallel Execution
+### Parallel Execution Guidelines
 
-**Dependency-Based Parallelization:**
+**When to Execute in Parallel:**
 
-The system now uses dependency matrices to automatically determine optimal parallelization:
+- Independent file operations (reads, writes, analysis)
+- Separate module implementations (frontend + backend)
+- Multiple test file creations
+- Documentation across different modules
+- Style and type definitions
 
-```yaml
-# Example from agent-dependencies.yaml
-solidity-expert:
-  parallel_with: [typescript-expert, database-expert, documentation-expert]
-  required_for: [subgraph-dev, orpc-expert]
+**When to Execute Sequentially:**
+
+- Dependencies exist between tasks
+- Output from one agent feeds another
+- Contract → Subgraph → API → UI flow
+- Security reviews require complete code
+
+### Example: Multi-Agent Feature Implementation
+
 ```
-
-**Execution Phases:**
-
-1. **Analysis Phase** (Parallel): planner, code-archaeologist, security-auditor
-2. **Foundation Phase** (Parallel): solidity-expert, database-expert, typescript-expert
-3. **Integration Phase** (Sequential Groups): subgraph → orpc → react/tests
-4. **Quality Phase** (Parallel): testing, optimization, documentation
-5. **Review Phase** (Sequential): code-reviewer
-
-**Micro-Parallelization:**
-
-Within each phase, maximize parallelization:
-- Batch file operations
-- Concurrent API calls
-- Parallel test execution
-- Simultaneous documentation updates
-
-### Workflow Examples
-
-#### Feature Development (see workflows/feature-development.yaml)
-
-```yaml
 User: "Add token transfer functionality with approval"
 
-# Automatic workflow selection based on task type
-Workflow: feature_development_workflow
-
-Phases:
-  1. Analysis (Parallel):
-     - planner (opus): Requirements analysis
-     - code-archaeologist (opus): Existing patterns
-     - security-auditor (opus): Threat model
-     - performance-optimizer (opus): Baseline metrics
-     
-  2. Design (Parallel):
-     - typescript-expert (sonnet): Type interfaces
-     - database-expert (sonnet): Schema if needed
-     - config-expert (sonnet): Feature flags
-     
-  3. Foundation → Integration → Quality → Review
-     - Smart contracts: opus (security critical)
-     - APIs/UI: sonnet (established patterns)
-     - Tests: sonnet (repetitive patterns)
+Optimized Parallel Flow:
+1. Invoke planner agent → Returns implementation roadmap
+2. Extract planner's findings and routing map
+3. PARALLEL EXECUTION - Phase 1:
+   - solidity-expert: "Implement transfer methods per planner's spec"
+   - documentation-expert: "Prepare transfer feature documentation structure"
+4. SEQUENTIAL - Phase 2 (needs contract output):
+   - subgraph-dev: "Index transfer events from contract at [address]"
+5. PARALLEL EXECUTION - Phase 3:
+   - orpc-expert: "Create transfer API endpoints"
+   - react-dev: "Build transfer UI components"
+   - test-dev: "Write unit tests for utilities"
+6. PARALLEL EXECUTION - Phase 4:
+   - test-dev: "Integration tests for complete feature"
+   - documentation-expert: "Finalize docs with examples"
+7. SEQUENTIAL - Final Phase:
+   - code-reviewer: "Review all changes"
 ```
 
-#### Bug Fix (see workflows/bug-fix.yaml)
-
-```yaml
-User: "Fix null pointer in auth module"
-
-Workflow: bug_fix_workflow
-
-Phases:
-  1. Triage: root cause + security impact
-  2. Planning: fix strategy
-  3. Implementation: targeted fix
-  4. Testing: regression prevention
-  5. Review: quality gate
-```
-
-### Workflow State Machine
+### Orchestration Workflow
 
 ```mermaid
-stateDiagram-v2
-    [*] --> Analysis
-    Analysis --> Design: Requirements Clear
-    Analysis --> Analysis: Need More Info
-    
-    Design --> Foundation: Design Approved
-    Foundation --> Integration: Contracts/DB Ready
-    
-    Integration --> Quality: Features Complete
-    Quality --> Deployment: All Tests Pass
-    Quality --> Integration: Tests Fail
-    
-    Deployment --> Review: Deployed
-    Review --> [*]: Approved
-    Review --> Quality: Changes Needed
+graph TD
+    Main[Main Claude] --> Plan[Planner]
+    Plan --> P1{Phase 1: Parallel}
+    P1 --> Sol[Solidity Expert]
+    P1 --> Doc1[Documentation Expert]
+
+    Sol --> S1{Sequential}
+    S1 --> Sub[Subgraph Dev]
+
+    Sub --> P2{Phase 2: Parallel}
+    P2 --> API[ORPC Expert]
+    P2 --> UI[React Dev]
+    P2 --> Test1[Test Dev - Units]
+
+    API --> P3{Phase 3: Parallel}
+    UI --> P3
+    P3 --> Test2[Test Dev - Integration]
+    P3 --> Doc2[Documentation Expert - Finalize]
+
+    Test2 --> Rev[Code Reviewer]
+    Doc2 --> Rev
 ```
 
-### Context Handoff Pattern
+### Parallel Execution Syntax
 
-```typescript
-// Phase 1 completes
-const phase1Context = {
-  contractAddresses: { token: '0x...', factory: '0x...' },
-  decisions: { gasOptimization: 'moderate', securityLevel: 'high' },
-  caches: { gemini: 'analysis_123', context7: 'react_hooks_v19' }
-};
+When invoking agents in parallel, use clear phase grouping:
 
-// Phase 2 receives context
-INVOKE subgraph-dev WITH:
-  "Index events for contracts at ${phase1Context.contractAddresses}"
-  "Apply security level: ${phase1Context.decisions.securityLevel}"
-  "Use cached analysis: ${phase1Context.caches.gemini}"
-```
+```markdown
+## PARALLEL EXECUTION - [Phase Name]
 
-### Caching Strategy
+Invoke the following agents simultaneously:
 
-```yaml
-Cache Lifetimes:
-  context7_docs: 1 hour     # Library documentation
-  gemini_analysis: 10 min   # Code analysis results
-  grep_examples: 1 day      # Real-world examples
-  agent_outputs: task       # Within workflow only
-```
+- agent-1: "Task description with specific context"
+- agent-2: "Task description with specific context"
+- agent-3: "Task description with specific context"
 
-## Intelligent Model Selection
+## SEQUENTIAL EXECUTION - [Phase Name]
 
-**Model Strategy**: See `.claude/orchestration/model-selection.yaml`
+After parallel tasks complete, invoke:
 
-### Quick Reference
-
-**Use Opus (Deep Reasoning) for:**
-- Security-critical code (smart contracts, auth)
-- Architecture design and planning
-- Complex problem solving
-- Performance optimization
-- Cross-system integration
-
-**Use Sonnet (Fast Patterns) for:**
-- Standard implementations
-- Well-defined patterns
-- Documentation and tests
-- Configuration changes
-- Parallel execution tasks
-
-### Agent Model Defaults
-
-| Agent Type | Default Model | Override Conditions |
-|------------|---------------|--------------------|
-| Strategic (planner, security) | Opus | Simple CRUD → Sonnet |
-| Implementation (react, orpc) | Sonnet | Complex logic → Opus |
-| Testing & Docs | Sonnet | Architecture review → Opus |
-| Infrastructure | Sonnet | Complex setup → Opus |
-
-### Model Selection in Commands
-
-```bash
-# Specify model when invoking agents
-INVOKE planner WITH model:opus FOR "complex architecture design"
-INVOKE react-dev WITH model:sonnet FOR "add loading spinner"
-
-# Parallel execution optimization
-PARALLEL EXECUTION:
-  - solidity-expert WITH model:opus    # Critical path
-  - react-dev WITH model:sonnet        # Can wait
-  - test-dev WITH model:sonnet         # Pattern-based
-```
-
-### Cost-Performance Optimization
-
-1. **Critical Path Analysis**: Use Opus only for blocking tasks
-2. **Parallel Preference**: Sonnet for parallel tasks (faster)
-3. **Security Override**: Always Opus for security analysis
-4. **Budget Mode**: Prefer Sonnet unless complexity demands Opus
-
-### Dynamic Model Selection Rules
-
-```yaml
-# Automatic model selection based on task
-if task.contains(["security", "auth", "financial"]):
-  model = opus  # Security first
-elif task.is_urgent and task.is_simple:
-  model = sonnet  # Speed for simple tasks
-elif task.requires_analysis:
-  model = opus  # Deep reasoning needed
-else:
-  model = agent.default  # Use agent's default
+- agent-4: "Task using outputs from previous phase"
 ```
 
 ## Essential Commands
@@ -336,32 +219,12 @@ mcp__gemini-cli__ask-gemini(prompt="@file.ts review my changes for security issu
 mcp__gemini-cli__ask-gemini(prompt="analyze performance bottlenecks", model="gemini-2.5-pro")
 ```
 
-### MCP Tool Caching & Optimization
+### Other MCP Tools:
 
 2. **Context7** - Latest library docs
-   ```typescript
-   // Cache docs for session duration
-   const reactDocs = await mcp__context7__get_library_docs({
-     libraryId: '/facebook/react',
-     topic: 'hooks',
-     tokens: 5000
-   });
-   // Store in context.caches.context7['react_hooks'] = reactDocs;
-   ```
-
 3. **Grep** - Real-world examples
-   ```typescript
-   // Cache examples for 24 hours
-   const examples = await mcp__grep__searchGitHub({
-     query: 'useState\\(',
-     language: ['TypeScript']
-   });
-   // Store in context.caches.realWorldExamples['useState'] = examples;
-   ```
-
-4. **Linear/Sentry** - Issue tracking (no caching needed)
-
-5. **OpenZeppelin Contracts** - Smart contract generation
+4. **Linear/Sentry** - Issue tracking
+5. **OpenZeppelin Contracts** - Smart contract generation:
    - Quick prototyping with audited base contracts
    - ERC-20/721/1155 tokens, DAOs, stablecoins
    - Use with `solidity-expert` to extend for ATK patterns

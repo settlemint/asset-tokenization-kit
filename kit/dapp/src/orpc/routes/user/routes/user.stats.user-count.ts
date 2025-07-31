@@ -109,6 +109,7 @@ export const statsUserCount = authRouter.user.statsUserCount
         since: sinceTimestamp.toString(),
       },
       output: UserCountResponseSchema,
+      error: "Failed to fetch user count",
     });
 
     // Calculate metrics

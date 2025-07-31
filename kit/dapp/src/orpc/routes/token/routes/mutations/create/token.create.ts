@@ -85,6 +85,7 @@ export const create = portalRouter.token.create
       {
         input: queryVariables,
         output: TokenQueryResultSchema,
+        error: context.t("tokens:api.mutations.create.messages.notFound"),
       }
     );
 

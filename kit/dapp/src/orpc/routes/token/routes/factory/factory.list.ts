@@ -10,7 +10,7 @@ import { FactoriesResponseSchema } from "@/orpc/routes/token/routes/factory/fact
  * Each factory can produce tokens of a specific type (e.g., equity tokens, bonds, funds).
  *
  * This query supports:
- * - Automatic pagination using @fetchAll directive
+ * - Paginated retrieval using skip/first parameters
  * - Flexible sorting by any TokenFactory field
  * - Filtering based on whether factories have created tokens
  *
@@ -18,12 +18,14 @@ import { FactoriesResponseSchema } from "@/orpc/routes/token/routes/factory/fact
  * allowing UIs to show only active factories or hide empty ones.
  */
 const LIST_TOKEN_FACTORIES_QUERY = theGraphGraphql(`
-  query ListTokenFactories($orderBy: TokenFactory_orderBy, $orderDirection: OrderDirection, $where: TokenFactory_filter) {
+  query ListTokenFactories($skip: Int!, $first: Int!, $orderBy: TokenFactory_orderBy, $orderDirection: OrderDirection, $where: TokenFactory_filter) {
     tokenFactories(
+      skip: $skip
+      first: $first
       orderBy: $orderBy
       orderDirection: $orderDirection
       where: $where
-    ) @fetchAll {
+    ) {
       id
       name
       typeId
@@ -93,6 +95,7 @@ export const factoryList = authRouter.token.factoryList
           where,
         },
         output: FactoriesResponseSchema,
+        error: context.t("tokens:api.factory.list.messages.failed"),
       }
     );
 

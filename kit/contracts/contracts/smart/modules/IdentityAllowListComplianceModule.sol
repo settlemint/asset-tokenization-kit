@@ -24,9 +24,11 @@ contract IdentityAllowListComplianceModule is AbstractIdentityComplianceModule {
         return TYPE_ID;
     }
 
+
     /// @notice Initializes the compliance module with a trusted forwarder
     /// @param _trustedForwarder Address of the trusted forwarder for meta transactions
     constructor(address _trustedForwarder) AbstractIdentityComplianceModule(_trustedForwarder) { }
+
 
     /// @notice Checks if a transfer is compliant based on the receiver's identity allowlist status
     /// @param _token The token contract address

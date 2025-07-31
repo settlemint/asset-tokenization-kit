@@ -1,6 +1,4 @@
 /**
- * @vitest-environment node
- *
  * Test Suite for Challenge-Response Authentication Helper
  *
  * This test suite verifies the functionality of the challenge-response authentication

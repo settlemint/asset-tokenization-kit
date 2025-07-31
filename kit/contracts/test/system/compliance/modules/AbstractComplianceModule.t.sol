@@ -79,7 +79,9 @@ contract AbstractComplianceModuleTest is Test {
         module.setAllowTransfers(false);
 
         vm.expectRevert(
-            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Transfer not allowed")
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Transfer not allowed"
+            )
         );
         module.canTransfer(tokenContract, user1, user2, 100, "");
     }
@@ -141,7 +143,7 @@ contract AbstractComplianceModuleTest is Test {
 
         assertEq(module.name(), "Test Module");
         assertEq(module2.name(), "Test Module");
-
+        
         // Both modules should have same type IDs since they're the same class
         assertEq(module.typeId(), module2.typeId());
     }
@@ -149,10 +151,10 @@ contract AbstractComplianceModuleTest is Test {
     function test_StatelessBehavior() public {
         // Test that the module behaves consistently regardless of order of operations
         module.setAllowTransfers(true);
-
+        
         module.canTransfer(tokenContract, user1, user2, 100, "");
         module.canTransfer(tokenContract, user2, user1, 200, "");
-
+        
         // State changes should not affect other calls since modules are stateless
         module.transferred(tokenContract, user1, user2, 100, "");
         module.canTransfer(tokenContract, user1, user2, 300, "");
@@ -213,7 +215,7 @@ contract AbstractComplianceModuleTest is Test {
     function test_LifecycleFunctions_DoNotRevert() public {
         // All lifecycle functions should not revert for stateless modules by default
         bytes memory params = abi.encode("test");
-
+        
         module.transferred(tokenContract, user1, user2, 100, params);
         module.created(tokenContract, user1, 100, params);
         module.destroyed(tokenContract, user1, 100, params);

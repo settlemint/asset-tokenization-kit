@@ -182,6 +182,7 @@ export const stats = authRouter.user.stats
         since: sinceTimestamp.toString(),
       },
       output: UserMetricsResponseSchema,
+      error: "Failed to fetch user metrics",
     });
 
     // Calculate metrics

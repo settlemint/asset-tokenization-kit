@@ -13,8 +13,7 @@ import { ISMARTComplianceModule } from "../interface/ISMARTComplianceModule.sol"
 /// approved list.
 /// @dev It inherits from `AbstractCountryComplianceModule` and implements a country-based allow-list logic.
 /// The module uses a token-specific list of allowed country codes provided via the `_params` argument when this
-/// module is registered with a particular `ISMART` token. The format for these parameters is `abi.encode(uint16[]
-/// memory
+/// module is registered with a particular `ISMART` token. The format for these parameters is `abi.encode(uint16[] memory
 /// allowedCountries)`.
 /// A transfer *to* a recipient is PERMITTED if:
 ///    - The recipient has a registered identity in the token's `ISMARTIdentityRegistry` AND their country code is known
@@ -22,13 +21,11 @@ import { ISMARTComplianceModule } from "../interface/ISMARTComplianceModule.sol"
 /// A transfer *to* a recipient is BLOCKED if:
 ///    - The recipient has no identity registered in the token's `ISMARTIdentityRegistry`, or their country code is 0.
 ///    - OR the recipient's registered country code is not present in the token-specific list of allowed countries.
-/// If any of these blocking conditions are met, the `canTransfer` function will revert with a `ComplianceCheckFailed`
-/// error,
+/// If any of these blocking conditions are met, the `canTransfer` function will revert with a `ComplianceCheckFailed` error,
 /// effectively blocking the transfer.
 /// @custom:parameters The `_params` data for this module should be ABI-encoded as a dynamic array of `uint16` country
 /// codes:
-///                   `abi.encode(uint16[] memory allowedCountries)`. These are the countries allowed for a specific
-/// token.
+///                   `abi.encode(uint16[] memory allowedCountries)`. These are the countries allowed for a specific token.
 contract CountryAllowListComplianceModule is AbstractCountryComplianceModule {
     /// @notice Unique type identifier for this compliance module
     bytes32 public constant TYPE_ID = keccak256("CountryAllowListComplianceModule");
@@ -40,12 +37,14 @@ contract CountryAllowListComplianceModule is AbstractCountryComplianceModule {
         return TYPE_ID;
     }
 
+
     // --- Constructor ---
     /// @notice Constructor for the `CountryAllowListComplianceModule`.
     /// @dev When a contract inheriting from `CountryAllowListComplianceModule` is deployed, this constructor is called.
     /// It calls the constructor of `AbstractCountryComplianceModule` with the `_trustedForwarder` address.
     /// @param _trustedForwarder Address of the trusted forwarder for meta transactions
     constructor(address _trustedForwarder) AbstractCountryComplianceModule(_trustedForwarder) { }
+
 
     // --- Compliance Check --- (ISMARTComplianceModule Implementation)
 

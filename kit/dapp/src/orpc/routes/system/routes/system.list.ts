@@ -6,8 +6,8 @@ import { SystemsResponseSchema } from "@/orpc/routes/system/routes/system.list.s
 /**
  * GraphQL query for retrieving SMART systems from TheGraph.
  *
- * This query fetches all system contracts with support for:
- * - Automatic pagination using @fetchAll directive
+ * This query fetches a paginated list of system contracts with support for:
+ * - Offset-based pagination (skip/first)
  * - Configurable sort order (ascending/descending)
  * - Custom ordering by any system field
  *
@@ -15,11 +15,13 @@ import { SystemsResponseSchema } from "@/orpc/routes/system/routes/system.list.s
  * tokenized assets and their associated compliance infrastructure.
  */
 const LIST_SYSTEM_QUERY = theGraphGraphql(`
-  query ListSystemQuery($orderBy: System_orderBy, $orderDirection: OrderDirection) {
+  query ListSystemQuery($skip: Int!, $first: Int!, $orderBy: System_orderBy, $orderDirection: OrderDirection) {
     systems(
+        skip: $skip
+        first: $first
         orderBy: $orderBy
         orderDirection: $orderDirection
-      ) @fetchAll {
+      ) {
       id
     }
   }
@@ -60,6 +62,7 @@ export const list = authRouter.system.list
     const result = await context.theGraphClient.query(LIST_SYSTEM_QUERY, {
       input,
       output: SystemsResponseSchema,
+      error: "Failed to retrieve systems",
     });
 
     // Return the array of system contracts

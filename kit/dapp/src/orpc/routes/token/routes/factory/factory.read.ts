@@ -71,6 +71,7 @@ export const factoryRead = authRouter.token.factoryRead
         output: z.object({
           tokenFactory: TokenFactoryDetailSchema,
         }),
+        error: context.t("tokens:api.factory.read.messages.failed"),
       }
     );
     return result.tokenFactory;

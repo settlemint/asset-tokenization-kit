@@ -23,9 +23,11 @@ contract AddressBlockListComplianceModule is AbstractAddressListComplianceModule
         return TYPE_ID;
     }
 
+
     /// @notice Initializes the compliance module with a trusted forwarder
     /// @param _trustedForwarder Address of the trusted forwarder for meta transactions
     constructor(address _trustedForwarder) AbstractAddressListComplianceModule(_trustedForwarder) { }
+
 
     /// @notice Checks if a transfer is compliant based on the receiver's address block status
     /// @param _to The receiver address being checked
