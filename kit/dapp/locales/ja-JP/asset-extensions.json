@@ -1,0 +1,48 @@
+{
+  "capabilities": {
+    "ACCESS_MANAGED": {
+      "label": "アクセス制御",
+      "description": "アセットへのアクセスと管理を制御する"
+    },
+    "BOND": {
+      "label": "固定利回り",
+      "description": "満期日と固定利回りを持つ債券を作成する"
+    },
+    "BURNABLE": {
+      "label": "トークン破棄",
+      "description": "アセット保有者がアセットを永続的に破棄できるようにする"
+    },
+    "CAPPED": {
+      "label": "供給上限",
+      "description": "アセット供給量の上限を設定する"
+    },
+    "COLLATERAL": {
+      "label": "融資担保",
+      "description": "ローンや融資の担保としてアセットを使用する"
+    },
+    "CUSTODIAN": {
+      "label": "安全な保管",
+      "description": "機関投資家レベルのカストディ機能を有効にする"
+    },
+    "FUND": {
+      "label": "ファンド管理",
+      "description": "手数料構造が組み込まれた投資ファンドを管理する"
+    },
+    "HISTORICAL_BALANCES": {
+      "label": "完全履歴",
+      "description": "完全な取引履歴と残高を追跡する"
+    },
+    "PAUSABLE": {
+      "label": "緊急停止",
+      "description": "緊急時にアセット転送を一時的に停止する"
+    },
+    "REDEEMABLE": {
+      "label": "現金化",
+      "description": "アセットを基礎価値と交換できるようにする"
+    },
+    "YIELD": {
+      "label": "収益獲得",
+      "description": "自動的な収益と利息支払いを生成する"
+    }
+  }
+}
