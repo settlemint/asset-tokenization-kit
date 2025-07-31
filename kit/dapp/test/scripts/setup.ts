@@ -1,3 +1,5 @@
+import type { ChildProcessByStdio } from "node:child_process";
+import type Stream from "node:stream";
 import { getOrpcClient } from "../utils/orpc-client";
 import {
   bootstrapSystem,
@@ -11,7 +13,9 @@ import {
   signInWithUser,
 } from "../utils/user";
 
-let runningDevServer: any | undefined;
+let runningDevServer:
+  | ChildProcessByStdio<null, Stream.Readable, Stream.Readable>
+  | undefined;
 
 export async function setup() {
   try {
