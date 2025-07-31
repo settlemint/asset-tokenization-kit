@@ -37,6 +37,7 @@ function RouteComponent() {
       navigationMode="next-only"
       title={t("onboarding:sidebar.title")}
       description={t("onboarding:sidebar.description")}
+      className="rounded-xl"
     >
       <Outlet />
     </StepLayout>

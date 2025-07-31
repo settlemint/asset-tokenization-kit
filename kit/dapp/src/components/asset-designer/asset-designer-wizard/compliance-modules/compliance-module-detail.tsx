@@ -1,4 +1,4 @@
-import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
+import { assetDesignerFormOptions } from "@/components/asset-designer/asset-designer-wizard/shared-form";
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
 import {

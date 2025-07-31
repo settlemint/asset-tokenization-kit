@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
 export const AssetDesignerSteps = [
-  "selectAssetType",
   "assetBasics",
   "complianceModules",
   "summary",
@@ -38,24 +37,18 @@ export function useAssetDesignerSteps(): Step<AssetDesignerStepsType>[] {
   return [
     {
       step: 1,
-      id: "selectAssetType",
-      label: t("wizard.steps.selectAssetType.title"),
-      description: t("wizard.steps.selectAssetType.description"),
-    },
-    {
-      step: 2,
       id: "assetBasics",
       label: t("wizard.steps.assetBasics.title"),
       description: t("wizard.steps.assetBasics.description"),
     },
     {
-      step: 3,
+      step: 2,
       id: "complianceModules",
       label: t("wizard.steps.complianceModules.title"),
       description: t("wizard.steps.complianceModules.description"),
     },
     {
-      step: 4,
+      step: 3,
       id: "summary",
       label: t("wizard.steps.summary.title"),
       description: t("wizard.steps.summary.description"),

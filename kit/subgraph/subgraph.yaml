@@ -933,10 +933,10 @@ templates:
           handler: handleComplianceModuleRegistered
       file: ./src/compliance/compliance-module-registry.ts
   - kind: ethereum
-    name: AbstractAddressListComplianceModule
+    name: Compliance
     network: settlemint
     source:
-      abi: AbstractAddressListComplianceModule
+      abi: Compliance
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
@@ -945,28 +945,14 @@ templates:
         - Address
         - Event
       abis:
-        - name: AbstractAddressListComplianceModule
-          file: ../contracts/.generated/artifacts/contracts/smart/modules/AbstractAddressListComplianceModule.sol/AbstractAddressListComplianceModule.json
+        - name: Compliance
+          file: ../contracts/.generated/artifacts/contracts/system/compliance/IATKCompliance.sol/IATKCompliance.json
       eventHandlers:
-        - event: GlobalAddressListChange(indexed address,indexed bool)
-          handler: handleGlobalAddressListChange
-      file: ./src/compliance/modules/address-list-compliance-module.ts
-  - kind: ethereum
-    name: AbstractCountryComplianceModule
-    network: settlemint
-    source:
-      abi: AbstractCountryComplianceModule
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - Address
-        - Event
-      abis:
-        - name: AbstractCountryComplianceModule
-          file: ../contracts/.generated/artifacts/contracts/smart/modules/AbstractCountryComplianceModule.sol/AbstractCountryComplianceModule.json
-      eventHandlers:
-        - event: GlobalCountryListChange(indexed uint16,indexed bool)
-          handler: handleGlobalCountryListChange
-      file: ./src/compliance/modules/country-list-compliance-module.ts
+        - event: GlobalComplianceModuleAdded(indexed address,indexed address,bytes)
+          handler: handleGlobalComplianceModuleAdded
+        - event: GlobalComplianceModuleRemoved(indexed address,indexed address)
+          handler: handleGlobalComplianceModuleRemoved
+        - event: GlobalComplianceModuleParametersUpdated(indexed address,indexed
+            address,bytes)
+          handler: handleGlobalComplianceModuleParametersUpdated
+      file: ./src/compliance/compliance.ts

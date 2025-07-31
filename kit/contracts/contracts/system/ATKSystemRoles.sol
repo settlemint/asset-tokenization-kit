@@ -12,6 +12,14 @@ library ATKSystemRoles {
 
     // --- People Roles (*_MANAGER_ROLE) ---
 
+    /// @notice Role identifier for addresses that can manage global compliance modules
+    /// @dev This role allows adding/removing global compliance modules that apply to all tokens
+    bytes32 public constant GLOBAL_COMPLIANCE_MANAGER_ROLE = keccak256("GLOBAL_COMPLIANCE_MANAGER_ROLE");
+
+    /// @notice Role identifier for addresses that can manage global compliance managers
+    /// @dev This role allows granting/revoking the GLOBAL_COMPLIANCE_MANAGER_ROLE
+    bytes32 public constant GLOBAL_COMPLIANCE_MANAGER_ADMIN_ROLE = keccak256("GLOBAL_COMPLIANCE_MANAGER_ADMIN_ROLE");
+
     /// @notice Role identifier for addresses that can manage the system
     /// @dev This role bootstraps the system, manage upgrades, implementation references + also the
     /// update linking (used in identity registry) etc. also has access on identity registry storage to modify

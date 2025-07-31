@@ -3,9 +3,6 @@ pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { Context } from "@openzeppelin/contracts/utils/Context.sol"; // Context might be implicitly inherited via
-    // AccessControl
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 
 // Interface imports
@@ -14,31 +11,23 @@ import { ISMARTComplianceModule } from "../interface/ISMARTComplianceModule.sol"
 /// @title Abstract Base for ATK Compliance Modules
 /// @author SettleMint
 /// @notice This abstract contract serves as a foundational building block for creating custom ATK compliance modules.
-/// @dev It implements the `IATKComplianceModule` interface and integrates OpenZeppelin's `AccessControl` for managing
-/// permissions within the module itself.
+/// @dev It implements the `ISMARTComplianceModule` interface as a stateless, pure logic unit.
 /// Key characteristics:
 /// - **Abstract Functions**: Child contracts (concrete compliance modules) *must* implement `canTransfer`,
 /// `validateParameters`, and `name`.
 /// - **Hook Functions**: `transferred`, `created`, and `destroyed` are provided as empty virtual functions. Child
 /// contracts can override these to react to token lifecycle events if needed.
-/// - **Access Control**: The deployer of a module instance automatically receives the `DEFAULT_ADMIN_ROLE`, allowing
-/// them to manage roles for that specific module instance.
-/// - **ERC165 Support**: It correctly reports support for the `IATKComplianceModule` interface.
+/// - **Stateless Design**: Modules are pure logic units without internal state or access control.
+/// - **ERC165 Support**: It correctly reports support for the `ISMARTComplianceModule` interface.
 /// Developers should inherit from this contract to create specific compliance rule sets.
-abstract contract AbstractComplianceModule is ERC2771Context, AccessControl, ISMARTComplianceModule {
+abstract contract AbstractComplianceModule is ERC2771Context, ISMARTComplianceModule {
     // --- Constructor ---
     /// @notice Constructor for the abstract compliance module.
     /// @dev When a contract inheriting from `AbstractComplianceModule` is deployed, this constructor is called.
-    /// It grants the `DEFAULT_ADMIN_ROLE` for this specific module instance to the address that deployed it
-    /// (`_msgSender()`).
-    /// The `DEFAULT_ADMIN_ROLE` is the highest administrative role within OpenZeppelin's AccessControl. It can grant
-    /// and revoke other roles.
-    /// This allows the deployer to manage permissions for their specific compliance module instance (e.g., who can
-    /// update settings if the module has any).
+    /// It initializes the ERC2771Context for meta-transaction support.
+    /// As modules are now stateless logic units, no access control setup is needed.
     /// @param _trustedForwarder Address of the trusted forwarder for meta transactions
-    constructor(address _trustedForwarder) ERC2771Context(_trustedForwarder) {
-        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
-    }
+    constructor(address _trustedForwarder) ERC2771Context(_trustedForwarder) { }
 
     // --- ISMARTComplianceModule State-Changing Hooks (Empty Virtual Implementations) ---
 
@@ -107,19 +96,16 @@ abstract contract AbstractComplianceModule is ERC2771Context, AccessControl, ISM
     /// contract implements.
     /// It explicitly states that this module (and any inheriting contract) supports the `ISMARTComplianceModule`
     /// interface.
-    /// It also calls `super.supportsInterface(interfaceId)` to include support for interfaces from parent contracts
-    /// (like `AccessControl` which also implements `IERC165`).
     /// @param interfaceId The interface identifier (bytes4) to check.
     /// @return `true` if the contract supports the `interfaceId`, `false` otherwise.
     function supportsInterface(bytes4 interfaceId)
         public
-        view
+        pure
         virtual
-        override(AccessControl, IERC165) // Specifies overriding from both AccessControl and IERC165 (if
-            // ISMARTComplianceModule also inherited IERC165 directly)
+        override(IERC165)
         returns (bool)
     {
-        return interfaceId == type(ISMARTComplianceModule).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(ISMARTComplianceModule).interfaceId || interfaceId == type(IERC165).interfaceId;
     }
 
     // --- Abstract Functions (MUST be implemented by inheriting concrete compliance modules) ---
@@ -175,7 +161,7 @@ abstract contract AbstractComplianceModule is ERC2771Context, AccessControl, ISM
     /// @return A string representing the name of the compliance module.
     function name() external pure virtual override returns (string memory);
 
-    // --- Internal Functions (Overrides for ERC2771Context and ERC165/AccessControl) ---
+    // --- Internal Functions (Overrides for ERC2771Context) ---
 
     /// @dev Overrides the `_msgSender()` function from OpenZeppelin's `Context` and `ERC2771Context`.
     /// This ensures that in the context of a meta-transaction (via a trusted forwarder), `msg.sender` (and thus
@@ -184,7 +170,7 @@ abstract contract AbstractComplianceModule is ERC2771Context, AccessControl, ISM
     /// If not a meta-transaction, it behaves like the standard `msg.sender`.
     /// @notice Returns the sender of the transaction, accounting for meta transactions
     /// @return The address of the original transaction sender (user) or the direct caller
-    function _msgSender() internal view override(Context, ERC2771Context) returns (address) {
+    function _msgSender() internal view override(ERC2771Context) returns (address) {
         return super._msgSender(); // Calls the ERC2771Context implementation.
     }
 
@@ -194,7 +180,7 @@ abstract contract AbstractComplianceModule is ERC2771Context, AccessControl, ISM
     /// If not a meta-transaction, it behaves like the standard `msg.data`.
     /// @notice Returns the call data of the transaction, accounting for meta transactions
     /// @return The original call data of the transaction
-    function _msgData() internal view override(Context, ERC2771Context) returns (bytes calldata) {
+    function _msgData() internal view override(ERC2771Context) returns (bytes calldata) {
         return super._msgData(); // Calls the ERC2771Context implementation.
     }
 
@@ -204,7 +190,7 @@ abstract contract AbstractComplianceModule is ERC2771Context, AccessControl, ISM
     /// The base `ERC2771Context` implementation handles this correctly.
     /// @notice Returns the length of the context suffix for meta transactions
     /// @return The length of the context suffix in the call data for meta-transactions
-    function _contextSuffixLength() internal view override(Context, ERC2771Context) returns (uint256) {
+    function _contextSuffixLength() internal view override(ERC2771Context) returns (uint256) {
         return super._contextSuffixLength();
     }
 }

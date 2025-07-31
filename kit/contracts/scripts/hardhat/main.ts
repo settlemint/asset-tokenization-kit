@@ -1,6 +1,7 @@
 import { batchAddToRegistry } from "./actions/add-to-registry";
 import { addTrustedIssuer } from "./actions/add-trusted-issuer";
 import { grantRole } from "./actions/grant-role";
+import { grantSystemRole } from "./actions/grant-system-role";
 import { issueVerificationClaims } from "./actions/issue-verification-claims";
 import { recoverIdentity } from "./actions/recover-identity";
 import { setGlobalBlockedAddresses } from "./actions/set-global-blocked-addressess";
@@ -118,6 +119,8 @@ async function main() {
   ]);
 
   console.log("\n=== Setting up compliance modules... ===\n");
+
+  await grantSystemRole(owner, ATKRoles.complianceManagerRole, owner.address);
 
   // block RU in the country block list module
   await setGlobalBlockedCountries([Countries.RU]);
