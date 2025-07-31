@@ -7,6 +7,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -170,25 +171,23 @@ export function PinSetupModal({ open, onOpenChange }: PinSetupModalProps) {
                     </form.Field>
                   )}
 
-                  <div className="flex gap-3 pt-4">
+                  <DialogFooter>
                     <Button
                       type="button"
                       variant="outline"
                       onClick={handleClose}
-                      className="flex-1"
                     >
                       {t("common:actions.cancel")}
                     </Button>
                     <Button
                       type="submit"
                       disabled={!isValid || state.isSubmitting}
-                      className="flex-1"
                     >
                       {state.isSubmitting
                         ? t("wallet-security.pincode.submitting")
                         : t("wallet-security.pincode.set-pin")}
                     </Button>
-                  </div>
+                  </DialogFooter>
                 </div>
               );
             }}

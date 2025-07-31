@@ -6,6 +6,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -293,7 +294,7 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
                 </form.Field>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4">
+              <DialogFooter>
                 <Button
                   type="button"
                   variant="outline"
@@ -312,7 +313,7 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
                     ? t("wallet-security.otp.verifying")
                     : t("wallet-security.otp.verify-code")}
                 </Button>
-              </div>
+              </DialogFooter>
             </form>
           </>
         ) : (
