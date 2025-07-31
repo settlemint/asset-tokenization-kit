@@ -214,7 +214,6 @@ export const create = onboardedRouter.system.create
       {
         input: queryVariables,
         output: SystemQueryResultSchema,
-        error: "Failed to create system",
       }
     );
 

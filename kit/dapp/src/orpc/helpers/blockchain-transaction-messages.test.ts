@@ -1,3 +1,6 @@
+/**
+ * @vitest-environment node
+ */
 import type { TOptions } from "i18next";
 import { describe, expect, test, vi } from "vitest";
 import type { i18nContext } from "@/orpc/middlewares/i18n/i18n.middleware";

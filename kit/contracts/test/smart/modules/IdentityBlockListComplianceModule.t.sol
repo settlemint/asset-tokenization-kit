@@ -61,7 +61,7 @@ contract IdentityBlockListComplianceModuleTest is AbstractComplianceModuleTest {
         address[] memory blockedIdentities = new address[](1);
         blockedIdentities[0] = address(identity2);
         bytes memory params = abi.encode(blockedIdentities);
-        
+
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, params); // identity1 user
         module.canTransfer(address(smartToken), tokenIssuer, user3, 100, params); // no identity user
     }
@@ -73,9 +73,7 @@ contract IdentityBlockListComplianceModuleTest is AbstractComplianceModuleTest {
         bytes memory params = abi.encode(blockedIdentities);
 
         vm.expectRevert(
-            abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity blocked"
-            )
+            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity blocked")
         );
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, params);
     }
@@ -88,16 +86,12 @@ contract IdentityBlockListComplianceModuleTest is AbstractComplianceModuleTest {
         bytes memory params = abi.encode(blockedIdentities);
 
         vm.expectRevert(
-            abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity blocked"
-            )
+            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity blocked")
         );
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, params);
 
         vm.expectRevert(
-            abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity blocked"
-            )
+            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity blocked")
         );
         module.canTransfer(address(smartToken), tokenIssuer, user2, 100, params);
     }
@@ -116,9 +110,7 @@ contract IdentityBlockListComplianceModuleTest is AbstractComplianceModuleTest {
         // Transfer to user1 (identity1) should fail
         vm.prank(tokenIssuer);
         vm.expectRevert(
-            abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity blocked"
-            )
+            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity blocked")
         );
         smartToken.transfer(user1, 100);
 
@@ -139,7 +131,7 @@ contract IdentityBlockListComplianceModuleTest is AbstractComplianceModuleTest {
 
     function test_IdentityBlockList_Lifecycle_Functions() public {
         bytes memory params = abi.encode(new address[](0));
-        
+
         // These functions should not revert for stateless modules
         module.transferred(address(smartToken), tokenIssuer, user1, 100, params);
         module.created(address(smartToken), user1, 100, params);
