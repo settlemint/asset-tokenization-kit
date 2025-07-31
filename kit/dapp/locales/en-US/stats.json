@@ -16,7 +16,7 @@
       "label": "Total Collateral"
     },
     "totalSupply": {
-      "description": "Historical total supply changes over the last {{days}} days",
+      "description": "Total asset supply over the last {{days}} days",
       "label": "Total supply",
       "title": "Token supply history",
       "noData": "No data available",
