@@ -1,28 +1,25 @@
 import { ComplianceModulesGrid } from "@/components/compliance/compliance-modules-grid";
-import { CountryBlocklistModuleDetail } from "@/components/compliance/details/country/country-blocklist-module-detail";
-import { Button } from "@/components/ui/button";
-import { getModuleConfig, isModuleEnabled } from "@/lib/compliance/utils";
 import {
-  ComplianceTypeIdEnum,
+  ComplianceModuleDetail,
+  hideModules,
+} from "@/components/compliance/details/compliance-module-detail";
+import {
   type ComplianceModulePairInput,
   type ComplianceModulePairInputArray,
-  type ComplianceParams,
   type ComplianceTypeId,
 } from "@/lib/zod/validators/compliance";
 import { ComplianceModulesList } from "@/orpc/routes/system/compliance-module/routes/compliance-module.list.schema";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getAddress, type Address } from "viem";
-import { CountryAllowlistModuleDetail } from "./details/country/country-allowlist-module-detail";
 
 interface ComplianceModulesProps {
-  /** Array of configured compliance modules with their current state */
   allModules: ComplianceModulesList;
-  /** Array of configured compliance modules with their current state */
+
   enabledModules: ComplianceModulePairInputArray;
-  /** Callback when a compliance module is enabled with encoded parameters */
+
   onEnable: (modulePair: ComplianceModulePairInput) => void;
-  /** Callback when a compliance module is disabled with encoded parameters */
+
   onDisable: (modulePair: ComplianceModulePairInput) => void;
 }
 
@@ -40,121 +37,27 @@ export function ComplianceModules({
 
   // Show detail view when a module is selected
   if (activeModule) {
-    const isEnabled = isModuleEnabled(activeModule.typeId, enabledModules);
-    const initialValues = isEnabled
-      ? getModuleConfig(activeModule.typeId, enabledModules)
-      : {
-          ...activeModule,
-          values: [],
-          params: "",
-        };
-
-    const complianceDetailProps = {
-      module: activeModule.module,
-      isEnabled,
-      onEnable,
-      onDisable,
-      onClose: () => {
-        setActiveModule(null);
-      },
-    };
-
-    // Detail component mapping based on compliance module type
-    const detailComponents: Record<ComplianceTypeId, React.ReactNode> = {
-      [ComplianceTypeIdEnum.CountryAllowListComplianceModule]: (
-        <CountryAllowlistModuleDetail
-          typeId="CountryAllowListComplianceModule"
-          initialValues={
-            initialValues as Extract<
-              ComplianceParams,
-              { typeId: "CountryAllowListComplianceModule" }
-            >
-          }
-          {...complianceDetailProps}
-        />
-      ),
-      [ComplianceTypeIdEnum.CountryBlockListComplianceModule]: (
-        <CountryBlocklistModuleDetail
-          typeId="CountryBlockListComplianceModule"
-          initialValues={
-            initialValues as Extract<
-              ComplianceParams,
-              { typeId: "CountryBlockListComplianceModule" }
-            >
-          }
-          {...complianceDetailProps}
-        />
-      ),
-      [ComplianceTypeIdEnum.AddressBlockListComplianceModule]: (
-        <div className="p-6 text-center">
-          <h3 className="text-lg font-semibold mb-2">Address Block List</h3>
-          <p className="text-muted-foreground mb-4">
-            Configuration interface coming soon...
-          </p>
-          <Button
-            variant="outline"
-            onClick={() => {
-              setActiveModule(null);
-            }}
-          >
-            {t("form:buttons.back")}
-          </Button>
-        </div>
-      ),
-      [ComplianceTypeIdEnum.IdentityAllowListComplianceModule]: (
-        <div className="p-6 text-center">
-          <h3 className="text-lg font-semibold mb-2">Identity Allow List</h3>
-          <p className="text-muted-foreground mb-4">
-            Configuration interface coming soon...
-          </p>
-          <Button
-            variant="outline"
-            onClick={() => {
-              setActiveModule(null);
-            }}
-          >
-            {t("form:buttons.back")}
-          </Button>
-        </div>
-      ),
-      [ComplianceTypeIdEnum.IdentityBlockListComplianceModule]: (
-        <div className="p-6 text-center">
-          <h3 className="text-lg font-semibold mb-2">Identity Block List</h3>
-          <p className="text-muted-foreground mb-4">
-            Configuration interface coming soon...
-          </p>
-          <Button
-            variant="outline"
-            onClick={() => {
-              setActiveModule(null);
-            }}
-          >
-            {t("form:buttons.back")}
-          </Button>
-        </div>
-      ),
-      [ComplianceTypeIdEnum.SMARTIdentityVerificationComplianceModule]: (
-        <div className="p-6 text-center">
-          <h3 className="text-lg font-semibold mb-2">
-            SMART Identity Verification
-          </h3>
-          <p className="text-muted-foreground mb-4">
-            Configuration interface coming soon...
-          </p>
-          <Button
-            variant="outline"
-            onClick={() => {
-              setActiveModule(null);
-            }}
-          >
-            {t("form:buttons.back")}
-          </Button>
-        </div>
-      ),
-    };
-
-    return detailComponents[activeModule.typeId];
+    return (
+      <ComplianceModuleDetail
+        activeModule={activeModule}
+        enabledModules={enabledModules}
+        onEnable={onEnable}
+        onDisable={onDisable}
+        onClose={() => {
+          setActiveModule(null);
+        }}
+      />
+    );
   }
+
+  const hiddenModules = Object.keys(hideModules) as ComplianceTypeId[];
+  const availableModules = allModules.filter((module) => {
+    const isHidden = hiddenModules.includes(module.typeId);
+    const isEnabled = enabledModules?.some(
+      (enabledModule) => enabledModule.typeId === module.typeId
+    );
+    return !isHidden && !isEnabled;
+  });
 
   return (
     <div className="space-y-8">
@@ -196,9 +99,9 @@ export function ComplianceModules({
             </p>
           </div>
           <ComplianceModulesGrid
-            complianceTypeIds={allModules.map((module) => module.typeId)}
+            complianceTypeIds={availableModules.map((module) => module.typeId)}
             onModuleSelect={(typeId) => {
-              const module = allModules.find((m) => m.typeId === typeId);
+              const module = availableModules.find((m) => m.typeId === typeId);
               if (module) {
                 setActiveModule({
                   typeId,

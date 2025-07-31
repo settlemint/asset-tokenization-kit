@@ -65,7 +65,7 @@ export function CountryRestrictionModuleDetail({
       typeId,
       module,
       values: [],
-      params: "0x0",
+      params: encodeCountryParams([]),
     });
   };
 
