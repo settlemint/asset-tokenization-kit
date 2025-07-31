@@ -14,17 +14,13 @@
     "totalSupply": {
       "description": "Historische Änderungen des Gesamtangebots über die Zeit",
       "label": "Gesamtangebot",
-      "title": "Token-Angebotsverlauf",
-      "noData": "Keine Daten verfügbar",
-      "noDataDescription": "Keine Gesamtangebotsdaten für die letzten {{days}} Tage gefunden"
+      "title": "Token-Angebotsverlauf"
     },
     "supplyChanges": {
       "description": "Gemintete und verbrannte Token in den letzten {{days}} Tagen",
       "title": "Angebotsänderungen",
       "minted": "Gemintet",
-      "burned": "Verbrannt",
-      "noData": "Keine Angebotsänderungsdaten verfügbar",
-      "noDataDescription": "Keine Mint- oder Burn-Aktivitäten in den letzten {{days}} Tagen gefunden"
+      "burned": "Verbrannt"
     },
     "transactionHistory": {
       "description": "Transaktionsvolumen über die Zeit",
