@@ -46,7 +46,6 @@ abstract contract AbstractComplianceModuleTest is Test {
     // Token
     ISMART internal smartToken;
 
-
     function setUp() public virtual {
         platformAdmin = makeAddr("platformAdmin");
         tokenIssuer = makeAddr("tokenIssuer");

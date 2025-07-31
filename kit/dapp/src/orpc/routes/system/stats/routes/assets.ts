@@ -77,6 +77,7 @@ function createAssetBreakdown(
  * console.log('Breakdown:', stats.assetBreakdown);
  * ```
  */
+
 export const statsAssets = authRouter.system.statsAssets
   .use(systemMiddleware)
   .use(theGraphMiddleware)
@@ -87,7 +88,6 @@ export const statsAssets = authRouter.system.statsAssets
     const response = await context.theGraphClient.query(ASSET_COUNT_QUERY, {
       input: {},
       output: AssetCountResponseSchema,
-      error: context.t("tokens:api.stats.assetCount.messages.failed"),
     });
 
     // Calculate metrics

@@ -3,6 +3,7 @@ import type {
   AccessControlRoles,
 } from "@/lib/fragments/the-graph/access-control-fragment";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { getAccessControlEntries } from "./access-control-helpers";
 
 /**
  * Maps the user roles from the access control fragment
@@ -16,21 +17,33 @@ export function mapUserRoles(
 ) {
   // Initialize with all roles set to false
   const initialUserRoles: Record<AccessControlRoles, boolean> = {
+    addonManager: false,
     addonModule: false,
     addonRegistryModule: false,
     admin: false,
     auditor: false,
+    burner: false,
     bypassListManager: false,
     bypassListManagerAdmin: false,
+    capManagement: false,
     claimManager: false,
+    claimPolicyManager: false,
+    complianceAdmin: false,
+    complianceManager: false,
     custodian: false,
     deployer: false,
     emergency: false,
+    forcedTransfer: false,
+    freezer: false,
     fundsManager: false,
     globalListManager: false,
     governance: false,
+    identityManager: false,
     identityRegistryModule: false,
     implementationManager: false,
+    minter: false,
+    pauser: false,
+    recovery: false,
     registrar: false,
     registrarAdmin: false,
     registryManager: false,
@@ -38,16 +51,23 @@ export function mapUserRoles(
     signer: false,
     storageModifier: false,
     supplyManagement: false,
+    systemManager: false,
     systemModule: false,
+    tokenAdmin: false,
     tokenFactoryModule: false,
     tokenFactoryRegistryModule: false,
+    tokenManager: false,
+    verificationAdmin: false,
   };
 
-  const userRoles = Object.entries(accessControl ?? {}).reduce<
+  // Use type-safe helper to get access control entries
+  const userRoles = getAccessControlEntries(accessControl).reduce<
     Record<AccessControlRoles, boolean>
   >((acc, [role, accounts]) => {
-    const userHasRole = accounts.some((account) => account.id === wallet);
-    acc[role as AccessControlRoles] = userHasRole;
+    const userHasRole = accounts.some(
+      (account) => account.id.toLowerCase() === wallet.toLowerCase()
+    );
+    acc[role] = userHasRole;
     return acc;
   }, initialUserRoles);
 

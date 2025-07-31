@@ -1,3 +1,4 @@
+import { assetExtensionArray } from "@/lib/zod/validators/asset-extensions";
 import { assetFactoryTypeId } from "@/lib/zod/validators/asset-types";
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
@@ -26,6 +27,13 @@ export const TokenFactorySchema = z.object({
    * Whether the factory has created any tokens
    */
   hasTokens: z.boolean().describe("Whether the factory has created any tokens"),
+
+  /**
+   * The token extensions of the token factory
+   */
+  tokenExtensions: assetExtensionArray().describe(
+    "The token extensions of the token factory"
+  ),
 });
 
 /**

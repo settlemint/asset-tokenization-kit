@@ -1,4 +1,5 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
+import { AssetExtensionEnum } from "@/lib/zod/validators/asset-extensions";
 import { validateBatchArrays } from "@/orpc/helpers/array-validation";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
@@ -173,7 +174,9 @@ export const transfer = tokenRouter.token.transfer
 
     // For forced transfers, check custodian interface;
     if (transferType === "forced") {
-      const supportsCustodian = context.token.extensions.includes("CUSTODIAN");
+      const supportsCustodian = context.token.extensions.includes(
+        AssetExtensionEnum.CUSTODIAN
+      );
       if (!supportsCustodian) {
         throw errors.TOKEN_INTERFACE_NOT_SUPPORTED({
           data: {

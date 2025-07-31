@@ -1,3 +1,6 @@
+/**
+ * @vitest-environment node
+ */
 import type { TOptions } from "i18next";
 import { describe, expect, test, vi } from "vitest";
 import {

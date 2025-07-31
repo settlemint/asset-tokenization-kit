@@ -1,5 +1,10 @@
+import type { ChildProcessByStdio } from "node:child_process";
+import type Stream from "node:stream";
 import { getOrpcClient } from "../utils/orpc-client";
-import { bootstrapSystem } from "../utils/system-bootstrap";
+import {
+  bootstrapSystem,
+  bootstrapTokenFactories,
+} from "../utils/system-bootstrap";
 import {
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
@@ -8,7 +13,9 @@ import {
   signInWithUser,
 } from "../utils/user";
 
-let runningDevServer: any | undefined;
+let runningDevServer:
+  | ChildProcessByStdio<null, Stream.Readable, Stream.Readable>
+  | undefined;
 
 export async function setup() {
   try {
@@ -23,10 +30,9 @@ export async function setup() {
 
     const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));
     console.log("Bootstrapping system");
-    await bootstrapSystem(orpClient);
-    // TODO: factories is broken due to system access manager changes (https://linear.app/settlemint/issue/ENG-3547/onboarding-asset-factories-failed-to-create-asset)
-    // console.log("Bootstrapping token factories");
-    // await bootstrapTokenFactories(orpClient, system);
+    const system = await bootstrapSystem(orpClient);
+    console.log("Bootstrapping token factories");
+    await bootstrapTokenFactories(orpClient, system);
   } catch (error: unknown) {
     console.error("Failed to setup test environment", error);
     process.exit(1);

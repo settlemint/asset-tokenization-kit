@@ -27,7 +27,7 @@ describe("Token permissions", () => {
     });
   });
 
-  test.skip("admin has all permissions", async () => {
+  test("admin has all permissions", async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
     const tokenInfo = await client.token.read({
@@ -36,21 +36,33 @@ describe("Token permissions", () => {
     // TODO: should be updated after https://linear.app/settlemint/issue/ENG-3488/subgraphapi-acces-management
     expect(tokenInfo.userPermissions).toEqual({
       roles: {
+        addonManager: false,
         addonModule: false,
         addonRegistryModule: false,
-        admin: false,
+        admin: true,
         auditor: false,
+        burner: false,
         bypassListManager: false,
         bypassListManagerAdmin: false,
+        capManagement: false,
         claimManager: false,
+        claimPolicyManager: false,
+        complianceAdmin: false,
+        complianceManager: false,
         custodian: false,
         deployer: false,
         emergency: false,
+        forcedTransfer: false,
+        freezer: false,
         fundsManager: false,
         globalListManager: false,
         governance: false,
+        identityManager: false,
         identityRegistryModule: false,
         implementationManager: false,
+        minter: false,
+        pauser: false,
+        recovery: false,
         registrar: false,
         registrarAdmin: false,
         registryManager: false,
@@ -58,9 +70,13 @@ describe("Token permissions", () => {
         signer: false,
         storageModifier: false,
         supplyManagement: false,
+        systemManager: false,
         systemModule: false,
+        tokenAdmin: false,
         tokenFactoryModule: false,
         tokenFactoryRegistryModule: false,
+        tokenManager: false,
+        verificationAdmin: false,
       },
       isAllowed: true,
       actions: {
@@ -84,7 +100,7 @@ describe("Token permissions", () => {
     });
   });
 
-  test.skip("investor has limited permissions", async () => {
+  test("investor has limited permissions", async () => {
     const headers = await signInWithUser(DEFAULT_INVESTOR);
     const client = getOrpcClient(headers);
     const tokenInfo = await client.token.read({
@@ -92,21 +108,33 @@ describe("Token permissions", () => {
     });
     expect(tokenInfo.userPermissions).toEqual({
       roles: {
+        addonManager: false,
         addonModule: false,
         addonRegistryModule: false,
         admin: false,
         auditor: false,
+        burner: false,
         bypassListManager: false,
         bypassListManagerAdmin: false,
+        capManagement: false,
         claimManager: false,
+        claimPolicyManager: false,
+        complianceAdmin: false,
+        complianceManager: false,
         custodian: false,
         deployer: false,
         emergency: false,
+        forcedTransfer: false,
+        freezer: false,
         fundsManager: false,
         globalListManager: false,
         governance: false,
+        identityManager: false,
         identityRegistryModule: false,
         implementationManager: false,
+        minter: false,
+        pauser: false,
+        recovery: false,
         registrar: false,
         registrarAdmin: false,
         registryManager: false,
@@ -114,9 +142,13 @@ describe("Token permissions", () => {
         signer: false,
         storageModifier: false,
         supplyManagement: false,
+        systemManager: false,
         systemModule: false,
+        tokenAdmin: false,
         tokenFactoryModule: false,
         tokenFactoryRegistryModule: false,
+        tokenManager: false,
+        verificationAdmin: false,
       },
       isAllowed: true,
       actions: {

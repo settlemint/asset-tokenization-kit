@@ -1,4 +1,4 @@
-import { complianceModuleCreate } from "@/orpc/routes/system/compliance-module/routes/complianceModule.create";
+import { complianceModuleCreate } from "@/orpc/routes/system/compliance-module/routes/compliance-module.create";
 
 const routes = {
   complianceModuleCreate,

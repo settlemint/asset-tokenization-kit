@@ -1,0 +1,117 @@
+# Bug Fix Workflow
+# Optimized workflow for handling bug reports and fixes
+
+name: bug_fix_workflow
+description: Systematic approach to diagnosing and fixing bugs
+
+phases:
+  - name: triage
+    description: Initial bug analysis and impact assessment
+    parallel_agents:
+      - agent: code-archaeologist
+        model: opus # Deep analysis for bug root cause
+        task: "Analyze root cause and trace bug origin"
+        outputs: [root_cause_analysis, affected_files, related_code_paths]
+
+      - agent: security-auditor
+        model: opus # Security impact always needs thorough analysis
+        task: "Assess security impact of the bug"
+        outputs: [security_impact, vulnerability_score, affected_users]
+        condition:
+          "bug involves authentication, authorization, or data handling"
+
+    success_criteria:
+      - root_cause_identified: true
+      - impact_assessed: true
+
+  - name: planning
+    description: Plan the fix approach
+    sequential_agents:
+      - agent: planner
+        model: opus # Complex coordination and strategy needed
+        task: "Create fix strategy based on triage results"
+        inputs: [root_cause_analysis, security_impact]
+        outputs: [fix_strategy, test_requirements, rollback_plan]
+
+  - name: implementation
+    description: Implement the bug fix
+    depends_on: [planning]
+    dynamic_agents: # Agent selection based on bug location
+      - condition: "bug in smart contracts"
+        agent: solidity-expert
+        model: opus # Always use Opus for smart contract security
+        task: "Fix contract bug with security considerations"
+
+      - condition: "bug in frontend"
+        agent: react-dev
+        model: sonnet # Standard UI fixes with established patterns
+        task: "Fix UI/UX bug with proper error handling"
+
+      - condition: "bug in API"
+        agent: orpc-expert
+        model: sonnet # API fixes typically follow patterns
+        task: "Fix API bug with backwards compatibility"
+
+      - condition: "bug in database"
+        agent: database-expert
+        model: sonnet # Query optimization has clear patterns
+        task: "Fix data inconsistency or query performance"
+
+  - name: testing
+    description: Comprehensive testing of the fix
+    depends_on: [implementation]
+    parallel_agents:
+      - agent: test-dev
+        model: sonnet # Test writing follows patterns
+        task: "Write regression tests for the bug"
+        outputs: [unit_tests, test_coverage]
+
+      - agent: integration-tester
+        model: sonnet # Integration testing is pattern-based
+        task: "Verify fix doesn't break existing functionality"
+        outputs: [integration_results, affected_features]
+
+  - name: review
+    description: Final review and approval
+    depends_on: [testing]
+    sequential_agents:
+      - agent: code-reviewer
+        model: sonnet # Code review follows established criteria
+        task: "Review fix implementation and test coverage"
+        inputs: [all_previous_outputs]
+        outputs: [review_status, improvement_suggestions]
+
+  - name: documentation
+    description: Update relevant documentation
+    depends_on: [review]
+    condition: "review_status == approved"
+    parallel_agents:
+      - agent: documentation-expert
+        model: sonnet # Documentation updates follow templates
+        task: "Update changelog and affected documentation"
+        outputs: [updated_docs, release_notes]
+
+rollback_triggers:
+  - test_failures: "Any test fails after implementation"
+  - security_concerns: "Security audit reveals new vulnerabilities"
+  - performance_regression: "Fix causes performance degradation > 10%"
+
+metrics:
+  - time_to_fix: "Time from bug report to merged fix"
+  - test_coverage_delta: "Change in test coverage percentage"
+  - affected_users: "Number of users impacted by the bug"
+
+model_selection_strategy:
+  opus_tasks:
+    - "Root cause analysis (code-archaeologist)"
+    - "Security impact assessment (security-auditor)"
+    - "Fix strategy planning (planner)"
+    - "Smart contract fixes (solidity-expert)"
+  sonnet_tasks:
+    - "UI/API fixes with established patterns"
+    - "Test writing and integration testing"
+    - "Code review with standard criteria"
+    - "Documentation updates"
+  rationale:
+    "Use Opus for complex analysis and security-critical decisions, Sonnet for
+    pattern-based implementation"

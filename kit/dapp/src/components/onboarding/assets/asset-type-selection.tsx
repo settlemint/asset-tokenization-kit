@@ -97,7 +97,7 @@ export function AssetTypeSelection() {
   // Handle verification code submission
   const handleVerificationSubmit = useCallback(
     (verification: UserVerification) => {
-      if (!pendingFactories || !systemDetails?.tokenFactoryRegistry) {
+      if (!pendingFactories) {
         return;
       }
 
@@ -107,7 +107,6 @@ export function AssetTypeSelection() {
       toast.promise(
         createFactories({
           verification,
-          contract: systemDetails.tokenFactoryRegistry,
           factories: pendingFactories,
         }),
         {
@@ -118,7 +117,7 @@ export function AssetTypeSelection() {
         }
       );
     },
-    [pendingFactories, systemDetails?.tokenFactoryRegistry, createFactories, t]
+    [pendingFactories, createFactories, t]
   );
 
   const availableAssets = TokenTypeEnum.options;

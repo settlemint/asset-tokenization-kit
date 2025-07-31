@@ -344,7 +344,6 @@ function createValidatedPortalClient(
               })
               .nullable(),
           }),
-          error: messages.waitingForIndexing,
         });
 
         const indexedBlock = result._meta?.block.number ?? 0;

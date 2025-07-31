@@ -25,7 +25,7 @@ import {
  */
 const LIST_ACTIONS_QUERY = theGraphGraphql(`
   query ListActionsQuery($where: Action_filter) {
-    actions(where: $where) {
+    actions(where: $where) @fetchAll {
         id
         name
         target
@@ -100,7 +100,6 @@ export const list = authRouter.actions.list
     const response = await context.theGraphClient.query(LIST_ACTIONS_QUERY, {
       input: { where },
       output: ActionsResponseSchema,
-      error: "Failed to list actions",
     });
 
     // Return simple list response
