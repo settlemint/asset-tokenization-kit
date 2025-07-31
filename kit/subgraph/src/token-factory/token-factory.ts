@@ -10,6 +10,7 @@ import { fetchAccount } from "../account/fetch/account";
 import { InterfaceIds } from "../erc165/utils/interfaceids";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentity } from "../identity/fetch/identity";
+import { updateTokenTypeStatsForTokenCreation } from "../stats/token-type-stats";
 import { fetchBond } from "../token-assets/bond/fetch/bond";
 import { fetchFund } from "../token-assets/fund/fetch/fund";
 import { fetchCapped } from "../token-extensions/capped/fetch/capped";
@@ -105,6 +106,9 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
   const account = fetchAccount(event.params.tokenAddress);
   account.identity = identity.id;
   account.save();
+
+  // Update token type stats for new token creation
+  updateTokenTypeStatsForTokenCreation(token);
 }
 
 export function handleTokenImplementationUpdated(
