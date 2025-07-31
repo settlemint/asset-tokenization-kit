@@ -179,15 +179,14 @@ contract SystemUtils is Test {
         vm.label(address(countryBlockListComplianceModule), "Country Block List Compliance Module");
 
         // Grant necessary roles to platformAdmin in the system access manager
-        address[] memory platformAdminRoles = [
-            ATKPeopleRoles.TOKEN_MANAGER_ROLE,
-            ATKPeopleRoles.ADDON_MANAGER_ROLE,
-            ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE,
-            ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE,
-            ATKPeopleRoles.IDENTITY_MANAGER_ROLE
+        bytes32[] memory platformAdminRoles = new bytes32[](5);
+        platformAdminRoles[0] = ATKPeopleRoles.TOKEN_MANAGER_ROLE;
+        platformAdminRoles[1] = ATKPeopleRoles.ADDON_MANAGER_ROLE;
+        platformAdminRoles[2] = ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE;
+        platformAdminRoles[3] = ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE;
+        platformAdminRoles[4] = ATKPeopleRoles.IDENTITY_MANAGER_ROLE;
 
-        ];
-        accessManager.grantMultipleRoles(
+        systemAccessManager.grantMultipleRoles(
             platformAdmin,
             platformAdminRoles
         );

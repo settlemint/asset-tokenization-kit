@@ -54,6 +54,9 @@ import { IATKSystemAddonRegistry } from "./addons/IATKSystemAddonRegistry.sol";
 import { IATKSystemAccessManager } from "./access-manager/IATKSystemAccessManager.sol";
 import { ATKSystemAccessManagerImplementation } from "./access-manager/ATKSystemAccessManagerImplementation.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
+import { IATKSystemAccessManaged } from "./access-manager/IATKSystemAccessManaged.sol";
+
+// Extensions
 import { ATKSystemAccessManaged } from "./access-manager/ATKSystemAccessManaged.sol";
 
 /// @title ATKSystem Contract

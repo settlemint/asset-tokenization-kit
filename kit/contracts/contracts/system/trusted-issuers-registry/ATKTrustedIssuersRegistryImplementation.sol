@@ -17,7 +17,7 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IERC3643TrustedIssuersRegistry } from "../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 import { IATKTrustedIssuersRegistry } from "./IATKTrustedIssuersRegistry.sol";
 import { IClaimAuthorizer } from "../../onchainid/extensions/IClaimAuthorizer.sol";
-import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 // Constants
 import { ATKSystemRoles, ATKPeopleRoles } from "../ATKRoles.sol";
