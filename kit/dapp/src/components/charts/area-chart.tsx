@@ -27,7 +27,8 @@ export interface AreaChartComponentProps {
   showLegend?: boolean;
   stacked?: boolean;
   className?: string;
-  tickFormatter?: (value: string) => string;
+  xTickFormatter?: (value: string) => string;
+  yTickFormatter?: (value: string) => string;
   emptyMessage?: string;
   emptyDescription?: string;
 }
@@ -54,7 +55,8 @@ export function AreaChartComponent({
   showLegend = true,
   stacked = false,
   className,
-  tickFormatter,
+  xTickFormatter,
+  yTickFormatter,
   emptyMessage,
   emptyDescription,
 }: AreaChartComponentProps) {
@@ -99,13 +101,14 @@ export function AreaChartComponent({
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={tickFormatter}
+              tickFormatter={xTickFormatter}
             />
             <YAxis
               tickLine={false}
               axisLine={false}
               tickMargin={8}
               hide={!showYAxis}
+              tickFormatter={yTickFormatter}
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
             <defs>

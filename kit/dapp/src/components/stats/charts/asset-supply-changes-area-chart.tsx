@@ -106,7 +106,7 @@ export function AssetSupplyChangesAreaChart({
         nameKey="timestamp"
         showLegend={true} // Show legend for minted/burned
         stacked={false} // Don't stack, show as separate areas
-        tickFormatter={(value) => {
+        yTickFormatter={(value: string) => {
           // Format Y-axis ticks with compact notation and handle negative values
           const numValue = Number(value);
           const isNegative = numValue < 0;

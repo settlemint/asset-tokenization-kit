@@ -91,7 +91,7 @@ export function AssetTotalSupplyAreaChart({
         nameKey="timestamp"
         showLegend={false}
         stacked={false}
-        tickFormatter={(value) => {
+        yTickFormatter={(value: string) => {
           // Format Y-axis ticks with compact notation for better readability
           const numValue = Number(value);
           return new Intl.NumberFormat("en-US", {
