@@ -5,7 +5,6 @@ import { AbstractComplianceModuleTest } from "./AbstractComplianceModuleTest.t.s
 import { IdentityAllowListComplianceModule } from
     "../../../contracts/smart/modules/IdentityAllowListComplianceModule.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 contract IdentityAllowListComplianceModuleTest is AbstractComplianceModuleTest {
     IdentityAllowListComplianceModule internal module;
@@ -13,71 +12,115 @@ contract IdentityAllowListComplianceModuleTest is AbstractComplianceModuleTest {
     function setUp() public override {
         super.setUp();
         module = new IdentityAllowListComplianceModule(address(0));
-        module.grantRole(module.GLOBAL_LIST_MANAGER_ROLE(), address(this));
 
-        // Issue claims to users
+        // Issue claims to users for identity testing
         claimUtils.issueAllClaims(user1);
         claimUtils.issueAllClaims(user2);
     }
 
     function test_IdentityAllowList_InitialState() public view {
         assertEq(module.name(), "Identity AllowList Compliance Module");
+        assertEq(module.typeId(), keccak256("IdentityAllowListComplianceModule"));
     }
 
-    function test_IdentityAllowList_SetGlobalAllowedIdentities() public {
-        address[] memory identitiesToAllow = new address[](2);
-        identitiesToAllow[0] = address(identity1);
-        identitiesToAllow[1] = address(identity2);
+    function test_IdentityAllowList_ValidateParameters_EmptyArray() public view {
+        bytes memory params = abi.encode(new address[](0));
+        module.validateParameters(params);
+    }
 
-        module.setGlobalAllowedIdentities(identitiesToAllow, true);
+    function test_IdentityAllowList_ValidateParameters_WithIdentities() public view {
+        address[] memory allowedIdentities = new address[](2);
+        allowedIdentities[0] = address(identity1);
+        allowedIdentities[1] = address(identity2);
+        bytes memory params = abi.encode(allowedIdentities);
+        module.validateParameters(params);
+    }
 
-        assertTrue(module.isGloballyAllowed(address(identity1)));
-        assertTrue(module.isGloballyAllowed(address(identity2)));
+    function test_IdentityAllowList_RevertWhen_InvalidParameters() public {
+        bytes memory invalidParams = abi.encode("invalid");
+        vm.expectRevert();
+        module.validateParameters(invalidParams);
+    }
 
-        module.setGlobalAllowedIdentities(identitiesToAllow, false);
+    function test_IdentityAllowList_RevertWhen_NoIdentity() public {
+        // A transfer to an address with no identity should fail for identity-based modules
+        bytes memory params = abi.encode(new address[](0));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity unknown"
+            )
+        );
+        module.canTransfer(address(smartToken), user1, user3, 100, params);
+    }
 
-        assertFalse(module.isGloballyAllowed(address(identity1)));
-        assertFalse(module.isGloballyAllowed(address(identity2)));
+    function test_IdentityAllowList_RevertWhen_EmptyAllowListNoIdentity() public {
+        // Empty allow list and no identity should fail
+        bytes memory params = abi.encode(new address[](0));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity unknown"
+            )
+        );
+        module.canTransfer(address(smartToken), tokenIssuer, user3, 100, params); // user3 has no identity
     }
 
     function test_IdentityAllowList_RevertWhen_TransferToNotAllowedIdentity() public {
+        // user1 has identity1, but identity1 is not in the empty allow list
+        bytes memory params = abi.encode(new address[](0));
         vm.expectRevert(
             abi.encodeWithSelector(
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity not in allowlist"
             )
         );
-        module.canTransfer(address(smartToken), tokenIssuer, user1, 100, abi.encode(new address[](0)));
+        module.canTransfer(address(smartToken), tokenIssuer, user1, 100, params);
     }
 
-    function test_IdentityAllowList_CanTransfer_GloballyAllowed() public {
-        address[] memory identitiesToAllow = new address[](1);
-        identitiesToAllow[0] = address(identity1);
-        module.setGlobalAllowedIdentities(identitiesToAllow, true);
-
-        module.canTransfer(address(smartToken), tokenIssuer, user1, 100, abi.encode(new address[](0)));
-    }
-
-    function test_IdentityAllowList_CanTransfer_TokenAllowed() public view {
-        address[] memory additionalAllowed = new address[](1);
-        additionalAllowed[0] = address(identity1);
-        bytes memory params = abi.encode(additionalAllowed);
+    function test_IdentityAllowList_CanTransfer_AllowedIdentity() public view {
+        // user1 has identity1, allow identity1 in the parameters
+        address[] memory allowedIdentities = new address[](1);
+        allowedIdentities[0] = address(identity1);
+        bytes memory params = abi.encode(allowedIdentities);
 
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, params);
     }
 
-    function test_IdentityAllowList_RevertWhen_Integration_TokenTransferToNotAllowed() public {
-        // Add the module to the token's compliance settings
+    function test_IdentityAllowList_CanTransfer_MultipleAllowedIdentities() public view {
+        // Allow both identity1 and identity2
+        address[] memory allowedIdentities = new address[](2);
+        allowedIdentities[0] = address(identity1); // user1
+        allowedIdentities[1] = address(identity2); // user2
+        bytes memory params = abi.encode(allowedIdentities);
+
+        module.canTransfer(address(smartToken), tokenIssuer, user1, 100, params);
+        module.canTransfer(address(smartToken), tokenIssuer, user2, 100, params);
+    }
+
+    function test_IdentityAllowList_RevertWhen_IdentityNotInList() public {
+        // Only allow identity2, but user1 has identity1
+        address[] memory allowedIdentities = new address[](1);
+        allowedIdentities[0] = address(identity2);
+        bytes memory params = abi.encode(allowedIdentities);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity not in allowlist"
+            )
+        );
+        module.canTransfer(address(smartToken), tokenIssuer, user1, 100, params);
+    }
+
+    function test_IdentityAllowList_Integration_TokenTransfer() public {
+        // Add module to token with only identity2 allowed
+        address[] memory allowedIdentities = new address[](1);
+        allowedIdentities[0] = address(identity2); // user2 has identity2
+        bytes memory params = abi.encode(allowedIdentities);
+
         vm.startPrank(tokenIssuer);
-        smartToken.addComplianceModule(address(module), abi.encode(new address[](0)));
+        smartToken.addComplianceModule(address(module), params);
+        smartToken.mint(tokenIssuer, 1000);
         vm.stopPrank();
 
-        // mint is not working because tokenIssuer is not in the allowlist
-
-        // Mint some tokens to the token issuer to have a balance to transfer from
-        vm.prank(tokenIssuer);
-        smartToken.mint(tokenIssuer, 1000);
-
-        // Attempt to transfer to user1 (who has an identity that is not on the allowlist)
+        // Transfer to user1 (identity1) should fail
         vm.prank(tokenIssuer);
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -85,18 +128,23 @@ contract IdentityAllowListComplianceModuleTest is AbstractComplianceModuleTest {
             )
         );
         smartToken.transfer(user1, 100);
+
+        // Transfer to user2 (identity2) should succeed
+        vm.prank(tokenIssuer);
+        smartToken.transfer(user2, 100);
+        assertEq(smartToken.balanceOf(user2), 100);
     }
 
-    function test_IdentityAllowList_FailWhen_SetGlobalAllowedIdentitiesFromNonAdmin() public {
-        vm.startPrank(user1);
-        address[] memory identitiesToAllow = new address[](1);
-        identitiesToAllow[0] = address(identity1);
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, module.GLOBAL_LIST_MANAGER_ROLE()
-            )
-        );
-        module.setGlobalAllowedIdentities(identitiesToAllow, true);
-        vm.stopPrank();
+    function test_IdentityAllowList_SupportsInterface() public view {
+        assertTrue(module.supportsInterface(type(ISMARTComplianceModule).interfaceId));
+    }
+
+    function test_IdentityAllowList_Lifecycle_Functions() public {
+        bytes memory params = abi.encode(new address[](0));
+
+        // These functions should not revert for stateless modules
+        module.transferred(address(smartToken), tokenIssuer, user1, 100, params);
+        module.created(address(smartToken), user1, 100, params);
+        module.destroyed(address(smartToken), user1, 100, params);
     }
 }

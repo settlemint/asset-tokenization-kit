@@ -38,20 +38,34 @@ class RoleConfig {
 }
 
 export const Roles = [
-  new RoleConfig("DEFAULT_ADMIN_ROLE", "admin"),
-  new RoleConfig("REGISTRAR_ROLE", "registrar"),
-  new RoleConfig("REGISTRAR_ADMIN_ROLE", "registrarAdmin"),
-  new RoleConfig("CLAIM_MANAGER_ROLE", "claimManager"),
-  new RoleConfig("DEPLOYER_ROLE", "deployer"),
-  new RoleConfig("STORAGE_MODIFIER_ROLE", "storageModifier"),
-  new RoleConfig("REGISTRY_MANAGER_ROLE", "registryManager"),
-  new RoleConfig("GOVERNANCE_ROLE", "governance"),
-  new RoleConfig("SUPPLY_MANAGEMENT_ROLE", "supplyManagement"),
-  new RoleConfig("CUSTODIAN_ROLE", "custodian"),
-  new RoleConfig("EMERGENCY_ROLE", "emergency"),
-  new RoleConfig("IMPLEMENTATION_MANAGER_ROLE", "implementationManager"),
-  new RoleConfig("BYPASS_LIST_MANAGER_ROLE", "bypassListManager"),
+  new RoleConfig("ADDON_MODULE_ROLE", "addonModule"),
+  new RoleConfig("ADDON_REGISTRY_MODULE_ROLE", "addonRegistryModule"),
+  new RoleConfig("AUDITOR_ROLE", "auditor"),
   new RoleConfig("BYPASS_LIST_MANAGER_ADMIN_ROLE", "bypassListManagerAdmin"),
+  new RoleConfig("BYPASS_LIST_MANAGER_ROLE", "bypassListManager"),
+  new RoleConfig("CLAIM_MANAGER_ROLE", "claimManager"),
+  new RoleConfig("CUSTODIAN_ROLE", "custodian"),
+  new RoleConfig("DEFAULT_ADMIN_ROLE", "admin"),
+  new RoleConfig("DEPLOYER_ROLE", "deployer"),
+  new RoleConfig("EMERGENCY_ROLE", "emergency"),
+  new RoleConfig("FUNDS_MANAGER_ROLE", "fundsManager"),
+  new RoleConfig("GLOBAL_LIST_MANAGER_ROLE", "globalListManager"),
+  new RoleConfig("GOVERNANCE_ROLE", "governance"),
+  new RoleConfig("IDENTITY_REGISTRY_MODULE_ROLE", "identityRegistryModule"),
+  new RoleConfig("IMPLEMENTATION_MANAGER_ROLE", "implementationManager"),
+  new RoleConfig("REGISTRAR_ADMIN_ROLE", "registrarAdmin"),
+  new RoleConfig("REGISTRAR_ROLE", "registrar"),
+  new RoleConfig("REGISTRY_MANAGER_ROLE", "registryManager"),
+  new RoleConfig("SALE_ADMIN_ROLE", "saleAdmin"),
+  new RoleConfig("SIGNER_ROLE", "signer"),
+  new RoleConfig("STORAGE_MODIFIER_ROLE", "storageModifier"),
+  new RoleConfig("SUPPLY_MANAGEMENT_ROLE", "supplyManagement"),
+  new RoleConfig("SYSTEM_MODULE_ROLE", "systemModule"),
+  new RoleConfig("TOKEN_FACTORY_MODULE_ROLE", "tokenFactoryModule"),
+  new RoleConfig(
+    "TOKEN_FACTORY_REGISTRY_MODULE_ROLE",
+    "tokenFactoryRegistryModule"
+  ),
 ];
 
 export function getRoleConfigFromBytes(bytes: Bytes): RoleConfig {

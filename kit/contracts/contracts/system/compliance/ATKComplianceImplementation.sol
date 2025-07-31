@@ -17,89 +17,82 @@ import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SM
 import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
-/// @dev Custom errors for ATKCompliance
-error SystemAccessManagerNotSet();
-error UnauthorizedAccess();
+
 
 /// @title ATK Compliance Contract Implementation
 /// @author SettleMint
-/// @notice This contract is the upgradeable logic implementation for the main compliance functionality within the ATK
-/// Protocol.
-/// @dev It acts as a central orchestrator for compliance checks related to ATK tokens (which implement the `IATK`
-/// interface).
-/// When a ATK token operation occurs (like a transfer, creation, or destruction of tokens),
-/// this compliance contract is notified. It then iterates through all compliance modules registered
-/// with that specific token and calls the relevant functions (hooks) on each module.
-/// For example, before a transfer, it checks `canTransfer` on all modules. After a transfer, it calls `transferred`.
-/// This contract is designed to be used behind a proxy (like `SMARTComplianceProxy`) to allow its logic to be upgraded.
-/// It supports meta-transactions via `ERC2771ContextUpgradeable` allowing a trusted forwarder to pay for gas fees.
-/// It supports interface detection through AccessControlUpgradeable.
-/// Additionally, it implements a bypass list functionality that allows certain addresses (mainly contracts) to bypass
-/// compliance checks when they are the sender or receiver of a transfer.
+/// @notice This contract is the upgradeable logic implementation for the main compliance functionality within the ATK Protocol.
 contract ATKComplianceImplementation is
     Initializable,
     ERC2771ContextUpgradeable,
     AccessControlUpgradeable,
     IATKCompliance
 {
+
     // --- Storage ---
     /// @notice Optional centralized access manager for enhanced role checking
     /// @dev If set, enables multi-role access patterns alongside existing AccessControl
     IATKSystemAccessManager private _systemAccessManager;
 
     /// @notice Mapping of addresses that are on the bypass list to bypass compliance checks
-    /// @dev When an address is on the bypass list, transfers involving this address (as sender or receiver) will skip
-    /// compliance module checks in the `canTransfer` function
     mapping(address => bool) private _bypassedAddresses;
+
+    /// @notice Array of global compliance modules that apply to all tokens
+    address[] private _globalComplianceModuleList;
+
+    /// @notice Mapping from module address to its index (plus one) in the global module list
+    /// @dev A value of 0 indicates the module is not in the list. Actual index is value - 1.
+    mapping(address => uint256) private _globalModuleIndex;
+
+    /// @notice Mapping from module address to its parameters
+    /// @dev Stores the ABI-encoded parameters for each global compliance module
+    mapping(address => bytes) private _globalModuleParameters;
 
     // --- Access Control Modifiers ---
 
     /// @notice Modifier that checks if the caller has any of the specified roles in the system access manager
-    /// @dev This implements the new centralized access pattern: onlySystemRoles(MANAGER_ROLE, [SYSTEM_ROLES])
-    /// Falls back to AccessControl if system access manager is not set
-    /// @param roles Array of roles, where the caller must have at least one
-    modifier onlySystemRoles(bytes32[] memory roles) {
-        if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
-        if (!_systemAccessManager.hasAnyRole(roles, _msgSender())) revert UnauthorizedAccess();
+    modifier onlySystemAndComplianceManagerRoles() {
+        bytes32[] memory roles = new bytes32[](3);
+        roles[0] = ATKSystemRoles.COMPLIANCE_MANAGER_ROLE;       // Primary compliance manager
+        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE;           // System manager
+        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE;            // System module role
+
+        _onlySystemRoles(roles, _msgSender());
+        _;
+    }
+
+    /// @notice Modifier that checks if the caller has the compliance manager role
+    modifier onlyComplianceManagerRole() {
+        bytes32[] memory roles = new bytes32[](1);
+        roles[0] = ATKSystemRoles.COMPLIANCE_MANAGER_ROLE;
+
+        _onlySystemRoles(roles, _msgSender());
         _;
     }
 
     // --- Internal Helper Functions ---
 
-    /// @notice Returns the roles that can perform compliance management operations
-    /// @dev Implements the pattern from the ticket: MANAGER_ROLE + [SYSTEM_ROLES]
-    /// @return roles Array of roles that can manage compliance and bypass lists
-    function _getComplianceManagementRoles() internal pure returns (bytes32[] memory roles) {
-        roles = new bytes32[](3);
-        roles[0] = ATKSystemRoles.COMPLIANCE_MANAGER_ROLE; // Primary compliance manager
-        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE; // System manager
-        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE; // System module role
+    /// @notice Internal helper function to check if the caller has any of the specified roles
+    /// @dev Falls back to AccessControl if system access manager is not set
+    /// @param roles Array of roles, where the caller must have at least one
+    /// @param sender The address of the caller
+    function _onlySystemRoles(bytes32[] memory roles, address sender) internal view {
+        if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
+        if (!_systemAccessManager.hasAnyRole(roles, sender)) revert UnauthorizedAccess();
     }
 
+
     // --- Constructor ---
-    /// @notice Constructor for the compliance implementation contract.
-    /// @dev This constructor is specific to OpenZeppelin's upgradeable contracts pattern.
-    /// It initializes the `ERC2771ContextUpgradeable` with the address of a trusted forwarder for meta-transactions.
-    /// The `_disableInitializers()` call is crucial for upgradeable contracts; it ensures that the `initialize`
-    /// function
-    /// cannot be called on the implementation contract directly after deployment, reserving it for the proxy context.
-    /// @param trustedForwarder The address of the ERC-2771 trusted forwarder contract. This allows users to interact
-    /// with this contract without paying gas fees directly, if the forwarder is set up to relay their transactions.
-    /// @custom:oz-upgrades-unsafe-allow constructor This annotation is used by OpenZeppelin Upgrades plugins to
-    /// acknowledge
-    /// that this constructor is part of an upgradeable contract pattern and is handled correctly.
+    /// @notice Constructor that sets up the trusted forwarder and disables initializers
+    /// @param trustedForwarder Address of the trusted forwarder for meta-transactions
     constructor(address trustedForwarder) ERC2771ContextUpgradeable(trustedForwarder) {
         _disableInitializers();
     }
 
     // --- Initializer ---
-    /// @notice Initializes the compliance contract after it has been deployed (typically via a proxy).
-    /// @dev This function is called once to set up the initial state of the contract. It initializes
-    /// the ERC165 interface detection capability and sets up AccessControl with the deployer as the default admin.
-    /// For upgradeable contracts, initializers replace constructors for setup logic.
-    /// The `initializer` modifier ensures this function can only be called once.
-    /// @param initialAdmin The address of the initial admin.
-    /// @param initialBypassListManagerAdmins The addresses of the initial bypass list manager admins.
+    /// @notice Initializes the compliance contract with initial admin and bypass list manager admins
+    /// @param initialAdmin Address that will receive the DEFAULT_ADMIN_ROLE
+    /// @param initialBypassListManagerAdmins Array of addresses that will receive bypass list manager roles
     function initialize(
         address initialAdmin,
         address[] calldata initialBypassListManagerAdmins
@@ -108,8 +101,8 @@ contract ATKComplianceImplementation is
         virtual
         initializer
     {
-        __ERC165_init_unchained(); // Initializes ERC165 announcing which interfaces this contract supports
-        __AccessControl_init_unchained(); // Initializes AccessControl with msg.sender as default admin
+        __ERC165_init_unchained();
+        __AccessControl_init_unchained();
 
         _setRoleAdmin(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, ATKSystemRoles.BYPASS_LIST_MANAGER_ADMIN_ROLE);
 
@@ -150,7 +143,7 @@ contract ATKComplianceImplementation is
     /// SYSTEM_MODULE_ROLE.
     /// Bypassed addresses can bypass compliance checks in canTransfer function.
     /// @param account The address to add to the bypass list
-    function addToBypassList(address account) external onlySystemRoles(_getComplianceManagementRoles()) {
+    function addToBypassList(address account) external onlySystemAndComplianceManagerRoles() {
         if (account == address(0)) revert ZeroAddressNotAllowed();
         if (_bypassedAddresses[account]) revert AddressAlreadyOnBypassList(account);
 
@@ -162,7 +155,7 @@ contract ATKComplianceImplementation is
     /// @dev Uses new multi-role access control. Can be called by COMPLIANCE_MANAGER_ROLE, SYSTEM_MANAGER_ROLE, or
     /// SYSTEM_MODULE_ROLE.
     /// @param account The address to remove from the bypass list
-    function removeFromBypassList(address account) external onlySystemRoles(_getComplianceManagementRoles()) {
+    function removeFromBypassList(address account) external onlySystemAndComplianceManagerRoles() {
         if (!_bypassedAddresses[account]) revert AddressNotOnBypassList(account);
 
         _bypassedAddresses[account] = false;
@@ -176,7 +169,7 @@ contract ATKComplianceImplementation is
     /// @param accounts Array of addresses to add to the bypass list
     function addMultipleToBypassList(address[] calldata accounts)
         external
-        onlySystemRoles(_getComplianceManagementRoles())
+        onlySystemAndComplianceManagerRoles()
     {
         uint256 accountsLength = accounts.length;
         for (uint256 i = 0; i < accountsLength;) {
@@ -199,7 +192,7 @@ contract ATKComplianceImplementation is
     /// @param accounts Array of addresses to remove from the bypass list
     function removeMultipleFromBypassList(address[] calldata accounts)
         external
-        onlySystemRoles(_getComplianceManagementRoles())
+        onlySystemAndComplianceManagerRoles()
     {
         uint256 accountsLength = accounts.length;
         for (uint256 i = 0; i < accountsLength;) {
@@ -215,84 +208,176 @@ contract ATKComplianceImplementation is
         }
     }
 
-    /// @notice Checks if an address is on the bypass list
+    /// @notice Checks if an address is on the compliance bypass list
     /// @param account The address to check
     /// @return True if the address is on the bypass list, false otherwise
     function isBypassed(address account) external view returns (bool) {
         return _bypassedAddresses[account];
     }
 
+    // --- Global Compliance Module Management Functions ---
+
+    /// @notice Adds a global compliance module that applies to all tokens
+    /// @param module Address of the compliance module to add
+    /// @param params ABI-encoded parameters for the module
+    function addGlobalComplianceModule(address module, bytes calldata params)
+        external
+        onlyComplianceManagerRole()
+    {
+        // Validate module and parameters first
+        _validateModuleAndParams(module, params);
+
+        // Check if module is already added
+        if (_globalModuleIndex[module] != 0) {
+            revert GlobalModuleAlreadyAdded(module);
+        }
+
+        // Add to data structures
+        _globalComplianceModuleList.push(module);
+        _globalModuleIndex[module] = _globalComplianceModuleList.length; // Store index + 1
+        _globalModuleParameters[module] = params;
+
+        emit GlobalComplianceModuleAdded(_msgSender(), module, params);
+    }
+
+    /// @notice Removes a global compliance module
+    /// @param module Address of the compliance module to remove
+    function removeGlobalComplianceModule(address module)
+        external
+        onlyComplianceManagerRole()
+    {
+        uint256 index = _globalModuleIndex[module]; // This is index + 1
+        if (index == 0) {
+            revert GlobalModuleNotFound(module);
+        }
+
+        uint256 listIndex = index - 1; // Actual array index
+        uint256 lastIndex = _globalComplianceModuleList.length - 1;
+
+        if (listIndex != lastIndex) {
+            // If it's not the last element, swap with the last element
+            address lastModule = _globalComplianceModuleList[lastIndex];
+            _globalComplianceModuleList[listIndex] = lastModule;
+            _globalModuleIndex[lastModule] = listIndex + 1; // Update index of the element that was moved
+        }
+        _globalComplianceModuleList.pop(); // Remove the last element
+
+        delete _globalModuleIndex[module]; // Clear the module's index
+        delete _globalModuleParameters[module]; // Clear the module's parameters
+
+        emit GlobalComplianceModuleRemoved(_msgSender(),module);
+    }
+
+    /// @notice Updates the parameters for an existing global compliance module
+    /// @param module Address of the compliance module to update
+    /// @param params New ABI-encoded parameters for the module
+    function setParametersForGlobalComplianceModule(address module, bytes calldata params)
+        external
+        onlyComplianceManagerRole()
+    {
+        if (_globalModuleIndex[module] == 0) {
+            revert GlobalModuleNotFound(module);
+        }
+        _validateModuleAndParams(module, params);
+        _globalModuleParameters[module] = params;
+        emit GlobalComplianceModuleParametersUpdated(_msgSender(), module, params);
+    }
+
+    /// @notice Returns all global compliance modules with their parameters
+    /// @return Array of module-parameter pairs for all global compliance modules
+    function getGlobalComplianceModules() external view returns (SMARTComplianceModuleParamPair[] memory) {
+        uint256 length = _globalComplianceModuleList.length;
+        SMARTComplianceModuleParamPair[] memory modules = new SMARTComplianceModuleParamPair[](length);
+
+        for (uint256 i = 0; i < length;) {
+            modules[i] = SMARTComplianceModuleParamPair({
+                module: _globalComplianceModuleList[i],
+                params: _globalModuleParameters[_globalComplianceModuleList[i]]
+            });
+            unchecked {
+                ++i;
+            }
+        }
+
+        return modules;
+    }
+
     // --- ISMARTCompliance Implementation (State-Changing) ---
 
-    /// @inheritdoc ISMARTCompliance
-    /// @notice Called by an `ISMART` token contract after a token transfer has successfully occurred.
-    /// @dev This function iterates through all compliance modules registered with the given `_token`.
-    /// For each module, it calls the module's `transferred` function, passing along the transfer details.
-    /// This allows modules to react to transfers, for example, by updating internal state or logging.
-    /// It is critical that this function is only callable by the `ISMART` token contract it is associated with
-    /// to prevent unauthorized notifications. The current implementation assumes this restriction is handled by the
-    /// token contract itself.
-    /// @param _token The address of the `ISMART` token contract that performed the transfer.
-    /// @param _from The address from which tokens were transferred. This will be `address(0)` for token
-    /// minting/creation events.
-    /// @param _to The address to which tokens were transferred. This will be `address(0)` for token burning/destruction
-    /// events.
-    /// @param _amount The quantity of tokens that were transferred.
+    /// @notice Called after a token transfer to update compliance module states
+    /// @param _token Address of the token contract
+    /// @param _from Address tokens were transferred from
+    /// @param _to Address tokens were transferred to
+    /// @param _amount Amount of tokens transferred
     function transferred(address _token, address _from, address _to, uint256 _amount) external virtual override {
-        // Assumption: The ISMART token contract (_token) is responsible for access control,
-        // ensuring only it can call this `transferred` function on its designated compliance contract.
-        SMARTComplianceModuleParamPair[] memory modulePairs = ISMART(_token).complianceModules();
-        uint256 modulePairsLength = modulePairs.length;
-        for (uint256 i = 0; i < modulePairsLength;) {
-            // Call the `transferred` hook on each registered compliance module.
-            // The `modulePairs[i].params` are specific parameters configured for this module when it was added to the
-            // token.
-            ISMARTComplianceModule(modulePairs[i].module).transferred(
-                _token, _from, _to, _amount, modulePairs[i].params
+        // First, call token-specific compliance modules
+        SMARTComplianceModuleParamPair[] memory tokenModulePairs = ISMART(_token).complianceModules();
+        uint256 tokenModulePairsLength = tokenModulePairs.length;
+        for (uint256 i = 0; i < tokenModulePairsLength;) {
+            ISMARTComplianceModule(tokenModulePairs[i].module).transferred(
+                _token, _from, _to, _amount, tokenModulePairs[i].params
             );
-            // Using unchecked arithmetic for the loop increment is safe here as modulePairsLength
-            // is derived from storage and cannot cause an overflow that leads to an infinite loop within reasonable gas
-            // limits.
+            unchecked {
+                ++i;
+            }
+        }
+
+        // Second, call global compliance modules
+        uint256 globalModulesLength = _globalComplianceModuleList.length;
+        for (uint256 i = 0; i < globalModulesLength;) {
+            ISMARTComplianceModule(_globalComplianceModuleList[i]).transferred(
+                _token, _from, _to, _amount, _globalModuleParameters[_globalComplianceModuleList[i]]
+            );
             unchecked {
                 ++i;
             }
         }
     }
 
-    /// @inheritdoc ISMARTCompliance
-    /// @notice Called by an `ISMART` token contract after new tokens have been successfully created (minted).
-    /// @dev This function iterates through all compliance modules registered with the given `_token`.
-    /// For each module, it calls the module's `created` function, passing along the creation details.
-    /// This allows modules to react to token creation events.
-    /// It is critical that this function is only callable by the `ISMART` token contract.
-    /// @param _token The address of the `ISMART` token contract where tokens were created.
-    /// @param _to The address to which the new tokens were minted.
-    /// @param _amount The quantity of tokens that were created.
+    /// @notice Called after tokens are created/minted to update compliance module states
+    /// @param _token Address of the token contract
+    /// @param _to Address tokens were created for
+    /// @param _amount Amount of tokens created
     function created(address _token, address _to, uint256 _amount) external virtual override {
-        SMARTComplianceModuleParamPair[] memory modulePairs = ISMART(_token).complianceModules();
-        uint256 modulePairsLength = modulePairs.length;
-        for (uint256 i = 0; i < modulePairsLength;) {
-            ISMARTComplianceModule(modulePairs[i].module).created(_token, _to, _amount, modulePairs[i].params);
+        // First, call token-specific compliance modules
+        SMARTComplianceModuleParamPair[] memory tokenModulePairs = ISMART(_token).complianceModules();
+        uint256 tokenModulePairsLength = tokenModulePairs.length;
+        for (uint256 i = 0; i < tokenModulePairsLength;) {
+            ISMARTComplianceModule(tokenModulePairs[i].module).created(_token, _to, _amount, tokenModulePairs[i].params);
+            unchecked {
+                ++i;
+            }
+        }
+
+        // Second, call global compliance modules
+        uint256 globalModulesLength = _globalComplianceModuleList.length;
+        for (uint256 i = 0; i < globalModulesLength;) {
+            ISMARTComplianceModule(_globalComplianceModuleList[i]).created(_token, _to, _amount, _globalModuleParameters[_globalComplianceModuleList[i]]);
             unchecked {
                 ++i;
             }
         }
     }
 
-    /// @inheritdoc ISMARTCompliance
-    /// @notice Called by an `ISMART` token contract after tokens have been successfully destroyed (burned).
-    /// @dev This function iterates through all compliance modules registered with the given `_token`.
-    /// For each module, it calls the module's `destroyed` function, passing along the destruction details.
-    /// This allows modules to react to token destruction events.
-    /// It is critical that this function is only callable by the `ISMART` token contract.
-    /// @param _token The address of the `ISMART` token contract from which tokens were destroyed.
-    /// @param _from The address from which tokens were burned.
-    /// @param _amount The quantity of tokens that were destroyed.
+    /// @notice Called after tokens are destroyed/burned to update compliance module states
+    /// @param _token Address of the token contract
+    /// @param _from Address tokens were destroyed from
+    /// @param _amount Amount of tokens destroyed
     function destroyed(address _token, address _from, uint256 _amount) external virtual override {
-        SMARTComplianceModuleParamPair[] memory modulePairs = ISMART(_token).complianceModules();
-        uint256 modulePairsLength = modulePairs.length;
-        for (uint256 i = 0; i < modulePairsLength;) {
-            ISMARTComplianceModule(modulePairs[i].module).destroyed(_token, _from, _amount, modulePairs[i].params);
+        // First, call token-specific compliance modules
+        SMARTComplianceModuleParamPair[] memory tokenModulePairs = ISMART(_token).complianceModules();
+        uint256 tokenModulePairsLength = tokenModulePairs.length;
+        for (uint256 i = 0; i < tokenModulePairsLength;) {
+            ISMARTComplianceModule(tokenModulePairs[i].module).destroyed(_token, _from, _amount, tokenModulePairs[i].params);
+            unchecked {
+                ++i;
+            }
+        }
+
+        // Second, call global compliance modules
+        uint256 globalModulesLength = _globalComplianceModuleList.length;
+        for (uint256 i = 0; i < globalModulesLength;) {
+            ISMARTComplianceModule(_globalComplianceModuleList[i]).destroyed(_token, _from, _amount, _globalModuleParameters[_globalComplianceModuleList[i]]);
             unchecked {
                 ++i;
             }
@@ -301,27 +386,15 @@ contract ATKComplianceImplementation is
 
     // --- ISMARTCompliance Implementation (View) ---
 
-    /// @inheritdoc ISMARTCompliance
-    /// @notice Checks if a single given module address and its associated parameters are valid.
-    /// @dev This function calls the internal `_validateModuleAndParams` helper.
-    /// It's a view function, meaning it doesn't change state and can be called without gas costs (if called
-    /// externally).
-    /// It will revert if the module is invalid (e.g., doesn't support `ISMARTComplianceModule` interface or parameters
-    /// are incorrect for the module).
-    /// @param _module The address of the compliance module contract to validate.
-    /// @param _params The ABI-encoded parameters intended for this specific module. Each module defines how its
-    /// parameters should be structured and validated.
+    /// @notice Validates that a module and its parameters are valid
+    /// @param _module Address of the compliance module to validate
+    /// @param _params ABI-encoded parameters to validate
     function isValidComplianceModule(address _module, bytes calldata _params) external view virtual override {
         _validateModuleAndParams(_module, _params);
     }
 
-    /// @inheritdoc ISMARTCompliance
-    /// @notice Checks if an array of compliance module and parameter pairs are all valid.
-    /// @dev This function iterates through the provided array and calls `_validateModuleAndParams` for each pair.
-    /// If any module/parameter pair in the array is invalid, the entire function call will revert.
-    /// This is useful for validating a set of modules before registering them with a token.
-    /// @param _pairs An array of `SMARTComplianceModuleParamPair` structs. Each struct contains a module address and
-    /// its ABI-encoded parameters.
+    /// @notice Validates that multiple modules and their parameters are valid
+    /// @param _pairs Array of module-parameter pairs to validate
     function areValidComplianceModules(SMARTComplianceModuleParamPair[] calldata _pairs)
         external
         view
@@ -329,7 +402,6 @@ contract ATKComplianceImplementation is
         override
     {
         uint256 pairsLength = _pairs.length;
-        // aderyn-fp-next-line(require-revert-in-loop)
         for (uint256 i = 0; i < pairsLength;) {
             _validateModuleAndParams(_pairs[i].module, _pairs[i].params);
             unchecked {
@@ -338,23 +410,12 @@ contract ATKComplianceImplementation is
         }
     }
 
-    /// @inheritdoc ISMARTCompliance
-    /// @notice Checks if a proposed token transfer is compliant with all registered modules for a given token.
-    /// @dev This function is typically called by an `ISMART` token contract *before* a transfer is executed.
-    /// It first checks if either the sender or receiver is on the bypass list - if so, the transfer is automatically
-    /// allowed.
-    /// Otherwise, it retrieves all compliance modules registered for the `_token` and calls the `canTransfer` view
-    /// function on
-    /// each module.
-    /// If *any* of the modules revert during their `canTransfer` check (indicating the transfer is not allowed by that
-    /// module),
-    /// this entire function call will also revert, signaling that the transfer is not compliant.
-    /// If all modules allow the transfer (i.e., none of them revert), this function returns `true`.
-    /// @param _token The address of the `ISMART` token contract for which the compliance check is being performed.
-    /// @param _from The address from which tokens would be transferred.
-    /// @param _to The address to which tokens would be transferred.
-    /// @param _amount The quantity of tokens proposed to be transferred.
-    /// @return `true` if all registered compliance modules allow the transfer, otherwise the function reverts.
+    /// @notice Checks if a token transfer is compliant with all applicable modules
+    /// @param _token Address of the token contract
+    /// @param _from Address tokens would be transferred from
+    /// @param _to Address tokens would be transferred to
+    /// @param _amount Amount of tokens to transfer
+    /// @return True if the transfer is compliant, false otherwise
     function canTransfer(
         address _token,
         address _from,
@@ -372,61 +433,54 @@ contract ATKComplianceImplementation is
             return true;
         }
 
-        // If neither address is on the bypass list, proceed with normal compliance module checks
-        SMARTComplianceModuleParamPair[] memory modulePairs = ISMART(_token).complianceModules();
-        uint256 modulePairsLength = modulePairs.length;
-        for (uint256 i = 0; i < modulePairsLength;) {
-            // Each module's `canTransfer` function is expected to revert if the transfer is not allowed according to
-            // its rules.
-            // If a module reverts, this loop (and the entire `canTransfer` call) will also revert.
-            ISMARTComplianceModule(modulePairs[i].module).canTransfer(
-                _token, _from, _to, _amount, modulePairs[i].params
+        // First, check token-specific compliance modules
+        SMARTComplianceModuleParamPair[] memory tokenModulePairs = ISMART(_token).complianceModules();
+        uint256 tokenModulePairsLength = tokenModulePairs.length;
+        for (uint256 i = 0; i < tokenModulePairsLength;) {
+            ISMARTComplianceModule(tokenModulePairs[i].module).canTransfer(
+                _token, _from, _to, _amount, tokenModulePairs[i].params
             );
             unchecked {
                 ++i;
             }
         }
-        // If the loop completes without any module reverting, it means all modules allow the transfer.
+
+        // Second, check global compliance modules
+        uint256 globalModulesLength = _globalComplianceModuleList.length;
+        for (uint256 i = 0; i < globalModulesLength;) {
+            ISMARTComplianceModule(_globalComplianceModuleList[i]).canTransfer(
+                _token, _from, _to, _amount, _globalModuleParameters[_globalComplianceModuleList[i]]
+            );
+            unchecked {
+                ++i;
+            }
+        }
+
         return true;
     }
 
     // -- Internal Validation Function --
 
-    /// @notice Internal helper function to validate a single compliance module and its parameters.
-    /// @dev This function performs two main checks:
-    /// 1. Ensures the `_module` address is not the zero address.
-    /// 2. Verifies that the `_module` contract implements the `ISMARTComplianceModule` interface (using ERC165
-    /// `supportsInterface`).
-    /// 3. Calls the `validateParameters` function on the `_module` itself, allowing the module to check if `_params`
-    /// are valid for its specific logic.
-    /// If any of these checks fail, the function will revert with an appropriate error (`ZeroAddressNotAllowed`,
-    /// `InvalidModuleImplementation`, or an error from the module's `validateParameters`).
-    /// @param _module The address of the compliance module contract to validate.
-    /// @param _params The ABI-encoded parameters to be validated by the module.
+    /// @notice Internal function to validate a compliance module and its parameters
+    /// @param _module Address of the compliance module to validate
+    /// @param _params ABI-encoded parameters to validate
     function _validateModuleAndParams(address _module, bytes calldata _params) private view {
         if (_module == address(0)) revert ZeroAddressNotAllowed();
 
-        // Check if the module supports the ISMARTComplianceModule interface (ERC165 check).
-        // A `try-catch` block is used because the external call to `supportsInterface` could itself revert
-        // (e.g., if _module is not a contract or runs out of gas)..
         try IERC165(_module).supportsInterface(type(ISMARTComplianceModule).interfaceId) returns (bool supported) {
             if (!supported) {
-                revert InvalidModule(); // Revert if the interface is not supported by the module.
+                revert InvalidModule();
             }
         } catch {
-            revert InvalidModule(); // Revert if the supportsInterface call itself fails for any reason.
+            revert InvalidModule();
         }
 
-        // After confirming interface support, call the module's own parameter validation function.
-        // This external call can revert if the parameters are invalid according to the module's logic.
-        // If it reverts, the error will propagate up, causing `_validateModuleAndParams` to revert.
         ISMARTComplianceModule(_module).validateParameters(_params);
     }
 
     // --- Overrides for ERC2771ContextUpgradeable ---
 
-    /// @notice Override supportsInterface to support ERC165 interface detection
-    /// @dev Announces support for ISMARTCompliance and IATKCompliance interfaces
+    /// @notice Checks if the contract supports a given interface
     /// @param interfaceId The interface identifier to check
     /// @return True if the interface is supported, false otherwise
     function supportsInterface(bytes4 interfaceId)
@@ -440,10 +494,8 @@ contract ATKComplianceImplementation is
             || super.supportsInterface(interfaceId);
     }
 
-    /// @notice Override _msgSender to support meta-transactions via ERC2771
-    /// @dev This ensures that when using a trusted forwarder, the original sender is returned
-    /// rather than the forwarder's address. This is crucial for access control functions.
-    /// @return sender The address of the original sender of the transaction
+    /// @notice Returns the message sender, considering meta-transactions
+    /// @return sender The address of the message sender
     function _msgSender()
         internal
         view
@@ -454,10 +506,8 @@ contract ATKComplianceImplementation is
         return ERC2771ContextUpgradeable._msgSender();
     }
 
-    /// @notice Override _msgData to support meta-transactions via ERC2771
-    /// @dev This ensures that when using a trusted forwarder, the original calldata is returned
-    /// rather than the forwarder's modified calldata.
-    /// @return The original calldata of the transaction
+    /// @notice Returns the message data, considering meta-transactions
+    /// @return The message data
     function _msgData()
         internal
         view
@@ -469,7 +519,6 @@ contract ATKComplianceImplementation is
     }
 
     /// @notice Returns the context suffix length for meta-transactions
-    /// @dev Required for ERC2771Context implementation
     /// @return The length of the context suffix
     function _contextSuffixLength()
         internal

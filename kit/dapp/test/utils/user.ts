@@ -267,12 +267,15 @@ export async function setupUser(user: User) {
     console.log(`[setupUser] Session data for ${user.email}:`, {
       hasData: !!session.data,
       hasUser: !!session.data?.user,
-      isOnboarded: session.data?.user.isOnboarded,
       userId: session.data?.user.id,
       userEmail: session.data?.user.email,
     });
 
-    if (!session.data?.user.isOnboarded) {
+    if (
+      !session.data?.user.wallet ||
+      !session.data?.user.pincodeEnabled ||
+      !session.data?.user.secretCodesConfirmed
+    ) {
       console.log(
         `[setupUser] User ${user.email} is not onboarded - full session:`,
         JSON.stringify(session, null, 2)

@@ -1,19 +1,8 @@
-import { oc } from "@orpc/contract";
+import { ErrorMap, oc } from "@orpc/contract";
 import { oo } from "@orpc/openapi";
 import { z } from "zod";
 
-/**
- * Base ORPC contract with common error definitions.
- *
- * This contract serves as the foundation for all other contracts in the application,
- * defining standard error types that can occur across any API procedure. These
- * errors follow HTTP status code conventions and provide consistent error handling
- * throughout the application.
- *
- * All other contracts should extend this base contract to inherit these common
- * error definitions, ensuring consistent error responses across the entire API.
- */
-export const baseContract = oc.errors({
+export const CUSTOM_ERRORS = {
   /**
    * Input validation failure error.
    *
@@ -322,4 +311,17 @@ export const baseContract = oc.errors({
     message: "Conflict",
     status: 409,
   },
-});
+} satisfies ErrorMap;
+
+/**
+ * Base ORPC contract with common error definitions.
+ *
+ * This contract serves as the foundation for all other contracts in the application,
+ * defining standard error types that can occur across any API procedure. These
+ * errors follow HTTP status code conventions and provide consistent error handling
+ * throughout the application.
+ *
+ * All other contracts should extend this base contract to inherit these common
+ * error definitions, ensuring consistent error responses across the entire API.
+ */
+export const baseContract = oc.errors(CUSTOM_ERRORS);

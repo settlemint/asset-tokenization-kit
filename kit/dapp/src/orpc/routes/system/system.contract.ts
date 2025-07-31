@@ -1,6 +1,8 @@
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
+import { addonContract } from "@/orpc/routes/system/addon/addon.contract";
+import { complianceModuleContract } from "@/orpc/routes/system/compliance-module/compliance-module.contract";
 import { identityContract } from "@/orpc/routes/system/identity/identity.contract";
-import { SystemAddonCreateSchema } from "@/orpc/routes/system/routes/system.addonCreate.schema";
+import { statsContract } from "@/orpc/routes/system/stats/stats.contract";
 import { SystemCreateSchema } from "@/orpc/routes/system/routes/system.create.schema";
 import {
   SystemReadOutputSchema,
@@ -82,31 +84,6 @@ const read = baseContract
   .output(SystemReadOutputSchema);
 
 /**
- * Contract definition for the system addon creation endpoint.
- *
- * Defines the type-safe interface for registering system addons:
- * - HTTP POST method to /systems/addons endpoint
- * - Input validation for addon configuration and verification credentials
- * - Server-sent events output for real-time transaction tracking
- * - OpenAPI documentation with proper tags and descriptions
- *
- * The endpoint streams events as the blockchain transactions progress through
- * confirmation and indexing phases for each addon registration.
- */
-const addonCreate = baseContract
-  .route({
-    method: "POST",
-    path: "/systems/addons",
-    description:
-      "Register system add-ons to extend SMART system functionality with additional modules and features",
-    successDescription:
-      "System add-ons registered successfully with updated system configuration",
-    tags: ["system"],
-  })
-  .input(SystemAddonCreateSchema)
-  .output(SystemReadOutputSchema);
-
-/**
  * System API contract collection.
  *
  * Exports all system-related API contracts for use in the main contract registry.
@@ -115,6 +92,13 @@ const addonCreate = baseContract
  * - create: Deploy a new SMART system
  * - read: Retrieve a specific system with its token factories
  * - addonCreate: Register system add-ons
+ * - identityCreate: Create blockchain identity contracts
+ * - identityRegister: Register identity claims
+ * - complianceModuleCreate: Deploy compliance modules
+ * - statsAssets: System-wide asset statistics
+ * - statsValue: System-wide value metrics
+ * - statsTransactionCount: System-wide transaction count statistics
+ * - statsTransactionHistory: System-wide transaction history
  *
  * Future endpoints may include:
  * - update: Update system configuration
@@ -124,6 +108,8 @@ export const systemContract = {
   list,
   create,
   read,
-  addonCreate,
+  ...addonContract,
   ...identityContract,
+  ...complianceModuleContract,
+  ...statsContract,
 };

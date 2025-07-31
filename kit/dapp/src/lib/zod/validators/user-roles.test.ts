@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   getUserRole,
+  isUserRole,
   userRoleNames,
   userRoles,
-  isUserRole,
 } from "./user-roles";
 
 describe("userRoles", () => {
@@ -64,7 +64,7 @@ describe("userRoles", () => {
       // Investor has standard permissions
       expect(validator.parse("investor") as string).toBe("investor");
 
-      // Issuer has asset issuance permissions
+      // Issuer has trusted issuer permissions
       expect(validator.parse("issuer") as string).toBe("issuer");
     });
   });

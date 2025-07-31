@@ -29,10 +29,10 @@ const TOKEN_RECOVER_TOKENS_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenRecoverTokens = tokenRouter.token.tokenRecoverTokens
+export const recoverTokens = tokenRouter.token.recoverTokens
   .use(
     tokenPermissionMiddleware({
-      requiredRoles: TOKEN_PERMISSIONS.tokenRecoverTokens,
+      requiredRoles: TOKEN_PERMISSIONS.recoverTokens,
     })
   )
   .use(portalMiddleware)

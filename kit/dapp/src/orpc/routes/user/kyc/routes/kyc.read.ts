@@ -1,20 +1,20 @@
 import { kycProfiles } from "@/lib/db/schema";
+import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { UserIdSchema } from "@/orpc/routes/user/kyc/kyc.schema";
 import { eq } from "drizzle-orm";
 
 export const read = authRouter.user.kyc.read
+  .use(
+    offChainPermissionsMiddleware<typeof UserIdSchema>({
+      requiredPermissions: { kyc: ["list"] },
+      alwaysAllowIf: (context, input) => input.userId === context.auth?.user.id,
+    })
+  )
   .use(databaseMiddleware)
   .handler(async ({ context, input, errors }) => {
     const { userId } = input;
-
-    // Check if user is accessing their own data or is an admin
-    if (context.auth.user.id !== userId && context.auth.user.role !== "admin") {
-      throw errors.FORBIDDEN({
-        message:
-          "Access denied. You do not have permission to view this KYC profile.",
-      });
-    }
 
     const [profile] = await context.db
       .select()

@@ -36,6 +36,7 @@ import {
   stablecoinAbi,
   stablecoinFactoryAbi,
   systemAbi,
+  systemAccessManagerAbi,
   systemAddonRegistryAbi,
   timeBoundAirdropFactoryAbi,
   tokenFactoryRegistryAbi,
@@ -59,6 +60,7 @@ export const ATKContracts = {
   equityFactory: equityFactoryAbi,
   fundFactory: fundFactoryAbi,
   stablecoinFactory: stablecoinFactoryAbi,
+  systemAccessManager: systemAccessManagerAbi,
   // token
   accessManager: accessManagerAbi,
   identity: identityAbi,

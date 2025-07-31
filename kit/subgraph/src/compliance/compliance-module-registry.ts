@@ -1,15 +1,9 @@
 import { Bytes } from "@graphprotocol/graph-ts";
-import {
-  AbstractAddressListComplianceModule as AddressListComplianceModuleTemplate,
-  AbstractCountryComplianceModule as CountryListComplianceModuleTemplate,
-} from "../../generated/templates";
 import { ComplianceModuleRegistered as ComplianceModuleRegisteredEvent } from "../../generated/templates/ComplianceModuleRegistry/ComplianceModuleRegistry";
 import { fetchEvent } from "../event/fetch/event";
 import { getDecodedTypeId } from "../type-identifier/type-identifier";
 import { fetchComplianceModule } from "./fetch/compliance-module";
 import { fetchComplianceModuleRegistry } from "./fetch/compliance-module-registry";
-import { isAddressListComplianceModule } from "./modules/address-list-compliance-module";
-import { isCountryListComplianceModule } from "./modules/country-list-compliance-module";
 
 export function handleComplianceModuleRegistered(
   event: ComplianceModuleRegisteredEvent
@@ -22,13 +16,6 @@ export function handleComplianceModuleRegistered(
   }
   complianceModule.name = event.params.name;
   complianceModule.typeId = getDecodedTypeId(event.params.typeId);
-
-  if (isAddressListComplianceModule(event.params.typeId)) {
-    AddressListComplianceModuleTemplate.create(event.params.moduleAddress);
-  }
-  if (isCountryListComplianceModule(event.params.typeId)) {
-    CountryListComplianceModuleTemplate.create(event.params.moduleAddress);
-  }
 
   complianceModule.complianceModuleRegistry = fetchComplianceModuleRegistry(
     event.address
