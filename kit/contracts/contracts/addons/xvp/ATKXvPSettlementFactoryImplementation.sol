@@ -61,14 +61,10 @@ contract ATKXvPSettlementFactoryImplementation is
 
     /// @notice Initializes the factory with system address and admin
     /// @dev Can only be called once, sets up initial roles and system integration
-    /// @param systemAddress The address of the ATK system contract
-    /// @param initialAdmin The address that will be granted admin role
-    function initialize(address systemAddress, address initialAdmin) public initializer {
-        if (systemAddress == address(0)) revert ZeroAddressNotAllowed();
-        if (initialAdmin == address(0)) revert ZeroAddressNotAllowed();
-
-        __ERC165_init();
-        _initializeAbstractSystemAddonFactory(systemAddress, initialAdmin);
+    /// @param accessManager The address of the access manager.
+    /// @param systemAddress The address of the `IATKSystem` contract.
+    function initialize(address accessManager, address systemAddress) public initializer {
+        _initializeAbstractSystemAddonFactory(accessManager, systemAddress);
 
         // Deploy the initial XvPSettlement implementation
         ATKXvPSettlementImplementation initialImplementation = new ATKXvPSettlementImplementation(trustedForwarder());
