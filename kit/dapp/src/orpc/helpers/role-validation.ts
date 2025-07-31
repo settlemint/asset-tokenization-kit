@@ -3,6 +3,7 @@ import type {
   AccessControlRoles,
 } from "@/lib/fragments/the-graph/access-control-fragment";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { getAccessControlEntries } from "./access-control-helpers";
 
 /**
  * Maps the user roles from the access control fragment
@@ -59,11 +60,14 @@ export function mapUserRoles(
     verificationAdmin: false,
   };
 
-  const userRoles = Object.entries(accessControl ?? {}).reduce<
+  // Use type-safe helper to get access control entries
+  const userRoles = getAccessControlEntries(accessControl).reduce<
     Record<AccessControlRoles, boolean>
   >((acc, [role, accounts]) => {
-    const userHasRole = accounts.some((account) => account.id === wallet);
-    acc[role as AccessControlRoles] = userHasRole;
+    const userHasRole = accounts.some(
+      (account) => account.id.toLowerCase() === wallet.toLowerCase()
+    );
+    acc[role] = userHasRole;
     return acc;
   }, initialUserRoles);
 

@@ -98,7 +98,6 @@ export const statsTransactionCount = authRouter.system.statsTransactionCount
           since: sinceTimestamp.toString(),
         },
         output: TransactionCountResponseSchema,
-        error: context.t("tokens:api.stats.transactionCount.messages.failed"),
       }
     );
 

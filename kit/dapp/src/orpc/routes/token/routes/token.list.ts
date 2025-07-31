@@ -12,7 +12,7 @@ import { TokensResponseSchema } from "@/orpc/routes/token/routes/token.list.sche
  * and permission features for regulated assets.
  *
  * This query supports:
- * - Paginated retrieval using skip/first parameters
+ * - Automatic pagination using @fetchAll directive
  * - Flexible sorting by any Token field (name, symbol, etc.)
  * - Ordered results in ascending or descending direction
  *
@@ -21,14 +21,12 @@ import { TokensResponseSchema } from "@/orpc/routes/token/routes/token.list.sche
  * current state or whether they have any holders.
  */
 const LIST_TOKEN_QUERY = theGraphGraphql(`
-  query ListTokenQuery($skip: Int!, $first: Int!, $orderBy: Token_orderBy, $orderDirection: OrderDirection, $where: Token_filter) {
+  query ListTokenQuery($orderBy: Token_orderBy, $orderDirection: OrderDirection, $where: Token_filter) {
     tokens(
         where: $where
-        skip: $skip
-        first: $first
         orderBy: $orderBy
         orderDirection: $orderDirection
-      ) {
+      ) @fetchAll {
         id
         type
         createdAt
@@ -102,14 +100,9 @@ export const list = authRouter.token.list
     // Manually construct GraphQL variables since we need to handle searchByAddress mapping
     const response = await context.theGraphClient.query(LIST_TOKEN_QUERY, {
       input: {
-        skip: input.offset,
-        first: input.limit ? Math.min(input.limit, 1000) : 1000,
-        orderBy: input.orderBy,
-        orderDirection: input.orderDirection,
         where: Object.keys(where).length > 0 ? where : undefined,
       },
       output: TokensResponseSchema,
-      error: context.t("tokens:api.queries.list.messages.failed"),
     });
 
     return response.tokens;

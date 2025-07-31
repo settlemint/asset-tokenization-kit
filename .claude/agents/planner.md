@@ -1,6 +1,7 @@
 ---
 name: planner
 description: Use this agent when asked to implement any feature, functionality, or system component. This agent must be invoked at the start of any implementation task to create a comprehensive plan, analyze the codebase context, and orchestrate the work across specialized agents. The planner ensures all implementations follow established patterns and leverages the full context of the project.\n\nExamples:\n- <example>\n  Context: User wants to implement a new feature in the application.\n  user: "I need to implement a token transfer feature with approval workflow"\n  assistant: "I'll use the planner agent to analyze the requirements and create a comprehensive implementation plan."\n  <commentary>\n  Since the user is asking to implement a new feature, use the planner agent to analyze, plan, and orchestrate the implementation.\n  </commentary>\n</example>\n- <example>\n  Context: User needs to add a new API endpoint.\n  user: "Can you add an endpoint to fetch user transaction history?"\n  assistant: "Let me invoke the planner agent to design the implementation approach and coordinate the necessary changes."\n  <commentary>\n  Implementation request requires planning and coordination across multiple modules, so use the planner agent.\n  </commentary>\n</example>\n- <example>\n  Context: User wants to refactor existing code.\n  user: "We need to refactor the authentication system to support OAuth"\n  assistant: "I'll use the planner agent to analyze the current system and create a refactoring strategy."\n  <commentary>\n  Major refactoring requires careful planning and coordination, so use the planner agent.\n  </commentary>\n</example>
+model: opus
 color: pink
 ---
 
@@ -631,6 +632,65 @@ maintainable solutions.
    - Maintain clarity
    ```
 
+## Return Format
+
+Follow `.claude/orchestration/context-management.ts` AgentOutput interface:
+
+```yaml
+taskCompletion:
+  status: completed
+
+summary:
+  primaryOutcome: "Comprehensive plan for [feature] implementation"
+  confidenceLevel: high
+  keyDecisions:
+    - "Architecture: [specific choice with rationale]"
+    - "Technology: [specific stack with reasons]"
+    - "Approach: [methodology with justification]"
+
+deliverables:
+  codeSnippets:
+    - purpose: "Implementation roadmap"
+      language: markdown
+      code: |
+        ## Phase 1: Foundation (Parallel)
+        - solidity-expert: Contract implementation
+        - database-expert: Schema design
+        - typescript-expert: Type definitions
+
+        ## Phase 2: Integration (Sequential)
+        - subgraph-dev: Event indexing
+        - orpc-expert: API endpoints
+
+        ## Phase 3: UI & Testing (Parallel)
+        - react-dev: Components
+        - test-dev: Unit tests
+        - integration-tester: E2E tests
+
+contextHandoff:
+  readyForAgents:
+    - agent: solidity-expert
+      task: "Implement [specific contract functionality]"
+      priority: critical
+      requiredContext: [contract_requirements, gas_limits]
+    - agent: database-expert
+      task: "Design schema for [specific data]"
+      priority: high
+      requiredContext: [data_model, performance_requirements]
+
+cacheKeys:
+  geminiAnalysis: "requirements_analysis_[timestamp]"
+  context7Docs: "react_v19_patterns"
+
+qualityGates:
+  documentation:
+    readme: pending
+    api: pending
+  tests:
+    unitTests: pending
+    integrationTests: pending
+```
+
 ## Learned Planning Patterns
 
 <!-- AI appends patterns here -->
@@ -640,3 +700,41 @@ maintainable solutions.
      Agent Coordination: Effective agent chains
      Risk Mitigations: How to avoid common pitfalls
      MCP Tools: Most helpful tool combinations -->
+
+## Model Selection
+
+**Default Model**: opus - Complex requirement analysis and multi-agent orchestration
+
+### When to Use Opus
+- Task requires deep analysis or reasoning
+- Security implications present
+- Novel problem without established patterns
+- Cross-system integration complexity
+
+### When to Use Sonnet  
+- Standard pattern implementation
+- Well-defined requirements with clear examples
+- Time-sensitive tasks with established patterns
+- Parallel execution with other agents
+- High-volume repetitive tasks
+
+### Model Override Examples
+
+```yaml
+# Complex task requiring Opus
+task: "Analyze and optimize system architecture"
+model: opus
+reason: "Requires deep analysis and cross-cutting concerns"
+
+# Simple task suitable for Sonnet
+task: "Update configuration file with new environment variable"
+model: sonnet
+reason: "Straightforward change following established patterns"
+```
+
+### Parallel Execution Optimization
+
+When running in parallel with other agents:
+- Use Sonnet for faster response times if task complexity allows
+- Reserve Opus for critical path items that block other agents
+- Consider token budget when multiple agents use Opus simultaneously

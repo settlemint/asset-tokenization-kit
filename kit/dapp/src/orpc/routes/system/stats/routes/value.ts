@@ -60,7 +60,6 @@ export const statsValue = authRouter.system.statsValue
         systemId: context.system.address.toLowerCase(),
       },
       output: TotalValueResponseSchema,
-      error: context.t("tokens:api.stats.totalValue.messages.failed"),
     });
 
     // Extract total value, defaulting to "0" if no system stats
