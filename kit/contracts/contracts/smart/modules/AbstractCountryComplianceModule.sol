@@ -29,7 +29,6 @@ import { AbstractComplianceModule } from "./AbstractComplianceModule.sol";
 /// Inheriting contracts still need to implement `canTransfer` (with country-specific logic), `name`, and may override
 /// other hooks from `AbstractComplianceModule`.
 abstract contract AbstractCountryComplianceModule is AbstractComplianceModule {
-
     // --- Constructor ---
     /// @notice Constructor for the abstract country compliance module.
     /// @dev When a contract inheriting from `AbstractCountryComplianceModule` is deployed,

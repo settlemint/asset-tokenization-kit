@@ -51,7 +51,6 @@ export const read = publicRouter.account.read
     const result = await context.theGraphClient.query(READ_ACCOUNT_QUERY, {
       input: { walletAddress: wallet },
       output: AccountResponseSchema,
-      error: "Failed to retrieve account",
     });
 
     if (!result.account) {

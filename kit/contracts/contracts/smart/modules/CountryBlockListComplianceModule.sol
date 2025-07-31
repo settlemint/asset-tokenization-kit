@@ -13,7 +13,8 @@ import { ISMARTComplianceModule } from "../interface/ISMARTComplianceModule.sol"
 /// list (block-list) or if their identity/country is unknown.
 /// @dev It inherits from `AbstractCountryComplianceModule` and implements a country-based block-list logic.
 /// The module uses a token-specific list of blocked country codes provided via the `_params` argument when this
-/// module is registered with a particular `ISMART` token. The format for these parameters is `abi.encode(uint16[] memory
+/// module is registered with a particular `ISMART` token. The format for these parameters is `abi.encode(uint16[]
+/// memory
 /// blockedCountries)`.
 /// A transfer *to* a recipient is BLOCKED (i.e., `canTransfer` reverts) if:
 ///    - The recipient has no identity registered in the token's `ISMARTIdentityRegistry`, or their country code is 0
@@ -25,7 +26,8 @@ import { ISMARTComplianceModule } from "../interface/ISMARTComplianceModule.sol"
 ///      NOT present in the token-specific list of blocked countries.
 /// @custom:parameters The `_params` data for this module should be ABI-encoded as a dynamic array of `uint16` country
 /// codes:
-///                   `abi.encode(uint16[] memory blockedCountries)`. These are the countries blocked for a specific token.
+///                   `abi.encode(uint16[] memory blockedCountries)`. These are the countries blocked for a specific
+/// token.
 contract CountryBlockListComplianceModule is AbstractCountryComplianceModule {
     /// @notice Unique type identifier for this compliance module
     bytes32 public constant TYPE_ID = keccak256("CountryBlockListComplianceModule");
@@ -37,14 +39,12 @@ contract CountryBlockListComplianceModule is AbstractCountryComplianceModule {
         return TYPE_ID;
     }
 
-
     // --- Constructor ---
     /// @notice Constructor for the `CountryBlockListComplianceModule`.
     /// @dev When a contract inheriting from `CountryBlockListComplianceModule` is deployed, this constructor is called.
     /// It calls the constructor of `AbstractCountryComplianceModule` with the `_trustedForwarder` address.
     /// @param _trustedForwarder Address of the trusted forwarder for meta transactions
     constructor(address _trustedForwarder) AbstractCountryComplianceModule(_trustedForwarder) { }
-
 
     // --- Compliance Check --- (ISMARTComplianceModule Implementation)
 

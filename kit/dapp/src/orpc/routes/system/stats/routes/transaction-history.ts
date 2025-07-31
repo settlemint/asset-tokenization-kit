@@ -132,7 +132,6 @@ export const statsTransactionHistory = authRouter.system.statsTransactionHistory
           since: sinceTimestamp.toString(),
         },
         output: TransactionMetricsResponseSchema,
-        error: context.t("tokens:api.stats.transactions.messages.failed"),
       }
     );
 

@@ -1,4 +1,6 @@
 /**
+ * @vitest-environment node
+ *
  * Actions Schema Tests
  *
  * Unit tests for actions schemas and validation.
