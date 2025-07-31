@@ -1,7 +1,7 @@
 import {
   getCountriesSorted,
+  getNumericCodeByName as getNumericCodeByNameFn,
   getNumericCountriesSorted,
-  getNumericCountryCode,
   getSupportedLocales,
   type SupportedLocale,
 } from "@/lib/zod/validators/iso-country-code";
@@ -114,7 +114,7 @@ export function useCountries(): UseCountriesReturn {
 
   const getNumericCodeByName = useMemo(
     () => (name: string) => {
-      return getNumericCountryCode(name, baseLocale);
+      return getNumericCodeByNameFn(name, baseLocale);
     },
     [baseLocale]
   );

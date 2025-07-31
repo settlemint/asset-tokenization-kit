@@ -178,7 +178,7 @@ export function getCountries(locale: SupportedLocale = "en") {
   return countries.getNames(locale);
 }
 
-export function getNumericCountryCode(
+export function getNumericCodeByName(
   name: string,
   locale: SupportedLocale = "en"
 ) {
