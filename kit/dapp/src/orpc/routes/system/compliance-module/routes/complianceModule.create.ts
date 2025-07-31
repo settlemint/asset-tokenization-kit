@@ -18,6 +18,7 @@
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
+import { complianceTypeIds } from "@/lib/zod/validators/compliance";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
@@ -27,7 +28,6 @@ import {
   type SystemComplianceModuleCreateOutput,
   type SystemComplianceModuleCreateSchema,
 } from "@/orpc/routes/system/compliance-module/routes/complianceModule.create.schema";
-import { complianceTypeIds } from "@/lib/zod/validators/compliance";
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
@@ -65,23 +65,6 @@ const COMPLIANCE_TYPE_TO_IMPLEMENTATION_NAME = {
   IdentityBlockListComplianceModule: "sanctionsModuleFactory",
   IdentityAllowListComplianceModule: "sanctionsModuleFactory",
 };
-
-/**
- * Resolves compliance modules from input - either "all" or specific configurations
- */
-function resolveComplianceModules(
-  complianceModules:
-    | "all"
-    | SystemComplianceModuleConfig
-    | SystemComplianceModuleConfig[]
-): SystemComplianceModuleConfig[] {
-  if (complianceModules === "all") {
-    return complianceTypeIds.map((type) => ({ type }));
-  }
-  return Array.isArray(complianceModules)
-    ? complianceModules
-    : [complianceModules];
-}
 
 /**
  * Gets the implementation address for a compliance module configuration
@@ -133,8 +116,7 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
       });
     }
 
-    // Resolve compliance modules (either "all" or specific configurations)
-    const moduleList = resolveComplianceModules(complianceModules);
+    const moduleList = getModuleList(complianceModules);
 
     // Query existing system compliance modules to check for duplicates
     const existingComplianceModuleTypeIds =
@@ -220,3 +202,20 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
       { context }
     );
   });
+
+/**
+ * Resolves compliance modules from input - either "all" or specific configurations
+ */
+function getModuleList(
+  complianceModules:
+    | "all"
+    | SystemComplianceModuleConfig
+    | SystemComplianceModuleConfig[]
+): SystemComplianceModuleConfig[] {
+  if (complianceModules === "all") {
+    return complianceTypeIds.map((type) => ({ type }));
+  }
+  return Array.isArray(complianceModules)
+    ? complianceModules
+    : [complianceModules];
+}
