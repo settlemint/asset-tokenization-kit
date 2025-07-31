@@ -31,10 +31,10 @@ export function arraysEqual(
 
   return first.every((value, index) => {
     const secondArrValue = second[index];
-    if (!secondArrValue) return false;
+    if (secondArrValue === undefined) return false;
 
-    const firstValue = Number.parseInt(value.toString());
-    const secondValue = Number.parseInt(secondArrValue.toString());
+    const firstValue = Number(value);
+    const secondValue = Number(secondArrValue);
 
     return firstValue === secondValue;
   });
