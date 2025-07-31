@@ -55,6 +55,27 @@ const CREATE_SYSTEM_MUTATION = portalGraphql(`
   }
 `);
 
+const GRANT_ROLE_MUTATION = portalGraphql(`
+  mutation GrantRoleMutation(
+    $verificationId: String
+    $challengeResponse: String!
+    $address: String!
+    $to: String!
+    $role: String!
+    $from: String!
+  ) {
+    IATKSystemAccessManagerGrantRole(
+      verificationId: $verificationId
+      challengeResponse: $challengeResponse
+      address: $address
+      from: $from
+      input: { account: $to, role: $role }
+    ) {
+      transactionHash
+    }
+  }
+`);
+
 /**
  * GraphQL mutation for bootstrapping a system contract.
  * @param address - The system contract address to bootstrap
@@ -248,12 +269,41 @@ export const create = onboardedRouter.system.create
       { context }
     );
 
-    // Return the complete system details
-    return await call(
+    const systemDetails = await call(
       read,
       {
         id: system.id,
       },
       { context }
     );
+
+    // Grant roles to the contracts
+    if (systemDetails.systemAccessManager) {
+      const requiresAdminRole = [
+        systemDetails.tokenFactoryRegistry,
+        systemDetails.systemAddonRegistry,
+      ].filter((contract) => contract !== null);
+
+      for (const contract of requiresAdminRole) {
+        const grantRoleChallengeResponse = await handleChallenge(sender, {
+          code: verification.verificationCode,
+          type: verification.verificationType,
+        });
+
+        await context.portalClient.mutate(
+          GRANT_ROLE_MUTATION,
+          {
+            address: systemDetails.systemAccessManager,
+            from: sender.wallet,
+            to: contract,
+            role: "0x0000000000000000000000000000000000000000000000000000000000000000", // DEFAULT_ADMIN_ROLE
+            ...grantRoleChallengeResponse,
+          },
+          "Failed to grant default admin role"
+        );
+      }
+    }
+
+    // Return the complete system details
+    return systemDetails;
   });

@@ -20,21 +20,33 @@ export type AccessControl = FragmentOf<typeof AccessControlFragment>;
  */
 export const AccessControlFragment = theGraphGraphql(`
   fragment AccessControlFragment on AccessControl {
-    admin { id }
-    auditor { id }
+    addonManager { id }
     addonModule { id }
     addonRegistryModule { id }
+    admin { id }
+    auditor { id }
+    burner { id }
     bypassListManager { id }
     bypassListManagerAdmin { id }
+    capManagement { id }
     claimManager { id }
+    claimPolicyManager { id }
+    complianceAdmin { id }
+    complianceManager { id }
     custodian { id }
     deployer { id }
     emergency { id }
+    forcedTransfer { id }
+    freezer { id }
     fundsManager { id }
     globalListManager { id }
     governance { id }
-    implementationManager { id }
+    identityManager { id }
     identityRegistryModule { id }
+    implementationManager { id }
+    minter { id }
+    pauser { id }
+    recovery { id }
     registrar { id }
     registrarAdmin { id }
     registryManager { id }
@@ -42,8 +54,12 @@ export const AccessControlFragment = theGraphGraphql(`
     signer { id }
     storageModifier { id }
     supplyManagement { id }
+    systemManager { id }
     systemModule { id }
+    tokenAdmin { id }
     tokenFactoryModule { id }
     tokenFactoryRegistryModule { id }
+    tokenManager { id }
+    verificationAdmin { id }
   }
 `);

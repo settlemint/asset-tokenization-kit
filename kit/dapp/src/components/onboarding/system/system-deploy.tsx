@@ -67,17 +67,29 @@ export function SystemDeploy() {
               </div>
             </div>
 
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">
-                {t("system.what-gets-deployed")}
-              </h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>{t("system.core-system-contract")}</li>
-                <li>{t("system.identity-registry")}</li>
-                <li>{t("system.compliance-engine")}</li>
-                <li>{t("system.trusted-issuers")}</li>
-                <li>{t("system.token-factory")}</li>
-              </ul>
+            <div className="space-y-4 text-sm">
+              <p>{t("system.bootstrap-explanation")}</p>
+              <p>{t("system.admin-role-explanation")}</p>
+              <div>
+                <p className="font-medium mb-3">
+                  {t("system.bootstrap-contracts-header")}
+                </p>
+                <ul className="space-y-3 text-sm list-disc ml-6">
+                  <li>
+                    <strong>{t("system.identity-registry-name")}</strong> –{" "}
+                    {t("system.identity-registry-description")}
+                  </li>
+                  <li>
+                    <strong>{t("system.compliance-engine-name")}</strong> –{" "}
+                    {t("system.compliance-engine-description")}
+                  </li>
+                  <li>
+                    <strong>{t("system.trusted-issuers-name")}</strong> –{" "}
+                    {t("system.trusted-issuers-description")}
+                  </li>
+                </ul>
+              </div>
+              <p>{t("system.infrastructure-conclusion")}</p>
             </div>
           </div>
         </div>

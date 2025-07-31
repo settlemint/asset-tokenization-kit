@@ -1,7 +1,6 @@
 import { Address, Bytes } from "@graphprotocol/graph-ts";
 import { TokenFactoryRegistry } from "../../../generated/schema";
 import { TokenFactoryRegistry as TokenFactoryRegistryTemplate } from "../../../generated/templates";
-import { fetchAccessControl } from "../../access-control/fetch/accesscontrol";
 import { fetchAccount } from "../../account/fetch/account";
 
 export function fetchTokenFactoryRegistry(
@@ -12,7 +11,6 @@ export function fetchTokenFactoryRegistry(
   if (!tokenFactoryRegistry) {
     tokenFactoryRegistry = new TokenFactoryRegistry(address);
     tokenFactoryRegistry.system = Address.zero();
-    tokenFactoryRegistry.accessControl = fetchAccessControl(address).id;
     tokenFactoryRegistry.account = fetchAccount(address).id;
     tokenFactoryRegistry.deployedInTransaction = Bytes.empty();
     tokenFactoryRegistry.save();

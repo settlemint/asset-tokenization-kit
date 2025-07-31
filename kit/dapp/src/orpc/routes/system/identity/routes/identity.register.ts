@@ -36,7 +36,7 @@ export const identityRegister = portalRouter.system.identityRegister
     blockchainPermissionsMiddleware({
       requiredRoles: ["registrar"],
       getAccessControl: ({ context }) => {
-        return context.system?.identityRegistry?.accessControl;
+        return context.system?.systemAccessManager?.accessControl;
       },
     })
   )
@@ -75,7 +75,7 @@ export const identityRegister = portalRouter.system.identityRegister
     await context.portalClient.mutate(
       IDENTITY_REGISTER_MUTATION,
       {
-        address: system.identityRegistry.id,
+        address: system.identityRegistry,
         from: sender.wallet,
         country: Number(countries.alpha2ToNumeric(country) ?? "0"),
         identity: account.identity,
