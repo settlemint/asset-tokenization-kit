@@ -120,7 +120,7 @@ export const statsSupplyChanges = tokenRouter.token.statsSupplyChanges
             since: sinceTimestamp.toString(),
           },
           output: TokenSupplyChangesResponseSchema,
-          error: "Failed to fetch token supply changes history",
+          error: context.t("tokens:api.stats.supplyChanges.messages.failed"),
         }
       );
 
@@ -134,7 +134,7 @@ export const statsSupplyChanges = tokenRouter.token.statsSupplyChanges
       };
     } catch (error) {
       throw new ORPCError("INTERNAL_SERVER_ERROR", {
-        message: "Failed to fetch token supply changes history",
+        message: context.t("tokens:api.stats.supplyChanges.messages.failed"),
         data: {
           tokenAddress,
           days,
