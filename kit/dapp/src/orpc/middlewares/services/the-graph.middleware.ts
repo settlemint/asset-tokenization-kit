@@ -253,10 +253,7 @@ function createValidatedTheGraphClient(
                   firstValue =
                     typeof varValue === "number" ? varValue : undefined;
                   // If variable is defined in query but not passed in input, check if it's a standard pagination variable
-                  if (
-                    firstValue === undefined &&
-                    (varName === "first" || varName.endsWith("irst"))
-                  ) {
+                  if (firstValue === undefined && varName === "first") {
                     hasFirstArg = true;
                     firstValue = THE_GRAPH_LIMIT; // Default to THE_GRAPH_LIMIT
                     firstValueIsDefault = true; // Mark that this was defaulted
@@ -274,10 +271,7 @@ function createValidatedTheGraphClient(
                   skipValue =
                     typeof varValue === "number" ? varValue : undefined;
                   // If variable is defined in query but not passed in input, check if it's a standard pagination variable
-                  if (
-                    skipValue === undefined &&
-                    (varName === "skip" || varName.endsWith("kip"))
-                  ) {
+                  if (skipValue === undefined && varName === "skip") {
                     hasSkipArg = true;
                     skipValue = 0; // Default to 0
                   }
