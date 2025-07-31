@@ -158,7 +158,7 @@ export const addonCreate = portalRouter.system.addonCreate
     blockchainPermissionsMiddleware<typeof SystemAddonCreateSchema>({
       requiredRoles: ["registrar"],
       getAccessControl: ({ context }) => {
-        return context.system?.systemAddonRegistry?.accessControl;
+        return context.system?.systemAccessManager?.accessControl;
       },
     })
   )
@@ -167,7 +167,7 @@ export const addonCreate = portalRouter.system.addonCreate
     const sender = context.auth.user;
     const { system } = context;
 
-    const contract = system?.systemAddonRegistry?.id;
+    const contract = system?.systemAddonRegistry;
     if (!contract) {
       throw errors.INTERNAL_SERVER_ERROR({
         message: `No addon registry found for system ${system?.address}`,

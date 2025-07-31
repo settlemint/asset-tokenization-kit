@@ -29,7 +29,7 @@
 
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { z } from "zod";
-import { MutationInputSchemaWithContract } from "../../../common/schemas/mutation.schema";
+import { MutationInputSchema } from "../../../common/schemas/mutation.schema";
 
 /**
  * Token types supported for factory creation
@@ -106,7 +106,7 @@ const SingleFactorySchema = z.object({
  * Main schema for factory creation
  * Supports both single factory and batch creation
  */
-export const FactoryCreateSchema = MutationInputSchemaWithContract.extend({
+export const FactoryCreateSchema = MutationInputSchema.extend({
   /**
    * Factory or factories to create
    * Can be a single factory object or an array of factories

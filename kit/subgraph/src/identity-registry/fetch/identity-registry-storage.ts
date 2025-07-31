@@ -1,6 +1,5 @@
 import { Address, Bytes } from "@graphprotocol/graph-ts";
 import { IdentityRegistryStorage } from "../../../generated/schema";
-import { fetchAccessControl } from "../../access-control/fetch/accesscontrol";
 import { fetchAccount } from "../../account/fetch/account";
 
 export function fetchIdentityRegistryStorage(
@@ -10,7 +9,6 @@ export function fetchIdentityRegistryStorage(
 
   if (!identityRegistryStorage) {
     identityRegistryStorage = new IdentityRegistryStorage(address);
-    identityRegistryStorage.accessControl = fetchAccessControl(address).id;
     identityRegistryStorage.account = fetchAccount(address).id;
     identityRegistryStorage.deployedInTransaction = Bytes.empty();
     identityRegistryStorage.save();
