@@ -25,7 +25,7 @@ import {
  */
 const LIST_ACTIONS_QUERY = theGraphGraphql(`
   query ListActionsQuery($where: Action_filter) {
-    actions(where: $where) {
+    actions(where: $where) @fetchAll {
         id
         name
         target

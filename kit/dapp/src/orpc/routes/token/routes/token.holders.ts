@@ -20,7 +20,7 @@ import { TokenHoldersResponseSchema } from "@/orpc/routes/token/routes/token.hol
 const TOKEN_HOLDERS_QUERY = theGraphGraphql(`
   query TokenHoldersQuery($id: ID!) {
     token(id: $id) {
-      balances {
+      balances @fetchAll {
         id
         available
         frozen

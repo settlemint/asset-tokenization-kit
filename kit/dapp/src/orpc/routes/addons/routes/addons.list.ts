@@ -12,7 +12,7 @@ import { AddonsResponseSchema } from "@/orpc/routes/addons/routes/addons.list.sc
  * with features like airdrops, yield distribution, and XVP settlements.
  *
  * This query supports:
- * - Paginated retrieval using skip/first parameters
+ * - Automatic pagination using @fetchAll directive
  * - Flexible sorting by any SystemAddon field
  * - Filtering by addon type (airdrops, yield, xvp)
  * - Filtering by account address (who deployed the addon)
@@ -21,14 +21,12 @@ import { AddonsResponseSchema } from "@/orpc/routes/addons/routes/addons.list.sc
  * while account filtering enables finding addons deployed by specific users.
  */
 const LIST_SYSTEM_ADDONS_QUERY = theGraphGraphql(`
-  query ListSystemAddons($skip: Int!, $first: Int!, $orderBy: SystemAddon_orderBy, $orderDirection: OrderDirection, $where: SystemAddon_filter) {
+  query ListSystemAddons($orderBy: SystemAddon_orderBy, $orderDirection: OrderDirection, $where: SystemAddon_filter) {
     systemAddons(
-      skip: $skip
-      first: $first
       orderBy: $orderBy
       orderDirection: $orderDirection
       where: $where
-    ) {
+    ) @fetchAll {
       id
       name
       typeId

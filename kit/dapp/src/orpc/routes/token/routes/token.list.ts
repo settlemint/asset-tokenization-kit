@@ -12,7 +12,7 @@ import { TokensResponseSchema } from "@/orpc/routes/token/routes/token.list.sche
  * and permission features for regulated assets.
  *
  * This query supports:
- * - Paginated retrieval using skip/first parameters
+ * - Automatic pagination using @fetchAll directive
  * - Flexible sorting by any Token field (name, symbol, etc.)
  * - Ordered results in ascending or descending direction
  *
@@ -21,14 +21,12 @@ import { TokensResponseSchema } from "@/orpc/routes/token/routes/token.list.sche
  * current state or whether they have any holders.
  */
 const LIST_TOKEN_QUERY = theGraphGraphql(`
-  query ListTokenQuery($skip: Int!, $first: Int!, $orderBy: Token_orderBy, $orderDirection: OrderDirection, $where: Token_filter) {
+  query ListTokenQuery($orderBy: Token_orderBy, $orderDirection: OrderDirection, $where: Token_filter) {
     tokens(
         where: $where
-        skip: $skip
-        first: $first
         orderBy: $orderBy
         orderDirection: $orderDirection
-      ) {
+      ) @fetchAll {
         id
         type
         createdAt

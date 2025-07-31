@@ -17,7 +17,7 @@ const TOKEN_EVENTS_QUERY = theGraphGraphql(`
   query TokenEventsQuery($emitter: String!) {
     events(
       where: { emitter: $emitter }
-    ) {
+    ) @fetchAll {
       id
       eventName
       txIndex
