@@ -97,7 +97,7 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
     blockchainPermissionsMiddleware<typeof SystemComplianceModuleCreateSchema>({
       requiredRoles: ["deployer"],
       getAccessControl: ({ context }) => {
-        return context.system?.complianceModuleRegistry?.accessControl;
+        return context.system?.systemAccessManager?.accessControl;
       },
     })
   )
@@ -106,7 +106,7 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
     const sender = context.auth.user;
     const { system } = context;
 
-    const contract = system?.complianceModuleRegistry?.id;
+    const contract = system?.complianceModuleRegistry;
     if (!contract) {
       const cause = new Error("System compliance module registry not found");
       throw errors.INTERNAL_SERVER_ERROR({

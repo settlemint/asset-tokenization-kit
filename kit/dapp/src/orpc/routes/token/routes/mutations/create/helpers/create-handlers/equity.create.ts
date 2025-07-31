@@ -63,12 +63,10 @@ export const equityCreateHandler = async (
   }
 
   return createToken(input, context, () => {
-    // Delete verification from input to avoid leaking it in the logs
-    const { verification: _, ...otherInput } = input;
     return context.portalClient.mutate(
       CREATE_EQUITY_MUTATION,
       {
-        ...otherInput,
+        ...input,
         ...context.mutationVariables,
       },
       "Failed to create equity token"
