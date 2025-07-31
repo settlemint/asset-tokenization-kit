@@ -45,7 +45,7 @@ export const blockchainPermissionsMiddleware = <InputSchema extends z.ZodType>({
     const userRoles = auth
       ? Object.entries(accessControl)
           .filter(([, accounts]) =>
-            accounts.some(
+            (accounts as Array<{ id: string }>).some(
               (account) => account.id === auth.user.wallet.toLowerCase()
             )
           )

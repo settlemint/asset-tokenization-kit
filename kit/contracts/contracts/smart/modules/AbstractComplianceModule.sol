@@ -98,13 +98,7 @@ abstract contract AbstractComplianceModule is ERC2771Context, ISMARTComplianceMo
     /// interface.
     /// @param interfaceId The interface identifier (bytes4) to check.
     /// @return `true` if the contract supports the `interfaceId`, `false` otherwise.
-    function supportsInterface(bytes4 interfaceId)
-        public
-        pure
-        virtual
-        override(IERC165)
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public pure virtual override(IERC165) returns (bool) {
         return interfaceId == type(ISMARTComplianceModule).interfaceId || interfaceId == type(IERC165).interfaceId;
     }
 

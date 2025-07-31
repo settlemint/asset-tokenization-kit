@@ -62,7 +62,6 @@ export const list = authRouter.system.list
     const result = await context.theGraphClient.query(LIST_SYSTEM_QUERY, {
       input,
       output: SystemsResponseSchema,
-      error: "Failed to retrieve systems",
     });
 
     // Return the array of system contracts

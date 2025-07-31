@@ -111,7 +111,6 @@ export const addonsList = authRouter.addons.list
           where: Object.keys(where).length > 0 ? where : undefined,
         },
         output: AddonsResponseSchema,
-        error: "Failed to list system addons",
       }
     );
 

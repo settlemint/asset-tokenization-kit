@@ -1,4 +1,6 @@
 /**
+ * @vitest-environment node
+ *
  * Exchange Rates Tests
  *
  * Unit tests for exchange rates schemas and validation.

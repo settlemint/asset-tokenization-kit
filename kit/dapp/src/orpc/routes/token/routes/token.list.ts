@@ -102,14 +102,9 @@ export const list = authRouter.token.list
     // Manually construct GraphQL variables since we need to handle searchByAddress mapping
     const response = await context.theGraphClient.query(LIST_TOKEN_QUERY, {
       input: {
-        skip: input.offset,
-        first: input.limit ? Math.min(input.limit, 1000) : 1000,
-        orderBy: input.orderBy,
-        orderDirection: input.orderDirection,
         where: Object.keys(where).length > 0 ? where : undefined,
       },
       output: TokensResponseSchema,
-      error: context.t("tokens:api.queries.list.messages.failed"),
     });
 
     return response.tokens;

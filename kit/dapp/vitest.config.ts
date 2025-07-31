@@ -11,6 +11,9 @@ export default defineConfig({
     setupFiles: "./test/setup.ts",
     include: ["src/**/*.test.{ts,tsx}"],
     passWithNoTests: true,
+    pool: "forks",
+    isolate: false,
+    reporters: process.env.CI ? ["dot", "github-actions"] : [],
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html", "json-summary"],
@@ -48,6 +51,10 @@ export default defineConfig({
       "@": resolve(__dirname, "./src"),
       "@settlemint/sdk-utils/logging": resolve(__dirname, "./test/mocks.ts"),
       "@/lib/settlemint/portal": resolve(__dirname, "./test/portal-mocks.ts"),
+      "@/lib/settlemint/the-graph": resolve(
+        __dirname,
+        "./test/the-graph-mocks.ts"
+      ),
       "@settlemint/sdk-portal": resolve(
         __dirname,
         "./test/sdk-portal-mocks.ts"

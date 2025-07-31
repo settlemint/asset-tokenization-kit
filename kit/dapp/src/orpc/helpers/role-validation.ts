@@ -62,7 +62,9 @@ export function mapUserRoles(
   const userRoles = Object.entries(accessControl ?? {}).reduce<
     Record<AccessControlRoles, boolean>
   >((acc, [role, accounts]) => {
-    const userHasRole = accounts.some((account) => account.id === wallet);
+    const userHasRole = (accounts as Array<{ id: string }>).some(
+      (account) => account.id === wallet
+    );
     acc[role as AccessControlRoles] = userHasRole;
     return acc;
   }, initialUserRoles);

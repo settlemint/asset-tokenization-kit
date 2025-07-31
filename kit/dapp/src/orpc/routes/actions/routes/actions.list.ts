@@ -100,7 +100,6 @@ export const list = authRouter.actions.list
     const response = await context.theGraphClient.query(LIST_ACTIONS_QUERY, {
       input: { where },
       output: ActionsResponseSchema,
-      error: "Failed to list actions",
     });
 
     // Return simple list response

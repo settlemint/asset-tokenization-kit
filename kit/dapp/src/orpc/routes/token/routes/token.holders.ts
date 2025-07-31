@@ -72,7 +72,6 @@ export const holders = tokenRouter.token.holders
         id: context.token.id.toLowerCase(),
       },
       output: TokenHoldersResponseSchema,
-      error: context.t("tokens:api.queries.holders.messages.failed"),
     });
 
     return response;
