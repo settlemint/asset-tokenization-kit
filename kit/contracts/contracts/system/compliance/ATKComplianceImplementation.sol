@@ -7,6 +7,7 @@ import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/m
 import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
+import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 
 // Interface imports
 import { ISMARTCompliance } from "../../smart/interface/ISMARTCompliance.sol";
@@ -17,6 +18,10 @@ import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SM
 import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
+// Extensions
+import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
+
+
 
 
 /// @title ATK Compliance Contract Implementation
@@ -25,8 +30,9 @@ import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 contract ATKComplianceImplementation is
     Initializable,
     ERC2771ContextUpgradeable,
-    AccessControlUpgradeable,
-    IATKCompliance
+    ATKSystemAccessManaged,
+    IATKCompliance,
+    ERC165Upgradeable
 {
 
     // --- Storage ---
@@ -48,39 +54,6 @@ contract ATKComplianceImplementation is
     /// @dev Stores the ABI-encoded parameters for each global compliance module
     mapping(address => bytes) private _globalModuleParameters;
 
-    // --- Access Control Modifiers ---
-
-    /// @notice Modifier that checks if the caller has any of the specified roles in the system access manager
-    modifier onlySystemAndComplianceManagerRoles() {
-        bytes32[] memory roles = new bytes32[](3);
-        roles[0] = ATKSystemRoles.COMPLIANCE_MANAGER_ROLE;       // Primary compliance manager
-        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE;           // System manager
-        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE;            // System module role
-
-        _onlySystemRoles(roles, _msgSender());
-        _;
-    }
-
-    /// @notice Modifier that checks if the caller has the compliance manager role
-    modifier onlyComplianceManagerRole() {
-        bytes32[] memory roles = new bytes32[](1);
-        roles[0] = ATKSystemRoles.COMPLIANCE_MANAGER_ROLE;
-
-        _onlySystemRoles(roles, _msgSender());
-        _;
-    }
-
-    // --- Internal Helper Functions ---
-
-    /// @notice Internal helper function to check if the caller has any of the specified roles
-    /// @dev Falls back to AccessControl if system access manager is not set
-    /// @param roles Array of roles, where the caller must have at least one
-    /// @param sender The address of the caller
-    function _onlySystemRoles(bytes32[] memory roles, address sender) internal view {
-        if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
-        if (!_systemAccessManager.hasAnyRole(roles, sender)) revert UnauthorizedAccess();
-    }
-
 
     // --- Constructor ---
     /// @notice Constructor that sets up the trusted forwarder and disables initializers
@@ -91,50 +64,19 @@ contract ATKComplianceImplementation is
 
     // --- Initializer ---
     /// @notice Initializes the compliance contract with initial admin and bypass list manager admins
-    /// @param initialAdmin Address that will receive the DEFAULT_ADMIN_ROLE
-    /// @param initialBypassListManagerAdmins Array of addresses that will receive bypass list manager roles
+    /// @param accessManager Address that will receive the DEFAULT_ADMIN_ROLE
     function initialize(
-        address initialAdmin,
-        address[] calldata initialBypassListManagerAdmins
+        address accessManager
     )
         public
         virtual
         initializer
     {
+        __ATKSystemAccessManaged_init(accessManager);
         __ERC165_init_unchained();
-        __AccessControl_init_unchained();
 
-        _setRoleAdmin(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, ATKSystemRoles.BYPASS_LIST_MANAGER_ADMIN_ROLE);
-
-        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
-
-        for (uint256 i = 0; i < initialBypassListManagerAdmins.length; ++i) {
-            _grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, initialBypassListManagerAdmins[i]);
-            _grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ADMIN_ROLE, initialBypassListManagerAdmins[i]);
-        }
     }
 
-    // --- System Access Manager Functions ---
-
-    /// @notice Sets the system access manager for enhanced role checking
-    /// @dev Only callable by accounts with DEFAULT_ADMIN_ROLE. Setting to address(0) disables centralized access
-    /// control
-    /// @param systemAccessManager The address of the ATK system access manager, or address(0) to disable
-    function setSystemAccessManager(address systemAccessManager) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        _systemAccessManager = IATKSystemAccessManager(systemAccessManager);
-        emit SystemAccessManagerSet(_msgSender(), systemAccessManager);
-    }
-
-    /// @notice Returns the current system access manager address
-    /// @return The address of the system access manager, or address(0) if not set
-    function getSystemAccessManager() external view returns (address) {
-        return address(_systemAccessManager);
-    }
-
-    /// @notice Event emitted when the system access manager is updated
-    /// @param admin The address that updated the system access manager
-    /// @param systemAccessManager The new system access manager address
-    event SystemAccessManagerSet(address indexed admin, address indexed systemAccessManager);
 
     // --- Bypass List Management Functions ---
 
@@ -143,7 +85,7 @@ contract ATKComplianceImplementation is
     /// SYSTEM_MODULE_ROLE.
     /// Bypassed addresses can bypass compliance checks in canTransfer function.
     /// @param account The address to add to the bypass list
-    function addToBypassList(address account) external onlySystemAndComplianceManagerRoles() {
+    function addToBypassList(address account) external onlySystemRoles3(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKSystemRoles.ADDON_MODULE_ROLE) {
         if (account == address(0)) revert ZeroAddressNotAllowed();
         if (_bypassedAddresses[account]) revert AddressAlreadyOnBypassList(account);
 
@@ -155,7 +97,7 @@ contract ATKComplianceImplementation is
     /// @dev Uses new multi-role access control. Can be called by COMPLIANCE_MANAGER_ROLE, SYSTEM_MANAGER_ROLE, or
     /// SYSTEM_MODULE_ROLE.
     /// @param account The address to remove from the bypass list
-    function removeFromBypassList(address account) external onlySystemAndComplianceManagerRoles() {
+    function removeFromBypassList(address account) external onlySystemRoles3(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKSystemRoles.ADDON_MODULE_ROLE) {
         if (!_bypassedAddresses[account]) revert AddressNotOnBypassList(account);
 
         _bypassedAddresses[account] = false;
@@ -168,8 +110,7 @@ contract ATKComplianceImplementation is
     /// This is a gas-efficient way to add multiple addresses to the bypass list at once.
     /// @param accounts Array of addresses to add to the bypass list
     function addMultipleToBypassList(address[] calldata accounts)
-        external
-        onlySystemAndComplianceManagerRoles()
+         external onlySystemRoles3(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKSystemRoles.ADDON_MODULE_ROLE)
     {
         uint256 accountsLength = accounts.length;
         for (uint256 i = 0; i < accountsLength;) {
@@ -191,8 +132,7 @@ contract ATKComplianceImplementation is
     /// SYSTEM_MODULE_ROLE.
     /// @param accounts Array of addresses to remove from the bypass list
     function removeMultipleFromBypassList(address[] calldata accounts)
-        external
-        onlySystemAndComplianceManagerRoles()
+         external onlySystemRoles3(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKSystemRoles.ADDON_MODULE_ROLE)
     {
         uint256 accountsLength = accounts.length;
         for (uint256 i = 0; i < accountsLength;) {
@@ -222,7 +162,7 @@ contract ATKComplianceImplementation is
     /// @param params ABI-encoded parameters for the module
     function addGlobalComplianceModule(address module, bytes calldata params)
         external
-        onlyComplianceManagerRole()
+        onlySystemRole(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE)
     {
         // Validate module and parameters first
         _validateModuleAndParams(module, params);
@@ -244,7 +184,7 @@ contract ATKComplianceImplementation is
     /// @param module Address of the compliance module to remove
     function removeGlobalComplianceModule(address module)
         external
-        onlyComplianceManagerRole()
+        onlySystemRole(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE)
     {
         uint256 index = _globalModuleIndex[module]; // This is index + 1
         if (index == 0) {
@@ -273,7 +213,7 @@ contract ATKComplianceImplementation is
     /// @param params New ABI-encoded parameters for the module
     function setParametersForGlobalComplianceModule(address module, bytes calldata params)
         external
-        onlyComplianceManagerRole()
+        onlySystemRole(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE)
     {
         if (_globalModuleIndex[module] == 0) {
             revert GlobalModuleNotFound(module);
@@ -487,7 +427,7 @@ contract ATKComplianceImplementation is
         public
         view
         virtual
-        override(AccessControlUpgradeable, IERC165)
+        override(ERC165Upgradeable, IERC165)
         returns (bool)
     {
         return interfaceId == type(ISMARTCompliance).interfaceId || interfaceId == type(IATKCompliance).interfaceId
@@ -500,33 +440,10 @@ contract ATKComplianceImplementation is
         internal
         view
         virtual
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        override(ERC2771ContextUpgradeable, ATKSystemAccessManaged)
         returns (address sender)
     {
         return ERC2771ContextUpgradeable._msgSender();
     }
 
-    /// @notice Returns the message data, considering meta-transactions
-    /// @return The message data
-    function _msgData()
-        internal
-        view
-        virtual
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (bytes calldata)
-    {
-        return ERC2771ContextUpgradeable._msgData();
-    }
-
-    /// @notice Returns the context suffix length for meta-transactions
-    /// @return The length of the context suffix
-    function _contextSuffixLength()
-        internal
-        view
-        virtual
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (uint256)
-    {
-        return ERC2771ContextUpgradeable._contextSuffixLength();
-    }
 }

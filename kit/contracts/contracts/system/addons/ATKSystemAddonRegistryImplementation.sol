@@ -3,8 +3,6 @@ pragma solidity ^0.8.28;
 
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
@@ -18,6 +16,9 @@ import {
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 import { IATKTypedImplementationRegistry } from "../IATKTypedImplementationRegistry.sol";
 import { ATKTypedImplementationProxy } from "../ATKTypedImplementationProxy.sol";
+import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
+import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
+import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 
 /**
  * @title ATKSystemAddonRegistryImplementation
@@ -32,9 +33,10 @@ contract ATKSystemAddonRegistryImplementation is
     Initializable,
     IATKSystemAddonRegistry,
     IATKTypedImplementationRegistry,
-    AccessControlUpgradeable,
+    ATKSystemAccessManaged,
     ReentrancyGuardUpgradeable,
-    ERC2771ContextUpgradeable
+    ERC2771ContextUpgradeable,
+    ERC165Upgradeable
 {
     IATKSystem private _system;
 
@@ -49,15 +51,12 @@ contract ATKSystemAddonRegistryImplementation is
     }
 
     /// @notice Initializes the addon registry with initial admin and system address
-    /// @param initialAdmin The address to be granted initial admin roles
+    /// @param accessManager The address of the access manager
     /// @param systemAddress The address of the ATK system contract
-    function initialize(address initialAdmin, address systemAddress) public override initializer {
-        __AccessControl_init();
+    function initialize(address accessManager, address systemAddress) public override initializer {
+        __ATKSystemAccessManaged_init(accessManager);
         __ReentrancyGuard_init();
 
-        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
-        _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialAdmin);
-        _grantRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, initialAdmin);
         _system = IATKSystem(systemAddress);
     }
 
@@ -75,7 +74,7 @@ contract ATKSystemAddonRegistryImplementation is
         external
         override
         nonReentrant
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
         returns (address proxyAddress)
     {
         if (address(implementation_) == address(0)) revert InvalidAddonAddress();
@@ -92,8 +91,7 @@ contract ATKSystemAddonRegistryImplementation is
 
         addonProxiesByType[addonTypeHash] = _addonProxy;
 
-        IAccessControl(address(_system.compliance())).grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, _addonProxy);
-        IAccessControl(address(_system.identityRegistry())).grantRole(ATKSystemRoles.REGISTRAR_ROLE, _addonProxy);
+        IATKSystemAccessManager(_accessManager).grantRole(ATKSystemRoles.ADDON_MODULE_ROLE, _addonProxy);
 
         (bool success, bytes memory data) =
             _addonProxy.staticcall(abi.encodeWithSelector(bytes4(keccak256("typeId()"))));
@@ -120,7 +118,7 @@ contract ATKSystemAddonRegistryImplementation is
     )
         public
         override
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
     {
         if (implementation_ == address(0)) revert InvalidAddonAddress();
         if (addonImplementationsByType[addonTypeHash] == address(0)) {
@@ -151,7 +149,7 @@ contract ATKSystemAddonRegistryImplementation is
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(AccessControlUpgradeable, IERC165)
+        override(ERC165Upgradeable, IERC165)
         returns (bool)
     {
         return super.supportsInterface(interfaceId) || interfaceId == type(IATKSystemAddonRegistry).interfaceId
@@ -161,31 +159,8 @@ contract ATKSystemAddonRegistryImplementation is
     /// @notice Returns the address of the current message sender
     /// @return The address of the message sender, accounting for meta-transactions
     /// @dev Overrides to use ERC2771 context for meta-transaction support
-    function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
-        return super._msgSender();
+    function _msgSender() internal view override(ERC2771ContextUpgradeable, ATKSystemAccessManaged) returns (address) {
+        return ERC2771ContextUpgradeable._msgSender();
     }
 
-    /// @notice Returns the calldata of the current transaction
-    /// @return The calldata, accounting for meta-transactions
-    /// @dev Overrides to use ERC2771 context for meta-transaction support
-    function _msgData()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (bytes calldata)
-    {
-        return super._msgData();
-    }
-
-    /// @notice Returns the length of the context suffix for meta-transactions
-    /// @return The length of the context suffix
-    /// @dev Overrides to use ERC2771 context for meta-transaction support
-    function _contextSuffixLength()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (uint256)
-    {
-        return super._contextSuffixLength();
-    }
 }

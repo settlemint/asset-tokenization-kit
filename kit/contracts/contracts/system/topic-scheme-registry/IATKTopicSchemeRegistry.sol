@@ -12,20 +12,6 @@ import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSche
  */
 interface IATKTopicSchemeRegistry is ISMARTTopicSchemeRegistry {
     /// @notice Initializes the topic scheme registry with system access manager
-    /// @param systemAccessManager_ The address of the system access manager for role-based permissions
-    function initialize(address systemAccessManager_) external;
-
-    /// @notice Sets or updates the system access manager
-    /// @dev Only callable by the current system access manager's DEFAULT_ADMIN_ROLE
-    /// @param systemAccessManager_ The new system access manager address
-    function setSystemAccessManager(address systemAccessManager_) external;
-
-    /// @notice Returns the address of the system access manager
-    /// @return The address of the system access manager contract
-    function getSystemAccessManager() external view returns (address);
-
-    /// @notice Event emitted when the system access manager is set
-    /// @param sender The address that set the access manager
-    /// @param systemAccessManager The address of the new system access manager
-    event SystemAccessManagerSet(address indexed sender, address indexed systemAccessManager);
+    /// @param accessManager The address of the access manager
+    function initialize(address accessManager) external;
 }

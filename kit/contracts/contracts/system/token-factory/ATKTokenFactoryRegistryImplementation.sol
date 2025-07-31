@@ -23,76 +23,32 @@ import { IATKTypedImplementationRegistry } from "../IATKTypedImplementationRegis
 import { ATKTypedImplementationProxy } from "../ATKTypedImplementationProxy.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { ISMART } from "../../smart/interface/ISMART.sol";
+import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
 import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
+import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 
-/// @dev Custom errors for ATKTokenFactoryRegistry
-error SystemAccessManagerNotSet();
-error UnauthorizedAccess();
 
-/**
- * @title ATKTokenFactoryRegistryImplementation
- * @author SettleMint
- * @notice Implementation contract for the ATK Token Factory Registry
- * @dev This contract manages the registration and deployment of token factories within the ATK ecosystem.
- *      Each factory type (Bond, Equity, Fund, etc.) is identified by a unique type hash and deployed
- *      as an upgradeable proxy. The registry ensures that only valid factory implementations supporting
- *      the IATKTokenFactory interface can be registered.
- */
+/// @title ATKTokenFactoryRegistryImplementation
+/// @author SettleMint
+/// @notice Implementation contract for the ATK Token Factory Registry
+/// @dev This contract manages the registration and deployment of token factories within the ATK ecosystem.
+///      Each factory type (Bond, Equity, Fund, etc.) is identified by a unique type hash and deployed
+///      as an upgradeable proxy. The registry ensures that only valid factory implementations supporting
+///      the IATKTokenFactory interface can be registered.
 contract ATKTokenFactoryRegistryImplementation is
     Initializable,
     IATKTokenFactoryRegistry,
     IATKTypedImplementationRegistry,
-    AccessControlUpgradeable,
+    ATKSystemAccessManaged,
     ReentrancyGuardUpgradeable,
-    ERC2771ContextUpgradeable
+    ERC2771ContextUpgradeable,
+    ERC165Upgradeable
 {
     IATKSystem private _system;
-    /// @notice Optional centralized access manager for enhanced role checking
-    /// @dev If set, enables multi-role access patterns alongside existing AccessControl
-    IATKSystemAccessManager private _systemAccessManager;
 
     mapping(bytes32 typeHash => address tokenFactoryImplementationAddress) private tokenFactoryImplementationsByType;
     mapping(bytes32 typeHash => address tokenFactoryProxyAddress) private tokenFactoryProxiesByType;
     bytes4 private constant _IATK_TOKEN_FACTORY_ID = type(IATKTokenFactory).interfaceId;
-
-    // --- Access Control Modifiers ---
-
-    /// @notice Modifier that checks if the caller has any of the specified roles in the system access manager
-    /// @dev This implements the new centralized access pattern: g(MANAGER_ROLE, [SYSTEM_ROLES])
-    /// Falls back to AccessControl if system access manager is not set
-    /// @param roles Array of roles, where the caller must have at least one
-    modifier onlySystemRoles(bytes32[] memory roles) {
-        if (address(_systemAccessManager) != address(0)) {
-            // Use centralized access manager when available
-            if (!_systemAccessManager.hasAnyRole(roles, _msgSender())) revert UnauthorizedAccess();
-        } else {
-            // Fall back to traditional AccessControl during bootstrap
-            if (!hasRole(ATKSystemRoles.REGISTRAR_ROLE, _msgSender())) revert UnauthorizedAccess();
-        }
-        _;
-    }
-
-    // --- Internal Helper Functions ---
-
-    /// @notice Returns the roles that can perform token factory registry operations
-    /// @dev Implements the pattern: REGISTRAR_ROLE + [SYSTEM_ROLES]
-    /// @return roles Array of roles that can register and manage token factories
-    function _getTokenFactoryRegistryRoles() internal pure returns (bytes32[] memory roles) {
-        roles = new bytes32[](3);
-        roles[0] = ATKSystemRoles.REGISTRAR_ROLE; // Primary registrar role
-        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE; // System manager
-        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE; // System module role
-    }
-
-    /// @notice Returns the roles that can perform implementation management operations
-    /// @dev Implements the pattern: IMPLEMENTATION_MANAGER_ROLE + [SYSTEM_ROLES]
-    /// @return roles Array of roles that can manage implementations
-    function _getImplementationManagerRoles() internal pure returns (bytes32[] memory roles) {
-        roles = new bytes32[](3);
-        roles[0] = ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE; // Primary implementation manager
-        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE; // System manager
-        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE; // System module role
-    }
 
     /// @notice Constructor that disables initializers and sets the trusted forwarder
     /// @param trustedForwarder The address of the trusted forwarder for meta-transactions
@@ -102,31 +58,13 @@ contract ATKTokenFactoryRegistryImplementation is
     }
 
     /// @notice Initializes the token factory registry with initial admin and system address
-    /// @param initialAdmin The address to be granted admin roles
+    /// @param accessManager The address of the access manager
     /// @param systemAddress The address of the ATK system contract
-    function initialize(address initialAdmin, address systemAddress) public override initializer {
-        __AccessControl_init();
+    function initialize(address accessManager, address systemAddress) public override initializer {
+        __ATKSystemAccessManaged_init(accessManager);
         __ReentrancyGuard_init();
 
-        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
-        _grantRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, initialAdmin);
-        _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialAdmin);
-
-        // Grant admin role to the system contract so it can call setSystemAccessManager during bootstrap
-        if (systemAddress != address(0)) {
-            _grantRole(DEFAULT_ADMIN_ROLE, systemAddress);
-        }
-
         _system = IATKSystem(systemAddress);
-
-        // Note: System access manager will be set later via setSystemAccessManager after system bootstrap
-    }
-
-    /// @notice Sets the system access manager for centralized role checking
-    /// @param systemAccessManager The address of the system access manager
-    /// @dev Only callable by addresses with DEFAULT_ADMIN_ROLE
-    function setSystemAccessManager(address systemAccessManager) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        _systemAccessManager = IATKSystemAccessManager(systemAccessManager);
     }
 
     /// @notice Registers a new token factory type in the registry
@@ -143,7 +81,7 @@ contract ATKTokenFactoryRegistryImplementation is
         external
         override
         nonReentrant
-        //onlySystemRoles(_getTokenFactoryRegistryRoles())
+        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
         returns (address)
     {
         if (address(_factoryImplementation) == address(0)) revert InvalidTokenFactoryAddress();
@@ -169,13 +107,7 @@ contract ATKTokenFactoryRegistryImplementation is
 
         tokenFactoryProxiesByType[factoryTypeHash] = _tokenFactoryProxy;
 
-        // Grant compliance management role through the system access manager instead of directly on compliance
-        IAccessControl(address(_system.systemAccessManager())).grantRole(
-            ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, _tokenFactoryProxy
-        );
-
-        // Grant permission to register contract identities in the identity registry
-        IAccessControl(address(_system.identityRegistry())).grantRole(ATKSystemRoles.REGISTRAR_ROLE, _tokenFactoryProxy);
+        IATKSystemAccessManager(_accessManager).grantRole(ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, _tokenFactoryProxy);
 
         emit TokenFactoryRegistered(
             _msgSender(),
@@ -201,7 +133,7 @@ contract ATKTokenFactoryRegistryImplementation is
     )
         public
         override
-        //onlySystemRoles(_getImplementationManagerRoles())
+        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
     {
         if (implementation_ == address(0)) revert InvalidTokenFactoryAddress();
         if (tokenFactoryImplementationsByType[factoryTypeHash] == address(0)) revert InvalidTokenFactoryAddress();
@@ -246,7 +178,7 @@ contract ATKTokenFactoryRegistryImplementation is
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(AccessControlUpgradeable, IERC165)
+        override(ERC165Upgradeable, IERC165)
         returns (bool)
     {
         return super.supportsInterface(interfaceId) || interfaceId == type(IATKTokenFactoryRegistry).interfaceId
@@ -256,32 +188,8 @@ contract ATKTokenFactoryRegistryImplementation is
     /// @notice Returns the address of the current message sender
     /// @return The address of the message sender, accounting for meta-transactions
     /// @dev Overrides to use ERC2771 context for meta-transaction support
-    function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
-        return super._msgSender();
-    }
-
-    /// @notice Returns the calldata of the current transaction
-    /// @return The calldata, accounting for meta-transactions
-    /// @dev Overrides to use ERC2771 context for meta-transaction support
-    function _msgData()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (bytes calldata)
-    {
-        return super._msgData();
-    }
-
-    /// @notice Returns the length of the context suffix for meta-transactions
-    /// @return The length of the context suffix
-    /// @dev Overrides to use ERC2771 context for meta-transaction support
-    function _contextSuffixLength()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (uint256)
-    {
-        return super._contextSuffixLength();
+    function _msgSender() internal view override(ERC2771ContextUpgradeable, ATKSystemAccessManaged) returns (address) {
+        return ERC2771ContextUpgradeable._msgSender();
     }
 
     /// @notice Safely retrieves the registered interfaces of a token implementation

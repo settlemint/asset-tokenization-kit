@@ -2,6 +2,10 @@
 
 pragma solidity ^0.8.28;
 
+/// @notice Error indicating that a zero address was provided where a non-zero address is required.
+/// @dev This error is thrown when a function expects a non-zero address but receives the zero address instead.
+error ZeroAddressNotAllowed();
+
 /// @notice Error indicating that an invalid system address was provided or encountered.
 /// @dev This typically means an address expected to be a core system component (like a module proxy or implementation)
 /// was found to be the zero address or an otherwise incorrect address during a critical operation.

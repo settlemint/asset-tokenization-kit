@@ -11,7 +11,7 @@ import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.so
  *      modules that extend the core ATK system functionality. Addons are deployed as upgradeable
  *      proxies with implementation contracts that can be updated by authorized parties.
  */
-interface IATKSystemAddonRegistry is IAccessControl {
+interface IATKSystemAddonRegistry {
     /// @notice Emitted when a new system addon is registered
     /// @param sender The address that registered the addon
     /// @param name The unique name identifier for the addon
@@ -62,7 +62,7 @@ interface IATKSystemAddonRegistry is IAccessControl {
     function addon(bytes32 addonTypeHash) external view returns (address);
 
     /// @notice Initializes the addon registry with initial admin and system address
-    /// @param initialAdmin The address to be granted initial admin roles
+    /// @param accessManager The address of the access manager
     /// @param systemAddress The address of the ATK system contract
-    function initialize(address initialAdmin, address systemAddress) external;
+    function initialize(address accessManager, address systemAddress) external;
 }

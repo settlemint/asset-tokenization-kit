@@ -13,14 +13,12 @@ import { ISMARTIdentityRegistry } from "../../smart/interface/ISMARTIdentityRegi
 interface IATKIdentityRegistry is ISMARTIdentityRegistry {
     /// @notice Initializes the identity registry
     /// @dev Sets up the registry with initial configuration including admins and related contracts
-    /// @param initialAdmin The address that will have initial admin privileges
-    /// @param registrarAdmins Array of addresses that will have registrar admin privileges
+    /// @param accessManager The address of the access manager
     /// @param identityStorage The address of the identity storage contract
     /// @param trustedIssuersRegistry The address of the trusted issuers registry contract
     /// @param topicSchemeRegistry The address of the topic scheme registry contract
     function initialize(
-        address initialAdmin,
-        address[] memory registrarAdmins,
+        address accessManager,
         address identityStorage,
         address trustedIssuersRegistry,
         address topicSchemeRegistry

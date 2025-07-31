@@ -12,7 +12,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
  *      within the ATK ecosystem. Each factory type is identified by a unique type hash and can be
  *      upgraded independently through its implementation address.
  */
-interface IATKTokenFactoryRegistry is IAccessControl, IERC165 {
+interface IATKTokenFactoryRegistry is IERC165 {
     /// @notice Emitted when a new token factory is registered
     /// @param sender The address that registered the factory
     /// @param name The name of the token factory
@@ -65,11 +65,8 @@ interface IATKTokenFactoryRegistry is IAccessControl, IERC165 {
     function tokenFactory(bytes32 factoryTypeHash) external view returns (address);
 
     /// @notice Initializes the token factory registry
-    /// @param initialAdmin The address that will be granted the admin role
+    /// @param accessManager The address of the access manager
     /// @param systemAddress The address of the ATK system contract
-    function initialize(address initialAdmin, address systemAddress) external;
+    function initialize(address accessManager, address systemAddress) external;
 
-    /// @notice Sets the system access manager for centralized role checking
-    /// @param systemAccessManager The address of the system access manager
-    function setSystemAccessManager(address systemAccessManager) external;
 }

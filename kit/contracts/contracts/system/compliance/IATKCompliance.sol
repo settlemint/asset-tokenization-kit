@@ -58,10 +58,8 @@ interface IATKCompliance is ISMARTCompliance {
 
     // --- Functions ---
     /// @notice Initializes the compliance contract
-    /// @dev Sets up the initial admin and bypass list managers
-    /// @param initialAdmin The address that will have initial admin privileges
-    /// @param initialBypassListManagers Array of addresses that will have bypass list manager privileges
-    function initialize(address initialAdmin, address[] calldata initialBypassListManagers) external;
+    /// @param accessManager The address of the access manager
+    function initialize(address accessManager) external;
 
     // --- Functions ---
     /// @notice Adds an address to the compliance bypass list.
