@@ -107,7 +107,7 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
     )
         external
         override(IATKVaultFactory)
-        onlyRole(ATKSystemRoles.DEPLOYER_ROLE)
+        onlySystemRole(ATKSystemRoles.ADDON_MANAGER_ROLE)
         returns (address contractAddress)
     {
         (bytes memory saltInputData, bytes memory constructorArgs, bytes memory vaultBytecode) =

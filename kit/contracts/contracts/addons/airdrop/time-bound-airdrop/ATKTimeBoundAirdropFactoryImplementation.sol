@@ -78,7 +78,7 @@ contract ATKTimeBoundAirdropFactoryImplementation is
     /// @param _newImplementation The address of the new `ATKTimeBoundAirdrop` logic contract.
     function updateImplementation(address _newImplementation)
         external
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
     {
         if (_newImplementation == address(0)) revert IATKTimeBoundAirdropFactory.InvalidAddress();
         if (_newImplementation == atkTimeBoundAirdropImplementation) revert IATKTimeBoundAirdropFactory.SameAddress();
@@ -117,7 +117,7 @@ contract ATKTimeBoundAirdropFactoryImplementation is
     )
         external
         override(IATKTimeBoundAirdropFactory)
-        onlyRole(ATKSystemRoles.DEPLOYER_ROLE)
+        onlySystemRole(ATKSystemRoles.ADDON_MANAGER_ROLE)
         returns (address airdropProxyAddress)
     {
         bytes memory saltInputData = abi.encode(address(this), name, token, root, owner, startTime, endTime);

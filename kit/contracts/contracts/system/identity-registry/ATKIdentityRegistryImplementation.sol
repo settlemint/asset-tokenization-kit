@@ -265,7 +265,7 @@ contract ATKIdentityRegistryImplementation is
     )
         external
         override
-        onlySystemRoles3(ATKSystemRoles.IDENTITY_MANAGER_ROLE, ATKSystemRoles.ADDON_MODULE_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE)
+        onlySystemRoles3(ATKSystemRoles.IDENTITY_MANAGER_ROLE, ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE)
     {
         _registerIdentity(_userAddress, _identity, _country);
     }
@@ -279,7 +279,7 @@ contract ATKIdentityRegistryImplementation is
     /// Emits an `IdentityRemoved` event upon successful deletion.
     /// @param _userAddress The blockchain address of the user whose identity is to be deleted.
     /// Reverts with `IdentityNotRegistered` if the address is not found.
-    function deleteIdentity(address _userAddress) external override onlySystemRoles3(ATKSystemRoles.IDENTITY_MANAGER_ROLE, ATKSystemRoles.ADDON_MODULE_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE) {
+    function deleteIdentity(address _userAddress) external override onlySystemRoles3(ATKSystemRoles.IDENTITY_MANAGER_ROLE, ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE) {
         // Ensure the identity exists before attempting to delete.
         // The `contains` function checks the storage contract.
         if (!this.contains(_userAddress)) revert IdentityNotRegistered(_userAddress);

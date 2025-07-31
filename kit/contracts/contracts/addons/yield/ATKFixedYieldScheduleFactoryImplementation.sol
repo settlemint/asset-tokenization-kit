@@ -82,7 +82,7 @@ contract ATKFixedYieldScheduleFactoryImplementation is
     /// @param _newImplementation The address of the new `ATKFixedYieldSchedule` logic contract.
     function updateImplementation(address _newImplementation)
         external
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
     {
         if (_newImplementation == address(0)) revert InvalidAddress(); // Added basic check
         if (_newImplementation == atkFixedYieldScheduleImplementation) revert SameAddress(); // Added basic check
@@ -123,7 +123,7 @@ contract ATKFixedYieldScheduleFactoryImplementation is
     )
         external
         override(IATKFixedYieldScheduleFactory)
-        onlyRole(ATKSystemRoles.DEPLOYER_ROLE)
+        onlySystemRole(ATKSystemRoles.ADDON_MANAGER_ROLE)
         returns (address scheduleProxyAddress)
     {
         bytes memory saltInputData = abi.encode(address(this), address(token), startTime, endTime, rate, interval);

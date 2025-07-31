@@ -78,7 +78,7 @@ contract ATKVestingAirdropFactoryImplementation is
     /// @param _newImplementation The address of the new `ATKVestingAirdrop` logic contract.
     function updateImplementation(address _newImplementation)
         external
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
     {
         if (_newImplementation == address(0)) revert InvalidAddress();
         if (_newImplementation == atkVestingAirdropImplementation) revert SameAddress();
@@ -116,7 +116,7 @@ contract ATKVestingAirdropFactoryImplementation is
         uint256 initializationDeadline
     )
         external
-        onlyRole(ATKSystemRoles.DEPLOYER_ROLE)
+        onlySystemRole(ATKSystemRoles.ADDON_MANAGER_ROLE)
         returns (address airdropProxyAddress)
     {
         bytes memory saltInputData =
