@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 import { ISMARTCompliance } from "../../smart/interface/ISMARTCompliance.sol";
+import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 /// @title ATK Compliance Bypass List Interface
 /// @author SettleMint
@@ -19,12 +20,41 @@ interface IATKCompliance is ISMARTCompliance {
     /// @param manager The address that performed the removal.
     event AddressRemovedFromBypassList(address indexed account, address indexed manager);
 
+    /// @notice Emitted when a global compliance module is added
+    /// @param sender The address that performed the addition
+    /// @param module The module address that was added
+    /// @param params The parameters configured for the module
+    event GlobalComplianceModuleAdded(address indexed sender, address indexed module, bytes params);
+
+    /// @notice Emitted when a global compliance module is removed
+    /// @param sender The address that performed the removal
+    /// @param module The module address that was removed
+    event GlobalComplianceModuleRemoved(address indexed sender, address indexed module);
+
+    /// @notice Emitted when global compliance module parameters are updated
+    /// @param sender The address that performed the update
+    /// @param module The module address whose parameters were updated
+    /// @param params The new parameters
+    event GlobalComplianceModuleParametersUpdated(address indexed sender, address indexed module, bytes params);
+
     // --- Custom Errors ---
     /// @notice Error thrown when trying to remove an address that is not on the bypass list.
     error AddressNotOnBypassList(address account);
 
     /// @notice Error thrown when trying to add an address that is already on the bypass list.
     error AddressAlreadyOnBypassList(address account);
+
+    /// @notice Error thrown when trying to add a global compliance module that is already registered.
+    error GlobalModuleAlreadyAdded(address module);
+
+    /// @notice Error thrown when trying to access a global compliance module that is not registered.
+    error GlobalModuleNotFound(address module);
+
+    /// @notice Error thrown when the system access manager is not set.
+    error SystemAccessManagerNotSet();
+
+    /// @notice Error thrown when the caller is not authorized to perform the action.
+    error UnauthorizedAccess();
 
     // --- Functions ---
     /// @notice Initializes the compliance contract
@@ -60,4 +90,28 @@ interface IATKCompliance is ISMARTCompliance {
     /// @param account The address to check.
     /// @return True if the address is on the bypass list, false otherwise.
     function isBypassed(address account) external view returns (bool);
+
+    // --- Global Compliance Module Management Functions ---
+
+    /// @notice Adds a global compliance module that applies to all tokens
+    /// @dev Only addresses with GLOBAL_COMPLIANCE_MANAGER_ROLE can call this function.
+    /// This module will be executed in addition to token-specific modules for all compliance checks.
+    /// @param module The address of the compliance module to add
+    /// @param params The ABI-encoded parameters for the module
+    function addGlobalComplianceModule(address module, bytes calldata params) external;
+
+    /// @notice Removes a specific global compliance module
+    /// @dev Only addresses with GLOBAL_COMPLIANCE_MANAGER_ROLE can call this function.
+    /// @param module The address of the compliance module to remove
+    function removeGlobalComplianceModule(address module) external;
+
+    /// @notice Updates parameters for an existing global compliance module
+    /// @dev Only addresses with GLOBAL_COMPLIANCE_MANAGER_ROLE can call this function.
+    /// @param module The address of the compliance module to update
+    /// @param params The new ABI-encoded parameters for the module
+    function setParametersForGlobalComplianceModule(address module, bytes calldata params) external;
+
+    /// @notice Returns all global compliance modules
+    /// @return Array of global compliance module-parameter pairs
+    function getGlobalComplianceModules() external view returns (SMARTComplianceModuleParamPair[] memory);
 }

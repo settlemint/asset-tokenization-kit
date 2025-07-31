@@ -8,6 +8,16 @@
       "description": "時間経過に伴う資産の総供給量",
       "title": "資産供給"
     },
+    "totalCollateral": {
+      "label": "総担保"
+    },
+    "totalSupply": {
+      "description": "時間経過に伴う総供給量の履歴変更",
+      "label": "総供給量",
+      "title": "トークン供給履歴",
+      "noData": "データが利用できません",
+      "noDataDescription": "過去{{days}}日間の総供給量データが見つかりません"
+    },
     "transactionHistory": {
       "description": "時間経過に伴う取引量",
       "title": "取引履歴"

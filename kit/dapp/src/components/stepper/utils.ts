@@ -44,6 +44,37 @@ export function getNextStep<StepId, Steps extends Step<StepId>[]>(
   return nextStep;
 }
 
+export function getPreviousStepId<StepId, Steps extends Step<StepId>[]>(
+  allSteps: Steps,
+  currentStepId: Steps[number]["id"]
+): Steps[number]["id"] {
+  const currentStep = getStepById(allSteps, currentStepId);
+  const previousStep = getPreviousStep(allSteps, currentStep);
+  return previousStep.id;
+}
+
+export function getPreviousStep<StepId, Steps extends Step<StepId>[]>(
+  allSteps: Steps,
+  currentStep: Steps[number]
+): Steps[number] {
+  const sortedSteps = sortByStep(allSteps);
+  const currentIndex = sortedSteps.findIndex(
+    (step) => step.id === currentStep.id
+  );
+
+  if (currentIndex === -1) {
+    throw new Error(`Current step ${currentStep.id} not found in steps array`);
+  }
+
+  const isFirstStep = currentIndex === 0;
+  if (isFirstStep) {
+    return currentStep;
+  }
+
+  const previousStep = getElementAtIndex(sortedSteps, currentIndex - 1);
+  return previousStep;
+}
+
 export function getLastStep<StepId, Steps extends Step<StepId>[]>(
   steps: Steps
 ): Steps[number] {

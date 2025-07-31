@@ -9,6 +9,7 @@ import {
 import { Countries } from "../constants/countries";
 import { Asset } from "../entities/asset";
 import { getAnvilTimeMilliseconds, getAnvilTimeSeconds } from "../utils/anvil";
+import { encodeAddressParams } from "../utils/encode-address-params";
 import { toBaseUnits } from "../utils/to-base-units";
 import { mature } from "./actions/bond/mature";
 import { burn } from "./actions/burnable/burn";
@@ -27,7 +28,6 @@ import { setYieldSchedule } from "./actions/yield/set-yield-schedule";
 import { topupUnderlyingAsset } from "./actions/yield/topup-underlying-asset";
 import { withdrawnUnderlyingAsset } from "./actions/yield/withdrawn-underlying-asset";
 import { getDefaultComplianceModules } from "./utils/default-compliance-modules";
-import { encodeAddressParams } from "./utils/encode-address-params";
 
 export const createBond = async (depositToken: Asset<any>) => {
   console.log("\n=== Creating bond... ===\n");

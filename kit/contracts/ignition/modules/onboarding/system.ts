@@ -252,6 +252,7 @@ const ATKOnboardingSystemModule = buildModule(
       tokenFactoryRegistry,
       complianceModuleRegistry,
       systemAddonRegistry,
+      systemAccessManager,
     };
   }
 );

@@ -20,7 +20,7 @@ dependencies:
     version: "*"
     repository: file://./charts/redis
   - name: reloader
-    version: 2.1.5
+    version: 2.2.0
     repository: https://stakater.github.io/stakater-charts
   - name: minio
     version: 5.4.0

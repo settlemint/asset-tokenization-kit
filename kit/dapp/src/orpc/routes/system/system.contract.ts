@@ -2,6 +2,7 @@ import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { addonContract } from "@/orpc/routes/system/addon/addon.contract";
 import { complianceModuleContract } from "@/orpc/routes/system/compliance-module/compliance-module.contract";
 import { identityContract } from "@/orpc/routes/system/identity/identity.contract";
+import { statsContract } from "@/orpc/routes/system/stats/stats.contract";
 import { SystemCreateSchema } from "@/orpc/routes/system/routes/system.create.schema";
 import {
   SystemReadOutputSchema,
@@ -91,6 +92,13 @@ const read = baseContract
  * - create: Deploy a new SMART system
  * - read: Retrieve a specific system with its token factories
  * - addonCreate: Register system add-ons
+ * - identityCreate: Create blockchain identity contracts
+ * - identityRegister: Register identity claims
+ * - complianceModuleCreate: Deploy compliance modules
+ * - statsAssets: System-wide asset statistics
+ * - statsValue: System-wide value metrics
+ * - statsTransactionCount: System-wide transaction count statistics
+ * - statsTransactionHistory: System-wide transaction history
  *
  * Future endpoints may include:
  * - update: Update system configuration
@@ -103,4 +111,5 @@ export const systemContract = {
   ...addonContract,
   ...identityContract,
   ...complianceModuleContract,
+  ...statsContract,
 };

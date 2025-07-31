@@ -1,8 +1,5 @@
 import { Bytes, ethereum } from "@graphprotocol/graph-ts";
-import { GlobalAddressListChange as GlobalAddressListChangeEvent } from "../../../generated/templates/AbstractAddressListComplianceModule/AbstractAddressListComplianceModule";
-import { fetchEvent } from "../../event/fetch/event";
 import { getEncodedTypeId } from "../../type-identifier/type-identifier";
-import { fetchComplianceModule } from "../fetch/compliance-module";
 
 export function isAddressListComplianceModule(typeId: Bytes): boolean {
   return (
@@ -35,30 +32,4 @@ export function decodeAddressListParams(data: Bytes): Array<Bytes> {
   }
 
   return result;
-}
-
-export function handleGlobalAddressListChange(
-  event: GlobalAddressListChangeEvent
-): void {
-  fetchEvent(event, "GlobalAddressListChange");
-
-  const complianceModule = fetchComplianceModule(event.address);
-  let addresses = complianceModule.addresses;
-  if (!addresses) {
-    addresses = [];
-  }
-
-  if (event.params.inList) {
-    addresses.push(event.params.addr);
-  } else {
-    const newAddresses: Bytes[] = [];
-    for (let i = 0; i < addresses.length; i++) {
-      if (addresses[i] != event.params.addr) {
-        newAddresses.push(addresses[i] as Bytes);
-      }
-    }
-    addresses = newAddresses;
-  }
-  complianceModule.addresses = addresses;
-  complianceModule.save();
 }

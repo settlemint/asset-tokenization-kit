@@ -1,8 +1,8 @@
 import { ATKTopic } from "../../constants/topics";
 import { atkDeployer } from "../../services/deployer";
+import { encodeAddressParams } from "../../utils/encode-address-params";
+import { encodeCountryParams } from "../../utils/encode-country-params";
 import { expressionBuilder } from "../../utils/expression-builder";
-import { encodeAddressParams } from "./encode-address-params";
-import { encodeCountryParams } from "./encode-country-params";
 
 export const getDefaultComplianceModules = () => {
   return [
