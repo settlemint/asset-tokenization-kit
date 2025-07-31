@@ -7,8 +7,8 @@
  * @module ComplianceValidation
  */
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
-import { isoCountryCode } from "@/lib/zod/validators/iso-country-code";
+import { ethereumHex } from "@/lib/zod/validators/ethereum-hex";
+import { isoCountryCodeNumeric } from "@/lib/zod/validators/iso-country-code";
 import { z } from "zod";
 
 /**
@@ -88,9 +88,13 @@ export const complianceTypeId = () =>
   z.enum(complianceTypeIds).describe("Compliance module typeId identifier");
 
 export const countryAllowListValues = () =>
-  z.array(isoCountryCode).describe("Array of ISO country codes to allow");
+  z
+    .array(isoCountryCodeNumeric)
+    .describe("Array of ISO country codes to allow");
 export const countryBlockListValues = () =>
-  z.array(isoCountryCode).describe("Array of ISO country codes to block");
+  z
+    .array(isoCountryCodeNumeric)
+    .describe("Array of ISO country codes to block");
 export const addressBlockListValues = () =>
   z.array(ethereumAddress).describe("Array of Ethereum addresses to block");
 export const identityAllowListValues = () =>
@@ -136,37 +140,37 @@ export const complianceParams = () =>
         typeId: z.literal("AddressBlockListComplianceModule"),
         values: addressBlockListValues(),
         module: ethereumAddress,
-        params: ethereumHash,
+        params: ethereumHex,
       }),
       z.object({
         typeId: z.literal("CountryAllowListComplianceModule"),
         values: countryAllowListValues(),
         module: ethereumAddress,
-        params: ethereumHash,
+        params: ethereumHex,
       }),
       z.object({
         typeId: z.literal("CountryBlockListComplianceModule"),
         values: countryBlockListValues(),
         module: ethereumAddress,
-        params: ethereumHash,
+        params: ethereumHex,
       }),
       z.object({
         typeId: z.literal("IdentityAllowListComplianceModule"),
         values: identityAllowListValues(),
         module: ethereumAddress,
-        params: ethereumHash,
+        params: ethereumHex,
       }),
       z.object({
         typeId: z.literal("IdentityBlockListComplianceModule"),
         values: identityBlockListValues(),
         module: ethereumAddress,
-        params: ethereumHash,
+        params: ethereumHex,
       }),
       z.object({
         typeId: z.literal("SMARTIdentityVerificationComplianceModule"),
         values: smartIdentityVerificationValues(),
         module: ethereumAddress,
-        params: ethereumHash,
+        params: ethereumHex,
       }),
     ])
 

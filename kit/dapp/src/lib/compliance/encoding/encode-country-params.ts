@@ -6,10 +6,11 @@ import { encodeAbiParameters, parseAbiParameters } from "viem";
  * @returns Encoded ABI parameters as hex string
  */
 export const encodeCountryParams = (countries: (string | number)[]) => {
-  const numericCountries = countries.map((country) => {
-    return Number.parseInt(country.toString(), 10);
+  const countryCodes = countries.map((country) => {
+    return typeof country === "number" ? country : Number.parseInt(country);
   });
+
   return encodeAbiParameters(parseAbiParameters("uint16[]"), [
-    numericCountries,
+    [...new Set(countryCodes)],
   ]);
 };

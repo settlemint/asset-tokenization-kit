@@ -2,8 +2,7 @@ import { complianceModuleConfig } from "@/components/compliance/config";
 import type { ComplianceModuleDetailProps } from "@/components/compliance/details/types";
 import { CountryMultiselect } from "@/components/country/country-multiselect";
 import { Button } from "@/components/ui/button";
-import { encodeCountryParams } from "@/lib/compliance/encoding";
-
+import { encodeCountryParams } from "@/lib/compliance/encoding/encode-country-params";
 import { ComplianceTypeIdEnum } from "@/lib/zod/validators/compliance";
 import { getSupportedLocales } from "@/lib/zod/validators/iso-country-code";
 import { getName } from "i18n-iso-countries";
