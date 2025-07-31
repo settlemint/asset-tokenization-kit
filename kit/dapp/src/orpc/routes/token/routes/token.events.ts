@@ -17,7 +17,7 @@ const TOKEN_EVENTS_QUERY = theGraphGraphql(`
   query TokenEventsQuery($emitter: String!) {
     events(
       where: { emitter: $emitter }
-    ) {
+    ) @fetchAll {
       id
       eventName
       txIndex
@@ -80,7 +80,6 @@ export const events = tokenRouter.token.events
         emitter: context.token.id.toLowerCase(),
       },
       output: EventsResponseSchema,
-      error: context.t("tokens:api.queries.events.messages.failed"),
     });
 
     return response;

@@ -20,7 +20,7 @@ import { TokenHoldersResponseSchema } from "@/orpc/routes/token/routes/token.hol
 const TOKEN_HOLDERS_QUERY = theGraphGraphql(`
   query TokenHoldersQuery($id: ID!) {
     token(id: $id) {
-      balances {
+      balances @fetchAll {
         id
         available
         frozen
@@ -72,7 +72,6 @@ export const holders = tokenRouter.token.holders
         id: context.token.id.toLowerCase(),
       },
       output: TokenHoldersResponseSchema,
-      error: context.t("tokens:api.queries.holders.messages.failed"),
     });
 
     return response;

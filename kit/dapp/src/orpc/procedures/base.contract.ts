@@ -301,6 +301,24 @@ export const CUSTOM_ERRORS = {
   },
 
   /**
+   * The Graph error.
+   *
+   * Thrown when a The Graph error occurs:
+   * - The Graph service unavailable
+   * - The Graph service timeout
+   * - The Graph service error
+   */
+  THE_GRAPH_ERROR: {
+    message: "The Graph error",
+    status: 500,
+    data: z.object({
+      document: z.unknown(),
+      variables: z.unknown(),
+      responseValidation: z.string().optional(),
+    }),
+  },
+
+  /**
    * Conflict error.
    *
    * Thrown when a requested resource conflicts with the current state of the system:

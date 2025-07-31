@@ -32,5 +32,4 @@ abstract contract AbstractIdentityComplianceModule is AbstractAddressListComplia
         identity = identityRegistry.identity(_user);
         return (true, identity);
     }
-
 }

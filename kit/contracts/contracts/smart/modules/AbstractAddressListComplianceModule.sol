@@ -15,7 +15,6 @@ import { AbstractComplianceModule } from "./AbstractComplianceModule.sol";
 /// - **Standardized Parameters**: The `_params` data is expected to be `abi.encode(address[] memory addresses)`.
 /// - **Helper Functions**: Provides `_decodeParams` to easily decode the address list from `_params`.
 abstract contract AbstractAddressListComplianceModule is AbstractComplianceModule {
-
     /// @notice Initializes the address list compliance module with a trusted forwarder
     /// @param _trustedForwarder Address of the trusted forwarder for meta transactions
     constructor(address _trustedForwarder) AbstractComplianceModule(_trustedForwarder) { }

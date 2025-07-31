@@ -18,7 +18,7 @@ A Helm chart for the supporting components
 | file://./charts/redis | redis | * |
 | https://charts.min.io/ | minio | 5.4.0 |
 | https://kubernetes.github.io/ingress-nginx | ingress-nginx | 4.13.0 |
-| https://stakater.github.io/stakater-charts | reloader | 2.1.5 |
+| https://stakater.github.io/stakater-charts | reloader | 2.2.0 |
 
 ## Values
 
