@@ -18,17 +18,13 @@
     "totalSupply": {
       "description": "Total asset supply over the last {{days}} days",
       "label": "Total supply",
-      "title": "Token supply history",
-      "noData": "No data available",
-      "noDataDescription": "No total supply data found for the last {{days}} days"
+      "title": "Token supply history"
     },
     "supplyChanges": {
       "description": "Minted and burned assets over the last {{days}} days",
       "title": "Supply changes",
       "minted": "Minted",
-      "burned": "Burned",
-      "noData": "No supply changes data available",
-      "noDataDescription": "No minting or burning activity found for the last {{days}} days"
+      "burned": "Burned"
     },
     "transactionHistory": {
       "description": "Transaction volume over time",
@@ -37,6 +33,11 @@
     "userGrowth": {
       "description": "Number of users over time",
       "title": "User growth"
+    },
+    "walletDistribution": {
+      "title": "Wallet distribution",
+      "description": "Amount of holders vs the amounts they hold",
+      "holders": "Number of Wallets"
     }
   },
   "title": "Statistics",
