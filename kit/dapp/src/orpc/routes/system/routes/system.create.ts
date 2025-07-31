@@ -326,6 +326,14 @@ export const create = onboardedRouter.system.create
       }
     }
 
+    const updatedSystemDetails = await call(
+      read,
+      {
+        id: system.id,
+      },
+      { context }
+    );
+
     // Return the complete system details
-    return systemDetails;
+    return updatedSystemDetails;
   });
