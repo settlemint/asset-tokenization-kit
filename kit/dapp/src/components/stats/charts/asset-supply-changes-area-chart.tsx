@@ -8,22 +8,22 @@ import { format } from "date-fns/format";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-export interface TokenSupplyChangesAreaChartProps {
-  tokenAddress: string;
+export interface AssetSupplyChangesAreaChartProps {
+  assetAddress: string;
   timeRange?: number; // days, default 30
 }
 
 /**
- * Token Supply Changes Area Chart Component
+ * Asset Supply Changes Area Chart Component
  *
- * Displays historical minted and burned token data for a specific token using an area chart.
+ * Displays historical minted and burned asset data for a specific asset using an area chart.
  * Shows minted amounts as positive values and burned amounts as negative values.
  * Uses dnum for safe BigInt handling to prevent precision loss.
  */
-export function TokenSupplyChangesAreaChart({
-  tokenAddress,
+export function AssetSupplyChangesAreaChart({
+  assetAddress,
   timeRange = 30,
-}: TokenSupplyChangesAreaChartProps) {
+}: AssetSupplyChangesAreaChartProps) {
   const { t } = useTranslation("stats");
 
   // Memoize the data transformation function to prevent unnecessary re-creation
@@ -88,7 +88,7 @@ export function TokenSupplyChangesAreaChart({
     data: { chartData, chartConfig, dataKeys },
   } = useSuspenseQuery(
     orpc.token.statsSupplyChanges.queryOptions({
-      input: { tokenAddress, days: timeRange },
+      input: { tokenAddress: assetAddress, days: timeRange },
       select: selectTransform,
       staleTime: 5 * 60 * 1000, // 5 minutes - reduce API calls
       gcTime: 10 * 60 * 1000, // 10 minutes - cache retention
@@ -96,7 +96,7 @@ export function TokenSupplyChangesAreaChart({
   );
 
   return (
-    <ComponentErrorBoundary componentName="Token Supply Changes Chart">
+    <ComponentErrorBoundary componentName="Asset Supply Changes Chart">
       <AreaChartComponent
         title={t("charts.supplyChanges.title")}
         description={t("charts.supplyChanges.description", { days: timeRange })}

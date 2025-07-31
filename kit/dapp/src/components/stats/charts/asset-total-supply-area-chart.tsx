@@ -8,21 +8,21 @@ import { format } from "date-fns/format";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-export interface TokenTotalSupplyAreaChartProps {
-  tokenAddress: string;
+export interface AssetTotalSupplyAreaChartProps {
+  assetAddress: string;
   timeRange?: number; // days, default 30
 }
 
 /**
- * Token Total Supply Area Chart Component
+ * Asset Total Supply Area Chart Component
  *
- * Displays historical total supply data for a specific token using an area chart.
+ * Displays historical total supply data for a specific asset using an area chart.
  * Uses dnum for safe BigInt handling to prevent precision loss.
  */
-export function TokenTotalSupplyAreaChart({
-  tokenAddress,
+export function AssetTotalSupplyAreaChart({
+  assetAddress,
   timeRange = 30,
-}: TokenTotalSupplyAreaChartProps) {
+}: AssetTotalSupplyAreaChartProps) {
   const { t } = useTranslation("stats");
 
   // Memoize the data transformation function to prevent unnecessary re-creation
@@ -73,7 +73,7 @@ export function TokenTotalSupplyAreaChart({
     data: { chartData, chartConfig, dataKeys },
   } = useSuspenseQuery(
     orpc.token.statsTotalSupply.queryOptions({
-      input: { tokenAddress, days: timeRange },
+      input: { tokenAddress: assetAddress, days: timeRange },
       select: selectTransform,
       staleTime: 5 * 60 * 1000, // 5 minutes - reduce API calls
       gcTime: 10 * 60 * 1000, // 10 minutes - cache retention
@@ -81,7 +81,7 @@ export function TokenTotalSupplyAreaChart({
   );
 
   return (
-    <ComponentErrorBoundary componentName="Token Total Supply Chart">
+    <ComponentErrorBoundary componentName="Asset Total Supply Chart">
       <AreaChartComponent
         title={t("charts.totalSupply.title")}
         description={t("charts.totalSupply.description", { days: timeRange })}
