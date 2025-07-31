@@ -51,9 +51,7 @@ contract AddressBlockListComplianceModuleTest is AbstractComplianceModuleTest {
         bytes memory params = abi.encode(blockedAddresses);
 
         vm.expectRevert(
-            abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver address blocked"
-            )
+            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver address blocked")
         );
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, params);
     }
@@ -65,9 +63,7 @@ contract AddressBlockListComplianceModuleTest is AbstractComplianceModuleTest {
         bytes memory params = abi.encode(blockedAddresses);
 
         vm.expectRevert(
-            abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver address blocked"
-            )
+            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver address blocked")
         );
         module.canTransfer(address(smartToken), tokenIssuer, user2, 100, params);
     }
@@ -96,9 +92,7 @@ contract AddressBlockListComplianceModuleTest is AbstractComplianceModuleTest {
         // Transfer to user1 should fail (blocked)
         vm.prank(tokenIssuer);
         vm.expectRevert(
-            abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver address blocked"
-            )
+            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver address blocked")
         );
         smartToken.transfer(user1, 100);
 
@@ -114,7 +108,7 @@ contract AddressBlockListComplianceModuleTest is AbstractComplianceModuleTest {
 
     function test_AddressBlockList_Lifecycle_Functions() public {
         bytes memory params = abi.encode(new address[](0));
-        
+
         // These functions should not revert for stateless modules
         module.transferred(address(smartToken), tokenIssuer, user1, 100, params);
         module.created(address(smartToken), user1, 100, params);

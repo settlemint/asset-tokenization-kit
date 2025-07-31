@@ -1,4 +1,6 @@
 /**
+ * @vitest-environment node
+ *
  * Token Actions Route Tests
  *
  * Minimal tests to verify schema extension works correctly.

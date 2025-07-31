@@ -593,6 +593,25 @@ export const getUsers = authRouter.user.getUsers
 - **Integration Tests**: Use test database
 - **Contract Tests**: Validate OpenAPI output
 - **E2E Tests**: Full request/response cycle
+- **Node Environment**: ALWAYS use `@vitest-environment node` directive at the
+  top of all ORPC test files
+
+#### Test Environment Requirements
+
+All ORPC test files MUST include the Node environment directive:
+
+```typescript
+/**
+ * @vitest-environment node
+ */
+```
+
+This is required because:
+
+- ORPC middleware checks for browser environment (`globalThis.window`)
+- SDK components may have browser-specific behavior
+- Node environment ensures consistent test execution
+- Avoids browser-specific mocking complications
 
 ### TypeScript Patterns for ORPC
 
@@ -696,3 +715,155 @@ Execute these simultaneously:
      Implementation: Code example
      Benefits: Why use this approach
      Pitfalls: What to avoid -->
+
+## Return Format
+
+Follow `.claude/orchestration/context-management.ts` AgentOutput interface:
+
+```yaml
+taskCompletion:
+  status: completed # or 'blocked' or 'partial'
+
+summary:
+  primaryOutcome: "[One-line description of what was accomplished]"
+  confidenceLevel: high # or 'medium' or 'low'
+  keyDecisions:
+    - "[Decision 1: rationale]"
+    - "[Decision 2: rationale]"
+
+deliverables:
+  filesModified:
+    - path: /absolute/path/to/file.ts
+      changeType: modified # or 'created' or 'deleted'
+      specificChanges: "[What was changed]"
+      linesAdded: 50
+      linesRemoved: 10
+  artifactsCreated:
+    - type: contract # or 'api', 'component', 'type', 'test', 'config'
+      name: "[Artifact name]"
+      location: /path/to/artifact
+      interfaces: ["interface1", "interface2"]
+  configurationsChanged:
+    - file: config.json
+      changes:
+        key: "new value"
+
+contextHandoff:
+  readyForAgents:
+    - agent: next-agent-name
+      task: "[Specific task description]"
+      priority: high # or 'medium', 'low', 'critical'
+      requiredContext: ["context1", "context2"]
+  blockedDependencies: ["what needs to be resolved first"]
+  sharedResources:
+    - type: "contract_address"
+      identifier: "0x..."
+      location: "/path/to/resource"
+      description: "[What this resource is]"
+
+qualityGates:
+  tests:
+    unitTests: passed # or 'failed', 'pending', 'not_applicable'
+    integrationTests: pending
+    e2eTests: not_applicable
+  security:
+    vulnerabilities: passed
+    manualReviewNeeded: false
+  performance:
+    impact: "< 5ms latency increase"
+  documentation:
+    inline: passed
+    readme: passed
+    api: pending
+
+cacheKeys:
+  geminiAnalysis: "analysis_key_123"
+  context7Docs: "react_hooks_v19"
+  realWorldExamples: ["useState_patterns", "form_handling"]
+
+metrics:
+  timeInvested: 300000 # milliseconds
+  confidence: 0.95 # 0-1
+```
+
+### Compressed Format (for simple responses):
+
+```yaml
+s: ✓ # status
+f: ["/path/file.ts:+45-10", "/path/new.ts:new"] # files
+n: ["next-agent:task"] # next agents
+b: ["blocker1"] # blockers (optional)
+c: ["gemini:key123", "ctx7:react_v19"] # cache keys
+m: { t: 300, cf: 0.95 } # metrics: time(s), confidence
+```
+
+## MCP Tool Caching
+
+Use caching for expensive MCP operations:
+
+```typescript
+// Cache Context7 documentation
+const docs = await withMCPCache(
+  context,
+  'mcp__context7__get_library_docs',
+  { context7CompatibleLibraryID: '/library/name', topic: 'specific-topic' },
+  async () => await mcp__context7__get_library_docs({...})
+);
+
+// Cache Gemini analysis
+const analysis = await withMCPCache(
+  context,
+  'mcp__gemini_cli__ask_gemini',
+  { prompt: 'analyze...', model: 'gemini-2.5-pro' },
+  async () => await mcp__gemini_cli__ask_gemini({...})
+);
+
+// Cache real-world examples
+const examples = await withMCPCache(
+  context,
+  'mcp__grep__searchGitHub',
+  { query: 'pattern', language: ['TypeScript'] },
+  async () => await mcp__grep__searchGitHub({...})
+);
+```
+
+## Model Selection
+
+**Default Model**: sonnet - API patterns are well-defined
+
+### When to Use Opus
+
+- Complex middleware chains with security implications
+- Custom authentication/authorization implementations
+- Rate limiting with dynamic algorithms
+- Database transaction management across services
+
+### When to Use Sonnet
+
+- Standard pattern implementation
+- Well-defined requirements with clear examples
+- Time-sensitive tasks with established patterns
+- Parallel execution with other agents
+- High-volume repetitive tasks
+
+### Model Override Examples
+
+```yaml
+# Complex task requiring Opus
+task: "Analyze and optimize system architecture"
+model: opus
+reason: "Requires deep analysis and cross-cutting concerns"
+
+# Simple task suitable for Sonnet
+task: "Update configuration file with new environment variable"
+model: sonnet
+reason: "Straightforward change following established patterns"
+```
+
+### Parallel Execution Optimization
+
+When running in parallel with other agents:
+
+- Use Sonnet for faster response times if task complexity allows
+- Reserve Opus for critical path items that block other agents
+- Consider token budget when multiple agents use Opus simultaneously

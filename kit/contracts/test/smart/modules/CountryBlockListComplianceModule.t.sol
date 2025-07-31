@@ -46,9 +46,7 @@ contract CountryBlockListComplianceModuleTest is AbstractComplianceModuleTest {
         // A transfer to an address with no identity should revert.
         bytes memory params = abi.encode(new uint16[](0));
         vm.expectRevert(
-            abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity unknown"
-            )
+            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity unknown")
         );
         module.canTransfer(address(smartToken), user1, user3, 100, params);
     }
@@ -64,9 +62,7 @@ contract CountryBlockListComplianceModuleTest is AbstractComplianceModuleTest {
         // Even with empty block list, users without identity are blocked
         bytes memory params = abi.encode(new uint16[](0));
         vm.expectRevert(
-            abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity unknown"
-            )
+            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity unknown")
         );
         module.canTransfer(address(smartToken), tokenIssuer, user3, 100, params);
     }
@@ -76,7 +72,7 @@ contract CountryBlockListComplianceModuleTest is AbstractComplianceModuleTest {
         uint16[] memory blockedCountries = new uint16[](1);
         blockedCountries[0] = TestConstants.COUNTRY_CODE_JP;
         bytes memory params = abi.encode(blockedCountries);
-        
+
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, params); // US user
         module.canTransfer(address(smartToken), tokenIssuer, user2, 100, params); // Belgium user
     }
@@ -88,9 +84,7 @@ contract CountryBlockListComplianceModuleTest is AbstractComplianceModuleTest {
         bytes memory params = abi.encode(blockedCountries);
 
         vm.expectRevert(
-            abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver country blocked"
-            )
+            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver country blocked")
         );
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, params);
     }
@@ -103,16 +97,12 @@ contract CountryBlockListComplianceModuleTest is AbstractComplianceModuleTest {
         bytes memory params = abi.encode(blockedCountries);
 
         vm.expectRevert(
-            abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver country blocked"
-            )
+            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver country blocked")
         );
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, params);
 
         vm.expectRevert(
-            abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver country blocked"
-            )
+            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver country blocked")
         );
         module.canTransfer(address(smartToken), tokenIssuer, user2, 100, params);
     }
@@ -131,9 +121,7 @@ contract CountryBlockListComplianceModuleTest is AbstractComplianceModuleTest {
         // Transfer to user1 (US) should fail
         vm.prank(tokenIssuer);
         vm.expectRevert(
-            abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver country blocked"
-            )
+            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver country blocked")
         );
         smartToken.transfer(user1, 100);
 
@@ -145,9 +133,7 @@ contract CountryBlockListComplianceModuleTest is AbstractComplianceModuleTest {
         // Transfer to user3 (no identity) should fail
         vm.prank(tokenIssuer);
         vm.expectRevert(
-            abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity unknown"
-            )
+            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity unknown")
         );
         smartToken.transfer(user3, 100);
     }
@@ -158,7 +144,7 @@ contract CountryBlockListComplianceModuleTest is AbstractComplianceModuleTest {
 
     function test_CountryBlockList_Lifecycle_Functions() public {
         bytes memory params = abi.encode(new uint16[](0));
-        
+
         // These functions should not revert for stateless modules
         module.transferred(address(smartToken), tokenIssuer, user1, 100, params);
         module.created(address(smartToken), user1, 100, params);
