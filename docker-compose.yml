@@ -11,7 +11,7 @@ volumes:
     driver: local
 services:
   anvil:
-    image: ghcr.io/settlemint/btp-anvil-test-node:v7.7.5
+    image: ghcr.io/settlemint/btp-anvil-test-node:v7.7.6
     container_name: atk-anvil
     restart: unless-stopped
     environment:
@@ -52,7 +52,7 @@ services:
       retries: 5
       start_period: 1s
   txsigner:
-    image: ghcr.io/settlemint/btp-signer:7.13.3
+    image: ghcr.io/settlemint/btp-signer:7.13.4
     container_name: atk-txsigner
     restart: unless-stopped
     depends_on:
@@ -118,7 +118,7 @@ services:
       retries: 5
       start_period: 5s
   portal:
-    image: ghcr.io/settlemint/btp-scs-portal:8.5.13
+    image: ghcr.io/settlemint/btp-scs-portal:8.5.14
     container_name: atk-portal
     restart: unless-stopped
     depends_on:
@@ -176,7 +176,7 @@ services:
     volumes:
       - atk-redis:/data
   hasura:
-    image: hasura/graphql-engine:v2.48.1
+    image: hasura/graphql-engine:v2.48.3
     container_name: atk-hasura
     restart: unless-stopped
     depends_on:
@@ -287,7 +287,7 @@ services:
       - ./tools/docker/minio/init.sh:/init.sh
     restart: "no"
   blockscout-backend:
-    image: ghcr.io/blockscout/blockscout:8.1.1
+    image: ghcr.io/blockscout/blockscout:8.1.2
     container_name: atk-blockscout-backend
     restart: unless-stopped
     depends_on:
@@ -324,7 +324,7 @@ services:
     ports:
       - "4000:4000"
   blockscout-frontend:
-    image: ghcr.io/blockscout/frontend:v2.2.0
+    image: ghcr.io/blockscout/frontend:v2.2.1
     platform: linux/amd64
     restart: unless-stopped
     container_name: atk-blockscout-frontend

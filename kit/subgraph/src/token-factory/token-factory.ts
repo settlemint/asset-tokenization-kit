@@ -1,10 +1,10 @@
 import { Bytes } from "@graphprotocol/graph-ts";
+import { TokenStatsState } from "../../generated/schema";
 import { Burnable as BurnableTemplate } from "../../generated/templates";
 import {
   TokenAssetCreated,
   TokenImplementationUpdated,
 } from "../../generated/templates/TokenFactory/TokenFactory";
-import { TokenStatsState } from "../../generated/schema";
 import { fetchAccessControl } from "../access-control/fetch/accesscontrol";
 import { fetchAccount } from "../account/fetch/account";
 import { InterfaceIds } from "../erc165/utils/interfaceids";
@@ -20,6 +20,7 @@ import { fetchPausable } from "../token-extensions/pausable/fetch/pausable";
 import { fetchRedeemable } from "../token-extensions/redeemable/fetch/redeemable";
 import { fetchYield } from "../token-extensions/yield/fetch/yield";
 import { fetchToken } from "../token/fetch/token";
+import { getTokenType } from "../token/utils/token-utils";
 import { fetchTokenFactory } from "./fetch/token-factory";
 
 /**
@@ -45,11 +46,15 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
     token.deployedInTransaction = event.transaction.hash;
   }
   token.tokenFactory = tokenFactory.id;
-  token.type = tokenFactory.name;
+  token.type = getTokenType(tokenFactory);
   token.createdAt = event.block.timestamp;
   token.createdBy = fetchAccount(event.transaction.from).id;
-  token.identity = fetchIdentity(event.params.tokenIdentity).id;
   token.accessControl = fetchAccessControl(event.params.accessManager).id;
+
+  // Set the token extensions and implemented interfaces from the Factory
+  token.extensions = tokenFactory.tokenExtensions;
+  token.implementsERC3643 = tokenFactory.tokenImplementsERC3643;
+  token.implementsSMART = tokenFactory.tokenImplementsSMART;
 
   // Initialize TokenStatsState for the new token
   const tokenStatsState = new TokenStatsState(event.params.tokenAddress);
@@ -93,6 +98,14 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
   }
 
   token.save();
+
+  const identity = fetchIdentity(event.params.tokenIdentity);
+  identity.isContract = true;
+  identity.save();
+
+  const account = fetchAccount(event.params.tokenAddress);
+  account.identity = identity.id;
+  account.save();
 
   // Update token type stats for new token creation
   updateTokenTypeStatsForTokenCreation(token);

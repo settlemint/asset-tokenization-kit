@@ -1,0 +1,145 @@
+{
+  "charts": {
+    "assetDistribution": {
+      "description": "Aufschlüsselung nach Asset-Typ",
+      "empty": "Keine Assets anzuzeigen",
+      "title": "Asset-Verteilung"
+    },
+    "topAssets": {
+      "columns": {
+        "change": "24h Veränderung",
+        "name": "Asset",
+        "rank": "#",
+        "value": "Wert",
+        "volume": "Volumen"
+      },
+      "description": "Assets nach Rendite-Prozentsatz",
+      "title": "Am besten abschneidende Assets"
+    },
+    "transactionVolume": {
+      "axes": {
+        "x": "Datum",
+        "y": "Transaktionen"
+      },
+      "description": "Tägliche Transaktionsanzahl",
+      "title": "Transaktionsvolumen"
+    },
+    "valueOverTime": {
+      "description": "Gesamtwert über die Zeit",
+      "periods": {
+        "all": "ALLE",
+        "day": "24H",
+        "month": "1M",
+        "quarter": "3M",
+        "week": "7D",
+        "year": "1J"
+      },
+      "title": "Portfolio-Wert"
+    }
+  },
+  "empty": {
+    "action": "Asset erstellen",
+    "subtitle": "Beginnen Sie mit der Erstellung Ihres ersten tokenisierten Assets",
+    "title": "Keine Daten anzuzeigen"
+  },
+  "errors": {
+    "loadFailed": "Laden der Dashboard-Daten fehlgeschlagen",
+    "retry": "Erneut versuchen"
+  },
+  "export": {
+    "formats": {
+      "csv": "CSV",
+      "json": "JSON",
+      "pdf": "PDF-Bericht",
+      "xlsx": "Excel"
+    },
+    "sections": {
+      "all": "Alle Daten",
+      "analytics": "Analytik-Bericht",
+      "assets": "Nur Assets",
+      "transactions": "Nur Transaktionen"
+    },
+    "title": "Daten exportieren"
+  },
+  "filters": {
+    "apply": "Filter anwenden",
+    "assetType": "Asset-Typ",
+    "dateRange": "Datumsbereich",
+    "reset": "Zurücksetzen",
+    "status": "Status"
+  },
+  "loading": {
+    "activity": "Aktivität wird geladen...",
+    "charts": "Diagramme werden geladen...",
+    "stats": "Statistiken werden geladen..."
+  },
+  "quickActions": {
+    "createAsset": "Neues Asset erstellen",
+    "generateReport": "Bericht generieren",
+    "title": "Schnellaktionen",
+    "transferTokens": "Token übertragen",
+    "viewPortfolio": "Portfolio anzeigen"
+  },
+  "stats": {
+    "activeUsers": {
+      "description": "Nutzer in den letzten 30 Tagen",
+      "title": "Aktive Nutzer",
+      "trend": "{{count}} neu in dieser Woche"
+    },
+    "totalAssets": {
+      "description": "Aktive tokenisierte Assets",
+      "title": "Gesamtanzahl der Assets",
+      "trend": "{{percentage}}% im Vergleich zum letzten Monat"
+    },
+    "totalValue": {
+      "description": "Kombinierter Wert aller Assets",
+      "title": "Total Value Locked",
+      "trend": "{{percentage}}% im Vergleich zum letzten Monat"
+    },
+    "transactions": {
+      "description": "Insgesamt verarbeitete Transaktionen",
+      "title": "Transaktionen",
+      "trend": "{{count}} heute"
+    }
+  },
+  "subtitle": "Übersicht über Ihre tokenisierten Assets",
+  "title": "Dashboard",
+  "welcome": {
+    "subtitle": "Hier ist, was heute mit Ihren Assets passiert",
+    "title": "Willkommen zurück, {{name}}"
+  },
+  "widgets": {
+    "alerts": {
+      "dismiss": "Schließen",
+      "title": "Benachrichtigungen",
+      "types": {
+        "error": "Fehler",
+        "info": "Information",
+        "success": "Erfolg",
+        "warning": "Warnung"
+      },
+      "viewDetails": "Details anzeigen"
+    },
+    "pendingActions": {
+      "empty": "Keine ausstehenden Aktionen",
+      "title": "Ausstehende Aktionen",
+      "types": {
+        "approval": "Genehmigung erforderlich",
+        "kyc": "KYC-Überprüfung ausstehend",
+        "signature": "Unterschrift erforderlich"
+      }
+    },
+    "recentActivity": {
+      "empty": "Keine aktuellen Aktivitäten",
+      "title": "Aktuelle Aktivitäten",
+      "types": {
+        "approval": "{{user}} genehmigte {{spender}}",
+        "burn": "{{amount}} {{token}} verbrannt",
+        "deployment": "Neues {{type}} bereitgestellt",
+        "mint": "{{amount}} {{token}} geprägt",
+        "transfer": "{{user}} übertrug {{amount}} {{token}}"
+      },
+      "viewAll": "Alle Aktivitäten anzeigen"
+    }
+  }
+}

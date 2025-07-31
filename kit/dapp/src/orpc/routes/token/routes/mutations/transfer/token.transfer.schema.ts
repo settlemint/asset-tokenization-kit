@@ -1,5 +1,7 @@
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { apiBigInt } from "@/lib/zod/validators/bigint";
+import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
+import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
 import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { z } from "zod";
 
@@ -44,35 +46,6 @@ export const TokenTransferSchema = z
         "Type of transfer: standard (sender to recipient), transferFrom (using allowance), or forced (custodian)"
       ),
     verification: UserVerificationSchema.describe("Verification credentials"),
-    messages: z
-      .object({
-        preparingTransfer: z
-          .string()
-          .default("Preparing token transfer...")
-          .describe("Message shown when preparing the transfer"),
-        submittingTransfer: z
-          .string()
-          .default("Submitting transfer transaction...")
-          .describe("Message shown when submitting the transaction"),
-        waitingForMining: z
-          .string()
-          .default("Waiting for transaction to be mined...")
-          .describe("Message shown while waiting for mining"),
-        transferComplete: z
-          .string()
-          .default("Token transfer completed successfully")
-          .describe("Message shown when transfer is complete"),
-        transferFailed: z
-          .string()
-          .default("Failed to transfer tokens")
-          .describe("Message shown when transfer fails"),
-        defaultError: z
-          .string()
-          .default("An unexpected error occurred during transfer")
-          .describe("Default error message"),
-      })
-      .optional()
-      .describe("Custom messages for transfer operation"),
   })
   .refine(
     (data) => {
@@ -109,8 +82,7 @@ export const TokenTransferSchema = z
       return true;
     },
     {
-      message:
-        "From address(es) required for transferFrom and forced transfers",
+      message: "tokens:validation.transfer.fromRequired",
       path: ["from"],
     }
   );
@@ -118,33 +90,34 @@ export const TokenTransferSchema = z
 // Note: Old separate schemas removed since we consolidated into TokenTransferSchema
 
 /**
- * Schema for transfer messages (shared structure)
+ * Output schema for token transfer operation
+ * Returns the ethereum hash and the updated token data
  */
-export const TokenTransferMessagesSchema = z.object({
-  preparingTransfer: z.string().default("Preparing transfer..."),
-  submittingTransfer: z.string().default("Submitting transfer transaction..."),
-  waitingForMining: z
-    .string()
-    .default("Waiting for transaction to be mined..."),
-  transferComplete: z.string().default("Transfer completed successfully"),
-  transferFailed: z.string().default("Failed to transfer tokens"),
-  waitingForIndexing: z
-    .string()
-    .default("Transaction confirmed. Waiting for indexing..."),
-  transactionIndexed: z.string().default("Transaction successfully indexed."),
-  indexingTimeout: z
-    .string()
-    .default(
-      "Indexing is taking longer than expected. Data will be available soon."
-    ),
-  streamTimeout: z
-    .string()
-    .default("Transaction tracking timed out. Please check the status later."),
-  transactionDropped: z
-    .string()
-    .default("Transaction was dropped from the network. Please try again."),
-  defaultError: z.string().default("An unexpected error occurred"),
+export const TokenTransferOutputSchema = BaseMutationOutputSchema.extend({
+  data: z
+    .object({
+      totalTransferred: bigDecimal().describe(
+        "Total amount of tokens transferred"
+      ),
+      transferType: z
+        .enum(["standard", "transferFrom", "forced"])
+        .describe("Type of transfer performed"),
+      recipients: z
+        .array(ethereumAddress)
+        .describe("Addresses tokens were transferred to"),
+      amounts: z
+        .array(bigDecimal())
+        .describe("Amounts transferred to each address"),
+      from: z
+        .array(ethereumAddress)
+        .optional()
+        .describe("Source addresses for transferFrom/forced transfers"),
+      tokenName: z.string().optional().describe("Name of the token"),
+      tokenSymbol: z.string().optional().describe("Symbol of the token"),
+    })
+    .optional()
+    .describe("Transfer operation details"),
 });
 
 export type TokenTransferInput = z.infer<typeof TokenTransferSchema>;
-export type TokenTransferMessages = z.infer<typeof TokenTransferMessagesSchema>;
+export type TokenTransferOutput = z.infer<typeof TokenTransferOutputSchema>;

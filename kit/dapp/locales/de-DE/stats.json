@@ -1,0 +1,54 @@
+{
+  "charts": {
+    "assetActivity": {
+      "description": "Aktivitäten von Vermögensübertragungen",
+      "title": "Vermögensaktivitäten"
+    },
+    "assetSupply": {
+      "description": "Gesamtangebot an Vermögenswerten über die Zeit",
+      "title": "Vermögensangebot"
+    },
+    "totalCollateral": {
+      "label": "Gesamtsicherheit"
+    },
+    "totalSupply": {
+      "description": "Historische Änderungen des Gesamtangebots über die Zeit",
+      "label": "Gesamtangebot",
+      "title": "Token-Angebotsverlauf",
+      "noData": "Keine Daten verfügbar",
+      "noDataDescription": "Keine Gesamtangebotsdaten für die letzten {{days}} Tage gefunden"
+    },
+    "transactionHistory": {
+      "description": "Transaktionsvolumen über die Zeit",
+      "title": "Transaktionshistorie"
+    },
+    "userGrowth": {
+      "description": "Anzahl der Nutzer über die Zeit",
+      "title": "Nutzerwachstum"
+    }
+  },
+  "title": "Statistiken",
+  "widgets": {
+    "assets": {
+      "empty": "Noch keine Vermögenswerte",
+      "title": "Gesamtvermögen"
+    },
+    "common": {
+      "error": "Fehler beim Laden der Daten",
+      "loading": "Laden...",
+      "retry": "Erneut versuchen"
+    },
+    "transactions": {
+      "description": "{{count}} Transaktionen in den letzten {{days}} Tagen",
+      "title": "Gesamttransaktionen"
+    },
+    "users": {
+      "description": "{{count}} aktive Nutzer in den letzten {{days}} Tagen",
+      "title": "Aktive Nutzer"
+    },
+    "value": {
+      "description": "Kombinierter Wert aller Vermögenswerte",
+      "title": "Gesamtwert"
+    }
+  }
+}

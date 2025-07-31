@@ -65,11 +65,16 @@ const CONTRACT_ADDRESSES = {
   ATKIdentityFactoryImplementation:
     "0x5e771e1417100000000000000000000000020005",
   ATKIdentityImplementation: "0x5e771e1417100000000000000000000000020006",
-  ATKTokenIdentityImplementation: "0x5e771e1417100000000000000000000000020007",
+  ATKContractIdentityImplementation:
+    "0x5e771e1417100000000000000000000000020007",
   ATKTopicSchemeRegistryImplementation:
     "0x5e771e1417100000000000000000000000020008",
   ATKTokenAccessManagerImplementation:
     "0x5e771e1417100000000000000000000000020009",
+
+  // System access manager implementation
+  ATKSystemAccessManagerImplementation:
+    "0x5e771e141710000000000000000000000002000a",
 
   // Registry implementations
   ATKTokenFactoryRegistryImplementation:
@@ -141,12 +146,14 @@ const CONTRACT_FILES = {
     "contracts/system/identity-factory/ATKIdentityFactoryImplementation.sol",
   ATKIdentityImplementation:
     "contracts/system/identity-factory/identities/ATKIdentityImplementation.sol",
-  ATKTokenIdentityImplementation:
-    "contracts/system/identity-factory/identities/ATKTokenIdentityImplementation.sol",
+  ATKContractIdentityImplementation:
+    "contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol",
   ATKTopicSchemeRegistryImplementation:
     "contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol",
   ATKTokenAccessManagerImplementation:
     "contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol",
+  ATKSystemAccessManagerImplementation:
+    "contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol",
   ATKTokenFactoryRegistryImplementation:
     "contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol",
   ATKComplianceModuleRegistryImplementation:
@@ -489,12 +496,12 @@ class ContractDeployer {
           CONTRACT_ADDRESSES.ATKTopicSchemeRegistryImplementation,
           CONTRACT_ADDRESSES.ATKIdentityFactoryImplementation,
           CONTRACT_ADDRESSES.ATKIdentityImplementation,
-          CONTRACT_ADDRESSES.ATKTokenIdentityImplementation,
+          CONTRACT_ADDRESSES.ATKContractIdentityImplementation,
           CONTRACT_ADDRESSES.ATKTokenAccessManagerImplementation,
-          CONTRACT_ADDRESSES.SMARTIdentityVerificationComplianceModule,
           CONTRACT_ADDRESSES.ATKTokenFactoryRegistryImplementation,
           CONTRACT_ADDRESSES.ATKComplianceModuleRegistryImplementation,
           CONTRACT_ADDRESSES.ATKSystemAddonRegistryImplementation,
+          CONTRACT_ADDRESSES.ATKSystemAccessManagerImplementation,
           forwarderAddress,
         ];
 

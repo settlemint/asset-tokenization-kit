@@ -14,6 +14,7 @@ import CountryAllowListModule from "./onboarding/modules/country-allow-list-modu
 import CountryBlockListModule from "./onboarding/modules/country-block-list-module";
 import IdentityAllowListModule from "./onboarding/modules/identity-allow-list-module";
 import IdentityBlockListModule from "./onboarding/modules/identity-block-list-module";
+import IdentityVerificationModule from "./onboarding/modules/identity-verification-module";
 import ATKOnboardingSystemModule from "./onboarding/system";
 
 /**
@@ -33,6 +34,7 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
     tokenFactoryRegistry,
     complianceModuleRegistry,
     systemAddonRegistry,
+    systemAccessManager,
   } = m.useModule(ATKOnboardingSystemModule);
 
   // Setup factories
@@ -69,6 +71,9 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
   const { addressBlockListModule } = m.useModule(AddressBlockListModule);
   const { identityBlockListModule } = m.useModule(IdentityBlockListModule);
   const { identityAllowListModule } = m.useModule(IdentityAllowListModule);
+  const { identityVerificationModule } = m.useModule(
+    IdentityVerificationModule
+  );
 
   return {
     system,
@@ -83,6 +88,7 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
     equityFactory,
     fundFactory,
     stablecoinFactory,
+    systemAccessManager,
     // Registries
     tokenFactoryRegistry,
     complianceModuleRegistry,
@@ -93,6 +99,7 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
     addressBlockListModule,
     identityBlockListModule,
     identityAllowListModule,
+    identityVerificationModule,
     // Addons
     fixedYieldScheduleFactory,
     xvpSettlementFactory,

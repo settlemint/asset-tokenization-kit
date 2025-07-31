@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { AbstractATKAssetTest } from "./AbstractATKAssetTest.sol";
@@ -20,6 +20,7 @@ import { MockedERC20Token } from "../utils/mocks/MockedERC20Token.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { ISMARTCollateral } from "../../contracts/smart/extensions/collateral/ISMARTCollateral.sol";
+import { TestConstants } from "../Constants.sol";
 
 contract ATKDepositTest is AbstractATKAssetTest {
     IATKDepositFactory public depositFactory;
@@ -65,7 +66,7 @@ contract ATKDepositTest is AbstractATKAssetTest {
         _setUpIdentity(user2, "User2");
         _setUpIdentity(spender, "Spender");
 
-        deposit = _createDeposit("Deposit", "DEP", DECIMALS, new uint256[](0), new SMARTComplianceModuleParamPair[](0));
+        deposit = _createDeposit("Deposit", "DEP", DECIMALS, new SMARTComplianceModuleParamPair[](0));
         vm.label(address(deposit), "Deposit");
     }
 
@@ -73,7 +74,6 @@ contract ATKDepositTest is AbstractATKAssetTest {
         string memory name,
         string memory symbol,
         uint8 decimals,
-        uint256[] memory requiredClaimTopics,
         SMARTComplianceModuleParamPair[] memory initialModulePairs
     )
         internal
@@ -82,7 +82,7 @@ contract ATKDepositTest is AbstractATKAssetTest {
         vm.startPrank(owner);
 
         address depositAddress =
-            depositFactory.createDeposit(name, symbol, decimals, requiredClaimTopics, initialModulePairs);
+            depositFactory.createDeposit(name, symbol, decimals, initialModulePairs, TestConstants.COUNTRY_CODE_US);
         result = IATKDeposit(depositAddress);
 
         vm.label(depositAddress, "Deposit");
@@ -133,7 +133,6 @@ contract ATKDepositTest is AbstractATKAssetTest {
                 string.concat("Deposit ", Strings.toString(decimalValues[i])),
                 string.concat("DEP_", Strings.toString(decimalValues[i])),
                 decimalValues[i],
-                new uint256[](0),
                 new SMARTComplianceModuleParamPair[](0)
             );
             assertEq(newToken.decimals(), decimalValues[i]);
@@ -145,7 +144,7 @@ contract ATKDepositTest is AbstractATKAssetTest {
 
         vm.expectRevert(abi.encodeWithSelector(ISMART.InvalidDecimals.selector, 19));
         depositFactory.createDeposit(
-            "Deposit 19", "DEP19", 19, new uint256[](0), new SMARTComplianceModuleParamPair[](0)
+            "Deposit 19", "DEP19", 19, new SMARTComplianceModuleParamPair[](0), TestConstants.COUNTRY_CODE_US
         );
         vm.stopPrank();
     }

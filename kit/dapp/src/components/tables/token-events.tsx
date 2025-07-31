@@ -1,5 +1,3 @@
-"use no memo";
-
 import {
   ActionsCell,
   type ActionItem,
@@ -85,6 +83,7 @@ function EventDetailsSheet({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  "use no memo";
   const { t } = useTranslation(["tokens", "common"]);
 
   const handleOpenAutoFocus = useCallback((e: Event) => {
@@ -194,7 +193,7 @@ function EventDetailsSheet({
                         } else if (
                           typeof value.value === "string" &&
                           value.value.trim() !== "" &&
-                          !isNaN(Number(value.value.trim()))
+                          !Number.isNaN(Number(value.value.trim()))
                         ) {
                           formattedValue = formatValue(value.value, {
                             type: "number",
@@ -246,16 +245,15 @@ export function TokenEventsTable({ token }: TokenEventsTableProps) {
   const [selectedEvent, setSelectedEvent] = useState<TokenEvent | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const router = useRouter();
-  const routePath =
-    router.state.matches[router.state.matches.length - 1]?.pathname;
+  const routePath = router.state.matches.at(-1)?.pathname;
 
-  const { data: eventsResponse } = useSuspenseQuery({
-    ...orpc.token.events.queryOptions({
+  const { data: eventsResponse } = useSuspenseQuery(
+    orpc.token.events.queryOptions({
       input: {
         tokenAddress: token.id,
       },
-    }),
-  });
+    })
+  );
 
   // Extract events data
   const events = eventsResponse.events;

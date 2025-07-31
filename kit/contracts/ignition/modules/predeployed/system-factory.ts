@@ -6,8 +6,8 @@ import IdentityModule from "./identity";
 import IdentityFactoryModule from "./identity-factory";
 import IdentityRegistryModule from "./identity-registry";
 import IdentityRegistryStorageModule from "./identity-registry-storage";
-import IdentityVerificationModule from "./modules/identity-verification-module";
 import SystemModule from "./system";
+import SystemAccessManagerModule from "./system-access-manager";
 import SystemAddonRegistryModule from "./system-addon-registry";
 import TokenAccessManagerModule from "./token-access-manager";
 import TokenFactoryRegistryModule from "./token-factory-registry";
@@ -25,7 +25,7 @@ const SystemFactoryModule = buildModule("SystemFactoryModule", (m) => {
   const { trustedIssuerRegistry } = m.useModule(TrustedIssuerRegistryModule);
   const { topicSchemeRegistry } = m.useModule(TopicSchemeRegistryModule);
   const { identityFactory } = m.useModule(IdentityFactoryModule);
-  const { identity, tokenIdentity } = m.useModule(IdentityModule);
+  const { identity, contractIdentity } = m.useModule(IdentityModule);
   const { tokenAccessManager } = m.useModule(TokenAccessManagerModule);
 
   const { tokenFactoryRegistry } = m.useModule(TokenFactoryRegistryModule);
@@ -33,10 +33,7 @@ const SystemFactoryModule = buildModule("SystemFactoryModule", (m) => {
     ComplianceModuleRegistryModule
   );
   const { systemAddonRegistry } = m.useModule(SystemAddonRegistryModule);
-
-  const { identityVerificationModule } = m.useModule(
-    IdentityVerificationModule
-  );
+  const { systemAccessManager } = m.useModule(SystemAccessManagerModule);
 
   const systemFactory = m.contract("ATKSystemFactory", [
     system,
@@ -47,12 +44,12 @@ const SystemFactoryModule = buildModule("SystemFactoryModule", (m) => {
     topicSchemeRegistry,
     identityFactory,
     identity,
-    tokenIdentity,
+    contractIdentity,
     tokenAccessManager,
-    identityVerificationModule,
     tokenFactoryRegistry,
     complianceModuleRegistry,
     systemAddonRegistry,
+    systemAccessManager,
     forwarder,
   ]);
 

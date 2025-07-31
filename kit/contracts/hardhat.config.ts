@@ -1,5 +1,5 @@
 import "@nomicfoundation/hardhat-foundry";
-import "@nomicfoundation/hardhat-toolbox-viem";
+import "@nomicfoundation/hardhat-ignition-viem";
 import "@nomiclabs/hardhat-solhint";
 import type { HardhatUserConfig } from "hardhat/config";
 
@@ -7,7 +7,7 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       {
-        version: "0.8.28",
+        version: "0.8.30",
         settings: {
           evmVersion: "cancun",
           viaIR: true,

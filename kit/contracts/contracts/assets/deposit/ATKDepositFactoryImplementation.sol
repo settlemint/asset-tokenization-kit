@@ -22,9 +22,20 @@ import { ATKTopics } from "../../system/ATKTopics.sol";
 import { ATKDepositProxy } from "./ATKDepositProxy.sol";
 
 /// @title Implementation of the ATK Deposit Factory
+/// @author SettleMint
 /// @notice This contract is responsible for creating instances of ATK Deposit tokens.
+/// @dev This factory deploys ATK Deposit tokens with collateral support, using the SMART protocol
+///      for compliance and identity verification. It inherits from AbstractATKTokenFactoryImplementation
+///      for common factory functionality.
 contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKTokenFactoryImplementation {
-    bytes32 public constant override typeId = keccak256("ATKDepositFactory");
+    /// @notice The unique identifier for this factory type.
+    bytes32 public constant TYPE_ID = keccak256("ATKDepositFactory");
+
+    /// @notice Returns the unique type identifier for this factory.
+    /// @return The keccak256 hash of "ATKDepositFactory".
+    function typeId() external pure override returns (bytes32) {
+        return TYPE_ID;
+    }
 
     /// @notice The collateral claim topic ID.
     uint256 internal _collateralClaimTopicId;
@@ -37,18 +48,16 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
     /// @param systemAddress The address of the `IATKSystem` contract.
     /// @param tokenImplementation_ The initial address of the token implementation contract.
     /// @param initialAdmin The address to be granted the DEFAULT_ADMIN_ROLE and DEPLOYER_ROLE.
-    /// @param identityVerificationModule_ The address of the identity verification module.
     function initialize(
         address systemAddress,
         address tokenImplementation_,
-        address initialAdmin,
-        address identityVerificationModule_
+        address initialAdmin
     )
         public
         override(AbstractATKTokenFactoryImplementation, IATKTokenFactory)
         initializer
     {
-        super.initialize(systemAddress, tokenImplementation_, initialAdmin, identityVerificationModule_);
+        super.initialize(systemAddress, tokenImplementation_, initialAdmin);
 
         ISMARTTopicSchemeRegistry topicSchemeRegistry =
             ISMARTTopicSchemeRegistry(IATKSystem(_systemAddress).topicSchemeRegistry());
@@ -60,15 +69,16 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
     /// @param name_ The name of the deposit token.
     /// @param symbol_ The symbol of the deposit token.
     /// @param decimals_ The number of decimals for the deposit token.
-    /// @param requiredClaimTopics_ An array of claim topics required for interacting with the deposit token.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
+    /// @param countryCode_ The numeric country code (ISO 3166-1 alpha-2 standard) representing the token's
+    /// jurisdiction.
     /// @return deployedDepositAddress The address of the newly deployed deposit token contract.
     function createDeposit(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         uint8 decimals_,
-        uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_
+        SMARTComplianceModuleParamPair[] calldata initialModulePairs_,
+        uint16 countryCode_
     )
         external
         override
@@ -79,17 +89,14 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
         // Create the access manager for the token
         ISMARTTokenAccessManager accessManager = _createAccessManager(salt);
 
-        address tokenIdentityAddress = _predictTokenIdentityAddress(name_, symbol_, decimals_, address(accessManager));
-
-        // ABI encode constructor arguments for ATKDepositProxy
+        // ABI encode constructor arguments for ATKDepositProxy (no onchainID parameter)
         bytes memory constructorArgs = abi.encode(
             address(this),
             name_,
             symbol_,
             decimals_,
-            tokenIdentityAddress,
             _collateralClaimTopicId,
-            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
+            initialModulePairs_,
             _identityRegistry(),
             _compliance(),
             address(accessManager)
@@ -99,20 +106,22 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
         bytes memory proxyBytecode = type(ATKDepositProxy).creationCode;
 
         // Deploy using the helper from the abstract contract
+        string memory description = string.concat("Deposit: ", name_, " (", symbol_, ")");
         address deployedTokenIdentityAddress;
         (deployedDepositAddress, deployedTokenIdentityAddress) =
-            _deployToken(proxyBytecode, constructorArgs, salt, address(accessManager));
+            _deployToken(proxyBytecode, constructorArgs, salt, address(accessManager), description, countryCode_);
 
-        if (deployedTokenIdentityAddress != tokenIdentityAddress) {
-            revert TokenIdentityAddressMismatch(deployedTokenIdentityAddress, tokenIdentityAddress);
-        }
+        // Identity verification check removed - identity is now set after deployment
 
-        emit DepositCreated(_msgSender(), deployedDepositAddress, name_, symbol_, decimals_, requiredClaimTopics_);
+        emit DepositCreated(
+            _msgSender(), deployedDepositAddress, deployedTokenIdentityAddress, name_, symbol_, decimals_, countryCode_
+        );
 
         return deployedDepositAddress;
     }
 
     /// @notice Checks if a given address implements the IATKDeposit interface.
+    /// @dev Uses ERC165 to check interface support for IATKDeposit
     /// @param tokenImplementation_ The address of the contract to check.
     /// @return bool True if the contract supports the IATKDeposit interface, false otherwise.
     function isValidTokenImplementation(address tokenImplementation_) public view override returns (bool) {
@@ -120,18 +129,17 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
     }
 
     /// @notice Predicts the deployment address of a ATKDepositProxy contract.
+    /// @dev Uses CREATE2 to deterministically calculate the deployment address based on the provided parameters
     /// @param name_ The name of the token.
     /// @param symbol_ The symbol of the token.
     /// @param decimals_ The decimals of the token.
-    /// @param requiredClaimTopics_ The required claim topics for the token.
     /// @param initialModulePairs_ The initial compliance module pairs for the token.
     /// @return predictedAddress The predicted address of the token contract.
     function predictDepositAddress(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         uint8 decimals_,
-        uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_
+        SMARTComplianceModuleParamPair[] calldata initialModulePairs_
     )
         external
         view
@@ -140,16 +148,15 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
     {
         bytes memory salt = _buildSaltInput(name_, symbol_, decimals_);
         address accessManagerAddress_ = _predictAccessManagerAddress(salt);
-        address tokenIdentityAddress = _predictTokenIdentityAddress(name_, symbol_, decimals_, accessManagerAddress_);
-        // ABI encode constructor arguments for ATKDepositProxy
+
+        // ABI encode constructor arguments for ATKDepositProxy (no onchainID parameter)
         bytes memory constructorArgs = abi.encode(
             address(this), // The factory address is part of the constructor args
             name_,
             symbol_,
             decimals_,
-            tokenIdentityAddress,
             _collateralClaimTopicId,
-            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
+            initialModulePairs_,
             _identityRegistry(),
             _compliance(),
             accessManagerAddress_ // Use the provided access manager address
@@ -166,6 +173,10 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
 
     // --- ERC165 Overrides ---
 
+    /// @notice Checks if the contract supports the given interface
+    /// @dev Implements ERC165 interface detection
+    /// @param interfaceId The interface identifier to check
+    /// @return True if the interface is supported, false otherwise
     function supportsInterface(bytes4 interfaceId)
         public
         view

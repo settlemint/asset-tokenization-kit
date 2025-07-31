@@ -1,5 +1,3 @@
-"use client";
-
 import {
   ArchiveIcon,
   CopyIcon,
@@ -501,7 +499,7 @@ function convertToCSV(data: unknown[]): string {
           stringValue.includes('"') ||
           stringValue.includes("\n")
         ) {
-          return `"${stringValue.replace(/"/g, '""')}"`;
+          return `"${stringValue.replaceAll('"', '""')}"`;
         }
         return stringValue;
       })
@@ -525,9 +523,9 @@ function downloadFile(content: string, filename: string, mimeType: string) {
   const link = document.createElement("a");
   link.href = url;
   link.download = filename;
-  document.body.appendChild(link);
+  document.body.append(link);
   link.click();
-  document.body.removeChild(link);
+  link.remove();
   URL.revokeObjectURL(url);
 }
 

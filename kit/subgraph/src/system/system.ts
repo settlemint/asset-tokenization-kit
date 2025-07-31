@@ -4,17 +4,19 @@ import {
   Bootstrapped,
   ComplianceImplementationUpdated,
   ComplianceModuleRegistryImplementationUpdated,
+  ContractIdentityImplementationUpdated,
   IdentityFactoryImplementationUpdated,
   IdentityImplementationUpdated,
   IdentityRegistryImplementationUpdated,
   IdentityRegistryStorageImplementationUpdated,
+  SystemAccessManagerImplementationUpdated,
   SystemAddonRegistryImplementationUpdated,
   TokenAccessManagerImplementationUpdated,
   TokenFactoryRegistryImplementationUpdated,
-  TokenIdentityImplementationUpdated,
   TopicSchemeRegistryImplementationUpdated,
   TrustedIssuersRegistryImplementationUpdated,
 } from "../../generated/templates/System/System";
+import { fetchCompliance } from "../compliance/fetch/compliance";
 import { fetchComplianceModuleRegistry } from "../compliance/fetch/compliance-module-registry";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentityFactory } from "../identity-factory/fetch/identity-factory";
@@ -23,8 +25,8 @@ import { fetchIdentityRegistryStorage } from "../identity-registry/fetch/identit
 import { fetchSystemAddonRegistry } from "../system-addons/fetch/system-addon-registry";
 import { fetchTokenFactoryRegistry } from "../token-factory/fetch/token-factory-registry";
 import { fetchTopicSchemeRegistry } from "../topic-scheme-registry/fetch/topic-scheme-registry";
-import { fetchCompliance } from "./fetch/compliance";
 import { fetchSystem } from "./fetch/system";
+import { fetchSystemAccessManager } from "./fetch/system-access-manager";
 import { fetchTrustedIssuersRegistry } from "./fetch/trusted-issuers-registry";
 
 export function handleBootstrapped(event: Bootstrapped): void {
@@ -97,6 +99,15 @@ export function handleBootstrapped(event: Bootstrapped): void {
   }
   systemAddonRegistry.save();
 
+  const systemAccessManager = fetchSystemAccessManager(
+    event.params.systemAccessManagerProxy
+  );
+  if (systemAccessManager.deployedInTransaction.equals(Bytes.empty())) {
+    systemAccessManager.deployedInTransaction = event.transaction.hash;
+  }
+  systemAccessManager.system = system.id;
+  systemAccessManager.save();
+
   system.compliance = fetchCompliance(event.params.complianceProxy).id;
   system.identityRegistry = identityRegistry.id;
   system.identityRegistryStorage = identityRegistryStorage.id;
@@ -106,6 +117,7 @@ export function handleBootstrapped(event: Bootstrapped): void {
   system.tokenFactoryRegistry = tokenFactoryRegistry.id;
   system.complianceModuleRegistry = complianceModuleRegistry.id;
   system.systemAddonRegistry = systemAddonRegistry.id;
+  system.systemAccessManager = systemAccessManager.id;
   system.save();
 }
 
@@ -145,10 +157,10 @@ export function handleTokenAccessManagerImplementationUpdated(
   fetchEvent(event, "TokenAccessManagerImplementationUpdated");
 }
 
-export function handleTokenIdentityImplementationUpdated(
-  event: TokenIdentityImplementationUpdated
+export function handleContractIdentityImplementationUpdated(
+  event: ContractIdentityImplementationUpdated
 ): void {
-  fetchEvent(event, "TokenIdentityImplementationUpdated");
+  fetchEvent(event, "ContractIdentityImplementationUpdated");
 }
 
 export function handleTrustedIssuersRegistryImplementationUpdated(
@@ -179,4 +191,10 @@ export function handleSystemAddonRegistryImplementationUpdated(
   event: SystemAddonRegistryImplementationUpdated
 ): void {
   fetchEvent(event, "SystemAddonRegistryImplementationUpdated");
+}
+
+export function handleSystemAccessManagerImplementationUpdated(
+  event: SystemAccessManagerImplementationUpdated
+): void {
+  fetchEvent(event, "SystemAccessManagerImplementationUpdated");
 }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 import { AbstractATKAssetTest } from "./AbstractATKAssetTest.sol";
 import { MockedERC20Token } from "../utils/mocks/MockedERC20Token.sol";
@@ -13,6 +13,7 @@ import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.so
 import { ATKBondFactoryImplementation } from "../../contracts/assets/bond/ATKBondFactoryImplementation.sol";
 import { ATKBondImplementation } from "../../contracts/assets/bond/ATKBondImplementation.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { TestConstants } from "../Constants.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
@@ -161,16 +162,20 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
     function _createBondWithMaliciousToken() internal returns (IATKBond result) {
         vm.startPrank(owner);
+        IATKBond.BondInitParams memory bondParams = IATKBond.BondInitParams({
+            maturityDate: maturityDate,
+            faceValue: faceValue,
+            underlyingAsset: address(maliciousToken)
+        });
+
         address bondAddress = bondFactory.createBond(
             "Test Bond",
             "TBOND",
             DECIMALS,
             CAP,
-            maturityDate,
-            faceValue,
-            address(maliciousToken),
-            new uint256[](0),
-            new SMARTComplianceModuleParamPair[](0)
+            bondParams,
+            new SMARTComplianceModuleParamPair[](0),
+            TestConstants.COUNTRY_CODE_US
         );
 
         result = IATKBond(bondAddress);
@@ -481,16 +486,20 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
         // Create a new bond with normal token
         vm.startPrank(owner);
+        IATKBond.BondInitParams memory normalBondParams = IATKBond.BondInitParams({
+            maturityDate: maturityDate,
+            faceValue: faceValue,
+            underlyingAsset: address(normalToken)
+        });
+
         address normalBondAddress = bondFactory.createBond(
             "Normal Bond",
             "NBOND",
             DECIMALS,
             CAP,
-            maturityDate,
-            faceValue,
-            address(normalToken),
-            new uint256[](0),
-            new SMARTComplianceModuleParamPair[](0)
+            normalBondParams,
+            new SMARTComplianceModuleParamPair[](0),
+            TestConstants.COUNTRY_CODE_US
         );
 
         IATKBond normalBond = IATKBond(normalBondAddress);

@@ -67,7 +67,7 @@ test.describe("Create, mint, burn and transfer cryptocurrency", () => {
     }
   });
   test("Admin user creates, mints and burns cryptocurrency", async ({
-    browser,
+    browser: _browser,
   }) => {
     await adminPages.adminPage.createCryptocurrency(cryptocurrencyData);
     testData.cryptocurrencyName = cryptocurrencyData.name;

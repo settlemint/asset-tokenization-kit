@@ -14,9 +14,10 @@
  * @see {@link https://tanstack.com/query/latest/docs/react/guides/suspense} - React Query suspense mode
  */
 
-import { AssetDesignerForm } from "@/components/asset-designer/asset-designer-form";
-import { Button } from "@/components/ui/button";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { useSettings } from "@/hooks/use-settings";
+import { orpc } from "@/orpc/orpc-client";
+import { useQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
   /**
@@ -34,14 +35,11 @@ export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
    * @param root0.context
    */
   loader: async ({ context: { queryClient, orpc } }) => {
-    // User and systems data should be loaded in parent _private route, but we need to ensure it exists
+    // User data should be loaded in parent _private route, but we need to ensure it exists
     // to handle cache misses, invalidation, or direct navigation
-    const [user, systems] = await Promise.all([
-      queryClient.ensureQueryData(orpc.user.me.queryOptions()),
-      queryClient.ensureQueryData(orpc.system.list.queryOptions({ input: {} })),
-    ]);
+    const user = await queryClient.ensureQueryData(orpc.user.me.queryOptions());
 
-    return { user, systems };
+    return { user };
   },
   component: Home,
 });
@@ -54,7 +52,16 @@ export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
  * React Suspense boundaries for loading states.
  */
 function Home() {
-  const { user, systems } = Route.useLoaderData();
+  const { user } = Route.useLoaderData();
+  const [systemAddress] = useSettings("SYSTEM_ADDRESS");
+
+  // Get system details using the system address from settings
+  const { data: systemDetails, isLoading: isLoadingSystem } = useQuery(
+    orpc.system.read.queryOptions({
+      input: { id: systemAddress ?? "" },
+      enabled: Boolean(systemAddress),
+    })
+  );
 
   return (
     <div className="p-6 space-y-8">
@@ -66,22 +73,26 @@ function Home() {
             {JSON.stringify(
               {
                 wallet: user.wallet,
-                onboardingFinished: user.isOnboarded,
                 userId: user.id,
+                systemAddress: systemAddress,
               },
               null,
               2
             )}
           </pre>
         </div>
-        <pre className="text-sm bg-muted p-4 rounded-lg">
-          {JSON.stringify(systems, null, 2)}
-        </pre>
+        {isLoadingSystem ? (
+          <div className="text-sm">Loading system details...</div>
+        ) : systemDetails ? (
+          <pre className="text-sm bg-muted p-4 rounded-lg">
+            {JSON.stringify(systemDetails, null, 2)}
+          </pre>
+        ) : (
+          <div className="text-sm text-muted-foreground">
+            No system found at address: {systemAddress}
+          </div>
+        )}
       </div>
-      <Link to="/asset-designer" className="mb-6 block">
-        <Button>Create New Asset</Button>
-      </Link>
-      <AssetDesignerForm />
     </div>
   );
 }

@@ -25,7 +25,17 @@ import {
 import type { TokenCreateInput } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 
 const CREATE_STABLECOIN_MUTATION = portalGraphql(`
-  mutation CreateStableCoinMutation($address: String!, $from: String!, $symbol: String!, $name: String!, $decimals: Int!, $initialModulePairs: [ATKStableCoinFactoryImplementationATKStableCoinFactoryImplementationCreateStableCoinInitialModulePairsInput!]!, $requiredClaimTopics: [String!]!, $verificationId: String, $challengeResponse: String!) {
+  mutation CreateStableCoinMutation(
+    $address: String!
+    $from: String!
+    $symbol: String!
+    $name: String!
+    $decimals: Int!
+    $initialModulePairs: [ATKStableCoinFactoryImplementationATKStableCoinFactoryImplementationCreateStableCoinInitialModulePairsInput!]!
+    $verificationId: String
+    $challengeResponse: String!
+    $countryCode: Int!
+  ) {
     CreateStableCoin: ATKStableCoinFactoryImplementationCreateStableCoin(
       address: $address
       from: $from
@@ -34,7 +44,7 @@ const CREATE_STABLECOIN_MUTATION = portalGraphql(`
         name_: $name
         decimals_: $decimals
         initialModulePairs_: $initialModulePairs
-        requiredClaimTopics_: $requiredClaimTopics
+        countryCode_: $countryCode
       }
       verificationId: $verificationId
       challengeResponse: $challengeResponse
@@ -44,23 +54,22 @@ const CREATE_STABLECOIN_MUTATION = portalGraphql(`
   }
 `);
 
-export const stablecoinCreateHandler = async function* (
+export const stablecoinCreateHandler = async (
   input: TokenCreateInput,
   context: TokenCreateContext
-) {
+) => {
   if (input.type !== AssetTypeEnum.stablecoin) {
     throw new Error("Invalid token type");
   }
 
-  yield* createToken(input, (creationFailedMessage, messages) => {
+  return createToken(input, context, () => {
     return context.portalClient.mutate(
       CREATE_STABLECOIN_MUTATION,
       {
         ...input,
         ...context.mutationVariables,
       },
-      creationFailedMessage,
-      messages
+      "Failed to create stablecoin token"
     );
   });
 };

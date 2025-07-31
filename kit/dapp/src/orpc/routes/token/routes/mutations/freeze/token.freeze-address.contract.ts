@@ -1,7 +1,6 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import { TokenFreezeAddressInputSchema } from "@/orpc/routes/token/routes/mutations/freeze/token.freeze-address.schema";
-import { TokenTransactionOutputSchema } from "@/orpc/routes/token/routes/mutations/common/token.transaction.schema";
-import { eventIterator } from "@orpc/server";
+import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 
 export const tokenFreezeAddressContract = baseContract
   .route({
@@ -12,4 +11,4 @@ export const tokenFreezeAddressContract = baseContract
     tags: ["token"],
   })
   .input(TokenFreezeAddressInputSchema)
-  .output(eventIterator(TokenTransactionOutputSchema));
+  .output(TokenSchema);

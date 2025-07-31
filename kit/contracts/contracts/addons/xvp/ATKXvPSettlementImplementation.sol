@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.27;
+pragma solidity ^0.8.28;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
-import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
@@ -13,6 +12,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { IATKXvPSettlement } from "./IATKXvPSettlement.sol";
 
 /// @title ATKXvPSettlementImplementation - A contract for cross-value proposition settlements
+/// @author SettleMint
 /// @notice This contract facilitates atomic swaps between parties with multiple token flows.
 /// Parties can approve the settlement, and once all parties are approved, the settlement can be executed.
 /// @dev This contract supports:
@@ -61,7 +61,7 @@ contract ATKXvPSettlementImplementation is
     modifier onlyOpen() {
         if (_executed) revert XvPSettlementAlreadyExecuted();
         if (_cancelled) revert XvPSettlementAlreadyCancelled();
-        if (block.timestamp >= _cutoffDate) revert XvPSettlementExpired();
+        if (block.timestamp > _cutoffDate - 1) revert XvPSettlementExpired();
         _;
     }
 
@@ -74,7 +74,7 @@ contract ATKXvPSettlementImplementation is
     /// @notice Modifier to check if the sender is involved in a settlement
     modifier onlyInvolvedSender() {
         bool involved = false;
-        for (uint256 i = 0; i < _flows.length; i++) {
+        for (uint256 i = 0; i < _flows.length; ++i) {
             if (_flows[i].from == _msgSender()) {
                 involved = true;
                 break;
@@ -84,6 +84,8 @@ contract ATKXvPSettlementImplementation is
         _;
     }
 
+    /// @notice Constructor that disables initializers to prevent implementation contract initialization
+    /// @param forwarder The address of the trusted forwarder for meta-transactions
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) {
         _disableInitializers();
@@ -96,10 +98,10 @@ contract ATKXvPSettlementImplementation is
     /// @param settlementAutoExecute Whether to auto-execute after all approvals
     /// @param settlementFlows Array of token flows for this settlement
     function initialize(
-        string memory settlementName,
+        string calldata settlementName,
         uint256 settlementCutoffDate,
         bool settlementAutoExecute,
-        Flow[] memory settlementFlows
+        Flow[] calldata settlementFlows
     )
         external
         initializer
@@ -113,7 +115,7 @@ contract ATKXvPSettlementImplementation is
         _createdAt = block.timestamp;
         if (settlementFlows.length == 0) revert EmptyFlows();
 
-        for (uint256 i = 0; i < settlementFlows.length; i++) {
+        for (uint256 i = 0; i < settlementFlows.length; ++i) {
             Flow memory flow = settlementFlows[i];
             if (flow.asset == address(0)) revert InvalidToken();
             if (flow.from == address(0)) revert ZeroAddress();
@@ -128,34 +130,51 @@ contract ATKXvPSettlementImplementation is
         }
     }
 
+    /// @notice Returns the cutoff date after which the settlement expires
+    /// @return The cutoff date timestamp in seconds since epoch
     function cutoffDate() public view returns (uint256) {
         return _cutoffDate;
     }
 
+    /// @notice Returns whether the settlement should auto-execute when all approvals are received
+    /// @return True if auto-execute is enabled, false otherwise
     function autoExecute() public view returns (bool) {
         return _autoExecute;
     }
 
+    /// @notice Returns whether the settlement has been executed
+    /// @return True if the settlement has been executed, false otherwise
     function executed() public view returns (bool) {
         return _executed;
     }
 
+    /// @notice Returns whether the settlement has been cancelled
+    /// @return True if the settlement has been cancelled, false otherwise
     function cancelled() public view returns (bool) {
         return _cancelled;
     }
 
+    /// @notice Returns all flows in the settlement
+    /// @return Array of all flows defined in the settlement
     function flows() public view returns (Flow[] memory) {
         return _flows;
     }
 
+    /// @notice Returns whether an account has approved the settlement
+    /// @param account The account to check approvals for
+    /// @return True if the account has approved the settlement, false otherwise
     function approvals(address account) public view returns (bool) {
         return _approvals[account];
     }
 
+    /// @notice Returns the timestamp when the settlement was created
+    /// @return The creation timestamp in seconds since epoch
     function createdAt() public view returns (uint256) {
         return _createdAt;
     }
 
+    /// @notice Returns the name of the settlement
+    /// @return The settlement name as a string
     function name() public view returns (string memory) {
         return _name;
     }
@@ -167,7 +186,7 @@ contract ATKXvPSettlementImplementation is
         if (_approvals[_msgSender()]) revert SenderAlreadyApprovedSettlement();
 
         uint256 flowsLength = _flows.length;
-        for (uint256 i = 0; i < flowsLength; i++) {
+        for (uint256 i = 0; i < flowsLength; ++i) {
             Flow storage flow = _flows[i];
             if (flow.from == _msgSender()) {
                 uint256 currentAllowance = IERC20(flow.asset).allowance(_msgSender(), address(this));
@@ -190,7 +209,7 @@ contract ATKXvPSettlementImplementation is
     }
 
     /// @notice Executes the flows if all approvals are in place
-    /// @return success True if execution was successful
+    /// @return True if execution was successful
     function execute() external nonReentrant onlyOpen returns (bool) {
         return _executeSettlement();
     }
@@ -200,7 +219,7 @@ contract ATKXvPSettlementImplementation is
     function _executeSettlement() private returns (bool) {
         if (!isFullyApproved()) revert XvPSettlementNotApproved();
 
-        for (uint256 i = 0; i < _flows.length; i++) {
+        for (uint256 i = 0; i < _flows.length; ++i) {
             Flow storage flow = _flows[i];
             IERC20(flow.asset).safeTransferFrom(flow.from, flow.to, flow.amount);
         }
@@ -213,7 +232,7 @@ contract ATKXvPSettlementImplementation is
 
     /// @notice Revokes approval for a XvP settlement
     /// @dev The caller must have previously approved the settlement
-    /// @return success True if the revocation was successful
+    /// @return True if the revocation was successful
     function revokeApproval() external nonReentrant onlyInvolvedSender returns (bool) {
         if (!_approvals[_msgSender()]) revert SenderNotApprovedSettlement();
 
@@ -223,6 +242,9 @@ contract ATKXvPSettlementImplementation is
         return true;
     }
 
+    /// @notice Cancels the settlement
+    /// @dev The caller must be involved in the settlement and it must not be executed yet
+    /// @return True if the cancellation was successful
     function cancel() external nonReentrant onlyNotExecuted onlyInvolvedSender returns (bool) {
         _cancelled = true;
 
@@ -234,7 +256,7 @@ contract ATKXvPSettlementImplementation is
     /// @return approved True if all parties have approved
     function isFullyApproved() public view returns (bool) {
         // Check all unique "from" addresses for approval
-        for (uint256 i = 0; i < _flows.length; i++) {
+        for (uint256 i = 0; i < _flows.length; ++i) {
             address from = _flows[i].from;
             if (!_approvals[from]) {
                 return false;

@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { cn } from "@/lib/utils";
 import { formatValidationError } from "@/lib/utils/format-validation-error";
 import { noop } from "@/lib/utils/noop";
 import { createLogger } from "@settlemint/sdk-utils/logging";
+import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -44,17 +44,15 @@ export function WizardStep({ className }: WizardStepProps) {
   } = context;
 
   const currentStep = steps[currentStepIndex];
-
-  const mutation = useStreamingMutation({
-    mutationOptions: {
-      mutationKey: [currentStep?.mutation?.mutationKey ?? "no-mutation"],
-      mutationFn:
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (currentStep?.mutation?.mutationFn as any) ?? (() => null), // Type assertion for now
-    },
-  });
-
   const shouldUseMutation = !!currentStep?.mutation;
+
+  const mutation = useMutation({
+    mutationKey: [currentStep?.mutation?.mutationKey ?? "no-mutation"],
+    mutationFn:
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (currentStep?.mutation?.mutationFn as any) ?? (() => null), // Type assertion for now
+  });
+  const { mutateAsync } = mutation;
 
   const { matchingFields, matchingGroups, totalResultCount, groupCounts } =
     useWizardFiltering({
@@ -101,7 +99,7 @@ export function WizardStep({ className }: WizardStepProps) {
 
       // Run mutation if provided
       if (shouldUseMutation && form?.state?.values) {
-        await mutation.mutateAsync(form.state.values);
+        await mutateAsync(form.state.values);
       }
 
       // Run onStepComplete if provided
@@ -112,9 +110,7 @@ export function WizardStep({ className }: WizardStepProps) {
       // Mark step as complete and move to next
       markStepComplete(currentStep.id);
 
-      if (!isLastStep) {
-        nextStep();
-      } else {
+      if (isLastStep) {
         // Final submission - call the form's onSubmit handler directly
         if (form?.options?.onSubmit && form?.state?.values) {
           await form.options.onSubmit({
@@ -122,12 +118,14 @@ export function WizardStep({ className }: WizardStepProps) {
             formApi: form,
           });
         }
+      } else {
+        nextStep();
       }
     } catch (error) {
       const errorMessage = formatValidationError(error);
       markStepError(currentStep.id, errorMessage);
       toast.error(errorMessage, {
-        duration: 10000,
+        duration: 10_000,
         description: "Check browser console for details",
       });
       logger.error("Step validation failed", { error, stepId: currentStep.id });
@@ -140,7 +138,7 @@ export function WizardStep({ className }: WizardStepProps) {
     form,
     markStepError,
     shouldUseMutation,
-    mutation,
+    mutateAsync,
     markStepComplete,
     isLastStep,
     nextStep,

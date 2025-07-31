@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 // OpenZeppelin Contracts
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
@@ -18,6 +18,7 @@ import { ATKTimeBoundAirdropProxy } from "./ATKTimeBoundAirdropProxy.sol";
 import { ATKSystemRoles } from "../../../system/ATKSystemRoles.sol";
 
 /// @title Factory for Creating ATKTimeBoundAirdrop Proxies
+/// @author SettleMint
 /// @notice This contract serves as a factory to deploy new UUPS proxy instances of `ATKTimeBoundAirdrop` contracts.
 /// It manages a single implementation contract and allows for updating this implementation.
 /// @dev Key features of this factory:
@@ -33,7 +34,14 @@ contract ATKTimeBoundAirdropFactoryImplementation is
     AbstractATKSystemAddonFactoryImplementation,
     IATKTimeBoundAirdropFactory
 {
-    bytes32 public constant override typeId = keccak256("ATKTimeBoundAirdropFactory");
+    /// @notice Unique type identifier for this factory contract.
+    bytes32 public constant TYPE_ID = keccak256("ATKTimeBoundAirdropFactory");
+
+    /// @notice Returns the unique type identifier for this factory.
+    /// @return The type identifier as a bytes32 hash.
+    function typeId() external pure override returns (bytes32) {
+        return TYPE_ID;
+    }
 
     /// @notice Address of the current `ATKTimeBoundAirdrop` logic contract (implementation).
     address public override atkTimeBoundAirdropImplementation;
@@ -43,6 +51,8 @@ contract ATKTimeBoundAirdropFactoryImplementation is
     IATKTimeBoundAirdrop[] private allAirdrops;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
+    /// @notice Constructor that disables initializers to prevent implementation contract initialization
+    /// @param forwarder The address of the trusted forwarder for meta-transactions
     constructor(address forwarder) AbstractATKSystemAddonFactoryImplementation(forwarder) { }
 
     /// @notice Initializes the `ATKTimeBoundAirdropFactory`.
@@ -98,7 +108,7 @@ contract ATKTimeBoundAirdropFactoryImplementation is
     /// @param endTime The timestamp when claims end.
     /// @return airdropProxyAddress The address of the newly created `ATKTimeBoundAirdropProxy` contract.
     function create(
-        string memory name,
+        string calldata name,
         address token,
         bytes32 root,
         address owner,
@@ -131,6 +141,7 @@ contract ATKTimeBoundAirdropFactoryImplementation is
     }
 
     /// @notice Returns the total number of time-bound airdrop proxy contracts created by this factory.
+    /// @return count The number of time-bound airdrop proxy contracts created
     function allAirdropsLength() external view override(IATKTimeBoundAirdropFactory) returns (uint256 count) {
         return allAirdrops.length;
     }
@@ -144,7 +155,7 @@ contract ATKTimeBoundAirdropFactoryImplementation is
     /// @param endTime The timestamp when claims end.
     /// @return predictedAddress The predicted address of the time-bound airdrop proxy.
     function predictTimeBoundAirdropAddress(
-        string memory name,
+        string calldata name,
         address token,
         bytes32 root,
         address owner,
@@ -163,7 +174,9 @@ contract ATKTimeBoundAirdropFactoryImplementation is
         return _predictProxyAddress(proxyBytecode, constructorArgs, saltInputData);
     }
 
-    /// @notice Returns the address of the current `ATKTimeBoundAirdrop` logic contract (implementation).
+    /// @notice Checks if the contract supports a given interface
+    /// @param interfaceId The interface identifier to check
+    /// @return True if the contract supports the interface, false otherwise
     function supportsInterface(bytes4 interfaceId)
         public
         view

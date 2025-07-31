@@ -1,363 +1,443 @@
 # Asset Tokenization Kit
 
-## Project Overview
+**SettleMint Asset Tokenization Kit** - Full-stack blockchain tokenization
+platform.
 
-**SettleMint Asset Tokenization Kit** - A full-stack solution for building
-digital asset platforms with blockchain tokenization.
+## Quick Reference
 
-## Repository Structure
+```bash
+# Setup
+bun install && bunx settlemint connect --instance local && bun run artifacts
+
+# Development
+bun run dev:up && bun run dev
+
+# Quality (REQUIRED before PR)
+bun run ci
+
+# Branch check (CRITICAL)
+[[ "$(git branch --show-current)" =~ ^(main|master)$ ]] && git checkout -b feature/name
+```
+
+## Project Structure
+
+- `kit/contracts/` - Solidity (ERC-3643, UUPS) → Use **solidity-expert**
+- `kit/dapp/` - React 19, TanStack, ORPC → Use **react-dev**
+- `kit/subgraph/` - TheGraph indexing → Use **subgraph-dev**
+- `kit/dapp/src/orpc/` - API endpoints → Use **orpc-expert**
+
+## Agent Orchestration Pattern
+
+### CRITICAL: Agent Communication Limitations
+
+**Sub-agents CANNOT invoke other agents** - Only main Claude orchestrates:
+
+- Agents return structured outputs with handoff information
+- Main Claude extracts findings and passes context between agents
+- Each agent must specify what the next agent needs
+
+### Agent Routing Protocol
+
+**For any implementation task:**
+
+1. **ALWAYS start with planner** agent for multi-step features
+2. **FOLLOW the agent routing** specified by planner EXACTLY
+3. **USE ONLY the agents** explicitly recommended
+4. **EXTRACT and PASS context** between agent invocations
+5. **EXECUTE agents in PARALLEL** when tasks are independent
+
+### Agent Return Format
+
+Agents must return structured information:
+
+```markdown
+## Task Completed: [Task Name]
+
+- Key findings: [What was discovered/implemented]
+- Output location: [Files created/modified]
+- Next agent needs: [Context for next specialist]
+- Blockers: [Any issues preventing completion]
+```
+
+### Available Specialized Agents
+
+**Core Development:**
+
+- **planner**: Tech lead, analyzes requirements, orchestrates teams
+- **solidity-expert**: Smart contract development and security
+- **react-dev**: React components with TanStack suite
+- **orpc-expert**: ORPC API endpoints and OpenAPI
+- **subgraph-dev**: TheGraph indexing and mappings
+
+**Quality & Testing:**
+
+- **test-dev**: Vitest and Forge test creation
+- **integration-tester**: E2E testing with Playwright
+- **security-auditor**: Comprehensive security reviews
+- **code-reviewer**: Post-implementation review
+
+**Infrastructure & Optimization:**
+
+- **devops**: Helm charts and Kubernetes configs
+- **ci-cd-expert**: GitHub Actions and deployment pipelines
+- **performance-optimizer**: Full-stack performance tuning
+
+**Specialized Support:**
+
+- **tailwind-css-expert**: Styling with Tailwind/shadcn
+- **documentation-expert**: All documentation needs - README, CLAUDE.md,
+  content, translations (MUST write to README.md files in relevant folders,
+  NEVER create separate docs/ folders)
+- **code-archaeologist**: Legacy code analysis
+- **team-configurator**: Multi-agent coordination
+
+### Parallel Execution Guidelines
+
+**When to Execute in Parallel:**
+
+- Independent file operations (reads, writes, analysis)
+- Separate module implementations (frontend + backend)
+- Multiple test file creations
+- Documentation across different modules
+- Style and type definitions
+
+**When to Execute Sequentially:**
+
+- Dependencies exist between tasks
+- Output from one agent feeds another
+- Contract → Subgraph → API → UI flow
+- Security reviews require complete code
+
+### Example: Multi-Agent Feature Implementation
 
 ```
-asset-tokenization-kit/
-├── kit/                   # Main application packages
-│   ├── contracts/         # Smart contracts (Solidity)
-│   ├── dapp/              # Modern React/TypeScript frontend
-│   ├── dapp-v1/           # ⚠️ DEPRECATED - DO NOT USE
-│   ├── subgraph/          # TheGraph indexing
-│   ├── e2e/               # End-to-end tests
-│   └── charts/            # Helm charts for deployment
-├── tools/                 # Root-level utilities
-└── docker-compose.yml     # Local development environment
+User: "Add token transfer functionality with approval"
+
+Optimized Parallel Flow:
+1. Invoke planner agent → Returns implementation roadmap
+2. Extract planner's findings and routing map
+3. PARALLEL EXECUTION - Phase 1:
+   - solidity-expert: "Implement transfer methods per planner's spec"
+   - documentation-expert: "Prepare transfer feature documentation structure"
+4. SEQUENTIAL - Phase 2 (needs contract output):
+   - subgraph-dev: "Index transfer events from contract at [address]"
+5. PARALLEL EXECUTION - Phase 3:
+   - orpc-expert: "Create transfer API endpoints"
+   - react-dev: "Build transfer UI components"
+   - test-dev: "Write unit tests for utilities"
+6. PARALLEL EXECUTION - Phase 4:
+   - test-dev: "Integration tests for complete feature"
+   - documentation-expert: "Finalize docs with examples"
+7. SEQUENTIAL - Final Phase:
+   - code-reviewer: "Review all changes"
+```
+
+### Orchestration Workflow
+
+```mermaid
+graph TD
+    Main[Main Claude] --> Plan[Planner]
+    Plan --> P1{Phase 1: Parallel}
+    P1 --> Sol[Solidity Expert]
+    P1 --> Doc1[Documentation Expert]
+
+    Sol --> S1{Sequential}
+    S1 --> Sub[Subgraph Dev]
+
+    Sub --> P2{Phase 2: Parallel}
+    P2 --> API[ORPC Expert]
+    P2 --> UI[React Dev]
+    P2 --> Test1[Test Dev - Units]
+
+    API --> P3{Phase 3: Parallel}
+    UI --> P3
+    P3 --> Test2[Test Dev - Integration]
+    P3 --> Doc2[Documentation Expert - Finalize]
+
+    Test2 --> Rev[Code Reviewer]
+    Doc2 --> Rev
+```
+
+### Parallel Execution Syntax
+
+When invoking agents in parallel, use clear phase grouping:
+
+```markdown
+## PARALLEL EXECUTION - [Phase Name]
+
+Invoke the following agents simultaneously:
+
+- agent-1: "Task description with specific context"
+- agent-2: "Task description with specific context"
+- agent-3: "Task description with specific context"
+
+## SEQUENTIAL EXECUTION - [Phase Name]
+
+After parallel tasks complete, invoke:
+
+- agent-4: "Task using outputs from previous phase"
 ```
 
 ## Essential Commands
 
-### Development Setup
+See `package.json` scripts. Key ones:
+
+- `bun run artifacts` - After contract changes
+- `bun run dev:reset` - Reset Docker environment
+- `bun run db:generate && bun run db:migrate` - Database changes
+
+## MCP Tools (Strategic Usage)
+
+### MANDATORY: Gemini-CLI Usage Protocol
+
+**ALWAYS use Gemini-CLI for:**
+
+1. **Context Gathering** (REQUIRED before implementation):
+   - `@file.ts explain the architecture` - Understand before modifying
+   - `@module/ what patterns are used here` - Learn conventions first
+   - Use before making architectural decisions
+2. **Code Review** (REQUIRED after changes):
+   - `@changed-file.ts review for bugs and edge cases`
+   - `changeMode: true` for structured edit suggestions
+   - Validate security implications of changes
+
+3. **Complex Problem Solving**:
+   - Architecture validation and alternatives
+   - Performance optimization strategies
+   - Cross-module impact analysis
+
+**Usage Pattern:**
 
 ```bash
-# Initial setup
-bun install                      # Install dependencies
-bunx settlemint connect --instance local  # Connect to SettleMint
-bun run artifacts               # Generate artifacts (contracts, DB, ABIs)
-bun run dev:up                  # Start Docker environment
+# Before implementation - gather context
+mcp__gemini-cli__ask-gemini(prompt="@kit/contracts/ explain the upgrade pattern", model="gemini-2.5-pro")
 
-# Daily development
-bun run dev                     # Start dApp development server
-bun run dev:reset              # Reset and restart Docker environment
+# After implementation - review changes
+mcp__gemini-cli__ask-gemini(prompt="@file.ts review my changes for security issues", changeMode=true)
+
+# For complex analysis - use flash for speed
+mcp__gemini-cli__ask-gemini(prompt="analyze performance bottlenecks", model="gemini-2.5-pro")
 ```
 
-### Quality Assurance
+### Other MCP Tools:
 
-```bash
-# Run full CI suite before creating PR
-bun run ci                      # Runs: format, compile, codegen, lint, test
+2. **Context7** - Latest library docs
+3. **Grep** - Real-world examples
+4. **Linear/Sentry** - Issue tracking
+5. **OpenZeppelin Contracts** - Smart contract generation:
+   - Quick prototyping with audited base contracts
+   - ERC-20/721/1155 tokens, DAOs, stablecoins
+   - Use with `solidity-expert` to extend for ATK patterns
 
-# Individual tasks
-bun run format                  # Check code formatting
-bun run lint                    # Run ESLint
-bun run test                    # Run unit tests
-bun run typecheck              # TypeScript type checking
-bun run test:integration       # Integration tests
+## CLAUDE.md Creation Rules
+
+Module CLAUDE.md files MUST be minimal (< 50 lines):
+
+```markdown
+# [Module] - AI Guidelines
+
+[One-line description]. See [README.md](./README.md) for documentation.
+
+**Agent**: Use `[agent-name]` for this module.
+
+[Only critical AI-specific notes if needed]
 ```
 
-### Contract Development
+## Documentation Rules
 
-```bash
-# From root directory
-bun run compile                 # Compile smart contracts
-bun run codegen                # Generate TypeScript types
-bun run artifacts              # Update genesis, DB, ABIs after contract changes
-bun run contracts:test         # Run Foundry tests
+1. **ALWAYS write documentation in README.md files** in the relevant module
+   folders
+2. **NEVER create separate docs/ folders** - documentation belongs with the code
+3. **Module structure for documentation**:
+   - `kit/contracts/README.md` - Smart contract documentation
+   - `kit/dapp/README.md` - Frontend documentation
+   - `kit/dapp/src/orpc/README.md` - API documentation
+   - `kit/subgraph/README.md` - Subgraph documentation
+4. **Documentation content**:
+   - User guides go in module README.md files
+   - API references go in relevant folder README.md files
+   - Architecture docs go in root or module README.md files
+
+## Critical Rules
+
+1. **NEVER commit to main branch**
+2. **ALWAYS run `bun run ci` before PR**
+3. **Trust Opus first, validate with Gemini-CLI only when needed**
+4. **NEVER modify shadcn components in ui/ folder**
+5. **Subgraph .ts files are AssemblyScript, not TypeScript**
+6. **React hooks**: Avoid unnecessary useCallback/useMemo - see react-dev agent
+   guidelines
+7. **React Query with ORPC**:
+
+   ```typescript
+   // ✅ CORRECT - Direct usage preserves type safety
+   useMutation(orpc.token.create.mutationOptions());
+   useQuery(orpc.token.read.queryOptions({ input: { id } }));
+
+   // ✅ CORRECT - Custom hooks for reusability
+   function useUserTokens(userId?: string) {
+     return useQuery(
+       orpc.token.listByUser.queryOptions({
+         input: { userId },
+         enabled: !!userId, // Dependent query pattern
+       })
+     );
+   }
+
+   // ❌ WRONG - Don't destructure or copy to state
+   useMutation({ ...orpc.token.create.mutationOptions() });
+   const [tokens, setTokens] = useState(data?.tokens); // Never copy query data
+   ```
+
+   - Use `select` for transformations, not render-time filtering
+   - Handle loading/error states before checking data
+   - Create custom hooks for complex queries
+   - Test with MSW and fresh QueryClient per test
+
+## Memories
+
+- Shadcn components are never the problem
+
+## Context Optimization
+
+- Reference README.md files instead of duplicating content
+- Keep agent-specific details in agent files
+- Use concise command examples
+- Avoid redundant explanations
+- Link to external docs rather than copying
+
+## Granular Task Planning
+
+**CRITICAL**: All tasks must be broken down into specific, measurable actions
+with concrete values. This transparency ensures all implementation decisions are
+visible and approved before execution.
+
+### ❌ WRONG - Vague Tasks:
+
+- "Style the navbar"
+- "Optimize the API"
+- "Update the database schema"
+- "Improve the algorithm"
+
+### ✅ CORRECT - Granular Tasks:
+
+- "Change navbar height from 60px to 80px"
+- "Reduce padding-top from 16px to 12px"
+- "Adjust background from #ffffff to rgba(255,255,255,0.95)"
+- "Add index on user_id column in tokens table"
+- "Change API timeout from 30s to 10s"
+- "Replace O(n²) nested loop with O(n log n) sort-then-process"
+- "Increase cache TTL from 5 minutes to 15 minutes"
+
+### Domain-Specific Examples:
+
+**Frontend Tasks:**
+
+- "Change button border-radius from 4px to 8px"
+- "Update font-size from 14px to 16px for .heading-secondary"
+- "Add 200ms ease-in-out transition to hover states"
+- "Change grid from 3 columns to 4 columns on desktop (>1024px)"
+
+**Backend Tasks:**
+
+- "Add rate limiting: 100 requests per minute per IP"
+- "Change batch size from 100 to 500 records"
+- "Add retry logic: 3 attempts with exponential backoff (1s, 2s, 4s)"
+- "Update validation: require email to match /^[^\s@]+@[^\s@]+\.[^\s@]+$/"
+
+**Database Tasks:**
+
+- "Add compound index on (user_id, created_at DESC)"
+- "Change column type from VARCHAR(255) to TEXT"
+- "Add CHECK constraint: price >= 0"
+- "Set default value for status column to 'pending'"
+
+**Algorithm Tasks:**
+
+- "Replace linear search with binary search for sorted array"
+- "Change hash function from MD5 to SHA-256"
+- "Update threshold from 0.7 to 0.85 for matching algorithm"
+- "Add memoization for recursive calls with cache size 1000"
+
+## Agent Context7 MCP Documentation Requirements
+
+**CRITICAL**: All specialized agents MUST fetch latest documentation using
+Context7 MCP for their area of responsibility before implementation. This
+ensures agents use current APIs and best practices.
+
+Each agent has specific Context7 documentation requirements defined in their
+individual agent files in `.claude/agents/`. Agents must:
+
+1. **Fetch documentation at task start** - Before any implementation
+2. **Use library-specific topics** - Target relevant documentation sections
+3. **Apply latest patterns** - Use current best practices from docs
+4. **Cache results** - Avoid redundant fetches in same session
+
+### Documentation Fetching Pattern
+
+All agents should follow this pattern:
+
+1. **Identify required libraries** from package.json and imports
+2. **Resolve library IDs** using `resolve-library-id`
+3. **Fetch specific docs** with relevant topics using `get-library-docs`
+4. **Cache results** to avoid repeated fetches in same session
+5. **Apply latest patterns** from fetched documentation
+
+### Example Agent Implementation
+
+```typescript
+// At the start of any agent task
+async function fetchRequiredDocs() {
+  // Resolve library ID first
+  const { libraryId } =
+    (await mcp__context7__resolve) -
+    library -
+    id({
+      libraryName: "react",
+    });
+
+  // Then fetch documentation with specific topic
+  const docs =
+    (await mcp__context7__get) -
+    library -
+    docs({
+      context7CompatibleLibraryID: libraryId,
+      topic: "hooks",
+      tokens: 5000,
+    });
+
+  return docs;
+}
 ```
 
-### Quick Start for New Developers
+## Agent Best Practices
 
-```bash
-# 1. Clone and setup
-git clone <repo-url>
-cd asset-tokenization-kit
-bun install
+1. **Agent File Guidelines**
+   - Keep under 500 lines for token efficiency
+   - Use bullet points over paragraphs
+   - Include only essential examples
+   - Reference docs instead of embedding
 
-# 2. Create feature branch (NEVER work on main!)
-git checkout -b feature/your-feature-name
+2. **Agent Selection**
+   - Use `planner` for any multi-step implementation
+   - Invoke `security-auditor` before production deployments
+   - Run `integration-tester` for user-facing features
+   - Apply `performance-optimizer` when metrics degrade
 
-# 3. Connect to SettleMint and generate artifacts
-bunx settlemint connect --instance local
-bun run artifacts
-bun run codegen
+3. **Workflow Patterns**
+   - **Parallel**: Frontend + Backend development
+   - **Sequential**: Contract → Subgraph → API → UI
+   - **Continuous**: Security + Performance reviews
+   - **Final**: Code review before completion
 
-# 4. Start development environment
-bun run dev:up
-bun run dev
+4. **Task Transparency**
+   - Break down ALL tasks into specific, measurable actions
+   - Include exact values (pixels, percentages, timeouts, etc.)
+   - Expose algorithmic choices and thresholds
+   - Make design decisions explicit before implementation
 
-# 5. Before committing
-bun run ci  # Must pass!
-git add .
-git commit -m "feat: your descriptive message"
-```
-
-## Technology Stack
-
-Note: Check relevant package.json files for exact library versions, as they may
-update frequently.
-
-### Smart Contracts (`kit/contracts`)
-
-- **Language**: Solidity 0.8.28
-- **Framework**: Foundry (primary), Hardhat (deployment)
-- **Standards**: ERC-3643 compliant security tokens
-- **Architecture**: UUPS upgradeable proxy pattern
-- **Testing**: Foundry with fuzz testing
-- **Libraries**: OpenZeppelin, OnChain ID, SMART Protocol
-
-Run `bun artifacts` and `bun codegen` before running any
-testing/linting/formatting tasks.
-
-### Frontend (`kit/dapp`)
-
-- **Framework**: React 19 with Tanstack Start
-- **Language**: TypeScript (strict mode)
-- **Styling**: Tailwind CSS v4, shadcn/ui
-- **State**: Tanstack Query, Tanstack Form
-- **API**: ORPC framework
-- **Auth**: Better Auth
-- **I18n**: i18next (Arabic, German, English, Japanese)
-- **Build**: Vite with Bun
-
-Before starting any work, run `bunx settlemint connect --instance local` and
-`bun run codegen`.
-
-### Subgraph (`kit/subgraph`)
-
-- **Language**: AssemblyScript
-- **Framework**: The Graph Protocol
-
-### Backend Services
-
-- **Database**: PostgreSQL with Drizzle ORM
-- **GraphQL**: Hasura, TheGraph, Portal, Blockscout
-- **File Storage**: IPFS, MinIO
-- **Blockchain**: Besu network (local development)
-
-## Git Workflow
-
-CRITICAL: Never commit to main branch. NEVER, EVER commit to main, if you are
-not on a branch, make a new one.
-
-### Commit Format
-
-`type(scope): description` (scope optional, description lowercase)
-
-**Types:** feat, fix, chore, docs, style, refactor, perf, test, build, ci,
-revert
-
-### Branch Rules (CRITICAL)
-
-```bash
-# Check current branch FIRST
-current_branch=$(git branch --show-current)
-[[ "$current_branch" == "main" || "$current_branch" == "master" ]] && git checkout -b feature/name || echo "Using: $current_branch"
-```
-
-## MCP Server Integration
-
-The project integrates with:
-
-- **Context7**: Library documentation (React, Next.js, etc.)
-  - Working with external libraries/frameworks (React, FastAPI, Next.js, etc.)
-  - Need current documentation beyond training cutoff
-  - Implementing new integrations or features with third-party tools
-  - Troubleshooting library-specific issues
-- **DeepWiki**: GitHub repository documentation
-  - Need in-depth, structured documentation for open source projects
-  - Want to explore repository wikis, architecture, or usage patterns
-  - Require answers to specific questions about a GitHub repository
-- **Linear**: Issue tracking and project management
-  - Use Linear to manage the metadata of a Linear ticket if you have been
-    provided one. Do this when you start and during the lifecycle of your
-    work/pr so we can keep track of progress.
-  - When tackling a task, search linear for similar issues and add them to your
-    context. Also inspect linked github PR's for additional information.
-- **Sentry**: Error tracking and monitoring
-  - Monitor and triage application errors and exceptions
-  - Investigate root causes and error trends
-  - Link errors to code changes and releases
-- **Playwright**: Browser automation
-  - Use Playwright to automate browser interactions
-  - Test web application functionality
-  - Debug UI issues and performance bottlenecks
-- **Gemini**: AI agentic search
-  - Use Gemini to search the web and answer questions
-  - Generate documentation and code snippets
-  - Assist with complex research tasks
-
-## Coding Standards & AI Instructions
-
-CRITICAL: Write code as if the person maintaining it is a violent psychopath who
-knows where you live. Make it that clear. 
-
-## Important Notes
-
-1. **Deprecated**: `kit/dapp-v1` folder is completely deprecated - use
-   `kit/dapp`
-2. **Artifacts**: Regenerate after contract changes with `bun run artifacts`
-3. **Docker Reset**: Use `bun run dev:reset` after artifact changes
-4. **Type Safety**: Always run `bun run typecheck` before committing
-5. **CI Required**: `bun run ci` must pass before creating PRs
-6. **Auto-generated Files**: `routeTree.gen.ts` is auto-generated, ignore it
-7. **Subgraph Files**: ts files in kit/subgraph are AssemblyScript, not
-   TypeScript!!!!
-8. **Shadcn Components**: Never change files in the kit/dapp/src/components/ui
-   folder, they are shadcn components and should not be modified
-
-### The Ten Universal Commandments
-
-1. Thou shalt ALWAYS use MCP tools before coding.
-2. Thou shalt NEVER assume; always question.
-3. Thou shalt write code that's clear and obvious.
-4. Thou shalt be BRUTALLY HONEST in assessments.
-5. Thou shalt PRESERVE CONTEXT, not delete it.
-6. Thou shalt make atomic, descriptive commits.
-7. Thou shalt document the WHY, not just the WHAT.
-8. Thou shalt test before declaring done.
-9. Thou shalt handle errors explicitly
-10. Thou shalt treat user data as sacred
-
-### General Instructions
-
-#### Context Management
-
-- Your primary responsibility is to manage your own context effectively. Always
-  read relevant files in their entirety BEFORE planning or making changes.
-  Partial reads lead to mistakes, duplication, or architectural
-  misunderstandings.
-
-#### Documentation and Code Quality
-
-- When updating documentation, keep changes concise and focused to prevent
-  bloat.
-- Write code following KISS (Keep It Simple, Stupid), YAGNI (You Aren't Gonna
-  Need It), and DRY (Don't Repeat Yourself) principles.
-- Optimize code for readability, as it is read more often than written.
-- Apply SOLID principles where appropriate, leveraging modern framework features
-  over custom implementations.
-- Prioritize industry-standard libraries and frameworks over custom solutions.
-- Never use mocks, placeholders, or omit code. Implement fully unless explicitly
-  instructed otherwise.
-- No "dummy" implementations; deliver complete, functional code.
-
-#### Development Workflow
-
-- For new tasks, first understand the current architecture, identify files to
-  modify, and create a detailed Plan. Include architectural considerations, edge
-  cases, and optimal approaches. Get user approval before coding.
-- Commit early and often, but NEVER to the main branch—create a new feature
-  branch first. Break large tasks into milestones and commit at each.
-- Always run formatting, linting, and tests after major changes to catch errors
-  early.
-- Do not run servers yourself; instruct the user to run them for testing.
-- For repeated issues, identify root causes rather than trial-and-error or
-  abandoning approaches.
-- Do not perform large refactors unless explicitly instructed.
-- When tasks are vague or large, break them into subtasks. If needed, ask the
-  user for clarification or assistance in decomposition.
-- Use parallel subagents for similar tasks across multiple files to increase
-  efficiency.
-- **Fixes**: When asked to fix something, do not care if it is related to the
-  current change or not
-- **Temporary Files**: Do not store temporary analysis md files, and if you
-  absolutely need to, make sure to clean them up before committing
-
-#### Best Practices and Honesty
-
-- Follow proven best practices when in doubt.
-- Be brutally honest in assessing ideas—clearly state if something is good or
-  bad.
-- Make side effects explicit and minimal.
-- Design database schemas to be evolution-friendly, avoiding breaking changes.
-- Treat user data as sacred; handle with utmost care.
-- For UI/UX work, ensure designs are aesthetically pleasing, user-friendly, and
-  adhere to best practices, including interaction patterns and
-  micro-interactions. Stick to existing components and styles where possible.
-
-#### Research and Tools
-
-- Your knowledge of libraries may be outdated; always verify latest syntax and
-  usage via Context7 (preferred), DeepWiki, or web search (if others
-  unavailable).
-- Do not skip or abandon libraries if they "aren't working"—correct syntax or
-  usage instead, especially if user-specified.
-- Prioritize sources: Codebase > Documentation > Training data.
-- Research current documentation; don't rely on outdated knowledge.
-- Ask questions early and often for clarity—never assume.
-- Use slash commands for consistent workflows.
-- Derive documentation on-demand.
-- Employ extended thinking for complex problems.
-- Use visual inputs for UI/UX debugging.
-- Test locally before pushing changes.
-- Think simple: clear, obvious, no unnecessary complexity.
-
-#### Expertise
-
-- You are a highly talented polyglot with decades of experience in software
-  architecture, system design, development, UI/UX, copywriting, and more.
-
-### Solidity
-
-- Use OpenZeppelin contracts where possible
-- Follow Checks-Effects-Interactions pattern
-- Implement events for all state changes
-- Use custom errors for gas efficiency
-- Comprehensive NatSpec comments for all public/external functions
-- Design for upgradability with UUPS proxy pattern
-- Implement access control and security best practices
-- Optimize for gas efficiency (storage packing, immutable vars)
-- Comprehensive testing with Foundry (fuzz, coverage)
-
-For full rules, refer to Solhint configuration (.solhint.json) and NatSpec
-standards.
-
-### Typescript / React
-
-- **Logging**: Use `createLogger()`, never `console.log`
-- **Error Handling**: Use error boundaries (DefaultCatchBoundary for routes,
-  DataTableErrorBoundary for tables) and toast notifications with
-  formatValidationError
-- **State Management**: Prefer URL state for persistent UI configuration, local
-  state for ephemeral interactions
-- **Imports**: No barrel files (index.ts exports); during refactors, if you
-  encounter barrel files, remove them
-- **Testing**: Use `bun:test`, not vitest; tests are stored next to the
-  route/component/file, not in a `__tests__` folder
-- **Components**: Keep files under 350 lines, split when needed
-- **Security**: Never commit secrets, validate all inputs
-- **Type Safety**: Use full types when possible, e.g. User and not { role?:
-  string } if you just need the role; `as any` is NEVER allowed!
-- **Performance**: Only optimize performance after measuring with React DevTools
-  Profiler
-- **Translations**: Organized into focused namespaces - use multiple namespaces
-  in components as needed; use very specific translation namespaces for each
-  component (e.g., "detail-grid" for the DetailGrid component, not "common");
-  never pass around `t` from the translations hook, if you cannot get `t` into a
-  function, you shouldn't use such a function
-- **Directives**: Since we use Tanstack Start, we do not need `use client;`
-- **Linting**: Never use eslint-disable comments, fix the issues for real
-
-For comprehensive rules, refer to the ESLint configuration in .eslintrc files.
-Key principles include:
-
-- Accessibility compliance (ARIA, keyboard navigation)
-- Performance optimizations (avoid unnecessary renders, use memoization)
-- Type safety (no 'any', explicit types)
-- Modern JavaScript patterns (prefer arrow functions, template literals)
-- Security best practices (input validation, no dangerous props)
-
-### Turborepo
-
-This project uses Turborepo for managing the monorepo structure, enabling
-efficient build orchestration across packages.
-
-- Run all package.json scripts from the root directory to ensure proper
-  execution of pre/post hooks and turbo dependencies.
-- Benefits include task caching for faster rebuilds, parallel task execution,
-  and dependency graph management.
-- Configuration is defined in turbo.json at the root, including pipeline
-  definitions and cache settings.
-
-### Package Manager: Bun (Default)
-
-```bash
-bun <file>            # instead of node/ts-node
-bun install/run/test  # instead of npm/yarn/pnpm
-# Auto-loads .env files (no dotenv needed)
-```
+5. **Documentation First**
+   - ALWAYS fetch latest docs before implementation
+   - Use Context7 MCP for all library documentation
+   - Apply current best practices from fetched docs
+   - Update approach based on latest API changes

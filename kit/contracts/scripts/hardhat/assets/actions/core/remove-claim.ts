@@ -1,6 +1,6 @@
+import { owner } from "../../../constants/actors";
 import { ATKContracts } from "../../../constants/contracts";
 import type { ATKTopic } from "../../../constants/topics";
-import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { topicManager } from "../../../services/topic-manager";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
@@ -17,7 +17,7 @@ export const removeClaim = async (asset: Asset<any>, claimTopic: ATKTopic) => {
 
   const tokenIdentityContract = owner.getContractInstance({
     address: asset.identity,
-    abi: ATKContracts.tokenIdentity,
+    abi: ATKContracts.contractIdentity,
   });
 
   const claims = await tokenIdentityContract.read.getClaimIdsByTopic([

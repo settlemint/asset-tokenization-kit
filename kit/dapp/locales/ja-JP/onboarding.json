@@ -1,0 +1,371 @@
+{
+  "assets": {
+    "asset-factories-deployed-successfully": "アセットファクトリーが正常にデプロイされました",
+    "asset-factories-description": "アセットファクトリーは、さまざまな種類のトークン化された資産を作成および管理するためのスマートコントラクトです。各ファクトリーは、特定の資産クラスを扱い、特有の機能とコンプライアンス要件を持っています。",
+    "asset-types-deployed": "デプロイされたアセットタイプ",
+    "available-asset-types": "利用可能なアセットタイプ",
+    "choose-asset-types": "プラットフォームでトークン化したいアセットの種類を選択してください",
+    "confirm-deployment-description": "アセットファクトリーをデプロイするには、本人確認を行ってください。",
+    "confirm-deployment-title": "アセットデプロイの確認",
+    "deploy-assets": "アセットをデプロイ",
+    "deployed": "アセットファクトリーが正常にデプロイされました",
+    "deployed-factories": "デプロイされたファクトリー",
+    "deployed-label": "(デプロイ済み)",
+    "deploying-toast": "アセットファクトリーをデプロイ中...",
+    "description": "プラットフォームで有効にするデジタルアセットの種類を選択してください",
+    "descriptions": {
+      "bond": "固定収入機能を持つトークン化された債券",
+      "deposit": "トークン化された銀行預金および証明書",
+      "equity": "企業の所有権を表すデジタル株式",
+      "fund": "プール投資用の投資ファンドトークン",
+      "stablecoin": "価格安定型デジタル通貨"
+    },
+    "info": "プラットフォームがサポートするデジタルアセットの種類を選択してください。後でさらにアセットタイプを追加できます。",
+    "no-system": "システムが見つかりません。まずシステムをデプロイしてください。",
+    "select-all-asset-types": "トークン化する予定のすべてのアセットタイプを選択してください",
+    "select-asset-types": "アセットタイプを選択",
+    "title": "アセットタイプを選択",
+    "validation-error": "少なくとも1つのアセットタイプを選択してください",
+    "what-are-asset-factories": "アセットファクトリーとは何ですか？",
+    "your-asset-factories-ready": "あなたのアセットファクトリーはトークン化の準備が整いました",
+    "deploy": "資産ファクトリーをデプロイする",
+    "deploying": "デプロイ中...",
+    "deployment-warning": "このアクションはスマートコントラクトファクトリーをブロックチェーンにデプロイします。一度デプロイされると、削除することはできませんが、未使用のまま残すことができます。",
+    "failed-toast": "資産ファクトリーのデプロイに失敗しました: "
+  },
+  "groups": {
+    "addons": {
+      "description": "オプションのプラットフォーム機能を有効にする",
+      "title": "アドオン"
+    },
+    "identity": {
+      "description": "あなたの検証済みブロックチェーンIDを作成する",
+      "title": "ID"
+    },
+    "system": {
+      "description": "トークン化インフラを初期化する",
+      "title": "スマートコントラクトをデプロイする"
+    },
+    "wallet": {
+      "description": "デジタルウォレットを作成し、セキュリティを追加する",
+      "title": "ウォレット"
+    }
+  },
+  "identity": {
+    "confirm-description": "オンチェーンIDを作成するには、本人確認を行ってください。",
+    "confirm-title": "本人確認の確認",
+    "deployed-toast": "IDが正常に登録されました！",
+    "deploying-toast": "本人確認を登録中...",
+    "description": "本人確認およびKYC検証に必要です",
+    "failed-toast": "IDの登録に失敗しました: ",
+    "intro": "完全なプラットフォームアクセスを解除するには、本人確認を完了してください。これは、金融規制（KYC/AML）への準拠を確保します。\n\n今はスキップできますが、IDを登録するには少なくとも居住国を提供する必要があります。\n\nあなたのデータは暗号化され、規制遵守のためだけに使用されます。",
+    "title": "個人情報を追加する"
+  },
+  "identity-setup": {
+    "address-title": "これがあなたのONCHAINIDアドレスです",
+    "confirm-description": "オンチェーンIDを作成するには、本人確認を行ってください。",
+    "confirm-title": "本人確認の確認",
+    "deployed-toast": "ONCHAINIDが正常に作成されました！",
+    "deploying-toast": "ONCHAINIDを作成中...",
+    "description": "あなたのIDコントラクトをブロックチェーンにデプロイしています",
+    "failed-toast": "ONCHAINIDの作成に失敗しました: ",
+    "form": {
+      "submit": "ONCHAINIDを作成する",
+      "submitting": "ONCHAINIDを作成中..."
+    },
+    "info": "アイデンティティファクトリーを使用してONCHAINIDを作成しています。",
+    "info-description": "これにより、ブロックチェーン上にあなたのアイデンティティスマートコントラクトが作成されます。これは、あなたの検証済み資格情報のための安全なコンテナです。\n\nまだ個人データは保存されていません。それは次のステップです。今は、あなたが制御するユニークなアイデンティティアドレスを確立しています。\n\n通常、これには10〜30秒かかります。",
+    "success-message": "あなたのブロックチェーンIDが準備完了です。次に、KYCコンプライアンスを完了するために、検証済みの情報を追加できます。",
+    "success-title": "ONCHAINIDが正常に作成されました",
+    "title": "あなたのONCHAINIDを作成中"
+  },
+  "sidebar": {
+    "description": "ウォレット作成からプラットフォームデプロイまで、トークン化の力を解放するための簡単な手順に従ってください。",
+    "title": "あなたのセットアップ進捗"
+  },
+  "steps": {
+    "identity": {
+      "description": "コンプライアンスのための個人情報を追加する",
+      "title": "本人確認を行う"
+    },
+    "identity-setup": {
+      "description": "ユニークなアイデンティティコントラクトをデプロイする",
+      "title": "ブロックチェーンIDを作成する"
+    },
+    "system-addons": {
+      "description": "オプションのプラットフォーム機能を有効にする",
+      "title": "システムアドオン"
+    },
+    "system-assets": {
+      "description": "債券、株式、ファンドなどを有効にする",
+      "title": "アセットタイプを選択"
+    },
+    "system-deploy": {
+      "description": "コアスマートコントラクトを初期化する",
+      "title": "システムをデプロイする"
+    },
+    "system-settings": {
+      "description": "システムパラメータと設定を設定する",
+      "title": "システムを構成する"
+    },
+    "wallet": {
+      "description": "あなたのブロックチェーンウォレットを表示する",
+      "title": "あなたのウォレット"
+    },
+    "wallet-recovery-codes": {
+      "description": "緊急アクセス用のバックアップコードを保存する",
+      "title": "リカバリーコード"
+    },
+    "wallet-security": {
+      "description": "PINまたはOTP認証を追加する",
+      "title": "ウォレットを保護する"
+    }
+  },
+  "system": {
+    "admin-role-explanation": "これにより、あなたはシステムの初期管理者となり、その基本コンポーネントを完全に制御できるようになります。後で、運用管理を支援する追加の管理者を招待することができます。",
+    "bootstrap-contracts-header": "システムのブートストラップには、これらの重要なスマートコントラクトのデプロイが含まれます：",
+    "bootstrap-explanation": "最初のユーザーとして、あなたはシステムのブートストラップ（プラットフォームを動作させるコアスマートコントラクトをデプロイする一回限りの設定）を担当します。",
+    "compliance-engine": "• 規制要件のためのコンプライアンスエンジン",
+    "compliance-engine-description": "KYC、管轄権、転送制限などのルールを実施します",
+    "compliance-engine-label": "コンプライアンスエンジン",
+    "compliance-engine-name": "コンプライアンスエンジン",
+    "confirm-deployment-description": "ブロックチェーンシステムをデプロイするには、本人確認を行ってください。",
+    "confirm-deployment-title": "システムデプロイの確認",
+    "core-system-contract": "• コアシステムスマートコントラクト",
+    "deploy": "システムをデプロイする",
+    "deployed-contracts": "デプロイされたコントラクトアドレス",
+    "deployed-toast": "システムが正常にデプロイされました！",
+    "deploying": "デプロイ中...",
+    "deploying-toast": "システムをデプロイ中...",
+    "deployment-details-description": "システムデプロイの詳細を表示する",
+    "deployment-details-title": "デプロイメントの詳細",
+    "deployment-warning": "このアクションはブロックチェーンスマートコントラクトをデプロイし、元に戻すことはできません。デプロイされると、システムはブロックチェーン上で永久にアクティブになります。",
+    "failed-toast": "システムのデプロイに失敗しました: ",
+    "identity-registry": "• ユーザー確認のためのアイデンティティレジストリ",
+    "identity-registry-description": "ブロックチェーン上でユーザーアイデンティティを管理します",
+    "identity-registry-label": "アイデンティティレジストリ",
+    "identity-registry-name": "アイデンティティレジストリ",
+    "infrastructure-conclusion": "これらのスマートコントラクトは、ユーザーアイデンティティ、コンプライアンス、アセット発行の背後にある安全なインフラストラクチャを形成します。デプロイされると、あなたのプラットフォームは現実世界のトークン化をサポートする準備が整います。",
+    "initialize-subtitle": "プラットフォームの基盤を設定しようとしています",
+    "initialize-title": "システムを初期化する",
+    "system-contract": "システムコントラクト",
+    "token-factory": "• アセット作成のためのトークンファクトリーレジストリ",
+    "token-factory-label": "トークンファクトリーレジストリ",
+    "trusted-issuers": "• 認可された当事者のための信頼できる発行者レジストリ",
+    "trusted-issuers-description": "検証済み証明書を発行できるエンティティを定義します",
+    "trusted-issuers-label": "信頼できる発行者レジストリ",
+    "trusted-issuers-name": "信頼できる発行者レジストリ",
+    "view-deployment-details": "デプロイメントの詳細を表示する",
+    "what-gets-deployed": "デプロイされるもの:"
+  },
+  "system-addons": {
+    "addon-deployment": {
+      "addons-deployed-successfully": "アドオンが正常にデプロイされました",
+      "deployed-addons": "デプロイされたアドオン",
+      "description": "あなたのアドオンは使用可能です",
+      "title": "アドオンがデプロイされました"
+    },
+    "addon-selection": {
+      "addon-types": {
+        "airdrops": {
+          "description": "プラットフォームのエアドロップ機能を有効にします。これにより、あなたの資産のためにエアドロップを作成できます。",
+          "title": "エアドロップ"
+        },
+        "xvp": {
+          "description": "プラットフォームのXvP（配達対支払い）機能を有効にします。これにより、ユーザーはデフォルトの配達対支払いメカニズムの代わりにXvPを使用してポジションを決済できます。",
+          "title": "XvP"
+        },
+        "yield": {
+          "description": "プラットフォームの利回り機能を有効にします。これにより、債券やその他の固定収入商品などの利回りを生む資産を作成できます。",
+          "title": "利回り"
+        }
+      },
+      "addons-description": "アドオンは、あなたのプラットフォームの追加機能や統合です。ここで有効または無効にできます。",
+      "available-addons": "利用可能なアドオン",
+      "confirm-deployment-description": "アドオンをデプロイするために、あなたの身分を確認してください。",
+      "confirm-deployment-title": "アドオンデプロイの確認",
+      "deploy-addons": "アドオンをデプロイ",
+      "deployed-toast": "アドオンが正常にデプロイされました！",
+      "deploying-toast": "アドオンをデプロイ中...",
+      "description": "プラットフォームの追加機能や統合を有効にします",
+      "failed-toast": "アドオンのデプロイに失敗しました: ",
+      "no-system": "システムが見つかりません。最初にシステムをデプロイしてください。",
+      "select-all-addons": "有効にする予定のすべてのアドオンを選択してください",
+      "title": "アドオンを有効にする",
+      "validation": {
+        "invalid": "少なくとも1つのアドオンを選択してください"
+      },
+      "what-are-addons": "アドオンとは何ですか？",
+      "deploying": "デプロイ中...",
+      "required-for-bonds": "債券に必要"
+    }
+  },
+  "system-settings": {
+    "buttons": {
+      "saveAndContinue": "保存して続行",
+      "saving": "保存中..."
+    },
+    "description": {
+      "intro": "資産を発行する前に、プラットフォームの動作を決定する基本設定を構成しましょう。これらのデフォルト値は、あなたとあなたのユーザーの体験をパーソナライズするのに役立ちます。",
+      "update": "これらの設定は後でプラットフォーム設定で更新できます。"
+    },
+    "form": {
+      "baseCurrency": {
+        "description": "プラットフォームのデフォルト通貨を選択してください",
+        "label": "基本通貨",
+        "validation": {
+          "invalid": "無効な通貨選択"
+        }
+      }
+    },
+    "subtitle": "プラットフォームのデフォルト設定を設定します",
+    "title": "プラットフォーム設定を構成する",
+    "toast": {
+      "error": "プラットフォーム設定の保存に失敗しました: {{message}}",
+      "exchangeRateSyncWarning": "基本通貨が保存されましたが、為替レートは同期できませんでした。後で自動的に同期されます。",
+      "saving": "プラットフォーム設定を保存中...",
+      "success": "プラットフォーム設定が正常に保存されました！"
+    }
+  },
+  "wallet": {
+    "access-your-assets": "資産にアクセスする",
+    "access-your-assets-description": "トークン化された資産を表示、管理、取引します。トークンはブロックチェーン上に存在しますが、あなたのウォレットだけがそれらを制御できます。",
+    "address-explanation": "このアドレスを自由に共有してください—トークンを受け取るためのメールアドレスのようなものです。取引は公開されていますが、あなたの身元は非公開のままです。",
+    "asset-control": "資産の制御",
+    "asset-control-description": "トークン化された資産に対する完全な制御—残高を表示し、パフォーマンスを追跡し、ポートフォリオを管理します。",
+    "authorize-transactions": "取引を承認する",
+    "authorize-transactions-description": "購入、販売、またはトークンの移転など、すべてのアクションにはあなたのデジタル署名が必要です。これにより、あなたが本物であることが証明され、プライベートキーを公開することはありません。",
+    "created-title": "あなたのウォレット",
+    "creating-wallet": "作成中...",
+    "failed-to-create-wallet": "ウォレットの作成に失敗しました。もう一度お試しください。",
+    "how-it-works": "仕組み（特別な銀行カードのように）:",
+    "how-it-works-description": "PINを持つ銀行カードのように、ウォレットのプライベートキーを使用して:",
+    "intro": "あなたのウォレットは単なるストレージではなく、ブロックチェーンへのマスターキーです。このユニークな暗号鍵は、あなたがトークンを所有していることを証明し、すべての取引を承認することを可能にします。",
+    "invest-in-digital-assets": "デジタル資産に投資する",
+    "invest-in-digital-assets-description": "認証された発行者からトークン化された株式、債券、ファンド、その他のデジタル資産にアクセスします。",
+    "manage-on-chain-identity": "オンチェーンアイデンティティを管理する",
+    "manage-on-chain-identity-description": "あなたのウォレットは、あなたの確認されたアイデンティティをオンチェーンで固定し、あなたが誰であるかを所有しているものにリンクします。",
+    "manage-your-digital-assets": "デジタル資産を管理する",
+    "manage-your-digital-assets-description": "すべてのデジタル資産を1つの安全なプラットフォームで購入、販売、移転、追跡します。",
+    "secure-wallet-button": "ウォレットを保護する",
+    "security-importance": "あなたのウォレットは貴重な資産を制御します。適切に保護しましょう。",
+    "security-next-steps": "次に、認証を追加し、バックアップコードを保存します—これらは資産を保護し、アクセスを失わないようにするための簡単なステップです。",
+    "submit": "ウォレットを作成する",
+    "subtitle": "ブロックチェーンへのデジタルキー",
+    "success-message": "おめでとうございます！あなたのWeb3ウォレットが正常に作成されました",
+    "wallet-address-description": "資産を受け取り、スマートコントラクトと対話するためのユニークなブロックチェーン識別子です。",
+    "wallet-address-title": "これがあなたのウォレットアドレスです",
+    "wallet-created-successfully": "ウォレットが正常に作成されました！",
+    "what-your-wallet-enables": "あなたのウォレットが可能にすること:"
+  },
+  "wallet-security": {
+    "method-selector": {
+      "choose-one": "あなたのセキュリティニーズに合ったオプションを選択してください。最大の保護にはOTPを推奨します。",
+      "comparison": {
+        "choose-otp": "OTPを選択",
+        "choose-pin": "PINを選択",
+        "description": "説明",
+        "ease-of-use": "使いやすさ",
+        "feature": "機能",
+        "offline-access": "オフラインアクセス",
+        "requires-phone-app": "電話アプリが必要",
+        "security-good": "良好",
+        "security-level": "セキュリティレベル",
+        "security-maximum": "最大",
+        "setup-time": "設定時間",
+        "setup-time-otp": "2-3分",
+        "setup-time-pin": "1分"
+      },
+      "description": "銀行カードがPINを必要とするように、あなたのウォレットも保護が必要です。\n\n迅速なPINコードまたは認証アプリからのより強力なワンタイムパスワード（OTP）のいずれかを選択してください。",
+      "generate-backup-codes": "バックアップコードを生成する",
+      "otp": {
+        "description": "Google Authenticatorのようなアプリを使用して、30秒ごとに新しいコードを生成します。資産に対する最大のセキュリティ。",
+        "summary": "最大のセキュリティ",
+        "title": "OTP"
+      },
+      "pin": {
+        "description": "取引を承認するために入力する6桁のコード。日常的な使用に便利で迅速です。",
+        "summary": "迅速で便利",
+        "title": "PINコード"
+      },
+      "recommended": "推奨",
+      "security-methods": {
+        "one-time-password": "ワンタイムパスワード",
+        "pin-code": "PINコード"
+      },
+      "success": "素晴らしい！あなたのセキュリティ方法が設定されました。",
+      "success-content": "あなたは{{method}}を正常に設定しました。これにより、ウォレットに重要な保護層が追加され、資産が不正アクセスからより安全になります。\n\nウォレットのセキュリティを完成させるための最終ステップは、バックアップコードを生成することです。これらは、PINや認証方法を失った場合にアクセスを回復するための秘密の回復キーです。\n\nこれらのバックアップコードを安全でプライベートな場所に保存してください—それらはあなたの最後の防衛線です。",
+      "success-description": "ウォレットを完全に保護するためのもう1つのステップ。",
+      "title": "ウォレットを保護する"
+    },
+    "otp": {
+      "back": "戻る",
+      "cancel": "キャンセル",
+      "enter-code": "アプリからの6桁のコードを入力してください",
+      "invalid-code": "無効な確認コード",
+      "loading": "読み込み中...",
+      "manual-entry": "スキャンできませんか？手動で入力してください",
+      "manual-entry-key": "秘密鍵のみ:",
+      "manual-entry-url": "完全な認証者URL:",
+      "qr-code-alt": "OTP設定用のQRコード",
+      "qr-code-label": "QRコード",
+      "refresh-failed": "ユーザー状態の更新に失敗しました",
+      "scan-with-app": "アプリでスキャンしてください",
+      "setting-up": "OTPを設定中...",
+      "setting-up-description": "QRコードを生成していますのでお待ちください。",
+      "setup-description": "このQRコードを認証者アプリでスキャンしてください",
+      "setup-error": "OTPの設定に失敗しました",
+      "setup-failed": "OTP設定データの取得に失敗しました",
+      "setup-failed-description": "OTP認証の設定に失敗しました。もう一度お試しください。",
+      "setup-failed-title": "設定に失敗しました",
+      "setup-initiated": "OTP設定が開始されました",
+      "setup-title": "認証者アプリを設定する",
+      "try-again": "もう一度試す",
+      "verified-success": "OTPが正常に確認されました",
+      "verify-code": "コードを確認する",
+      "verifying": "確認中..."
+    },
+    "pincode": {
+      "confirm-pin": "PINコードを確認する",
+      "description": "ウォレット取引を保護するために6桁のPINコードを作成してください",
+      "enter-pin": "PINコードを入力してください",
+      "invalid-pin-format": "無効なPINコード形式",
+      "pin-codes-dont-match": "PINコードが一致しません",
+      "pin-codes-match": "✓ PINコードが一致します",
+      "set-pin": "PINコードを設定する",
+      "setup-failed": "PINコードの設定に失敗しました",
+      "submitting": "設定中...",
+      "success": "PINコードが正常に設定されました",
+      "title": "PINコードを設定する"
+    },
+    "recovery-codes": {
+      "confirm": "ウォレットの設定を完了する",
+      "confirm-error": "秘密コードの確認に失敗しました",
+      "confirm-stored": "Confirm you stored your recovery keys in a safe place.",
+      "copied-to-clipboard": "秘密コードがクリップボードにコピーされました！",
+      "copy-all": "すべてコピー",
+      "description": "これらのコードを安全な場所に保存してください",
+      "description-2": "これらのコードは、PINを忘れたり認証者アプリへのアクセスを失った場合にウォレットを復元するために使用できます。",
+      "download": "ダウンロード",
+      "downloaded": "秘密コードがダウンロードされました！",
+      "generated-error": "秘密コードの生成に失敗しました",
+      "generated-success": "秘密コードが正常に生成されました！",
+      "generating": "秘密コードを生成しています...",
+      "title": "あなたの秘密コード",
+      "warning": "重要: これらのコードを安全に保管してください！他のセキュリティ手段を失った場合にアクセスを回復する唯一の方法です。",
+      "your-recovery-codes": "あなたの秘密コード ({{count}})"
+    }
+  },
+  "welcome": {
+    "complete-journey": "プラットフォームの設定を完了する準備はできましたか？",
+    "continue-setup": "設定を続行する",
+    "description": "実世界の資産を安全なデジタルトークンに変換 — すべてコンプライアンス、透明性があり、完全にあなたの管理下にあります。",
+    "get-started": "始める",
+    "setup-description-new": "わずか5分で、資産のトークン化を開始するために必要なすべての設定をお手伝いします。安全なウォレットを作成し、ブロックチェーンのアイデンティティを確立し、プラットフォームを構成します — 銀行口座を設定するよりも簡単ですが、はるかに強力です。",
+    "setup-description-returning": "プラットフォームの完全な潜在能力を解放するために、あと数ステップです。デジタルウォレットを保護し、ブロックチェーンのアイデンティティを確立し、プラットフォームを構成します — それから資産をトークン化し、価値の創造と交換の方法を変革する準備が整います。",
+    "setup-overview": "あなたの旅の先",
+    "title": "デジタル資産プラットフォームへようこそ",
+    "welcome-back": "お帰りなさい！"
+  },
+  "wallet-security.method-selector.otp.title": "OTP"
+}

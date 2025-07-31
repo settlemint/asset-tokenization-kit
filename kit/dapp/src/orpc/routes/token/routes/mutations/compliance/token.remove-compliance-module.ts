@@ -1,11 +1,10 @@
-import { ALL_INTERFACE_IDS } from "@/lib/interface-ids";
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { supportsInterface } from "@/orpc/helpers/interface-detection";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenRemoveComplianceModuleMessagesSchema } from "./token.remove-compliance-module.schema";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
+import { portalRouter } from "@/orpc/procedures/portal.router";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { call } from "@orpc/server";
+import { read } from "../../token.read";
 
 const TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
   mutation TokenRemoveComplianceModule(
@@ -15,7 +14,7 @@ const TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
     $from: String!
     $moduleAddress: String!
   ) {
-    removeComplianceModule: IERC3643RemoveComplianceModule(
+    removeComplianceModule: ISMARTRemoveComplianceModule(
       address: $address
       from: $from
       verificationId: $verificationId
@@ -29,49 +28,33 @@ const TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenRemoveComplianceModule =
-  tokenRouter.token.tokenRemoveComplianceModule
-    .use(portalMiddleware)
-    .handler(async function* ({ input, context, errors }) {
-      const { contract, verification, moduleAddress } = input;
-      const { auth } = context;
+export const removeComplianceModule = portalRouter.token.removeComplianceModule
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.removeComplianceModule,
+    })
+  )
+  .handler(async ({ input, context }) => {
+    const { contract, verification, moduleAddress } = input;
+    const { auth } = context;
 
-      // Parse messages with defaults
-      const messages = TokenRemoveComplianceModuleMessagesSchema.parse(
-        input.messages ?? {}
-      );
-
-      // Validate that the token supports compliance management
-      const supportsCompliance = await supportsInterface(
-        context.portalClient,
-        contract,
-        ALL_INTERFACE_IDS.IERC3643
-      );
-
-      if (!supportsCompliance) {
-        throw errors.FORBIDDEN({
-          message:
-            "Token does not support compliance management. The token must implement IERC3643 interface.",
-        });
-      }
-
-      const sender = auth.user;
-      const challengeResponse = await handleChallenge(sender, {
-        code: verification.verificationCode,
-        type: verification.verificationType,
-      });
-
-      const transactionHash = yield* context.portalClient.mutate(
-        TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION,
-        {
-          address: contract,
-          from: sender.wallet,
-          moduleAddress,
-          ...challengeResponse,
-        },
-        messages.complianceModuleRemovalFailed,
-        messages
-      );
-
-      return getEthereumHash(transactionHash);
+    const sender = auth.user;
+    const challengeResponse = await handleChallenge(sender, {
+      code: verification.verificationCode,
+      type: verification.verificationType,
     });
+
+    await context.portalClient.mutate(
+      TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION,
+      {
+        address: contract,
+        from: sender.wallet,
+        moduleAddress,
+        ...challengeResponse,
+      },
+      context.t("tokens:api.mutations.compliance.messages.removeFailed")
+    );
+
+    // Return updated token data
+    return await call(read, { tokenAddress: contract }, { context });
+  });

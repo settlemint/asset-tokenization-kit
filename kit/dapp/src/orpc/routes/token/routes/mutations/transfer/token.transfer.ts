@@ -1,12 +1,14 @@
-import { ALL_INTERFACE_IDS } from "@/lib/interface-ids";
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
+import { AssetExtensionEnum } from "@/lib/zod/validators/asset-extensions";
 import { validateBatchArrays } from "@/orpc/helpers/array-validation";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { supportsInterface } from "@/orpc/helpers/interface-detection";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
+import { tokenMiddleware } from "@/orpc/middlewares/system/token.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenTransferMessagesSchema } from "@/orpc/routes/token/routes/mutations/transfer/token.transfer.schema";
+import { read } from "@/orpc/routes/token/routes/token.read";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { call } from "@orpc/server";
 
 const TOKEN_TRANSFER_MUTATION = portalGraphql(`
   mutation TokenTransfer(
@@ -138,7 +140,13 @@ const TOKEN_BATCH_FORCED_TRANSFER_MUTATION = portalGraphql(`
 
 export const transfer = tokenRouter.token.transfer
   .use(portalMiddleware)
-  .handler(async function* ({ input, context, errors }) {
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.transfer,
+    })
+  )
+  .use(tokenMiddleware)
+  .handler(async ({ input, context, errors }) => {
     const {
       contract,
       recipients,
@@ -152,35 +160,28 @@ export const transfer = tokenRouter.token.transfer
     // Determine if this is a batch operation
     const isBatch = recipients.length > 1;
 
-    // Parse messages with defaults
-    const messages = TokenTransferMessagesSchema.parse(input.messages ?? {});
+    // Generate error message based on transfer type and batch mode
+    const errorMessage =
+      transferType === "forced"
+        ? isBatch
+          ? context.t("tokens:api.mutations.transfer.messages.batchForceFailed")
+          : context.t("tokens:api.mutations.transfer.messages.forceFailed")
+        : transferType === "transferFrom"
+          ? context.t("tokens:api.mutations.transfer.messages.fromOwnerFailed")
+          : isBatch
+            ? context.t("tokens:api.mutations.transfer.messages.batchFailed")
+            : context.t("tokens:api.mutations.transfer.messages.failed");
 
-    // Validate that the token supports ERC3643 (we only support ERC3643 tokens)
-    const supportsERC3643 = await supportsInterface(
-      context.portalClient,
-      contract,
-      ALL_INTERFACE_IDS.IERC3643
-    );
-
-    if (!supportsERC3643) {
-      throw errors.FORBIDDEN({
-        message:
-          "Token does not support transfer operations. The token must implement IERC3643 interface.",
-      });
-    }
-
-    // For forced transfers, check custodian interface
+    // For forced transfers, check custodian interface;
     if (transferType === "forced") {
-      const supportsCustodian = await supportsInterface(
-        context.portalClient,
-        contract,
-        ALL_INTERFACE_IDS.ISMARTCustodian
+      const supportsCustodian = context.token.extensions.includes(
+        AssetExtensionEnum.CUSTODIAN
       );
-
       if (!supportsCustodian) {
-        throw errors.FORBIDDEN({
-          message:
-            "Token does not support forced transfer operations. The token must implement ISMARTCustodian interface.",
+        throw errors.TOKEN_INTERFACE_NOT_SUPPORTED({
+          data: {
+            requiredInterfaces: ["CUSTODIAN"],
+          },
         });
       }
     }
@@ -190,7 +191,6 @@ export const transfer = tokenRouter.token.transfer
       code: verification.verificationCode,
       type: verification.verificationType,
     });
-
     // Choose the appropriate mutation based on transfer type and batch operation
     if (isBatch) {
       if (transferType === "standard") {
@@ -203,7 +203,7 @@ export const transfer = tokenRouter.token.transfer
           "batch transfer"
         );
 
-        const transactionHash = yield* context.portalClient.mutate(
+        await context.portalClient.mutate(
           TOKEN_BATCH_TRANSFER_MUTATION,
           {
             address: contract,
@@ -212,19 +212,18 @@ export const transfer = tokenRouter.token.transfer
             amounts: amounts.map((a) => a.toString()),
             ...challengeResponse,
           },
-          messages.transferFailed,
-          messages
+          errorMessage
         );
-        return getEthereumHash(transactionHash);
       } else if (transferType === "forced") {
         // Forced batch transfer is supported
         if (!from || from.length === 0) {
           throw errors.INPUT_VALIDATION_FAILED({
-            message: "From addresses are required for forced batch transfers",
+            message: context.t(
+              "tokens:api.mutations.transfer.messages.fromRequired"
+            ),
             data: { errors: ["Missing required from addresses"] },
           });
         }
-
         // Validate all arrays have matching lengths
         validateBatchArrays(
           {
@@ -234,8 +233,7 @@ export const transfer = tokenRouter.token.transfer
           },
           "batch forced transfer"
         );
-
-        const transactionHash = yield* context.portalClient.mutate(
+        await context.portalClient.mutate(
           TOKEN_BATCH_FORCED_TRANSFER_MUTATION,
           {
             address: contract,
@@ -245,15 +243,14 @@ export const transfer = tokenRouter.token.transfer
             amounts: amounts.map((a) => a.toString()),
             ...challengeResponse,
           },
-          messages.transferFailed,
-          messages
+          errorMessage
         );
-        return getEthereumHash(transactionHash);
       } else {
         // transferType === "transferFrom" - not supported in batch, must be done individually
         throw errors.INPUT_VALIDATION_FAILED({
-          message:
-            "Batch transferFrom operations are not supported. Use individual transfers instead.",
+          message: context.t(
+            "tokens:api.mutations.transfer.messages.batchTransferFromNotSupported"
+          ),
           data: { errors: ["Batch transferFrom not supported"] },
         });
       }
@@ -262,16 +259,16 @@ export const transfer = tokenRouter.token.transfer
       const [to] = recipients;
       const [amount] = amounts;
       const [owner] = from ?? [];
-
       if (!to || !amount) {
         throw errors.INPUT_VALIDATION_FAILED({
-          message: "Missing required recipient or amount",
+          message: context.t(
+            "tokens:api.mutations.transfer.messages.missingRecipientOrAmount"
+          ),
           data: { errors: ["Invalid input data"] },
         });
       }
-
       if (transferType === "standard") {
-        const transactionHash = yield* context.portalClient.mutate(
+        await context.portalClient.mutate(
           TOKEN_TRANSFER_MUTATION,
           {
             address: contract,
@@ -280,18 +277,18 @@ export const transfer = tokenRouter.token.transfer
             amount: amount.toString(),
             ...challengeResponse,
           },
-          messages.transferFailed,
-          messages
+          errorMessage
         );
-        return getEthereumHash(transactionHash);
       } else if (transferType === "transferFrom") {
         if (!owner) {
           throw errors.INPUT_VALIDATION_FAILED({
-            message: "Missing required owner address for transferFrom",
+            message: context.t(
+              "tokens:api.mutations.transfer.messages.missingOwnerForTransferFrom"
+            ),
             data: { errors: ["Invalid input data"] },
           });
         }
-        const transactionHash = yield* context.portalClient.mutate(
+        await context.portalClient.mutate(
           TOKEN_TRANSFER_FROM_MUTATION,
           {
             address: contract,
@@ -301,19 +298,19 @@ export const transfer = tokenRouter.token.transfer
             amount: amount.toString(),
             ...challengeResponse,
           },
-          messages.transferFailed,
-          messages
+          errorMessage
         );
-        return getEthereumHash(transactionHash);
       } else {
         // transferType === "forced"
         if (!owner) {
           throw errors.INPUT_VALIDATION_FAILED({
-            message: "Missing required owner address for forced transfer",
+            message: context.t(
+              "tokens:api.mutations.transfer.messages.missingOwnerForForced"
+            ),
             data: { errors: ["Invalid input data"] },
           });
         }
-        const transactionHash = yield* context.portalClient.mutate(
+        await context.portalClient.mutate(
           TOKEN_FORCED_TRANSFER_MUTATION,
           {
             address: contract,
@@ -323,10 +320,19 @@ export const transfer = tokenRouter.token.transfer
             amount: amount.toString(),
             ...challengeResponse,
           },
-          messages.transferFailed,
-          messages
+          errorMessage
         );
-        return getEthereumHash(transactionHash);
       }
     }
+
+    // Return the updated token data using the read handler
+    return await call(
+      read,
+      {
+        tokenAddress: contract,
+      },
+      {
+        context,
+      }
+    );
   });

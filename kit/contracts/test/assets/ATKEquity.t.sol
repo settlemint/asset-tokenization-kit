@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { AbstractATKAssetTest } from "./AbstractATKAssetTest.sol";
@@ -15,6 +15,7 @@ import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
+import { TestConstants } from "../Constants.sol";
 
 contract ATKEquityTest is AbstractATKAssetTest {
     IATKEquityFactory internal equityFactory;
@@ -68,8 +69,7 @@ contract ATKEquityTest is AbstractATKAssetTest {
         _setUpIdentity(user2, "User 2");
         _setUpIdentity(spender, "Spender");
 
-        smartEquity =
-            _createEquityAndMint(NAME, SYMBOL, DECIMALS, new uint256[](0), new SMARTComplianceModuleParamPair[](0));
+        smartEquity = _createEquityAndMint(NAME, SYMBOL, DECIMALS, new SMARTComplianceModuleParamPair[](0));
         vm.label(address(smartEquity), "ATKEquity");
 
         // Fund test accounts
@@ -82,7 +82,6 @@ contract ATKEquityTest is AbstractATKAssetTest {
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         internal
@@ -90,7 +89,7 @@ contract ATKEquityTest is AbstractATKAssetTest {
     {
         vm.startPrank(owner);
         address equityAddress =
-            equityFactory.createEquity(name_, symbol_, decimals_, requiredClaimTopics_, initialModulePairs_);
+            equityFactory.createEquity(name_, symbol_, decimals_, initialModulePairs_, TestConstants.COUNTRY_CODE_US);
 
         result = IATKEquity(equityAddress);
 
@@ -133,7 +132,6 @@ contract ATKEquityTest is AbstractATKAssetTest {
                 string.concat("Test ATK Equity", Strings.toString(decimalValues[i])),
                 string.concat("TEST", Strings.toString(decimalValues[i])),
                 decimalValues[i],
-                new uint256[](0),
                 new SMARTComplianceModuleParamPair[](0)
             );
             assertEq(newEquity.decimals(), decimalValues[i]);

@@ -1,9 +1,9 @@
-import type { AbstractActor } from "../entities/actors/abstract-actor";
+import type { Actor } from "../entities/actor";
 
 import { atkDeployer } from "../services/deployer";
 import { waitForSuccess } from "../utils/wait-for-success";
 
-export const addToRegistry = async (actor: AbstractActor) => {
+export const addToRegistry = async (actor: Actor) => {
   console.log(`[Add to registry] → Starting registration...`);
 
   const identity = await actor.getIdentity();
@@ -17,7 +17,7 @@ export const addToRegistry = async (actor: AbstractActor) => {
   console.log(`[Add to registry] ✓ ${actor.name} added to registry`);
 };
 
-export async function batchAddToRegistry(actors: AbstractActor[]) {
+export async function batchAddToRegistry(actors: Actor[]) {
   console.log(`[Batch add to registry] → Starting batch registration...`);
 
   const resolvedIdentities = await Promise.all(

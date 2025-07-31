@@ -1,0 +1,151 @@
+{
+  "compliance": {
+    "available": {
+      "description": "Sie können eines der folgenden Compliance-Module aktivieren, um zu steuern, wer auf Ihr Asset zugreifen kann.",
+      "title": "Verfügbare Module"
+    },
+    "configured": {
+      "description": "Compliance-Module, die für Ihr Asset aktiviert wurden.",
+      "title": "Aktivierte Module"
+    },
+    "description": "Aktivieren und konfigurieren Sie Compliance-Module, um zu steuern, wer auf Ihr Asset zugreifen kann",
+    "title": "Compliance-Module"
+  },
+  "form": {
+    "actions": {
+      "create": "Erstellen {{type}}",
+      "creating": "Erstelle..."
+    },
+    "buttons": {
+      "back": "Zurück",
+      "cancel": "Abbrechen",
+      "disable": "Deaktivieren",
+      "enable": "Aktivieren",
+      "next": "Weiter",
+      "submit": "Einreichen",
+      "leave": "Verlassen"
+    },
+    "description": "Konfigurieren Sie Ihr {{type}}, indem Sie die grundlegenden Informationen unten bereitstellen.",
+    "fields": {
+      "cap": {
+        "description": "Die maximale Anzahl von Token, die ausgegeben werden können",
+        "label": "Token-Obergrenze",
+        "placeholder": "z.B. 1000000"
+      },
+      "countryCode": {
+        "description": "Wählen Sie aus, wo Ihr Asset registriert wird",
+        "label": "Land"
+      },
+      "decimals": {
+        "description": "Anzahl der Dezimalstellen für das Token (0-18, Standard ist 18)",
+        "label": "Dezimalstellen",
+        "placeholder": "18"
+      },
+      "faceValue": {
+        "description": "Der Nennwert jedes Anleihe-Token",
+        "label": "Nennwert",
+        "placeholder": "z.B. 1000"
+      },
+      "isin": {
+        "description": "Die ISIN des Tokens. Dies ist ein optionaler eindeutiger Identifikator für das Token im Finanzsystem.",
+        "label": "ISIN (Optional)",
+        "placeholder": "z.B. US0378331005"
+      },
+      "managementFeeBps": {
+        "description": "Verwaltungsgebühr in Basispunkten (100 BPS = 1%)",
+        "label": "Verwaltungsgebühr (BPS)",
+        "placeholder": "z.B. 100"
+      },
+      "maturityDate": {
+        "description": "Das Fälligkeitsdatum der Anleihe",
+        "label": "Fälligkeitsdatum",
+        "placeholder": "Datum auswählen"
+      },
+      "name": {
+        "description": "Der Name des Tokens. Dieser wird verwendet, um das Token in der Benutzeroberfläche zu identifizieren und kann nach der Erstellung nicht mehr geändert werden.",
+        "label": "Name",
+        "placeholder": "z.B. Regierung {{type}} Serie A"
+      },
+      "symbol": {
+        "description": "Ein kurzes Symbol für das Token (normalerweise 3-5 Zeichen)",
+        "label": "Symbol",
+        "placeholder": "z.B. GBSA"
+      },
+      "type": {
+        "description": "Wählen Sie den Typ des Assets, das Sie erstellen möchten. Nur Asset-Typen mit bereitgestellten Fabriken sind verfügbar.",
+        "label": "Asset-Typ"
+      },
+      "underlyingAsset": {
+        "description": "Die Ethereum-Adresse des zugrunde liegenden Assets",
+        "label": "Zugrunde liegendes Asset",
+        "placeholder": "z.B. 0x..."
+      }
+    },
+    "title": "Erstellen {{type}}"
+  },
+  "leave-confirmation": {
+    "title": "Asset-Designer verlassen?",
+    "description": "Ihr Fortschritt geht verloren, wenn Sie jetzt verlassen. Alle eingegebenen Informationen werden nicht gespeichert.",
+    "stay": "Bleiben",
+    "leave": "Verlassen"
+  },
+  "messages": {
+    "comingSoon": "Bald verfügbar!",
+    "created": "{{type}} erfolgreich erstellt.",
+    "creating": "Erstelle das {{type}}...",
+    "creation-failed": "Erstellung des {{type}} fehlgeschlagen.",
+    "error-toast": "Erstellung von {{type}} fehlgeschlagen",
+    "loading": "Lade verfügbare Asset-Typen...",
+    "loading-description": "Bitte warten Sie, während wir die verfügbaren Token-Fabriken abrufen.",
+    "no-asset-types": "Keine verfügbaren Asset-Typen",
+    "no-asset-types-description": "Es wurden noch keine Token-Fabriken bereitgestellt. Bitte stellen Sie zuerst Token-Fabriken bereit, bevor Sie Tokens erstellen.",
+    "success-toast": "{{type}} erfolgreich erstellt!"
+  },
+  "streaming-messages": {
+    "creation-failed": "Erstellung des {{type}} fehlgeschlagen.",
+    "creation-success": "{{type}} erfolgreich erstellt.",
+    "default-error": "Erstellung von {{type}} fehlgeschlagen.",
+    "initial-loading": "Bereite die Erstellung von {{type}} vor...",
+    "no-result-error": "Es wurde kein Transaktionshash von der Erstellung des {{type}} empfangen."
+  },
+  "validation": {
+    "type-required": "Bitte wählen Sie einen Asset-Typ aus"
+  },
+  "verification": {
+    "confirm-description": "Bitte verifizieren Sie Ihre Identität, um Ihr digitales Asset zu erstellen.",
+    "confirm-title": "Bestätigen Sie die Erstellung des Assets"
+  },
+  "wizard": {
+    "description": "Wir führen Sie durch jeden Schritt, um Ihr tokenisiertes Asset mit integrierter regulatorischer Compliance und Anlegerschutz zu erstellen.",
+    "steps": {
+      "asset-type": {
+        "description": "Wählen Sie den Typ des Tokens, den Sie erstellen möchten",
+        "title": "Token-Typ auswählen"
+      },
+      "assetBasics": {
+        "description": "Legen Sie die grundlegenden Eigenschaften und Details fest, die Ihr Asset definieren",
+        "title": "Definieren Sie Ihr Asset"
+      },
+      "complianceModules": {
+        "description": "Richten Sie Compliance-Module ein, um sicherzustellen, dass Ihr Asset den gesetzlichen Anforderungen entspricht",
+        "title": "Compliance konfigurieren"
+      },
+      "selectAssetType": {
+        "description": "Wählen Sie den Typ des realen Assets, das Sie auf der Blockchain tokenisieren möchten",
+        "title": "Wählen Sie Ihren Asset-Typ"
+      },
+      "summary": {
+        "description": "Bestätigen und stellen Sie Ihr konformes digitales Asset auf der Blockchain bereit",
+        "title": "Überprüfen & Bereitstellen"
+      },
+      "token-details": {
+        "description": "Konfigurieren Sie die grundlegenden Eigenschaften Ihres Tokens",
+        "title": "Token-Details"
+      }
+    },
+    "title": "Gestalten Sie Ihr Asset"
+  },
+  "sidebar": {
+    "button-title": "Asset-Designer"
+  }
+}

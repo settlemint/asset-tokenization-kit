@@ -1,0 +1,28 @@
+{
+  "actions": {
+    "cancel": "Abbrechen",
+    "skip": "Überspringen"
+  },
+  "appDescription": "In Minuten bereitstellen, einfach anpassen",
+  "appName": "Asset-Tokenisierungs-Kit",
+  "complete": "Vollständig",
+  "continue": "Fortfahren",
+  "deploying": "Wird bereitgestellt...",
+  "generating": "Wird generiert...",
+  "next": "Nächster",
+  "previous": "Vorheriger",
+  "transaction": {
+    "indexed": "Transaktion bestätigt und indiziert",
+    "waitingForMining": "Warten auf das Mining der Transaktion..."
+  },
+  "transactionHash": {
+    "copied": "Kopiert!",
+    "copyToClipboard": "Transaktionshash kopieren"
+  },
+  "verification": {
+    "pincode": {
+      "description": "Geben Sie Ihren 6-stelligen Bestätigungscode ein",
+      "label": "Bestätigungscode"
+    }
+  }
+}

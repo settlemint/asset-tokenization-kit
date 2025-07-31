@@ -1,13 +1,28 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
+  Action,
   XvPSettlement,
   XvPSettlementApproval,
   XvPSettlementFlow,
 } from "../../../../generated/schema";
 import { XvPSettlement as XvPSettlementTemplate } from "../../../../generated/templates";
-import { XvPSettlement as XvPSettlementContract } from "../../../../generated/templates/XvPSettlement/XvPSettlement";
+import {
+  XvPSettlementApprovalRevoked,
+  XvPSettlementApproved,
+  XvPSettlementCancelled,
+  XvPSettlement as XvPSettlementContract,
+  XvPSettlementExecuted,
+} from "../../../../generated/templates/XvPSettlement/XvPSettlement";
 import { fetchAccount } from "../../../account/fetch/account";
+import { fetchEvent } from "../../../event/fetch/event";
 import { fetchToken } from "../../../token/fetch/token";
+import {
+  actionExecuted,
+  actionId,
+  ActionName,
+  createAction,
+  createActionIdentifier,
+} from "../../../utils/actions";
 import { setBigNumber } from "../../../utils/bignumber";
 
 /**
@@ -140,4 +155,142 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
   }
 
   return xvpSettlement;
+}
+
+export function handleXvPSettlementApproved(
+  event: XvPSettlementApproved
+): void {
+  fetchEvent(event, "XvPSettlementApproved");
+
+  const approval = fetchXvPSettlementApproval(
+    event.address,
+    event.params.sender
+  );
+  approval.approved = true;
+  approval.timestamp = event.block.timestamp;
+  approval.save();
+
+  const xvpSettlement = fetchXvPSettlement(event.address);
+  actionExecuted(
+    event,
+    ActionName.ApproveXvPSettlement,
+    event.address,
+    createActionIdentifier(
+      ActionName.ApproveXvPSettlement,
+      event.address,
+      approval.account
+    )
+  );
+
+  if (xvpSettlement.autoExecute) {
+    return;
+  }
+
+  // Manual approval lookup instead of using derived field .load()
+  // Get flows from contract to extract approver addresses
+  const settlementContract = XvPSettlementContract.bind(event.address);
+  const flows = settlementContract.try_flows();
+
+  if (flows.reverted) {
+    return;
+  }
+
+  const approvers: Address[] = [];
+
+  // Collect unique approvers (from addresses) from flows
+  for (let i = 0; i < flows.value.length; i++) {
+    const flow = flows.value[i];
+
+    let fromExists = false;
+    for (let j = 0; j < approvers.length; j++) {
+      if (approvers[j].equals(flow.from)) {
+        fromExists = true;
+        break;
+      }
+    }
+    if (!fromExists) {
+      approvers.push(flow.from);
+    }
+  }
+
+  // Check if all approvals are done
+  let allApproved = true;
+  const participants: Bytes[] = [];
+
+  for (let i = 0; i < approvers.length; i++) {
+    const approval = fetchXvPSettlementApproval(event.address, approvers[i]);
+    if (!approval.approved) {
+      allApproved = false;
+      break;
+    }
+    participants.push(approval.account);
+  }
+
+  if (allApproved) {
+    // Check if ExecuteXvPSettlement action already exists to prevent duplicates
+    const executeActionIdentifier = createActionIdentifier(
+      ActionName.ExecuteXvPSettlement,
+      event.address
+    );
+    const executeActionId = actionId(
+      ActionName.ExecuteXvPSettlement,
+      event.address,
+      executeActionIdentifier
+    );
+    const existingExecuteAction = Action.load(executeActionId);
+
+    if (!existingExecuteAction) {
+      createAction(
+        event,
+        ActionName.ExecuteXvPSettlement,
+        event.address,
+        event.block.timestamp,
+        xvpSettlement.cutoffDate,
+        participants,
+        null,
+        executeActionIdentifier
+      );
+    }
+  }
+}
+
+export function handleXvPSettlementApprovalRevoked(
+  event: XvPSettlementApprovalRevoked
+): void {
+  fetchEvent(event, "XvPSettlementApprovalRevoked");
+
+  const approval = fetchXvPSettlementApproval(
+    event.address,
+    event.params.sender
+  );
+  approval.approved = false;
+  approval.timestamp = null;
+  approval.save();
+}
+
+export function handleXvPSettlementExecuted(
+  event: XvPSettlementExecuted
+): void {
+  fetchEvent(event, "XvPSettlementExecuted");
+
+  const xvpSettlement = fetchXvPSettlement(event.address);
+  xvpSettlement.executed = true;
+  xvpSettlement.save();
+
+  actionExecuted(
+    event,
+    ActionName.ExecuteXvPSettlement,
+    event.address,
+    createActionIdentifier(ActionName.ExecuteXvPSettlement, event.address)
+  );
+}
+
+export function handleXvPSettlementCancelled(
+  event: XvPSettlementCancelled
+): void {
+  fetchEvent(event, "XvPSettlementCancelled");
+
+  const xvpSettlement = fetchXvPSettlement(event.address);
+  xvpSettlement.cancelled = true;
+  xvpSettlement.save();
 }

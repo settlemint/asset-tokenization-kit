@@ -14,7 +14,7 @@ A Helm chart for the blockscout components
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://blockscout.github.io/helm-charts | blockscout-stack | 3.2.3 |
+| https://blockscout.github.io/helm-charts | blockscout-stack | 3.3.0 |
 
 ## Values
 
@@ -52,12 +52,12 @@ A Helm chart for the blockscout components
 | blockscout-stack.blockscout.env.SUPPORTED_CHAINS | string | `"{}"` |  |
 | blockscout-stack.blockscout.env.TXS_STATS_ENABLED | string | `"true"` |  |
 | blockscout-stack.blockscout.env.WEBAPP_URL | string | `"https://explorer.k8s.orb.local"` |  |
-| blockscout-stack.blockscout.envFromSecret.DATABASE_URL | string | `"postgresql://blockscout:atk@postgresql-pgpool:5432/blockscout?sslmode=disable"` |  |
+| blockscout-stack.blockscout.envFromSecret.DATABASE_URL | string | `"postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"` |  |
 | blockscout-stack.blockscout.envFromSecret.ETHEREUM_JSONRPC_HTTP_URL | string | `"http://erpc:4000"` |  |
 | blockscout-stack.blockscout.envFromSecret.ETHEREUM_JSONRPC_TRACE_URL | string | `"http://erpc:4000"` |  |
 | blockscout-stack.blockscout.envFromSecret.SECRET_KEY_BASE | string | `"atk"` |  |
 | blockscout-stack.blockscout.image.repository | string | `"ghcr.io/blockscout/blockscout"` |  |
-| blockscout-stack.blockscout.image.tag | string | `"8.1.1"` |  |
+| blockscout-stack.blockscout.image.tag | string | `"8.1.2"` |  |
 | blockscout-stack.blockscout.ingress.className | string | `"atk-nginx"` |  |
 | blockscout-stack.blockscout.ingress.enabled | bool | `true` |  |
 | blockscout-stack.blockscout.ingress.hostname | string | `"explorer.k8s.orb.local"` |  |
@@ -89,7 +89,7 @@ A Helm chart for the blockscout components
 | blockscout-stack.frontend.env.NEXT_PUBLIC_SEO_ENHANCED_DATA_ENABLED | string | `"true"` |  |
 | blockscout-stack.frontend.env.NEXT_PUBLIC_TRANSACTION_INTERPRETATION_PROVIDER | string | `"blockscout"` |  |
 | blockscout-stack.frontend.image.repository | string | `"ghcr.io/blockscout/frontend"` |  |
-| blockscout-stack.frontend.image.tag | string | `"v2.2.0"` |  |
+| blockscout-stack.frontend.image.tag | string | `"v2.2.1"` |  |
 | blockscout-stack.frontend.ingress.className | string | `"atk-nginx"` |  |
 | blockscout-stack.frontend.ingress.enabled | bool | `true` |  |
 | blockscout-stack.frontend.ingress.hostname | string | `"explorer.k8s.orb.local"` |  |

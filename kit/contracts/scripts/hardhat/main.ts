@@ -1,6 +1,7 @@
 import { batchAddToRegistry } from "./actions/add-to-registry";
 import { addTrustedIssuer } from "./actions/add-trusted-issuer";
 import { grantRole } from "./actions/grant-role";
+import { grantSystemRole } from "./actions/grant-system-role";
 import { issueVerificationClaims } from "./actions/issue-verification-claims";
 import { recoverIdentity } from "./actions/recover-identity";
 import { setGlobalBlockedAddresses } from "./actions/set-global-blocked-addressess";
@@ -18,18 +19,18 @@ import { createEquity } from "./assets/equity";
 import { createFund } from "./assets/fund";
 import { createPausedAsset } from "./assets/paused";
 import { createStableCoin } from "./assets/stablecoin";
-import { Countries } from "./constants/countries";
-import { ATKRoles } from "./constants/roles";
-import { ATKTopic } from "./constants/topics";
-import { claimIssuer } from "./entities/actors/claim-issuer";
 import {
+  claimIssuer,
   frozenInvestor,
   investorA,
   investorANew,
   investorB,
   maliciousInvestor,
-} from "./entities/actors/investors";
-import { owner } from "./entities/actors/owner";
+  owner,
+} from "./constants/actors";
+import { Countries } from "./constants/countries";
+import { ATKRoles } from "./constants/roles";
+import { ATKTopic } from "./constants/topics";
 import { AirdropMerkleTree } from "./entities/airdrop/merkle-tree";
 import { atkDeployer } from "./services/deployer";
 import { topicManager } from "./services/topic-manager";
@@ -89,6 +90,13 @@ async function main() {
   await topicManager.initialize();
 
   // Add the claim issuer as a trusted issuer
+  await grantRole(
+    atkDeployer.getTrustedIssuersRegistryContract().address,
+    owner,
+    ATKRoles.registrarRole,
+    owner.address
+  );
+
   const claimIssuerIdentity = await claimIssuer.getIdentity();
   await addTrustedIssuer(claimIssuerIdentity, [
     topicManager.getTopicId(ATKTopic.kyc),
@@ -96,6 +104,7 @@ async function main() {
     topicManager.getTopicId(ATKTopic.collateral),
     topicManager.getTopicId(ATKTopic.assetClassification),
     topicManager.getTopicId(ATKTopic.basePrice),
+    topicManager.getTopicId(ATKTopic.isin),
   ]);
 
   console.log("\n=== Verify the actors... ===\n");
@@ -110,6 +119,8 @@ async function main() {
   ]);
 
   console.log("\n=== Setting up compliance modules... ===\n");
+
+  await grantSystemRole(owner, ATKRoles.complianceManagerRole, owner.address);
 
   // block RU in the country block list module
   await setGlobalBlockedCountries([Countries.RU]);
@@ -138,16 +149,20 @@ async function main() {
   const merkleTree = new AirdropMerkleTree(distribution);
   await createAirdrops(stableCoin, merkleTree);
 
-  // Addon -XVP Settlement
+  // Addon -XVP Settlement - Single scenario for actions testing
+  console.log("\n=== Creating XVP Settlement ===\n");
+
+  // Single unapproved settlement (provides pending actions for testing)
   await createXvpSettlement(
-    investorA, // fromActor
-    investorB, // toActor
-    stableCoin.address, // fromAssetAddress (stablecoin)
-    equity.address, // toAssetAddress (equity)
-    5n * 10n ** 18n, // fromAmount (5 stablecoin)
-    2n * 10n ** 18n, // toAmount (2 equity)
-    false // autoExecute
+    investorA,
+    investorB,
+    stableCoin.address,
+    equity.address,
+    3n * 10n ** 18n,
+    1n * 10n ** 18n,
+    false
   );
+  console.log("✅ XVP settlement created");
 
   await createPausedAsset();
 

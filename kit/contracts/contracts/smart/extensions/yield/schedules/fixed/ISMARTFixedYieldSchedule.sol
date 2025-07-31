@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ISMARTYield } from "../../ISMARTYield.sol";
@@ -7,7 +7,9 @@ import { ISMARTYieldSchedule } from "../ISMARTYieldSchedule.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 /// @title Interface for a SMART Fixed Yield Schedule Contract
-/// @notice This interface defines the set of functions that a fixed yield schedule contract must implement.
+/// @author SettleMint
+/// @notice This interface defines the set of functions that a fixed yield schedule contract must
+/// implement.
 /// A fixed yield schedule typically involves distributing a predetermined rate of yield at regular intervals over a
 /// defined period.
 /// This interface extends `ISMARTYieldSchedule`, inheriting its `startDate()` function, and adds many more specific
@@ -84,12 +86,12 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     /// fund yield payments.
     /// @param from The address that sent the `_underlyingAsset` tokens (the funder).
     /// @param amount The quantity of `_underlyingAsset` tokens deposited.
-    event UnderlyingAssetTopUp(address indexed from, uint256 amount);
+    event UnderlyingAssetTopUp(address indexed from, uint256 indexed amount);
 
     /// @notice Emitted when an administrator successfully withdraws `_underlyingAsset` from the contract.
     /// @param to The address that received the withdrawn `_underlyingAsset` tokens.
     /// @param amount The quantity of `_underlyingAsset` tokens withdrawn.
-    event UnderlyingAssetWithdrawn(address indexed to, uint256 amount);
+    event UnderlyingAssetWithdrawn(address indexed to, uint256 indexed amount);
 
     /// @notice Emitted when a token holder successfully claims their accrued yield.
     /// @param holder The address of the token holder who claimed the yield.

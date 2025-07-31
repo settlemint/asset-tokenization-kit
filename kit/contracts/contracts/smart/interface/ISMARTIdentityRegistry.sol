@@ -12,6 +12,9 @@ import { ISMARTIdentityRegistryStorage } from "./ISMARTIdentityRegistryStorage.s
 import { IERC3643TrustedIssuersRegistry } from "./ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 import { ISMARTTopicSchemeRegistry } from "./ISMARTTopicSchemeRegistry.sol";
 
+// Struct imports
+import { ExpressionNode } from "./structs/ExpressionNode.sol";
+
 /// @title ISMARTIdentityRegistry Interface
 /// @author SettleMint
 /// @notice This interface defines the standard functions for an Identity Registry contract within the SMART protocol.
@@ -233,23 +236,22 @@ interface ISMARTIdentityRegistry is IERC165 {
      * @notice Checks if a given investor wallet address is currently registered in this Identity Registry.
      * @dev This is a view function and does not consume gas beyond the read operation cost.
      * @param _userAddress The wallet address to query.
-     * @return `true` if the address is registered, `false` otherwise.
+     * @return True if the address is registered, false otherwise
      */
     function contains(address _userAddress) external view returns (bool);
 
     /**
-     * @notice Checks if a registered investor's wallet address is considered 'verified'.
-     * @dev Verification is determined by checking the claims held in the investor's associated `IIdentity` contract.
-     *      Specifically, it checks if the `IIdentity` contract has valid claims for ALL topics listed in
-     * `requiredClaimTopics`.
-     *      A claim is considered valid if it is issued by an issuer listed in the `TrustedIssuersRegistry` and has not
-     * expired or been revoked.
-     *      This function typically interacts with both the `IIdentity` contract and the `TrustedIssuersRegistry`.
+     * @notice Checks if a registered investor's wallet address is considered 'verified' using logical expressions.
+     * @dev Verification is determined by evaluating a postfix (Reverse Polish Notation) expression that can combine
+     *      claim topics using logical operations (AND, OR, NOT).
+     *      This allows for flexible compliance rules like "(KYC AND AML) OR (VAULT AND WHITELISTED)".
+     *      Each TOPIC node in the expression is verified against the investor's claims using the same validation
+     *      logic as the array-based isVerified function.
      * @param _userAddress The investor's wallet address to verify.
-     * @param requiredClaimTopics An array of claim topic IDs (e.g., KYC, accreditation) that the identity must possess.
-     * @return `true` if the investor's identity holds all required valid claims, `false` otherwise.
+     * @param expression An array of ExpressionNode structs representing a postfix expression for claim verification.
+     * @return True if the investor's identity satisfies the logical expression, false otherwise
      */
-    function isVerified(address _userAddress, uint256[] memory requiredClaimTopics) external view returns (bool);
+    function isVerified(address _userAddress, ExpressionNode[] memory expression) external view returns (bool);
 
     /**
      * @notice Retrieves the `IIdentity` contract address associated with a registered investor's wallet address.

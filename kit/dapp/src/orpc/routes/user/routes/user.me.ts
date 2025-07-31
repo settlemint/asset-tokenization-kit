@@ -9,11 +9,20 @@
  */
 
 import { kycProfiles, user as userTable } from "@/lib/db/schema";
+import { AssetFactoryTypeIdEnum } from "@/lib/zod/validators/asset-types";
+import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import type { VerificationType } from "@/lib/zod/validators/verification-type";
+import { VerificationType as VerificationTypeEnum } from "@/lib/zod/validators/verification-type";
+import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
+import { getSystemContext } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { read } from "@/orpc/routes/settings/routes/settings.read";
-import { call } from "@orpc/server";
+import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
+import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
+import { TOKEN_FACTORY_PERMISSIONS } from "@/orpc/routes/token/routes/factory/factory.permissions";
+import { call, ORPCError } from "@orpc/server";
 import { eq } from "drizzle-orm";
+import { zeroAddress } from "viem";
 
 /**
  * Get current authenticated user information.
@@ -49,7 +58,13 @@ export const me = authRouter.user.me
     const userId = authUser.id;
 
     // Fetch user and KYC profile in a single query with left join
-    const [[userQueryResult], systemAddress] = await Promise.all([
+    const [
+      [userQueryResult],
+      systemAddress,
+      baseCurrency,
+      systemAddonsSkipped,
+      account,
+    ] = await Promise.all([
       context.db
         .select({
           user: userTable,
@@ -63,7 +78,7 @@ export const me = authRouter.user.me
         .where(eq(userTable.id, userId))
         .limit(1),
       call(
-        read,
+        settingsRead,
         {
           key: "SYSTEM_ADDRESS",
         },
@@ -71,10 +86,35 @@ export const me = authRouter.user.me
           context,
         }
       ),
+      call(
+        settingsRead,
+        {
+          key: "BASE_CURRENCY",
+        },
+        { context }
+      ),
+      call(
+        settingsRead,
+        {
+          key: "SYSTEM_ADDONS_SKIPPED",
+        },
+        { context }
+      ).catch(() => "false"), // Default to false if not set
+      call(readAccount, {}, { context }).catch((error: unknown) => {
+        if (error instanceof ORPCError && error.status === 404) {
+          return null;
+        }
+        throw error;
+      }),
     ]);
 
     const { kyc } = userQueryResult ?? {};
 
+    const { accessControl, ...systemOnboardingState } = await getSystemInfo(
+      systemAddress,
+      systemAddonsSkipped
+    );
+    const userRoles = mapUserRoles(authUser.wallet, accessControl);
     return {
       id: authUser.id,
       name:
@@ -84,16 +124,97 @@ export const me = authRouter.user.me
       email: authUser.email,
       role: authUser.role,
       wallet: authUser.wallet,
-      isOnboarded: authUser.isOnboarded,
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,
+      verificationTypes: [
+        ...(authUser.pincodeEnabled ? [VerificationTypeEnum.pincode] : []),
+        ...(authUser.twoFactorEnabled ? [VerificationTypeEnum.twoFactor] : []),
+        ...(authUser.secretCodeVerificationId
+          ? [VerificationTypeEnum.secretCode]
+          : []),
+      ] as VerificationType[],
+      userPermissions: {
+        tokenFactory: {
+          actions: {
+            create:
+              TOKEN_FACTORY_PERMISSIONS.create.every(
+                (role) => userRoles[role]
+              ) ?? false,
+          },
+        },
+      },
       onboardingState: {
-        wallet: !!authUser.wallet,
+        wallet: authUser.wallet !== zeroAddress,
         walletSecurity:
           authUser.pincodeEnabled || authUser.twoFactorEnabled || false,
-        walletRecoveryCodes: !!authUser.secretCodeVerificationId,
-        system: !!systemAddress,
+        walletRecoveryCodes: authUser.secretCodesConfirmed ?? false,
+        ...systemOnboardingState,
+        systemSettings: !!baseCurrency,
+        identitySetup: !!account?.identity,
         identity: !!userQueryResult?.kyc,
       },
     };
   });
+
+async function getSystemInfo(
+  systemAddress: string | null,
+  systemAddonsSkipped: string | null
+) {
+  const systemOnboardingState = {
+    system: false,
+    systemAssets: false,
+    systemAddons: false,
+  };
+
+  if (!systemAddress) {
+    return {
+      ...systemOnboardingState,
+      accessControl: null,
+    };
+  }
+  try {
+    const systemData = await getSystemContext(
+      getEthereumAddress(systemAddress)
+    );
+    if (!systemData) {
+      return {
+        ...systemOnboardingState,
+        accessControl: null,
+      };
+    }
+    systemOnboardingState.system = true;
+    systemOnboardingState.systemAssets = systemData.tokenFactories.length > 0;
+
+    // Check if bond factory is deployed
+    const hasBondFactory = systemData.tokenFactories.some(
+      (factory) => factory.typeId === AssetFactoryTypeIdEnum.ATKBondFactory
+    );
+
+    // Check if yield addon is deployed
+    const hasYieldAddon = systemData.systemAddons.some(
+      (addon) => addon.typeId === "ATKFixedYieldScheduleFactory"
+    );
+
+    // System addons are optional, except when bond factory exists - then yield addon is required
+    // If user has explicitly skipped, consider it complete unless bond factory requires yield
+    if (systemAddonsSkipped === "true") {
+      systemOnboardingState.systemAddons = hasBondFactory
+        ? hasYieldAddon
+        : true;
+    } else {
+      systemOnboardingState.systemAddons = hasBondFactory
+        ? hasYieldAddon
+        : systemData.systemAddons.length > 0;
+    }
+    return {
+      ...systemOnboardingState,
+      accessControl: systemData.systemAccessManager?.accessControl ?? null,
+    };
+  } catch {
+    // If system read fails, we assume no factories and addons
+  }
+  return {
+    ...systemOnboardingState,
+    accessControl: null,
+  };
+}

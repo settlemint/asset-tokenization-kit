@@ -1,15 +1,12 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 // OpenZeppelin Contracts
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // Interfaces
 import { IATKVestingAirdropFactory } from "./IATKVestingAirdropFactory.sol";
 import { IATKVestingAirdrop } from "./IATKVestingAirdrop.sol";
-import { IATKSystem } from "../../../system/IATKSystem.sol";
-import { IATKCompliance } from "../../../system/compliance/IATKCompliance.sol";
 
 // Implementations
 import { AbstractATKSystemAddonFactoryImplementation } from
@@ -21,6 +18,7 @@ import { ATKVestingAirdropProxy } from "./ATKVestingAirdropProxy.sol";
 import { ATKSystemRoles } from "../../../system/ATKSystemRoles.sol";
 
 /// @title Factory for Creating ATKVestingAirdrop Proxies
+/// @author SettleMint
 /// @notice This contract serves as a factory to deploy new UUPS proxy instances of `ATKVestingAirdrop` contracts.
 /// It manages a single implementation contract and allows for updating this implementation.
 /// @dev Key features of this factory:
@@ -36,7 +34,14 @@ contract ATKVestingAirdropFactoryImplementation is
     AbstractATKSystemAddonFactoryImplementation,
     IATKVestingAirdropFactory
 {
-    bytes32 public constant override typeId = keccak256("ATKVestingAirdropFactory");
+    /// @notice Unique type identifier for this factory contract.
+    bytes32 public constant TYPE_ID = keccak256("ATKVestingAirdropFactory");
+
+    /// @notice Returns the unique type identifier for this factory.
+    /// @return The type identifier as a bytes32 hash.
+    function typeId() external pure override returns (bytes32) {
+        return TYPE_ID;
+    }
 
     /// @notice Address of the current `ATKVestingAirdrop` logic contract (implementation).
     address public atkVestingAirdropImplementation;
@@ -45,6 +50,8 @@ contract ATKVestingAirdropFactoryImplementation is
     /// airdrop proxy contracts created by this factory.
     IATKVestingAirdrop[] private allAirdrops;
 
+    /// @notice Constructor that disables initializers to prevent implementation contract initialization
+    /// @param forwarder The address of the trusted forwarder for meta-transactions
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address forwarder) AbstractATKSystemAddonFactoryImplementation(forwarder) { }
 
@@ -101,7 +108,7 @@ contract ATKVestingAirdropFactoryImplementation is
     /// @param initializationDeadline The timestamp after which no new vesting can be initialized.
     /// @return airdropProxyAddress The address of the newly created `ATKVestingAirdropProxy` contract.
     function create(
-        string memory name,
+        string calldata name,
         address token,
         bytes32 root,
         address owner,
@@ -137,6 +144,7 @@ contract ATKVestingAirdropFactoryImplementation is
     }
 
     /// @notice Returns the total number of vesting airdrop proxy contracts created by this factory.
+    /// @return count The total number of vesting airdrop proxy contracts created.
     function allAirdropsLength() external view returns (uint256 count) {
         return allAirdrops.length;
     }
@@ -150,7 +158,7 @@ contract ATKVestingAirdropFactoryImplementation is
     /// @param initializationDeadline The timestamp after which no new vesting can be initialized.
     /// @return predictedAddress The predicted address of the vesting airdrop proxy.
     function predictVestingAirdropAddress(
-        string memory name,
+        string calldata name,
         address token,
         bytes32 root,
         address owner,
@@ -170,7 +178,9 @@ contract ATKVestingAirdropFactoryImplementation is
         return _predictProxyAddress(proxyBytecode, constructorArgs, saltInputData);
     }
 
-    /// @notice Returns the address of the current `ATKVestingAirdrop` logic contract (implementation).
+    /// @notice Checks if this contract supports a specific interface.
+    /// @param interfaceId The interface identifier to check for support.
+    /// @return bool True if the interface is supported, false otherwise.
     function supportsInterface(bytes4 interfaceId)
         public
         view

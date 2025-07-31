@@ -1,0 +1,19 @@
+{
+  "asset": "Vermögenswert",
+  "assetClasses": "Vermögensklassen",
+  "assetManagement": "Vermögensverwaltung",
+  "cashEquivalent": "Bargleichwert",
+  "fixedIncome": "Festverzinslich",
+  "flexibleIncome": "Flexibles Einkommen",
+  "home": "Dashboard",
+  "statistics": "Statistiken",
+  "addons": "Zusatzmodule",
+  "assetDesigner": "Vermögensdesigner",
+  "addonDesigner": "Zusatzmodul-Designer",
+  "addonCategories": {
+    "distribution": "Verteilung",
+    "exchange": "Austausch",
+    "custody": "Treuhand",
+    "income": "Einkommen"
+  }
+}

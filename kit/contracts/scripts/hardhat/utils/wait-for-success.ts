@@ -12,32 +12,118 @@ type NetworkTimeoutConfig = {
 export async function waitForSuccess(
   transactionHash: Hex
 ): Promise<TransactionReceipt> {
-  const receipt = await _waitForTransactionReceipt(transactionHash);
+  const maxRetries = _isCI() ? 2 : 0; // Retry up to 2 times in CI environments
+  let lastError: Error | undefined;
 
-  if (receipt.status === "success") {
-    return receipt;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const receipt = await _waitForTransactionReceipt(
+        transactionHash,
+        attempt
+      );
+
+      if (receipt.status === "success") {
+        return receipt;
+      }
+
+      if (receipt.status === "reverted") {
+        await _analyzeRevertedTransaction(transactionHash, receipt);
+      }
+
+      // For any other non-success status
+      throw new Error(
+        `Transaction with hash ${transactionHash} failed with status: ${receipt.status}. ` +
+          `Block Number: ${receipt.blockNumber}, Tx Index: ${receipt.transactionIndex}`
+      );
+    } catch (error) {
+      lastError = error as Error;
+
+      // Only retry timeout errors in CI environments
+      if (attempt < maxRetries && _isTimeoutError(lastError)) {
+        console.log(
+          `[Transaction] ⚠️  Attempt ${attempt + 1} failed due to timeout. Retrying... (${maxRetries - attempt} attempts remaining)`
+        );
+        // Wait a bit before retrying to allow network conditions to improve
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        continue;
+      }
+
+      // If we've exhausted retries or it's not a timeout error, throw
+      break;
+    }
   }
 
-  if (receipt.status === "reverted") {
-    await _analyzeRevertedTransaction(transactionHash, receipt);
+  // Enhance error message for CI environments
+  if (_isCI() && lastError && _isTimeoutError(lastError)) {
+    throw new Error(
+      `${lastError.message}\n\n` +
+        `CI Environment Detection: This error occurred in a CI environment after ${maxRetries + 1} attempts.\n` +
+        `Troubleshooting steps:\n` +
+        `1. Set ATK_TRANSACTION_TIMEOUT_SECONDS environment variable to increase timeout (e.g., ATK_TRANSACTION_TIMEOUT_SECONDS=300 for 5 minutes)\n` +
+        `2. Check if the CI environment has sufficient resources\n` +
+        `3. Consider running transactions in smaller batches\n` +
+        `4. Check the blockchain explorer for transaction status: https://anvil.settlemint.com/tx/${transactionHash}`
+    );
   }
 
-  // For any other non-success status
-  throw new Error(
-    `Transaction with hash ${transactionHash} failed with status: ${receipt.status}. ` +
-      `Block Number: ${receipt.blockNumber}, Tx Index: ${receipt.transactionIndex}`
+  throw lastError!;
+}
+
+function _isTimeoutError(error: Error): boolean {
+  return (
+    error.message.includes("is still pending after") ||
+    error.message.includes("TransactionReceiptNotFoundError") ||
+    error.message.includes("timeout")
+  );
+}
+
+function _isCI(): boolean {
+  return Boolean(
+    process.env.CI ||
+      process.env.CONTINUOUS_INTEGRATION ||
+      process.env.BUILD_NUMBER ||
+      process.env.GITHUB_ACTIONS ||
+      process.env.GITLAB_CI ||
+      process.env.CIRCLECI ||
+      process.env.JENKINS_URL ||
+      process.env.DRONE ||
+      process.env.BUILDKITE
   );
 }
 
 function _getTimeoutConfig(): NetworkTimeoutConfig {
   const chain = getViemChain();
+  const isCI = _isCI();
+
+  // Custom timeout override via environment variable
+  const customTimeoutSeconds = process.env.ATK_TRANSACTION_TIMEOUT_SECONDS;
+  if (customTimeoutSeconds) {
+    const timeoutMs = parseInt(customTimeoutSeconds) * 1000;
+    const pollingInterval = chain.id === 31337 ? 100 : 1000; // Faster polling for local
+    const retryCount = Math.floor(timeoutMs / pollingInterval);
+
+    return {
+      pollingInterval,
+      retryCount,
+      timeoutDescription: `${customTimeoutSeconds} seconds (custom)`,
+    };
+  }
 
   // Anvil (local development)
   if (chain.id === 31337) {
+    if (isCI) {
+      // Longer timeout for CI environments due to potential resource constraints
+      return {
+        pollingInterval: 100, // 100ms - slightly slower than dev but faster than testnet
+        retryCount: 1200, // 2 minute timeout (100ms * 1200 = 120s)
+        timeoutDescription: "2 minutes (CI environment)",
+      };
+    }
+
     return {
       pollingInterval: 50, // 50ms - fast local feedback
-      retryCount: 100, // 5 second timeout (50ms * 100 = 5s)
-      timeoutDescription: "5 seconds",
+      retryCount: 500, // 25 second timeout (50ms * 500 = 25s)
+      timeoutDescription: "25 seconds",
     };
   }
 
@@ -59,13 +145,15 @@ function _getTimeoutConfig(): NetworkTimeoutConfig {
 }
 
 async function _waitForTransactionReceipt(
-  transactionHash: Hex
+  transactionHash: Hex,
+  attempt: number = 0
 ): Promise<TransactionReceipt> {
   const publicClient = getPublicClient();
   const config = _getTimeoutConfig();
 
+  const attemptPrefix = attempt > 0 ? ` (attempt ${attempt + 1})` : "";
   console.log(
-    `[Transaction] Waiting for transaction ${transactionHash} to be mined (timeout: ${config.timeoutDescription})...`
+    `[Transaction] Waiting for transaction ${transactionHash} to be mined (timeout: ${config.timeoutDescription})${attemptPrefix}...`
   );
 
   try {
@@ -76,7 +164,7 @@ async function _waitForTransactionReceipt(
     });
 
     console.log(
-      `[Transaction] ✓ Transaction mined in block ${receipt.blockNumber}`
+      `[Transaction] ✓ Transaction mined in block ${receipt.blockNumber}${attemptPrefix}`
     );
 
     return receipt;

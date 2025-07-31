@@ -25,7 +25,18 @@ import {
 import type { TokenCreateInput } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 
 const CREATE_FUND_MUTATION = portalGraphql(`
-  mutation CreateFundMutation($address: String!, $from: String!, $symbol: String!, $name: String!, $decimals: Int!, $initialModulePairs: [ATKFundFactoryImplementationATKFundFactoryImplementationCreateFundInitialModulePairsInput!]!, $requiredClaimTopics: [String!]!, $verificationId: String, $challengeResponse: String!, $managementFeeBps: Int!) {
+  mutation CreateFundMutation(
+    $address: String!
+    $from: String!
+    $symbol: String!
+    $name: String!
+    $decimals: Int!
+    $initialModulePairs: [ATKFundFactoryImplementationATKFundFactoryImplementationCreateFundInitialModulePairsInput!]!
+    $verificationId: String
+    $challengeResponse: String!
+    $managementFeeBps: Int!
+    $countryCode: Int!
+  ) {
     CreateFund: ATKFundFactoryImplementationCreateFund(
       address: $address
       from: $from
@@ -34,8 +45,8 @@ const CREATE_FUND_MUTATION = portalGraphql(`
         name_: $name
         decimals_: $decimals
         initialModulePairs_: $initialModulePairs
-        requiredClaimTopics_: $requiredClaimTopics
         managementFeeBps_: $managementFeeBps
+        countryCode_: $countryCode
       }
       verificationId: $verificationId
       challengeResponse: $challengeResponse
@@ -45,23 +56,22 @@ const CREATE_FUND_MUTATION = portalGraphql(`
   }
 `);
 
-export const fundCreateHandler = async function* (
+export const fundCreateHandler = async (
   input: TokenCreateInput,
   context: TokenCreateContext
-) {
+) => {
   if (input.type !== AssetTypeEnum.fund) {
     throw new Error("Invalid token type");
   }
 
-  yield* createToken(input, (creationFailedMessage, messages) => {
+  return createToken(input, context, () => {
     return context.portalClient.mutate(
       CREATE_FUND_MUTATION,
       {
         ...input,
         ...context.mutationVariables,
       },
-      creationFailedMessage,
-      messages
+      "Failed to create fund token"
     );
   });
 };

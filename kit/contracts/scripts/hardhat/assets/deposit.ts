@@ -1,14 +1,10 @@
-import {
-  frozenInvestor,
-  investorA,
-  investorB,
-} from "../entities/actors/investors";
+import { frozenInvestor, investorA, investorB } from "../constants/actors";
 
-import { ATKTopic } from "../constants/topics";
-import { owner } from "../entities/actors/owner";
+import { owner } from "../constants/actors";
+import { Countries } from "../constants/countries";
 import { Asset } from "../entities/asset";
 import { atkDeployer } from "../services/deployer";
-import { topicManager } from "../services/topic-manager";
+import { encodeAddressParams } from "../utils/encode-address-params";
 import { burn } from "./actions/burnable/burn";
 import { mint } from "./actions/core/mint";
 import { transfer } from "./actions/core/transfer";
@@ -18,7 +14,6 @@ import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
 import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
 import { setupAsset } from "./actions/setup-asset";
 import { getDefaultComplianceModules } from "./utils/default-compliance-modules";
-import { encodeAddressParams } from "./utils/encode-address-params";
 
 export const createDeposit = async () => {
   console.log("\n=== Creating deposit... ===\n");
@@ -42,7 +37,6 @@ export const createDeposit = async () => {
     deposit.name,
     deposit.symbol,
     deposit.decimals,
-    [topicManager.getTopicId(ATKTopic.kyc)],
     [
       ...getDefaultComplianceModules(),
       {
@@ -50,6 +44,7 @@ export const createDeposit = async () => {
         params: encodeAddressParams(allowedIdentities),
       },
     ],
+    Countries.BE,
   ]);
 
   await deposit.waitUntilDeployed(transactionHash);

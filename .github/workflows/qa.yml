@@ -145,6 +145,26 @@ jobs:
         run: |
           bun dev:up
 
+      - name: Verify subgraph SystemFactory address
+        if: |
+          github.event_name == 'push' ||
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+        run: |
+          echo "Checking SystemFactory address in subgraph.yaml..."
+          EXPECTED_ADDRESS="0x5e771e1417100000000000000000000000020088"
+          ACTUAL_ADDRESS=$(yq '.dataSources[] | select(.name == "SystemFactory") | .source.address' kit/subgraph/subgraph.yaml)
+          if [ "$ACTUAL_ADDRESS" != "$EXPECTED_ADDRESS" ]; then
+            echo "❌ ERROR: SystemFactory address mismatch!"
+            echo "Expected: $EXPECTED_ADDRESS"
+            echo "Actual:   $ACTUAL_ADDRESS"
+            echo ""
+            echo "The subgraph.yaml file has an incorrect SystemFactory address."
+            echo "This needs to be fixed before running tests."
+            exit 1
+          else
+            echo "✅ SystemFactory address is correct: $ACTUAL_ADDRESS"
+          fi
+
       - name: CI tests
         id: qa-tests
         if: |
@@ -158,6 +178,60 @@ jobs:
             echo "Running full Turbo for main branch"
             bun run ci:gha:main --concurrency=100%
           fi
+
+      - name: Check for dapp changes
+        id: check-dapp-changes
+        if: |
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.draft == false &&
+          steps.qa-tests.outcome == 'success'
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          if git diff --name-only "origin/${BASE_REF}...HEAD" | grep -q "^kit/dapp/"; then
+            echo "has_dapp_changes=true" >> $GITHUB_OUTPUT
+            echo "✅ Dapp changes detected - coverage report will be generated"
+          else
+            echo "has_dapp_changes=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ No dapp changes detected - skipping coverage report"
+          fi
+
+      - name: Coverage Report
+        if: |
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.draft == false &&
+          steps.qa-tests.outcome == 'success' &&
+          steps.check-dapp-changes.outputs.has_dapp_changes == 'true'
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          name: 'dapp'
+          working-directory: './kit/dapp'
+          json-summary-path: './coverage/coverage-summary.json'
+          json-final-path: './coverage/coverage-final.json'
+          vite-config-path: './vitest.config.ts'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker compose logs on failure
+        if: |
+          failure() &&
+          steps.qa-tests.conclusion == 'failure' &&
+          (github.event_name == 'push' ||
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false))
+        run: |
+          echo "CI tests failed - collecting docker compose logs for debugging"
+          echo "============================================"
+          echo "Docker compose service status:"
+          echo "============================================"
+          docker compose -p atk ps
+          echo ""
+          echo "============================================"
+          echo "Docker compose logs:"
+          echo "============================================"
+          for service in $(docker compose -p atk ps --services); do
+            echo ""
+            echo "--- Logs for service: $service ---"
+            docker compose -p atk logs "$service" || true
+          done
 
       - name: Store predeployed output
         if: |

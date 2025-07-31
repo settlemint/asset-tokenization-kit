@@ -364,7 +364,7 @@ export class AdminPage extends BasePage {
           const supplyCell = row.locator(
             `td:nth-child(${columnIndices.supplyColumnIndex})`
           );
-          const supplyText = (await supplyCell.textContent()) || "";
+          const supplyText = (await supplyCell.textContent()) ?? "";
 
           if (supplyText.includes("NaN") || supplyText.trim() === "NaN") {
             throw new Error(
@@ -412,7 +412,6 @@ export class AdminPage extends BasePage {
         (error.message.includes("VALIDATION_ERROR") ||
           error.message.includes("but total supply"))
       ) {
-        console.error(error.message);
         throw error;
       }
       return { found: false, matchedSupply: false };
@@ -469,10 +468,6 @@ export class AdminPage extends BasePage {
             const count = await rows.count();
 
             if (count === 0) {
-              console.log(
-                "No rows found in table, checking if we need to refresh"
-              );
-
               const result = await this.handleNoRows(
                 currentSearchAttempts,
                 maxSearchAttempts,
@@ -501,8 +496,6 @@ export class AdminPage extends BasePage {
               }
             }
 
-            console.log(`Asset ${options.name} not found in ${count} rows`);
-
             const result = await this.handleAssetNotFound(
               currentSearchAttempts,
               maxSearchAttempts,
@@ -523,8 +516,6 @@ export class AdminPage extends BasePage {
             ) {
               throw error;
             }
-
-            console.log(`Error during search: ${error}`);
             return false;
           }
         },
@@ -596,9 +587,6 @@ export class AdminPage extends BasePage {
     const updatedSearchAttempts = searchAttempts + 1;
 
     if (updatedSearchAttempts < maxSearchAttempts) {
-      console.error(
-        `Asset not found, search attempt ${updatedSearchAttempts}/${maxSearchAttempts}...`
-      );
       await this.page.waitForTimeout(1000);
       return {
         continueSearch: false,
@@ -862,7 +850,6 @@ export class AdminPage extends BasePage {
   async verifySuccessMessage(partialMessage: string) {
     const toastSelector =
       '[data-sonner-toast][data-type="success"][data-mounted="true"][data-visible="true"]';
-    const titleSelector = `${toastSelector} [data-title]`;
 
     await expect
       .poll(
@@ -991,7 +978,7 @@ export class AdminPage extends BasePage {
     await detailsLink.click();
     const singularForm = this.getSingularForm(options.sidebarAssetTypes);
     await this.page.waitForURL(
-      new RegExp(`.*\/assets\/${singularForm}\/0x[a-fA-F0-9]{40}`)
+      new RegExp(`.*\\/assets\\/${singularForm}\\/0x[a-fA-F0-9]{40}`)
     );
   }
 

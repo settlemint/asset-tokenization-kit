@@ -8,7 +8,7 @@ import { ZeroAddressNotAllowed } from "../ATKIdentityErrors.sol";
 import { IATKIdentity } from "./IATKIdentity.sol";
 
 /// @title ATK Identity Proxy Contract (for Wallet Identities)
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This contract serves as an upgradeable proxy for an individual on-chain identity associated with a user
 /// wallet.
 ///         It is based on the ERC725 (OnchainID) standard for identity and uses ERC734 for key management.
@@ -33,17 +33,27 @@ contract ATKIdentityProxy is AbstractATKSystemProxy {
     /// `ATKIdentityImplementation` inherits) via `_performInitializationDelegatecall`.
     /// @param systemAddress The address of the `IATKSystem` contract.
     /// @param initialManagementKey The address to be set as the first management key for this identity.
-    constructor(address systemAddress, address initialManagementKey) AbstractATKSystemProxy(systemAddress) {
+    /// @param claimAuthorizationContracts Array of addresses implementing IClaimAuthorizer to register as claim
+    /// authorizers.
+    constructor(
+        address systemAddress,
+        address initialManagementKey,
+        address[] memory claimAuthorizationContracts
+    )
+        AbstractATKSystemProxy(systemAddress)
+    {
         if (initialManagementKey == address(0)) revert ZeroAddressNotAllowed();
 
         IATKSystem system_ = _getSystem();
         address implementation = _getSpecificImplementationAddress(system_);
 
-        bytes memory data = abi.encodeWithSelector(IATKIdentity.initialize.selector, initialManagementKey);
+        bytes memory data =
+            abi.encodeWithSelector(IATKIdentity.initialize.selector, initialManagementKey, claimAuthorizationContracts);
 
         _performInitializationDelegatecall(implementation, data);
     }
 
+    /// @notice Gets the specific implementation address for the identity proxy
     /// @dev Retrieves the implementation address for the Identity module from the `IATKSystem` contract.
     /// @dev Reverts with `IdentityImplementationNotSet` if the implementation address is zero.
     /// @param system The `IATKSystem` contract instance.

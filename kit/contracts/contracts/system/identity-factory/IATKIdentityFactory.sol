@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 /// @title IATKIdentityFactory Interface
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This interface defines the functions for a factory contract responsible for creating and managing
 ///         on-chain identities for both user wallets and token contracts within the ATK Protocol.
 /// @dev These identities are typically based on standards like ERC725 (OnchainID) and are deployed as proxy contracts
@@ -18,12 +18,22 @@ interface IATKIdentityFactory is IERC165 {
     /// @param identity The address of the newly deployed `ATKIdentityProxy` contract.
     /// @param wallet The investor wallet address for which the identity was created.
     event IdentityCreated(address indexed sender, address indexed identity, address indexed wallet);
-    /// @notice Emitted when a new identity contract is successfully created and registered for a token contract.
-    /// @param sender The address that initiated the token identity creation (e.g., an address with `REGISTRAR_ROLE`).
-    /// @param identity The address of the newly deployed `ATKTokenIdentityProxy` contract.
-    /// @param token The address of the token contract for which the identity was created.
-    event TokenIdentityCreated(address indexed sender, address indexed identity, address indexed token);
+    /// @notice Emitted when a new identity contract is successfully created and registered for a contract.
+    /// @param sender The address that initiated the contract identity creation (e.g., an address with
+    /// `REGISTRAR_ROLE`).
+    /// @param identity The address of the newly deployed contract identity contract.
+    /// @param contractAddress The address of the contract for which the identity was created.
+    event ContractIdentityCreated(address indexed sender, address indexed identity, address indexed contractAddress);
 
+    /// @notice Emitted when a contract is registered with an identity and description
+    /// @param sender The address that initiated the registration
+    /// @param contractAddress The address of the contract being registered
+    /// @param description Human-readable description of the contract (for indexing/UX)
+    event ContractIdentityRegistered(address indexed sender, address indexed contractAddress, string description);
+
+    /// @notice Initializes the identity factory
+    /// @dev Sets up the system address for the factory
+    /// @param systemAddress The address of the ATK system contract
     function initialize(address systemAddress) external;
 
     // --- State-Changing Functions ---
@@ -46,19 +56,13 @@ interface IATKIdentityFactory is IERC165 {
         external
         returns (address identityContract);
 
-    /// @notice Creates a new on-chain identity specifically for a token contract using metadata-based salt.
-    /// @dev This function deploys a new identity contract (e.g., a `ATKTokenIdentityProxy`) using the token's
-    ///      metadata (name, symbol, decimals) queried from the ISMART interface to generate a unique salt.
-    ///      This provides more predictable and meaningful identity addresses based on token characteristics.
-    /// @param _token The address of
-    /// @param _accessManager The address of the access manager contract to be used for the token identity.
-    /// @return tokenIdentityContract The address of the newly deployed token identity contract.
-    function createTokenIdentity(
-        address _token,
-        address _accessManager
-    )
-        external
-        returns (address tokenIdentityContract);
+    /// @notice Creates a new on-chain identity for a contract that implements IContractWithIdentity.
+    /// @dev This function deploys a new identity contract using a salt based on the contract address.
+    ///      The salt is calculated deterministically from the contract address for predictable deployment.
+    ///      Permission checks are delegated to the contract itself via canAddClaim/canRemoveClaim.
+    /// @param _contract The address of the contract implementing IContractWithIdentity
+    /// @return contractIdentityAddress The address of the newly deployed contract identity contract.
+    function createContractIdentity(address _contract) external returns (address contractIdentityAddress);
 
     // --- View Functions ---
 
@@ -68,11 +72,11 @@ interface IATKIdentityFactory is IERC165 {
     /// `address(0)`.
     function getIdentity(address _wallet) external view returns (address identityContract);
 
-    /// @notice Retrieves the address of an already created on-chain identity associated with a given token contract.
-    /// @param _token The token contract address to look up.
-    /// @return tokenIdentityContract The address of the token identity contract if one exists for the token, otherwise
+    /// @notice Retrieves the address of an already created on-chain identity associated with a given contract.
+    /// @param _contract The contract address to look up.
+    /// @return contractIdentityAddress The address of the contract identity if one exists for the contract, otherwise
     /// `address(0)`.
-    function getTokenIdentity(address _token) external view returns (address tokenIdentityContract);
+    function getContractIdentity(address _contract) external view returns (address contractIdentityAddress);
 
     /// @notice Calculates the deterministic address at which an identity contract for a user wallet *would be* or *was*
     /// deployed.
@@ -92,23 +96,20 @@ interface IATKIdentityFactory is IERC165 {
         view
         returns (address predictedAddress);
 
-    /// @notice Calculates the deterministic address at which an identity contract for a token *would be* or *was*
-    /// deployed using metadata-based salt.
-    /// @dev Uses token metadata (name, symbol, decimals) combined with token address to calculate the deployment
-    ///      address. This provides a way to predict addresses for tokens based on their characteristics.
-    /// @param _name The name of the token used in salt generation.
-    /// @param _symbol The symbol of the token used in salt generation.
-    /// @param _decimals The decimals of the token used in salt generation.
-    /// @param _initialManager The address that would be (or was) set as the initial manager during the token identity's
-    /// creation.
-    /// @return predictedAddress The pre-computed or actual deployment address of the token's identity contract.
-    function calculateTokenIdentityAddress(
-        string calldata _name,
-        string calldata _symbol,
-        uint8 _decimals,
-        address _initialManager
-    )
+    /// @notice Calculates the deterministic address at which an identity contract for a contract *would be* or *was*
+    /// deployed using address-based salt.
+    /// @dev Uses the contract address to calculate a deterministic salt for deployment address prediction.
+    ///      This provides predictable addresses based on the contract address.
+    /// @param _contractAddress The address of the contract for which the identity will be created.
+    /// @return predictedAddress The pre-computed or actual deployment address of the contract's identity contract.
+    function calculateContractIdentityAddress(address _contractAddress)
         external
         view
         returns (address predictedAddress);
+
+    /// @notice Sets the identity factory's own OnChain ID and issues a self-claim.
+    /// @dev This is called during bootstrap by the system contract only. After setting the identity,
+    ///      it issues a CONTRACT_IDENTITY claim to itself to attest that the factory is a contract identity.
+    /// @param identityAddress The address of the identity factory's own identity contract.
+    function setOnchainID(address identityAddress) external;
 }

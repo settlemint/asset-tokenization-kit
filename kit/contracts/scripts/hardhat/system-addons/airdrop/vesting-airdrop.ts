@@ -1,16 +1,20 @@
 import { atkDeployer } from "../../services/deployer";
 
-import { owner } from "../../entities/actors/owner";
+import { owner } from "../../constants/actors";
 import { AirdropMerkleTree } from "../../entities/airdrop/merkle-tree";
 import { VestingAirdrop } from "../../entities/airdrop/vesting-airdrop";
 import { Asset } from "../../entities/asset";
 import { getAnvilTimeSeconds } from "../../utils/anvil";
+import { grantAirdropFactoryPermissions } from "./utils/permissions";
 
 export const createVestingAirdrop = async (
   asset: Asset<any>,
   merkleTree: AirdropMerkleTree
 ) => {
   console.log("\n=== Creating vesting airdrop... ===\n");
+
+  // Grant necessary permissions to the vesting airdrop factory
+  await grantAirdropFactoryPermissions("vestingAirdropFactory");
 
   // Create linear vesting strategy
   const linearVestingStrategy =

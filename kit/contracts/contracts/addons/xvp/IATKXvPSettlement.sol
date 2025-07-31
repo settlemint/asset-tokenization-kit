@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.27;
+pragma solidity ^0.8.28;
 
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 /// @title IATKXvPSettlement - Interface for cross-value proposition settlements
+/// @author SettleMint
 /// @notice Interface for contracts that facilitate atomic swaps between parties with multiple token flows
 /// @custom:security-contact support@settlemint.com
 interface IATKXvPSettlement is IERC165 {
@@ -27,31 +28,54 @@ interface IATKXvPSettlement is IERC165 {
 
     // Events
     /// @notice Event emitted when an XvP settlement is approved by a party
+    /// @param sender The address of the party that approved the settlement
     event XvPSettlementApproved(address indexed sender);
 
     /// @notice Event emitted when an XvP settlement approval is revoked
+    /// @param sender The address of the party that revoked their approval
     event XvPSettlementApprovalRevoked(address indexed sender);
 
     /// @notice Event emitted when an XvP settlement is executed
+    /// @param sender The address that executed the settlement
     event XvPSettlementExecuted(address indexed sender);
 
     /// @notice Event emitted when an XvP settlement is cancelled
+    /// @param sender The address that cancelled the settlement
     event XvPSettlementCancelled(address indexed sender);
 
     // Custom errors
+    /// @notice Error thrown when attempting to execute an already executed settlement
     error XvPSettlementAlreadyExecuted();
+    /// @notice Error thrown when attempting to execute an already cancelled settlement
     error XvPSettlementAlreadyCancelled();
+    /// @notice Error thrown when attempting to execute an expired settlement
     error XvPSettlementExpired();
+    /// @notice Error thrown when attempting an operation that requires the settlement to be expired
     error XvPSettlementNotExpired();
+    /// @notice Error thrown when a flow amount is zero
     error ZeroAmount();
+    /// @notice Error thrown when an address is the zero address
     error ZeroAddress();
+    /// @notice Error thrown when no flows are provided
     error EmptyFlows();
+    /// @notice Error thrown when the cutoff date is invalid
     error InvalidCutoffDate();
+    /// @notice Error thrown when a token address is invalid
     error InvalidToken();
+    /// @notice Error thrown when the sender is not involved in the settlement
     error SenderNotInvolvedInSettlement();
+    /// @notice Error thrown when the sender has already approved the settlement
     error SenderAlreadyApprovedSettlement();
+    /// @notice Error thrown when the sender has not approved the settlement
     error SenderNotApprovedSettlement();
+    /// @notice Error thrown when the settlement is not fully approved by all parties
     error XvPSettlementNotApproved();
+    /// @notice Error thrown when there is insufficient token allowance
+    /// @param token The token address
+    /// @param owner The token owner address
+    /// @param spender The spender address
+    /// @param required The required allowance amount
+    /// @param allowed The current allowance amount
     error InsufficientAllowance(address token, address owner, address spender, uint256 required, uint256 allowed);
 
     // View functions

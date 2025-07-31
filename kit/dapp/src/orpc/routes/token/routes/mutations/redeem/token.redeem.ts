@@ -1,11 +1,14 @@
-import { ALL_INTERFACE_IDS } from "@/lib/interface-ids";
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { supportsInterface } from "@/orpc/helpers/interface-detection";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
+import { tokenMiddleware } from "@/orpc/middlewares/system/token.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenRedeemMessagesSchema } from "./token.redeem.schema";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { read } from "../../token.read";
+import { call } from "@orpc/server";
+import { from } from "dnum";
+import type { TokenRedeemOutput } from "./token.redeem.schema";
 
 const TOKEN_REDEEM_MUTATION = portalGraphql(`
   mutation TokenRedeem(
@@ -41,63 +44,56 @@ const TOKEN_REDEEM_ALL_MUTATION = portalGraphql(`
       from: $from
       verificationId: $verificationId
       challengeResponse: $challengeResponse
-      input: {}
     ) {
       transactionHash
     }
   }
 `);
 
-export const tokenRedeem = tokenRouter.token.tokenRedeem
+export const redeem = tokenRouter.token.redeem
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.redeem,
+      requiredExtensions: ["REDEEMABLE"],
+    })
+  )
   .use(portalMiddleware)
-  .handler(async function* ({ input, context, errors }) {
+  .use(tokenMiddleware)
+  .handler(async ({ input, context, errors }): Promise<TokenRedeemOutput> => {
     const { contract, verification, amount, redeemAll } = input;
     const { auth } = context;
-
-    // Parse messages with defaults
-    const messages = TokenRedeemMessagesSchema.parse(input.messages ?? {});
-
-    // Validate that the token supports redemption
-    const supportsRedemption = await supportsInterface(
-      context.portalClient,
-      contract,
-      ALL_INTERFACE_IDS.ISMARTRedeemable
-    );
-
-    if (!supportsRedemption) {
-      throw errors.FORBIDDEN({
-        message:
-          "Token does not support redemption operations. The token must implement ISMARTRedeemable interface.",
-      });
-    }
 
     // Validate input parameters
     if (!redeemAll && !amount) {
       throw errors.INPUT_VALIDATION_FAILED({
-        message: "Either amount must be provided or redeemAll must be true",
+        message: context.t(
+          "tokens:api.mutations.redeem.messages.amountOrRedeemAllRequired"
+        ),
         data: { errors: ["Invalid redeem parameters"] },
       });
     }
+
+    const errorMessage = redeemAll
+      ? context.t("tokens:api.mutations.redeem.messages.redeemAllFailed")
+      : context.t("tokens:api.mutations.redeem.messages.failed");
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
       code: verification.verificationCode,
       type: verification.verificationType,
     });
-
     // Choose mutation based on whether we're redeeming all or a specific amount
-    const transactionHash = redeemAll
-      ? yield* context.portalClient.mutate(
+    const result = await (redeemAll
+      ? context.portalClient.mutate(
           TOKEN_REDEEM_ALL_MUTATION,
           {
             address: contract,
             from: sender.wallet,
             ...challengeResponse,
           },
-          messages.redemptionFailed,
-          messages
+          errorMessage
         )
-      : yield* context.portalClient.mutate(
+      : context.portalClient.mutate(
           TOKEN_REDEEM_MUTATION,
           {
             address: contract,
@@ -105,9 +101,29 @@ export const tokenRedeem = tokenRouter.token.tokenRedeem
             amount: amount?.toString() ?? "",
             ...challengeResponse,
           },
-          messages.redemptionFailed,
-          messages
-        );
+          errorMessage
+        ));
 
-    return getEthereumHash(transactionHash);
+    // Get updated token data
+    const updatedToken = await call(
+      read,
+      { tokenAddress: contract },
+      { context }
+    );
+
+    // Calculate redeemed amount
+    const amountRedeemed = redeemAll
+      ? from(0, updatedToken.decimals) // We don't know the exact amount for redeemAll
+      : from(amount ?? 0, updatedToken.decimals);
+
+    return {
+      txHash: result,
+      data: {
+        amountRedeemed,
+        redeemedAll: Boolean(redeemAll),
+        tokenName: updatedToken.name,
+        tokenSymbol: updatedToken.symbol,
+        totalRedeemedAmount: updatedToken.redeemable?.redeemedAmount,
+      },
+    };
   });

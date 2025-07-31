@@ -1,34 +1,13 @@
+import { accessControlRoles } from "@/lib/zod/validators/access-control-roles";
+import { assetExtensionArray } from "@/lib/zod/validators/asset-extensions";
+import { assetType } from "@/lib/zod/validators/asset-types";
 import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
 import { decimals } from "@/lib/zod/validators/decimals";
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { timestamp } from "@/lib/zod/validators/timestamp";
-import type { TokenRoles } from "@/orpc/middlewares/system/token.middleware";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { from } from "dnum";
 import { z } from "zod";
-
-/**
- * Available token roles in the system
- *
- * These roles define the various permission levels that can be assigned
- * to users for interacting with tokenized assets. Each role grants
- * specific capabilities within the token contract.
- *
- * @see {@link TokenRoles} for the complete type definition
- */
-const ROLES: TokenRoles[] = [
-  "admin",
-  "bypassListManager",
-  "claimManager",
-  "custodian",
-  "deployer",
-  "emergency",
-  "implementationManager",
-  "registryManager",
-  "registrar",
-  "storageModifier",
-  "supplyManagement",
-  "governance",
-];
 
 /**
  * Zod schema for token details with user permissions
@@ -43,41 +22,7 @@ const ROLES: TokenRoles[] = [
  * @property {number} decimals - Number of decimal places for the token (typically 18 for ERC20)
  * @property {Object} [userPermissions] - Optional permissions object for the current user
  * @property {Object} userPermissions.roles - Boolean flags for each role the user has
- * @property {boolean} userPermissions.isCompliant - Whether the user meets compliance requirements
  * @property {boolean} userPermissions.isAllowed - Whether the user can interact with the token
- *
- * @example
- * ```typescript
- * // Example token data that validates against this schema
- * const tokenData = {
- *   id: "0x1234567890abcdef1234567890abcdef12345678",
- *   name: "Corporate Bond Token",
- *   symbol: "CBT",
- *   decimals: 18,
- *   userPermissions: {
- *     roles: {
- *       admin: false,
- *       bypassListManager: false,
- *       claimManager: false,
- *       custodian: true,
- *       deployer: false,
- *       emergency: false,
- *       implementationManager: false,
- *       registryManager: false,
- *       registrar: false,
- *       storageModifier: false,
- *       supplyManagement: true,
- *       governance: false
- *     },
- *     isCompliant: true,
- *     isAllowed: true
- *   }
- * };
- *
- * // Validate the data
- * const validated = TokenSchema.parse(tokenData);
- * ```
- *
  * @remarks
  * - The userPermissions field is optional and will only be present when the
  *   API is called with authentication
@@ -91,10 +36,17 @@ const ROLES: TokenRoles[] = [
  */
 export const RawTokenSchema = z.object({
   id: ethereumAddress.describe("The token contract address"),
+  type: assetType(),
+  createdAt: timestamp().describe("The timestamp of the token creation"),
   name: z.string().describe("The name of the token"),
   symbol: z.string().describe("The symbol of the token"),
   decimals: decimals(),
   totalSupply: z.string().describe("The total supply of the token as string"),
+  extensions: assetExtensionArray().describe("The extensions of the token"),
+  implementsERC3643: z
+    .boolean()
+    .describe("Whether the token implements ERC3643"),
+  implementsSMART: z.boolean().describe("Whether the token implements SMART"),
   pausable: z.object({
     paused: z.boolean().describe("Whether the token is paused"),
   }),
@@ -145,27 +97,92 @@ export const RawTokenSchema = z.object({
     .describe("The fund of the token"),
   userPermissions: z
     .object({
-      roles: z
-        .object(
-          ROLES.reduce<Record<TokenRoles, z.ZodType<boolean>>>(
-            (acc, role) => {
-              acc[role] = z
-                .boolean()
-                .describe(`Whether the user has the ${role} role`);
-              return acc;
-            },
-            {} as Record<TokenRoles, z.ZodType<boolean>>
-          )
-        )
-        .describe("The roles of the user for the token"),
-      isCompliant: z
-        .boolean()
-        .describe(
-          "Whether the user has the required claim topics to interact with the token"
-        ),
+      roles: accessControlRoles.describe("The roles of the user for the token"),
       isAllowed: z
         .boolean()
         .describe("Whether the user is allowed to interact with the token"),
+      notAllowedReason: z
+        .string()
+        .describe(
+          "The reason the user is not allowed to interact with the token"
+        )
+        .optional(),
+      actions: z
+        .object(
+          (() => {
+            const actionsSchema: Record<
+              keyof typeof TOKEN_PERMISSIONS,
+              z.ZodType<boolean>
+            > = {
+              burn: z
+                .boolean()
+                .describe("Whether the user can execute the burn action"),
+              create: z
+                .boolean()
+                .describe("Whether the user can execute the create action"),
+              mint: z
+                .boolean()
+                .describe("Whether the user can execute the mint action"),
+              pause: z
+                .boolean()
+                .describe("Whether the user can execute the pause action"),
+              addComplianceModule: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the addComplianceModule action"
+                ),
+              approve: z
+                .boolean()
+                .describe("Whether the user can execute the approve action"),
+              forcedRecover: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenForcedRecover action"
+                ),
+              freezeAddress: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenFreezeAddress action"
+                ),
+              recoverERC20: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenRecoverERC20 action"
+                ),
+              recoverTokens: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenRecoverTokens action"
+                ),
+              redeem: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenRedeem action"
+                ),
+              removeComplianceModule: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenRemoveComplianceModule action"
+                ),
+              setCap: z
+                .boolean()
+                .describe("Whether the user can execute the setCap action"),
+              setYieldSchedule: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenSetYieldSchedule action"
+                ),
+              transfer: z
+                .boolean()
+                .describe("Whether the user can execute the transfer action"),
+              unpause: z
+                .boolean()
+                .describe("Whether the user can execute the unpause action"),
+            };
+            return actionsSchema;
+          })()
+        )
+        .describe("The actions on the token the user is allowed to execute"),
     })
     .optional()
     .describe("The permissions of the user for the token"),

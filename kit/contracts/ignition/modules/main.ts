@@ -3,7 +3,6 @@ import PushAirdropFactoryModule from "./predeployed/addons/airdrop/push-airdrop-
 import TimeboundAirdropFactoryModule from "./predeployed/addons/airdrop/time-bound-airdrop.factory";
 import VestingAirdropFactoryModule from "./predeployed/addons/airdrop/vesting-airdrop-factory";
 import FixedYieldScheduleFactoryModule from "./predeployed/addons/fixed-yield-schedule-factory";
-import VaultModule from "./predeployed/addons/vault/vault";
 import VaultFactoryModule from "./predeployed/addons/vault/vault-factory";
 import XvPSettlementFactoryModule from "./predeployed/addons/xvp-settlement-factory";
 import BondModule from "./predeployed/assets/bond";
@@ -16,6 +15,7 @@ import CountryAllowListModule from "./predeployed/modules/country-allow-list-mod
 import CountryBlockListModule from "./predeployed/modules/country-block-list-module";
 import IdentityAllowListModule from "./predeployed/modules/identity-allow-list-module";
 import IdentityBlockListModule from "./predeployed/modules/identity-block-list-module";
+import IdentityVerificationModule from "./predeployed/modules/identity-verification-module";
 import SystemFactoryModule from "./predeployed/system-factory";
 
 /**
@@ -50,13 +50,15 @@ const ATKModule = buildModule("ATKModule", (m) => {
     TimeboundAirdropFactoryModule
   );
   const { vaultFactoryImplementation } = m.useModule(VaultFactoryModule);
-  const { atkVaultImplementation } = m.useModule(VaultModule);
 
   const { countryAllowListModule } = m.useModule(CountryAllowListModule);
   const { countryBlockListModule } = m.useModule(CountryBlockListModule);
   const { addressBlockListModule } = m.useModule(AddressBlockListModule);
   const { identityBlockListModule } = m.useModule(IdentityBlockListModule);
   const { identityAllowListModule } = m.useModule(IdentityAllowListModule);
+  const { identityVerificationModule } = m.useModule(
+    IdentityVerificationModule
+  );
 
   return {
     systemFactory,
@@ -77,13 +79,13 @@ const ATKModule = buildModule("ATKModule", (m) => {
     pushAirdropFactoryImplementation,
     timeBoundAirdropFactoryImplementation,
     vaultFactoryImplementation,
-    atkVaultImplementation,
     // compliancemodules
     countryAllowListModule,
     countryBlockListModule,
     addressBlockListModule,
     identityBlockListModule,
     identityAllowListModule,
+    identityVerificationModule,
   };
 });
 

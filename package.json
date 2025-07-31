@@ -45,7 +45,7 @@
     "ci": "turbo run ci",
     "ci:publish": "turbo run ci:publish",
     "version": "bun run tools/version.ts",
-    "clean": "git clean -fdX -e '.env' -e '.env.*' -e '!.env' -e '!.env.*' && find . -type f \\( -name 'pnpm-lock.yaml' -o -name 'package-lock.json' -o -name 'yarn.lock' -o -name 'bun.lockb' -o -name 'bun.lock' \\) -exec rm -f {} + && bun install",
+    "clean": "git clean -fdX -e '.env' -e '.env.*' -e '!.env' -e '!.env.*' -e '.turbo/config.json' && find . -type f \\( -name 'pnpm-lock.yaml' -o -name 'package-lock.json' -o -name 'yarn.lock' -o -name 'bun.lockb' -o -name 'bun.lock' \\) -exec rm -f {} + && bun install && bunx turbo link --yes",
     "predev": "bunx settlemint connect --instance local",
     "dev": "turbo dev watch db:studio",
     "lint": "turbo lint",
@@ -67,13 +67,18 @@
     "extract-env": "bun run tools/extract-env.ts",
     "db:studio": "turbo run db:studio"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@types/js-yaml": "4.0.9",
+    "js-yaml": "4.1.0"
+  },
   "devDependencies": {
     "@prettier/plugin-oxc": "0.0.4",
-    "@settlemint/sdk-cli": "2.5.1",
+    "@settlemint/sdk-cli": "2.5.2",
+    "@settlemint/sdk-utils": "2.5.2",
     "prettier": "3.6.2",
-    "turbo": "2.5.4",
-    "typescript": "5.8.3"
+    "turbo": "2.5.5",
+    "typescript": "5.9.1-rc",
+    "yaml": "2.8.0"
   },
   "trustedDependencies": [
     "@sentry/cli",
@@ -91,5 +96,5 @@
   "workspaces": [
     "kit/*"
   ],
-  "packageManager": "bun@1.2.16"
+  "packageManager": "bun@1.2.19"
 }

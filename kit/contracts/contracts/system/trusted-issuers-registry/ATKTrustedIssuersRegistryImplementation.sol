@@ -16,12 +16,18 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 // Interface imports
 import { IERC3643TrustedIssuersRegistry } from "../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 import { IATKTrustedIssuersRegistry } from "./IATKTrustedIssuersRegistry.sol";
+import { IClaimAuthorizer } from "../../onchainid/extensions/IClaimAuthorizer.sol";
+import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
 
 // Constants
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
+/// @dev Custom errors for ATKTrustedIssuersRegistry
+error UnauthorizedAccess();
+error MissingRegistrarRole();
+
 /// @title ATK Trusted Issuers Registry Implementation
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This contract is the upgradeable logic for managing a registry of trusted claim issuers and the specific
 /// claim topics they are authorized to issue claims for. It is compliant with the `IERC3643TrustedIssuersRegistry`
 /// interface, a standard for tokenization platforms.
@@ -48,9 +54,14 @@ contract ATKTrustedIssuersRegistryImplementation is
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
     AccessControlUpgradeable,
-    IATKTrustedIssuersRegistry
+    IATKTrustedIssuersRegistry,
+    IClaimAuthorizer
 {
     // --- Storage Variables ---
+    /// @notice Optional centralized access manager for enhanced role checking
+    /// @dev If set, enables multi-role access patterns alongside existing AccessControl
+    IATKSystemAccessManager private _systemAccessManager;
+
     /// @notice Defines a structure to hold the details for a trusted claim issuer.
     /// @param issuer The Ethereum address of the `IClaimIssuer` compliant contract. This contract is responsible for
     /// issuing claims (e.g., KYC, accreditation) about identities.
@@ -60,8 +71,8 @@ contract ATKTrustedIssuersRegistryImplementation is
     /// registry. `true` if active, `false` if removed or not yet added.
     struct TrustedIssuer {
         address issuer;
-        uint256[] claimTopics;
         bool exists;
+        uint256[] claimTopics;
     }
 
     /// @notice Primary mapping that stores `TrustedIssuer` details, keyed by the issuer's contract address.
@@ -103,6 +114,14 @@ contract ATKTrustedIssuersRegistryImplementation is
     /// @dev The zero address is invalid for representing an issuer contract. This ensures all registered issuers
     /// have a valid contract address.
     error InvalidIssuerAddress();
+
+    /// @notice Error triggered if an attempt is made to initialize with a zero address for the admin role.
+    /// @dev The zero address is invalid for representing an admin. This ensures proper access control setup.
+    error InvalidAdminAddress();
+
+    /// @notice Error triggered if an attempt is made to grant registrar role to a zero address.
+    /// @dev The zero address is invalid for representing a registrar. This ensures all registrars have valid addresses.
+    error InvalidRegistrarAddress();
 
     /// @notice Error triggered if an attempt is made to add or update an issuer with an empty list of claim topics.
     /// @dev A trusted issuer must be associated with at least one claim topic they are authorized to issue claims for.
@@ -195,12 +214,74 @@ contract ATKTrustedIssuersRegistryImplementation is
     /// The `initializer` modifier from `Initializable` ensures this function can only be executed once.
     /// @param initialAdmin The address that will receive the initial `DEFAULT_ADMIN_ROLE` and `REGISTRAR_ROLE`.
     /// This address will have full control over the registry's setup and initial population of trusted issuers.
-    function initialize(address initialAdmin) public initializer {
+    /// @param initialRegistrars The addresses that will receive the initial `REGISTRAR_ROLE`.
+    /// These addresses will have the ability to add and remove trusted issuers.
+    /// @dev Reverts with:
+    ///      - `InvalidAdminAddress()` if `initialAdmin` is `address(0)`.
+    ///      - `InvalidRegistrarAddress()` if any address in `initialRegistrars` is `address(0)`.
+    function initialize(address initialAdmin, address[] calldata initialRegistrars) public initializer {
+        if (initialAdmin == address(0)) revert InvalidAdminAddress();
+
         __ERC165_init_unchained();
         __AccessControl_init_unchained();
 
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin); // Manually grant DEFAULT_ADMIN_ROLE
-        _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialAdmin);
+
+        for (uint256 i = 0; i < initialRegistrars.length; ++i) {
+            if (initialRegistrars[i] == address(0)) revert InvalidRegistrarAddress();
+            _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialRegistrars[i]);
+        }
+    }
+
+    // --- System Access Manager Functions ---
+
+    /// @notice Sets the system access manager for enhanced role checking
+    /// @dev Only callable by accounts with DEFAULT_ADMIN_ROLE. Setting to address(0) disables centralized access
+    /// control
+    /// @param systemAccessManager The address of the ATK system access manager, or address(0) to disable
+    function setSystemAccessManager(address systemAccessManager) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _systemAccessManager = IATKSystemAccessManager(systemAccessManager);
+        emit SystemAccessManagerSet(_msgSender(), systemAccessManager);
+    }
+
+    /// @notice Returns the current system access manager address
+    /// @return The address of the system access manager, or address(0) if not set
+    function getSystemAccessManager() external view returns (address) {
+        return address(_systemAccessManager);
+    }
+
+    /// @notice Event emitted when the system access manager is updated
+    /// @param admin The address that updated the system access manager
+    /// @param systemAccessManager The new system access manager address
+    event SystemAccessManagerSet(address indexed admin, address indexed systemAccessManager);
+
+    // --- Access Control Modifiers ---
+
+    /// @notice Modifier that checks if the caller has any of the specified roles in the system access manager
+    /// @dev This implements the new centralized access pattern: onlySystemRoles(MANAGER_ROLE, [SYSTEM_ROLES])
+    /// Falls back to AccessControl if system access manager is not set
+    /// @param roles Array of roles, where the caller must have at least one
+    modifier onlySystemRoles(bytes32[] memory roles) {
+        if (address(_systemAccessManager) != address(0)) {
+            // Use centralized access manager when available
+            if (!_systemAccessManager.hasAnyRole(roles, _msgSender())) revert UnauthorizedAccess();
+        } else {
+            // Fall back to traditional AccessControl during bootstrap
+            if (!hasRole(ATKSystemRoles.REGISTRAR_ROLE, _msgSender())) revert MissingRegistrarRole();
+        }
+        _;
+    }
+
+    // --- Internal Helper Functions ---
+
+    /// @notice Returns the roles that can perform claim policy management operations
+    /// @dev Implements the pattern from the ticket: MANAGER_ROLE + [SYSTEM_ROLES]
+    /// @return roles Array of roles that can manage trusted issuers and claim policies
+    function _getClaimPolicyManagementRoles() internal pure returns (bytes32[] memory roles) {
+        roles = new bytes32[](3);
+        roles[0] = ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE; // Primary claim policy manager
+        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE; // System manager
+        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE; // System module role
     }
 
     // --- Issuer Management Functions (REGISTRAR_ROLE required) ---
@@ -231,7 +312,7 @@ contract ATKTrustedIssuersRegistryImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        onlySystemRoles(_getClaimPolicyManagementRoles())
     {
         address issuerAddress = address(_trustedIssuer);
         if (issuerAddress == address(0)) revert InvalidIssuerAddress();
@@ -239,7 +320,7 @@ contract ATKTrustedIssuersRegistryImplementation is
         if (_trustedIssuers[issuerAddress].exists) revert IssuerAlreadyExists(issuerAddress);
 
         // Store issuer details
-        _trustedIssuers[issuerAddress] = TrustedIssuer(issuerAddress, _claimTopics, true);
+        _trustedIssuers[issuerAddress] = TrustedIssuer(issuerAddress, true, _claimTopics);
         _issuerAddresses.push(issuerAddress);
 
         // Add issuer to the lookup mapping for each specified claim topic
@@ -273,7 +354,7 @@ contract ATKTrustedIssuersRegistryImplementation is
     function removeTrustedIssuer(IClaimIssuer _trustedIssuer)
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        onlySystemRoles(_getClaimPolicyManagementRoles())
     {
         address issuerAddress = address(_trustedIssuer);
         if (!_trustedIssuers[issuerAddress].exists) revert IssuerDoesNotExist(issuerAddress);
@@ -324,7 +405,7 @@ contract ATKTrustedIssuersRegistryImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        onlySystemRoles(_getClaimPolicyManagementRoles())
     {
         address issuerAddress = address(_trustedIssuer);
         if (!_trustedIssuers[issuerAddress].exists) revert IssuerDoesNotExist(issuerAddress);
@@ -458,16 +539,30 @@ contract ATKTrustedIssuersRegistryImplementation is
         return _trustedIssuers[_issuer].exists;
     }
 
+    // --- IClaimAuthorization Implementation ---
+
+    /// @inheritdoc IClaimAuthorizer
+    /// @notice Checks if an issuer is authorized to add a claim for a specific topic
+    /// @dev This function checks if the issuer is registered as a trusted issuer and
+    ///      if they are authorized for the specific claim topic using the existing registry logic.
+    /// @param issuer The address of the issuer attempting to add the claim
+    /// @param topic The claim topic for which authorization is being checked
+    /// @return True if the issuer is trusted for this topic, false otherwise
+    function isAuthorizedToAddClaim(address issuer, uint256 topic) external view override returns (bool) {
+        return this.hasClaimTopic(issuer, topic);
+    }
+
     // --- Internal Helper Functions ---
 
+    /// @notice Adds an issuer to the list of issuers for a specific claim topic
     /// @dev Internal function to add an issuer to the lookup array for a specific claim topic (`_issuersByClaimTopic`)
     /// and update the corresponding index in `_claimTopicIssuerIndex`.
-    /// @param claimTopic The `uint256` claim topic to associate the issuer with.
-    /// @param issuerAddress The address of the issuer to add to the topic's list.
-    /// @dev This function appends the `issuerAddress` to the `_issuersByClaimTopic[claimTopic]` array.
+    /// This function appends the `issuerAddress` to the `_issuersByClaimTopic[claimTopic]` array.
     /// It then stores the new length of this array (which is `index + 1` for 0-based indexing) in
     /// `_claimTopicIssuerIndex[claimTopic][issuerAddress]`. This stored value (index+1) is used for quick
     /// existence checks and for efficient removal using swap-and-pop.
+    /// @param claimTopic The claim topic ID to add the issuer to
+    /// @param issuerAddress The address of the issuer to add to the topic's list
     function _addIssuerToClaimTopic(uint256 claimTopic, address issuerAddress) internal {
         address[] storage issuers = _issuersByClaimTopic[claimTopic];
         // Store index+1. `issuers.length` before push is the 0-based index where it will be inserted.
@@ -476,12 +571,11 @@ contract ATKTrustedIssuersRegistryImplementation is
         issuers.push(issuerAddress);
     }
 
+    /// @notice Removes an issuer from the list of issuers for a specific claim topic
     /// @dev Internal function to remove an issuer from the lookup array for a specific claim topic
     /// (`_issuersByClaimTopic[claimTopic]`) using the efficient swap-and-pop technique. It also cleans up the
     /// `_claimTopicIssuerIndex` mapping.
-    /// @param claimTopic The `uint256` claim topic from which to remove the issuer.
-    /// @param issuerAddress The address of the issuer to remove from the topic's list.
-    /// @dev Steps:
+    /// Steps:
     /// 1.  Retrieves the stored index (plus one) of `issuerAddress` for the given `claimTopic` from
     ///     `_claimTopicIssuerIndex`. If this index is 0, it means the issuer is not in the list for this topic,
     ///     and the function reverts with `IssuerNotFoundInTopicList`.
@@ -497,6 +591,8 @@ contract ATKTrustedIssuersRegistryImplementation is
     ///     `issuerAddress` if it was last, or the duplicate of `lastIssuer` that was moved).
     /// This ensures O(1) removal complexity.
     /// Reverts with `IssuerNotFoundInTopicList` if the issuer is not found in the specified topic's list initially.
+    /// @param claimTopic The claim topic ID to remove the issuer from
+    /// @param issuerAddress The address of the issuer to remove from the topic's list
     function _removeIssuerFromClaimTopic(uint256 claimTopic, address issuerAddress) internal {
         uint256 indexToRemovePlusOne = _claimTopicIssuerIndex[claimTopic][issuerAddress];
         // Revert if index is 0 (meaning issuer was not found for this specific topic in the index mapping)
@@ -519,22 +615,23 @@ contract ATKTrustedIssuersRegistryImplementation is
         issuers.pop();
     }
 
+    /// @notice Removes an address from a storage array using swap-and-pop technique
     /// @dev Internal function to remove an address from a dynamic array of addresses (`address[] storage list`)
     /// using the swap-and-pop technique. This is a more generic version used for lists like `_issuerAddresses`
     /// where a separate index mapping (like `_claimTopicIssuerIndex`) is not maintained for each element's position.
-    /// @param list The storage array from which to remove the address.
-    /// @param addrToRemove The address to be removed from the `list`.
     /// @dev This function iterates through the `list` to find `addrToRemove`.
-    /// - Once found at index `i`:
+    /// Once found at index `i`:
     ///   - It replaces `list[i]` with the last element in the `list`.
     ///   - It then removes the last element from the `list` using `pop()`.
     ///   - The function then returns, having removed the first occurrence of `addrToRemove`.
-    /// - If `addrToRemove` is not found after iterating through the entire list, it reverts with
-    ///   `AddressNotFoundInList`. This situation implies a potential inconsistency if the caller expected the address
-    ///   to be present (e.g., if `_trustedIssuers[addrToRemove].exists` was true).
-    /// @dev Assumes the address is present and aims to remove only its first occurrence if there were duplicates
+    /// If `addrToRemove` is not found after iterating through the entire list, it reverts with
+    /// `AddressNotFoundInList`. This situation implies a potential inconsistency if the caller expected the address
+    /// to be present (e.g., if `_trustedIssuers[addrToRemove].exists` was true).
+    /// Assumes the address is present and aims to remove only its first occurrence if there were duplicates
     /// (though `_issuerAddresses` should ideally not have duplicates).
     /// Reverts with `AddressNotFoundInList(addrToRemove)` if the address is not found in the list.
+    /// @param list The storage array to remove the address from
+    /// @param addrToRemove The address to remove from the list
     function _removeAddressFromList(address[] storage list, address addrToRemove) internal {
         uint256 listLength = list.length;
         for (uint256 i = 0; i < listLength;) {
@@ -612,7 +709,8 @@ contract ATKTrustedIssuersRegistryImplementation is
     /// It checks for:
     /// 1.  `type(IERC3643TrustedIssuersRegistry).interfaceId`: Confirms adherence to the ERC-3643 standard for
     ///     trusted issuer registries.
-    /// 2.  Interfaces supported by parent contracts (e.g., `AccessControlUpgradeable`, `ERC165Upgradeable`)
+    /// 2.  `type(IClaimAuthorization).interfaceId`: Confirms implementation of claim authorization interface.
+    /// 3.  Interfaces supported by parent contracts (e.g., `AccessControlUpgradeable`, `ERC165Upgradeable`)
     ///     via `super.supportsInterface(interfaceId)`.
     /// Crucial for interoperability, allowing other components to verify compatibility.
     /// @param interfaceId The EIP-165 interface identifier (`bytes4`) to check.
@@ -626,6 +724,7 @@ contract ATKTrustedIssuersRegistryImplementation is
         returns (bool)
     {
         return interfaceId == type(IATKTrustedIssuersRegistry).interfaceId
-            || interfaceId == type(IERC3643TrustedIssuersRegistry).interfaceId || super.supportsInterface(interfaceId);
+            || interfaceId == type(IERC3643TrustedIssuersRegistry).interfaceId
+            || interfaceId == type(IClaimAuthorizer).interfaceId || super.supportsInterface(interfaceId);
     }
 }

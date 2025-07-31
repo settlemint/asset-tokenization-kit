@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,6 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { Link } from "@tanstack/react-router";
 import { type VariantProps, cva } from "class-variance-authority";
 import { MoreHorizontal } from "lucide-react";
 import {
@@ -19,7 +18,6 @@ import {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "@tanstack/react-router";
 
 const dataTableRowActionsVariants = cva("flex items-center space-x-2", {
   variants: {
@@ -72,15 +70,12 @@ export function DataTableRowActions({
 
   const menuItemHandlers = useMemo(() => {
     if (!actions) return {};
-    return actions.reduce(
-      (acc, action) => {
-        acc[action.id] = () => {
-          handleMenuItemClick(action.id);
-        };
-        return acc;
-      },
-      {} as Record<string, () => void>
-    );
+    return actions.reduce<Record<string, () => void>>((acc, action) => {
+      acc[action.id] = () => {
+        handleMenuItemClick(action.id);
+      };
+      return acc;
+    }, {});
   }, [actions, handleMenuItemClick]);
 
   if (!actions && !detailUrl) {

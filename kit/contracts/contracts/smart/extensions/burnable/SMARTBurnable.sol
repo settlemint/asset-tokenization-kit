@@ -8,6 +8,7 @@ import { SMARTExtension } from "../common/SMARTExtension.sol";
 import { _SMARTBurnableLogic } from "./internal/_SMARTBurnableLogic.sol";
 
 /// @title Standard (Non-Upgradeable) SMART Burnable Extension
+/// @author SettleMint
 /// @notice This contract provides the functionality to burn (destroy) tokens for a standard,
 ///         non-upgradeable SMART token contract. It acts as a concrete implementation layer
 ///         over the core burning logic defined in `_SMARTBurnableLogic`.

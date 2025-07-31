@@ -26,12 +26,15 @@ export const user = pgTable("user", {
   banned: boolean("banned"),
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires", { withTimezone: true }),
-  wallet: text("wallet").unique().$type<Address>(),
+  wallet: text("wallet").$type<Address>(),
   lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
   pincodeEnabled: boolean("pincode_enabled").notNull().default(false),
   pincodeVerificationId: text("pincode_verification_id").unique(),
   twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
   twoFactorVerificationId: text("two_factor_verification_id").unique(),
+  secretCodesConfirmed: boolean("secret_codes_confirmed")
+    .notNull()
+    .default(false),
   secretCodeVerificationId: text("secret_code_verification_id").unique(),
 });
 
@@ -98,7 +101,7 @@ export const apikey = pgTable("apikey", {
   lastRefillAt: timestamp("last_refill_at", { withTimezone: true }),
   enabled: boolean("enabled").default(true),
   rateLimitEnabled: boolean("rate_limit_enabled").default(true),
-  rateLimitTimeWindow: integer("rate_limit_time_window").default(60000),
+  rateLimitTimeWindow: integer("rate_limit_time_window").default(60_000),
   rateLimitMax: integer("rate_limit_max").default(60),
   requestCount: integer("request_count"),
   remaining: integer("remaining"),

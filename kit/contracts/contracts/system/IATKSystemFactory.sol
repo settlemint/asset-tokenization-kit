@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 /// @title IATKSystemFactory
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Interface for the ATKSystemFactory contract that deploys new instances of the ATKSystem contract.
 /// @dev This interface defines all public functions, events, and state variables for the ATKSystemFactory.
 /// It supports meta-transactions through ERC2771Context and tracks all deployed ATKSystem instances.
@@ -58,11 +58,11 @@ interface IATKSystemFactory {
     /// @return address The default identity implementation address.
     function defaultIdentityImplementation() external view returns (address);
 
-    /// @notice The default contract address for the token identity contract's logic (template/implementation).
-    /// @dev This address will be passed to newly created `ATKSystem` instances as the initial token identity
+    /// @notice The default contract address for the contract identity contract's logic (template/implementation).
+    /// @dev This address will be passed to newly created `ATKSystem` instances as the initial contract identity
     /// implementation.
-    /// @return address The default token identity implementation address.
-    function defaultTokenIdentityImplementation() external view returns (address);
+    /// @return address The default contract identity implementation address.
+    function defaultContractIdentityImplementation() external view returns (address);
 
     /// @notice The default contract address for the token access manager contract's logic (implementation).
     /// @dev This address will be passed to newly created `ATKSystem` instances as the initial token access manager

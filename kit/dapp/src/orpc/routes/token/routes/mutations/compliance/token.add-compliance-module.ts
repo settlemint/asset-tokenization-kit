@@ -1,11 +1,10 @@
-import { ALL_INTERFACE_IDS } from "@/lib/interface-ids";
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { supportsInterface } from "@/orpc/helpers/interface-detection";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenAddComplianceModuleMessagesSchema } from "./token.add-compliance-module.schema";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
+import { portalRouter } from "@/orpc/procedures/portal.router";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { call } from "@orpc/server";
+import { read } from "../../token.read";
 
 const TOKEN_ADD_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
   mutation TokenAddComplianceModule(
@@ -14,14 +13,16 @@ const TOKEN_ADD_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
     $address: String!
     $from: String!
     $moduleAddress: String!
+    $params: String!
   ) {
-    addComplianceModule: IERC3643AddComplianceModule(
+    addComplianceModule: ISMARTAddComplianceModule(
       address: $address
       from: $from
       verificationId: $verificationId
       challengeResponse: $challengeResponse
       input: {
         _module: $moduleAddress
+        _params: $params
       }
     ) {
       transactionHash
@@ -29,49 +30,34 @@ const TOKEN_ADD_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenAddComplianceModule =
-  tokenRouter.token.tokenAddComplianceModule
-    .use(portalMiddleware)
-    .handler(async function* ({ input, context, errors }) {
-      const { contract, verification, moduleAddress } = input;
-      const { auth } = context;
+export const addComplianceModule = portalRouter.token.addComplianceModule
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.addComplianceModule,
+    })
+  )
+  .handler(async ({ input, context }) => {
+    const { contract, verification, moduleAddress } = input;
+    const { auth } = context;
 
-      // Parse messages with defaults
-      const messages = TokenAddComplianceModuleMessagesSchema.parse(
-        input.messages ?? {}
-      );
-
-      // Validate that the token supports compliance management
-      const supportsCompliance = await supportsInterface(
-        context.portalClient,
-        contract,
-        ALL_INTERFACE_IDS.IERC3643
-      );
-
-      if (!supportsCompliance) {
-        throw errors.FORBIDDEN({
-          message:
-            "Token does not support compliance management. The token must implement IERC3643 interface.",
-        });
-      }
-
-      const sender = auth.user;
-      const challengeResponse = await handleChallenge(sender, {
-        code: verification.verificationCode,
-        type: verification.verificationType,
-      });
-
-      const transactionHash = yield* context.portalClient.mutate(
-        TOKEN_ADD_COMPLIANCE_MODULE_MUTATION,
-        {
-          address: contract,
-          from: sender.wallet,
-          moduleAddress,
-          ...challengeResponse,
-        },
-        messages.complianceModuleFailed,
-        messages
-      );
-
-      return getEthereumHash(transactionHash);
+    const sender = auth.user;
+    const challengeResponse = await handleChallenge(sender, {
+      code: verification.verificationCode,
+      type: verification.verificationType,
     });
+
+    await context.portalClient.mutate(
+      TOKEN_ADD_COMPLIANCE_MODULE_MUTATION,
+      {
+        address: contract,
+        from: sender.wallet,
+        moduleAddress,
+        params: JSON.stringify({}), // TODO: provide params as input to the request
+        ...challengeResponse,
+      },
+      context.t("tokens:api.mutations.compliance.messages.addFailed")
+    );
+
+    // Return updated token data
+    return await call(read, { tokenAddress: contract }, { context });
+  });

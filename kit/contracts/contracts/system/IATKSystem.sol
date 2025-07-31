@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 /// @title IATKSystem Interface
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This interface outlines the essential functions for interacting with the ATK Protocol's central system
 /// contract.
 /// @dev The ATK System contract serves as the main hub and discovery point for various modules and features within
@@ -47,11 +47,12 @@ interface IATKSystem is IERC165 {
     /// @param sender The address that called the `updateIdentityImplementation` function.
     /// @param newImplementation The address of the new standard identity module implementation contract.
     event IdentityImplementationUpdated(address indexed sender, address indexed newImplementation);
-    /// @notice Emitted when the implementation (logic contract) for the token identity module is updated.
-    /// @dev Token identity contracts might be specialized identities associated with specific tokens.
-    /// @param sender The address that called the `updateTokenIdentityImplementation` function.
-    /// @param newImplementation The address of the new token identity module implementation contract.
-    event TokenIdentityImplementationUpdated(address indexed sender, address indexed newImplementation);
+
+    /// @notice Emitted when the implementation (logic contract) for the contract identity module is updated.
+    /// @dev Contract identity contracts are identities associated with any contract implementing IContractWithIdentity.
+    /// @param sender The address that called the `updateContractIdentityImplementation` function.
+    /// @param newImplementation The address of the new contract identity module implementation contract.
+    event ContractIdentityImplementationUpdated(address indexed sender, address indexed newImplementation);
     /// @notice Emitted when the implementation (logic contract) for the token access manager module is updated.
     /// @param sender The address that called the `updateTokenAccessManagerImplementation` function.
     /// @param newImplementation The address of the new token access manager module implementation contract.
@@ -82,6 +83,11 @@ interface IATKSystem is IERC165 {
         address indexed sender, string name, bytes32 indexed moduleTypeHash, address indexed module, uint256 timestamp
     );
 
+    /// @notice Emitted when the implementation (logic contract) for the system access manager is updated.
+    /// @param sender The address that called the function.
+    /// @param newImplementation The address of the new system access manager implementation contract.
+    event SystemAccessManagerImplementationUpdated(address indexed sender, address indexed newImplementation);
+
     /// @notice Emitted when the `bootstrap` function has been successfully executed, creating and linking proxy
     /// contracts
     /// for all core modules of the ATKSystem.
@@ -95,7 +101,9 @@ interface IATKSystem is IERC165 {
     /// @param tokenFactoryRegistryProxy The address of the deployed ATKTokenFactoryRegistryProxy contract.
     /// @param systemAddonRegistryProxy The address of the deployed ATKSystemAddonRegistryProxy contract.
     /// @param complianceModuleRegistryProxy The address of the deployed ATKComplianceModuleRegistryProxy contract.
-    /// @param identityVerificationModule The address of the deployed IdentityVerificationModule contract.
+    /// @param systemAccessManagerProxy The address of the deployed ATKSystemAccessManagerProxy contract.
+    /// @param systemAccessManagerImplementation The address of the deployed ATKSystemAccessManagerImplementation
+    /// contract.
     event Bootstrapped(
         address indexed sender,
         address indexed complianceProxy,
@@ -107,7 +115,8 @@ interface IATKSystem is IERC165 {
         address tokenFactoryRegistryProxy,
         address systemAddonRegistryProxy,
         address complianceModuleRegistryProxy,
-        address identityVerificationModule
+        address systemAccessManagerProxy,
+        address systemAccessManagerImplementation
     );
 
     /// @notice Initializes and sets up the entire ATK Protocol system.
@@ -184,22 +193,23 @@ interface IATKSystem is IERC165 {
     /// @return The address of the compliance module registry contract.
     function complianceModuleRegistry() external view returns (address);
 
-    /// @notice Retrieves the smart contract address of the proxy for the identity verification module.
-    /// @dev This function returns the stable, unchanging address of the identity verification module's proxy contract.
-    /// To interact with the identity verification module (e.g., to verify an identity or check verification status),
-    /// you should use this proxy address. It will forward calls to the current logic implementation.
-    /// @return identityVerificationModuleAddress The blockchain address of the identity verification module's proxy.
-    function identityVerificationModule() external view returns (address identityVerificationModuleAddress);
+    /// @notice Returns the address of the system access manager.
+    /// @return The address of the system access manager proxy contract.
+    function systemAccessManager() external view returns (address);
 
     /// @notice Returns the address of the identity implementation.
     /// @return The address of the identity implementation contract.
     function identityImplementation() external view returns (address);
 
-    /// @notice Returns the address of the token identity implementation.
-    /// @return The address of the token identity implementation contract.
-    function tokenIdentityImplementation() external view returns (address);
+    /// @notice Returns the address of the contract identity implementation.
+    /// @return The address of the contract identity implementation contract.
+    function contractIdentityImplementation() external view returns (address);
 
-    /// @notice Returns the address of the access manager implementation.
-    /// @return The address of the access manager implementation contract.
+    /// @notice Returns the address of the token access manager implementation.
+    /// @return The address of the token access manager implementation contract.
     function tokenAccessManagerImplementation() external view returns (address);
+
+    /// @notice Returns the address of the system access manager implementation.
+    /// @return The address of the system access manager implementation contract.
+    function systemAccessManagerImplementation() external view returns (address);
 }

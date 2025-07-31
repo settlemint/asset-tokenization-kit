@@ -8,11 +8,10 @@ import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTId
 import { IATKIdentityFactory } from "../../contracts/system/identity-factory/IATKIdentityFactory.sol";
 import { ISMARTTopicSchemeRegistry } from "../../contracts/smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
+import { ERC734KeyTypes } from "../../contracts/onchainid/ERC734KeyTypes.sol";
+import { ERC735ClaimSchemes } from "../../contracts/onchainid/ERC735ClaimSchemes.sol";
 
 contract ClaimUtils is Test {
-    // Signature Schemes (ERC735)
-    uint256 public constant ECDSA_TYPE = 1;
-
     address internal _platformAdmin;
     address internal _claimIssuer;
     uint256 internal _claimIssuerPrivateKey;
@@ -142,7 +141,7 @@ contract ClaimUtils is Test {
 
         // 4. Client adds the claim to their identity (needs prank)
         vm.startPrank(clientWalletAddress_);
-        clientIdentity.addClaim(claimTopic, ECDSA_TYPE, issuerIdentityAddr_, signature, data, "");
+        clientIdentity.addClaim(claimTopic, ERC735ClaimSchemes.SCHEME_ECDSA, issuerIdentityAddr_, signature, data, "");
         vm.stopPrank();
     }
 
@@ -170,7 +169,7 @@ contract ClaimUtils is Test {
         internal
     {
         // 1. Get token's identity contract
-        address tokenIdentityAddr = _identityFactory.getTokenIdentity(tokenAddr_);
+        address tokenIdentityAddr = _identityFactory.getContractIdentity(tokenAddr_);
         require(tokenIdentityAddr != address(0), "ClaimUtils: Token identity not found");
 
         // Add claim needs to be done by the token owner.

@@ -13,8 +13,8 @@ import type {
 } from "viem";
 
 import ATKOnboardingModule from "../../../ignition/modules/onboarding";
+import { owner } from "../constants/actors";
 import { ATKContracts } from "../constants/contracts";
-import { owner } from "../entities/actors/owner";
 // --- Utility Imports ---
 
 // Type for the keys of CONTRACT_METADATA, e.g., "system" | "compliance" | ...
@@ -37,11 +37,13 @@ export type PredeployedContractName = keyof Pick<
   | "addressBlockListModule"
   | "identityBlockListModule"
   | "identityAllowListModule"
+  | "identityVerificationModule"
   | "fixedYieldScheduleFactory"
   | "vestingAirdropFactory"
   | "pushAirdropFactory"
   | "timeBoundAirdropFactory"
   | "xvpSettlementFactory"
+  | "systemAccessManager"
 >;
 
 // Helper type for Viem contract instances
@@ -282,6 +284,12 @@ export class ATKDeployer {
     walletClient?: WalletClient<Transport, Chain, Account>
   ): ATKOnboardingContracts["identityFactory"] {
     return this.getContract("identityFactory", walletClient);
+  }
+
+  public getSystemAccessManagerContract(
+    walletClient?: WalletClient<Transport, Chain, Account>
+  ): ATKOnboardingContracts["systemAccessManager"] {
+    return this.getContract("systemAccessManager", walletClient);
   }
 
   public getBondFactoryContract(

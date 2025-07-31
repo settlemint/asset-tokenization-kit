@@ -5,11 +5,9 @@ import { ATKAssetProxy } from "../ATKAssetProxy.sol";
 import { IATKBond } from "./IATKBond.sol";
 
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { IATKTokenFactory } from "../../system/token-factory/IATKTokenFactory.sol";
-
-import { TokenImplementationNotSet } from "../../system/ATKSystemErrors.sol";
 
 /// @title Proxy contract for ATK Bonds, using ATKAssetProxy.
+/// @author SettleMint
 /// @notice This contract serves as a proxy, allowing for upgradeability of the underlying bond logic.
 /// It retrieves the implementation address from the ISMARTTokenFactory contract via ATKAssetProxy.
 contract ATKBondProxy is ATKAssetProxy {
@@ -20,11 +18,8 @@ contract ATKBondProxy is ATKAssetProxy {
     /// @param name_ The name of the bond.
     /// @param symbol_ The symbol of the bond.
     /// @param decimals_ The number of decimals of the bond.
-    /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
     /// @param cap_ The cap of the bond.
-    /// @param maturityDate_ The maturity date of the bond.
-    /// @param faceValue_ The face value of the bond.
-    /// @param underlyingAsset_ The underlying asset of the bond.
+    /// @param bondParams Bond-specific parameters (maturityDate, faceValue, underlyingAsset).
     /// @param initialModulePairs_ The initial module pairs of the bond.
     /// @param identityRegistry_ The identity registry of the bond.
     /// @param compliance_ The compliance of the bond.
@@ -34,11 +29,8 @@ contract ATKBondProxy is ATKAssetProxy {
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        address onchainID_,
         uint256 cap_,
-        uint256 maturityDate_,
-        uint256 faceValue_,
-        address underlyingAsset_,
+        IATKBond.BondInitParams memory bondParams,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,
@@ -54,11 +46,8 @@ contract ATKBondProxy is ATKAssetProxy {
             name_,
             symbol_,
             decimals_,
-            onchainID_,
             cap_,
-            maturityDate_,
-            faceValue_,
-            underlyingAsset_,
+            bondParams,
             initialModulePairs_,
             identityRegistry_,
             compliance_,

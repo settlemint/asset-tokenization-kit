@@ -3,8 +3,6 @@ pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
@@ -12,22 +10,30 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 // Interface imports
 import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { IATKTopicSchemeRegistry } from "./IATKTopicSchemeRegistry.sol";
+import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
 
 // Constants
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
+/// @notice Error thrown when attempting to perform actions without required authorization
+error UnauthorizedAccess();
+
 /// @title ATK Topic Scheme Registry Implementation
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Implementation for managing topic schemes with their signatures for data encoding/decoding
 /// @dev This contract manages the registration and lifecycle of topic schemes used for claim data structures
 contract ATKTopicSchemeRegistryImplementation is
     Initializable,
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
-    AccessControlUpgradeable,
     IATKTopicSchemeRegistry
 {
     // --- Storage Variables ---
+
+    /// @notice Reference to the centralized system access manager
+    /// @dev All role checks are delegated to this contract
+    IATKSystemAccessManager private _systemAccessManager;
+
     /// @notice Mapping from topic ID to topic scheme information
     /// @dev Maps topicId => TopicScheme struct containing id, signature, and existence flag
     mapping(uint256 topicId => TopicScheme scheme) private _topicSchemes;
@@ -42,6 +48,7 @@ contract ATKTopicSchemeRegistryImplementation is
     mapping(uint256 topicId => uint256 indexPlusOne) private _topicIdIndex;
 
     // --- Custom Errors ---
+
     /// @notice Error thrown when attempting to register a topic scheme with an empty name
     error EmptyName();
 
@@ -77,6 +84,30 @@ contract ATKTopicSchemeRegistryImplementation is
     /// @notice Error thrown when attempting batch operations with empty arrays
     error EmptyArraysProvided();
 
+    /// @notice Error thrown when trying to initialize with a zero address system access manager
+    error SystemAccessManagerCannotBeZeroAddress();
+
+    // --- Events ---
+
+    // Event declarations moved to the interface IATKTopicSchemeRegistry
+
+    // --- Modifiers ---
+
+    /// @notice Modifier that checks if the caller has any of the specified roles in the system access manager
+    /// @dev This implements the new centralized access pattern: onlySystemRoles(MANAGER_ROLE, [SYSTEM_ROLES])
+    /// @param roles Array of roles, where the caller must have at least one
+    modifier onlySystemRoles(bytes32[] memory roles) {
+        if (address(_systemAccessManager) != address(0)) {
+            if (!_systemAccessManager.hasAnyRole(roles, _msgSender())) {
+                revert UnauthorizedAccess();
+            }
+        } else {
+            // If system access manager is not set, revert since we need centralized access control
+            revert UnauthorizedAccess();
+        }
+        _;
+    }
+
     // --- Constructor ---
     /// @notice Constructor for the SMARTTopicSchemeRegistryImplementation
     /// @dev Initializes ERC2771Context with trusted forwarder and disables initializers for UUPS pattern
@@ -88,19 +119,64 @@ contract ATKTopicSchemeRegistryImplementation is
 
     // --- Initializer ---
     /// @notice Initializes the SMARTTopicSchemeRegistryImplementation contract
-    /// @dev Sets up access control and grants initial roles to the admin
-    /// @param initialAdmin The address that will receive admin and registrar roles
-    /// @param initialRegistrars The addresses that will receive registrar roles
-    function initialize(address initialAdmin, address[] memory initialRegistrars) public initializer {
+    /// @dev Sets up the system access manager reference - roles are managed centrally
+    /// @param systemAccessManager_ The address of the centralized system access manager
+    function initialize(address systemAccessManager_) public initializer {
         __ERC165_init_unchained();
-        __AccessControl_init_unchained();
 
-        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
-
-        uint256 initialRegistrarsLength = initialRegistrars.length;
-        for (uint256 i = 0; i < initialRegistrarsLength; ++i) {
-            _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialRegistrars[i]);
+        if (systemAccessManager_ == address(0)) {
+            revert SystemAccessManagerCannotBeZeroAddress();
         }
+
+        _systemAccessManager = IATKSystemAccessManager(systemAccessManager_);
+        emit SystemAccessManagerSet(_msgSender(), systemAccessManager_);
+    }
+
+    // --- Access Control Functions ---
+
+    /// @notice Sets or updates the system access manager
+    /// @dev Only callable by the current system access manager's DEFAULT_ADMIN_ROLE
+    /// @param systemAccessManager_ The new system access manager address
+    function setSystemAccessManager(address systemAccessManager_) external {
+        // Only allow current access manager's admin role to change the access manager
+        if (address(_systemAccessManager) != address(0)) {
+            if (!_systemAccessManager.hasRole(0x00, _msgSender())) {
+                // DEFAULT_ADMIN_ROLE = 0x00
+                revert UnauthorizedAccess();
+            }
+        } else {
+            // If there's no access manager set, we can't verify permission, so revert
+            revert UnauthorizedAccess();
+        }
+
+        _systemAccessManager = IATKSystemAccessManager(systemAccessManager_);
+        emit SystemAccessManagerSet(_msgSender(), systemAccessManager_);
+    }
+
+    /// @notice Returns the address of the system access manager
+    /// @return The address of the system access manager contract
+    function getSystemAccessManager() external view returns (address) {
+        return address(_systemAccessManager);
+    }
+
+    /// @notice Checks if an account has a specific role in the system access manager
+    /// @param role The role identifier to check
+    /// @param account The account to check
+    /// @return True if the account has the role, false otherwise
+    function hasRole(bytes32 role, address account) external view returns (bool) {
+        return _systemAccessManager.hasRole(role, account);
+    }
+
+    // --- Internal Helper Functions ---
+
+    /// @notice Returns the roles that can perform claim policy management operations
+    /// @dev Implements the pattern from the ticket: MANAGER_ROLE + [SYSTEM_ROLES]
+    /// @return roles Array of roles that can manage topic schemes
+    function _getClaimPolicyManagementRoles() internal pure returns (bytes32[] memory roles) {
+        roles = new bytes32[](3);
+        roles[0] = ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE; // Primary claim policy manager
+        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE; // System manager has access to all
+        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE; // System module role
     }
 
     // --- Topic Scheme Management Functions ---
@@ -112,7 +188,7 @@ contract ATKTopicSchemeRegistryImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        onlySystemRoles(_getClaimPolicyManagementRoles())
     {
         if (bytes(name).length == 0) revert EmptyName();
         if (bytes(signature).length == 0) revert EmptySignature();
@@ -139,7 +215,7 @@ contract ATKTopicSchemeRegistryImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        onlySystemRoles(_getClaimPolicyManagementRoles())
     {
         uint256 namesLength = names.length;
         uint256 signaturesLength = signatures.length;
@@ -181,7 +257,7 @@ contract ATKTopicSchemeRegistryImplementation is
 
             // Add to enumeration array
             topicIds_.push(topicId);
-            currentArrayLength++;
+            ++currentArrayLength;
             topicIdIndex_[topicId] = currentArrayLength; // Use cached length instead of reading from storage
 
             // Emit individual event for each registration
@@ -203,7 +279,7 @@ contract ATKTopicSchemeRegistryImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        onlySystemRoles(_getClaimPolicyManagementRoles())
     {
         if (bytes(name).length == 0) revert EmptyName();
         if (bytes(newSignature).length == 0) revert EmptySignature();
@@ -224,7 +300,11 @@ contract ATKTopicSchemeRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTTopicSchemeRegistry
-    function removeTopicScheme(string calldata name) external override onlyRole(ATKSystemRoles.REGISTRAR_ROLE) {
+    function removeTopicScheme(string calldata name)
+        external
+        override
+        onlySystemRoles(_getClaimPolicyManagementRoles())
+    {
         if (bytes(name).length == 0) revert EmptyName();
 
         // Generate topicId from name
@@ -317,12 +397,7 @@ contract ATKTopicSchemeRegistryImplementation is
     /// @dev Supports ISMARTTopicSchemeRegistry and inherited interfaces
     /// @param interfaceId The interface identifier to check
     /// @return True if the interface is supported
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC165Upgradeable, AccessControlUpgradeable, IERC165)
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public view override(ERC165Upgradeable, IERC165) returns (bool) {
         return interfaceId == type(IATKTopicSchemeRegistry).interfaceId
             || interfaceId == type(ISMARTTopicSchemeRegistry).interfaceId || super.supportsInterface(interfaceId);
     }
@@ -332,31 +407,21 @@ contract ATKTopicSchemeRegistryImplementation is
     /// @notice Returns the sender of the transaction, supporting meta-transactions
     /// @dev Overrides to support ERC2771 meta-transactions
     /// @return The address of the transaction sender
-    function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
+    function _msgSender() internal view override(ERC2771ContextUpgradeable) returns (address) {
         return ERC2771ContextUpgradeable._msgSender();
     }
 
     /// @notice Returns the calldata of the transaction, supporting meta-transactions
     /// @dev Overrides to support ERC2771 meta-transactions
     /// @return The calldata of the transaction
-    function _msgData()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (bytes calldata)
-    {
+    function _msgData() internal view override(ERC2771ContextUpgradeable) returns (bytes calldata) {
         return ERC2771ContextUpgradeable._msgData();
     }
 
     /// @notice Returns the context suffix for meta-transactions
     /// @dev Overrides to support ERC2771 meta-transactions
     /// @return The context suffix
-    function _contextSuffixLength()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (uint256)
-    {
+    function _contextSuffixLength() internal view override(ERC2771ContextUpgradeable) returns (uint256) {
         return ERC2771ContextUpgradeable._contextSuffixLength();
     }
 }

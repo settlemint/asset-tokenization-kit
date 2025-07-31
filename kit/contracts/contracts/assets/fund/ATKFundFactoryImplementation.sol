@@ -16,9 +16,17 @@ import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SM
 import { ATKFundProxy } from "./ATKFundProxy.sol";
 
 /// @title Implementation of the ATK Fund Factory
+/// @author SettleMint
 /// @notice This contract is responsible for creating instances of ATK Funds.
 contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactoryImplementation {
-    bytes32 public constant override typeId = keccak256("ATKFundFactory");
+    /// @notice Unique identifier for the ATK Fund Factory type
+    bytes32 public constant TYPE_ID = keccak256("ATKFundFactory");
+
+    /// @notice Returns the type identifier for this factory
+    /// @return The bytes32 identifier for the ATK Fund Factory
+    function typeId() external pure override returns (bytes32) {
+        return TYPE_ID;
+    }
 
     /// @notice Constructor for the ATKFundFactoryImplementation.
     /// @param forwarder The address of the trusted forwarder for meta-transactions.
@@ -29,16 +37,16 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
     /// @param symbol_ The symbol of the fund.
     /// @param decimals_ The number of decimals for the fund tokens.
     /// @param managementFeeBps_ The management fee in basis points.
-    /// @param requiredClaimTopics_ An array of claim topics required for interacting with the fund.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
+    /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return deployedFundAddress The address of the newly deployed fund contract.
     function createFund(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         uint8 decimals_,
         uint16 managementFeeBps_,
-        uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_
+        SMARTComplianceModuleParamPair[] calldata initialModulePairs_,
+        uint16 countryCode_
     )
         external
         override
@@ -48,17 +56,14 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
         // Create the access manager for the token
         ISMARTTokenAccessManager accessManager = _createAccessManager(salt);
 
-        address tokenIdentityAddress = _predictTokenIdentityAddress(name_, symbol_, decimals_, address(accessManager));
-
-        // ABI encode constructor arguments for SMARTFundProxy
+        // ABI encode constructor arguments for SMARTFundProxy (no onchainID parameter)
         bytes memory constructorArgs = abi.encode(
             address(this),
             name_,
             symbol_,
             decimals_,
-            tokenIdentityAddress,
             managementFeeBps_,
-            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
+            initialModulePairs_,
             _identityRegistry(),
             _compliance(),
             address(accessManager)
@@ -68,16 +73,24 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
         bytes memory proxyBytecode = type(ATKFundProxy).creationCode;
 
         // Deploy using the helper from the abstract contract
+        string memory description = string.concat("Fund: ", name_, " (", symbol_, ")");
         address deployedTokenIdentityAddress;
         (deployedFundAddress, deployedTokenIdentityAddress) =
-            _deployToken(proxyBytecode, constructorArgs, salt, address(accessManager));
+            _deployToken(proxyBytecode, constructorArgs, salt, address(accessManager), description, countryCode_);
 
-        if (deployedTokenIdentityAddress != tokenIdentityAddress) {
-            revert TokenIdentityAddressMismatch(deployedTokenIdentityAddress, tokenIdentityAddress);
-        }
+        // Identity verification check removed - identity is now set after deployment
+
+        // Identity registration is now handled automatically in _deployContractIdentity
 
         emit FundCreated(
-            _msgSender(), deployedFundAddress, name_, symbol_, decimals_, requiredClaimTopics_, managementFeeBps_
+            _msgSender(),
+            deployedFundAddress,
+            deployedTokenIdentityAddress,
+            name_,
+            symbol_,
+            decimals_,
+            managementFeeBps_,
+            countryCode_
         );
 
         return deployedFundAddress;
@@ -95,16 +108,14 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
     /// @param symbol_ The symbol of the fund.
     /// @param decimals_ The decimals of the fund.
     /// @param managementFeeBps_ The management fee in basis points for the fund.
-    /// @param requiredClaimTopics_ The required claim topics for the fund.
     /// @param initialModulePairs_ The initial compliance module pairs for the fund.
     /// @return predictedAddress The predicted address of the fund contract.
     function predictFundAddress(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         uint8 decimals_,
         uint16 managementFeeBps_,
-        uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_
+        SMARTComplianceModuleParamPair[] calldata initialModulePairs_
     )
         external
         view
@@ -113,15 +124,14 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
     {
         bytes memory salt = _buildSaltInput(name_, symbol_, decimals_);
         address accessManagerAddress_ = _predictAccessManagerAddress(salt);
-        address tokenIdentityAddress = _predictTokenIdentityAddress(name_, symbol_, decimals_, accessManagerAddress_);
+
         bytes memory constructorArgs = abi.encode(
             address(this),
             name_,
             symbol_,
             decimals_,
-            tokenIdentityAddress,
             managementFeeBps_,
-            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
+            initialModulePairs_,
             _identityRegistry(),
             _compliance(),
             accessManagerAddress_
@@ -134,6 +144,9 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
 
     // --- ERC165 Overrides ---
 
+    /// @notice Checks if this contract implements a specific interface
+    /// @param interfaceId The interface identifier to check
+    /// @return True if the contract implements the interface, false otherwise
     function supportsInterface(bytes4 interfaceId)
         public
         view

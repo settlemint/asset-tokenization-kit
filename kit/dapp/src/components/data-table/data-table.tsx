@@ -1,5 +1,3 @@
-"use no memo"; // fixes rerendering with react compiler, v9 of tanstack table will fix this
-
 import {
   Table,
   TableBody,
@@ -30,7 +28,7 @@ import {
 } from "@tanstack/react-table";
 import { PackageOpen } from "lucide-react";
 import * as React from "react";
-import { type ComponentType, useCallback, useMemo, useState } from "react";
+import { type ComponentType, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DataTableActionBar } from "./data-table-action-bar";
 import {
@@ -175,6 +173,7 @@ function DataTableComponent<TData>({
   urlState,
   onRowClick,
 }: DataTableProps<TData>) {
+  "use no memo";
   const { t } = useTranslation("data-table");
 
   // Use URL state management if enabled, otherwise use local state
@@ -297,20 +296,20 @@ function DataTableComponent<TData>({
    * Clears all row selections in the table.
    * Uses URL state or local state based on configuration.
    */
-  const handleSelectionClear = useCallback(() => {
+  const handleSelectionClear = () => {
     if (isUsingUrlState) {
       tableState.setRowSelection({});
     } else {
       setLocalRowSelection({});
     }
-  }, [isUsingUrlState, tableState]);
+  };
 
   /**
    * Handles row click events, preventing propagation from interactive elements.
    * @param row The table row data
    * @returns Event handler function
    */
-  const createRowClickHandler = useCallback(
+  const createRowClickHandler =
     (row: TData) => (e: React.MouseEvent<HTMLTableRowElement>) => {
       // Don't trigger row click if clicking on interactive elements
       const target = e.target as HTMLElement;
@@ -328,18 +327,16 @@ function DataTableComponent<TData>({
       if (!isInteractiveElement && onRowClick) {
         onRowClick(row);
       }
-    },
-    [onRowClick]
-  );
+    };
 
   /**
    * Handles clearing all filters in the table.
    * Resets both global filter and column filters.
    */
-  const handleClearFilters = useCallback(() => {
+  const handleClearFilters = () => {
     table.resetGlobalFilter();
     table.resetColumnFilters();
-  }, [table]);
+  };
 
   /**
    * Renders the table body with rows or empty state message.
@@ -347,7 +344,7 @@ function DataTableComponent<TData>({
    * @returns The rendered table body content
    */
   const renderTableBody = () => {
-    if (table.getRowModel().rows.length) {
+    if (table.getRowModel().rows.length > 0) {
       return table.getRowModel().rows.map((row) => {
         return (
           <TableRow

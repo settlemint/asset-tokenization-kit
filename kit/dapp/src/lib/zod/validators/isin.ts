@@ -26,11 +26,12 @@ function validateIsinChecksum(isin: string): boolean {
       expandedString += char;
     } else if (char >= "A" && char <= "Z") {
       // A=10, B=11, ..., Z=35
-      expandedString += (
-        char.charCodeAt(0) -
-        "A".charCodeAt(0) +
-        10
-      ).toString();
+      const charCode = char.codePointAt(0);
+      const aCode = "A".codePointAt(0);
+      if (charCode === undefined || aCode === undefined) {
+        return false;
+      }
+      expandedString += (charCode - aCode + 10).toString();
     } else {
       return false;
     }

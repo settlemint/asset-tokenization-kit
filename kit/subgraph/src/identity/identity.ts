@@ -22,7 +22,7 @@ import {
   isCollateralClaim,
   updateCollateral,
 } from "../token-extensions/collateral/utils/collateral-utils";
-import { fetchToken } from "../token/fetch/token";
+import { fetchTokenByIdentity } from "../token/fetch/token";
 import { updateBasePrice } from "../token/utils/token-utils";
 import { fetchIdentity } from "./fetch/identity";
 import { fetchIdentityClaim } from "./fetch/identity-claim";
@@ -83,8 +83,8 @@ export function handleClaimAdded(event: ClaimAdded): void {
     updateBasePrice(identityClaim);
 
     // Update system stats for price change
-    if (identity.token) {
-      const token = fetchToken(Address.fromBytes(identity.token!));
+    const token = fetchTokenByIdentity(identity);
+    if (token) {
       const newPrice = getTokenBasePrice(identityClaim.id);
       updateSystemStatsForPriceChange(token, BigDecimal.zero(), newPrice);
 
@@ -119,9 +119,7 @@ export function handleClaimChanged(event: ClaimChanged): void {
   if (isBasePriceClaim(identityClaim)) {
     updateBasePrice(identityClaim);
 
-    const token = identity.token
-      ? fetchToken(Address.fromBytes(identity.token!))
-      : null;
+    const token = fetchTokenByIdentity(identity);
     // Update system stats for price change
     if (token) {
       const newPrice = getTokenBasePrice(identityClaim.id);
@@ -147,9 +145,7 @@ export function handleClaimRemoved(event: ClaimRemoved): void {
     updateCollateral(identityClaim);
   }
   if (isBasePriceClaim(identityClaim)) {
-    const token = identity.token
-      ? fetchToken(Address.fromBytes(identity.token!))
-      : null;
+    const token = fetchTokenByIdentity(identity);
     // Get old price before updating claim (should be 0 for new claims)
     const oldPrice = token
       ? getTokenBasePrice(token.basePriceClaim)

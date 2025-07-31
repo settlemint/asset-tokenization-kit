@@ -11,8 +11,13 @@ import { SMARTHooks } from "../common/SMARTHooks.sol"; // Consider SMARTHooksUpg
 // Internal implementation imports
 import { _SMARTCollateralLogic } from "./internal/_SMARTCollateralLogic.sol";
 
+// Interface imports
+import { ISMARTCollateral } from "./ISMARTCollateral.sol";
+
 /// @title Upgradeable SMART Collateral Extension
-/// @notice This contract adds a collateral verification requirement to an upgradeable SMART token.
+/// @author SettleMint
+/// @notice This contract adds a collateral verification requirement to an upgradeable SMART
+/// token.
 ///         Before new tokens can be minted, it checks for a valid collateral claim on the token
 ///         contract's own OnchainID identity.
 ///         'Upgradeable' means the contract's logic can be changed post-deployment via a proxy,
@@ -27,6 +32,14 @@ import { _SMARTCollateralLogic } from "./internal/_SMARTCollateralLogic.sol";
 ///      Careful attention to storage layout is crucial when working with upgradeable contracts to avoid
 ///      storage slot collisions during upgrades.
 abstract contract SMARTCollateralUpgradeable is Initializable, SMARTExtensionUpgradeable, _SMARTCollateralLogic {
+    /// @notice Register the interface ID for ERC165.
+    /// @dev This allows factories to check if the
+    /// contract
+    /// supports the `ISMARTCollateral` interface based on the upgradeable implementation.
+    constructor() {
+        _registerInterface(type(ISMARTCollateral).interfaceId);
+    }
+
     /// @notice Initializer for the upgradeable collateral extension.
     /// @dev This function should be called only once, typically within the main contract's `initialize` function,
     ///      when deploying or upgrading the implementation contract behind a proxy.
@@ -41,6 +54,8 @@ abstract contract SMARTCollateralUpgradeable is Initializable, SMARTExtensionUpg
         __SMARTCollateral_init_unchained(collateralProofTopic_);
     }
 
+    /// @notice Returns the total supply of tokens for collateral calculations.
+    /// @return The total supply of tokens.
     /// @inheritdoc _SMARTCollateralLogic
     function __collateral_totalSupply() internal view virtual override returns (uint256) {
         return totalSupply();

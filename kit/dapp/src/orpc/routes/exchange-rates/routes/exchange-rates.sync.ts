@@ -42,11 +42,11 @@ async function fetchExchangeRatesFromApi(
 
   if (!response.ok) {
     throw new Error(
-      `Failed to fetch exchange rates: ${response.status} ${response.statusText}`
+      `Failed to fetch exchange rates: ${String(response.status)} ${response.statusText}`
     );
   }
 
-  const data = await response.json();
+  const data = (await response.json()) as unknown;
 
   // Validate the response with Zod schema
   const parsed = safeParse(exchangeRateApiResponseSchema, data);
@@ -220,5 +220,12 @@ export const sync = authRouter.exchangeRates.sync
     const { db } = context;
 
     // Delegate to internal sync function
-    return syncExchangeRatesInternal(db, force);
+    const result = await syncExchangeRatesInternal(db, force);
+
+    // Add translated message if no message exists
+    result.message ??= context.t("exchange-rates:actions.sync.success", {
+      ratesUpdated: result.ratesUpdated,
+    });
+
+    return result;
   });

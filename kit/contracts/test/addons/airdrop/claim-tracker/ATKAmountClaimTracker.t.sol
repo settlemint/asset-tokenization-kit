@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { ATKAmountClaimTracker } from "../../../../contracts/addons/airdrop/claim-tracker/ATKAmountClaimTracker.sol";
@@ -16,7 +16,7 @@ contract ATKAmountClaimTrackerTest is Test {
     uint256 public constant CLAIM_AMOUNT = 100 ether;
 
     // Events
-    event ClaimRecorded(uint256 indexed index, uint256 claimedAmount, uint256 totalAmount);
+    event ClaimRecorded(uint256 indexed index, uint256 indexed claimedAmount, uint256 indexed totalAmount);
 
     function setUp() public {
         owner = makeAddr("owner");

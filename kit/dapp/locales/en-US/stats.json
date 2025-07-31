@@ -1,0 +1,54 @@
+{
+  "charts": {
+    "assetActivity": {
+      "description": "Asset transaction activity",
+      "title": "Asset activity"
+    },
+    "assetSupply": {
+      "description": "Total supply of assets over time",
+      "title": "Asset supply"
+    },
+    "totalCollateral": {
+      "label": "Total Collateral"
+    },
+    "totalSupply": {
+      "description": "Historical total supply changes over time",
+      "label": "Total supply",
+      "title": "Token supply history",
+      "noData": "No data available",
+      "noDataDescription": "No total supply data found for the last {{days}} days"
+    },
+    "transactionHistory": {
+      "description": "Transaction volume over time",
+      "title": "Transaction history"
+    },
+    "userGrowth": {
+      "description": "Number of users over time",
+      "title": "User growth"
+    }
+  },
+  "title": "Statistics",
+  "widgets": {
+    "assets": {
+      "empty": "No assets yet",
+      "title": "Total assets"
+    },
+    "common": {
+      "error": "Error loading data",
+      "loading": "Loading...",
+      "retry": "Retry"
+    },
+    "transactions": {
+      "description": "{{count}} transactions in the last {{days}} days",
+      "title": "Total transactions"
+    },
+    "users": {
+      "description": "{{count}} active users in the last {{days}} days",
+      "title": "Active users"
+    },
+    "value": {
+      "description": "Combined value of all assets",
+      "title": "Total value"
+    }
+  }
+}

@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 /// @title SMART Topic Scheme Registry Interface
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Interface for managing topic schemes with their signatures for data encoding/decoding
 /// @dev This registry allows registration and management of topic schemes used for claim data structures
 interface ISMARTTopicSchemeRegistry is IERC165 {

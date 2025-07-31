@@ -1,7 +1,6 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import { TokenRecoverERC20InputSchema } from "@/orpc/routes/token/routes/mutations/recovery/token.recover-erc20.schema";
-import { TokenTransactionOutputSchema } from "@/orpc/routes/token/routes/mutations/common/token.transaction.schema";
-import { eventIterator } from "@orpc/server";
+import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 
 export const tokenRecoverERC20Contract = baseContract
   .route({
@@ -12,4 +11,4 @@ export const tokenRecoverERC20Contract = baseContract
     tags: ["token"],
   })
   .input(TokenRecoverERC20InputSchema)
-  .output(eventIterator(TokenTransactionOutputSchema));
+  .output(TokenSchema);

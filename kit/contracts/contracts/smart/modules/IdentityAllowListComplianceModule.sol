@@ -5,44 +5,36 @@ pragma solidity ^0.8.28;
 import { AbstractIdentityComplianceModule } from "./AbstractIdentityComplianceModule.sol";
 
 // Interface imports
-import { ISMARTComplianceModule } from "../interface/ISMARTComplianceModule.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 
 /// @title Identity Allow-List Compliance Module
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This compliance module restricts token transfers *to* users unless their identity is on an approved list.
+/// @dev The module uses a token-specific list of allowed identity addresses provided via the `_params` argument.
+/// A transfer is allowed only if the recipient's identity address is in the token-specific allow list.
+/// @custom:parameters The `_params` data should be ABI-encoded as: `abi.encode(address[] memory allowedIdentities)`.
 contract IdentityAllowListComplianceModule is AbstractIdentityComplianceModule {
-    bytes32 public constant override typeId = keccak256("IdentityAllowListComplianceModule");
+    /// @notice Unique type identifier for this compliance module
+    bytes32 public constant TYPE_ID = keccak256("IdentityAllowListComplianceModule");
 
-    event GlobalAllowedIdentitiesUpdated(address[] identityAddresses, bool indexed allowed);
+    /// @notice Returns a unique identifier for the type of this contract.
+    /// @dev This identifier is used to distinguish this compliance module type from others in the system.
+    /// @return The unique type identifier for the IdentityAllowListComplianceModule.
+    function typeId() external pure override returns (bytes32) {
+        return TYPE_ID;
+    }
 
+
+    /// @notice Initializes the compliance module with a trusted forwarder
+    /// @param _trustedForwarder Address of the trusted forwarder for meta transactions
     constructor(address _trustedForwarder) AbstractIdentityComplianceModule(_trustedForwarder) { }
 
-    function setGlobalAllowedIdentities(
-        address[] calldata _identityAddresses,
-        bool _allow
-    )
-        external
-        onlyRole(GLOBAL_LIST_MANAGER_ROLE)
-    {
-        uint256 identityAddressesLength = _identityAddresses.length;
-        for (uint256 i = 0; i < identityAddressesLength;) {
-            _setIdentityInGlobalList(_identityAddresses[i], _allow);
-            unchecked {
-                ++i;
-            }
-        }
-        emit GlobalAllowedIdentitiesUpdated(_identityAddresses, _allow);
-    }
 
-    function isGloballyAllowed(address _identityAddress) public view virtual returns (bool) {
-        return _isIdentityInGlobalList(_identityAddress);
-    }
-
-    function getGlobalAllowedIdentities() external view virtual returns (address[] memory) {
-        return _getGlobalIdentitiesList();
-    }
-
+    /// @notice Checks if a transfer is compliant based on the receiver's identity allowlist status
+    /// @param _token The token contract address
+    /// @param _to The receiver address whose identity is being checked
+    /// @param _params Encoded array of allowed identity addresses for this token
+    // solhint-disable-next-line use-natspec
     function canTransfer(
         address _token,
         address, /* _from - unused */
@@ -61,14 +53,10 @@ contract IdentityAllowListComplianceModule is AbstractIdentityComplianceModule {
             revert ComplianceCheckFailed("Receiver identity unknown");
         }
 
-        if (isGloballyAllowed(address(receiverIdentity))) {
-            return;
-        }
-
-        address[] memory additionalAllowedIdentities = _decodeParams(_params);
-        uint256 additionalAllowedIdentitiesLength = additionalAllowedIdentities.length;
-        for (uint256 i = 0; i < additionalAllowedIdentitiesLength;) {
-            if (additionalAllowedIdentities[i] == address(receiverIdentity)) {
+        address[] memory allowedIdentities = _decodeParams(_params);
+        uint256 allowedIdentitiesLength = allowedIdentities.length;
+        for (uint256 i = 0; i < allowedIdentitiesLength;) {
+            if (allowedIdentities[i] == address(receiverIdentity)) {
                 return;
             }
             unchecked {
@@ -79,6 +67,8 @@ contract IdentityAllowListComplianceModule is AbstractIdentityComplianceModule {
         revert ComplianceCheckFailed("Receiver identity not in allowlist");
     }
 
+    /// @notice Returns the human-readable name of this compliance module
+    /// @return The name of the compliance module
     function name() external pure virtual override returns (string memory) {
         return "Identity AllowList Compliance Module";
     }

@@ -1,5 +1,5 @@
-import { describe, expect, it } from "bun:test";
-import { secretCode } from "./secret-code";
+import { describe, expect, it } from "vitest";
+import { secretCode, isSecretCode, getSecretCode } from "./secret-code";
 
 describe("secretCode", () => {
   const validator = secretCode();
@@ -24,7 +24,9 @@ describe("secretCode", () => {
 
     it("should accept codes with special characters", () => {
       expect(validator.parse("!@#$%^&*()")).toBe("!@#$%^&*()");
-      expect(validator.parse("{}[]|\\:;\"'<>,.?/")).toBe("{}[]|\\:;\"'<>,.?/");
+      expect(validator.parse(String.raw`{}[]|\:;"'<>,.?/`)).toBe(
+        String.raw`{}[]|\:;"'<>,.?/`
+      );
       expect(validator.parse("emoji🔑code")).toBe("emoji🔑code");
     });
   });
@@ -50,7 +52,7 @@ describe("secretCode", () => {
     });
 
     it("should reject non-string types", () => {
-      expect(() => validator.parse(12345678)).toThrow();
+      expect(() => validator.parse(12_345_678)).toThrow();
       expect(() => validator.parse(null)).toThrow();
       expect(() => validator.parse(undefined)).toThrow();
       expect(() => validator.parse({})).toThrow();
@@ -87,5 +89,75 @@ describe("secretCode", () => {
         expect(result.data).toBe("p@ssw0rd_2024");
       }
     });
+  });
+});
+
+describe("isSecretCode", () => {
+  it("should return true for valid secret codes", () => {
+    expect(isSecretCode("12345678")).toBe(true);
+    expect(isSecretCode("MySecret123!")).toBe(true);
+    expect(isSecretCode("p@ssw0rd_2024")).toBe(true);
+    expect(isSecretCode("a".repeat(64))).toBe(true);
+    expect(isSecretCode("!@#$%^&*()")).toBe(true);
+  });
+
+  it("should return false for invalid secret codes", () => {
+    expect(isSecretCode("1234567")).toBe(false);
+    expect(isSecretCode("")).toBe(false);
+    expect(isSecretCode("a".repeat(65))).toBe(false);
+    expect(isSecretCode(null)).toBe(false);
+    expect(isSecretCode(undefined)).toBe(false);
+    expect(isSecretCode(12_345_678)).toBe(false);
+    expect(isSecretCode({})).toBe(false);
+    expect(isSecretCode([])).toBe(false);
+  });
+
+  it("should work as a type guard", () => {
+    const value: unknown = "MySecretKey123!";
+    if (isSecretCode(value)) {
+      // TypeScript should recognize value as SecretCode here
+      const length = value.length;
+      expect(length).toBeGreaterThanOrEqual(8);
+      expect(length).toBeLessThanOrEqual(64);
+    }
+  });
+});
+
+describe("getSecretCode", () => {
+  it("should return valid secret codes", () => {
+    expect(getSecretCode("12345678")).toBe("12345678");
+    expect(getSecretCode("MySecret123!")).toBe("MySecret123!");
+    expect(getSecretCode("p@ssw0rd_2024")).toBe("p@ssw0rd_2024");
+    expect(getSecretCode("a".repeat(64))).toBe("a".repeat(64));
+  });
+
+  it("should throw for invalid secret codes", () => {
+    expect(() => getSecretCode("1234567")).toThrow(
+      "Secret code must be at least 8 characters long"
+    );
+    expect(() => getSecretCode("")).toThrow(
+      "Secret code must be at least 8 characters long"
+    );
+    expect(() => getSecretCode("a".repeat(65))).toThrow(
+      "Secret code must not exceed 64 characters"
+    );
+  });
+
+  it("should throw for non-string types", () => {
+    expect(() => getSecretCode(null)).toThrow();
+    expect(() => getSecretCode(undefined)).toThrow();
+    expect(() => getSecretCode(12_345_678)).toThrow();
+    expect(() => getSecretCode({})).toThrow();
+    expect(() => getSecretCode([])).toThrow();
+  });
+
+  it("should be useful in functions requiring SecretCode type", () => {
+    const validateApiKey = (key: unknown) => {
+      const validatedKey = getSecretCode(key);
+      return validatedKey.length >= 8;
+    };
+
+    expect(validateApiKey("myApiKey123")).toBe(true);
+    expect(() => validateApiKey("short")).toThrow();
   });
 });

@@ -14,11 +14,11 @@ A Helm chart for the supporting components
 
 | Repository | Name | Version |
 |------------|------|---------|
+| file://./charts/postgresql | postgresql | * |
+| file://./charts/redis | redis | * |
+| https://charts.min.io/ | minio | 5.4.0 |
 | https://kubernetes.github.io/ingress-nginx | ingress-nginx | 4.13.0 |
 | https://stakater.github.io/stakater-charts | reloader | 2.1.5 |
-| oci://registry-1.docker.io/bitnamicharts | minio | 17.0.13 |
-| oci://registry-1.docker.io/bitnamicharts | postgresql-ha | 16.0.22 |
-| oci://registry-1.docker.io/bitnamicharts | redis | 21.2.12 |
 
 ## Values
 
@@ -129,73 +129,75 @@ A Helm chart for the supporting components
 | ingress-nginx.imagePullSecrets[0] | string | `"image-pull-secret-docker"` |  |
 | ingress-nginx.imagePullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
 | ingress-nginx.imagePullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
-| minio.auth.rootPassword | string | `"atk-password"` |  |
-| minio.auth.rootUser | string | `"admin"` |  |
-| minio.console.image.registry | string | `"docker.io"` |  |
-| minio.defaultInitContainers.image.registry | string | `"docker.io"` |  |
+| minio.buckets[0].name | string | `"atk"` |  |
+| minio.buckets[0].policy | string | `"none"` |  |
+| minio.buckets[0].purge | bool | `false` |  |
+| minio.consoleIngress.enabled | bool | `true` |  |
+| minio.consoleIngress.hosts[0] | string | `"minio-console.k8s.orb.local"` |  |
+| minio.consoleIngress.ingressClassName | string | `"atk-nginx"` |  |
+| minio.consoleIngress.path | string | `"/"` |  |
 | minio.enabled | bool | `true` |  |
 | minio.fullnameOverride | string | `"minio"` |  |
 | minio.global.imagePullSecrets[0] | string | `"image-pull-secret-docker"` |  |
 | minio.global.imagePullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
 | minio.global.imagePullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
-| minio.global.security.allowInsecureImages | bool | `true` |  |
-| minio.image.registry | string | `"docker.io"` |  |
-| minio.provisioning.config[0].name | string | `"region"` |  |
-| minio.provisioning.config[0].options.name | string | `"eu-central-1"` |  |
-| minio.provisioning.enabled | bool | `true` |  |
-| minio.provisioning.extraCommands | string | `"if ! mc admin user svcacct info provisioning atk-service >/dev/null 2>&1; then\n  echo \"Adding atk-service user\"\n  mc admin user svcacct add provisioning \"admin\" --access-key \"atk-service\" --secret-key \"atk-service-secret\"\nfi"` |  |
-| minio.statefulset.replicaCount | int | `1` |  |
-| postgresql-ha.commonLabels."app.kubernetes.io/managed-by" | string | `"helm"` |  |
-| postgresql-ha.commonLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
-| postgresql-ha.enabled | bool | `true` |  |
-| postgresql-ha.fullnameOverride | string | `"postgresql"` |  |
-| postgresql-ha.global.imagePullSecrets[0] | string | `"image-pull-secret-docker"` |  |
-| postgresql-ha.global.imagePullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
-| postgresql-ha.global.imagePullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
-| postgresql-ha.global.security.allowInsecureImages | bool | `true` |  |
-| postgresql-ha.pgpool.adminPassword | string | `"atk"` |  |
-| postgresql-ha.pgpool.adminUsername | string | `"pgpool"` |  |
-| postgresql-ha.pgpool.customUsers.passwords | string | `"atk,atk,atk,atk,atk"` |  |
-| postgresql-ha.pgpool.customUsers.usernames | string | `"blockscout,hasura,thegraph,portal,txsigner"` |  |
-| postgresql-ha.pgpool.image.registry | string | `"docker.io"` |  |
-| postgresql-ha.pgpool.logConnections | bool | `true` |  |
-| postgresql-ha.pgpool.maxPool | int | `500` |  |
-| postgresql-ha.pgpool.numInitChildren | int | `500` |  |
-| postgresql-ha.pgpool.pullSecrets | list | `[]` |  |
-| postgresql-ha.pgpool.replicaCount | int | `1` |  |
-| postgresql-ha.pgpool.resourcesPreset | string | `"none"` |  |
-| postgresql-ha.postgresql.dbUserConnectionLimit | int | `1000` |  |
-| postgresql-ha.postgresql.image.registry | string | `"docker.io"` |  |
-| postgresql-ha.postgresql.initdbScripts."create_db.sql" | string | `"CREATE DATABASE blockscout;\nCREATE USER blockscout WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE blockscout TO blockscout;\n\\c blockscout;\nGRANT ALL ON SCHEMA public TO blockscout;\nCREATE DATABASE thegraph WITH ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' TEMPLATE template0;\nCREATE USER thegraph WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE thegraph TO thegraph;\n\\c thegraph;\nGRANT ALL ON SCHEMA public TO thegraph;\nCREATE DATABASE hasura;\nCREATE USER hasura WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE hasura TO hasura;\n\\c hasura;\nGRANT ALL ON SCHEMA public TO hasura;\nCREATE DATABASE portal;\nCREATE USER portal WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE portal TO portal;\n\\c portal;\nGRANT ALL ON SCHEMA public TO portal;\nCREATE DATABASE txsigner;\nCREATE USER txsigner WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE txsigner TO txsigner;\n\\c txsigner;\nGRANT ALL ON SCHEMA public TO txsigner;\n"` |  |
-| postgresql-ha.postgresql.maxConnections | int | `1000` |  |
-| postgresql-ha.postgresql.password | string | `"atk"` |  |
-| postgresql-ha.postgresql.postgresConnectionLimit | int | `1000` |  |
-| postgresql-ha.postgresql.pullSecrets | list | `[]` |  |
-| postgresql-ha.postgresql.repmgrPassword | string | `"atk"` |  |
-| postgresql-ha.postgresql.repmgrUsername | string | `"repmgr"` |  |
-| postgresql-ha.postgresql.resourcesPreset | string | `"none"` |  |
-| postgresql-ha.postgresql.username | string | `"postgres"` |  |
-| postgresql-ha.service.annotations."service.beta.kubernetes.io/aws-load-balancer-backend-protocol" | string | `"tcp"` |  |
-| postgresql-ha.service.annotations."service.beta.kubernetes.io/aws-load-balancer-nlb-target-type" | string | `"ip"` |  |
-| postgresql-ha.service.annotations."service.beta.kubernetes.io/aws-load-balancer-scheme" | string | `"internet-facing"` |  |
-| postgresql-ha.service.annotations."service.beta.kubernetes.io/aws-load-balancer-type" | string | `"nlb"` |  |
-| postgresql-ha.service.annotations."service.beta.kubernetes.io/azure-load-balancer-disable-tcp-reset" | string | `"true"` |  |
-| postgresql-ha.service.annotations."service.beta.kubernetes.io/azure-load-balancer-tcp-idle-timeout" | string | `"30"` |  |
-| postgresql-ha.service.externalTrafficPolicy | string | `"Local"` |  |
-| postgresql-ha.service.type | string | `"LoadBalancer"` |  |
-| redis.auth.password | string | `"atk"` |  |
-| redis.commonLabels."app.kubernetes.io/managed-by" | string | `"helm"` |  |
-| redis.commonLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
-| redis.enabled | bool | `true` |  |
-| redis.fullnameOverride | string | `"redis"` |  |
-| redis.global.imagePullSecrets[0] | string | `"image-pull-secret-docker"` |  |
-| redis.global.imagePullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
-| redis.global.imagePullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
-| redis.global.security.allowInsecureImages | bool | `true` |  |
-| redis.image.registry | string | `"docker.io"` |  |
-| redis.master.resourcesPreset | string | `"none"` |  |
-| redis.replica.replicaCount | int | `1` |  |
-| redis.replica.resourcesPreset | string | `"none"` |  |
+| minio.image.repository | string | `"docker.io/minio/minio"` |  |
+| minio.image.tag | string | `"RELEASE.2025-07-18T21-56-31Z"` |  |
+| minio.ingress.enabled | bool | `true` |  |
+| minio.ingress.hosts[0] | string | `"minio.k8s.orb.local"` |  |
+| minio.ingress.ingressClassName | string | `"atk-nginx"` |  |
+| minio.ingress.path | string | `"/"` |  |
+| minio.mode | string | `"standalone"` |  |
+| minio.persistence.enabled | bool | `true` |  |
+| minio.persistence.size | string | `"1Gi"` |  |
+| minio.replicas | int | `1` |  |
+| minio.resources.limits.cpu | string | `"200m"` |  |
+| minio.resources.limits.memory | string | `"512Mi"` |  |
+| minio.resources.requests.cpu | string | `"100m"` |  |
+| minio.resources.requests.memory | string | `"256Mi"` |  |
+| minio.rootPassword | string | `"atk-password"` |  |
+| minio.rootUser | string | `"admin"` |  |
+| minio.users[0].accessKey | string | `"atk-service"` |  |
+| minio.users[0].policy | string | `"readwrite"` |  |
+| minio.users[0].secretKey | string | `"atk-service-secret"` |  |
+| postgresql.commonLabels."app.kubernetes.io/managed-by" | string | `"helm"` |  |
+| postgresql.commonLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
+| postgresql.enabled | bool | `true` |  |
+| postgresql.fullnameOverride | string | `"postgresql"` |  |
+| postgresql.image.pullPolicy | string | `"IfNotPresent"` |  |
+| postgresql.image.registry | string | `"docker.io"` |  |
+| postgresql.image.repository | string | `"postgres"` |  |
+| postgresql.image.tag | string | `"17.5-alpine"` |  |
+| postgresql.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
+| postgresql.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
+| postgresql.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
+| postgresql.initdb.scripts."create_databases.sql" | string | `"-- Create databases and users for all ATK services\nCREATE DATABASE blockscout;\nCREATE USER blockscout WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE blockscout TO blockscout;\n\\c blockscout;\nGRANT ALL ON SCHEMA public TO blockscout;\n\n\\c postgres;\nCREATE DATABASE thegraph WITH ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' TEMPLATE template0;\nCREATE USER thegraph WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE thegraph TO thegraph;\n\\c thegraph;\nGRANT ALL ON SCHEMA public TO thegraph;\n\n\\c postgres;\nCREATE DATABASE hasura;\nCREATE USER hasura WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE hasura TO hasura;\n\\c hasura;\nGRANT ALL ON SCHEMA public TO hasura;\n\n\\c postgres;\nCREATE DATABASE portal;\nCREATE USER portal WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE portal TO portal;\n\\c portal;\nGRANT ALL ON SCHEMA public TO portal;\n\n\\c postgres;\nCREATE DATABASE txsigner;\nCREATE USER txsigner WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE txsigner TO txsigner;\n\\c txsigner;\nGRANT ALL ON SCHEMA public TO txsigner;\n"` |  |
+| postgresql.persistence.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| postgresql.persistence.enabled | bool | `true` |  |
+| postgresql.persistence.size | string | `"8Gi"` |  |
+| postgresql.persistence.storageClass | string | `""` |  |
+| postgresql.postgresql.database | string | `"postgres"` |  |
+| postgresql.postgresql.password | string | `"atk"` |  |
+| postgresql.postgresql.username | string | `"postgres"` |  |
+| postgresql.postgresql_conf.checkpoint_completion_target | float | `0.9` |  |
+| postgresql.postgresql_conf.default_statistics_target | int | `100` |  |
+| postgresql.postgresql_conf.effective_cache_size | string | `"1GB"` |  |
+| postgresql.postgresql_conf.effective_io_concurrency | int | `200` |  |
+| postgresql.postgresql_conf.maintenance_work_mem | string | `"64MB"` |  |
+| postgresql.postgresql_conf.max_connections | int | `1000` |  |
+| postgresql.postgresql_conf.max_wal_size | string | `"4GB"` |  |
+| postgresql.postgresql_conf.min_wal_size | string | `"1GB"` |  |
+| postgresql.postgresql_conf.random_page_cost | float | `1.1` |  |
+| postgresql.postgresql_conf.shared_buffers | string | `"256MB"` |  |
+| postgresql.postgresql_conf.wal_buffers | string | `"16MB"` |  |
+| postgresql.postgresql_conf.work_mem | string | `"4MB"` |  |
+| postgresql.resources.limits.cpu | string | `"500m"` |  |
+| postgresql.resources.limits.memory | string | `"1Gi"` |  |
+| postgresql.resources.requests.cpu | string | `"100m"` |  |
+| postgresql.resources.requests.memory | string | `"256Mi"` |  |
+| postgresql.service.port | int | `5432` |  |
+| postgresql.service.targetPort | int | `5432` |  |
+| postgresql.service.type | string | `"ClusterIP"` |  |
 | reloader.enabled | bool | `true` |  |
 | reloader.fullnameOverride | string | `"reloader"` |  |
 | reloader.global.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |

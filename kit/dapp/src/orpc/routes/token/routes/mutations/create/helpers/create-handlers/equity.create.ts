@@ -25,7 +25,17 @@ import {
 import type { TokenCreateInput } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 
 const CREATE_EQUITY_MUTATION = portalGraphql(`
-  mutation CreateEquityMutation($address: String!, $from: String!, $symbol: String!, $name: String!, $decimals: Int!, $initialModulePairs: [ATKEquityFactoryImplementationATKEquityFactoryImplementationCreateEquityInitialModulePairsInput!]!, $requiredClaimTopics: [String!]!, $verificationId: String, $challengeResponse: String!) {
+  mutation CreateEquityMutation(
+    $address: String!
+    $from: String!
+    $symbol: String!
+    $name: String!
+    $decimals: Int!
+    $initialModulePairs: [ATKEquityFactoryImplementationATKEquityFactoryImplementationCreateEquityInitialModulePairsInput!]!
+    $verificationId: String
+    $challengeResponse: String!
+    $countryCode: Int!
+  ) {
     CreateEquity: ATKEquityFactoryImplementationCreateEquity(
       address: $address
       from: $from
@@ -34,7 +44,7 @@ const CREATE_EQUITY_MUTATION = portalGraphql(`
         name_: $name
         decimals_: $decimals
         initialModulePairs_: $initialModulePairs
-        requiredClaimTopics_: $requiredClaimTopics
+        countryCode_: $countryCode
       }
       verificationId: $verificationId
       challengeResponse: $challengeResponse
@@ -44,23 +54,22 @@ const CREATE_EQUITY_MUTATION = portalGraphql(`
   }
 `);
 
-export const equityCreateHandler = async function* (
+export const equityCreateHandler = async (
   input: TokenCreateInput,
   context: TokenCreateContext
-) {
+) => {
   if (input.type !== AssetTypeEnum.equity) {
     throw new Error("Invalid token type");
   }
 
-  yield* createToken(input, (creationFailedMessage, messages) => {
+  return createToken(input, context, () => {
     return context.portalClient.mutate(
       CREATE_EQUITY_MUTATION,
       {
         ...input,
         ...context.mutationVariables,
       },
-      creationFailedMessage,
-      messages
+      "Failed to create equity token"
     );
   });
 };

@@ -1,10 +1,10 @@
+import { owner } from "../../../constants/actors";
 import { ATKContracts } from "../../../constants/contracts";
-import { owner } from "../../../entities/actors/owner";
 import type { Asset } from "../../../entities/asset";
 import { atkDeployer } from "../../../services/deployer";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
+import { encodeCountryParams } from "../../../utils/encode-country-params";
 import { waitForSuccess } from "../../../utils/wait-for-success";
-import { encodeCountryParams } from "../../utils/encode-country-params";
 
 export const addCountryComplianceModule = async (
   asset: Asset<any>,

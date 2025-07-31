@@ -6,7 +6,7 @@ The following endpoints are now available:
 
   Blockchain JSON-RPC: https://{{ (index .Values.erpc.ingress.hosts 0).host | default "rpc.k8s.orb.local" }}
    Blockchain Explorer: https://{{ (index .Values "blockscout" "blockscout-stack" "frontend" "ingress" "hostname" ) | default "explorer.k8s.orb.local" }}
-             The Graph: https://{{ (index .Values "thegraph" "graph-node" "ingress" "hosts" 0).host | default "graph.k8s.orb.local" }}
+             The Graph: https://{{ (index .Values "graph-node" "ingress" "hosts" 0).host | default "graph.k8s.orb.local" }}
                 Hasura: https://{{ (index .Values "hasura" "graphql-engine" "ingress" "hostName" ) | default "hasura.k8s.orb.local" }}
                Grafana: https://{{ (index .Values "observability" "grafana" "ingress" "hosts" 0 ) | default "grafana.k8s.orb.local" }}
 {{- if .Values.dapp.enabled }}
@@ -26,13 +26,15 @@ Configuration Details:
   Load Balancer: https://{{ (index .Values.erpc.ingress.hosts 0).host | default "rpc.k8s.orb.local" }}
   Hasura GraphQL: https://{{ (index .Values "hasura" "graphql-engine" "ingress" "hostName" ) | default "hasura.k8s.orb.local" }}/v1/graphql
   Hasura Admin Secret: {{ .Values.dapp.secretEnv.SETTLEMINT_HASURA_ADMIN_SECRET | default "atk" }}
-  Database URL: {{ printf "postgresql://hasura:atk@postgresql-pgpool.%s:5432/hasura" (include "atk.extractDomain" (dict "url" (index .Values "hasura" "graphql-engine" "ingress" "hostName" | default "hasura.k8s.orb.local"))) }}
-  The Graph Endpoint: https://{{ (index .Values "thegraph" "graph-node" "ingress" "hosts" 0).host | default "graph.k8s.orb.local" }}
+  Database URL: {{ printf "postgresql://hasura:atk@postgresql.%s:5432/hasura" (include "atk.extractDomain" (dict "url" (index .Values "hasura" "graphql-engine" "ingress" "hostName" | default "hasura.k8s.orb.local"))) }}
+  The Graph Endpoint: https://{{ (index .Values "graph-node" "ingress" "hosts" 0).host | default "graph.k8s.orb.local" }}
   Subgraph Names: kit
+{{- if .Values.portal.enabled }}
   Portal GraphQL: https://{{ .Values.portal.ingress.hostname | default "portal.k8s.orb.local" }}/graphql
+{{- end }}
   MinIO Endpoint: s3://minio.k8s.orb.local
-  MinIO Access Key: <MINIO_ACCESS_KEY>
-  MinIO Secret Key: <MINIO_SECRET_KEY>
+  MinIO Access Key: atk-service
+  MinIO Secret Key: atk-service-secret
   IPFS Endpoint: https://ipfs.console.settlemint.com
   Blockscout GraphQL: https://{{ (index .Values "blockscout" "blockscout-stack" "frontend" "ingress" "hostname" ) | default "explorer.k8s.orb.local" }}/api/v1/graphql
 
@@ -49,22 +51,24 @@ SETTLEMINT_BLOCKSCOUT_GRAPHQL_ENDPOINT=https://{{ (index .Values "blockscout" "b
 SETTLEMINT_HASURA_ENDPOINT=https://{{ (index .Values "hasura" "graphql-engine" "ingress" "hostName" ) | default "hasura.k8s.orb.local" }}/v1/graphql
 SETTLEMINT_INSTANCE=standalone
 SETTLEMINT_IPFS_API_ENDPOINT=https://ipfs.console.settlemint.com
-SETTLEMINT_MINIO_ACCESS_KEY=<MINIO_ACCESS_KEY>
+SETTLEMINT_MINIO_ACCESS_KEY=atk-service
 SETTLEMINT_MINIO_ENDPOINT=s3://minio.k8s.orb.local
+{{- if .Values.portal.enabled }}
 SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT=https://{{ .Values.portal.ingress.hostname | default "portal.k8s.orb.local" }}/graphql
+{{- else }}
+# SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT=https://portal.k8s.orb.local/graphql  # Portal disabled
+{{- end }}
 SETTLEMINT_THEGRAPH_DEFAULT_SUBGRAPH=kit
-SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS=["https://{{ (index .Values "thegraph" "graph-node" "ingress" "hosts" 0).host | default "graph.k8s.orb.local" }}/subgraphs/name/kit"]
+SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS=["https://{{ (index .Values "graph-node" "ingress" "hosts" 0).host | default "graph.k8s.orb.local" }}/subgraphs/name/kit"]
 
 === .env.local ===
 SETTLEMINT_HASURA_ADMIN_SECRET={{ .Values.dapp.secretEnv.SETTLEMINT_HASURA_ADMIN_SECRET | default "atk" }}
-SETTLEMINT_HASURA_DATABASE_URL={{ printf "postgresql://hasura:atk@postgresql-pgpool.%s:5432/hasura" (include "atk.extractDomain" (dict "url" (index .Values "hasura" "graphql-engine" "ingress" "hostName" | default "hasura.k8s.orb.local"))) }}
-SETTLEMINT_MINIO_SECRET_KEY=<MINIO_SECRET_KEY>
+SETTLEMINT_HASURA_DATABASE_URL={{ printf "postgresql://hasura:atk@postgresql.%s:5432/hasura" (include "atk.extractDomain" (dict "url" (index .Values "hasura" "graphql-engine" "ingress" "hostName" | default "hasura.k8s.orb.local"))) }}
+SETTLEMINT_MINIO_SECRET_KEY=atk-service-secret
 
 ========================================================================
 
 Notes:
-- Replace <MINIO_ACCESS_KEY> and <MINIO_SECRET_KEY> with your actual
-  MinIO credentials when MinIO is configured in your deployment.
 {{- if and .Values.txsigner.enabled (not .Values.txsigner.ingress.enabled) }}
 - Transaction Signer is enabled but not exposed via ingress. To use it
   for signing transactions, either enable ingress for txsigner or use

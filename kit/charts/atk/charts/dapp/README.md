@@ -34,14 +34,14 @@ A Helm chart for the ATK DApp frontend
 | initContainer.graphQLCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | initContainer.graphQLCheck.image.registry | string | `"docker.io"` |  |
 | initContainer.graphQLCheck.image.repository | string | `"curlimages/curl"` |  |
-| initContainer.graphQLCheck.image.tag | string | `"8.14.1"` |  |
+| initContainer.graphQLCheck.image.tag | string | `"8.15.0"` |  |
 | initContainer.graphQLCheck.name | string | `"wait-for-graph-subgraph-kit"` |  |
 | initContainer.graphQLCheck.query | string | `"{ __typename }"` |  |
 | initContainer.graphQLCheck.retries | int | `24` |  |
 | initContainer.graphQLCheck.retryDelaySeconds | int | `20` |  |
 | initContainer.graphQLCheck.timeoutSeconds | int | `10` |  |
 | initContainer.graphQLCheck.url | string | `"http://graph-node-combined.atk.svc.cluster.local:8000/subgraphs/name/kit"` |  |
-| initContainer.tcpCheck.dependencies[0].endpoint | string | `"postgresql-pgpool.atk.svc.cluster.local:5432"` |  |
+| initContainer.tcpCheck.dependencies[0].endpoint | string | `"postgresql.atk.svc.cluster.local:5432"` |  |
 | initContainer.tcpCheck.dependencies[0].name | string | `"postgres"` |  |
 | initContainer.tcpCheck.dependencies[1].endpoint | string | `"hasura.atk.svc.cluster.local:8080"` |  |
 | initContainer.tcpCheck.dependencies[1].name | string | `"hasura"` |  |
@@ -54,7 +54,7 @@ A Helm chart for the ATK DApp frontend
 | initContainer.tcpCheck.enabled | bool | `true` |  |
 | initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
-| initContainer.tcpCheck.image.tag | string | `"v7.7.5"` |  |
+| initContainer.tcpCheck.image.tag | string | `"v7.7.6"` |  |
 | initContainer.tcpCheck.timeout | int | `5` |  |
 | job.enabled | bool | `true` |  |
 | job.image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -70,7 +70,7 @@ A Helm chart for the ATK DApp frontend
 | job.initContainer.hasuraCheck.endpoint | string | `"hasura.atk.svc.cluster.local:8080"` |  |
 | job.initContainer.hasuraCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | job.initContainer.hasuraCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
-| job.initContainer.hasuraCheck.image.tag | string | `"v7.7.5"` |  |
+| job.initContainer.hasuraCheck.image.tag | string | `"v7.7.6"` |  |
 | job.initContainer.hasuraCheck.timeout | int | `5` |  |
 | job.podAnnotations | object | `{}` |  |
 | job.podSecurityContext | object | `{}` |  |

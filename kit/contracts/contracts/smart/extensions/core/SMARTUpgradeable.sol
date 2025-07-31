@@ -20,7 +20,9 @@ import { _SMARTLogic } from "./internal/_SMARTLogic.sol";
 // Error imports
 
 /// @title Upgradeable SMART Token Implementation (UUPS Pattern)
-/// @notice This abstract contract provides an upgradeable version of a SMART token, utilizing OpenZeppelin's
+/// @author SettleMint
+/// @notice This abstract contract provides an upgradeable version of a SMART token, utilizing
+/// OpenZeppelin's
 ///         UUPS (Universal Upgradeable Proxy Standard) proxy pattern. It integrates ERC20 functionality,
 ///         identity verification, and compliance checks from the `_SMARTLogic` base.
 /// @dev This contract is 'abstract' because it needs to be combined with:
@@ -177,35 +179,52 @@ abstract contract SMARTUpgradeable is Initializable, SMARTExtensionUpgradeable, 
     // extension logic by always calling the __smart_<action>Logic and then super.<hook>.
 
     /// @inheritdoc SMARTHooks
-    /// @dev Integrates SMART core pre-mint logic into the `_beforeMint` hook chain.
+    /// @notice Integrates SMART core pre-mint logic into the `_beforeMint` hook chain.
+    /// @dev Calls `__smart_beforeMintLogic` to perform identity verification and compliance checks.
+    /// @param to The address that will receive the minted tokens.
+    /// @param amount The amount of tokens to be minted.
     function _beforeMint(address to, uint256 amount) internal virtual override(SMARTHooks) {
         __smart_beforeMintLogic(to, amount);
         super._beforeMint(to, amount);
     }
 
     /// @inheritdoc SMARTHooks
-    /// @dev Integrates SMART core post-mint logic into the `_afterMint` hook chain.
+    /// @notice Integrates SMART core post-mint logic into the `_afterMint` hook chain.
+    /// @dev Calls `__smart_afterMintLogic` to notify compliance systems and other extensions.
+    /// @param to The address that received the minted tokens.
+    /// @param amount The amount of tokens that were minted.
     function _afterMint(address to, uint256 amount) internal virtual override(SMARTHooks) {
         __smart_afterMintLogic(to, amount);
         super._afterMint(to, amount);
     }
 
     /// @inheritdoc SMARTHooks
-    /// @dev Integrates SMART core pre-transfer logic into the `_beforeTransfer` hook chain.
+    /// @notice Integrates SMART core pre-transfer logic into the `_beforeTransfer` hook chain.
+    /// @dev Calls `__smart_beforeTransferLogic` for identity and compliance checks.
+    /// @param from The address sending the tokens.
+    /// @param to The address receiving the tokens.
+    /// @param amount The amount of tokens being transferred.
     function _beforeTransfer(address from, address to, uint256 amount) internal virtual override(SMARTHooks) {
         __smart_beforeTransferLogic(from, to, amount);
         super._beforeTransfer(from, to, amount);
     }
 
     /// @inheritdoc SMARTHooks
-    /// @dev Integrates SMART core post-transfer logic into the `_afterTransfer` hook chain.
+    /// @notice Integrates SMART core post-transfer logic into the `_afterTransfer` hook chain.
+    /// @dev Calls `__smart_afterTransferLogic` to emit events and notify compliance systems.
+    /// @param from The address that sent the tokens.
+    /// @param to The address that received the tokens.
+    /// @param amount The amount of tokens that were transferred.
     function _afterTransfer(address from, address to, uint256 amount) internal virtual override(SMARTHooks) {
         __smart_afterTransferLogic(from, to, amount);
         super._afterTransfer(from, to, amount);
     }
 
     /// @inheritdoc SMARTHooks
-    /// @dev Integrates SMART core post-burn logic into the `_afterBurn` hook chain.
+    /// @notice Integrates SMART core post-burn logic into the `_afterBurn` hook chain.
+    /// @dev Calls `__smart_afterBurnLogic` to notify compliance systems of the burn operation.
+    /// @param from The address from which tokens were burned.
+    /// @param amount The amount of tokens that were burned.
     function _afterBurn(address from, uint256 amount) internal virtual override(SMARTHooks) {
         __smart_afterBurnLogic(from, amount);
         super._afterBurn(from, amount);

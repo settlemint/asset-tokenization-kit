@@ -14,6 +14,7 @@ import { ISMARTCompliance } from "./ISMARTCompliance.sol";
 import { SMARTComplianceModuleParamPair } from "./structs/SMARTComplianceModuleParamPair.sol";
 
 /// @title ISMART Token Interface
+/// @author SettleMint
 /// @notice This interface defines the comprehensive set of functions, events, and errors for a SMART token.
 /// A SMART token extends standard ERC20 functionality (token transfers, balances) and ERC20Metadata (name, symbol,
 /// decimals)
@@ -116,7 +117,7 @@ interface ISMART is IERC20, IERC20Metadata, IERC165 {
     /// highly unusual and complex for ERC20 tokens).
     /// @param _newOnchainID The address of the new on-chain Identity contract representing the token itself (if
     /// applicable).
-    event UpdatedTokenInformation(address indexed sender, uint8 _newDecimals, address indexed _newOnchainID);
+    event UpdatedTokenInformation(address indexed sender, uint8 indexed _newDecimals, address indexed _newOnchainID);
 
     /// @notice Emitted when a new compliance module is successfully added to the token's compliance framework.
     /// @dev Compliance modules implement specific rules (e.g., geographic restrictions, holding limits).
@@ -154,7 +155,7 @@ interface ISMART is IERC20, IERC20Metadata, IERC165 {
     /// @param sender The address of the account (e.g., minter role) that initiated the minting.
     /// @param to The address that received the newly minted tokens.
     /// @param amount The quantity of tokens minted.
-    event MintCompleted(address indexed sender, address indexed to, uint256 amount);
+    event MintCompleted(address indexed sender, address indexed to, uint256 indexed amount);
 
     /// @notice Emitted when tokens are recovered from a lost wallet to the caller's address.
     /// @param sender The address that initiated the recovery operation.

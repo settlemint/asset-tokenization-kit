@@ -12,7 +12,7 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[solidity]": {
-    "editor.defaultFormatter": "NomicFoundation.hardhat-solidity"
+    "editor.defaultFormatter": "JuanBlanco.solidity"
   },
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -37,10 +37,9 @@
   "cursor.terminal.usePreviewBox": true,
   "dotenv.enableAutocloaking": false,
   "editor.codeActionsOnSave": {
-    "quickfix.biome": "explicit",
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit",
-    "source.organizeImports.biome": "explicit"
+    "source.fixAll.oxlint": "explicit"
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.fontLigatures": true,
@@ -67,7 +66,7 @@
     "*.js": "${capture}.js.map, ${capture}.min.js, ${capture}.d.ts",
     "*.jsx": "${capture}.js",
     "*.mts": "${capture}.typegen.ts",
-    "*.ts": "${capture}.js, ${capture}.typegen.ts, ${capture}.spec.ts, ${capture}.test.ts, ${capture}.schema.ts, ${capture}.contract.ts",
+    "*.ts": "${capture}.js, ${capture}.typegen.ts, ${capture}.spec.ts, ${capture}.test.ts, ${capture}.test.tsx, ${capture}.schema.ts, ${capture}.contract.ts",
     "*.tsx": "${capture}.ts, ${capture}.typegen.ts, ${capture}.spec.ts, ${capture}.test.ts, ${capture}.spec.tsx, ${capture}.test.tsx, ${capture}.schema.tsx",
     "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb, bun.lock",
     "tsconfig.json": "tsconfig.*.json",

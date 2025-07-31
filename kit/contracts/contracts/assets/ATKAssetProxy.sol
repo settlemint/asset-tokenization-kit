@@ -14,7 +14,7 @@ import {
 } from "../system/ATKSystemErrors.sol";
 
 /// @title Abstract Base Proxy for ATK Assets
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Provides common functionality for asset proxy contracts that interact with an IATKTokenFactory
 ///         to determine their implementation address and handle initialization.
 /// @dev Child contracts must:
@@ -43,6 +43,7 @@ abstract contract ATKAssetProxy is Proxy {
         StorageSlot.getAddressSlot(_ASSET_PROXY_TOKEN_FACTORY_SLOT).value = tokenFactoryAddress_;
     }
 
+    /// @notice Retrieves the token factory contract instance
     /// @dev Internal function to retrieve the `IATKTokenFactory` contract instance from the stored address.
     /// @return An `IATKTokenFactory` instance pointing to the stored token factory contract address.
     function _getTokenFactory() internal view returns (IATKTokenFactory) {
@@ -71,6 +72,7 @@ abstract contract ATKAssetProxy is Proxy {
         }
     }
 
+    /// @notice Returns the current implementation address for the proxy
     /// @dev Overrides `Proxy._implementation()`. This is used by OpenZeppelin's proxy mechanisms.
     /// It retrieves the `ISMARTTokenFactory` instance and then calls the abstract `_getSpecificImplementationAddress`
     /// which the child contract must implement. The child's implementation is responsible for returning a valid

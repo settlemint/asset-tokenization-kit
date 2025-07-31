@@ -1,5 +1,9 @@
-import { describe, expect, it } from "bun:test";
-import { twoFactorCode } from "./two-factor-code";
+import { describe, expect, it } from "vitest";
+import {
+  getTwoFactorCode,
+  isTwoFactorCode,
+  twoFactorCode,
+} from "./two-factor-code";
 
 describe("twoFactorCode", () => {
   const validator = twoFactorCode();
@@ -72,7 +76,7 @@ describe("twoFactorCode", () => {
     });
 
     it("should reject non-string types", () => {
-      expect(() => validator.parse(123456)).toThrow();
+      expect(() => validator.parse(123_456)).toThrow();
       expect(() => validator.parse(null)).toThrow();
       expect(() => validator.parse(undefined)).toThrow();
       expect(() => validator.parse({})).toThrow();
@@ -82,7 +86,7 @@ describe("twoFactorCode", () => {
   describe("edge cases", () => {
     it("should handle numeric string input only", () => {
       // Even though 123456 as number has 6 digits, we only accept strings
-      expect(() => validator.parse(123456)).toThrow();
+      expect(() => validator.parse(123_456)).toThrow();
 
       // String representation is valid
       expect(validator.parse("123456")).toBe("123456");
@@ -110,5 +114,99 @@ describe("twoFactorCode", () => {
         expect(result.data).toBe("567890");
       }
     });
+  });
+
+  describe("safeParse", () => {
+    it("should return success for valid 2FA codes", () => {
+      const result = validator.safeParse("123456");
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data).toBe("123456");
+      }
+    });
+
+    it("should return error for invalid 2FA codes", () => {
+      const result = validator.safeParse("12345");
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0]?.message).toBe(
+          "Two-factor code must be exactly 6 digits"
+        );
+      }
+    });
+  });
+});
+
+describe("isTwoFactorCode type guard", () => {
+  it("should return true for valid 2FA codes", () => {
+    expect(isTwoFactorCode("123456")).toBe(true);
+    expect(isTwoFactorCode("000000")).toBe(true);
+    expect(isTwoFactorCode("999999")).toBe(true);
+    expect(isTwoFactorCode("000123")).toBe(true);
+  });
+
+  it("should return false for invalid 2FA codes", () => {
+    expect(isTwoFactorCode("12345")).toBe(false);
+    expect(isTwoFactorCode("1234567")).toBe(false);
+    expect(isTwoFactorCode("abc123")).toBe(false);
+    expect(isTwoFactorCode("123 456")).toBe(false);
+    expect(isTwoFactorCode(null)).toBe(false);
+    expect(isTwoFactorCode(undefined)).toBe(false);
+    expect(isTwoFactorCode(123_456)).toBe(false);
+    expect(isTwoFactorCode({})).toBe(false);
+    expect(isTwoFactorCode([])).toBe(false);
+  });
+
+  it("should narrow type correctly in TypeScript", () => {
+    const value: unknown = "123456";
+    if (isTwoFactorCode(value)) {
+      // TypeScript should know value is TwoFactorCode here
+      expect(value).toBe("123456");
+    }
+  });
+});
+
+describe("getTwoFactorCode helper", () => {
+  it("should return valid 2FA codes", () => {
+    expect(getTwoFactorCode("123456")).toBe("123456");
+    expect(getTwoFactorCode("000123")).toBe("000123");
+    expect(getTwoFactorCode("999999")).toBe("999999");
+  });
+
+  it("should throw for invalid 2FA codes", () => {
+    expect(() => getTwoFactorCode("12345")).toThrow(
+      "Two-factor code must be exactly 6 digits"
+    );
+    expect(() => getTwoFactorCode("1234567")).toThrow(
+      "Two-factor code must be exactly 6 digits"
+    );
+    expect(() => getTwoFactorCode("abc123")).toThrow();
+    expect(() => getTwoFactorCode("123 456")).toThrow();
+    expect(() => getTwoFactorCode(null)).toThrow();
+    expect(() => getTwoFactorCode(undefined)).toThrow();
+  });
+});
+
+describe("TOTP compatibility", () => {
+  it("should accept codes from common authenticator apps", () => {
+    // Simulate codes that would come from popular TOTP apps
+    const totpCodes = ["123456", "000001", "999999", "543210"];
+    totpCodes.forEach((code) => {
+      expect(twoFactorCode().parse(code)).toBe(code);
+    });
+  });
+
+  it("should not trim whitespace (security consideration)", () => {
+    expect(() => twoFactorCode().parse(" 123456")).toThrow();
+    expect(() => twoFactorCode().parse("123456 ")).toThrow();
+    expect(() => twoFactorCode().parse(" 123456 ")).toThrow();
+  });
+
+  it("should not transform input (codes must be exact)", () => {
+    // Ensure no transformation happens - codes must match exactly
+    const code = "012345";
+    const result = twoFactorCode().parse(code);
+    expect(result).toBe(code);
+    expect(result === code).toBe(true); // Exact reference equality
   });
 });

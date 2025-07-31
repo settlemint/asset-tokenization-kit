@@ -1,10 +1,9 @@
 import { atkDeployer } from "../services/deployer";
 
+import { owner } from "../constants/actors";
+import { Countries } from "../constants/countries";
 import { ATKRoles } from "../constants/roles";
-import { ATKTopic } from "../constants/topics";
-import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
-import { topicManager } from "../services/topic-manager";
 import { grantRoles } from "./actions/core/grant-roles";
 import { issueBasePriceClaim } from "./actions/core/issue-base-price-claim";
 import { pauseAsset } from "./actions/pausable/pause-asset";
@@ -27,14 +26,15 @@ export const createPausedAsset = async () => {
     pausedStableCoin.name,
     pausedStableCoin.symbol,
     pausedStableCoin.decimals,
-    [topicManager.getTopicId(ATKTopic.kyc)],
     [],
+    Countries.BE,
   ]);
 
   await pausedStableCoin.waitUntilDeployed(transactionHash);
 
   // needs to be done so that he can add the claims and also pause the asset
   await grantRoles(pausedStableCoin, owner, [
+    ATKRoles.governanceRole,
     ATKRoles.claimManagerRole,
     ATKRoles.emergencyRole,
   ]);

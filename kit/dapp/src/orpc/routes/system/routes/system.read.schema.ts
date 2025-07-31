@@ -27,7 +27,10 @@ export const SystemReadSchema = z.object({
   /**
    * The system contract address to query
    */
-  id: ethereumAddress.describe("The system contract address"),
+  id: z.union([
+    z.literal("default").describe("The system used by the dApp"),
+    ethereumAddress.describe("The system contract address"),
+  ]),
 });
 
 /**
@@ -46,6 +49,46 @@ const TokenFactorySchema = z.object({
 
   /**
    * The type identifier of the factory (bond, equity, fund, etc.)
+   */
+  typeId: z.string(),
+});
+
+/**
+ * System addon information schema
+ */
+const SystemAddonSchema = z.object({
+  /**
+   * The addon contract address
+   */
+  id: ethereumAddress,
+
+  /**
+   * The name of the addon
+   */
+  name: z.string(),
+
+  /**
+   * The type identifier of the addon
+   */
+  typeId: z.string(),
+});
+
+/**
+ * Compliance module information schema
+ */
+const ComplianceModuleSchema = z.object({
+  /**
+   * The compliance module contract address
+   */
+  id: ethereumAddress,
+
+  /**
+   * The name of the compliance module
+   */
+  name: z.string(),
+
+  /**
+   * The type identifier of the compliance module
    */
   typeId: z.string(),
 });
@@ -70,14 +113,19 @@ export const SystemReadOutputSchema = z.object({
   identityRegistry: ethereumAddress.nullable(),
 
   /**
+   * The identity factory contract address
+   */
+  identityFactory: ethereumAddress.nullable(),
+
+  /**
    * The trusted issuers registry contract address
    */
   trustedIssuersRegistry: ethereumAddress.nullable(),
 
   /**
-   * The compliance engine contract address
+   * The compliance module registry contract address
    */
-  compliance: ethereumAddress.nullable(),
+  complianceModuleRegistry: ethereumAddress.nullable(),
 
   /**
    * The token factory registry contract address
@@ -90,9 +138,24 @@ export const SystemReadOutputSchema = z.object({
   systemAddonRegistry: ethereumAddress.nullable(),
 
   /**
+   * The system access manager contract address
+   */
+  systemAccessManager: ethereumAddress.nullable(),
+
+  /**
    * List of token factories deployed by this system
    */
   tokenFactories: z.array(TokenFactorySchema),
+
+  /**
+   * List of system addons deployed by this system
+   */
+  systemAddons: z.array(SystemAddonSchema),
+
+  /**
+   * List of compliance modules deployed by this system
+   */
+  complianceModules: z.array(ComplianceModuleSchema),
 });
 
 // Type exports

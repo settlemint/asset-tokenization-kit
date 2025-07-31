@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
-
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+pragma solidity ^0.8.28;
 
 /// @title Interface for a generic SMART Yield Schedule contract
-/// @notice This interface defines the most basic function that any yield schedule contract, associated with a SMART
+/// @author SettleMint
+/// @notice This interface defines the most basic function that any yield schedule contract,
+/// associated with a SMART
 /// token's yield extension, must implement.
 /// It primarily ensures that the associated SMART token (e.g., via `_SMARTYieldLogic`) can query the start date of the
 /// yield schedule.

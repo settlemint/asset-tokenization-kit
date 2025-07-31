@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
-
-import { IATKPushAirdrop } from "./IATKPushAirdrop.sol";
+pragma solidity ^0.8.28;
 
 /// @title Interface for ATK Push Airdrop Factory
+/// @author SettleMint
 /// @notice Interface for creating and managing ATK Push Airdrop proxies
 /// @dev This interface defines the standard for factories that create push airdrop contracts
 interface IATKPushAirdropFactory {

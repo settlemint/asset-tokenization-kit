@@ -46,7 +46,6 @@ abstract contract AbstractComplianceModuleTest is Test {
     // Token
     ISMART internal smartToken;
 
-    bytes32 internal constant GLOBAL_LIST_MANAGER_ROLE = keccak256("GLOBAL_LIST_MANAGER_ROLE");
 
     function setUp() public virtual {
         platformAdmin = makeAddr("platformAdmin");
@@ -100,7 +99,7 @@ abstract contract AbstractComplianceModuleTest is Test {
 
         // Add token issuer to the bypass list so that he is allowed to do things for testing
         vm.startPrank(platformAdmin);
-        IAccessControl(address(systemUtils.compliance())).grantRole(
+        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
             ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, platformAdmin
         );
         IATKCompliance(address(systemUtils.compliance())).addToBypassList(tokenIssuer);
@@ -134,7 +133,7 @@ abstract contract AbstractComplianceModuleTest is Test {
         accessManager.grantRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, tokenIssuer);
 
         // Create the token's on-chain identity
-        tokenUtils.createAndSetTokenOnchainID(address(smartToken), tokenIssuer, address(accessManager));
+        tokenUtils.createAndSetTokenOnchainID(address(smartToken), tokenIssuer);
 
         // Issue a collateral claim
         uint256 largeCollateralAmount = type(uint256).max / 2; // Avoid hitting absolute max

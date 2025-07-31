@@ -28,6 +28,9 @@ export const TokenListSchema = z.array(
     redeemable: true,
     capped: true,
     createdBy: true,
+    extensions: true,
+    implementsERC3643: true,
+    implementsSMART: true,
   })
 );
 

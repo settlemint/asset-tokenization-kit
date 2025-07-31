@@ -1,5 +1,3 @@
-"use client";
-
 import { CommandItem } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import { Circle, CircleCheck } from "lucide-react";

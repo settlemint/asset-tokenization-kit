@@ -1,7 +1,8 @@
-    // SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
 /// @title SMARTComplianceModuleParamPair
+/// @author SettleMint
 /// @notice This struct represents a key-value pair, specifically designed to link a compliance module
 ///         (identified by its Ethereum address) with its configuration parameters (encoded as bytes).
 /// @dev This structure is crucial for initializing or updating compliance modules within the SMART protocol.

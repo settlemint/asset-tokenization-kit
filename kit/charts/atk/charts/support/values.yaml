@@ -1,110 +1,109 @@
-# https://github.com/bitnami/charts/blob/main/bitnami/postgresql-ha/values.yaml
-postgresql-ha:
+# Our simple PostgreSQL chart configuration
+postgresql:
   enabled: true
-  global:
-    security:
-      allowInsecureImages: true
-    imagePullSecrets:
-      - image-pull-secret-docker
-      - image-pull-secret-ghcr
-      - image-pull-secret-harbor
   fullnameOverride: postgresql
+
+  # Image configuration
+  image:
+    registry: docker.io
+    repository: postgres
+    tag: "17.5-alpine"
+    pullPolicy: IfNotPresent
+
+  # Image pull secrets
+  imagePullSecrets:
+    - name: image-pull-secret-docker
+    - name: image-pull-secret-ghcr
+    - name: image-pull-secret-harbor
+
+  # PostgreSQL configuration
+  postgresql:
+    username: postgres
+    password: atk
+    database: postgres
+
+  # Resource configuration for development
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
+  # Persistence configuration
+  persistence:
+    enabled: true
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi
+
+  # Service configuration
+  service:
+    type: ClusterIP
+    port: 5432
+    targetPort: 5432
+
+  # Common labels
   commonLabels:
     kots.io/app-slug: settlemint-atk
     app.kubernetes.io/managed-by: helm
-  postgresql:
-    image:
-      registry: docker.io
-    username: "postgres"
-    password: "atk"
-    repmgrUsername: repmgr
-    repmgrPassword: "atk"
-    maxConnections: 1000
-    postgresConnectionLimit: 1000
-    dbUserConnectionLimit: 1000
-    pullSecrets: []
-    resourcesPreset: none
-    initdbScripts:
-      create_db.sql: |
+
+  # Database initialization scripts (same as before)
+  initdb:
+    scripts:
+      create_databases.sql: |
+        -- Create databases and users for all ATK services
         CREATE DATABASE blockscout;
         CREATE USER blockscout WITH PASSWORD 'atk' SUPERUSER;
         GRANT ALL PRIVILEGES ON DATABASE blockscout TO blockscout;
         \c blockscout;
         GRANT ALL ON SCHEMA public TO blockscout;
+
+        \c postgres;
         CREATE DATABASE thegraph WITH ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' TEMPLATE template0;
         CREATE USER thegraph WITH PASSWORD 'atk' SUPERUSER;
         GRANT ALL PRIVILEGES ON DATABASE thegraph TO thegraph;
         \c thegraph;
         GRANT ALL ON SCHEMA public TO thegraph;
+
+        \c postgres;
         CREATE DATABASE hasura;
         CREATE USER hasura WITH PASSWORD 'atk' SUPERUSER;
         GRANT ALL PRIVILEGES ON DATABASE hasura TO hasura;
         \c hasura;
         GRANT ALL ON SCHEMA public TO hasura;
+
+        \c postgres;
         CREATE DATABASE portal;
         CREATE USER portal WITH PASSWORD 'atk' SUPERUSER;
         GRANT ALL PRIVILEGES ON DATABASE portal TO portal;
         \c portal;
         GRANT ALL ON SCHEMA public TO portal;
+
+        \c postgres;
         CREATE DATABASE txsigner;
         CREATE USER txsigner WITH PASSWORD 'atk' SUPERUSER;
         GRANT ALL PRIVILEGES ON DATABASE txsigner TO txsigner;
         \c txsigner;
         GRANT ALL ON SCHEMA public TO txsigner;
-  pgpool:
-    image:
-      registry: docker.io
-    replicaCount: 1
-    adminUsername: "pgpool"
-    adminPassword: "atk"
-    customUsers:
-      usernames: "blockscout,hasura,thegraph,portal,txsigner"
-      passwords: "atk,atk,atk,atk,atk"
-    maxPool: 500
-    numInitChildren: 500
-    logConnections: true
-    resourcesPreset: none
-    pullSecrets: []
-  service:
-    # Change the service type from ClusterIP to LoadBalancer
-    type: LoadBalancer
-    # External traffic policy - use Local for better performance and client IP preservation
-    externalTrafficPolicy: Local
-    # Cloud-specific annotations
-    annotations:
-      # AWS Network Load Balancer configuration
-      service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
-      service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
-      service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
-      service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
-      # Azure Load Balancer configuration
-      service.beta.kubernetes.io/azure-load-balancer-disable-tcp-reset: "true"
-      service.beta.kubernetes.io/azure-load-balancer-tcp-idle-timeout: "30"
 
-# https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml
-redis:
-  enabled: true
-  global:
-    security:
-      allowInsecureImages: true
-    imagePullSecrets:
-      - image-pull-secret-docker
-      - image-pull-secret-ghcr
-      - image-pull-secret-harbor
-  image:
-    registry: docker.io
-  fullnameOverride: redis
-  commonLabels:
-    kots.io/app-slug: settlemint-atk
+  # PostgreSQL configuration tuned for development
+  postgresql_conf:
+    max_connections: 1000
+    shared_buffers: 256MB
+    effective_cache_size: 1GB
+    maintenance_work_mem: 64MB
+    checkpoint_completion_target: 0.9
+    wal_buffers: 16MB
+    default_statistics_target: 100
+    random_page_cost: 1.1
+    effective_io_concurrency: 200
+    work_mem: 4MB
+    min_wal_size: 1GB
+    max_wal_size: 4GB
 
-    app.kubernetes.io/managed-by: helm
-  auth:
-    password: "atk"
-  master:
-    resourcesPreset: "none"
-  replica:
-    replicaCount: 1
-    resourcesPreset: "none"
 
 # https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
 ingress-nginx:
@@ -317,36 +316,55 @@ reloader:
 
 minio:
   enabled: true
+  image:
+    repository: docker.io/minio/minio
+    tag: RELEASE.2025-07-18T21-56-31Z
+  fullnameOverride: 'minio'
+  mode: standalone
+  replicas: 1
+  persistence:
+    enabled: true
+    size: 1Gi
+  rootUser: "admin"
+  rootPassword: "atk-password"
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 200m
+
+  # Automatic bucket creation
+  buckets:
+    - name: atk
+      policy: none
+      purge: false
+
+  # Automatic user/service account creation
+  users:
+    - accessKey: atk-service
+      secretKey: atk-service-secret
+      policy: readwrite
+
+  # Ingress configuration
+  ingress:
+    enabled: true
+    ingressClassName: atk-nginx
+    path: /
+    hosts:
+      - minio.k8s.orb.local
+
+  consoleIngress:
+    enabled: true
+    ingressClassName: atk-nginx
+    path: /
+    hosts:
+      - minio-console.k8s.orb.local
+
+  # Image pull secrets (using global scope to avoid template bug)
   global:
-    security:
-      allowInsecureImages: true
     imagePullSecrets:
       - image-pull-secret-docker
       - image-pull-secret-ghcr
       - image-pull-secret-harbor
-  image:
-    registry: docker.io
-  fullnameOverride: 'minio'
-  # defaultBuckets: atk
-  auth:
-    rootUser: admin
-    rootPassword: atk-password
-  statefulset:
-    replicaCount: 1
-  provisioning:
-    enabled: true
-    config:
-      - name: region
-        options:
-          name: eu-central-1
-    extraCommands: |-
-      if ! mc admin user svcacct info provisioning atk-service >/dev/null 2>&1; then
-        echo "Adding atk-service user"
-        mc admin user svcacct add provisioning "admin" --access-key "atk-service" --secret-key "atk-service-secret"
-      fi
-  console:
-    image:
-      registry: docker.io
-  defaultInitContainers:
-    image:
-      registry: docker.io

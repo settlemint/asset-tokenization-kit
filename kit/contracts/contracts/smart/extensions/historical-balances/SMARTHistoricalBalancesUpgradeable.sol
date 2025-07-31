@@ -12,8 +12,13 @@ import { SMARTHooks } from "../common/SMARTHooks.sol"; // Common hook definition
 // Internal implementation imports
 import { _SMARTHistoricalBalancesLogic } from "./internal/_SMARTHistoricalBalancesLogic.sol"; // Core logic
 
+// Interface imports
+import { ISMARTHistoricalBalances } from "./ISMARTHistoricalBalances.sol";
+
 /// @title Upgradeable SMART Historical Balances Extension
-/// @notice This abstract contract provides the upgradeable (UUPS proxy pattern) implementation for tracking
+/// @author SettleMint
+/// @notice This abstract contract provides the upgradeable (UUPS proxy pattern) implementation
+/// for tracking
 ///         historical token balances and total supply for a SMART token.
 /// @dev It integrates the core checkpointing logic from `_SMARTHistoricalBalancesLogic` into the upgradeable
 ///      SMART token lifecycle. This is done by overriding `SMARTHooks` (`_afterMint`, `_afterBurn`,
@@ -28,6 +33,14 @@ abstract contract SMARTHistoricalBalancesUpgradeable is
     SMARTExtensionUpgradeable, // Base for upgradeable SMART extensions
     _SMARTHistoricalBalancesLogic // Core historical balances logic
 {
+    /// @notice Register the interface ID for ERC165.
+    /// @dev This allows factories to check if the
+    /// contract
+    /// supports the `ISMARTHistoricalBalances` interface based on the upgradeable implementation.
+    constructor() {
+        _registerInterface(type(ISMARTHistoricalBalances).interfaceId);
+    }
+
     /// @notice Initializer for the Upgradeable SMART Historical Balances extension.
     /// @dev This function MUST be called once by the `initialize` function of the final concrete (and proxy-deployed)
     ///      contract. It uses the `onlyInitializing` modifier from `Initializable` to ensure it runs only during

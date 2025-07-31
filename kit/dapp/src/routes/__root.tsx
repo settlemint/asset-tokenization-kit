@@ -52,6 +52,7 @@ export const Route = createRootRouteWithContext<{
   head: () => ({
     meta: [
       {
+        // eslint-disable-next-line unicorn/text-encoding-identifier-case
         charSet: "utf-8",
       },
       {
@@ -182,7 +183,10 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
           <Toaster richColors />
           {import.meta.env.DEV && (
             <Suspense fallback={null}>
-              <TanStackRouterDevtools initialIsOpen={false} />
+              <TanStackRouterDevtools
+                initialIsOpen={false}
+                position="bottom-right"
+              />
               <ReactQueryDevtools initialIsOpen={false} />
             </Suspense>
           )}

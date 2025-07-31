@@ -1,13 +1,12 @@
-import { ATKTopic } from "../constants/topics";
 import {
   frozenInvestor,
   investorA,
   investorB,
-} from "../entities/actors/investors";
-import { owner } from "../entities/actors/owner";
+  owner,
+} from "../constants/actors";
+import { Countries } from "../constants/countries";
 import { Asset } from "../entities/asset";
 import { atkDeployer } from "../services/deployer";
-import { topicManager } from "../services/topic-manager";
 import { burn } from "./actions/burnable/burn";
 import { mint } from "./actions/core/mint";
 import { transfer } from "./actions/core/transfer";
@@ -35,8 +34,8 @@ export const createEquity = async () => {
     equity.name,
     equity.symbol,
     equity.decimals,
-    [topicManager.getTopicId(ATKTopic.kyc)],
     getDefaultComplianceModules(),
+    Countries.BE,
   ]);
 
   await equity.waitUntilDeployed(transactionHash);

@@ -1,0 +1,108 @@
+{
+  "actions": {
+    "update": {
+      "success": "Perfekt! Der {{baseCurrency}}/{{quoteCurrency}} Wechselkurs wurde auf {{rate}} aktualisiert",
+      "title": "Wechselkurs aktualisieren",
+      "description": "Einen benutzerdefinierten Wechselkurs zwischen Währungen festlegen",
+      "button": "Kurs aktualisieren",
+      "updating": "Kurs wird aktualisiert...",
+      "error": "Der Wechselkurs konnte nicht aktualisiert werden. Bitte versuchen Sie es erneut"
+    },
+    "sync": {
+      "success": "Ausgezeichnet! Wir haben {{ratesUpdated}} Wechselkurse mit den neuesten Marktdaten aktualisiert",
+      "title": "Wechselkurse synchronisieren",
+      "description": "Die neuesten Kurse von unseren vertrauenswürdigen Marktdatenanbietern abrufen",
+      "button": "Kurse synchronisieren",
+      "syncing": "Die neuesten Kurse werden abgerufen...",
+      "error": "Der Wechselkurs kann im Moment nicht synchronisiert werden. Wir versuchen es automatisch erneut",
+      "no-updates": "Ihre Kurse sind bereits auf dem neuesten Stand!"
+    },
+    "delete": {
+      "success": "Alles erledigt! Der benutzerdefinierte {{baseCurrency}}/{{quoteCurrency}} Kurs wurde entfernt und wir verwenden stattdessen die Marktpreise",
+      "title": "Benutzerdefinierten Kurs entfernen",
+      "description": "Löschen Sie Ihren benutzerdefinierten Kurs und kehren Sie zu den Marktpreisen zurück",
+      "button": "Kurs entfernen",
+      "deleting": "Benutzerdefinierten Kurs wird entfernt...",
+      "error": "Der benutzerdefinierte Kurs konnte nicht entfernt werden. Bitte versuchen Sie es erneut",
+      "confirm": "Sind Sie sicher, dass Sie diesen benutzerdefinierten Kurs entfernen möchten?"
+    }
+  },
+  "rates": {
+    "title": "Wechselkurse",
+    "subtitle": "Verwalten Sie Währungsumrechnungen für Ihre Plattform",
+    "description": "Halten Sie Ihre Wechselkurse aktuell für genaue Vermögensbewertungen. Sie können aktuelle Marktkurse verwenden oder benutzerdefinierte Kurse für bestimmte Währungspaare festlegen.",
+    "loading": "Wechselkurse werden geladen...",
+    "error": "Wechselkurse konnten nicht geladen werden",
+    "empty": "Es sind noch keine Wechselkurse konfiguriert",
+    "last-updated": "Zuletzt aktualisiert {{time}}",
+    "source": {
+      "market": "Marktkurs",
+      "custom": "Benutzerdefinierter Kurs",
+      "system": "Systemstandard"
+    }
+  },
+  "table": {
+    "headers": {
+      "currency-pair": "Währungspaar",
+      "rate": "Wechselkurs",
+      "source": "Quelle",
+      "last-updated": "Zuletzt aktualisiert",
+      "actions": "Aktionen"
+    },
+    "search": "Währungspaare suchen...",
+    "filter": {
+      "all": "Alle Kurse",
+      "custom": "Nur benutzerdefinierte Kurse",
+      "market": "Nur Marktkurse"
+    }
+  },
+  "form": {
+    "base-currency": {
+      "label": "Von Währung",
+      "description": "Die Währung, von der Sie umrechnen",
+      "placeholder": "Basiswährung auswählen",
+      "validation": {
+        "required": "Bitte wählen Sie eine Basiswährung aus"
+      }
+    },
+    "quote-currency": {
+      "label": "Nach Währung",
+      "description": "Die Währung, in die Sie umrechnen",
+      "placeholder": "Gegenwährung auswählen",
+      "validation": {
+        "required": "Bitte wählen Sie eine Gegenwährung aus",
+        "same-as-base": "Die Gegenwährung muss sich von der Basiswährung unterscheiden"
+      }
+    },
+    "rate": {
+      "label": "Wechselkurs",
+      "description": "Wie viel 1 {{baseCurrency}} in {{quoteCurrency}} entspricht",
+      "placeholder": "Wechselkurs eingeben",
+      "validation": {
+        "required": "Bitte geben Sie einen Wechselkurs ein",
+        "positive": "Der Wechselkurs muss eine positive Zahl sein",
+        "invalid": "Bitte geben Sie eine gültige Zahl ein"
+      }
+    }
+  },
+  "help": {
+    "what-are-exchange-rates": {
+      "title": "Was sind Wechselkurse?",
+      "description": "Wechselkurse bestimmen, wie Währungen untereinander umgerechnet werden. Sie sind entscheidend für Multi-Währungsplattformen, um genaue Vermögenswerte anzuzeigen."
+    },
+    "custom-vs-market": {
+      "title": "Benutzerdefinierte vs. Marktkurse",
+      "description": "Marktkurse werden automatisch von Finanzdatenanbietern aktualisiert. Benutzerdefinierte Kurse ermöglichen es Ihnen, spezifische Paare für spezielle Preise oder feste Umrechnungen zu überschreiben."
+    },
+    "sync-frequency": {
+      "title": "Wie oft werden Kurse aktualisiert?",
+      "description": "Marktkurse werden alle 15 Minuten während der Handelszeiten aktualisiert. Sie können jederzeit manuell synchronisieren, und benutzerdefinierte Kurse bleiben fest, bis Sie sie ändern."
+    }
+  },
+  "tooltips": {
+    "custom-rate": "Sie haben einen benutzerdefinierten Kurs für dieses Paar festgelegt",
+    "market-rate": "Dieser Kurs stammt aus aktuellen Marktdaten",
+    "stale-rate": "Dieser Kurs wurde seit über 24 Stunden nicht aktualisiert",
+    "sync-needed": "Bitte synchronisieren Sie für die neuesten Kurse"
+  }
+}

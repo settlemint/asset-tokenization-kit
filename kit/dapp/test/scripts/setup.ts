@@ -1,6 +1,10 @@
-import { afterAll, beforeAll } from "bun:test";
+import type { ChildProcessByStdio } from "node:child_process";
+import type Stream from "node:stream";
 import { getOrpcClient } from "../utils/orpc-client";
-import { bootstrapSystem } from "../utils/system-bootstrap";
+import {
+  bootstrapSystem,
+  bootstrapTokenFactories,
+} from "../utils/system-bootstrap";
 import {
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
@@ -9,9 +13,11 @@ import {
   signInWithUser,
 } from "../utils/user";
 
-let runningDevServer: Bun.Subprocess | undefined;
+let runningDevServer:
+  | ChildProcessByStdio<null, Stream.Readable, Stream.Readable>
+  | undefined;
 
-beforeAll(async () => {
+export async function setup() {
   try {
     await startDevServerIfNotRunning();
 
@@ -24,14 +30,16 @@ beforeAll(async () => {
 
     const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));
     console.log("Bootstrapping system");
-    await bootstrapSystem(orpClient);
-  } catch (error) {
+    const system = await bootstrapSystem(orpClient);
+    console.log("Bootstrapping token factories");
+    await bootstrapTokenFactories(orpClient, system);
+  } catch (error: unknown) {
     console.error("Failed to setup test environment", error);
     process.exit(1);
   }
-});
+}
 
-afterAll(stopDevServer);
+export const teardown = stopDevServer;
 
 process.on("SIGINT", stopDevServer);
 process.on("exit", stopDevServer);
@@ -41,16 +49,9 @@ async function startDevServerIfNotRunning() {
     console.log("Dev server already running");
     return;
   }
-  const result = await Promise.race([
-    startDevServer(),
-    (async () => {
-      await new Promise((resolve) => setTimeout(resolve, 10_000));
-      return false;
-    })(),
-  ]);
-  if (!result) {
-    throw new Error("Dev server did not start in time");
-  }
+
+  // Just call startDevServer directly - it has its own timeout logic
+  await startDevServer();
 }
 
 async function isDevServerRunning() {
@@ -64,42 +65,64 @@ async function isDevServerRunning() {
 
 async function startDevServer() {
   console.log("Starting dev server");
-  const devProcess = Bun.spawn(["bun", "run", "dev", "--", "--no-open"], {
-    stdout: "pipe",
-    stderr: "pipe",
+
+  // Use child_process.spawn for better control over streams
+  const { spawn } = await import("child_process");
+  runningDevServer = spawn("bun", ["run", "dev", "--", "--no-open"], {
+    stdio: ["ignore", "pipe", "pipe"],
   });
-  runningDevServer = devProcess;
 
-  // Wait for "completed" in stdout
-  const reader = devProcess.stdout?.getReader();
-  const decoder = new TextDecoder();
   let output = "";
+  let serverStarted = false;
 
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) {
-      console.log("Dev server started");
-      break;
-    }
+  // Handle stdout streaming
+  if (runningDevServer.stdout) {
+    runningDevServer.stdout.on("data", (data: Buffer) => {
+      const chunk = data.toString();
+      output += chunk;
+      process.stdout.write(chunk);
 
-    const chunk = decoder.decode(value);
-    output += chunk;
+      // Check if server is ready
+      const cleanText = output.replace(
+        // eslint-disable-next-line no-control-regex
+        /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+        ""
+      );
 
-    // Output to main process stdout
-    process.stdout.write(chunk);
+      if (/VITE\s+v(.*)\s+ready\s+in/i.test(cleanText) && !serverStarted) {
+        serverStarted = true;
+        console.log("\nDev server is ready!");
+      }
+    });
+  }
 
-    // Remove all ANSI colors/styles from strings
-    const text = output.replace(
-      // eslint-disable-next-line no-control-regex, security/detect-unsafe-regex
-      /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
-      ""
-    );
-    if (/VITE\s+v(.*)\s+ready\s+in/i.test(text)) {
-      console.log("Dev server started");
-      reader.releaseLock();
-      break;
+  // Handle stderr streaming
+  if (runningDevServer.stderr) {
+    runningDevServer.stderr.on("data", (data: Buffer) => {
+      process.stderr.write(data.toString());
+    });
+  }
+
+  // Wait for server to be ready or timeout
+  const startTime = Date.now();
+  while (!serverStarted && Date.now() - startTime < 10_000) {
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Check if process is still running
+    if (
+      runningDevServer.exitCode !== null &&
+      runningDevServer.exitCode !== undefined
+    ) {
+      throw new Error(
+        `Dev server exited with code ${runningDevServer.exitCode}`
+      );
     }
   }
+
+  if (!serverStarted) {
+    throw new Error("Dev server did not start in time");
+  }
+
   return true;
 }
 

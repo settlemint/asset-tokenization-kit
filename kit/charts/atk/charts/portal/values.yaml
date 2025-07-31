@@ -28,7 +28,7 @@ image:
   # -- Portal image repository
   repository: settlemint/btp-scs-portal
   # -- Portal image tag (immutable tags are recommended)
-  tag: "8.5.13"
+  tag: "8.5.14"
   # -- Portal image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
   digest: ""
   # -- Portal image pull policy
@@ -406,8 +406,8 @@ initContainers:
 
         # Function to test PostgreSQL connection
         test_postgres() {
-          pg_isready -h postgresql-pgpool -p 5432 -U portal && \
-          psql -h postgresql-pgpool -p 5432 -U portal -d portal -c "SELECT 1;" > /dev/null 2>&1
+          pg_isready -h postgresql -p 5432 -U portal && \
+          psql -h postgresql -p 5432 -U portal -d portal -c "SELECT 1;" > /dev/null 2>&1
         }
 
         # Wait with exponential backoff
@@ -450,12 +450,12 @@ config:
     nodeRpcUrl: "http://txsigner:3000"
 
   # -- PostgreSQL connection string
-  postgresql: "postgresql://portal:atk@postgresql-pgpool:5432/portal?sslmode=disable"
+  postgresql: "postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"
 
   # -- Redis configuration
   redis:
     # -- Redis host
-    host: "redis-master"
+    host: "redis"
     # -- Redis port
     port: 6379
     # -- Redis username

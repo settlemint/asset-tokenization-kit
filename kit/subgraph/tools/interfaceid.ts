@@ -309,8 +309,8 @@ async function findInterfaceFiles(): Promise<string[]> {
 
   logger.info(`Found ${interfaceFiles.length} interface files:`);
   for (const file of interfaceFiles) {
-    const relativePath = relative(CONTRACTS_ROOT, file);
-    logger.info(`  - ${relativePath}`);
+    const _relativePath = relative(CONTRACTS_ROOT, file);
+    logger.info(`  - ${_relativePath}`);
   }
 
   return interfaceFiles;
@@ -346,7 +346,6 @@ async function extractInterfaceMetadata(
     if (interfaceRegex.test(content)) {
       // Check if we've already seen this interface name
       if (seenInterfaces.has(interfaceName)) {
-        const relativePath = relative(join(CONTRACTS_ROOT, "contracts"), file);
         logger.warn(
           `  ⚠ ${interfaceName}: Duplicate interface found, skipping (already processed)`
         );
@@ -461,7 +460,6 @@ async function calculateInterfaceIds(
     // Extract and display the results section
     const lines = output.split("\n");
     let inResultsSection = false;
-    let inTypeScriptSection = false;
 
     for (const line of lines) {
       if (line.includes("=== SMART Protocol Interface IDs ===")) {
@@ -470,7 +468,6 @@ async function calculateInterfaceIds(
       }
       if (line.includes("=== TypeScript Format ===")) {
         inResultsSection = false;
-        inTypeScriptSection = true;
         continue;
       }
       if (inResultsSection && line.trim()) {
@@ -484,26 +481,27 @@ async function calculateInterfaceIds(
     }
 
     return output;
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error("Forge script execution failed:");
 
-    // If it's a ShellError from Bun, extract detailed error information
-    if (error.stderr) {
-      logger.error("STDERR:", error.stderr.toString());
-    }
-    if (error.stdout) {
-      logger.error("STDOUT:", error.stdout.toString());
-    }
-    if (error.exitCode) {
-      logger.error("Exit code:", error.exitCode);
+    if (error instanceof $.ShellError) {
+      // If it's a ShellError from Bun, extract detailed error information
+      if (error.stderr) {
+        logger.error("STDERR:", error.stderr.toString());
+      }
+      if (error.stdout) {
+        logger.error("STDOUT:", error.stdout.toString());
+      }
+      if (error.exitCode) {
+        logger.error("Exit code:", error.exitCode);
+      }
     }
 
     // Log the full error object for debugging
     logger.debug("Full error object:", error);
 
-    throw new Error(
-      `Failed to calculate interface IDs: ${error.message || error}`
-    );
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`Failed to calculate interface IDs: ${message}`);
   }
 }
 
@@ -709,8 +707,8 @@ async function main() {
     // Force cleanup before exiting, even if it fails
     try {
       await cleanupTempFiles(tempContract);
-    } catch (cleanupError) {
-      logger.warn(`Cleanup failed during error handling: ${cleanupError}`);
+    } catch (_cleanupError) {
+      logger.warn(`Cleanup failed during error handling: ${_cleanupError}`);
     }
 
     process.exit(1);
@@ -718,7 +716,7 @@ async function main() {
     // Final cleanup attempt - this runs regardless of success or failure
     try {
       await cleanupTempFiles(tempContract);
-    } catch (cleanupError) {
+    } catch (_cleanupError) {
       // Don't log this as it might be redundant, just ensure it doesn't crash
     }
   }
@@ -735,9 +733,9 @@ if (import.meta.main) {
       if (typeof CONTRACTS_ROOT !== "undefined") {
         await cleanupTempFiles(tempContract);
       }
-    } catch (cleanupError) {
+    } catch (_cleanupError) {
       // Don't let cleanup errors prevent error reporting
-      logger.error("Final cleanup attempt failed:", cleanupError);
+      logger.error("Final cleanup attempt failed:", _cleanupError);
     }
 
     process.exit(1);

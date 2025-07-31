@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 /// @title Interface for the SMART Token Access Control Manager
+/// @author SettleMint
 /// @notice This interface defines the essential functions that a dedicated Access Control Manager
 ///         contract must implement for the SMART token ecosystem. SMART token contracts
 ///         that are "access managed" will delegate their authorization checks to a contract
@@ -49,4 +50,9 @@ interface ISMARTTokenAccessManager is
     /// @param account The address that will lose all the roles.
     /// @param roles The array of role identifiers to revoke.
     function revokeMultipleRoles(address account, bytes32[] calldata roles) external;
+
+    /// @notice Renounces multiple roles from the calling account.
+    /// @param roles The array of role identifiers to renounce.
+    /// @param callerConfirmation The address that will confirm the renouncement.
+    function renounceMultipleRoles(bytes32[] calldata roles, address callerConfirmation) external;
 }

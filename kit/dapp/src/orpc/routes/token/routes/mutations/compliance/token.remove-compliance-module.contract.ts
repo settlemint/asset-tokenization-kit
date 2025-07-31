@@ -1,7 +1,6 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import { TokenRemoveComplianceModuleInputSchema } from "@/orpc/routes/token/routes/mutations/compliance/token.remove-compliance-module.schema";
-import { TokenTransactionOutputSchema } from "@/orpc/routes/token/routes/mutations/common/token.transaction.schema";
-import { eventIterator } from "@orpc/server";
+import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 
 export const tokenRemoveComplianceModuleContract = baseContract
   .route({
@@ -12,4 +11,4 @@ export const tokenRemoveComplianceModuleContract = baseContract
     tags: ["token"],
   })
   .input(TokenRemoveComplianceModuleInputSchema)
-  .output(eventIterator(TokenTransactionOutputSchema));
+  .output(TokenSchema);

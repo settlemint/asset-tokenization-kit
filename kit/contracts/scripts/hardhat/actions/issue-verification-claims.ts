@@ -1,15 +1,17 @@
 import type { Address } from "viem";
+import { claimIssuer } from "../constants/actors";
 import { ATKContracts } from "../constants/contracts";
-import type { AbstractActor } from "../entities/actors/abstract-actor";
-import { claimIssuer } from "../entities/actors/claim-issuer";
 
+import { KeyType } from "../constants/key-types";
 import { ATKTopic } from "../constants/topics";
+import type { Actor } from "../entities/actor";
 import { atkDeployer } from "../services/deployer";
-import { topicManager } from "../services/topic-manager";
 import { encodeClaimData } from "../utils/claim-scheme-utils";
+import { withDecodedRevertReason } from "../utils/decode-revert-reason";
+import { expressionBuilder } from "../utils/expression-builder";
 import { waitForSuccess } from "../utils/wait-for-success";
 
-export const issueVerificationClaims = async (actor: AbstractActor) => {
+export const issueVerificationClaims = async (actor: Actor) => {
   console.log(
     `[Verification claims] → Starting verification claims issuance...`
   );
@@ -34,10 +36,7 @@ export const issueVerificationClaims = async (actor: AbstractActor) => {
     .getIdentityRegistryContract()
     .read.isVerified([
       actor.address,
-      [
-        topicManager.getTopicId(ATKTopic.kyc),
-        topicManager.getTopicId(ATKTopic.aml),
-      ],
+      expressionBuilder().topic(ATKTopic.kyc).and(ATKTopic.aml).build(),
     ]);
 
   if (!isVerified) {
@@ -50,7 +49,7 @@ export const issueVerificationClaims = async (actor: AbstractActor) => {
 };
 
 async function _issueClaim(
-  actor: AbstractActor,
+  actor: Actor,
   claimIssuerIdentity: Address,
   claimTopic: ATKTopic,
   claimData: string
@@ -65,19 +64,22 @@ async function _issueClaim(
     encodedClaimData
   );
 
+  // let the actor do it, else we cannot do it in parallel ... we get nonce issues then
   const identityContract = actor.getContractInstance({
     address: identityAddress,
     abi: ATKContracts.identity,
   });
 
-  const transactionHash = await identityContract.write.addClaim([
-    topicId,
-    BigInt(1), // ECDSA
-    claimIssuerIdentity,
-    claimSignature,
-    encodedClaimData,
-    "",
-  ]);
+  const transactionHash = await withDecodedRevertReason(() =>
+    identityContract.write.addClaim([
+      topicId,
+      KeyType.ecdsa,
+      claimIssuerIdentity,
+      claimSignature,
+      encodedClaimData,
+      "",
+    ])
+  );
 
   await waitForSuccess(transactionHash);
 

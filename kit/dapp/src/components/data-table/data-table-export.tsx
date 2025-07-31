@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import type { Column, Table } from "@tanstack/react-table";
 import { Download } from "lucide-react";
@@ -25,11 +23,11 @@ function formatCellValue(value: unknown): string {
   }
 
   if (typeof value === "object") {
-    return `"${JSON.stringify(value).replace(/"/g, '""')}"`;
+    return `"${JSON.stringify(value).replaceAll('"', '""')}"`;
   }
 
   if (typeof value === "string") {
-    return `"${value.replace(/"/g, '""')}"`;
+    return `"${value.replaceAll('"', '""')}"`;
   }
 
   // At this point, value can only be number, boolean, bigint, symbol, or function
@@ -114,9 +112,9 @@ function exportTableToCSV<TData>(
     link.setAttribute("href", url);
     link.setAttribute("download", `${table.options.meta?.name ?? "table"}.csv`);
     link.style.visibility = "hidden";
-    document.body.appendChild(link);
+    document.body.append(link);
     link.click();
-    document.body.removeChild(link);
+    link.remove();
     setTimeout(() => {
       URL.revokeObjectURL(url);
     }, 100);

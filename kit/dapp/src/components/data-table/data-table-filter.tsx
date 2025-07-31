@@ -1,6 +1,3 @@
-"use client";
-"use no memo"; // fixes rerendering with react compiler
-
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -17,15 +14,16 @@ import {
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useScrollBlur } from "@/hooks/use-scroll-blur";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import { ArrowRight, Filter, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { PropertyFilterOperatorController } from "./filters/operators/operator-controller";
+import { PropertyFilterSubject } from "./filters/property-filter-subject";
 import type { ColumnDataType } from "./filters/types/column-types";
 import type { FilterValue } from "./filters/types/filter-types";
 import { getColumn, getColumnMeta } from "./filters/utils/table-helpers";
-import { PropertyFilterOperatorController } from "./filters/operators/operator-controller";
-import { PropertyFilterSubject } from "./filters/property-filter-subject";
 import { PropertyFilterValueController } from "./filters/values/value-controller";
 import { PropertyFilterValueMenu } from "./filters/values/value-menu";
 
@@ -39,6 +37,7 @@ import { PropertyFilterValueMenu } from "./filters/values/value-menu";
  * @returns Filter UI with responsive layout
  */
 export function DataTableFilter<TData>({ table }: { table: Table<TData> }) {
+  "use no memo";
   const isMobile = useIsMobile();
 
   // Key by filter count to force re-render when filters change
@@ -47,7 +46,7 @@ export function DataTableFilter<TData>({ table }: { table: Table<TData> }) {
   if (isMobile) {
     return (
       <div
-        key={`mobile-${filterCount}`}
+        key={`mobile-${String(filterCount)}`}
         className="flex w-full items-start justify-between gap-2"
       >
         <TableFilter table={table} />
@@ -60,7 +59,7 @@ export function DataTableFilter<TData>({ table }: { table: Table<TData> }) {
 
   return (
     <div
-      key={`desktop-${filterCount}`}
+      key={`desktop-${String(filterCount)}`}
       className="flex w-full items-start justify-between gap-2"
     >
       <TableFilter table={table} />
@@ -85,36 +84,8 @@ export function DataTableFilterDesktopContainer({
   children: React.ReactNode;
 }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [showLeftBlur, setShowLeftBlur] = useState(false);
-  const [showRightBlur, setShowRightBlur] = useState(true);
-
-  // Check if there's content to scroll and update blur states
-  const checkScroll = useCallback(() => {
-    if (scrollContainerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } =
-        scrollContainerRef.current;
-
-      // Show left blur if scrolled to the right
-      setShowLeftBlur(scrollLeft > 0);
-
-      // Show right blur if there's more content to scroll to the right
-      // Add a small buffer (1px) to account for rounding errors
-      setShowRightBlur(scrollLeft + clientWidth < scrollWidth - 1);
-    }
-  }, []);
-
-  // Set up ResizeObserver to monitor container size
-  useEffect(() => {
-    if (scrollContainerRef.current) {
-      const resizeObserver = new ResizeObserver(() => {
-        checkScroll();
-      });
-      resizeObserver.observe(scrollContainerRef.current);
-      return () => {
-        resizeObserver.disconnect();
-      };
-    }
-  }, [checkScroll]);
+  const { showLeftBlur, showRightBlur, checkScroll } =
+    useScrollBlur(scrollContainerRef);
 
   // Update blur states when children change
   useEffect(() => {
@@ -159,41 +130,8 @@ export function DataTableFilterMobileContainer({
   children: React.ReactNode;
 }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [showLeftBlur, setShowLeftBlur] = useState(false);
-  const [showRightBlur, setShowRightBlur] = useState(true);
-
-  // Check if there's content to scroll and update blur states
-  const checkScroll = useCallback(() => {
-    if (scrollContainerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } =
-        scrollContainerRef.current;
-
-      // Show left blur if scrolled to the right
-      setShowLeftBlur(scrollLeft > 0);
-
-      // Show right blur if there's more content to scroll to the right
-      // Add a small buffer (1px) to account for rounding errors
-      setShowRightBlur(scrollLeft + clientWidth < scrollWidth - 1);
-    }
-  }, []);
-
-  // Log blur states for debugging
-  // useEffect(() => {
-  //   logger.debug('Blur states - left:', showLeftBlur, 'right:', showRightBlur);
-  // }, [showLeftBlur, showRightBlur])
-
-  // Set up ResizeObserver to monitor container size
-  useEffect(() => {
-    if (scrollContainerRef.current) {
-      const resizeObserver = new ResizeObserver(() => {
-        checkScroll();
-      });
-      resizeObserver.observe(scrollContainerRef.current);
-      return () => {
-        resizeObserver.disconnect();
-      };
-    }
-  }, [checkScroll]);
+  const { showLeftBlur, showRightBlur, checkScroll } =
+    useScrollBlur(scrollContainerRef);
 
   // Update blur states when children change
   useEffect(() => {
@@ -233,6 +171,7 @@ export function DataTableFilterMobileContainer({
  * @returns Filter button with popover menu
  */
 export function TableFilter<TData>({ table }: { table: Table<TData> }) {
+  "use no memo";
   const { t } = useTranslation("data-table");
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
@@ -377,6 +316,7 @@ export function TableFilterMenuItem<TData>({
  * @returns List of filter chip components
  */
 export function PropertyFilterList<TData>({ table }: { table: Table<TData> }) {
+  "use no memo";
   // Get filters directly from table state - this will re-render when table updates
   const filters = table.getState().columnFilters;
 

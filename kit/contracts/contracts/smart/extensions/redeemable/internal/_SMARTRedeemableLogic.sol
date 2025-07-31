@@ -4,7 +4,9 @@ pragma solidity ^0.8.28;
 import { _SMARTExtension } from "../../common/_SMARTExtension.sol";
 import { ISMARTRedeemable } from "../ISMARTRedeemable.sol";
 /// @title Internal Logic for SMART Redeemable Extension
-/// @notice This abstract contract provides the core, reusable logic for the redeemable token functionality.
+/// @author SettleMint
+/// @notice This abstract contract provides the core, reusable logic for the redeemable token
+/// functionality.
 /// It allows token holders to burn (redeem) their own tokens.
 /// @dev This contract is designed to be inherited by other contracts (either standard or upgradeable versions
 /// of the redeemable extension) that will provide the full implementation details (like how `_burn` works or

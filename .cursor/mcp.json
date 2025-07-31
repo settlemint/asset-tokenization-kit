@@ -11,6 +11,10 @@
     },
     "Sentry": {
       "url": "https://mcp.sentry.dev/sse"
+    },
+    "OpenZeppelinSolidityContracts": {
+      "type": "streamable-http",
+      "url": "https://mcp.openzeppelin.com/contracts/solidity/mcp"
     }
   }
 }

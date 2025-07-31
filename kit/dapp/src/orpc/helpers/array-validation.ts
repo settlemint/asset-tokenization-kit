@@ -24,7 +24,7 @@ export function validateArrayLengths(
       throw new ORPCError("BAD_REQUEST", {
         message: `Array length mismatch in ${operation}`,
         data: {
-          error: `${firstName} has ${expectedLength} elements but ${name} has ${array.length} elements`,
+          error: `${firstName} has ${String(expectedLength)} elements but ${name} has ${String(array.length)} elements`,
           expected: expectedLength,
           actual: array.length,
           operation,
@@ -81,7 +81,7 @@ export function validateBatchArrays(
     throw new ORPCError("BAD_REQUEST", {
       message: `Too many elements in ${operation}`,
       data: {
-        error: `Maximum ${maxLength} elements allowed, but ${firstArray.length} provided`,
+        error: `Maximum ${String(maxLength)} elements allowed, but ${String(firstArray.length)} provided`,
         operation,
       },
     });

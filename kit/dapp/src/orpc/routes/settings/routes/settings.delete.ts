@@ -35,5 +35,8 @@ export const del = authRouter.settings.delete
     // Delete the setting and check if it existed
     await context.db.delete(settings).where(eq(settings.key, key));
 
-    return { success: true };
+    return {
+      success: true,
+      message: context.t("settings:actions.delete.success", { key }),
+    };
   });

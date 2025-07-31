@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
@@ -59,7 +57,7 @@ export function SelectionHeader<TData>({
             isAllSelected
               ? t("bulkActions.clearSelection")
               : isSomeSelected
-                ? `${selectedCount} of ${totalCount} rows selected`
+                ? `${String(selectedCount)} of ${String(totalCount)} rows selected`
                 : t("bulkActions.selectAll")
           }
           className={cn(
@@ -158,7 +156,7 @@ export function SelectionCell({
         {/* Row number indicator */}
         {showRowNumber && !isSelected && (
           <span className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground pointer-events-none">
-            {rowIndex}
+            {String(rowIndex)}
           </span>
         )}
       </div>
@@ -202,7 +200,7 @@ export function SelectionSummary({
       {variant === "detailed" && (
         <>
           <span className="text-muted-foreground">of</span>
-          <span className="text-muted-foreground">{totalCount}</span>
+          <span className="text-muted-foreground">{String(totalCount)}</span>
           <span className="text-muted-foreground">
             {totalCount === 1 ? "item" : "items"}
           </span>

@@ -5,43 +5,34 @@ pragma solidity ^0.8.28;
 import { AbstractAddressListComplianceModule } from "./AbstractAddressListComplianceModule.sol";
 
 // Interface imports
-import { ISMARTComplianceModule } from "../interface/ISMARTComplianceModule.sol";
 
 /// @title Address Block-List Compliance Module
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This compliance module restricts token transfers *to* specific wallet addresses.
+/// @dev The module uses a token-specific list of blocked addresses provided via the `_params` argument.
+/// A transfer is blocked if the recipient address is in the token-specific block list.
+/// @custom:parameters The `_params` data should be ABI-encoded as: `abi.encode(address[] memory blockedAddresses)`.
 contract AddressBlockListComplianceModule is AbstractAddressListComplianceModule {
-    bytes32 public constant override typeId = keccak256("AddressBlockListComplianceModule");
+    /// @notice Unique type identifier for this compliance module
+    bytes32 public constant TYPE_ID = keccak256("AddressBlockListComplianceModule");
 
-    event GlobalBlockedAddressesUpdated(address[] addresses, bool indexed blocked);
+    /// @notice Returns a unique identifier for the type of this contract.
+    /// @dev This identifier is used to distinguish this compliance module type from others in the system.
+    /// @return The unique type identifier for the AddressBlockListComplianceModule.
+    function typeId() external pure override returns (bytes32) {
+        return TYPE_ID;
+    }
 
+
+    /// @notice Initializes the compliance module with a trusted forwarder
+    /// @param _trustedForwarder Address of the trusted forwarder for meta transactions
     constructor(address _trustedForwarder) AbstractAddressListComplianceModule(_trustedForwarder) { }
 
-    function setGlobalBlockedAddresses(
-        address[] calldata _addresses,
-        bool _block
-    )
-        external
-        onlyRole(GLOBAL_LIST_MANAGER_ROLE)
-    {
-        uint256 addressesLength = _addresses.length;
-        for (uint256 i = 0; i < addressesLength;) {
-            _setAddressInGlobalList(_addresses[i], _block);
-            unchecked {
-                ++i;
-            }
-        }
-        emit GlobalBlockedAddressesUpdated(_addresses, _block);
-    }
 
-    function isGloballyBlocked(address _addr) public view virtual returns (bool) {
-        return _isAddressInGlobalList(_addr);
-    }
-
-    function getGlobalBlockedAddresses() external view virtual returns (address[] memory) {
-        return _getGlobalAddressesList();
-    }
-
+    /// @notice Checks if a transfer is compliant based on the receiver's address block status
+    /// @param _to The receiver address being checked
+    /// @param _params Encoded array of blocked addresses for this token
+    // solhint-disable-next-line use-natspec
     function canTransfer(
         address, /* _token - unused */
         address, /* _from - unused */
@@ -54,15 +45,11 @@ contract AddressBlockListComplianceModule is AbstractAddressListComplianceModule
         virtual
         override
     {
-        if (isGloballyBlocked(_to)) {
-            revert ComplianceCheckFailed("Receiver address globally blocked");
-        }
-
-        address[] memory additionalBlockedAddresses = _decodeParams(_params);
-        uint256 additionalBlockedAddressesLength = additionalBlockedAddresses.length;
-        for (uint256 i = 0; i < additionalBlockedAddressesLength;) {
-            if (additionalBlockedAddresses[i] == _to) {
-                revert ComplianceCheckFailed("Receiver address blocked for token");
+        address[] memory blockedAddresses = _decodeParams(_params);
+        uint256 blockedAddressesLength = blockedAddresses.length;
+        for (uint256 i = 0; i < blockedAddressesLength;) {
+            if (blockedAddresses[i] == _to) {
+                revert ComplianceCheckFailed("Receiver address blocked");
             }
             unchecked {
                 ++i;
@@ -70,6 +57,8 @@ contract AddressBlockListComplianceModule is AbstractAddressListComplianceModule
         }
     }
 
+    /// @notice Returns the human-readable name of this compliance module
+    /// @return The name of the compliance module
     function name() external pure virtual override returns (string memory) {
         return "Address BlockList Compliance Module";
     }

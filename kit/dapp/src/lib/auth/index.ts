@@ -25,8 +25,7 @@ import {
 import { pincode } from "@/lib/auth/plugins/pincode-plugin";
 import { secretCodes } from "@/lib/auth/plugins/secret-codes-plugin";
 import { twoFactor } from "@/lib/auth/plugins/two-factor";
-import { isOnboarded } from "@/lib/auth/plugins/utils";
-import { createWallet } from "@/lib/auth/wallet";
+import { kycProfiles } from "@/lib/db/schema";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { UserRole } from "@/lib/zod/validators/user-roles";
 import { serverOnly } from "@tanstack/react-start";
@@ -42,6 +41,7 @@ import { admin, apiKey, customSession } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { reactStartCookies } from "better-auth/react-start";
 import { eq } from "drizzle-orm/sql";
+import { zeroAddress } from "viem";
 import { db } from "../db";
 import * as authSchema from "../db/schemas/auth";
 import { env } from "../env";
@@ -117,7 +117,7 @@ const options = {
       wallet: {
         type: "string",
         required: false,
-        unique: true,
+        unique: false,
         input: false,
       },
       /**
@@ -183,6 +183,15 @@ const options = {
         unique: true,
         input: false,
       },
+      /**
+       * Whether the user has confirmed the secret codes.
+       */
+      secretCodesConfirmed: {
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+        input: false,
+      },
     },
   },
   /**
@@ -217,12 +226,11 @@ const options = {
         before: async (user) => {
           try {
             const firstUser = await db.query.user.findFirst();
-            const walletAddress = await createWallet(user.email);
             return {
               data: {
                 ...user,
                 role: firstUser ? "admin" : "investor",
-                wallet: walletAddress,
+                wallet: zeroAddress,
               },
             };
           } catch (error) {
@@ -335,11 +343,10 @@ const getAuthConfig = serverOnly(() => {
           before: async (user: User) => {
             try {
               const firstUser = await db.query.user.findFirst();
-              const walletAddress = await createWallet(user.email);
               return {
                 data: {
                   ...user,
-                  wallet: walletAddress,
+                  wallet: zeroAddress,
                   role: firstUser ? "investor" : "admin",
                 },
               };
@@ -360,13 +367,19 @@ const getAuthConfig = serverOnly(() => {
     plugins: [
       ...enhancedOptions.plugins,
       customSession(async ({ user, session }) => {
-        return Promise.resolve({
+        const kyc = await db.query.kycProfiles.findFirst({
+          where: eq(kycProfiles.userId, user.id),
+        });
+        return {
           user: {
             ...user,
-            isOnboarded: isOnboarded(user as SessionUser),
+            name:
+              kyc?.firstName && kyc.lastName
+                ? `${kyc.firstName} ${kyc.lastName}`
+                : user.name,
           } as SessionUser,
           session,
-        });
+        };
       }, enhancedOptions),
     ],
   });
@@ -395,5 +408,4 @@ export type Session = typeof auth.$Infer.Session;
 export interface SessionUser extends InferUser<typeof options> {
   wallet: EthereumAddress;
   role: UserRole;
-  isOnboarded: boolean;
 }

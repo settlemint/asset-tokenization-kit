@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.19;
+// SPDX-License-Identifier: FSL-1.1-MIT
+pragma solidity ^0.8.28;
 
 import "forge-std/Test.sol";
 import "../../../contracts/system/token-factory/AbstractATKTokenFactoryImplementation.sol";
@@ -62,7 +62,7 @@ contract AbstractATKTokenFactoryImplementationSimpleTest is Test {
     function testConstructorDisablesInitializers() public {
         // Test that the constructor properly disables initializers
         vm.expectRevert(abi.encodeWithSignature("InvalidInitialization()"));
-        factory.initialize(admin, admin, admin, admin);
+        factory.initialize(admin, admin, admin);
     }
 
     function testSupportsInterface() public view {

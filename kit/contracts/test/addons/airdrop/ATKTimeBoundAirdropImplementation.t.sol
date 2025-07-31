@@ -1,11 +1,8 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
-import { Test } from "forge-std/Test.sol";
 import { AbstractATKAssetTest } from "../../assets/AbstractATKAssetTest.sol";
 import { AirdropUtils } from "../../utils/AirdropUtils.sol";
-import { ATKTimeBoundAirdropImplementation } from
-    "../../../contracts/addons/airdrop/time-bound-airdrop/ATKTimeBoundAirdropImplementation.sol";
 import { ATKTimeBoundAirdropFactoryImplementation } from
     "../../../contracts/addons/airdrop/time-bound-airdrop/ATKTimeBoundAirdropFactoryImplementation.sol";
 import { IATKTimeBoundAirdropFactory } from
@@ -47,7 +44,7 @@ contract ATKTimeBoundAirdropTest is AbstractATKAssetTest {
     AirdropUtils.TestUserData public testUserData;
 
     // Events
-    event AirdropTokensTransferred(address indexed recipient, uint256 indexed index, uint256 amount);
+    event AirdropTokensTransferred(address indexed recipient, uint256 indexed index, uint256 indexed amount);
     event AirdropBatchTokensTransferred(address[] recipients, uint256[] indices, uint256[] amounts);
 
     function setUp() public {
@@ -89,6 +86,12 @@ contract ATKTimeBoundAirdropTest is AbstractATKAssetTest {
 
         // Grant DEPLOYER_ROLE to owner so they can create time-bound airdrops
         IAccessControl(address(timeBoundAirdropFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
+
+        // Grant SYSTEM_MODULE_ROLE to the factory so it can access compliance functions like addToBypassList
+        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
+            ATKSystemRoles.SYSTEM_MODULE_ROLE, address(timeBoundAirdropFactory)
+        );
+
         vm.stopPrank();
 
         // Set up test user data using utility

@@ -99,9 +99,10 @@
   --sm-border: oklch(0.2264 0 87 / 12%);
   /* Step Wizard Sidebar Gradient */
   --sm-wizard-sidebar-gradient: linear-gradient(
-    45deg,
-    rgba(52, 110, 238, 0.5),
-    rgba(137, 214, 162, 0.8)
+    135deg,
+    var(--sm-graphics-secondary) 0%,
+    var(--sm-graphics-tertiary) 50%,
+    var(--sm-graphics-primary) 100%
   );
   /* shadcn colors */
   --background: var(--sm-background-lightest);
@@ -174,9 +175,10 @@
   --sm-border: oklch(1 0 87 / 12%);
   /* Step Wizard Sidebar Gradient */
   --sm-wizard-sidebar-gradient: linear-gradient(
-    45deg,
-    rgba(0, 0, 0, 0.8),
-    rgba(0, 0, 0, 0.5)
+    135deg,
+    var(--sm-graphics-secondary) 0%,
+    var(--sm-graphics-tertiary) 50%,
+    var(--sm-graphics-primary) 100%
   );
   /* shadcn colors */
   --background: var(--sm-background-lightest);
@@ -275,6 +277,10 @@
       0 0 var(--sm-text),
       0 0 var(--sm-text),
       0 5px 15px var(--sm-colored-shadow);
+  }
+
+  .dark [data-slot="accordion"] {
+    box-shadow: none;
   }
 
   [data-slot="dropdown-menu-content"] {
@@ -395,7 +401,7 @@
     @apply bg-sidebar-accent;
   }
 
-  .AuthProvider [data-slot="separator-root"] {
+  .AuthProvider [data-slot="separator"] {
     @apply shrink-1;
   }
 
@@ -423,5 +429,55 @@
 
   .react-pdf__Page__annotations {
     @apply opacity-100;
+  }
+
+  .StepLayout [data-slot="sidebar-wrapper"] {
+    min-height: initial;
+    height: 100%;
+  }
+
+  .StepLayout [data-slot="sidebar-container"],
+  .StepLayout [data-slot="sidebar"],
+  .StepLayout [data-slot="sidebar-inner"] {
+    height: 100%;
+  }
+
+  /* Custom thin scrollbars for StepLayout */
+  .StepLayout ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .StepLayout ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .StepLayout ::-webkit-scrollbar-thumb {
+    background: var(--sm-muted);
+    border-radius: 3px;
+    transition: background 0.2s ease;
+  }
+
+  .StepLayout ::-webkit-scrollbar-thumb:hover {
+    background: var(--sm-border);
+  }
+
+  /* Specific styling for StepLayout sidebar scrollbar */
+  .StepLayout [data-slot="sidebar-content"] ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .StepLayout [data-slot="sidebar-content"] ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  /* Firefox scrollbar styling */
+  .StepLayout {
+    scrollbar-width: thin;
+    scrollbar-color: var(--sm-muted) transparent;
+  }
+
+  .StepLayout [data-slot="sidebar-content"] {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
   }
 }

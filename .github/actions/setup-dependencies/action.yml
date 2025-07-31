@@ -64,9 +64,7 @@ runs:
     - name: Install Bun dependencies
       shell: bash
       run: |
-        # Use Namespace's fast network for package downloads
-        export BUN_CONFIG_NO_PROGRESS=true
-        bun install --frozen-lockfile
+        bun install
 
     - name: Install Helm
       uses: azure/setup-helm@v4

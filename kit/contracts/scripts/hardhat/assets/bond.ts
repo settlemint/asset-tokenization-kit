@@ -1,15 +1,15 @@
 import { atkDeployer } from "../services/deployer";
 
-import { ATKTopic } from "../constants/topics";
 import {
   frozenInvestor,
   investorA,
   investorB,
-} from "../entities/actors/investors";
-import { owner } from "../entities/actors/owner";
+  owner,
+} from "../constants/actors";
+import { Countries } from "../constants/countries";
 import { Asset } from "../entities/asset";
-import { topicManager } from "../services/topic-manager";
 import { getAnvilTimeMilliseconds, getAnvilTimeSeconds } from "../utils/anvil";
+import { encodeAddressParams } from "../utils/encode-address-params";
 import { toBaseUnits } from "../utils/to-base-units";
 import { mature } from "./actions/bond/mature";
 import { burn } from "./actions/burnable/burn";
@@ -28,7 +28,6 @@ import { setYieldSchedule } from "./actions/yield/set-yield-schedule";
 import { topupUnderlyingAsset } from "./actions/yield/topup-underlying-asset";
 import { withdrawnUnderlyingAsset } from "./actions/yield/withdrawn-underlying-asset";
 import { getDefaultComplianceModules } from "./utils/default-compliance-modules";
-import { encodeAddressParams } from "./utils/encode-address-params";
 
 export const createBond = async (depositToken: Asset<any>) => {
   console.log("\n=== Creating bond... ===\n");
@@ -59,10 +58,11 @@ export const createBond = async (depositToken: Asset<any>) => {
     bond.symbol,
     bond.decimals,
     cap,
-    BigInt(anvilTimeSeconds + 365 * 24 * 60 * 60), // 1 year
-    faceValue,
-    depositToken.address!,
-    [topicManager.getTopicId(ATKTopic.kyc)],
+    {
+      maturityDate: BigInt(anvilTimeSeconds + 365 * 24 * 60 * 60), // 1 year
+      faceValue: faceValue,
+      underlyingAsset: depositToken.address!,
+    },
     [
       ...getDefaultComplianceModules(),
       {
@@ -70,6 +70,7 @@ export const createBond = async (depositToken: Asset<any>) => {
         params: encodeAddressParams(bondAllowedIdentities),
       },
     ],
+    Countries.BE,
   ]);
 
   await bond.waitUntilDeployed(transactionHash);
@@ -102,7 +103,8 @@ export const createBond = async (depositToken: Asset<any>) => {
     new Date(anvilTime + 1 * 24 * 60 * 60 * 1000), // 1 day from now
     new Date(anvilTime + 4 * 24 * 60 * 60 * 1000), // 4 days from now
     50, // 0.5%
-    12 * 60 * 60 // 12 hours in seconds
+    12 * 60 * 60, // 12 hours in seconds
+    Countries.BE
   );
 
   // Make sure bond and yield can hold deposit token

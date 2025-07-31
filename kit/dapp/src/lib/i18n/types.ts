@@ -25,32 +25,42 @@
  * @see https://www.i18next.com/overview/typescript - i18next TypeScript documentation
  */
 
-import type enAccessibilityTranslations from "@/locales/en/accessibility.json";
-import type enAssetDesignerTranslations from "@/locales/en/asset-designer.json";
-import type enAssetTypesTranslations from "@/locales/en/asset-types.json";
-import type enAssetsTranslations from "@/locales/en/assets.json";
-import type enAuthTranslations from "@/locales/en/auth.json";
-import type enBlockchainTranslations from "@/locales/en/blockchain.json";
-import type enCommonTranslations from "@/locales/en/common.json";
-import type enDashboardTranslations from "@/locales/en/dashboard.json";
-import type enDataTableTranslations from "@/locales/en/data-table.json";
-import type enDepositsTableTranslations from "@/locales/en/deposits-table.json";
-import type enDetailGridTranslations from "@/locales/en/detail-grid.json";
-import type enErrorsTranslations from "@/locales/en/errors.json";
-import type enFormTranslations from "@/locales/en/form.json";
-import type enFormatsTranslations from "@/locales/en/formats.json";
-import type enGeneralTranslations from "@/locales/en/general.json";
-import type enStatsTranslations from "@/locales/en/stats.json";
-import type enLanguageTranslations from "@/locales/en/language.json";
-import type enNavigationTranslations from "@/locales/en/navigation.json";
-import type enOnboardingTranslations from "@/locales/en/onboarding.json";
-import type enSeoTranslations from "@/locales/en/seo.json";
-import type enThemeTranslations from "@/locales/en/theme.json";
-import type enToastTranslations from "@/locales/en/toast.json";
-import type enTokenFactoryTranslations from "@/locales/en/token-factory.json";
-import type enTokensTranslations from "@/locales/en/tokens.json";
-import type enValidationTranslations from "@/locales/en/validation.json";
-import type enWalletTranslations from "@/locales/en/wallet.json";
+import type enAccessibilityTranslations from "@/locales/en-US/accessibility.json";
+import type enAssetClassTranslations from "@/locales/en-US/asset-class.json";
+import type enAssetDesignerTranslations from "@/locales/en-US/asset-designer.json";
+import type enAssetExtensionsTranslations from "@/locales/en-US/asset-extensions.json";
+import type enAssetTypesTranslations from "@/locales/en-US/asset-types.json";
+import type enAssetsTranslations from "@/locales/en-US/assets.json";
+import type enAuthTranslations from "@/locales/en-US/auth.json";
+import type enBlockchainTranslations from "@/locales/en-US/blockchain.json";
+import type enCommonTranslations from "@/locales/en-US/common.json";
+import type enComplianceModulesTranslations from "@/locales/en-US/compliance-modules.json";
+import type enComponentsTranslations from "@/locales/en-US/components.json";
+import type enCountryMultiselectTranslations from "@/locales/en-US/country-multiselect.json";
+import type enDashboardTranslations from "@/locales/en-US/dashboard.json";
+import type enDataTableTranslations from "@/locales/en-US/data-table.json";
+import type enDepositsTableTranslations from "@/locales/en-US/deposits-table.json";
+import type enDetailGridTranslations from "@/locales/en-US/detail-grid.json";
+import type enErrorsTranslations from "@/locales/en-US/errors.json";
+import type enExchangeRatesTranslations from "@/locales/en-US/exchange-rates.json";
+import type enFormTranslations from "@/locales/en-US/form.json";
+import type enFormatsTranslations from "@/locales/en-US/formats.json";
+import type enGeneralTranslations from "@/locales/en-US/general.json";
+import type enIssuerDashboardTranslations from "@/locales/en-US/issuer-dashboard.json";
+import type enLanguageTranslations from "@/locales/en-US/language.json";
+import type enNavigationTranslations from "@/locales/en-US/navigation.json";
+import type enOnboardingTranslations from "@/locales/en-US/onboarding.json";
+import type enSeoTranslations from "@/locales/en-US/seo.json";
+import type enSettingsTranslations from "@/locales/en-US/settings.json";
+import type enStatsTranslations from "@/locales/en-US/stats.json";
+import type enSystemTranslations from "@/locales/en-US/system.json";
+import type enThemeTranslations from "@/locales/en-US/theme.json";
+import type enToastTranslations from "@/locales/en-US/toast.json";
+import type enTokenFactoryTranslations from "@/locales/en-US/token-factory.json";
+import type enTokensTranslations from "@/locales/en-US/tokens.json";
+import type enUserTranslations from "@/locales/en-US/user.json";
+import type enValidationTranslations from "@/locales/en-US/validation.json";
+import type enWalletTranslations from "@/locales/en-US/wallet.json";
 
 declare module "i18next" {
   /**
@@ -76,29 +86,39 @@ declare module "i18next" {
      */
     resources: {
       accessibility: typeof enAccessibilityTranslations;
+      "asset-class": typeof enAssetClassTranslations;
       "asset-designer": typeof enAssetDesignerTranslations;
+      "asset-extensions": typeof enAssetExtensionsTranslations;
       "asset-types": typeof enAssetTypesTranslations;
       assets: typeof enAssetsTranslations;
       auth: typeof enAuthTranslations;
       blockchain: typeof enBlockchainTranslations;
+      "compliance-modules": typeof enComplianceModulesTranslations;
       common: typeof enCommonTranslations;
+      "country-multiselect": typeof enCountryMultiselectTranslations;
+      components: typeof enComponentsTranslations;
       dashboard: typeof enDashboardTranslations;
       "data-table": typeof enDataTableTranslations;
       "deposits-table": typeof enDepositsTableTranslations;
       "detail-grid": typeof enDetailGridTranslations;
       errors: typeof enErrorsTranslations;
+      "exchange-rates": typeof enExchangeRatesTranslations;
       form: typeof enFormTranslations;
       formats: typeof enFormatsTranslations;
       general: typeof enGeneralTranslations;
+      "issuer-dashboard": typeof enIssuerDashboardTranslations;
       stats: typeof enStatsTranslations;
       language: typeof enLanguageTranslations;
       navigation: typeof enNavigationTranslations;
       onboarding: typeof enOnboardingTranslations;
       seo: typeof enSeoTranslations;
+      settings: typeof enSettingsTranslations;
+      system: typeof enSystemTranslations;
       theme: typeof enThemeTranslations;
       toast: typeof enToastTranslations;
       "token-factory": typeof enTokenFactoryTranslations;
       tokens: typeof enTokensTranslations;
+      user: typeof enUserTranslations;
       validation: typeof enValidationTranslations;
       wallet: typeof enWalletTranslations;
     };

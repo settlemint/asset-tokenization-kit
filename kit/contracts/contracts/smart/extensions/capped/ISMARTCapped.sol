@@ -2,7 +2,9 @@
 pragma solidity ^0.8.28;
 
 /// @title Interface for the SMART Capped Token Extension
-/// @notice This interface defines the external functions that a SMART token contract with a capped
+/// @author SettleMint
+/// @notice This interface defines the external functions that a SMART token contract with a
+/// capped
 ///         total supply must implement. A "capped" token has a maximum limit on the total number
 ///         of tokens that can ever exist (be minted).
 ///         In Solidity, an interface specifies *what* functions a contract has (their names, parameters,
@@ -28,7 +30,7 @@ interface ISMARTCapped {
     /// @notice Emitted when the cap is set or changed.
     /// @param sender The address that set/changed the cap.
     /// @param cap The new cap value.
-    event CapSet(address indexed sender, uint256 cap);
+    event CapSet(address indexed sender, uint256 indexed cap);
 
     /// @notice Returns the maximum allowed total supply for this token (the "cap").
     /// @dev This function provides a way to query the hard limit on the token's supply.

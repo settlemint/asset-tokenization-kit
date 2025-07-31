@@ -30,6 +30,7 @@ const LIST_TOKEN_FACTORIES_QUERY = theGraphGraphql(`
       name
       typeId
       hasTokens
+      tokenExtensions
     }
   }
 `);
@@ -82,9 +83,9 @@ export const factoryList = authRouter.token.factoryList
   .handler(async ({ input, context }) => {
     // Build where clause if hasTokens filter is provided
     const where =
-      input.hasTokens !== undefined
-        ? { hasTokens: input.hasTokens }
-        : undefined;
+      input.hasTokens === undefined
+        ? undefined
+        : { hasTokens: input.hasTokens };
 
     const response = await context.theGraphClient.query(
       LIST_TOKEN_FACTORIES_QUERY,
@@ -94,7 +95,7 @@ export const factoryList = authRouter.token.factoryList
           where,
         },
         output: FactoriesResponseSchema,
-        error: "Failed to list token factories",
+        error: context.t("tokens:api.factory.list.messages.failed"),
       }
     );
 

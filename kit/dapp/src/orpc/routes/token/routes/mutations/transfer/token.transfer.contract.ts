@@ -1,7 +1,6 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import { TokenTransferSchema } from "@/orpc/routes/token/routes/mutations/transfer/token.transfer.schema";
-import { TokenTransactionOutputSchema } from "@/orpc/routes/token/routes/mutations/common/token.transaction.schema";
-import { eventIterator } from "@orpc/server";
+import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 
 export const tokenTransferContract = baseContract
   .route({
@@ -13,4 +12,4 @@ export const tokenTransferContract = baseContract
     tags: ["token"],
   })
   .input(TokenTransferSchema)
-  .output(eventIterator(TokenTransactionOutputSchema));
+  .output(TokenSchema);

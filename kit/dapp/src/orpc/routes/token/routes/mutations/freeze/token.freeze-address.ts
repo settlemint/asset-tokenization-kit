@@ -1,11 +1,12 @@
-import { ALL_INTERFACE_IDS } from "@/lib/interface-ids";
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { supportsInterface } from "@/orpc/helpers/interface-detection";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
+import { tokenMiddleware } from "@/orpc/middlewares/system/token.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenFreezeAddressMessagesSchema } from "./token.freeze-address.schema";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { read } from "../../token.read";
+import { call } from "@orpc/server";
 
 const TOKEN_FREEZE_ADDRESS_MUTATION = portalGraphql(`
   mutation TokenFreezeAddress(
@@ -31,38 +32,25 @@ const TOKEN_FREEZE_ADDRESS_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenFreezeAddress = tokenRouter.token.tokenFreezeAddress
+export const freezeAddress = tokenRouter.token.freezeAddress
   .use(portalMiddleware)
-  .handler(async function* ({ input, context, errors }) {
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.freezeAddress,
+      requiredExtensions: ["CUSTODIAN"],
+    })
+  )
+  .use(tokenMiddleware)
+  .handler(async ({ input, context }) => {
     const { contract, verification, userAddress, freeze } = input;
     const { auth } = context;
-
-    // Parse messages with defaults
-    const messages = TokenFreezeAddressMessagesSchema.parse(
-      input.messages ?? {}
-    );
-
-    // Validate that the token supports custodian operations
-    const supportsCustodian = await supportsInterface(
-      context.portalClient,
-      contract,
-      ALL_INTERFACE_IDS.ISMARTCustodian
-    );
-
-    if (!supportsCustodian) {
-      throw errors.FORBIDDEN({
-        message:
-          "Token does not support custodian operations. The token must implement ISMARTCustodian interface.",
-      });
-    }
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
       code: verification.verificationCode,
       type: verification.verificationType,
     });
-
-    const transactionHash = yield* context.portalClient.mutate(
+    await context.portalClient.mutate(
       TOKEN_FREEZE_ADDRESS_MUTATION,
       {
         address: contract,
@@ -71,9 +59,19 @@ export const tokenFreezeAddress = tokenRouter.token.tokenFreezeAddress
         freeze,
         ...challengeResponse,
       },
-      messages.freezeFailed,
-      messages
+      freeze
+        ? context.t("tokens:api.mutations.freeze.messages.freezeFailed")
+        : context.t("tokens:api.mutations.freeze.messages.unfreezeFailed")
     );
 
-    return getEthereumHash(transactionHash);
+    // Return the updated token data using the read handler
+    return await call(
+      read,
+      {
+        tokenAddress: contract,
+      },
+      {
+        context,
+      }
+    );
   });

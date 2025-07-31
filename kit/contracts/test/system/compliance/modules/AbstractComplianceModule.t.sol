@@ -1,21 +1,18 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: FSL-1.1-MIT
+pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { AbstractComplianceModule } from "../../../../contracts/smart/modules/AbstractComplianceModule.sol";
 import { ISMARTComplianceModule } from "../../../../contracts/smart/interface/ISMARTComplianceModule.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 contract TestComplianceModule is AbstractComplianceModule {
     bytes32 public constant override typeId = keccak256("TestComplianceModule");
 
-    string private _moduleName;
     bool private _allowTransfers;
     bool private _shouldRevertOnValidation;
 
-    constructor(string memory moduleName) AbstractComplianceModule(address(0)) {
-        _moduleName = moduleName;
+    constructor(string memory) AbstractComplianceModule(address(0)) {
         _allowTransfers = true;
         _shouldRevertOnValidation = false;
     }
@@ -30,7 +27,7 @@ contract TestComplianceModule is AbstractComplianceModule {
 
     function canTransfer(address, address, address, uint256, bytes calldata) external view override {
         if (!_allowTransfers) {
-            revert("Transfer not allowed");
+            revert ComplianceCheckFailed("Transfer not allowed");
         }
     }
 
@@ -47,61 +44,54 @@ contract TestComplianceModule is AbstractComplianceModule {
 
 contract AbstractComplianceModuleTest is Test {
     TestComplianceModule public module;
-    address public admin;
     address public user1;
     address public user2;
     address public tokenContract;
 
     function setUp() public {
-        admin = makeAddr("admin");
         user1 = makeAddr("user1");
         user2 = makeAddr("user2");
         tokenContract = makeAddr("tokenContract");
 
-        vm.prank(admin);
-        module = new TestComplianceModule("Test Module");
+        module = new TestComplianceModule("");
     }
 
     function test_Constructor() public view {
-        assertTrue(module.hasRole(module.DEFAULT_ADMIN_ROLE(), admin));
-    }
-
-    function test_ConstructorWithDifferentDeployer() public {
-        vm.prank(user1);
-        TestComplianceModule newModule = new TestComplianceModule("Another Module");
-
-        assertTrue(newModule.hasRole(newModule.DEFAULT_ADMIN_ROLE(), user1));
-        assertFalse(newModule.hasRole(newModule.DEFAULT_ADMIN_ROLE(), admin));
+        // Since modules are now stateless, just check that construction succeeded
+        assertEq(module.name(), "Test Module");
+        assertEq(module.typeId(), keccak256("TestComplianceModule"));
     }
 
     function test_Name() public view {
         assertEq(module.name(), "Test Module");
     }
 
-    function test_CanTransfer_Allowed() public {
-        vm.prank(admin);
-        module.setAllowTransfers(true);
+    function test_TypeId() public view {
+        assertEq(module.typeId(), keccak256("TestComplianceModule"));
+    }
 
+    function test_CanTransfer_Allowed() public {
+        module.setAllowTransfers(true);
         module.canTransfer(tokenContract, user1, user2, 100, "");
     }
 
     function test_CanTransfer_NotAllowed() public {
-        vm.prank(admin);
         module.setAllowTransfers(false);
 
-        vm.expectRevert("Transfer not allowed");
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Transfer not allowed"
+            )
+        );
         module.canTransfer(tokenContract, user1, user2, 100, "");
     }
 
     function test_ValidateParameters_Valid() public {
-        vm.prank(admin);
         module.setShouldRevertOnValidation(false);
-
         module.validateParameters("");
     }
 
     function test_ValidateParameters_Invalid() public {
-        vm.prank(admin);
         module.setShouldRevertOnValidation(true);
 
         vm.expectRevert("Invalid parameters");
@@ -122,55 +112,8 @@ contract AbstractComplianceModuleTest is Test {
 
     function test_SupportsInterface() public view {
         assertTrue(module.supportsInterface(type(ISMARTComplianceModule).interfaceId));
-        assertTrue(module.supportsInterface(type(IAccessControl).interfaceId));
         assertTrue(module.supportsInterface(type(IERC165).interfaceId));
         assertFalse(module.supportsInterface(bytes4(0x12345678)));
-    }
-
-    function test_AccessControl_GrantRole() public {
-        bytes32 newRole = keccak256("NEW_ROLE");
-
-        vm.prank(admin);
-        module.grantRole(newRole, user1);
-
-        assertTrue(module.hasRole(newRole, user1));
-    }
-
-    function test_AccessControl_RevokeRole() public {
-        bytes32 newRole = keccak256("NEW_ROLE");
-
-        vm.startPrank(admin);
-        module.grantRole(newRole, user1);
-        assertTrue(module.hasRole(newRole, user1));
-
-        module.revokeRole(newRole, user1);
-        assertFalse(module.hasRole(newRole, user1));
-        vm.stopPrank();
-    }
-
-    function test_AccessControl_OnlyAdminCanGrantRole() public {
-        bytes32 newRole = keccak256("NEW_ROLE");
-
-        vm.prank(user1);
-        vm.expectRevert();
-        module.grantRole(newRole, user2);
-    }
-
-    function test_AccessControl_RenounceRole() public {
-        bytes32 newRole = keccak256("NEW_ROLE");
-
-        vm.prank(admin);
-        module.grantRole(newRole, user1);
-
-        vm.prank(user1);
-        module.renounceRole(newRole, user1);
-
-        assertFalse(module.hasRole(newRole, user1));
-    }
-
-    function test_GetRoleAdmin() public view {
-        bytes32 newRole = keccak256("NEW_ROLE");
-        assertEq(module.getRoleAdmin(newRole), module.DEFAULT_ADMIN_ROLE());
     }
 
     function test_HooksWithParameters() public {
@@ -184,45 +127,37 @@ contract AbstractComplianceModuleTest is Test {
     function test_CanTransferWithParameters() public {
         bytes memory params = abi.encode(uint256(456), address(user1));
 
-        vm.prank(admin);
         module.setAllowTransfers(true);
-
         module.canTransfer(tokenContract, user1, user2, 100, params);
     }
 
     function test_ValidateParametersWithData() public {
         bytes memory params = abi.encode(uint256(789), "validation_data");
 
-        vm.prank(admin);
         module.setShouldRevertOnValidation(false);
-
         module.validateParameters(params);
     }
 
-    function test_MultipleModulesIndependentRoles() public {
-        vm.prank(user1);
-        TestComplianceModule module2 = new TestComplianceModule("Second Module");
+    function test_MultipleModulesIndependent() public {
+        TestComplianceModule module2 = new TestComplianceModule("");
 
-        assertTrue(module.hasRole(module.DEFAULT_ADMIN_ROLE(), admin));
-        assertFalse(module.hasRole(module.DEFAULT_ADMIN_ROLE(), user1));
-
-        assertTrue(module2.hasRole(module2.DEFAULT_ADMIN_ROLE(), user1));
-        assertFalse(module2.hasRole(module2.DEFAULT_ADMIN_ROLE(), admin));
+        assertEq(module.name(), "Test Module");
+        assertEq(module2.name(), "Test Module");
+        
+        // Both modules should have same type IDs since they're the same class
+        assertEq(module.typeId(), module2.typeId());
     }
 
-    function test_MultipleRoles() public {
-        bytes32 role1 = keccak256("ROLE_1");
-        bytes32 role2 = keccak256("ROLE_2");
-
-        vm.startPrank(admin);
-        module.grantRole(role1, user1);
-        module.grantRole(role2, user1);
-        vm.stopPrank();
-
-        assertTrue(module.hasRole(role1, user1));
-        assertTrue(module.hasRole(role2, user1));
-        assertFalse(module.hasRole(role1, user2));
-        assertFalse(module.hasRole(role2, user2));
+    function test_StatelessBehavior() public {
+        // Test that the module behaves consistently regardless of order of operations
+        module.setAllowTransfers(true);
+        
+        module.canTransfer(tokenContract, user1, user2, 100, "");
+        module.canTransfer(tokenContract, user2, user1, 200, "");
+        
+        // State changes should not affect other calls since modules are stateless
+        module.transferred(tokenContract, user1, user2, 100, "");
+        module.canTransfer(tokenContract, user1, user2, 300, "");
     }
 
     function test_Fuzz_CanTransfer(
@@ -234,9 +169,7 @@ contract AbstractComplianceModuleTest is Test {
     )
         public
     {
-        vm.prank(admin);
         module.setAllowTransfers(true);
-
         module.canTransfer(token, from, to, value, params);
     }
 
@@ -251,7 +184,6 @@ contract AbstractComplianceModuleTest is Test {
         module.created(address(0), address(0), 0, "");
         module.destroyed(address(0), address(0), 0, "");
 
-        vm.prank(admin);
         module.setAllowTransfers(true);
         module.canTransfer(address(0), address(0), address(0), 0, "");
     }
@@ -263,8 +195,29 @@ contract AbstractComplianceModuleTest is Test {
         module.created(tokenContract, user1, maxValue, "");
         module.destroyed(tokenContract, user1, maxValue, "");
 
-        vm.prank(admin);
         module.setAllowTransfers(true);
         module.canTransfer(tokenContract, user1, user2, maxValue, "");
+    }
+
+    function test_ERC2771Context() public view {
+        // Test that the module correctly extends ERC2771Context
+        // The _msgSender() and _msgData() functions should be available (they're internal)
+        // We can't test them directly, but we can verify the module was constructed properly
+        assertEq(module.name(), "Test Module");
+    }
+
+    function test_ParameterValidation_EmptyParams() public {
+        module.setShouldRevertOnValidation(false);
+        module.validateParameters("");
+        module.validateParameters(hex"");
+    }
+
+    function test_LifecycleFunctions_DoNotRevert() public {
+        // All lifecycle functions should not revert for stateless modules by default
+        bytes memory params = abi.encode("test");
+        
+        module.transferred(tokenContract, user1, user2, 100, params);
+        module.created(tokenContract, user1, 100, params);
+        module.destroyed(tokenContract, user1, 100, params);
     }
 }

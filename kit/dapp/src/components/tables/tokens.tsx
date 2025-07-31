@@ -1,5 +1,3 @@
-"use no memo";
-
 import {
   ActionsCell,
   type ActionItem,
@@ -11,12 +9,15 @@ import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
+import { formatDate } from "@/lib/utils/date";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+import { format } from "dnum";
 import {
   Coins,
   Copy,
@@ -43,12 +44,12 @@ const columnHelper = createColumnHelper<Token>();
 
 /**
  * Initial sorting configuration for the deposits table
- * Sorts tokens by name in ascending order by default
+ * Sorts tokens by creation date in descending order by default (most recent first)
  */
 const INITIAL_SORTING = [
   {
-    id: "name",
-    desc: false,
+    id: "createdAt",
+    desc: true,
   },
 ];
 
@@ -58,7 +59,7 @@ const INITIAL_SORTING = [
  */
 interface TokensTableProps {
   /** The address of the token factory contract */
-  factoryAddress: string;
+  factoryAddress: EthereumAddress;
 }
 
 /**
@@ -80,16 +81,15 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
   const router = useRouter();
   const { t } = useTranslation("tokens");
   // Get the current route's path pattern from the matched route
-  const routePath =
-    router.state.matches[router.state.matches.length - 1]?.pathname;
+  const routePath = router.state.matches.at(-1)?.pathname;
 
-  const { data: tokens } = useSuspenseQuery({
-    ...orpc.token.list.queryOptions({
+  const { data: tokens } = useSuspenseQuery(
+    orpc.token.list.queryOptions({
       input: {
         tokenFactory: factoryAddress,
       },
-    }),
-  });
+    })
+  );
 
   /**
    * Creates action items for each row in the table
@@ -232,6 +232,9 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
         }),
         columnHelper.accessor("totalSupply", {
           header: t("columns.totalSupply"),
+          cell: (cellProps) => {
+            return format(cellProps.getValue());
+          },
           meta: {
             displayName: t("columns.totalSupply"),
             type: "number",
@@ -248,6 +251,17 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
             displayName: t("columns.paused"),
             type: "badge",
             icon: PauseCircle,
+          },
+        }),
+        columnHelper.accessor("createdAt", {
+          header: t("columns.createdAt"),
+          cell: (cellProps) => {
+            const timestamp = cellProps.getValue();
+            return formatDate(timestamp);
+          },
+          meta: {
+            displayName: t("columns.createdAt"),
+            type: "date",
           },
         }),
         columnHelper.display({
@@ -301,9 +315,10 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
           enableGlobalFilter: true,
           enableRowSelection: true,
           debounceMs: 300,
-          initialColumnVisibility: {
-            name: false,
-          },
+        }}
+        initialColumnVisibility={{
+          name: false,
+          createdAt: false,
         }}
         advancedToolbar={{
           enableGlobalSearch: false,

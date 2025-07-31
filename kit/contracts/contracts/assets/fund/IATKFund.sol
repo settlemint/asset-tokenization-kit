@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
 import { IVotes } from "@openzeppelin/contracts/governance/utils/IVotes.sol";
@@ -14,20 +14,19 @@ import { ISMARTPausable } from "../../smart/extensions/pausable/ISMARTPausable.s
 import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.sol";
 
 /// @title Interface for a ATK Fund
+/// @author SettleMint
 /// @notice Defines the core functionality and extensions for a ATK Fund, including voting capabilities.
 interface IATKFund is ISMART, ISMARTTokenAccessManaged, ISMARTCustodian, ISMARTPausable, ISMARTBurnable, IVotes {
     /// @notice Emitted when management fees are collected
     /// @param sender The address that collected the management fees
     /// @param amount The amount of tokens minted as management fees
     /// @param timestamp The timestamp when the fees were collected
-    event ManagementFeeCollected(address indexed sender, uint256 amount, uint256 timestamp);
+    event ManagementFeeCollected(address indexed sender, uint256 indexed amount, uint256 indexed timestamp);
 
     /// @notice Initializes the ATK Fund contract.
     /// @param name_ The name of the fund.
     /// @param symbol_ The symbol of the fund.
     /// @param decimals_ The number of decimals for the fund tokens.
-    /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
-    /// one.
     /// @param managementFeeBps_ The management fee in basis points.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param identityRegistry_ The address of the identity registry contract.
@@ -37,7 +36,6 @@ interface IATKFund is ISMART, ISMARTTokenAccessManaged, ISMARTCustodian, ISMARTP
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        address onchainID_,
         uint16 managementFeeBps_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,

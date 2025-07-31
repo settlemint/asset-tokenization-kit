@@ -23,6 +23,22 @@ export const verificationTypes = [
 ] as const;
 
 /**
+ * Enum-like object for verification types with camelCase keys.
+ * Use this instead of hardcoded strings for type safety.
+ * @example
+ * ```typescript
+ * if (user.verificationTypes.includes(VerificationType.twoFactor)) {
+ *   // User has 2FA enabled
+ * }
+ * ```
+ */
+export const VerificationType = {
+  twoFactor: "two-factor",
+  pincode: "pincode",
+  secretCode: "secret-code",
+} as const satisfies Record<string, (typeof verificationTypes)[number]>;
+
+/**
  * Creates a Zod schema that validates verification types.
  * @returns A Zod enum schema for verification type validation
  * @example

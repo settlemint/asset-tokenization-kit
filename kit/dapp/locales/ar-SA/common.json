@@ -1,0 +1,28 @@
+{
+  "actions": {
+    "cancel": "إلغاء",
+    "skip": "تخطي"
+  },
+  "appDescription": "نشر في دقائق، تخصيص بسهولة",
+  "appName": "مجموعة توكن الأصول",
+  "complete": "مكتمل",
+  "continue": "استمر",
+  "deploying": "يتم النشر...",
+  "generating": "يتم التوليد...",
+  "next": "التالي",
+  "previous": "السابق",
+  "transaction": {
+    "indexed": "تم تأكيد المعاملة وفهرستها",
+    "waitingForMining": "في انتظار تعدين المعاملة..."
+  },
+  "transactionHash": {
+    "copied": "تم النسخ!",
+    "copyToClipboard": "نسخ تجزئة المعاملة"
+  },
+  "verification": {
+    "pincode": {
+      "description": "أدخل رمز التحقق المكون من 6 أرقام",
+      "label": "رمز التحقق"
+    }
+  }
+}

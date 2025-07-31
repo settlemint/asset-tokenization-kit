@@ -36,6 +36,20 @@
       "when": 1752326228994,
       "tag": "0004_vengeful_carlie_cooper",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1753171677262,
+      "tag": "0005_striped_mach_iv",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1753346326947,
+      "tag": "0006_striped_rumiko_fujikawa",
+      "breakpoints": true
     }
   ]
 }

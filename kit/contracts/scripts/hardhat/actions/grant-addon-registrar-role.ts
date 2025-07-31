@@ -6,10 +6,12 @@
  */
 
 import { parseArgs } from "node:util";
+import { getAddress } from "viem";
+import { owner } from "../constants/actors";
 import { ATKContracts } from "../constants/contracts";
 import { ATKRoles } from "../constants/roles";
-import { owner } from "../entities/actors/owner";
 import { atkDeployer } from "../services/deployer";
+import { getPublicClient } from "../utils/public-client";
 
 async function main() {
   const { values } = parseArgs({
@@ -78,7 +80,7 @@ Example:
   await owner.initialize();
 
   // Get the user address (defaults to owner address)
-  const userAddress = values.user || owner.address;
+  const userAddress = getAddress(values.user || owner.address);
   console.log(`👤 User Address: ${userAddress}`);
 
   // Check current roles

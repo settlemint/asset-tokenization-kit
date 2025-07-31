@@ -12,46 +12,13 @@
  * @see {@link ./system.read.schema} - Input/output validation schemas
  */
 
-import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
+import { getSystemContext } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { z } from "zod";
-import type { SystemReadOutput } from "./system.read.schema";
-
-/**
- * GraphQL query to fetch system details with token factories.
- * @param id - The system contract address to query
- * @returns System object with token factories
- */
-const SYSTEM_DETAILS_QUERY = theGraphGraphql(`
-  query SystemDetails($id: ID!) {
-    system(id: $id) {
-      id
-      deployedInTransaction
-      identityRegistry {
-        id
-      }
-      trustedIssuersRegistry {
-        id
-      }
-      compliance {
-        id
-      }
-      tokenFactoryRegistry {
-        id
-        tokenFactories {
-          id
-          name
-          typeId
-        }
-      }
-      systemAddonRegistry {
-        id
-      }
-    }
-  }
-`);
+import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
+import type { SystemReadOutput } from "@/orpc/routes/system/routes/system.read.schema";
+import { call } from "@orpc/server";
 
 /**
  * Reads system contract details including token factories.
@@ -79,87 +46,45 @@ const SYSTEM_DETAILS_QUERY = theGraphGraphql(`
 export const read = onboardedRouter.system.read
   .use(theGraphMiddleware)
   .handler(async ({ input, context, errors }) => {
-    // Define response schema for type-safe validation
-    // This Zod schema ensures the GraphQL response matches our expected structure
-    // and provides compile-time type inference for the validated data
-    const SystemResponseSchema = z.object({
-      system: z
-        .object({
-          id: z.string(),
-          deployedInTransaction: z.string().nullable(),
-          identityRegistry: z
-            .object({
-              id: z.string(),
-            })
-            .nullable(),
-          trustedIssuersRegistry: z
-            .object({
-              id: z.string(),
-            })
-            .nullable(),
-          compliance: z
-            .object({
-              id: z.string(),
-            })
-            .nullable(),
-          tokenFactoryRegistry: z
-            .object({
-              id: z.string(),
-              tokenFactories: z.array(
-                z.object({
-                  id: z.string(),
-                  name: z.string(),
-                  typeId: z.string(),
-                })
-              ),
-            })
-            .nullable(),
-          systemAddonRegistry: z
-            .object({
-              id: z.string(),
-            })
-            .nullable(),
-        })
-        .nullable(),
-    });
-
     // Query system details from TheGraph with automatic ID transformation
-    const result = await context.theGraphClient.query(SYSTEM_DETAILS_QUERY, {
-      input: {
-        id: input.id.toLowerCase(), // TheGraph stores addresses in lowercase
-      },
-      output: SystemResponseSchema,
-      error: `Failed to retrieve system: ${input.id}`,
-    });
-
-    // Check if system exists
-    if (!result.system) {
+    const systemAddress =
+      input.id === "default"
+        ? await call(
+            settingsRead,
+            {
+              key: "SYSTEM_ADDRESS",
+            },
+            {
+              context,
+            }
+          )
+        : input.id;
+    if (!systemAddress) {
       throw errors.NOT_FOUND({
         message: `System not found: ${input.id}`,
       });
     }
-
-    // Transform and return the data with proper type casting
-    // The EthereumAddress type assertions ensure type safety for blockchain addresses
-    // The factory mapping no longer needs explicit type annotations thanks to Zod inference
+    const systemContext = await getSystemContext(
+      getEthereumAddress(systemAddress)
+    );
+    if (!systemContext) {
+      throw errors.NOT_FOUND({
+        message: `System not found: ${input.id}`,
+      });
+    }
     const output: SystemReadOutput = {
-      id: result.system.id as EthereumAddress,
-      deployedInTransaction: result.system.deployedInTransaction,
-      identityRegistry: result.system.identityRegistry?.id as EthereumAddress,
-      trustedIssuersRegistry: result.system.trustedIssuersRegistry
-        ?.id as EthereumAddress,
-      compliance: result.system.compliance?.id as EthereumAddress,
-      tokenFactoryRegistry: result.system.tokenFactoryRegistry
-        ?.id as EthereumAddress,
-      systemAddonRegistry: result.system.systemAddonRegistry
-        ?.id as EthereumAddress,
-      tokenFactories:
-        result.system.tokenFactoryRegistry?.tokenFactories.map((factory) => ({
-          id: factory.id as EthereumAddress,
-          name: factory.name,
-          typeId: factory.typeId,
-        })) ?? [],
+      id: systemContext.address,
+      deployedInTransaction: systemContext.deployedInTransaction,
+      identityRegistry: systemContext.identityRegistry ?? null,
+      identityFactory: systemContext.identityFactory ?? null,
+      trustedIssuersRegistry: systemContext.trustedIssuersRegistry ?? null,
+      complianceModuleRegistry: systemContext.complianceModuleRegistry ?? null,
+      tokenFactoryRegistry: systemContext.tokenFactoryRegistry ?? null,
+      systemAddonRegistry: systemContext.systemAddonRegistry ?? null,
+      tokenFactories: systemContext.tokenFactories,
+      systemAddons: systemContext.systemAddons,
+      complianceModules: systemContext.complianceModules,
+      systemAccessManager: systemContext.systemAccessManager?.id ?? null,
     };
-
     return output;
   });

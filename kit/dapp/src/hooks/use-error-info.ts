@@ -1,5 +1,8 @@
+import type { baseContract } from "@/orpc/procedures/base.contract";
 import type { ORPCError } from "@orpc/server";
 import { useTranslation } from "react-i18next";
+
+type ErrorKeys = keyof (typeof baseContract)["~orpc"]["errorMap"];
 
 /**
  * Check if error is an ORPC error
@@ -7,7 +10,7 @@ import { useTranslation } from "react-i18next";
  */
 export function isORPCError(
   error: unknown
-): error is ORPCError<string, unknown> {
+): error is ORPCError<ErrorKeys, unknown> {
   return (
     error !== null &&
     typeof error === "object" &&
@@ -23,7 +26,7 @@ export function isORPCError(
 export function getErrorCode(error: unknown): string | number {
   // For ORPC errors, use the status code
   if (isORPCError(error)) {
-    return error.status || error.code || "500";
+    return error.status || "500";
   }
 
   // Type guard for error-like objects
@@ -68,28 +71,24 @@ export function useErrorTitle(error: unknown): string {
         return t("validation.title");
       case "RATE_LIMIT_EXCEEDED":
         return t("rateLimit.title");
-      case "TRANSACTION_FAILED":
-        return t("transaction.title");
       case "TIMEOUT":
         return t("timeout.title");
       case "PORTAL_ERROR":
         return t("portal.title");
       case "INTERNAL_SERVER_ERROR":
         return t("internal.title");
-      case "BLOCKCHAIN_ERROR":
-        return t("blockchain.title");
-      case "CONTRACT_ERROR":
-        return t("contract.title");
-      case "INSUFFICIENT_FUNDS":
-        return t("insufficientFunds.title");
-      case "NETWORK_ERROR":
-        return t("network.title");
       case "NOT_ONBOARDED":
         return t("notOnboarded.title");
       case "SYSTEM_NOT_CREATED":
         return t("systemNotCreated.title");
       case "RESOURCE_ALREADY_EXISTS":
         return t("resourceAlreadyExists.title");
+      case "TOKEN_INTERFACE_NOT_SUPPORTED":
+        return t("tokenInterfaceNotSupported.title");
+      case "USER_NOT_ALLOWED":
+        return t("userNotAllowed.title");
+      case "USER_NOT_AUTHORIZED":
+        return t("userNotAuthorized.title");
       default:
         return t("generic.title");
     }
@@ -178,28 +177,33 @@ export function useErrorDescription(error: unknown): string {
         return t("validation.description");
       case "RATE_LIMIT_EXCEEDED":
         return t("rateLimit.description");
-      case "TRANSACTION_FAILED":
-        return t("transaction.description");
       case "TIMEOUT":
         return t("timeout.description");
       case "PORTAL_ERROR":
         return t("portal.description");
       case "INTERNAL_SERVER_ERROR":
         return t("internal.description");
-      case "BLOCKCHAIN_ERROR":
-        return t("blockchain.description");
-      case "CONTRACT_ERROR":
-        return t("contract.description");
-      case "INSUFFICIENT_FUNDS":
-        return t("insufficientFunds.description");
-      case "NETWORK_ERROR":
-        return t("network.description");
       case "NOT_ONBOARDED":
         return t("notOnboarded.description");
       case "SYSTEM_NOT_CREATED":
         return t("systemNotCreated.description");
       case "RESOURCE_ALREADY_EXISTS":
         return t("resourceAlreadyExists.description");
+      case "TOKEN_INTERFACE_NOT_SUPPORTED":
+        return t("tokenInterfaceNotSupported.description", {
+          requiredInterfaces: (error.data as { requiredInterfaces: string[] })
+            .requiredInterfaces,
+        });
+
+      case "USER_NOT_ALLOWED":
+        return t("userNotAllowed.description", {
+          reason: (error.data as { reason: string }).reason,
+        });
+      case "USER_NOT_AUTHORIZED":
+        return t("userNotAuthorized.description", {
+          requiredRoles: (error.data as { requiredRoles: string[] })
+            .requiredRoles,
+        });
       default:
         return t("generic.description");
     }

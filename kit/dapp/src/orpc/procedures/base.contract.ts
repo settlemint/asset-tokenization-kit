@@ -1,19 +1,8 @@
-import { oc } from "@orpc/contract";
+import { ErrorMap, oc } from "@orpc/contract";
 import { oo } from "@orpc/openapi";
 import { z } from "zod";
 
-/**
- * Base ORPC contract with common error definitions.
- *
- * This contract serves as the foundation for all other contracts in the application,
- * defining standard error types that can occur across any API procedure. These
- * errors follow HTTP status code conventions and provide consistent error handling
- * throughout the application.
- *
- * All other contracts should extend this base contract to inherit these common
- * error definitions, ensuring consistent error responses across the entire API.
- */
-export const baseContract = oc.errors({
+export const CUSTOM_ERRORS = {
   /**
    * Input validation failure error.
    *
@@ -30,6 +19,20 @@ export const baseContract = oc.errors({
     message: "Input validation failed",
     data: z.object({
       errors: z.array(z.string()),
+    }),
+  },
+
+  /**
+   * Token does not implement the required extension.
+   *
+   * Thrown when a token does not implement the required extension.
+   */
+  TOKEN_INTERFACE_NOT_SUPPORTED: {
+    status: 422,
+    message:
+      "The token contract at the provided address does not implement the required interface.",
+    data: z.object({
+      requiredInterfaces: z.array(z.string()),
     }),
   },
 
@@ -101,6 +104,32 @@ export const baseContract = oc.errors({
   },
 
   /**
+   * User is not allowed to interact with the token.
+   *
+   * Thrown when a user is not allowed to interact with the token.
+   */
+  USER_NOT_ALLOWED: {
+    status: 403,
+    message: "User is not allowed to interact with the token.",
+    data: z.object({
+      reason: z.string(),
+    }),
+  },
+
+  /**
+   * User does not have the required role to interact with the token.
+   *
+   * Thrown when a user does not have the required role to interact with the token.
+   */
+  USER_NOT_AUTHORIZED: {
+    status: 403,
+    message: "User does not have the required role to execute this action.",
+    data: z.object({
+      requiredRoles: z.array(z.string()),
+    }),
+  },
+
+  /**
    * Verification ID not found error.
    *
    * Thrown when a required verification ID is missing from the user's profile:
@@ -144,23 +173,6 @@ export const baseContract = oc.errors({
   TIMEOUT: {
     status: 504,
     message: "Operation timeout",
-    data: z.object({
-      details: z.unknown().optional(),
-    }),
-  },
-
-  /**
-   * Transaction failed error.
-   *
-   * Thrown when a blockchain transaction fails:
-   * - Transaction reverted
-   * - Insufficient gas
-   * - Contract execution error
-   * - Invalid transaction parameters
-   */
-  TRANSACTION_FAILED: {
-    status: 400,
-    message: "Transaction failed",
     data: z.object({
       details: z.unknown().optional(),
     }),
@@ -287,4 +299,29 @@ export const baseContract = oc.errors({
       details: z.string(),
     }),
   },
-});
+
+  /**
+   * Conflict error.
+   *
+   * Thrown when a requested resource conflicts with the current state of the system:
+   * - Duplicate resource creation attempt
+   * - Resource already exists in database
+   */
+  CONFLICT: {
+    message: "Conflict",
+    status: 409,
+  },
+} satisfies ErrorMap;
+
+/**
+ * Base ORPC contract with common error definitions.
+ *
+ * This contract serves as the foundation for all other contracts in the application,
+ * defining standard error types that can occur across any API procedure. These
+ * errors follow HTTP status code conventions and provide consistent error handling
+ * throughout the application.
+ *
+ * All other contracts should extend this base contract to inherit these common
+ * error definitions, ensuring consistent error responses across the entire API.
+ */
+export const baseContract = oc.errors(CUSTOM_ERRORS);

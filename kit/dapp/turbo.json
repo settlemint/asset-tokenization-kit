@@ -20,10 +20,22 @@
     },
     "artifacts": {},
     "test": {
-      "dependsOn": ["codegen"]
+      "dependsOn": ["codegen"],
+      "outputs": ["coverage/**"]
     },
     "test:integration": {
       "dependsOn": ["codegen"]
+    },
+    "lint": {
+      "dependsOn": ["codegen"],
+      "inputs": [
+        "src/**/*.{js,jsx,ts,tsx}",
+        ".eslintrc*",
+        "eslint.config.*",
+        "package.json",
+        "tsconfig.json"
+      ],
+      "outputs": [".eslintcache"]
     }
   }
 }

@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.27;
+pragma solidity ^0.8.28;
 
-import { Test } from "forge-std/Test.sol";
 import { AbstractATKAssetTest } from "../../assets/AbstractATKAssetTest.sol";
 import { ATKXvPSettlementFactoryImplementation } from
     "../../../contracts/addons/xvp/ATKXvPSettlementFactoryImplementation.sol";
 import { ATKXvPSettlementImplementation } from "../../../contracts/addons/xvp/ATKXvPSettlementImplementation.sol";
 import { IATKXvPSettlementFactory } from "../../../contracts/addons/xvp/IATKXvPSettlementFactory.sol";
 import { IATKXvPSettlement } from "../../../contracts/addons/xvp/IATKXvPSettlement.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ERC20Mock } from "../../mocks/ERC20Mock.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
@@ -78,6 +76,12 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         IAccessControl(address(factory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, admin);
         IAccessControl(address(factory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, user1);
         IAccessControl(address(factory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, user2);
+
+        // Grant SYSTEM_MODULE_ROLE to the factory so it can access compliance functions like addToBypassList
+        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
+            ATKSystemRoles.SYSTEM_MODULE_ROLE, address(factory)
+        );
+
         vm.stopPrank();
 
         vm.label(address(tokenA), "TokenA");

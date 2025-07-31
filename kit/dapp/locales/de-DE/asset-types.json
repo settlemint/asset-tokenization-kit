@@ -1,0 +1,176 @@
+{
+  "whichAssetType": "Welchen Asset-Typ möchten Sie gestalten?",
+  "whichAssetTypeForClass": "Welchen {{assetClass}}-Vermögenswert möchten Sie gestalten?",
+  "assetTypeDifferences": "Jeder Asset-Typ hat unterschiedliche Zahlungsstrukturen, Liquiditätsbedingungen und Anlegerrechte.",
+  "bond": {
+    "description": "Schuldverschreibungen, die über einen bestimmten Zeitraum feste Zinsen zahlen",
+    "name": "Anleihe-Token"
+  },
+  "categories": {
+    "cashEquivalent": {
+      "description": "Hochliquide Investitionen, die leicht in bekannte Geldbeträge umgewandelt werden können.",
+      "icon": "Brieftasche",
+      "name": "Bargeldäquivalent"
+    },
+    "fixedIncome": {
+      "description": "Vermögenswerte, die Erträge in Form von regelmäßigen, festen Zinszahlungen und der Rückzahlung des Kapitals bei Fälligkeit bieten.",
+      "icon": "TrendSteigend",
+      "name": "Festverzinslich"
+    },
+    "flexibleIncome": {
+      "description": "Vermögenswerte, die variable Erträge basierend auf Marktbedingungen und zugrunde liegender Leistung generieren.",
+      "icon": "Aktivität",
+      "name": "Flexibles Einkommen"
+    }
+  },
+  "deposit": {
+    "description": "Zeitlich gebundene Einlagen, die über einen festen Zeitraum Zinsen erwirtschaften",
+    "name": "Einlage-Token"
+  },
+  "equity": {
+    "description": "Eigentumsanteile, die einen Anspruch auf Vermögenswerte und Erträge darstellen",
+    "name": "Eigenkapital-Token"
+  },
+  "fields": {
+    "common": {
+      "decimals": "Dezimalstellen",
+      "description": "Beschreibung",
+      "issuanceDate": "Ausgabedatum",
+      "issuer": "Emittent",
+      "name": "Vermögensname",
+      "status": "Status",
+      "symbol": "Symbol",
+      "totalSupply": "Gesamtangebot"
+    },
+    "compliance": {
+      "accreditation": "Zulassung erforderlich",
+      "holdingPeriod": "Mindesthaltedauer",
+      "kyc": "KYC erforderlich",
+      "maxInvestors": "Maximale Investoren",
+      "transferRestrictions": "Übertragungsbeschränkungen"
+    }
+  },
+  "fund": {
+    "description": "Gemeinschaftsinvestitionsvehikel, die Kapital von mehreren Investoren bündeln",
+    "name": "Fonds-Token"
+  },
+  "metadata": {
+    "liquidity": {
+      "high": "Hohe Liquidität",
+      "illiquid": "Illiquide",
+      "low": "Niedrige Liquidität",
+      "medium": "Mittlere Liquidität"
+    },
+    "riskLevel": {
+      "high": "Hohes Risiko",
+      "low": "Niedriges Risiko",
+      "medium": "Mittleres Risiko",
+      "veryHigh": "Sehr hohes Risiko"
+    }
+  },
+  "stablecoin": {
+    "description": "Digitale Währungen, die darauf ausgelegt sind, einen stabilen Wert im Verhältnis zu einem Referenzvermögen zu halten",
+    "name": "Stablecoins"
+  },
+  "status": {
+    "active": "Aktiv",
+    "defaulted": "In Verzug",
+    "frozen": "Eingefroren",
+    "matured": "Fällig",
+    "paused": "Pausiert",
+    "redeemed": "Eingelöst"
+  },
+  "types": {
+    "bond": {
+      "actions": {
+        "issue": "Anleihe ausgeben",
+        "payInterest": "Zinsen zahlen",
+        "redeem": "Anleihe einlösen",
+        "trade": "Anleihe handeln"
+      },
+      "category": "festverzinslich",
+      "description": "Schuldverschreibungen, die über einen bestimmten Zeitraum feste Zinsen zahlen.",
+      "features": {
+        "coupon": "Kuponzins",
+        "faceValue": "Nennwert",
+        "maturity": "Fälligkeitsdatum",
+        "rating": "Kreditwürdigkeit",
+        "yield": "Rendite bis zur Fälligkeit"
+      },
+      "name": "Anleihe",
+      "namePlural": "Anleihen"
+    },
+    "deposit": {
+      "actions": {
+        "calculateInterest": "Zinsen berechnen",
+        "create": "Einlage erstellen",
+        "renew": "Einlage erneuern",
+        "withdraw": "Abheben"
+      },
+      "category": "bargeldäquivalent",
+      "description": "Zeitlich gebundene Einlagen, die über einen festen Zeitraum Zinsen erwirtschaften.",
+      "features": {
+        "earlyWithdrawal": "Frühzeitige Abhebungsgebühr",
+        "minAmount": "Mindestbetrag",
+        "rate": "Zinssatz",
+        "term": "Einlagefrist"
+      },
+      "name": "Einlage",
+      "namePlural": "Einlagen"
+    },
+    "equity": {
+      "actions": {
+        "issue": "Aktien ausgeben",
+        "payDividend": "Dividende zahlen",
+        "transfer": "Eigentum übertragen",
+        "vote": "Abstimmen"
+      },
+      "category": "flexiblesEinkommen",
+      "description": "Eigentumsanteile, die einen Anspruch auf Vermögenswerte und Erträge darstellen.",
+      "features": {
+        "class": "Aktienklasse",
+        "dividends": "Dividendenzahlungen",
+        "ownership": "Eigentumsanteil",
+        "votingRights": "Stimmrechte"
+      },
+      "name": "Eigenkapital",
+      "namePlural": "Aktien"
+    },
+    "fund": {
+      "actions": {
+        "calculateNAV": "NAV berechnen",
+        "distribute": "Erträge verteilen",
+        "redeem": "Aktien einlösen",
+        "subscribe": "Abonnieren"
+      },
+      "category": "flexiblesEinkommen",
+      "description": "Gemeinschaftsinvestitionsvehikel, die Kapital von mehreren Investoren bündeln.",
+      "features": {
+        "managementFee": "Verwaltungsgebühr",
+        "nav": "Nettovermögenswert",
+        "performanceFee": "Performancegebühr",
+        "strategy": "Anlagestrategie"
+      },
+      "name": "Fonds",
+      "namePlural": "Fonds"
+    },
+    "stablecoin": {
+      "actions": {
+        "audit": "Prüfungsreserven",
+        "burn": "Token verbrennen",
+        "mint": "Token prägen",
+        "rebalance": "Reserven neu ausbalancieren"
+      },
+      "category": "bargeldäquivalent",
+      "description": "Digitale Währungen, die darauf ausgelegt sind, einen stabilen Wert im Verhältnis zu einem Referenzvermögen aufrechtzuerhalten.",
+      "features": {
+        "collateral": "Besicherungsquote",
+        "mechanism": "Stabilitätsmechanismus",
+        "peg": "Angebundenes Vermögen",
+        "reserves": "Reservebestände"
+      },
+      "name": "Stablecoin",
+      "namePlural": "Stablecoins"
+    }
+  }
+}

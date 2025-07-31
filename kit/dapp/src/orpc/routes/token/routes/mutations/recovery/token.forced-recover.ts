@@ -1,11 +1,11 @@
-import { ALL_INTERFACE_IDS } from "@/lib/interface-ids";
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { supportsInterface } from "@/orpc/helpers/interface-detection";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenForcedRecoverMessagesSchema } from "./token.forced-recover.schema";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { read } from "../../token.read";
+import { call } from "@orpc/server";
 
 const TOKEN_FORCED_RECOVER_MUTATION = portalGraphql(`
   mutation TokenForcedRecover(
@@ -31,30 +31,17 @@ const TOKEN_FORCED_RECOVER_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenForcedRecover = tokenRouter.token.tokenForcedRecover
+export const forcedRecover = tokenRouter.token.forcedRecover
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.forcedRecover,
+      requiredExtensions: ["CUSTODIAN"],
+    })
+  )
   .use(portalMiddleware)
-  .handler(async function* ({ input, context, errors }) {
+  .handler(async ({ input, context }) => {
     const { contract, verification, lostWallet, newWallet } = input;
     const { auth } = context;
-
-    // Parse messages with defaults
-    const messages = TokenForcedRecoverMessagesSchema.parse(
-      input.messages ?? {}
-    );
-
-    // Validate that the token supports custodian operations
-    const supportsCustodian = await supportsInterface(
-      context.portalClient,
-      contract,
-      ALL_INTERFACE_IDS.ISMARTCustodian
-    );
-
-    if (!supportsCustodian) {
-      throw errors.FORBIDDEN({
-        message:
-          "Token does not support custodian operations. The token must implement ISMARTCustodian interface.",
-      });
-    }
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -62,7 +49,7 @@ export const tokenForcedRecover = tokenRouter.token.tokenForcedRecover
       type: verification.verificationType,
     });
 
-    const transactionHash = yield* context.portalClient.mutate(
+    await context.portalClient.mutate(
       TOKEN_FORCED_RECOVER_MUTATION,
       {
         address: contract,
@@ -71,9 +58,9 @@ export const tokenForcedRecover = tokenRouter.token.tokenForcedRecover
         newWallet,
         ...challengeResponse,
       },
-      messages.forcedRecoveryFailed,
-      messages
+      context.t("tokens:api.mutations.recovery.messages.forcedRecoverFailed")
     );
 
-    return getEthereumHash(transactionHash);
+    // Return updated token data
+    return await call(read, { tokenAddress: contract }, { context });
   });

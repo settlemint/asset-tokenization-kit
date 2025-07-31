@@ -1,8 +1,12 @@
+import { handlePortalError } from "@/lib/portal/portal-error-handling";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
+import {
+  getTransactionHash,
+  type TransactionHash,
+} from "@/lib/zod/validators/transaction-hash";
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
-import { withEventMeta } from "@orpc/server";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import type { TadaDocumentNode } from "gql.tada";
 import type { Variables } from "graphql-request";
@@ -60,47 +64,29 @@ function createValidatedPortalClient(
 ) {
   const client = {
     /**
-     * Executes a GraphQL mutation and tracks the resulting transaction through its lifecycle.
+     * Executes a GraphQL mutation and waits for the transaction to complete.
      *
-     * This method uses an AsyncGenerator pattern to stream real-time transaction status updates.
-     * It automatically extracts the transaction hash from the mutation response and monitors
-     * the transaction through three phases:
+     * This method submits a mutation to Portal and monitors the resulting transaction
+     * through its lifecycle until it's confirmed on-chain and indexed by TheGraph.
      *
-     * 1. **Submission Phase**: Mutation is sent to Portal and transaction hash is extracted
-     * 2. **Mining Phase**: Transaction is monitored until mined and confirmed on-chain
-     * 3. **Indexing Phase**: (Optional) Transaction is monitored until indexed by TheGraph
      * @param {TadaDocumentNode} document - The GraphQL mutation document
      * @param {TVariables} variables - Variables for the GraphQL mutation
      * @param {string} userMessage - User-friendly error message to show if operation fails
      * @param {object} [trackingMessages] - Optional custom messages for each tracking phase
-     * @param {string} [trackingMessages.streamTimeout] - Message when tracking times out
-     * @param {string} [trackingMessages.waitingForMining] - Message while waiting for mining
-     * @param {string} [trackingMessages.transactionFailed] - Message when transaction fails
-     * @param {string} [trackingMessages.transactionDropped] - Message when transaction is dropped
-     * @param {string} [trackingMessages.waitingForIndexing] - Message while waiting for indexing
-     * @param {string} [trackingMessages.transactionIndexed] - Message when indexing completes
-     * @param {string} [trackingMessages.indexingTimeout] - Message when indexing times out
-     * @param {object} [trackingOptions] - Optional configuration for event tracking
-     * @param {string} [trackingOptions.eventId] - Custom event ID for the withEventMeta wrapper
-     * @param {boolean} [trackingOptions.skipEventWrapper] - Skip the withEventMeta wrapper
-     * @yields {TransactionEvent} Real-time transaction status updates
-     * @returns {string} The transaction hash once tracking is complete
+     * @returns {Promise<string>} The transaction hash once confirmed
      * @throws {PORTAL_ERROR} When Portal GraphQL operation fails
      * @throws {INTERNAL_SERVER_ERROR} When transaction fails, times out, or has invalid format
      * @example
      * ```typescript
-     * // Basic usage with default messages
-     * for await (const event of client.mutate(CREATE_TOKEN_MUTATION, { name: "MyToken" }, "Failed to create token")) {
-     *   console.log(`${event.status}: ${event.message} (${event.transactionHash})`);
-     *   // Output:
-     *   // pending: Transaction submitted (0x123...)
-     *   // pending: Waiting for transaction to be mined... (0x123...)
-     *   // pending: Transaction confirmed. Waiting for indexing... (0x123...)
-     *   // confirmed: Transaction successfully indexed. (0x123...)
-     * }
+     * // Basic usage
+     * const txHash = await client.mutate(
+     *   CREATE_TOKEN_MUTATION,
+     *   { name: "MyToken" },
+     *   "Failed to create token"
+     * );
      *
-     * // Custom tracking messages
-     * for await (const event of client.mutate(
+     * // With custom messages
+     * const txHash = await client.mutate(
      *   TRANSFER_MUTATION,
      *   { to: recipient, amount },
      *   "Transfer failed",
@@ -108,34 +94,10 @@ function createValidatedPortalClient(
      *     waitingForMining: "Processing your transfer...",
      *     transactionIndexed: "Transfer completed successfully!"
      *   }
-     * )) {
-     *   updateUI(event);
-     * }
-     *
-     * // With custom event ID for ORPC
-     * for await (const event of client.mutate(
-     *   MINT_MUTATION,
-     *   { to: recipient, amount },
-     *   "Mint failed",
-     *   messages,
-     *   { eventId: "token-mint" }
-     * )) {
-     *   // Events will be wrapped with withEventMeta and the custom event ID
-     * }
-     *
-     * // Error handling
-     * try {
-     *   for await (const event of client.mutate(RISKY_MUTATION, vars, "Operation failed")) {
-     *     // Handle events
-     *   }
-     * } catch (error) {
-     *   if (error.code === "PORTAL_ERROR") {
-     *     // Handle Portal-specific errors
-     *   }
-     * }
+     * );
      * ```
      */
-    async *mutate<TResult, TVariables extends Variables>(
+    async mutate<TResult, TVariables extends Variables>(
       document: TadaDocumentNode<TResult, TVariables>,
       variables: TVariables,
       userMessage: string,
@@ -147,12 +109,8 @@ function createValidatedPortalClient(
         waitingForIndexing?: string;
         transactionIndexed?: string;
         indexingTimeout?: string;
-      },
-      trackingOptions?: {
-        eventId?: string;
-        skipEventWrapper?: boolean;
       }
-    ): AsyncGenerator<TransactionEventEmitted, string, void> {
+    ): Promise<TransactionHash> {
       // Extract operation name from document metadata
       const operation =
         (
@@ -160,17 +118,6 @@ function createValidatedPortalClient(
             __meta?: { operationName?: string };
           }
         ).__meta?.operationName ?? "GraphQL Mutation";
-
-      // Auto-generate unique event ID from operation name and timestamp if not provided
-      const eventId =
-        trackingOptions?.eventId ??
-        `${operation
-          .replace(/([A-Z])/g, "-$1")
-          .toLowerCase()
-          .replace(
-            /^-/,
-            ""
-          )}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
       let result: TResult;
       try {
@@ -189,24 +136,7 @@ function createValidatedPortalClient(
           error: error instanceof Error ? error.message : String(error),
         });
 
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-
-        // Use specialized errors when possible
-        if (
-          errorMessage.includes("Portal") ||
-          errorMessage.includes("portal")
-        ) {
-          throw errors.PORTAL_ERROR({
-            message: userMessage,
-            data: { operation, details: errorMessage },
-          });
-        }
-
-        throw errors.INTERNAL_SERVER_ERROR({
-          message: userMessage,
-          cause: new Error(`GraphQL ${operation} failed: ${errorMessage}`),
-        });
+        handlePortalError(error, errors);
       }
 
       // Find transaction hash in the result
@@ -243,22 +173,10 @@ function createValidatedPortalClient(
         });
       }
 
-      // Helper function to yield events with proper wrapper
-      const yieldEvent = (event: TransactionEventEmitted) => {
-        if (trackingOptions?.skipEventWrapper) {
-          return event;
-        }
-        return withEventMeta(event, { id: eventId, retry: 1000 });
-      };
-
       // If no theGraphClient is provided, just return the transaction hash
       if (!theGraphClient) {
-        yield yieldEvent({
-          status: "pending",
-          message: "Transaction submitted",
-          transactionHash,
-        });
-        return transactionHash;
+        logger.info(`Transaction submitted: ${transactionHash}`);
+        return getTransactionHash(transactionHash);
       }
 
       // ===== TRANSACTION TRACKING CONFIGURATION =====
@@ -335,11 +253,7 @@ function createValidatedPortalClient(
 
       for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
         if (Date.now() - streamStartTime > STREAM_TIMEOUT_MS) {
-          yield yieldEvent({
-            status: "failed" as const,
-            message: messages.streamTimeout,
-            transactionHash,
-          });
+          logger.error(`Transaction tracking timeout for ${transactionHash}`);
           throw errors.INTERNAL_SERVER_ERROR({
             message: userMessage,
             cause: new Error(messages.streamTimeout),
@@ -369,21 +283,15 @@ function createValidatedPortalClient(
         receipt = result.getTransaction?.receipt ?? undefined;
 
         if (!receipt) {
-          yield yieldEvent({
-            status: "pending",
-            message: messages.waitingForMining,
-            transactionHash,
-          });
+          logger.debug(
+            `Waiting for transaction ${transactionHash} to be mined...`
+          );
           await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
           continue;
         }
 
         if (receipt.status !== "Success") {
-          yield yieldEvent({
-            status: "failed",
-            message: messages.transactionFailed,
-            transactionHash,
-          });
+          logger.error(`Transaction ${transactionHash} failed`);
           throw errors.INTERNAL_SERVER_ERROR({
             message: userMessage,
             cause: new Error(messages.transactionFailed),
@@ -394,11 +302,7 @@ function createValidatedPortalClient(
       }
 
       if (!receipt) {
-        yield yieldEvent({
-          status: "failed",
-          message: messages.transactionDropped,
-          transactionHash,
-        });
+        logger.error(`Transaction ${transactionHash} dropped`);
         throw errors.INTERNAL_SERVER_ERROR({
           message: userMessage,
           cause: new Error(messages.transactionDropped),
@@ -410,11 +314,9 @@ function createValidatedPortalClient(
       // This ensures that the transaction data is available for queries.
       // TheGraph needs to process the block containing our transaction before
       // the dApp can display updated data.
-      yield yieldEvent({
-        status: "pending",
-        message: messages.waitingForIndexing,
-        transactionHash,
-      });
+      logger.debug(
+        `Waiting for TheGraph to index transaction ${transactionHash}`
+      );
 
       const targetBlockNumber = Number(receipt.blockNumber);
 
@@ -424,11 +326,7 @@ function createValidatedPortalClient(
         attempt++
       ) {
         if (Date.now() - streamStartTime > STREAM_TIMEOUT_MS) {
-          yield yieldEvent({
-            status: "failed",
-            message: messages.streamTimeout,
-            transactionHash,
-          });
+          logger.error(`TheGraph indexing timeout for ${transactionHash}`);
           throw errors.INTERNAL_SERVER_ERROR({
             message: userMessage,
             cause: new Error(messages.streamTimeout),
@@ -452,13 +350,8 @@ function createValidatedPortalClient(
         const indexedBlock = result._meta?.block.number ?? 0;
 
         if (indexedBlock >= targetBlockNumber) {
-          // Always yield the final confirmed event
-          yield yieldEvent({
-            status: "confirmed",
-            message: messages.transactionIndexed,
-            transactionHash,
-          });
-          return transactionHash;
+          logger.info(`Transaction ${transactionHash} successfully indexed`);
+          return getTransactionHash(transactionHash);
         }
 
         await new Promise((resolve) =>
@@ -466,14 +359,11 @@ function createValidatedPortalClient(
         );
       }
 
-      // Indexing timeout
-      yield yieldEvent({
-        status: "confirmed",
-        message: messages.indexingTimeout,
-        transactionHash,
-      });
-
-      return transactionHash;
+      // Indexing timeout - but transaction was confirmed, so we still return success
+      logger.warn(
+        `TheGraph indexing timeout for ${transactionHash}, but transaction was confirmed`
+      );
+      return getTransactionHash(transactionHash);
     },
 
     /**
@@ -565,33 +455,7 @@ function createValidatedPortalClient(
           error: error instanceof Error ? error.message : String(error),
         });
 
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-
-        if (
-          errorMessage.includes("Portal") ||
-          errorMessage.includes("portal")
-        ) {
-          throw errors.PORTAL_ERROR({
-            message: userMessage,
-            data: { operation, details: errorMessage },
-          });
-        }
-
-        if (
-          errorMessage.includes("not found") ||
-          errorMessage.includes("404")
-        ) {
-          throw errors.NOT_FOUND({
-            message: userMessage,
-            data: { operation, details: errorMessage },
-          });
-        }
-
-        throw errors.INTERNAL_SERVER_ERROR({
-          message: userMessage,
-          cause: new Error(`GraphQL ${operation} failed: ${errorMessage}`),
-        });
+        handlePortalError(error, errors);
       }
 
       // Validate with Zod schema

@@ -1,5 +1,5 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { Token } from "../../../generated/schema";
+import { Identity, Token } from "../../../generated/schema";
 import { Token as TokenTemplate } from "../../../generated/templates";
 import { Token as TokenContract } from "../../../generated/templates/Token/Token";
 import { fetchAccount } from "../../account/fetch/account";
@@ -27,13 +27,28 @@ export function fetchToken(address: Address): Token {
       token.decimals
     );
     token.deployedInTransaction = Bytes.empty();
-    token.requiredClaimTopics = [];
+    token.extensions = [];
+    token.implementsERC3643 = false;
+    token.implementsSMART = false;
 
     token.save();
     TokenTemplate.create(address);
 
     // Initialize distribution stats for new token
     initializeTokenDistributionStats(token);
+  }
+
+  return token;
+}
+
+export function fetchTokenByIdentity(identity: Identity): Token | null {
+  if (identity.isContract !== true || !identity.account) {
+    return null;
+  }
+  const tokenAddress = Address.fromBytes(identity.account!);
+  const token = Token.load(tokenAddress); // only load because we don't want to create a new token
+  if (!token) {
+    return null;
   }
 
   return token;

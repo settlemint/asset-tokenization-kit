@@ -1,0 +1,67 @@
+import { portalGraphql } from "@/lib/settlemint/portal";
+import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
+import {
+  PredictAddressOutputSchema,
+  type PredictAddressInput,
+  type PredictAddressOutput,
+} from "@/orpc/routes/token/routes/factory/factory.predict-address.schema";
+import z from "zod";
+import type { PredictHandlerContext } from "./handler-map";
+
+const PREDICT_BOND_ADDRESS_QUERY = portalGraphql(`
+  query PredictBondAddress(
+    $address: String!
+    $symbol: String!
+    $name: String!
+    $decimals: Int!
+    $initialModulePairs: [ATKBondFactoryImplementationPredictBondAddressInitialModulePairsInput!]!
+    $cap: String!
+    $faceValue: String!
+    $maturityDate: String!
+    $underlyingAsset: String!
+  ) {
+    ATKBondFactoryImplementation(address: $address) {
+      predictBondAddress(
+        symbol_: $symbol
+        name_: $name
+        decimals_: $decimals
+        initialModulePairs_: $initialModulePairs
+        cap_: $cap
+        bondParams: {
+          faceValue: $faceValue
+          maturityDate: $maturityDate
+          underlyingAsset: $underlyingAsset
+        }
+      ) {
+        predictedAddress
+      }
+    }
+  }
+`);
+
+export const bondPredictHandler = async (
+  input: PredictAddressInput,
+  context: PredictHandlerContext
+): Promise<PredictAddressOutput> => {
+  if (input.type !== AssetTypeEnum.bond) {
+    throw new Error("Invalid token type");
+  }
+
+  const result = await context.portalClient.query(
+    PREDICT_BOND_ADDRESS_QUERY,
+    {
+      address: context.factoryAddress,
+      ...input,
+      faceValue: input.faceValue.toString(),
+      cap: input.cap.toString(),
+    },
+    z.object({
+      ATKBondFactoryImplementation: z.object({
+        predictBondAddress: PredictAddressOutputSchema,
+      }),
+    }),
+    "Failed to predict bond address"
+  );
+
+  return result.ATKBondFactoryImplementation.predictBondAddress;
+};

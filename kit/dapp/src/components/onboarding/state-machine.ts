@@ -3,9 +3,12 @@ import type {
   OnboardingState,
 } from "@/orpc/routes/user/routes/user.me.schema";
 import { Derived, Store } from "@tanstack/react-store";
-import type { useTranslation } from "react-i18next";
 
-export const enum OnboardingStep {
+interface OnboardingStateMachine extends OnboardingState {
+  isAdmin: boolean;
+}
+
+export enum OnboardingStep {
   wallet = "wallet",
   walletSecurity = "wallet-security",
   walletRecoveryCodes = "wallet-recovery-codes",
@@ -13,6 +16,7 @@ export const enum OnboardingStep {
   systemSettings = "system-settings",
   systemAssets = "system-assets",
   systemAddons = "system-addons",
+  identitySetup = "identity-setup",
   identity = "identity",
 }
 
@@ -22,145 +26,113 @@ export const enum OnboardingStepGroup {
   identity = "identity",
 }
 
-export const onboardingStateMachine = new Store<OnboardingState>({
+export const onboardingStateMachine = new Store<OnboardingStateMachine>({
+  isAdmin: false,
   wallet: false,
   walletSecurity: false,
   walletRecoveryCodes: false,
   system: false,
+  systemSettings: false,
+  systemAssets: false,
+  systemAddons: false,
+  identitySetup: false,
   identity: false,
 });
 
-type TranslationKey = Parameters<
-  ReturnType<typeof useTranslation<readonly ["onboarding"]>>["t"]
->[0];
-
-export function buildOnboardingSteps(user: CurrentUser, hasSystem: boolean) {
-  const onboardingState = user.onboardingState;
-
-  const steps: {
-    step: OnboardingStep;
-    groupId: OnboardingStepGroup;
-    titleTranslationKey?: TranslationKey;
-    descriptionTranslationKey?: TranslationKey;
-    current: boolean;
-    completed: boolean;
-  }[] = [
-    {
-      step: OnboardingStep.wallet,
-      groupId: OnboardingStepGroup.wallet,
-      current: false,
-      completed: onboardingState.wallet,
-      titleTranslationKey: "steps.wallet.title",
-      descriptionTranslationKey: "steps.wallet.description",
-    },
-    {
-      step: OnboardingStep.walletSecurity,
-      groupId: OnboardingStepGroup.wallet,
-      current: false,
-      completed: onboardingState.walletSecurity,
-    },
-    {
-      step: OnboardingStep.walletRecoveryCodes,
-      groupId: OnboardingStepGroup.wallet,
-      current: false,
-      completed: onboardingState.walletRecoveryCodes,
-    },
-  ];
-
-  // Show system steps if user is admin (always show them, but with proper completion states)
-  if (user.role === "admin") {
-    // ISSUE: Currently onboardingState.system is set to !!systemAddress, which means it's true
-    // whenever a system exists, not when all system steps are completed.
-    // Until we have individual step tracking, we need to handle this properly:
-
-    // For now, only systemDeploy is completed when system exists
-    // Other steps are never completed (since we can't track individual completion)
-    // This means the user will have to manually complete settings, assets, addons
-
-    steps.push(
-      {
-        step: OnboardingStep.systemDeploy,
-        groupId: OnboardingStepGroup.system,
-        current: false,
-        completed: hasSystem, // Complete when system is deployed
-      },
-      {
-        step: OnboardingStep.systemSettings,
-        groupId: OnboardingStepGroup.system,
-        current: false,
-        completed: false, // TODO: Add individual step tracking
-      },
-      {
-        step: OnboardingStep.systemAssets,
-        groupId: OnboardingStepGroup.system,
-        current: false,
-        completed: false, // TODO: Add individual step tracking
-      },
-      {
-        step: OnboardingStep.systemAddons,
-        groupId: OnboardingStepGroup.system,
-        current: false,
-        completed: false, // TODO: Add individual step tracking
-      }
-    );
-  }
-
-  steps.push({
-    step: OnboardingStep.identity,
-    groupId: OnboardingStepGroup.identity,
-    current: false,
-    completed: onboardingState.identity,
-  });
-
-  // the current step should be true for the first step that is not completed
-  const currentStep = steps.find((step) => !step.completed);
-  if (currentStep) {
-    currentStep.current = true;
-  }
-
-  return steps;
-}
-
-let currentUser: CurrentUser | null = null;
-let currentHasSystem = false;
-
 export const onboardingSteps = new Derived({
   fn: () => {
-    if (!currentUser) return [];
-    return buildOnboardingSteps(currentUser, currentHasSystem);
+    const steps: {
+      step: OnboardingStep;
+      groupId: OnboardingStepGroup;
+      current: boolean;
+      completed: boolean;
+    }[] = [
+      {
+        step: OnboardingStep.wallet,
+        groupId: OnboardingStepGroup.wallet,
+        current: false,
+        completed: onboardingStateMachine.state.wallet,
+      },
+      {
+        step: OnboardingStep.walletSecurity,
+        groupId: OnboardingStepGroup.wallet,
+        current: false,
+        completed: onboardingStateMachine.state.walletSecurity,
+      },
+      {
+        step: OnboardingStep.walletRecoveryCodes,
+        groupId: OnboardingStepGroup.wallet,
+        current: false,
+        completed: onboardingStateMachine.state.walletRecoveryCodes,
+      },
+      ...(onboardingStateMachine.state.isAdmin
+        ? [
+            {
+              step: OnboardingStep.systemDeploy,
+              groupId: OnboardingStepGroup.system,
+              current: false,
+              completed: onboardingStateMachine.state.system,
+            },
+            {
+              step: OnboardingStep.systemSettings,
+              groupId: OnboardingStepGroup.system,
+              current: false,
+              completed: onboardingStateMachine.state.systemSettings,
+            },
+            {
+              step: OnboardingStep.systemAssets,
+              groupId: OnboardingStepGroup.system,
+              current: false,
+              completed: onboardingStateMachine.state.systemAssets,
+            },
+            {
+              step: OnboardingStep.systemAddons,
+              groupId: OnboardingStepGroup.system,
+              current: false,
+              completed: onboardingStateMachine.state.systemAddons,
+            },
+          ]
+        : []),
+      {
+        step: OnboardingStep.identitySetup,
+        groupId: OnboardingStepGroup.identity,
+        current: false,
+        completed: onboardingStateMachine.state.identitySetup,
+      },
+      {
+        step: OnboardingStep.identity,
+        groupId: OnboardingStepGroup.identity,
+        current: false,
+        completed: onboardingStateMachine.state.identity,
+      },
+    ];
+
+    // the current step should be true for the first step that is not completed
+    const currentStep = steps.find((step) => !step.completed);
+    if (currentStep) {
+      currentStep.current = true;
+    }
+
+    return steps;
   },
   deps: [onboardingStateMachine],
 });
 
 onboardingSteps.mount();
 
-export function updateOnboardingStateMachine({
-  user,
-  hasSystem = false,
-}: {
-  user: CurrentUser;
-  hasSystem?: boolean;
-}) {
+export function updateOnboardingStateMachine({ user }: { user: CurrentUser }) {
   const onboardingState = user.onboardingState;
-
-  // Update the global state for the store
-  currentUser = user;
-  currentHasSystem = hasSystem;
 
   onboardingStateMachine.setState((prev) => ({
     ...prev,
-    wallet: onboardingState.wallet,
-    walletSecurity: onboardingState.walletSecurity,
-    walletRecoveryCodes: onboardingState.walletRecoveryCodes,
-    system: onboardingState.system,
-    identity: onboardingState.identity,
+    ...onboardingState,
+    isAdmin: user.role === "admin",
   }));
 
-  const steps = buildOnboardingSteps(user, hasSystem);
-  const currentStep = steps.find((step) => step.current);
-
   return {
-    currentStep: currentStep?.step ?? OnboardingStep.wallet,
-    steps,
+    currentStep:
+      onboardingSteps.state.find((step) => step.current)?.step ??
+      OnboardingStep.wallet,
+    steps: onboardingSteps.state,
   };
 }

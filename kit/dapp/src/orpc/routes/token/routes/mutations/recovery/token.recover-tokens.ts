@@ -1,11 +1,11 @@
-import { ALL_INTERFACE_IDS } from "@/lib/interface-ids";
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { supportsInterface } from "@/orpc/helpers/interface-detection";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenRecoverTokensMessagesSchema } from "./token.recover-tokens.schema";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { read } from "../../token.read";
+import { call } from "@orpc/server";
 
 const TOKEN_RECOVER_TOKENS_MUTATION = portalGraphql(`
   mutation TokenRecoverTokens(
@@ -29,31 +29,16 @@ const TOKEN_RECOVER_TOKENS_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenRecoverTokens = tokenRouter.token.tokenRecoverTokens
+export const recoverTokens = tokenRouter.token.recoverTokens
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.recoverTokens,
+    })
+  )
   .use(portalMiddleware)
-  .handler(async function* ({ input, context, errors }) {
+  .handler(async ({ input, context }) => {
     const { contract, verification, lostWallet } = input;
     const { auth } = context;
-
-    // Parse messages with defaults
-    const messages = TokenRecoverTokensMessagesSchema.parse(
-      input.messages ?? {}
-    );
-
-    // Validate that the token supports recovery operations
-    // All ISMART tokens should support recovery, but let's check for ERC3643 as a proxy
-    const supportsRecovery = await supportsInterface(
-      context.portalClient,
-      contract,
-      ALL_INTERFACE_IDS.IERC3643
-    );
-
-    if (!supportsRecovery) {
-      throw errors.FORBIDDEN({
-        message:
-          "Token does not support recovery operations. The token must implement IERC3643 interface.",
-      });
-    }
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -61,7 +46,7 @@ export const tokenRecoverTokens = tokenRouter.token.tokenRecoverTokens
       type: verification.verificationType,
     });
 
-    const transactionHash = yield* context.portalClient.mutate(
+    await context.portalClient.mutate(
       TOKEN_RECOVER_TOKENS_MUTATION,
       {
         address: contract,
@@ -69,9 +54,9 @@ export const tokenRecoverTokens = tokenRouter.token.tokenRecoverTokens
         lostWallet,
         ...challengeResponse,
       },
-      messages.recoveryFailed,
-      messages
+      context.t("tokens:api.mutations.recovery.messages.recoverTokensFailed")
     );
 
-    return getEthereumHash(transactionHash);
+    // Return updated token data
+    return await call(read, { tokenAddress: contract }, { context });
   });

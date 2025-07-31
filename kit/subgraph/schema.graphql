@@ -40,27 +40,61 @@ type EventValue @entity(immutable: true) {
 # ACCESS CONTROL & SYSTEM
 # ==================================================
 
+type SystemAccessManager @entity(immutable: false) {
+  id: Bytes!
+  system: System!
+  deployedInTransaction: Bytes!
+  accessControl: AccessControl!
+}
+
 type AccessControl @entity(immutable: false) {
   id: Bytes!
+  addonManager: [Account!]!
+  addonModule: [Account!]!
+  addonRegistryModule: [Account!]!
   admin: [Account!]!
-  registrar: [Account!]!
-  claimManager: [Account!]!
-  deployer: [Account!]!
-  storageModifier: [Account!]!
-  registryManager: [Account!]!
-  governance: [Account!]!
-  supplyManagement: [Account!]!
-  custodian: [Account!]!
-  emergency: [Account!]!
-  implementationManager: [Account!]!
+  auditor: [Account!]!
+  burner: [Account!]!
   bypassListManager: [Account!]!
   bypassListManagerAdmin: [Account!]!
+  capManagement: [Account!]!
+  claimManager: [Account!]!
+  claimPolicyManager: [Account!]!
+  complianceAdmin: [Account!]!
+  complianceManager: [Account!]!
+  custodian: [Account!]!
+  deployer: [Account!]!
+  emergency: [Account!]!
+  forcedTransfer: [Account!]!
+  freezer: [Account!]!
+  fundsManager: [Account!]!
+  globalListManager: [Account!]!
+  governance: [Account!]!
+  identityManager: [Account!]!
+  identityRegistryModule: [Account!]!
+  implementationManager: [Account!]!
+  minter: [Account!]!
+  pauser: [Account!]!
+  recovery: [Account!]!
+  registrar: [Account!]!
+  registrarAdmin: [Account!]!
+  registryManager: [Account!]!
+  saleAdmin: [Account!]!
+  signer: [Account!]!
+  storageModifier: [Account!]!
+  supplyManagement: [Account!]!
+  systemManager: [Account!]!
+  systemModule: [Account!]!
+  tokenAdmin: [Account!]!
+  tokenFactoryModule: [Account!]!
+  tokenFactoryRegistryModule: [Account!]!
+  tokenManager: [Account!]!
+  verificationAdmin: [Account!]!
 }
 
 type System @entity(immutable: false) {
   id: Bytes!
   deployedInTransaction: Bytes!
-  accessControl: AccessControl!
   account: Account
   compliance: Compliance
   identityRegistryStorage: IdentityRegistryStorage
@@ -71,24 +105,15 @@ type System @entity(immutable: false) {
   tokenFactoryRegistry: TokenFactoryRegistry
   complianceModuleRegistry: ComplianceModuleRegistry
   systemAddonRegistry: SystemAddonRegistry
-}
-
-type SystemAddon @entity(immutable: false) {
-  id: Bytes!
-  deployedInTransaction: Bytes!
-  accessControl: AccessControl!
-  name: String!
-  typeId: String!
-  system: System
-  account: Account!
+  systemAccessManager: SystemAccessManager
 }
 
 type VaultFactory @entity(immutable: false) {
   id: Bytes!
   deployedInTransaction: Bytes!
+  # Access control for the vault factory
   accessControl: AccessControl!
   systemAddon: SystemAddon!
-  system: System!
   account: Account!
   vaults: [Vault!]! @derivedFrom(field: "factory")
 }
@@ -99,6 +124,7 @@ type Vault @entity(immutable: false) {
   createdBy: Account!
   factory: VaultFactory!
   account: Account!
+  # Access control for the vault
   accessControl: AccessControl!
   required: BigInt!
   signers: [Account!]!
@@ -106,6 +132,9 @@ type Vault @entity(immutable: false) {
   balance: BigDecimal!
   balanceExact: BigInt!
   deployedInTransaction: Bytes!
+  weightedSignaturesEnabled: Boolean!
+  signerWeights: [VaultSigner!]! @derivedFrom(field: "vault")
+  onchainId: Account
 }
 
 type VaultTransaction @entity(immutable: false) {
@@ -156,9 +185,18 @@ type VaultContractCall @entity(immutable: false) {
   returnData: Bytes
 }
 
+type VaultSigner @entity(immutable: false) {
+  id: Bytes! # vault-signer composite key
+  vault: Vault!
+  signer: Account!
+  weight: BigInt!
+  deployedInTransaction: Bytes!
+}
+
 type Compliance @entity(immutable: false) {
   id: Bytes!
   account: Account!
+  complianceModuleConfigs: [GlobalComplianceModuleConfig!]! @derivedFrom(field: "compliance")
 }
 
 # ==================================================
@@ -167,21 +205,18 @@ type Compliance @entity(immutable: false) {
 
 type IdentityRegistryStorage @entity(immutable: false) {
   id: Bytes!
-  accessControl: AccessControl!
   account: Account!
   deployedInTransaction: Bytes!
 }
 
 type IdentityFactory @entity(immutable: false) {
   id: Bytes!
-  accessControl: AccessControl!
   account: Account!
   deployedInTransaction: Bytes!
 }
 
 type IdentityRegistry @entity(immutable: false) {
   id: Bytes!
-  accessControl: AccessControl!
   account: Account!
   identities: [Identity!]! @derivedFrom(field: "registry")
   trustedIssuersRegistry: TrustedIssuersRegistry
@@ -192,14 +227,12 @@ type IdentityRegistry @entity(immutable: false) {
 
 type TrustedIssuersRegistry @entity(immutable: false) {
   id: Bytes!
-  accessControl: AccessControl!
   account: Account!
   deployedInTransaction: Bytes!
 }
 
 type TopicSchemeRegistry @entity(immutable: false) {
   id: Bytes!
-  accessControl: AccessControl!
   account: Account!
   schemes: [TopicScheme!]! @derivedFrom(field: "registry")
   deployedInTransaction: Bytes!
@@ -220,7 +253,7 @@ type Identity @entity(immutable: false) {
   registry: IdentityRegistry
   claims: [IdentityClaim!]! @derivedFrom(field: "identity")
   account: Account
-  token: Token
+  isContract: Boolean
   deployedInTransaction: Bytes!
 }
 
@@ -248,7 +281,6 @@ type IdentityClaimValue @entity(immutable: false) {
 
 type ComplianceModuleRegistry @entity(immutable: false) {
   id: Bytes!
-  accessControl: AccessControl!
   account: Account!
   deployedInTransaction: Bytes!
   complianceModules: [ComplianceModule!]!
@@ -257,25 +289,68 @@ type ComplianceModuleRegistry @entity(immutable: false) {
 
 type ComplianceModule @entity(immutable: false) {
   id: Bytes!
+  # Access control for the compliance module
   accessControl: AccessControl!
   name: String!
   typeId: String!
   account: Account!
   deployedInTransaction: Bytes!
   complianceModuleRegistry: ComplianceModuleRegistry
-  tokens: [TokenComplianceModule!]! @derivedFrom(field: "complianceModule")
+  tokenConfigs: [TokenComplianceModuleConfig!]! @derivedFrom(field: "complianceModule")
+  globalConfigs: [GlobalComplianceModuleConfig!]! @derivedFrom(field: "complianceModule")
+}
+
+type GlobalComplianceModuleConfig @entity(immutable: false) {
+  id: Bytes!
+  compliance: Compliance!
+  complianceModule: ComplianceModule!
+  parameters: ComplianceModuleParameters!
+}
+
+type ComplianceModuleParameters @entity(immutable: false) {
+  id: Bytes!
+  encodedParams: Bytes!
   addresses: [Bytes!]
   countries: [Int!]
+  expression: [ExpressionNode!] @derivedFrom(field: "parameters")
+}
+
+type ExpressionNode @entity(immutable: true) {
+  id: Bytes!
+  parameters: ComplianceModuleParameters!
+  nodeType: ExpressionNodeType!
+  index: Int!
+  topicScheme: TopicScheme
+}
+
+enum ExpressionNodeType {
+  TOPIC
+  AND
+  OR
+  NOT
 }
 
 # ==================================================
 # TOKEN MANAGEMENT
 # ==================================================
 
+enum TokenExtension {
+  ACCESS_MANAGED
+  BOND
+  BURNABLE
+  CAPPED
+  COLLATERAL
+  CUSTODIAN
+  FUND
+  HISTORICAL_BALANCES
+  PAUSABLE
+  REDEEMABLE
+  YIELD
+}
+
 type TokenFactoryRegistry @entity(immutable: false) {
   id: Bytes!
   system: System!
-  accessControl: AccessControl!
   account: Account!
   deployedInTransaction: Bytes!
   tokenFactories: [TokenFactory!]! @derivedFrom(field: "tokenFactoryRegistry")
@@ -283,6 +358,7 @@ type TokenFactoryRegistry @entity(immutable: false) {
 
 type TokenFactory @entity(immutable: false) {
   id: Bytes!
+  # Access control for the token factory
   accessControl: AccessControl!
   name: String!
   typeId: String!
@@ -293,6 +369,11 @@ type TokenFactory @entity(immutable: false) {
   # This field is used for efficient filtering without expensive joins
   # Set to false when factory is created, true when first token is deployed
   hasTokens: Boolean!
+  # Implemented interfaces
+  tokenImplementsERC3643: Boolean!
+  tokenImplementsSMART: Boolean!
+  # Extensions of tokens created by this factory
+  tokenExtensions: [TokenExtension!]!
 }
 
 type Token @entity(immutable: false) {
@@ -301,8 +382,8 @@ type Token @entity(immutable: false) {
   createdBy: Account!
   deployedInTransaction: Bytes!
   account: Account!
+  # Access control for the token
   accessControl: AccessControl
-  identity: Identity
   balances: [TokenBalance!]! @derivedFrom(field: "token")
   type: String!
   tokenFactory: TokenFactory
@@ -311,7 +392,11 @@ type Token @entity(immutable: false) {
   decimals: Int!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
+  # Implemented interfaces
+  implementsERC3643: Boolean!
+  implementsSMART: Boolean!
   # Extensions
+  extensions: [TokenExtension!]!
   pausable: TokenPausable
   collateral: TokenCollateral
   capped: TokenCapped
@@ -322,10 +407,8 @@ type Token @entity(immutable: false) {
   fund: TokenFund
   # Claims
   basePriceClaim: IdentityClaim
-  # The identity verification claim topics that are required for accounts to own tokens of this type
-  requiredClaimTopics: [TopicScheme!]!
   # Compliance
-  tokenComplianceModules: [TokenComplianceModule!]! @derivedFrom(field: "token")
+  complianceModuleConfigs: [TokenComplianceModuleConfig!]! @derivedFrom(field: "token")
   # Stats
   stats: TokenStatsState @derivedFrom(field: "token")
   distributionStats: TokenDistributionStatsState @derivedFrom(field: "token")
@@ -345,14 +428,13 @@ type TokenBalance @entity(immutable: false) {
   availableExact: BigInt!
 }
 
-type TokenComplianceModule @entity(immutable: false) {
+type TokenComplianceModuleConfig @entity(immutable: false) {
   id: Bytes!
   token: Token!
   complianceModule: ComplianceModule!
-  encodedParams: Bytes!
-  addresses: [Bytes!]
-  countries: [Int!]
+  parameters: ComplianceModuleParameters!
 }
+
 
 # ==================================================
 # TOKEN EXTENSIONS
@@ -412,9 +494,20 @@ type TokenFund @entity(immutable: false) {
 
 type SystemAddonRegistry @entity(immutable: false) {
   id: Bytes!
-  accessControl: AccessControl!
   account: Account!
   deployedInTransaction: Bytes!
+  systemAddons: [SystemAddon!]! @derivedFrom(field: "systemAddonRegistry")
+}
+
+type SystemAddon @entity(immutable: false) {
+  id: Bytes!
+  deployedInTransaction: Bytes!
+  # Access control for the system addon
+  accessControl: AccessControl!
+  systemAddonRegistry: SystemAddonRegistry!
+  name: String!
+  typeId: String!
+  account: Account!
 }
 
 # ==================================================
@@ -450,6 +543,39 @@ type XvPSettlementApproval @entity(immutable: false) {
   account: Account!
   approved: Boolean!
   timestamp: BigInt
+}
+
+# ==================================================
+# ACTIONS
+# ==================================================
+
+enum ActionStatus {
+  PENDING
+  ACTIVE
+  EXECUTED
+  EXPIRED
+}
+
+type Action @entity(immutable: false) {
+  id: Bytes!
+  name: String!
+  target: Bytes!
+  createdAt: BigInt!
+  activeAt: BigInt!
+  expiresAt: BigInt
+  requiredRole: String
+  status: ActionStatus!
+  executed: Boolean!  # DEPRECATED: Use status field instead. Keep for backward compatibility until frontend is migrated.
+  executedAt: BigInt
+  executedBy: Bytes
+  identifier: String
+  executor: ActionExecutor!  # Must be ActionExecutor! for @derivedFrom to work
+}
+
+type ActionExecutor @entity(immutable: false) {
+  id: Bytes!
+  executors: [Bytes!]!
+  actions: [Action!]! @derivedFrom(field: "executor")
 }
 
 # ==================================================

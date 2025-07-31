@@ -1,19 +1,28 @@
 import { AccessControlFragment } from "@/lib/fragments/the-graph/access-control-fragment";
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { isEthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
-import type { ResultOf } from "@settlemint/sdk-thegraph";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { createLogger } from "@settlemint/sdk-utils/logging";
+
+const logger = createLogger();
 
 const READ_TOKEN_QUERY = theGraphGraphql(
   `
   query ReadTokenQuery($id: ID!) {
     token(id: $id) {
       id
+      type
+      createdAt
       name
       symbol
       decimals
       totalSupply
+      extensions
+      implementsERC3643
+      implementsSMART
       pausable {
         paused
       }
@@ -34,9 +43,6 @@ const READ_TOKEN_QUERY = theGraphGraphql(
       fund {
         managementFeeBps
       }
-      requiredClaimTopics {
-        name
-      }
       collateral {
         collateral
         expiryTimestamp
@@ -49,10 +55,6 @@ const READ_TOKEN_QUERY = theGraphGraphql(
   `,
   [AccessControlFragment]
 );
-
-export type TokenRoles = keyof NonNullable<
-  NonNullable<ResultOf<typeof READ_TOKEN_QUERY>["token"]>["accessControl"]
->;
 
 /**
  * Middleware to inject the token context into the request context.
@@ -68,10 +70,26 @@ export const tokenMiddleware = baseRouter.middleware(
       });
     }
 
-    const tokenAddress =
-      typeof input === "object" && input !== null && "tokenAddress" in input
-        ? input.tokenAddress
-        : null;
+    const { auth, userClaimTopics } = context;
+
+    // Early authorization check before making expensive queries
+    if (!auth?.user.wallet) {
+      logger.warn("sessionMiddleware should be called before tokenMiddleware");
+      throw errors.UNAUTHORIZED({
+        message: "Authentication required to access token information",
+      });
+    }
+
+    if (!userClaimTopics) {
+      logger.warn(
+        "userClaimsMiddleware should be called before tokenMiddleware"
+      );
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: "User claim topics context not set",
+      });
+    }
+
+    const tokenAddress = getTokenAddress(input);
 
     if (!isEthereumAddress(tokenAddress)) {
       throw errors.INPUT_VALIDATION_FAILED({
@@ -79,21 +97,6 @@ export const tokenMiddleware = baseRouter.middleware(
         data: {
           errors: ["Token address is not a valid Ethereum address"],
         },
-      });
-    }
-
-    const { auth, userClaimTopics } = context;
-
-    // Early authorization check before making expensive queries
-    if (!auth?.user.wallet) {
-      throw errors.UNAUTHORIZED({
-        message: "Authentication required to access token information",
-      });
-    }
-
-    if (!userClaimTopics) {
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: "User claim topics context not set",
       });
     }
 
@@ -107,27 +110,51 @@ export const tokenMiddleware = baseRouter.middleware(
       });
     }
 
-    const userRoles = Object.entries(token.accessControl ?? {}).reduce<
-      Record<TokenRoles, boolean>
-    >(
-      (acc, [role, accounts]) => {
-        const userHasRole = accounts.some(
-          (account) => account.id === auth.user.wallet
-        );
-        acc[role as TokenRoles] = userHasRole;
-        return acc;
-      },
-      {} as Record<TokenRoles, boolean>
-    );
-
+    const userRoles = mapUserRoles(auth.user.wallet, token.accessControl);
     const tokenContext = TokenSchema.parse({
       ...token,
       userPermissions: {
         roles: userRoles,
-        isCompliant: token.requiredClaimTopics.every(({ name }) =>
-          userClaimTopics.includes(name)
-        ),
+        // TODO: implement logic which checks if the user is allowed to interact with the token
+        // user is not allowed when in the block list or when it requires an allow list
+        // Another reason could be that the user is a citizen of a blocked country
+        // We should do this in the subgraph, more fine grained so we can derive the reason here
         isAllowed: true,
+        notAllowedReason: undefined,
+        actions: (() => {
+          // Initialize all actions as false
+          const initialActions: Record<
+            keyof typeof TOKEN_PERMISSIONS,
+            boolean
+          > = {
+            burn: false,
+            create: false,
+            mint: false,
+            pause: false,
+            addComplianceModule: false,
+            approve: false,
+            forcedRecover: false,
+            freezeAddress: false,
+            recoverERC20: false,
+            recoverTokens: false,
+            redeem: false,
+            removeComplianceModule: false,
+            setCap: false,
+            setYieldSchedule: false,
+            transfer: false,
+            unpause: false,
+          };
+
+          // Update based on user roles
+          Object.entries(TOKEN_PERMISSIONS).forEach(
+            ([action, requiredRoles]) => {
+              initialActions[action as keyof typeof TOKEN_PERMISSIONS] =
+                requiredRoles.every((role) => userRoles[role]);
+            }
+          );
+
+          return initialActions;
+        })(),
       },
     });
 
@@ -138,3 +165,24 @@ export const tokenMiddleware = baseRouter.middleware(
     });
   }
 );
+
+/**
+ * Get the token address from the input.
+ * @param input - The input object.
+ * @returns The token address.
+ */
+function getTokenAddress(input: unknown) {
+  if (input === null || input === undefined) {
+    return null;
+  }
+  if (typeof input === "string") {
+    return input;
+  }
+  if (typeof input === "object" && "tokenAddress" in input) {
+    return input.tokenAddress;
+  }
+  if (typeof input === "object" && "contract" in input) {
+    return input.contract;
+  }
+  return null;
+}

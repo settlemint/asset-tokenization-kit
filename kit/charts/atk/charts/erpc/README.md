@@ -40,10 +40,6 @@
 
 Kubernetes: `>=1.21.0-0`
 
-| Repository | Name | Version |
-|------------|------|---------|
-| oci://registry-1.docker.io/bitnamicharts | common | 2.31.3 |
-
 ## Prerequisites
 
 - Kubernetes 1.19+
@@ -87,12 +83,12 @@ The command removes all the Kubernetes components associated with the chart and 
 | autoscaling.minReplicas | int | `1` | Minimum number of eRPC replicas |
 | commonAnnotations | object | `{}` | Annotations to add to all deployed objects |
 | commonLabels | object | `{}` | Labels to add to all deployed objects |
-| config | object | `{"logLevel":"info","projects":[{"id":"settlemint","upstreams":[{"endpoint":"http://besu-node-rpc-1:8545"}]}],"server":{"aliasing":{"rules":[{"matchDomain":"*","serveArchitecture":"evm","serveChain":"53771311147","serveProject":"settlemint"}]}}}` | eRPC configuration |
+| config | object | `{"logLevel":"info","projects":[{"id":"settlemint","upstreams":[{"endpoint":"http://besu-node-rpc-1:8545"}]}],"server":{"aliasing":{"rules":[{"matchDomain":"*","serveArchitecture":"evm","serveChain":"1337","serveProject":"settlemint"}]}}}` | eRPC configuration |
 | config.logLevel | string | `"info"` | Log level for eRPC |
 | config.projects | list | `[{"id":"settlemint","upstreams":[{"endpoint":"http://besu-node-rpc-1:8545"}]}]` | Array of project configurations |
-| config.server | object | `{"aliasing":{"rules":[{"matchDomain":"*","serveArchitecture":"evm","serveChain":"53771311147","serveProject":"settlemint"}]}}` | Server configuration |
-| config.server.aliasing | object | `{"rules":[{"matchDomain":"*","serveArchitecture":"evm","serveChain":"53771311147","serveProject":"settlemint"}]}` | Aliasing configuration |
-| config.server.aliasing.rules | list | `[{"matchDomain":"*","serveArchitecture":"evm","serveChain":"53771311147","serveProject":"settlemint"}]` | Array of aliasing rules |
+| config.server | object | `{"aliasing":{"rules":[{"matchDomain":"*","serveArchitecture":"evm","serveChain":"1337","serveProject":"settlemint"}]}}` | Server configuration |
+| config.server.aliasing | object | `{"rules":[{"matchDomain":"*","serveArchitecture":"evm","serveChain":"1337","serveProject":"settlemint"}]}` | Aliasing configuration |
+| config.server.aliasing.rules | list | `[{"matchDomain":"*","serveArchitecture":"evm","serveChain":"1337","serveProject":"settlemint"}]` | Array of aliasing rules |
 | containerSecurityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"enabled":false,"readOnlyRootFilesystem":false,"runAsGroup":1001,"runAsNonRoot":true,"runAsUser":1001,"seccompProfile":{"type":"RuntimeDefault"}}` | Container Security Context configuration |
 | containerSecurityContext.allowPrivilegeEscalation | bool | `false` | Set container's Security Context allowPrivilegeEscalation |
 | containerSecurityContext.capabilities | object | `{"drop":["ALL"]}` | Linux capabilities configuration |
@@ -114,13 +110,13 @@ The command removes all the Kubernetes components associated with the chart and 
 | global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array |
 | global.imageRegistry | string | `""` | Global Docker image registry |
 | global.storageClass | string | `""` | Global StorageClass for Persistent Volume(s) |
-| image | object | `{"digest":"","pullPolicy":"IfNotPresent","pullSecrets":[],"registry":"ghcr.io","repository":"erpc/erpc","tag":"0.0.52"}` | eRPC image |
+| image | object | `{"digest":"","pullPolicy":"IfNotPresent","pullSecrets":[],"registry":"ghcr.io","repository":"erpc/erpc","tag":"0.0.53"}` | eRPC image |
 | image.digest | string | `""` | eRPC image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag |
 | image.pullPolicy | string | `"IfNotPresent"` | eRPC image pull policy |
 | image.pullSecrets | list | `[]` | eRPC image pull secrets |
 | image.registry | string | `"ghcr.io"` | eRPC image registry |
 | image.repository | string | `"erpc/erpc"` | eRPC image repository |
-| image.tag | string | `"0.0.52"` | eRPC image tag (immutable tags are recommended) |
+| image.tag | string | `"0.0.53"` | eRPC image tag (immutable tags are recommended) |
 | ingress | object | `{"annotations":{},"apiVersion":"","enabled":true,"extraHosts":[],"extraPaths":[],"extraRules":[],"extraTls":[],"hostname":"besu.k8s.orb.local","ingressClassName":"atk-nginx","path":"/","pathType":"ImplementationSpecific","secrets":[],"selfSigned":false,"tls":false}` | Ingress parameters |
 | ingress.annotations | object | `{}` | Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations. |
 | ingress.apiVersion | string | `""` | Force Ingress API version (automatically detected if not set) |
@@ -141,7 +137,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | initContainer.tcpCheck.enabled | bool | `true` |  |
 | initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
-| initContainer.tcpCheck.image.tag | string | `"v7.7.5"` |  |
+| initContainer.tcpCheck.image.tag | string | `"v7.7.6"` |  |
 | initContainer.tcpCheck.timeout | int | `0` |  |
 | lifecycleHooks | object | `{}` | lifecycleHooks for the eRPC container(s) to automate configuration before or after startup |
 | livenessProbe | object | `{"enabled":true,"failureThreshold":3,"httpGet":{"path":"/healthcheck","port":"http"},"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}` | Configure eRPC containers' liveness probe |

@@ -1,15 +1,19 @@
 import { parseEther } from "viem";
-import { owner } from "../../entities/actors/owner";
+import { owner } from "../../constants/actors";
 import { AirdropMerkleTree } from "../../entities/airdrop/merkle-tree";
 import { PushAirdrop } from "../../entities/airdrop/push-airdrop";
 import { Asset } from "../../entities/asset";
 import { atkDeployer } from "../../services/deployer";
+import { grantAirdropFactoryPermissions } from "./utils/permissions";
 
 export const createPushAirdrop = async (
   asset: Asset<any>,
   merkleTree: AirdropMerkleTree
 ) => {
   console.log("\n=== Creating push airdrop... ===\n");
+
+  // Grant necessary permissions to the push airdrop factory
+  await grantAirdropFactoryPermissions("pushAirdropFactory");
 
   const pushAirdropFactory = atkDeployer.getPushAirdropFactoryContract();
 
@@ -30,7 +34,7 @@ export const createPushAirdrop = async (
     pushAirdrop.token.address,
     pushAirdrop.root,
     pushAirdrop.owner,
-    pushAirdrop.distributionCap,
+    pushAirdrop.distributionCap, // Add the missing distributionCap parameter
   ]);
 
   await pushAirdrop.waitUntilDeployed(transactionHash);

@@ -14,7 +14,7 @@ dependencies:
 - name: blockscout
   repository: ""
   version: '*'
-- name: thegraph
+- name: graph-node
   repository: ""
   version: '*'
 - name: portal
@@ -29,5 +29,5 @@ dependencies:
 - name: dapp
   repository: file://./charts/dapp
   version: 0.1.0
-digest: sha256:35c4904fdc371e1e0c6dca5c18c524d97ecd8304c34c51ab589cec3c43630097
-generated: "2025-04-21T17:16:50.644333+03:00"
+digest: sha256:43cedf79e086ffadc3bb34dff32fd38d40d556798ecbebd3d4a0c823fb6cd299
+generated: "2025-07-29T14:54:38.099496+02:00"

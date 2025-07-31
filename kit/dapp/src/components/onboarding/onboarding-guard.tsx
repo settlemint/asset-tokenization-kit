@@ -16,19 +16,19 @@ export function OnboardingGuard({
   require = "onboarded",
 }: OnboardingGuardProps): ReactNode {
   const navigate = useNavigate();
-  const { data: user } = useSuspenseQuery({
-    ...orpc.user.me.queryOptions(),
-  });
+  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
 
-  const isOnboarded = Object.values(user.onboardingState).every((step) => step);
+  const isOnboarded = Object.values(user.onboardingState).every(Boolean);
+  const redirectToOnboarding = require === "onboarded" && !isOnboarded;
+  const redirectToHome = require === "not-onboarded" && isOnboarded;
 
   useEffect(() => {
     const handleNavigation = async () => {
-      if (require === "onboarded" && !isOnboarded) {
+      if (redirectToOnboarding) {
         await navigate({
           to: "/onboarding",
         });
-      } else if (require === "not-onboarded" && isOnboarded) {
+      } else if (redirectToHome) {
         await navigate({
           to: "/",
         });
@@ -36,14 +36,10 @@ export function OnboardingGuard({
     };
 
     void handleNavigation();
-  }, [require, isOnboarded, navigate]);
+  }, [redirectToOnboarding, redirectToHome, navigate]);
 
   // Don't render children if we're about to redirect
-  if (require === "onboarded" && !isOnboarded) {
-    return null;
-  }
-
-  if (require === "not-onboarded" && isOnboarded) {
+  if (redirectToOnboarding || redirectToHome) {
     return null;
   }
 

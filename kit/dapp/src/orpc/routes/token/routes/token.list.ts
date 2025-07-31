@@ -2,7 +2,6 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { TokensResponseSchema } from "@/orpc/routes/token/routes/token.list.schema";
-import type { VariablesOf } from "@settlemint/sdk-thegraph";
 
 /**
  * GraphQL query for retrieving tokenized assets from TheGraph.
@@ -31,6 +30,8 @@ const LIST_TOKEN_QUERY = theGraphGraphql(`
         orderDirection: $orderDirection
       ) {
         id
+        type
+        createdAt
         name
         symbol
         decimals
@@ -85,9 +86,14 @@ export const list = authRouter.token.list
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
     // Build where clause, mapping searchByAddress to id
-    const where: VariablesOf<typeof LIST_TOKEN_QUERY>["where"] = {};
+    const where: {
+      id?: string;
+      tokenFactory_?: { id: string };
+    } = {};
     if (input.tokenFactory !== undefined) {
-      where.tokenFactory = input.tokenFactory;
+      where.tokenFactory_ = {
+        id: input.tokenFactory,
+      };
     }
     if (input.searchByAddress !== undefined) {
       where.id = input.searchByAddress.toLowerCase();
@@ -103,7 +109,7 @@ export const list = authRouter.token.list
         where: Object.keys(where).length > 0 ? where : undefined,
       },
       output: TokensResponseSchema,
-      error: "Failed to list tokens",
+      error: context.t("tokens:api.queries.list.messages.failed"),
     });
 
     return response.tokens;

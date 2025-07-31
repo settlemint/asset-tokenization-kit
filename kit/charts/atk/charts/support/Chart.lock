@@ -2,17 +2,17 @@ dependencies:
 - name: ingress-nginx
   repository: https://kubernetes.github.io/ingress-nginx
   version: 4.13.0
-- name: postgresql-ha
-  repository: oci://registry-1.docker.io/bitnamicharts
-  version: 16.0.22
+- name: postgresql
+  repository: file://./charts/postgresql
+  version: 0.1.0
 - name: redis
-  repository: oci://registry-1.docker.io/bitnamicharts
-  version: 21.2.12
+  repository: file://./charts/redis
+  version: 0.1.0
 - name: reloader
   repository: https://stakater.github.io/stakater-charts
-  version: 2.1.5
+  version: 2.2.0
 - name: minio
-  repository: oci://registry-1.docker.io/bitnamicharts
-  version: 17.0.13
-digest: sha256:164eff3ac85dd212885ce2b317deca8622181c9422447733943e384a12d3174c
-generated: "2025-07-16T07:01:07.471574302Z"
+  repository: https://charts.min.io/
+  version: 5.4.0
+digest: sha256:28ca5beb750a945629e6b6936c7a4db41d6c9898134624efccc72f36c0062786
+generated: "2025-07-31T00:04:15.877975263Z"

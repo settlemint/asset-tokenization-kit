@@ -23,7 +23,21 @@ import { createToken } from "@/orpc/routes/token/routes/mutations/create/helpers
 import type { TokenCreateInput } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 
 const CREATE_BOND_MUTATION = portalGraphql(`
-  mutation CreateBondMutation($address: String!, $from: String!, $symbol: String!, $name: String!, $decimals: Int!, $initialModulePairs: [ATKBondFactoryImplementationATKBondFactoryImplementationCreateBondInitialModulePairsInput!]!, $requiredClaimTopics: [String!]!, $cap: String!, $faceValue: String!, $maturityDate: String!, $underlyingAsset: String!, $verificationId: String, $challengeResponse: String!) {
+  mutation CreateBondMutation(
+    $address: String!
+    $from: String!
+    $symbol: String!
+    $name: String!
+    $decimals: Int!
+    $initialModulePairs: [ATKBondFactoryImplementationATKBondFactoryImplementationCreateBondInitialModulePairsInput!]!
+    $cap: String!
+    $faceValue: String!
+    $maturityDate: String!
+    $underlyingAsset: String!
+    $verificationId: String
+    $challengeResponse: String!
+    $countryCode: Int!
+  ) {
     CreateBond: ATKBondFactoryImplementationCreateBond(
       address: $address
       from: $from
@@ -32,11 +46,13 @@ const CREATE_BOND_MUTATION = portalGraphql(`
         name_: $name
         decimals_: $decimals
         initialModulePairs_: $initialModulePairs
-        requiredClaimTopics_: $requiredClaimTopics
         cap_: $cap
-        faceValue_: $faceValue
-        maturityDate_: $maturityDate
-        underlyingAsset_: $underlyingAsset
+        bondParams: {
+          faceValue: $faceValue
+          maturityDate: $maturityDate
+          underlyingAsset: $underlyingAsset
+        }
+        countryCode_: $countryCode
       }
       verificationId: $verificationId
       challengeResponse: $challengeResponse
@@ -46,15 +62,15 @@ const CREATE_BOND_MUTATION = portalGraphql(`
   }
 `);
 
-export const bondCreateHandler = async function* (
+export const bondCreateHandler = async (
   input: TokenCreateInput,
   context: TokenCreateContext
-) {
+) => {
   if (input.type !== AssetTypeEnum.bond) {
     throw new Error("Invalid token type");
   }
 
-  yield* createToken(input, (creationFailedMessage, messages) => {
+  return createToken(input, context, () => {
     return context.portalClient.mutate(
       CREATE_BOND_MUTATION,
       {
@@ -63,8 +79,7 @@ export const bondCreateHandler = async function* (
         faceValue: input.faceValue.toString(),
         ...context.mutationVariables,
       },
-      creationFailedMessage,
-      messages
+      "Failed to create bond token"
     );
   });
 };

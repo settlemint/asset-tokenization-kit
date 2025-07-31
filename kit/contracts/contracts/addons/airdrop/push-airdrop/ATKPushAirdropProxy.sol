@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 import { Proxy } from "@openzeppelin/contracts/proxy/Proxy.sol";
 import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
@@ -18,6 +18,7 @@ error InitializationWithZeroAddress();
 error ETHTransfersNotAllowed();
 
 /// @title Proxy for ATKPushAirdrop, managed by a factory.
+/// @author SettleMint
 /// @notice This contract is a proxy that delegates calls to an implementation
 /// of ATKPushAirdrop. The implementation address is fetched from a specified
 /// ATKPushAirdropFactory contract.
@@ -63,14 +64,15 @@ contract ATKPushAirdropProxy is Proxy {
         _performInitializationDelegatecall(implementationAddress, initData);
     }
 
-    /// @dev Internal function to retrieve the IATKPushAirdropFactory contract instance from the stored
-    /// address.
+    /// @notice Internal function to retrieve the IATKPushAirdropFactory contract instance from the stored address.
+    /// @dev Reads the factory address from the storage slot.
     /// @return An IATKPushAirdropFactory instance.
     function _getFactory() internal view returns (IATKPushAirdropFactory) {
         return IATKPushAirdropFactory(StorageSlot.getAddressSlot(_ATK_PUSH_AIRDROP_FACTORY_ADDRESS_SLOT).value);
     }
 
-    /// @dev Fetches the implementation address from the factory.
+    /// @notice Fetches the implementation address from the factory.
+    /// @dev Retrieves the current push airdrop implementation from the factory contract.
     /// @return The address of the push airdrop implementation.
     function _getImplementationAddressFromFactory() internal view returns (address) {
         IATKPushAirdropFactory factory = _getFactory();
@@ -86,7 +88,8 @@ contract ATKPushAirdropProxy is Proxy {
         return implementation;
     }
 
-    /// @dev Performs the delegatecall to initialize the implementation contract.
+    /// @notice Performs the delegatecall to initialize the implementation contract.
+    /// @dev Executes initialization delegatecall and reverts with the actual error if it fails.
     /// @param implementationAddress_ The non-zero address of the logic contract to `delegatecall` to.
     /// @param initializeData_ The ABI-encoded data for the `initialize` function call.
     function _performInitializationDelegatecall(
@@ -106,14 +109,15 @@ contract ATKPushAirdropProxy is Proxy {
         }
     }
 
-    /// @dev Overrides `Proxy._implementation()`. This is used by OpenZeppelin's proxy mechanisms.
-    /// It retrieves the implementation address from the configured factory.
+    /// @notice Overrides `Proxy._implementation()`. This is used by OpenZeppelin's proxy mechanisms.
+    /// @dev Retrieves the implementation address from the configured factory.
     /// @return The address of the current logic/implementation contract for push airdrops.
     function _implementation() internal view override returns (address) {
         return _getImplementationAddressFromFactory();
     }
 
     /// @notice Fallback function to reject any direct Ether transfers to this proxy contract.
+    /// @dev Reverts with ETHTransfersNotAllowed error when ETH is sent to this contract.
     receive() external payable virtual {
         revert ETHTransfersNotAllowed();
     }

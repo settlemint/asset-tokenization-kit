@@ -1,46 +1,50 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
+import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { AccountResponseSchema } from "@/orpc/routes/account/routes/account.read.schema";
+import { publicRouter } from "@/orpc/procedures/public.router";
+import {
+  AccountReadSchema,
+  AccountResponseSchema,
+} from "@/orpc/routes/account/routes/account.read.schema";
+import countries from "i18n-iso-countries";
 
-/**
- * GraphQL query for retrieving SMART systems from TheGraph.
- *
- * This query fetches a paginated list of system contracts with support for:
- * - Offset-based pagination (skip/first)
- * - Configurable sort order (ascending/descending)
- * - Custom ordering by any system field
- *
- * Systems represent deployed SMART protocol instances that manage
- * tokenized assets and their associated compliance infrastructure.
- */
-export const READ_ACCOUNT_QUERY = theGraphGraphql(`
-query ReadAccountQuery($walletAddress: ID!) {
-  account(id: $walletAddress) {
-    id
+const READ_ACCOUNT_QUERY = theGraphGraphql(`
+  query ReadAccountQuery($walletAddress: ID!) {
+    account(id: $walletAddress) {
+      id
+      country
+      identity {
+        id
+        claims {
+          name
+        }
+      }
+    }
   }
-}
 `);
 
 /**
  * Account read route handler.
  *
  * Retrieves the account information for the given wallet address.
+ * Is used during onboarding so cannot use the onboarded router
  *
- * Authentication: Required (uses authenticated router)
- * Permissions: Requires "read" permission - available to admin, issuer, user, and auditor roles
- * Method: GET /systems
  */
-export const read = onboardedRouter.account.read
+export const read = publicRouter.account.read
   .use(
-    permissionsMiddleware({
-      user: ["list"],
+    offChainPermissionsMiddleware<typeof AccountReadSchema>({
+      requiredPermissions: { account: ["list"] },
+      alwaysAllowIf: (context, input) =>
+        input.wallet === context.auth?.user.wallet,
     })
   )
   .use(theGraphMiddleware)
   .handler(async ({ input, context, errors }) => {
     const { wallet } = input;
+
+    if (!context.auth) {
+      throw errors.UNAUTHORIZED();
+    }
 
     // Execute TheGraph query with type-safe parameters
     // The Zod schema ensures type safety at both compile-time and runtime
@@ -57,11 +61,13 @@ export const read = onboardedRouter.account.read
     }
 
     // Return the account with basic information only
-    // Country and claims data not available in current subgraph schema
     // TypeScript ensures the return type matches AccountReadOutput interface
     return {
       id: result.account.id,
-      country: undefined,
-      claims: undefined,
+      country: result.account.country
+        ? countries.numericToAlpha2(result.account.country)
+        : undefined,
+      identity: result.account.identity?.id,
+      claims: result.account.identity?.claims.map((claim) => claim.name) ?? [],
     };
   });

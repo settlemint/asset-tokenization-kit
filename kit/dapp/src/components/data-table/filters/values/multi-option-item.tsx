@@ -1,5 +1,3 @@
-"use client";
-
 import { Checkbox } from "@/components/ui/checkbox";
 import { CommandItem } from "@/components/ui/command";
 import { cn } from "@/lib/utils";

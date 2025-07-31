@@ -1,7 +1,7 @@
+import { claimIssuer } from "../../../constants/actors";
 import { ATKContracts } from "../../../constants/contracts";
+import { KeyType } from "../../../constants/key-types";
 import { ATKTopic } from "../../../constants/topics";
-import { claimIssuer } from "../../../entities/actors/claim-issuer";
-import { owner } from "../../../entities/actors/owner";
 import type { Asset } from "../../../entities/asset";
 import { encodeClaimData } from "../../../utils/claim-scheme-utils";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
@@ -22,17 +22,16 @@ export const issueIsinClaim = async (asset: Asset<any>, isin: string) => {
     encodedIsinData
   );
 
-  const tokenIdentityContract = owner.getContractInstance({
-    address: asset.identity,
-    abi: ATKContracts.tokenIdentity,
-  });
-
   const claimIssuerIdentity = await claimIssuer.getIdentity();
+  const tokenIdentityContract = claimIssuer.getContractInstance({
+    address: asset.identity,
+    abi: ATKContracts.contractIdentity,
+  });
 
   const transactionHash = await withDecodedRevertReason(() =>
     tokenIdentityContract.write.addClaim([
       topicId,
-      BigInt(1), // ECDSA
+      KeyType.ecdsa,
       claimIssuerIdentity,
       isinClaimSignature,
       isinClaimData,

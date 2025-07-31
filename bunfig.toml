@@ -1,2 +1,5 @@
 [install]
 exact = true
+
+[console]
+depth = 5

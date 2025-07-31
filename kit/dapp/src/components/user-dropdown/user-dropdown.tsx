@@ -13,29 +13,18 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Web3Avatar } from "@/components/web3/web3-avatar";
 import { authClient } from "@/lib/auth/auth.client";
+import { orpc } from "@/orpc/orpc-client";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { BadgeCheck, ChevronsUpDown, LogOut, Sparkles } from "lucide-react";
 import { useCallback } from "react";
 
-export function UserDropdown({
-  user,
-}: {
-  user?: {
-    name?: string;
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    wallet?: string;
-    address?: string;
-  };
-}) {
+export function UserDropdown() {
   const navigate = useNavigate();
 
-  // Match the API logic: use firstName + lastName only if BOTH are present
-  const displayName =
-    user?.firstName && user.lastName
-      ? `${user.firstName} ${user.lastName}`
-      : user?.name;
+  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
+
+  const displayName = user?.name;
 
   const handleSignOut = useCallback(async () => {
     await authClient.signOut();
@@ -56,7 +45,7 @@ export function UserDropdown({
           <Web3Avatar
             email={user?.email}
             name={displayName}
-            address={user?.address ?? user?.wallet}
+            address={user?.wallet}
             size="small"
           />
           <div className="hidden sm:grid flex-1 text-left text-sm leading-tight">
@@ -86,7 +75,7 @@ export function UserDropdown({
             <Web3Avatar
               email={user?.email}
               name={displayName}
-              address={user?.address ?? user?.wallet}
+              address={user?.wallet}
               size="small"
             />
             <div className="grid flex-1 text-left text-sm leading-tight">

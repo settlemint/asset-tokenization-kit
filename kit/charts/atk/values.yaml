@@ -12,6 +12,14 @@ global:
     enabled: false
   # Namespace where ingress controller is deployed
   ingressNamespace: ingress-nginx
+  # Artifacts container configuration
+  artifacts:
+    # Image containing contract ABIs and genesis files
+    image:
+      registry: ghcr.io
+      repository: settlemint/asset-tokenization-kit-artifacts
+      tag: 2.0.0
+      pullPolicy: IfNotPresent
 
 
 imagePullCredentials:
@@ -152,7 +160,7 @@ erpc:
           - id: redis-cache
             driver: redis  # Refer to "redis" driver docs below
             redis:
-              addr: redis-master.atk.svc.cluster.local:6379
+              addr: redis.atk.svc.cluster.local:6379
               password: "atk"
               db: 0
               connPoolSize: 128
@@ -188,8 +196,8 @@ blockscout:
         args:
           - -c
           - |  # Using YAML multiline string for clarity
-            echo "Waiting for postgresql-pgpool:5432..."
-            while ! nc -z postgresql-pgpool 5432; do
+            echo "Waiting for postgresql:5432..."
+            while ! nc -z postgresql 5432; do
               sleep 2;
             done;
             echo "PostgreSQL is ready!"
@@ -205,80 +213,16 @@ blockscout:
       ingress:
         hostname: explorer.k8s.orb.local
 
-thegraph:
+graph-node:
   enabled: true
-  graph-node:
-    graphNodeDefaults:
-      imagePullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
-    graphNodeGroups:
-      query:
-        enabled: false
-        replicaCount: 1
-        podAnnotations:
-          prometheus.io/scrape: "true"
-          prometheus.io/port: "8040"
-          prometheus.io/path: "/metrics"
-      index:
-        enabled: false
-        replicaCount: 1
-        podAnnotations:
-          prometheus.io/scrape: "true"
-          prometheus.io/port: "8040"
-          prometheus.io/path: "/metrics"
-      block-ingestor:
-        enabled: false
-        replicaCount: 1
-        podAnnotations:
-          prometheus.io/scrape: "true"
-          prometheus.io/port: "8040"
-          prometheus.io/path: "/metrics"
-      combined:
-        enabled: true
-        replicaCount: 1
-        podAnnotations:
-          prometheus.io/scrape: "true"
-          prometheus.io/port: "8040"
-          prometheus.io/path: "/metrics"
-        includeInIndexPools:
-          - default
-        env:
-          node_role: combined-mode
-    blockIngestorGroupName: combined
-    ingress:
-      hosts:
-        - host: graph.k8s.orb.local
-          paths:
-            - path: /(.*)
-              pathType: ImplementationSpecific
-              port: 8000
-              serviceName: graph-node-combined
-            - path: /ws/?(.*)
-              pathType: ImplementationSpecific
-              port: 8001
-              serviceName: graph-node-combined
-            - path: /admin/?(.*)
-              pathType: ImplementationSpecific
-              port: 8020
-              serviceName: graph-node-combined
-            - path: /indexer/?(.*)
-              pathType: ImplementationSpecific
-              port: 8030
-              serviceName: graph-node-combined
-            - path: /graphman/?(.*)
-              pathType: ImplementationSpecific
-              port: 8050
-              serviceName: graph-node-combined
-    grafana:
-      # -- Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace`
-      dashboards: false
-  job:
-    enabled: true
-    fullnameOverride: graph
-    workspace:
-      size: 1Gi
+  imagePullSecrets:
+    - name: image-pull-secret-docker
+    - name: image-pull-secret-ghcr
+    - name: image-pull-secret-harbor
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8040"
+    prometheus.io/path: "/metrics"
 
 hasura:
   enabled: true
@@ -313,35 +257,6 @@ portal:
 support:
   enabled: true
 
-  # https://github.com/bitnami/charts/blob/main/bitnami/postgresql-ha/values.yaml
-  postgresql-ha:
-    postgresql:
-      pullSecrets:
-        - image-pull-secret-docker
-        - image-pull-secret-ghcr
-        - image-pull-secret-harbor
-      resources: {}
-      replicaCount: 1
-    pgpool:
-      pullSecrets:
-        - image-pull-secret-docker
-        - image-pull-secret-ghcr
-        - image-pull-secret-harbor
-      resources: {}
-      replicaCount: 1
-
-  # https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml
-  redis:
-    global:
-      imagePullSecrets:
-        - image-pull-secret-docker
-        - image-pull-secret-ghcr
-        - image-pull-secret-harbor
-    master:
-      resources: {}
-    replica:
-      resources: {}
-
   # https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
   ingress-nginx:
     replicaCount: 1
@@ -358,14 +273,40 @@ support:
   minio:
     enabled: true
     image:
+      repository: docker.io/minio/minio
+      tag: RELEASE.2025-07-18T21-56-31Z
+    ingress:
+      enabled: true
+      ingressClassName: atk-nginx
+      path: /
+      hosts:
+        - minio.k8s.orb.local
+
+  # Redis configuration
+  redis:
+    enabled: true
+    fullnameOverride: redis
+    commonLabels:
+      kots.io/app-slug: settlemint-atk
+      app.kubernetes.io/managed-by: helm
+    image:
       pullSecrets:
         - name: image-pull-secret-docker
         - name: image-pull-secret-ghcr
         - name: image-pull-secret-harbor
-    ingress:
+    auth:
       enabled: true
-      ingressClassName: "atk-nginx"
-      hostname: minio.k8s.orb.local
+      password: "atk"
+    persistence:
+      enabled: true
+      size: 1Gi
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "100m"
+      limits:
+        memory: "256Mi"
+        cpu: "200m"
 
 observability:
   enabled: true
@@ -469,7 +410,7 @@ txsigner:
   config:
     mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
     derivationPath: "m/44'/60'/0'/0/0"
-  postgresql: postgresql://txsigner:atk@postgresql-pgpool:5432/txsigner?sslmode=disable
+  postgresql: postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable
   replicaCount: 1
   resources: {}
 
@@ -494,7 +435,7 @@ dapp:
     OTEL_EXPORTER_OTLP_PROTOCOL: "http"
     SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "http://blockscout-frontend-svc/"
     SETTLEMINT_HASURA_ADMIN_SECRET: "atk"
-    SETTLEMINT_HASURA_DATABASE_URL: "postgresql://hasura:atk@postgresql-pgpool:5432/hasura"
+    SETTLEMINT_HASURA_DATABASE_URL: "postgresql://hasura:atk@postgresql:5432/hasura"
     SETTLEMINT_HASURA_ENDPOINT: "http://hasura:8080/v1/graphql"
     SETTLEMINT_HD_PRIVATE_KEY: "atk-hd-private-key"
     SETTLEMINT_INSTANCE: "standalone"
@@ -508,7 +449,7 @@ dapp:
       dependencies:
         # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
         - name: postgres
-          endpoint: "postgresql-pgpool:5432"
+          endpoint: "postgresql:5432"
         - name: hasura
           endpoint: "hasura:8080"
         - name: portal

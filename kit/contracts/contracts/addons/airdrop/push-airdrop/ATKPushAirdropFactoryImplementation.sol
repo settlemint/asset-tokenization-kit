@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 // OpenZeppelin Contracts
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
@@ -18,6 +18,7 @@ import { ATKPushAirdropProxy } from "./ATKPushAirdropProxy.sol";
 import { ATKSystemRoles } from "../../../system/ATKSystemRoles.sol";
 
 /// @title Factory for Creating ATKPushAirdrop Proxies
+/// @author SettleMint
 /// @notice This contract serves as a factory to deploy new UUPS proxy instances of `ATKPushAirdrop` contracts.
 /// It manages a single implementation contract and allows for updating this implementation.
 /// @dev Key features of this factory:
@@ -30,7 +31,11 @@ import { ATKSystemRoles } from "../../../system/ATKSystemRoles.sol";
 /// - **Meta-transactions**: Inherits `ERC2771Context` to support gasless operations if a trusted forwarder is
 /// configured.
 contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImplementation, IATKPushAirdropFactory {
-    bytes32 public constant override typeId = keccak256("ATKPushAirdropFactory");
+    /// @notice Type identifier for the factory
+    /// @return The keccak256 hash of "ATKPushAirdropFactory"
+    function typeId() external pure override returns (bytes32) {
+        return keccak256("ATKPushAirdropFactory");
+    }
 
     /// @notice Address of the current `ATKPushAirdrop` logic contract (implementation).
     address public override atkPushAirdropImplementation;
@@ -39,6 +44,8 @@ contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImp
     /// airdrop proxy contracts created by this factory.
     IATKPushAirdrop[] private allAirdrops;
 
+    /// @notice Constructor that disables initializers to prevent implementation contract initialization
+    /// @param forwarder The address of the trusted forwarder for meta-transactions
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address forwarder) AbstractATKSystemAddonFactoryImplementation(forwarder) { }
 
@@ -94,7 +101,7 @@ contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImp
     /// @param distributionCap The maximum tokens that can be distributed (0 for no cap).
     /// @return airdropProxyAddress The address of the newly created `ATKPushAirdropProxy` contract.
     function create(
-        string memory name,
+        string calldata name,
         address token,
         bytes32 root,
         address owner,
@@ -126,6 +133,7 @@ contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImp
     }
 
     /// @notice Returns the total number of push airdrop proxy contracts created by this factory.
+    /// @return count The number of push airdrop proxies created
     function allAirdropsLength() external view override(IATKPushAirdropFactory) returns (uint256 count) {
         return allAirdrops.length;
     }
@@ -138,7 +146,7 @@ contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImp
     /// @param distributionCap The maximum tokens that can be distributed.
     /// @return predictedAddress The predicted address of the push airdrop proxy.
     function predictPushAirdropAddress(
-        string memory name,
+        string calldata name,
         address token,
         bytes32 root,
         address owner,
@@ -156,7 +164,9 @@ contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImp
         return _predictProxyAddress(proxyBytecode, constructorArgs, saltInputData);
     }
 
-    /// @notice Returns the address of the current `ATKPushAirdrop` logic contract (implementation).
+    /// @notice Checks if the factory supports a specific interface
+    /// @param interfaceId The interface identifier to check
+    /// @return True if the interface is supported, false otherwise
     function supportsInterface(bytes4 interfaceId)
         public
         view

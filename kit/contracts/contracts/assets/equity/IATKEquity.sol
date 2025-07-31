@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
 import { IVotes } from "@openzeppelin/contracts/governance/utils/IVotes.sol";
@@ -13,15 +13,18 @@ import { ISMARTCustodian } from "../../smart/extensions/custodian/ISMARTCustodia
 import { ISMARTPausable } from "../../smart/extensions/pausable/ISMARTPausable.sol";
 import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.sol";
 
-/// @title Interface for a ATK Equity token
-/// @notice Defines the core functionality and extensions for a ATK Equity token, including voting capabilities.
+/// @title Interface for ATK Equity token
+/// @author SettleMint
+/// @notice Defines the core functionality and extensions for ATK Equity token, including voting capabilities.
+/// This interface extends multiple SMART protocol interfaces to provide comprehensive security token
+/// functionality with governance features through the IVotes extension.
+/// @dev This interface combines ERC-3643 compliant security token standards with OpenZeppelin governance
+/// capabilities, allowing equity tokens to participate in on-chain voting and governance processes.
 interface IATKEquity is ISMART, ISMARTTokenAccessManaged, ISMARTCustodian, ISMARTPausable, ISMARTBurnable, IVotes {
     /// @notice Initializes the ATK Equity token contract.
     /// @param name_ The name of the equity token.
     /// @param symbol_ The symbol of the equity token.
     /// @param decimals_ The number of decimals for the equity token.
-    /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
-    /// one.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param identityRegistry_ The address of the identity registry contract.
     /// @param compliance_ The address of the compliance contract.
@@ -30,7 +33,6 @@ interface IATKEquity is ISMART, ISMARTTokenAccessManaged, ISMARTCustodian, ISMAR
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        address onchainID_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,

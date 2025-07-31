@@ -1,7 +1,7 @@
+import { owner } from "../../../constants/actors";
 import { ATKContracts } from "../../../constants/contracts";
 import { ATKRoles } from "../../../constants/roles";
-import type { AbstractActor } from "../../../entities/actors/abstract-actor";
-import { owner } from "../../../entities/actors/owner";
+import type { Actor } from "../../../entities/actor";
 import type { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { waitForSuccess } from "../../../utils/wait-for-success";
@@ -10,7 +10,7 @@ import { waitForSuccess } from "../../../utils/wait-for-success";
 // The issuer will create the claim and the claim manager will add it to the token identity.
 export const grantRoles = async (
   asset: Asset<any>,
-  targetActor: AbstractActor,
+  targetActor: Actor,
   roles: (typeof ATKRoles)[keyof typeof ATKRoles][]
 ) => {
   console.log(`[Role] → Starting role grant operation...`);

@@ -12,13 +12,9 @@ import {
 } from "../../generated/templates/Token/Token";
 import { fetchComplianceModule } from "../compliance/fetch/compliance-module";
 import {
-  decodeAddressListParams,
-  isAddressListComplianceModule,
-} from "../compliance/modules/address-list-compliance-module";
-import {
-  decodeCountryListParams,
-  isCountryListComplianceModule,
-} from "../compliance/modules/country-list-compliance-module";
+  fetchComplianceModuleParameters,
+  updateComplianceModuleParameters,
+} from "../compliance/fetch/compliance-module-parameters";
 import { fetchEvent } from "../event/fetch/event";
 import { updateAccountStatsForBalanceChange } from "../stats/account-stats";
 import { updateSystemStatsForSupplyChange } from "../stats/system-stats";
@@ -31,10 +27,9 @@ import {
 } from "../token-balance/utils/token-balance-utils";
 import { fetchCollateral } from "../token-extensions/collateral/fetch/collateral";
 import { updateYield } from "../token-extensions/fixed-yield-schedule/utils/fixed-yield-schedule-utils";
-import { getEncodedTypeId } from "../type-identifier/type-identifier";
 import { toBigDecimal } from "../utils/token-decimals";
 import { fetchToken } from "./fetch/token";
-import { fetchTokenComplianceModule } from "./fetch/token-compliance-module";
+import { fetchTokenComplianceModuleConfig } from "./fetch/token-compliance-module-config";
 import { increaseTokenSupply } from "./utils/token-utils";
 
 export function handleApproval(event: Approval): void {
@@ -50,30 +45,20 @@ export function handleComplianceModuleAdded(
 ): void {
   fetchEvent(event, "ComplianceModuleAdded");
 
-  const tokenComplianceModule = fetchTokenComplianceModule(
+  const complianceModule = fetchComplianceModule(event.params._module);
+  const complianceModuleConfig = fetchTokenComplianceModuleConfig(
     event.address,
     event.params._module
   );
+  const complianceModuleParameters = fetchComplianceModuleParameters(
+    complianceModuleConfig.id
+  );
 
-  const complianceModule = fetchComplianceModule(event.params._module);
-  tokenComplianceModule.encodedParams = event.params._params;
-
-  if (
-    isAddressListComplianceModule(getEncodedTypeId(complianceModule.typeId))
-  ) {
-    tokenComplianceModule.addresses = decodeAddressListParams(
-      event.params._params
-    );
-  }
-  if (
-    isCountryListComplianceModule(getEncodedTypeId(complianceModule.typeId))
-  ) {
-    tokenComplianceModule.countries = decodeCountryListParams(
-      event.params._params
-    );
-  }
-
-  tokenComplianceModule.save();
+  updateComplianceModuleParameters(
+    complianceModuleParameters,
+    complianceModule,
+    event.params._params
+  );
 }
 
 export function handleComplianceModuleRemoved(
@@ -81,12 +66,15 @@ export function handleComplianceModuleRemoved(
 ): void {
   fetchEvent(event, "ComplianceModuleRemoved");
 
-  const tokenComplianceModule = fetchTokenComplianceModule(
+  const tokenComplianceModule = fetchTokenComplianceModuleConfig(
     event.address,
     event.params._module
   );
 
-  store.remove("TokenComplianceModule", tokenComplianceModule.id.toHexString());
+  store.remove(
+    "TokenComplianceModuleConfig",
+    tokenComplianceModule.id.toHexString()
+  );
 }
 
 export function handleIdentityRegistryAdded(
@@ -134,30 +122,20 @@ export function handleModuleParametersUpdated(
 ): void {
   fetchEvent(event, "ModuleParametersUpdated");
 
-  const tokenComplianceModule = fetchTokenComplianceModule(
+  const complianceModule = fetchComplianceModule(event.params._module);
+  const tokenComplianceModuleConfig = fetchTokenComplianceModuleConfig(
     event.address,
     event.params._module
   );
+  const complianceModuleParameters = fetchComplianceModuleParameters(
+    tokenComplianceModuleConfig.id
+  );
 
-  const complianceModule = fetchComplianceModule(event.params._module);
-  tokenComplianceModule.encodedParams = event.params._params;
-
-  if (
-    isAddressListComplianceModule(getEncodedTypeId(complianceModule.typeId))
-  ) {
-    tokenComplianceModule.addresses = decodeAddressListParams(
-      event.params._params
-    );
-  }
-  if (
-    isCountryListComplianceModule(getEncodedTypeId(complianceModule.typeId))
-  ) {
-    tokenComplianceModule.countries = decodeCountryListParams(
-      event.params._params
-    );
-  }
-
-  tokenComplianceModule.save();
+  updateComplianceModuleParameters(
+    complianceModuleParameters,
+    complianceModule,
+    event.params._params
+  );
 }
 
 export function handleTransferCompleted(event: TransferCompleted): void {

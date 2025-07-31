@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 /// @title IATKTokenFactory Interface
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This interface defines the functions for a factory contract responsible for creating ATK tokens.
 /// @dev This interface extends IERC165 for interface detection support.
 interface IATKTokenFactory is IERC165 {
@@ -24,11 +24,10 @@ interface IATKTokenFactory is IERC165 {
     error AccessManagerAlreadyDeployed(address predictedAddress);
     /// @notice Error when a token identity address mismatch is detected.
     error TokenIdentityAddressMismatch(address deployedTokenIdentityAddress, address tokenIdentityAddress);
-    /// @notice Error when the provided identity verification module address is the zero address.
-    error InvalidIdentityVerificationModuleAddress();
 
     // -- Events --
     /// @notice Emitted when the token implementation address is updated.
+    /// @param sender The address that updated the implementation.
     /// @param oldImplementation The address of the old token implementation.
     /// @param newImplementation The address of the new token implementation.
     event TokenImplementationUpdated(
@@ -49,24 +48,24 @@ interface IATKTokenFactory is IERC165 {
         address accessManager
     );
 
+    /// @notice Emitted when a contract is registered with an identity and description
+    /// @param sender The address that initiated the registration
+    /// @param contractAddress The address of the contract being registered
+    /// @param description Human-readable description of the contract (for indexing/UX)
+    event ContractIdentityRegistered(address indexed sender, address indexed contractAddress, string description);
+
     /// @notice Initializes the token registry.
     /// @param systemAddress The address of the `IATKSystem` contract.
     /// @param tokenImplementation_ The address of the token implementation contract.
     /// @param initialAdmin The address of the initial admin for the token registry.
-    /// @param identityVerificationModule The address of the identity verification module.
-    function initialize(
-        address systemAddress,
-        address tokenImplementation_,
-        address initialAdmin,
-        address identityVerificationModule
-    )
-        external;
+    function initialize(address systemAddress, address tokenImplementation_, address initialAdmin) external;
 
     /// @notice Returns the address of the token implementation contract.
     /// @return tokenImplementation The address of the token implementation contract.
     function tokenImplementation() external view returns (address);
 
-    /// @notice Returns the address of the token implementation contract.
-    /// @return tokenImplementation The address of the token implementation contract.
+    /// @notice Checks if the provided address is a valid token implementation.
+    /// @param tokenImplementation_ The address to check for validity.
+    /// @return True if the address is a valid token implementation, false otherwise.
     function isValidTokenImplementation(address tokenImplementation_) external view returns (bool);
 }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { SystemUtils } from "../utils/SystemUtils.sol";
@@ -15,6 +15,7 @@ import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ATKForwarder } from "../../contracts/vendor/ATKForwarder.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 abstract contract AbstractATKAssetTest is Test {
     address public platformAdmin;
@@ -69,8 +70,18 @@ abstract contract AbstractATKAssetTest is Test {
         // Initialize the forwarder
         forwarder = new ATKForwarder();
 
-        // Initialize the access manager
-        vm.prank(_owner);
+        // Grant necessary roles to the owner in the system access manager
+        vm.startPrank(platformAdmin);
+        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
+            ATKSystemRoles.DEPLOYER_ROLE, _owner
+        );
+        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
+            ATKSystemRoles.TOKEN_MANAGER_ROLE, _owner
+        );
+        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
+            ATKSystemRoles.ADDON_MANAGER_ROLE, _owner
+        );
+        vm.stopPrank();
     }
 
     function _setUpIdentity(address _wallet, string memory _label) internal {

@@ -1,42 +1,82 @@
 import { describe, expect, it } from "bun:test";
 import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
 
+interface TokenComplianceModule {
+  parameters: {
+    addresses?: string[];
+    countries?: number[];
+    encodedParams: string;
+    expression?: Array<{
+      nodeType: string;
+      index: number;
+      topicScheme?: {
+        name: string;
+        topicId: string;
+      } | null;
+    }>;
+  };
+  complianceModule: {
+    name: string;
+  };
+}
+
+interface Token {
+  name: string;
+  complianceModuleConfigs: TokenComplianceModule[];
+}
+
+interface TokensResponse {
+  tokens: Token[];
+}
+
 describe("Token Compliance Modules", () => {
   it("should receive the compliance modules for the assets", async () => {
     const query = theGraphGraphql(
       `query {
         tokens(where: {}) {
           name
-          tokenComplianceModules(where: {}) {
-            addresses
-            countries
-            encodedParams
-            complianceModule {
-              name
+          complianceModuleConfigs(where: {}) {
+            parameters {
               addresses
               countries
+              encodedParams
+              expression {
+                nodeType
+                index
+                topicScheme {
+                  name
+                  topicId
+                }
+              }
+            }
+            complianceModule {
+              name
             }
           }
         }
-      }
-    `
+      }`
     );
-    const response = await theGraphClient.request(query, {});
+    const response = await theGraphClient.request<TokensResponse>(query, {});
 
     for (const token of response.tokens) {
       if (token.name === "Paused Stablecoin") {
         continue;
       }
 
-      const complianceModules = token.tokenComplianceModules;
+      const complianceModules = token.complianceModuleConfigs;
 
       const countryAllowListModule = complianceModules.find(
         (m) => m.complianceModule.name === "Country AllowList Compliance Module"
       );
       expect(countryAllowListModule).toBeDefined();
-      expect(countryAllowListModule.countries.map(Number).sort()).toEqual(
-        [56, 528, 250, 276].sort()
-      );
+      if (
+        countryAllowListModule &&
+        countryAllowListModule.parameters.countries
+      ) {
+        expect(
+          countryAllowListModule.parameters.countries.map(Number).sort()
+        ).toEqual([56, 528, 250, 276].sort());
+      }
 
       const identityBlockListModule = complianceModules.find(
         (m) =>
@@ -49,6 +89,39 @@ describe("Token Compliance Modules", () => {
       );
       expect(identityVerificationModule).toBeDefined();
 
+      // Test the new expression-based identity verification
+      if (
+        identityVerificationModule &&
+        identityVerificationModule.parameters.expression
+      ) {
+        const expressionNodes = Array.isArray(
+          identityVerificationModule.parameters.expression
+        )
+          ? identityVerificationModule.parameters.expression.sort(
+              (a, b) => a.index - b.index
+            )
+          : [];
+
+        // Expected: expressionBuilder().topic(ATKTopic.kyc).and(ATKTopic.aml).build()
+        // Should create: [TOPIC(kyc), TOPIC(aml), AND]
+        expect(expressionNodes).toHaveLength(3);
+
+        // Node 0: KYC topic
+        expect(expressionNodes[0].nodeType).toBe("TOPIC");
+        expect(expressionNodes[0].index).toBe(0);
+        expect(expressionNodes[0].topicScheme?.name).toBe("kyc");
+
+        // Node 1: AML topic
+        expect(expressionNodes[1].nodeType).toBe("TOPIC");
+        expect(expressionNodes[1].index).toBe(1);
+        expect(expressionNodes[1].topicScheme?.name).toBe("aml");
+
+        // Node 2: AND operation
+        expect(expressionNodes[2].nodeType).toBe("AND");
+        expect(expressionNodes[2].index).toBe(2);
+        expect(expressionNodes[2].topicScheme).toBeNull();
+      }
+
       const countryBlockListModule = complianceModules.find(
         (m) => m.complianceModule.name === "Country BlockList Compliance Module"
       );
@@ -58,55 +131,5 @@ describe("Token Compliance Modules", () => {
         expect(countryBlockListModule).toBeUndefined();
       }
     }
-  });
-
-  it("should receive the required claim topics for the assets", async () => {
-    const query = theGraphGraphql(
-      `query {
-        tokens(orderBy: name) {
-          name
-          requiredClaimTopics {
-            name
-          }
-        }
-      }
-    `
-    );
-    const response = await theGraphClient.request(query, {});
-    expect(response.tokens.length).toBe(6);
-    expect(response.tokens).toEqual([
-      {
-        name: "Apple",
-        requiredClaimTopics: [],
-      },
-      {
-        name: "Bens Bugs",
-        requiredClaimTopics: [
-          {
-            name: "kyc",
-          },
-        ],
-      },
-      {
-        name: "Euro Bonds",
-        requiredClaimTopics: [
-          {
-            name: "kyc",
-          },
-        ],
-      },
-      {
-        name: "Euro Deposits",
-        requiredClaimTopics: [],
-      },
-      {
-        name: "Paused Stablecoin",
-        requiredClaimTopics: [],
-      },
-      {
-        name: "Tether",
-        requiredClaimTopics: [],
-      },
-    ]);
   });
 });

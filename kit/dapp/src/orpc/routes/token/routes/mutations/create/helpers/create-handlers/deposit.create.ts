@@ -25,7 +25,17 @@ import {
 import type { TokenCreateInput } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 
 const CREATE_DEPOSIT_MUTATION = portalGraphql(`
-  mutation CreateDepositMutation($address: String!, $from: String!, $symbol: String!, $name: String!, $decimals: Int!, $initialModulePairs: [ATKDepositFactoryImplementationATKDepositFactoryImplementationCreateDepositInitialModulePairsInput!]!, $requiredClaimTopics: [String!]!, $verificationId: String, $challengeResponse: String!) {
+  mutation CreateDepositMutation(
+    $address: String!
+    $from: String!
+    $symbol: String!
+    $name: String!
+    $decimals: Int!
+    $initialModulePairs: [ATKDepositFactoryImplementationATKDepositFactoryImplementationCreateDepositInitialModulePairsInput!]!
+    $verificationId: String
+    $challengeResponse: String!
+    $countryCode: Int!
+  ) {
     CreateDeposit: ATKDepositFactoryImplementationCreateDeposit(
       address: $address
       from: $from
@@ -34,7 +44,7 @@ const CREATE_DEPOSIT_MUTATION = portalGraphql(`
         name_: $name
         decimals_: $decimals
         initialModulePairs_: $initialModulePairs
-        requiredClaimTopics_: $requiredClaimTopics
+        countryCode_: $countryCode
       }
       verificationId: $verificationId
       challengeResponse: $challengeResponse
@@ -44,23 +54,22 @@ const CREATE_DEPOSIT_MUTATION = portalGraphql(`
   }
 `);
 
-export const depositCreateHandler = async function* (
+export const depositCreateHandler = async (
   input: TokenCreateInput,
   context: TokenCreateContext
-) {
+) => {
   if (input.type !== AssetTypeEnum.deposit) {
     throw new Error("Invalid token type");
   }
 
-  yield* createToken(input, (creationFailedMessage, messages) => {
+  return createToken(input, context, () => {
     return context.portalClient.mutate(
       CREATE_DEPOSIT_MUTATION,
       {
         ...input,
         ...context.mutationVariables,
       },
-      creationFailedMessage,
-      messages
+      "Failed to create deposit token"
     );
   });
 };

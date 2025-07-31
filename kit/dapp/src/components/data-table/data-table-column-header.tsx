@@ -1,6 +1,3 @@
-"use client";
-"use no memo";
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,9 +10,9 @@ import { cn } from "@/lib/utils";
 import type { Column } from "@tanstack/react-table";
 import { type VariantProps, cva } from "class-variance-authority";
 import { ArrowDownUp, EyeOff, SortAsc, SortDesc } from "lucide-react";
+import type { HTMLAttributes, PropsWithChildren } from "react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import type { HTMLAttributes, PropsWithChildren } from "react";
 
 /**
  * Class variance configuration for the header text styling.

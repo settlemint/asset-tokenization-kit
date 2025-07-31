@@ -1,0 +1,19 @@
+{
+  "asset": "Asset",
+  "assetClasses": "Asset classes",
+  "assetManagement": "Asset management",
+  "cashEquivalent": "Cash equivalent",
+  "fixedIncome": "Fixed income",
+  "flexibleIncome": "Flexible income",
+  "home": "Dashboard",
+  "statistics": "Statistics",
+  "addons": "Addons",
+  "assetDesigner": "Asset designer",
+  "addonDesigner": "Addon designer",
+  "addonCategories": {
+    "distribution": "Distribution",
+    "exchange": "Exchange",
+    "custody": "Custody",
+    "income": "Income"
+  }
+}

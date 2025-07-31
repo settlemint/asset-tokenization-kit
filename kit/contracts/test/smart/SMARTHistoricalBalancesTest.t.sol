@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { ISMARTHistoricalBalances } from
@@ -97,7 +97,9 @@ contract SMARTHistoricalBalancesTest is Test {
     address public bob;
     address public charlie;
 
-    event CheckpointUpdated(address indexed sender, address indexed account, uint256 oldBalance, uint256 newBalance);
+    event CheckpointUpdated(
+        address indexed sender, address indexed account, uint256 indexed oldBalance, uint256 newBalance
+    );
 
     function setUp() public {
         // Set up test accounts

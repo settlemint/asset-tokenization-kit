@@ -1,6 +1,3 @@
-"use client";
-"use no memo"; // fixes rerendering with react compiler, v9 of tanstack table will fix this
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -49,8 +46,7 @@ export function DataTableViewOptions<TData>({
         {table
           .getAllColumns()
           .filter(
-            (column) =>
-              typeof column.accessorFn !== "undefined" && column.getCanHide()
+            (column) => column.accessorFn !== undefined && column.getCanHide()
           )
           .map((column) => {
             return (

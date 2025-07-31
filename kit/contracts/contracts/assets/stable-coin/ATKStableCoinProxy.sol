@@ -5,11 +5,9 @@ import { ATKAssetProxy } from "../ATKAssetProxy.sol";
 import { IATKStableCoin } from "./IATKStableCoin.sol";
 
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { IATKTokenFactory } from "../../system/token-factory/IATKTokenFactory.sol";
-
-import { TokenImplementationNotSet } from "../../system/ATKSystemErrors.sol";
 
 /// @title Proxy contract for ATK Stable Coins, using ATKAssetProxy.
+/// @author SettleMint
 /// @notice This contract serves as a proxy, allowing for upgradeability of the underlying stable coin logic.
 /// It retrieves the implementation address from the IATKTokenFactory contract via ATKAssetProxy.
 contract ATKStableCoinProxy is ATKAssetProxy {
@@ -20,8 +18,6 @@ contract ATKStableCoinProxy is ATKAssetProxy {
     /// @param name_ The name of the stable coin.
     /// @param symbol_ The symbol of the stable coin.
     /// @param decimals_ The number of decimals of the stable coin.
-    /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
-    /// one.
     /// @param collateralTopicId_ The topic ID of the collateral claim.
     /// @param initialModulePairs_ The initial module pairs of the stable coin.
     /// @param identityRegistry_ The identity registry of the stable coin.
@@ -32,7 +28,6 @@ contract ATKStableCoinProxy is ATKAssetProxy {
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        address onchainID_,
         uint256 collateralTopicId_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
@@ -49,7 +44,6 @@ contract ATKStableCoinProxy is ATKAssetProxy {
             name_,
             symbol_,
             decimals_,
-            onchainID_,
             collateralTopicId_,
             initialModulePairs_,
             identityRegistry_,

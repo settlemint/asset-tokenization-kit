@@ -1,5 +1,3 @@
-"use no memo"; // fixes rerendering with react compiler, v9 of tanstack table will fix this
-
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -119,7 +117,7 @@ export function DataTablePagination<TData>({
         <div className="flex items-center gap-2">
           <p className="text-muted-foreground text-xs">{t("rowsPerPage")}</p>
           <Select
-            value={`${table.getState().pagination.pageSize}`}
+            value={String(table.getState().pagination.pageSize)}
             onValueChange={handlePageSizeChange}
           >
             <SelectTrigger className="h-6 w-[65px] text-xs px-2 py-1">
@@ -129,7 +127,7 @@ export function DataTablePagination<TData>({
               {[10, 20, 30, 50, 100].map((pageSize) => (
                 <SelectItem
                   key={pageSize}
-                  value={`${pageSize}`}
+                  value={String(pageSize)}
                   className="text-xs"
                 >
                   {pageSize}
@@ -161,11 +159,11 @@ export function DataTablePagination<TData>({
           </Button>
           <div className="flex items-center gap-1 text-muted-foreground text-xs px-2 tabular-nums">
             <span className="transition-all duration-200">
-              {table.getState().pagination.pageIndex + 1}
+              {String(table.getState().pagination.pageIndex + 1)}
             </span>
             <span>/</span>
             <span className="transition-all duration-200">
-              {table.getPageCount()}
+              {String(table.getPageCount())}
             </span>
           </div>
           <Button

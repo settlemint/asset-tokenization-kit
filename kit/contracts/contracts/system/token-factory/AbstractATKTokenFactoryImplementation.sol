@@ -1,29 +1,27 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IATKTokenFactory } from "./IATKTokenFactory.sol";
 import { ISMART } from "../../smart/interface/ISMART.sol";
-import { ISMARTCustodian } from "../../smart/extensions/custodian/ISMARTCustodian.sol";
 import { ATKTokenAccessManagerProxy } from "../access-manager/ATKTokenAccessManagerProxy.sol";
 import { ISMARTTokenAccessManager } from "../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { ISMARTIdentityRegistry } from "../../smart/interface/ISMARTIdentityRegistry.sol";
 import { ISMARTCompliance } from "../../smart/interface/ISMARTCompliance.sol";
+import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IATKSystem } from "../IATKSystem.sol";
 import { IATKIdentityFactory } from "../identity-factory/IATKIdentityFactory.sol";
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 import { ATKRoles } from "../../assets/ATKRoles.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
-import { ISMARTComplianceModule } from "../../smart/interface/ISMARTComplianceModule.sol";
-import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.sol";
 
 /// @title ATKTokenFactory - Contract for managing token registries with role-based access control
+/// @author SettleMint
 /// @notice This contract provides functionality for registering tokens and checking their registration status,
 /// managed by roles defined in AccessControl. It also supports deploying proxy contracts using CREATE2.
 /// @dev Inherits from AccessControl and ERC2771Context for role management and meta-transaction support.
@@ -56,10 +54,6 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @dev This address points to the contract that holds the core logic for token operations.
     address internal _tokenImplementation;
 
-    /// @notice Address of the identity verification module.
-    /// @dev This address points to the contract that holds the core logic for identity verification.
-    address internal _identityVerificationModule;
-
     /// @notice Constructor for the token factory implementation.
     /// @param forwarder The address of the trusted forwarder for meta-transactions (ERC2771).
     constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) {
@@ -70,12 +64,10 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @param systemAddress The address of the `IATKSystem` contract.
     /// @param tokenImplementation_ The initial address of the token implementation contract.
     /// @param initialAdmin The address to be granted the DEFAULT_ADMIN_ROLE and DEPLOYER_ROLE.
-    /// @param identityVerificationModule The address of the identity verification module.
     function initialize(
         address systemAddress,
         address tokenImplementation_,
-        address initialAdmin,
-        address identityVerificationModule
+        address initialAdmin
     )
         public
         virtual
@@ -87,15 +79,9 @@ abstract contract AbstractATKTokenFactoryImplementation is
         }
         if (
             tokenImplementation_ == address(0)
-                && IERC165(tokenImplementation_).supportsInterface(type(ISMART).interfaceId)
+                || !IERC165(tokenImplementation_).supportsInterface(type(ISMART).interfaceId)
         ) {
             revert InvalidImplementationAddress();
-        }
-        if (
-            identityVerificationModule == address(0)
-                || !IERC165(identityVerificationModule).supportsInterface(type(ISMARTComplianceModule).interfaceId)
-        ) {
-            revert InvalidIdentityVerificationModuleAddress();
         }
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
         _grantRole(ATKSystemRoles.DEPLOYER_ROLE, initialAdmin);
@@ -103,7 +89,6 @@ abstract contract AbstractATKTokenFactoryImplementation is
 
         _tokenImplementation = tokenImplementation_;
         _systemAddress = systemAddress;
-        _identityVerificationModule = identityVerificationModule;
     }
 
     /// @inheritdoc IATKTokenFactory
@@ -145,40 +130,6 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @return The compliance contract.
     function _compliance() internal view returns (ISMARTCompliance) {
         return ISMARTCompliance(IATKSystem(_systemAddress).compliance());
-    }
-
-    /// @notice Creates a pair for the identity verification module.
-    /// @param requiredClaimTopics The required claim topics.
-    /// @return The pair for the identity verification module.
-    function _identityVerificationModulePair(uint256[] memory requiredClaimTopics)
-        internal
-        view
-        returns (SMARTComplianceModuleParamPair memory)
-    {
-        return SMARTComplianceModuleParamPair({
-            module: _identityVerificationModule,
-            params: abi.encode(requiredClaimTopics)
-        });
-    }
-
-    /// @notice Adds the identity verification module pair to the module pairs.
-    /// @param modulePairs The module pairs.
-    /// @param requiredClaimTopics The required claim topics.
-    /// @return result The module pairs with the identity verification module pair added.
-    function _addIdentityVerificationModulePair(
-        SMARTComplianceModuleParamPair[] memory modulePairs,
-        uint256[] memory requiredClaimTopics
-    )
-        internal
-        view
-        returns (SMARTComplianceModuleParamPair[] memory result)
-    {
-        result = new SMARTComplianceModuleParamPair[](modulePairs.length + 1);
-        result[0] = _identityVerificationModulePair(requiredClaimTopics);
-        for (uint256 i = 0; i < modulePairs.length; i++) {
-            result[i + 1] = modulePairs[i];
-        }
-        return result;
     }
 
     /// @notice Calculates the salt for CREATE2 deployment.
@@ -240,7 +191,11 @@ abstract contract AbstractATKTokenFactoryImplementation is
         returns (bytes32 salt, bytes memory fullCreationCode)
     {
         salt = _calculateAccessManagerSalt(_systemAddress, accessManagerSaltInputData);
-        bytes memory constructorArgs = abi.encode(_systemAddress, initialAdmin);
+        address[] memory initialAdmins = new address[](2);
+        initialAdmins[0] = initialAdmin;
+        initialAdmins[1] = address(this); // Add the factory as an initial admin to allow the access manager to be
+            // upgraded
+        bytes memory constructorArgs = abi.encode(_systemAddress, initialAdmins);
         bytes memory bytecode = type(ATKTokenAccessManagerProxy).creationCode;
         fullCreationCode = bytes.concat(bytecode, constructorArgs);
     }
@@ -259,21 +214,6 @@ abstract contract AbstractATKTokenFactoryImplementation is
         bytes32 bytecodeHash = keccak256(fullCreationCode);
         predictedAddress = Create2.computeAddress(salt, bytecodeHash, address(this));
         return predictedAddress;
-    }
-
-    function _predictTokenIdentityAddress(
-        string memory name,
-        string memory symbol,
-        uint8 decimals,
-        address initialManager
-    )
-        internal
-        view
-        returns (address)
-    {
-        return IATKIdentityFactory(IATKSystem(_systemAddress).identityFactory()).calculateTokenIdentityAddress(
-            name, symbol, decimals, initialManager
-        );
     }
 
     /// @notice Creates a new access manager for a token using CREATE2.
@@ -316,30 +256,35 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @param encodedConstructorArgs ABI-encoded constructor arguments for the proxy.
     /// @param tokenSaltInputData The ABI encoded data to be used for salt calculation for the token.
     /// @param accessManager The address of the access manager.
+    /// @param description Human-readable description of the contract for indexing.
+    /// @param country The country code for the contract identity.
     /// @return deployedAddress The address of the newly deployed proxy contract.
+    /// @return deployedTokenIdentityAddress The address of the deployed contract identity.
     function _deployToken(
         bytes memory proxyCreationCode,
         bytes memory encodedConstructorArgs,
         bytes memory tokenSaltInputData,
-        address accessManager
+        address accessManager,
+        string memory description,
+        uint16 country
     )
         internal
         onlyRole(ATKSystemRoles.DEPLOYER_ROLE)
         returns (address deployedAddress, address deployedTokenIdentityAddress)
     {
-        // Calculate salt and creation code once
+        // Combine calculation to reduce stack variables
         bytes32 salt = _calculateSalt(_systemAddress, tokenSaltInputData);
-        bytes memory fullCreationCode = bytes.concat(proxyCreationCode, encodedConstructorArgs);
 
-        // Predict address using pre-calculated data
-        bytes32 bytecodeHash = keccak256(fullCreationCode);
-        address predictedAddress = Create2.computeAddress(salt, bytecodeHash, address(this));
+        // Calculate predicted address inline to reduce stack depth
+        address predictedAddress = Create2.computeAddress(
+            salt, keccak256(bytes.concat(proxyCreationCode, encodedConstructorArgs)), address(this)
+        );
 
         if (isFactoryToken[predictedAddress]) {
             revert AddressAlreadyDeployed(predictedAddress);
         }
 
-        deployedAddress = Create2.deploy(0, salt, fullCreationCode);
+        deployedAddress = Create2.deploy(0, salt, bytes.concat(proxyCreationCode, encodedConstructorArgs));
 
         if (deployedAddress != predictedAddress) {
             revert ProxyCreationFailed();
@@ -347,13 +292,30 @@ abstract contract AbstractATKTokenFactoryImplementation is
 
         isFactoryToken[deployedAddress] = true;
 
-        address tokenIdentity = _deployTokenIdentity(deployedAddress, accessManager);
+        // Create identity using simple address-based approach - no complex salt needed
+        deployedTokenIdentityAddress = _deployContractIdentity(deployedAddress, description, country);
+
+        // Grant the factory the GOVERNANCE_ROLE to allow it to upgrade the onchain ID
+        ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.GOVERNANCE_ROLE, address(this));
+        ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.DEFAULT_ADMIN_ROLE, address(this));
+
+        // Set the onchain ID on the token contract
+        ISMART(deployedAddress).setOnchainID(deployedTokenIdentityAddress);
+
+        bytes32[] memory roles = new bytes32[](2);
+        roles[0] = ATKRoles.GOVERNANCE_ROLE;
+        roles[1] = ATKRoles.DEFAULT_ADMIN_ROLE;
+        ISMARTTokenAccessManager(accessManager).renounceMultipleRoles(roles, address(this));
 
         emit TokenAssetCreated(
-            _msgSender(), deployedAddress, tokenIdentity, ISMART(deployedAddress).registeredInterfaces(), accessManager
+            _msgSender(),
+            deployedAddress,
+            deployedTokenIdentityAddress,
+            ISMART(deployedAddress).registeredInterfaces(),
+            accessManager
         );
 
-        return (deployedAddress, tokenIdentity);
+        return (deployedAddress, deployedTokenIdentityAddress);
     }
 
     /// @notice Predicts the deployment address of a proxy using CREATE2.
@@ -379,19 +341,39 @@ abstract contract AbstractATKTokenFactoryImplementation is
     }
 
     /// @notice Finalizes the token creation process after deployment and initialization.
-    /// @dev Sets up token identity, on-chain ID, and necessary roles.
-    /// @param tokenAddress The address of the deployed token (proxy).
-    /// @param accessManagerAddress The address of the token's access manager.
-    function _deployTokenIdentity(address tokenAddress, address accessManagerAddress) internal returns (address) {
-        IATKSystem system_ = IATKSystem(_systemAddress);
-        IATKIdentityFactory identityFactory_ = IATKIdentityFactory(system_.identityFactory());
-        address tokenIdentity = identityFactory_.createTokenIdentity(tokenAddress, accessManagerAddress);
+    /// @dev Sets up contract identity, on-chain ID, and necessary roles.
+    /// @param contractAddress The address of the deployed contract (proxy).
+    /// @param description Human-readable description of the contract.
+    /// @param country The numeric country code (ISO 3166-1 alpha-2 standard) representing the contract's jurisdiction.
+    /// @return The address of the deployed contract identity.
+    function _deployContractIdentity(
+        address contractAddress,
+        string memory description,
+        uint16 country
+    )
+        internal
+        returns (address)
+    {
+        // Create the contract identity using simple address-based salt
+        address contractIdentity =
+            IATKIdentityFactory(IATKSystem(_systemAddress).identityFactory()).createContractIdentity(contractAddress);
 
-        return tokenIdentity;
+        // Register the contract identity with the identity registry (same as any other identity)
+        ISMARTIdentityRegistry(IATKSystem(_systemAddress).identityRegistry()).registerIdentity(
+            contractAddress, IIdentity(contractIdentity), country
+        );
+
+        // Emit registration event for indexing
+        emit ContractIdentityRegistered(_msgSender(), contractAddress, description);
+
+        return contractIdentity;
     }
 
     // --- ERC165 Overrides ---
 
+    /// @notice Checks if the contract supports a specific interface
+    /// @param interfaceId The interface identifier to check
+    /// @return True if the interface is supported, false otherwise
     function supportsInterface(bytes4 interfaceId)
         public
         view
@@ -404,14 +386,18 @@ abstract contract AbstractATKTokenFactoryImplementation is
 
     // --- ERC2771Context Overrides ---
 
+    /// @notice Returns the address of the current message sender
     /// @dev Overrides the default implementation of _msgSender() to return the actual sender
     ///      instead of the forwarder address when using ERC2771 context.
+    /// @return The address of the message sender
     function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
         return super._msgSender();
     }
 
+    /// @notice Returns the calldata of the current message
     /// @dev Overrides the default implementation of _msgData() to return the actual calldata
     ///      instead of the forwarder calldata when using ERC2771 context.
+    /// @return The calldata of the message
     function _msgData()
         internal
         view
@@ -421,8 +407,10 @@ abstract contract AbstractATKTokenFactoryImplementation is
         return super._msgData();
     }
 
+    /// @notice Returns the length of the context suffix in the calldata
     /// @dev Overrides the default implementation of _contextSuffixLength() to return the actual suffix length
     ///      instead of the forwarder suffix length when using ERC2771 context.
+    /// @return The length of the context suffix
     function _contextSuffixLength()
         internal
         view

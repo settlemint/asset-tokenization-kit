@@ -69,7 +69,7 @@ export interface FormatValueOptions {
  * Uses dnum for precision handling when the value is a string
  * Returns 0 for NaN values
  */
-function safeToNumber(value: unknown): number {
+export function safeToNumber(value: unknown): number {
   // If it's already a number, check for NaN
   if (typeof value === "number") {
     return Number.isNaN(value) ? 0 : value;
@@ -114,7 +114,7 @@ export function formatValue(
 
   // Check if value is empty/null/undefined
   if (value === null || value === undefined || value === "") {
-    return emptyValue !== undefined ? emptyValue : "";
+    return emptyValue === undefined ? "" : emptyValue;
   }
 
   // If no type, return value as is
@@ -124,7 +124,7 @@ export function formatValue(
 
   // Auto-render based on type with intelligent defaults
   switch (type) {
-    case "address": {
+    case "address":
       try {
         const validAddress = getEthereumAddress(value);
         return (
@@ -145,7 +145,6 @@ export function formatValue(
           </span>
         );
       }
-    }
 
     case "badge": {
       // Determine variant based on column type or name
@@ -358,7 +357,6 @@ export function formatValue(
       return <span className="block tabular-nums">{formatted}</span>;
     }
 
-    case "text":
     default:
       return <span>{safeToString(value)}</span>;
   }

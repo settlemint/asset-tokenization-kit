@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { AbstractATKAssetTest } from "../../assets/AbstractATKAssetTest.sol";
@@ -49,9 +49,9 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
     AirdropUtils.TestUserData public testUserData;
 
     // Events
-    event VestingInitialized(address indexed account, uint256 totalAmount, uint256 index);
+    event VestingInitialized(address indexed account, uint256 indexed totalAmount, uint256 indexed index);
     event VestingStrategyUpdated(address indexed oldStrategy, address indexed newStrategy);
-    event AirdropTokensTransferred(address indexed recipient, uint256 indexed index, uint256 amount);
+    event AirdropTokensTransferred(address indexed recipient, uint256 indexed index, uint256 indexed amount);
 
     function setUp() public {
         owner = makeAddr("owner");
@@ -91,6 +91,12 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
 
         // Grant DEPLOYER_ROLE to owner so they can create vesting airdrops
         IAccessControl(address(vestingAirdropFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
+
+        // Grant SYSTEM_MODULE_ROLE to the factory so it can access compliance functions like addToBypassList
+        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
+            ATKSystemRoles.SYSTEM_MODULE_ROLE, address(vestingAirdropFactory)
+        );
+
         vm.stopPrank();
 
         // Set up test user data using utility

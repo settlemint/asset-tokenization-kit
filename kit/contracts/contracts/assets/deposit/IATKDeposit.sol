@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 // Interface imports
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
@@ -11,8 +11,11 @@ import { ISMARTPausable } from "../../smart/extensions/pausable/ISMARTPausable.s
 import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.sol";
 import { ISMARTCollateral } from "../../smart/extensions/collateral/ISMARTCollateral.sol";
 
-/// @title Interface for a ATK Deposit token
-/// @notice Defines the core functionality and extensions for a ATK Deposit token.
+/// @title Interface for ATK Deposit token
+/// @author SettleMint
+/// @notice Defines the core functionality and extensions for an ATK Deposit token
+/// @dev This interface combines SMART token functionality with access management,
+///      collateral tracking, custodian controls, pausability, and burning capabilities
 interface IATKDeposit is
     ISMART,
     ISMARTTokenAccessManaged,
@@ -25,8 +28,6 @@ interface IATKDeposit is
     /// @param name_ The name of the deposit token.
     /// @param symbol_ The symbol of the deposit token.
     /// @param decimals_ The number of decimals for the deposit token.
-    /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
-    /// one.
     /// @param collateralTopicId_ The topic ID of the collateral claim.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param identityRegistry_ The address of the identity registry contract.
@@ -36,7 +37,6 @@ interface IATKDeposit is
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        address onchainID_,
         uint256 collateralTopicId_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,

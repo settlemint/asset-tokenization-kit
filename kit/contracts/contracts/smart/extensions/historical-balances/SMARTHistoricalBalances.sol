@@ -12,7 +12,9 @@ import { SMARTHooks } from "../common/SMARTHooks.sol"; // Defines common hooks l
 import { _SMARTHistoricalBalancesLogic } from "./internal/_SMARTHistoricalBalancesLogic.sol"; // Contains core logic
 
 /// @title Standard (Non-Upgradeable) SMART Historical Balances Extension
-/// @notice This abstract contract provides the non-upgradeable implementation for tracking historical
+/// @author SettleMint
+/// @notice This abstract contract provides the non-upgradeable implementation for tracking
+/// historical
 ///         token balances and total supply for a SMART token.
 /// @dev It integrates the core checkpointing logic from `_SMARTHistoricalBalancesLogic` into the standard
 ///      (non-upgradeable) SMART token lifecycle. This is achieved by overriding the `SMARTHooks`

@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
-
-// OpenZeppelin imports
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+pragma solidity ^0.8.28;
 
 // Interface imports
 import { IATKVestingStrategy } from "./IATKVestingStrategy.sol";
 import { IATKAirdrop } from "../IATKAirdrop.sol";
 
 /// @title Interface for a ATK Vesting Airdrop
+/// @author SettleMint
 /// @notice Defines the core functionality for a vesting airdrop contract that uses pluggable claim strategies in the
 /// ATK Protocol.
 /// @dev This interface extends IATKAirdrop and defines a two-phase vesting airdrop process:

@@ -1,8 +1,5 @@
 import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
-import {
-  TokenBaseSchema,
-  createTokenMessagesSchema,
-} from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
+import { TokenBaseSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
 import { z } from "zod";
 
 export const FundSchema = z.object({
@@ -10,7 +7,7 @@ export const FundSchema = z.object({
     .number()
     .int()
     .min(0)
-    .max(10000)
+    .max(10_000)
     .describe("Management fee in basis points (0-10000)"),
 });
 
@@ -19,5 +16,4 @@ export const FundSchema = z.object({
  */
 export const FundTokenSchema = TokenBaseSchema.extend({
   type: z.literal(AssetTypeEnum.fund),
-  messages: createTokenMessagesSchema(AssetTypeEnum.fund).optional(),
 }).extend(FundSchema.shape);

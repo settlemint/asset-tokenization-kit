@@ -31,18 +31,6 @@ import { z } from "zod";
 
 export const MutationInputSchema = z.object({
   /**
-   * The Ethereum address of the smart contract to interact with.
-   *
-   * When provided, the create operation will target this specific contract
-   * instance. When omitted, the operation may use a default contract or
-   * deploy a new one, depending on the specific implementation.
-   * @optional
-   */
-  contract: ethereumAddress
-    .optional()
-    .describe("The address of the contract to call this function on"),
-
-  /**
    * Multi-factor authentication credentials for transaction signing.
    *
    * This object contains the verification code and type required to authorize
@@ -61,11 +49,4 @@ export const MutationInputSchemaWithContract = MutationInputSchema.extend({
   contract: ethereumAddress.describe(
     "The address of the contract to call this function on"
   ),
-});
-
-export const MutationOutputSchema = z.object({
-  status: z.enum(["pending", "confirmed", "failed"]),
-  message: z.string(),
-  transactionHash: z.string().optional(),
-  result: z.string().optional(), // For compatibility with useStreamingMutation hook
 });

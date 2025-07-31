@@ -1,7 +1,6 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import { TokenSetCapInputSchema } from "@/orpc/routes/token/routes/mutations/cap/token.set-cap.schema";
-import { TokenTransactionOutputSchema } from "@/orpc/routes/token/routes/mutations/common/token.transaction.schema";
-import { eventIterator } from "@orpc/server";
+import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 
 export const tokenSetCapContract = baseContract
   .route({
@@ -12,4 +11,4 @@ export const tokenSetCapContract = baseContract
     tags: ["token"],
   })
   .input(TokenSetCapInputSchema)
-  .output(eventIterator(TokenTransactionOutputSchema));
+  .output(TokenSchema);
