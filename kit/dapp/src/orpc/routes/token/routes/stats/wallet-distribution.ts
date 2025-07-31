@@ -2,6 +2,7 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { z } from "zod";
+import { type StatsWalletDistributionOutput } from "./wallet-distribution.schema";
 
 /**
  * GraphQL query to fetch token balances for wallet distribution calculation
@@ -45,10 +46,7 @@ const TokenBalancesResponseSchema = z.object({
  */
 function createDistributionBuckets(
   balances: { value: string; account: { id: string } }[]
-): {
-  buckets: { range: string; count: number }[];
-  totalHolders: number;
-} {
+): StatsWalletDistributionOutput {
   if (balances.length === 0) {
     return { buckets: [], totalHolders: 0 };
   }
