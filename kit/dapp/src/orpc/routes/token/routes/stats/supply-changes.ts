@@ -83,7 +83,7 @@ function processSupplyChangesHistoryData(
  * @example
  * ```typescript
  * // Get supply changes history for the last 60 days
- * const metrics = await orpc.token.statsAssetSupplyChanges.query({
+ * const metrics = await orpc.token.statsSupplyChanges.query({
  *   input: { tokenAddress: '0x1234...', days: 60 }
  * });
  * console.log(metrics.supplyChangesHistory);
