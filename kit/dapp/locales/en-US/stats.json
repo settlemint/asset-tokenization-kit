@@ -16,14 +16,14 @@
       "label": "Total Collateral"
     },
     "totalSupply": {
-      "description": "Historical total supply changes over time",
+      "description": "Historical total supply changes over the last {{days}} days",
       "label": "Total supply",
       "title": "Token supply history",
       "noData": "No data available",
       "noDataDescription": "No total supply data found for the last {{days}} days"
     },
     "supplyChanges": {
-      "description": "Minted and burned tokens over the last {{days}} days",
+      "description": "Minted and burned assets over the last {{days}} days",
       "title": "Supply changes",
       "minted": "Minted",
       "burned": "Burned",
