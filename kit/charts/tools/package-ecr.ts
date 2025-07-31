@@ -9,12 +9,22 @@ import { getKitProjectPath } from "../../../tools/root";
  * Usage:
  *   - From kit/charts: bun run tools/package-ecr.ts
  *   - From root: turbo run ecr --filter=charts
+ * 
+ * Environment Variables:
+ *   - ECR_REGISTRY: AWS ECR registry URL (required)
  */
 
-const ECR_REGISTRY = "709825985650.dkr.ecr.us-east-1.amazonaws.com/settlemint";
 const logger = createLogger({
   level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel || "info",
 });
+
+const ECR_REGISTRY = process.env.ECR_REGISTRY;
+if (!ECR_REGISTRY) {
+  logger.error("ECR_REGISTRY environment variable is not set!");
+  logger.info("Please set ECR_REGISTRY to your AWS ECR registry URL");
+  logger.info("Example: ECR_REGISTRY='123456789.dkr.ecr.us-east-1.amazonaws.com/myorg' bun run tools/package-ecr.ts");
+  process.exit(1);
+}
 
 /**
  * Check if a repository/image value is an implicit Docker Hub image
