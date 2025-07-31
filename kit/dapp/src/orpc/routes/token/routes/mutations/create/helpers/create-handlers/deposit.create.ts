@@ -68,6 +68,10 @@ export const depositCreateHandler = async (
       {
         ...input,
         ...context.mutationVariables,
+        initialModulePairs: input.initialModulePairs.map((pair) => ({
+          module: pair.module,
+          params: pair.params,
+        })),
       },
       "Failed to create deposit token"
     );

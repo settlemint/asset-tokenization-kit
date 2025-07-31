@@ -75,9 +75,13 @@ export const bondCreateHandler = async (
       CREATE_BOND_MUTATION,
       {
         ...input,
+        ...context.mutationVariables,
+        initialModulePairs: input.initialModulePairs.map((pair) => ({
+          module: pair.module,
+          params: pair.params,
+        })),
         cap: input.cap.toString(),
         faceValue: input.faceValue.toString(),
-        ...context.mutationVariables,
       },
       "Failed to create bond token"
     );
