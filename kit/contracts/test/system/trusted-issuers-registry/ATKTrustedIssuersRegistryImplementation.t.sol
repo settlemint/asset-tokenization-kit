@@ -71,21 +71,20 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         implementation = new ATKTrustedIssuersRegistryImplementation(forwarder);
 
         // Deploy proxy with initialization data
-        address[] memory initialRegistrars = new address[](1);
-        initialRegistrars[0] = admin;
-        bytes memory initData = abi.encodeWithSelector(implementation.initialize.selector, admin, initialRegistrars);
+        bytes memory initData = abi.encodeWithSelector(implementation.initialize.selector, address(systemAccessManager));
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
         registry = IERC3643TrustedIssuersRegistry(address(proxy));
 
         // Set the system access manager
         vm.prank(admin);
-        ATKTrustedIssuersRegistryImplementation(address(registry)).setSystemAccessManager(address(systemAccessManager));
+        // System access manager is set during initialization
     }
 
     function test_InitializeSuccess() public view {
         // Verify admin has both roles
         assertTrue(IAccessControl(address(registry)).hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
-        assertTrue(IAccessControl(address(registry)).hasRole(ATKSystemRoles.REGISTRAR_ROLE, admin));
+        // Admin should not directly have claim policy manager role on the registry itself
+        // The role is managed through the system access manager
 
         // Verify claimPolicyManager has claim policy manager role
         assertTrue(systemAccessManager.hasRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager));
@@ -97,7 +96,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
 
     function test_CannotInitializeTwice() public {
         vm.expectRevert();
-        ATKTrustedIssuersRegistryImplementation(address(registry)).initialize(user1, new address[](0));
+        ATKTrustedIssuersRegistryImplementation(address(registry)).initialize(address(systemAccessManager));
     }
 
     function test_AddTrustedIssuerSuccess() public {
@@ -403,7 +402,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
     function test_DirectCallToImplementation() public {
         // Direct calls to implementation should fail for initialize
         vm.expectRevert();
-        implementation.initialize(admin, new address[](0));
+        implementation.initialize(address(systemAccessManager));
     }
 
     function test_ERC2771ContextIntegration() public view {

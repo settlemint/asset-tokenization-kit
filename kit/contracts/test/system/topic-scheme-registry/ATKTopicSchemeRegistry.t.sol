@@ -9,6 +9,7 @@ import { IATKTopicSchemeRegistry } from "../../../contracts/system/topic-scheme-
 import { ATKTopicSchemeRegistryImplementation } from
     "../../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
 import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../../contracts/system/ATKRoles.sol";
+import { ATKSystemImplementation } from "../../../contracts/system/ATKSystemImplementation.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IATKSystemAccessManager } from "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
 
@@ -59,7 +60,7 @@ contract ATKTopicSchemeRegistryTest is Test {
         topicSchemeRegistry = IATKTopicSchemeRegistry(systemUtils.system().topicSchemeRegistry());
 
         // Get the system access manager from the system
-        systemAccessManager = IATKSystemAccessManager(systemUtils.system().systemAccessManager());
+        systemAccessManager = IATKSystemAccessManager(systemUtils.systemAccessManager());
 
         // Capture the initial state after system bootstrap (includes default topic schemes)
         initialTopicSchemeCount = topicSchemeRegistry.getTopicSchemeCount();
@@ -69,7 +70,6 @@ contract ATKTopicSchemeRegistryTest is Test {
         vm.startPrank(admin);
         systemAccessManager.grantRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager);
         systemAccessManager.grantRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE, systemManager);
-        systemAccessManager.grantRole(ATKSystemRoles.SYSTEM_MODULE_ROLE, systemModule);
         vm.stopPrank();
     }
 
@@ -86,7 +86,7 @@ contract ATKTopicSchemeRegistryTest is Test {
     }
 
     function test_SystemAccessManager() public view {
-        address accessManagerAddress = topicSchemeRegistry.getSystemAccessManager();
+        address accessManagerAddress = ATKTopicSchemeRegistryImplementation(address(topicSchemeRegistry)).accessManager();
         assertEq(accessManagerAddress, address(systemAccessManager), "System access manager address should match");
     }
 
@@ -266,27 +266,7 @@ contract ATKTopicSchemeRegistryTest is Test {
         );
     }
 
-    function test_SetSystemAccessManager() public {
-        // Create a mock access manager
-        address mockAccessManager = address(0x9999);
-
-        // Only admin should be able to set access manager
-        vm.prank(admin);
-        vm.expectEmit(true, true, false, true);
-        emit SystemAccessManagerSet(admin, mockAccessManager);
-
-        topicSchemeRegistry.setSystemAccessManager(mockAccessManager);
-
-        // Verify it was set
-        assertEq(
-            topicSchemeRegistry.getSystemAccessManager(), mockAccessManager, "System access manager should be updated"
-        );
-
-        // Try with unauthorized user
-        vm.prank(user);
-        vm.expectRevert(); // Should revert with UnauthorizedAccess error
-        topicSchemeRegistry.setSystemAccessManager(address(0x8888));
-    }
+    // Test removed: setSystemAccessManager no longer exists - access manager is set during initialization and cannot be changed
 
     function test_GetTopicId_Deterministic() public view {
         uint256 topicId1 = topicSchemeRegistry.getTopicId(TOPIC_NAME_1);
@@ -340,12 +320,12 @@ contract ATKTopicSchemeRegistryTest is Test {
         // Test that the topic scheme registry correctly references the system access manager
         ATKTopicSchemeRegistryImplementation registry =
             ATKTopicSchemeRegistryImplementation(address(topicSchemeRegistry));
-        assertEq(registry.getSystemAccessManager(), address(systemAccessManager));
+        assertEq(registry.accessManager(), address(systemAccessManager));
 
-        // Test hasRole delegation
-        assertTrue(registry.hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
-        assertTrue(registry.hasRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager));
-        assertFalse(registry.hasRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, user));
+        // Test hasRole delegation through access manager
+        assertTrue(systemAccessManager.hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(systemAccessManager.hasRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager));
+        assertFalse(systemAccessManager.hasRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, user));
     }
 
     function test_ComplexWorkflow() public {
@@ -404,16 +384,5 @@ contract ATKTopicSchemeRegistryTest is Test {
         assertEq(topicSchemeRegistry.getTopicSchemeCount(), countBefore + 1);
     }
 
-    function test_Initialize_ZeroAddressSystemAccessManager() public pure {
-        // NOTE: This test verifies that our validation exists by checking the error selector
-        // The actual runtime validation is tested during system bootstrap
-        bytes4 expectedSelector = ATKTopicSchemeRegistryImplementation.SystemAccessManagerCannotBeZeroAddress.selector;
-
-        // Verify the error selector exists and has the expected value
-        assertTrue(expectedSelector != bytes4(0), "Error selector should be defined");
-        assertEq(expectedSelector, bytes4(keccak256("SystemAccessManagerCannotBeZeroAddress()")));
-
-        // The validation is automatically tested during bootstrap since a zero address
-        // would cause the bootstrap to fail, which is verified by other passing tests
-    }
+    // Test removed: Zero address validation is now handled by ATKSystemAccessManaged base contract
 }
