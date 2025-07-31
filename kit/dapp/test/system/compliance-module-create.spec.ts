@@ -1,3 +1,4 @@
+import { complianceTypeIds } from "@/lib/zod/validators/compliance";
 import { getOrpcClient } from "test/utils/orpc-client";
 import {
   DEFAULT_ADMIN,
@@ -31,5 +32,34 @@ describe("System Compliance Module create", () => {
 
     const updatedSystem = await client.system.read({ id: result.id });
     expect(updatedSystem.complianceModules.length).toBeGreaterThanOrEqual(3);
+  });
+
+  test("can create all compliance modules at once using 'all' option", async () => {
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+
+    const result = await client.system.complianceModuleCreate({
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+      complianceModules: "all",
+    });
+
+    const updatedSystem = await client.system.read({ id: result.id });
+
+    // Should have all 6 compliance module types
+    expect(updatedSystem.complianceModules.length).toBe(6);
+
+    // Verify all expected compliance module types are present
+    const expectedTypes = complianceTypeIds;
+
+    const actualTypes = updatedSystem.complianceModules.map(
+      (module) => module.typeId
+    );
+
+    for (const expectedType of expectedTypes) {
+      expect(actualTypes).toContain(expectedType);
+    }
   });
 });
