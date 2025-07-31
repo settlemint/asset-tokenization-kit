@@ -18,15 +18,7 @@ import { recoverTokens } from "@/orpc/routes/token/routes/mutations/recovery/tok
 import { redeem } from "@/orpc/routes/token/routes/mutations/redeem/token.redeem";
 import { transfer } from "@/orpc/routes/token/routes/mutations/transfer/token.transfer";
 import { setYieldSchedule } from "@/orpc/routes/token/routes/mutations/yield/token.set-yield-schedule";
-import { statsActivityByAsset } from "@/orpc/routes/token/routes/stats/activity-by-asset";
-import { statsAssetCount } from "@/orpc/routes/token/routes/stats/asset-count";
-import { statsAssets } from "@/orpc/routes/token/routes/stats/assets";
-import { statsSupplyDistribution } from "@/orpc/routes/token/routes/stats/supply-distribution";
-import { statsTotalValue } from "@/orpc/routes/token/routes/stats/total-value";
-import { statsTransactionCount } from "@/orpc/routes/token/routes/stats/transaction-count";
-import { statsTransactionHistory } from "@/orpc/routes/token/routes/stats/transaction-history";
-import { statsTransactions } from "@/orpc/routes/token/routes/stats/transactions";
-import { statsValue } from "@/orpc/routes/token/routes/stats/value";
+import { statsTotalSupply } from "@/orpc/routes/token/routes/stats/total-supply";
 import { actions } from "@/orpc/routes/token/routes/token.actions";
 import { events } from "@/orpc/routes/token/routes/token.events";
 import { holders } from "@/orpc/routes/token/routes/token.holders";
@@ -59,15 +51,7 @@ const routes = {
   setYieldSchedule,
   addComplianceModule,
   removeComplianceModule,
-  statsActivityByAsset,
-  statsAssetCount,
-  statsAssets,
-  statsSupplyDistribution,
-  statsTotalValue,
-  statsTransactionCount,
-  statsTransactionHistory,
-  statsTransactions,
-  statsValue,
+  statsTotalSupply,
 };
 
 export default routes;
