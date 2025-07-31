@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/chart";
 import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
 import { ChartEmptyState } from "./chart-empty-state";
-import { ChartSkeleton } from "./chart-skeleton";
 
 export type AreaChartData = Record<string, string | number>;
 
@@ -29,7 +28,6 @@ export interface AreaChartComponentProps {
   stacked?: boolean;
   className?: string;
   tickFormatter?: (value: string) => string;
-  isLoading?: boolean;
   emptyMessage?: string;
   emptyDescription?: string;
 }
@@ -57,7 +55,6 @@ export function AreaChartComponent({
   stacked = false,
   className,
   tickFormatter,
-  isLoading = false,
   emptyMessage,
   emptyDescription,
 }: AreaChartComponentProps) {
@@ -66,11 +63,6 @@ export function AreaChartComponent({
     const label = config[value]?.label;
     return typeof label === "string" ? label : value;
   };
-
-  // Show loading state
-  if (isLoading) {
-    return <ChartSkeleton />;
-  }
 
   // Show empty state if no data
   if (data.length === 0) {

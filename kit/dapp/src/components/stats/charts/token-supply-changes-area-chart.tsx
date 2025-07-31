@@ -51,7 +51,6 @@ export function TokenSupplyChangesAreaChart({
               },
             },
             dataKeys: ["totalMinted", "totalBurned"],
-            isEmpty: true,
           };
         }
 
@@ -79,7 +78,6 @@ export function TokenSupplyChangesAreaChart({
           chartData: transformedData,
           chartConfig: config,
           dataKeys: ["totalMinted", "totalBurned"],
-          isEmpty: false,
         };
       },
     [t]
@@ -87,33 +85,15 @@ export function TokenSupplyChangesAreaChart({
 
   // Fetch and transform supply changes history data with optimized caching
   const {
-    data: { chartData, chartConfig, dataKeys, isEmpty },
-  } = useSuspenseQuery({
-    ...orpc.token.statsSupplyChanges.queryOptions({
+    data: { chartData, chartConfig, dataKeys },
+  } = useSuspenseQuery(
+    orpc.token.statsSupplyChanges.queryOptions({
       input: { tokenAddress, days: timeRange },
-    }),
-    select: selectTransform,
-    staleTime: 5 * 60 * 1000, // 5 minutes - reduce API calls
-    gcTime: 10 * 60 * 1000, // 10 minutes - cache retention
-  });
-
-  // Handle empty state
-  if (isEmpty) {
-    return (
-      <ComponentErrorBoundary componentName="Token Supply Changes Chart">
-        <div className="flex h-[300px] items-center justify-center rounded-lg border border-dashed">
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground">
-              {t("charts.supplyChanges.noData")}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {t("charts.supplyChanges.noDataDescription", { days: timeRange })}
-            </p>
-          </div>
-        </div>
-      </ComponentErrorBoundary>
-    );
-  }
+      select: selectTransform,
+      staleTime: 5 * 60 * 1000, // 5 minutes - reduce API calls
+      gcTime: 10 * 60 * 1000, // 10 minutes - cache retention
+    })
+  );
 
   return (
     <ComponentErrorBoundary componentName="Token Supply Changes Chart">

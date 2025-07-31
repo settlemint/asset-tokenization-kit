@@ -14,7 +14,6 @@ import {
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
 import { ChartEmptyState } from "./chart-empty-state";
-import { ChartSkeleton } from "./chart-skeleton";
 
 export type BarChartData = Record<string, string | number>;
 
@@ -29,7 +28,6 @@ export interface BarChartComponentProps {
   showLegend?: boolean;
   stacked?: boolean;
   className?: string;
-  isLoading?: boolean;
   emptyMessage?: string;
   emptyDescription?: string;
 }
@@ -58,7 +56,6 @@ export function BarChartComponent({
   showLegend = true,
   stacked = false,
   className,
-  isLoading = false,
   emptyMessage,
   emptyDescription,
 }: BarChartComponentProps) {
@@ -73,11 +70,6 @@ export function BarChartComponent({
     () => data.filter((item) => dataKeys.some((key) => Number(item[key]) > 0)),
     [data, dataKeys]
   );
-
-  // Show loading state
-  if (isLoading) {
-    return <ChartSkeleton />;
-  }
 
   // Show empty state if no data
   if (filteredData.length === 0) {

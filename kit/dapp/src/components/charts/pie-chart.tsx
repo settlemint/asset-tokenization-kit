@@ -17,7 +17,6 @@ import {
 import { ReactNode, useMemo } from "react";
 import { Cell, Pie, PieChart } from "recharts";
 import { ChartEmptyState } from "./chart-empty-state";
-import { ChartSkeleton } from "./chart-skeleton";
 
 interface PieChartProps {
   title: string;
@@ -28,7 +27,6 @@ interface PieChartProps {
   nameKey: string;
   className?: string;
   footer?: ReactNode;
-  isLoading?: boolean;
   emptyMessage?: string;
   emptyDescription?: string;
 }
@@ -42,7 +40,6 @@ export function PieChartComponent({
   nameKey,
   footer,
   className,
-  isLoading = false,
   emptyMessage,
   emptyDescription,
 }: PieChartProps) {
@@ -51,11 +48,6 @@ export function PieChartComponent({
     () => data.filter((d) => Number(d[dataKey]) !== 0),
     [data, dataKey]
   );
-
-  // Show loading state
-  if (isLoading) {
-    return <ChartSkeleton />;
-  }
 
   if (filteredData.length === 0) {
     return (

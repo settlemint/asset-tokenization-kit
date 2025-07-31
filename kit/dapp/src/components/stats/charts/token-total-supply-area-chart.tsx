@@ -42,7 +42,6 @@ export function TokenTotalSupplyAreaChart({
               },
             },
             dataKeys: ["totalSupply"],
-            isEmpty: true,
           };
         }
 
@@ -64,7 +63,6 @@ export function TokenTotalSupplyAreaChart({
           chartData: transformedData,
           chartConfig: config,
           dataKeys: ["totalSupply"],
-          isEmpty: false,
         };
       },
     [t]
@@ -72,7 +70,7 @@ export function TokenTotalSupplyAreaChart({
 
   // Fetch and transform total supply history data with optimized caching
   const {
-    data: { chartData, chartConfig, dataKeys, isEmpty },
+    data: { chartData, chartConfig, dataKeys },
   } = useSuspenseQuery(
     orpc.token.statsTotalSupply.queryOptions({
       input: { tokenAddress, days: timeRange },
@@ -81,24 +79,6 @@ export function TokenTotalSupplyAreaChart({
       gcTime: 10 * 60 * 1000, // 10 minutes - cache retention
     })
   );
-
-  // Handle empty state
-  if (isEmpty) {
-    return (
-      <ComponentErrorBoundary componentName="Token Total Supply Chart">
-        <div className="flex h-[300px] items-center justify-center rounded-lg border border-dashed">
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground">
-              {t("charts.totalSupply.noData")}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {t("charts.totalSupply.noDataDescription", { days: timeRange })}
-            </p>
-          </div>
-        </div>
-      </ComponentErrorBoundary>
-    );
-  }
 
   return (
     <ComponentErrorBoundary componentName="Token Total Supply Chart">
