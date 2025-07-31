@@ -24,8 +24,8 @@ import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middle
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
 import { upsert } from "@/orpc/routes/settings/routes/settings.upsert";
+import { complianceModuleCreate } from "@/orpc/routes/system/compliance-module/routes/compliance-module.create";
 import { read } from "@/orpc/routes/system/routes/system.read";
-import { complianceModuleCreate } from "@/orpc/routes/system/compliance-module/routes/complianceModule.create";
 import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";

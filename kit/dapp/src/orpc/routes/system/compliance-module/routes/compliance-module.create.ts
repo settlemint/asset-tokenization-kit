@@ -27,7 +27,7 @@ import {
   SystemComplianceModuleConfig,
   type SystemComplianceModuleCreateOutput,
   type SystemComplianceModuleCreateSchema,
-} from "@/orpc/routes/system/compliance-module/routes/complianceModule.create.schema";
+} from "@/orpc/routes/system/compliance-module/routes/compliance-module.create.schema";
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
