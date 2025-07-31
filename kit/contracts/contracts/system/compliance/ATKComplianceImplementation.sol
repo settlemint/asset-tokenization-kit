@@ -16,7 +16,7 @@ import { ISMARTComplianceModule } from "../../smart/interface/ISMARTComplianceMo
 import { ISMART } from "../../smart/interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
-import { ATKSystemRoles } from "../ATKSystemRoles.sol";
+import { ATKSystemRoles, ATKPeopleRoles } from "../ATKRoles.sol";
 
 // Extensions
 import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
@@ -85,7 +85,7 @@ contract ATKComplianceImplementation is
     /// SYSTEM_MODULE_ROLE.
     /// Bypassed addresses can bypass compliance checks in canTransfer function.
     /// @param account The address to add to the bypass list
-    function addToBypassList(address account) external onlySystemRoles3(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE) {
+    function addToBypassList(address account) external onlySystemRoles3(ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE) {
         if (account == address(0)) revert ZeroAddressNotAllowed();
         if (_bypassedAddresses[account]) revert AddressAlreadyOnBypassList(account);
 
@@ -97,7 +97,7 @@ contract ATKComplianceImplementation is
     /// @dev Uses new multi-role access control. Can be called by COMPLIANCE_MANAGER_ROLE, SYSTEM_MANAGER_ROLE, or
     /// SYSTEM_MODULE_ROLE.
     /// @param account The address to remove from the bypass list
-    function removeFromBypassList(address account) external onlySystemRoles3(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE) {
+    function removeFromBypassList(address account) external onlySystemRoles3(ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE) {
         if (!_bypassedAddresses[account]) revert AddressNotOnBypassList(account);
 
         _bypassedAddresses[account] = false;
@@ -110,7 +110,7 @@ contract ATKComplianceImplementation is
     /// This is a gas-efficient way to add multiple addresses to the bypass list at once.
     /// @param accounts Array of addresses to add to the bypass list
     function addMultipleToBypassList(address[] calldata accounts)
-         external onlySystemRoles3(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE)
+         external onlySystemRoles3(ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE)
     {
         uint256 accountsLength = accounts.length;
         for (uint256 i = 0; i < accountsLength;) {
@@ -132,7 +132,7 @@ contract ATKComplianceImplementation is
     /// SYSTEM_MODULE_ROLE.
     /// @param accounts Array of addresses to remove from the bypass list
     function removeMultipleFromBypassList(address[] calldata accounts)
-         external onlySystemRoles3(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE)
+         external onlySystemRoles3(ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE)
     {
         uint256 accountsLength = accounts.length;
         for (uint256 i = 0; i < accountsLength;) {
@@ -162,7 +162,7 @@ contract ATKComplianceImplementation is
     /// @param params ABI-encoded parameters for the module
     function addGlobalComplianceModule(address module, bytes calldata params)
         external
-        onlySystemRole(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE)
     {
         // Validate module and parameters first
         _validateModuleAndParams(module, params);
@@ -184,7 +184,7 @@ contract ATKComplianceImplementation is
     /// @param module Address of the compliance module to remove
     function removeGlobalComplianceModule(address module)
         external
-        onlySystemRole(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE)
     {
         uint256 index = _globalModuleIndex[module]; // This is index + 1
         if (index == 0) {
@@ -213,7 +213,7 @@ contract ATKComplianceImplementation is
     /// @param params New ABI-encoded parameters for the module
     function setParametersForGlobalComplianceModule(address module, bytes calldata params)
         external
-        onlySystemRole(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE)
     {
         if (_globalModuleIndex[module] == 0) {
             revert GlobalModuleNotFound(module);

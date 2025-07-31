@@ -11,7 +11,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 
 // Constants
-import { ATKSystemRoles } from "../ATKSystemRoles.sol";
+import { ATKSystemRoles, ATKPeopleRoles } from "../ATKRoles.sol";
 
 // Interface imports
 import { IERC3643IdentityRegistryStorage } from "./../../smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol";
@@ -260,7 +260,7 @@ contract ATKIdentityRegistryStorageImplementation is
     )
         external
         override
-        onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKSystemRoles.SYSTEM_MANAGER_ROLE) // Ensures only authorized contracts can modify storage.
+        onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKPeopleRoles.SYSTEM_MANAGER_ROLE) // Ensures only authorized contracts can modify storage.
     {
         if (_userAddress == address(0)) revert InvalidIdentityWalletAddress();
         if (address(_identity) == address(0)) revert InvalidIdentityAddress();
@@ -300,7 +300,7 @@ contract ATKIdentityRegistryStorageImplementation is
     function removeIdentityFromStorage(address _userAddress)
         external
         override
-        onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         // Ensure an identity exists for this user address before attempting removal.
         if (_identities[_userAddress].identityContract == address(0)) revert IdentityDoesNotExist(_userAddress);
@@ -352,7 +352,7 @@ contract ATKIdentityRegistryStorageImplementation is
     )
         external
         override
-        onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (_identities[_userAddress].identityContract == address(0)) revert IdentityDoesNotExist(_userAddress);
         if (address(_identity) == address(0)) revert InvalidIdentityAddress();
@@ -379,7 +379,7 @@ contract ATKIdentityRegistryStorageImplementation is
     )
         external
         override
-        onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (_identities[_userAddress].identityContract == address(0)) revert IdentityDoesNotExist(_userAddress);
 
@@ -408,7 +408,7 @@ contract ATKIdentityRegistryStorageImplementation is
     /// @dev Reverts with:
     ///      - `InvalidIdentityRegistryAddress()` if `_identityRegistry` is `address(0)`.
     ///      - `IdentityRegistryAlreadyBound(_identityRegistry)` if the registry is already bound.
-    function bindIdentityRegistry(address _identityRegistry) external onlySystemRoles2(ATKSystemRoles.SYSTEM_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE) {
+    function bindIdentityRegistry(address _identityRegistry) external onlySystemRoles2(ATKPeopleRoles.SYSTEM_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE) {
         if (_identityRegistry == address(0)) revert InvalidIdentityRegistryAddress();
         if (_boundIdentityRegistries[_identityRegistry]) revert IdentityRegistryAlreadyBound(_identityRegistry);
 
@@ -437,7 +437,7 @@ contract ATKIdentityRegistryStorageImplementation is
     /// @param _identityRegistry The address of the `SMARTIdentityRegistry` contract to unbind. This registry will no
     /// longer be able to modify storage data.
     /// @dev Reverts with `IdentityRegistryNotBound(_identityRegistry)` if the registry is not currently bound.
-    function unbindIdentityRegistry(address _identityRegistry) external onlySystemRoles2(ATKSystemRoles.SYSTEM_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE) {
+    function unbindIdentityRegistry(address _identityRegistry) external onlySystemRoles2(ATKPeopleRoles.SYSTEM_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE) {
         if (!_boundIdentityRegistries[_identityRegistry]) revert IdentityRegistryNotBound(_identityRegistry);
 
         // Note: Role revoking is now handled by the centralized access manager
@@ -529,7 +529,7 @@ contract ATKIdentityRegistryStorageImplementation is
     )
         external
         override
-        onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (userWallet == address(0)) revert InvalidIdentityWalletAddress();
         if (identityContract == address(0)) revert InvalidIdentityAddress();
@@ -555,7 +555,7 @@ contract ATKIdentityRegistryStorageImplementation is
     )
         external
         override
-        onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (lostWallet == address(0)) revert InvalidIdentityWalletAddress();
         if (newWallet == address(0)) revert InvalidIdentityWalletAddress();

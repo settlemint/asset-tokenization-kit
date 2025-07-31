@@ -15,7 +15,7 @@ import { ATKVestingAirdropImplementation } from "./ATKVestingAirdropImplementati
 import { ATKVestingAirdropProxy } from "./ATKVestingAirdropProxy.sol";
 
 // Constants
-import { ATKSystemRoles } from "../../../system/ATKSystemRoles.sol";
+import { ATKPeopleRoles } from "../../../system/ATKRoles.sol";
 
 /// @title Factory for Creating ATKVestingAirdrop Proxies
 /// @author SettleMint
@@ -78,7 +78,7 @@ contract ATKVestingAirdropFactoryImplementation is
     /// @param _newImplementation The address of the new `ATKVestingAirdrop` logic contract.
     function updateImplementation(address _newImplementation)
         external
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (_newImplementation == address(0)) revert InvalidAddress();
         if (_newImplementation == atkVestingAirdropImplementation) revert SameAddress();
@@ -116,7 +116,7 @@ contract ATKVestingAirdropFactoryImplementation is
         uint256 initializationDeadline
     )
         external
-        onlySystemRole(ATKSystemRoles.ADDON_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.ADDON_MANAGER_ROLE)
         returns (address airdropProxyAddress)
     {
         bytes memory saltInputData =

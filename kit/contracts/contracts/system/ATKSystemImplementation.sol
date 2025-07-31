@@ -36,7 +36,7 @@ import { ATKTypedImplementationProxy } from "./ATKTypedImplementationProxy.sol";
 import { ISMARTComplianceModule } from "../smart/interface/ISMARTComplianceModule.sol";
 
 // Constants
-import { ATKSystemRoles } from "./ATKSystemRoles.sol";
+import { ATKSystemRoles, ATKPeopleRoles } from "./ATKRoles.sol";
 import { ATKTopics } from "./ATKTopics.sol";
 
 // Interface imports
@@ -336,7 +336,7 @@ contract ATKSystemImplementation is
     /// The UUPS upgrade mechanism is used.
     /// Only the `DEFAULT_ADMIN_ROLE` can authorize an upgrade.
     /// @param newImplementation The address of the new implementation contract
-    function _authorizeUpgrade(address newImplementation) internal override onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE) { }
+    function _authorizeUpgrade(address newImplementation) internal override onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE) { }
 
     // --- Bootstrap Function ---
     /// @notice Deploys and initializes the proxy contracts for all core ATK modules.
@@ -353,7 +353,7 @@ contract ATKSystemImplementation is
     /// Reverts if any required implementation address (for compliance, identity registry, storage, trusted issuers,
     /// factory)
     /// is not set (i.e., is the zero address) before calling this function.
-    function bootstrap() external nonReentrant onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE) {
+    function bootstrap() external nonReentrant onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE) {
         // Check if system is already bootstrapped.
         if (_bootstrapped) {
             revert SystemAlreadyBootstrapped();
@@ -553,7 +553,7 @@ contract ATKSystemImplementation is
     /// @param implementation_ The new address for the compliance module logic contract.
     function setComplianceImplementation(address implementation_)
         public
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (implementation_ == address(0)) revert ComplianceImplementationNotSet();
         _checkInterface(implementation_, _COMPLIANCE_ID); // Ensure it supports the correct interface.
@@ -568,7 +568,7 @@ contract ATKSystemImplementation is
     /// @param implementation_ The new address for the identity registry logic contract.
     function setIdentityRegistryImplementation(address implementation_)
         public
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (implementation_ == address(0)) revert IdentityRegistryImplementationNotSet();
         _checkInterface(implementation_, _IDENTITY_REGISTRY_ID);
@@ -583,7 +583,7 @@ contract ATKSystemImplementation is
     /// @param implementation_ The new address for the identity registry storage logic contract.
     function setIdentityRegistryStorageImplementation(address implementation_)
         public
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (implementation_ == address(0)) revert IdentityRegistryStorageImplementationNotSet();
         _checkInterface(implementation_, _IDENTITY_REGISTRY_STORAGE_ID);
@@ -598,7 +598,7 @@ contract ATKSystemImplementation is
     /// @param implementation_ The new address for the trusted issuers registry logic contract.
     function setTrustedIssuersRegistryImplementation(address implementation_)
         public
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (implementation_ == address(0)) revert TrustedIssuersRegistryImplementationNotSet();
         _checkInterface(implementation_, _TRUSTED_ISSUERS_REGISTRY_ID);
@@ -613,7 +613,7 @@ contract ATKSystemImplementation is
     /// @param implementation_ The new address for the topic scheme registry logic contract.
     function setTopicSchemeRegistryImplementation(address implementation_)
         public
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (implementation_ == address(0)) revert TopicSchemeRegistryImplementationNotSet();
         _checkInterface(implementation_, _TOPIC_SCHEME_REGISTRY_ID);
@@ -628,7 +628,7 @@ contract ATKSystemImplementation is
     /// @param implementation_ The new address for the identity factory logic contract.
     function setIdentityFactoryImplementation(address implementation_)
         public
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (implementation_ == address(0)) revert IdentityFactoryImplementationNotSet();
         _checkInterface(implementation_, _IDENTITY_FACTORY_ID);
@@ -643,7 +643,7 @@ contract ATKSystemImplementation is
     /// @param implementation_ The new address for the standard identity logic template.
     function setIdentityImplementation(address implementation_)
         public
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (implementation_ == address(0)) revert IdentityImplementationNotSet();
         _checkInterface(implementation_, _IIDENTITY_ID);
@@ -658,7 +658,7 @@ contract ATKSystemImplementation is
     /// @param implementation_ The new address for the contract identity logic template.
     function setContractIdentityImplementation(address implementation_)
         public
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (implementation_ == address(0)) revert ContractIdentityImplementationNotSet();
         _checkInterface(implementation_, _IIDENTITY_ID);
@@ -673,7 +673,7 @@ contract ATKSystemImplementation is
     /// @param implementation_ The new address for the token access manager logic contract.
     function setTokenAccessManagerImplementation(address implementation_)
         public
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (implementation_ == address(0)) revert TokenAccessManagerImplementationNotSet();
         _checkInterface(implementation_, _TOKEN_ACCESS_MANAGER_ID);
@@ -689,7 +689,7 @@ contract ATKSystemImplementation is
     /// @param implementation_ The new address for the compliance module registry logic contract.
     function setComplianceModuleRegistryImplementation(address implementation_)
         public
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (implementation_ == address(0)) revert ComplianceModuleRegistryImplementationNotSet();
         _checkInterface(implementation_, _COMPLIANCE_MODULE_REGISTRY_ID);
@@ -705,7 +705,7 @@ contract ATKSystemImplementation is
     /// @param implementation_ The new address for the addon registry logic contract.
     function setAddonRegistryImplementation(address implementation_)
         public
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (implementation_ == address(0)) revert AddonRegistryImplementationNotSet();
         _checkInterface(implementation_, _ADDON_REGISTRY_ID);
@@ -721,7 +721,7 @@ contract ATKSystemImplementation is
     /// @param implementation_ The new address for the token factory registry logic contract.
     function setTokenFactoryRegistryImplementation(address implementation_)
         public
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (implementation_ == address(0)) revert TokenFactoryRegistryImplementationNotSet();
         _checkInterface(implementation_, _TOKEN_FACTORY_REGISTRY_ID);

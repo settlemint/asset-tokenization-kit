@@ -13,7 +13,7 @@ import {
     SystemAddonTypeAlreadyRegistered,
     SystemAddonImplementationNotSet
 } from "../ATKSystemErrors.sol";
-import { ATKSystemRoles } from "../ATKSystemRoles.sol";
+import { ATKPeopleRoles, ATKSystemRoles } from "../ATKRoles.sol";
 import { IATKTypedImplementationRegistry } from "../IATKTypedImplementationRegistry.sol";
 import { ATKTypedImplementationProxy } from "../ATKTypedImplementationProxy.sol";
 import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
@@ -74,7 +74,7 @@ contract ATKSystemAddonRegistryImplementation is
         external
         override
         nonReentrant
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
         returns (address proxyAddress)
     {
         if (address(implementation_) == address(0)) revert InvalidAddonAddress();
@@ -118,7 +118,7 @@ contract ATKSystemAddonRegistryImplementation is
     )
         public
         override
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (implementation_ == address(0)) revert InvalidAddonAddress();
         if (addonImplementationsByType[addonTypeHash] == address(0)) {

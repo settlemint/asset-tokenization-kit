@@ -16,7 +16,7 @@ import {
     InvalidTokenImplementationAddress,
     InvalidTokenImplementationInterface
 } from "../ATKSystemErrors.sol";
-import { ATKSystemRoles } from "../ATKSystemRoles.sol";
+import { ATKSystemRoles, ATKPeopleRoles } from "../ATKRoles.sol";
 import { IATKTokenFactory } from "../token-factory/IATKTokenFactory.sol";
 import { InvalidImplementationInterface } from "../ATKSystemErrors.sol";
 import { IATKTypedImplementationRegistry } from "../IATKTypedImplementationRegistry.sol";
@@ -81,7 +81,7 @@ contract ATKTokenFactoryRegistryImplementation is
         external
         override
         nonReentrant
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
         returns (address)
     {
         if (address(_factoryImplementation) == address(0)) revert InvalidTokenFactoryAddress();
@@ -133,7 +133,7 @@ contract ATKTokenFactoryRegistryImplementation is
     )
         public
         override
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (implementation_ == address(0)) revert InvalidTokenFactoryAddress();
         if (tokenFactoryImplementationsByType[factoryTypeHash] == address(0)) revert InvalidTokenFactoryAddress();

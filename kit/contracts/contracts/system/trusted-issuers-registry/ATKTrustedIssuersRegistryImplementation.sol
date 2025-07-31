@@ -20,7 +20,7 @@ import { IClaimAuthorizer } from "../../onchainid/extensions/IClaimAuthorizer.so
 import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
 
 // Constants
-import { ATKSystemRoles } from "../ATKSystemRoles.sol";
+import { ATKSystemRoles, ATKPeopleRoles } from "../ATKRoles.sol";
 
 // Extensions
 import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
@@ -226,8 +226,8 @@ contract ATKTrustedIssuersRegistryImplementation is
     /// @return roles Array of roles that can manage trusted issuers and claim policies
     function _getClaimPolicyManagementRoles() internal pure returns (bytes32[] memory roles) {
         roles = new bytes32[](3);
-        roles[0] = ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE; // Primary claim policy manager
-        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE; // System manager
+        roles[0] = ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE; // Primary claim policy manager
+        roles[1] = ATKPeopleRoles.SYSTEM_MANAGER_ROLE; // System manager
         roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE; // System module role
     }
 
@@ -259,7 +259,7 @@ contract ATKTrustedIssuersRegistryImplementation is
     )
         external
         override
-        onlySystemRoles2(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
+        onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
     {
         address issuerAddress = address(_trustedIssuer);
         if (issuerAddress == address(0)) revert InvalidIssuerAddress();
@@ -301,7 +301,7 @@ contract ATKTrustedIssuersRegistryImplementation is
     function removeTrustedIssuer(IClaimIssuer _trustedIssuer)
         external
         override
-        onlySystemRoles2(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
+        onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
     {
         address issuerAddress = address(_trustedIssuer);
         if (!_trustedIssuers[issuerAddress].exists) revert IssuerDoesNotExist(issuerAddress);
@@ -352,7 +352,7 @@ contract ATKTrustedIssuersRegistryImplementation is
     )
         external
         override
-        onlySystemRoles2(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
+        onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
     {
         address issuerAddress = address(_trustedIssuer);
         if (!_trustedIssuers[issuerAddress].exists) revert IssuerDoesNotExist(issuerAddress);

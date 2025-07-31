@@ -26,7 +26,7 @@ import { IATKIdentityRegistry } from "./IATKIdentityRegistry.sol";
 import { ExpressionNode, ExpressionType } from "../../smart/interface/structs/ExpressionNode.sol";
 
 // Constants
-import { ATKSystemRoles } from "../ATKSystemRoles.sol";
+import { ATKSystemRoles, ATKPeopleRoles } from "../ATKRoles.sol";
 
 // Extensions
 import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
@@ -208,7 +208,7 @@ contract ATKIdentityRegistryImplementation is
     function setIdentityRegistryStorage(address identityStorage_)
         external
         override
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (identityStorage_ == address(0)) revert InvalidStorageAddress();
         _identityStorage = ISMARTIdentityRegistryStorage(identityStorage_);
@@ -224,7 +224,7 @@ contract ATKIdentityRegistryImplementation is
     function setTrustedIssuersRegistry(address trustedIssuersRegistry_)
         external
         override
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (trustedIssuersRegistry_ == address(0)) revert InvalidRegistryAddress();
         _trustedIssuersRegistry = IERC3643TrustedIssuersRegistry(trustedIssuersRegistry_);
@@ -240,7 +240,7 @@ contract ATKIdentityRegistryImplementation is
     function setTopicSchemeRegistry(address topicSchemeRegistry_)
         external
         override
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (topicSchemeRegistry_ == address(0)) revert InvalidTopicSchemeRegistryAddress();
         _topicSchemeRegistry = ISMARTTopicSchemeRegistry(topicSchemeRegistry_);
@@ -265,7 +265,7 @@ contract ATKIdentityRegistryImplementation is
     )
         external
         override
-        onlySystemRoles3(ATKSystemRoles.IDENTITY_MANAGER_ROLE, ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE)
+        onlySystemRoles3(ATKPeopleRoles.IDENTITY_MANAGER_ROLE, ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE)
     {
         _registerIdentity(_userAddress, _identity, _country);
     }
@@ -279,7 +279,7 @@ contract ATKIdentityRegistryImplementation is
     /// Emits an `IdentityRemoved` event upon successful deletion.
     /// @param _userAddress The blockchain address of the user whose identity is to be deleted.
     /// Reverts with `IdentityNotRegistered` if the address is not found.
-    function deleteIdentity(address _userAddress) external override onlySystemRoles3(ATKSystemRoles.IDENTITY_MANAGER_ROLE, ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE) {
+    function deleteIdentity(address _userAddress) external override onlySystemRoles3(ATKPeopleRoles.IDENTITY_MANAGER_ROLE, ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE) {
         // Ensure the identity exists before attempting to delete.
         // The `contains` function checks the storage contract.
         if (!this.contains(_userAddress)) revert IdentityNotRegistered(_userAddress);
@@ -309,7 +309,7 @@ contract ATKIdentityRegistryImplementation is
     )
         external
         override
-        onlySystemRole(ATKSystemRoles.IDENTITY_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.IDENTITY_MANAGER_ROLE)
     {
         if (!this.contains(_userAddress)) revert IdentityNotRegistered(_userAddress);
 
@@ -334,7 +334,7 @@ contract ATKIdentityRegistryImplementation is
     )
         external
         override
-        onlySystemRole(ATKSystemRoles.IDENTITY_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.IDENTITY_MANAGER_ROLE)
     {
         if (!this.contains(_userAddress)) revert IdentityNotRegistered(_userAddress);
         if (address(_identity) == address(0)) revert InvalidIdentityAddress();
@@ -362,7 +362,7 @@ contract ATKIdentityRegistryImplementation is
     )
         external
         override
-        onlySystemRole(ATKSystemRoles.IDENTITY_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.IDENTITY_MANAGER_ROLE)
     {
         // Ensure all input arrays have the same number of elements.
         if (_userAddresses.length != _identities.length) {
@@ -391,7 +391,7 @@ contract ATKIdentityRegistryImplementation is
     )
         external
         override
-        onlySystemRole(ATKSystemRoles.IDENTITY_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.IDENTITY_MANAGER_ROLE)
     {
         // Initial input validation
         if (lostWallet == address(0)) revert InvalidUserAddress();

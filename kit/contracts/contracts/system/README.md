@@ -584,7 +584,7 @@ functions, ensuring consistent and secure updates across the entire protocol.
 ```
 system/
 ├── ATKSystem*.sol                          # Core system contracts
-├── ATKSystemRoles.sol                      # Role definitions
+├── ATKRoles.sol                      # Role definitions
 ├── ATKTopics.sol                          # Standard claim topics
 ├── access-manager/                        # Token access management
 ├── addons/                                # System addon registry

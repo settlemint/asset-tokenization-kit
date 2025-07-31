@@ -24,7 +24,7 @@ import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.so
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ATKSystemAccessManagerImplementation } from "./access-manager/ATKSystemAccessManagerImplementation.sol";
 import { IATKSystemAccessManager } from "./access-manager/IATKSystemAccessManager.sol";
-import { ATKSystemRoles } from "./ATKSystemRoles.sol";
+import { ATKPeopleRoles, ATKRoles, ATKSystemRoles } from "./ATKRoles.sol";
 
 
 // --- Contract Definition ---
@@ -254,12 +254,12 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
 
         // Grant the initial admin the default admin, deployer, and implementation manager roles.
         bytes32[] memory senderRoles = new bytes32[](2);
-        senderRoles[0] = ATKSystemRoles.DEFAULT_ADMIN_ROLE;
-        senderRoles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE;
+        senderRoles[0] = ATKRoles.DEFAULT_ADMIN_ROLE;
+        senderRoles[1] = ATKPeopleRoles.SYSTEM_MANAGER_ROLE;
         IATKSystemAccessManager(address(systemAccessManagerProxy)).grantMultipleRoles(sender, senderRoles);
 
         bytes32[] memory systemRoles = new bytes32[](2);
-        systemRoles[0] = ATKSystemRoles.DEFAULT_ADMIN_ROLE; // needs to be able to grant roles to system modules
+        systemRoles[0] = ATKRoles.DEFAULT_ADMIN_ROLE; // needs to be able to grant roles to system modules
         systemRoles[1] = ATKSystemRoles.SYSTEM_MODULE_ROLE;
         IATKSystemAccessManager(address(systemAccessManagerProxy)).grantMultipleRoles(systemAddress, systemRoles);
 

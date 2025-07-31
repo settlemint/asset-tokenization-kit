@@ -9,7 +9,7 @@ import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.s
 import { AbstractATKSystemAddonFactoryImplementation } from
     "../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
 import { ATKXvPSettlementProxy } from "./ATKXvPSettlementProxy.sol";
-import { ATKSystemRoles } from "../../system/ATKSystemRoles.sol";
+import { ATKPeopleRoles } from "../../system/ATKRoles.sol";
 
 /// @title ATKXvPSettlementFactoryImplementation - A factory contract for creating XvPSettlement contracts
 /// @author SettleMint
@@ -84,7 +84,7 @@ contract ATKXvPSettlementFactoryImplementation is
     /// @param _newImplementation The address of the new XvPSettlement logic contract.
     function updateImplementation(address _newImplementation)
         external
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (_newImplementation == address(0)) revert InvalidAddress();
         if (_newImplementation == xvpSettlementImplementation) revert SameAddress();
@@ -111,7 +111,7 @@ contract ATKXvPSettlementFactoryImplementation is
         bool autoExecute
     )
         external
-        onlySystemRole(ATKSystemRoles.ADDON_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.ADDON_MANAGER_ROLE)
         returns (address contractAddress)
     {
         if (cutoffDate < block.timestamp + 1) revert InvalidCutoffDate();

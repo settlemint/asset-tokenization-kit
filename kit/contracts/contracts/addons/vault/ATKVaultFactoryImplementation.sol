@@ -11,7 +11,7 @@ import { AbstractATKSystemAddonFactoryImplementation } from
 import { ATKVault } from "./ATKVault.sol";
 
 // Constants
-import { ATKSystemRoles } from "../../system/ATKSystemRoles.sol";
+import { ATKPeopleRoles } from "../../system/ATKRoles.sol";
 
 /// @title Factory for Creating ATKVault Proxies
 /// @author SettleMint
@@ -107,7 +107,7 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
     )
         external
         override(IATKVaultFactory)
-        onlySystemRole(ATKSystemRoles.ADDON_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.ADDON_MANAGER_ROLE)
         returns (address contractAddress)
     {
         (bytes memory saltInputData, bytes memory constructorArgs, bytes memory vaultBytecode) =

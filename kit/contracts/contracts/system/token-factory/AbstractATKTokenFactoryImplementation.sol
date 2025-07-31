@@ -14,7 +14,7 @@ import { ISMARTCompliance } from "../../smart/interface/ISMARTCompliance.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IATKSystem } from "../IATKSystem.sol";
 import { IATKIdentityFactory } from "../identity-factory/IATKIdentityFactory.sol";
-import { ATKSystemRoles } from "../ATKSystemRoles.sol";
+import { ATKPeopleRoles } from "../ATKRoles.sol";
 import { ATKRoles } from "../../assets/ATKRoles.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
@@ -106,7 +106,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
     function updateTokenImplementation(address newImplementation)
         public
         virtual
-        onlySystemRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (newImplementation == address(0)) {
             revert InvalidImplementationAddress();
@@ -221,7 +221,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
     function _createAccessManager(bytes memory accessManagerSaltInputData)
         internal
         virtual
-        onlySystemRole(ATKSystemRoles.TOKEN_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.TOKEN_MANAGER_ROLE)
         returns (ISMARTTokenAccessManager)
     {
         // Calculate salt and creation code once
@@ -267,7 +267,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
         uint16 country
     )
         internal
-        onlySystemRole(ATKSystemRoles.TOKEN_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.TOKEN_MANAGER_ROLE)
         returns (address deployedAddress, address deployedTokenIdentityAddress)
     {
         // Combine calculation to reduce stack variables

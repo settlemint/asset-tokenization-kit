@@ -19,7 +19,7 @@ import { ISMARTIdentityRegistry } from "../../smart/interface/ISMARTIdentityRegi
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 
 // Constants
-import { ATKSystemRoles } from "../ATKSystemRoles.sol";
+import { ATKPeopleRoles, ATKSystemRoles } from "../ATKRoles.sol";
 
 // Extensions
 import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
@@ -120,7 +120,7 @@ abstract contract AbstractATKSystemAddonFactoryImplementation is
         address expectedAddress
     )
         internal
-        onlySystemRole(ATKSystemRoles.ADDON_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.ADDON_MANAGER_ROLE)
         returns (address deployedAddress)
     {
         if (isFactorySystemAddon[expectedAddress]) {

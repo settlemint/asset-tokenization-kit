@@ -13,7 +13,7 @@ import { IATKTopicSchemeRegistry } from "./IATKTopicSchemeRegistry.sol";
 import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
 
 // Constants
-import { ATKSystemRoles } from "../ATKSystemRoles.sol";
+import { ATKSystemRoles, ATKPeopleRoles } from "../ATKRoles.sol";
 
 // Extensions
 import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
@@ -111,7 +111,7 @@ contract ATKTopicSchemeRegistryImplementation is
     )
         external
         override
-        onlySystemRoles2(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
+        onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
     {
         if (bytes(name).length == 0) revert EmptyName();
         if (bytes(signature).length == 0) revert EmptySignature();
@@ -138,7 +138,7 @@ contract ATKTopicSchemeRegistryImplementation is
     )
         external
         override
-        onlySystemRoles2(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
+        onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
     {
         uint256 namesLength = names.length;
         uint256 signaturesLength = signatures.length;
@@ -202,7 +202,7 @@ contract ATKTopicSchemeRegistryImplementation is
     )
         external
         override
-        onlySystemRoles2(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
+        onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
     {
         if (bytes(name).length == 0) revert EmptyName();
         if (bytes(newSignature).length == 0) revert EmptySignature();
@@ -226,7 +226,7 @@ contract ATKTopicSchemeRegistryImplementation is
     function removeTopicScheme(string calldata name)
         external
         override
-        onlySystemRoles2(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
+        onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
     {
         if (bytes(name).length == 0) revert EmptyName();
 
