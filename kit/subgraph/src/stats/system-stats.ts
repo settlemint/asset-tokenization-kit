@@ -1,41 +1,11 @@
-import { Address, BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal } from "@graphprotocol/graph-ts";
 import {
-  IdentityClaim,
   SystemStatsData,
   SystemStatsState,
   Token,
-  TokenFactory,
-  TokenFactoryRegistry,
 } from "../../generated/schema";
-import { fetchIdentityClaimValue } from "../identity/fetch/identity-claim-value";
 import { fetchSystem } from "../system/fetch/system";
-import { toBigDecimal } from "../utils/token-decimals";
-
-/**
- * Get base price for a token from its basePriceClaim
- */
-export function getTokenBasePrice(basePriceClaim: Bytes | null): BigDecimal {
-  if (!basePriceClaim) {
-    return BigDecimal.zero();
-  }
-
-  const claim = IdentityClaim.load(basePriceClaim);
-  if (!claim) {
-    return BigDecimal.zero();
-  }
-
-  const basePriceClaimValue = fetchIdentityClaimValue(claim, "amount");
-  const basePriceClaimDecimals = fetchIdentityClaimValue(claim, "decimals");
-
-  if (!basePriceClaimValue || !basePriceClaimValue.value) {
-    return BigDecimal.zero();
-  }
-
-  return toBigDecimal(
-    BigInt.fromString(basePriceClaimValue.value),
-    I32.parseInt(basePriceClaimDecimals.value)
-  );
-}
+import { getSystemAddress, getTokenBasePrice } from "./utils/stats-utils";
 
 /**
  * Update system stats when token supply changes (mint/burn)
@@ -131,31 +101,4 @@ function trackSystemStats(
   systemStats.totalValueInBaseCurrency = totalValue;
 
   systemStats.save();
-}
-
-/**
- * Get the system address from a token
- */
-function getSystemAddress(token: Token): Address {
-  if (!token.tokenFactory) {
-    return Address.zero();
-  }
-
-  const tokenFactory = TokenFactory.load(token.tokenFactory!);
-  if (!tokenFactory) {
-    return Address.zero();
-  }
-
-  if (!tokenFactory.tokenFactoryRegistry) {
-    return Address.zero();
-  }
-
-  const tokenFactoryRegistry = TokenFactoryRegistry.load(
-    tokenFactory.tokenFactoryRegistry!
-  );
-  if (!tokenFactoryRegistry) {
-    return Address.zero();
-  }
-
-  return Address.fromBytes(tokenFactoryRegistry.system);
 }

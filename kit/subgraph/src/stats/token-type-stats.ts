@@ -1,13 +1,11 @@
 import { Address, BigDecimal, Bytes, log } from "@graphprotocol/graph-ts";
 import {
   Token,
-  TokenFactory,
-  TokenFactoryRegistry,
   TokenTypeStatsData,
   TokenTypeStatsState,
 } from "../../generated/schema";
 import { fetchSystem } from "../system/fetch/system";
-import { getTokenBasePrice } from "./system-stats";
+import { getSystemAddress, getTokenBasePrice } from "./utils/stats-utils";
 
 /**
  * State management for token type statistics
@@ -191,32 +189,4 @@ function getPercentageOfTotalSupply(
     ]
   );
   return percentage.times(BigDecimal.fromString("100"));
-}
-
-/**
- * Get the system address from a token
- * This is a helper function similar to the one in system-stats.ts
- */
-function getSystemAddress(token: Token): Address {
-  if (!token.tokenFactory) {
-    return Address.zero();
-  }
-
-  const tokenFactory = TokenFactory.load(token.tokenFactory!);
-  if (!tokenFactory) {
-    return Address.zero();
-  }
-
-  if (!tokenFactory.tokenFactoryRegistry) {
-    return Address.zero();
-  }
-
-  const tokenFactoryRegistry = TokenFactoryRegistry.load(
-    tokenFactory.tokenFactoryRegistry!
-  );
-  if (!tokenFactoryRegistry) {
-    return Address.zero();
-  }
-
-  return Address.fromBytes(tokenFactoryRegistry.system);
 }
