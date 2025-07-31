@@ -1,5 +1,5 @@
 import { AssetBasics } from "@/components/asset-designer/asset-designer-wizard/asset-basics/asset";
-import { ComplianceModules } from "@/components/asset-designer/asset-designer-wizard/compliance-modules/compliance-modules";
+import { SelectComplianceModules } from "@/components/asset-designer/asset-designer-wizard/compliance-modules/select-compliance-modules";
 import {
   assetDesignerFormOptions,
   AssetDesignerFormSchema,
@@ -17,6 +17,7 @@ import {
   type AssetType,
 } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
+import { ComplianceModulesList } from "@/orpc/routes/system/compliance-module/routes/compliance-module.list.schema";
 import { FactoryList } from "@/orpc/routes/token/routes/factory/factory.list.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
@@ -27,11 +28,13 @@ import { toast } from "sonner";
 interface AssetDesignerFormProps {
   type: AssetType;
   factories: FactoryList;
+  complianceModules: ComplianceModulesList;
 }
 
 export const AssetDesignerWizard = ({
   type,
   factories,
+  complianceModules,
 }: AssetDesignerFormProps) => {
   const { t } = useTranslation(["asset-designer"]);
   const steps = useAssetDesignerSteps();
@@ -106,7 +109,11 @@ export const AssetDesignerWizard = ({
   const stepComponent: Record<AssetDesignerStepsType, JSX.Element> = {
     assetBasics: <AssetBasics form={form} onStepSubmit={incrementStep} />,
     complianceModules: (
-      <ComplianceModules form={form} onStepSubmit={incrementStep} />
+      <SelectComplianceModules
+        form={form}
+        onStepSubmit={incrementStep}
+        complianceModules={complianceModules}
+      />
     ),
     summary: (
       <Summary

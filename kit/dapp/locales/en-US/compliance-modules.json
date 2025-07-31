@@ -30,5 +30,16 @@
       "shortDescription": "Require SMART protocol identity verification",
       "title": "SMART Identity Verification"
     }
+  },
+  "title": "Compliance Modules",
+  "sections": {
+    "enabled": {
+      "title": "Enabled Modules",
+      "description": "Modules that are currently enabled and active"
+    },
+    "available": {
+      "title": "Available Modules",
+      "description": "Modules that are available to be enabled"
+    }
   }
 }

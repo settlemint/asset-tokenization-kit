@@ -236,7 +236,7 @@ export type ComplianceParams = z.infer<ReturnType<typeof complianceParams>>;
  * Type representing a compliance module pair with typeId and params.
  * Used for token initialization and configuration.
  */
-export type ComplianceModulePair = z.infer<
+export type ComplianceModulePair = z.input<
   ReturnType<typeof complianceModulePair>
 >;
 

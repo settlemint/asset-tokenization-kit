@@ -1,16 +1,10 @@
 import MultipleSelector from "@/components/ui/multiselect";
-import countries, {
-  alpha2ToNumeric,
-  getAlpha2Code,
-  getName,
-} from "i18n-iso-countries";
+import countries, { alpha2ToNumeric, getAlpha2Code } from "i18n-iso-countries";
 import { useTranslation } from "react-i18next";
 
 interface CountryMultiselectProps {
-  value: string[]; // ISO 3166-1 alpha-2 country codes
-  onChange: (
-    value: { name: string; numericCode: string; alpha2Code: string }[]
-  ) => void;
+  value: { name: string; numericCode: string }[];
+  onChange: (value: { name: string; numericCode: string }[]) => void;
 }
 
 export function CountryMultiselect({
@@ -26,20 +20,15 @@ export function CountryMultiselect({
     label: value,
   }));
 
-  const getCountryCodes = (country: string) => {
-    const alpha2Code = getAlpha2Code(country, i18n.language);
+  const getNumericCodeFromName = (name: string) => {
+    const alpha2Code = getAlpha2Code(name, i18n.language);
+
     if (!alpha2Code) {
-      throw new Error(`Alpha2 code for country ${country} not found`);
+      throw new Error(`Alpha2 code for country ${name} not found`);
     }
-
     const numericCode = alpha2ToNumeric(alpha2Code);
-    if (!numericCode) {
-      throw new Error(`Numeric code for country ${country} not found`);
-    }
-
     return {
-      numericCode,
-      alpha2Code,
+      numericCode: numericCode ?? "",
     };
   };
 
@@ -48,11 +37,7 @@ export function CountryMultiselect({
       commandProps={{
         label: t("label"),
       }}
-      value={value.map((code) => {
-        const name = getName(code, i18n.language);
-        if (!name) {
-          throw new Error(`Name for country ${code} not found`);
-        }
+      value={value.map(({ name }) => {
         return {
           value: name,
           label: name,
@@ -62,7 +47,7 @@ export function CountryMultiselect({
         onChange(
           options.map((option) => ({
             name: option.value,
-            ...getCountryCodes(option.value),
+            ...getNumericCodeFromName(option.value),
           }))
         );
       }}
