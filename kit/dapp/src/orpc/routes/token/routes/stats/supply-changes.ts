@@ -1,10 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-<<<<<<< HEAD
-import { ORPCError } from "@orpc/server";
-=======
->>>>>>> origin/main
 import { z } from "zod";
 
 /**

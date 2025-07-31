@@ -4,10 +4,7 @@ import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { AssetSupplyChangesAreaChart } from "@/components/stats/charts/asset-supply-changes-area-chart";
 import { AssetTotalSupplyAreaChart } from "@/components/stats/charts/asset-total-supply-area-chart";
-<<<<<<< HEAD
 import { AssetWalletDistributionChart } from "@/components/stats/charts/asset-wallet-distribution-chart";
-=======
->>>>>>> origin/main
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
