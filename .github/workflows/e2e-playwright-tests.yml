@@ -185,7 +185,7 @@ jobs:
           webhook-type: incoming-webhook
           payload: |
             {
-              "text": "${{ steps.playwright-ui.outcome == 'success' && ':white_check_mark: E2E UI Tests Passed' || ':x: E2E UI Tests Failed' }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run Details>"
+              "text": "${{ steps.playwright-ui.outcome == 'success' && ':white_check_mark: ATK E2E UI Tests Passed' || ':x: ATK E2E UI Tests Failed' }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run Details>"
             }
 
       - name: Docker compose logs on failure
