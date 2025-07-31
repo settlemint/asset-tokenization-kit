@@ -5,33 +5,47 @@
  * variable filtering, and schema validation for TheGraph queries.
  *
  * Key Features:
- * - Automatic pagination for list fields that include `first` and/or `skip` parameters
+ * - Automatic pagination using the `@fetchAll` directive OR explicit `first`/`skip` parameters
  * - Merge and filtering of complex GraphQL responses
  * - Integration with Zod for runtime type validation
+ * - Support for nested and multiple paginated fields
  *
- * IMPORTANT: This middleware requires queries to explicitly include pagination parameters
- * (`first` and/or `skip`) on fields that should be paginated. It will NOT automatically
- * add pagination to fields - it only handles the pagination loop for fields that already
- * have these parameters.
+ * The middleware supports two pagination patterns:
+ * 1. **@fetchAll Directive** (NEW): Add `@fetchAll` to any list field to automatically fetch all results
+ * 2. **Explicit Parameters**: Include `first` and/or `skip` parameters for manual control
  *
  * @module TheGraphMiddleware
  * @category Middleware
  * @example
- * // Query must include first/skip for pagination to work
+ * // Option 1: Using @fetchAll directive (recommended)
  * const TOKENS_QUERY = gql`
+ *   query GetAllTokens {
+ *     tokens @fetchAll {  # Automatically fetches ALL tokens
+ *       id
+ *       name
+ *       holders @fetchAll {  # Nested pagination also supported
+ *         id
+ *         balance
+ *       }
+ *     }
+ *   }
+ * `;
+ *
+ * // Option 2: Using explicit pagination parameters
+ * const TOKENS_WITH_PARAMS = gql`
  *   query GetTokens {
- *     tokens(first: 1000, skip: 0) {  # Required for pagination
+ *     tokens(first: 1000, skip: 0) {  # Manual pagination control
  *       id
  *       name
  *     }
  *   }
  * `;
  *
- * // The middleware will automatically fetch all pages
+ * // Both patterns work with the same client.query API
  * const result = await theGraphClient.query(TOKENS_QUERY, {
  *   output: TokenSchema
  * });
- * // result.tokens will contain ALL tokens, not just the first 1000
+ * // result.tokens contains ALL tokens, regardless of pagination limits
  */
 import { theGraphClient } from "@/lib/settlemint/the-graph";
 import { sortBy } from "es-toolkit";
@@ -52,6 +66,7 @@ import { baseRouter } from "../../procedures/base.router";
 const THE_GRAPH_LIMIT = 500;
 const FIRST_ARG = "first";
 const SKIP_ARG = "skip";
+const FETCH_ALL_DIRECTIVE = "fetchAll";
 
 interface ListField {
   path: string[];
@@ -62,6 +77,62 @@ interface ListField {
   skipValue?: number;
   otherArgs: ArgumentNode[];
   selections?: ReadonlyArray<SelectionNode>;
+  hasFetchAllDirective?: boolean;
+  firstValueIsDefault?: boolean; // Track if first value was defaulted
+}
+
+/**
+ * Detects and strips @fetchAll directives from a GraphQL document
+ *
+ * @param {DocumentNode} document - The GraphQL document to process
+ * @returns {Object} Processed document and list of fields with @fetchAll
+ *
+ * @remarks
+ * This function:
+ * - Identifies fields decorated with @fetchAll directive
+ * - Removes the directive from the AST (The Graph doesn't recognize it)
+ * - Returns both the cleaned document and a list of fields to auto-paginate
+ *
+ * @example
+ * const { document: cleanDoc, fetchAllFields } = stripFetchAllDirective(doc);
+ * // fetchAllFields = ['tokens', 'users'] for fields with @fetchAll
+ */
+function stripFetchAllDirective(document: DocumentNode): {
+  document: DocumentNode;
+  fetchAllFields: Set<string>;
+} {
+  const fetchAllFields = new Set<string>();
+
+  const strippedDocument = visit(document, {
+    Field(node) {
+      // Check if this field has the @fetchAll directive
+      if (node.directives && node.directives.length > 0) {
+        const hasFetchAll = node.directives.some(
+          (dir) => dir.name.value === FETCH_ALL_DIRECTIVE
+        );
+
+        if (hasFetchAll) {
+          const fieldIdentifier = node.alias?.value || node.name.value;
+          fetchAllFields.add(fieldIdentifier);
+
+          // Return a new node without the @fetchAll directive
+          return {
+            ...node,
+            directives: node.directives.filter(
+              (dir) => dir.name.value !== FETCH_ALL_DIRECTIVE
+            ),
+          };
+        }
+      }
+
+      return node;
+    },
+  });
+
+  return {
+    document: strippedDocument,
+    fetchAllFields,
+  };
 }
 
 /**
@@ -140,10 +211,11 @@ function customMerge(target: unknown, source: unknown): unknown {
 function createValidatedTheGraphClient(
   errors: Parameters<Parameters<typeof baseRouter.middleware>[0]>[0]["errors"]
 ) {
-  // Extract all list fields (queries that have pagination arguments)
+  // Extract all list fields (queries that have pagination arguments or @fetchAll)
   function extractListFields(
     document: DocumentNode,
-    variables?: Variables
+    variables?: Variables,
+    fetchAllFields?: Set<string>
   ): ListField[] {
     const fields: ListField[] = [];
     const pathStack: string[] = [];
@@ -164,6 +236,7 @@ function createValidatedTheGraphClient(
           let hasSkipArg = false;
           let firstValue: number | undefined;
           let skipValue: number | undefined;
+          let firstValueIsDefault = false;
           const otherArgs: ArgumentNode[] = [];
 
           if (node.arguments) {
@@ -173,22 +246,41 @@ function createValidatedTheGraphClient(
                 if (arg.value.kind === Kind.INT) {
                   firstValue = Number.parseInt(arg.value.value);
                 } else if (arg.value.kind === Kind.VARIABLE && variables) {
+                  const varName = arg.value.name.value;
                   const varValue = (variables as Record<string, unknown>)[
-                    arg.value.name.value
+                    varName
                   ];
                   firstValue =
                     typeof varValue === "number" ? varValue : undefined;
+                  // If variable is defined in query but not passed in input, check if it's a standard pagination variable
+                  if (
+                    firstValue === undefined &&
+                    (varName === "first" || varName.endsWith("irst"))
+                  ) {
+                    hasFirstArg = true;
+                    firstValue = THE_GRAPH_LIMIT; // Default to THE_GRAPH_LIMIT
+                    firstValueIsDefault = true; // Mark that this was defaulted
+                  }
                 }
               } else if (arg.name.value === SKIP_ARG) {
                 hasSkipArg = true;
                 if (arg.value.kind === Kind.INT) {
                   skipValue = Number.parseInt(arg.value.value);
                 } else if (arg.value.kind === Kind.VARIABLE && variables) {
+                  const varName = arg.value.name.value;
                   const varValue = (variables as Record<string, unknown>)[
-                    arg.value.name.value
+                    varName
                   ];
                   skipValue =
                     typeof varValue === "number" ? varValue : undefined;
+                  // If variable is defined in query but not passed in input, check if it's a standard pagination variable
+                  if (
+                    skipValue === undefined &&
+                    (varName === "skip" || varName.endsWith("kip"))
+                  ) {
+                    hasSkipArg = true;
+                    skipValue = 0; // Default to 0
+                  }
                 }
               } else {
                 otherArgs.push(arg);
@@ -196,20 +288,32 @@ function createValidatedTheGraphClient(
             }
           }
 
-          // Consider it a list field ONLY if it has pagination arguments (first/skip)
-          // This is the most reliable way to detect list fields in TheGraph
-          const hasPaginationArgs = hasFirstArg || hasSkipArg;
+          // Check if this field has @fetchAll directive
+          const fieldIdentifierForDirective =
+            node.alias?.value || node.name.value;
+          const hasFetchAllDirective = fetchAllFields?.has(
+            fieldIdentifierForDirective
+          );
 
-          if (hasPaginationArgs) {
+          // Consider it a list field if it has pagination arguments OR @fetchAll
+          const hasPaginationArgs = hasFirstArg || hasSkipArg;
+          const shouldPaginate = hasPaginationArgs || hasFetchAllDirective;
+
+          if (shouldPaginate) {
             fields.push({
               path: [...pathStack],
               fieldName: node.name.value,
               alias: node.alias?.value,
               hasFirstArg,
-              firstValue,
-              skipValue,
+              firstValue:
+                hasFetchAllDirective && !hasFirstArg
+                  ? THE_GRAPH_LIMIT
+                  : firstValue,
+              skipValue: hasFetchAllDirective && !hasSkipArg ? 0 : skipValue,
               otherArgs,
               selections: node.selectionSet?.selections,
+              hasFetchAllDirective,
+              firstValueIsDefault,
             });
           }
         },
@@ -371,7 +475,7 @@ function createValidatedTheGraphClient(
     return isEmpty(filtered) ? undefined : filtered;
   }
 
-  // Execute pagination for a list field to get ALL records
+  // Execute pagination for a list field
   async function executeListFieldPagination(
     document: DocumentNode,
     variables: Variables | undefined,
@@ -381,12 +485,19 @@ function createValidatedTheGraphClient(
     let currentSkip = field.skipValue || 0;
     let hasMore = true;
 
+    // For fields with pagination arguments, always attempt to fetch data
+    // and continue if we get a full page (indicating more data might exist)
+    const batchSize = Math.min(
+      field.firstValue || THE_GRAPH_LIMIT,
+      THE_GRAPH_LIMIT
+    );
+
     while (hasMore) {
       const query = createSingleFieldQuery(
         document,
         field,
         currentSkip,
-        THE_GRAPH_LIMIT
+        batchSize
       );
 
       const response = await (
@@ -402,15 +513,33 @@ function createValidatedTheGraphClient(
       // Use array path format for es-toolkit's get function
       const data = get(response, field.path);
 
-      if (isArray(data)) {
+      if (isArray(data) && data.length > 0) {
         results.push(...data);
-        // Continue if we got a full batch
-        hasMore = data.length === THE_GRAPH_LIMIT;
+
+        // Continue fetching if:
+        // 1. We have @fetchAll directive (fetch everything)
+        // 2. We have an explicit first value > THE_GRAPH_LIMIT and haven't reached it
+        // 3. We have a defaulted first value and got a full batch (treating it as "no explicit value")
+        // 4. We have no first value and got a full batch
+        if (field.hasFetchAllDirective) {
+          // With @fetchAll, continue if we got a full batch
+          hasMore = data.length === batchSize;
+        } else if (field.firstValue && !field.firstValueIsDefault) {
+          // With explicit first value (not defaulted), only continue if:
+          // - We haven't reached the requested amount yet
+          // - We got a full batch (indicating more data might exist)
+          hasMore =
+            data.length === batchSize && results.length < field.firstValue;
+        } else {
+          // When first is not specified or was defaulted (using default batch size),
+          // continue if we got a full batch (standard TheGraph pagination behavior)
+          hasMore = data.length === batchSize;
+        }
       } else {
         hasMore = false;
       }
 
-      currentSkip += THE_GRAPH_LIMIT;
+      currentSkip += batchSize;
     }
 
     return results;
@@ -430,10 +559,15 @@ function createValidatedTheGraphClient(
       const { input, output: schema } = options;
 
       try {
-        // Extract all list fields
+        // First, detect and strip @fetchAll directives
+        const { document: processedDocument, fetchAllFields } =
+          stripFetchAllDirective(document as unknown as DocumentNode);
+
+        // Extract all list fields (including those with @fetchAll)
         const listFields = extractListFields(
-          document as unknown as DocumentNode,
-          input
+          processedDocument,
+          input,
+          fetchAllFields
         );
 
         // If no list fields, execute normally
@@ -443,7 +577,13 @@ function createValidatedTheGraphClient(
               doc: TadaDocumentNode<D, V>,
               vars: V
             ) => Promise<D>
-          )(document, input as TVariables);
+          )(
+            processedDocument as unknown as TadaDocumentNode<
+              TResult,
+              TVariables
+            >,
+            input as TVariables
+          );
 
           return schema.parse(queryResponse);
         }
@@ -458,7 +598,7 @@ function createValidatedTheGraphClient(
         const fieldDataPromises = sortedFields.map(async (field) => ({
           field,
           data: await executeListFieldPagination(
-            document as unknown as DocumentNode,
+            processedDocument,
             input as Variables,
             field
           ),
@@ -473,10 +613,7 @@ function createValidatedTheGraphClient(
         }
 
         // Execute non-list fields (single entity queries)
-        const nonListQuery = createNonListQuery(
-          document as unknown as DocumentNode,
-          listFields
-        );
+        const nonListQuery = createNonListQuery(processedDocument, listFields);
 
         if (nonListQuery) {
           const nonListResult = await (
@@ -523,36 +660,50 @@ export type ValidatedTheGraphClient = ReturnType<
  * TheGraph middleware that enhances GraphQL queries with automatic pagination support.
  *
  * This middleware intercepts GraphQL queries to TheGraph and automatically handles
- * pagination for fields that include `first` and/or `skip` parameters.
+ * pagination for fields decorated with `@fetchAll` or that include `first`/`skip` parameters.
  *
  * @remarks
- * IMPORTANT: Queries must explicitly include `first` and/or `skip` parameters on fields
- * that should be paginated. The middleware will NOT add these parameters automatically.
+ * The middleware supports two pagination patterns:
+ * 1. **@fetchAll directive**: Add to any list field to automatically fetch all results
+ * 2. **Explicit parameters**: Include `first` and/or `skip` for manual pagination control
  *
  * @example
- * // In your ORPC route:
- * export const listTokens = systemProcedure
- *   .use(theGraphMiddleware)  // Add the middleware
- *   .input(z.object({ type: z.string().optional() }))
- *   .query(async ({ context, input }) => {
- *     // Query MUST include first/skip for pagination
+ * // Example 1: Using @fetchAll directive (recommended)
+ * export const listAllTokens = systemProcedure
+ *   .use(theGraphMiddleware)
+ *   .query(async ({ context }) => {
  *     const result = await context.theGraphClient.query(
  *       gql`
- *         query GetTokens($type: String) {
- *           tokens(first: 1000, skip: 0, where: { type: $type }) {
+ *         query GetAllTokens {
+ *           tokens @fetchAll {  # Fetches ALL tokens automatically
  *             id
  *             name
  *             totalSupply
  *           }
  *         }
  *       `,
- *       {
- *         input: { type: input.type },
- *         output: TokensSchema
- *       }
+ *       { output: TokensSchema }
  *     );
- *     // result.tokens contains ALL tokens (not just first 1000)
- *     return result.tokens;
+ *     return result.tokens; // Contains ALL tokens
+ *   });
+ *
+ * @example
+ * // Example 2: Using explicit pagination (backward compatible)
+ * export const listTokensPaginated = systemProcedure
+ *   .use(theGraphMiddleware)
+ *   .query(async ({ context }) => {
+ *     const result = await context.theGraphClient.query(
+ *       gql`
+ *         query GetTokens {
+ *           tokens(first: 1000, skip: 0) {  # Manual pagination
+ *             id
+ *             name
+ *           }
+ *         }
+ *       `,
+ *       { output: TokensSchema }
+ *     );
+ *     return result.tokens; // Also contains ALL tokens
  *   });
  */
 export const theGraphMiddleware = baseRouter.middleware((options) => {

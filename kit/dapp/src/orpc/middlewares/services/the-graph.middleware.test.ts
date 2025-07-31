@@ -686,18 +686,22 @@ describe("the-graph.middleware", () => {
           }
         `);
 
-        // First two calls: paginated list field (tokens)
-        (theGraphClient.request as Mock)
-          .mockResolvedValueOnce({ tokens: createMockTokens(1, 500) })
-          .mockResolvedValueOnce({ tokens: createMockTokens(501, 200) })
-          // Third call: non-list field (system)
-          .mockResolvedValueOnce({
-            system: {
-              id: "system-1",
-              account: { id: "account-1" },
-              compliance: { id: "compliance-1", enabled: true },
-            },
-          });
+        // Mock implementation to handle parallel requests
+        const { print } = await import("graphql");
+        (theGraphClient.request as Mock).mockImplementation((query) => {
+          const queryStr = print(query);
+          return queryStr.includes("tokens(")
+            ? // Tokens field has explicit first: 500, should only be called once
+              Promise.resolve({ tokens: createMockTokens(1, 500) })
+            : // Non-list query for system field
+              Promise.resolve({
+                system: {
+                  id: "system-1",
+                  account: { id: "account-1" },
+                  compliance: { id: "compliance-1", enabled: true },
+                },
+              });
+        });
 
         const schema = z.object({
           tokens: z.array(
@@ -721,10 +725,10 @@ describe("the-graph.middleware", () => {
           output: schema,
         });
 
-        expect(result.tokens).toHaveLength(700);
+        expect(result.tokens).toHaveLength(500); // Should respect explicit first: 500
         expect(result.system.id).toBe("system-1");
         expect(result.system.compliance.enabled).toBe(true);
-        expect(theGraphClient.request).toHaveBeenCalledTimes(3);
+        expect(theGraphClient.request).toHaveBeenCalledTimes(2); // 1 for tokens, 1 for system
       });
 
       test("should preserve non-list data when merging paginated results", async () => {
@@ -908,8 +912,8 @@ describe("the-graph.middleware", () => {
           .mockRejectedValueOnce(new Error("Rate limit exceeded"));
 
         const PAGINATED_QUERY = createMockDocument(`
-          query PaginatedQuery {
-            tokens(first: 500) {
+          query PaginatedQuery($first: Int!, $skip: Int!) {
+            tokens(first: $first, skip: $skip) {
               id
             }
           }
@@ -1320,8 +1324,8 @@ describe("the-graph.middleware", () => {
           }),
         });
 
-        expect(result.tokens).toHaveLength(5234);
-        expect(theGraphClient.request).toHaveBeenCalledTimes(11); // 11 calls for pagination
+        expect(result.tokens).toHaveLength(1000); // Should stop at the requested limit
+        expect(theGraphClient.request).toHaveBeenCalledTimes(2); // 2 calls to get 1000 items
       });
     });
 
@@ -2207,6 +2211,343 @@ describe("the-graph.middleware", () => {
         expect(result.data.boolField).toBe(true);
         expect(result.tokens).toHaveLength(1);
         expect(theGraphClient.request).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe("@fetchAll directive handling", () => {
+      test("should handle @fetchAll directive on simple list field", async () => {
+        const FETCH_ALL_QUERY = createMockDocument(`
+          query GetAllTokens {
+            tokens @fetchAll {
+              id
+              name
+            }
+          }
+        `);
+
+        (theGraphClient.request as Mock).mockReset();
+        // First page
+        (theGraphClient.request as Mock).mockResolvedValueOnce({
+          tokens: Array.from({ length: 500 }, (_, i) => ({
+            id: `token-${i}`,
+            name: `Token ${i}`,
+          })),
+        });
+        // Second page
+        (theGraphClient.request as Mock).mockResolvedValueOnce({
+          tokens: Array.from({ length: 300 }, (_, i) => ({
+            id: `token-${i + 500}`,
+            name: `Token ${i + 500}`,
+          })),
+        });
+
+        const result = await client.query(FETCH_ALL_QUERY, {
+          input: {},
+          output: z.object({
+            tokens: z.array(z.object({ id: z.string(), name: z.string() })),
+          }),
+        });
+
+        // Verify all results are fetched
+        expect(result.tokens).toHaveLength(800);
+        expect(result.tokens[0]?.id).toBe("token-0");
+        expect(result.tokens[799]?.id).toBe("token-799");
+
+        // Verify the query was called with proper pagination
+        expect(theGraphClient.request).toHaveBeenCalledTimes(2);
+
+        // Check that @fetchAll was stripped and pagination was added
+        const firstCall = (theGraphClient.request as Mock).mock.calls[0]?.[0];
+        expect(firstCall).toBeDefined();
+        // The middleware passes a DocumentNode, we need to convert it to string to check
+        const { print } = await import("graphql");
+        const firstQueryStr = print(firstCall);
+        expect(firstQueryStr).not.toContain("@fetchAll");
+        expect(firstQueryStr).toContain("first: 500");
+        expect(firstQueryStr).toContain("skip: 0");
+
+        const secondCall = (theGraphClient.request as Mock).mock.calls[1]?.[0];
+        expect(secondCall).toBeDefined();
+        const secondQueryStr = print(secondCall);
+        expect(secondQueryStr).toContain("skip: 500");
+      });
+
+      test("should handle @fetchAll with existing where clause", async () => {
+        const FETCH_ALL_WITH_WHERE = createMockDocument(`
+          query GetActiveTokens {
+            tokens(where: { active: true }) @fetchAll {
+              id
+              active
+            }
+          }
+        `);
+
+        (theGraphClient.request as Mock).mockReset();
+        (theGraphClient.request as Mock).mockResolvedValueOnce({
+          tokens: [
+            { id: "active-1", active: true },
+            { id: "active-2", active: true },
+          ],
+        });
+
+        const result = await client.query(FETCH_ALL_WITH_WHERE, {
+          input: {},
+          output: z.object({
+            tokens: z.array(z.object({ id: z.string(), active: z.boolean() })),
+          }),
+        });
+
+        expect(result.tokens).toHaveLength(2);
+        expect(result.tokens.every((t) => t.active)).toBe(true);
+
+        // Verify where clause is preserved
+        const call = (theGraphClient.request as Mock).mock.calls[0]?.[0];
+        expect(call).toBeDefined();
+        const { print } = await import("graphql");
+        const queryStr = print(call);
+        expect(queryStr).toContain("where:");
+        expect(queryStr).toContain("active:");
+        expect(queryStr).toContain("first:");
+        expect(queryStr).toContain("skip:");
+      });
+
+      test("should handle multiple @fetchAll directives", async () => {
+        const MULTIPLE_FETCH_ALL = createMockDocument(`
+          query GetAllData {
+            tokens @fetchAll {
+              id
+            }
+            users @fetchAll {
+              id
+              name
+            }
+          }
+        `);
+
+        (theGraphClient.request as Mock).mockReset();
+        // Mock responses for both fields
+        (theGraphClient.request as Mock)
+          .mockResolvedValueOnce({ tokens: [{ id: "token-1" }] })
+          .mockResolvedValueOnce({ users: [{ id: "user-1", name: "User 1" }] });
+
+        const result = await client.query(MULTIPLE_FETCH_ALL, {
+          input: {},
+          output: z.object({
+            tokens: z.array(z.object({ id: z.string() })),
+            users: z.array(z.object({ id: z.string(), name: z.string() })),
+          }),
+        });
+
+        expect(result.tokens).toHaveLength(1);
+        expect(result.users).toHaveLength(1);
+        expect(theGraphClient.request).toHaveBeenCalledTimes(2);
+      });
+
+      test("should handle @fetchAll on nested fields", async () => {
+        const NESTED_FETCH_ALL = createMockDocument(`
+          query GetTokensWithHolders {
+            tokens @fetchAll {
+              id
+              holders @fetchAll {
+                id
+                balance
+              }
+            }
+          }
+        `);
+
+        (theGraphClient.request as Mock).mockReset();
+        // First call for tokens
+        (theGraphClient.request as Mock).mockResolvedValueOnce({
+          tokens: [
+            {
+              id: "token-1",
+              holders: Array.from({ length: 3 }, (_, i) => ({
+                id: `holder-${i}`,
+                balance: `${(i + 1) * 100}`,
+              })),
+            },
+          ],
+        });
+
+        const result = await client.query(NESTED_FETCH_ALL, {
+          input: {},
+          output: z.object({
+            tokens: z.array(
+              z.object({
+                id: z.string(),
+                holders: z.array(
+                  z.object({ id: z.string(), balance: z.string() })
+                ),
+              })
+            ),
+          }),
+        });
+
+        expect(result.tokens).toHaveLength(1);
+        expect(result.tokens[0]?.holders).toHaveLength(3);
+      });
+
+      test("should handle @fetchAll with aliases", async () => {
+        const ALIASED_FETCH_ALL = createMockDocument(`
+          query GetAliasedData {
+            allTokens: tokens @fetchAll {
+              id
+            }
+          }
+        `);
+
+        (theGraphClient.request as Mock).mockReset();
+        (theGraphClient.request as Mock).mockResolvedValueOnce({
+          allTokens: [{ id: "token-1" }, { id: "token-2" }],
+        });
+
+        const result = await client.query(ALIASED_FETCH_ALL, {
+          input: {},
+          output: z.object({
+            allTokens: z.array(z.object({ id: z.string() })),
+          }),
+        });
+
+        expect(result.allTokens).toHaveLength(2);
+      });
+
+      test("should handle mixed @fetchAll and explicit pagination", async () => {
+        const MIXED_PAGINATION = createMockDocument(`
+          query MixedPagination {
+            tokens @fetchAll {
+              id
+            }
+            users(first: 10, skip: 0) {
+              id
+            }
+          }
+        `);
+
+        (theGraphClient.request as Mock).mockReset();
+        const { print } = await import("graphql");
+        // Since fields are processed in parallel, we need to handle requests based on what they're asking for
+        (theGraphClient.request as Mock).mockImplementation((query) => {
+          const queryStr = print(query);
+          if (queryStr.includes("tokens(")) {
+            // Check if this is the first or second call for tokens
+            const currentCallCount = (
+              theGraphClient.request as Mock
+            ).mock.calls.filter((call) =>
+              print(call[0]).includes("tokens(")
+            ).length;
+
+            return currentCallCount === 1
+              ? // First call - return 500 tokens
+                Promise.resolve({
+                  tokens: Array.from({ length: 500 }, (_, i) => ({
+                    id: `token-${i}`,
+                  })),
+                })
+              : // Second call - return 100 more tokens
+                Promise.resolve({
+                  tokens: Array.from({ length: 100 }, (_, i) => ({
+                    id: `token-${i + 500}`,
+                  })),
+                });
+          } else if (queryStr.includes("users(")) {
+            return Promise.resolve({
+              users: Array.from({ length: 10 }, (_, i) => ({
+                id: `user-${i}`,
+              })),
+            });
+          }
+          return Promise.resolve({});
+        });
+
+        const result = await client.query(MIXED_PAGINATION, {
+          input: {},
+          output: z.object({
+            tokens: z.array(z.object({ id: z.string() })),
+            users: z.array(z.object({ id: z.string() })),
+          }),
+        });
+
+        // Debug: Check how many times the request was called
+        const mockCalls = (theGraphClient.request as Mock).mock.calls;
+        expect(mockCalls.length).toBeGreaterThanOrEqual(2);
+
+        // Check the first call for tokens @fetchAll
+        const firstCall = mockCalls[0]?.[0];
+        expect(firstCall).toBeDefined();
+        const firstQueryStr = print(firstCall);
+        expect(firstQueryStr).not.toContain("@fetchAll");
+        expect(firstQueryStr).toContain("tokens(");
+        expect(firstQueryStr).toContain("first:");
+
+        expect(result.tokens).toHaveLength(600); // All tokens via @fetchAll
+        expect(result.users).toHaveLength(10); // Only 10 via explicit params
+      });
+
+      test("should handle @fetchAll when no results", async () => {
+        const EMPTY_FETCH_ALL = createMockDocument(`
+          query GetEmptyResults {
+            tokens @fetchAll {
+              id
+            }
+          }
+        `);
+
+        (theGraphClient.request as Mock).mockReset();
+        (theGraphClient.request as Mock).mockResolvedValueOnce({
+          tokens: [],
+        });
+
+        const result = await client.query(EMPTY_FETCH_ALL, {
+          input: {},
+          output: z.object({
+            tokens: z.array(z.object({ id: z.string() })),
+          }),
+        });
+
+        expect(result.tokens).toHaveLength(0);
+        expect(theGraphClient.request).toHaveBeenCalledTimes(1);
+      });
+
+      test("should not process fields without @fetchAll and without pagination params", async () => {
+        const NO_PAGINATION_QUERY = createMockDocument(`
+          query GetSingleEntity {
+            token(id: "1") {
+              id
+              name
+            }
+            metadata {
+              totalSupply
+            }
+          }
+        `);
+
+        (theGraphClient.request as Mock).mockReset();
+        (theGraphClient.request as Mock).mockResolvedValueOnce({
+          token: { id: "1", name: "Token 1" },
+          metadata: { totalSupply: "1000000" },
+        });
+
+        const result = await client.query(NO_PAGINATION_QUERY, {
+          input: {},
+          output: z.object({
+            token: z.object({ id: z.string(), name: z.string() }),
+            metadata: z.object({ totalSupply: z.string() }),
+          }),
+        });
+
+        // Should pass through without pagination
+        expect(result.token.id).toBe("1");
+        expect(result.metadata.totalSupply).toBe("1000000");
+        expect(theGraphClient.request).toHaveBeenCalledTimes(1);
+
+        // Verify no pagination was added
+        const call = (theGraphClient.request as Mock).mock.calls[0]?.[0];
+        expect(call).toBeDefined();
+        const { print } = await import("graphql");
+        const queryStr = print(call);
+        expect(queryStr).not.toContain("first:");
+        expect(queryStr).not.toContain("skip:");
       });
     });
   });

@@ -1,7 +1,15 @@
 /**
  * @vitest-environment node
  */
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  test,
+  vi,
+  type Mock,
+} from "vitest";
 import { portalClient } from "@/lib/settlemint/portal";
 import { getTransactionReceipt } from "./transaction-receipt";
 import { logger } from "better-auth";
@@ -10,13 +18,13 @@ import { logger } from "better-auth";
 // If the mock isn't working, we'll manually set it up
 if (
   typeof portalClient.request !== "function" ||
-  !(portalClient.request as any).mockResolvedValueOnce
+  !(portalClient.request as Mock).mockResolvedValueOnce
 ) {
   // Replace the request method with a mock
-  (portalClient as any).request = vi.fn();
+  (portalClient as unknown as { request: Mock }).request = vi.fn();
 }
 
-const mockRequest = portalClient.request as any;
+const mockRequest = portalClient.request as Mock;
 
 describe("transaction-receipt", () => {
   beforeEach(() => {

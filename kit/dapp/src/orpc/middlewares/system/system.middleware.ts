@@ -241,8 +241,12 @@ export const getSystemContext = async (
     complianceModules,
     systemAccessManager: system.systemAccessManager
       ? {
-          id: getEthereumAddress((system.systemAccessManager as any).id),
-          accessControl: (system.systemAccessManager as any).accessControl,
+          id: getEthereumAddress(
+            (system.systemAccessManager as { id: string }).id
+          ),
+          accessControl: (
+            system.systemAccessManager as { accessControl: AccessControl }
+          ).accessControl,
         }
       : null,
     identityFactory: system.identityFactory
