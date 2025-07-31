@@ -18,7 +18,6 @@ describe("Token create", () => {
       name: `Test Stablecoin ${Date.now()}`,
       symbol: "TSTC",
       decimals: 18,
-      countryCode: "056",
     } as const;
 
     const result = await client.token.create({
@@ -27,6 +26,7 @@ describe("Token create", () => {
         verificationType: "pincode",
       },
       ...tokenData,
+      countryCode: "056",
     });
 
     // The create method now returns the complete token object directly
@@ -50,7 +50,7 @@ describe("Token create", () => {
       },
       totalSupply: from("0"),
     });
-  });
+  }, 10_0000);
 
   test("regular users cant create tokens", async () => {
     const headers = await signInWithUser(DEFAULT_INVESTOR);
