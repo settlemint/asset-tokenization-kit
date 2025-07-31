@@ -829,9 +829,12 @@ type TokenTypeStatsData @entity(timeseries: true) {
   id: Int8!
   timestamp: Timestamp!
 
+  # System
   system: System!
+  # Token type
   type: String!
 
+  # Count of tokens of this type
   count: Int!
   # Percentage of total supply (eg bonds take 8% of the total supply accross all types)
   percentageOfTotalSupply: BigDecimal!
