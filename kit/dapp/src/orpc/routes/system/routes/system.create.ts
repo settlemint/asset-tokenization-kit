@@ -27,7 +27,6 @@ import { upsert } from "@/orpc/routes/settings/routes/settings.upsert";
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
-import { keccak256, toBytes } from "viem";
 import { z } from "zod";
 
 /**
@@ -297,7 +296,7 @@ export const create = onboardedRouter.system.create
             address: systemDetails.systemAccessManager,
             from: sender.wallet,
             to: contract,
-            role: keccak256(toBytes("DEFAULT_ADMIN_ROLE")),
+            role: "0x0000000000000000000000000000000000000000000000000000000000000000", // DEFAULT_ADMIN_ROLE
             ...grantRoleChallengeResponse,
           },
           "Failed to grant default admin role"

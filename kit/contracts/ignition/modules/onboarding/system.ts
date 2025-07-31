@@ -194,10 +194,7 @@ const ATKOnboardingSystemModule = buildModule(
     m.call(
       systemAccessManager,
       "grantRole",
-      [
-        "0xa6d0d666130ddda8d0a25bfc08c75c789806b23845f9cce674dfc4a9e8d0e45c",
-        systemAddonRegistryAddress,
-      ], // SYSTEM_MODULE_ROLE
+      [ATKRoles.systemModuleRole, systemAddonRegistryAddress],
       {
         from: m.getAccount(0),
         id: "grantSystemAddonRegistrySystemModuleRole",
