@@ -11,8 +11,8 @@ export default defineConfig({
     setupFiles: "./test/setup.ts",
     include: ["src/**/*.test.{ts,tsx}"],
     passWithNoTests: true,
-    pool: "forks",
-    isolate: false,
+    pool: "threads",
+    isolate: true,
     reporters: process.env.CI ? ["dot", "github-actions"] : [],
     coverage: {
       provider: "v8",
