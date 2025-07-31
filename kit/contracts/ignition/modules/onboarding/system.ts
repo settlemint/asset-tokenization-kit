@@ -1,4 +1,5 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
+import { ATKRoles } from "../../../scripts/hardhat/constants/roles";
 import ATKModule from "../main";
 
 const ATKOnboardingSystemModule = buildModule(
@@ -158,26 +159,20 @@ const ATKOnboardingSystemModule = buildModule(
 
     // Grant necessary roles to system registries in the system access manager
     // The registries need admin permissions to grant roles to the factories they create
-    const grantTokenFactoryRegistryAdminRole = m.call(
+    m.call(
       systemAccessManager,
       "grantRole",
-      [
-        "0x0000000000000000000000000000000000000000000000000000000000000000",
-        tokenFactoryRegistryAddress,
-      ], // DEFAULT_ADMIN_ROLE
+      [ATKRoles.defaultAdminRole, tokenFactoryRegistryAddress],
       {
         from: m.getAccount(0),
         id: "grantTokenFactoryRegistryAdminRole",
       }
     );
 
-    const grantSystemAddonRegistryAdminRole = m.call(
+    m.call(
       systemAccessManager,
       "grantRole",
-      [
-        "0x0000000000000000000000000000000000000000000000000000000000000000",
-        systemAddonRegistryAddress,
-      ], // DEFAULT_ADMIN_ROLE
+      [ATKRoles.defaultAdminRole, systemAddonRegistryAddress],
       {
         from: m.getAccount(0),
         id: "grantSystemAddonRegistryAdminRole",
@@ -186,26 +181,20 @@ const ATKOnboardingSystemModule = buildModule(
 
     // Grant SYSTEM_MODULE_ROLE to system registries so factories they create can access compliance
     // Token factories and addon factories need to add addresses to compliance bypass lists
-    const grantTokenFactoryRegistrySystemModuleRole = m.call(
+    m.call(
       systemAccessManager,
       "grantRole",
-      [
-        "0xa6d0d666130ddda8d0a25bfc08c75c789806b23845f9cce674dfc4a9e8d0e45c",
-        tokenFactoryRegistryAddress,
-      ], // SYSTEM_MODULE_ROLE
+      [ATKRoles.systemModuleRole, tokenFactoryRegistryAddress],
       {
         from: m.getAccount(0),
         id: "grantTokenFactoryRegistrySystemModuleRole",
       }
     );
 
-    const grantSystemAddonRegistrySystemModuleRole = m.call(
+    m.call(
       systemAccessManager,
       "grantRole",
-      [
-        "0xa6d0d666130ddda8d0a25bfc08c75c789806b23845f9cce674dfc4a9e8d0e45c",
-        systemAddonRegistryAddress,
-      ], // SYSTEM_MODULE_ROLE
+      [ATKRoles.systemModuleRole, systemAddonRegistryAddress],
       {
         from: m.getAccount(0),
         id: "grantSystemAddonRegistrySystemModuleRole",
@@ -214,13 +203,10 @@ const ATKOnboardingSystemModule = buildModule(
 
     // Grant REGISTRAR_ROLE to m.getAccount(0) on the system access manager
     // This is required to call registerTokenFactory
-    const grantRegistrarRoleToDeployer = m.call(
+    m.call(
       systemAccessManager,
       "grantRole",
-      [
-        "0x2cf38baf8b867d91cfcccc0e8d7a429365579f0eb969ff29c0621b271cdeeb64", // REGISTRAR_ROLE
-        m.getAccount(0),
-      ],
+      [ATKRoles.registrarRole, m.getAccount(0)],
       {
         from: m.getAccount(0),
         id: "grantRegistrarRoleToDeployer",
@@ -235,17 +221,12 @@ const ATKOnboardingSystemModule = buildModule(
     // Set the system access manager on contracts that need it
     // This is required for contracts that use onlySystemRoles modifier
     // Note: We're only setting it for contracts that don't already have it set in the bootstrap function
-    const setComplianceSystemAccessManager = m.call(
-      compliance,
-      "setSystemAccessManager",
-      [systemAccessManagerAddress],
-      {
-        from: m.getAccount(0),
-        id: "setComplianceSystemAccessManager",
-      }
-    );
+    m.call(compliance, "setSystemAccessManager", [systemAccessManagerAddress], {
+      from: m.getAccount(0),
+      id: "setComplianceSystemAccessManager",
+    });
 
-    const setTrustedIssuersRegistrySystemAccessManager = m.call(
+    m.call(
       trustedIssuersRegistry,
       "setSystemAccessManager",
       [systemAccessManagerAddress],

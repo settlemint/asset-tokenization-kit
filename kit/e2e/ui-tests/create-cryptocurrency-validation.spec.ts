@@ -3,8 +3,8 @@ import { CreateAssetForm } from "../pages/create-asset-form";
 import { Pages } from "../pages/pages";
 import { cryptocurrencyData } from "../test-data/asset-data";
 import {
-  successMessageData,
   errorMessageData,
+  successMessageData,
 } from "../test-data/message-data";
 import { adminUser } from "../test-data/user-data";
 import { ensureUserIsAdmin } from "../utils/db-utils";

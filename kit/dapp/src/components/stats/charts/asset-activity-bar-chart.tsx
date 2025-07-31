@@ -1,8 +1,6 @@
 import { BarChartComponent } from "@/components/charts/bar-chart";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
-import { orpc } from "@/orpc/orpc-client";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
 const chartConfig = {
@@ -32,30 +30,20 @@ const dataKeys = ["mint", "transfer", "burn", "clawback"];
  * Displays the distribution of events by asset type in a bar chart format.
  * Shows different event types (mint, transfer, burn, clawback) for asset types with activity.
  */
-export function AssetActivityChart() {
+export function AssetActivityBarChart() {
   const { t } = useTranslation("stats");
 
-  // Fetch just the activity by asset data - more efficient
-  const { data: metrics } = useSuspenseQuery(
-    orpc.token.statsActivityByAsset.queryOptions({ input: {} })
-  );
-
-  // Transform asset activity data to chart format
-  const chartData = metrics.assetActivity
-    .filter(
-      (activity) =>
-        activity.mint > 0 ||
-        activity.transfer > 0 ||
-        activity.burn > 0 ||
-        activity.clawback > 0
-    ) // Only show asset types with activity
-    .map((activity) => ({
-      assetType: activity.assetType,
-      mint: activity.mint,
-      transfer: activity.transfer,
-      burn: activity.burn,
-      clawback: activity.clawback,
-    }));
+  // TODO: Implement proper API endpoint for asset activity data
+  // See: https://linear.app/settlemint/issue/ENG-3559/create-api-endpoint-for-asset-activity-chart-data
+  // Current statsSystemTransactionHistory API only provides Transfer events without asset type grouping
+  // Need new endpoint that provides mint/burn/clawback events grouped by asset type
+  const chartData: Array<{
+    assetType: string;
+    mint: number;
+    transfer: number;
+    burn: number;
+    clawback: number;
+  }> = [];
 
   return (
     <ComponentErrorBoundary componentName="Asset Activity Chart">

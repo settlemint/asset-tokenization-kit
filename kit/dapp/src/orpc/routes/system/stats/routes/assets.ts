@@ -54,30 +54,30 @@ function createAssetBreakdown(
 }
 
 /**
- * Asset count route handler.
+ * System asset count route handler.
  *
- * Fetches asset count metrics specifically for the Asset Stats Widget:
- * - Total number of tokenized assets
+ * Fetches system-wide asset count metrics:
+ * - Total number of tokenized assets in the system
  * - Breakdown of assets by type (bond, equity, fund, etc.)
  *
- * This endpoint is optimized for displaying asset count summaries.
+ * This endpoint is optimized for displaying system asset summaries.
  *
  * Authentication: Required
- * Method: GET /token/stats/asset-count
+ * Method: GET /system/stats/assets
  *
- * @returns Promise<AssetCountMetrics> - Asset count and breakdown metrics
+ * @returns Promise<SystemAssetMetrics> - System asset count and breakdown metrics
  * @throws UNAUTHORIZED - If user is not authenticated
  * @throws INTERNAL_SERVER_ERROR - If TheGraph query fails
  *
  * @example
  * ```typescript
- * // Get asset count stats
- * const stats = await orpc.token.statsAssetCount.query();
+ * // Get system asset count stats
+ * const stats = await orpc.system.statsAssets.query();
  * console.log(`Total assets: ${stats.totalAssets}`);
  * console.log('Breakdown:', stats.assetBreakdown);
  * ```
  */
-export const statsAssetCount = authRouter.token.statsAssetCount
+export const statsAssets = authRouter.system.statsAssets
   .use(systemMiddleware)
   .use(theGraphMiddleware)
   .handler(async ({ context }) => {

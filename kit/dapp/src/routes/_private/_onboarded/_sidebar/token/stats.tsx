@@ -1,9 +1,9 @@
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
-import { AssetActivityChart } from "@/components/stats/charts/asset-activity-chart";
-import { AssetSupplyChart } from "@/components/stats/charts/asset-supply-chart";
+import { AssetActivityBarChart } from "@/components/stats/charts/asset-activity-bar-chart";
+import { AssetSupplyPieChart } from "@/components/stats/charts/asset-supply-pie-chart";
 import { ChartSkeleton } from "@/components/stats/charts/chart-skeleton";
-import { TransactionHistoryChart } from "@/components/stats/charts/transaction-history-chart";
-import { UserGrowthChart } from "@/components/stats/charts/user-growth-chart";
+import { TransactionHistoryAreaChart } from "@/components/stats/charts/transaction-history-area-chart";
+import { UserGrowthAreaChart } from "@/components/stats/charts/user-growth-area-chart";
 import { AssetStatsWidget } from "@/components/stats/widgets/asset-stats-widget";
 import { TransactionStatsWidget } from "@/components/stats/widgets/transaction-stats-widget";
 import { UserStatsWidget } from "@/components/stats/widgets/user-stats-widget";
@@ -69,16 +69,16 @@ function RouteComponent() {
       {/* Charts Section */}
       <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:grid-cols-2 lg:divide-x lg:divide-y-0 2xl:grid-cols-4">
         <Suspense fallback={<ChartSkeleton />}>
-          <AssetSupplyChart />
+          <AssetSupplyPieChart />
         </Suspense>
         <Suspense fallback={<ChartSkeleton />}>
-          <AssetActivityChart />
+          <AssetActivityBarChart />
         </Suspense>
         <Suspense fallback={<ChartSkeleton />}>
-          <UserGrowthChart />
+          <UserGrowthAreaChart />
         </Suspense>
         <Suspense fallback={<ChartSkeleton />}>
-          <TransactionHistoryChart />
+          <TransactionHistoryAreaChart />
         </Suspense>
       </div>
     </div>

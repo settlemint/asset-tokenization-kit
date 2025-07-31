@@ -55,7 +55,7 @@ describe("XVP Settlements", () => {
 
     // Derive participants from flows (unique from/to addresses)
     const participantAddresses = new Set();
-    settlement.flows.forEach((flow: any) => {
+    settlement.flows.forEach((flow) => {
       participantAddresses.add(flow.from.id);
       participantAddresses.add(flow.to.id);
     });
@@ -65,7 +65,7 @@ describe("XVP Settlements", () => {
     expect(settlement.approvals.length).toBe(2); // Approvals should be created for both participants
 
     // Verify flows structure
-    settlement.flows.forEach((flow: any) => {
+    settlement.flows.forEach((flow) => {
       expect(flow.asset).toBeDefined();
       expect(flow.asset.symbol).toBeDefined();
       expect(flow.from.id).toBeDefined();
@@ -75,7 +75,7 @@ describe("XVP Settlements", () => {
     });
 
     // Verify approvals structure - different scenarios may have different approval states
-    settlement.approvals.forEach((approval: any) => {
+    settlement.approvals.forEach((approval) => {
       expect(approval.account.id).toBeDefined();
       expect(typeof approval.approved).toBe("boolean"); // Can be true or false depending on scenario
       // If approved, should have timestamp; if not approved, should be null
@@ -122,7 +122,7 @@ describe("XVP Settlements", () => {
     const events = response.events;
 
     // Verify event structure
-    events.forEach((event: any) => {
+    events.forEach((event) => {
       expect(event.id).toBeDefined();
       expect(event.eventName).toBe("XvPSettlementCreated");
       expect(event.blockNumber).toBeDefined();
@@ -168,7 +168,7 @@ describe("XVP Settlements", () => {
     const flows = response.xvPSettlementFlows;
 
     // Verify flow structure and relationships
-    flows.forEach((flow: any) => {
+    flows.forEach((flow) => {
       expect(flow.id).toBeDefined();
       expect(flow.asset.id).toBeDefined();
       expect(flow.asset.symbol).toBeDefined();
@@ -182,7 +182,7 @@ describe("XVP Settlements", () => {
     });
 
     // The flows should represent our expected asset types from the script
-    const assetTypes = flows.map((flow: any) => flow.asset.type);
+    const assetTypes = flows.map((flow) => flow.asset.type);
     expect(assetTypes).toContain("stablecoin");
     expect(assetTypes).toContain("equity");
   });

@@ -146,6 +146,10 @@ bun run dev:reset
 ```bash
 # Start the docker compose setup
 bun run dev:up
+# Navigate to the dApp directory
+cd kit/dapp
+# Generate the required SDK types and GraphQL schemas
+bun run codegen
 # Start the dApp in development mode
 bun run dev
 ```

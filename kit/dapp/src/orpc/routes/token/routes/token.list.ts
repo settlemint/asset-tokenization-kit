@@ -2,7 +2,6 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { TokensResponseSchema } from "@/orpc/routes/token/routes/token.list.schema";
-import type { VariablesOf } from "@settlemint/sdk-thegraph";
 
 /**
  * GraphQL query for retrieving tokenized assets from TheGraph.
@@ -87,7 +86,10 @@ export const list = authRouter.token.list
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
     // Build where clause, mapping searchByAddress to id
-    const where: VariablesOf<typeof LIST_TOKEN_QUERY>["where"] = {};
+    const where: {
+      id?: string;
+      tokenFactory_?: { id: string };
+    } = {};
     if (input.tokenFactory !== undefined) {
       where.tokenFactory_ = {
         id: input.tokenFactory,
