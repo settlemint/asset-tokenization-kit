@@ -10,6 +10,7 @@ import countries from "i18n-iso-countries";
 import { z } from "zod";
 
 // Preload supported locales
+import { alpha2ToNumeric, getAlpha2Code } from "i18n-iso-countries";
 import localeAr from "i18n-iso-countries/langs/ar.json";
 import localeDe from "i18n-iso-countries/langs/de.json";
 import localeEn from "i18n-iso-countries/langs/en.json";
@@ -175,6 +176,18 @@ export function getSupportedLocales(): SupportedLocale[] {
  */
 export function getCountries(locale: SupportedLocale = "en") {
   return countries.getNames(locale);
+}
+
+export function getNumericCountryCode(
+  name: string,
+  locale: SupportedLocale = "en"
+) {
+  const alpha2Code = getAlpha2Code(name, locale);
+  if (!alpha2Code) {
+    return undefined;
+  }
+
+  return alpha2ToNumeric(alpha2Code);
 }
 
 /**
