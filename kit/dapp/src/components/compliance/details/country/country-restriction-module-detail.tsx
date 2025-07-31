@@ -5,12 +5,15 @@ import { Button } from "@/components/ui/button";
 import { useCountries } from "@/hooks/use-countries";
 import { encodeCountryParams } from "@/lib/compliance/encoding/encode-country-params";
 import { arraysEqual } from "@/lib/utils/array";
-import { ComplianceTypeIdEnum } from "@/lib/zod/validators/compliance";
 import { ArrowLeftIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-export function CountryAllowlistModuleDetail({
+type CountryModuleType =
+  | "CountryAllowListComplianceModule"
+  | "CountryBlockListComplianceModule";
+
+export function CountryRestrictionModuleDetail({
   typeId,
   module,
   isEnabled,
@@ -18,14 +21,17 @@ export function CountryAllowlistModuleDetail({
   onEnable,
   onDisable,
   onClose,
-}: ComplianceModuleDetailProps<"CountryAllowListComplianceModule">) {
+}: ComplianceModuleDetailProps<CountryModuleType>) {
   const { t } = useTranslation(["compliance-modules", "form"]);
   const { getCountryByNumericCode } = useCountries();
 
-  const config =
-    complianceModuleConfig[
-      ComplianceTypeIdEnum.CountryAllowListComplianceModule
-    ];
+  const config = complianceModuleConfig[typeId];
+
+  // Determine translation keys based on module type
+  const moduleKey =
+    typeId === "CountryAllowListComplianceModule"
+      ? "countryAllowList"
+      : "countryBlockList";
 
   // Convert numeric country codes to alpha2 codes for CountryMultiselect
   const initialCountries =
@@ -90,7 +96,7 @@ export function CountryAllowlistModuleDetail({
                 <config.icon className="w-5 h-5" />
               </div>
               <h2 className="text-2xl font-semibold leading-none tracking-tight">
-                {t("modules.countryAllowList.title")}
+                {t(`modules.${moduleKey}.title`)}
               </h2>
             </div>
             <div>
@@ -114,7 +120,7 @@ export function CountryAllowlistModuleDetail({
           </div>
           <div>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              {t("modules.countryAllowList.description")}
+              {t(`modules.${moduleKey}.description`)}
             </p>
           </div>
           {isEnabled && (
