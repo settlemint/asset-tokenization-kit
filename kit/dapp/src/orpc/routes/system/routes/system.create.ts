@@ -286,6 +286,7 @@ export const create = onboardedRouter.system.create
       const requiresAdminRole = [
         systemDetails.tokenFactoryRegistry,
         systemDetails.systemAddonRegistry,
+        systemDetails.complianceModuleRegistry,
       ].filter((contract) => contract !== null);
 
       for (const contract of requiresAdminRole) {
