@@ -10,7 +10,7 @@ import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMAR
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IWithTypeIdentifier } from "../../../contracts/smart/interface/IWithTypeIdentifier.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../../contracts/system/ATKRoles.sol";
 import {
     InvalidComplianceModuleAddress,
     ComplianceModuleAlreadyRegistered,
@@ -59,7 +59,7 @@ contract ATKComplianceModuleRegistryTest is Test {
     }
 
     function test_Initialize() public view {
-        assertTrue(registry.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(registry.hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
     }
 
     function test_RegisterComplianceModule_Success() public {
@@ -81,7 +81,7 @@ contract ATKComplianceModuleRegistryTest is Test {
         vm.prank(user);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user, ATKSystemRoles.DEFAULT_ADMIN_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user, ATKRoles.DEFAULT_ADMIN_ROLE
             )
         );
         registry.registerComplianceModule(address(mockModule));

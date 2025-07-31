@@ -10,7 +10,7 @@ import { IATKDepositFactory } from "../../contracts/assets/deposit/IATKDepositFa
 import { ATKDepositFactoryImplementation } from "../../contracts/assets/deposit/ATKDepositFactoryImplementation.sol";
 import { ATKDepositImplementation } from "../../contracts/assets/deposit/ATKDepositImplementation.sol";
 import { ATKRoles } from "../../contracts/assets/ATKRoles.sol";
-import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
+import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../contracts/system/ATKRoles.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";

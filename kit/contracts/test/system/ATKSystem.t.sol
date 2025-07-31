@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import { Test, console } from "forge-std/Test.sol";
 import { ATKSystemImplementation } from "../../contracts/system/ATKSystemImplementation.sol";
 import { IATKSystem } from "../../contracts/system/IATKSystem.sol";
-import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
+import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../contracts/system/ATKRoles.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
@@ -286,7 +286,7 @@ contract ATKSystemTest is Test {
         // Compliance module should be set via compliance module registry
 
         // Admin should have default admin role
-        assertTrue(IAccessControl(address(atkSystem)).hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(IAccessControl(address(atkSystem)).hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
     }
 
     function test_SetComplianceImplementation_OnlyAdmin_AccessControl() public {

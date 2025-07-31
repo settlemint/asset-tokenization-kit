@@ -18,7 +18,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ERC734KeyPurposes } from "../../../../contracts/onchainid/ERC734KeyPurposes.sol";
 import { ERC734KeyTypes } from "../../../../contracts/onchainid/ERC734KeyTypes.sol";
-import { ATKSystemRoles } from "../../../../contracts/system/ATKSystemRoles.sol";
+import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../../../contracts/system/ATKRoles.sol";
 
 /// @title ClaimAuthorizationSystem Test
 /// @notice Tests for the new claim authorization system (SRT-754)
@@ -102,7 +102,7 @@ contract ClaimAuthorizationSystemTest is Test {
 
         // Grant the admin the claim policy manager role in the system access manager
         vm.prank(admin);
-        systemAccessManager.grantRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, admin);
+        systemAccessManager.grantRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, admin);
     }
 
     // --- Authorization Contract Registration Tests ---

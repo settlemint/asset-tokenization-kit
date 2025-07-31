@@ -11,7 +11,7 @@ import { IATKCompliance } from "../../../contracts/system/compliance/IATKComplia
 import { ISMART } from "../../../contracts/smart/interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../../contracts/system/ATKRoles.sol";
 import { ATKSystemAccessManagerImplementation } from
     "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
 
@@ -133,7 +133,7 @@ contract ATKComplianceImplementationTest is Test {
 
         // Grant compliance manager role to our test user
         vm.prank(admin);
-        systemAccessManager.grantRole(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, complianceManager);
+        systemAccessManager.grantRole(ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE, complianceManager);
 
         // Deploy compliance implementation
         implementation = new ATKComplianceImplementation(trustedForwarder);

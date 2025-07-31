@@ -8,7 +8,7 @@ import { ISMARTTopicSchemeRegistry } from "../../../contracts/smart/interface/IS
 import { IATKTopicSchemeRegistry } from "../../../contracts/system/topic-scheme-registry/IATKTopicSchemeRegistry.sol";
 import { ATKTopicSchemeRegistryImplementation } from
     "../../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
-import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../../contracts/system/ATKRoles.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IATKSystemAccessManager } from "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
 
@@ -67,8 +67,8 @@ contract ATKTopicSchemeRegistryTest is Test {
 
         // Grant roles to test accounts through the system access manager
         vm.startPrank(admin);
-        systemAccessManager.grantRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager);
-        systemAccessManager.grantRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE, systemManager);
+        systemAccessManager.grantRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager);
+        systemAccessManager.grantRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE, systemManager);
         systemAccessManager.grantRole(ATKSystemRoles.SYSTEM_MODULE_ROLE, systemModule);
         vm.stopPrank();
     }
@@ -343,9 +343,9 @@ contract ATKTopicSchemeRegistryTest is Test {
         assertEq(registry.getSystemAccessManager(), address(systemAccessManager));
 
         // Test hasRole delegation
-        assertTrue(registry.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
-        assertTrue(registry.hasRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager));
-        assertFalse(registry.hasRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, user));
+        assertTrue(registry.hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(registry.hasRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager));
+        assertFalse(registry.hasRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, user));
     }
 
     function test_ComplexWorkflow() public {

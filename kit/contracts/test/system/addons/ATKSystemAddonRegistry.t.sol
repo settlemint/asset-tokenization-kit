@@ -10,7 +10,7 @@ import { IATKSystem } from "../../../contracts/system/IATKSystem.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IWithTypeIdentifier } from "../../../contracts/smart/interface/IWithTypeIdentifier.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../../contracts/system/ATKRoles.sol";
 import { IATKTypedImplementationRegistry } from "../../../contracts/system/IATKTypedImplementationRegistry.sol";
 import {
     InvalidAddonAddress,
@@ -69,7 +69,7 @@ contract ATKSystemAddonRegistryTest is Test {
     }
 
     function test_Initialize() public view {
-        assertTrue(registry.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(registry.hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
     }
 
     function test_RegisterSystemAddon_Success() public {

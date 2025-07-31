@@ -16,7 +16,7 @@ import { ISMARTTokenAccessManager } from
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { TestConstants } from "../../Constants.sol";
-import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../../contracts/system/ATKRoles.sol";
 import { IATKCompliance } from "../../../contracts/system/compliance/IATKCompliance.sol";
 
 abstract contract AbstractComplianceModuleTest is Test {

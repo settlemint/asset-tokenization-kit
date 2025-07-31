@@ -14,7 +14,7 @@ import { IATKTokenFactory } from "../../../contracts/system/token-factory/IATKTo
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IWithTypeIdentifier } from "../../../contracts/smart/interface/IWithTypeIdentifier.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../../contracts/system/ATKRoles.sol";
 import { IATKTypedImplementationRegistry } from "../../../contracts/system/IATKTypedImplementationRegistry.sol";
 import {
     InvalidTokenFactoryAddress,
@@ -89,7 +89,7 @@ contract ATKTokenFactoryRegistryTest is Test {
     }
 
     function test_Initialize() public view {
-        assertTrue(registry.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(registry.hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
     }
 
     function test_RegisterTokenFactory_Success() public {
@@ -110,7 +110,7 @@ contract ATKTokenFactoryRegistryTest is Test {
         // check roles granted
         assertTrue(
             IAccessControl(address(systemUtils.system().systemAccessManager())).hasRole(
-                ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, proxyAddress
+                ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE, proxyAddress
             )
         );
     }

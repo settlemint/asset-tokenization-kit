@@ -9,7 +9,7 @@ import { IERC3643TrustedIssuersRegistry } from
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../../contracts/system/ATKRoles.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ATKSystemAccessManagerImplementation } from
     "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
@@ -65,7 +65,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
 
         // Grant claim policy manager role to our test user
         vm.prank(admin);
-        systemAccessManager.grantRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager);
+        systemAccessManager.grantRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager);
 
         // Deploy trusted issuers registry implementation
         implementation = new ATKTrustedIssuersRegistryImplementation(forwarder);
@@ -84,11 +84,11 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
 
     function test_InitializeSuccess() public view {
         // Verify admin has both roles
-        assertTrue(IAccessControl(address(registry)).hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(IAccessControl(address(registry)).hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
         assertTrue(IAccessControl(address(registry)).hasRole(ATKSystemRoles.REGISTRAR_ROLE, admin));
 
         // Verify claimPolicyManager has claim policy manager role
-        assertTrue(systemAccessManager.hasRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager));
+        assertTrue(systemAccessManager.hasRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager));
 
         // Verify initial state
         IClaimIssuer[] memory issuers = registry.getTrustedIssuers();

@@ -7,7 +7,7 @@ import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { SMARTYieldToken } from "./examples/SMARTYieldToken.sol";
 import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
-import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
+import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../contracts/system/ATKRoles.sol";
 
 contract SMARTYieldStandardTest is SMARTYieldTest {
     function _setupToken() internal override {
