@@ -13,8 +13,9 @@ import { ATKFundImplementation } from "../../contracts/assets/fund/ATKFundImplem
 
 import { SMARTComplianceModuleParamPair } from
     "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ATKRoles } from "../../contracts/assets/ATKRoles.sol";
-import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../contracts/system/ATKRoles.sol";
+import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
+
+import { ATKRoles as SystemATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../contracts/system/ATKRoles.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ISMARTPausable } from "../../contracts/smart/extensions/pausable/ISMARTPausable.sol";
@@ -59,9 +60,6 @@ contract ATKFundTest is AbstractATKAssetTest {
         fundFactory = IATKFundFactory(
             systemUtils.tokenFactoryRegistry().registerTokenFactory("Fund", address(fundFactoryImpl), address(fundImpl))
         );
-
-        // Grant registrar role to owner so that he can create the fund
-        IAccessControl(address(fundFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
         vm.stopPrank();
 
         // Initialize identities
@@ -108,8 +106,8 @@ contract ATKFundTest is AbstractATKAssetTest {
         assertEq(fund.name(), NAME);
         assertEq(fund.symbol(), SYMBOL);
         assertEq(fund.decimals(), DECIMALS);
-        assertTrue(fund.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, owner));
-        assertTrue(fund.hasRole(ATKRoles.GOVERNANCE_ROLE, owner));
+        assertTrue(fund.hasRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, owner));
+        assertTrue(fund.hasRole(ATKAssetRoles.GOVERNANCE_ROLE, owner));
     }
 
     function test_Mint() public {
@@ -201,7 +199,7 @@ contract ATKFundTest is AbstractATKAssetTest {
         vm.startPrank(investor2);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, investor2, ATKRoles.CUSTODIAN_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, investor2, ATKAssetRoles.CUSTODIAN_ROLE
             )
         );
         fund.forcedTransfer(investor1, investor2, INVESTMENT_AMOUNT);

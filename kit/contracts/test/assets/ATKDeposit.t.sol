@@ -9,8 +9,7 @@ import { IATKDeposit } from "../../contracts/assets/deposit/IATKDeposit.sol";
 import { IATKDepositFactory } from "../../contracts/assets/deposit/IATKDepositFactory.sol";
 import { ATKDepositFactoryImplementation } from "../../contracts/assets/deposit/ATKDepositFactoryImplementation.sol";
 import { ATKDepositImplementation } from "../../contracts/assets/deposit/ATKDepositImplementation.sol";
-import { ATKRoles } from "../../contracts/assets/ATKRoles.sol";
-import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../contracts/system/ATKRoles.sol";
+import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
@@ -55,9 +54,6 @@ contract ATKDepositTest is AbstractATKAssetTest {
                 "Deposit", address(depositFactoryImpl), address(depositImpl)
             )
         );
-
-        // Grant registrar role to owner so that he can create the deposit
-        IAccessControl(address(depositFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
         vm.stopPrank();
 
         // Initialize identities
@@ -116,10 +112,10 @@ contract ATKDepositTest is AbstractATKAssetTest {
         assertEq(deposit.symbol(), "DEP");
         assertEq(deposit.decimals(), DECIMALS);
         assertEq(deposit.totalSupply(), 0);
-        assertTrue(deposit.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, owner));
-        assertTrue(deposit.hasRole(ATKRoles.GOVERNANCE_ROLE, owner));
-        assertTrue(deposit.hasRole(ATKRoles.CUSTODIAN_ROLE, owner));
-        assertTrue(deposit.hasRole(ATKRoles.EMERGENCY_ROLE, owner));
+        assertTrue(deposit.hasRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, owner));
+        assertTrue(deposit.hasRole(ATKAssetRoles.GOVERNANCE_ROLE, owner));
+        assertTrue(deposit.hasRole(ATKAssetRoles.CUSTODIAN_ROLE, owner));
+        assertTrue(deposit.hasRole(ATKAssetRoles.EMERGENCY_ROLE, owner));
     }
 
     function test_DifferentDecimals() public {
@@ -160,7 +156,7 @@ contract ATKDepositTest is AbstractATKAssetTest {
         vm.startPrank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKRoles.SUPPLY_MANAGEMENT_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE
             )
         );
         deposit.mint(user1, 100);
@@ -169,11 +165,11 @@ contract ATKDepositTest is AbstractATKAssetTest {
 
     function test_RoleManagement() public {
         vm.startPrank(owner);
-        ISMARTTokenAccessManager(deposit.accessManager()).grantRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1);
-        assertTrue(deposit.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1));
+        ISMARTTokenAccessManager(deposit.accessManager()).grantRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, user1);
+        assertTrue(deposit.hasRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, user1));
 
-        ISMARTTokenAccessManager(deposit.accessManager()).revokeRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1);
-        assertFalse(deposit.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1));
+        ISMARTTokenAccessManager(deposit.accessManager()).revokeRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, user1);
+        assertFalse(deposit.hasRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, user1));
         vm.stopPrank();
     }
 
@@ -189,7 +185,7 @@ contract ATKDepositTest is AbstractATKAssetTest {
     function test_onlyAdminCanPause() public {
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKRoles.EMERGENCY_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKAssetRoles.EMERGENCY_ROLE
             )
         );
         vm.prank(user1);
@@ -244,7 +240,7 @@ contract ATKDepositTest is AbstractATKAssetTest {
         vm.prank(user2);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, ATKRoles.CUSTODIAN_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, ATKAssetRoles.CUSTODIAN_ROLE
             )
         );
         deposit.freezePartialTokens(user1, 100);
@@ -294,7 +290,7 @@ contract ATKDepositTest is AbstractATKAssetTest {
         vm.prank(user2);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, ATKRoles.CUSTODIAN_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, ATKAssetRoles.CUSTODIAN_ROLE
             )
         );
         deposit.forcedTransfer(user1, user2, INITIAL_SUPPLY);
@@ -324,7 +320,7 @@ contract ATKDepositTest is AbstractATKAssetTest {
         vm.startPrank(user2);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, ATKRoles.EMERGENCY_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, ATKAssetRoles.EMERGENCY_ROLE
             )
         );
         deposit.recoverERC20(address(mockToken), user1, 500);

@@ -8,8 +8,10 @@ import { SMARTComplianceModuleParamPair } from
     "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IATKBond } from "../../contracts/assets/bond/IATKBond.sol";
 import { IATKBondFactory } from "../../contracts/assets/bond/IATKBondFactory.sol";
-import { ATKRoles } from "../../contracts/assets/ATKRoles.sol";
-import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../contracts/system/ATKRoles.sol";
+import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
+
+import { ATKRoles as SystemATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../contracts/system/ATKRoles.sol";
+import { ATKSystemImplementation } from "../../contracts/system/ATKSystemImplementation.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
@@ -84,9 +86,6 @@ contract ATKBondTest is AbstractATKAssetTest {
             systemUtils.tokenFactoryRegistry().registerTokenFactory("Bond", address(bondFactoryImpl), address(bondImpl))
         );
 
-        // Grant registrar role to owner so that he can create the bond
-        IAccessControl(address(bondFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
-
         fixedYieldScheduleFactory = IATKFixedYieldScheduleFactory(
             systemUtils.systemAddonRegistry().registerSystemAddon(
                 "fixed-yield-schedule-factory",
@@ -99,12 +98,6 @@ contract ATKBondTest is AbstractATKAssetTest {
             )
         );
         vm.label(address(fixedYieldScheduleFactory), "Yield Schedule Factory");
-        IAccessControl(address(fixedYieldScheduleFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
-
-        // Grant SYSTEM_MODULE_ROLE to the factory so it can access compliance functions like addToBypassList
-        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
-            ATKSystemRoles.SYSTEM_MODULE_ROLE, address(fixedYieldScheduleFactory)
-        );
 
         vm.stopPrank();
 
@@ -188,10 +181,10 @@ contract ATKBondTest is AbstractATKAssetTest {
         assertEq(bond.faceValue(), faceValue);
         assertEq(address(bond.underlyingAsset()), address(underlyingAsset));
         assertFalse(bond.isMatured());
-        assertTrue(bond.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, owner));
-        assertTrue(bond.hasRole(ATKRoles.GOVERNANCE_ROLE, owner));
-        assertTrue(bond.hasRole(ATKRoles.CUSTODIAN_ROLE, owner));
-        assertTrue(bond.hasRole(ATKRoles.EMERGENCY_ROLE, owner));
+        assertTrue(bond.hasRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, owner));
+        assertTrue(bond.hasRole(ATKAssetRoles.GOVERNANCE_ROLE, owner));
+        assertTrue(bond.hasRole(ATKAssetRoles.CUSTODIAN_ROLE, owner));
+        assertTrue(bond.hasRole(ATKAssetRoles.EMERGENCY_ROLE, owner));
     }
 
     function test_DifferentDecimals() public {
@@ -274,7 +267,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         vm.startPrank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKRoles.SUPPLY_MANAGEMENT_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE
             )
         );
         bond.mint(user1, toDecimals(100));
@@ -283,11 +276,11 @@ contract ATKBondTest is AbstractATKAssetTest {
 
     function test_RoleManagement() public {
         vm.startPrank(owner);
-        ISMARTTokenAccessManager(bond.accessManager()).grantRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1);
-        assertTrue(bond.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1));
+        ISMARTTokenAccessManager(bond.accessManager()).grantRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, user1);
+        assertTrue(bond.hasRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, user1));
 
-        ISMARTTokenAccessManager(bond.accessManager()).revokeRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1);
-        assertFalse(bond.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1));
+        ISMARTTokenAccessManager(bond.accessManager()).revokeRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, user1);
+        assertFalse(bond.hasRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, user1));
         vm.stopPrank();
     }
 
@@ -312,7 +305,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         vm.startPrank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKRoles.EMERGENCY_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKAssetRoles.EMERGENCY_ROLE
             )
         );
         bond.pause();
@@ -377,7 +370,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         vm.startPrank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKRoles.GOVERNANCE_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKAssetRoles.GOVERNANCE_ROLE
             )
         );
         bond.mature();
@@ -805,7 +798,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         vm.startPrank(user1); // user1 does not have SUPPLY_MANAGEMENT_ROLE
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKRoles.SUPPLY_MANAGEMENT_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE
             )
         );
         bond.setCap(CAP * 2);

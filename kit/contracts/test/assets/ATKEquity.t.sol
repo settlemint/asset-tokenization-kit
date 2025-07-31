@@ -7,8 +7,9 @@ import { IATKEquityFactory } from "../../contracts/assets/equity/IATKEquityFacto
 import { ATKEquityFactoryImplementation } from "../../contracts/assets/equity/ATKEquityFactoryImplementation.sol";
 import { IATKEquity } from "../../contracts/assets/equity/IATKEquity.sol";
 import { ATKEquityImplementation } from "../../contracts/assets/equity/ATKEquityImplementation.sol";
-import { ATKRoles } from "../../contracts/assets/ATKRoles.sol";
-import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../contracts/system/ATKRoles.sol";
+import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
+
+import { ATKRoles as SystemATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../contracts/system/ATKRoles.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
@@ -60,7 +61,7 @@ contract ATKEquityTest is AbstractATKAssetTest {
         );
 
         // Grant registrar role to owner so that he can create the equity
-        IAccessControl(address(equityFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
+        IAccessControl(address(equityFactory)).grantRole(ATKPeopleRoles.TOKEN_MANAGER_ROLE, owner);
         vm.stopPrank();
 
         // Initialize identities
@@ -112,10 +113,10 @@ contract ATKEquityTest is AbstractATKAssetTest {
         assertEq(smartEquity.name(), NAME);
         assertEq(smartEquity.symbol(), SYMBOL);
         assertEq(smartEquity.decimals(), DECIMALS);
-        assertTrue(smartEquity.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, owner));
-        assertTrue(smartEquity.hasRole(ATKRoles.GOVERNANCE_ROLE, owner));
-        assertTrue(smartEquity.hasRole(ATKRoles.CUSTODIAN_ROLE, owner));
-        assertTrue(smartEquity.hasRole(ATKRoles.EMERGENCY_ROLE, owner));
+        assertTrue(smartEquity.hasRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, owner));
+        assertTrue(smartEquity.hasRole(ATKAssetRoles.GOVERNANCE_ROLE, owner));
+        assertTrue(smartEquity.hasRole(ATKAssetRoles.CUSTODIAN_ROLE, owner));
+        assertTrue(smartEquity.hasRole(ATKAssetRoles.EMERGENCY_ROLE, owner));
         assertEq(smartEquity.totalSupply(), INITIAL_SUPPLY);
         assertEq(smartEquity.balanceOf(owner), INITIAL_SUPPLY);
     }
@@ -153,7 +154,7 @@ contract ATKEquityTest is AbstractATKAssetTest {
         vm.startPrank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKRoles.SUPPLY_MANAGEMENT_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE
             )
         );
         smartEquity.mint(user1, amount);
@@ -162,11 +163,11 @@ contract ATKEquityTest is AbstractATKAssetTest {
 
     function test_RoleManagement() public {
         vm.startPrank(owner);
-        ISMARTTokenAccessManager(smartEquity.accessManager()).grantRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1);
-        assertTrue(smartEquity.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1));
+        ISMARTTokenAccessManager(smartEquity.accessManager()).grantRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, user1);
+        assertTrue(smartEquity.hasRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, user1));
 
-        ISMARTTokenAccessManager(smartEquity.accessManager()).revokeRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1);
-        assertFalse(smartEquity.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1));
+        ISMARTTokenAccessManager(smartEquity.accessManager()).revokeRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, user1);
+        assertFalse(smartEquity.hasRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, user1));
         vm.stopPrank();
     }
 
@@ -227,7 +228,7 @@ contract ATKEquityTest is AbstractATKAssetTest {
 
     // Pausable Tests
     function test_OnlyAdminCanPause() public {
-        bytes32 role = ATKRoles.EMERGENCY_ROLE;
+        bytes32 role = ATKAssetRoles.EMERGENCY_ROLE;
 
         vm.startPrank(user1);
         vm.expectRevert(abi.encodeWithSignature("AccessControlUnauthorizedAccount(address,bytes32)", user1, role));
@@ -289,7 +290,7 @@ contract ATKEquityTest is AbstractATKAssetTest {
         vm.startPrank(user2);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, ATKRoles.CUSTODIAN_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, ATKAssetRoles.CUSTODIAN_ROLE
             )
         );
         smartEquity.freezePartialTokens(user1, 50 * 10 ** DECIMALS);
@@ -405,7 +406,7 @@ contract ATKEquityTest is AbstractATKAssetTest {
         vm.startPrank(user2);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, ATKRoles.CUSTODIAN_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, ATKAssetRoles.CUSTODIAN_ROLE
             )
         );
         smartEquity.forcedTransfer(user1, user2, 1000 * 10 ** DECIMALS);

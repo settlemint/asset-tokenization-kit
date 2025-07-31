@@ -123,10 +123,10 @@ abstract contract AbstractATKAssetTest is Test {
 
     function _grantAllRoles(address accessManager, address wallet, address defaultAdmin) internal {
         vm.startPrank(defaultAdmin);
-        ISMARTTokenAccessManager(accessManager).grantRole(AssetATKAssetRoles.GOVERNANCE_ROLE, wallet);
-        ISMARTTokenAccessManager(accessManager).grantRole(AssetATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, wallet);
-        ISMARTTokenAccessManager(accessManager).grantRole(AssetATKAssetRoles.CUSTODIAN_ROLE, wallet);
-        ISMARTTokenAccessManager(accessManager).grantRole(AssetATKAssetRoles.EMERGENCY_ROLE, wallet);
+        ISMARTTokenAccessManager(accessManager).grantRole(ATKAssetRoles.GOVERNANCE_ROLE, wallet);
+        ISMARTTokenAccessManager(accessManager).grantRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, wallet);
+        ISMARTTokenAccessManager(accessManager).grantRole(ATKAssetRoles.CUSTODIAN_ROLE, wallet);
+        ISMARTTokenAccessManager(accessManager).grantRole(ATKAssetRoles.EMERGENCY_ROLE, wallet);
         vm.stopPrank();
     }
 }
