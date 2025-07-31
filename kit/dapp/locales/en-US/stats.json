@@ -26,6 +26,14 @@
       "minted": "Minted",
       "burned": "Burned"
     },
+    "supplyChanges": {
+      "description": "Minted and burned assets over the last {{days}} days",
+      "title": "Supply changes",
+      "minted": "Minted",
+      "burned": "Burned",
+      "noData": "No supply changes data available",
+      "noDataDescription": "No minting or burning activity found for the last {{days}} days"
+    },
     "transactionHistory": {
       "description": "Transaction volume over time",
       "title": "Transaction history"

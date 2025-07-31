@@ -79,7 +79,7 @@ export const statsWalletDistribution = tokenRouter.token.statsWalletDistribution
           tokenId: input.tokenAddress.toLowerCase(),
         },
         output: TokenDistributionStatsResponseSchema,
-        error: "Failed to fetch token distribution statistics",
+        error: context.t("tokens:api.stats.walletDistribution.messages.failed"),
       }
     );
 
