@@ -97,7 +97,7 @@ export const assetExtension = () =>
  * ```typescript
  * const schema = assetExtensionArray();
  * schema.parse(["BURNABLE", "PAUSABLE"]); // Valid
- * schema.parse([]); // Invalid - empty array
+ * schema.parse([]); // Valid - empty array is allowed
  * schema.parse(["INVALID"]); // Invalid - unknown extension
  * ```
  */
@@ -113,7 +113,7 @@ export const assetExtensionArray = () =>
  * const schema = assetExtensionSet();
  * schema.parse(new Set(["BURNABLE", "PAUSABLE"])); // Valid
  * schema.parse(new Set(["BURNABLE", "BURNABLE"])); // Valid - duplicates removed
- * schema.parse(new Set()); // Invalid - empty set
+ * schema.parse(new Set()); // Valid - empty set is allowed
  * ```
  */
 export const assetExtensionSet = () =>
@@ -259,7 +259,7 @@ export function isAssetExtensionArray(
  * @example
  * ```typescript
  * const extensions = getAssetExtensionArray(["BURNABLE", "PAUSABLE"]); // Valid
- * const empty = getAssetExtensionArray([]); // Throws Error - empty array
+ * const empty = getAssetExtensionArray([]); // Valid - returns empty array
  * ```
  */
 export function getAssetExtensionArray(value: unknown): AssetExtensionArray {
@@ -292,7 +292,7 @@ export function isAssetExtensionSet(
  * @example
  * ```typescript
  * const extensions = getAssetExtensionSet(new Set(["BURNABLE", "PAUSABLE"])); // Valid
- * const empty = getAssetExtensionSet(new Set()); // Throws Error - empty set
+ * const empty = getAssetExtensionSet(new Set()); // Valid - returns empty set
  * ```
  */
 export function getAssetExtensionSet(value: unknown): AssetExtensionSet {

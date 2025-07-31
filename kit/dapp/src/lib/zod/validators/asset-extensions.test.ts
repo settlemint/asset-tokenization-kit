@@ -92,10 +92,8 @@ describe("assetExtensionArray", () => {
     expect(validator.parse(duplicates)).toEqual(duplicates);
   });
 
-  test("should reject empty arrays", () => {
-    expect(() => validator.parse([])).toThrow(
-      "At least one asset extension must be selected"
-    );
+  test("should accept empty arrays", () => {
+    expect(validator.parse([])).toEqual([]);
   });
 
   test("should reject invalid asset extensions in array", () => {
@@ -132,11 +130,11 @@ describe("assetExtensionSet", () => {
     expect(result.size).toBe(2);
   });
 
-  test("should reject empty sets", () => {
+  test("should accept empty sets", () => {
     const emptySet = new Set();
-    expect(() => validator.parse(emptySet)).toThrow(
-      "At least one asset extension must be selected"
-    );
+    const result = validator.parse(emptySet);
+    expect(result).toBeInstanceOf(Set);
+    expect(result.size).toBe(0);
   });
 
   test("should reject sets with invalid values", () => {
@@ -306,7 +304,7 @@ describe("type guard functions", () => {
     });
 
     test("should return false for invalid arrays", () => {
-      expect(isAssetExtensionArray([])).toBe(false);
+      expect(isAssetExtensionArray([])).toBe(true);
       expect(isAssetExtensionArray(["BURNABLE", "INVALID"])).toBe(false);
       expect(isAssetExtensionArray("BURNABLE")).toBe(false);
       expect(isAssetExtensionArray(123)).toBe(false);
@@ -322,7 +320,7 @@ describe("type guard functions", () => {
     });
 
     test("should return false for invalid sets", () => {
-      expect(isAssetExtensionSet(new Set())).toBe(false);
+      expect(isAssetExtensionSet(new Set())).toBe(true);
       expect(isAssetExtensionSet(new Set(["BURNABLE", "INVALID"]))).toBe(false);
       expect(isAssetExtensionSet(["BURNABLE"])).toBe(false);
       expect(isAssetExtensionSet("BURNABLE")).toBe(false);
@@ -361,7 +359,7 @@ describe("getter functions", () => {
     });
 
     test("should throw for invalid arrays", () => {
-      expect(() => getAssetExtensionArray([])).toThrow();
+      expect(getAssetExtensionArray([])).toEqual([]);
       expect(() => getAssetExtensionArray(["BURNABLE", "INVALID"])).toThrow();
       expect(() => getAssetExtensionArray("BURNABLE")).toThrow();
       expect(() => getAssetExtensionArray(123)).toThrow();
@@ -381,7 +379,9 @@ describe("getter functions", () => {
     });
 
     test("should throw for invalid sets", () => {
-      expect(() => getAssetExtensionSet(new Set())).toThrow();
+      const emptySet = getAssetExtensionSet(new Set());
+      expect(emptySet).toBeInstanceOf(Set);
+      expect(emptySet.size).toBe(0);
       expect(() =>
         getAssetExtensionSet(new Set(["BURNABLE", "INVALID"]))
       ).toThrow();
@@ -416,6 +416,13 @@ describe("usage in practical scenarios", () => {
     };
 
     expect(formSchema.parse(validForm)).toEqual(validForm);
+
+    const emptyExtensionsForm = {
+      name: "My Token",
+      extensions: [],
+    };
+
+    expect(formSchema.parse(emptyExtensionsForm)).toEqual(emptyExtensionsForm);
   });
 
   test("should work with configuration objects", () => {
