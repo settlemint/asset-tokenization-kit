@@ -21,6 +21,7 @@ import { ISMARTIdentityRegistryStorage } from "./../../smart/interface/ISMARTIde
 import { IERC3643TrustedIssuersRegistry } from "./../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { IATKIdentityRegistry } from "./IATKIdentityRegistry.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 // Struct imports
 import { ExpressionNode, ExpressionType } from "../../smart/interface/structs/ExpressionNode.sol";
@@ -802,6 +803,6 @@ contract ATKIdentityRegistryImplementation is
     {
         // Check for ISMARTIdentityRegistry interface and then delegate to parent contracts.
         return interfaceId == type(IATKIdentityRegistry).interfaceId
-            || interfaceId == type(ISMARTIdentityRegistry).interfaceId || super.supportsInterface(interfaceId);
+            || interfaceId == type(ISMARTIdentityRegistry).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
     }
 }

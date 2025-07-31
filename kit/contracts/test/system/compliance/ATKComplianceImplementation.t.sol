@@ -139,16 +139,12 @@ contract ATKComplianceImplementationTest is Test {
         implementation = new ATKComplianceImplementation(trustedForwarder);
 
         // Deploy compliance as proxy
-        address[] memory initialBypassListManagers = new address[](1);
-        initialBypassListManagers[0] = admin;
         bytes memory initData =
-            abi.encodeWithSelector(ATKComplianceImplementation.initialize.selector, admin, initialBypassListManagers);
+            abi.encodeWithSelector(ATKComplianceImplementation.initialize.selector, address(systemAccessManager));
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
         compliance = ATKComplianceImplementation(address(proxy));
 
-        // Set the system access manager
-        vm.prank(admin);
-        compliance.setSystemAccessManager(address(systemAccessManager));
+        // System access manager is set during initialization
 
 
         // Deploy mock token
@@ -162,9 +158,7 @@ contract ATKComplianceImplementationTest is Test {
 
     function testInitializeCanOnlyBeCalledOnce() public {
         vm.expectRevert();
-        address[] memory initialBypassListManagers = new address[](1);
-        initialBypassListManagers[0] = admin;
-        compliance.initialize(admin, initialBypassListManagers);
+        compliance.initialize(address(systemAccessManager));
     }
 
     function testSupportsInterface() public view {

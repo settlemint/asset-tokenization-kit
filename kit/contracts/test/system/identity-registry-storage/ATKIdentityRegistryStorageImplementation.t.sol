@@ -117,7 +117,7 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
 
     function test_InitializeTwice_ShouldRevert() public {
         vm.expectRevert();
-        storageContract.initialize(address(accessManager), system);
+        storageContract.initialize(address(accessManager));
     }
 
     function test_AddIdentityToStorage() public {

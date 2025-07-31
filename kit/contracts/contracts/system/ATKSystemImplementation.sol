@@ -854,6 +854,6 @@ contract ATKSystemImplementation is
         returns (bool)
     {
         return super.supportsInterface(interfaceId) || interfaceId == type(IATKSystem).interfaceId
-            || interfaceId == type(IATKTypedImplementationRegistry).interfaceId;
+            || interfaceId == type(IATKTypedImplementationRegistry).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId;
     }
 }

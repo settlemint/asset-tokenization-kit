@@ -2,12 +2,13 @@
 pragma solidity ^0.8.28;
 
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 /// @title IATKTokenFactory Interface
 /// @author SettleMint
 /// @notice This interface defines the functions for a factory contract responsible for creating ATK tokens.
 /// @dev This interface extends IERC165 for interface detection support.
-interface IATKTokenFactory is IERC165 {
+interface IATKTokenFactory is IERC165, IATKSystemAccessManaged {
     // -- Errors --
     /// @notice Custom errors for the factory contract
     /// @dev Defines custom error types used by the contract for various failure conditions.

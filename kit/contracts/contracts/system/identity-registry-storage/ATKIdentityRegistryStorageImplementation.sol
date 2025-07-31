@@ -18,6 +18,7 @@ import { IERC3643IdentityRegistryStorage } from "./../../smart/interface/ERC-364
 import { ISMARTIdentityRegistryStorage } from "./../../smart/interface/ISMARTIdentityRegistryStorage.sol";
 import { IATKIdentityRegistryStorage } from "./IATKIdentityRegistryStorage.sol";
 import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 // Extensions
 import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
@@ -617,6 +618,6 @@ contract ATKIdentityRegistryStorageImplementation is
         returns (bool)
     {
         return interfaceId == type(IATKIdentityRegistryStorage).interfaceId
-            || interfaceId == type(ISMARTIdentityRegistryStorage).interfaceId || super.supportsInterface(interfaceId);
+            || interfaceId == type(ISMARTIdentityRegistryStorage).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
     }
 }

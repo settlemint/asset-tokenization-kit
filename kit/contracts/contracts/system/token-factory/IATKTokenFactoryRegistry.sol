@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 /**
  * @title IATKTokenFactoryRegistry
@@ -12,7 +13,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
  *      within the ATK ecosystem. Each factory type is identified by a unique type hash and can be
  *      upgraded independently through its implementation address.
  */
-interface IATKTokenFactoryRegistry is IERC165 {
+interface IATKTokenFactoryRegistry is IERC165, IATKSystemAccessManaged {
     /// @notice Emitted when a new token factory is registered
     /// @param sender The address that registered the factory
     /// @param name The name of the token factory

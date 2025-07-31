@@ -11,6 +11,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { IATKTopicSchemeRegistry } from "./IATKTopicSchemeRegistry.sol";
 import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 // Constants
 import { ATKSystemRoles, ATKPeopleRoles } from "../ATKRoles.sol";
@@ -322,7 +323,7 @@ contract ATKTopicSchemeRegistryImplementation is
     /// @return True if the interface is supported
     function supportsInterface(bytes4 interfaceId) public view override(ERC165Upgradeable, IERC165) returns (bool) {
         return interfaceId == type(IATKTopicSchemeRegistry).interfaceId
-            || interfaceId == type(ISMARTTopicSchemeRegistry).interfaceId || super.supportsInterface(interfaceId);
+            || interfaceId == type(ISMARTTopicSchemeRegistry).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
     }
 
     // --- Meta-transaction Support ---

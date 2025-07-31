@@ -3,12 +3,13 @@ pragma solidity ^0.8.28;
 
 import { ISMARTCompliance } from "../../smart/interface/ISMARTCompliance.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 /// @title ATK Compliance Bypass List Interface
 /// @author SettleMint
 /// @notice Interface for managing the compliance bypass list functionality.
 /// @dev This interface defines the standard functions for managing addresses that bypass compliance checks.
-interface IATKCompliance is ISMARTCompliance {
+interface IATKCompliance is ISMARTCompliance, IATKSystemAccessManaged {
     // --- Events ---
     /// @notice Emitted when an address is added to the compliance bypass list.
     /// @param account The address that was added to the bypass list.

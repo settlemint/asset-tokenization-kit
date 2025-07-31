@@ -17,6 +17,7 @@ import {
 import { ATKPeopleRoles } from "../ATKRoles.sol";
 import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 
 /// @title ATKComplianceModuleRegistryImplementation
@@ -103,7 +104,7 @@ contract ATKComplianceModuleRegistryImplementation is
     /// @param interfaceId The interface identifier to check
     /// @return bool True if the interface is supported, false otherwise
     function supportsInterface(bytes4 interfaceId) public view override(ERC165Upgradeable) returns (bool) {
-        return interfaceId == type(IATKComplianceModuleRegistry).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IATKComplianceModuleRegistry).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
     }
 
     /// @notice Returns the address of the current message sender

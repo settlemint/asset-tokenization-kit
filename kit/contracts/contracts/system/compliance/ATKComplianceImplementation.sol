@@ -17,6 +17,7 @@ import { ISMART } from "../../smart/interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
 import { ATKSystemRoles, ATKPeopleRoles } from "../ATKRoles.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 // Extensions
 import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
@@ -430,7 +431,7 @@ contract ATKComplianceImplementation is
         override(ERC165Upgradeable, IERC165)
         returns (bool)
     {
-        return interfaceId == type(ISMARTCompliance).interfaceId || interfaceId == type(IATKCompliance).interfaceId
+        return interfaceId == type(ISMARTCompliance).interfaceId || interfaceId == type(IATKCompliance).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId
             || super.supportsInterface(interfaceId);
     }
 

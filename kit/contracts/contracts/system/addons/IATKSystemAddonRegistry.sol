@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 /**
  * @title IATKSystemAddonRegistry
@@ -11,7 +12,7 @@ import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.so
  *      modules that extend the core ATK system functionality. Addons are deployed as upgradeable
  *      proxies with implementation contracts that can be updated by authorized parties.
  */
-interface IATKSystemAddonRegistry {
+interface IATKSystemAddonRegistry is IATKSystemAccessManaged {
     /// @notice Emitted when a new system addon is registered
     /// @param sender The address that registered the addon
     /// @param name The unique name identifier for the addon

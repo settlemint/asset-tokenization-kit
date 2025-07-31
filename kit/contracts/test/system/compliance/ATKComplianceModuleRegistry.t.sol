@@ -8,6 +8,7 @@ import { ATKComplianceModuleRegistryImplementation } from
     "../../../contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { IATKSystemAccessManager } from "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
 import { IWithTypeIdentifier } from "../../../contracts/smart/interface/IWithTypeIdentifier.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../../contracts/system/ATKRoles.sol";
@@ -59,7 +60,7 @@ contract ATKComplianceModuleRegistryTest is Test {
     }
 
     function test_Initialize() public view {
-        assertTrue(registry.hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(systemUtils.systemAccessManager().hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
     }
 
     function test_RegisterComplianceModule_Success() public {

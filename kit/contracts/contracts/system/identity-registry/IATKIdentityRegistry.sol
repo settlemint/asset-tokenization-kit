@@ -2,15 +2,15 @@
 pragma solidity ^0.8.28;
 
 import { ISMARTIdentityRegistry } from "../../smart/interface/ISMARTIdentityRegistry.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
-/**
- * @title IATKIdentityRegistry
- * @author SettleMint
- * @notice Interface for the ATK Identity Registry, managing identity verification and registration
- * @dev Extends ISMARTIdentityRegistry to provide ATK-specific initialization functionality
- *      for managing identities within the ATK token ecosystem
- */
-interface IATKIdentityRegistry is ISMARTIdentityRegistry {
+
+/// @title IATKIdentityRegistry
+/// @author SettleMint
+/// @notice Interface for the ATK Identity Registry, managing identity verification and registration
+/// @dev Extends ISMARTIdentityRegistry to provide ATK-specific initialization functionality
+///      for managing identities within the ATK token ecosystem
+interface IATKIdentityRegistry is ISMARTIdentityRegistry, IATKSystemAccessManaged {
     /// @notice Initializes the identity registry
     /// @dev Sets up the registry with initial configuration including admins and related contracts
     /// @param accessManager The address of the access manager

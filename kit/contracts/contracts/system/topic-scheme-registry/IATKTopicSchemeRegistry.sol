@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 /**
  * @title IATKTopicSchemeRegistry
@@ -10,7 +11,7 @@ import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSche
  * @dev Extends ISMARTTopicSchemeRegistry to provide ATK-specific initialization functionality
  *      for managing claim topic schemes within the ATK token ecosystem
  */
-interface IATKTopicSchemeRegistry is ISMARTTopicSchemeRegistry {
+interface IATKTopicSchemeRegistry is ISMARTTopicSchemeRegistry, IATKSystemAccessManaged {
     /// @notice Initializes the topic scheme registry with system access manager
     /// @param accessManager The address of the access manager
     function initialize(address accessManager) external;

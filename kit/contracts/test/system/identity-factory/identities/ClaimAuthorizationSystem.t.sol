@@ -77,17 +77,15 @@ contract ClaimAuthorizationSystemTest is Test {
 
         // Deploy trusted issuers registry
         trustedIssuersRegistryLogic = new ATKTrustedIssuersRegistryImplementation(address(0));
-        address[] memory initialRegistrars = new address[](1);
-        initialRegistrars[0] = admin;
         trustedIssuersRegistryProxy = new ERC1967Proxy(
             address(trustedIssuersRegistryLogic),
-            abi.encodeWithSelector(trustedIssuersRegistryLogic.initialize.selector, admin, initialRegistrars)
+            abi.encodeWithSelector(trustedIssuersRegistryLogic.initialize.selector, address(systemAccessManager))
         );
         trustedIssuersRegistry = ATKTrustedIssuersRegistryImplementation(address(trustedIssuersRegistryProxy));
 
         // Configure trusted issuers registry with system access manager
         vm.prank(admin);
-        trustedIssuersRegistry.setSystemAccessManager(address(systemAccessManager));
+        // System access manager is set during initialization
 
         // Deploy mock contracts and issuer identity
         mockIssuer = new MockClaimIssuer();

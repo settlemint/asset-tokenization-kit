@@ -17,6 +17,7 @@ import { IWithTypeIdentifier } from "./../../smart/interface/IWithTypeIdentifier
 import { IATKIdentityFactory } from "../identity-factory/IATKIdentityFactory.sol";
 import { ISMARTIdentityRegistry } from "../../smart/interface/ISMARTIdentityRegistry.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 // Constants
 import { ATKPeopleRoles, ATKSystemRoles } from "../ATKRoles.sol";
@@ -168,7 +169,7 @@ abstract contract AbstractATKSystemAddonFactoryImplementation is
         override(ERC165Upgradeable)
         returns (bool)
     {
-        return super.supportsInterface(interfaceId);
+        return interfaceId == type(IATKSystemAccessManaged).interfaceId ||super.supportsInterface(interfaceId);
     }
 
     /// @notice Returns the address of the current message sender

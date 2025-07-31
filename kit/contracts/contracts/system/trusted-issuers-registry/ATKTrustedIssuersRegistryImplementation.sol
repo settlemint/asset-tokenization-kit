@@ -642,6 +642,6 @@ contract ATKTrustedIssuersRegistryImplementation is
     {
         return interfaceId == type(IATKTrustedIssuersRegistry).interfaceId
             || interfaceId == type(IERC3643TrustedIssuersRegistry).interfaceId
-            || interfaceId == type(IClaimAuthorizer).interfaceId || super.supportsInterface(interfaceId);
+            || interfaceId == type(IClaimAuthorizer).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
     }
 }

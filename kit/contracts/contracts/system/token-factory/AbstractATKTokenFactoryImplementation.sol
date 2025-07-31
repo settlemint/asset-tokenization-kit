@@ -14,12 +14,13 @@ import { ISMARTCompliance } from "../../smart/interface/ISMARTCompliance.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IATKSystem } from "../IATKSystem.sol";
 import { IATKIdentityFactory } from "../identity-factory/IATKIdentityFactory.sol";
-import { ATKPeopleRoles } from "../ATKRoles.sol";
-import { ATKRoles } from "../../assets/ATKRoles.sol";
+import { ATKPeopleRoles, ATKRoles } from "../ATKRoles.sol";
+import { ATKAssetRoles } from "../../assets/ATKAssetRoles.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.sol";
 import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 /// @title ATKTokenFactory - Contract for managing token registries with role-based access control
 /// @author SettleMint
@@ -379,7 +380,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
         override(ERC165Upgradeable, IERC165)
         returns (bool)
     {
-        return interfaceId == type(IATKTokenFactory).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IATKTokenFactory).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
     }
 
     // --- ERC2771Context Overrides ---

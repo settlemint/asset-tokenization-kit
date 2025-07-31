@@ -26,6 +26,7 @@ import { ISMART } from "../../smart/interface/ISMART.sol";
 import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
 import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 
 /// @title ATKTokenFactoryRegistryImplementation
@@ -182,7 +183,7 @@ contract ATKTokenFactoryRegistryImplementation is
         returns (bool)
     {
         return super.supportsInterface(interfaceId) || interfaceId == type(IATKTokenFactoryRegistry).interfaceId
-            || interfaceId == type(IATKTypedImplementationRegistry).interfaceId;
+            || interfaceId == type(IATKTypedImplementationRegistry).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId;
     }
 
     /// @notice Returns the address of the current message sender

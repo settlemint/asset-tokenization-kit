@@ -19,6 +19,7 @@ import { ATKTypedImplementationProxy } from "../ATKTypedImplementationProxy.sol"
 import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
 import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 /**
  * @title ATKSystemAddonRegistryImplementation
@@ -153,7 +154,7 @@ contract ATKSystemAddonRegistryImplementation is
         returns (bool)
     {
         return super.supportsInterface(interfaceId) || interfaceId == type(IATKSystemAddonRegistry).interfaceId
-            || interfaceId == type(IATKTypedImplementationRegistry).interfaceId;
+            || interfaceId == type(IATKTypedImplementationRegistry).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId;
     }
 
     /// @notice Returns the address of the current message sender

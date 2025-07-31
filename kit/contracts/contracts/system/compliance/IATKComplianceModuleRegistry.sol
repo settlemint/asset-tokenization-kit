@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 /**
  * @title IATKComplianceModuleRegistry
@@ -11,7 +12,7 @@ import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.so
  *      in the ATK ecosystem. Compliance modules implement various regulatory requirements such as
  *      identity verification, country restrictions, and allowlisting.
  */
-interface IATKComplianceModuleRegistry  {
+interface IATKComplianceModuleRegistry is IATKSystemAccessManaged {
     /// @notice Emitted when a new compliance module is registered
     /// @param sender The address that registered the module
     /// @param name The name of the compliance module
