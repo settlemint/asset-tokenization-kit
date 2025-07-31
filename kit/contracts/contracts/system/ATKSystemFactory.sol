@@ -264,7 +264,7 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         IATKSystemAccessManager(address(systemAccessManagerProxy)).grantMultipleRoles(systemAddress, systemRoles);
 
         // Emit an event to log the creation, including the new system's address and its initial admin.
-        emit ATKSystemCreated(sender, systemAddress);
+        emit ATKSystemCreated(sender, systemAddress, address(systemAccessManagerProxy));
 
         // Return the address of the newly created system.
         return systemAddress;

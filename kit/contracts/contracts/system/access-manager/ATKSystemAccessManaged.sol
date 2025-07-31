@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 import { ZeroAddressNotAllowed } from "../ATKSystemErrors.sol";
 import { IATKSystemAccessManager } from "./IATKSystemAccessManager.sol";
+import { IATKSystemAccessManaged } from "./IATKSystemAccessManaged.sol";
 
 
 /// @title Internal Logic for ATK System Access Management
@@ -16,7 +17,7 @@ import { IATKSystemAccessManager } from "./IATKSystemAccessManager.sol";
 ///      `ATKSystemAccessManaged` and `ATKSystemAccessManagedUpgradeable` contracts.
 ///      It implements access management by delegating `hasRole` checks to the
 ///      configured `_accessManager`.
-abstract contract ATKSystemAccessManaged {
+abstract contract ATKSystemAccessManaged is IATKSystemAccessManaged{
     /// @notice The blockchain address of the central `ATKSystemAccessManager` contract.
     /// @dev This manager contract is responsible for all role assignments and checks.
     ///      This variable is declared `internal`, meaning it's accessible within this contract
@@ -118,7 +119,7 @@ abstract contract ATKSystemAccessManaged {
     ///      contract without consuming gas (if called via a node's RPC) and it does not
     ///      modify the contract's state.
     /// @return The address of the `_accessManager`.
-    function accessManager() external view returns (address) {
+    function accessManager() external view override returns (address) {
         return _accessManager;
     }
 

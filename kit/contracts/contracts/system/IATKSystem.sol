@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { IATKSystemAccessManaged } from "./access-manager/IATKSystemAccessManaged.sol";
 
 /// @title IATKSystem Interface
 /// @author SettleMint
@@ -13,7 +14,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 /// compliance modules, identity registries, and their corresponding proxy contracts. These proxies are important
 /// because they enable these components to be upgraded in the future without altering the addresses that other parts
 /// of the system use to interact with them, ensuring stability and maintainability.
-interface IATKSystem is IERC165 {
+interface IATKSystem is IERC165, IATKSystemAccessManaged {
     // --- Events ---
     // Events are signals emitted by the contract that can be listened to by external applications or other contracts.
     // They are a way to log important state changes or actions.
