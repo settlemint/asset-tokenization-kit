@@ -1,5 +1,5 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { assetType } from "@/lib/zod/validators/asset-types";
+import { assetType, type AssetType } from "@/lib/zod/validators/asset-types";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
@@ -10,48 +10,27 @@ import { z } from "zod";
  * Optimized for the Asset Stats Widget specifically
  */
 const ASSET_COUNT_QUERY = theGraphGraphql(`
-  query AssetCount {
-    tokenStatsStates {
-      token {
-        type
-        symbol
-        name
-      }
+  query ($systemAddress: Bytes!) {
+    tokenTypeStatsStates(
+      where: { system_: { id: $systemAddress } }
+    ) {
+      id
+      type
+      count
     }
   }
 `);
 
 // Schema for the GraphQL response
 const AssetCountResponseSchema = z.object({
-  tokenStatsStates: z.array(
+  tokenTypeStatsStates: z.array(
     z.object({
-      token: z.object({
-        type: assetType(),
-        symbol: z.string(),
-        name: z.string(),
-      }),
+      id: z.string(),
+      type: assetType(),
+      count: z.number(),
     })
   ),
 });
-
-/**
- * Helper function to create asset breakdown from token stats
- * Counts tokens by type from tokenStatsStates
- */
-function createAssetBreakdown(
-  tokenStats: { token: { type: string } }[]
-): Record<string, number> {
-  const breakdown: Record<string, number> = {};
-
-  for (const tokenStat of tokenStats) {
-    const type = tokenStat.token.type;
-    if (type) {
-      breakdown[type] = (breakdown[type] ?? 0) + 1;
-    }
-  }
-
-  return breakdown;
-}
 
 /**
  * System asset count route handler.
@@ -82,17 +61,34 @@ export const statsAssets = authRouter.system.statsAssets
   .use(theGraphMiddleware)
   .handler(async ({ context }) => {
     // System context is guaranteed by systemMiddleware
-
+    const { system } = context;
     // Fetch asset count data in a single query
     const response = await context.theGraphClient.query(ASSET_COUNT_QUERY, {
-      input: {},
+      input: { systemAddress: system.address },
       output: AssetCountResponseSchema,
       error: context.t("tokens:api.stats.assetCount.messages.failed"),
     });
 
     // Calculate metrics
-    const totalAssets = response.tokenStatsStates.length;
-    const assetBreakdown = createAssetBreakdown(response.tokenStatsStates);
+    const totalAssets = response.tokenTypeStatsStates.reduce(
+      (acc, curr) => acc + curr.count,
+      0
+    );
+    const assetBreakdown = response.tokenTypeStatsStates.reduce<
+      Record<AssetType, number>
+    >(
+      (acc, curr) => {
+        acc[curr.type] = (acc[curr.type] ?? 0) + curr.count;
+        return acc;
+      },
+      {
+        bond: 0,
+        equity: 0,
+        fund: 0,
+        stablecoin: 0,
+        deposit: 0,
+      }
+    );
 
     return {
       totalAssets,
