@@ -53,29 +53,29 @@ function createDistributionBuckets(
     return { buckets: [], totalHolders: 0 };
   }
 
-  // Convert string values to numbers and sort by value
+  // Convert string values to BigInt and sort by value
   const sortedBalances = balances
     .map((balance) => ({
-      value: Number.parseFloat(balance.value),
+      value: BigInt(balance.value.split(".")[0] ?? "0"),
       account: balance.account.id,
     }))
-    .filter((b) => b.value > 0) // Ensure only positive values
-    .sort((a, b) => b.value - a.value);
+    .filter((b) => b.value > 0n) // Ensure only positive values
+    .sort((a, b) => (a.value > b.value ? -1 : a.value < b.value ? 1 : 0));
 
   if (sortedBalances.length === 0) {
     return { buckets: [], totalHolders: 0 };
   }
 
   // Calculate the maximum value
-  const maxValue = Math.max(...sortedBalances.map((b) => b.value));
+  const maxValue = sortedBalances[0]?.value ?? 0n;
 
   // Create 5 ranges from 0 to maxValue using percentages
   const ranges = [
-    0,
-    maxValue * 0.02, // 2% of max
-    maxValue * 0.1, // 10% of max
-    maxValue * 0.2, // 20% of max
-    maxValue * 0.4, // 40% of max
+    0n,
+    (maxValue * 2n) / 100n, // 2% of max
+    (maxValue * 10n) / 100n, // 10% of max
+    (maxValue * 20n) / 100n, // 20% of max
+    (maxValue * 40n) / 100n, // 40% of max
     maxValue, // 100% of max
   ];
 
@@ -101,7 +101,7 @@ function createDistributionBuckets(
     }).length;
 
     buckets.push({
-      range: `${minValue.toFixed(0)}-${maxValue.toFixed(0)}`,
+      range: `${minValue.toString()}-${maxValue.toString()}`,
       count,
     });
   }
