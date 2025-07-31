@@ -26,27 +26,29 @@ export function AssetSupplyPieChart() {
   // This reduces re-renders when other parts of the API response change
   const {
     data: { chartData, activeChartConfig },
-  } = useSuspenseQuery({
-    ...orpc.token.statsSystemAssets.queryOptions({ input: {} }),
-    select: (metrics) => {
-      // Convert asset breakdown to chart data format
-      const data = Object.entries(metrics.assetBreakdown).map(
-        ([assetType, count]) => ({
-          assetType,
-          totalSupply: count,
-        })
-      );
+  } = useSuspenseQuery(
+    orpc.system.statsAssets.queryOptions({
+      input: {},
+      select: (metrics) => {
+        // Convert asset breakdown to chart data format
+        const data = Object.entries(metrics.assetBreakdown).map(
+          ([assetType, count]) => ({
+            assetType,
+            totalSupply: count,
+          })
+        );
 
-      // Only include config for asset types that have data
-      const activeConfig = Object.fromEntries(
-        Object.entries(chartConfig).filter(([key]) =>
-          data.some((item) => item.assetType === key)
-        )
-      ) satisfies ChartConfig;
+        // Only include config for asset types that have data
+        const activeConfig = Object.fromEntries(
+          Object.entries(chartConfig).filter(([key]) =>
+            data.some((item) => item.assetType === key)
+          )
+        ) satisfies ChartConfig;
 
-      return { chartData: data, activeChartConfig: activeConfig };
-    },
-  });
+        return { chartData: data, activeChartConfig: activeConfig };
+      },
+    })
+  );
 
   return (
     <ComponentErrorBoundary componentName="Asset Supply Chart">

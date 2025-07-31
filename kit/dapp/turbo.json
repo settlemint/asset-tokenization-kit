@@ -21,8 +21,7 @@
     "artifacts": {},
     "test": {
       "dependsOn": ["codegen"],
-      "outputs": ["coverage/**"],
-      "env": ["CI"]
+      "outputs": ["coverage/**"]
     },
     "test:integration": {
       "dependsOn": ["codegen"]

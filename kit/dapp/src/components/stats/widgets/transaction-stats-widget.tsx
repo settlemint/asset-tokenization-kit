@@ -21,7 +21,7 @@ export function TransactionStatsWidget() {
 
   // Fetch just the transaction count metrics - more efficient than fetching all metrics
   const { data: metrics } = useSuspenseQuery(
-    orpc.token.statsSystemTransactionCount.queryOptions({
+    orpc.system.statsTransactionCount.queryOptions({
       input: { timeRange: 7 },
     })
   );

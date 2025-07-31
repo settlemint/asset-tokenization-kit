@@ -89,7 +89,7 @@ export function TokenSupplyChangesAreaChart({
   const {
     data: { chartData, chartConfig, dataKeys, isEmpty },
   } = useSuspenseQuery({
-    ...orpc.token.statsAssetSupplyChanges.queryOptions({
+    ...orpc.token.statsSupplyChanges.queryOptions({
       input: { tokenAddress, days: timeRange },
     }),
     select: selectTransform,
