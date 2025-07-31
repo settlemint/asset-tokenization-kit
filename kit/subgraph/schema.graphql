@@ -106,6 +106,9 @@ type System @entity(immutable: false) {
   complianceModuleRegistry: ComplianceModuleRegistry
   systemAddonRegistry: SystemAddonRegistry
   systemAccessManager: SystemAccessManager
+  # Stats
+  systemStats: SystemStatsState @derivedFrom(field: "system")
+  tokenTypeStats: [TokenTypeStatsState!] @derivedFrom(field: "system")
 }
 
 type VaultFactory @entity(immutable: false) {

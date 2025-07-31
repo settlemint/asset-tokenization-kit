@@ -66,138 +66,111 @@ describe("TokenTypeStats", () => {
     }
   });
 
-  it("should fetch token type stats data (timeseries)", async () => {
-    const query = theGraphGraphql(
+  it("should track token type stats correctly", async () => {
+    const systemStatQuery = theGraphGraphql(
       `query {
-        tokenTypeStatsData_collection(
-          orderBy: timestamp
-          first: 10
-        ) {
-          timestamp
-          type
-          count
-          percentageOfTotalSupply
-        }
-      }
-    `
-    );
-    const response = await theGraphClient.request(query, {});
-    expect(response.tokenTypeStatsData_collection).toBeDefined();
-    expect(Array.isArray(response.tokenTypeStatsData_collection)).toBe(true);
-
-    // Verify that stats have required fields
-    if (response.tokenTypeStatsData_collection.length > 0) {
-      const firstStat = response.tokenTypeStatsData_collection[0];
-      expect(firstStat.timestamp).toBeDefined();
-      expect(firstStat.type).toBeDefined();
-      expect(firstStat.count).toBeDefined();
-      expect(firstStat.percentageOfTotalSupply).toBeDefined();
-      expect(typeof firstStat.count).toBe("number");
-      expect(typeof firstStat.percentageOfTotalSupply).toBe("string");
-    }
-  });
-
-  it("should fetch token type stats state", async () => {
-    const query = theGraphGraphql(
-      `query {
-        tokenTypeStatsStates(
-          orderBy: type
-          first: 10
-        ) {
-          id
-          type
-          count
-          totalValueInBaseCurrency
-        }
-      }
-    `
-    );
-    const response = await theGraphClient.request(query, {});
-    expect(response.tokenTypeStatsStates).toBeDefined();
-    expect(Array.isArray(response.tokenTypeStatsStates)).toBe(true);
-
-    // Verify that state entities have required fields
-    if (response.tokenTypeStatsStates.length > 0) {
-      const firstState = response.tokenTypeStatsStates[0];
-      expect(firstState.id).toBeDefined();
-      expect(firstState.type).toBeDefined();
-      expect(firstState.count).toBeDefined();
-      expect(firstState.totalValueInBaseCurrency).toBeDefined();
-      expect(typeof firstState.count).toBe("number");
-      expect(typeof firstState.totalValueInBaseCurrency).toBe("string");
-    }
-  });
-
-  it("should filter token type stats by specific type", async () => {
-    const query = theGraphGraphql(
-      `query($type: String!) {
-        tokenTypeStats_collection(
-          interval: hour
-          where: { type: $type }
-          orderBy: timestamp
-          first: 10
-        ) {
-          timestamp
-          type
-          count
-          percentageOfTotalSupply
-        }
-      }
-    `
-    );
-    const response = await theGraphClient.request(query, {
-      type: "bond",
-    });
-    expect(response.tokenTypeStats_collection).toBeDefined();
-    expect(Array.isArray(response.tokenTypeStats_collection)).toBe(true);
-
-    // Verify all results have the correct type
-    response.tokenTypeStats_collection.forEach((stat: any) => {
-      expect(stat.type).toBe("bond");
-    });
-  });
-
-  it("should validate percentage calculation constraints", async () => {
-    const query = theGraphGraphql(
-      `query {
-        tokenTypeStats_collection(
-          interval: hour
-          orderBy: timestamp
-          first: 100
-        ) {
-          timestamp
-          type
-          count
-          percentageOfTotalSupply
-        }
-      }
-    `
-    );
-    const response = await theGraphClient.request(query, {});
-
-    if (response.tokenTypeStats_collection.length > 0) {
-      // Sum all percentages at the same timestamp
-      const timestampGroups = response.tokenTypeStats_collection.reduce(
-        (acc: any, stat: any) => {
-          const timestamp = stat.timestamp;
-          if (!acc[timestamp]) {
-            acc[timestamp] = [];
+          systemStatsStates {
+            id
+            totalValueInBaseCurrency
           }
-          acc[timestamp].push(stat);
-          return acc;
+        }
+      `
+    );
+    const systemStatsResponse = await theGraphClient.request(
+      systemStatQuery,
+      {}
+    );
+    expect(systemStatsResponse?.systemStatsStates).toBeArray();
+    expect(systemStatsResponse?.systemStatsStates.length).toEqual(1);
+
+    const systemStat = systemStatsResponse?.systemStatsStates[0];
+    const systemValueInBaseCurrency = systemStat.totalValueInBaseCurrency;
+    const tokenTypeStatsQuery = theGraphGraphql(
+      `query ($system: Bytes!) {
+          tokenTypeStatsStates(
+            where: { system_: { id: $system } }
+          ) {
+            id
+            type
+            system {
+              id
+            }
+            totalValueInBaseCurrency
+            count
+            percentageOfTotalSupply
+          }
+        }
+      `
+    );
+    const tokenTypeStatsResponse = await theGraphClient.request(
+      tokenTypeStatsQuery,
+      {
+        system: systemStat.id,
+      }
+    );
+    expect(tokenTypeStatsResponse?.tokenTypeStatsStates).toBeArray();
+    expect(tokenTypeStatsResponse?.tokenTypeStatsStates.length).toEqual(5);
+
+    const totalValueInBaseCurrency =
+      tokenTypeStatsResponse?.tokenTypeStatsStates.reduce(
+        (acc, tokenTypeStat) => {
+          return acc + Number(tokenTypeStat.totalValueInBaseCurrency);
         },
-        {}
+        0
+      );
+    expect(totalValueInBaseCurrency).toBeCloseTo(
+      Number(systemValueInBaseCurrency),
+      2
+    );
+
+    for (const tokenTypeStat of tokenTypeStatsResponse?.tokenTypeStatsStates) {
+      expect(tokenTypeStat.system.id).toBe(systemStat.id);
+
+      const tokenResponse = await theGraphClient.request(
+        theGraphGraphql(
+          `query($type: String!) {
+            tokens(where: { type: $type }) {
+              id
+              type
+              totalSupply
+              basePriceClaim {
+                id
+                values(where: { key: "amount" }) {
+                  key
+                  value
+                }
+              }
+            }
+          }
+        `
+        ),
+        { type: tokenTypeStat.type }
+      );
+      expect(tokenResponse.tokens.length).toEqual(tokenTypeStat.count);
+
+      const expectedTotalValue = tokenResponse.tokens.reduce((acc, token) => {
+        const basePrice = token.basePriceClaim?.values.find(
+          (value) => value.key === "amount"
+        )?.value;
+        if (!basePrice) {
+          return acc;
+        }
+        const basePriceParsed = Number(basePrice) / Math.pow(10, 18);
+        return acc + basePriceParsed * Number(token.totalSupply);
+      }, 0);
+      expect(Number(tokenTypeStat.totalValueInBaseCurrency)).toBeCloseTo(
+        expectedTotalValue,
+        2
       );
 
-      // For each timestamp, verify percentages are valid
-      Object.values(timestampGroups).forEach((stats: any) => {
-        stats.forEach((stat: any) => {
-          const percentage = parseFloat(stat.percentageOfTotalSupply);
-          // Percentage should be between 0 and 100
-          expect(percentage).toBeGreaterThanOrEqual(0);
-          expect(percentage).toBeLessThanOrEqual(100);
-        });
-      });
+      const expectedPercentageOfTotalSupply =
+        (Number(tokenTypeStat.totalValueInBaseCurrency) /
+          Number(systemValueInBaseCurrency)) *
+        100;
+      expect(Number(tokenTypeStat.percentageOfTotalSupply)).toBeCloseTo(
+        expectedPercentageOfTotalSupply,
+        2
+      );
     }
   });
 });

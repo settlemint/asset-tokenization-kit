@@ -1,4 +1,4 @@
-import { Address, BigDecimal, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, Bytes, log } from "@graphprotocol/graph-ts";
 import {
   Token,
   TokenFactory,
@@ -58,10 +58,16 @@ export function updateTokenTypeStatsForSupplyChange(
     state.totalValueInBaseCurrency.plus(valueDelta);
 
   state.percentageOfTotalSupply = getPercentageOfTotalSupply(
-    state,
+    state.totalValueInBaseCurrency,
     totalSystemValueInBaseCurrency
   );
   state.save();
+
+  // Update the percentage of total supply for all other token types in the system
+  updateTotalSupplyPercentageForOtherTypes(
+    state,
+    totalSystemValueInBaseCurrency
+  );
 
   // Track in timeseries
   trackTokenTypeStats(state);
@@ -90,10 +96,16 @@ export function updateTokenTypeStatsForPriceChange(
     state.totalValueInBaseCurrency.plus(valueDelta);
 
   state.percentageOfTotalSupply = getPercentageOfTotalSupply(
-    state,
+    state.totalValueInBaseCurrency,
     totalSystemValueInBaseCurrency
   );
   state.save();
+
+  // Update the percentage of total supply for all other token types in the system
+  updateTotalSupplyPercentageForOtherTypes(
+    state,
+    totalSystemValueInBaseCurrency
+  );
 
   // Track in timeseries
   trackTokenTypeStats(state);
@@ -128,21 +140,57 @@ function trackTokenTypeStats(state: TokenTypeStatsState): void {
   // Create timeseries entry - ID is auto-generated for timeseries entities
   const tokenTypeStats = new TokenTypeStatsData(1);
   tokenTypeStats.type = state.type;
+  tokenTypeStats.system = state.system;
   tokenTypeStats.count = state.count;
   tokenTypeStats.percentageOfTotalSupply = state.percentageOfTotalSupply;
   tokenTypeStats.save();
 }
 
 /**
+ * Update the percentage of total supply for all other token types in the system.
+ * This function recalculates and updates the percentageOfTotalSupply field
+ * for every token type except the one provided in `state`.
+ *
+ * @param state - The TokenTypeStatsState instance that was just updated
+ * @param totalSystemValueInBaseCurrency - The new total value in base currency for the system
+ */
+function updateTotalSupplyPercentageForOtherTypes(
+  state: TokenTypeStatsState,
+  totalSystemValueInBaseCurrency: BigDecimal
+): void {
+  const system = fetchSystem(Address.fromBytes(state.system));
+  const tokenTypeStats = system.tokenTypeStats.load();
+  for (let i = 0; i < tokenTypeStats.length; i++) {
+    const tokenTypeStat = tokenTypeStats[i];
+    if (tokenTypeStat.type != state.type) {
+      tokenTypeStat.percentageOfTotalSupply = getPercentageOfTotalSupply(
+        tokenTypeStat.totalValueInBaseCurrency,
+        totalSystemValueInBaseCurrency
+      );
+      tokenTypeStat.save();
+    }
+  }
+}
+
+/**
  * Get percentage of total supply
  */
 function getPercentageOfTotalSupply(
-  state: TokenTypeStatsState,
+  totalValueInBaseCurrency: BigDecimal,
   totalSystemValueInBaseCurrency: BigDecimal
 ): BigDecimal {
-  return state.totalValueInBaseCurrency
-    .times(BigDecimal.fromString("100"))
-    .div(totalSystemValueInBaseCurrency);
+  const percentage = totalValueInBaseCurrency.div(
+    totalSystemValueInBaseCurrency
+  );
+  log.info(
+    "totalValueInBaseCurrency: {}, totalSystemValueInBaseCurrency: {}, percentage: {}",
+    [
+      totalValueInBaseCurrency.toString(),
+      totalSystemValueInBaseCurrency.toString(),
+      percentage.toString(),
+    ]
+  );
+  return percentage.times(BigDecimal.fromString("100"));
 }
 
 /**
