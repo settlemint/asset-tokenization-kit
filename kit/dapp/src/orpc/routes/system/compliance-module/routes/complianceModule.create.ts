@@ -27,6 +27,7 @@ import {
   type SystemComplianceModuleCreateOutput,
   type SystemComplianceModuleCreateSchema,
 } from "@/orpc/routes/system/compliance-module/routes/complianceModule.create.schema";
+import { complianceTypeIds } from "@/lib/zod/validators/compliance";
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
@@ -64,6 +65,23 @@ const COMPLIANCE_TYPE_TO_IMPLEMENTATION_NAME = {
   IdentityBlockListComplianceModule: "sanctionsModuleFactory",
   IdentityAllowListComplianceModule: "sanctionsModuleFactory",
 };
+
+/**
+ * Resolves compliance modules from input - either "all" or specific configurations
+ */
+function resolveComplianceModules(
+  complianceModules:
+    | "all"
+    | SystemComplianceModuleConfig
+    | SystemComplianceModuleConfig[]
+): SystemComplianceModuleConfig[] {
+  if (complianceModules === "all") {
+    return complianceTypeIds.map((type) => ({ type }));
+  }
+  return Array.isArray(complianceModules)
+    ? complianceModules
+    : [complianceModules];
+}
 
 /**
  * Gets the implementation address for a compliance module configuration
@@ -115,10 +133,8 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
       });
     }
 
-    // Normalize to array
-    const moduleList = Array.isArray(complianceModules)
-      ? complianceModules
-      : [complianceModules];
+    // Resolve compliance modules (either "all" or specific configurations)
+    const moduleList = resolveComplianceModules(complianceModules);
 
     // Query existing system compliance modules to check for duplicates
     const existingComplianceModuleTypeIds =
