@@ -5,7 +5,6 @@ import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import type { ResultOf } from "@settlemint/sdk-thegraph";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 
 const logger = createLogger();
@@ -56,10 +55,6 @@ const READ_TOKEN_QUERY = theGraphGraphql(
   `,
   [AccessControlFragment]
 );
-
-export type TokenExtensions = NonNullable<
-  NonNullable<ResultOf<typeof READ_TOKEN_QUERY>["token"]>["extensions"][0]
->;
 
 /**
  * Middleware to inject the token context into the request context.

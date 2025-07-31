@@ -1,3 +1,4 @@
+import { AssetExtensionsList } from "@/components/asset-extensions/asset-extensions-list";
 import { Button } from "@/components/ui/button";
 import {
   DialogDescription,
@@ -33,6 +34,7 @@ export const SelectAssetType = withForm({
       "asset-designer",
       "asset-types",
       "asset-class",
+      "asset-extensions",
     ]);
     const assetClass = useStore(form.store, (state) => state.values.assetClass);
     const { assetClasses } = useAssetClass();
@@ -47,6 +49,12 @@ export const SelectAssetType = withForm({
               value: assetType,
               label: t(`asset-types:types.${assetType}.name`),
               description: t(`asset-types:types.${assetType}.description`),
+              footer: (
+                <AssetExtensionsList
+                  extensions={factory.tokenExtensions}
+                  className="mt-2"
+                />
+              ),
             };
           }) ?? [],
       [assetClasses, assetClass, t]
@@ -67,14 +75,16 @@ export const SelectAssetType = withForm({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="mt-6 mb-10">
-          <form.AppField
-            name="assetType"
-            children={(field) => (
-              <field.RadioField options={options} variant="card" />
-            )}
-          />
-        </div>
+        <form.AppField
+          name="assetType"
+          children={(field) => (
+            <field.RadioField
+              options={options}
+              variant="card"
+              className="mt-6 mb-10"
+            />
+          )}
+        />
 
         <DialogFooter className="!flex !flex-row !justify-between">
           <Button variant="ghost" onClick={onCancel}>

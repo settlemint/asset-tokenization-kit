@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+import { isAssetExtensionArray } from "../../src/lib/zod/validators/asset-extensions";
 import { getOrpcClient } from "../utils/orpc-client";
 import { DEFAULT_ADMIN, DEFAULT_PINCODE, signInWithUser } from "../utils/user";
 
@@ -22,11 +23,16 @@ describe("Token factory create", () => {
 
     const factories = await client.token.factoryList({});
     expect(factories.length).toBeGreaterThan(0);
-    expect(factories.find((f) => f.name === "Test Token")).toEqual({
+    const factory = factories.find((f) => f.name === "Test Token");
+    expect(factory).toEqual({
       id: expect.any(String),
       name: "Test Token",
       typeId: "ATKEquityFactory",
+      tokenExtensions: expect.any(Array),
       hasTokens: expect.any(Boolean),
     });
+
+    // Verify tokenExtensions is a valid asset extension array
+    expect(isAssetExtensionArray(factory?.tokenExtensions)).toBe(true);
   });
 });

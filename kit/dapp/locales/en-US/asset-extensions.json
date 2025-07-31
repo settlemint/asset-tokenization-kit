@@ -1,0 +1,48 @@
+{
+  "capabilities": {
+    "ACCESS_MANAGED": {
+      "label": "Access control",
+      "description": "Control who can access and manage your assets"
+    },
+    "BOND": {
+      "label": "Fixed returns",
+      "description": "Create bonds with maturity dates and fixed returns"
+    },
+    "BURNABLE": {
+      "label": "Destroy tokens",
+      "description": "Allow asset holders to permanently destroy assets"
+    },
+    "CAPPED": {
+      "label": "Supply limit",
+      "description": "Set a maximum limit on asset supply"
+    },
+    "COLLATERAL": {
+      "label": "Loan security",
+      "description": "Use assets as collateral for loans and financing"
+    },
+    "CUSTODIAN": {
+      "label": "Safe custody",
+      "description": "Enable institutional-grade custody features"
+    },
+    "FUND": {
+      "label": "Fund management",
+      "description": "Manage investment funds with built-in fee structures"
+    },
+    "HISTORICAL_BALANCES": {
+      "label": "Full history",
+      "description": "Track complete transaction history and balances"
+    },
+    "PAUSABLE": {
+      "label": "Emergency stop",
+      "description": "Temporarily pause asset transfers for emergencies"
+    },
+    "REDEEMABLE": {
+      "label": "Cash out",
+      "description": "Allow assets to be exchanged for underlying value"
+    },
+    "YIELD": {
+      "label": "Earn returns",
+      "description": "Generate automatic returns and interest payments"
+    }
+  }
+}
