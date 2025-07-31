@@ -2214,6 +2214,231 @@ describe("the-graph.middleware", () => {
       });
     });
 
+    describe("automatic pagination behavior", () => {
+      test("should NOT automatically paginate fields without explicit pagination parameters or @fetchAll", async () => {
+        const NO_PAGINATION_QUERY = createMockDocument(`
+          query NoPaginationTest {
+            tokens {
+              id
+              name
+            }
+          }
+        `);
+
+        // Mock response with 500 tokens
+        (theGraphClient.request as Mock).mockResolvedValueOnce({
+          tokens: createMockTokens(1, 500),
+        });
+
+        const result = await client.query(NO_PAGINATION_QUERY, {
+          input: {},
+          output: z.object({
+            tokens: z.array(
+              z.object({
+                id: z.string(),
+                name: z.string(),
+              })
+            ),
+          }),
+        });
+
+        // Should only get what the server returns (500 tokens)
+        expect(result.tokens).toHaveLength(500);
+        expect(result.tokens[0]?.name).toBe("Token 1");
+        expect(result.tokens[499]?.name).toBe("Token 500");
+
+        // Should have made only 1 request - no pagination
+        expect(theGraphClient.request).toHaveBeenCalledTimes(1);
+
+        // Verify no pagination parameters were added
+        const { print } = await import("graphql");
+        const call = (theGraphClient.request as Mock).mock.calls[0]?.[0];
+        const queryStr = print(call);
+        expect(queryStr).not.toContain("first:");
+        expect(queryStr).not.toContain("skip:");
+        expect(queryStr).not.toContain("orderBy:");
+        expect(queryStr).not.toContain("orderDirection:");
+      });
+
+      test("should NOT paginate fields without explicit pagination hints", async () => {
+        const PLURAL_FIELDS_QUERY = createMockDocument(`
+          query PluralFieldsTest {
+            accounts {
+              id
+            }
+            identities {
+              id
+              name
+            }
+          }
+        `);
+
+        // Single response with both fields
+        (theGraphClient.request as Mock).mockResolvedValueOnce({
+          accounts: [{ id: "account-1" }],
+          identities: [{ id: "identity-1", name: "Identity 1" }],
+        });
+
+        const result = await client.query(PLURAL_FIELDS_QUERY, {
+          input: {},
+          output: z.object({
+            accounts: z.array(z.object({ id: z.string() })),
+            identities: z.array(
+              z.object({
+                id: z.string(),
+                name: z.string(),
+              })
+            ),
+          }),
+        });
+
+        expect(result.accounts).toHaveLength(1);
+        expect(result.identities).toHaveLength(1);
+
+        // Without explicit first/skip or @fetchAll, no pagination occurs
+        expect(theGraphClient.request).toHaveBeenCalledTimes(1);
+      });
+
+      test("should not paginate single entity queries", async () => {
+        const SINGLE_ENTITY_QUERY = createMockDocument(`
+          query SingleEntityTest {
+            token(id: "0x123") {
+              id
+              name
+              symbol
+            }
+          }
+        `);
+
+        (theGraphClient.request as Mock).mockResolvedValueOnce({
+          token: {
+            id: "0x123",
+            name: "Test Token",
+            symbol: "TEST",
+          },
+        });
+
+        const result = await client.query(SINGLE_ENTITY_QUERY, {
+          input: {},
+          output: z.object({
+            token: z.object({
+              id: z.string(),
+              name: z.string(),
+              symbol: z.string(),
+            }),
+          }),
+        });
+
+        expect(result.token.name).toBe("Test Token");
+
+        // Should only make one request, no pagination needed
+        expect(theGraphClient.request).toHaveBeenCalledTimes(1);
+
+        // Verify no pagination was added
+        const { print } = await import("graphql");
+        const call = (theGraphClient.request as Mock).mock.calls[0]?.[0];
+        const queryStr = print(call);
+        expect(queryStr).not.toContain("first:");
+        expect(queryStr).not.toContain("skip:");
+      });
+
+      test("fields need explicit pagination hints (first/skip or @fetchAll) to paginate", async () => {
+        const PAGINATION_HINT_QUERY = createMockDocument(`
+          query PaginationHintTest {
+            # This will paginate due to @fetchAll
+            tokens @fetchAll {
+              id
+              name
+            }
+            # This will NOT paginate (no hints)
+            accounts {
+              id
+            }
+          }
+        `);
+
+        // First call for tokens with @fetchAll - returns 500
+        (theGraphClient.request as Mock)
+          .mockResolvedValueOnce({ tokens: createMockTokens(1, 500) })
+          // Second call for tokens - returns 200 more
+          .mockResolvedValueOnce({ tokens: createMockTokens(501, 200) })
+          // Non-list query includes accounts without pagination
+          .mockResolvedValueOnce({
+            accounts: [{ id: "account-1" }, { id: "account-2" }],
+          });
+
+        const result = await client.query(PAGINATION_HINT_QUERY, {
+          input: {},
+          output: z.object({
+            tokens: z.array(
+              z.object({
+                id: z.string(),
+                name: z.string(),
+              })
+            ),
+            accounts: z.array(z.object({ id: z.string() })),
+          }),
+        });
+
+        // tokens with @fetchAll should have all 700 items
+        expect(result.tokens).toHaveLength(700);
+        // accounts without hints gets only what server returns
+        expect(result.accounts).toHaveLength(2);
+
+        // 2 calls for tokens pagination + 1 for non-list fields
+        expect(theGraphClient.request).toHaveBeenCalledTimes(3);
+      });
+
+      test("should handle mixed queries without pagination", async () => {
+        const MIXED_AUTO_QUERY = createMockDocument(`
+          query MixedAutoQuery {
+            system {
+              id
+              name
+            }
+            tokens {
+              id
+              symbol
+            }
+          }
+        `);
+
+        // Single response with both fields (no pagination)
+        (theGraphClient.request as Mock).mockResolvedValueOnce({
+          system: {
+            id: "system-1",
+            name: "Test System",
+          },
+          tokens: createMockTokens(1, 100).map((t) => ({
+            id: t.id,
+            symbol: t.symbol,
+          })),
+        });
+
+        const result = await client.query(MIXED_AUTO_QUERY, {
+          input: {},
+          output: z.object({
+            system: z.object({
+              id: z.string(),
+              name: z.string(),
+            }),
+            tokens: z.array(
+              z.object({
+                id: z.string(),
+                symbol: z.string(),
+              })
+            ),
+          }),
+        });
+
+        expect(result.system.name).toBe("Test System");
+        expect(result.tokens).toHaveLength(100);
+
+        // Should make one request - no pagination without explicit hints
+        expect(theGraphClient.request).toHaveBeenCalledTimes(1);
+      });
+    });
+
     describe("@fetchAll directive handling", () => {
       test("should handle @fetchAll directive on simple list field", async () => {
         const FETCH_ALL_QUERY = createMockDocument(`
