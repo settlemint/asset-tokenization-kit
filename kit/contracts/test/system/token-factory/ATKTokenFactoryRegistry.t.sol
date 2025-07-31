@@ -37,6 +37,14 @@ contract MockTokenFactory is IATKTokenFactory, IWithTypeIdentifier {
         return address(0);
     }
 
+    function accessManager() external pure override returns (address) {
+        return address(0);
+    }
+
+    function hasSystemRole(bytes32 role, address account) external pure override returns (bool) {
+        return true;
+    }
+
     function typeId() external pure override returns (bytes32) {
         return TYPE_ID;
     }
@@ -61,6 +69,14 @@ contract MockInvalidTokenFactory is IATKTokenFactory {
 
     function tokenImplementation() external pure override returns (address) {
         return address(0);
+    }
+
+     function accessManager() external pure override returns (address) {
+        return address(0);
+    }
+
+    function hasSystemRole(bytes32 role, address account) external pure override returns (bool) {
+        return true;
     }
 
     function supportsInterface(bytes4 interfaceId) external pure override returns (bool) {
@@ -88,7 +104,7 @@ contract ATKTokenFactoryRegistryTest is Test {
     }
 
     function test_Initialize() public view {
-        assertTrue(registry.hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(registry.hasSystemRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
     }
 
     function test_RegisterTokenFactory_Success() public {
