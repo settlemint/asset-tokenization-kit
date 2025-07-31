@@ -16,6 +16,7 @@
     "package:harbor": "bun run tools/package-harbor.ts",
     "package:pack": "helm package atk --destination .",
     "package:push:harbor": "helm push ./atk-*.tgz oci://harbor.settlemint.com/atk",
+    "package:ecr": "bun run tools/package-ecr.ts",
     "package:version": "bun run tools/package-version.ts",
     "helm:secrets": "op inject --force -i tools/values-orbstack.1p.yaml -o tools/values-orbstack.yaml",
     "helm:check-context": "[ \"$(kubectl config current-context)\" = \"orbstack\" ] || (echo \"Error: Not in orbstack context. Current context: $(kubectl config current-context)\" && exit 1)",

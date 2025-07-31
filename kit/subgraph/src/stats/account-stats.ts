@@ -6,7 +6,7 @@ import {
   TokenBalance,
 } from "../../generated/schema";
 import { fetchAccount } from "../account/fetch/account";
-import { getTokenBasePrice } from "./system-stats";
+import { getTokenBasePrice } from "../token/utils/token-utils";
 
 /**
  * Increase the balance count for an account

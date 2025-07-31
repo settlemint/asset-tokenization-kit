@@ -399,19 +399,11 @@ tests:
 config:
   # -- Log level for eRPC
   logLevel: info
-  # -- Array of project configurations
-  projects:
-    - id: settlemint
-      upstreams:
-        - endpoint: http://besu-node-rpc-1:8545
-        # - endpoint: http://besu-node-rpc-2:8545
   # -- Server configuration
   server:
-    # -- Aliasing configuration
-    aliasing:
-      # -- Array of aliasing rules
-      rules:
-        - matchDomain: "*"
-          serveProject: "settlemint"
-          serveArchitecture: "evm"
-          serveChain: "1337"
+    httpHostV4: 0.0.0.0
+    httpPort: 4000
+  # -- Array of project configurations (will be overridden by parent chart)
+  projects: []
+  # -- Database configuration for caching
+  database: {}

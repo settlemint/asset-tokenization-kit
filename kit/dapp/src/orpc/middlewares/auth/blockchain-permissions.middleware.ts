@@ -2,6 +2,7 @@ import type {
   AccessControl,
   AccessControlRoles,
 } from "@/lib/fragments/the-graph/access-control-fragment";
+import { getUserRoles } from "@/orpc/helpers/access-control-helpers";
 import type { Context } from "@/orpc/context/context";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import type { z } from "zod";
@@ -42,15 +43,8 @@ export const blockchainPermissionsMiddleware = <InputSchema extends z.ZodType>({
       });
     }
 
-    const userRoles = auth
-      ? Object.entries(accessControl)
-          .filter(([, accounts]) =>
-            accounts.some(
-              (account) => account.id === auth.user.wallet.toLowerCase()
-            )
-          )
-          .map(([role]) => role as keyof typeof accessControl)
-      : [];
+    // Use type-safe helper to get user roles
+    const userRoles = auth ? getUserRoles(auth.user.wallet, accessControl) : [];
 
     if (requiredRoles.some((role) => !userRoles.includes(role))) {
       throw errors.USER_NOT_AUTHORIZED({

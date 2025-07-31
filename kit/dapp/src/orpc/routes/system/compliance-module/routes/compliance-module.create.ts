@@ -18,6 +18,7 @@
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
+import { complianceTypeIds } from "@/lib/zod/validators/compliance";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
@@ -95,9 +96,10 @@ function getComplianceImplementationAddress(
 export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
   .use(
     blockchainPermissionsMiddleware<typeof SystemComplianceModuleCreateSchema>({
-      requiredRoles: ["deployer"],
+      requiredRoles: ["registrar"],
       getAccessControl: ({ context }) => {
-        return context.system?.systemAccessManager?.accessControl;
+        const systemData = context.system;
+        return systemData?.systemAccessManager?.accessControl;
       },
     })
   )
@@ -115,10 +117,7 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
       });
     }
 
-    // Normalize to array
-    const moduleList = Array.isArray(complianceModules)
-      ? complianceModules
-      : [complianceModules];
+    const moduleList = getModuleList(complianceModules);
 
     // Query existing system compliance modules to check for duplicates
     const existingComplianceModuleTypeIds =
@@ -204,3 +203,20 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
       { context }
     );
   });
+
+/**
+ * Resolves compliance modules from input - either "all" or specific configurations
+ */
+function getModuleList(
+  complianceModules:
+    | "all"
+    | SystemComplianceModuleConfig
+    | SystemComplianceModuleConfig[]
+): SystemComplianceModuleConfig[] {
+  if (complianceModules === "all") {
+    return complianceTypeIds.map((type) => ({ type }));
+  }
+  return Array.isArray(complianceModules)
+    ? complianceModules
+    : [complianceModules];
+}

@@ -36,28 +36,10 @@ export function PinSetupModal({ open, onOpenChange }: PinSetupModalProps) {
       onChange: ({ value }) => {
         const errors: Partial<Record<keyof typeof value, string>> = {};
 
-        // Validate pincode
-        if (value.pincode) {
-          const pincodeResult = pincode().safeParse(value.pincode);
-          if (!pincodeResult.success) {
-            errors.pincode = t("wallet-security.pincode.invalid-pin-format");
-          }
-        }
-
-        // Validate confirmPincode
-        if (value.confirmPincode) {
-          const confirmResult = pincode().safeParse(value.confirmPincode);
-          if (!confirmResult.success) {
-            errors.confirmPincode = t(
-              "wallet-security.pincode.invalid-pin-format"
-            );
-          }
-        }
-
-        // Check match when both are complete
+        // Only validate when both PINs are complete (6 digits) and don't match
         if (
-          Object.keys(errors).length === 0 &&
-          value.pincode.length === value.confirmPincode.length &&
+          value.pincode.length === 6 &&
+          value.confirmPincode.length === 6 &&
           value.pincode !== value.confirmPincode
         ) {
           errors.confirmPincode = t(
@@ -69,6 +51,13 @@ export function PinSetupModal({ open, onOpenChange }: PinSetupModalProps) {
       },
     },
     onSubmit: async ({ value }) => {
+      // Validate PIN format before submission
+      const pincodeResult = pincode().safeParse(value.pincode);
+      if (!pincodeResult.success) {
+        toast.error(t("wallet-security.pincode.invalid-pin-format"));
+        return;
+      }
+
       try {
         await authClient.pincode.enable({
           pincode: value.pincode,

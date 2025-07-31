@@ -133,7 +133,6 @@ export const statsGrowthOverTime = authRouter.user.statsGrowthOverTime
           since: sinceTimestamp.toString(),
         },
         output: GrowthOverTimeResponseSchema,
-        error: "Failed to fetch user growth over time",
       }
     );
 

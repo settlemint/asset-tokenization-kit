@@ -18,6 +18,14 @@
       "noData": "データが利用できません",
       "noDataDescription": "過去{{days}}日間の総供給量データが見つかりません"
     },
+    "supplyChanges": {
+      "description": "過去{{days}}日間のミント・バーンされたトークン",
+      "title": "供給量変更",
+      "minted": "ミント済み",
+      "burned": "バーン済み",
+      "noData": "供給量変更データが利用できません",
+      "noDataDescription": "過去{{days}}日間のミント・バーン活動が見つかりません"
+    },
     "transactionHistory": {
       "description": "時間経過に伴う取引量",
       "title": "取引履歴"
