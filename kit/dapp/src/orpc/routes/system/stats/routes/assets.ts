@@ -56,6 +56,7 @@ const AssetCountResponseSchema = z.object({
  * console.log('Breakdown:', stats.assetBreakdown);
  * ```
  */
+
 export const statsAssets = authRouter.system.statsAssets
   .use(systemMiddleware)
   .use(theGraphMiddleware)

@@ -24,10 +24,14 @@ import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middle
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
 import { upsert } from "@/orpc/routes/settings/routes/settings.upsert";
+import { complianceModuleCreate } from "@/orpc/routes/system/compliance-module/routes/compliance-module.create";
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { z } from "zod";
+
+const logger = createLogger();
 
 /**
  * GraphQL mutation for creating a new system contract instance.
@@ -281,6 +285,7 @@ export const create = onboardedRouter.system.create
       const requiresAdminRole = [
         systemDetails.tokenFactoryRegistry,
         systemDetails.systemAddonRegistry,
+        systemDetails.complianceModuleRegistry,
       ].filter((contract) => contract !== null);
 
       for (const contract of requiresAdminRole) {
@@ -303,6 +308,31 @@ export const create = onboardedRouter.system.create
       }
     }
 
+    // Create all compliance modules if compliance module registry exists
+    if (systemDetails.complianceModuleRegistry) {
+      try {
+        await call(
+          complianceModuleCreate,
+          {
+            complianceModules: "all",
+            verification,
+          },
+          { context }
+        );
+      } catch (error) {
+        // Log but don't fail system creation
+        logger.error("Failed to create compliance modules", error);
+      }
+    }
+
+    const updatedSystemDetails = await call(
+      read,
+      {
+        id: system.id,
+      },
+      { context }
+    );
+
     // Return the complete system details
-    return systemDetails;
+    return updatedSystemDetails;
   });

@@ -51,6 +51,7 @@ const SystemComplianceModuleConfigSchema = z.object({
  */
 export const SystemComplianceModuleCreateSchema = MutationInputSchema.extend({
   complianceModules: z.union([
+    z.literal("all").describe("Create all available compliance modules"),
     SystemComplianceModuleConfigSchema,
     z.array(SystemComplianceModuleConfigSchema),
   ]),

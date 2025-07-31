@@ -18,6 +18,7 @@ import { recoverTokens } from "@/orpc/routes/token/routes/mutations/recovery/tok
 import { redeem } from "@/orpc/routes/token/routes/mutations/redeem/token.redeem";
 import { transfer } from "@/orpc/routes/token/routes/mutations/transfer/token.transfer";
 import { setYieldSchedule } from "@/orpc/routes/token/routes/mutations/yield/token.set-yield-schedule";
+import { statsSupplyChanges } from "@/orpc/routes/token/routes/stats/supply-changes";
 import { statsTotalSupply } from "@/orpc/routes/token/routes/stats/total-supply";
 import { actions } from "@/orpc/routes/token/routes/token.actions";
 import { events } from "@/orpc/routes/token/routes/token.events";
@@ -52,6 +53,7 @@ const routes = {
   addComplianceModule,
   removeComplianceModule,
   statsTotalSupply,
+  statsSupplyChanges,
 };
 
 export default routes;
