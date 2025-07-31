@@ -1,7 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { ORPCError } from "@orpc/server";
 import { z } from "zod";
 
 /**
@@ -109,37 +108,25 @@ export const statsSupplyChanges = tokenRouter.token.statsSupplyChanges
       Math.floor(since.getTime() / 1000)
     );
 
-    try {
-      // Fetch token supply changes history from TheGraph
-      // tokenAddress is already validated and checksummed by ethereumAddress schema
-      const response = await context.theGraphClient.query(
-        TOKEN_SUPPLY_CHANGES_QUERY,
-        {
-          input: {
-            tokenId: tokenAddress.toLowerCase(),
-            since: sinceTimestamp.toString(),
-          },
-          output: TokenSupplyChangesResponseSchema,
-          error: context.t("tokens:api.stats.supplyChanges.messages.failed"),
-        }
-      );
-
-      // Process the raw data into the expected output format
-      const supplyChangesHistory = processSupplyChangesHistoryData(
-        response.tokenStats_collection
-      );
-
-      return {
-        supplyChangesHistory,
-      };
-    } catch (error) {
-      throw new ORPCError("INTERNAL_SERVER_ERROR", {
-        message: context.t("tokens:api.stats.supplyChanges.messages.failed"),
-        data: {
-          tokenAddress,
-          days,
-          error: error instanceof Error ? error.message : String(error),
+    // Fetch token supply changes history from TheGraph
+    // tokenAddress is already validated and checksummed by ethereumAddress schema
+    const response = await context.theGraphClient.query(
+      TOKEN_SUPPLY_CHANGES_QUERY,
+      {
+        input: {
+          tokenId: tokenAddress.toLowerCase(),
+          since: sinceTimestamp.toString(),
         },
-      });
-    }
+        output: TokenSupplyChangesResponseSchema,
+      }
+    );
+
+    // Process the raw data into the expected output format
+    const supplyChangesHistory = processSupplyChangesHistoryData(
+      response.tokenStats_collection
+    );
+
+    return {
+      supplyChangesHistory,
+    };
   });
