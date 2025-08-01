@@ -6,10 +6,11 @@
     "selectPlaceholder": "Choose address",
     "searchPlaceholder": "Search addresses",
     "loading": "Loading",
-    "noResults": "No addresses found",
+    "noResults": "No matching addresses found",
+    "noAddressesCreated": "No addresses created yet",
     "recent": "Recent",
     "searchResults": "Results",
-    "recentAddresses": "Recent",
+    "allAddresses": "All",
     "searchInstead": "Search instead",
     "enterManually": "Enter manually"
   },

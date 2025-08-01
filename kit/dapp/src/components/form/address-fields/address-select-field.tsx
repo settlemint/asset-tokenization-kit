@@ -47,7 +47,6 @@ interface AddressSelectProps {
 }
 
 const MAX_RECENT_ADDRESSES = 5;
-const INITIAL_ADDRESSES_COUNT = 5;
 const SEARCH_DEBOUNCE_MS = 500;
 
 export function AddressSelectField({
@@ -90,19 +89,14 @@ export function AddressSelectField({
     }));
   }, [recentAddresses]);
 
-  // Display addresses: recent first, then search results, then initial if no recents
+  // Display addresses: search results, then initial
   const displayAddresses = useMemo(() => {
     if (searchTerm) {
       return searchResults;
     }
 
-    if (recentAddressOptions.length > 0) {
-      return recentAddressOptions;
-    }
-
-    // Show first 5 addresses as initial list
-    return searchResults.slice(0, INITIAL_ADDRESSES_COUNT);
-  }, [searchResults, recentAddressOptions, searchTerm]);
+    return searchResults;
+  }, [searchResults, searchTerm]);
 
   // Handle address selection from search results
   const handleAddressSelect = useCallback(
@@ -158,7 +152,11 @@ export function AddressSelectField({
             />
             <CommandList>
               <CommandEmpty>
-                {isLoading ? t("address.loading") : t("address.noResults")}
+                {isLoading
+                  ? t("address.loading")
+                  : searchTerm
+                    ? t("address.noResults")
+                    : t("address.noAddressesCreated")}
               </CommandEmpty>
 
               {!searchTerm && recentAddressOptions.length > 0 && (
@@ -175,22 +173,24 @@ export function AddressSelectField({
                 </CommandGroup>
               )}
 
-              <CommandGroup
-                heading={
-                  searchTerm
-                    ? t("address.searchResults")
-                    : t("address.recentAddresses")
-                }
-              >
-                {displayAddresses.map((option) => (
-                  <AddressCommandItem
-                    key={option.address}
-                    option={option}
-                    isSelected={field.state.value === option.address}
-                    onSelect={handleAddressSelect}
-                  />
-                ))}
-              </CommandGroup>
+              {displayAddresses.length > 0 && (
+                <CommandGroup
+                  heading={
+                    searchTerm
+                      ? t("address.searchResults")
+                      : t("address.allAddresses")
+                  }
+                >
+                  {displayAddresses.map((option) => (
+                    <AddressCommandItem
+                      key={option.address}
+                      option={option}
+                      isSelected={field.state.value === option.address}
+                      onSelect={handleAddressSelect}
+                    />
+                  ))}
+                </CommandGroup>
+              )}
             </CommandList>
           </Command>
         </PopoverContent>
