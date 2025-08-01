@@ -18,6 +18,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ERC734KeyPurposes } from "../../../../contracts/onchainid/ERC734KeyPurposes.sol";
 import { ERC734KeyTypes } from "../../../../contracts/onchainid/ERC734KeyTypes.sol";
+import { ATKPeopleRoles } from "../../../../contracts/system/ATKPeopleRoles.sol";
 import { ATKSystemRoles } from "../../../../contracts/system/ATKSystemRoles.sol";
 
 /// @title ClaimAuthorizationSystem Test
@@ -77,17 +78,15 @@ contract ClaimAuthorizationSystemTest is Test {
 
         // Deploy trusted issuers registry
         trustedIssuersRegistryLogic = new ATKTrustedIssuersRegistryImplementation(address(0));
-        address[] memory initialRegistrars = new address[](1);
-        initialRegistrars[0] = admin;
         trustedIssuersRegistryProxy = new ERC1967Proxy(
             address(trustedIssuersRegistryLogic),
-            abi.encodeWithSelector(trustedIssuersRegistryLogic.initialize.selector, admin, initialRegistrars)
+            abi.encodeWithSelector(trustedIssuersRegistryLogic.initialize.selector, address(systemAccessManager))
         );
         trustedIssuersRegistry = ATKTrustedIssuersRegistryImplementation(address(trustedIssuersRegistryProxy));
 
         // Configure trusted issuers registry with system access manager
         vm.prank(admin);
-        trustedIssuersRegistry.setSystemAccessManager(address(systemAccessManager));
+        // System access manager is set during initialization
 
         // Deploy mock contracts and issuer identity
         mockIssuer = new MockClaimIssuer();
@@ -102,7 +101,7 @@ contract ClaimAuthorizationSystemTest is Test {
 
         // Grant the admin the claim policy manager role in the system access manager
         vm.prank(admin);
-        systemAccessManager.grantRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, admin);
+        systemAccessManager.grantRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, admin);
     }
 
     // --- Authorization Contract Registration Tests ---

@@ -8,8 +8,11 @@ import { ATKXvPSettlementImplementation } from "../../../contracts/addons/xvp/AT
 import { IATKXvPSettlementFactory } from "../../../contracts/addons/xvp/IATKXvPSettlementFactory.sol";
 import { IATKXvPSettlement } from "../../../contracts/addons/xvp/IATKXvPSettlement.sol";
 import { ERC20Mock } from "../../mocks/ERC20Mock.sol";
+import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { ATKSystemImplementation } from "../../../contracts/system/ATKSystemImplementation.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
 
 /// @title XvP Settlement Test
 /// @notice Comprehensive test suite for XvPSettlement contract
@@ -62,7 +65,9 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Encode initialization data for the factory
         bytes memory encodedInitializationData = abi.encodeWithSelector(
-            ATKXvPSettlementFactoryImplementation.initialize.selector, address(systemUtils.system()), platformAdmin
+            ATKXvPSettlementFactoryImplementation.initialize.selector,
+            address(systemUtils.systemAccessManager()),
+            address(systemUtils.system())
         );
 
         // Create system addon for XvP settlement factory
@@ -73,14 +78,9 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         );
 
         // Grant DEPLOYER_ROLE to users who need to create settlements
-        IAccessControl(address(factory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, admin);
-        IAccessControl(address(factory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, user1);
-        IAccessControl(address(factory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, user2);
-
-        // Grant SYSTEM_MODULE_ROLE to the factory so it can access compliance functions like addToBypassList
-        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
-            ATKSystemRoles.SYSTEM_MODULE_ROLE, address(factory)
-        );
+        systemUtils.systemAccessManager().grantRole(ATKPeopleRoles.ADDON_MANAGER_ROLE, admin);
+        systemUtils.systemAccessManager().grantRole(ATKPeopleRoles.ADDON_MANAGER_ROLE, user1);
+        systemUtils.systemAccessManager().grantRole(ATKPeopleRoles.ADDON_MANAGER_ROLE, user2);
 
         vm.stopPrank();
 
@@ -95,8 +95,9 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
     /// @notice Grant DEPLOYER_ROLE to a user so they can create settlements
     function grantDeployerRole(address user) internal {
-        vm.prank(platformAdmin);
-        IAccessControl(address(factory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, user);
+        vm.startPrank(platformAdmin);
+        systemUtils.systemAccessManager().grantRole(ATKPeopleRoles.ADDON_MANAGER_ROLE, user);
+        vm.stopPrank();
     }
 
     // ========================================================================

@@ -1,13 +1,13 @@
 import { batchAddToRegistry } from "./actions/add-to-registry";
 import { addTrustedIssuer } from "./actions/add-trusted-issuer";
-import { grantRole } from "./actions/grant-role";
 import { grantSystemRole } from "./actions/grant-system-role";
+import { grantSystemRoles } from "./actions/grant-system-roles";
 import { issueVerificationClaims } from "./actions/issue-verification-claims";
 import { recoverIdentity } from "./actions/recover-identity";
 import { setGlobalBlockedAddresses } from "./actions/set-global-blocked-addressess";
 import { setGlobalBlockedCountries } from "./actions/set-global-blocked-countries";
 import { setGlobalBlockedIdentities } from "./actions/set-global-blocked-identities";
-import { grantRoles } from "./assets/actions/core/grant-roles";
+import { grantRoles as grantAssetRoles } from "./assets/actions/core/grant-roles";
 import { mint } from "./assets/actions/core/mint";
 import { recoverErc20Tokens } from "./assets/actions/core/recover-erc20-tokens";
 import { recoverTokens } from "./assets/actions/core/recover-tokens";
@@ -66,6 +66,12 @@ async function main() {
   await frozenInvestor.printBalance();
   await maliciousInvestor.printBalance();
 
+  await grantSystemRole(
+    owner,
+    ATKRoles.people.identityManagerRole,
+    owner.address
+  );
+
   // Add the actors to the registry
   await batchAddToRegistry([
     owner,
@@ -75,25 +81,15 @@ async function main() {
     maliciousInvestor,
   ]);
 
-  // Grant fixed yield schedule factory to allow list manager
-  // TODO: this is a temporary solution, will be fixed in the future
-  await grantRole(
-    atkDeployer.getComplianceContract().address,
-    owner,
-    ATKRoles.bypassListManagerRole,
-    atkDeployer.getFixedYieldScheduleFactoryContract().address
-  );
-
   console.log("\n=== Setting up topics and trusted issuers... ===\n");
 
   // Initialize the TopicManager with the deployed topic registry
   await topicManager.initialize();
 
   // Add the claim issuer as a trusted issuer
-  await grantRole(
-    atkDeployer.getTrustedIssuersRegistryContract().address,
+  await grantSystemRole(
     owner,
-    ATKRoles.registrarRole,
+    ATKRoles.people.claimPolicyManagerRole,
     owner.address
   );
 
@@ -120,7 +116,11 @@ async function main() {
 
   console.log("\n=== Setting up compliance modules... ===\n");
 
-  await grantSystemRole(owner, ATKRoles.complianceManagerRole, owner.address);
+  await grantSystemRole(
+    owner,
+    ATKRoles.people.complianceManagerRole,
+    owner.address
+  );
 
   // block RU in the country block list module
   await setGlobalBlockedCountries([Countries.RU]);
@@ -129,6 +129,15 @@ async function main() {
   await setGlobalBlockedAddresses([maliciousInvestor.address]);
   await setGlobalBlockedIdentities([await maliciousInvestor.getIdentity()]);
 
+  console.log("\n=== Setting up assets... ===\n");
+
+  // directly add addon role as well because we also need this for yield schedules
+  await grantSystemRoles(
+    owner,
+    [ATKRoles.people.tokenManagerRole, ATKRoles.people.addonManagerRole],
+    owner.address
+  );
+
   // Create the assets
   const deposit = await createDeposit();
   const bond = await createBond(deposit);
@@ -136,7 +145,7 @@ async function main() {
   const fund = await createFund();
   const stableCoin = await createStableCoin();
 
-  // Create the addons
+  console.log("\n=== Setting up addons... ===\n");
 
   // Addon - Airdrop
   const distribution = createDistribution({
@@ -185,7 +194,7 @@ async function main() {
   // need to force transfer it into the equity contract ... else it will throw RecipientNotVerified
   await forcedTransfer(stableCoin, owner, investorANew, equity, 10n);
 
-  await grantRoles(equity, owner, [ATKRoles.emergencyRole]);
+  await grantAssetRoles(equity, owner, [ATKRoles.assets.emergencyRole]);
   await recoverErc20Tokens(equity, owner, stableCoin, investorANew, 10n);
 }
 

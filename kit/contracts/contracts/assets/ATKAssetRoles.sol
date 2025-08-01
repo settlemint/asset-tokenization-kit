@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-/// @title ATKRoles
+/// @title ATKAssetRoles
 /// @author SettleMint
 /// @notice Library defining role constants for the ATK protocol's access control system
 /// @dev These roles are used with OpenZeppelin's AccessControl contract
-library ATKRoles {
+library ATKAssetRoles {
     /// @notice The default admin role that can grant and revoke other roles
     /// @dev Matches the default admin role in OpenZeppelin's AccessControl
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;

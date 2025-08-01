@@ -3,11 +3,9 @@ pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-// import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 
 // OnchainID imports
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
@@ -20,12 +18,17 @@ import { ISMARTIdentityRegistryStorage } from "./../../smart/interface/ISMARTIde
 import { IERC3643TrustedIssuersRegistry } from "./../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { IATKIdentityRegistry } from "./IATKIdentityRegistry.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 // Struct imports
 import { ExpressionNode, ExpressionType } from "../../smart/interface/structs/ExpressionNode.sol";
 
 // Constants
+import { ATKPeopleRoles } from "../ATKPeopleRoles.sol";
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
+
+// Extensions
+import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
 
 /// @title ATK Identity Registry Implementation
 /// @author SettleMint
@@ -41,8 +44,9 @@ import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 contract ATKIdentityRegistryImplementation is
     Initializable,
     ERC2771ContextUpgradeable,
-    AccessControlUpgradeable,
-    IATKIdentityRegistry
+    ATKSystemAccessManaged,
+    IATKIdentityRegistry,
+    ERC165Upgradeable
 {
     // --- Storage References ---
     /// @notice Stores the contract address of the `ISMARTIdentityRegistryStorage` instance.
@@ -153,10 +157,7 @@ contract ATKIdentityRegistryImplementation is
     /// contracts.
     ///     These addresses must not be zero addresses.
     /// It is protected by the `initializer` modifier from OpenZeppelin, ensuring it can only be called once.
-    /// @param initialAdmin The address that will receive initial administrative and registrar privileges.
-    /// This address will be responsible for the initial setup and management of the registry.
-    /// @param registrarAdmins The addresses that will receive initial registrar privileges.
-    /// This address will be responsible for managing identities.
+    /// @param accessManager The address of the access manager
     /// @param identityStorage_ The address of the deployed `ISMARTIdentityRegistryStorage` contract.
     /// This contract will be used to store all identity data.
     /// @param trustedIssuersRegistry_ The address of the deployed `IERC3643TrustedIssuersRegistry` contract.
@@ -164,8 +165,7 @@ contract ATKIdentityRegistryImplementation is
     /// @param topicSchemeRegistry_ The address of the deployed `ISMARTTopicSchemeRegistry` contract.
     /// This contract will be used to validate claim topics against registered schemes.
     function initialize(
-        address initialAdmin,
-        address[] memory registrarAdmins,
+        address accessManager,
         address identityStorage_,
         address trustedIssuersRegistry_,
         address topicSchemeRegistry_
@@ -173,23 +173,8 @@ contract ATKIdentityRegistryImplementation is
         public
         initializer // Ensures this function is called only once
     {
-        // Initialize ERC165 for interface detection support in an upgradeable context.
+        __ATKSystemAccessManaged_init(accessManager);
         __ERC165_init_unchained();
-        // Initialize AccessControl for role-based permissions in an upgradeable context.
-        __AccessControl_init_unchained();
-        // ERC2771Context is initialized by its constructor during contract creation.
-
-        // Grant the caller (initialAdmin) the default admin role, allowing them to manage other roles.
-        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
-        _grantRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE, initialAdmin);
-        _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialAdmin); // Platform Admin needs to register identities
-
-        for (uint256 i = 0; i < registrarAdmins.length; ++i) {
-            _grantRole(ATKSystemRoles.REGISTRAR_ADMIN_ROLE, registrarAdmins[i]);
-        }
-
-        // Set up role hierarchy: REGISTRAR_ADMIN_ROLE can manage REGISTRAR_ROLE
-        _setRoleAdmin(ATKSystemRoles.REGISTRAR_ROLE, ATKSystemRoles.REGISTRAR_ADMIN_ROLE);
 
         // Validate and set the identity storage contract address.
         if (identityStorage_ == address(0)) revert InvalidStorageAddress();
@@ -222,7 +207,7 @@ contract ATKIdentityRegistryImplementation is
     function setIdentityRegistryStorage(address identityStorage_)
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (identityStorage_ == address(0)) revert InvalidStorageAddress();
         _identityStorage = ISMARTIdentityRegistryStorage(identityStorage_);
@@ -238,7 +223,7 @@ contract ATKIdentityRegistryImplementation is
     function setTrustedIssuersRegistry(address trustedIssuersRegistry_)
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (trustedIssuersRegistry_ == address(0)) revert InvalidRegistryAddress();
         _trustedIssuersRegistry = IERC3643TrustedIssuersRegistry(trustedIssuersRegistry_);
@@ -254,7 +239,7 @@ contract ATKIdentityRegistryImplementation is
     function setTopicSchemeRegistry(address topicSchemeRegistry_)
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (topicSchemeRegistry_ == address(0)) revert InvalidTopicSchemeRegistryAddress();
         _topicSchemeRegistry = ISMARTTopicSchemeRegistry(topicSchemeRegistry_);
@@ -279,7 +264,11 @@ contract ATKIdentityRegistryImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE) // Ensures only authorized registrars can call this
+        onlySystemRoles3(
+            ATKPeopleRoles.IDENTITY_MANAGER_ROLE,
+            ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE,
+            ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE
+        )
     {
         _registerIdentity(_userAddress, _identity, _country);
     }
@@ -293,7 +282,15 @@ contract ATKIdentityRegistryImplementation is
     /// Emits an `IdentityRemoved` event upon successful deletion.
     /// @param _userAddress The blockchain address of the user whose identity is to be deleted.
     /// Reverts with `IdentityNotRegistered` if the address is not found.
-    function deleteIdentity(address _userAddress) external override onlyRole(ATKSystemRoles.REGISTRAR_ROLE) {
+    function deleteIdentity(address _userAddress)
+        external
+        override
+        onlySystemRoles3(
+            ATKPeopleRoles.IDENTITY_MANAGER_ROLE,
+            ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE,
+            ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE
+        )
+    {
         // Ensure the identity exists before attempting to delete.
         // The `contains` function checks the storage contract.
         if (!this.contains(_userAddress)) revert IdentityNotRegistered(_userAddress);
@@ -323,7 +320,7 @@ contract ATKIdentityRegistryImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        onlySystemRole(ATKPeopleRoles.IDENTITY_MANAGER_ROLE)
     {
         if (!this.contains(_userAddress)) revert IdentityNotRegistered(_userAddress);
 
@@ -348,7 +345,7 @@ contract ATKIdentityRegistryImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        onlySystemRole(ATKPeopleRoles.IDENTITY_MANAGER_ROLE)
     {
         if (!this.contains(_userAddress)) revert IdentityNotRegistered(_userAddress);
         if (address(_identity) == address(0)) revert InvalidIdentityAddress();
@@ -376,7 +373,7 @@ contract ATKIdentityRegistryImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        onlySystemRole(ATKPeopleRoles.IDENTITY_MANAGER_ROLE)
     {
         // Ensure all input arrays have the same number of elements.
         if (_userAddresses.length != _identities.length) {
@@ -405,7 +402,7 @@ contract ATKIdentityRegistryImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        onlySystemRole(ATKPeopleRoles.IDENTITY_MANAGER_ROLE)
     {
         // Initial input validation
         if (lostWallet == address(0)) revert InvalidUserAddress();
@@ -792,39 +789,10 @@ contract ATKIdentityRegistryImplementation is
         internal
         view
         virtual
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        override(ERC2771ContextUpgradeable, ATKSystemAccessManaged)
         returns (address)
     {
         return ERC2771ContextUpgradeable._msgSender();
-    }
-
-    /// @notice Provides the actual transaction data, supporting meta-transactions via ERC2771.
-    /// @dev Overrides the `_msgData()` function from both `ContextUpgradeable` and `ERC2771ContextUpgradeable`.
-    /// If the transaction is relayed through a trusted forwarder, this function returns the original `msg.data`.
-    /// Otherwise, it returns the current `msg.data`.
-    /// @return The original transaction data.
-    function _msgData()
-        internal
-        view
-        virtual
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (bytes calldata)
-    {
-        return ERC2771ContextUpgradeable._msgData();
-    }
-
-    /// @notice Returns the length of the suffix appended to the transaction data by an ERC2771 trusted forwarder.
-    /// @dev This is part of the ERC2771 standard, used by `ERC2771ContextUpgradeable` to correctly parse
-    /// the original sender from the transaction data if a trusted forwarder is used.
-    /// @return The length of the context suffix (typically 20 bytes for the sender's address).
-    function _contextSuffixLength()
-        internal
-        view
-        virtual
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (uint256)
-    {
-        return ERC2771ContextUpgradeable._contextSuffixLength();
     }
 
     /// @inheritdoc IERC165
@@ -839,11 +807,12 @@ contract ATKIdentityRegistryImplementation is
         public
         view
         virtual
-        override(AccessControlUpgradeable, IERC165) // Overrides the one in AccessControlUpgradeable
+        override(ERC165Upgradeable, IERC165)
         returns (bool)
     {
         // Check for ISMARTIdentityRegistry interface and then delegate to parent contracts.
         return interfaceId == type(IATKIdentityRegistry).interfaceId
-            || interfaceId == type(ISMARTIdentityRegistry).interfaceId || super.supportsInterface(interfaceId);
+            || interfaceId == type(ISMARTIdentityRegistry).interfaceId
+            || interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
     }
 }

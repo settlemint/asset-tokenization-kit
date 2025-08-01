@@ -3,10 +3,8 @@ pragma solidity ^0.8.28;
 
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
-import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { ISMARTComplianceModule } from "../../smart/interface/ISMARTComplianceModule.sol";
 import { IATKComplianceModuleRegistry } from "./IATKComplianceModuleRegistry.sol";
 import {
@@ -14,22 +12,25 @@ import {
     ComplianceModuleAlreadyRegistered,
     InvalidImplementationInterface
 } from "../ATKSystemErrors.sol";
+import { ATKPeopleRoles } from "../ATKPeopleRoles.sol";
+import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
+import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
-/**
- * @title ATKComplianceModuleRegistryImplementation
- * @author SettleMint
- * @notice Implementation contract for the ATK Compliance Module Registry
- * @dev This contract maintains a registry of approved compliance modules that can be used by
- *      security tokens in the ATK ecosystem. Compliance modules implement various regulatory
- *      requirements such as identity verification, country restrictions, and allowlisting.
- *      Only modules supporting the ISMARTComplianceModule interface can be registered.
- */
+/// @title ATKComplianceModuleRegistryImplementation
+/// @author SettleMint
+/// @notice Implementation contract for the ATK Compliance Module Registry
+/// @dev This contract maintains a registry of approved compliance modules that can be used by
+///      security tokens in the ATK ecosystem. Compliance modules implement various regulatory
+///      requirements such as identity verification, country restrictions, and allowlisting.
+///      Only modules supporting the ISMARTComplianceModule interface can be registered.
 contract ATKComplianceModuleRegistryImplementation is
     Initializable,
     IATKComplianceModuleRegistry,
-    AccessControlUpgradeable,
+    ATKSystemAccessManaged,
     ReentrancyGuardUpgradeable,
-    ERC2771ContextUpgradeable
+    ERC2771ContextUpgradeable,
+    ERC165Upgradeable
 {
     mapping(bytes32 typeHash => address moduleAddress) private complianceModulesByType;
 
@@ -43,19 +44,11 @@ contract ATKComplianceModuleRegistryImplementation is
     }
 
     /// @notice Initializes the compliance module registry with initial admin accounts
-    /// @param initialAdmins Array of addresses to be granted the default admin role
+    /// @param accessManager The address of the access manager
     /// @dev Reverts if no initial admins are provided
-    function initialize(address[] calldata initialAdmins) public override initializer {
-        __AccessControl_init();
+    function initialize(address accessManager) public override initializer {
+        __ATKSystemAccessManaged_init(accessManager);
         __ReentrancyGuard_init();
-
-        if (initialAdmins.length == 0) {
-            revert NoInitialAdmins();
-        }
-
-        for (uint256 i = 0; i < initialAdmins.length; ++i) {
-            _grantRole(DEFAULT_ADMIN_ROLE, initialAdmins[i]);
-        }
     }
 
     /// @notice Registers a new compliance module in the registry
@@ -65,7 +58,7 @@ contract ATKComplianceModuleRegistryImplementation is
         external
         override
         nonReentrant
-        onlyRole(DEFAULT_ADMIN_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (moduleAddress == address(0)) revert InvalidComplianceModuleAddress();
         _checkInterface(moduleAddress, _ISMART_COMPLIANCE_MODULE_ID);
@@ -107,38 +100,15 @@ contract ATKComplianceModuleRegistryImplementation is
     /// @notice Checks if the contract supports a given interface
     /// @param interfaceId The interface identifier to check
     /// @return bool True if the interface is supported, false otherwise
-    function supportsInterface(bytes4 interfaceId) public view override(AccessControlUpgradeable) returns (bool) {
-        return interfaceId == type(IATKComplianceModuleRegistry).interfaceId || super.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId) public view override(ERC165Upgradeable) returns (bool) {
+        return interfaceId == type(IATKComplianceModuleRegistry).interfaceId
+            || interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
     }
 
     /// @notice Returns the address of the current message sender
     /// @return The address of the message sender, accounting for meta-transactions
     /// @dev Overrides to use ERC2771 context for meta-transaction support
-    function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
-        return super._msgSender();
-    }
-
-    /// @notice Returns the length of the context suffix for meta-transactions
-    /// @return The length of the context suffix
-    /// @dev Overrides to use ERC2771 context for meta-transaction support
-    function _contextSuffixLength()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (uint256)
-    {
-        return super._contextSuffixLength();
-    }
-
-    /// @notice Returns the calldata of the current transaction
-    /// @return The calldata, accounting for meta-transactions
-    /// @dev Overrides to use ERC2771 context for meta-transaction support
-    function _msgData()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (bytes calldata)
-    {
-        return super._msgData();
+    function _msgSender() internal view override(ERC2771ContextUpgradeable, ATKSystemAccessManaged) returns (address) {
+        return ERC2771ContextUpgradeable._msgSender();
     }
 }

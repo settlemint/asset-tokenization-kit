@@ -5,17 +5,15 @@ import ATKOnboardingSystemModule from "../../system";
 const ATKOnboardingTimeBoundAirdropFactoryModule = buildModule(
   "ATKOnboardingTimeBoundAirdropFactoryModule",
   (m) => {
-    const { system, systemAddonRegistry } = m.useModule(
+    const { system, systemAddonRegistry, systemAccessManager } = m.useModule(
       ATKOnboardingSystemModule
     );
     const { timeBoundAirdropFactoryImplementation } = m.useModule(ATKModule);
 
-    const platformAdmin = m.getAccount(0);
-
     const encodedInitializationData = m.encodeFunctionCall(
       timeBoundAirdropFactoryImplementation,
       "initialize",
-      [system.address, platformAdmin]
+      [systemAccessManager.address, system.address]
     );
 
     const createTimeBoundAirdropFactoryAddon = m.call(

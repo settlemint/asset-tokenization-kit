@@ -8,14 +8,18 @@ import { ATKComplianceModuleRegistryImplementation } from
     "../../../contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { IATKSystemAccessManager } from "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
 import { IWithTypeIdentifier } from "../../../contracts/smart/interface/IWithTypeIdentifier.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
+import { ATKRoles } from "../../../contracts/system/ATKRoles.sol";
+
 import {
     InvalidComplianceModuleAddress,
     ComplianceModuleAlreadyRegistered,
     InvalidImplementationInterface
 } from "../../../contracts/system/ATKSystemErrors.sol";
+import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
 
 // Mock for a compliance module
 contract MockComplianceModule is ISMARTComplianceModule {
@@ -59,7 +63,7 @@ contract ATKComplianceModuleRegistryTest is Test {
     }
 
     function test_Initialize() public view {
-        assertTrue(registry.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(systemUtils.systemAccessManager().hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
     }
 
     function test_RegisterComplianceModule_Success() public {
@@ -81,7 +85,9 @@ contract ATKComplianceModuleRegistryTest is Test {
         vm.prank(user);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user, ATKSystemRoles.DEFAULT_ADMIN_ROLE
+                IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector,
+                user,
+                ATKPeopleRoles.SYSTEM_MANAGER_ROLE
             )
         );
         registry.registerComplianceModule(address(mockModule));
@@ -122,7 +128,7 @@ contract ATKComplianceModuleRegistryTest is Test {
         );
         assertTrue(
             ATKComplianceModuleRegistryImplementation(address(registry)).supportsInterface(
-                type(IAccessControl).interfaceId
+                type(IATKSystemAccessManaged).interfaceId
             )
         );
         assertTrue(

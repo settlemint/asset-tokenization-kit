@@ -44,6 +44,21 @@ interface IATKSystemAccessManager is IAccessControl {
     /// @param accounts The addresses that will lose the role.
     function batchRevokeRole(bytes32 role, address[] calldata accounts) external;
 
+    /// @notice Grants multiple roles to a single account.
+    /// @param account The address that will receive all the roles.
+    /// @param roles The array of role identifiers to grant.
+    function grantMultipleRoles(address account, bytes32[] calldata roles) external;
+
+    /// @notice Revokes multiple roles from a single account.
+    /// @param account The address that will lose all the roles.
+    /// @param roles The array of role identifiers to revoke.
+    function revokeMultipleRoles(address account, bytes32[] calldata roles) external;
+
+    /// @notice Renounces multiple roles from the calling account.
+    /// @param roles The array of role identifiers to renounce.
+    /// @param callerConfirmation The address that will confirm the renouncement.
+    function renounceMultipleRoles(bytes32[] calldata roles, address callerConfirmation) external;
+
     /// @notice Grants `role` to an address.
     /// @param role The role identifier to grant.
     /// @param account The address that will receive the role.
@@ -58,4 +73,9 @@ interface IATKSystemAccessManager is IAccessControl {
     /// @param role The role identifier to renounce.
     /// @param account The address that will renounce the role.
     function renounceRole(bytes32 role, address account) external;
+
+    /// @notice Sets the admin role for a given role.
+    /// @param role The role identifier to set the admin role for.
+    /// @param adminRole The admin role to set for the given role.
+    function setRoleAdmin(bytes32 role, bytes32 adminRole) external;
 }

@@ -86,7 +86,8 @@ contract AbstractATKTokenFactoryImplementationSimpleTest is Test {
 
     function testInheritanceStructure() public view {
         // Test that the contract supports expected interfaces from inheritance
-        assertTrue(factory.supportsInterface(type(IAccessControl).interfaceId));
+        assertTrue(factory.supportsInterface(type(IATKSystemAccessManaged).interfaceId));
+        assertTrue(factory.supportsInterface(type(IATKTokenFactory).interfaceId));
     }
 
     function testCalculateSaltDeterministic() public view {
@@ -152,7 +153,7 @@ contract AbstractATKTokenFactoryImplementationSimpleTest is Test {
         // Test that the abstract contract properly overrides supportsInterface
         assertTrue(factory.supportsInterface(type(IATKTokenFactory).interfaceId));
         assertTrue(factory.supportsInterface(type(IERC165).interfaceId));
-        assertTrue(factory.supportsInterface(type(IAccessControl).interfaceId));
+        assertTrue(factory.supportsInterface(type(IATKSystemAccessManaged).interfaceId));
 
         // Test that it doesn't support random interfaces
         assertFalse(factory.supportsInterface(bytes4(0x12345678)));

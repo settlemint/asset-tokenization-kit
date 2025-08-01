@@ -5,17 +5,15 @@ import ATKOnboardingSystemModule from "../../system";
 const ATKOnboardingVaultFactoryModule = buildModule(
   "ATKOnboardingVaultFactoryModule",
   (m) => {
-    const { system, systemAddonRegistry } = m.useModule(
+    const { system, systemAddonRegistry, systemAccessManager } = m.useModule(
       ATKOnboardingSystemModule
     );
     const { vaultFactoryImplementation } = m.useModule(ATKModule);
 
-    const platformAdmin = m.getAccount(0);
-
     const encodedInitializationData = m.encodeFunctionCall(
       vaultFactoryImplementation,
       "initialize",
-      [system.address, platformAdmin]
+      [systemAccessManager.address, system.address]
     );
 
     const createVaultFactoryAddon = m.call(

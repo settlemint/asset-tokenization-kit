@@ -16,7 +16,9 @@ import { ISMARTTokenAccessManager } from
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { TestConstants } from "../../Constants.sol";
+import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { ATKSystemImplementation } from "../../../contracts/system/ATKSystemImplementation.sol";
 import { IATKCompliance } from "../../../contracts/system/compliance/IATKCompliance.sol";
 
 abstract contract AbstractComplianceModuleTest is Test {
@@ -98,9 +100,7 @@ abstract contract AbstractComplianceModuleTest is Test {
 
         // Add token issuer to the bypass list so that he is allowed to do things for testing
         vm.startPrank(platformAdmin);
-        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
-            ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, platformAdmin
-        );
+        systemUtils.systemAccessManager().grantRole(ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE, platformAdmin);
         IATKCompliance(address(systemUtils.compliance())).addToBypassList(tokenIssuer);
         vm.stopPrank();
 
@@ -129,7 +129,6 @@ abstract contract AbstractComplianceModuleTest is Test {
         accessManager.grantRole(SMARTToken(address(smartToken)).PAUSER_ROLE(), tokenIssuer);
         accessManager.grantRole(SMARTToken(address(smartToken)).CAP_MANAGEMENT_ROLE(), tokenIssuer);
         accessManager.grantRole(SMARTToken(address(smartToken)).TOKEN_ADMIN_ROLE(), tokenIssuer);
-        accessManager.grantRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, tokenIssuer);
 
         // Create the token's on-chain identity
         tokenUtils.createAndSetTokenOnchainID(address(smartToken), tokenIssuer);

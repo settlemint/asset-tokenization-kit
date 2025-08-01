@@ -10,6 +10,7 @@ import "../../utils/ClaimUtils.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import "@openzeppelin/contracts/access/IAccessControl.sol";
+import { IATKSystemAccessManager } from "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IERC3643TrustedIssuersRegistry } from
     "../../../contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
@@ -368,7 +369,6 @@ contract ATKIdentityRegistryImplementationTest is Test {
         testClaimTopics[1] = 2; // AML topic
 
         // Should return false since we haven't set up proper claims for verification
-        // TODO: Add comprehensive claim verification tests with proper claim setup
         assertFalse(identityRegistry.isVerified(user1, _topicsToExpressionNodes(testClaimTopics)));
     }
 
@@ -456,12 +456,7 @@ contract ATKIdentityRegistryImplementationTest is Test {
         ATKIdentityRegistryImplementation impl = ATKIdentityRegistryImplementation(address(identityRegistry));
         assertTrue(impl.supportsInterface(type(ISMARTIdentityRegistry).interfaceId));
         assertTrue(impl.supportsInterface(type(IERC165).interfaceId));
-        assertTrue(impl.supportsInterface(type(IAccessControl).interfaceId));
-    }
-
-    function testAccessControlRoles() public view {
-        ATKIdentityRegistryImplementation impl = ATKIdentityRegistryImplementation(address(identityRegistry));
-        assertTrue(impl.hasRole(impl.DEFAULT_ADMIN_ROLE(), admin));
+        assertTrue(impl.supportsInterface(type(IATKSystemAccessManaged).interfaceId));
     }
 
     // --- recoverIdentity Tests ---
