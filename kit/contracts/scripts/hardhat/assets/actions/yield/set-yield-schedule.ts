@@ -27,34 +27,9 @@ export const setYieldSchedule = async (
     abi: ATKContracts.ismartYield,
   });
 
-  // Get the access manager address from the asset object
-  const accessManagerAddress = asset.accessManager;
-
-  // Get the access manager contract
-  const accessManagerContract = owner.getContractInstance({
-    address: accessManagerAddress,
-    abi: ATKContracts.accessManager,
-  });
-
-  // Grant GOVERNANCE_ROLE to owner so they can call setYieldSchedule
-  const grantGovRoleHash = await withDecodedRevertReason(() =>
-    accessManagerContract.write.grantRole([
-      ATKRoles.assets.governanceRole,
-      owner.address,
-    ])
-  );
-  await waitForSuccess(grantGovRoleHash);
-  console.log(
-    `[Set yield schedule] ✓ Granted GOVERNANCE_ROLE to ${owner.address}`
-  );
-
-  // Also grant DEPLOYER_ROLE directly on the fixed yield schedule factory
-  // This is required because the factory may check its own roles
   const factoryAddress = atkDeployer.getContractAddress(
     "fixedYieldScheduleFactory"
   );
-
-  // Now create a different contract instance with the factory ABI for creating the yield schedule
   const factoryContract = owner.getContractInstance({
     address: factoryAddress,
     abi: ATKContracts.fixedYieldScheduleFactory,

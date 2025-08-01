@@ -5,17 +5,15 @@ import ATKOnboardingSystemModule from "../../system";
 const ATKOnboardingVestingAirdropFactoryModule = buildModule(
   "ATKOnboardingVestingAirdropFactoryModule",
   (m) => {
-    const { system, systemAddonRegistry } = m.useModule(
+    const { system, systemAddonRegistry, systemAccessManager } = m.useModule(
       ATKOnboardingSystemModule
     );
     const { vestingAirdropFactoryImplementation } = m.useModule(ATKModule);
 
-    const platformAdmin = m.getAccount(0);
-
     const encodedInitializationData = m.encodeFunctionCall(
       vestingAirdropFactoryImplementation,
       "initialize",
-      [system.address, platformAdmin]
+      [systemAccessManager.address, system.address]
     );
 
     const createVestingAirdropFactoryAddon = m.call(

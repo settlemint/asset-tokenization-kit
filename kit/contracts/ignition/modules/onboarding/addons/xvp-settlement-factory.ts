@@ -5,19 +5,16 @@ import ATKOnboardingSystemModule from "../system";
 const ATKOnboardingXvPSettlementFactoryModule = buildModule(
   "ATKOnboardingXvPSettlementFactoryModule",
   (m) => {
-    const { system, systemAddonRegistry } = m.useModule(
+    const { system, systemAddonRegistry, systemAccessManager } = m.useModule(
       ATKOnboardingSystemModule
     );
-    const { xvpSettlementImplementation, xvpSettlementFactoryImplementation } =
-      m.useModule(ATKModule);
-
-    const platformAdmin = m.getAccount(0);
+    const { xvpSettlementFactoryImplementation } = m.useModule(ATKModule);
 
     // Create the factory addon (individual settlements are managed by factory, not system)
     const encodedInitializationData = m.encodeFunctionCall(
       xvpSettlementFactoryImplementation,
       "initialize",
-      [system.address, platformAdmin]
+      [systemAccessManager.address, system.address]
     );
 
     const createXvPSettlementFactoryAddon = m.call(

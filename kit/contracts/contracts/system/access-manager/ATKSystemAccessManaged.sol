@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import { ZeroAddressNotAllowed } from "../ATKSystemErrors.sol";
 import { IATKSystemAccessManager } from "./IATKSystemAccessManager.sol";
 import { IATKSystemAccessManaged } from "./IATKSystemAccessManaged.sol";
+import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 
 /// @title Internal Logic for ATK System Access Management
@@ -24,8 +25,8 @@ abstract contract ATKSystemAccessManaged is IATKSystemAccessManaged{
     ///      and any contracts that inherit from it, but not externally.
     address internal _accessManager;
 
-
-
+    /// @notice Error thrown when the access manager is not a valid `IATKSystemAccessManager` contract.
+    error InvalidAccessManager();
 
     /// @notice Internal function to get the sender of the message.
     /// @dev This function is used to get the sender of the message.
@@ -45,6 +46,9 @@ abstract contract ATKSystemAccessManaged is IATKSystemAccessManaged{
     function __ATKSystemAccessManaged_init(address accessManager_) internal {
         if (accessManager_ == address(0)) {
             revert ZeroAddressNotAllowed();
+        }
+        if (!IERC165(accessManager_).supportsInterface(type(IATKSystemAccessManager).interfaceId)) {
+            revert InvalidAccessManager();
         }
         _accessManager = accessManager_;
 
