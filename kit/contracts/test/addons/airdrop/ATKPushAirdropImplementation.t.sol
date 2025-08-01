@@ -72,7 +72,9 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
 
         // Encode initialization data for the factory
         bytes memory encodedInitializationData = abi.encodeWithSelector(
-            ATKPushAirdropFactoryImplementation.initialize.selector, address(systemUtils.system()), platformAdmin
+            ATKPushAirdropFactoryImplementation.initialize.selector,
+            address(systemUtils.systemAccessManager()),
+            address(systemUtils.system())
         );
 
         // Create system addon for push airdrop factory

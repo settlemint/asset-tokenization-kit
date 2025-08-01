@@ -80,7 +80,9 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
 
         // Encode initialization data for the factory
         bytes memory encodedInitializationData = abi.encodeWithSelector(
-            ATKVestingAirdropFactoryImplementation.initialize.selector, address(systemUtils.system()), platformAdmin
+            ATKVestingAirdropFactoryImplementation.initialize.selector,
+            address(systemUtils.systemAccessManager()),
+            address(systemUtils.system())
         );
 
         // Create system addon for vesting airdrop factory
