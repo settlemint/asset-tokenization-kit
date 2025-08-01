@@ -24,7 +24,7 @@ dataSources:
         - name: System
           file: ../contracts/.generated/artifacts/contracts/system/IATKSystem.sol/IATKSystem.json
       eventHandlers:
-        - event: ATKSystemCreated(indexed address,indexed address)
+        - event: ATKSystemCreated(indexed address,indexed address,indexed address)
           handler: handleATKSystemCreated
       file: ./src/system-factory/system-factory.ts
 templates:
