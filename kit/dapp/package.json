@@ -162,7 +162,6 @@
     "react": "19.1.1",
     "react-day-picker": "9.8.1",
     "react-dom": "19.1.1",
-    "react-hook-form": "7.61.1",
     "react-i18next": "15.6.1",
     "react-jazzicon": "1.0.4",
     "react-qr-code": "2.0.18",

@@ -1,8 +1,219 @@
-# blockscout
+# Blockscout Explorer
 
 ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
-A Helm chart for the blockscout components
+A Helm chart for deploying Blockscout - a comprehensive blockchain explorer and analytics platform for the Asset Tokenization Kit's private Besu network.
+
+## Overview
+
+Blockscout is an open-source blockchain explorer that provides a web interface for exploring and analyzing blockchain data. This chart deploys a complete Blockscout stack optimized for ERC-3643 security tokens and asset tokenization use cases on private networks.
+
+## Key Features
+
+- **Comprehensive Explorer**: Browse blocks, transactions, addresses, and smart contracts
+- **Token Support**: Native support for ERC-20, ERC-721, ERC-1155, and ERC-3643 tokens
+- **Smart Contract Verification**: Upload and verify contract source code
+- **API Access**: RESTful and GraphQL APIs for programmatic access
+- **Real-time Updates**: Live updates of blockchain data via WebSockets
+- **Analytics Dashboard**: Transaction statistics and network health metrics
+- **Multi-Language Support**: Internationalization support for global deployments
+
+## Architecture
+
+Blockscout consists of two main components:
+
+### Backend (Elixir/Phoenix)
+- **Purpose**: Indexes blockchain data and provides APIs
+- **Technology**: Elixir Phoenix framework
+- **Database**: PostgreSQL for indexed data storage
+- **Indexing**: Real-time blockchain data indexing from Besu nodes
+- **APIs**: REST and GraphQL endpoints
+
+### Frontend (Next.js)
+- **Purpose**: User-facing web interface
+- **Technology**: Next.js React framework
+- **Features**: Responsive design, dark/light themes, search functionality
+- **Customization**: Branded for Asset Tokenization Kit
+
+## Integration Points
+
+Blockscout integrates seamlessly with other ATK components:
+
+- **Besu Network**: Connects via eRPC proxy for blockchain data
+- **PostgreSQL**: Shares database infrastructure with other services
+- **eRPC**: Uses load-balanced RPC endpoints for optimal performance
+- **Monitoring**: Provides Prometheus metrics for observability
+
+## Configuration Examples
+
+### Basic Configuration
+```yaml
+blockscout-stack:
+  blockscout:
+    replicaCount: 1
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+      limits:
+        cpu: 2000m
+        memory: 4Gi
+```
+
+### High Availability Setup
+```yaml
+blockscout-stack:
+  blockscout:
+    replicaCount: 2
+    env:
+      POOL_SIZE: "10"
+      POOL_SIZE_API: "10"
+      QUEUE_TARGET: "10000"
+  frontend:
+    replicaCount: 2
+```
+
+### Custom Network Configuration
+```yaml
+blockscout-stack:
+  config:
+    network:
+      name: "My Private Network"
+      shortname: "MPN"
+      id: 1337
+      currency:
+        name: "Custom Token"
+        symbol: "CTK"
+        decimals: 18
+```
+
+### Database Optimization
+```yaml
+blockscout-stack:
+  blockscout:
+    env:
+      POOL_SIZE: "20"
+      POOL_MAX_OVERFLOW: "80"
+      DATABASE_TIMEOUT: "120000"
+      ECTO_ADAPTER_TIMEOUT: "120000"
+```
+
+## Features & Capabilities
+
+### Token Analysis
+- **ERC-3643 Compliance**: Full support for security token standards
+- **Token Holders**: Track token distribution and holder analytics
+- **Transfer History**: Complete token transfer audit trails
+- **Compliance Events**: Monitor regulatory compliance events
+
+### Smart Contract Features
+- **Source Verification**: Upload and verify contract source code
+- **ABI Interface**: Interact with contracts directly through the UI
+- **Event Logs**: View and filter contract event emissions
+- **Internal Transactions**: Track internal contract calls
+
+### Search & Navigation
+- **Universal Search**: Search by address, transaction hash, block number, or token
+- **Advanced Filters**: Filter transactions by type, status, method
+- **Bookmarking**: Save frequently accessed addresses and contracts
+- **Export Data**: Export transaction and token data to CSV
+
+### Analytics & Metrics
+- **Network Statistics**: Block time, transaction throughput, gas usage
+- **Token Metrics**: Supply, transfers, holder distribution
+- **Address Analytics**: Balance history, transaction patterns
+- **Market Data**: Token prices and market cap (when enabled)
+
+## Security & Performance
+
+### Security Features
+- **Input Validation**: All user inputs sanitized and validated
+- **Rate Limiting**: API rate limiting to prevent abuse
+- **SSL/TLS**: HTTPS encryption for all web traffic
+- **CORS Protection**: Configurable CORS policies
+
+### Performance Optimization
+- **Database Indexing**: Optimized database queries with proper indexing
+- **Caching**: Redis caching for frequently accessed data
+- **Connection Pooling**: Efficient database connection management
+- **CDN Support**: Static asset delivery via CDN
+
+## Monitoring & Observability
+
+### Metrics Available
+- Indexing performance and lag
+- Database query performance
+- API response times
+- User activity and page views
+- Error rates and exceptions
+
+### Health Checks
+- Database connectivity
+- RPC endpoint availability
+- Indexing synchronization status
+- Web service responsiveness
+
+## Troubleshooting
+
+### Common Issues
+
+**Indexing Lag**
+```bash
+# Check indexer status
+kubectl logs -n atk blockscout-backend-0 | grep "Indexed"
+
+# Monitor database performance
+kubectl exec -n atk postgresql-0 -- psql -U blockscout -c "SELECT * FROM pg_stat_activity;"
+```
+
+**Database Connection Issues**
+```bash
+# Check database connectivity
+kubectl exec -n atk blockscout-backend-0 -- nc -zv postgresql 5432
+
+# Review connection pool settings
+kubectl logs -n atk blockscout-backend-0 | grep "pool"
+```
+
+**Frontend Not Loading**
+```bash
+# Check frontend service
+kubectl get svc -n atk blockscout-frontend-svc
+
+# Check ingress configuration
+kubectl get ingress -n atk blockscout-frontend
+```
+
+### Performance Tuning
+
+**High Transaction Volume**
+- Increase indexer workers and batch sizes
+- Optimize database connection pools
+- Enable database read replicas
+
+**Large Blockchain State**
+- Increase memory allocation for indexing
+- Configure database partitioning
+- Enable data archiving for old blocks
+
+**Slow UI Response**
+- Enable Redis caching
+- Optimize database queries
+- Configure CDN for static assets
+
+## Customization
+
+### Branding
+- Custom logos and color schemes
+- White-label deployment options
+- Custom footer and header content
+- Multi-language support
+
+### Feature Toggles
+- Enable/disable specific features
+- Configure analytics providers
+- Set up custom notification systems
+- Integration with external services
 
 ## Maintainers
 
