@@ -146,13 +146,26 @@ erpc:
             pathType: ImplementationSpecific
   config:
     logLevel: info
+    server:
+      httpHostV4: 0.0.0.0
+      httpPort: 4000
     projects:
       - id: settlemint
         upstreams:
-          - endpoint: http://besu-node-rpc-1:8545
-            id: besu-node-rpc-1
-          - endpoint: http://besu-node-validator-1:8545
-            id: besu-node-validator-1
+          - id: besu-node-rpc-1
+            endpoint: http://besu-node-rpc-1:8545
+            evm:
+              chainId: 1337
+            failsafe:
+              timeout:
+                duration: 30s
+          - id: besu-node-validator-1
+            endpoint: http://besu-node-validator-1:8545
+            evm:
+              chainId: 1337
+            failsafe:
+              timeout:
+                duration: 30s
     database:
       evmJsonRpcCache:
         # Define one or more storage connectors with unique IDs useful in policies

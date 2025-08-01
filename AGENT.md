@@ -399,12 +399,13 @@ Module CLAUDE.md files MUST be minimal (< 50 lines):
 
 1. **NEVER commit to main branch**
 2. **ALWAYS run `bun run ci` before PR**
-3. **Trust Opus first, validate with Gemini-CLI only when needed**
-4. **NEVER modify shadcn components in ui/ folder**
-5. **Subgraph .ts files are AssemblyScript, not TypeScript**
-6. **React hooks**: Avoid unnecessary useCallback/useMemo - see react-dev agent
+3. **ALWAYS use vitest, not bun:test**
+4. **Trust Opus first, validate with Gemini-CLI only when needed**
+5. **NEVER modify shadcn components in ui/ folder**
+6. **Subgraph .ts files are AssemblyScript, not TypeScript**
+7. **React hooks**: Avoid unnecessary useCallback/useMemo - see react-dev agent
    guidelines
-7. **React Query with ORPC**:
+8. **React Query with ORPC**:
 
    ```typescript
    // ✅ CORRECT - Direct usage preserves type safety
@@ -434,6 +435,7 @@ Module CLAUDE.md files MUST be minimal (< 50 lines):
 ## Memories
 
 - Shadcn components are never the problem
+- We use vitest, not bun:test
 
 ## Context Optimization
 
@@ -578,3 +580,4 @@ async function fetchRequiredDocs() {
    - Use Context7 MCP for all library documentation
    - Apply current best practices from fetched docs
    - Update approach based on latest API changes
+```
