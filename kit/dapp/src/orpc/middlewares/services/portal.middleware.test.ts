@@ -157,12 +157,12 @@ describe("portal.middleware", () => {
           data: params.data,
           cause: params.cause,
         });
-        return error;
+        throw error;
       }),
       NOT_FOUND: vi.fn(() => {
         const error = new Error("Not Found");
         Object.assign(error, { code: "NOT_FOUND" });
-        return error;
+        throw error;
       }),
     };
 
@@ -488,6 +488,9 @@ describe("portal.middleware", () => {
       });
 
       test("should track transaction until mined and indexed", async () => {
+        // Use fake timers to speed up the test
+        vi.useFakeTimers();
+
         const TRACKED_MUTATION = createMockDocument(`
           mutation TrackedTx {
             createAsset {
@@ -545,7 +548,13 @@ describe("portal.middleware", () => {
             },
           });
 
-        const result = await client.mutate(TRACKED_MUTATION, {});
+        // Start the mutation
+        const resultPromise = client.mutate(TRACKED_MUTATION, {});
+
+        // Fast-forward through all timers
+        await vi.runAllTimersAsync();
+
+        const result = await resultPromise;
 
         expect(result).toBe(mockTxHash);
 
@@ -563,6 +572,9 @@ describe("portal.middleware", () => {
           input: {},
           output: expect.any(z.ZodObject),
         });
+
+        // Restore real timers
+        vi.useRealTimers();
       });
 
       test("should handle transaction revert", async () => {
@@ -608,6 +620,9 @@ describe("portal.middleware", () => {
       });
 
       test("should handle transaction dropped from mempool", async () => {
+        // Use fake timers to speed up the test
+        vi.useFakeTimers();
+
         const DROPPED_MUTATION = createMockDocument(`
           mutation DroppedTx {
             action {
@@ -625,22 +640,6 @@ describe("portal.middleware", () => {
 
         (portalClient.request as Mock).mockResolvedValueOnce(mockResponse);
 
-        // Mock setTimeout to execute immediately
-        const originalSetTimeout = globalThis.setTimeout;
-        const timeoutCallbacks: Array<() => void> = [];
-        vi.spyOn(globalThis, "setTimeout").mockImplementation(((
-          callback: () => void,
-          _delay?: number
-        ) => {
-          timeoutCallbacks.push(callback);
-          // Execute callbacks immediately after current execution
-          Promise.resolve().then(() => {
-            const cb = timeoutCallbacks.shift();
-            if (cb) cb();
-          });
-          return 1 as unknown as ReturnType<typeof setTimeout>;
-        }) as typeof setTimeout);
-
         // Mock all 30 attempts returning null receipt
         for (let i = 0; i < 30; i++) {
           (portalClient.request as Mock).mockResolvedValueOnce({
@@ -650,7 +649,22 @@ describe("portal.middleware", () => {
           });
         }
 
-        await expect(client.mutate(DROPPED_MUTATION, {})).rejects.toThrow();
+        // Start the mutation and catch the error
+        const resultPromise = client
+          .mutate(DROPPED_MUTATION, {})
+          .catch((error) => {
+            // Catch the error to prevent unhandled rejection
+            expect(error.message).toBe("Transaction dropped from mempool");
+            return error;
+          });
+
+        // Advance all timers to trigger the timeout
+        await vi.runAllTimersAsync();
+
+        // Wait for the promise to settle
+        const error = await resultPromise;
+        expect(error).toBeInstanceOf(Error);
+        expect(error.message).toBe("Transaction dropped from mempool");
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
           message: "Transaction dropped from mempool",
@@ -661,8 +675,8 @@ describe("portal.middleware", () => {
           }),
         });
 
-        // Restore setTimeout
-        globalThis.setTimeout = originalSetTimeout;
+        // Restore real timers
+        vi.useRealTimers();
       });
 
       test("should timeout if tracking takes too long", async () => {
