@@ -21,6 +21,9 @@ bun run dev:up && bun run dev
 # Before PR (MANDATORY)
 bun run ci
 [[ "$(git branch --show-current)" =~ ^(main|master)$ ]] && git checkout -b feature/name
+# PR title must follow semantic commit format: type(scope): description
+# Focus on main code changes - ignore docs/tests if code changes exist
+# Examples: feat(dapp): add user authentication | fix(contracts): resolve overflow issue
 
 # Common
 bun run dev:reset              # Reset Docker
