@@ -1,6 +1,7 @@
 import { PieChartComponent } from "@/components/charts/pie-chart";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { useBondStatusData } from "@/hooks/use-bond-status-data";
+import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 
@@ -29,16 +30,14 @@ export function AssetBondStatusProgressChart({
   const { data: token } = useSuspenseQuery(
     orpc.token.read.queryOptions({
       input: { tokenAddress: assetAddress },
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes
+      ...CHART_QUERY_OPTIONS,
     })
   );
 
   const { data: bondStatus } = useSuspenseQuery(
     orpc.token.statsBondStatus.queryOptions({
       input: { tokenAddress: assetAddress },
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes
+      ...CHART_QUERY_OPTIONS,
     })
   );
 

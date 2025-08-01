@@ -1,6 +1,7 @@
 import { AreaChartComponent } from "@/components/charts/area-chart";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
+import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
 import { safeToNumber } from "@/lib/utils/format-value";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -75,8 +76,7 @@ export function AssetTotalSupplyAreaChart({
     orpc.token.statsTotalSupply.queryOptions({
       input: { tokenAddress: assetAddress, days: timeRange },
       select: selectTransform,
-      staleTime: 5 * 60 * 1000, // 5 minutes - reduce API calls
-      gcTime: 10 * 60 * 1000, // 10 minutes - cache retention
+      ...CHART_QUERY_OPTIONS,
     })
   );
 
