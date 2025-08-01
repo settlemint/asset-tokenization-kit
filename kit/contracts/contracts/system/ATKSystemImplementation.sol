@@ -98,7 +98,6 @@ contract ATKSystemImplementation is
     bytes32 internal constant COMPLIANCE_MODULE_REGISTRY = keccak256("COMPLIANCE_MODULE_REGISTRY");
     bytes32 internal constant ADDON_REGISTRY = keccak256("ADDON_REGISTRY");
     bytes32 internal constant TOKEN_FACTORY_REGISTRY = keccak256("TOKEN_FACTORY_REGISTRY");
-    bytes32 internal constant SYSTEM_ACCESS_MANAGER = keccak256("SYSTEM_ACCESS_MANAGER");
 
     // Expected interface IDs used for validating implementation contracts.
     // These are unique identifiers for Solidity interfaces, ensuring that a contract claiming to be, for example,
@@ -378,7 +377,6 @@ contract ATKSystemImplementation is
         }
         if (_implementations[ADDON_REGISTRY] == address(0)) revert AddonRegistryImplementationNotSet();
         if (_implementations[TOKEN_FACTORY_REGISTRY] == address(0)) revert TokenFactoryRegistryImplementationNotSet();
-        if (_implementations[SYSTEM_ACCESS_MANAGER] == address(0)) revert SystemAccessManagerImplementationNotSet();
 
         // --- Interactions (Part 1: Create proxy instances and store their addresses in local variables) ---
         // This follows the Checks-Effects-Interactions pattern where possible.
@@ -760,12 +758,6 @@ contract ATKSystemImplementation is
     /// @return The address of the access manager implementation contract.
     function tokenAccessManagerImplementation() external view returns (address) {
         return _implementations[TOKEN_ACCESS_MANAGER];
-    }
-
-    /// @notice Returns the address of the system access manager implementation.
-    /// @return The address of the system access manager implementation contract.
-    function systemAccessManagerImplementation() external view returns (address) {
-        return _implementations[SYSTEM_ACCESS_MANAGER];
     }
 
     // --- Proxy Getter Functions ---
