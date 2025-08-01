@@ -63,13 +63,9 @@ export const equityCreateHandler = async (
   }
 
   return createToken(input, context, () => {
-    return context.portalClient.mutate(
-      CREATE_EQUITY_MUTATION,
-      {
-        ...input,
-        ...context.mutationVariables,
-      },
-      "Failed to create equity token"
-    );
+    return context.portalClient.mutate(CREATE_EQUITY_MUTATION, {
+      ...input,
+      ...context.mutationVariables,
+    });
   });
 };

@@ -47,8 +47,7 @@ export const depositPredictHandler = async (
       ATKDepositFactoryImplementation: z.object({
         predictDepositAddress: PredictAddressOutputSchema,
       }),
-    }),
-    "Failed to predict deposit address"
+    })
   );
 
   return result.ATKDepositFactoryImplementation.predictDepositAddress;

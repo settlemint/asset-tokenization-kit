@@ -233,8 +233,7 @@ export const addonCreate = portalRouter.system.addonCreate
         // Execute the mutation
         const transactionHash = await context.portalClient.mutate(
           REGISTER_SYSTEM_ADDON_MUTATION,
-          variables,
-          `Failed to register addon: ${name}`
+          variables
         );
 
         const implementationName = ADDON_TYPE_TO_IMPLEMENTATION_NAME[type];

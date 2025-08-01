@@ -49,8 +49,7 @@ export const fundPredictHandler = async (
       ATKFundFactoryImplementation: z.object({
         predictFundAddress: PredictAddressOutputSchema,
       }),
-    }),
-    "Failed to predict fund address"
+    })
   );
 
   return result.ATKFundFactoryImplementation.predictFundAddress;

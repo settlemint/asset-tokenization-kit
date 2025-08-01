@@ -73,10 +73,6 @@ export const redeem = tokenRouter.token.redeem
       });
     }
 
-    const errorMessage = redeemAll
-      ? context.t("tokens:api.mutations.redeem.messages.redeemAllFailed")
-      : context.t("tokens:api.mutations.redeem.messages.failed");
-
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
       code: verification.verificationCode,
@@ -84,25 +80,17 @@ export const redeem = tokenRouter.token.redeem
     });
     // Choose mutation based on whether we're redeeming all or a specific amount
     const result = await (redeemAll
-      ? context.portalClient.mutate(
-          TOKEN_REDEEM_ALL_MUTATION,
-          {
-            address: contract,
-            from: sender.wallet,
-            ...challengeResponse,
-          },
-          errorMessage
-        )
-      : context.portalClient.mutate(
-          TOKEN_REDEEM_MUTATION,
-          {
-            address: contract,
-            from: sender.wallet,
-            amount: amount?.toString() ?? "",
-            ...challengeResponse,
-          },
-          errorMessage
-        ));
+      ? context.portalClient.mutate(TOKEN_REDEEM_ALL_MUTATION, {
+          address: contract,
+          from: sender.wallet,
+          ...challengeResponse,
+        })
+      : context.portalClient.mutate(TOKEN_REDEEM_MUTATION, {
+          address: contract,
+          from: sender.wallet,
+          amount: amount?.toString() ?? "",
+          ...challengeResponse,
+        }));
 
     // Get updated token data
     const updatedToken = await call(

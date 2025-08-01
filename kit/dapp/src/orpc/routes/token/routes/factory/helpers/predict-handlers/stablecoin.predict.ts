@@ -47,8 +47,7 @@ export const stablecoinPredictHandler = async (
       ATKStableCoinFactoryImplementation: z.object({
         predictStableCoinAddress: PredictAddressOutputSchema,
       }),
-    }),
-    "Failed to predict stablecoin address"
+    })
   );
 
   return result.ATKStableCoinFactoryImplementation.predictStableCoinAddress;
