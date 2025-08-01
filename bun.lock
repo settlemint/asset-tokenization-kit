@@ -129,7 +129,7 @@
         "i18n-iso-countries": "7.14.0",
         "i18next": "25.3.2",
         "input-otp": "1.4.2",
-        "lucide-react": "0.535.0",
+        "lucide-react": "0.536.0",
         "motion": "12.23.12",
         "next-themes": "0.4.6",
         "postcss": "8.5.6",
@@ -137,7 +137,6 @@
         "react": "19.1.1",
         "react-day-picker": "9.8.1",
         "react-dom": "19.1.1",
-        "react-hook-form": "7.61.1",
         "react-i18next": "15.6.1",
         "react-jazzicon": "1.0.4",
         "react-qr-code": "2.0.18",
@@ -192,10 +191,6 @@
         "vite-tsconfig-paths": "5.1.4",
         "vitest": "3.2.4",
       },
-    },
-    "kit/dapp-v1": {
-      "name": "dapp-v1",
-      "version": "1.0.6",
     },
     "kit/e2e": {
       "name": "e2e",
@@ -1885,8 +1880,6 @@
 
     "dapp": ["dapp@workspace:kit/dapp"],
 
-    "dapp-v1": ["dapp-v1@workspace:kit/dapp-v1"],
-
     "data-uri-to-buffer": ["data-uri-to-buffer@4.0.1", "", {}, "sha512-0R9ikRb668HB7QDxT1vkpuUBtqc53YyAwMwGeUFKRojY/NWKvdZ+9UYtRfGmhqNbRkTSVpMbmyhXipFFv2cb/A=="],
 
     "data-urls": ["data-urls@5.0.0", "", { "dependencies": { "whatwg-mimetype": "^4.0.0", "whatwg-url": "^14.0.0" } }, "sha512-ZYP5VBHshaDAiVZxjbRVcFJpc+4xGgT0bK3vzy1HLN8jTO975HEbuYzZJcHoQEY5K1a0z8YayJkyVETa08eNTg=="],
@@ -2797,7 +2790,7 @@
 
     "lru_map": ["lru_map@0.3.3", "", {}, "sha512-Pn9cox5CsMYngeDbmChANltQl+5pi6XmTrraMSzhPmMBbmgcxmqWry0U3PGapCU1yB4/LqCcom7qhHZiF/jGfQ=="],
 
-    "lucide-react": ["lucide-react@0.535.0", "", { "peerDependencies": { "react": "^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-2E3+YWGLpjZ8ejIYrdqxVjWMSMiRQHmU6xZYE9xA2SC5j2m0NeB4/acjhRdhxbfniBKoNEukDDQnmShTxwOQ4g=="],
+    "lucide-react": ["lucide-react@0.536.0", "", { "peerDependencies": { "react": "^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-2PgvNa9v+qz4Jt/ni8vPLt4jwoFybXHuubQT8fv4iCW5TjDxkbZjNZZHa485ad73NSEn/jdsEtU57eE1g+ma8A=="],
 
     "luxon": ["luxon@3.7.1", "", {}, "sha512-RkRWjA926cTvz5rAb1BqyWkKbbjzCGchDUIKMCUvNi17j6f6j8uHGDV82Aqcqtzd+icoYpELmG3ksgGiFNNcNg=="],
 
