@@ -64,15 +64,42 @@ height 60px→80px" | "API timeout 30s→10s" | "Add index on user_id"
 
 ## Agent Usage (MANDATORY)
 
-**PROACTIVELY use specialized agents**
+**PROACTIVELY use ALL specialized agents from .claude/agents/**
 
-### Categories
+### CRITICAL: You MUST use agents for their designated tasks
 
-- **Development**: code-reviewer, architect-reviewer,
-  react-performance-architect
-- **Testing**: vitest-test-architect, playwright-test-engineer
-- **Infrastructure**: kubernetes-orchestration-expert, github-actions-architect
-- **Specialized**: solidity-security-auditor, tanstack-suite-architect
+#### All Available Agents (USE THEM!)
+
+- **code-reviewer**: ALWAYS after writing/modifying code
+- **architect-reviewer**: ALWAYS after structural changes, new services, API
+  modifications
+- **react-performance-architect**: ALWAYS for React components, hooks, state
+  management
+- **vitest-test-architect**: ALWAYS for unit tests, test coverage, mocking
+  strategies
+- **playwright-test-engineer**: ALWAYS for E2E tests, browser automation
+- **kubernetes-orchestration-expert**: ALWAYS for K8s deployments, manifests,
+  scaling
+- **github-actions-architect**: ALWAYS for CI/CD workflows, automation
+- **solidity-security-auditor**: ALWAYS for smart contract review, gas
+  optimization
+- **tanstack-suite-architect**: ALWAYS for TanStack Query/Router/Table usage
+- **typescript-type-architect**: ALWAYS for type system design, generics, type
+  safety
+- **bun-runtime-specialist**: ALWAYS for Bun optimization, bundling, performance
+- **orpc-api-architect**: ALWAYS for oRPC routes, middleware, API design
+- **tailwind-css-architect**: ALWAYS for styling, Tailwind utilities, responsive
+  design
+- **reality-check-manager**: ALWAYS to validate actual vs claimed progress
+
+### Agent Usage Protocol
+
+1. **Immediate invocation**: Use agents AS SOON as you perform their designated
+   task
+2. **No exceptions**: EVERY code change → code-reviewer, EVERY React component →
+   react-performance-architect
+3. **Multiple agents**: Often need multiple agents for one task (e.g., new API
+   endpoint → orpc-api-architect + code-reviewer + architect-reviewer)
 
 ## MCP Workflows (MANDATORY)
 

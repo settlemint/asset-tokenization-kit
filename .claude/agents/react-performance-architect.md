@@ -65,6 +65,56 @@ Tailwind CSS expert.
 4. **Hooks**: Abstract logic | Correct deps | Rules of hooks
 5. **Quality**: Error boundaries | A11y | TypeScript
 
+## Memoization Guidelines
+
+### When to Use useCallback/useMemo
+
+**VALID USE CASES**:
+
+- Passing to memoized components (React.memo)
+- Expensive computations (proven by profiling)
+- Referential stability for effects/comparisons
+- Dependencies in other hooks
+
+**AVOID WHEN**:
+
+- Passing to DOM elements or non-memoized components
+- Dependencies change every render
+- No measurable performance impact
+- Creating complex memoization chains
+
+### Best Practices
+
+1. **Profile First**: Measure before optimizing
+2. **Latest Ref Pattern**: Use refs for changing values without breaking
+   memoization
+3. **Stable Dependencies**: Prefer primitive values as dependencies
+4. **Future-Proof**: Consider React Compiler and useEffectEvent
+5. **Simplicity > Optimization**: Clear code beats premature optimization
+
+### Common Antipatterns
+
+```tsx
+// ❌ Useless - DOM elements don't benefit
+const handleClick = useCallback(() => {}, [value])
+<button onClick={handleClick}>
+
+// ❌ Broken - non-primitive dependency
+const fn = useCallback(() => {}, [object])
+
+// ✅ Valid - memoized component
+const MemoChild = React.memo(Child)
+const handleClick = useCallback(() => {}, [id])
+<MemoChild onClick={handleClick} />
+
+// ✅ Latest Ref Pattern
+const valueRef = useRef(value)
+valueRef.current = value
+const stableFn = useCallback(() => {
+  console.log(valueRef.current)
+}, [])
+```
+
 ## Analysis
 
 - Structure: Separation of concerns
