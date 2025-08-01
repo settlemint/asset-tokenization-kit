@@ -101,7 +101,7 @@ export function BaseAddressField({
       orpc.user.list.queryOptions({
         enabled: mode === "user",
         input: {
-          searchByAddress: searchTerm,
+          searchByAddress: searchTerm.length > 0 ? searchTerm : undefined,
         },
         staleTime: 1000 * 60 * 30, // Cache user data for 30 minutes as it rarely changes
       })
@@ -112,7 +112,7 @@ export function BaseAddressField({
       orpc.token.list.queryOptions({
         enabled: mode === "asset",
         input: {
-          searchByAddress: searchTerm,
+          searchByAddress: searchTerm.length > 0 ? searchTerm : undefined,
         },
         staleTime: 1000 * 60 * 30, // Cache token data for 30 minutes as it rarely changes
       })
