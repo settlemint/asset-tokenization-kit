@@ -66,6 +66,10 @@ export const depositCreateHandler = async (
     return context.portalClient.mutate(CREATE_DEPOSIT_MUTATION, {
       ...input,
       ...context.mutationVariables,
+      initialModulePairs: input.initialModulePairs.map((pair) => ({
+        module: pair.module,
+        params: pair.params,
+      })),
     });
   });
 };
