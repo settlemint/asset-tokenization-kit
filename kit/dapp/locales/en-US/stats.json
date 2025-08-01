@@ -38,6 +38,13 @@
       "title": "Wallet distribution",
       "description": "Amount of holders vs the amounts they hold",
       "holders": "Number of Wallets"
+    },
+    "collateralRatio": {
+      "title": "Collateral ratio",
+      "description": "Breakdown of available vs used collateral",
+      "available": "Available collateral",
+      "used": "Used collateral",
+      "ratio": "Collateralization: {{ratio}}%"
     }
   },
   "title": "Statistics",
