@@ -68,56 +68,43 @@ export function useCountries(): UseCountriesReturn {
     return getSupportedLocales().find((l) => l === lang) ?? "en";
   }, [i18n.language]);
 
-  const getCountryOptions = useMemo(
-    () =>
-      (valueType: ValueType = "alpha2") => {
-        if (valueType === "numeric") {
-          const numericCountries = getNumericCountriesSorted(baseLocale);
-          return numericCountries.map(([numeric, name]) => ({
-            label: name,
-            value: numeric,
-          }));
-        }
+  const getCountryOptions = (valueType: ValueType = "alpha2") => {
+    if (valueType === "numeric") {
+      const numericCountries = getNumericCountriesSorted(baseLocale);
+      return numericCountries.map(([numeric, name]) => ({
+        label: name,
+        value: numeric,
+      }));
+    }
 
-        const names = getCountriesSorted(baseLocale);
-        if (valueType === "name") {
-          return names.map(([, name]) => ({
-            label: name,
-            value: name,
-          }));
-        }
+    const names = getCountriesSorted(baseLocale);
+    if (valueType === "name") {
+      return names.map(([, name]) => ({
+        label: name,
+        value: name,
+      }));
+    }
 
-        return names.map(([code, name]) => ({
-          label: name,
-          value: code,
-        }));
-      },
-    [baseLocale]
-  );
+    return names.map(([code, name]) => ({
+      label: name,
+      value: code,
+    }));
+  };
 
-  const getCountryMap = useMemo(
-    () => () => {
-      return countries.getNames(baseLocale, {
-        select: "official",
-      });
-    },
-    [baseLocale]
-  );
+  const getCountryMap = () => {
+    return countries.getNames(baseLocale, {
+      select: "official",
+    });
+  };
 
-  const getCountryByNumericCode = useMemo(
-    () => (numericCode: string | number) => {
-      const numericString = numericCode.toString();
-      return countries.getName(numericString, baseLocale);
-    },
-    [baseLocale]
-  );
+  const getCountryByNumericCode = (numericCode: string | number) => {
+    const numericString = numericCode.toString();
+    return countries.getName(numericString, baseLocale);
+  };
 
-  const getNumericCodeByName = useMemo(
-    () => (name: string) => {
-      return getNumericCodeByNameFn(name, baseLocale);
-    },
-    [baseLocale]
-  );
+  const getNumericCodeByName = (name: string) => {
+    return getNumericCodeByNameFn(name, baseLocale);
+  };
 
   return {
     baseLocale,
