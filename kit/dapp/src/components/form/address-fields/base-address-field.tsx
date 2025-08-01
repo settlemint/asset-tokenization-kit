@@ -16,6 +16,7 @@ import {
 import { Web3Address } from "@/components/web3/web3-address";
 import { useFieldContext } from "@/hooks/use-form-contexts";
 import { useDebouncedCallback } from "@/lib/hooks/use-debounced-callback";
+import { useRecentCache } from "@/lib/hooks/use-recent-cache";
 import { cn } from "@/lib/utils";
 import {
   type EthereumAddress,
@@ -38,11 +39,6 @@ export interface AddressOption {
   address: EthereumAddress;
   displayName?: string;
   secondaryInfo?: string;
-}
-
-interface RecentAddress {
-  address: EthereumAddress;
-  selectedAt: number;
 }
 
 interface BaseAddressFieldProps {
@@ -77,18 +73,12 @@ export function BaseAddressField({
   const [manualInput, setManualInput] = useState("");
   const [manualError, setManualError] = useState<string | null>(null);
 
-  // Load recent addresses from localStorage
-  const [recentAddresses, setRecentAddresses] = useState<RecentAddress[]>(
-    () => {
-      if (globalThis.window === undefined) return [];
-      try {
-        const stored = localStorage.getItem(recentStorageKey);
-        return stored ? JSON.parse(stored) : [];
-      } catch {
-        return [];
-      }
-    }
-  );
+  // Use the recent cache hook for managing recent addresses
+  const { recentItems: recentAddresses, addItem: addToRecents } =
+    useRecentCache<EthereumAddress>({
+      storageKey: recentStorageKey,
+      maxItems: MAX_RECENT_ADDRESSES,
+    });
 
   // Debounced search function
   const debouncedSearch = useDebouncedCallback((term: string) => {
@@ -134,16 +124,13 @@ export function BaseAddressField({
     return isAssetAddressesLoading;
   }, [mode, isUserAddressesLoading, isAssetAddressesLoading]);
 
-  // Get recent addresses that still exist in the system
+  // Convert recent addresses to AddressOption format
   const recentAddressOptions = useMemo(() => {
-    return recentAddresses
-      .sort((a, b) => b.selectedAt - a.selectedAt)
-      .slice(0, MAX_RECENT_ADDRESSES)
-      .map((recent) => ({
-        address: recent.address,
-        displayName: undefined,
-        secondaryInfo: undefined,
-      }));
+    return recentAddresses.map((address) => ({
+      address,
+      displayName: undefined,
+      secondaryInfo: undefined,
+    }));
   }, [recentAddresses]);
 
   // Display addresses: recent first, then search results, then initial if no recents
@@ -159,31 +146,6 @@ export function BaseAddressField({
     // Show first 5 addresses as initial list
     return addresses.slice(0, INITIAL_ADDRESSES_COUNT);
   }, [addresses, recentAddressOptions, searchTerm]);
-
-  // Add address to recent selections
-  const addToRecents = useCallback(
-    (address: EthereumAddress) => {
-      const newRecent: RecentAddress = {
-        address,
-        selectedAt: Date.now(),
-      };
-
-      setRecentAddresses((prev) => {
-        const filtered = prev.filter((item) => item.address !== address);
-        const updated = [newRecent, ...filtered].slice(0, MAX_RECENT_ADDRESSES);
-
-        // Save to localStorage
-        try {
-          localStorage.setItem(recentStorageKey, JSON.stringify(updated));
-        } catch {
-          // Ignore localStorage errors
-        }
-
-        return updated;
-      });
-    },
-    [recentStorageKey]
-  );
 
   // Handle address selection from search results
   const handleAddressSelect = useCallback(
