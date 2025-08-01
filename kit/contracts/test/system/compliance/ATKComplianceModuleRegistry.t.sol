@@ -17,6 +17,7 @@ import {
     ComplianceModuleAlreadyRegistered,
     InvalidImplementationInterface
 } from "../../../contracts/system/ATKSystemErrors.sol";
+import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
 
 // Mock for a compliance module
 contract MockComplianceModule is ISMARTComplianceModule {
@@ -82,7 +83,7 @@ contract ATKComplianceModuleRegistryTest is Test {
         vm.prank(user);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user, ATKRoles.DEFAULT_ADMIN_ROLE
+                IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector, user, ATKPeopleRoles.SYSTEM_MANAGER_ROLE
             )
         );
         registry.registerComplianceModule(address(mockModule));
@@ -123,7 +124,7 @@ contract ATKComplianceModuleRegistryTest is Test {
         );
         assertTrue(
             ATKComplianceModuleRegistryImplementation(address(registry)).supportsInterface(
-                type(IAccessControl).interfaceId
+                type(IATKSystemAccessManaged).interfaceId
             )
         );
         assertTrue(

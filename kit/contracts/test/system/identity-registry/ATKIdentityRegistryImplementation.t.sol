@@ -458,7 +458,7 @@ contract ATKIdentityRegistryImplementationTest is Test {
         ATKIdentityRegistryImplementation impl = ATKIdentityRegistryImplementation(address(identityRegistry));
         assertTrue(impl.supportsInterface(type(ISMARTIdentityRegistry).interfaceId));
         assertTrue(impl.supportsInterface(type(IERC165).interfaceId));
-        assertTrue(impl.supportsInterface(type(IAccessControl).interfaceId));
+        assertTrue(impl.supportsInterface(type(IATKSystemAccessManaged).interfaceId));
     }
 
     // --- recoverIdentity Tests ---

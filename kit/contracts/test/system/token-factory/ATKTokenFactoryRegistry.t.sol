@@ -22,6 +22,7 @@ import {
     InvalidTokenImplementationInterface,
     InvalidImplementationInterface
 } from "../../../contracts/system/ATKSystemErrors.sol";
+import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
 
 // Mock for IATKTokenFactory that can be instantiated
 contract MockTokenFactory is IATKTokenFactory, IWithTypeIdentifier {
@@ -130,13 +131,10 @@ contract ATKTokenFactoryRegistryTest is Test {
         );
     }
 
-    // Test skipped since onlySystemRoles modifier is commented out in implementation
     function test_RegisterTokenFactory_Fail_NotAdmin() public {
         vm.prank(user);
-        // Access control is currently disabled, so this should succeed instead of reverting
+        vm.expectRevert(abi.encodeWithSelector(IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector, user, ATKPeopleRoles.SYSTEM_MANAGER_ROLE));
         registry.registerTokenFactory("TestFactory", address(mockTokenFactory), address(mockTokenImplementation));
-        // Skip test by adding a simple assertion that will pass
-        assertTrue(true);
     }
 
     function test_RegisterTokenFactory_Fail_ZeroFactoryAddress() public {
@@ -212,10 +210,8 @@ contract ATKTokenFactoryRegistryTest is Test {
         MockTokenFactory newMockTokenFactory = new MockTokenFactory();
 
         vm.prank(user);
-        // Access control is currently disabled, so this should succeed instead of reverting
+        vm.expectRevert(abi.encodeWithSelector(IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector, user, ATKPeopleRoles.SYSTEM_MANAGER_ROLE));
         registry.setTokenFactoryImplementation(factoryTypeHash, address(newMockTokenFactory));
-        // Skip test by adding a simple assertion that will pass
-        assertTrue(true);
     }
 
     function test_SetTokenFactoryImplementation_Fail_ZeroAddress() public {
@@ -258,7 +254,7 @@ contract ATKTokenFactoryRegistryTest is Test {
 
     function test_SupportsInterface() public view {
         assertTrue(registry.supportsInterface(type(IATKTokenFactoryRegistry).interfaceId));
-        assertTrue(registry.supportsInterface(type(IAccessControl).interfaceId));
+        assertTrue(registry.supportsInterface(type(IATKSystemAccessManaged).interfaceId));
         assertTrue(registry.supportsInterface(type(IERC165).interfaceId));
         assertTrue(registry.supportsInterface(type(IATKTypedImplementationRegistry).interfaceId));
     }

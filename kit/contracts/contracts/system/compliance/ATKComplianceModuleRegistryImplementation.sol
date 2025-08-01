@@ -61,7 +61,7 @@ contract ATKComplianceModuleRegistryImplementation is
         external
         override
         nonReentrant
-        onlySystemRole(ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (moduleAddress == address(0)) revert InvalidComplianceModuleAddress();
         _checkInterface(moduleAddress, _ISMART_COMPLIANCE_MODULE_ID);
