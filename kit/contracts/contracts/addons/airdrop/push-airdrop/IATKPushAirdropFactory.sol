@@ -23,7 +23,7 @@ interface IATKPushAirdropFactory {
     /// @param newImplementation The address of the new implementation
     event ImplementationUpdated(address indexed oldImplementation, address indexed newImplementation);
 
-     /// @notice Initializes the factory with access manager and system address
+    /// @notice Initializes the factory with access manager and system address
     /// @param accessManager The address of the access manager.
     /// @param systemAddress The address of the `IATKSystem` contract.
     function initialize(address accessManager, address systemAddress) external;

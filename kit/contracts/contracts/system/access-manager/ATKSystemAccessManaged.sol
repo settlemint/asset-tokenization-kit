@@ -6,7 +6,6 @@ import { IATKSystemAccessManager } from "./IATKSystemAccessManager.sol";
 import { IATKSystemAccessManaged } from "./IATKSystemAccessManaged.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-
 /// @title Internal Logic for ATK System Access Management
 /// @author SettleMint
 /// @notice This abstract contract encapsulates the core shared logic for managing access
@@ -18,7 +17,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 ///      `ATKSystemAccessManaged` and `ATKSystemAccessManagedUpgradeable` contracts.
 ///      It implements access management by delegating `hasRole` checks to the
 ///      configured `_accessManager`.
-abstract contract ATKSystemAccessManaged is IATKSystemAccessManaged{
+abstract contract ATKSystemAccessManaged is IATKSystemAccessManaged {
     /// @notice The blockchain address of the central `ATKSystemAccessManager` contract.
     /// @dev This manager contract is responsible for all role assignments and checks.
     ///      This variable is declared `internal`, meaning it's accessible within this contract

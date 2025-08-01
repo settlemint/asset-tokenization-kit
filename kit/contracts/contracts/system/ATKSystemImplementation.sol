@@ -158,7 +158,6 @@ contract ATKSystemImplementation is
     /// @dev Stores the address of the token factory registry proxy contract.
     address private _tokenFactoryRegistryProxy;
 
-
     // --- Internal Helper for Interface Check ---
     /// @notice Internal helper function to check if a given contract address supports a specific interface
     /// @dev Internal helper function to check if a given contract address (`implAddress`)
@@ -243,7 +242,6 @@ contract ATKSystemImplementation is
         __ATKSystemAccessManaged_init(accessManager_);
         __ReentrancyGuard_init();
         __UUPSUpgradeable_init();
-
 
         // Validate and set the compliance implementation address.
         if (complianceImplementation_ == address(0)) revert ComplianceImplementationNotSet();
@@ -330,7 +328,6 @@ contract ATKSystemImplementation is
             // ISMARTTokenFactoryRegistry
         _implementations[TOKEN_FACTORY_REGISTRY] = tokenFactoryRegistryImplementation_;
         emit TokenFactoryRegistryImplementationUpdated(initialAdmin_, tokenFactoryRegistryImplementation_);
-
     }
 
     /// @notice Authorizes an upgrade to a new implementation contract
@@ -338,7 +335,11 @@ contract ATKSystemImplementation is
     /// The UUPS upgrade mechanism is used.
     /// Only the `DEFAULT_ADMIN_ROLE` can authorize an upgrade.
     /// @param newImplementation The address of the new implementation contract
-    function _authorizeUpgrade(address newImplementation) internal override onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE) { }
+    function _authorizeUpgrade(address newImplementation)
+        internal
+        override
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
+    { }
 
     // --- Bootstrap Function ---
     /// @notice Deploys and initializes the proxy contracts for all core ATK modules.
@@ -403,24 +404,20 @@ contract ATKSystemImplementation is
             address(new ATKTypedImplementationProxy(address(this), ADDON_REGISTRY, addonRegistryData));
 
         // Deploy the ATKComplianceProxy, linking it to this ATKSystem contract.
-        bytes memory complianceData =
-            abi.encodeWithSelector(IATKCompliance.initialize.selector, _accessManager);
+        bytes memory complianceData = abi.encodeWithSelector(IATKCompliance.initialize.selector, _accessManager);
         address localComplianceProxy =
             address(new ATKTypedImplementationProxy(address(this), COMPLIANCE, complianceData));
 
-
         // Deploy the ATKIdentityRegistryStorageProxy, using the system access manager for centralized access control.
-        bytes memory identityRegistryStorageData = abi.encodeWithSelector(
-            IATKIdentityRegistryStorage.initialize.selector, _accessManager
-        );
+        bytes memory identityRegistryStorageData =
+            abi.encodeWithSelector(IATKIdentityRegistryStorage.initialize.selector, _accessManager);
         address localIdentityRegistryStorageProxy = address(
             new ATKTypedImplementationProxy(address(this), IDENTITY_REGISTRY_STORAGE, identityRegistryStorageData)
         );
 
         // Deploy the ATKTrustedIssuersRegistryProxy, linking it to this ATKSystem and setting an initial admin.
-        bytes memory trustedIssuersRegistryData = abi.encodeWithSelector(
-            IATKTrustedIssuersRegistry.initialize.selector, _accessManager
-        );
+        bytes memory trustedIssuersRegistryData =
+            abi.encodeWithSelector(IATKTrustedIssuersRegistry.initialize.selector, _accessManager);
         address localTrustedIssuersRegistryProxy = address(
             new ATKTypedImplementationProxy(address(this), TRUSTED_ISSUERS_REGISTRY, trustedIssuersRegistryData)
         );
@@ -459,7 +456,6 @@ contract ATKSystemImplementation is
         _tokenFactoryRegistryProxy = localTokenFactoryRegistryProxy;
         _addonRegistryProxy = localAddonRegistryProxy;
 
-
         // --- Effects (Part 2: Grant roles) ---
         IATKSystemAccessManager(_accessManager).grantRole(
             ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, localIdentityRegistryProxy
@@ -481,10 +477,8 @@ contract ATKSystemImplementation is
             ATKSystemRoles.ADDON_FACTORY_REGISTRY_MODULE_ROLE, localAddonRegistryProxy
         );
 
-
         // --- Interactions (Part 3: Call methods on newly created proxies to link them) ---
         // After all proxy state variables are set, perform any necessary interactions between the new proxies.
-
 
         // Here, we bind the IdentityRegistryProxy to its dedicated IdentityRegistryStorageProxy.
         // This tells the storage proxy which identity registry is allowed to manage it.
@@ -492,7 +486,6 @@ contract ATKSystemImplementation is
             localIdentityRegistryProxy // Using the local variable, or _identityRegistryProxy which is now correctly
                 // set.
         );
-
 
         // Register the topic schemes.
         IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).batchRegisterTopicSchemes(
@@ -519,8 +512,6 @@ contract ATKSystemImplementation is
         // Connect the token factory registry to the system access manager for centralized role checking
         // TODO REMOVE
         // IATKTokenFactoryRegistry(localTokenFactoryRegistryProxy).setSystemAccessManager(localSystemAccessManagerProxy);
-
-
 
         // Mark the system as bootstrapped
         _bootstrapped = true;
@@ -818,7 +809,6 @@ contract ATKSystemImplementation is
         return _tokenFactoryRegistryProxy;
     }
 
-
     // --- Governance Functions ---
 
     // --- Internal Functions (Overrides for ERC2771Context and ERC165/AccessControl) ---
@@ -834,7 +824,6 @@ contract ATKSystemImplementation is
         return ERC2771ContextUpgradeable._msgSender(); // Calls the ERC2771Context implementation.
     }
 
-
     /// @notice Checks if the contract supports a given interface ID, according to ERC165.
     /// @dev This function is part of the ERC165 standard for interface detection.
     /// It returns `true` if this contract implements the interface specified by `interfaceId`.
@@ -842,13 +831,9 @@ contract ATKSystemImplementation is
     /// like `IERC165` (from `ERC165`) and `IAccessControl` (from `AccessControl`).
     /// @param interfaceId The 4-byte interface identifier to check.
     /// @return supported `true` if the contract supports the interface, `false` otherwise.
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC165Upgradeable, IERC165)
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public view override(ERC165Upgradeable, IERC165) returns (bool) {
         return super.supportsInterface(interfaceId) || interfaceId == type(IATKSystem).interfaceId
-            || interfaceId == type(IATKTypedImplementationRegistry).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId;
+            || interfaceId == type(IATKTypedImplementationRegistry).interfaceId
+            || interfaceId == type(IATKSystemAccessManaged).interfaceId;
     }
 }

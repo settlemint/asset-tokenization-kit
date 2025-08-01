@@ -224,7 +224,6 @@ contract SMARTCrossExtensionTest is Test {
 
         // Grant necessary roles to owner
         _grantRoles();
-
     }
 
     function _setupTestIdentities() private {

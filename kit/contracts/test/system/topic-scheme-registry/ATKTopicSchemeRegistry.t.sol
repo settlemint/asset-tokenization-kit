@@ -85,7 +85,8 @@ contract ATKTopicSchemeRegistryTest is Test {
     }
 
     function test_SystemAccessManager() public view {
-        address accessManagerAddress = ATKTopicSchemeRegistryImplementation(address(topicSchemeRegistry)).accessManager();
+        address accessManagerAddress =
+            ATKTopicSchemeRegistryImplementation(address(topicSchemeRegistry)).accessManager();
         assertEq(accessManagerAddress, address(systemAccessManager), "System access manager address should match");
     }
 
@@ -179,7 +180,6 @@ contract ATKTopicSchemeRegistryTest is Test {
         assertTrue(topicSchemeRegistry.hasTopicSchemeByName(TOPIC_NAME_3));
     }
 
-
     function test_UpdateTopicScheme_BySystemModule() public {
         // First register with claim policy manager
         vm.prank(claimPolicyManager);
@@ -201,7 +201,8 @@ contract ATKTopicSchemeRegistryTest is Test {
         );
     }
 
-    // Test removed: setSystemAccessManager no longer exists - access manager is set during initialization and cannot be changed
+    // Test removed: setSystemAccessManager no longer exists - access manager is set during initialization and cannot be
+    // changed
 
     function test_GetTopicId_Deterministic() public view {
         uint256 topicId1 = topicSchemeRegistry.getTopicId(TOPIC_NAME_1);

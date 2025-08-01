@@ -137,7 +137,11 @@ contract ATKEquityImplementation is
     /// @notice Sets the Compliance contract address
     /// @dev Only callable by addresses with GOVERNANCE_ROLE
     /// @param _compliance The address of the main compliance contract
-    function setCompliance(address _compliance) external override onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE) {
+    function setCompliance(address _compliance)
+        external
+        override
+        onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
+    {
         _smart_setCompliance(_compliance);
     }
 

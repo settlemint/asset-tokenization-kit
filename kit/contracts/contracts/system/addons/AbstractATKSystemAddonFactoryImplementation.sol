@@ -162,14 +162,8 @@ abstract contract AbstractATKSystemAddonFactoryImplementation is
     /// @notice Checks if a contract supports a given interface.
     /// @param interfaceId The interface identifier.
     /// @return bool True if the contract supports the interface, false otherwise.
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC165Upgradeable)
-        returns (bool)
-    {
-        return interfaceId == type(IATKSystemAccessManaged).interfaceId ||super.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165Upgradeable) returns (bool) {
+        return interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
     }
 
     /// @notice Returns the address of the current message sender

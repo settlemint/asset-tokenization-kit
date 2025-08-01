@@ -380,7 +380,8 @@ abstract contract AbstractATKTokenFactoryImplementation is
         override(ERC165Upgradeable, IERC165)
         returns (bool)
     {
-        return interfaceId == type(IATKTokenFactory).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IATKTokenFactory).interfaceId
+            || interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
     }
 
     // --- ERC2771Context Overrides ---
@@ -392,6 +393,4 @@ abstract contract AbstractATKTokenFactoryImplementation is
     function _msgSender() internal view override(ERC2771ContextUpgradeable, ATKSystemAccessManaged) returns (address) {
         return ERC2771ContextUpgradeable._msgSender();
     }
-
-
 }

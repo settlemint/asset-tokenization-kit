@@ -236,7 +236,11 @@ contract ATKBondImplementation is
     /// @notice Sets the compliance contract address
     /// @dev Only callable by addresses with GOVERNANCE_ROLE
     /// @param _compliance The address of the new compliance contract
-    function setCompliance(address _compliance) external override onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE) {
+    function setCompliance(address _compliance)
+        external
+        override
+        onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
+    {
         _smart_setCompliance(_compliance);
     }
 
@@ -547,7 +551,11 @@ contract ATKBondImplementation is
     /// @notice Sets the yield schedule contract for the bond
     /// @dev Only callable by addresses with GOVERNANCE_ROLE
     /// @param schedule The address of the yield schedule contract
-    function setYieldSchedule(address schedule) external override onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE) {
+    function setYieldSchedule(address schedule)
+        external
+        override
+        onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
+    {
         _smart_setYieldSchedule(schedule);
     }
 

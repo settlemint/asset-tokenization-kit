@@ -28,7 +28,6 @@ import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManag
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
-
 /// @title ATKTokenFactoryRegistryImplementation
 /// @author SettleMint
 /// @notice Implementation contract for the ATK Token Factory Registry
@@ -176,14 +175,10 @@ contract ATKTokenFactoryRegistryImplementation is
     /// @notice Checks if the contract supports a given interface
     /// @param interfaceId The interface identifier to check
     /// @return bool True if the interface is supported, false otherwise
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC165Upgradeable, IERC165)
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public view override(ERC165Upgradeable, IERC165) returns (bool) {
         return super.supportsInterface(interfaceId) || interfaceId == type(IATKTokenFactoryRegistry).interfaceId
-            || interfaceId == type(IATKTypedImplementationRegistry).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId;
+            || interfaceId == type(IATKTypedImplementationRegistry).interfaceId
+            || interfaceId == type(IATKSystemAccessManaged).interfaceId;
     }
 
     /// @notice Returns the address of the current message sender

@@ -132,7 +132,11 @@ contract ATKStableCoinImplementation is
 
     /// @notice Sets the compliance contract address
     /// @param _compliance The address of the compliance contract
-    function setCompliance(address _compliance) external override onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE) {
+    function setCompliance(address _compliance)
+        external
+        override
+        onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
+    {
         _smart_setCompliance(_compliance);
     }
 

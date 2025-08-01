@@ -45,7 +45,8 @@ library ATKPeopleRoles {
 library ATKSystemRoles {
     /// @notice Role identifier for addresses that can manage the system modules
     /// @dev Will be allowed to register compliance modules as well; also has access to the register topic schemes;
-    /// is also the roleAdmin of IDENTITY_REGISTRY_MODULE_ROLE, TOKEN_FACTORY_REGISTRY_MODULE_ROLE, ADDON_REGISTRY_MODULE_ROLE
+    /// is also the roleAdmin of IDENTITY_REGISTRY_MODULE_ROLE, TOKEN_FACTORY_REGISTRY_MODULE_ROLE,
+    /// ADDON_REGISTRY_MODULE_ROLE
     bytes32 public constant SYSTEM_MODULE_ROLE = keccak256("SYSTEM_MODULE_ROLE");
 
     /// @notice Role identifier for addresses that can manage the identity registry module

@@ -26,7 +26,6 @@ import { ATKSystemAccessManagerImplementation } from "./access-manager/ATKSystem
 import { IATKSystemAccessManager } from "./access-manager/IATKSystemAccessManager.sol";
 import { ATKPeopleRoles, ATKRoles, ATKSystemRoles } from "./ATKRoles.sol";
 
-
 // --- Contract Definition ---
 
 /// @title ATKSystemFactory
@@ -101,7 +100,6 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// @dev This address will be passed to newly created `ATKSystem` instances as the initial token factory
     /// registry implementation.
     address public immutable DEFAULT_TOKEN_FACTORY_REGISTRY_IMPLEMENTATION;
-
 
     /// @notice An array storing the addresses of all `ATKSystem` instances that have been created by this factory.
     /// @dev This allows for easy tracking and retrieval of deployed systems.
@@ -194,7 +192,6 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         DEFAULT_COMPLIANCE_MODULE_REGISTRY_IMPLEMENTATION = complianceModuleRegistryImplementation_;
         DEFAULT_ADDON_REGISTRY_IMPLEMENTATION = addonRegistryImplementation_;
 
-
         FACTORY_FORWARDER = forwarder_; // Store the forwarder address for use by this factory and new systems.
     }
 
@@ -222,7 +219,8 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         bytes memory systemAccessManagerCallData = abi.encodeWithSelector(
             ATKSystemAccessManagerImplementation.initialize.selector, initialSystemAccessManagerAdmins
         );
-        ERC1967Proxy systemAccessManagerProxy = new ERC1967Proxy(ATK_SYSTEM_ACCESS_MANAGER_IMPLEMENTATION, systemAccessManagerCallData);
+        ERC1967Proxy systemAccessManagerProxy =
+            new ERC1967Proxy(ATK_SYSTEM_ACCESS_MANAGER_IMPLEMENTATION, systemAccessManagerCallData);
 
         // Deploy a new ATKSystem contract instance.
         // It passes all the default implementation addresses stored in this factory, plus the factory's forwarder

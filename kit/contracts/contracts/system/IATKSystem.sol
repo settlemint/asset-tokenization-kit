@@ -120,7 +120,8 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @param accessManager_ The address of the access manager implementation.
     /// @param complianceImplementation_ The address of the compliance module implementation.
     /// @param identityRegistryImplementation_ The address of the identity registry module implementation.
-    /// @param identityRegistryStorageImplementation_ The address of the identity registry storage module implementation.
+    /// @param identityRegistryStorageImplementation_ The address of the identity registry storage module
+    /// implementation.
     /// @param trustedIssuersRegistryImplementation_ The address of the trusted issuers registry module implementation.
     /// @param topicSchemeRegistryImplementation_ The address of the topic scheme registry module implementation.
     /// @param identityFactoryImplementation_ The address of the identity factory module implementation.
@@ -128,7 +129,8 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @param contractIdentityImplementation_ The address of the contract identity module implementation.
     /// @param tokenAccessManagerImplementation_ The address of the token access manager module implementation.
     /// @param tokenFactoryRegistryImplementation_ The address of the token factory registry module implementation.
-    /// @param complianceModuleRegistryImplementation_ The address of the compliance module registry module implementation.
+    /// @param complianceModuleRegistryImplementation_ The address of the compliance module registry module
+    /// implementation.
     /// @param addonRegistryImplementation_ The address of the addon registry module implementation.
     function initialize(
         address initialAdmin_,
@@ -233,5 +235,4 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @notice Returns the address of the token access manager implementation.
     /// @return The address of the token access manager implementation contract.
     function tokenAccessManagerImplementation() external view returns (address);
-
 }

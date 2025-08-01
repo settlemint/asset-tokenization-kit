@@ -83,7 +83,9 @@ contract ATKComplianceModuleRegistryTest is Test {
         vm.prank(user);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector, user, ATKPeopleRoles.SYSTEM_MANAGER_ROLE
+                IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector,
+                user,
+                ATKPeopleRoles.SYSTEM_MANAGER_ROLE
             )
         );
         registry.registerComplianceModule(address(mockModule));

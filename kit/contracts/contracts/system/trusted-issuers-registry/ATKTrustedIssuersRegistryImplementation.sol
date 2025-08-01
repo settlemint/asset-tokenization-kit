@@ -217,8 +217,6 @@ contract ATKTrustedIssuersRegistryImplementation is
         __ERC165_init_unchained();
     }
 
-
-
     // --- Internal Helper Functions ---
 
     /// @notice Returns the roles that can perform claim policy management operations
@@ -618,8 +616,6 @@ contract ATKTrustedIssuersRegistryImplementation is
         return ERC2771ContextUpgradeable._msgSender();
     }
 
-
-
     /// @inheritdoc IERC165
     /// @notice Indicates whether this contract supports a given interface ID, as per ERC165.
     /// @dev This function allows other contracts/tools to query if this contract implements specific interfaces.
@@ -642,6 +638,7 @@ contract ATKTrustedIssuersRegistryImplementation is
     {
         return interfaceId == type(IATKTrustedIssuersRegistry).interfaceId
             || interfaceId == type(IERC3643TrustedIssuersRegistry).interfaceId
-            || interfaceId == type(IClaimAuthorizer).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
+            || interfaceId == type(IClaimAuthorizer).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId
+            || super.supportsInterface(interfaceId);
     }
 }

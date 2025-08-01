@@ -37,7 +37,7 @@ interface IATKVestingAirdropFactory {
     /// @notice Custom error for invalid implementation address.
     error InvalidImplementation();
 
-     /// @notice Initializes the factory with access manager and system address
+    /// @notice Initializes the factory with access manager and system address
     /// @param accessManager The address of the access manager.
     /// @param systemAddress The address of the `IATKSystem` contract.
     function initialize(address accessManager, address systemAddress) external;

@@ -13,7 +13,8 @@ import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../../contracts/sys
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ATKSystemAccessManagerImplementation } from
     "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
-import { IATKTrustedIssuersRegistry } from "../../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
+import { IATKTrustedIssuersRegistry } from
+    "../../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
 import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
 
 // Mock claim issuer for testing

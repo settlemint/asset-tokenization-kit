@@ -59,7 +59,7 @@ interface IATKTokenFactory is IERC165, IATKSystemAccessManaged {
     /// @param accessManager The address of the access manager
     /// @param systemAddress The address of the `IATKSystem` contract.
     /// @param tokenImplementation_ The address of the token implementation contract.
-    function initialize(address accessManager, address systemAddress, address tokenImplementation_  ) external;
+    function initialize(address accessManager, address systemAddress, address tokenImplementation_) external;
 
     /// @notice Returns the address of the token implementation contract.
     /// @return tokenImplementation The address of the token implementation contract.

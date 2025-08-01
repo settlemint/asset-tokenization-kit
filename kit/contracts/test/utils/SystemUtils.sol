@@ -186,11 +186,7 @@ contract SystemUtils is Test {
         platformAdminRoles[3] = ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE;
         platformAdminRoles[4] = ATKPeopleRoles.IDENTITY_MANAGER_ROLE;
 
-        systemAccessManager.grantMultipleRoles(
-            platformAdmin,
-            platformAdminRoles
-        );
-
+        systemAccessManager.grantMultipleRoles(platformAdmin, platformAdminRoles);
 
         vm.stopPrank();
     }

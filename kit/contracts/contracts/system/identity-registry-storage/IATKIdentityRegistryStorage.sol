@@ -4,7 +4,6 @@ pragma solidity ^0.8.28;
 import { ISMARTIdentityRegistryStorage } from "../../smart/interface/ISMARTIdentityRegistryStorage.sol";
 import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
-
 /// @title IATKIdentityRegistryStorage
 /// @author SettleMint
 /// @notice Interface for the ATK Identity Registry Storage, managing identity data persistence

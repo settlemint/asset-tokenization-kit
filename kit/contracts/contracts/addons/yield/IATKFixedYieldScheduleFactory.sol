@@ -34,7 +34,7 @@ interface IATKFixedYieldScheduleFactory {
     /// @return The address of the current implementation contract
     function atkFixedYieldScheduleImplementation() external view returns (address);
 
-     /// @notice Initializes the factory with access manager and system address
+    /// @notice Initializes the factory with access manager and system address
     /// @param accessManager The address of the access manager.
     /// @param systemAddress The address of the `IATKSystem` contract.
     function initialize(address accessManager, address systemAddress) external;

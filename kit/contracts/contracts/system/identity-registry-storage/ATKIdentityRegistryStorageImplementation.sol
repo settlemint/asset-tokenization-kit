@@ -58,8 +58,6 @@ contract ATKIdentityRegistryStorageImplementation is
     ERC165Upgradeable,
     IATKIdentityRegistryStorage
 {
-
-
     // --- Storage Variables ---
     /// @notice Defines a structure to hold the comprehensive information for a registered identity.
     /// An `Identity` struct links a user's wallet address to their on-chain identity representation, country, and
@@ -223,7 +221,6 @@ contract ATKIdentityRegistryStorageImplementation is
     function initialize(address accessManager) public initializer {
         __ATKSystemAccessManaged_init(accessManager);
         __ERC165_init_unchained(); // Base for interface detection.
-
     }
 
     // --- Storage Modification Functions (IDENTITY_REGISTRY_MODULE_ROLE required) ---
@@ -261,7 +258,8 @@ contract ATKIdentityRegistryStorageImplementation is
     )
         external
         override
-        onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKPeopleRoles.SYSTEM_MANAGER_ROLE) // Ensures only authorized contracts can modify storage.
+        onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKPeopleRoles.SYSTEM_MANAGER_ROLE) // Ensures
+            // only authorized contracts can modify storage.
     {
         if (_userAddress == address(0)) revert InvalidIdentityWalletAddress();
         if (address(_identity) == address(0)) revert InvalidIdentityAddress();
@@ -409,7 +407,10 @@ contract ATKIdentityRegistryStorageImplementation is
     /// @dev Reverts with:
     ///      - `InvalidIdentityRegistryAddress()` if `_identityRegistry` is `address(0)`.
     ///      - `IdentityRegistryAlreadyBound(_identityRegistry)` if the registry is already bound.
-    function bindIdentityRegistry(address _identityRegistry) external onlySystemRoles2(ATKPeopleRoles.SYSTEM_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE) {
+    function bindIdentityRegistry(address _identityRegistry)
+        external
+        onlySystemRoles2(ATKPeopleRoles.SYSTEM_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
+    {
         if (_identityRegistry == address(0)) revert InvalidIdentityRegistryAddress();
         if (_boundIdentityRegistries[_identityRegistry]) revert IdentityRegistryAlreadyBound(_identityRegistry);
 
@@ -438,7 +439,10 @@ contract ATKIdentityRegistryStorageImplementation is
     /// @param _identityRegistry The address of the `SMARTIdentityRegistry` contract to unbind. This registry will no
     /// longer be able to modify storage data.
     /// @dev Reverts with `IdentityRegistryNotBound(_identityRegistry)` if the registry is not currently bound.
-    function unbindIdentityRegistry(address _identityRegistry) external onlySystemRoles2(ATKPeopleRoles.SYSTEM_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE) {
+    function unbindIdentityRegistry(address _identityRegistry)
+        external
+        onlySystemRoles2(ATKPeopleRoles.SYSTEM_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
+    {
         if (!_boundIdentityRegistries[_identityRegistry]) revert IdentityRegistryNotBound(_identityRegistry);
 
         // Note: Role revoking is now handled by the centralized access manager
@@ -590,10 +594,15 @@ contract ATKIdentityRegistryStorageImplementation is
     /// attributed to the correct originating user, even when gas is paid by a third party.
     /// @return The address of the original transaction sender (user) if relayed via a trusted forwarder,
     /// or `msg.sender` if called directly.
-    function _msgSender() internal view virtual override(ERC2771ContextUpgradeable, ATKSystemAccessManaged) returns (address) {
+    function _msgSender()
+        internal
+        view
+        virtual
+        override(ERC2771ContextUpgradeable, ATKSystemAccessManaged)
+        returns (address)
+    {
         return ERC2771ContextUpgradeable._msgSender();
     }
-
 
     /// @inheritdoc IERC165
     /// @notice Indicates whether this contract supports a given interface ID, as per the ERC165 standard.
@@ -618,6 +627,7 @@ contract ATKIdentityRegistryStorageImplementation is
         returns (bool)
     {
         return interfaceId == type(IATKIdentityRegistryStorage).interfaceId
-            || interfaceId == type(ISMARTIdentityRegistryStorage).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
+            || interfaceId == type(ISMARTIdentityRegistryStorage).interfaceId
+            || interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
     }
 }

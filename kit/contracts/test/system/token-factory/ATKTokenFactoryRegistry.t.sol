@@ -5,7 +5,8 @@ import { Test } from "forge-std/Test.sol";
 import { console } from "forge-std/console.sol";
 import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { IATKTokenFactoryRegistry } from "../../../contracts/system/token-factory/IATKTokenFactoryRegistry.sol";
-import { ATKTokenFactoryRegistryImplementation } from "../../../contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol";
+import { ATKTokenFactoryRegistryImplementation } from
+    "../../../contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol";
 import { IATKSystem } from "../../../contracts/system/IATKSystem.sol";
 import { IATKTokenFactory } from "../../../contracts/system/token-factory/IATKTokenFactory.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
@@ -72,7 +73,7 @@ contract MockInvalidTokenFactory is IATKTokenFactory {
         return address(0);
     }
 
-     function accessManager() external pure override returns (address) {
+    function accessManager() external pure override returns (address) {
         return address(0);
     }
 
@@ -124,16 +125,18 @@ contract ATKTokenFactoryRegistryTest is Test {
         assertTrue(registry.tokenFactory(factoryTypeHash) == proxyAddress);
 
         // check roles granted
-        assertTrue(
-            systemUtils.systemAccessManager().hasRole(
-                ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, proxyAddress
-            )
-        );
+        assertTrue(systemUtils.systemAccessManager().hasRole(ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, proxyAddress));
     }
 
     function test_RegisterTokenFactory_Fail_NotAdmin() public {
         vm.prank(user);
-        vm.expectRevert(abi.encodeWithSelector(IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector, user, ATKPeopleRoles.SYSTEM_MANAGER_ROLE));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector,
+                user,
+                ATKPeopleRoles.SYSTEM_MANAGER_ROLE
+            )
+        );
         registry.registerTokenFactory("TestFactory", address(mockTokenFactory), address(mockTokenImplementation));
     }
 
@@ -210,7 +213,13 @@ contract ATKTokenFactoryRegistryTest is Test {
         MockTokenFactory newMockTokenFactory = new MockTokenFactory();
 
         vm.prank(user);
-        vm.expectRevert(abi.encodeWithSelector(IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector, user, ATKPeopleRoles.SYSTEM_MANAGER_ROLE));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector,
+                user,
+                ATKPeopleRoles.SYSTEM_MANAGER_ROLE
+            )
+        );
         registry.setTokenFactoryImplementation(factoryTypeHash, address(newMockTokenFactory));
     }
 

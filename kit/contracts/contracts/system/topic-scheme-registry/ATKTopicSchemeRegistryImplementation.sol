@@ -32,7 +32,6 @@ contract ATKTopicSchemeRegistryImplementation is
 {
     // --- Storage Variables ---
 
-
     /// @notice Mapping from topic ID to topic scheme information
     /// @dev Maps topicId => TopicScheme struct containing id, signature, and existence flag
     mapping(uint256 topicId => TopicScheme scheme) private _topicSchemes;
@@ -82,8 +81,6 @@ contract ATKTopicSchemeRegistryImplementation is
 
     /// @notice Error thrown when attempting batch operations with empty arrays
     error EmptyArraysProvided();
-
-
 
     // --- Constructor ---
     /// @notice Constructor for the SMARTTopicSchemeRegistryImplementation
@@ -323,7 +320,8 @@ contract ATKTopicSchemeRegistryImplementation is
     /// @return True if the interface is supported
     function supportsInterface(bytes4 interfaceId) public view override(ERC165Upgradeable, IERC165) returns (bool) {
         return interfaceId == type(IATKTopicSchemeRegistry).interfaceId
-            || interfaceId == type(ISMARTTopicSchemeRegistry).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
+            || interfaceId == type(ISMARTTopicSchemeRegistry).interfaceId
+            || interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
     }
 
     // --- Meta-transaction Support ---
@@ -334,5 +332,4 @@ contract ATKTopicSchemeRegistryImplementation is
     function _msgSender() internal view override(ERC2771ContextUpgradeable, ATKSystemAccessManaged) returns (address) {
         return ERC2771ContextUpgradeable._msgSender();
     }
-
 }

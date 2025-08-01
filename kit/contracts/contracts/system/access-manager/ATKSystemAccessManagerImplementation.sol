@@ -72,8 +72,6 @@ contract ATKSystemAccessManagerImplementation is
         return false;
     }
 
-
-
     // --- Role Checking Functions ---
 
     /// @notice Checks if an account has a specific role
@@ -152,7 +150,14 @@ contract ATKSystemAccessManagerImplementation is
     /// @param role The role identifier to grant
     /// @param accounts Array of addresses to grant the role to
     /// @dev Caller must have the role's admin role for each grant
-    function batchGrantRole(bytes32 role, address[] calldata accounts) external override onlyRoles(_getRoleAdmins(role)) {
+    function batchGrantRole(
+        bytes32 role,
+        address[] calldata accounts
+    )
+        external
+        override
+        onlyRoles(_getRoleAdmins(role))
+    {
         for (uint256 i = 0; i < accounts.length;) {
             grantRole(role, accounts[i]);
             unchecked {
@@ -165,7 +170,14 @@ contract ATKSystemAccessManagerImplementation is
     /// @param role The role identifier to revoke
     /// @param accounts Array of addresses to revoke the role from
     /// @dev Caller must have the role's admin role for each revocation
-    function batchRevokeRole(bytes32 role, address[] calldata accounts) external override onlyRoles(_getRoleAdmins(role)) {
+    function batchRevokeRole(
+        bytes32 role,
+        address[] calldata accounts
+    )
+        external
+        override
+        onlyRoles(_getRoleAdmins(role))
+    {
         for (uint256 i = 0; i < accounts.length;) {
             revokeRole(role, accounts[i]);
             unchecked {
@@ -204,7 +216,13 @@ contract ATKSystemAccessManagerImplementation is
     /// @param roles Array of role identifiers to renounce
     /// @param callerConfirmation Address confirmation (must match msg.sender)
     /// @dev Can only renounce roles for yourself
-    function renounceMultipleRoles(bytes32[] calldata roles, address callerConfirmation) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function renounceMultipleRoles(
+        bytes32[] calldata roles,
+        address callerConfirmation
+    )
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
         for (uint256 i = 0; i < roles.length;) {
             renounceRole(roles[i], callerConfirmation);
             unchecked {

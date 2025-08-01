@@ -69,5 +69,4 @@ interface IATKTokenFactoryRegistry is IERC165, IATKSystemAccessManaged {
     /// @param accessManager The address of the access manager
     /// @param systemAddress The address of the ATK system contract
     function initialize(address accessManager, address systemAddress) external;
-
 }

@@ -147,14 +147,10 @@ contract ATKSystemAddonRegistryImplementation is
     /// @notice Checks if the contract supports a given interface
     /// @param interfaceId The interface identifier to check
     /// @return bool True if the interface is supported, false otherwise
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC165Upgradeable, IERC165)
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public view override(ERC165Upgradeable, IERC165) returns (bool) {
         return super.supportsInterface(interfaceId) || interfaceId == type(IATKSystemAddonRegistry).interfaceId
-            || interfaceId == type(IATKTypedImplementationRegistry).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId;
+            || interfaceId == type(IATKTypedImplementationRegistry).interfaceId
+            || interfaceId == type(IATKSystemAccessManaged).interfaceId;
     }
 
     /// @notice Returns the address of the current message sender
@@ -163,5 +159,4 @@ contract ATKSystemAddonRegistryImplementation is
     function _msgSender() internal view override(ERC2771ContextUpgradeable, ATKSystemAccessManaged) returns (address) {
         return ERC2771ContextUpgradeable._msgSender();
     }
-
 }

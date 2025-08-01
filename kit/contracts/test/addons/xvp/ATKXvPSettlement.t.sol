@@ -64,7 +64,9 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Encode initialization data for the factory
         bytes memory encodedInitializationData = abi.encodeWithSelector(
-            ATKXvPSettlementFactoryImplementation.initialize.selector, address(systemUtils.systemAccessManager()), address(systemUtils.system())
+            ATKXvPSettlementFactoryImplementation.initialize.selector,
+            address(systemUtils.systemAccessManager()),
+            address(systemUtils.system())
         );
 
         // Create system addon for XvP settlement factory

@@ -266,7 +266,11 @@ contract ATKIdentityRegistryImplementation is
     )
         external
         override
-        onlySystemRoles3(ATKPeopleRoles.IDENTITY_MANAGER_ROLE, ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE)
+        onlySystemRoles3(
+            ATKPeopleRoles.IDENTITY_MANAGER_ROLE,
+            ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE,
+            ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE
+        )
     {
         _registerIdentity(_userAddress, _identity, _country);
     }
@@ -280,7 +284,15 @@ contract ATKIdentityRegistryImplementation is
     /// Emits an `IdentityRemoved` event upon successful deletion.
     /// @param _userAddress The blockchain address of the user whose identity is to be deleted.
     /// Reverts with `IdentityNotRegistered` if the address is not found.
-    function deleteIdentity(address _userAddress) external override onlySystemRoles3(ATKPeopleRoles.IDENTITY_MANAGER_ROLE, ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE, ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE) {
+    function deleteIdentity(address _userAddress)
+        external
+        override
+        onlySystemRoles3(
+            ATKPeopleRoles.IDENTITY_MANAGER_ROLE,
+            ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE,
+            ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE
+        )
+    {
         // Ensure the identity exists before attempting to delete.
         // The `contains` function checks the storage contract.
         if (!this.contains(_userAddress)) revert IdentityNotRegistered(_userAddress);
@@ -785,7 +797,6 @@ contract ATKIdentityRegistryImplementation is
         return ERC2771ContextUpgradeable._msgSender();
     }
 
-
     /// @inheritdoc IERC165
     /// @notice Indicates whether this contract supports a given interface ID.
     /// @dev This function is part of the ERC165 standard for interface detection.
@@ -803,6 +814,7 @@ contract ATKIdentityRegistryImplementation is
     {
         // Check for ISMARTIdentityRegistry interface and then delegate to parent contracts.
         return interfaceId == type(IATKIdentityRegistry).interfaceId
-            || interfaceId == type(ISMARTIdentityRegistry).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
+            || interfaceId == type(ISMARTIdentityRegistry).interfaceId
+            || interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
     }
 }
