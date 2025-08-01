@@ -32,7 +32,7 @@ import {
   FieldErrors,
   FieldLabel,
   FieldLayout,
-} from "./field";
+} from "../field";
 
 export interface AddressOption {
   address: EthereumAddress;
