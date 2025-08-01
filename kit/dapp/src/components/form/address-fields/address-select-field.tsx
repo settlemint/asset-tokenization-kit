@@ -138,7 +138,7 @@ export function AddressSelectField({
               {field.state.value ? (
                 <Web3Address
                   address={field.state.value}
-                  size="small"
+                  size="tiny"
                   showBadge={false}
                 />
               ) : (
@@ -223,7 +223,7 @@ const AddressCommandItem = memo(
         {showIcon && <History className="h-4 w-4 opacity-50" />}
         <Web3Address
           address={option.address}
-          size="small"
+          size="tiny"
           showBadge={false}
           className="flex-1"
         />

@@ -1,3 +1,4 @@
+import { AddressSelectOrInput } from "@/components/address-select-or-input/address-select-or-input-field";
 import {
   commonFields,
   CommonFields,
@@ -60,14 +61,33 @@ export const BondBasics = withForm({
               />
             )}
           />
-          <form.AppField
-            name="underlyingAsset"
-            children={(field) => (
-              <field.AddressSelectOrInputField
-                scope="asset"
-                label={t("form.fields.underlyingAsset.label")}
-                required={isRequiredField("underlyingAsset")}
-              />
+          <AddressSelectOrInput
+            children={({ mode }) => (
+              <>
+                {mode === "select" && (
+                  <form.AppField
+                    name="underlyingAsset"
+                    children={(field) => (
+                      <field.AddressSelectField
+                        scope="asset"
+                        label={t("form.fields.underlyingAsset.label")}
+                        required={isRequiredField("underlyingAsset")}
+                      />
+                    )}
+                  />
+                )}
+                {mode === "manual" && (
+                  <form.AppField
+                    name="underlyingAsset"
+                    children={(field) => (
+                      <field.AddressInputField
+                        label={t("form.fields.underlyingAsset.label")}
+                        required={isRequiredField("underlyingAsset")}
+                      />
+                    )}
+                  />
+                )}
+              </>
             )}
           />
         </FormStepContent>
