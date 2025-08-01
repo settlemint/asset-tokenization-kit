@@ -114,42 +114,6 @@ export class MaturedStrategy implements BondStatusStrategy {
 }
 
 /**
- * Strategy factory to determine which strategy to use based on token state
- */
-export function getBondStatusStrategy(token: Token): BondStatusStrategy {
-  if (!token.bond) {
-    throw new Error("Token is not a bond asset");
-  }
-
-  // Check if bond is matured with proper date handling
-  const now = getUnixTime(new Date());
-  const maturityTimestamp = token.bond.maturityDate
-    ? getUnixTime(token.bond.maturityDate)
-    : null;
-  const isMatured =
-    token.bond.isMatured ||
-    (maturityTimestamp !== null && now >= maturityTimestamp);
-
-  if (isMatured) {
-    return new MaturedStrategy();
-  }
-
-  // Check if bond is still in issuing phase
-  if (token.capped?.cap) {
-    const totalSupply = token.totalSupply;
-    const cap = token.capped.cap;
-
-    // Use dnum for safe comparison - if total supply is less than cap
-    if (greaterThan(cap, totalSupply)) {
-      return new IssuingStrategy();
-    }
-  }
-
-  // Default to active phase
-  return new ActiveStrategy();
-}
-
-/**
  * Helper function to get bond status without strategy instantiation
  */
 export function getBondStatus(token: Token): BondStatus {
@@ -179,4 +143,22 @@ export function getBondStatus(token: Token): BondStatus {
   }
 
   return "active";
+}
+
+/**
+ * Strategy factory to determine which strategy to use based on token state
+ */
+export function getBondStatusStrategy(token: Token): BondStatusStrategy {
+  const status = getBondStatus(token);
+
+  switch (status) {
+    case "matured":
+      return new MaturedStrategy();
+    case "issuing":
+      return new IssuingStrategy();
+    case "active":
+      return new ActiveStrategy();
+    default:
+      return new ActiveStrategy();
+  }
 }

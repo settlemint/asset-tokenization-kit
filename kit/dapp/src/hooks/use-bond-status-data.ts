@@ -79,8 +79,6 @@ export function useBondStatusData(
     };
   }, [
     token.bond,
-    token.bond?.isMatured,
-    token.bond?.maturityDate,
     token.capped?.cap,
     token.totalSupply,
     token.redeemable?.redeemedAmount,
