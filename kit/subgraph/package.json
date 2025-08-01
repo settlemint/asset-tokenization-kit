@@ -17,7 +17,7 @@
     "@graphprotocol/graph-ts": "0.38.1"
   },
   "devDependencies": {
-    "@settlemint/sdk-thegraph": "2.5.3",
+    "@settlemint/sdk-thegraph": "2.5.5",
     "matchstick-as": "0.6.0",
     "yaml": "2.8.0",
     "contracts": "workspace:*"
