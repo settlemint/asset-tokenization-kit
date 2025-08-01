@@ -66,6 +66,10 @@ export const equityCreateHandler = async (
     return context.portalClient.mutate(CREATE_EQUITY_MUTATION, {
       ...input,
       ...context.mutationVariables,
+      initialModulePairs: input.initialModulePairs.map((pair) => ({
+        module: pair.module,
+        params: pair.params,
+      })),
     });
   });
 };

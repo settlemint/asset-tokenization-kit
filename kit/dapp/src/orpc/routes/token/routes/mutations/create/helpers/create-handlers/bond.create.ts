@@ -73,9 +73,13 @@ export const bondCreateHandler = async (
   return createToken(input, context, () => {
     return context.portalClient.mutate(CREATE_BOND_MUTATION, {
       ...input,
+      ...context.mutationVariables,
       cap: input.cap.toString(),
       faceValue: input.faceValue.toString(),
-      ...context.mutationVariables,
+      initialModulePairs: input.initialModulePairs.map((pair) => ({
+        module: pair.module,
+        params: pair.params,
+      })),
     });
   });
 };

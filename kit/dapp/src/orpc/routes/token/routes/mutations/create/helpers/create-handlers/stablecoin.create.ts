@@ -66,6 +66,10 @@ export const stablecoinCreateHandler = async (
     return context.portalClient.mutate(CREATE_STABLECOIN_MUTATION, {
       ...input,
       ...context.mutationVariables,
+      initialModulePairs: input.initialModulePairs.map((pair) => ({
+        module: pair.module,
+        params: pair.params,
+      })),
     });
   });
 };
