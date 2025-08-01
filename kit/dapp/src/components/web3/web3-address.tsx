@@ -1,10 +1,9 @@
 import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboard";
 import { Badge } from "@/components/ui/badge";
 import { Web3Avatar } from "@/components/web3/web3-avatar";
+import { useSearchAddresses } from "@/hooks/use-search-addresses";
 import { cn } from "@/lib/utils";
 import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { orpc } from "@/orpc/orpc-client";
-import { useQuery } from "@tanstack/react-query";
 import { memo, useMemo } from "react";
 
 interface Web3AddressProps {
@@ -30,27 +29,13 @@ function Web3AddressComponent({
   showSymbol = true,
   showPrettyName = true,
 }: Web3AddressProps) {
-  // Select only the first user from the list to minimize re-renders
-  const { data: user } = useQuery(
-    orpc.user.list.queryOptions({
-      input: {
-        searchByAddress: address,
-      },
-      select: (users) => users[0],
-      staleTime: 1000 * 60 * 30, // Cache user data for 30 minutes as it rarely changes
-    })
-  );
+  const { users, assets } = useSearchAddresses({
+    searchTerm: address,
+    scope: "all",
+  });
 
-  // Select only the first token from the list to minimize re-renders
-  const { data: token } = useQuery(
-    orpc.token.list.queryOptions({
-      input: {
-        searchByAddress: address,
-      },
-      select: (tokens) => tokens[0],
-      staleTime: 1000 * 60 * 30, // Cache token metadata for 30 minutes as it rarely changes
-    })
-  );
+  const user = users.length > 0 ? users[0] : undefined;
+  const token = assets.length > 0 ? assets[0] : undefined;
 
   // Memoize truncated address display
   const truncatedAddressDisplay = useMemo(() => {

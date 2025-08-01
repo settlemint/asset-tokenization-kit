@@ -7,7 +7,6 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
@@ -15,25 +14,21 @@ import {
 } from "@/components/ui/popover";
 import { Web3Address } from "@/components/web3/web3-address";
 import { useFieldContext } from "@/hooks/use-form-contexts";
+import { useSearchAddresses } from "@/hooks/use-search-addresses";
 import { useDebouncedCallback } from "@/lib/hooks/use-debounced-callback";
 import { useRecentCache } from "@/lib/hooks/use-recent-cache";
 import { cn } from "@/lib/utils";
-import {
-  type EthereumAddress,
-  ethereumAddress,
-} from "@/lib/zod/validators/ethereum-address";
-import { orpc } from "@/orpc/orpc-client";
-import { useQuery } from "@tanstack/react-query";
-import { Check, ChevronsUpDown, History, Pencil, Search } from "lucide-react";
+import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { Check, ChevronsUpDown, History, Pencil } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { getAddress } from "viem";
 import {
-  errorClassNames,
   FieldDescription,
   FieldErrors,
   FieldLabel,
   FieldLayout,
 } from "../field";
+import { AddressInput } from "./address-input";
 
 export interface AddressOption {
   address: EthereumAddress;
@@ -47,7 +42,7 @@ interface BaseAddressFieldProps {
   required?: boolean;
   placeholder?: string;
   disabled?: boolean;
-  mode: "user" | "asset";
+  scope: "user" | "asset";
   recentStorageKey: string;
   addressTypeName: string;
 }
@@ -62,7 +57,7 @@ export function BaseAddressField({
   required = false,
   placeholder,
   disabled = false,
-  mode,
+  scope,
   recentStorageKey,
   addressTypeName,
 }: BaseAddressFieldProps) {
@@ -70,8 +65,6 @@ export function BaseAddressField({
   const [open, setOpen] = useState(false);
   const [manualMode, setManualMode] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [manualInput, setManualInput] = useState("");
-  const [manualError, setManualError] = useState<string | null>(null);
 
   // Use the recent cache hook for managing recent addresses
   const { recentItems: recentAddresses, addItem: addToRecents } =
@@ -85,44 +78,19 @@ export function BaseAddressField({
     setSearchTerm(term);
   }, SEARCH_DEBOUNCE_MS);
 
-  // Query for addresses based on search term
-  const { data: userAddresses = [], isLoading: isUserAddressesLoading } =
-    useQuery(
-      orpc.user.list.queryOptions({
-        enabled: mode === "user",
-        input: {
-          searchByAddress: searchTerm.length > 0 ? searchTerm : undefined,
-        },
-        staleTime: 1000 * 60 * 30, // Cache user data for 30 minutes as it rarely changes
-      })
-    );
-
-  const { data: assetAddresses = [], isLoading: isAssetAddressesLoading } =
-    useQuery(
-      orpc.token.list.queryOptions({
-        enabled: mode === "asset",
-        input: {
-          searchByAddress: searchTerm.length > 0 ? searchTerm : undefined,
-        },
-        staleTime: 1000 * 60 * 30, // Cache token data for 30 minutes as it rarely changes
-      })
-    );
+  const { users, assets, isLoading } = useSearchAddresses({
+    searchTerm,
+    scope,
+  });
 
   const addresses = useMemo(() => {
-    const addresses = mode === "user" ? userAddresses : assetAddresses;
-    return addresses.map((address) => ({
-      address: getAddress(address.id),
-      displayName: address.name,
-      secondaryInfo: "symbol" in address ? address.symbol : address.email,
+    const addressList = scope === "user" ? users : assets;
+    return addressList.map((item) => ({
+      address: getAddress(item.id),
+      displayName: item.name,
+      secondaryInfo: "symbol" in item ? item.symbol : item.email,
     }));
-  }, [mode, userAddresses, assetAddresses]);
-
-  const isLoading = useMemo(() => {
-    if (mode === "user") {
-      return isUserAddressesLoading;
-    }
-    return isAssetAddressesLoading;
-  }, [mode, isUserAddressesLoading, isAssetAddressesLoading]);
+  }, [scope, users, assets]);
 
   // Convert recent addresses to AddressOption format
   const recentAddressOptions = useMemo(() => {
@@ -157,47 +125,15 @@ export function BaseAddressField({
     [field, addToRecents]
   );
 
-  // Handle manual input validation and submission
-  const validateManualInput = useCallback(
-    (input: string) => {
-      if (!input.trim()) {
-        setManualError(null);
-        return;
-      }
-
-      const result = ethereumAddress.safeParse(input);
-      if (result.success) {
-        setManualError(null);
-        field.handleChange(result.data);
-        addToRecents(result.data);
-      } else {
-        setManualError(result.error.issues[0]?.message || "Invalid address");
-      }
-    },
-    [field, addToRecents]
-  );
-
-  // Handle manual input changes
-  const handleManualInputChange = useCallback(
-    (value: string) => {
-      setManualInput(value);
-      validateManualInput(value);
-    },
-    [validateManualInput]
-  );
-
   // Switch to manual mode
   const switchToManualMode = useCallback(() => {
     setManualMode(true);
     setOpen(false);
-    setManualInput(field.state.value || "");
-  }, [field.state.value]);
+  }, []);
 
   // Switch to search mode
   const switchToSearchMode = useCallback(() => {
     setManualMode(false);
-    setManualInput("");
-    setManualError(null);
   }, []);
 
   // Reset search when popover closes
@@ -211,51 +147,19 @@ export function BaseAddressField({
 
   if (manualMode) {
     return (
-      <FieldLayout>
-        <FieldLabel htmlFor={field.name} label={label} required={required} />
-        <FieldDescription description={description} />
-        <div className="space-y-2">
-          <div className="flex gap-2">
-            <Input
-              id={field.name}
-              type="text"
-              value={manualInput}
-              onChange={(e) => {
-                handleManualInputChange(e.target.value);
-              }}
-              placeholder="0x..."
-              className={cn(
-                errorClassNames(field.state.meta),
-                manualError && "border-destructive"
-              )}
-              disabled={disabled}
-            />
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              onClick={switchToSearchMode}
-              disabled={disabled}
-            >
-              <Search className="h-4 w-4" />
-            </Button>
-          </div>
-          {manualError && (
-            <p className="text-sm text-destructive">{manualError}</p>
-          )}
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={switchToSearchMode}
-            className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
-            disabled={disabled}
-          >
-            ← Switch to search mode
+      <div>
+        <AddressInput
+          value={field.state.value}
+          label={label}
+          description={description}
+          required={required}
+        />
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={switchToSearchMode}>
+            Search for address instead
           </Button>
         </div>
-        <FieldErrors {...field.state.meta} />
-      </FieldLayout>
+      </div>
     );
   }
 
@@ -291,14 +195,12 @@ export function BaseAddressField({
         <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
           <Command shouldFilter={false}>
             <CommandInput
-              placeholder={`Search ${addressTypeName} addresses...`}
+              placeholder={`Search ${addressTypeName} addresses`}
               onValueChange={debouncedSearch}
             />
             <CommandList>
               <CommandEmpty>
-                {isLoading
-                  ? "Loading..."
-                  : `No ${addressTypeName} addresses found`}
+                {isLoading ? "Loading..." : "No matching address found"}
               </CommandEmpty>
 
               {!searchTerm && recentAddressOptions.length > 0 && (
@@ -333,23 +235,22 @@ export function BaseAddressField({
                   />
                 ))}
               </CommandGroup>
-
-              <div className="border-t px-2 py-1">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={switchToManualMode}
-                  className="w-full justify-start text-xs text-muted-foreground hover:text-foreground"
-                >
-                  <Pencil className="mr-2 h-3 w-3" />
-                  Enter address manually instead
-                </Button>
-              </div>
             </CommandList>
           </Command>
         </PopoverContent>
       </Popover>
+      <div className="border-t px-2 py-1">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={switchToManualMode}
+          className="w-full justify-start text-xs text-muted-foreground hover:text-foreground"
+        >
+          <Pencil className="mr-2 h-3 w-3" />
+          Enter address manually instead
+        </Button>
+      </div>
       <FieldErrors {...field.state.meta} />
     </FieldLayout>
   );

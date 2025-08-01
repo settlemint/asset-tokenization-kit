@@ -18,8 +18,8 @@ import {
 import { kycContract } from "@/orpc/routes/user/kyc/kyc.contract";
 import { createWalletContract } from "@/orpc/routes/user/routes/mutations/create-wallet.contract";
 import {
+  UserListInputSchema,
   UserListOutputSchema,
-  UserListSchema,
 } from "@/orpc/routes/user/routes/user.list.schema";
 import { UserMeSchema } from "@/orpc/routes/user/routes/user.me.schema";
 import {
@@ -88,7 +88,7 @@ const list = baseContract
     successDescription: "List of users",
     tags: ["user"],
   })
-  .input(UserListSchema)
+  .input(UserListInputSchema)
   .output(UserListOutputSchema);
 
 /**

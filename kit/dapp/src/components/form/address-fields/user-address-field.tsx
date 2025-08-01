@@ -22,7 +22,7 @@ export function UserAddressField({
       required={required}
       placeholder={placeholder || "Select or enter user address"}
       disabled={disabled}
-      mode="user"
+      scope="user"
       recentStorageKey="recently-selected-user-addresses"
       addressTypeName="user"
     />

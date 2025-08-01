@@ -22,7 +22,7 @@ export function AssetAddressField({
       required={required}
       placeholder={placeholder || "Select or enter asset address"}
       disabled={disabled}
-      mode="asset"
+      scope="asset"
       recentStorageKey="recently-selected-asset-addresses"
       addressTypeName="asset"
     />
