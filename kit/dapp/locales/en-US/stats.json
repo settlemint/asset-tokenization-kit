@@ -20,6 +20,11 @@
       "label": "Total supply",
       "title": "Token supply history"
     },
+    "totalTransfers": {
+      "description": "Total transfers activity over the last {{days}} days",
+      "label": "Total transfers",
+      "title": "Transfer activity"
+    },
     "supplyChanges": {
       "description": "Minted and burned assets over the last {{days}} days",
       "title": "Supply changes",
