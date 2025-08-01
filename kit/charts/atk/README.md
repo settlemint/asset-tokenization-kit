@@ -1,8 +1,123 @@
-# atk
+# Asset Tokenization Kit (ATK)
 
 ![Version: v2.0.0](https://img.shields.io/badge/Version-v2.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.0.0](https://img.shields.io/badge/AppVersion-v2.0.0-informational?style=flat-square)
 
-A Helm chart for the SettleMint Asset Tokenization Kit
+A comprehensive Helm umbrella chart for deploying the SettleMint Asset Tokenization Kit - a complete blockchain tokenization platform supporting ERC-3643 compliant security tokens with full-stack infrastructure.
+
+## Overview
+
+The Asset Tokenization Kit provides a production-ready platform for tokenizing real-world assets on blockchain networks. This umbrella chart orchestrates multiple components to create a complete tokenization ecosystem including blockchain infrastructure, APIs, user interfaces, and monitoring.
+
+## Architecture
+
+The ATK follows a microservices architecture with clear separation of concerns:
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │    │   APIs          │    │   Blockchain    │
+│                 │    │                 │    │                 │
+│ ┌─────────────┐ │    │ ┌─────────────┐ │    │ ┌─────────────┐ │
+│ │    DApp     │ │    │ │   Portal    │ │    │ │Besu Network │ │
+│ │  (React)    │ │    │ │  (GraphQL)  │ │    │ │  (Private)  │ │
+│ └─────────────┘ │    │ └─────────────┘ │    │ └─────────────┘ │
+│                 │    │                 │    │                 │
+│                 │    │ ┌─────────────┐ │    │ ┌─────────────┐ │
+│                 │    │ │   Hasura    │ │    │ │    eRPC     │ │
+│                 │    │ │ (GraphQL)   │ │    │ │ (RPC Proxy) │ │
+│                 │    │ └─────────────┘ │    │ └─────────────┘ │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+                                ▲
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Indexing      │    │  Infrastructure │    │   Monitoring    │
+│                 │    │                 │    │                 │
+│ ┌─────────────┐ │    │ ┌─────────────┐ │    │ ┌─────────────┐ │
+│ │ Graph Node  │ │    │ │ PostgreSQL  │ │    │ │   Grafana   │ │
+│ │ (Subgraph)  │ │    │ │   (Data)    │ │    │ │ (Dashboard) │ │
+│ └─────────────┘ │    │ └─────────────┘ │    │ └─────────────┘ │
+│                 │    │                 │    │                 │
+│ ┌─────────────┐ │    │ ┌─────────────┐ │    │ ┌─────────────┐ │
+│ │ Blockscout  │ │    │ │    Redis    │ │    │ │    Loki     │ │
+│ │ (Explorer)  │ │    │ │  (Cache)    │ │    │ │   (Logs)    │ │
+│ └─────────────┘ │    │ └─────────────┘ │    │ └─────────────┘ │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+### Service Dependencies
+
+Services start in the following order to ensure proper dependencies:
+
+1. **Infrastructure Layer**: PostgreSQL, Redis
+2. **Blockchain Layer**: Besu Network (validators and RPC nodes)
+3. **Middleware Layer**: Graph Node, Hasura, Portal, TxSigner
+4. **User-Facing Layer**: Blockscout, eRPC, DApp
+5. **Observability Layer**: Grafana, Loki, Prometheus (runs parallel)
+
+## Key Features
+
+- **ERC-3643 Compliance**: Full support for security token standards
+- **Private Blockchain**: Hyperledger Besu network with customizable validators
+- **GraphQL APIs**: Dual API layer with Portal (custom) and Hasura (generated)
+- **Real-time Indexing**: The Graph protocol for blockchain event indexing
+- **Modern Frontend**: React-based DApp with TypeScript and TanStack Query
+- **Comprehensive Monitoring**: Grafana dashboards, Loki logs, Prometheus metrics
+- **Production Ready**: Includes security, scaling, and operational best practices
+
+## Components
+
+| Component | Purpose | Technology |
+|-----------|---------|------------|
+| [besu-network](./charts/besu-network/) | Private blockchain network | Hyperledger Besu |
+| [dapp](./charts/dapp/) | Frontend application | React, TypeScript, TanStack |
+| [portal](./charts/portal/) | Custom GraphQL API | Node.js, GraphQL |
+| [hasura](./charts/hasura/) | Auto-generated GraphQL API | Hasura Engine |
+| [graph-node](./charts/graph-node/) | Blockchain event indexing | The Graph Protocol |
+| [blockscout](./charts/blockscout/) | Blockchain explorer | Elixir, Phoenix |
+| [erpc](./charts/erpc/) | RPC proxy and load balancer | Go |
+| [txsigner](./charts/txsigner/) | Transaction signing service | Node.js |
+| [support](./charts/support/) | Infrastructure services | PostgreSQL, Redis, Nginx |
+| [observability](./charts/observability/) | Monitoring and logging | Grafana, Loki, Prometheus |
+
+## Quick Start
+
+1. **Prerequisites**: Kubernetes cluster, Helm 3.x
+2. **Install dependencies**: `helm dependency update`
+3. **Deploy**: `helm install atk . -n atk --create-namespace`
+4. **Access**: Services available at configured ingress endpoints
+
+For detailed deployment instructions, see the [deployment guide](../../README.md).
+
+## Configuration
+
+### Environment-Specific Values
+
+- **Production**: Customize `values.yaml` for your environment
+- **Cloud**: Specific values files for AWS, GCP, Azure deployments
+
+### Common Configuration Patterns
+
+- **Scaling**: Adjust `replicaCount` for each service
+- **Resources**: Set `resources.requests` and `resources.limits`
+- **Storage**: Configure persistent volumes for stateful services
+- **Networking**: Enable `networkPolicy` for security
+- **Registry**: Configure `imagePullCredentials` for private registries
+
+## Deployment Patterns
+
+### Umbrella Chart Design
+
+This chart uses the umbrella pattern where:
+- All sub-charts share common configuration through `values.yaml`
+- Common helper templates in `templates/_common-helpers.tpl`
+- Conditional deployment via `<subchart>.enabled` flags
+- Centralized image pull secrets management
+
+### Production Considerations
+
+- **High Availability**: Enable multiple replicas for stateless services
+- **Backup Strategy**: Configure persistent volume backups
+- **Security**: Enable network policies and security contexts
+- **Monitoring**: Configure alerting rules and notification channels
+- **Resource Planning**: Size nodes appropriately for workload
 
 ## Maintainers
 
