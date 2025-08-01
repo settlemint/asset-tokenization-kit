@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 /**

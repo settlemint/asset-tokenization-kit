@@ -3,8 +3,6 @@ pragma solidity ^0.8.28;
 
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
@@ -21,7 +19,6 @@ import { IATKTokenFactory } from "../token-factory/IATKTokenFactory.sol";
 import { InvalidImplementationInterface } from "../ATKSystemErrors.sol";
 import { IATKTypedImplementationRegistry } from "../IATKTypedImplementationRegistry.sol";
 import { ATKTypedImplementationProxy } from "../ATKTypedImplementationProxy.sol";
-import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { ISMART } from "../../smart/interface/ISMART.sol";
 import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
 import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";

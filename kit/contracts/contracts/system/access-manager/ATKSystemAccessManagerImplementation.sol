@@ -261,17 +261,17 @@ contract ATKSystemAccessManagerImplementation is
         // Follow the admin chain until we reach DEFAULT_ADMIN_ROLE
         while (currentAdminRole != DEFAULT_ADMIN_ROLE && count < 255) {
             adminChain[count] = currentAdminRole;
-            count++;
+            ++count;
             currentAdminRole = getRoleAdmin(currentAdminRole);
         }
 
         // Always add DEFAULT_ADMIN_ROLE at the end
         adminChain[count] = DEFAULT_ADMIN_ROLE;
-        count++;
+        ++count;
 
         // Create the final array with the exact size
         bytes32[] memory result = new bytes32[](count);
-        for (uint256 i = 0; i < count; i++) {
+        for (uint256 i = 0; i < count; ++i) {
             result[i] = adminChain[i];
         }
 

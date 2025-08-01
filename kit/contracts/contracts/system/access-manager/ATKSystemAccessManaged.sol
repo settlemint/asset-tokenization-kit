@@ -151,7 +151,7 @@ abstract contract ATKSystemAccessManaged is IATKSystemAccessManaged {
     /// @param roles Array of role identifiers to check for.
     /// @param account The address of the account to verify.
     function _checkAnySystemRole(bytes32[] memory roles, address account) internal view {
-        for (uint256 i = 0; i < roles.length; i++) {
+        for (uint256 i = 0; i < roles.length; ++i) {
             if (_hasSystemRole(roles[i], account)) {
                 return; // Account has at least one role, access granted
             }
@@ -166,7 +166,7 @@ abstract contract ATKSystemAccessManaged is IATKSystemAccessManaged {
     /// @param roles Array of role identifiers to check for.
     /// @param account The address of the account to verify.
     function _checkAllSystemRoles(bytes32[] memory roles, address account) internal view {
-        for (uint256 i = 0; i < roles.length; i++) {
+        for (uint256 i = 0; i < roles.length; ++i) {
             if (!_hasSystemRole(roles[i], account)) {
                 revert AccessControlUnauthorizedAccount(account, roles[i]);
             }

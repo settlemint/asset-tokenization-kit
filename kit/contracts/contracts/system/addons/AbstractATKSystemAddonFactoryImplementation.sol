@@ -4,8 +4,6 @@ pragma solidity ^0.8.28;
 // OpenZeppelin Contracts
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
-import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
@@ -20,7 +18,7 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 // Constants
-import { ATKPeopleRoles, ATKSystemRoles } from "../ATKRoles.sol";
+import { ATKPeopleRoles } from "../ATKRoles.sol";
 
 // Extensions
 import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";

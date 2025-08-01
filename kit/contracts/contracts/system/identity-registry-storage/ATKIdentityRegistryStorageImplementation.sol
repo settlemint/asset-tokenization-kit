@@ -17,7 +17,6 @@ import { ATKSystemRoles, ATKPeopleRoles } from "../ATKRoles.sol";
 import { IERC3643IdentityRegistryStorage } from "./../../smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol";
 import { ISMARTIdentityRegistryStorage } from "./../../smart/interface/ISMARTIdentityRegistryStorage.sol";
 import { IATKIdentityRegistryStorage } from "./IATKIdentityRegistryStorage.sol";
-import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
 import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 // Extensions

@@ -5,7 +5,6 @@ import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/I
 import { UUPSUpgradeable } from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {
     ERC2771ContextUpgradeable,
-    ContextUpgradeable
 } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
@@ -21,7 +20,6 @@ import {
     IdentityRegistryImplementationNotSet,
     IdentityRegistryStorageImplementationNotSet,
     InvalidImplementationInterface,
-    SystemAccessManagerImplementationNotSet,
     SystemAlreadyBootstrapped,
     TokenAccessManagerImplementationNotSet,
     TopicSchemeRegistryImplementationNotSet,
@@ -52,7 +50,6 @@ import { IATKCompliance } from "./compliance/IATKCompliance.sol";
 import { IATKIdentityRegistryStorage } from "./identity-registry-storage/IATKIdentityRegistryStorage.sol";
 import { IATKSystemAddonRegistry } from "./addons/IATKSystemAddonRegistry.sol";
 import { IATKSystemAccessManager } from "./access-manager/IATKSystemAccessManager.sol";
-import { ATKSystemAccessManagerImplementation } from "./access-manager/ATKSystemAccessManagerImplementation.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IATKSystemAccessManaged } from "./access-manager/IATKSystemAccessManaged.sol";
 

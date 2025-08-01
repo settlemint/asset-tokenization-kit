@@ -10,7 +10,6 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 // Interface imports
 import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { IATKTopicSchemeRegistry } from "./IATKTopicSchemeRegistry.sol";
-import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
 import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 // Constants
