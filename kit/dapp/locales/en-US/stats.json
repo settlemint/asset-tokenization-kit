@@ -25,6 +25,11 @@
       "label": "Total transfers",
       "title": "Transfer activity"
     },
+    "totalVolume": {
+      "description": "Total transaction volume over the last {{days}} days",
+      "label": "Total volume",
+      "title": "Transaction volume"
+    },
     "supplyChanges": {
       "description": "Minted and burned assets over the last {{days}} days",
       "title": "Supply changes",

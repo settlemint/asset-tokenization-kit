@@ -21,6 +21,7 @@ import { setYieldSchedule } from "@/orpc/routes/token/routes/mutations/yield/tok
 import { statsSupplyChanges } from "@/orpc/routes/token/routes/stats/supply-changes";
 import { statsTotalSupply } from "@/orpc/routes/token/routes/stats/total-supply";
 import { statsTransfers } from "@/orpc/routes/token/routes/stats/transfers";
+import { statsVolume } from "@/orpc/routes/token/routes/stats/volume";
 import { statsWalletDistribution } from "@/orpc/routes/token/routes/stats/wallet-distribution";
 import { actions } from "@/orpc/routes/token/routes/token.actions";
 import { events } from "@/orpc/routes/token/routes/token.events";
@@ -57,6 +58,7 @@ const routes = {
   statsTotalSupply,
   statsSupplyChanges,
   statsTransfers,
+  statsVolume,
   statsWalletDistribution,
 };
 
