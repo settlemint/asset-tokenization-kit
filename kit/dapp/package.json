@@ -13,7 +13,7 @@
     "build": "bun --bun vite build",
     "shadcn": "bunx --bun shadcn@canary",
     "codegen:settlemint": "settlemint codegen",
-    "codegen:gql-tada": "exit 0",
+    "codegen:gql-tada": "echo \"GraphQL codegen disabled\"",
     "codegen:interface-ids": "bun run ./tools/generate-interface-ids.ts",
     "codegen": "bun run codegen:interface-ids && bun run codegen:settlemint && bun run codegen:gql-tada",
     "format": "prettier --experimental-cli --write .",
