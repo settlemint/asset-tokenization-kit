@@ -22,28 +22,18 @@ import { seo } from "@/config/metadata";
 import type { orpc } from "@/orpc/orpc-client";
 import { Providers } from "@/providers";
 import appCss from "@/styles/app.css?url";
+import { TanstackDevtools } from "@tanstack/react-devtools";
 import { type QueryClient } from "@tanstack/react-query";
+import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import {
   createRootRouteWithContext,
   HeadContent,
   Outlet,
   Scripts,
 } from "@tanstack/react-router";
-import { lazy, Suspense, useMemo, type ReactNode } from "react";
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { useMemo, type ReactNode } from "react";
 import { Toaster } from "sonner";
-
-// Lazy load dev tools to reduce bundle size in production
-const ReactQueryDevtools = lazy(async () =>
-  import("@tanstack/react-query-devtools").then((m) => ({
-    default: m.ReactQueryDevtools,
-  }))
-);
-
-const TanStackRouterDevtools = lazy(async () =>
-  import("@tanstack/react-router-devtools").then((m) => ({
-    default: m.TanStackRouterDevtools,
-  }))
-);
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -181,15 +171,18 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <Providers>
           {children}
           <Toaster richColors />
-          {import.meta.env.DEV && (
-            <Suspense fallback={null}>
-              <TanStackRouterDevtools
-                initialIsOpen={false}
-                position="bottom-right"
-              />
-              <ReactQueryDevtools initialIsOpen={false} />
-            </Suspense>
-          )}
+          <TanstackDevtools
+            plugins={[
+              {
+                name: "Tanstack Query",
+                render: <ReactQueryDevtoolsPanel />,
+              },
+              {
+                name: "Tanstack Router",
+                render: <TanStackRouterDevtoolsPanel />,
+              },
+            ]}
+          />
         </Providers>
         <Scripts />
       </body>
