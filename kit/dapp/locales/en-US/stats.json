@@ -65,6 +65,13 @@
         "description": "{{percentage}}% of bonds have been redeemed",
         "label": "Matured"
       }
+    },
+    "collateralRatio": {
+      "title": "Collateral ratio",
+      "description": "Breakdown of available vs used collateral",
+      "available": "Available collateral",
+      "used": "Used collateral",
+      "ratio": "Collateralization: {{ratio}}%"
     }
   },
   "title": "Statistics",
