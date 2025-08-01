@@ -31,6 +31,7 @@ import { tokenListContract } from "@/orpc/routes/token/routes/token.list.contrac
 import { tokenReadContract } from "@/orpc/routes/token/routes/token.read.contract";
 
 // Stats contracts
+import { statsBondStatusContract } from "@/orpc/routes/token/routes/stats/bond-status.contract";
 import { statsCollateralRatioContract } from "@/orpc/routes/token/routes/stats/collateral-ratio.contract";
 import { statsSupplyChangesContract } from "@/orpc/routes/token/routes/stats/supply-changes.contract";
 import { statsTotalSupplyContract } from "@/orpc/routes/token/routes/stats/total-supply.contract";
@@ -70,6 +71,7 @@ export const tokenContract = {
   holders: tokenHoldersContract,
 
   // Stats
+  statsBondStatus: statsBondStatusContract,
   statsCollateralRatio: statsCollateralRatioContract,
   statsTotalSupply: statsTotalSupplyContract,
   statsSupplyChanges: statsSupplyChangesContract,
