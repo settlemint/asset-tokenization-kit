@@ -198,7 +198,7 @@ chains:
           # -- Type of Provider: web3
           type: web3
           # -- URL for JSON-RPC endpoint
-          url: http://erpc:4000
+          url: http://erpc:4000/settlemint/evm/1337
           # -- Data capabilities this node has
           features: [archive, traces]
 
@@ -295,3 +295,59 @@ extraVolumeMounts: []
 # from killing the node process prematurely. Premature shutdown
 # can lead to data integrity issues
 terminationGracePeriodSeconds: 60
+
+# Subgraph deployment automation
+subgraphDeploy:
+  # -- Enable automated subgraph deployment
+  enabled: true
+  
+  # -- Service account configuration for subgraph deployment
+  serviceAccount:
+    create: true
+  
+  # -- Docker image for subgraph deployment (ATK image with bun and git)
+  image:
+    repository: ghcr.io/settlemint/asset-tokenization-kit
+    tag: "2.0.0-main0d06815fc"
+    pullPolicy: IfNotPresent
+  
+  # -- Curl image for health checks
+  curlImage:
+    repository: docker.io/curlimages/curl
+    tag: 8.15.0
+    pullPolicy: IfNotPresent
+  
+  # -- Job configuration
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 300
+  
+  # -- Contract deployment check configuration
+  contractCheckMaxAttempts: 12  # 2 minutes total wait
+  contractCheckDelay: 10
+  
+  # -- Graph node readiness check configuration
+  graphNodeCheckMaxAttempts: 30
+  graphNodeCheckDelay: 10
+  
+  # -- Log level for deployment
+  logLevel: "info"
+  
+  # -- Workspace size for job
+  workspaceSize: "2Gi"
+  
+  # -- Resource requirements
+  resources:
+    initContainer:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        cpu: 100m
+        memory: 64Mi
+    container:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+      limits:
+        cpu: 2
+        memory: 2Gi

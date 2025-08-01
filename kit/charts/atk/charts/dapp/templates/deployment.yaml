@@ -71,17 +71,33 @@ spec:
               connect_timeout={{ .Values.initContainer.graphQLCheck.connectTimeoutSeconds | default 5 }}
               max_time={{ .Values.initContainer.graphQLCheck.timeoutSeconds | default 10 }}
 
-              echo "Waiting for GraphQL endpoint at $url to be ready..."
+              echo "Waiting for GraphQL endpoint at $url to be ready and synced..."
               until [ "$attempts" -ge "$max_attempts" ]
               do
-                curl --fail --silent --show-error --connect-timeout "$connect_timeout" --max-time "$max_time" \
+                response=$(curl --fail --silent --show-error --connect-timeout "$connect_timeout" --max-time "$max_time" \
                   -X POST -H "Content-Type: application/json" --data "$query" \
-                  "$url" \
-                  | grep -q -v '"errors"' && \
-                  echo "GraphQL endpoint $url is ready." && exit 0
+                  "$url" 2>/dev/null)
+
+                if [ $? -eq 0 ]; then
+                  # Check if response has no errors or only "syncing" related errors
+                  if echo "$response" | grep -q -v '"errors"'; then
+                    # No errors - GraphQL endpoint is working
+                    echo "✅ GraphQL endpoint $url is ready."
+                    exit 0
+                  elif echo "$response" | grep -q "has not started syncing yet\|wait.*ingest.*blocks\|still syncing"; then
+                    # Expected "syncing" errors - endpoint is working, subgraph is just starting
+                    echo "✅ GraphQL endpoint is ready (subgraph is syncing, which is expected)"
+                    exit 0
+                  else
+                    # Other errors - still not ready
+                    echo "GraphQL endpoint has errors (attempt $attempts/$max_attempts): $response"
+                  fi
+                else
+                  echo "GraphQL endpoint not reachable (attempt $attempts/$max_attempts)..."
+                fi
 
                 attempts=$((attempts+1))
-                echo "GraphQL endpoint not ready (attempt $attempts/$max_attempts). Retrying in ${delay}s..."
+                echo "Retrying in ${delay}s..."
                 sleep "$delay"
               done
               echo "Error: GraphQL endpoint $url did not become ready after $max_attempts attempts."
