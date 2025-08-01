@@ -107,9 +107,9 @@ hasura:
 portal:
   image:
     pullSecrets:
-      - image-pull-secret-docker
-      - image-pull-secret-ghcr
-      - image-pull-secret-harbor
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
 
 support:
   ingress-nginx:
