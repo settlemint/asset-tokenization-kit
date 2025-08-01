@@ -92,12 +92,15 @@ contract ATKBondTest is AbstractATKAssetTest {
                 address(fixedYieldScheduleFactoryImpl),
                 abi.encodeWithSelector(
                     ATKFixedYieldScheduleFactoryImplementation.initialize.selector,
-                    address(systemUtils.system()),
-                    platformAdmin
+                    address(systemUtils.systemAccessManager()),
+                    address(systemUtils.system())
                 )
             )
         );
         vm.label(address(fixedYieldScheduleFactory), "Yield Schedule Factory");
+
+        // to be able to create yield schedules
+        systemUtils.systemAccessManager().grantRole(ATKPeopleRoles.ADDON_MANAGER_ROLE, owner);
 
         vm.stopPrank();
 
