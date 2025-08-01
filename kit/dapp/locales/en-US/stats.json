@@ -43,6 +43,28 @@
       "title": "Wallet distribution",
       "description": "Amount of holders vs the amounts they hold",
       "holders": "Number of Wallets"
+    },
+    "bondStatus": {
+      "title": "Bond Status",
+      "notBond": "This asset is not a bond",
+      "notAvailable": "Bond status not available",
+      "completed": "Completed",
+      "remaining": "Remaining",
+      "issuing": {
+        "title": "Bond Issuance",
+        "description": "{{percentage}}% of bonds have been issued",
+        "label": "Issuing"
+      },
+      "active": {
+        "title": "Redemption Coverage",
+        "description": "{{percentage}}% of underlying assets available",
+        "label": "Active"
+      },
+      "matured": {
+        "title": "Bond Redemption",
+        "description": "{{percentage}}% of bonds have been redeemed",
+        "label": "Matured"
+      }
     }
   },
   "title": "Statistics",
