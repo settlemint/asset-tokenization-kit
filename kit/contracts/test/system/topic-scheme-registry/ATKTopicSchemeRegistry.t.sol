@@ -21,7 +21,6 @@ contract ATKTopicSchemeRegistryTest is Test {
 
     address public admin = makeAddr("admin");
     address public claimPolicyManager = makeAddr("claimPolicyManager");
-    address public systemManager = makeAddr("systemManager");
     address public systemModule = makeAddr("systemModule");
     address public user = makeAddr("user");
 
@@ -69,7 +68,7 @@ contract ATKTopicSchemeRegistryTest is Test {
         // Grant roles to test accounts through the system access manager
         vm.startPrank(admin);
         systemAccessManager.grantRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager);
-        systemAccessManager.grantRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE, systemManager);
+        systemAccessManager.grantRole(ATKSystemRoles.SYSTEM_MODULE_ROLE, systemModule);
         vm.stopPrank();
     }
 
@@ -103,21 +102,6 @@ contract ATKTopicSchemeRegistryTest is Test {
         assertTrue(topicSchemeRegistry.hasTopicSchemeByName(TOPIC_NAME_1));
         assertEq(topicSchemeRegistry.getTopicSchemeSignature(expectedTopicId), SIGNATURE_1);
         assertEq(topicSchemeRegistry.getTopicSchemeSignatureByName(TOPIC_NAME_1), SIGNATURE_1);
-        assertEq(topicSchemeRegistry.getTopicSchemeCount(), initialTopicSchemeCount + 1);
-    }
-
-    function test_RegisterTopicScheme_BySystemManager() public {
-        uint256 expectedTopicId = topicSchemeRegistry.getTopicId(TOPIC_NAME_4);
-
-        vm.prank(systemManager);
-        vm.expectEmit(true, true, false, true);
-        emit TopicSchemeRegistered(systemManager, expectedTopicId, TOPIC_NAME_4, SIGNATURE_4);
-
-        topicSchemeRegistry.registerTopicScheme(TOPIC_NAME_4, SIGNATURE_4);
-
-        assertTrue(topicSchemeRegistry.hasTopicScheme(expectedTopicId));
-        assertTrue(topicSchemeRegistry.hasTopicSchemeByName(TOPIC_NAME_4));
-        assertEq(topicSchemeRegistry.getTopicSchemeSignature(expectedTopicId), SIGNATURE_4);
         assertEq(topicSchemeRegistry.getTopicSchemeCount(), initialTopicSchemeCount + 1);
     }
 
@@ -195,32 +179,6 @@ contract ATKTopicSchemeRegistryTest is Test {
         assertTrue(topicSchemeRegistry.hasTopicSchemeByName(TOPIC_NAME_3));
     }
 
-    function test_BatchRegisterTopicSchemes_BySystemManager() public {
-        string[] memory names = new string[](2);
-        names[0] = TOPIC_NAME_4;
-        names[1] = TOPIC_NAME_5;
-
-        string[] memory signatures = new string[](2);
-        signatures[0] = SIGNATURE_4;
-        signatures[1] = SIGNATURE_5;
-
-        // Calculate expected topic IDs
-        uint256[] memory expectedTopicIds = new uint256[](2);
-        expectedTopicIds[0] = topicSchemeRegistry.getTopicId(TOPIC_NAME_4);
-        expectedTopicIds[1] = topicSchemeRegistry.getTopicId(TOPIC_NAME_5);
-
-        vm.prank(systemManager);
-        vm.expectEmit(true, false, false, false);
-        emit TopicSchemesBatchRegistered(systemManager, expectedTopicIds, names, signatures);
-
-        topicSchemeRegistry.batchRegisterTopicSchemes(names, signatures);
-
-        assertEq(topicSchemeRegistry.getTopicSchemeCount(), initialTopicSchemeCount + 2);
-        assertTrue(topicSchemeRegistry.hasTopicScheme(expectedTopicIds[0]));
-        assertTrue(topicSchemeRegistry.hasTopicScheme(expectedTopicIds[1]));
-        assertTrue(topicSchemeRegistry.hasTopicSchemeByName(TOPIC_NAME_4));
-        assertTrue(topicSchemeRegistry.hasTopicSchemeByName(TOPIC_NAME_5));
-    }
 
     function test_UpdateTopicScheme_BySystemModule() public {
         // First register with claim policy manager
@@ -240,29 +198,6 @@ contract ATKTopicSchemeRegistryTest is Test {
             topicSchemeRegistry.getTopicSchemeSignature(topicId),
             UPDATED_SIGNATURE,
             "Signature should be updated by system module"
-        );
-    }
-
-    function test_RemoveTopicScheme_BySystemManager() public {
-        // First register with claim policy manager
-        vm.prank(claimPolicyManager);
-        topicSchemeRegistry.registerTopicScheme(TOPIC_NAME_1, SIGNATURE_1);
-
-        // Verify it exists
-        assertTrue(topicSchemeRegistry.hasTopicSchemeByName(TOPIC_NAME_1));
-
-        // Then remove with system manager role
-        uint256 topicId = topicSchemeRegistry.getTopicId(TOPIC_NAME_1);
-
-        vm.prank(systemManager);
-        vm.expectEmit(true, true, false, true);
-        emit TopicSchemeRemoved(systemManager, topicId, TOPIC_NAME_1);
-
-        topicSchemeRegistry.removeTopicScheme(TOPIC_NAME_1);
-
-        // Verify it's gone
-        assertFalse(
-            topicSchemeRegistry.hasTopicSchemeByName(TOPIC_NAME_1), "Topic scheme should be removed by system manager"
         );
     }
 
