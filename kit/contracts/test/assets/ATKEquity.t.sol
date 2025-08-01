@@ -60,8 +60,6 @@ contract ATKEquityTest is AbstractATKAssetTest {
             )
         );
 
-        // Grant registrar role to owner so that he can create the equity
-        IAccessControl(address(equityFactory)).grantRole(ATKPeopleRoles.TOKEN_MANAGER_ROLE, owner);
         vm.stopPrank();
 
         // Initialize identities
