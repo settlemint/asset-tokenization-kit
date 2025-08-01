@@ -64,6 +64,12 @@ export function safeParse<T extends z.ZodType>(
   const result = schema.safeParse(value);
 
   if (!result.success) {
+    if (process.env.NODE_ENV === "test") {
+      // In test environment, throw a simple error without prettified output
+      throw new Error(
+        `Validation failed with error(s). Check logs for details.`
+      );
+    }
     logger.error(z.prettifyError(result.error));
     // Throw a generic error to avoid exposing sensitive validation details
     throw new Error(`Validation failed with error(s). Check logs for details.`);

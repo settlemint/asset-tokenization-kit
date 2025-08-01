@@ -1,6 +1,7 @@
 import { BarChartComponent } from "@/components/charts/bar-chart";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
+import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
@@ -69,8 +70,7 @@ export function AssetWalletDistributionChart({
     orpc.token.statsWalletDistribution.queryOptions({
       input: { tokenAddress: assetAddress },
       select: selectTransform,
-      staleTime: 5 * 60 * 1000, // 5 minutes - reduce API calls
-      gcTime: 10 * 60 * 1000, // 10 minutes - cache retention
+      ...CHART_QUERY_OPTIONS,
     })
   );
 
