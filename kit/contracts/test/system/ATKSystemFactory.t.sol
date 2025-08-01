@@ -23,6 +23,7 @@ import {
     ComplianceModuleRegistryImplementationNotSet,
     SystemAccessManagerImplementationNotSet
 } from "../../contracts/system/ATKSystemErrors.sol";
+import { IATKSystemAccessManaged } from "../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
 
 // Implementations for testing
 import { ATKIdentityRegistryStorageImplementation } from
@@ -444,8 +445,8 @@ contract ATKSystemFactoryTest is Test {
         assertEq(factory.getSystemAtIndex(0), systemAddress);
 
         // Verify the created system has correct properties
-        IAccessControl system = IAccessControl(systemAddress);
-        assertTrue(system.hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
+        IATKSystemAccessManaged system = IATKSystemAccessManaged(systemAddress);
+        assertTrue(system.hasSystemRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
     }
 
     function test_CreateMultipleSystems() public {
@@ -463,10 +464,10 @@ contract ATKSystemFactoryTest is Test {
         assertNotEq(system1, system2);
 
         // Verify each system has correct admin
-        IAccessControl smartSystem1 = IAccessControl(system1);
-        IAccessControl smartSystem2 = IAccessControl(system2);
-        assertTrue(smartSystem1.hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, user1));
-        assertTrue(smartSystem2.hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, user2));
+        IATKSystemAccessManaged smartSystem1 = IATKSystemAccessManaged(system1);
+        IATKSystemAccessManaged smartSystem2 = IATKSystemAccessManaged(system2);
+        assertTrue(smartSystem1.hasSystemRole(ATKRoles.DEFAULT_ADMIN_ROLE, user1));
+        assertTrue(smartSystem2.hasSystemRole(ATKRoles.DEFAULT_ADMIN_ROLE, user2));
     }
 
     function test_GetSystemCount() public {
