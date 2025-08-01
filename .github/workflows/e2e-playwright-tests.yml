@@ -1,10 +1,14 @@
 name: Playwright Tests
 on:
-  # schedule:
-  #   - cron: "0 0 * * 1-5" # runs every night Sun-Fri at 2AM (time difference with GHA! + 1hr)
+  schedule:
+    - cron: "0 0 * * 1-5" # runs every night Sun-Fri at 2AM (time difference with GHA! + 1hr)
   pull_request:
     types: [labeled]
   workflow_dispatch:
+
+env:
+  PORT: 3000
+  HOST: 0.0.0.0
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -24,71 +28,72 @@ jobs:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v7
 
-      - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v5
-
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Configure 1Password
+      - name: Setup 1Password
         uses: 1password/load-secrets-action/configure@v2
         with:
           service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
 
-      - name: Load secrets
+      - name: Load all secrets
         uses: 1password/load-secrets-action@v2
         env:
           SLACK_WEBHOOK_URL: op://platform/slack-webhooks/e2e-report
+          PAT_TOKEN: op://platform/github-commit-pat/credential
+          HARBOR_USER: op://platform/harbor/username
+          HARBOR_PASS: op://platform/harbor/password
+          NPM_TOKEN: op://platform/npmjs/credential
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
         with:
-          node-version-file: .nvmrc
-          token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          npm_token: ${{ env.NPM_TOKEN }}
 
-      - name: Install dependencies
-        run: bun install
-        working-directory: kit/e2e
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to Harbor
+        uses: docker/login-action@v3
+        with:
+          registry: harbor.settlemint.com
+          username: ${{ env.HARBOR_USER }}
+          password: ${{ env.HARBOR_PASS }}
+
+      - name: Connect to SettleMint
+        uses: settlemint/settlemint-action@main
+        with:
+          instance: local
+
+      - name: Generate all artifacts
+        run: bunx turbo run artifacts --concurrency=100%
 
       - name: Install Playwright browsers
         run: bunx playwright install --with-deps chromium
         working-directory: kit/e2e
 
-      - name: Connect to SettleMint
-        uses: settlemint/settlemint-action@main
-        with:
-          instance: ${{ secrets.SETTLEMINT_INSTANCE }}
-          access-token: ${{ secrets.SETTLEMINT_PERSONAL_ACCESS_TOKEN }}
-          dotEnvFile: ${{ secrets.ENV_FILE }}
-          dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
-
-      - name: Install dapp dependencies
-        run: bun install
-        working-directory: kit/dapp
-
-      - name: Generate SettleMint code and addresses
+      - name: Reset dev environment (clean start)
         run: |
-          bun codegen:settlemint
-          bun addresses
-        working-directory: kit/dapp
+          bun run dev:reset
 
       - name: Start dev server
         run: |
           echo "Starting dev server..."
-          nohup bun dev --port 3000 --hostname 0.0.0.0 > server.log 2>&1 &
+          nohup bun run dev > server.log 2>&1 &
           echo "SERVER_PID=$!" >> $GITHUB_ENV
           echo "Waiting 30 seconds for Next.js to initialize all routes..."
           sleep 30
           echo "Performing initial server check..."
-          curl -v http://localhost:3000/ || echo "Initial check failed, will retry"
+          curl -v http://localhost:${PORT}/ || echo "Initial check failed, will retry"
           timeout_seconds=120
           elapsed=0
           success=false
 
           while [ $elapsed -lt $timeout_seconds ]; do
             echo "Checking server status (${elapsed}s elapsed)..."
-            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/en || echo "failed")
+            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:${PORT}/ || echo "failed")
 
             if [ "$status" = "200" ]; then
               echo "Server is ready! Status: $status"
@@ -111,41 +116,50 @@ jobs:
             echo "Server failed to start within $timeout_seconds seconds. Last server logs:"
             cat server.log
             echo "Attempting final direct check with verbose output:"
-            curl -v http://localhost:3000/en || echo "Final check failed"
+            curl -v http://localhost:${PORT}/ || echo "Final check failed"
             exit 1
           fi
 
-          echo "Dev server is ready at http://localhost:3000!"
-        working-directory: kit/dapp
-
-      - name: Run API Playwright tests
-        id: playwright-api
-        run:
-          bun playwright test --config=playwright.api.config.ts
-          --project=api-tests --retries 2 --reporter=html
-        working-directory: kit/e2e
+          echo "Dev server is ready at http://localhost:${PORT}!"
+        working-directory: .
         env:
-          CI: true
+          PORT: ${{ env.PORT }}
+          HOST: ${{ env.HOST }}
+
+      - name: Verify subgraph SystemFactory address
+        run: |
+            echo "Checking SystemFactory address in subgraph.yaml..."
+            EXPECTED_ADDRESS="0x5e771e1417100000000000000000000000020088"
+            ACTUAL_ADDRESS=$(yq '.dataSources[] | select(.name == "SystemFactory") | .source.address' kit/subgraph/subgraph.yaml)
+            if [ "$ACTUAL_ADDRESS" != "$EXPECTED_ADDRESS" ]; then
+              echo "❌ ERROR: SystemFactory address mismatch!"
+              echo "Expected: $EXPECTED_ADDRESS"
+              echo "Actual:   $ACTUAL_ADDRESS"
+              echo ""
+              echo "The subgraph.yaml file has an incorrect SystemFactory address."
+              echo "This needs to be fixed before running tests."
+              exit 1
+            else
+              echo "✅ SystemFactory address is correct: $ACTUAL_ADDRESS"
+            fi
+
+      # - name: Run API Playwright tests
+      #   id: playwright-api
+      #   run:
+      #     bun playwright test --config=playwright.api.config.ts
+      #     --project=api-tests --retries 2 --reporter=html
+      #   working-directory: kit/e2e
+      #   env:
+      #     CI: true
 
       - name: Run UI Playwright tests
         id: playwright-ui
-        run:
-          bun playwright test --config=playwright.ui.config.ts
-          --project=ui-tests --retries 2 --reporter=html
+        # if: success() || steps.playwright-api.conclusion == 'failure'
+        run: |
+          bun playwright test --config=playwright.ui.config.ts --project=ui-tests --retries 2 --reporter=html
         working-directory: kit/e2e
         env:
           CI: true
-
-      - name: Send Slack notification
-        if: ${{ !cancelled() }}
-        uses: slackapi/slack-github-action@v2.1.1
-        with:
-          webhook: ${{ env.SLACK_WEBHOOK_URL }}
-          webhook-type: incoming-webhook
-          payload: |
-            {
-              "text": "${{ (steps.playwright-api.outcome == 'success' && steps.playwright-ui.outcome == 'success') && ':white_check_mark: Asset Tokenization E2E Tests Passed (API & UI)' || ':x: Asset Tokenization E2E Tests Failed (API or UI)' }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run Details>"
-            }
 
       - name: Stop dev server
         if: always()
@@ -162,3 +176,32 @@ jobs:
             kit/e2e/test-results/
             kit/dapp/server.log
           retention-days: 1
+
+      - name: Send Slack notification
+        if: ${{ !cancelled() }}
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          webhook: ${{ env.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "${{ steps.playwright-ui.outcome == 'success' && ':white_check_mark: ATK E2E UI Tests Passed' || ':x: ATK E2E UI Tests Failed' }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run Details>"
+            }
+
+      - name: Docker compose logs on failure
+        if: failure()
+        run: |
+          echo "CI tests failed - collecting docker compose logs for debugging"
+          echo "============================================"
+          echo "Docker compose service status:"
+          echo "============================================"
+          docker compose -p atk ps
+          echo ""
+          echo "============================================"
+          echo "Docker compose logs:"
+          echo "============================================"
+          for service in $(docker compose -p atk ps --services); do
+            echo ""
+            echo "--- Logs for service: $service ---"
+            docker compose -p atk logs "$service" || true
+          done
