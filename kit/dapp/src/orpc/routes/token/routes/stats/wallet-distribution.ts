@@ -79,27 +79,22 @@ export const statsWalletDistribution = tokenRouter.token.statsWalletDistribution
           tokenId: input.tokenAddress.toLowerCase(),
         },
         output: TokenDistributionStatsResponseSchema,
-        error: context.t("tokens:api.stats.walletDistribution.messages.failed"),
       }
     );
 
     const stats = response.tokenDistributionStatsState;
 
     // Convert subgraph segments to API response format (handles null case with ??)
+    const buckets = [
+      { range: "0-2%", count: stats?.balancesCountSegment1 ?? 0 },
+      { range: "2-10%", count: stats?.balancesCountSegment2 ?? 0 },
+      { range: "10-20%", count: stats?.balancesCountSegment3 ?? 0 },
+      { range: "20-40%", count: stats?.balancesCountSegment4 ?? 0 },
+      { range: "40-100%", count: stats?.balancesCountSegment5 ?? 0 },
+    ];
+
     return {
-      buckets: [
-        { range: "0-2%", count: stats?.balancesCountSegment1 ?? 0 },
-        { range: "2-10%", count: stats?.balancesCountSegment2 ?? 0 },
-        { range: "10-20%", count: stats?.balancesCountSegment3 ?? 0 },
-        { range: "20-40%", count: stats?.balancesCountSegment4 ?? 0 },
-        { range: "40-100%", count: stats?.balancesCountSegment5 ?? 0 },
-      ],
-      totalHolders: stats
-        ? stats.balancesCountSegment1 +
-          stats.balancesCountSegment2 +
-          stats.balancesCountSegment3 +
-          stats.balancesCountSegment4 +
-          stats.balancesCountSegment5
-        : 0,
+      buckets,
+      totalHolders: buckets.reduce((sum, bucket) => sum + bucket.count, 0),
     };
   });
