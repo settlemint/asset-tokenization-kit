@@ -8,7 +8,7 @@ blockscout-stack:
       blackbox:
         enabled: false
     network:
-      id: 53771311147
+      id: 1337
       name: Asset Tokenization Kit
       shortname: ATK
       currency:
@@ -64,8 +64,8 @@ blockscout-stack:
       BLOCKSCOUT_PROTOCOL: 'https'
     envFromSecret:
       DATABASE_URL: postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable
-      ETHEREUM_JSONRPC_HTTP_URL: http://erpc:4000
-      ETHEREUM_JSONRPC_TRACE_URL: http://erpc:4000
+      ETHEREUM_JSONRPC_HTTP_URL: http://erpc:4000/settlemint/evm/1337
+      ETHEREUM_JSONRPC_TRACE_URL: http://erpc:4000/settlemint/evm/1337
       SECRET_KEY_BASE: atk
   frontend:
     image:

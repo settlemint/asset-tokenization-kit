@@ -12,8 +12,12 @@ export default defineConfig({
     include: ["src/**/*.test.{ts,tsx}"],
     passWithNoTests: true,
     pool: "threads",
-    isolate: true,
+    isolate: false,
     reporters: process.env.CI ? ["dot", "github-actions"] : [],
+    onConsoleLog: process.env.CI ? () => false : undefined,
+    typecheck: {
+      enabled: true,
+    },
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html", "json-summary"],
