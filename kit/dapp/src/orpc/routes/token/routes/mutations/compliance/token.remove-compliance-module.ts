@@ -44,16 +44,12 @@ export const removeComplianceModule = portalRouter.token.removeComplianceModule
       type: verification.verificationType,
     });
 
-    await context.portalClient.mutate(
-      TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION,
-      {
-        address: contract,
-        from: sender.wallet,
-        moduleAddress,
-        ...challengeResponse,
-      },
-      context.t("tokens:api.mutations.compliance.messages.removeFailed")
-    );
+    await context.portalClient.mutate(TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION, {
+      address: contract,
+      from: sender.wallet,
+      moduleAddress,
+      ...challengeResponse,
+    });
 
     // Return updated token data
     return await call(read, { tokenAddress: contract }, { context });

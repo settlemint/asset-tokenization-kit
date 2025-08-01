@@ -295,8 +295,9 @@ export const CUSTOM_ERRORS = {
     message: "Portal error",
     status: 500,
     data: z.object({
-      operation: z.string(),
-      details: z.string(),
+      document: z.unknown(),
+      variables: z.unknown(),
+      responseValidation: z.string().optional(),
     }),
   },
 

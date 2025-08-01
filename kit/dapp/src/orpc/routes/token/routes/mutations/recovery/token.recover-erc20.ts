@@ -50,18 +50,14 @@ export const recoverERC20 = tokenRouter.token.recoverERC20
       type: verification.verificationType,
     });
 
-    await context.portalClient.mutate(
-      TOKEN_RECOVER_ERC20_MUTATION,
-      {
-        address: contract,
-        from: sender.wallet,
-        tokenAddress,
-        recipient,
-        amount: amount.toString(),
-        ...challengeResponse,
-      },
-      context.t("tokens:api.mutations.recovery.messages.recoverERC20Failed")
-    );
+    await context.portalClient.mutate(TOKEN_RECOVER_ERC20_MUTATION, {
+      address: contract,
+      from: sender.wallet,
+      tokenAddress,
+      recipient,
+      amount: amount.toString(),
+      ...challengeResponse,
+    });
 
     // Return updated token data
     return await call(read, { tokenAddress: contract }, { context });

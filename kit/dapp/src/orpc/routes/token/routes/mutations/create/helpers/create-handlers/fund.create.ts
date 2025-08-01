@@ -65,13 +65,9 @@ export const fundCreateHandler = async (
   }
 
   return createToken(input, context, () => {
-    return context.portalClient.mutate(
-      CREATE_FUND_MUTATION,
-      {
-        ...input,
-        ...context.mutationVariables,
-      },
-      "Failed to create fund token"
-    );
+    return context.portalClient.mutate(CREATE_FUND_MUTATION, {
+      ...input,
+      ...context.mutationVariables,
+    });
   });
 };

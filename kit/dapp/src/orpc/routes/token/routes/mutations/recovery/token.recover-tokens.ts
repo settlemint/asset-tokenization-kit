@@ -46,16 +46,12 @@ export const recoverTokens = tokenRouter.token.recoverTokens
       type: verification.verificationType,
     });
 
-    await context.portalClient.mutate(
-      TOKEN_RECOVER_TOKENS_MUTATION,
-      {
-        address: contract,
-        from: sender.wallet,
-        lostWallet,
-        ...challengeResponse,
-      },
-      context.t("tokens:api.mutations.recovery.messages.recoverTokensFailed")
-    );
+    await context.portalClient.mutate(TOKEN_RECOVER_TOKENS_MUTATION, {
+      address: contract,
+      from: sender.wallet,
+      lostWallet,
+      ...challengeResponse,
+    });
 
     // Return updated token data
     return await call(read, { tokenAddress: contract }, { context });

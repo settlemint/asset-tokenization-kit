@@ -45,15 +45,11 @@ export const pause = tokenRouter.token.pause
       type: verification.verificationType,
     });
 
-    await context.portalClient.mutate(
-      TOKEN_PAUSE_MUTATION,
-      {
-        address: contract,
-        from: sender.wallet,
-        ...challengeResponse,
-      },
-      context.t("tokens:actions.pause.messages.failed")
-    );
+    await context.portalClient.mutate(TOKEN_PAUSE_MUTATION, {
+      address: contract,
+      from: sender.wallet,
+      ...challengeResponse,
+    });
 
     // Return the updated token data using the read handler
     return await call(

@@ -144,9 +144,15 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | erpc.config.logLevel | string | `"info"` |  |
 | erpc.config.projects[0].id | string | `"settlemint"` |  |
 | erpc.config.projects[0].upstreams[0].endpoint | string | `"http://besu-node-rpc-1:8545"` |  |
+| erpc.config.projects[0].upstreams[0].evm.chainId | int | `1337` |  |
+| erpc.config.projects[0].upstreams[0].failsafe.timeout.duration | string | `"30s"` |  |
 | erpc.config.projects[0].upstreams[0].id | string | `"besu-node-rpc-1"` |  |
 | erpc.config.projects[0].upstreams[1].endpoint | string | `"http://besu-node-validator-1:8545"` |  |
+| erpc.config.projects[0].upstreams[1].evm.chainId | int | `1337` |  |
+| erpc.config.projects[0].upstreams[1].failsafe.timeout.duration | string | `"30s"` |  |
 | erpc.config.projects[0].upstreams[1].id | string | `"besu-node-validator-1"` |  |
+| erpc.config.server.httpHostV4 | string | `"0.0.0.0"` |  |
+| erpc.config.server.httpPort | int | `4000` |  |
 | erpc.enabled | bool | `true` |  |
 | erpc.image.pullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
 | erpc.image.pullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |

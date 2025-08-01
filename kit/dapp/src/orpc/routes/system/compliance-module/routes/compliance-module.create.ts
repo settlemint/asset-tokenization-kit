@@ -174,8 +174,7 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
         // Execute the mutation
         const transactionHash = await context.portalClient.mutate(
           REGISTER_COMPLIANCE_MODULE_MUTATION,
-          variables,
-          `Failed to register compliance module: ${type}`
+          variables
         );
 
         const implementationName = COMPLIANCE_TYPE_TO_IMPLEMENTATION_NAME[type];
