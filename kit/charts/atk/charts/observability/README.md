@@ -1,8 +1,563 @@
-# observability
+# Observability Stack
 
 ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
-A Helm chart for the observability components
+A Helm chart for deploying a comprehensive observability stack including metrics, logging, tracing, and monitoring for the Asset Tokenization Kit.
+
+## Overview
+
+The Observability Stack provides complete monitoring, logging, and tracing capabilities for the Asset Tokenization Kit. Built on industry-standard tools like Grafana, Loki, Tempo, VictoriaMetrics, and Alloy, it offers real-time insights into system performance, application behavior, and business metrics.
+
+## Key Features
+
+- **Unified Observability**: Metrics, logs, and traces in a single platform
+- **Real-time Monitoring**: Live dashboards and alerting
+- **Advanced Analytics**: Business and technical metrics correlation
+- **Distributed Tracing**: End-to-end request tracing across services
+- **Log Aggregation**: Centralized logging with powerful search capabilities
+- **Custom Dashboards**: Pre-built dashboards for ATK components
+- **Scalable Architecture**: Designed for production workloads
+
+## Architecture
+
+### Core Components
+
+#### Grafana
+- **Visualization Platform**: Primary interface for dashboards and analytics
+- **Multi-datasource**: Connects to metrics, logs, and tracing backends
+- **Alerting**: Rule-based alerting with multiple notification channels
+- **User Management**: Role-based access control and team collaboration
+
+#### VictoriaMetrics
+- **Metrics Storage**: High-performance time-series database
+- **Query Engine**: PromQL-compatible query interface
+- **Data Retention**: Configurable retention policies
+- **Compression**: Efficient data compression and storage
+
+#### Loki
+- **Log Aggregation**: Centralized log collection and storage
+- **Label-based Indexing**: Efficient log querying and filtering
+- **Pattern Recognition**: Automatic log pattern detection
+- **Retention Management**: Configurable log retention policies
+
+#### Tempo
+- **Distributed Tracing**: Trace storage and analysis
+- **Span Analysis**: Detailed request flow visualization
+- **Service Maps**: Automatic service dependency discovery
+- **Performance Analysis**: Latency and error rate tracking
+
+#### Alloy (Grafana Agent)
+- **Data Collection**: Unified agent for metrics, logs, and traces
+- **Service Discovery**: Kubernetes-native service discovery
+- **Data Processing**: Filtering, transformation, and routing
+- **Remote Write**: Efficient data transmission to backends
+
+## Data Collection Strategy
+
+### Metrics Collection
+```yaml
+# Kubernetes cluster metrics
+- Node metrics (CPU, memory, disk, network)
+- Pod metrics (resource usage, restarts, status)
+- Service metrics (request rate, latency, errors)
+- Custom application metrics via Prometheus annotations
+
+# ATK-specific metrics
+- Token transfer rates and volumes
+- Compliance check success/failure rates
+- User activity and session metrics
+- Blockchain synchronization status
+```
+
+### Log Aggregation
+```yaml
+# System logs
+- Kubernetes API server logs
+- Container logs from all pods
+- Ingress access logs
+- Network policy logs
+
+# Application logs
+- DApp frontend logs (user interactions, errors)
+- Portal API logs (business logic, compliance)
+- Graph Node logs (indexing progress, queries)
+- Hasura logs (GraphQL queries, mutations)
+```
+
+### Distributed Tracing
+```yaml
+# End-to-end tracing
+- HTTP request traces across all services
+- Database query traces
+- Blockchain RPC call traces
+- External API call traces
+```
+
+## Configuration
+
+### Alloy Configuration
+```yaml
+alloy:
+  endpoints:
+    internal:
+      prometheus:
+        enabled: true
+        url: "http://metrics:8428/api/v1/write"
+      loki:
+        enabled: true
+        url: "http://logs:3100/loki/api/v1/push"
+      otel:
+        enabled: true
+        url: "http://tempo:4318"
+    
+    external:
+      prometheus:
+        enabled: false
+        url: ""
+        basicAuth:
+          username: ""
+          password: ""
+```
+
+### VictoriaMetrics Configuration
+```yaml
+victoria-metrics-single:
+  server:
+    retentionPeriod: 1  # months
+    persistentVolume:
+      size: "10Gi"
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "512Mi"
+      limits:
+        cpu: "1000m"
+        memory: "2Gi"
+```
+
+### Loki Configuration
+```yaml
+loki:
+  deploymentMode: "SingleBinary"
+  loki:
+    commonConfig:
+      replication_factor: 1
+    
+    limits_config:
+      retention_period: "168h"  # 7 days
+      max_query_parallelism: 2
+      ingestion_rate_mb: 1000
+      ingestion_burst_size_mb: 1000
+    
+    compactor:
+      retention_enabled: true
+      retention_delete_delay: "2h"
+```
+
+### Tempo Configuration
+```yaml
+tempo:
+  tempo:
+    retention: "168h"  # 7 days
+    metricsGenerator:
+      enabled: true
+      remoteWriteUrl: "http://o11y-metrics:8428/api/v1/write"
+    
+    overrides:
+      defaults:
+        ingestion:
+          rate_limit_bytes: 30000000
+          max_traces_per_user: 100000
+        global:
+          max_bytes_per_trace: 20000000
+```
+
+## Dashboards and Visualization
+
+### Pre-built Dashboards
+
+#### ATK Business Metrics
+- **Token Activity**: Transfer volumes, holder counts, compliance rates
+- **User Engagement**: Active users, session duration, feature adoption
+- **Compliance Monitoring**: KYC/AML status, regulatory reporting
+- **Revenue Metrics**: Transaction fees, platform usage costs
+
+#### Infrastructure Monitoring
+- **Kubernetes Cluster**: Node health, resource utilization, pod status
+- **Database Performance**: Query performance, connection pools, storage
+- **Network Analysis**: Ingress traffic, service-to-service communication
+- **Security Events**: Failed authentications, suspicious activities
+
+#### Application Performance
+- **Service Health**: Response times, error rates, throughput
+- **API Performance**: GraphQL query performance, mutation success rates
+- **Frontend Metrics**: Page load times, user interaction tracking
+- **Blockchain Sync**: Block processing speed, RPC performance
+
+### Custom Dashboard Example
+```json
+{
+  "dashboard": {
+    "title": "ATK Token Transfer Monitoring",
+    "panels": [
+      {
+        "title": "Transfer Volume (24h)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(increase(atk_token_transfers_total[24h]))",
+            "legendFormat": "Total Transfers"
+          }
+        ]
+      },
+      {
+        "title": "Transfer Success Rate",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "rate(atk_token_transfers_success_total[5m]) / rate(atk_token_transfers_total[5m]) * 100",
+            "legendFormat": "Success Rate %"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+## Alerting and Notifications
+
+### Critical Alerts
+```yaml
+# System-level alerts
+- Node down or high resource usage
+- Pod crash loops or OOMKilled
+- Database connection failures
+- Storage volume near capacity
+
+# Application alerts
+- High error rates (>5% for 5 minutes)
+- Slow response times (>2s for 5 minutes)
+- Failed compliance checks
+- Blockchain synchronization lag
+
+# Security alerts
+- Suspicious authentication patterns
+- Unexpected network traffic
+- Failed compliance validations
+- Unauthorized access attempts
+```
+
+### Alert Configuration Example
+```yaml
+groups:
+- name: atk-critical
+  rules:
+  - alert: HighErrorRate
+    expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "High error rate detected in {{ $labels.service }}"
+      description: "Error rate is {{ $value | humanizePercentage }} for the last 5 minutes"
+  
+  - alert: DatabaseDown
+    expr: up{job="postgresql"} == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "PostgreSQL database is down"
+      description: "PostgreSQL has been down for more than 1 minute"
+```
+
+## Deployment Patterns
+
+### Single Instance (Development)
+```yaml
+# Minimal resource allocation for development
+grafana:
+  persistence:
+    enabled: false
+    
+loki:
+  singleBinary:
+    replicas: 1
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+
+victoria-metrics-single:
+  server:
+    persistentVolume:
+      size: "5Gi"
+```
+
+### High Availability (Production)
+```yaml
+# Production configuration with redundancy
+grafana:
+  replicas: 2
+  persistence:
+    enabled: true
+    size: "10Gi"
+
+loki:
+  singleBinary:
+    replicas: 3
+    persistence:
+      size: "50Gi"
+
+tempo:
+  replicas: 2
+  persistence:
+    size: "20Gi"
+
+alloy:
+  controller:
+    replicas: 2
+```
+
+## Integration with ATK Components
+
+### Service Discovery
+Alloy automatically discovers ATK services using Kubernetes labels:
+
+```yaml
+discovery.kubernetes "kubernetes_pods" {
+  role = "pod"
+  selectors {
+    role  = "pod"
+    label = "app.kubernetes.io/instance=atk"
+  }
+}
+```
+
+### Metrics Collection
+Services expose metrics via Prometheus annotations:
+
+```yaml
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8080"
+  prometheus.io/path: "/metrics"
+```
+
+### Log Processing
+Alloy processes and enriches logs before forwarding:
+
+```yaml
+# Redact sensitive information
+loki.process "redact_tokens" {
+  stage.replace {
+    expression = "(?i)sm_\\S+_[0-9a-zA-Z]{3}([0-9a-zA-Z]+)"
+    replace = "****"
+  }
+}
+
+# Filter secrets
+loki.secretfilter "secret_filter" {
+  redact_with = "<ALLOY-REDACTED-SECRET:$SECRET_NAME:$SECRET_HASH>"
+}
+```
+
+### Trace Collection
+OpenTelemetry traces from ATK applications:
+
+```yaml
+# OTLP receiver configuration
+otelcol.receiver.otlp "atk_traces" {
+  grpc {
+    endpoint = "0.0.0.0:4317"
+  }
+  http {
+    endpoint = "0.0.0.0:4318"
+  }
+}
+```
+
+## Access Control
+
+### Grafana Authentication
+```yaml
+grafana:
+  adminUser: "settlemint"
+  adminPassword: "secure-password"
+  
+  # LDAP/OAuth integration
+  ldap:
+    enabled: true
+    config: |
+      [[servers]]
+      host = "ldap.company.com"
+      port = 389
+      use_ssl = false
+      start_tls = false
+      bind_dn = "cn=admin,dc=company,dc=com"
+      bind_password = "admin_password"
+      search_filter = "(cn=%s)"
+      search_base_dns = ["dc=company,dc=com"]
+```
+
+### Role-based Access
+```yaml
+# Team configuration
+teams:
+- name: "Platform Team"
+  permissions: ["admin"]
+- name: "Compliance Team"
+  permissions: ["viewer", "compliance-dashboards"]
+- name: "Development Team"
+  permissions: ["editor", "dev-dashboards"]
+```
+
+## Security and Privacy
+
+### Data Protection
+- **Secret Redaction**: Automatic removal of sensitive data from logs
+- **Access Logging**: All dashboard and query access is logged
+- **Data Encryption**: TLS encryption for all internal communication
+- **Retention Policies**: Automatic data cleanup based on compliance requirements
+
+### Network Security
+```yaml
+networkPolicy:
+  enabled: true
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: "atk"
+    ports:
+    - protocol: TCP
+      port: 3000  # Grafana
+  - from:
+    - podSelector: {}
+    ports:
+    - protocol: TCP
+      port: 9090  # Metrics collection
+```
+
+## Troubleshooting
+
+### Common Issues
+
+#### 1. Missing Metrics
+```bash
+# Check Alloy discovery
+kubectl logs -l app.kubernetes.io/name=alloy | grep "discovery"
+
+# Verify service annotations
+kubectl get pods -o yaml | grep -A 5 "prometheus.io"
+
+# Test metrics endpoint
+kubectl exec -it deployment/alloy -- curl http://service:port/metrics
+```
+
+#### 2. Log Ingestion Problems
+```bash
+# Check Loki ingestion
+kubectl logs -l app.kubernetes.io/name=logs | grep "ingester"
+
+# Verify log forwarding
+kubectl logs -l app.kubernetes.io/name=alloy | grep "loki"
+
+# Test log query
+curl -G 'http://loki:3100/loki/api/v1/query' \
+  --data-urlencode 'query={app="dapp"}'
+```
+
+#### 3. Dashboard Loading Issues
+```bash
+# Check Grafana status
+kubectl get pods -l app.kubernetes.io/name=grafana
+
+# Verify datasource connectivity
+kubectl exec -it deployment/grafana -- \
+  curl http://metrics:8428/api/v1/query?query=up
+
+# Check dashboard provisioning
+kubectl logs -l app.kubernetes.io/name=grafana | grep "dashboard"
+```
+
+#### 4. Trace Collection Problems
+```bash
+# Check Tempo ingestion
+kubectl logs -l app.kubernetes.io/name=tempo | grep "ingester"
+
+# Verify OTLP endpoint
+kubectl exec -it deployment/alloy -- \
+  curl -X POST http://tempo:4318/v1/traces
+
+# Test trace query
+curl 'http://tempo:3100/api/traces/trace-id'
+```
+
+### Performance Optimization
+
+#### Metrics Optimization
+```yaml
+# Reduce cardinality
+prometheus.scrape "kubernetes_pods" {
+  metric_relabel_rules = [
+    {
+      source_labels = ["__name__"]
+      regex = "expensive_metric_.*"
+      action = "drop"
+    }
+  ]
+}
+
+# Increase scrape intervals for less critical metrics
+scrape_interval = "30s"
+```
+
+#### Log Optimization
+```yaml
+# Implement log sampling
+loki.process "sample_logs" {
+  stage.sampling {
+    rate = 0.1  # Keep 10% of logs
+  }
+}
+
+# Compress logs
+loki:
+  loki:
+    ingester:
+      chunk_encoding: "snappy"
+```
+
+## External Integration
+
+### Cloud Provider Integration
+```yaml
+# External endpoints for cloud monitoring
+alloy:
+  endpoints:
+    external:
+      prometheus:
+        enabled: true
+        url: "https://prometheus-us-central1.grafana.net/api/prom/push"
+        basicAuth:
+          username: "123456"
+          password: "your-api-key"
+      
+      loki:
+        enabled: true
+        url: "https://logs-prod-us-central1.grafana.net/loki/api/v1/push"
+        basicAuth:
+          username: "987654"
+          password: "your-api-key"
+```
+
+### Compliance Reporting
+- **Audit Trails**: Complete audit logs for regulatory compliance
+- **Data Retention**: Configurable retention based on legal requirements
+- **Export Capabilities**: Scheduled exports for compliance reporting
+- **Access Monitoring**: Track all data access for security audits
 
 ## Maintainers
 
