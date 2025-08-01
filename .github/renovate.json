@@ -21,7 +21,12 @@
   ],
   "labels": ["dependencies"],
   "rebaseWhen": "conflicted",
-  "postUpdateOptions": ["bunInstall"],
+  "allowedCommands": ["^bun clean$"],
+  "postUpgradeTasks": {
+    "commands": ["bun clean"],
+    "fileFilters": ["bun.lock"],
+    "executionMode": "update"
+  },
   "packageRules": [
     {
       "groupName": "SettleMint SDK",
