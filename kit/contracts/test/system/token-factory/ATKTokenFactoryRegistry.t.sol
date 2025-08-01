@@ -41,7 +41,7 @@ contract MockTokenFactory is IATKTokenFactory, IWithTypeIdentifier {
         return address(0);
     }
 
-    function hasSystemRole(bytes32 role, address account) external pure override returns (bool) {
+    function hasSystemRole(bytes32, address) external pure override returns (bool) {
         return true;
     }
 
@@ -75,7 +75,7 @@ contract MockInvalidTokenFactory is IATKTokenFactory {
         return address(0);
     }
 
-    function hasSystemRole(bytes32 role, address account) external pure override returns (bool) {
+    function hasSystemRole(bytes32, address) external pure override returns (bool) {
         return true;
     }
 

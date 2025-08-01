@@ -13,6 +13,8 @@ import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../../contracts/sys
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ATKSystemAccessManagerImplementation } from
     "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
+import { IATKTrustedIssuersRegistry } from "../../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
+import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
 
 // Mock claim issuer for testing
 contract MockClaimIssuer {
@@ -24,7 +26,7 @@ contract MockClaimIssuer {
 
 contract ATKTrustedIssuersRegistryImplementationTest is Test {
     ATKTrustedIssuersRegistryImplementation public implementation;
-    IERC3643TrustedIssuersRegistry public registry;
+    IATKTrustedIssuersRegistry public registry;
     ATKSystemAccessManagerImplementation public systemAccessManager;
 
     // Test addresses
@@ -73,16 +75,12 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         // Deploy proxy with initialization data
         bytes memory initData = abi.encodeWithSelector(implementation.initialize.selector, address(systemAccessManager));
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
-        registry = IERC3643TrustedIssuersRegistry(address(proxy));
-
-        // Set the system access manager
-        vm.prank(admin);
-        // System access manager is set during initialization
+        registry = IATKTrustedIssuersRegistry(address(proxy));
     }
 
     function test_InitializeSuccess() public view {
         // Verify admin has both roles
-        assertTrue(IAccessControl(address(registry)).hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(registry.hasSystemRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
         // Admin should not directly have claim policy manager role on the registry itself
         // The role is managed through the system access manager
 
@@ -393,7 +391,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         // Test ERC165 support
         assertTrue(implementation.supportsInterface(type(IERC165).interfaceId));
         assertTrue(implementation.supportsInterface(type(IERC3643TrustedIssuersRegistry).interfaceId));
-        assertTrue(implementation.supportsInterface(type(IAccessControl).interfaceId));
+        assertTrue(implementation.supportsInterface(type(IATKSystemAccessManaged).interfaceId));
 
         // Test unsupported interface
         assertFalse(implementation.supportsInterface(0x12345678));
