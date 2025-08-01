@@ -1,6 +1,7 @@
 import { batchAddToRegistry } from "./actions/add-to-registry";
 import { addTrustedIssuer } from "./actions/add-trusted-issuer";
 import { grantSystemRole } from "./actions/grant-system-role";
+import { grantSystemRoles } from "./actions/grant-system-roles";
 import { issueVerificationClaims } from "./actions/issue-verification-claims";
 import { recoverIdentity } from "./actions/recover-identity";
 import { setGlobalBlockedAddresses } from "./actions/set-global-blocked-addressess";
@@ -128,6 +129,15 @@ async function main() {
   await setGlobalBlockedAddresses([maliciousInvestor.address]);
   await setGlobalBlockedIdentities([await maliciousInvestor.getIdentity()]);
 
+  console.log("\n=== Setting up assets... ===\n");
+
+  // directly add addon role as well because we also need this for yield schedules
+  await grantSystemRoles(
+    owner,
+    [ATKRoles.people.tokenManagerRole, ATKRoles.people.addonManagerRole],
+    owner.address
+  );
+
   // Create the assets
   const deposit = await createDeposit();
   const bond = await createBond(deposit);
@@ -135,7 +145,7 @@ async function main() {
   const fund = await createFund();
   const stableCoin = await createStableCoin();
 
-  // Create the addons
+  console.log("\n=== Setting up addons... ===\n");
 
   // Addon - Airdrop
   const distribution = createDistribution({
