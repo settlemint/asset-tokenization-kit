@@ -23,102 +23,42 @@ global:
 
 
 imagePullCredentials:
-  registries:
-    # -- lowercase, no points or special caracters unique identifier for the registry, harbor, ghcr and docker have special meaning, but you can add more
-    harbor:
-      # -- Enable this if you want this chart to create an image pull secret for you (harbor is the default registry for the platform)
-      enabled: false
-      # -- The registry hosting the packages, e.g docker.io or ghcr.io
-      registryUrl: 'harbor.settlemint.com'
-      # -- The username to access the registry
-      username: ''
-      # -- The password or access token to access the registry
-      password: ''
-      # -- The email to access the registry
-      email: ''
-    # -- lowercase, no points or special caracters unique identifier for the registry, harbor, ghcr and docker have special meaning, but you can add more
-    ghcr:
-      # -- Enable this if you want this chart to create an image pull secret for you
-      enabled: false
-      # -- The registry hosting the packages, e.g docker.io or ghcr.io
-      registryUrl: 'ghcr.io'
-      # -- The username to access the registry
-      username: ''
-      # -- The password or access token to access the registry
-      password: ''
-      # -- The email to access the registry
-      email: ''
-    # -- lowercase, no points or special caracters unique identifier for the registry, harbor, ghcr and docker have special meaning, but you can add more
-    docker:
-      # -- Enable this if you want this chart to create an image pull secret for you
-      enabled: false
-      # -- The registry hosting the packages, e.g docker.io or ghcr.io
-      registryUrl: 'docker.io'
-      # -- The username to access the registry
-      username: ''
-      # -- The password or access token to access the registry
-      password: ''
-      # -- The email to access the registry
-      email: ''
+  registries: {}
 
 besu-network:
   enabled: true
   besu-validator-1:
     enabled: true
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
     storage:
       sizeLimit: "5Gi"
       pvcSizeLimit: "5Gi"
     resources: {}
   besu-validator-2:
     enabled: false
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
     storage:
       sizeLimit: "5Gi"
       pvcSizeLimit: "5Gi"
     resources: {}
   besu-validator-3:
     enabled: false
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
     storage:
       sizeLimit: "5Gi"
       pvcSizeLimit: "5Gi"
     resources: {}
   besu-validator-4:
     enabled: false
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
     storage:
       sizeLimit: "5Gi"
       pvcSizeLimit: "5Gi"
     resources: {}
   besu-rpc-1:
     enabled: true
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
     storage:
       sizeLimit: "5Gi"
       pvcSizeLimit: "5Gi"
     resources: {}
   besu-rpc-2:
     enabled: false
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
     storage:
       sizeLimit: "5Gi"
       pvcSizeLimit: "5Gi"
@@ -131,11 +71,6 @@ besu-network:
 erpc:
   enabled: true
   resources: {}
-  image:
-    pullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
   ingress:
     enabled: true
     className: "atk-nginx"
@@ -192,10 +127,6 @@ erpc:
 blockscout:
   enabled: true
   blockscout-stack:
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
     podAnnotations:
       prometheus.io/scrape: "true"
       prometheus.io/port: "4000"
@@ -228,10 +159,6 @@ blockscout:
 
 graph-node:
   enabled: true
-  imagePullSecrets:
-    - name: image-pull-secret-docker
-    - name: image-pull-secret-ghcr
-    - name: image-pull-secret-harbor
   podAnnotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8040"
@@ -241,11 +168,6 @@ hasura:
   enabled: true
   graphql-engine:
     replicas: 1
-    global:
-      imagePullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
     ingress:
       hostName: "hasura.k8s.orb.local"
     labels:
@@ -255,11 +177,6 @@ hasura:
 
 portal:
   enabled: true
-  image:
-    pullSecrets:
-      - image-pull-secret-docker
-      - image-pull-secret-ghcr
-      - image-pull-secret-harbor
   podLabels:
     app.kubernetes.io/component: portal
   podAnnotations:
@@ -273,10 +190,6 @@ support:
   # https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
   ingress-nginx:
     replicaCount: 1
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
     controller:
       resources: {}
   # https://github.com/stakater/Reloader/tree/master/deployments/kubernetes/chart/reloader
@@ -302,11 +215,6 @@ support:
     commonLabels:
       kots.io/app-slug: settlemint-atk
       app.kubernetes.io/managed-by: helm
-    image:
-      pullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
     auth:
       enabled: true
       password: "atk"
@@ -327,27 +235,14 @@ observability:
   # https://github.com/kubernetes-sigs/metrics-server/blob/master/charts/metrics-server/values.yaml
   metrics-server:
     enabled: false
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
     resources: {}
 
   # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-state-metrics/values.yaml
   kube-state-metrics:
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
     resources: {}
 
   # https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metrics-single/values.yaml
   victoria-metrics-single:
-    global:
-      imagePullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
     server:
       persistentVolume:
         storageClass: ""
@@ -356,69 +251,39 @@ observability:
 
   # https://github.com/grafana/loki/blob/main/production/helm/loki/values.yaml
   loki:
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
-  singleBinary:
-    persistence:
-      size: 10Gi
-    resources: {}
-    extraEnv: {}
-      # Keep a little bit lower than memory limits
-      # - name: GOMEMLIMIT
-      #   value: 3750MiB
+    singleBinary:
+      persistence:
+        size: 10Gi
+      resources: {}
+      extraEnv: {}
+        # Keep a little bit lower than memory limits
+        # - name: GOMEMLIMIT
+        #   value: 3750MiB
 
   # https://github.com/grafana/alloy/blob/main/operations/helm/charts/alloy/values.yaml
   alloy:
-    global:
-      image:
-        pullSecrets:
-          - name: image-pull-secret-docker
-          - name: image-pull-secret-ghcr
-          - name: image-pull-secret-harbor
     alloy:
       resources: {}
 
   alertmanager:
     alertmanager:
-      global:
-        imagePullSecrets:
-          - name: image-pull-secret-docker
-          - name: image-pull-secret-ghcr
-          - name: image-pull-secret-harbor
+      resources: {}
   prometheus-stack:
-    global:
-      imagePullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
+    prometheusOperator:
+      resources: {}
   grafana:
-    global:
-      imagePullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
     ingress:
       hosts:
         - grafana.k8s.orb.local
     adminUser: settlemint
     adminPassword: atk
   tempo:
-    global:
-      imagePullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
+    server:
+      resources: {}
 
 # Transaction Signer Configuration
 txsigner:
   enabled: true
-  image:
-    pullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
   # Configuration for the txsigner subchart
   config:
     mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
