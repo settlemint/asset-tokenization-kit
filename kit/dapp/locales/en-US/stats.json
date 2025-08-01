@@ -20,11 +20,6 @@
       "label": "Total supply",
       "title": "Token supply history"
     },
-    "totalTransfers": {
-      "description": "Total transfers activity over the last {{days}} days",
-      "label": "Total transfers",
-      "title": "Transfer activity"
-    },
     "totalVolume": {
       "description": "Total transaction volume over the last {{days}} days",
       "label": "Total volume",

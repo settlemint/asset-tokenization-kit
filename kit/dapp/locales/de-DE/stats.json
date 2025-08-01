@@ -18,11 +18,6 @@
       "noData": "Keine Daten verfügbar",
       "noDataDescription": "Keine Gesamtangebotsdaten für die letzten {{days}} Tage gefunden"
     },
-    "totalTransfers": {
-      "description": "Gesamte Übertragungsaktivität über die letzten {{days}} Tage",
-      "label": "Gesamte Übertragungen",
-      "title": "Übertragungsaktivität"
-    },
     "supplyChanges": {
       "description": "Gemintete und verbrannte Token in den letzten {{days}} Tagen",
       "title": "Angebotsänderungen",
