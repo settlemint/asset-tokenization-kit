@@ -29,6 +29,7 @@ import { SMARTComplianceModuleParamPair } from
 import { IATKTypedImplementationRegistry } from "../../contracts/system/IATKTypedImplementationRegistry.sol";
 import { IATKCompliance } from "../../contracts/system/compliance/IATKCompliance.sol";
 import { IATKSystemAccessManaged } from "../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
+import { ATKRoles } from "../../contracts/system/ATKRoles.sol";
 
 // Import system errors
 import {

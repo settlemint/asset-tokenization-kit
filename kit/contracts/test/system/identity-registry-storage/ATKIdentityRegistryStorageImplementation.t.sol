@@ -15,6 +15,7 @@ import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { IdentityUtils } from "../../utils/IdentityUtils.sol";
 import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { ATKRoles } from "../../../contracts/system/ATKRoles.sol";
 
 contract ATKIdentityRegistryStorageImplementationTest is Test {
     ATKIdentityRegistryStorageImplementation public implementation;

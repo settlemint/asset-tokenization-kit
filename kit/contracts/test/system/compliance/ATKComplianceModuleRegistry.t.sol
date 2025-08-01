@@ -12,6 +12,7 @@ import { IATKSystemAccessManager } from "../../../contracts/system/access-manage
 import { IWithTypeIdentifier } from "../../../contracts/smart/interface/IWithTypeIdentifier.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
+import { ATKRoles } from "../../../contracts/system/ATKRoles.sol";
 
 import {
     InvalidComplianceModuleAddress,
