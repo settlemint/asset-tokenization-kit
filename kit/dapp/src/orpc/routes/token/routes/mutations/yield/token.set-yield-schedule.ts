@@ -97,8 +97,7 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
         startTime: startTime.toString(),
         token: contract,
         ...challengeResponse,
-      },
-      context.t("tokens:api.mutations.yield.messages.createScheduleFailed")
+      }
     );
     let receipt: Awaited<ReturnType<typeof getTransactionReceipt>>;
     try {
@@ -155,16 +154,12 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
       });
     }
     // Now set the yield schedule with the created schedule address
-    await context.portalClient.mutate(
-      TOKEN_SET_YIELD_SCHEDULE_MUTATION,
-      {
-        address: contract,
-        from: sender.wallet,
-        schedule: getEthereumAddress(scheduleAddress),
-        ...challengeResponse,
-      },
-      context.t("tokens:api.mutations.yield.messages.setScheduleFailed")
-    );
+    await context.portalClient.mutate(TOKEN_SET_YIELD_SCHEDULE_MUTATION, {
+      address: contract,
+      from: sender.wallet,
+      schedule: getEthereumAddress(scheduleAddress),
+      ...challengeResponse,
+    });
 
     // Return updated token data
     return await call(read, { tokenAddress: contract }, { context });

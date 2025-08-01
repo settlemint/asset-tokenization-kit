@@ -46,17 +46,13 @@ export const addComplianceModule = portalRouter.token.addComplianceModule
       type: verification.verificationType,
     });
 
-    await context.portalClient.mutate(
-      TOKEN_ADD_COMPLIANCE_MODULE_MUTATION,
-      {
-        address: contract,
-        from: sender.wallet,
-        moduleAddress,
-        params: JSON.stringify({}), // TODO: provide params as input to the request
-        ...challengeResponse,
-      },
-      context.t("tokens:api.mutations.compliance.messages.addFailed")
-    );
+    await context.portalClient.mutate(TOKEN_ADD_COMPLIANCE_MODULE_MUTATION, {
+      address: contract,
+      from: sender.wallet,
+      moduleAddress,
+      params: JSON.stringify({}), // TODO: provide params as input to the request
+      ...challengeResponse,
+    });
 
     // Return updated token data
     return await call(read, { tokenAddress: contract }, { context });

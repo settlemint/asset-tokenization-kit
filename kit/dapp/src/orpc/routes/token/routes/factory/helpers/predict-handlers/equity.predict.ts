@@ -47,8 +47,7 @@ export const equityPredictHandler = async (
       ATKEquityFactoryImplementation: z.object({
         predictEquityAddress: PredictAddressOutputSchema,
       }),
-    }),
-    "Failed to predict equity address"
+    })
   );
 
   return result.ATKEquityFactoryImplementation.predictEquityAddress;

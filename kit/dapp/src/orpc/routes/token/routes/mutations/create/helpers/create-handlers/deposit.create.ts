@@ -63,13 +63,9 @@ export const depositCreateHandler = async (
   }
 
   return createToken(input, context, () => {
-    return context.portalClient.mutate(
-      CREATE_DEPOSIT_MUTATION,
-      {
-        ...input,
-        ...context.mutationVariables,
-      },
-      "Failed to create deposit token"
-    );
+    return context.portalClient.mutate(CREATE_DEPOSIT_MUTATION, {
+      ...input,
+      ...context.mutationVariables,
+    });
   });
 };

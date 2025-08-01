@@ -48,16 +48,12 @@ export const setCap = tokenRouter.token.setCap
       code: verification.verificationCode,
       type: verification.verificationType,
     });
-    await context.portalClient.mutate(
-      TOKEN_SET_CAP_MUTATION,
-      {
-        address: contract,
-        from: sender.wallet,
-        newCap: newCap.toString(),
-        ...challengeResponse,
-      },
-      context.t("tokens:api.mutations.cap.messages.failed")
-    );
+    await context.portalClient.mutate(TOKEN_SET_CAP_MUTATION, {
+      address: contract,
+      from: sender.wallet,
+      newCap: newCap.toString(),
+      ...challengeResponse,
+    });
 
     // Return the updated token data using the read handler
     return await call(

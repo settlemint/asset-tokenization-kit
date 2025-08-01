@@ -59,8 +59,7 @@ export const bondPredictHandler = async (
       ATKBondFactoryImplementation: z.object({
         predictBondAddress: PredictAddressOutputSchema,
       }),
-    }),
-    "Failed to predict bond address"
+    })
   );
 
   return result.ATKBondFactoryImplementation.predictBondAddress;

@@ -193,8 +193,7 @@ export const create = onboardedRouter.system.create
     // Use the Portal client's mutate method
     const transactionHash = await context.portalClient.mutate(
       CREATE_SYSTEM_MUTATION,
-      createSystemVariables,
-      "Failed to create system"
+      createSystemVariables
     );
 
     // Query for the deployed system contract
@@ -258,8 +257,7 @@ export const create = onboardedRouter.system.create
 
     await context.portalClient.mutate(
       BOOTSTRAP_SYSTEM_MUTATION,
-      bootstrapVariables,
-      "Failed to bootstrap system"
+      bootstrapVariables
     );
 
     // Save the system address to settings using orpc BEFORE yielding final events
@@ -294,17 +292,13 @@ export const create = onboardedRouter.system.create
           type: verification.verificationType,
         });
 
-        await context.portalClient.mutate(
-          GRANT_ROLE_MUTATION,
-          {
-            address: systemDetails.systemAccessManager,
-            from: sender.wallet,
-            to: contract,
-            role: "0x0000000000000000000000000000000000000000000000000000000000000000", // DEFAULT_ADMIN_ROLE
-            ...grantRoleChallengeResponse,
-          },
-          "Failed to grant default admin role"
-        );
+        await context.portalClient.mutate(GRANT_ROLE_MUTATION, {
+          address: systemDetails.systemAccessManager,
+          from: sender.wallet,
+          to: contract,
+          role: "0x0000000000000000000000000000000000000000000000000000000000000000", // DEFAULT_ADMIN_ROLE
+          ...grantRoleChallengeResponse,
+        });
       }
     }
 
