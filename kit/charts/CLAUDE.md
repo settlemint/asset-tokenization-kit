@@ -79,12 +79,31 @@ When cleaning values for production (e.g., AWS Marketplace), empty YAML values m
 - Empty strings: Use `""` with comment (e.g., `password: ""  # Must be provided`)
 - Empty lists: Use `[]`
 
-### Image Pull Secrets Format
+### Image Pull Secrets Configuration
+
+**IMPORTANT**: Image pull secrets have been centralized in the environment-specific values files for better security and maintainability.
+
+#### Current Architecture (as of 2025-08-01)
+- **Main values.yaml**: No longer contains any imagePullSecrets - only empty registries configuration
+- **tools/values-orbstack.1p.yaml**: Contains all imagePullSecrets for local development with 1Password references
+- **Production deployments**: Should use their own values file with appropriate imagePullSecrets
+
+#### Format
 Always use the object format with `name` field:
 ```yaml
 imagePullSecrets:
   - name: image-pull-secret-docker  # Correct
 # NOT: - image-pull-secret-docker   # Wrong
+```
+
+#### Adding imagePullSecrets to a Service
+Add to the environment-specific values file (e.g., `tools/values-orbstack.1p.yaml`):
+```yaml
+service-name:
+  imagePullSecrets:
+    - name: image-pull-secret-docker
+    - name: image-pull-secret-ghcr
+    - name: image-pull-secret-harbor
 ```
 
 ## Common Pitfalls
