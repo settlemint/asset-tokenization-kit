@@ -1,10 +1,10 @@
+import type { ChartConfig } from "@/components/ui/chart";
+import { getBondStatusStrategy } from "@/lib/strategies/bond-status-strategies";
+import type { StatsBondStatusOutput } from "@/orpc/routes/token/routes/stats/bond-status.schema";
+import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import type { BondChartData } from "@/types/bond-status";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import type { ChartConfig } from "@/components/ui/chart";
-import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import type { StatsBondStatusOutput } from "@/orpc/routes/token/routes/stats/bond-status.schema";
-import type { BondChartData } from "@/types/bond-status";
-import { getBondStatusStrategy } from "@/lib/strategies/bond-status-strategies";
 
 /**
  * Custom hook for processing bond status data into chart-ready format
@@ -26,20 +26,6 @@ export function useBondStatusData(
   const { t } = useTranslation(["stats", "tokens"]);
 
   return useMemo(() => {
-    // Early return for non-bond assets
-    if (!token.bond) {
-      return {
-        data: [],
-        config: {},
-        title: t("stats:charts.bondStatus.title"),
-        description: t("stats:charts.bondStatus.notBond"),
-        footerData: null,
-        progress: 0,
-        status: "active" as const, // Default for type safety
-        isEmpty: true,
-      };
-    }
-
     // Get the appropriate strategy for current bond state
     const strategy = getBondStatusStrategy(token);
 

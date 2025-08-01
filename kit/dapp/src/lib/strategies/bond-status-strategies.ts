@@ -7,7 +7,7 @@ import type {
   BondStatusStrategy,
 } from "@/types/bond-status";
 import { getUnixTime } from "date-fns";
-import { format, divide, multiply, greaterThan, from } from "dnum";
+import { divide, format, from, greaterThan, multiply } from "dnum";
 import type { TFunction } from "i18next";
 
 /**
@@ -158,7 +158,9 @@ export function getBondStatus(token: Token): BondStatus {
   const maturityTimestamp = getUnixTime(token.bond.maturityDate);
   const isMatured = token.bond.isMatured || now >= maturityTimestamp;
 
-  if (isMatured) return "matured";
+  if (isMatured) {
+    return "matured";
+  }
 
   if (token.capped?.cap) {
     const totalSupply = token.totalSupply;

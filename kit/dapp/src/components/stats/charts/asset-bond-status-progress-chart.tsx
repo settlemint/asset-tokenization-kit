@@ -3,7 +3,6 @@ import { ComponentErrorBoundary } from "@/components/error/component-error-bound
 import { useBondStatusData } from "@/hooks/use-bond-status-data";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
 
 export interface AssetBondStatusProgressChartProps {
   assetAddress: string;
@@ -26,8 +25,6 @@ export interface AssetBondStatusProgressChartProps {
 export function AssetBondStatusProgressChart({
   assetAddress,
 }: AssetBondStatusProgressChartProps) {
-  const { t } = useTranslation(["stats", "tokens"]);
-
   // Fetch token data and bond status data in parallel
   const { data: token } = useSuspenseQuery(
     orpc.token.read.queryOptions({
@@ -49,7 +46,7 @@ export function AssetBondStatusProgressChart({
   const chartData = useBondStatusData(token, bondStatus);
 
   // Create footer JSX from footer data
-  const footer = chartData.footerData ? (
+  const chartFooter = chartData.footerData ? (
     <div className="flex flex-col items-center justify-center space-y-2">
       <div className="text-2xl font-bold">{chartData.footerData.progress}%</div>
       <div className="text-sm text-muted-foreground text-center">
@@ -59,23 +56,6 @@ export function AssetBondStatusProgressChart({
       </div>
     </div>
   ) : null;
-
-  // Handle non-bond assets or empty data
-  if (!token.bond || chartData.isEmpty) {
-    return (
-      <ComponentErrorBoundary componentName="Asset Bond Status Progress Chart">
-        <PieChartComponent
-          title={chartData.title}
-          description={chartData.description}
-          data={[]}
-          config={{}}
-          dataKey="value"
-          nameKey="name"
-          emptyMessage={t("stats:charts.bondStatus.notAvailable")}
-        />
-      </ComponentErrorBoundary>
-    );
-  }
 
   // Render the chart with processed data
   return (
@@ -87,7 +67,7 @@ export function AssetBondStatusProgressChart({
         config={chartData.config}
         dataKey="value"
         nameKey="name"
-        footer={footer}
+        footer={chartFooter}
       />
     </ComponentErrorBoundary>
   );
