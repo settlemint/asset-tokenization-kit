@@ -25,7 +25,7 @@
   "postUpgradeTasks": {
     "commands": ["bun clean"],
     "fileFilters": ["bun.lock"],
-    "executionMode": "update"
+    "executionMode": "branch"
   },
   "packageRules": [
     {
