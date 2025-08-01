@@ -2,6 +2,17 @@
   "letters-only": "Only letters are allowed",
   "noCountryFound": "No country found.",
   "valid-email": "Please enter a valid email address",
+  "address": {
+    "selectPlaceholder": "Choose address",
+    "searchPlaceholder": "Search addresses",
+    "loading": "Loading",
+    "noResults": "No addresses found",
+    "recent": "Recent",
+    "searchResults": "Results",
+    "recentAddresses": "Recent",
+    "searchInstead": "Search instead",
+    "enterManually": "Enter manually"
+  },
   "buttons": {
     "back": "Back",
     "cancel": "Cancel",

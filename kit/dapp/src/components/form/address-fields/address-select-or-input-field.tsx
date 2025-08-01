@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { AddressSearchScope } from "@/hooks/use-search-addresses";
 import { Pencil, Search } from "lucide-react";
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AddressInputField } from "./address-input-field";
 import { AddressSelectField } from "./address-select-field";
 
@@ -20,6 +21,7 @@ export function AddressSelectOrInputField({
   scope,
   defaultMode = "select",
 }: AddressFieldToggleProps) {
+  const { t } = useTranslation("form");
   const [mode, setMode] = useState<"select" | "manual">(defaultMode);
 
   // Switch to manual mode
@@ -36,6 +38,7 @@ export function AddressSelectOrInputField({
     return (
       <div className="space-y-2">
         <AddressInputField
+          key={mode}
           label={label}
           description={description}
           required={required}
@@ -48,7 +51,7 @@ export function AddressSelectOrInputField({
           className="text-xs"
         >
           <Search className="mr-2 h-3 w-3" />
-          Search for address instead
+          {t("address.searchInstead")}
         </Button>
       </div>
     );
@@ -57,6 +60,7 @@ export function AddressSelectOrInputField({
   return (
     <div className="space-y-2">
       <AddressSelectField
+        key={mode}
         label={label}
         description={description}
         required={required}
@@ -70,7 +74,7 @@ export function AddressSelectOrInputField({
         className="w-full justify-start text-xs text-muted-foreground hover:text-foreground"
       >
         <Pencil className="mr-2 h-3 w-3" />
-        Enter address manually instead
+        {t("address.enterManually")}
       </Button>
     </div>
   );

@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { useFieldContext } from "@/hooks/use-form-contexts";
 import { cn } from "@/lib/utils";
 import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { getAddress } from "viem";
 
 export interface AddressInputProps {
   label: string;
@@ -33,7 +32,7 @@ export function AddressInputField({
         type="text"
         value={field.state.value}
         onChange={(e) => {
-          field.handleChange(getAddress(e.target.value));
+          field.handleChange(e.target.value as EthereumAddress);
         }}
         className={cn(errorClassNames(field.state.meta))}
       />

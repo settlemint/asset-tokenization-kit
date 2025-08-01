@@ -30,6 +30,7 @@ import { cn } from "@/lib/utils";
 import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { Check, ChevronsUpDown, History } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getAddress } from "viem";
 
 export interface AddressOption {
@@ -55,6 +56,7 @@ export function AddressSelectField({
   scope,
   required = false,
 }: AddressSelectProps) {
+  const { t } = useTranslation("form");
   const field = useFieldContext<EthereumAddress>();
   const [open, setOpen] = useState(false);
 
@@ -140,7 +142,9 @@ export function AddressSelectField({
                   showBadge={false}
                 />
               ) : (
-                <span className="text-muted-foreground">Select an address</span>
+                <span className="text-muted-foreground">
+                  {t("address.selectPlaceholder")}
+                </span>
               )}
             </div>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -149,16 +153,16 @@ export function AddressSelectField({
         <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
           <Command shouldFilter={false}>
             <CommandInput
-              placeholder="Search for an address"
+              placeholder={t("address.searchPlaceholder")}
               onValueChange={debouncedSearch}
             />
             <CommandList>
               <CommandEmpty>
-                {isLoading ? "Loading..." : "No matching address found"}
+                {isLoading ? t("address.loading") : t("address.noResults")}
               </CommandEmpty>
 
               {!searchTerm && recentAddressOptions.length > 0 && (
-                <CommandGroup heading="Recent">
+                <CommandGroup heading={t("address.recent")}>
                   {recentAddressOptions.map((option) => (
                     <AddressCommandItem
                       key={option.address}
@@ -172,7 +176,11 @@ export function AddressSelectField({
               )}
 
               <CommandGroup
-                heading={searchTerm ? "Search results" : "Recent addresses"}
+                heading={
+                  searchTerm
+                    ? t("address.searchResults")
+                    : t("address.recentAddresses")
+                }
               >
                 {displayAddresses.map((option) => (
                   <AddressCommandItem
