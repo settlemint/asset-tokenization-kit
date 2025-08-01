@@ -114,8 +114,6 @@ type System @entity(immutable: false) {
 type VaultFactory @entity(immutable: false) {
   id: Bytes!
   deployedInTransaction: Bytes!
-  # Access control for the vault factory
-  accessControl: AccessControl!
   systemAddon: SystemAddon!
   account: Account!
   vaults: [Vault!]! @derivedFrom(field: "factory")
@@ -292,8 +290,6 @@ type ComplianceModuleRegistry @entity(immutable: false) {
 
 type ComplianceModule @entity(immutable: false) {
   id: Bytes!
-  # Access control for the compliance module
-  accessControl: AccessControl!
   name: String!
   typeId: String!
   account: Account!
@@ -361,8 +357,6 @@ type TokenFactoryRegistry @entity(immutable: false) {
 
 type TokenFactory @entity(immutable: false) {
   id: Bytes!
-  # Access control for the token factory
-  accessControl: AccessControl!
   name: String!
   typeId: String!
   tokenFactoryRegistry: TokenFactoryRegistry
@@ -505,8 +499,6 @@ type SystemAddonRegistry @entity(immutable: false) {
 type SystemAddon @entity(immutable: false) {
   id: Bytes!
   deployedInTransaction: Bytes!
-  # Access control for the system addon
-  accessControl: AccessControl!
   systemAddonRegistry: SystemAddonRegistry!
   name: String!
   typeId: String!
