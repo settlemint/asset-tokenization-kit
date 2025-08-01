@@ -18,6 +18,7 @@ import {
     SystemAddonTypeAlreadyRegistered,
     SystemAddonImplementationNotSet
 } from "../../../contracts/system/ATKSystemErrors.sol";
+import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
 
 // Mock for an addon implementation
 contract MockAddon is IWithTypeIdentifier {
@@ -110,18 +111,18 @@ contract ATKSystemAddonRegistryTest is Test {
         address proxyAddress = registry.registerSystemAddon(addonName, address(mockAddonWithoutTypeId), initData);
         Vm.Log[] memory logs = vm.getRecordedLogs();
 
-        assertEq(logs.length, 3);
+        assertEq(logs.length, 2);
 
         // Manual check of event
-        bytes32 eventSignature = IATKSystemAddonRegistry.SystemAddonRegistered.selector;
-        assertEq(logs[2].topics[0], eventSignature);
-        assertEq(logs[2].topics.length, 4); // 3 indexed topics
-        assertEq(address(uint160(uint256(logs[2].topics[1]))), admin);
-        assertEq(address(uint160(uint256(logs[2].topics[2]))), proxyAddress);
-        assertEq(address(uint160(uint256(logs[2].topics[3]))), address(mockAddonWithoutTypeId));
+        bytes32 eventSignature = keccak256("SystemAddonRegistered(address,string,bytes32,address,address,bytes,uint256)");
+        assertEq(logs[1].topics[0], eventSignature);
+        assertEq(logs[1].topics.length, 4); // 3 indexed topics
+        assertEq(address(uint160(uint256(logs[1].topics[1]))), admin);
+        assertEq(address(uint160(uint256(logs[1].topics[2]))), proxyAddress);
+        assertEq(address(uint160(uint256(logs[1].topics[3]))), address(mockAddonWithoutTypeId));
 
         (string memory name, bytes32 typeId, bytes memory data, uint256 timestamp) =
-            abi.decode(logs[2].data, (string, bytes32, bytes, uint256));
+            abi.decode(logs[1].data, (string, bytes32, bytes, uint256));
 
         assertEq(name, addonName);
         assertEq(typeId, bytes32(0));
@@ -230,7 +231,7 @@ contract ATKSystemAddonRegistryTest is Test {
             )
         );
         assertTrue(
-            ATKSystemAddonRegistryImplementation(address(registry)).supportsInterface(type(IAccessControl).interfaceId)
+            ATKSystemAddonRegistryImplementation(address(registry)).supportsInterface(type(IATKSystemAccessManaged).interfaceId)
         );
         assertTrue(ATKSystemAddonRegistryImplementation(address(registry)).supportsInterface(type(IERC165).interfaceId));
         assertTrue(
