@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-
 /// @title Interface for ATK System Access Management
 /// @author SettleMint
 /// @notice This interface defines the methods that must be implemented by contracts that manage access to the ATK

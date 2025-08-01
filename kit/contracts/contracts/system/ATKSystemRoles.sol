@@ -32,4 +32,3 @@ library ATKSystemRoles {
     /// @dev Will be able to add add-on instance contracts etc. to the allow list of compliance
     bytes32 public constant ADDON_FACTORY_MODULE_ROLE = keccak256("ADDON_FACTORY_MODULE_ROLE");
 }
-
