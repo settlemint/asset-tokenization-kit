@@ -20,5 +20,6 @@ export function handleATKSystemCreated(event: ATKSystemCreated): void {
   systemAccessManager.system = system.id;
   systemAccessManager.save();
 
+  system.systemAccessManager = systemAccessManager.id;
   system.save();
 }

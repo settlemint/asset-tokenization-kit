@@ -81,8 +81,7 @@ export const factoryCreate = portalRouter.token.factoryCreate
     blockchainPermissionsMiddleware({
       requiredRoles: TOKEN_FACTORY_PERMISSIONS.create,
       getAccessControl: ({ context }) => {
-        const systemData = context.system;
-        return systemData?.systemAccessManager?.accessControl;
+        return context.system?.systemAccessManager?.accessControl;
       },
     })
   )
