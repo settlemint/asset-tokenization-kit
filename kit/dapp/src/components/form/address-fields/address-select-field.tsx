@@ -28,7 +28,13 @@ import { useDebouncedCallback } from "@/lib/hooks/use-debounced-callback";
 import { useRecentCache } from "@/lib/hooks/use-recent-cache";
 import { cn } from "@/lib/utils";
 import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { Check, ChevronsUpDown, History } from "lucide-react";
+import {
+  Check,
+  ChevronsUpDown,
+  History,
+  Search,
+  SquareStack,
+} from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getAddress } from "viem";
@@ -160,14 +166,21 @@ export function AddressSelectField({
               </CommandEmpty>
 
               {!searchTerm && recentAddressOptions.length > 0 && (
-                <CommandGroup heading={t("address.recent")}>
+                <CommandGroup
+                  heading={
+                    <div className="flex items-center gap-2">
+                      <History className="h-4 w-4 opacity-50" />
+                      {t("address.recent")}
+                    </div>
+                  }
+                >
                   {recentAddressOptions.map((option) => (
                     <AddressCommandItem
-                      key={option.address}
+                      key={`recent-${option.address}`}
                       option={option}
                       isSelected={field.state.value === option.address}
                       onSelect={handleAddressSelect}
-                      showIcon={true}
+                      section="recent"
                     />
                   ))}
                 </CommandGroup>
@@ -176,17 +189,29 @@ export function AddressSelectField({
               {displayAddresses.length > 0 && (
                 <CommandGroup
                   heading={
-                    searchTerm
-                      ? t("address.searchResults")
-                      : t("address.allAddresses")
+                    <>
+                      {searchTerm && (
+                        <div className="flex items-center gap-2">
+                          <Search className="h-4 w-4 opacity-50" />
+                          {t("address.searchResults")}
+                        </div>
+                      )}
+                      {!searchTerm && (
+                        <div className="flex items-center gap-2">
+                          <SquareStack className="h-4 w-4 opacity-50" />
+                          {t("address.allAddresses")}
+                        </div>
+                      )}
+                    </>
                   }
                 >
                   {displayAddresses.map((option) => (
                     <AddressCommandItem
-                      key={option.address}
+                      key={`all-${option.address}`}
                       option={option}
                       isSelected={field.state.value === option.address}
                       onSelect={handleAddressSelect}
+                      section="all"
                     />
                   ))}
                 </CommandGroup>
@@ -205,22 +230,22 @@ const AddressCommandItem = memo(
     option,
     isSelected,
     onSelect,
-    showIcon = false,
+    section,
   }: {
     option: AddressOption;
     isSelected: boolean;
     onSelect: (address: EthereumAddress) => void;
-    showIcon?: boolean;
+
+    section: string;
   }) => {
     return (
       <CommandItem
-        value={option.address}
+        value={section ? `${section}-${option.address}` : option.address}
         onSelect={() => {
           onSelect(option.address);
         }}
         className="flex items-center gap-2"
       >
-        {showIcon && <History className="h-4 w-4 opacity-50" />}
         <Web3Address
           address={option.address}
           size="tiny"
