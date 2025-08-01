@@ -141,7 +141,6 @@ contract ATKSystemAccessManagerImplementation is
     )
         public
         override(IATKSystemAccessManager, AccessControlUpgradeable)
-        onlyRoles(_getRoleAdmins(role))
     {
         super.renounceRole(role, account);
     }
@@ -221,7 +220,6 @@ contract ATKSystemAccessManagerImplementation is
         address callerConfirmation
     )
         external
-        onlyRole(DEFAULT_ADMIN_ROLE)
     {
         for (uint256 i = 0; i < roles.length;) {
             renounceRole(roles[i], callerConfirmation);
