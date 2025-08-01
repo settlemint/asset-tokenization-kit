@@ -72,7 +72,7 @@ templates:
           file: ../contracts/.generated/artifacts/@openzeppelin/contracts/utils/introspection/IERC165.sol/IERC165.json
       eventHandlers:
         - event: Bootstrapped(indexed address,indexed address,indexed
-            address,address,address,address,address,address,address,address,address,address)
+            address,address,address,address,address,address,address,address)
           handler: handleBootstrapped
         - event: ComplianceImplementationUpdated(indexed address,indexed address)
           handler: handleComplianceImplementationUpdated
@@ -102,8 +102,6 @@ templates:
           handler: handleComplianceModuleRegistryImplementationUpdated
         - event: SystemAddonRegistryImplementationUpdated(indexed address,indexed address)
           handler: handleSystemAddonRegistryImplementationUpdated
-        - event: SystemAccessManagerImplementationUpdated(indexed address,indexed address)
-          handler: handleSystemAccessManagerImplementationUpdated
       file: ./src/system/system.ts
   - kind: ethereum
     name: TokenFactory

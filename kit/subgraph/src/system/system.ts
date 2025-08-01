@@ -9,7 +9,6 @@ import {
   IdentityImplementationUpdated,
   IdentityRegistryImplementationUpdated,
   IdentityRegistryStorageImplementationUpdated,
-  SystemAccessManagerImplementationUpdated,
   SystemAddonRegistryImplementationUpdated,
   TokenAccessManagerImplementationUpdated,
   TokenFactoryRegistryImplementationUpdated,
@@ -191,10 +190,4 @@ export function handleSystemAddonRegistryImplementationUpdated(
   event: SystemAddonRegistryImplementationUpdated
 ): void {
   fetchEvent(event, "SystemAddonRegistryImplementationUpdated");
-}
-
-export function handleSystemAccessManagerImplementationUpdated(
-  event: SystemAccessManagerImplementationUpdated
-): void {
-  fetchEvent(event, "SystemAccessManagerImplementationUpdated");
 }
