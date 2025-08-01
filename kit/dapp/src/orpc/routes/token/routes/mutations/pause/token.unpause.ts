@@ -45,15 +45,11 @@ export const unpause = tokenRouter.token.unpause
       type: verification.verificationType,
     });
 
-    await context.portalClient.mutate(
-      TOKEN_UNPAUSE_MUTATION,
-      {
-        address: contract,
-        from: sender.wallet,
-        ...challengeResponse,
-      },
-      context.t("tokens:actions.unpause.messages.failed")
-    );
+    await context.portalClient.mutate(TOKEN_UNPAUSE_MUTATION, {
+      address: contract,
+      from: sender.wallet,
+      ...challengeResponse,
+    });
 
     // Return the updated token data using the read handler
     return await call(

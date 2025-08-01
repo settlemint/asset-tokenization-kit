@@ -63,17 +63,13 @@ export const depositCreateHandler = async (
   }
 
   return createToken(input, context, () => {
-    return context.portalClient.mutate(
-      CREATE_DEPOSIT_MUTATION,
-      {
-        ...input,
-        ...context.mutationVariables,
-        initialModulePairs: input.initialModulePairs.map((pair) => ({
-          module: pair.module,
-          params: pair.params,
-        })),
-      },
-      "Failed to create deposit token"
-    );
+    return context.portalClient.mutate(CREATE_DEPOSIT_MUTATION, {
+      ...input,
+      ...context.mutationVariables,
+      initialModulePairs: input.initialModulePairs.map((pair) => ({
+        module: pair.module,
+        params: pair.params,
+      })),
+    });
   });
 };

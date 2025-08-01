@@ -63,17 +63,13 @@ export const stablecoinCreateHandler = async (
   }
 
   return createToken(input, context, () => {
-    return context.portalClient.mutate(
-      CREATE_STABLECOIN_MUTATION,
-      {
-        ...input,
-        ...context.mutationVariables,
-        initialModulePairs: input.initialModulePairs.map((pair) => ({
-          module: pair.module,
-          params: pair.params,
-        })),
-      },
-      "Failed to create stablecoin token"
-    );
+    return context.portalClient.mutate(CREATE_STABLECOIN_MUTATION, {
+      ...input,
+      ...context.mutationVariables,
+      initialModulePairs: input.initialModulePairs.map((pair) => ({
+        module: pair.module,
+        params: pair.params,
+      })),
+    });
   });
 };

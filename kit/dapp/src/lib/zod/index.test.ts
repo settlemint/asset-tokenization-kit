@@ -2,13 +2,12 @@ import { describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 import { safeParse } from "./index";
 
-process.env.CI = "true";
-
-// Logger is mocked via vitest.config.ts alias
-// Mock the redactSensitiveFields function
+// Mock the redactSensitiveFields function (hoisted)
 vi.mock("../redaction", () => ({
   redactSensitiveFields: (value: unknown) => value,
 }));
+
+process.env.CI = "true";
 
 describe("safeParse", () => {
   describe("successful validation", () => {

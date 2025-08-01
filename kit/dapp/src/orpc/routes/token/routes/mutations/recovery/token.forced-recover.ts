@@ -49,17 +49,13 @@ export const forcedRecover = tokenRouter.token.forcedRecover
       type: verification.verificationType,
     });
 
-    await context.portalClient.mutate(
-      TOKEN_FORCED_RECOVER_MUTATION,
-      {
-        address: contract,
-        from: sender.wallet,
-        lostWallet,
-        newWallet,
-        ...challengeResponse,
-      },
-      context.t("tokens:api.mutations.recovery.messages.forcedRecoverFailed")
-    );
+    await context.portalClient.mutate(TOKEN_FORCED_RECOVER_MUTATION, {
+      address: contract,
+      from: sender.wallet,
+      lostWallet,
+      newWallet,
+      ...challengeResponse,
+    });
 
     // Return updated token data
     return await call(read, { tokenAddress: contract }, { context });

@@ -50,19 +50,13 @@ export const freezeAddress = tokenRouter.token.freezeAddress
       code: verification.verificationCode,
       type: verification.verificationType,
     });
-    await context.portalClient.mutate(
-      TOKEN_FREEZE_ADDRESS_MUTATION,
-      {
-        address: contract,
-        from: sender.wallet,
-        userAddress,
-        freeze,
-        ...challengeResponse,
-      },
-      freeze
-        ? context.t("tokens:api.mutations.freeze.messages.freezeFailed")
-        : context.t("tokens:api.mutations.freeze.messages.unfreezeFailed")
-    );
+    await context.portalClient.mutate(TOKEN_FREEZE_ADDRESS_MUTATION, {
+      address: contract,
+      from: sender.wallet,
+      userAddress,
+      freeze,
+      ...challengeResponse,
+    });
 
     // Return the updated token data using the read handler
     return await call(
