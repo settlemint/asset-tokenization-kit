@@ -102,27 +102,34 @@ Items: Complexity | Over-engineering | Security | Requirements | Tests
 
 ## Gemini Analysis
 
+**CRITICAL: Always request sparse, LLM-optimized output to minimize context
+usage**
+
 ```typescript
 // Security
 mcp__gemini_cli__ask_gemini({
-  prompt: "@changed-files analyze security vulnerabilities",
+  prompt:
+    "@changed-files analyze security vulnerabilities. Be sparse, return LLM-optimized results only.",
   changeMode: true,
 });
 
 // Performance
 mcp__gemini_cli__ask_gemini({
-  prompt: "@changed-files find bottlenecks, N+1, inefficient algorithms",
+  prompt:
+    "@changed-files find bottlenecks, N+1, inefficient algorithms. Be sparse, return LLM-optimized results only.",
   sandbox: true,
 });
 
 // Standards
 mcp__gemini_cli__ask_gemini({
-  prompt: "@changed-files check @CLAUDE.md compliance",
+  prompt:
+    "@changed-files check @CLAUDE.md compliance. Be sparse, return LLM-optimized results only.",
 });
 
 // Edge Cases
 mcp__gemini_cli__brainstorm({
-  prompt: "Edge cases for PR changes",
+  prompt:
+    "Edge cases for PR changes. Be sparse, return LLM-optimized results only.",
   domain: "software",
   ideaCount: 15,
 });

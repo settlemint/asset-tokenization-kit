@@ -52,6 +52,9 @@ TxSigner:8547 | Portal:7701 | Hasura:8080 | Graph:8000 | MinIO:9000
 ## Test Execution
 
 - ALWAYS use `bun run test`, NEVER use `bun test`
+- If test fails with "Error: This function can only be used on the server as
+  including it in the browser will expose your access token." set
+  @vitest-environment node
 
 ## Task Planning (MANDATORY)
 
@@ -141,8 +144,14 @@ mcp__linear__create_issue({ title, description, teamSlug });
 
 **ALWAYS Gemini validation + Grep patterns**
 
+**CRITICAL: Always request sparse, LLM-optimized output to minimize context
+usage**
+
 ```typescript
-mcp__gemini_cli__ask_gemini({ prompt, changeMode: true });
+mcp__gemini_cli__ask_gemini({
+  prompt: prompt + " Be sparse, return LLM-optimized results only.",
+  changeMode: true,
+});
 mcp__grep__searchGitHub({ query: "pattern", repo: "org/" });
 ```
 

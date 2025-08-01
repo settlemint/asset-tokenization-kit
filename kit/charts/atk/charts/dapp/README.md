@@ -18,10 +18,7 @@ A Helm chart for the ATK DApp frontend
 | fullnameOverride | string | `"dapp"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/settlemint/asset-tokenization-kit"` |  |
-| image.tag | string | `"1.1.1"` |  |
-| imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
+| image.tag | string | `"2.0.0-main0d06815fc"` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.className | string | `"atk-nginx"` |  |
 | ingress.enabled | bool | `false` |  |
@@ -29,17 +26,15 @@ A Helm chart for the ATK DApp frontend
 | ingress.hosts[0].paths[0].path | string | `"/((?:sm_|bpaas-)[^/]+)?/?(.*)"` |  |
 | ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
 | ingress.tls | list | `[]` |  |
-| initContainer.graphQLCheck.connectTimeoutSeconds | int | `5` |  |
 | initContainer.graphQLCheck.enabled | bool | `true` |  |
 | initContainer.graphQLCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | initContainer.graphQLCheck.image.registry | string | `"docker.io"` |  |
 | initContainer.graphQLCheck.image.repository | string | `"curlimages/curl"` |  |
-| initContainer.graphQLCheck.image.tag | string | `"8.15.0"` |  |
-| initContainer.graphQLCheck.name | string | `"wait-for-graph-subgraph-kit"` |  |
-| initContainer.graphQLCheck.query | string | `"{ __typename }"` |  |
-| initContainer.graphQLCheck.retries | int | `24` |  |
-| initContainer.graphQLCheck.retryDelaySeconds | int | `20` |  |
-| initContainer.graphQLCheck.timeoutSeconds | int | `10` |  |
+| initContainer.graphQLCheck.image.tag | string | `"8.11.1"` |  |
+| initContainer.graphQLCheck.name | string | `"wait-for-graphql"` |  |
+| initContainer.graphQLCheck.query | string | `"{ _meta { hasIndexingErrors block { number } } }"` |  |
+| initContainer.graphQLCheck.retries | int | `10` |  |
+| initContainer.graphQLCheck.retryDelaySeconds | int | `10` |  |
 | initContainer.graphQLCheck.url | string | `"http://graph-node-combined.atk.svc.cluster.local:8000/subgraphs/name/kit"` |  |
 | initContainer.tcpCheck.dependencies[0].endpoint | string | `"postgresql.atk.svc.cluster.local:5432"` |  |
 | initContainer.tcpCheck.dependencies[0].name | string | `"postgres"` |  |
