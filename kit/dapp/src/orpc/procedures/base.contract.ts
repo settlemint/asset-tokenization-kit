@@ -125,7 +125,7 @@ export const CUSTOM_ERRORS = {
     status: 403,
     message: "User does not have the required role to execute this action.",
     data: z.object({
-      requiredRoles: z.array(z.string()),
+      requiredRoles: z.any(), // Can be string, string[], or RoleRequirement object
     }),
   },
 
