@@ -160,17 +160,50 @@ spec:
                 fi
               fi
 
-              # Use genesis.json directly from artifacts instead of merging
-              echo "Using genesis.json from artifacts..."
+              # Use the generated genesis file which has correct validator addresses
+              echo "Using generated genesis file with correct validator addresses..."
+              echo "Generated genesis file info:"
+              ls -la "$GENESIS_FILE"
+              
+              # Optionally merge contract alloc data from artifacts if needed
               ARTIFACTS_GENESIS_FILE="/contracts/genesis/genesis.json"
               if [ -f "$ARTIFACTS_GENESIS_FILE" ]; then
-                echo "Copying genesis.json from artifacts to replace generated one..."
-                cp "$ARTIFACTS_GENESIS_FILE" "$GENESIS_FILE"
-                echo "Genesis file replaced successfully"
-                echo "Final genesis file size:"
-                ls -la "$GENESIS_FILE"
+                echo "Artifacts genesis file found, extracting alloc data..."
+                
+                # Extract only the alloc section from artifacts (contract deployments)
+                ARTIFACTS_ALLOC=$(jq -r '.alloc // {}' "$ARTIFACTS_GENESIS_FILE" 2>/dev/null || echo '{}')
+                
+                # Only merge if there are actual allocations in artifacts
+                if [ "$ARTIFACTS_ALLOC" != "{}" ] && [ "$ARTIFACTS_ALLOC" != "null" ]; then
+                  echo "Merging contract allocations from artifacts..."
+                  
+                  # Merge artifacts alloc into generated genesis
+                  jq --argjson artifacts_alloc "$ARTIFACTS_ALLOC" \
+                     '.alloc = (.alloc + $artifacts_alloc)' \
+                     "$GENESIS_FILE" > "${GENESIS_FILE}.merged"
+                  
+                  if [ -s "${GENESIS_FILE}.merged" ]; then
+                    mv "${GENESIS_FILE}.merged" "$GENESIS_FILE"
+                    echo "Successfully merged contract allocations"
+                  else
+                    echo "Error: Merged file is empty, keeping original"
+                    rm -f "${GENESIS_FILE}.merged"
+                  fi
+                else
+                  echo "No contract allocations found in artifacts"
+                fi
               else
-                echo "Warning: Genesis file not found at $ARTIFACTS_GENESIS_FILE, using generated one"
+                echo "No artifacts genesis file found, using generated genesis as-is"
+              fi
+              
+              echo "Final genesis file info:"
+              ls -la "$GENESIS_FILE"
+              echo "Genesis file validation:"
+              if jq -e . "$GENESIS_FILE" >/dev/null 2>&1; then
+                echo "✓ Genesis file is valid JSON"
+              else
+                echo "✗ Genesis file is invalid JSON!"
+                exit 1
               fi
 
               safeWriteGenesisConfigmap $FOLDER_PATH
