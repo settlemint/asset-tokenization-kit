@@ -1,3 +1,9 @@
+import {
+  FieldDescription,
+  FieldErrors,
+  FieldLabel,
+  FieldLayout,
+} from "@/components/form/field";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -14,21 +20,17 @@ import {
 } from "@/components/ui/popover";
 import { Web3Address } from "@/components/web3/web3-address";
 import { useFieldContext } from "@/hooks/use-form-contexts";
-import { useSearchAddresses } from "@/hooks/use-search-addresses";
+import {
+  useSearchAddresses,
+  type AddressSearchScope,
+} from "@/hooks/use-search-addresses";
 import { useDebouncedCallback } from "@/lib/hooks/use-debounced-callback";
 import { useRecentCache } from "@/lib/hooks/use-recent-cache";
 import { cn } from "@/lib/utils";
 import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { Check, ChevronsUpDown, History, Pencil } from "lucide-react";
+import { Check, ChevronsUpDown, History } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { getAddress } from "viem";
-import {
-  FieldDescription,
-  FieldErrors,
-  FieldLabel,
-  FieldLayout,
-} from "../field";
-import { AddressInput } from "./address-input";
 
 export interface AddressOption {
   address: EthereumAddress;
@@ -36,54 +38,35 @@ export interface AddressOption {
   secondaryInfo?: string;
 }
 
-interface BaseAddressFieldProps {
+interface AddressSelectProps {
   label: string;
+  scope: AddressSearchScope;
   description?: string;
   required?: boolean;
-  placeholder?: string;
-  disabled?: boolean;
-  scope: "user" | "asset";
-  recentStorageKey: string;
-  addressTypeName: string;
 }
 
 const MAX_RECENT_ADDRESSES = 5;
 const INITIAL_ADDRESSES_COUNT = 5;
 const SEARCH_DEBOUNCE_MS = 500;
 
-export function BaseAddressField({
+export function AddressSelectField({
   label,
   description,
-  required = false,
-  placeholder,
-  disabled = false,
   scope,
-  recentStorageKey,
-  addressTypeName,
-}: BaseAddressFieldProps) {
+  required = false,
+}: AddressSelectProps) {
   const field = useFieldContext<EthereumAddress>();
   const [open, setOpen] = useState(false);
-  const [manualMode, setManualMode] = useState(false);
+
   const [searchTerm, setSearchTerm] = useState("");
-
-  // Use the recent cache hook for managing recent addresses
-  const { recentItems: recentAddresses, addItem: addToRecents } =
-    useRecentCache<EthereumAddress>({
-      storageKey: recentStorageKey,
-      maxItems: MAX_RECENT_ADDRESSES,
-    });
-
-  // Debounced search function
   const debouncedSearch = useDebouncedCallback((term: string) => {
     setSearchTerm(term);
   }, SEARCH_DEBOUNCE_MS);
-
   const { users, assets, isLoading } = useSearchAddresses({
     searchTerm,
     scope,
   });
-
-  const addresses = useMemo(() => {
+  const searchResults = useMemo(() => {
     const addressList = scope === "user" ? users : assets;
     return addressList.map((item) => ({
       address: getAddress(item.id),
@@ -92,7 +75,11 @@ export function BaseAddressField({
     }));
   }, [scope, users, assets]);
 
-  // Convert recent addresses to AddressOption format
+  const { recentItems: recentAddresses, addItem: addToRecents } =
+    useRecentCache<EthereumAddress>({
+      storageKey: scope,
+      maxItems: MAX_RECENT_ADDRESSES,
+    });
   const recentAddressOptions = useMemo(() => {
     return recentAddresses.map((address) => ({
       address,
@@ -104,7 +91,7 @@ export function BaseAddressField({
   // Display addresses: recent first, then search results, then initial if no recents
   const displayAddresses = useMemo(() => {
     if (searchTerm) {
-      return addresses;
+      return searchResults;
     }
 
     if (recentAddressOptions.length > 0) {
@@ -112,8 +99,8 @@ export function BaseAddressField({
     }
 
     // Show first 5 addresses as initial list
-    return addresses.slice(0, INITIAL_ADDRESSES_COUNT);
-  }, [addresses, recentAddressOptions, searchTerm]);
+    return searchResults.slice(0, INITIAL_ADDRESSES_COUNT);
+  }, [searchResults, recentAddressOptions, searchTerm]);
 
   // Handle address selection from search results
   const handleAddressSelect = useCallback(
@@ -125,43 +112,12 @@ export function BaseAddressField({
     [field, addToRecents]
   );
 
-  // Switch to manual mode
-  const switchToManualMode = useCallback(() => {
-    setManualMode(true);
-    setOpen(false);
-  }, []);
-
-  // Switch to search mode
-  const switchToSearchMode = useCallback(() => {
-    setManualMode(false);
-  }, []);
-
   // Reset search when popover closes
   useEffect(() => {
     if (!open) {
       setSearchTerm("");
     }
   }, [open]);
-
-  const defaultPlaceholder = `Select or enter ${addressTypeName} address`;
-
-  if (manualMode) {
-    return (
-      <div>
-        <AddressInput
-          value={field.state.value}
-          label={label}
-          description={description}
-          required={required}
-        />
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={switchToSearchMode}>
-            Search for address instead
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <FieldLayout>
@@ -170,11 +126,11 @@ export function BaseAddressField({
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
+            id={field.name}
             variant="outline"
             role="combobox"
             aria-expanded={open}
             className="w-full justify-between"
-            disabled={disabled}
           >
             <div className="flex-1 truncate text-left">
               {field.state.value ? (
@@ -184,9 +140,7 @@ export function BaseAddressField({
                   showBadge={false}
                 />
               ) : (
-                <span className="text-muted-foreground">
-                  {placeholder || defaultPlaceholder}
-                </span>
+                <span className="text-muted-foreground">Select an address</span>
               )}
             </div>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -195,7 +149,7 @@ export function BaseAddressField({
         <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
           <Command shouldFilter={false}>
             <CommandInput
-              placeholder={`Search ${addressTypeName} addresses`}
+              placeholder="Search for an address"
               onValueChange={debouncedSearch}
             />
             <CommandList>
@@ -218,13 +172,7 @@ export function BaseAddressField({
               )}
 
               <CommandGroup
-                heading={
-                  searchTerm
-                    ? "Search Results"
-                    : recentAddressOptions.length > 0
-                      ? "All Addresses"
-                      : `${addressTypeName.charAt(0).toUpperCase() + addressTypeName.slice(1)} Addresses`
-                }
+                heading={searchTerm ? "Search results" : "Recent addresses"}
               >
                 {displayAddresses.map((option) => (
                   <AddressCommandItem
@@ -239,24 +187,11 @@ export function BaseAddressField({
           </Command>
         </PopoverContent>
       </Popover>
-      <div className="border-t px-2 py-1">
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={switchToManualMode}
-          className="w-full justify-start text-xs text-muted-foreground hover:text-foreground"
-        >
-          <Pencil className="mr-2 h-3 w-3" />
-          Enter address manually instead
-        </Button>
-      </div>
       <FieldErrors {...field.state.meta} />
     </FieldLayout>
   );
 }
 
-// Memoized command item component
 const AddressCommandItem = memo(
   ({
     option,

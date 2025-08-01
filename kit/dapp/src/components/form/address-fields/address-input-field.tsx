@@ -12,13 +12,12 @@ import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { getAddress } from "viem";
 
 export interface AddressInputProps {
-  value: EthereumAddress;
   label: string;
   description?: string;
   required?: boolean;
 }
 
-export function AddressInput({
+export function AddressInputField({
   label,
   description,
   required,
