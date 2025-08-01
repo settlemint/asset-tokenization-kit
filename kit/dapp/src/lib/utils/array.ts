@@ -23,19 +23,25 @@ export function getElementAtIndex<T>(elements: T[], index: number): T {
   return element;
 }
 
+/**
+ * Compares two arrays to determine if they contain the same numeric values.
+ *
+ * Performs order-insensitive comparison - [1,2,3] and [3,2,1] are considered equal.
+ * This is useful for comparing selections like country codes where order is irrelevant.
+ *
+ * @param first - First array of strings or numbers
+ * @param second - Second array of strings or numbers
+ * @returns true if both arrays contain the same numeric values (regardless of order)
+ */
 export function haveSameNumbers(
   first: (string | number)[],
   second: (string | number)[]
 ) {
   if (first.length !== second.length) return false;
 
-  return first.every((value, index) => {
-    const secondArrValue = second[index];
-    if (secondArrValue === undefined) return false;
+  const firstNumbers = first.map(Number);
+  const secondNumbers = new Set(second.map(Number));
 
-    const firstValue = Number(value);
-    const secondValue = Number(secondArrValue);
-
-    return firstValue === secondValue;
-  });
+  // Order-insensitive comparison: check if every element in first exists in second
+  return firstNumbers.every((num) => secondNumbers.has(num));
 }
