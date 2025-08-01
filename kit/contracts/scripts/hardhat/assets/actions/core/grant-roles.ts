@@ -11,7 +11,7 @@ import { waitForSuccess } from "../../../utils/wait-for-success";
 export const grantRoles = async (
   asset: Asset<any>,
   targetActor: Actor,
-  roles: (typeof ATKRoles)[keyof typeof ATKRoles][]
+  roles: (typeof ATKRoles.assets)[keyof typeof ATKRoles.assets][]
 ) => {
   console.log(`[Role] → Starting role grant operation...`);
 
