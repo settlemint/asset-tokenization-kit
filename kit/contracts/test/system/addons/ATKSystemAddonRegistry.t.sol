@@ -11,7 +11,8 @@ import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.so
 import { IATKSystemAccessManager } from "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
 import { IWithTypeIdentifier } from "../../../contracts/smart/interface/IWithTypeIdentifier.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../../contracts/system/ATKRoles.sol";
+import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
+import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { IATKTypedImplementationRegistry } from "../../../contracts/system/IATKTypedImplementationRegistry.sol";
 import {
     InvalidAddonAddress,

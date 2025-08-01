@@ -8,8 +8,8 @@ import { ATKEquityFactoryImplementation } from "../../contracts/assets/equity/AT
 import { IATKEquity } from "../../contracts/assets/equity/IATKEquity.sol";
 import { ATKEquityImplementation } from "../../contracts/assets/equity/ATKEquityImplementation.sol";
 import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
-
-import { ATKRoles as SystemATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../contracts/system/ATKRoles.sol";
+import { ATKPeopleRoles } from "../../contracts/system/ATKPeopleRoles.sol";
+import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";

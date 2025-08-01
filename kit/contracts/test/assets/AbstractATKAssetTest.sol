@@ -11,8 +11,8 @@ import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTId
 import { ISMARTCompliance } from "../../contracts/smart/interface/ISMARTCompliance.sol";
 import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
 import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
-
-import { ATKRoles as SystemATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../contracts/system/ATKRoles.sol";
+import { ATKPeopleRoles } from "../../contracts/system/ATKPeopleRoles.sol";
+import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { ATKSystemImplementation } from "../../contracts/system/ATKSystemImplementation.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ATKForwarder } from "../../contracts/vendor/ATKForwarder.sol";

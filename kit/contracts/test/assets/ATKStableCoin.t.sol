@@ -10,8 +10,8 @@ import { ATKStableCoinFactoryImplementation } from
     "../../contracts/assets/stable-coin/ATKStableCoinFactoryImplementation.sol";
 import { ATKStableCoinImplementation } from "../../contracts/assets/stable-coin/ATKStableCoinImplementation.sol";
 import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
-
-import { ATKRoles as SystemATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../contracts/system/ATKRoles.sol";
+import { ATKPeopleRoles } from "../../contracts/system/ATKPeopleRoles.sol";
+import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { ClaimUtils } from "../../test/utils/ClaimUtils.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";

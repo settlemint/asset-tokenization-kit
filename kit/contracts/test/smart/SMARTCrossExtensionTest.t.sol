@@ -27,9 +27,10 @@ import { TokenUtils } from "../utils/TokenUtils.sol";
 import { ClaimUtils } from "../utils/ClaimUtils.sol";
 import { TestConstants } from "../Constants.sol";
 import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
-import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../contracts/system/ATKRoles.sol";
-// Mock Access Manager that always returns true for canCall
+import { ATKPeopleRoles } from "../../contracts/system/ATKPeopleRoles.sol";
+import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 
+// Mock Access Manager that always returns true for canCall
 contract MockAccessManager is IAccessManager {
     mapping(address => mapping(bytes4 => bool)) public restrictions;
 

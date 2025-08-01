@@ -18,7 +18,8 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ERC734KeyPurposes } from "../../../../contracts/onchainid/ERC734KeyPurposes.sol";
 import { ERC734KeyTypes } from "../../../../contracts/onchainid/ERC734KeyTypes.sol";
-import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../../../contracts/system/ATKRoles.sol";
+import { ATKPeopleRoles } from "../../../../contracts/system/ATKPeopleRoles.sol";
+import { ATKSystemRoles } from "../../../../contracts/system/ATKSystemRoles.sol";
 
 /// @title ClaimAuthorizationSystem Test
 /// @notice Tests for the new claim authorization system (SRT-754)

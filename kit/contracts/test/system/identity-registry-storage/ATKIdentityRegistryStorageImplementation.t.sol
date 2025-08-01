@@ -13,7 +13,8 @@ import { ISMARTIdentityRegistryStorage } from "../../../contracts/smart/interfac
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { IdentityUtils } from "../../utils/IdentityUtils.sol";
-import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../../contracts/system/ATKRoles.sol";
+import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
+import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 
 contract ATKIdentityRegistryStorageImplementationTest is Test {
     ATKIdentityRegistryStorageImplementation public implementation;

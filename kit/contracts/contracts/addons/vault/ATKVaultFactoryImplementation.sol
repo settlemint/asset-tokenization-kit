@@ -11,7 +11,7 @@ import { AbstractATKSystemAddonFactoryImplementation } from
 import { ATKVault } from "./ATKVault.sol";
 
 // Constants
-import { ATKPeopleRoles } from "../../system/ATKRoles.sol";
+import { ATKPeopleRoles } from "../../system/ATKPeopleRoles.sol";
 
 /// @title Factory for Creating ATKVault Proxies
 /// @author SettleMint

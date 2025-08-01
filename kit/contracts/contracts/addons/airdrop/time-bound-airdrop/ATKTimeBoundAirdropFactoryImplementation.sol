@@ -15,7 +15,7 @@ import { ATKTimeBoundAirdropImplementation } from "./ATKTimeBoundAirdropImplemen
 import { ATKTimeBoundAirdropProxy } from "./ATKTimeBoundAirdropProxy.sol";
 
 // Constants
-import { ATKPeopleRoles } from "../../../system/ATKRoles.sol";
+import { ATKPeopleRoles } from "../../../system/ATKPeopleRoles.sol";
 
 /// @title Factory for Creating ATKTimeBoundAirdrop Proxies
 /// @author SettleMint

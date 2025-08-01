@@ -18,7 +18,7 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 // Constants
-import { ATKPeopleRoles } from "../ATKRoles.sol";
+import { ATKPeopleRoles } from "../ATKPeopleRoles.sol";
 
 // Extensions
 import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";

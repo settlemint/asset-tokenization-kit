@@ -11,7 +11,8 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 
 // Constants
-import { ATKSystemRoles, ATKPeopleRoles } from "../ATKRoles.sol";
+import { ATKPeopleRoles } from "../ATKPeopleRoles.sol";
+import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
 // Interface imports
 import { IERC3643IdentityRegistryStorage } from "./../../smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol";

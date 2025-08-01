@@ -9,7 +9,7 @@ import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.s
 import { AbstractATKSystemAddonFactoryImplementation } from
     "../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
 import { ATKXvPSettlementProxy } from "./ATKXvPSettlementProxy.sol";
-import { ATKPeopleRoles } from "../../system/ATKRoles.sol";
+import { ATKPeopleRoles } from "../../system/ATKPeopleRoles.sol";
 
 /// @title ATKXvPSettlementFactoryImplementation - A factory contract for creating XvPSettlement contracts
 /// @author SettleMint

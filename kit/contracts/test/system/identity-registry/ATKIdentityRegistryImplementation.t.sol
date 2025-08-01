@@ -10,7 +10,6 @@ import "../../utils/ClaimUtils.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import "@openzeppelin/contracts/access/IAccessControl.sol";
-import { ATKRoles } from "../../../contracts/system/ATKRoles.sol";
 import { IATKSystemAccessManager } from "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IERC3643TrustedIssuersRegistry } from

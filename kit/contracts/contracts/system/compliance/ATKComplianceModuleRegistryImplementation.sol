@@ -12,7 +12,7 @@ import {
     ComplianceModuleAlreadyRegistered,
     InvalidImplementationInterface
 } from "../ATKSystemErrors.sol";
-import { ATKPeopleRoles } from "../ATKRoles.sol";
+import { ATKPeopleRoles } from "../ATKPeopleRoles.sol";
 import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";

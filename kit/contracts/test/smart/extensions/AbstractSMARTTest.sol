@@ -20,7 +20,8 @@ import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { MockedComplianceModule } from "../../utils/mocks/MockedComplianceModule.sol";
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 import { SMARTToken } from "../examples/SMARTToken.sol";
-import { ATKPeopleRoles, ATKSystemRoles } from "../../../contracts/system/ATKRoles.sol";
+import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
+import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { SMARTIdentityVerificationComplianceModule } from
     "../../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
 import { ClaimExpressionUtils } from "../../utils/ClaimExpressionUtils.sol";

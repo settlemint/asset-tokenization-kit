@@ -24,7 +24,9 @@ import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.so
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ATKSystemAccessManagerImplementation } from "./access-manager/ATKSystemAccessManagerImplementation.sol";
 import { IATKSystemAccessManager } from "./access-manager/IATKSystemAccessManager.sol";
-import { ATKPeopleRoles, ATKRoles, ATKSystemRoles } from "./ATKRoles.sol";
+import { ATKPeopleRoles } from "./ATKPeopleRoles.sol";
+import { ATKRoles } from "./ATKRoles.sol";
+import { ATKSystemRoles } from "./ATKSystemRoles.sol";
 
 // --- Contract Definition ---
 

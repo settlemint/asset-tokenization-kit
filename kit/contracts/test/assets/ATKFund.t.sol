@@ -14,8 +14,8 @@ import { ATKFundImplementation } from "../../contracts/assets/fund/ATKFundImplem
 import { SMARTComplianceModuleParamPair } from
     "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
-
-import { ATKRoles as SystemATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../contracts/system/ATKRoles.sol";
+import { ATKPeopleRoles } from "../../contracts/system/ATKPeopleRoles.sol";
+import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ISMARTPausable } from "../../contracts/smart/extensions/pausable/ISMARTPausable.sol";

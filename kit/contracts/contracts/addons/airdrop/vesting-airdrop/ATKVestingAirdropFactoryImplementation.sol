@@ -15,7 +15,7 @@ import { ATKVestingAirdropImplementation } from "./ATKVestingAirdropImplementati
 import { ATKVestingAirdropProxy } from "./ATKVestingAirdropProxy.sol";
 
 // Constants
-import { ATKPeopleRoles } from "../../../system/ATKRoles.sol";
+import { ATKPeopleRoles } from "../../../system/ATKPeopleRoles.sol";
 
 /// @title Factory for Creating ATKVestingAirdrop Proxies
 /// @author SettleMint

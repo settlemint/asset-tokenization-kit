@@ -17,7 +17,8 @@ import { IClaimAuthorizer } from "../../onchainid/extensions/IClaimAuthorizer.so
 import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 // Constants
-import { ATKSystemRoles, ATKPeopleRoles } from "../ATKRoles.sol";
+import { ATKPeopleRoles } from "../ATKPeopleRoles.sol";
+import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
 // Extensions
 import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";

@@ -9,8 +9,7 @@ import { SMARTComplianceModuleParamPair } from
 import { IATKBond } from "../../contracts/assets/bond/IATKBond.sol";
 import { IATKBondFactory } from "../../contracts/assets/bond/IATKBondFactory.sol";
 import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
-
-import { ATKRoles as SystemATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../contracts/system/ATKRoles.sol";
+import { ATKPeopleRoles } from "../../contracts/system/ATKPeopleRoles.sol";
 import { ATKSystemImplementation } from "../../contracts/system/ATKSystemImplementation.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";

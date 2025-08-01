@@ -14,7 +14,7 @@ import { ATKLinearVestingStrategy } from
     "../../../contracts/addons/airdrop/vesting-airdrop/ATKLinearVestingStrategy.sol";
 import { IATKVestingStrategy } from "../../../contracts/addons/airdrop/vesting-airdrop/IATKVestingStrategy.sol";
 import { MockedERC20Token } from "../../utils/mocks/MockedERC20Token.sol";
-import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../../contracts/system/ATKRoles.sol";
+import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
 import { ATKSystemImplementation } from "../../../contracts/system/ATKSystemImplementation.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { AirdropUtils } from "../../utils/AirdropUtils.sol";

@@ -32,7 +32,8 @@ import { ATKTypedImplementationProxy } from "./ATKTypedImplementationProxy.sol";
 import { ISMARTComplianceModule } from "../smart/interface/ISMARTComplianceModule.sol";
 
 // Constants
-import { ATKSystemRoles, ATKPeopleRoles } from "./ATKRoles.sol";
+import { ATKPeopleRoles } from "./ATKPeopleRoles.sol";
+import { ATKSystemRoles } from "./ATKSystemRoles.sol";
 import { ATKTopics } from "./ATKTopics.sol";
 
 // Interface imports

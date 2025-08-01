@@ -14,7 +14,8 @@ import {
     InvalidTokenImplementationAddress,
     InvalidTokenImplementationInterface
 } from "../ATKSystemErrors.sol";
-import { ATKSystemRoles, ATKPeopleRoles } from "../ATKRoles.sol";
+import { ATKPeopleRoles } from "../ATKPeopleRoles.sol";
+import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 import { IATKTokenFactory } from "../token-factory/IATKTokenFactory.sol";
 import { InvalidImplementationInterface } from "../ATKSystemErrors.sol";
 import { IATKTypedImplementationRegistry } from "../IATKTypedImplementationRegistry.sol";

@@ -14,7 +14,8 @@ import { ISMARTComplianceModule } from "../../smart/interface/ISMARTComplianceMo
 import { ISMART } from "../../smart/interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
-import { ATKSystemRoles, ATKPeopleRoles } from "../ATKRoles.sol";
+import { ATKPeopleRoles } from "../ATKPeopleRoles.sol";
+import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 // Extensions

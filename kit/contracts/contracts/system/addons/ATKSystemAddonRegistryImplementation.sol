@@ -12,7 +12,8 @@ import {
     SystemAddonTypeAlreadyRegistered,
     SystemAddonImplementationNotSet
 } from "../ATKSystemErrors.sol";
-import { ATKPeopleRoles, ATKSystemRoles } from "../ATKRoles.sol";
+import { ATKPeopleRoles } from "../ATKPeopleRoles.sol";
+import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 import { IATKTypedImplementationRegistry } from "../IATKTypedImplementationRegistry.sol";
 import { ATKTypedImplementationProxy } from "../ATKTypedImplementationProxy.sol";
 import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";

@@ -17,7 +17,7 @@ import { ATKFixedYieldProxy } from "./ATKFixedYieldProxy.sol";
 import { ATKFixedYieldScheduleUpgradeable } from "./ATKFixedYieldScheduleUpgradeable.sol";
 
 // Constants
-import { ATKPeopleRoles } from "../../system/ATKRoles.sol";
+import { ATKPeopleRoles } from "../../system/ATKPeopleRoles.sol";
 
 /// @title ATKFixedYieldScheduleFactoryImplementation
 /// @author SettleMint

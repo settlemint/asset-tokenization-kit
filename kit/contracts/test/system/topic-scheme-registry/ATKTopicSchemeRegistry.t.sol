@@ -8,7 +8,8 @@ import { ISMARTTopicSchemeRegistry } from "../../../contracts/smart/interface/IS
 import { IATKTopicSchemeRegistry } from "../../../contracts/system/topic-scheme-registry/IATKTopicSchemeRegistry.sol";
 import { ATKTopicSchemeRegistryImplementation } from
     "../../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
-import { ATKRoles, ATKPeopleRoles, ATKSystemRoles } from "../../../contracts/system/ATKRoles.sol";
+import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
+import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { ATKSystemImplementation } from "../../../contracts/system/ATKSystemImplementation.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IATKSystemAccessManager } from "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
