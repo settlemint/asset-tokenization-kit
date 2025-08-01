@@ -123,8 +123,12 @@ export function getBondStatusStrategy(token: Token): BondStatusStrategy {
 
   // Check if bond is matured with proper date handling
   const now = getUnixTime(new Date());
-  const maturityTimestamp = getUnixTime(token.bond.maturityDate);
-  const isMatured = token.bond.isMatured || now >= maturityTimestamp;
+  const maturityTimestamp = token.bond.maturityDate
+    ? getUnixTime(token.bond.maturityDate)
+    : null;
+  const isMatured =
+    token.bond.isMatured ||
+    (maturityTimestamp !== null && now >= maturityTimestamp);
 
   if (isMatured) {
     return new MaturedStrategy();
@@ -155,8 +159,12 @@ export function getBondStatus(token: Token): BondStatus {
 
   // Check if bond is matured with proper date handling
   const now = getUnixTime(new Date());
-  const maturityTimestamp = getUnixTime(token.bond.maturityDate);
-  const isMatured = token.bond.isMatured || now >= maturityTimestamp;
+  const maturityTimestamp = token.bond.maturityDate
+    ? getUnixTime(token.bond.maturityDate)
+    : null;
+  const isMatured =
+    token.bond.isMatured ||
+    (maturityTimestamp !== null && now >= maturityTimestamp);
 
   if (isMatured) {
     return "matured";
