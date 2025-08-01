@@ -14,7 +14,7 @@ export default defineConfig({
     pool: "threads",
     isolate: false,
     reporters: process.env.CI ? ["dot", "github-actions"] : [],
-    onConsoleLog: () => false,
+    onConsoleLog: process.env.CI ? () => false : undefined,
     typecheck: {
       enabled: true,
     },
