@@ -200,7 +200,6 @@ contract ATKBondImplementation is
     /// @notice Closes off the bond at maturity
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE after maturity date
     /// @dev Requires sufficient underlying assets for all potential redemptions
-    /// @dev TODO: check role
     function mature() external override onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE) {
         if (block.timestamp < _maturityDate) revert BondNotYetMatured();
         if (isMatured) revert BondAlreadyMatured();

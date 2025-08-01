@@ -369,7 +369,6 @@ contract ATKIdentityRegistryImplementationTest is Test {
         testClaimTopics[1] = 2; // AML topic
 
         // Should return false since we haven't set up proper claims for verification
-        // TODO: Add comprehensive claim verification tests with proper claim setup
         assertFalse(identityRegistry.isVerified(user1, _topicsToExpressionNodes(testClaimTopics)));
     }
 

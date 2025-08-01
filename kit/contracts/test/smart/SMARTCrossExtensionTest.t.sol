@@ -527,11 +527,6 @@ contract SMARTCrossExtensionTest is Test {
     // ============ Helper Functions ============
 
     function _setupTokenIdentity() private {
-        // Grant CLAIM_MANAGER_ROLE to owner on the token identity's access manager
-        // TODO: do we need this?
-        // vm.prank(owner);
-        // IAccessControl(address(accessManager)).grantRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, owner);
-
         // Issue a large collateral claim to the token to allow minting
         claimUtils.issueCollateralClaim(
             address(crossExtToken),

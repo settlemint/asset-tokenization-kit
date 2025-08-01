@@ -505,10 +505,6 @@ contract ATKSystemImplementation is
         // Set the identity factory's own OnChainID (this will now successfully issue claims)
         IATKIdentityFactory(localIdentityFactoryProxy).setOnchainID(identityFactoryIdentity);
 
-        // Connect the token factory registry to the system access manager for centralized role checking
-        // TODO REMOVE
-        // IATKTokenFactoryRegistry(localTokenFactoryRegistryProxy).setSystemAccessManager(localSystemAccessManagerProxy);
-
         // Mark the system as bootstrapped
         _bootstrapped = true;
 
