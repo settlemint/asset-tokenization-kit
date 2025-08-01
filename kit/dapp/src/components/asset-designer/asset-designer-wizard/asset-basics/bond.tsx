@@ -63,7 +63,8 @@ export const BondBasics = withForm({
           <form.AppField
             name="underlyingAsset"
             children={(field) => (
-              <field.AssetAddressField
+              <field.AddressSelectOrInputField
+                scope="asset"
                 label={t("form.fields.underlyingAsset.label")}
                 required={isRequiredField("underlyingAsset")}
               />
