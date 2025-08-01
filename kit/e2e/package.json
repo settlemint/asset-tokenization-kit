@@ -5,7 +5,7 @@
   "type": "module",
   "dependencies": {},
   "devDependencies": {
-    "@playwright/test": "1.54.1",
+    "@playwright/test": "1.54.2",
     "@types/bun": "1.2.19"
   },
   "peerDependencies": {
