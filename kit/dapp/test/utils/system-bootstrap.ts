@@ -100,7 +100,6 @@ export async function bootstrapTokenFactories(
       verificationCode: DEFAULT_PINCODE,
       verificationType: "pincode",
     },
-    contract: system?.tokenFactoryRegistry,
     factories: nonExistingFactories,
   });
 

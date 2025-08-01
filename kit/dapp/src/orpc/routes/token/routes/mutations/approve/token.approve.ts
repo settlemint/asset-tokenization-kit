@@ -50,17 +50,13 @@ export const approve = tokenRouter.token.approve
       type: verification.verificationType,
     });
 
-    await context.portalClient.mutate(
-      TOKEN_APPROVE_MUTATION,
-      {
-        address: contract,
-        from: sender.wallet,
-        spender,
-        amount: amount.toString(),
-        ...challengeResponse,
-      },
-      context.t("tokens:api.mutations.approve.messages.failed")
-    );
+    await context.portalClient.mutate(TOKEN_APPROVE_MUTATION, {
+      address: contract,
+      from: sender.wallet,
+      spender,
+      amount: amount.toString(),
+      ...challengeResponse,
+    });
 
     // Return the updated token data using the read handler
     return await call(

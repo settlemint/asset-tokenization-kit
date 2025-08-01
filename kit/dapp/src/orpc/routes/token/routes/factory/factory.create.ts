@@ -82,7 +82,7 @@ export const factoryCreate = portalRouter.token.factoryCreate
       requiredRoles: TOKEN_FACTORY_PERMISSIONS.create,
       getAccessControl: ({ context }) => {
         const systemData = context.system;
-        return systemData?.tokenFactoryRegistry?.accessControl;
+        return systemData?.systemAccessManager?.accessControl;
       },
     })
   )
@@ -153,7 +153,7 @@ export const factoryCreate = portalRouter.token.factoryCreate
 
         // Execute the factory creation transaction (reuse challenge response)
         const variables: VariablesOf<typeof CREATE_TOKEN_FACTORY_MUTATION> = {
-          address: system.tokenFactoryRegistry?.id,
+          address: system.tokenFactoryRegistry,
           from: sender.wallet,
           factoryImplementation: factoryImplementation,
           tokenImplementation: tokenImplementation,
@@ -164,8 +164,7 @@ export const factoryCreate = portalRouter.token.factoryCreate
         // Use the Portal client's mutate method that returns the transaction hash
         const transactionHash = await context.portalClient.mutate(
           CREATE_TOKEN_FACTORY_MUTATION,
-          variables,
-          context.t("tokens:api.factory.create.messages.failed", { name })
+          variables
         );
 
         results.push({

@@ -135,20 +135,20 @@ describe("complianceParams", () => {
     it("should accept valid country codes", () => {
       const validParams = {
         typeId: "CountryAllowListComplianceModule" as const,
-        values: ["US", "GB", "FR", "DE"],
+        values: [840, 826, 250, 276], // US, GB, FR, DE as numeric codes
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
         params:
           "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       const result = validator.parse(validParams);
       expect(result.typeId).toBe("CountryAllowListComplianceModule");
-      expect(result.values).toEqual(["US", "GB", "FR", "DE"]);
+      expect(result.values).toEqual([840, 826, 250, 276]);
     });
 
     it("should reject invalid country codes", () => {
       const invalidParams = {
         typeId: "CountryAllowListComplianceModule" as const,
-        values: ["USA", "us", "XX", "123"],
+        values: [999, 1000, -1, 0], // Invalid numeric codes
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
         params:
           "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
@@ -172,14 +172,14 @@ describe("complianceParams", () => {
     it("should accept valid country codes", () => {
       const validParams = {
         typeId: "CountryBlockListComplianceModule" as const,
-        values: ["CN", "RU", "IR"],
+        values: [156, 643, 364], // CN, RU, IR as numeric codes
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
         params:
           "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       const result = validator.parse(validParams);
       expect(result.typeId).toBe("CountryBlockListComplianceModule");
-      expect(result.values).toEqual(["CN", "RU", "IR"]);
+      expect(result.values).toEqual([156, 643, 364]);
     });
   });
 
@@ -255,7 +255,7 @@ describe("complianceParams", () => {
 
       const countryParams = {
         typeId: "CountryAllowListComplianceModule" as const,
-        values: ["US"],
+        values: [840], // US as numeric code
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
         params:
           "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
@@ -269,7 +269,7 @@ describe("complianceParams", () => {
       // Address module with country codes should fail
       const wrongParams1 = {
         typeId: "AddressBlockListComplianceModule" as const,
-        values: ["US", "GB"], // Country codes instead of addresses
+        values: [840, 826], // Numeric country codes instead of addresses
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
         params:
           "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
@@ -279,7 +279,7 @@ describe("complianceParams", () => {
       // Country module with addresses should fail
       const wrongParams2 = {
         typeId: "CountryAllowListComplianceModule" as const,
-        values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"], // Address instead of country codes
+        values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"], // Address instead of numeric country codes
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
         params:
           "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
@@ -314,7 +314,7 @@ describe("complianceParams", () => {
     it("should reject invalid params hash", () => {
       const invalidParams = {
         typeId: "CountryAllowListComplianceModule" as const,
-        values: ["US"],
+        values: [840], // US as numeric code
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
         params: "0xinvalidhash", // Too short
       };
@@ -324,7 +324,7 @@ describe("complianceParams", () => {
     it("should reject params without 0x prefix", () => {
       const invalidParams = {
         typeId: "CountryBlockListComplianceModule" as const,
-        values: ["CN"],
+        values: [156], // CN as numeric code
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
         params:
           "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef", // Missing 0x
@@ -389,7 +389,7 @@ describe("complianceModulePair", () => {
     };
     const countryPair = {
       typeId: "CountryAllowListComplianceModule" as const,
-      values: ["US", "GB"],
+      values: [840, 826], // US, GB as numeric codes
       module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
       params:
         "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
@@ -437,7 +437,7 @@ describe("complianceModulePairArray", () => {
       },
       {
         typeId: "CountryAllowListComplianceModule" as const,
-        values: ["US", "GB"],
+        values: [840, 826], // US, GB as numeric codes
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
         params:
           "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
@@ -536,7 +536,7 @@ describe("type safety", () => {
     it("should handle safeParse", () => {
       const result = complianceParams().safeParse({
         typeId: "CountryAllowListComplianceModule",
-        values: ["US", "GB"],
+        values: [840, 826], // US, GB as numeric codes
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
         params:
           "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
@@ -545,7 +545,7 @@ describe("type safety", () => {
       if (result.success) {
         expect(result.data.typeId).toBe("CountryAllowListComplianceModule");
         if (result.data.typeId === "CountryAllowListComplianceModule") {
-          expect(result.data.values).toEqual(["US", "GB"]);
+          expect(result.data.values).toEqual([840, 826]);
         }
       }
     });
@@ -637,8 +637,8 @@ describe("Individual value validators", () => {
   describe("countryAllowListValues", () => {
     const validator = countryAllowListValues();
 
-    it("should accept valid ISO country codes", () => {
-      const validCodes = ["US", "GB", "FR", "DE", "JP", "CN"];
+    it("should accept valid ISO numeric country codes", () => {
+      const validCodes = [840, 826, 250, 276, 392, 156]; // US, GB, FR, DE, JP, CN
       const result = validator.parse(validCodes);
       expect(result).toEqual(validCodes);
     });
@@ -649,19 +649,18 @@ describe("Individual value validators", () => {
     });
 
     it("should reject invalid country codes", () => {
-      expect(() => validator.parse(["USA"])).toThrow(); // 3-letter code
-      expect(() => validator.parse(["us"])).toThrow(); // lowercase
-      expect(() => validator.parse(["XX"])).toThrow(); // invalid code
-      expect(() => validator.parse(["U1"])).toThrow(); // alphanumeric
-      expect(() => validator.parse([""])).toThrow(); // empty string
+      expect(() => validator.parse([999])).toThrow(); // invalid numeric code
+      expect(() => validator.parse([0])).toThrow(); // invalid code
+      expect(() => validator.parse([-1])).toThrow(); // negative code
+      expect(() => validator.parse([1000])).toThrow(); // too high
     });
 
     it("should reject mixed valid and invalid codes", () => {
-      expect(() => validator.parse(["US", "GB", "XXX", "FR"])).toThrow();
+      expect(() => validator.parse([840, 826, 999, 276])).toThrow();
     });
 
-    it("should reject non-string values", () => {
-      expect(() => validator.parse([123])).toThrow();
+    it("should reject non-numeric values", () => {
+      expect(() => validator.parse(["US"])).toThrow(); // string code
       expect(() => validator.parse([null])).toThrow();
       expect(() => validator.parse([undefined])).toThrow();
       expect(() => validator.parse([{}])).toThrow();
@@ -675,8 +674,8 @@ describe("Individual value validators", () => {
   describe("countryBlockListValues", () => {
     const validator = countryBlockListValues();
 
-    it("should accept valid ISO country codes", () => {
-      const validCodes = ["RU", "CN", "IR", "KP"];
+    it("should accept valid ISO numeric country codes", () => {
+      const validCodes = [643, 156, 364, 408]; // RU, CN, IR, KP
       const result = validator.parse(validCodes);
       expect(result).toEqual(validCodes);
     });
@@ -687,9 +686,9 @@ describe("Individual value validators", () => {
     });
 
     it("should reject invalid country codes", () => {
-      expect(() => validator.parse(["RUSSIA"])).toThrow();
-      expect(() => validator.parse(["cn"])).toThrow();
-      expect(() => validator.parse(["12"])).toThrow();
+      expect(() => validator.parse([999])).toThrow(); // invalid numeric code
+      expect(() => validator.parse([0])).toThrow(); // invalid code
+      expect(() => validator.parse([-1])).toThrow(); // negative code
     });
 
     it("should have proper description", () => {
@@ -902,30 +901,29 @@ describe("Edge cases and error handling", () => {
       expect((result as { extraField?: unknown }).extraField).toBeUndefined();
     });
 
-    it("should handle params with wrong length hash", () => {
-      const shortHash = {
+    it("should handle params with invalid hex format", () => {
+      const invalidHex = {
         typeId: "AddressBlockListComplianceModule" as const,
         values: [],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params: "0x1234", // Too short
+        params: "0xinvalidhex", // Invalid hex characters
       };
-      expect(() => complianceParams().parse(shortHash)).toThrow();
+      expect(() => complianceParams().parse(invalidHex)).toThrow();
 
-      const longHash = {
+      const noPrefix = {
         typeId: "AddressBlockListComplianceModule" as const,
         values: [],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef00", // Too long
+        params: "1234567890abcdef", // Missing 0x prefix
       };
-      expect(() => complianceParams().parse(longHash)).toThrow();
+      expect(() => complianceParams().parse(noPrefix)).toThrow();
     });
   });
 
   describe("Array validators edge cases", () => {
     it("should handle non-array values for array validators", () => {
-      expect(() => countryAllowListValues().parse("US")).toThrow();
-      expect(() => countryBlockListValues().parse(123)).toThrow();
+      expect(() => countryAllowListValues().parse(840)).toThrow(); // single number instead of array
+      expect(() => countryBlockListValues().parse(156)).toThrow(); // single number instead of array
       expect(() => addressBlockListValues().parse({})).toThrow();
       expect(() => identityAllowListValues().parse(null)).toThrow();
       expect(() => identityBlockListValues().parse(undefined)).toThrow();
@@ -933,7 +931,7 @@ describe("Edge cases and error handling", () => {
     });
 
     it("should handle nested arrays", () => {
-      expect(() => countryAllowListValues().parse([["US"]])).toThrow();
+      expect(() => countryAllowListValues().parse([[840]])).toThrow(); // nested numeric codes
       expect(() =>
         addressBlockListValues().parse([
           ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"],
@@ -942,7 +940,7 @@ describe("Edge cases and error handling", () => {
     });
 
     it("should handle objects in arrays", () => {
-      expect(() => countryAllowListValues().parse([{ code: "US" }])).toThrow();
+      expect(() => countryAllowListValues().parse([{ code: 840 }])).toThrow(); // object instead of number
       expect(() =>
         addressBlockListValues().parse([
           { address: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f" },
@@ -970,7 +968,7 @@ describe("Edge cases and error handling", () => {
       const nestedInvalid = [
         {
           typeId: "CountryAllowListComplianceModule" as const,
-          values: ["US", 123], // Invalid country code
+          values: [840, "invalid"], // Invalid country code (mixed with string)
           module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
           params:
             "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
@@ -983,7 +981,7 @@ describe("Edge cases and error handling", () => {
       const orderedArray = [
         {
           typeId: "CountryAllowListComplianceModule" as const,
-          values: ["US"],
+          values: [840], // US as numeric code
           module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
           params:
             "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
@@ -1006,7 +1004,7 @@ describe("Edge cases and error handling", () => {
     it("should provide clear error for mismatched typeId and values", () => {
       const mismatch = {
         typeId: "AddressBlockListComplianceModule" as const,
-        values: ["US", "GB"], // Country codes for address module
+        values: [840, 826], // Numeric country codes for address module (should fail)
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
         params:
           "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",

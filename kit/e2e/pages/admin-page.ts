@@ -19,9 +19,7 @@ export class AdminPage extends BasePage {
     internalId: string
   ) {
     await this.page
-      .locator(
-        'div[data-slot="sidebar-content"] > button:has-text("Asset Designer")'
-      )
+      .getByRole("button", { name: "Asset designer" })
       .first()
       .click();
     await this.page

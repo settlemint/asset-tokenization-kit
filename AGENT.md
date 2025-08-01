@@ -1,443 +1,289 @@
-# Asset Tokenization Kit
+# Asset Tokenization Kit (ATK) - Development Assistant
 
-**SettleMint Asset Tokenization Kit** - Full-stack blockchain tokenization
-platform.
+## Identity
 
-## Quick Reference
+Expert ATK blockchain tokenization specialist. Direct, precise, results-focused.
+
+## Context
+
+**Monorepo**: ERC-3643 compliant contracts + React 19 dApp + TheGraph + K8s
+**Architecture**: UUPS proxies, factory patterns, modular compliance, RBAC
+**Stack**: Solidity 0.8.30 | React 19 | TanStack | oRPC | Drizzle |
+Foundry/Hardhat
+
+## Commands
 
 ```bash
 # Setup
 bun install && bunx settlemint connect --instance local && bun run artifacts
-
-# Development
 bun run dev:up && bun run dev
 
-# Quality (REQUIRED before PR)
+# Before PR (MANDATORY)
 bun run ci
-
-# Branch check (CRITICAL)
 [[ "$(git branch --show-current)" =~ ^(main|master)$ ]] && git checkout -b feature/name
+
+# Common
+bun run dev:reset              # Reset Docker
+bun run artifacts              # After contract changes
+bun run db:generate && migrate # DB changes
+cd kit/dapp && bun run codegen # Frontend codegen
+cd kit/contracts && bun test   # Test contracts
 ```
 
-## Project Structure
+## Architecture
 
-- `kit/contracts/` - Solidity (ERC-3643, UUPS) → Use **solidity-expert**
-- `kit/dapp/` - React 19, TanStack, ORPC → Use **react-dev**
-- `kit/subgraph/` - TheGraph indexing → Use **subgraph-dev**
-- `kit/dapp/src/orpc/` - API endpoints → Use **orpc-expert**
+**Monorepo**: kit/{contracts,dapp,subgraph,e2e,charts,tools}
 
-## Agent Orchestration Pattern
+**Contracts**:
 
-### CRITICAL: Agent Communication Limitations
+- System: ATKSystem (registry), AccessManager (RBAC), UUPS proxies
+- Assets: Bonds, Deposits, Equities, Funds, Stablecoins, Crypto
+- SMART: Modular compliance (Burnable, Capped, Collateral, Pausable, Yield)
 
-**Sub-agents CANNOT invoke other agents** - Only main Claude orchestrates:
+**Frontend**: React 19 + TanStack (Query/Router/Form/Start) + oRPC + Drizzle +
+shadcn/ui
 
-- Agents return structured outputs with handoff information
-- Main Claude extracts findings and passes context between agents
-- Each agent must specify what the next agent needs
-
-### Agent Routing Protocol
-
-**For any implementation task:**
-
-1. **ALWAYS start with planner** agent for multi-step features
-2. **FOLLOW the agent routing** specified by planner EXACTLY
-3. **USE ONLY the agents** explicitly recommended
-4. **EXTRACT and PASS context** between agent invocations
-5. **EXECUTE agents in PARALLEL** when tasks are independent
-
-### Agent Return Format
-
-Agents must return structured information:
-
-```markdown
-## Task Completed: [Task Name]
-
-- Key findings: [What was discovered/implemented]
-- Output location: [Files created/modified]
-- Next agent needs: [Context for next specialist]
-- Blockers: [Any issues preventing completion]
-```
-
-### Available Specialized Agents
-
-**Core Development:**
-
-- **planner**: Tech lead, analyzes requirements, orchestrates teams
-- **solidity-expert**: Smart contract development and security
-- **react-dev**: React components with TanStack suite
-- **orpc-expert**: ORPC API endpoints and OpenAPI
-- **subgraph-dev**: TheGraph indexing and mappings
-
-**Quality & Testing:**
-
-- **test-dev**: Vitest and Forge test creation
-- **integration-tester**: E2E testing with Playwright
-- **security-auditor**: Comprehensive security reviews
-- **code-reviewer**: Post-implementation review
-
-**Infrastructure & Optimization:**
-
-- **devops**: Helm charts and Kubernetes configs
-- **ci-cd-expert**: GitHub Actions and deployment pipelines
-- **performance-optimizer**: Full-stack performance tuning
-
-**Specialized Support:**
-
-- **tailwind-css-expert**: Styling with Tailwind/shadcn
-- **documentation-expert**: All documentation needs - README, CLAUDE.md,
-  content, translations (MUST write to README.md files in relevant folders,
-  NEVER create separate docs/ folders)
-- **code-archaeologist**: Legacy code analysis
-- **team-configurator**: Multi-agent coordination
-
-### Parallel Execution Guidelines
-
-**When to Execute in Parallel:**
-
-- Independent file operations (reads, writes, analysis)
-- Separate module implementations (frontend + backend)
-- Multiple test file creations
-- Documentation across different modules
-- Style and type definitions
-
-**When to Execute Sequentially:**
-
-- Dependencies exist between tasks
-- Output from one agent feeds another
-- Contract → Subgraph → API → UI flow
-- Security reviews require complete code
-
-### Example: Multi-Agent Feature Implementation
-
-```
-User: "Add token transfer functionality with approval"
-
-Optimized Parallel Flow:
-1. Invoke planner agent → Returns implementation roadmap
-2. Extract planner's findings and routing map
-3. PARALLEL EXECUTION - Phase 1:
-   - solidity-expert: "Implement transfer methods per planner's spec"
-   - documentation-expert: "Prepare transfer feature documentation structure"
-4. SEQUENTIAL - Phase 2 (needs contract output):
-   - subgraph-dev: "Index transfer events from contract at [address]"
-5. PARALLEL EXECUTION - Phase 3:
-   - orpc-expert: "Create transfer API endpoints"
-   - react-dev: "Build transfer UI components"
-   - test-dev: "Write unit tests for utilities"
-6. PARALLEL EXECUTION - Phase 4:
-   - test-dev: "Integration tests for complete feature"
-   - documentation-expert: "Finalize docs with examples"
-7. SEQUENTIAL - Final Phase:
-   - code-reviewer: "Review all changes"
-```
-
-### Orchestration Workflow
-
-```mermaid
-graph TD
-    Main[Main Claude] --> Plan[Planner]
-    Plan --> P1{Phase 1: Parallel}
-    P1 --> Sol[Solidity Expert]
-    P1 --> Doc1[Documentation Expert]
-
-    Sol --> S1{Sequential}
-    S1 --> Sub[Subgraph Dev]
-
-    Sub --> P2{Phase 2: Parallel}
-    P2 --> API[ORPC Expert]
-    P2 --> UI[React Dev]
-    P2 --> Test1[Test Dev - Units]
-
-    API --> P3{Phase 3: Parallel}
-    UI --> P3
-    P3 --> Test2[Test Dev - Integration]
-    P3 --> Doc2[Documentation Expert - Finalize]
-
-    Test2 --> Rev[Code Reviewer]
-    Doc2 --> Rev
-```
-
-### Parallel Execution Syntax
-
-When invoking agents in parallel, use clear phase grouping:
-
-```markdown
-## PARALLEL EXECUTION - [Phase Name]
-
-Invoke the following agents simultaneously:
-
-- agent-1: "Task description with specific context"
-- agent-2: "Task description with specific context"
-- agent-3: "Task description with specific context"
-
-## SEQUENTIAL EXECUTION - [Phase Name]
-
-After parallel tasks complete, invoke:
-
-- agent-4: "Task using outputs from previous phase"
-```
-
-## Essential Commands
-
-See `package.json` scripts. Key ones:
-
-- `bun run artifacts` - After contract changes
-- `bun run dev:reset` - Reset Docker environment
-- `bun run db:generate && bun run db:migrate` - Database changes
-
-## MCP Tools (Strategic Usage)
-
-### MANDATORY: Gemini-CLI Usage Protocol
-
-**ALWAYS use Gemini-CLI for:**
-
-1. **Context Gathering** (REQUIRED before implementation):
-   - `@file.ts explain the architecture` - Understand before modifying
-   - `@module/ what patterns are used here` - Learn conventions first
-   - Use before making architectural decisions
-2. **Code Review** (REQUIRED after changes):
-   - `@changed-file.ts review for bugs and edge cases`
-   - `changeMode: true` for structured edit suggestions
-   - Validate security implications of changes
-
-3. **Complex Problem Solving**:
-   - Architecture validation and alternatives
-   - Performance optimization strategies
-   - Cross-module impact analysis
-
-**Usage Pattern:**
-
-```bash
-# Before implementation - gather context
-mcp__gemini-cli__ask-gemini(prompt="@kit/contracts/ explain the upgrade pattern", model="gemini-2.5-pro")
-
-# After implementation - review changes
-mcp__gemini-cli__ask-gemini(prompt="@file.ts review my changes for security issues", changeMode=true)
-
-# For complex analysis - use flash for speed
-mcp__gemini-cli__ask-gemini(prompt="analyze performance bottlenecks", model="gemini-2.5-pro")
-```
-
-### Other MCP Tools:
-
-2. **Context7** - Latest library docs
-3. **Grep** - Real-world examples
-4. **Linear/Sentry** - Issue tracking
-5. **OpenZeppelin Contracts** - Smart contract generation:
-   - Quick prototyping with audited base contracts
-   - ERC-20/721/1155 tokens, DAOs, stablecoins
-   - Use with `solidity-expert` to extend for ATK patterns
-
-## CLAUDE.md Creation Rules
-
-Module CLAUDE.md files MUST be minimal (< 50 lines):
-
-```markdown
-# [Module] - AI Guidelines
-
-[One-line description]. See [README.md](./README.md) for documentation.
-
-**Agent**: Use `[agent-name]` for this module.
-
-[Only critical AI-specific notes if needed]
-```
-
-## Documentation Rules
-
-1. **ALWAYS write documentation in README.md files** in the relevant module
-   folders
-2. **NEVER create separate docs/ folders** - documentation belongs with the code
-3. **Module structure for documentation**:
-   - `kit/contracts/README.md` - Smart contract documentation
-   - `kit/dapp/README.md` - Frontend documentation
-   - `kit/dapp/src/orpc/README.md` - API documentation
-   - `kit/subgraph/README.md` - Subgraph documentation
-4. **Documentation content**:
-   - User guides go in module README.md files
-   - API references go in relevant folder README.md files
-   - Architecture docs go in root or module README.md files
+**Ports**: Anvil:8545 | TxSigner:8547 | Portal:7701 | Hasura:8080 | Graph:8000 |
+MinIO:9000
 
 ## Critical Rules
 
-1. **NEVER commit to main branch**
-2. **ALWAYS run `bun run ci` before PR**
-3. **Trust Opus first, validate with Gemini-CLI only when needed**
-4. **NEVER modify shadcn components in ui/ folder**
-5. **Subgraph .ts files are AssemblyScript, not TypeScript**
-6. **React hooks**: Avoid unnecessary useCallback/useMemo - see react-dev agent
-   guidelines
-7. **React Query with ORPC**:
-
-   ```typescript
-   // ✅ CORRECT - Direct usage preserves type safety
-   useMutation(orpc.token.create.mutationOptions());
-   useQuery(orpc.token.read.queryOptions({ input: { id } }));
-
-   // ✅ CORRECT - Custom hooks for reusability
-   function useUserTokens(userId?: string) {
-     return useQuery(
-       orpc.token.listByUser.queryOptions({
-         input: { userId },
-         enabled: !!userId, // Dependent query pattern
-       })
-     );
-   }
-
-   // ❌ WRONG - Don't destructure or copy to state
-   useMutation({ ...orpc.token.create.mutationOptions() });
-   const [tokens, setTokens] = useState(data?.tokens); // Never copy query data
-   ```
-
-   - Use `select` for transformations, not render-time filtering
-   - Handle loading/error states before checking data
-   - Create custom hooks for complex queries
-   - Test with MSW and fresh QueryClient per test
-
-## Memories
-
-- Shadcn components are never the problem
-
-## Context Optimization
-
-- Reference README.md files instead of duplicating content
-- Keep agent-specific details in agent files
-- Use concise command examples
-- Avoid redundant explanations
-- Link to external docs rather than copying
-
-## Granular Task Planning
-
-**CRITICAL**: All tasks must be broken down into specific, measurable actions
-with concrete values. This transparency ensures all implementation decisions are
-visible and approved before execution.
-
-### ❌ WRONG - Vague Tasks:
-
-- "Style the navbar"
-- "Optimize the API"
-- "Update the database schema"
-- "Improve the algorithm"
-
-### ✅ CORRECT - Granular Tasks:
-
-- "Change navbar height from 60px to 80px"
-- "Reduce padding-top from 16px to 12px"
-- "Adjust background from #ffffff to rgba(255,255,255,0.95)"
-- "Add index on user_id column in tokens table"
-- "Change API timeout from 30s to 10s"
-- "Replace O(n²) nested loop with O(n log n) sort-then-process"
-- "Increase cache TTL from 5 minutes to 15 minutes"
-
-### Domain-Specific Examples:
-
-**Frontend Tasks:**
-
-- "Change button border-radius from 4px to 8px"
-- "Update font-size from 14px to 16px for .heading-secondary"
-- "Add 200ms ease-in-out transition to hover states"
-- "Change grid from 3 columns to 4 columns on desktop (>1024px)"
-
-**Backend Tasks:**
-
-- "Add rate limiting: 100 requests per minute per IP"
-- "Change batch size from 100 to 500 records"
-- "Add retry logic: 3 attempts with exponential backoff (1s, 2s, 4s)"
-- "Update validation: require email to match /^[^\s@]+@[^\s@]+\.[^\s@]+$/"
-
-**Database Tasks:**
-
-- "Add compound index on (user_id, created_at DESC)"
-- "Change column type from VARCHAR(255) to TEXT"
-- "Add CHECK constraint: price >= 0"
-- "Set default value for status column to 'pending'"
-
-**Algorithm Tasks:**
-
-- "Replace linear search with binary search for sorted array"
-- "Change hash function from MD5 to SHA-256"
-- "Update threshold from 0.7 to 0.85 for matching algorithm"
-- "Add memoization for recursive calls with cache size 1000"
-
-## Agent Context7 MCP Documentation Requirements
-
-**CRITICAL**: All specialized agents MUST fetch latest documentation using
-Context7 MCP for their area of responsibility before implementation. This
-ensures agents use current APIs and best practices.
-
-Each agent has specific Context7 documentation requirements defined in their
-individual agent files in `.claude/agents/`. Agents must:
-
-1. **Fetch documentation at task start** - Before any implementation
-2. **Use library-specific topics** - Target relevant documentation sections
-3. **Apply latest patterns** - Use current best practices from docs
-4. **Cache results** - Avoid redundant fetches in same session
-
-### Documentation Fetching Pattern
-
-All agents should follow this pattern:
-
-1. **Identify required libraries** from package.json and imports
-2. **Resolve library IDs** using `resolve-library-id`
-3. **Fetch specific docs** with relevant topics using `get-library-docs`
-4. **Cache results** to avoid repeated fetches in same session
-5. **Apply latest patterns** from fetched documentation
-
-### Example Agent Implementation
+1. NEVER commit to main
+2. ALWAYS `bun run ci` before PR
+3. vitest only (not bun:test)
+4. Trust Opus → validate with Gemini
+5. NEVER modify shadcn ui/ components
+6. Subgraph = AssemblyScript (not TypeScript)
+7. No unnecessary useCallback/useMemo
+8. React Query + oRPC:
 
 ```typescript
-// At the start of any agent task
-async function fetchRequiredDocs() {
-  // Resolve library ID first
-  const { libraryId } =
-    (await mcp__context7__resolve) -
-    library -
-    id({
-      libraryName: "react",
-    });
+// ✅ CORRECT
+useMutation(orpc.token.create.mutationOptions());
+useQuery(orpc.token.read.queryOptions({ input: { id } }));
 
-  // Then fetch documentation with specific topic
-  const docs =
-    (await mcp__context7__get) -
-    library -
-    docs({
-      context7CompatibleLibraryID: libraryId,
-      topic: "hooks",
-      tokens: 5000,
-    });
-
-  return docs;
-}
+// ❌ WRONG
+useMutation({ ...orpc.token.create.mutationOptions() });
+const [tokens, setTokens] = useState(data?.tokens); // Never copy query data
 ```
 
-## Agent Best Practices
+## Key Facts
 
-1. **Agent File Guidelines**
-   - Keep under 500 lines for token efficiency
-   - Use bullet points over paragraphs
-   - Include only essential examples
-   - Reference docs instead of embedding
+- Shadcn components = never the problem
+- vitest only (not bun:test)
+- `select` for transforms (not render-time)
+- Handle loading/error before data
 
-2. **Agent Selection**
-   - Use `planner` for any multi-step implementation
-   - Invoke `security-auditor` before production deployments
-   - Run `integration-tester` for user-facing features
-   - Apply `performance-optimizer` when metrics degrade
+## Testing
 
-3. **Workflow Patterns**
-   - **Parallel**: Frontend + Backend development
-   - **Sequential**: Contract → Subgraph → API → UI
-   - **Continuous**: Security + Performance reviews
-   - **Final**: Code review before completion
+- **Contracts**: Foundry tests in kit/contracts/test/
+- **Frontend**: Vitest with `bun run test`
+- **E2E**: Playwright in kit/e2e/
 
-4. **Task Transparency**
-   - Break down ALL tasks into specific, measurable actions
-   - Include exact values (pixels, percentages, timeouts, etc.)
-   - Expose algorithmic choices and thresholds
-   - Make design decisions explicit before implementation
+```bash
+forge test --match-test testSpecificFunction -vvv  # Single contract test
+bun run test path/to/test.spec.ts                  # Single frontend test
+```
 
-5. **Documentation First**
-   - ALWAYS fetch latest docs before implementation
-   - Use Context7 MCP for all library documentation
-   - Apply current best practices from fetched docs
-   - Update approach based on latest API changes
+## Patterns
+
+**Upgradeable Contracts**: Never change storage layout | Add vars at end | Use
+gap pattern
+
+**Type Safety**: ABIs → Contract types | Schemas → GraphQL types | Drizzle → DB
+types | Run `bun run codegen` after changes
+
+## Debugging
+
+- **Contracts**: docker logs atk-anvil | forge debug | Check
+  ignition/deployments/
+- **Frontend**: Console + Network tab | Check localStorage auth
+- **Subgraph**: docker logs atk-graph-node | http://localhost:8030/graphql
+
+## Kit Packages
+
+**kit/contracts**:
+
+- Stack: Foundry + Hardhat + Solidity 0.8.30 + OpenZeppelin 5.4.0 + OnChainID
+  v2.2.1
+- Patterns: UUPS proxies, Factory pattern, Modular compliance, RBAC via
+  AccessManager
+
+**kit/dapp**:
+
+- Stack: React 19 + TanStack (Start/Query/Form/Router) + oRPC + Drizzle + Better
+  Auth
+- UI: Tailwind v4 + shadcn/ui + Vite + Bun runtime
+- Features: Multi-step wizards, URL state, 2FA/pincode, i18next, Recharts
+
+**kit/subgraph**:
+
+- Stack: TheGraph v0.38.1 + AssemblyScript + GraphQL + gql.tada
+- Coverage: System/Token/Compliance/Identity/Asset events
+
+**kit/e2e**:
+
+- Stack: Playwright v1.54.1 + TypeScript + Page Object Model
+- Coverage: Onboarding, Asset ops, Token ops, XvP, Form validation
+
+**kit/charts**:
+
+- Stack: Helm v3 + K8s + Victoria Metrics + Tempo
+- Services: ATK chart, PostgreSQL, Redis, Besu, Portal, Hasura
+- Features: HPA, Network policies, PodDisruptionBudgets
+
+## Task Planning (MANDATORY)
+
+**ALWAYS TodoWrite before starting ANY task**
+
+❌ VAGUE: "Style navbar" | "Optimize API" | "Update schema"
+✅ SPECIFIC: "navbar height 60px→80px" | "API timeout 30s→10s" | "Add index on
+user_id"
+
+**Protocol**: Task → TodoWrite → in_progress → completed → update if needed
+
+## Agent Usage (MANDATORY)
+
+**PROACTIVELY use specialized agents from `.claude/agents/`**
+
+NEVER handle specialized tasks yourself → ALWAYS use the appropriate agent
+
+### Agent Categories
+
+**Development & Architecture**
+
+- `code-reviewer` - MUST BE USED after ANY code changes
+- `architect-reviewer` - MUST BE USED for architectural decisions
+- `react-performance-architect` - MUST BE USED for React components
+- `typescript-type-architect` - MUST BE USED for TypeScript types
+- `orpc-api-architect` - MUST BE USED for oRPC APIs
+- `tailwind-css-architect` - MUST BE USED for styling
+
+**Testing**
+
+- `vitest-test-architect` - MUST BE USED for unit tests
+- `playwright-test-engineer` - MUST BE USED for E2E tests
+
+**Infrastructure**
+
+- `kubernetes-orchestration-expert` - MUST BE USED for K8s tasks
+- `github-actions-architect` - MUST BE USED for CI/CD workflows
+- `bun-runtime-specialist` - MUST BE USED for Bun optimization
+
+**Specialized**
+
+- `solidity-security-auditor` - MUST BE USED for smart contracts
+- `tanstack-suite-architect` - MUST BE USED for TanStack libraries
+- `reality-check-manager` - MUST BE USED to verify completions
+
+### Agent Usage Examples
+
+```typescript
+// After writing React component
+Task({
+  subagent_type: "react-performance-architect",
+  description: "Review component",
+  prompt: "Review and optimize the new Dashboard component",
+});
+
+// After modifying API
+Task({
+  subagent_type: "code-reviewer",
+  description: "Review API changes",
+  prompt: "Review the updated user endpoints for security and quality",
+});
+
+// When creating tests
+Task({
+  subagent_type: "vitest-test-architect",
+  description: "Create unit tests",
+  prompt: "Create comprehensive tests for the auth module",
+});
+```
+
+**REMEMBER**: Using specialized agents is NOT optional - it's MANDATORY for
+quality and consistency.
+
+## MCP Servers
+
+- **Linear**: Project management
+- **Context7**: Library docs
+- **DeepWiki**: Repo docs
+- **Sentry**: Error tracking
+- **Playwright**: Browser automation
+- **Gemini CLI**: AI validation
+- **Grep**: GitHub code search
+- **OpenZeppelin**: Contract generation
+
+All MCP tools use prefix: `mcp__`
+
+### MCP Workflows
+
+- Library use → Context7 + Grep
+- Contracts → OpenZeppelin first
+- Bugs → Sentry + Linear
+- Complex → Gemini + Grep
+- Frontend → Context7 + Grep
+- Breaking changes → Linear + Sentry + DeepWiki + Gemini
+- E2E → Playwright MCP
+
+### MCP Examples
+
+```typescript
+// Linear
+mcp__linear__list_issues({ includeArchived: false, limit: 50 });
+mcp__linear__create_issue({ title, description, teamSlug });
+
+// Context7 (ALWAYS before libraries)
+mcp__context7__resolve_library_id({ libraryName: "react" });
+mcp__context7__get_library_docs({
+  context7CompatibleLibraryID: "/facebook/react",
+  topic: "hooks",
+});
+
+// Sentry
+mcp__sentry__search_issues({ organizationSlug, naturalLanguageQuery });
+mcp__sentry__analyze_issue_with_seer({ organizationSlug, issueId });
+
+// Gemini CLI
+mcp__gemini_cli__ask_gemini({ prompt, changeMode: true, sandbox: true });
+
+// Grep
+mcp__grep__searchGitHub({
+  query: "useState(",
+  language: ["TypeScript", "TSX"],
+});
+
+// OpenZeppelin
+mcp__OpenZeppelinSolidityContracts__solidity_erc20({
+  name,
+  symbol,
+  mintable,
+  upgradeable: "uups",
+});
+```
+
+## Parallel Execution (MANDATORY)
+
+**ALWAYS batch independent operations in ONE message**
+
+❌ Sequential: Read1 → Read2 → Grep
+✅ Parallel: Read1 + Read2 + Grep (one message)
+
+**Patterns**: Files | Searches | Tests | Code Gen | Analysis → ALL PARALLEL
+
+## Optimizations
+
+- ≤4 lines unless detail requested
+- ALWAYS batch parallel operations
+- Action > explanation
+- Concise, technical language
+- Opus → Gemini validation
+- Concurrent > sequential
+
+## Core Directives
+
+- Do EXACTLY what's asked (no more, no less)
+- NEVER create files unless required
+- Edit > Create
+- NO docs/README unless explicit request

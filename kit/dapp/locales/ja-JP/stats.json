@@ -14,9 +14,13 @@
     "totalSupply": {
       "description": "時間経過に伴う総供給量の履歴変更",
       "label": "総供給量",
-      "title": "トークン供給履歴",
-      "noData": "データが利用できません",
-      "noDataDescription": "過去{{days}}日間の総供給量データが見つかりません"
+      "title": "トークン供給履歴"
+    },
+    "supplyChanges": {
+      "description": "過去{{days}}日間のミント・バーンされたトークン",
+      "title": "供給量変更",
+      "minted": "ミント済み",
+      "burned": "バーン済み"
     },
     "transactionHistory": {
       "description": "時間経過に伴う取引量",

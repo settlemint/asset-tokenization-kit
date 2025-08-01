@@ -83,9 +83,7 @@ describe("SystemStats", () => {
       `query {
         tokens {
           id
-          symbol
           totalSupply
-          decimals
           basePriceClaim {
             id
             values(where: { key: "amount" }) {

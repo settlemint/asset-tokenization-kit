@@ -31,7 +31,10 @@ import { tokenListContract } from "@/orpc/routes/token/routes/token.list.contrac
 import { tokenReadContract } from "@/orpc/routes/token/routes/token.read.contract";
 
 // Stats contracts
+import { statsSupplyChangesContract } from "@/orpc/routes/token/routes/stats/supply-changes.contract";
 import { statsTotalSupplyContract } from "@/orpc/routes/token/routes/stats/total-supply.contract";
+import { statsVolumeContract } from "@/orpc/routes/token/routes/stats/volume.contract";
+import { statsWalletDistributionContract } from "@/orpc/routes/token/routes/stats/wallet-distribution.contract";
 
 export const tokenContract = {
   // Factory
@@ -67,6 +70,9 @@ export const tokenContract = {
 
   // Stats
   statsTotalSupply: statsTotalSupplyContract,
+  statsSupplyChanges: statsSupplyChangesContract,
+  statsVolume: statsVolumeContract,
+  statsWalletDistribution: statsWalletDistributionContract,
 };
 
 // Extract mutation keys for permissions

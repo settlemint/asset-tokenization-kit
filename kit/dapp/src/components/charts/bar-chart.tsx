@@ -11,9 +11,9 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { PieChart as PieChartIcon } from "lucide-react";
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
+import { ChartEmptyState } from "./chart-empty-state";
 
 export type BarChartData = Record<string, string | number>;
 
@@ -28,6 +28,8 @@ export interface BarChartComponentProps {
   showLegend?: boolean;
   stacked?: boolean;
   className?: string;
+  emptyMessage?: string;
+  emptyDescription?: string;
 }
 
 // Static bar radius configuration hoisted outside component
@@ -54,6 +56,8 @@ export function BarChartComponent({
   showLegend = true,
   stacked = false,
   className,
+  emptyMessage,
+  emptyDescription,
 }: BarChartComponentProps) {
   // Simple formatter function - React Compiler will optimize this
   const legendFormatter = (value: string): string => {
@@ -70,20 +74,13 @@ export function BarChartComponent({
   // Show empty state if no data
   if (filteredData.length === 0) {
     return (
-      <Card className={className}>
-        <CardHeader>
-          <CardTitle>{title}</CardTitle>
-          {description && <CardDescription>{description}</CardDescription>}
-        </CardHeader>
-        <CardContent>
-          <div className="flex h-[200px] flex-col items-center justify-center gap-2 text-center">
-            <PieChartIcon className="h-8 w-8 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">
-              No data available
-            </span>
-          </div>
-        </CardContent>
-      </Card>
+      <ChartEmptyState
+        title={title}
+        description={description}
+        className={className}
+        emptyMessage={emptyMessage}
+        emptyDescription={emptyDescription}
+      />
     );
   }
 

@@ -1,4 +1,5 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
+import { AssetExtensionEnum } from "@/lib/zod/validators/asset-extensions";
 import { validateBatchArrays } from "@/orpc/helpers/array-validation";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
@@ -159,21 +160,11 @@ export const transfer = tokenRouter.token.transfer
     // Determine if this is a batch operation
     const isBatch = recipients.length > 1;
 
-    // Generate error message based on transfer type and batch mode
-    const errorMessage =
-      transferType === "forced"
-        ? isBatch
-          ? context.t("tokens:api.mutations.transfer.messages.batchForceFailed")
-          : context.t("tokens:api.mutations.transfer.messages.forceFailed")
-        : transferType === "transferFrom"
-          ? context.t("tokens:api.mutations.transfer.messages.fromOwnerFailed")
-          : isBatch
-            ? context.t("tokens:api.mutations.transfer.messages.batchFailed")
-            : context.t("tokens:api.mutations.transfer.messages.failed");
-
     // For forced transfers, check custodian interface;
     if (transferType === "forced") {
-      const supportsCustodian = context.token.extensions.includes("CUSTODIAN");
+      const supportsCustodian = context.token.extensions.includes(
+        AssetExtensionEnum.CUSTODIAN
+      );
       if (!supportsCustodian) {
         throw errors.TOKEN_INTERFACE_NOT_SUPPORTED({
           data: {
@@ -200,17 +191,13 @@ export const transfer = tokenRouter.token.transfer
           "batch transfer"
         );
 
-        await context.portalClient.mutate(
-          TOKEN_BATCH_TRANSFER_MUTATION,
-          {
-            address: contract,
-            from: sender.wallet,
-            recipients,
-            amounts: amounts.map((a) => a.toString()),
-            ...challengeResponse,
-          },
-          errorMessage
-        );
+        await context.portalClient.mutate(TOKEN_BATCH_TRANSFER_MUTATION, {
+          address: contract,
+          from: sender.wallet,
+          recipients,
+          amounts: amounts.map((a) => a.toString()),
+          ...challengeResponse,
+        });
       } else if (transferType === "forced") {
         // Forced batch transfer is supported
         if (!from || from.length === 0) {
@@ -239,8 +226,7 @@ export const transfer = tokenRouter.token.transfer
             toList: recipients,
             amounts: amounts.map((a) => a.toString()),
             ...challengeResponse,
-          },
-          errorMessage
+          }
         );
       } else {
         // transferType === "transferFrom" - not supported in batch, must be done individually
@@ -265,17 +251,13 @@ export const transfer = tokenRouter.token.transfer
         });
       }
       if (transferType === "standard") {
-        await context.portalClient.mutate(
-          TOKEN_TRANSFER_MUTATION,
-          {
-            address: contract,
-            from: sender.wallet,
-            to,
-            amount: amount.toString(),
-            ...challengeResponse,
-          },
-          errorMessage
-        );
+        await context.portalClient.mutate(TOKEN_TRANSFER_MUTATION, {
+          address: contract,
+          from: sender.wallet,
+          to,
+          amount: amount.toString(),
+          ...challengeResponse,
+        });
       } else if (transferType === "transferFrom") {
         if (!owner) {
           throw errors.INPUT_VALIDATION_FAILED({
@@ -285,18 +267,14 @@ export const transfer = tokenRouter.token.transfer
             data: { errors: ["Invalid input data"] },
           });
         }
-        await context.portalClient.mutate(
-          TOKEN_TRANSFER_FROM_MUTATION,
-          {
-            address: contract,
-            from: sender.wallet,
-            owner,
-            to,
-            amount: amount.toString(),
-            ...challengeResponse,
-          },
-          errorMessage
-        );
+        await context.portalClient.mutate(TOKEN_TRANSFER_FROM_MUTATION, {
+          address: contract,
+          from: sender.wallet,
+          owner,
+          to,
+          amount: amount.toString(),
+          ...challengeResponse,
+        });
       } else {
         // transferType === "forced"
         if (!owner) {
@@ -307,18 +285,14 @@ export const transfer = tokenRouter.token.transfer
             data: { errors: ["Invalid input data"] },
           });
         }
-        await context.portalClient.mutate(
-          TOKEN_FORCED_TRANSFER_MUTATION,
-          {
-            address: contract,
-            from: sender.wallet,
-            owner,
-            to,
-            amount: amount.toString(),
-            ...challengeResponse,
-          },
-          errorMessage
-        );
+        await context.portalClient.mutate(TOKEN_FORCED_TRANSFER_MUTATION, {
+          address: contract,
+          from: sender.wallet,
+          owner,
+          to,
+          amount: amount.toString(),
+          ...challengeResponse,
+        });
       }
     }
 

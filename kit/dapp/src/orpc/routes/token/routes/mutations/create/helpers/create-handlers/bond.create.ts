@@ -47,9 +47,11 @@ const CREATE_BOND_MUTATION = portalGraphql(`
         decimals_: $decimals
         initialModulePairs_: $initialModulePairs
         cap_: $cap
-        faceValue_: $faceValue
-        maturityDate_: $maturityDate
-        underlyingAsset_: $underlyingAsset
+        bondParams: {
+          faceValue: $faceValue
+          maturityDate: $maturityDate
+          underlyingAsset: $underlyingAsset
+        }
         countryCode_: $countryCode
       }
       verificationId: $verificationId
@@ -69,17 +71,15 @@ export const bondCreateHandler = async (
   }
 
   return createToken(input, context, () => {
-    // Delete verification from input to avoid leaking it in the logs
-    const { verification: _, ...otherInput } = input;
-    return context.portalClient.mutate(
-      CREATE_BOND_MUTATION,
-      {
-        ...otherInput,
-        cap: input.cap.toString(),
-        faceValue: input.faceValue.toString(),
-        ...context.mutationVariables,
-      },
-      "Failed to create bond token"
-    );
+    return context.portalClient.mutate(CREATE_BOND_MUTATION, {
+      ...input,
+      ...context.mutationVariables,
+      cap: input.cap.toString(),
+      faceValue: input.faceValue.toString(),
+      initialModulePairs: input.initialModulePairs.map((pair) => ({
+        module: pair.module,
+        params: pair.params,
+      })),
+    });
   });
 };

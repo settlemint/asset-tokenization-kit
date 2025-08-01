@@ -24,10 +24,14 @@ import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middle
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
 import { upsert } from "@/orpc/routes/settings/routes/settings.upsert";
+import { complianceModuleCreate } from "@/orpc/routes/system/compliance-module/routes/compliance-module.create";
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { z } from "zod";
+
+const logger = createLogger();
 
 /**
  * GraphQL mutation for creating a new system contract instance.
@@ -49,6 +53,27 @@ const CREATE_SYSTEM_MUTATION = portalGraphql(`
       challengeResponse: $challengeResponse
       address: $address
       from: $from
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+const GRANT_ROLE_MUTATION = portalGraphql(`
+  mutation GrantRoleMutation(
+    $verificationId: String
+    $challengeResponse: String!
+    $address: String!
+    $to: String!
+    $role: String!
+    $from: String!
+  ) {
+    IATKSystemAccessManagerGrantRole(
+      verificationId: $verificationId
+      challengeResponse: $challengeResponse
+      address: $address
+      from: $from
+      input: { account: $to, role: $role }
     ) {
       transactionHash
     }
@@ -168,8 +193,7 @@ export const create = onboardedRouter.system.create
     // Use the Portal client's mutate method
     const transactionHash = await context.portalClient.mutate(
       CREATE_SYSTEM_MUTATION,
-      createSystemVariables,
-      "Failed to create system"
+      createSystemVariables
     );
 
     // Query for the deployed system contract
@@ -193,7 +217,6 @@ export const create = onboardedRouter.system.create
       {
         input: queryVariables,
         output: SystemQueryResultSchema,
-        error: "Failed to create system",
       }
     );
 
@@ -234,8 +257,7 @@ export const create = onboardedRouter.system.create
 
     await context.portalClient.mutate(
       BOOTSTRAP_SYSTEM_MUTATION,
-      bootstrapVariables,
-      "Failed to bootstrap system"
+      bootstrapVariables
     );
 
     // Save the system address to settings using orpc BEFORE yielding final events
@@ -248,12 +270,63 @@ export const create = onboardedRouter.system.create
       { context }
     );
 
-    // Return the complete system details
-    return await call(
+    const systemDetails = await call(
       read,
       {
         id: system.id,
       },
       { context }
     );
+
+    // Grant roles to the contracts
+    if (systemDetails.systemAccessManager) {
+      const requiresAdminRole = [
+        systemDetails.tokenFactoryRegistry,
+        systemDetails.systemAddonRegistry,
+        systemDetails.complianceModuleRegistry,
+      ].filter((contract) => contract !== null);
+
+      for (const contract of requiresAdminRole) {
+        const grantRoleChallengeResponse = await handleChallenge(sender, {
+          code: verification.verificationCode,
+          type: verification.verificationType,
+        });
+
+        await context.portalClient.mutate(GRANT_ROLE_MUTATION, {
+          address: systemDetails.systemAccessManager,
+          from: sender.wallet,
+          to: contract,
+          role: "0x0000000000000000000000000000000000000000000000000000000000000000", // DEFAULT_ADMIN_ROLE
+          ...grantRoleChallengeResponse,
+        });
+      }
+    }
+
+    // Create all compliance modules if compliance module registry exists
+    if (systemDetails.complianceModuleRegistry) {
+      try {
+        await call(
+          complianceModuleCreate,
+          {
+            complianceModules: "all",
+            verification,
+          },
+          { context }
+        );
+      } catch (error) {
+        // Log but don't fail system creation
+        logger.error("Failed to create compliance modules", error);
+      }
+    }
+
+    const updatedSystemDetails = await call(
+      read,
+      {
+        id: system.id,
+      },
+      { context }
+    );
+
+    // Return the complete system details
+    return updatedSystemDetails;
   });

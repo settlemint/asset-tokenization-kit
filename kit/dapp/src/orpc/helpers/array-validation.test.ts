@@ -1,3 +1,6 @@
+/**
+ * @vitest-environment node
+ */
 import { ORPCError } from "@orpc/server";
 import { describe, expect, test } from "vitest";
 import {

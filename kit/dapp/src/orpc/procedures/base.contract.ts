@@ -295,8 +295,27 @@ export const CUSTOM_ERRORS = {
     message: "Portal error",
     status: 500,
     data: z.object({
-      operation: z.string(),
-      details: z.string(),
+      document: z.unknown(),
+      variables: z.unknown(),
+      responseValidation: z.string().optional(),
+    }),
+  },
+
+  /**
+   * The Graph error.
+   *
+   * Thrown when a The Graph error occurs:
+   * - The Graph service unavailable
+   * - The Graph service timeout
+   * - The Graph service error
+   */
+  THE_GRAPH_ERROR: {
+    message: "The Graph error",
+    status: 500,
+    data: z.object({
+      document: z.unknown(),
+      variables: z.unknown(),
+      responseValidation: z.string().optional(),
     }),
   },
 

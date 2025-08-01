@@ -2,7 +2,6 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { TokensResponseSchema } from "@/orpc/routes/token/routes/token.list.schema";
-import type { VariablesOf } from "@settlemint/sdk-thegraph";
 
 /**
  * GraphQL query for retrieving tokenized assets from TheGraph.
@@ -13,7 +12,7 @@ import type { VariablesOf } from "@settlemint/sdk-thegraph";
  * and permission features for regulated assets.
  *
  * This query supports:
- * - Paginated retrieval using skip/first parameters
+ * - Automatic pagination using @fetchAll directive
  * - Flexible sorting by any Token field (name, symbol, etc.)
  * - Ordered results in ascending or descending direction
  *
@@ -22,14 +21,12 @@ import type { VariablesOf } from "@settlemint/sdk-thegraph";
  * current state or whether they have any holders.
  */
 const LIST_TOKEN_QUERY = theGraphGraphql(`
-  query ListTokenQuery($skip: Int!, $first: Int!, $orderBy: Token_orderBy, $orderDirection: OrderDirection, $where: Token_filter) {
+  query ListTokenQuery($orderBy: Token_orderBy, $orderDirection: OrderDirection, $where: Token_filter) {
     tokens(
         where: $where
-        skip: $skip
-        first: $first
         orderBy: $orderBy
         orderDirection: $orderDirection
-      ) {
+      ) @fetchAll {
         id
         type
         createdAt
@@ -87,7 +84,10 @@ export const list = authRouter.token.list
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
     // Build where clause, mapping searchByAddress to id
-    const where: VariablesOf<typeof LIST_TOKEN_QUERY>["where"] = {};
+    const where: {
+      id?: string;
+      tokenFactory_?: { id: string };
+    } = {};
     if (input.tokenFactory !== undefined) {
       where.tokenFactory_ = {
         id: input.tokenFactory,
@@ -100,14 +100,9 @@ export const list = authRouter.token.list
     // Manually construct GraphQL variables since we need to handle searchByAddress mapping
     const response = await context.theGraphClient.query(LIST_TOKEN_QUERY, {
       input: {
-        skip: input.offset,
-        first: input.limit ? Math.min(input.limit, 1000) : 1000,
-        orderBy: input.orderBy,
-        orderDirection: input.orderDirection,
         where: Object.keys(where).length > 0 ? where : undefined,
       },
       output: TokensResponseSchema,
-      error: context.t("tokens:api.queries.list.messages.failed"),
     });
 
     return response.tokens;

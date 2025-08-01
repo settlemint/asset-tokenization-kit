@@ -13,16 +13,14 @@ import {
 } from "../../generated/templates/Identity/Identity";
 import { fetchEvent } from "../event/fetch/event";
 import { updateAccountStatsForPriceChange } from "../stats/account-stats";
-import {
-  getTokenBasePrice,
-  updateSystemStatsForPriceChange,
-} from "../stats/system-stats";
+import { updateSystemStatsForPriceChange } from "../stats/system-stats";
+import { updateTokenTypeStatsForPriceChange } from "../stats/token-type-stats";
 import {
   isCollateralClaim,
   updateCollateral,
 } from "../token-extensions/collateral/utils/collateral-utils";
 import { fetchTokenByIdentity } from "../token/fetch/token";
-import { updateBasePrice } from "../token/utils/token-utils";
+import { getTokenBasePrice, updateBasePrice } from "../token/utils/token-utils";
 import { fetchIdentity } from "./fetch/identity";
 import { fetchIdentityClaim } from "./fetch/identity-claim";
 import { decodeClaimValues } from "./utils/decode-claim";
@@ -85,7 +83,19 @@ export function handleClaimAdded(event: ClaimAdded): void {
     const token = fetchTokenByIdentity(identity);
     if (token) {
       const newPrice = getTokenBasePrice(identityClaim.id);
-      updateSystemStatsForPriceChange(token, BigDecimal.zero(), newPrice);
+      const totalSystemValueInBaseCurrency = updateSystemStatsForPriceChange(
+        token,
+        BigDecimal.zero(),
+        newPrice
+      );
+
+      // Update token type stats for price change
+      updateTokenTypeStatsForPriceChange(
+        totalSystemValueInBaseCurrency,
+        token,
+        BigDecimal.zero(),
+        newPrice
+      );
 
       // Update account stats for all token holders
       updateAccountStatsForAllTokenHolders(token, BigDecimal.zero(), newPrice);
@@ -119,7 +129,19 @@ export function handleClaimChanged(event: ClaimChanged): void {
     // Update system stats for price change
     if (token) {
       const newPrice = getTokenBasePrice(identityClaim.id);
-      updateSystemStatsForPriceChange(token, oldPrice, newPrice);
+      const totalSystemValueInBaseCurrency = updateSystemStatsForPriceChange(
+        token,
+        oldPrice,
+        newPrice
+      );
+
+      // Update token type stats for price change
+      updateTokenTypeStatsForPriceChange(
+        totalSystemValueInBaseCurrency,
+        token,
+        oldPrice,
+        newPrice
+      );
 
       // Update account stats for all token holders
       updateAccountStatsForAllTokenHolders(token, oldPrice, newPrice);
@@ -148,7 +170,15 @@ export function handleClaimRemoved(event: ClaimRemoved): void {
 
     // Update system stats for price change (price goes to 0 when claim removed)
     if (token && oldPrice.notEqual(BigDecimal.zero())) {
-      updateSystemStatsForPriceChange(
+      const totalSystemValueInBaseCurrency = updateSystemStatsForPriceChange(
+        token,
+        oldPrice,
+        BigDecimal.zero() // Price becomes 0 when claim is removed
+      );
+
+      // Update token type stats for price change
+      updateTokenTypeStatsForPriceChange(
+        totalSystemValueInBaseCurrency,
         token,
         oldPrice,
         BigDecimal.zero() // Price becomes 0 when claim is removed

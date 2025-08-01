@@ -2,7 +2,7 @@ import { describe, expect, test, vi } from "vitest";
 import { renderHook } from "@testing-library/react";
 import { getAssetTypePlural, useAssetTypePlural } from "./asset-pluralization";
 
-// Mock react-i18next
+// Mock react-i18next (hoisted)
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: vi.fn((key, options) => {

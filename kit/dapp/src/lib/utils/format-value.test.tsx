@@ -4,7 +4,7 @@ import React from "react";
 import { formatValue, safeToString } from "./format-value";
 import { from } from "dnum";
 
-// Mock the components used by formatValue
+// Mock the components used by formatValue (hoisted)
 vi.mock("@/components/ui/badge", () => ({
   Badge: ({
     children,

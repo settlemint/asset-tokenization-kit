@@ -63,15 +63,13 @@ export const depositCreateHandler = async (
   }
 
   return createToken(input, context, () => {
-    // Delete verification from input to avoid leaking it in the logs
-    const { verification: _, ...otherInput } = input;
-    return context.portalClient.mutate(
-      CREATE_DEPOSIT_MUTATION,
-      {
-        ...otherInput,
-        ...context.mutationVariables,
-      },
-      "Failed to create deposit token"
-    );
+    return context.portalClient.mutate(CREATE_DEPOSIT_MUTATION, {
+      ...input,
+      ...context.mutationVariables,
+      initialModulePairs: input.initialModulePairs.map((pair) => ({
+        module: pair.module,
+        params: pair.params,
+      })),
+    });
   });
 };

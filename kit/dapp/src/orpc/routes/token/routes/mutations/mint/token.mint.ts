@@ -72,10 +72,6 @@ export const mint = tokenRouter.token.mint
     // Determine if this is a batch operation
     const isBatch = recipients.length > 1;
 
-    const errorMessage = isBatch
-      ? context.t("tokens:api.mutations.mint.messages.batchFailed")
-      : context.t("tokens:api.mutations.mint.messages.failed");
-
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
       code: verification.verificationCode,
@@ -93,17 +89,13 @@ export const mint = tokenRouter.token.mint
         "batch mint"
       );
 
-      await context.portalClient.mutate(
-        TOKEN_BATCH_MINT_MUTATION,
-        {
-          address: contract,
-          from: sender.wallet,
-          toList: recipients,
-          amounts: amounts.map((a) => a.toString()),
-          ...challengeResponse,
-        },
-        errorMessage
-      );
+      await context.portalClient.mutate(TOKEN_BATCH_MINT_MUTATION, {
+        address: contract,
+        from: sender.wallet,
+        toList: recipients,
+        amounts: amounts.map((a) => a.toString()),
+        ...challengeResponse,
+      });
     } else {
       const [to] = recipients;
       const [amount] = amounts;
@@ -117,17 +109,13 @@ export const mint = tokenRouter.token.mint
         });
       }
 
-      await context.portalClient.mutate(
-        TOKEN_SINGLE_MINT_MUTATION,
-        {
-          address: contract,
-          from: sender.wallet,
-          to,
-          amount: amount.toString(),
-          ...challengeResponse,
-        },
-        errorMessage
-      );
+      await context.portalClient.mutate(TOKEN_SINGLE_MINT_MUTATION, {
+        address: contract,
+        from: sender.wallet,
+        to,
+        amount: amount.toString(),
+        ...challengeResponse,
+      });
     }
 
     // Return the updated token data using the read handler

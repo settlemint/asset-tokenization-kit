@@ -64,15 +64,11 @@ export const identityCreate = portalRouter.system.identityCreate.handler(
       type: verification.verificationType,
     });
 
-    await context.portalClient.mutate(
-      IDENTITY_CREATE_MUTATION,
-      {
-        address: system.identityFactory.id,
-        from: sender.wallet,
-        ...challengeResponse,
-      },
-      "Failed to create identity"
-    );
+    await context.portalClient.mutate(IDENTITY_CREATE_MUTATION, {
+      address: system.identityFactory,
+      from: sender.wallet,
+      ...challengeResponse,
+    });
 
     // Return the updated account data
     return await call(

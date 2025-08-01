@@ -10,6 +10,10 @@ import {
   getEthereumAddress,
   type EthereumAddress,
 } from "@/lib/zod/validators/ethereum-address";
+import {
+  parseSystemComponent,
+  getComponentId,
+} from "@/orpc/helpers/system-component-helpers";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { read } from "@/orpc/routes/settings/routes/settings.read";
 import { call } from "@orpc/server";
@@ -21,14 +25,14 @@ const SYSTEM_QUERY = theGraphGraphql(
     system(id: $systemAddress) {
       id
       deployedInTransaction
-      accessControl {
-        ...AccessControlFragment
-      }
-      tokenFactoryRegistry {
+      systemAccessManager {
         id
         accessControl {
           ...AccessControlFragment
         }
+      }
+      tokenFactoryRegistry {
+        id
         tokenFactories {
           id
           name
@@ -40,9 +44,6 @@ const SYSTEM_QUERY = theGraphGraphql(
       }
       complianceModuleRegistry {
         id
-        accessControl {
-          ...AccessControlFragment
-        }
         complianceModules {
           id
           typeId
@@ -57,33 +58,18 @@ const SYSTEM_QUERY = theGraphGraphql(
       }
       identityRegistryStorage {
         id
-        accessControl {
-          ...AccessControlFragment
-        }
       }
       identityRegistry {
         id
-        accessControl {
-          ...AccessControlFragment
-        }
       }
       trustedIssuersRegistry {
         id
-        accessControl {
-          ...AccessControlFragment
-        }
       }
       topicSchemeRegistry {
         id
-        accessControl {
-          ...AccessControlFragment
-        }
       }
       systemAddonRegistry {
         id
-        accessControl {
-          ...AccessControlFragment
-        }
         systemAddons {
           id
           name
@@ -151,18 +137,18 @@ export interface SystemComplianceModule extends SystemComponent {
 export interface SystemContext {
   address: EthereumAddress;
   deployedInTransaction: Hex;
-  accessControl: AccessControl;
-  complianceModuleRegistry: SystemComponent | null;
+  systemAccessManager: SystemComponent | null;
+  complianceModuleRegistry: EthereumAddress | null;
   complianceModules: SystemComplianceModule[];
-  identityFactory: Pick<SystemComponent, "id"> | null;
-  identityRegistry: SystemComponent | null;
-  identityRegistryStorage: SystemComponent | null;
-  systemAddonRegistry: SystemComponent | null;
+  identityFactory: EthereumAddress | null;
+  identityRegistry: EthereumAddress | null;
+  identityRegistryStorage: EthereumAddress | null;
+  systemAddonRegistry: EthereumAddress | null;
   systemAddons: SystemAddon[];
   tokenFactories: TokenFactory[];
-  tokenFactoryRegistry: SystemComponent | null;
-  topicSchemeRegistry: SystemComponent | null;
-  trustedIssuersRegistry: SystemComponent | null;
+  tokenFactoryRegistry: EthereumAddress | null;
+  topicSchemeRegistry: EthereumAddress | null;
+  trustedIssuersRegistry: EthereumAddress | null;
 }
 
 /**
@@ -254,56 +240,17 @@ export const getSystemContext = async (
   return {
     address: systemAddress,
     deployedInTransaction: system.deployedInTransaction as Hex,
-    accessControl: system.accessControl,
     tokenFactories,
     systemAddons,
     complianceModules,
-    identityFactory: system.identityFactory
-      ? {
-          id: getEthereumAddress(system.identityFactory?.id),
-        }
-      : null,
-    tokenFactoryRegistry: system.tokenFactoryRegistry
-      ? {
-          id: getEthereumAddress(system.tokenFactoryRegistry.id),
-          accessControl: system.tokenFactoryRegistry.accessControl,
-        }
-      : null,
-    complianceModuleRegistry: system.complianceModuleRegistry
-      ? {
-          id: getEthereumAddress(system.complianceModuleRegistry.id),
-          accessControl: system.complianceModuleRegistry.accessControl,
-        }
-      : null,
-    identityRegistryStorage: system.identityRegistryStorage
-      ? {
-          id: getEthereumAddress(system.identityRegistryStorage.id),
-          accessControl: system.identityRegistryStorage.accessControl,
-        }
-      : null,
-    identityRegistry: system.identityRegistry
-      ? {
-          id: getEthereumAddress(system.identityRegistry.id),
-          accessControl: system.identityRegistry.accessControl,
-        }
-      : null,
-    trustedIssuersRegistry: system.trustedIssuersRegistry
-      ? {
-          id: getEthereumAddress(system.trustedIssuersRegistry.id),
-          accessControl: system.trustedIssuersRegistry.accessControl,
-        }
-      : null,
-    topicSchemeRegistry: system.topicSchemeRegistry
-      ? {
-          id: getEthereumAddress(system.topicSchemeRegistry?.id),
-          accessControl: system?.topicSchemeRegistry?.accessControl,
-        }
-      : null,
-    systemAddonRegistry: system.systemAddonRegistry
-      ? {
-          id: getEthereumAddress(system.systemAddonRegistry.id),
-          accessControl: system.systemAddonRegistry.accessControl,
-        }
-      : null,
+    systemAccessManager: parseSystemComponent(system.systemAccessManager),
+    identityFactory: getComponentId(system.identityFactory),
+    tokenFactoryRegistry: getComponentId(system.tokenFactoryRegistry),
+    complianceModuleRegistry: getComponentId(system.complianceModuleRegistry),
+    identityRegistryStorage: getComponentId(system.identityRegistryStorage),
+    identityRegistry: getComponentId(system.identityRegistry),
+    trustedIssuersRegistry: getComponentId(system.trustedIssuersRegistry),
+    topicSchemeRegistry: getComponentId(system.topicSchemeRegistry),
+    systemAddonRegistry: getComponentId(system.systemAddonRegistry),
   };
 };

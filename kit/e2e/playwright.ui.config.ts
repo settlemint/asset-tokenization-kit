@@ -7,7 +7,7 @@ const uiConfig: PlaywrightTestConfig = {
   testIgnore: ["**/create-*.spec.ts", "**/xvp-settlement.spec.ts"],
   use: {
     ...baseConfig.use,
-    headless: false,
+    headless: true,
     launchOptions: {
       slowMo: 100,
     },

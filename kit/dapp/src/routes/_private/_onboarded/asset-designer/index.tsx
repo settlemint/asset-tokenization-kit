@@ -19,13 +19,16 @@ export const Route = createFileRoute("/_private/_onboarded/asset-designer/")({
       orpc.token.factoryList.queryOptions({ input: {} })
     );
 
-    return { factories };
+    const complianceModules = await queryClient.ensureQueryData(
+      orpc.system.complianceModuleList.queryOptions({ input: {} })
+    );
+
+    return { factories, complianceModules };
   },
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const routeContext = Route.useRouteContext();
   const { type } = Route.useSearch();
   const { onBack } = useGoBack();
   const { t } = useTranslation(["asset-designer"]);
@@ -51,7 +54,7 @@ function RouteComponent() {
         />
       </header>
       <main className="flex-1 overflow-hidden">
-        <AssetDesignerWizard factories={routeContext.factories} type={type} />
+        <AssetDesignerWizard type={type} />
       </main>
     </div>
   );

@@ -73,9 +73,6 @@ export const burn = tokenRouter.token.burn
     // Determine if this is a batch operation
     const isBatch = addresses.length > 1;
 
-    const errorMessage = isBatch
-      ? context.t("tokens:api.mutations.burn.messages.batchFailed")
-      : context.t("tokens:api.mutations.burn.messages.failed");
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
       code: verification.verificationCode,
@@ -93,17 +90,13 @@ export const burn = tokenRouter.token.burn
         context.t("tokens:api.mutations.burn.validation.batchDescription")
       );
 
-      await context.portalClient.mutate(
-        TOKEN_BATCH_BURN_MUTATION,
-        {
-          address: contract,
-          from: sender.wallet,
-          userAddresses: addresses,
-          amounts: amounts.map((a) => a.toString()),
-          ...challengeResponse,
-        },
-        errorMessage
-      );
+      await context.portalClient.mutate(TOKEN_BATCH_BURN_MUTATION, {
+        address: contract,
+        from: sender.wallet,
+        userAddresses: addresses,
+        amounts: amounts.map((a) => a.toString()),
+        ...challengeResponse,
+      });
     } else {
       const [userAddress] = addresses;
       const [amount] = amounts;
@@ -115,17 +108,13 @@ export const burn = tokenRouter.token.burn
           data: { errors: ["Invalid input data"] },
         });
       }
-      await context.portalClient.mutate(
-        TOKEN_SINGLE_BURN_MUTATION,
-        {
-          address: contract,
-          from: sender.wallet,
-          userAddress,
-          amount: amount.toString(),
-          ...challengeResponse,
-        },
-        errorMessage
-      );
+      await context.portalClient.mutate(TOKEN_SINGLE_BURN_MUTATION, {
+        address: contract,
+        from: sender.wallet,
+        userAddress,
+        amount: amount.toString(),
+        ...challengeResponse,
+      });
     }
 
     // Return the updated token data using the read handler

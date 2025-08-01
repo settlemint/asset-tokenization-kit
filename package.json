@@ -73,11 +73,11 @@
   },
   "devDependencies": {
     "@prettier/plugin-oxc": "0.0.4",
-    "@settlemint/sdk-cli": "2.5.2",
-    "@settlemint/sdk-utils": "2.5.2",
+    "@settlemint/sdk-cli": "2.5.3",
+    "@settlemint/sdk-utils": "2.5.3",
     "prettier": "3.6.2",
     "turbo": "2.5.5",
-    "typescript": "5.9.1-rc",
+    "typescript": "5.9.2",
     "yaml": "2.8.0"
   },
   "trustedDependencies": [

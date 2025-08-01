@@ -208,7 +208,7 @@ async function getSystemInfo(
     }
     return {
       ...systemOnboardingState,
-      accessControl: systemData.accessControl,
+      accessControl: systemData.systemAccessManager?.accessControl ?? null,
     };
   } catch {
     // If system read fails, we assume no factories and addons

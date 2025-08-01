@@ -17,6 +17,7 @@ const governanceRole = keccak256(toBytes("GOVERNANCE_ROLE"));
 const supplyManagementRole = keccak256(toBytes("SUPPLY_MANAGEMENT_ROLE"));
 const custodianRole = keccak256(toBytes("CUSTODIAN_ROLE"));
 const emergencyRole = keccak256(toBytes("EMERGENCY_ROLE"));
+const systemModuleRole = keccak256(toBytes("SYSTEM_MODULE_ROLE"));
 
 export const ATKRoles = {
   defaultAdminRole,
@@ -27,6 +28,7 @@ export const ATKRoles = {
   storageModifierRole,
   registryManagerRole,
   bypassListManagerRole,
+  systemModuleRole,
   complianceManagerRole,
   // Asset Roles
   governanceRole,

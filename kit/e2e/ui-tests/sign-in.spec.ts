@@ -3,11 +3,23 @@ import { Pages } from "../pages/pages";
 import { adminUser, signInTestData } from "../test-data/user-data";
 
 test.describe("Sign-in Tests", () => {
-  test("should stay on sign-in page with wrong password", async ({ page }) => {
-    const pages = Pages(page);
+  let pages: ReturnType<typeof Pages>;
 
+  test.beforeEach(async ({ page }) => {
+    pages = Pages(page);
     await pages.signInPage.goto();
     await pages.signInPage.clearForm();
+  });
+
+  test.afterEach(async ({ page }) => {
+    await page.context().clearCookies();
+    await page.evaluate(() => {
+      window.localStorage.clear();
+      window.sessionStorage.clear();
+    });
+  });
+
+  test("should stay on sign-in page with wrong password", async ({ page }) => {
     await pages.signInPage.fillSignInForm(
       adminUser.email,
       signInTestData.wrongPassword
@@ -20,10 +32,6 @@ test.describe("Sign-in Tests", () => {
   });
 
   test("should handle invalid email format", async ({ page }) => {
-    const pages = Pages(page);
-
-    await pages.signInPage.goto();
-    await pages.signInPage.clearForm();
     await pages.signInPage.fillSignInForm(
       signInTestData.invalidEmails[0],
       adminUser.password

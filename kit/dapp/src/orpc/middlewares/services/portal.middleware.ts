@@ -1,4 +1,3 @@
-import { handlePortalError } from "@/lib/portal/portal-error-handling";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
@@ -14,22 +13,6 @@ import { z } from "zod";
 import { baseRouter } from "../../procedures/base.router";
 
 const logger = createLogger();
-
-/**
- * Represents an event emitted during transaction processing.
- * @interface TransactionEventEmitted
- * @property {("pending" | "confirmed" | "failed")} status - Current status of the transaction
- *   - `pending`: Transaction is submitted but not yet confirmed
- *   - `confirmed`: Transaction has been mined and indexed
- *   - `failed`: Transaction failed or was reverted
- * @property {string} message - Human-readable message describing the current state
- * @property {string} transactionHash - The Ethereum transaction hash (0x-prefixed)
- */
-export interface TransactionEventEmitted {
-  status: "pending" | "confirmed" | "failed";
-  message: string;
-  transactionHash: string;
-}
 
 /**
  * Creates a validated Portal client with built-in error handling and validation.
@@ -75,7 +58,7 @@ function createValidatedPortalClient(
      * @param {object} [trackingMessages] - Optional custom messages for each tracking phase
      * @returns {Promise<string>} The transaction hash once confirmed
      * @throws {PORTAL_ERROR} When Portal GraphQL operation fails
-     * @throws {INTERNAL_SERVER_ERROR} When transaction fails, times out, or has invalid format
+     * @throws {PORTAL_ERROR} When transaction fails, times out, or has invalid format
      * @example
      * ```typescript
      * // Basic usage
@@ -99,17 +82,7 @@ function createValidatedPortalClient(
      */
     async mutate<TResult, TVariables extends Variables>(
       document: TadaDocumentNode<TResult, TVariables>,
-      variables: TVariables,
-      userMessage: string,
-      trackingMessages?: {
-        streamTimeout?: string;
-        waitingForMining?: string;
-        transactionFailed?: string;
-        transactionDropped?: string;
-        waitingForIndexing?: string;
-        transactionIndexed?: string;
-        indexingTimeout?: string;
-      }
+      variables: TVariables
     ): Promise<TransactionHash> {
       // Extract operation name from document metadata
       const operation =
@@ -135,8 +108,14 @@ function createValidatedPortalClient(
           ...variables,
           error: error instanceof Error ? error.message : String(error),
         });
-
-        handlePortalError(error, errors);
+        throw errors.PORTAL_ERROR({
+          message: `GraphQL ${operation} failed`,
+          data: {
+            document,
+            variables,
+          },
+          cause: error,
+        });
       }
 
       // Find transaction hash in the result
@@ -147,11 +126,12 @@ function createValidatedPortalClient(
           result,
         });
 
-        throw errors.INTERNAL_SERVER_ERROR({
-          message: userMessage,
-          cause: new Error(
-            `No transaction hash found in ${operation} response`
-          ),
+        throw errors.PORTAL_ERROR({
+          message: `No transaction hash found in ${operation} response`,
+          data: {
+            document,
+            variables,
+          },
         });
       }
 
@@ -167,9 +147,14 @@ function createValidatedPortalClient(
           error: zodError,
         });
 
-        throw errors.INTERNAL_SERVER_ERROR({
-          message: userMessage,
-          cause: new Error(`Invalid transaction hash format from ${operation}`),
+        throw errors.PORTAL_ERROR({
+          message: `Invalid transaction hash format: ${zodError instanceof Error ? zodError.message : String(zodError)}`,
+          data: {
+            document,
+            variables,
+            responseValidation: `Invalid transaction hash at ${found.path}: ${found.value}`,
+          },
+          cause: zodError,
         });
       }
 
@@ -210,30 +195,6 @@ function createValidatedPortalClient(
         }
       `);
 
-      const messages = {
-        streamTimeout:
-          trackingMessages?.streamTimeout ??
-          "Transaction tracking timed out. Please check the status later.",
-        waitingForMining:
-          trackingMessages?.waitingForMining ??
-          "Waiting for transaction to be mined...",
-        transactionFailed:
-          trackingMessages?.transactionFailed ??
-          "Transaction failed. Please try again.",
-        transactionDropped:
-          trackingMessages?.transactionDropped ??
-          "Transaction was dropped from the network. Please try again.",
-        waitingForIndexing:
-          trackingMessages?.waitingForIndexing ??
-          "Transaction confirmed. Waiting for indexing...",
-        transactionIndexed:
-          trackingMessages?.transactionIndexed ??
-          "Transaction successfully indexed.",
-        indexingTimeout:
-          trackingMessages?.indexingTimeout ??
-          "Indexing is taking longer than expected. Data will be available soon.",
-      };
-
       const streamStartTime = Date.now();
 
       // ===== PHASE 1: BLOCKCHAIN CONFIRMATION =====
@@ -254,15 +215,20 @@ function createValidatedPortalClient(
       for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
         if (Date.now() - streamStartTime > STREAM_TIMEOUT_MS) {
           logger.error(`Transaction tracking timeout for ${transactionHash}`);
-          throw errors.INTERNAL_SERVER_ERROR({
-            message: userMessage,
-            cause: new Error(messages.streamTimeout),
+          throw errors.PORTAL_ERROR({
+            message: `Transaction tracking timeout after ${STREAM_TIMEOUT_MS}ms`,
+            data: {
+              document: GET_TRANSACTION_QUERY,
+              variables: { transactionHash },
+              responseValidation: `Transaction ${transactionHash} timed out after ${Date.now() - streamStartTime}ms`,
+            },
           });
         }
 
+        const transactionQueryVariables = { transactionHash };
         const result = await client.query(
           GET_TRANSACTION_QUERY,
-          { transactionHash },
+          transactionQueryVariables,
           z.object({
             getTransaction: z
               .object({
@@ -276,8 +242,7 @@ function createValidatedPortalClient(
                   .nullable(),
               })
               .nullable(),
-          }),
-          messages.waitingForMining
+          })
         );
 
         receipt = result.getTransaction?.receipt ?? undefined;
@@ -292,9 +257,13 @@ function createValidatedPortalClient(
 
         if (receipt.status !== "Success") {
           logger.error(`Transaction ${transactionHash} failed`);
-          throw errors.INTERNAL_SERVER_ERROR({
-            message: userMessage,
-            cause: new Error(messages.transactionFailed),
+          throw errors.PORTAL_ERROR({
+            message: `Transaction reverted: ${receipt.revertReasonDecoded || receipt.revertReason || "Unknown reason"}`,
+            data: {
+              document: GET_TRANSACTION_QUERY,
+              variables: transactionQueryVariables,
+              responseValidation: `Transaction ${transactionHash} reverted with status ${receipt.status}`,
+            },
           });
         }
 
@@ -303,9 +272,13 @@ function createValidatedPortalClient(
 
       if (!receipt) {
         logger.error(`Transaction ${transactionHash} dropped`);
-        throw errors.INTERNAL_SERVER_ERROR({
-          message: userMessage,
-          cause: new Error(messages.transactionDropped),
+        throw errors.PORTAL_ERROR({
+          message: "Transaction dropped from mempool",
+          data: {
+            document: GET_TRANSACTION_QUERY,
+            variables: { transactionHash },
+            responseValidation: `Transaction ${transactionHash} dropped after ${MAX_ATTEMPTS} attempts`,
+          },
         });
       }
 
@@ -319,6 +292,7 @@ function createValidatedPortalClient(
       );
 
       const targetBlockNumber = Number(receipt.blockNumber);
+      const indexingQueryVariables = {};
 
       for (
         let attempt = 0;
@@ -327,14 +301,18 @@ function createValidatedPortalClient(
       ) {
         if (Date.now() - streamStartTime > STREAM_TIMEOUT_MS) {
           logger.error(`TheGraph indexing timeout for ${transactionHash}`);
-          throw errors.INTERNAL_SERVER_ERROR({
-            message: userMessage,
-            cause: new Error(messages.streamTimeout),
+          throw errors.PORTAL_ERROR({
+            message: `TheGraph indexing timeout after ${STREAM_TIMEOUT_MS}ms`,
+            data: {
+              document: GET_INDEXING_STATUS_QUERY,
+              variables: indexingQueryVariables,
+              responseValidation: `Indexing timeout for transaction ${transactionHash} at block ${targetBlockNumber}`,
+            },
           });
         }
 
         const result = await theGraphClient.query(GET_INDEXING_STATUS_QUERY, {
-          input: {},
+          input: indexingQueryVariables,
           output: z.object({
             _meta: z
               .object({
@@ -344,7 +322,6 @@ function createValidatedPortalClient(
               })
               .nullable(),
           }),
-          error: messages.waitingForIndexing,
         });
 
         const indexedBlock = result._meta?.block.number ?? 0;
@@ -360,7 +337,7 @@ function createValidatedPortalClient(
       }
 
       // Indexing timeout - but transaction was confirmed, so we still return success
-      logger.warn(
+      logger.error(
         `TheGraph indexing timeout for ${transactionHash}, but transaction was confirmed`
       );
       return getTransactionHash(transactionHash);
@@ -379,7 +356,7 @@ function createValidatedPortalClient(
      * @returns {Promise<TValidated>} The validated query response data
      * @throws {PORTAL_ERROR} When the Portal service encounters an error
      * @throws {NOT_FOUND} When the requested resource is not found
-     * @throws {INTERNAL_SERVER_ERROR} When the query fails or response validation fails
+     * @throws {PORTAL_ERROR} When the query fails or response validation fails
      * @example
      * ```typescript
      * // Define the expected response schema
@@ -430,8 +407,7 @@ function createValidatedPortalClient(
     async query<TResult, TVariables extends Variables, TValidated>(
       document: TadaDocumentNode<TResult, TVariables>,
       variables: TVariables,
-      schema: z.ZodType<TValidated>,
-      userMessage: string
+      schema: z.ZodType<TValidated>
     ): Promise<TValidated> {
       const operation =
         (
@@ -454,8 +430,14 @@ function createValidatedPortalClient(
           ...variables,
           error: error instanceof Error ? error.message : String(error),
         });
-
-        handlePortalError(error, errors);
+        throw errors.PORTAL_ERROR({
+          message: `GraphQL ${operation} failed`,
+          data: {
+            document,
+            variables,
+          },
+          cause: error,
+        });
       }
 
       // Validate with Zod schema
@@ -469,17 +451,17 @@ function createValidatedPortalClient(
 
         // Check if this is a null response (common for queries that return no data)
         if (result === null || result === undefined) {
-          throw errors.NOT_FOUND({
-            message: userMessage,
-            data: { operation, details: "Query returned no data" },
-          });
+          throw errors.NOT_FOUND();
         }
 
-        throw errors.INTERNAL_SERVER_ERROR({
-          message: userMessage,
-          cause: new Error(
-            `Invalid response format from ${operation}: ${parseResult.error.message}`
-          ),
+        throw errors.PORTAL_ERROR({
+          message: `Invalid response format from ${operation}`,
+          data: {
+            document,
+            variables,
+            responseValidation: z.prettifyError(parseResult.error),
+          },
+          cause: parseResult.error,
         });
       }
 
