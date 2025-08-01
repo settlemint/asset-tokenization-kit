@@ -43,11 +43,152 @@ imagePullCredentials:
 # PodDisruptionBudget configurations
 # For development, we typically don't need PDBs, but for production they should be enabled
 
-dapp:
-  enabled: false
+# Configure imagePullSecrets for all services
+besu-network:
+  besu-validator-1:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  besu-validator-2:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  besu-validator-3:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  besu-validator-4:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  besu-rpc-1:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  besu-rpc-2:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+
+erpc:
+  image:
+    pullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+
+blockscout:
+  blockscout-stack:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+
+graph-node:
+  imagePullSecrets:
+    - name: image-pull-secret-docker
+    - name: image-pull-secret-ghcr
+    - name: image-pull-secret-harbor
+
+hasura:
+  graphql-engine:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+
+portal:
+  image:
+    pullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+
+support:
+  ingress-nginx:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  redis:
+    image:
+      pullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+
+observability:
+  metrics-server:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  kube-state-metrics:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  victoria-metrics-single:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+  loki:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  alloy:
+    global:
+      image:
+        pullSecrets:
+          - name: image-pull-secret-docker
+          - name: image-pull-secret-ghcr
+          - name: image-pull-secret-harbor
+  alertmanager:
+    alertmanager:
+      global:
+        imagePullSecrets:
+          - name: image-pull-secret-docker
+          - name: image-pull-secret-ghcr
+          - name: image-pull-secret-harbor
+  prometheus-stack:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+  grafana:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+  tempo:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
 
 txsigner:
+  image:
+    pullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
   ingress:
     enabled: true
     hostname: txsigner.k8s.orb.local
+
+dapp:
+  enabled: false
 

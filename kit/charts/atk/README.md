@@ -145,44 +145,26 @@ This chart uses the umbrella pattern where:
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | besu-network.besu-rpc-1.enabled | bool | `true` |  |
-| besu-network.besu-rpc-1.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| besu-network.besu-rpc-1.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| besu-network.besu-rpc-1.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | besu-network.besu-rpc-1.resources | object | `{}` |  |
 | besu-network.besu-rpc-1.storage.pvcSizeLimit | string | `"5Gi"` |  |
 | besu-network.besu-rpc-1.storage.sizeLimit | string | `"5Gi"` |  |
 | besu-network.besu-rpc-2.enabled | bool | `false` |  |
-| besu-network.besu-rpc-2.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| besu-network.besu-rpc-2.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| besu-network.besu-rpc-2.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | besu-network.besu-rpc-2.resources | object | `{}` |  |
 | besu-network.besu-rpc-2.storage.pvcSizeLimit | string | `"5Gi"` |  |
 | besu-network.besu-rpc-2.storage.sizeLimit | string | `"5Gi"` |  |
 | besu-network.besu-validator-1.enabled | bool | `true` |  |
-| besu-network.besu-validator-1.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| besu-network.besu-validator-1.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| besu-network.besu-validator-1.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | besu-network.besu-validator-1.resources | object | `{}` |  |
 | besu-network.besu-validator-1.storage.pvcSizeLimit | string | `"5Gi"` |  |
 | besu-network.besu-validator-1.storage.sizeLimit | string | `"5Gi"` |  |
 | besu-network.besu-validator-2.enabled | bool | `false` |  |
-| besu-network.besu-validator-2.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| besu-network.besu-validator-2.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| besu-network.besu-validator-2.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | besu-network.besu-validator-2.resources | object | `{}` |  |
 | besu-network.besu-validator-2.storage.pvcSizeLimit | string | `"5Gi"` |  |
 | besu-network.besu-validator-2.storage.sizeLimit | string | `"5Gi"` |  |
 | besu-network.besu-validator-3.enabled | bool | `false` |  |
-| besu-network.besu-validator-3.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| besu-network.besu-validator-3.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| besu-network.besu-validator-3.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | besu-network.besu-validator-3.resources | object | `{}` |  |
 | besu-network.besu-validator-3.storage.pvcSizeLimit | string | `"5Gi"` |  |
 | besu-network.besu-validator-3.storage.sizeLimit | string | `"5Gi"` |  |
 | besu-network.besu-validator-4.enabled | bool | `false` |  |
-| besu-network.besu-validator-4.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| besu-network.besu-validator-4.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| besu-network.besu-validator-4.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | besu-network.besu-validator-4.resources | object | `{}` |  |
 | besu-network.besu-validator-4.storage.pvcSizeLimit | string | `"5Gi"` |  |
 | besu-network.besu-validator-4.storage.sizeLimit | string | `"5Gi"` |  |
@@ -197,9 +179,6 @@ This chart uses the umbrella pattern where:
 | blockscout.blockscout-stack.blockscout.init.enabled | bool | `true` |  |
 | blockscout.blockscout-stack.blockscout.resources | object | `{}` |  |
 | blockscout.blockscout-stack.frontend.ingress.hostname | string | `"explorer.k8s.orb.local"` |  |
-| blockscout.blockscout-stack.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| blockscout.blockscout-stack.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| blockscout.blockscout-stack.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | blockscout.blockscout-stack.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
 | blockscout.blockscout-stack.podAnnotations."prometheus.io/port" | string | `"4000"` |  |
 | blockscout.blockscout-stack.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
@@ -269,9 +248,6 @@ This chart uses the umbrella pattern where:
 | erpc.config.server.httpHostV4 | string | `"0.0.0.0"` |  |
 | erpc.config.server.httpPort | int | `4000` |  |
 | erpc.enabled | bool | `true` |  |
-| erpc.image.pullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| erpc.image.pullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| erpc.image.pullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | erpc.ingress.className | string | `"atk-nginx"` |  |
 | erpc.ingress.enabled | bool | `true` |  |
 | erpc.ingress.hosts[0].host | string | `"rpc.k8s.orb.local"` |  |
@@ -289,93 +265,40 @@ This chart uses the umbrella pattern where:
 | global.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | global.networkPolicy.enabled | bool | `false` |  |
 | graph-node.enabled | bool | `true` |  |
-| graph-node.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| graph-node.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| graph-node.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | graph-node.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
 | graph-node.podAnnotations."prometheus.io/port" | string | `"8040"` |  |
 | graph-node.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
 | hasura.enabled | bool | `true` |  |
-| hasura.graphql-engine.global.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| hasura.graphql-engine.global.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| hasura.graphql-engine.global.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | hasura.graphql-engine.ingress.hostName | string | `"hasura.k8s.orb.local"` |  |
 | hasura.graphql-engine.labels."app.kubernetes.io/component" | string | `"hasura"` |  |
 | hasura.graphql-engine.labels."app.kubernetes.io/instance" | string | `"atk"` |  |
 | hasura.graphql-engine.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | hasura.graphql-engine.replicas | int | `1` |  |
-| imagePullCredentials.registries.docker | object | `{"email":"","enabled":false,"password":"","registryUrl":"docker.io","username":""}` | lowercase, no points or special caracters unique identifier for the registry, harbor, ghcr and docker have special meaning, but you can add more |
-| imagePullCredentials.registries.docker.email | string | `""` | The email to access the registry |
-| imagePullCredentials.registries.docker.enabled | bool | `false` | Enable this if you want this chart to create an image pull secret for you |
-| imagePullCredentials.registries.docker.password | string | `""` | The password or access token to access the registry |
-| imagePullCredentials.registries.docker.registryUrl | string | `"docker.io"` | The registry hosting the packages, e.g docker.io or ghcr.io |
-| imagePullCredentials.registries.docker.username | string | `""` | The username to access the registry |
-| imagePullCredentials.registries.ghcr | object | `{"email":"","enabled":false,"password":"","registryUrl":"ghcr.io","username":""}` | lowercase, no points or special caracters unique identifier for the registry, harbor, ghcr and docker have special meaning, but you can add more |
-| imagePullCredentials.registries.ghcr.email | string | `""` | The email to access the registry |
-| imagePullCredentials.registries.ghcr.enabled | bool | `false` | Enable this if you want this chart to create an image pull secret for you |
-| imagePullCredentials.registries.ghcr.password | string | `""` | The password or access token to access the registry |
-| imagePullCredentials.registries.ghcr.registryUrl | string | `"ghcr.io"` | The registry hosting the packages, e.g docker.io or ghcr.io |
-| imagePullCredentials.registries.ghcr.username | string | `""` | The username to access the registry |
-| imagePullCredentials.registries.harbor | object | `{"email":"","enabled":false,"password":"","registryUrl":"harbor.settlemint.com","username":""}` | lowercase, no points or special caracters unique identifier for the registry, harbor, ghcr and docker have special meaning, but you can add more |
-| imagePullCredentials.registries.harbor.email | string | `""` | The email to access the registry |
-| imagePullCredentials.registries.harbor.enabled | bool | `false` | Enable this if you want this chart to create an image pull secret for you (harbor is the default registry for the platform) |
-| imagePullCredentials.registries.harbor.password | string | `""` | The password or access token to access the registry |
-| imagePullCredentials.registries.harbor.registryUrl | string | `"harbor.settlemint.com"` | The registry hosting the packages, e.g docker.io or ghcr.io |
-| imagePullCredentials.registries.harbor.username | string | `""` | The username to access the registry |
-| observability.alertmanager.alertmanager.global.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| observability.alertmanager.alertmanager.global.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| observability.alertmanager.alertmanager.global.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
+| imagePullCredentials.registries | object | `{}` |  |
+| observability.alertmanager.alertmanager.resources | object | `{}` |  |
 | observability.alloy.alloy.resources | object | `{}` |  |
-| observability.alloy.global.image.pullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| observability.alloy.global.image.pullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| observability.alloy.global.image.pullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | observability.enabled | bool | `true` |  |
 | observability.grafana.adminPassword | string | `"atk"` |  |
 | observability.grafana.adminUser | string | `"settlemint"` |  |
-| observability.grafana.global.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| observability.grafana.global.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| observability.grafana.global.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | observability.grafana.ingress.hosts[0] | string | `"grafana.k8s.orb.local"` |  |
-| observability.kube-state-metrics.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| observability.kube-state-metrics.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| observability.kube-state-metrics.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | observability.kube-state-metrics.resources | object | `{}` |  |
-| observability.loki.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| observability.loki.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| observability.loki.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
+| observability.loki.singleBinary.extraEnv | object | `{}` |  |
+| observability.loki.singleBinary.persistence.size | string | `"10Gi"` |  |
+| observability.loki.singleBinary.resources | object | `{}` |  |
 | observability.metrics-server.enabled | bool | `false` |  |
-| observability.metrics-server.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| observability.metrics-server.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| observability.metrics-server.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | observability.metrics-server.resources | object | `{}` |  |
-| observability.prometheus-stack.global.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| observability.prometheus-stack.global.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| observability.prometheus-stack.global.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
-| observability.singleBinary.extraEnv | object | `{}` |  |
-| observability.singleBinary.persistence.size | string | `"10Gi"` |  |
-| observability.singleBinary.resources | object | `{}` |  |
-| observability.tempo.global.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| observability.tempo.global.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| observability.tempo.global.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
-| observability.victoria-metrics-single.global.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| observability.victoria-metrics-single.global.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| observability.victoria-metrics-single.global.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
+| observability.prometheus-stack.prometheusOperator.resources | object | `{}` |  |
+| observability.tempo.server.resources | object | `{}` |  |
 | observability.victoria-metrics-single.server.persistentVolume.size | string | `"10Gi"` |  |
 | observability.victoria-metrics-single.server.persistentVolume.storageClass | string | `""` |  |
 | observability.victoria-metrics-single.server.resources | object | `{}` |  |
 | portal.enabled | bool | `true` |  |
-| portal.image.pullSecrets[0] | string | `"image-pull-secret-docker"` |  |
-| portal.image.pullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
-| portal.image.pullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
 | portal.podAnnotations."prometheus.io/path" | string | `"/portal-metrics"` |  |
 | portal.podAnnotations."prometheus.io/port" | string | `"3000"` |  |
 | portal.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
 | portal.podLabels."app.kubernetes.io/component" | string | `"portal"` |  |
 | support.enabled | bool | `true` |  |
 | support.ingress-nginx.controller.resources | object | `{}` |  |
-| support.ingress-nginx.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| support.ingress-nginx.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| support.ingress-nginx.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | support.ingress-nginx.replicaCount | int | `1` |  |
 | support.minio.enabled | bool | `true` |  |
 | support.minio.image.repository | string | `"docker.io/minio/minio"` |  |
@@ -390,9 +313,6 @@ This chart uses the umbrella pattern where:
 | support.redis.commonLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | support.redis.enabled | bool | `true` |  |
 | support.redis.fullnameOverride | string | `"redis"` |  |
-| support.redis.image.pullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| support.redis.image.pullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| support.redis.image.pullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | support.redis.persistence.enabled | bool | `true` |  |
 | support.redis.persistence.size | string | `"1Gi"` |  |
 | support.redis.resources.limits.cpu | string | `"200m"` |  |
@@ -403,9 +323,6 @@ This chart uses the umbrella pattern where:
 | txsigner.config.derivationPath | string | `"m/44'/60'/0'/0/0"` |  |
 | txsigner.config.mnemonic | string | `"gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"` |  |
 | txsigner.enabled | bool | `true` |  |
-| txsigner.image.pullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| txsigner.image.pullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| txsigner.image.pullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | txsigner.postgresql | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
 | txsigner.replicaCount | int | `1` |  |
 | txsigner.resources | object | `{}` |  |
