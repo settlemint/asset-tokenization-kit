@@ -219,7 +219,7 @@ function RouteComponent() {
         <h2 className="text-2xl font-semibold tracking-tight">
           {t("stats:title")}
         </h2>
-        
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {asset.collateral && (
             <Suspense fallback={<ChartSkeleton />}>
@@ -236,10 +236,7 @@ function RouteComponent() {
             />
           </Suspense>
           <Suspense fallback={<ChartSkeleton />}>
-            <AssetTotalVolumeAreaChart
-              assetAddress={asset.id}
-              timeRange={30}
-            />
+            <AssetTotalVolumeAreaChart assetAddress={asset.id} timeRange={30} />
           </Suspense>
           <Suspense fallback={<ChartSkeleton />}>
             <AssetWalletDistributionChart assetAddress={asset.id} />

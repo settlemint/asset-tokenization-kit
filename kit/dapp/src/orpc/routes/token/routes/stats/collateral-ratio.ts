@@ -99,7 +99,9 @@ export const statsCollateralRatio = tokenRouter.token.statsCollateralRatio
 
     // Calculate collateral ratio (used/total * 100)
     const collateralRatio =
-      stats.collateral > 0 ? (stats.collateralUsed / stats.collateral) * 100 : 0;
+      stats.collateral > 0
+        ? (stats.collateralUsed / stats.collateral) * 100
+        : 0;
 
     return {
       buckets,
