@@ -14,6 +14,23 @@ import { IATKSystemAccessManager } from "./IATKSystemAccessManager.sol";
 ///      `ATKSystemAccessManagedUpgradeable` contracts.
 ///      It implements access management by delegating `hasRole` checks to the configured `_accessManager`.
 interface IATKSystemAccessManaged {
+    /// @notice Emitted when the access manager is set.
+    /// @param sender The address that set the access manager.
+    /// @param accessManager The address of the access manager.
+    event AccessManagerSet(address indexed sender, address indexed accessManager);
+
+    /// @dev Error: Account Lacks Required Role.
+    ///      This error is emitted when an action is attempted by an account (`account`)
+    ///      that does not possess the necessary authorization role (`neededRole`).
+    ///      For example, if an account tries to perform a system operation but doesn't have the required role.
+    /// @notice This error is functionally identical to `AccessControlUnauthorizedAccount`
+    ///         defined in OpenZeppelin's `access/AccessControl.sol` contract.
+    ///         Re-defining it here ensures consistency within the ATK framework and can
+    ///         help in scenarios where specific error catching is needed for this module.
+    /// @param account The address of the account that attempted the unauthorized action.
+    /// @param neededRole The `bytes32` identifier of the role that the `account` was missing.
+    error AccessControlUnauthorizedAccount(address account, bytes32 neededRole);
+
     /// @notice Returns the address of the access manager
     /// @return The address of the access manager
     function accessManager() external view returns (address);

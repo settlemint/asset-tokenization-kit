@@ -19,6 +19,7 @@ import { MockedComplianceModule } from "../../utils/mocks/MockedComplianceModule
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
 
 contract MockATKToken {
     SMARTComplianceModuleParamPair[] private _modules;
@@ -372,7 +373,11 @@ contract ATKComplianceImplementationTest is Test {
 
     function testAddToBypassListAsUnauthorized() public {
         vm.prank(unauthorizedUser);
-        vm.expectRevert(abi.encodeWithSelector(IATKCompliance.UnauthorizedAccess.selector));
+        vm.expectRevert( abi.encodeWithSelector(
+            IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector,
+            unauthorizedUser,
+            ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE
+        ));
         IATKCompliance(address(compliance)).addToBypassList(charlie);
     }
 
@@ -407,7 +412,11 @@ contract ATKComplianceImplementationTest is Test {
         IATKCompliance(address(compliance)).addToBypassList(charlie);
 
         vm.prank(unauthorizedUser);
-        vm.expectRevert(abi.encodeWithSelector(IATKCompliance.UnauthorizedAccess.selector));
+        vm.expectRevert( abi.encodeWithSelector(
+            IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector,
+            unauthorizedUser,
+            ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE
+        ));
         IATKCompliance(address(compliance)).removeFromBypassList(charlie);
     }
 
@@ -637,7 +646,9 @@ contract ATKComplianceImplementationTest is Test {
         vm.prank(unauthorizedUser);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IATKCompliance.UnauthorizedAccess.selector
+                IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector,
+                unauthorizedUser,
+                ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE
             )
         );
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), params);
@@ -707,7 +718,9 @@ contract ATKComplianceImplementationTest is Test {
         vm.prank(unauthorizedUser);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IATKCompliance.UnauthorizedAccess.selector
+                IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector,
+                unauthorizedUser,
+                ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE
             )
         );
         IATKCompliance(address(compliance)).removeGlobalComplianceModule(address(validModule));
@@ -791,7 +804,9 @@ contract ATKComplianceImplementationTest is Test {
         vm.prank(unauthorizedUser);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IATKCompliance.UnauthorizedAccess.selector
+                IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector,
+                unauthorizedUser,
+                ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE
             )
         );
         IATKCompliance(address(compliance)).setParametersForGlobalComplianceModule(address(validModule), newParams);

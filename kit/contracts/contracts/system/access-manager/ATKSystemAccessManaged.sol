@@ -24,22 +24,7 @@ abstract contract ATKSystemAccessManaged is IATKSystemAccessManaged{
     ///      and any contracts that inherit from it, but not externally.
     address internal _accessManager;
 
-    /// @notice Emitted when the access manager is set.
-    /// @param sender The address that set the access manager.
-    /// @param accessManager The address of the access manager.
-    event AccessManagerSet(address indexed sender, address indexed accessManager);
 
-    /// @dev Error: Account Lacks Required Role.
-    ///      This error is emitted when an action is attempted by an account (`account`)
-    ///      that does not possess the necessary authorization role (`neededRole`).
-    ///      For example, if an account tries to perform a system operation but doesn't have the required role.
-    /// @notice This error is functionally identical to `AccessControlUnauthorizedAccount`
-    ///         defined in OpenZeppelin's `access/AccessControl.sol` contract.
-    ///         Re-defining it here ensures consistency within the ATK framework and can
-    ///         help in scenarios where specific error catching is needed for this module.
-    /// @param account The address of the account that attempted the unauthorized action.
-    /// @param neededRole The `bytes32` identifier of the role that the `account` was missing.
-    error AccessControlUnauthorizedAccount(address account, bytes32 neededRole);
 
 
     /// @notice Internal function to get the sender of the message.

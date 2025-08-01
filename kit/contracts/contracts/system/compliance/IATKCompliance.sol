@@ -54,9 +54,6 @@ interface IATKCompliance is ISMARTCompliance, IATKSystemAccessManaged {
     /// @notice Error thrown when the system access manager is not set.
     error SystemAccessManagerNotSet();
 
-    /// @notice Error thrown when the caller is not authorized to perform the action.
-    error UnauthorizedAccess();
-
     // --- Functions ---
     /// @notice Initializes the compliance contract
     /// @param accessManager The address of the access manager
