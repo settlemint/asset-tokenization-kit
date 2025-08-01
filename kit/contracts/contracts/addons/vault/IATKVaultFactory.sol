@@ -46,9 +46,9 @@ interface IATKVaultFactory {
         returns (address predictedAddress);
 
     /// @notice Initializes the factory contract
-    /// @param systemAddress_ Address of the ATK system contract
-    /// @param initialAdmin_ Address that will have admin role
-    function initialize(address systemAddress_, address initialAdmin_) external;
+    /// @param accessManager The address of the access manager.
+    /// @param systemAddress The address of the `IATKSystem` contract.
+    function initialize(address accessManager, address systemAddress) external;
 
     /// @notice Returns the address of the current ATKVault logic contract (implementation)
     /// @dev This function is expected to be available on the factory contract

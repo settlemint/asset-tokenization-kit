@@ -34,6 +34,11 @@ interface IATKFixedYieldScheduleFactory {
     /// @return The address of the current implementation contract
     function atkFixedYieldScheduleImplementation() external view returns (address);
 
+     /// @notice Initializes the factory with access manager and system address
+    /// @param accessManager The address of the access manager.
+    /// @param systemAddress The address of the `IATKSystem` contract.
+    function initialize(address accessManager, address systemAddress) external;
+
     /// @notice Creates a new ATKFixedYieldSchedule proxy contract.
     /// @dev This function deploys a new proxy contract that delegates to the current implementation.
     /// The proxy is deployed using CREATE2 for deterministic addresses.

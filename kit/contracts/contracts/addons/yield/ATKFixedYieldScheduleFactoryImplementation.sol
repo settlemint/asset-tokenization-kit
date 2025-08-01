@@ -62,10 +62,10 @@ contract ATKFixedYieldScheduleFactoryImplementation is
     /// @notice Initializes the `ATKFixedYieldScheduleFactory`.
     /// @dev Initializes the factory, deploys the initial `ATKFixedYieldSchedule` implementation,
     /// and sets up support for meta-transactions via ERC2771Context.
-    /// @param systemAddress_ The address of the `IATKSystem` contract.
-    /// @param initialAdmin_ The address of the initial admin.
-    function initialize(address systemAddress_, address initialAdmin_) public initializer {
-        _initializeAbstractSystemAddonFactory(systemAddress_, initialAdmin_);
+    /// @param accessManager The address of the access manager.
+    /// @param systemAddress The address of the `IATKSystem` contract.
+    function initialize(address accessManager, address systemAddress) public initializer {
+        _initializeAbstractSystemAddonFactory(accessManager, systemAddress);
 
         address forwarder = trustedForwarder();
         // Deploy the initial implementation contract for SMARTFixedYieldSchedule.
