@@ -49,47 +49,50 @@ type SystemAccessManager @entity(immutable: false) {
 
 type AccessControl @entity(immutable: false) {
   id: Bytes!
-  addonManager: [Account!]!
-  addonModule: [Account!]!
-  addonRegistryModule: [Account!]!
+
+  # Core Admin Role
   admin: [Account!]!
-  auditor: [Account!]!
-  burner: [Account!]!
-  bypassListManager: [Account!]!
-  bypassListManagerAdmin: [Account!]!
-  capManagement: [Account!]!
-  claimManager: [Account!]!
-  claimPolicyManager: [Account!]!
-  complianceAdmin: [Account!]!
+
+  # People Roles (ATKPeopleRoles)
+  systemManager: [Account!]!
+  identityManager: [Account!]!
+  tokenManager: [Account!]!
   complianceManager: [Account!]!
+  addonManager: [Account!]!
+  claimPolicyManager: [Account!]!
+  auditor: [Account!]!
+
+  # System Roles (ATKSystemRoles)
+  systemModule: [Account!]!
+  identityRegistryModule: [Account!]!
+  tokenFactoryRegistryModule: [Account!]!
+  tokenFactoryModule: [Account!]!
+  addonRegistryModule: [Account!]!
+  addonModule: [Account!]!
+
+  # Asset Roles (ATKAssetRoles)
+  governance: [Account!]!
+  supplyManagement: [Account!]!
   custodian: [Account!]!
-  deployer: [Account!]!
   emergency: [Account!]!
+
+  # SMART Token Extension Roles
+  burner: [Account!]!
+  capManagement: [Account!]!
+  complianceAdmin: [Account!]!
   forcedTransfer: [Account!]!
   freezer: [Account!]!
-  fundsManager: [Account!]!
-  globalListManager: [Account!]!
-  governance: [Account!]!
-  identityManager: [Account!]!
-  identityRegistryModule: [Account!]!
-  implementationManager: [Account!]!
   minter: [Account!]!
   pauser: [Account!]!
   recovery: [Account!]!
-  registrar: [Account!]!
-  registrarAdmin: [Account!]!
-  registryManager: [Account!]!
+  tokenAdmin: [Account!]!
+  verificationAdmin: [Account!]!
+
+  # Addon-Specific Roles
+  fundsManager: [Account!]!
   saleAdmin: [Account!]!
   signer: [Account!]!
-  storageModifier: [Account!]!
-  supplyManagement: [Account!]!
-  systemManager: [Account!]!
-  systemModule: [Account!]!
-  tokenAdmin: [Account!]!
-  tokenFactoryModule: [Account!]!
-  tokenFactoryRegistryModule: [Account!]!
-  tokenManager: [Account!]!
-  verificationAdmin: [Account!]!
+  globalListManager: [Account!]!
 }
 
 type System @entity(immutable: false) {
