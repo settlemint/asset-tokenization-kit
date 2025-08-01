@@ -17,25 +17,21 @@ import {
   type AssetType,
 } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
-import { ComplianceModulesList } from "@/orpc/routes/system/compliance-module/routes/compliance-module.list.schema";
 import { FactoryList } from "@/orpc/routes/token/routes/factory/factory.list.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useRouteContext } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
 import type { JSX } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 interface AssetDesignerFormProps {
   type: AssetType;
-  factories: FactoryList;
-  complianceModules: ComplianceModulesList;
 }
 
-export const AssetDesignerWizard = ({
-  type,
-  factories,
-  complianceModules,
-}: AssetDesignerFormProps) => {
+export const AssetDesignerWizard = ({ type }: AssetDesignerFormProps) => {
+  const { factories, complianceModules } = useRouteContext({
+    from: "/_private/_onboarded/asset-designer/",
+  });
   const { t } = useTranslation(["asset-designer"]);
   const steps = useAssetDesignerSteps();
   const navigate = useNavigate();

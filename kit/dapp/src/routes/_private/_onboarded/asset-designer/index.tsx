@@ -29,7 +29,6 @@ export const Route = createFileRoute("/_private/_onboarded/asset-designer/")({
 });
 
 function RouteComponent() {
-  const { factories, complianceModules } = Route.useRouteContext();
   const { type } = Route.useSearch();
   const { onBack } = useGoBack();
   const { t } = useTranslation(["asset-designer"]);
@@ -55,11 +54,7 @@ function RouteComponent() {
         />
       </header>
       <main className="flex-1 overflow-hidden">
-        <AssetDesignerWizard
-          factories={factories}
-          complianceModules={complianceModules}
-          type={type}
-        />
+        <AssetDesignerWizard type={type} />
       </main>
     </div>
   );
