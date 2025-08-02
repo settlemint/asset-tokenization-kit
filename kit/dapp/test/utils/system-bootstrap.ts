@@ -95,6 +95,8 @@ export async function bootstrapTokenFactories(
     return;
   }
 
+  const initialFactoryCount = tokenFactories.length;
+
   const result = await orpClient.token.factoryCreate({
     verification: {
       verificationCode: DEFAULT_PINCODE,
@@ -103,23 +105,14 @@ export async function bootstrapTokenFactories(
     factories: nonExistingFactories,
   });
 
-  // The factoryCreate method returns a FactoryCreateOutput with status and results
-  if (result.status !== "completed") {
-    throw new Error(`Factory creation failed: ${result.message}`);
+  // The factoryCreate method now returns the updated system details
+  if (!result.id || !result.tokenFactories) {
+    throw new Error(`Factory creation failed: invalid response`);
   }
 
-  const transactionHashes: string[] = [];
+  const finalFactoryCount = result.tokenFactories.length;
+  const successfulCreations = finalFactoryCount - initialFactoryCount;
 
-  if (result.results) {
-    result.results.forEach((r) => {
-      if (r.transactionHash) {
-        transactionHashes.push(r.transactionHash);
-      }
-    });
-  }
-
-  const successfulCreations =
-    result.results?.filter((r) => !r.error).length || 0;
   if (successfulCreations !== nonExistingFactories.length) {
     throw new Error(
       `Token factories attempted: ${nonExistingFactories.length}, succeeded: ${successfulCreations}`

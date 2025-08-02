@@ -18,13 +18,12 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
+import { read } from "@/orpc/routes/system/routes/system.read";
 import { TOKEN_FACTORY_PERMISSIONS } from "@/orpc/routes/token/routes/factory/factory.permissions";
+import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import {
-  type FactoryCreateOutput,
-  getDefaultImplementations,
-} from "./factory.create.schema";
+import { getDefaultImplementations } from "./factory.create.schema";
 
 const logger = createLogger();
 
@@ -88,7 +87,7 @@ export const factoryCreate = portalRouter.token.factoryCreate
   .handler(async ({ input, context, errors }) => {
     const { factories, verification } = input;
     const sender = context.auth.user;
-    const { t, system } = context;
+    const { system } = context;
 
     if (!system.tokenFactoryRegistry) {
       const cause = new Error("Token factory registry not found");
@@ -98,9 +97,11 @@ export const factoryCreate = portalRouter.token.factoryCreate
       });
     }
 
+    // Store registry address to satisfy TypeScript's null checks
+    const tokenFactoryRegistry = system.tokenFactoryRegistry;
+
     // Normalize to array
     const factoryList = Array.isArray(factories) ? factories : [factories];
-    const totalFactories = factoryList.length;
 
     // Query existing token factories using the ORPC client
     let existingFactoryNames = new Set<string>();
@@ -116,10 +117,13 @@ export const factoryCreate = portalRouter.token.factoryCreate
       logger.debug(`Could not fetch existing factories: ${String(error)}`);
     }
 
-    const results: FactoryCreateOutput["results"] = [];
+    // Filter out existing factories
+    const factoriesToDeploy = factoryList.filter(
+      (factory) => !existingFactoryNames.has(factory.name.toLowerCase())
+    );
 
-    // Process each factory using a generator pattern for batch operations
-    for (const factory of factoryList) {
+    // Process all factories in parallel for better performance
+    const deploymentPromises = factoriesToDeploy.map(async (factory, index) => {
       const { type, name } = factory;
       const defaults = getDefaultImplementations(type);
 
@@ -129,30 +133,25 @@ export const factoryCreate = portalRouter.token.factoryCreate
       const tokenImplementation =
         factory.tokenImplementation ?? defaults.tokenImplementation;
 
-      // For single factory, use specific message. For batch, use progress
-
-      // Check if factory already exists
-      if (existingFactoryNames.has(name.toLowerCase())) {
-        results.push({
-          type,
-          name,
-          transactionHash: "",
-          error: t("tokens:api.factory.create.messages.alreadyExists"),
-        });
-
-        continue; // Skip to next factory
-      }
-
       try {
-        // Every request needs a challenge response (can only be used once)
+        // Every request needs a unique challenge response
+        // For batch operations, append index to make each code unique
+        const uniqueVerification = {
+          verificationCode:
+            factoriesToDeploy.length > 1
+              ? `${verification.verificationCode}_${index}`
+              : verification.verificationCode,
+          verificationType: verification.verificationType,
+        };
+
         const challengeResponse = await handleChallenge(sender, {
-          code: verification.verificationCode,
-          type: verification.verificationType,
+          code: uniqueVerification.verificationCode,
+          type: uniqueVerification.verificationType,
         });
 
-        // Execute the factory creation transaction (reuse challenge response)
+        // Execute the factory creation transaction
         const variables: VariablesOf<typeof CREATE_TOKEN_FACTORY_MUTATION> = {
-          address: system.tokenFactoryRegistry,
+          address: tokenFactoryRegistry,
           from: sender.wallet,
           factoryImplementation: factoryImplementation,
           tokenImplementation: tokenImplementation,
@@ -161,103 +160,35 @@ export const factoryCreate = portalRouter.token.factoryCreate
         };
 
         // Use the Portal client's mutate method that returns the transaction hash
-        const transactionHash = await context.portalClient.mutate(
+        return await context.portalClient.mutate(
           CREATE_TOKEN_FACTORY_MUTATION,
           variables
         );
-
-        results.push({
-          type,
-          name,
-          transactionHash,
-        });
       } catch (error) {
-        results.push({
-          type,
-          name,
-          error: error instanceof Error ? error.message : String(error),
-        });
+        logger.error(`Failed to create factory ${name}:`, error);
+        // Throw error to be caught by Promise.allSettled
+        throw error;
       }
-    }
+    });
 
-    // Final completion message
-    const successCount = results.filter((r) => !r.error).length;
-    const skippedCount = results.filter(
-      (r) => r.error === t("tokens:api.factory.create.messages.alreadyExists")
-    ).length;
-    const failureCount = results.filter(
-      (r) =>
-        r.error &&
-        r.error !== t("tokens:api.factory.create.messages.alreadyExists")
-    ).length;
+    // Execute all deployments in parallel with partial success handling
+    const results = await Promise.allSettled(deploymentPromises);
 
-    let completionMessage = t("tokens:api.factory.create.messages.completed");
+    // Log any failures for debugging
+    results.forEach((result, index) => {
+      if (result.status === "rejected") {
+        logger.error(`Factory deployment ${index} failed:`, result.reason);
+      }
+    });
 
-    // All succeeded
-    if (successCount > 0 && failureCount === 0 && skippedCount === 0) {
-      completionMessage = t("tokens:api.factory.create.messages.allSucceeded", {
-        count: successCount,
-      });
-    }
-    // All skipped
-    else if (skippedCount > 0 && successCount === 0 && failureCount === 0) {
-      completionMessage = t("tokens:api.factory.create.messages.allSkipped", {
-        count: skippedCount,
-      });
-    }
-    // All failed
-    else if (failureCount > 0 && successCount === 0 && skippedCount === 0) {
-      completionMessage = t("tokens:api.factory.create.messages.batchFailed", {
-        count: failureCount,
-      });
-    }
-    // Mixed results with all three types
-    else if (successCount > 0 && skippedCount > 0 && failureCount > 0) {
-      completionMessage = t("tokens:api.factory.create.messages.mixedResults", {
-        successCount,
-        skippedCount,
-        failureCount,
-      });
-    }
-    // Success and skipped only
-    else if (successCount > 0 && skippedCount > 0 && failureCount === 0) {
-      completionMessage = t(
-        "tokens:api.factory.create.messages.successAndSkipped",
-        {
-          successCount,
-          skippedCount,
-        }
-      );
-    }
-    // Success and failed only
-    else if (successCount > 0 && failureCount > 0 && skippedCount === 0) {
-      completionMessage = t(
-        "tokens:api.factory.create.messages.successAndFailed",
-        {
-          successCount,
-          failureCount,
-        }
-      );
-    }
-    // Skipped and failed only
-    else if (skippedCount > 0 && failureCount > 0 && successCount === 0) {
-      completionMessage = t(
-        "tokens:api.factory.create.messages.skippedAndFailed",
-        {
-          skippedCount,
-          failureCount,
-        }
-      );
-    }
-
-    return {
-      status: "completed" as const,
-      message: completionMessage,
-      results,
-      result: results, // Added for useStreamingMutation hook compatibility
-      progress: {
-        current: totalFactories,
-        total: totalFactories,
+    const updatedSystemDetails = await call(
+      read,
+      {
+        id: context.system.address,
       },
-    };
+      { context }
+    );
+
+    // Return the complete system details
+    return updatedSystemDetails;
   });

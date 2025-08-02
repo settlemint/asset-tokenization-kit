@@ -49,6 +49,7 @@
     "@vitest/ui": "3.2.4",
     "babel-plugin-react-compiler": "19.1.0-rc.2",
     "contracts": "workspace:*",
+    "subgraph": "workspace:*",
     "dotenv": "17.2.1",
     "drizzle-kit": "0.31.4",
     "eslint": "9.32.0",

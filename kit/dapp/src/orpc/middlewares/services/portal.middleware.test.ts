@@ -652,9 +652,11 @@ describe("portal.middleware", () => {
         // Start the mutation and catch the error
         const resultPromise = client
           .mutate(DROPPED_MUTATION, {})
-          .catch((error) => {
+          .catch((error: unknown) => {
             // Catch the error to prevent unhandled rejection
-            expect(error.message).toBe("Transaction dropped from mempool");
+            expect((error as Error).message).toBe(
+              "Transaction dropped from mempool"
+            );
             return error;
           });
 
@@ -664,7 +666,9 @@ describe("portal.middleware", () => {
         // Wait for the promise to settle
         const error = await resultPromise;
         expect(error).toBeInstanceOf(Error);
-        expect(error.message).toBe("Transaction dropped from mempool");
+        expect((error as Error).message).toBe(
+          "Transaction dropped from mempool"
+        );
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
           message: "Transaction dropped from mempool",

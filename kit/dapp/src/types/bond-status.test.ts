@@ -39,10 +39,11 @@ describe("bond-status types", () => {
           case "matured":
             expect(status).toBe("matured");
             break;
-          default:
+          default: {
             // This ensures exhaustive type checking
             const _exhaustive: never = status;
             throw new Error(`Unhandled status: ${_exhaustive}`);
+          }
         }
       }
 
@@ -85,7 +86,7 @@ describe("bond-status types", () => {
       };
 
       const nanProgress: BondProgressData = {
-        progress: NaN,
+        progress: Number.NaN,
         status: "active",
       };
 
@@ -269,7 +270,7 @@ describe("bond-status types", () => {
         name: "Test Bond",
         symbol: "TBD",
         decimals: 18,
-        totalSupply: from(1000000),
+        totalSupply: from(1_000_000),
         extensions: [],
         implementsERC3643: true,
         implementsSMART: false,
@@ -365,7 +366,7 @@ describe("bond-status types", () => {
         name: "Test Bond",
         symbol: "TBD",
         decimals: 18,
-        totalSupply: from(1000000),
+        totalSupply: from(1_000_000),
         extensions: [],
         implementsERC3643: true,
         implementsSMART: false,
@@ -460,7 +461,7 @@ describe("bond-status types", () => {
         name: "Test Bond",
         symbol: "TBD",
         decimals: 18,
-        totalSupply: from(1000000),
+        totalSupply: from(1_000_000),
         extensions: [],
         implementsERC3643: true,
         implementsSMART: false,
@@ -557,7 +558,7 @@ describe("bond-status types", () => {
         name: "Test Bond",
         symbol: "TBD",
         decimals: 18,
-        totalSupply: from(1000000),
+        totalSupply: from(1_000_000),
         extensions: [],
         implementsERC3643: true,
         implementsSMART: false,
