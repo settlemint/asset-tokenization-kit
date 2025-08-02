@@ -30,7 +30,7 @@
       "dependsOn": ["package", "^publish"]
     },
     "test:integration": {
-      "dependsOn": ["test:codegen:gql-tada"]
+      "dependsOn": ["test:codegen:gql-tada", "test"]
     },
     "translate": {},
     "artifacts": {

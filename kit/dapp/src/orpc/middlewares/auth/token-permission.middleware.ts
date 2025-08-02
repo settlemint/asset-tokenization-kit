@@ -1,4 +1,6 @@
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
+import type { RoleRequirement } from "@/lib/zod/validators/role-requirement";
+import { satisfiesRoleRequirement } from "@/lib/zod/validators/role-requirement";
 import type { AssetExtension } from "@/lib/zod/validators/asset-extensions";
 import { baseRouter } from "@/orpc/procedures/base.router";
 
@@ -15,7 +17,7 @@ export function tokenPermissionMiddleware({
   requiredRoles,
   requiredExtensions,
 }: {
-  requiredRoles?: AccessControlRoles[];
+  requiredRoles?: RoleRequirement;
   requiredExtensions?: AssetExtension[];
 } = {}) {
   return baseRouter.middleware(async ({ context, next, errors }) => {
@@ -62,17 +64,18 @@ export function tokenPermissionMiddleware({
       });
     }
 
-    if (
-      Array.isArray(requiredRoles) &&
-      !requiredRoles.every(
-        (requiredRole) => token.userPermissions?.roles[requiredRole]
-      )
-    ) {
-      throw errors.USER_NOT_AUTHORIZED({
-        data: {
-          requiredRoles,
-        },
-      });
+    if (requiredRoles) {
+      const userRoleList = Object.entries(token.userPermissions?.roles || {})
+        .filter(([_, hasRole]) => hasRole)
+        .map(([role]) => role) as AccessControlRoles[];
+
+      if (!satisfiesRoleRequirement(userRoleList, requiredRoles)) {
+        throw errors.USER_NOT_AUTHORIZED({
+          data: {
+            requiredRoles,
+          },
+        });
+      }
     }
 
     return next();

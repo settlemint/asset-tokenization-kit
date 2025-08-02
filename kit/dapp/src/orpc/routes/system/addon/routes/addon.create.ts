@@ -156,7 +156,7 @@ function getImplementationAddress(addonConfig: SystemAddonConfig): string {
 export const addonCreate = portalRouter.system.addonCreate
   .use(
     blockchainPermissionsMiddleware<typeof SystemAddonCreateSchema>({
-      requiredRoles: ["registrar"],
+      requiredRoles: { any: ["addonManager", "systemManager"] },
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },

@@ -31,9 +31,8 @@ export const create = portalRouter.token.create
   .use(
     blockchainPermissionsMiddleware<typeof TokenCreateSchema>({
       requiredRoles: TOKEN_PERMISSIONS.create,
-      getAccessControl: ({ context, input }) => {
-        const tokenFactory = getTokenFactory(context, input.type);
-        return tokenFactory?.accessControl;
+      getAccessControl: ({ context }) => {
+        return context.system?.systemAccessManager?.accessControl;
       },
     })
   )

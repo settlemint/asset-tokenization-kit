@@ -12,6 +12,12 @@ export default defineConfig({
     include: ["src/**/*.test.{ts,tsx}"],
     passWithNoTests: true,
     pool: "threads",
+    poolOptions: {
+      threads: {
+        useAtomics: true,
+        isolate: false,
+      },
+    },
     isolate: false,
     reporters: process.env.CI ? ["dot", "github-actions"] : [],
     onConsoleLog: process.env.CI ? () => false : undefined,

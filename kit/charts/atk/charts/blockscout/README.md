@@ -53,8 +53,8 @@ A Helm chart for the blockscout components
 | blockscout-stack.blockscout.env.TXS_STATS_ENABLED | string | `"true"` |  |
 | blockscout-stack.blockscout.env.WEBAPP_URL | string | `"https://explorer.k8s.orb.local"` |  |
 | blockscout-stack.blockscout.envFromSecret.DATABASE_URL | string | `"postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"` |  |
-| blockscout-stack.blockscout.envFromSecret.ETHEREUM_JSONRPC_HTTP_URL | string | `"http://erpc:4000"` |  |
-| blockscout-stack.blockscout.envFromSecret.ETHEREUM_JSONRPC_TRACE_URL | string | `"http://erpc:4000"` |  |
+| blockscout-stack.blockscout.envFromSecret.ETHEREUM_JSONRPC_HTTP_URL | string | `"http://erpc:4000/settlemint/evm/1337"` |  |
+| blockscout-stack.blockscout.envFromSecret.ETHEREUM_JSONRPC_TRACE_URL | string | `"http://erpc:4000/settlemint/evm/1337"` |  |
 | blockscout-stack.blockscout.envFromSecret.SECRET_KEY_BASE | string | `"atk"` |  |
 | blockscout-stack.blockscout.image.repository | string | `"ghcr.io/blockscout/blockscout"` |  |
 | blockscout-stack.blockscout.image.tag | string | `"8.1.2"` |  |
@@ -69,7 +69,7 @@ A Helm chart for the blockscout components
 | blockscout-stack.config.network.currency.decimals | int | `18` |  |
 | blockscout-stack.config.network.currency.name | string | `"Native Token"` |  |
 | blockscout-stack.config.network.currency.symbol | string | `"NT"` |  |
-| blockscout-stack.config.network.id | int | `53771311147` |  |
+| blockscout-stack.config.network.id | int | `1337` |  |
 | blockscout-stack.config.network.name | string | `"Asset Tokenization Kit"` |  |
 | blockscout-stack.config.network.shortname | string | `"ATK"` |  |
 | blockscout-stack.config.prometheus.blackbox.enabled | bool | `false` |  |

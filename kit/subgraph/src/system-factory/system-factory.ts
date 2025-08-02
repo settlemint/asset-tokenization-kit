@@ -10,6 +10,7 @@ export function handleATKSystemCreated(event: ATKSystemCreated): void {
   if (system.deployedInTransaction.equals(Bytes.empty())) {
     system.deployedInTransaction = event.transaction.hash;
   }
+  system.save();
 
   const systemAccessManager = fetchSystemAccessManager(
     event.params.accessManager
@@ -20,5 +21,6 @@ export function handleATKSystemCreated(event: ATKSystemCreated): void {
   systemAccessManager.system = system.id;
   systemAccessManager.save();
 
+  system.systemAccessManager = systemAccessManager.id;
   system.save();
 }

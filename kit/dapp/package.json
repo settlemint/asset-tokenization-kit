@@ -9,6 +9,7 @@
     "translate": "languine translate",
     "dev": "bun --bun vite dev",
     "typecheck": "tsc --noEmit",
+    "posttypecheck": "bun gql-tada check",
     "watch": "tsc --noEmit --watch",
     "build": "bun --bun vite build",
     "shadcn": "bunx --bun shadcn@canary",
@@ -29,7 +30,8 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "test:integration": "vitest run --config vitest.config.integration.ts",
-    "route:gen": "tsr generate"
+    "route:gen": "tsr generate",
+    "knip": "knip"
   },
   "devDependencies": {
     "@eslint/js": "9.32.0",
@@ -47,6 +49,7 @@
     "@vitest/ui": "3.2.4",
     "babel-plugin-react-compiler": "19.1.0-rc.2",
     "contracts": "workspace:*",
+    "subgraph": "workspace:*",
     "dotenv": "17.2.1",
     "drizzle-kit": "0.31.4",
     "eslint": "9.32.0",
@@ -60,6 +63,7 @@
     "globals": "16.3.0",
     "gql.tada": "1.8.12",
     "happy-dom": "18.0.1",
+    "knip": "5.43.4",
     "languine": "3.1.4",
     "minimatch": "10.0.3",
     "typescript": "5.9.2",

@@ -50,6 +50,7 @@ const TOKEN_CREATE_YIELD_SCHEDULE_MUTATION = portalGraphql(`
       verificationId: $verificationId
       challengeResponse: $challengeResponse
       input: {
+        country: 1
         endTime: $endTime
         interval: $interval
         rate: $rate

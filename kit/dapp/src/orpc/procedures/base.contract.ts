@@ -1,6 +1,7 @@
 import { ErrorMap, oc } from "@orpc/contract";
 import { oo } from "@orpc/openapi";
 import { z } from "zod";
+import { RoleRequirementSchema } from "@/lib/zod/validators/role-requirement";
 
 export const CUSTOM_ERRORS = {
   /**
@@ -125,7 +126,11 @@ export const CUSTOM_ERRORS = {
     status: 403,
     message: "User does not have the required role to execute this action.",
     data: z.object({
-      requiredRoles: z.array(z.string()),
+      requiredRoles: z.union([
+        z.string(),
+        z.array(z.string()),
+        RoleRequirementSchema,
+      ]),
     }),
   },
 

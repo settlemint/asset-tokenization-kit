@@ -14,6 +14,8 @@ import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { VerificationType } from "@/lib/zod/validators/verification-type";
 import { VerificationType as VerificationTypeEnum } from "@/lib/zod/validators/verification-type";
 import { mapUserRoles } from "@/orpc/helpers/role-validation";
+import { satisfiesRoleRequirement } from "@/lib/zod/validators/role-requirement";
+import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { getSystemContext } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
@@ -136,10 +138,12 @@ export const me = authRouter.user.me
       userPermissions: {
         tokenFactory: {
           actions: {
-            create:
-              TOKEN_FACTORY_PERMISSIONS.create.every(
-                (role) => userRoles[role]
-              ) ?? false,
+            create: satisfiesRoleRequirement(
+              Object.entries(userRoles)
+                .filter(([_, hasRole]) => hasRole)
+                .map(([role]) => role) as AccessControlRoles[],
+              TOKEN_FACTORY_PERMISSIONS.create
+            ),
           },
         },
       },

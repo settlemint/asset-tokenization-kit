@@ -10,6 +10,11 @@ import { getAccessControlEntries } from "./access-control-helpers";
  * @param wallet - The wallet address of the user
  * @param accessControl - The access control fragment
  * @returns The user roles
+ * @remarks
+ * This function maps roles based on the current GraphQL schema, which is the single source of truth for roles.
+ * Legacy roles (e.g., 'deployer', 'registrar') have been removed from the schema and their permissions remapped.
+ * Consuming code must ensure that access control checks use the new, correct roles defined in the schema
+ * to avoid potential security vulnerabilities like permission gaps or privilege escalations.
  */
 export function mapUserRoles(
   wallet: EthereumAddress,
@@ -23,15 +28,11 @@ export function mapUserRoles(
     admin: false,
     auditor: false,
     burner: false,
-    bypassListManager: false,
-    bypassListManagerAdmin: false,
     capManagement: false,
-    claimManager: false,
     claimPolicyManager: false,
     complianceAdmin: false,
     complianceManager: false,
     custodian: false,
-    deployer: false,
     emergency: false,
     forcedTransfer: false,
     freezer: false,
@@ -40,16 +41,11 @@ export function mapUserRoles(
     governance: false,
     identityManager: false,
     identityRegistryModule: false,
-    implementationManager: false,
     minter: false,
     pauser: false,
     recovery: false,
-    registrar: false,
-    registrarAdmin: false,
-    registryManager: false,
     saleAdmin: false,
     signer: false,
-    storageModifier: false,
     supplyManagement: false,
     systemManager: false,
     systemModule: false,

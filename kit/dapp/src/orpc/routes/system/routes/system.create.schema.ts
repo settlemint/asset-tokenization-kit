@@ -26,7 +26,6 @@
  */
 
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { z } from "zod";
 import { MutationInputSchema } from "../../common/schemas/mutation.schema";
 
 export const SystemCreateSchema = MutationInputSchema.extend({
@@ -40,13 +39,4 @@ export const SystemCreateSchema = MutationInputSchema.extend({
   contract: ethereumAddress
     .describe("The address of the contract to call this function on")
     .default("0x5e771e1417100000000000000000000000020088"),
-});
-
-/**
- * Output schema for streaming events
- */
-export const SystemCreateOutputSchema = z.object({
-  status: z.enum(["pending", "confirmed", "failed"]),
-  message: z.string(),
-  result: ethereumAddress.optional(),
 });

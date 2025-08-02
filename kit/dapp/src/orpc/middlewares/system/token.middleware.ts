@@ -5,6 +5,8 @@ import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { satisfiesRoleRequirement } from "@/lib/zod/validators/role-requirement";
+import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 
 const logger = createLogger();
@@ -145,11 +147,15 @@ export const tokenMiddleware = baseRouter.middleware(
             unpause: false,
           };
 
-          // Update based on user roles
+          // Update based on user roles using the flexible role requirement system
           Object.entries(TOKEN_PERMISSIONS).forEach(
-            ([action, requiredRoles]) => {
+            ([action, roleRequirement]) => {
+              const userRoleList = Object.entries(userRoles)
+                .filter(([_, hasRole]) => hasRole)
+                .map(([role]) => role) as AccessControlRoles[];
+
               initialActions[action as keyof typeof TOKEN_PERMISSIONS] =
-                requiredRoles.every((role) => userRoles[role]);
+                satisfiesRoleRequirement(userRoleList, roleRequirement);
             }
           );
 

@@ -8,9 +8,10 @@ import { z } from "zod";
  * Retrieves the latest collateral data for the token
  */
 const TOKEN_COLLATERAL_STATS_QUERY = theGraphGraphql(`
-  query TokenCollateralStats($tokenId: ID!) {
-    tokenCollateralStats(
+  query TokenCollateralStats($tokenId: String!) {
+    tokenCollateralStats_collection(
       where: { token: $tokenId }
+      interval: hour
       orderBy: timestamp
       orderDirection: desc
       first: 1
@@ -24,7 +25,7 @@ const TOKEN_COLLATERAL_STATS_QUERY = theGraphGraphql(`
 
 // Schema for the GraphQL response
 const TokenCollateralStatsResponseSchema = z.object({
-  tokenCollateralStats: z.array(
+  tokenCollateralStats_collection: z.array(
     z.object({
       collateral: z.number(),
       collateralAvailable: z.number(),
@@ -77,7 +78,7 @@ export const statsCollateralRatio = tokenRouter.token.statsCollateralRatio
       }
     );
 
-    const stats = response.tokenCollateralStats[0];
+    const stats = response.tokenCollateralStats_collection[0];
 
     // Handle case where no collateral data exists
     if (!stats) {

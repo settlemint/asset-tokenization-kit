@@ -96,7 +96,7 @@ function getComplianceImplementationAddress(
 export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
   .use(
     blockchainPermissionsMiddleware<typeof SystemComplianceModuleCreateSchema>({
-      requiredRoles: ["registrar"],
+      requiredRoles: { any: ["complianceManager", "systemManager"] },
       getAccessControl: ({ context }) => {
         const systemData = context.system;
         return systemData?.systemAccessManager?.accessControl;
