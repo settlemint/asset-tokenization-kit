@@ -3,6 +3,7 @@
  */
 import { describe, expect, test } from "vitest";
 import type { TFunction } from "i18next";
+import { from } from "dnum";
 import type {
   BondStatus,
   BondProgressData,
@@ -11,6 +12,8 @@ import type {
   BondChartData,
   BondStatusStrategy,
 } from "./bond-status";
+import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import type { StatsBondStatusOutput } from "@/orpc/routes/token/routes/stats/bond-status.schema";
 
 describe("bond-status types", () => {
   describe("BondStatus", () => {
@@ -25,23 +28,27 @@ describe("bond-status types", () => {
     });
 
     test("should be used as discriminated union", () => {
-      const status: BondStatus = "active";
-
-      switch (status) {
-        case "issuing":
-          expect(status).toBe("issuing");
-          break;
-        case "active":
-          expect(status).toBe("active");
-          break;
-        case "matured":
-          expect(status).toBe("matured");
-          break;
-        default:
-          // This ensures exhaustive type checking
-          const _exhaustive: never = status;
-          throw new Error(`Unhandled status: ${_exhaustive}`);
+      function testStatus(status: BondStatus): void {
+        switch (status) {
+          case "issuing":
+            expect(status).toBe("issuing");
+            break;
+          case "active":
+            expect(status).toBe("active");
+            break;
+          case "matured":
+            expect(status).toBe("matured");
+            break;
+          default:
+            // This ensures exhaustive type checking
+            const _exhaustive: never = status;
+            throw new Error(`Unhandled status: ${_exhaustive}`);
+        }
       }
+
+      testStatus("active");
+      testStatus("issuing");
+      testStatus("matured");
     });
   });
 
@@ -238,16 +245,16 @@ describe("bond-status types", () => {
     test("should implement BondStatusStrategy interface", () => {
       // Mock implementation of the strategy
       const mockStrategy: BondStatusStrategy = {
-        calculateProgress: (token, bondStatus) => {
+        calculateProgress: () => {
           return {
             progress: 50,
             status: "active",
           };
         },
-        getDisplayData: (t, progress) => {
+        getDisplayData: (_, progress) => {
           return {
-            title: t("stats:bondStatus.active.title"),
-            description: t("stats:bondStatus.active.description"),
+            title: "Active Bond",
+            description: "Bond is active",
             color: "#00FF00",
             label: `${progress}%`,
           };
@@ -255,8 +262,36 @@ describe("bond-status types", () => {
       };
 
       // Test calculateProgress method
-      const mockToken = {};
-      const mockBondStatus = {};
+      const mockToken: Token = {
+        id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+        type: "bond",
+        createdAt: new Date(),
+        name: "Test Bond",
+        symbol: "TBD",
+        decimals: 18,
+        totalSupply: from(1000000),
+        extensions: [],
+        implementsERC3643: true,
+        implementsSMART: false,
+        pausable: { paused: false },
+        collateral: null,
+        capped: null,
+        createdBy: {
+          id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+        },
+        redeemable: null,
+        bond: {
+          faceValue: from(1000),
+          isMatured: false,
+          maturityDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+        },
+        fund: null,
+      };
+      const mockBondStatus: StatsBondStatusOutput = {
+        underlyingAssetBalanceAvailable: from(500),
+        underlyingAssetBalanceRequired: from(1000),
+        coveredPercentage: from(50),
+      };
       const progressResult = mockStrategy.calculateProgress(
         mockToken,
         mockBondStatus
@@ -268,25 +303,25 @@ describe("bond-status types", () => {
       });
 
       // Test getDisplayData method
-      const mockT: TFunction<"stats" | "tokens"> = (key) => key;
+      const mockT = ((key: string) => key) as TFunction<
+        readonly ["stats", "tokens"]
+      >;
       const displayResult = mockStrategy.getDisplayData(mockT, 75);
 
-      expect(displayResult).toEqual({
-        title: "stats:bondStatus.active.title",
-        description: "stats:bondStatus.active.description",
-        color: "#00FF00",
-        label: "75%",
-      });
+      expect(displayResult.title).toBe("Active Bond");
+      expect(displayResult.description).toBe("Bond is active");
+      expect(displayResult.color).toBe("#00FF00");
+      expect(displayResult.label).toBe("75%");
     });
 
     test("should handle multiple strategy implementations", () => {
       // Issuing strategy
       const issuingStrategy: BondStatusStrategy = {
-        calculateProgress: (token, bondStatus) => ({
+        calculateProgress: () => ({
           progress: 25,
           status: "issuing",
         }),
-        getDisplayData: (t, progress) => ({
+        getDisplayData: (__, progress) => ({
           title: "Issuing",
           description: "Bond is being issued",
           color: "#FFA500",
@@ -296,11 +331,11 @@ describe("bond-status types", () => {
 
       // Active strategy
       const activeStrategy: BondStatusStrategy = {
-        calculateProgress: (token, bondStatus) => ({
+        calculateProgress: () => ({
           progress: 60,
           status: "active",
         }),
-        getDisplayData: (t, progress) => ({
+        getDisplayData: (__, progress) => ({
           title: "Active",
           description: "Bond is active",
           color: "#00FF00",
@@ -310,11 +345,11 @@ describe("bond-status types", () => {
 
       // Matured strategy
       const maturedStrategy: BondStatusStrategy = {
-        calculateProgress: (token, bondStatus) => ({
+        calculateProgress: () => ({
           progress: 100,
           status: "matured",
         }),
-        getDisplayData: (t, progress) => ({
+        getDisplayData: (__, _progress) => ({
           title: "Matured",
           description: "Bond has matured",
           color: "#0000FF",
@@ -323,9 +358,39 @@ describe("bond-status types", () => {
       };
 
       // Test each strategy
-      const mockToken = {};
-      const mockBondStatus = {};
-      const mockT: TFunction<"stats" | "tokens"> = (key) => key;
+      const mockToken: Token = {
+        id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+        type: "bond",
+        createdAt: new Date(),
+        name: "Test Bond",
+        symbol: "TBD",
+        decimals: 18,
+        totalSupply: from(1000000),
+        extensions: [],
+        implementsERC3643: true,
+        implementsSMART: false,
+        pausable: { paused: false },
+        collateral: null,
+        capped: null,
+        createdBy: {
+          id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+        },
+        redeemable: null,
+        bond: {
+          faceValue: from(1000),
+          isMatured: false,
+          maturityDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+        },
+        fund: null,
+      };
+      const mockBondStatus: StatsBondStatusOutput = {
+        underlyingAssetBalanceAvailable: from(500),
+        underlyingAssetBalanceRequired: from(1000),
+        coveredPercentage: from(50),
+      };
+      const mockT = ((key: string) => key) as TFunction<
+        readonly ["stats", "tokens"]
+      >;
 
       const issuingProgress = issuingStrategy.calculateProgress(
         mockToken,
@@ -369,14 +434,14 @@ describe("bond-status types", () => {
     test("should compose types correctly in a complete flow for active status", () => {
       // Simulate a complete bond status calculation flow
       const mockStrategy: BondStatusStrategy = {
-        calculateProgress: (token, bondStatus) => {
+        calculateProgress: () => {
           const progressData: BondProgressData = {
             progress: 80,
             status: "active",
           };
           return progressData;
         },
-        getDisplayData: (t, progress) => {
+        getDisplayData: (_) => {
           const displayData: BondDisplayData = {
             title: "Active Bond",
             description: "80% complete",
@@ -388,11 +453,44 @@ describe("bond-status types", () => {
       };
 
       // Calculate progress
-      const progressData = mockStrategy.calculateProgress({}, {});
+      const mockTokenForCalc: Token = {
+        id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+        type: "bond",
+        createdAt: new Date(),
+        name: "Test Bond",
+        symbol: "TBD",
+        decimals: 18,
+        totalSupply: from(1000000),
+        extensions: [],
+        implementsERC3643: true,
+        implementsSMART: false,
+        pausable: { paused: false },
+        collateral: null,
+        capped: null,
+        createdBy: {
+          id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+        },
+        redeemable: null,
+        bond: {
+          faceValue: from(1000),
+          isMatured: false,
+          maturityDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+        },
+        fund: null,
+      };
+      const mockBondStatusForCalc: StatsBondStatusOutput = {
+        underlyingAssetBalanceAvailable: from(800),
+        underlyingAssetBalanceRequired: from(1000),
+        coveredPercentage: from(80),
+      };
+      const progressData = mockStrategy.calculateProgress(
+        mockTokenForCalc,
+        mockBondStatusForCalc
+      );
 
       // Get display data
       const displayData = mockStrategy.getDisplayData(
-        (key) => key,
+        ((key: string) => key) as TFunction<readonly ["stats", "tokens"]>,
         progressData.progress
       );
 
@@ -432,19 +530,19 @@ describe("bond-status types", () => {
       expect(chartData.progress).toBe(80);
       expect(chartData.status).toBe("active");
       expect(chartData.title).toBe("Active Bond");
-      expect(chartData.data[0].value).toBe(80);
-      expect(chartData.data[1].value).toBe(20);
+      expect(chartData.data[0]?.value).toBe(80);
+      expect(chartData.data[1]?.value).toBe(20);
       expect(chartData.footerData?.progress).toBe(80);
       expect(chartData.footerData?.label).toBe("80%");
     });
 
     test("should compose types correctly for matured status", () => {
       const mockStrategy: BondStatusStrategy = {
-        calculateProgress: (token, bondStatus) => ({
+        calculateProgress: () => ({
           progress: 100,
           status: "matured",
         }),
-        getDisplayData: (t, progress) => ({
+        getDisplayData: (__, _progress) => ({
           title: "Matured Bond",
           description: "Fully matured",
           color: "#0000FF",
@@ -452,9 +550,42 @@ describe("bond-status types", () => {
         }),
       };
 
-      const progressData = mockStrategy.calculateProgress({}, {});
+      const mockToken: Token = {
+        id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+        type: "bond",
+        createdAt: new Date(),
+        name: "Test Bond",
+        symbol: "TBD",
+        decimals: 18,
+        totalSupply: from(1000000),
+        extensions: [],
+        implementsERC3643: true,
+        implementsSMART: false,
+        pausable: { paused: false },
+        collateral: null,
+        capped: null,
+        createdBy: {
+          id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+        },
+        redeemable: null,
+        bond: {
+          faceValue: from(1000),
+          isMatured: true,
+          maturityDate: new Date(Date.now() - 24 * 60 * 60 * 1000),
+        },
+        fund: null,
+      };
+      const mockBondStatus: StatsBondStatusOutput = {
+        underlyingAssetBalanceAvailable: from(1000),
+        underlyingAssetBalanceRequired: from(1000),
+        coveredPercentage: from(100),
+      };
+      const progressData = mockStrategy.calculateProgress(
+        mockToken,
+        mockBondStatus
+      );
       const displayData = mockStrategy.getDisplayData(
-        (k) => k,
+        ((k: string) => k) as TFunction<readonly ["stats", "tokens"]>,
         progressData.progress
       );
       const footerData: BondFooterData = {
@@ -490,8 +621,8 @@ describe("bond-status types", () => {
       expect(chartData.progress).toBe(100);
       expect(chartData.status).toBe("matured");
       expect(chartData.title).toBe("Matured Bond");
-      expect(chartData.data[0].value).toBe(100);
-      expect(chartData.data[1].value).toBe(0);
+      expect(chartData.data[0]?.value).toBe(100);
+      expect(chartData.data[1]?.value).toBe(0);
     });
   });
 });

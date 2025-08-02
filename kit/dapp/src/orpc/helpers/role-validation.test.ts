@@ -57,11 +57,11 @@ describe("role-validation", () => {
     });
 
     test("should correctly identify user roles when user has single role", () => {
-      const accessControl: AccessControl = {
+      const accessControl = {
         admin: [{ id: mockWallet }],
         minter: [{ id: anotherWallet }],
         burner: [],
-      } as AccessControl;
+      } as unknown as AccessControl;
 
       const result = mapUserRoles(mockWallet, accessControl);
 
