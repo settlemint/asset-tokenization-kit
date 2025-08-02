@@ -17,7 +17,10 @@ import {
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { read } from "@/orpc/routes/settings/routes/settings.read";
 import { call } from "@orpc/server";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import type { Hex } from "viem";
+
+const logger = createLogger();
 
 const SYSTEM_QUERY = theGraphGraphql(
   `
@@ -198,6 +201,7 @@ export const getSystemContext = async (
       systemAddress,
     },
   });
+  logger.error("system", { system });
   if (!system) {
     return null;
   }
