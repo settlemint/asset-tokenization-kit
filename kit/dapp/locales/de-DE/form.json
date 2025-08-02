@@ -1,5 +1,16 @@
 {
   "letters-only": "Es sind nur Buchstaben erlaubt",
   "noCountryFound": "Kein Land gefunden.",
-  "valid-email": "Bitte geben Sie eine gültige E-Mail-Adresse ein"
+  "valid-email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+  "address": {
+    "selectPlaceholder": "Adresse wählen",
+    "searchPlaceholder": "Adressen suchen",
+    "loading": "Lädt",
+    "noResults": "Keine Adressen gefunden",
+    "recent": "Kürzlich",
+    "searchResults": "Ergebnisse",
+    "recentAddresses": "Kürzlich",
+    "searchInstead": "Stattdessen suchen",
+    "enterManually": "Manuell eingeben"
+  }
 }
