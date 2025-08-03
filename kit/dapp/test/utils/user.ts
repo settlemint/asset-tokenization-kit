@@ -128,7 +128,6 @@ export async function setupUser(user: User) {
       fetchOptions: {
         headers: {
           ...Object.fromEntries(signInHeaders.entries()),
-          "x-forwarded-for": "127.0.0.1",
         },
       },
     });
@@ -171,7 +170,6 @@ export async function setupUser(user: User) {
         fetchOptions: {
           headers: {
             ...Object.fromEntries(freshHeaders.entries()),
-            "x-forwarded-for": "127.0.0.1",
           },
         },
       });
@@ -190,7 +188,6 @@ export async function setupUser(user: User) {
       {
         headers: {
           ...Object.fromEntries(pincodeHeaders.entries()),
-          "x-forwarded-for": "127.0.0.1",
         },
       }
     );
@@ -225,7 +222,6 @@ export async function setupUser(user: User) {
       {
         headers: {
           ...Object.fromEntries(secretCodeHeaders.entries()),
-          "x-forwarded-for": "127.0.0.1",
         },
       }
     );
@@ -257,7 +253,6 @@ export async function setupUser(user: User) {
         {
           headers: {
             ...Object.fromEntries(confirmSecretCodeHeaders.entries()),
-            "x-forwarded-for": "127.0.0.1",
           },
         }
       );
@@ -281,7 +276,6 @@ export async function setupUser(user: User) {
       fetchOptions: {
         headers: {
           ...Object.fromEntries(sessionHeaders.entries()),
-          "x-forwarded-for": "127.0.0.1",
         },
       },
     });
