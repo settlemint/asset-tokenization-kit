@@ -54,9 +54,13 @@ TxSigner:8547 | Portal:7701 | Hasura:8080 | Graph:8000 | MinIO:9000
 4. Use TodoWrite for task planning
 5. Use specialized agents
 
-## Test Execution
+## Test Execution (MANDATORY test-validator agent)
 
 - ALWAYS use `bun run test`, NEVER use `bun test`
+- **MANDATORY**: MUST use test-validator agent for ALL test runs (especially
+  integration tests)
+- **CRITICAL**: When running `bun run test:integration`, ALWAYS use
+  test-validator agent
 - If test fails with "Error: This function can only be used on the server as
   including it in the browser will expose your access token." set
   @vitest-environment node
@@ -74,11 +78,15 @@ height 60px→80px" | "API timeout 30s→10s" | "Add index on user_id"
 
 **Available Agents (4 total)**
 
-1. **researcher**: Documentation fetcher, pattern finder, implementation planner
-2. **code-reviewer**: Code quality, architecture, SOLID, reality validation
-3. **solidity-auditor**: Smart contract security, gas optimization, ERC
-   compliance
-4. **test-validator**: Test execution, linting, parallel validation
+1. **researcher**: MANDATORY before ANY implementation - fetches docs, finds
+   patterns, plans implementation to avoid duplication
+2. **code-reviewer**: MANDATORY after code changes - validates quality,
+   architecture, SOLID principles, implementation correctness
+3. **solidity-auditor**: MANDATORY for smart contracts - security audits, gas
+   optimization, ERC compliance checks
+4. **test-validator**: MANDATORY for ALL tests & linting - runs tests
+   (unit/integration/e2e), executes linters, validates in parallel. NEVER run
+   tests/lint directly!
 
 ### Agent Workflow (MANDATORY)
 
@@ -89,11 +97,17 @@ researcher → gathers all docs, patterns, best practices
 // 2. Implementation (main thread)
 You write code based on research
 
-// 3. Validation (parallel agents)
+// 3. Validation (parallel agents - ALWAYS USE)
 code-reviewer & test-validator → quality check
 
 // 4. Specialized (when needed)
 solidity-auditor → for smart contracts only
+
+// CRITICAL: Test/Lint Commands
+// ❌ NEVER: bun run test:integration (direct)
+// ✅ ALWAYS: test-validator agent → bun run test:integration
+// ❌ NEVER: bun run lint (direct)
+// ✅ ALWAYS: test-validator agent → bun run lint
 ```
 
 ### When to Use Each Agent
@@ -112,12 +126,15 @@ solidity-auditor → for smart contracts only
 - When claiming task complete
 - To validate implementation
 
-**test-validator** (PROACTIVE):
+**test-validator** (MANDATORY for tests):
 
+- **MANDATORY**: When user asks to run ANY tests (unit, integration, e2e)
+- **MANDATORY**: For `bun run test:integration` command
 - After code changes
 - Before commits
 - Before PR creation
 - To debug test failures
+- **NEVER** run tests directly - ALWAYS through test-validator agent
 
 **solidity-auditor** (CONTRACTS ONLY):
 

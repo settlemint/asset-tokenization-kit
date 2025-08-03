@@ -14,14 +14,10 @@ export class RoleConfig {
     this.fieldName = fieldName;
 
     // DEFAULT_ADMIN_ROLE is always 0x00...
-    if (name === "DEFAULT_ADMIN_ROLE") {
-      this.bytes =
-        "0x0000000000000000000000000000000000000000000000000000000000000000";
-    } else {
-      // Calculate keccak256 hash of the role name string
-      // encodePacked converts the string to bytes, then keccak256 hashes it
-      this.bytes = keccak256(encodePacked(["string"], [name]));
-    }
+    this.bytes =
+      name === "DEFAULT_ADMIN_ROLE"
+        ? "0x0000000000000000000000000000000000000000000000000000000000000000"
+        : keccak256(encodePacked(["string"], [name]));
   }
 }
 

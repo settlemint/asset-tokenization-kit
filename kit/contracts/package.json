@@ -4,9 +4,9 @@
   "private": false,
   "license": "FSL-1.1-MIT",
   "scripts": {
-    "compile:typescript": "tsc --noEmit ${CLAUDECODE:+--pretty false}",
+    "compile:typescript": "tsc --noEmit",
     "dependencies": "bun run tools/dependencies.ts",
-    "compile:forge": "settlemint scs foundry build ${CLAUDECODE:+--quiet} --sizes",
+    "compile:forge": "settlemint scs foundry build --sizes",
     "compile:hardhat": "settlemint scs hardhat build",
     "codegen:types": "bun run tools/codegen-types.ts",
     "artifacts:genesis": "bun run tools/artifacts-genesis.ts",
@@ -18,7 +18,7 @@
     "publish": "bun run clean:deployments && settlemint scs hardhat script local --script scripts/hardhat/main.ts",
     "publish:docker": "DOCKER_BUILD_TAG=$(jq -r .version ../../package.json); if [ -z \"$CI\" ]; then DOCKER_BUILD_TAG=\"$DOCKER_BUILD_TAG-dev.$(date +%s)\"; fi; docker buildx build . --file=./Dockerfile --platform=linux/amd64,linux/arm64 --provenance true --sbom true -t ghcr.io/settlemint/asset-tokenization-kit-artifacts:$DOCKER_BUILD_TAG --push",
     "abi-output": "bash tools/abi-output.sh",
-    "test": "settlemint scs foundry test ${CLAUDECODE:+-q}",
+    "test": "settlemint scs foundry test",
     "deploy:remote": "settlemint scs hardhat deploy remote --deployment-id asset-tokenization"
   },
   "dependencies": {
