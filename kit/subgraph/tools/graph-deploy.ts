@@ -158,9 +158,6 @@ function setupCleanup(): void {
     await cleanup();
     process.exit(EXIT_CODES.ERROR);
   });
-
-  // Handle normal exit
-  process.on("beforeExit", cleanup);
 }
 
 // ============================================================================
@@ -718,7 +715,8 @@ async function main(): Promise<void> {
     logger.error("Deployment failed:", error);
     exitCode = EXIT_CODES.ERROR;
   } finally {
-    // Cleanup will be called by the beforeExit handler
+    // Always cleanup before exit
+    await cleanup();
     process.exit(exitCode);
   }
 }

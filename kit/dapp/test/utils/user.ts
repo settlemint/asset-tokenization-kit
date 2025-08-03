@@ -126,7 +126,10 @@ export async function setupUser(user: User) {
     );
     const sessionBeforeWallet = await authClient.getSession({
       fetchOptions: {
-        headers: signInHeaders,
+        headers: {
+          ...Object.fromEntries(signInHeaders.entries()),
+          "x-forwarded-for": "127.0.0.1",
+        },
       },
     });
 
@@ -166,7 +169,10 @@ export async function setupUser(user: User) {
       // Verify wallet was created
       const sessionAfterWallet = await authClient.getSession({
         fetchOptions: {
-          headers: freshHeaders,
+          headers: {
+            ...Object.fromEntries(freshHeaders.entries()),
+            "x-forwarded-for": "127.0.0.1",
+          },
         },
       });
       console.log(
@@ -181,7 +187,12 @@ export async function setupUser(user: User) {
       {
         pincode: DEFAULT_PINCODE,
       },
-      { headers: pincodeHeaders }
+      {
+        headers: {
+          ...Object.fromEntries(pincodeHeaders.entries()),
+          "x-forwarded-for": "127.0.0.1",
+        },
+      }
     );
 
     if (pincodeError) {
@@ -212,7 +223,10 @@ export async function setupUser(user: User) {
         password: user.password,
       },
       {
-        headers: secretCodeHeaders,
+        headers: {
+          ...Object.fromEntries(secretCodeHeaders.entries()),
+          "x-forwarded-for": "127.0.0.1",
+        },
       }
     );
 
@@ -240,7 +254,12 @@ export async function setupUser(user: User) {
         {
           stored: true,
         },
-        { headers: confirmSecretCodeHeaders }
+        {
+          headers: {
+            ...Object.fromEntries(confirmSecretCodeHeaders.entries()),
+            "x-forwarded-for": "127.0.0.1",
+          },
+        }
       );
     if (confirmSecretCodeError) {
       console.log(`[setupUser] Confirm secret code error for ${user.email}:`, {
@@ -260,7 +279,10 @@ export async function setupUser(user: User) {
     const sessionHeaders = await signInWithUser(user);
     const session = await authClient.getSession({
       fetchOptions: {
-        headers: sessionHeaders,
+        headers: {
+          ...Object.fromEntries(sessionHeaders.entries()),
+          "x-forwarded-for": "127.0.0.1",
+        },
       },
     });
 
@@ -298,7 +320,15 @@ export async function setupUser(user: User) {
 
 export async function getUserData(user: User) {
   const headers = await signInWithUser(user);
-  const session = await authClient.getSession({}, { headers });
+  const session = await authClient.getSession(
+    {},
+    {
+      headers: {
+        ...Object.fromEntries(headers.entries()),
+        "x-forwarded-for": "127.0.0.1",
+      },
+    }
+  );
   const userInfo = session.data?.user;
   if (!userInfo) {
     throw new Error(`User ${user.email} not found`);

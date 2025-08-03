@@ -193,3 +193,5 @@ message)
 
 - **DO NOT RUN COMMANDS DIRECTLY, ONLY VIA THE PACKAGE.JSON SCRIPTS**
 - no need to run test:reset, `bun run test:integation` will do this itself
+- we are in a turborepo with complex dependencies, run ALL commands from the
+  root so turbo is used
