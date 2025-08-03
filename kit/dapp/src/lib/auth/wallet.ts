@@ -35,9 +35,15 @@ export async function createWallet(email: string) {
   if (isLocal) {
     try {
       const balanceInHex = toHex(1_000_000_000_000_000_000n);
+      // For test environment, check if we're using test ports
+      const isTestEnv =
+        process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT?.includes(
+          ":18547"
+        );
+      const anvilPort = isTestEnv ? 18_545 : 8545;
       const client = createPublicClient({
         chain: anvil,
-        transport: http("http://localhost:8545"),
+        transport: http(`http://localhost:${anvilPort}`),
       });
 
       await client.request({

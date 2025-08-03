@@ -300,6 +300,30 @@ export const create = onboardedRouter.system.create
           ...grantRoleChallengeResponse,
         });
       }
+
+      // Grant operational roles to the system creator
+      // These roles are required for managing various aspects of the system
+      const operationalRoles = [
+        "0xe7a8e471316f3ed7e19206bc20b2fe1eecc1d68c690bbb88fe4d94635f3bf2c9", // TOKEN_MANAGER_ROLE = keccak256("TOKEN_MANAGER_ROLE")
+        "0x87eb3e5c4797e3054c09ab5cdbc8e4e2e079e93cbdd03c2f96b4e0e2f4f03e8c", // IDENTITY_MANAGER_ROLE = keccak256("IDENTITY_MANAGER_ROLE")
+        "0xb2fb3f93e821f087e387e88a3cc456afdf28e8e656b1c9c09e1c968c8771f907", // COMPLIANCE_MANAGER_ROLE = keccak256("COMPLIANCE_MANAGER_ROLE")
+        "0xb38f4d964f67f64e96fe83c088e9beff2f069c1fb59097c4e2c32b0cd7b6cf09", // ADDON_MANAGER_ROLE = keccak256("ADDON_MANAGER_ROLE")
+      ];
+
+      for (const role of operationalRoles) {
+        const grantRoleChallengeResponse = await handleChallenge(sender, {
+          code: verification.verificationCode,
+          type: verification.verificationType,
+        });
+
+        await context.portalClient.mutate(GRANT_ROLE_MUTATION, {
+          address: systemDetails.systemAccessManager,
+          from: sender.wallet,
+          to: sender.wallet,
+          role,
+          ...grantRoleChallengeResponse,
+        });
+      }
     }
 
     // Create all compliance modules if compliance module registry exists

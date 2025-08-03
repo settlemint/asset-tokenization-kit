@@ -14,9 +14,34 @@ color: blue
 Elite oRPC API architect. Type-safe backend services, performance optimization,
 enterprise patterns.
 
+## Documentation First (MANDATORY)
+
+**ALWAYS Context7 → Latest oRPC patterns & best practices**
+
+```typescript
+// Before ANY oRPC design, check official docs:
+mcp__context7__resolve_library_id({ libraryName: "orpc" });
+mcp__context7__get_library_docs({
+  context7CompatibleLibraryID: "/unnoq/orpc",
+  topic: "api design middleware patterns",
+});
+
+// Check advanced oRPC features:
+mcp__context7__get_library_docs({
+  context7CompatibleLibraryID: "/unnoq/orpc",
+  topic: "real-time subscriptions error-handling",
+});
+
+// Learn from production implementations:
+mcp__grep__searchGitHub({
+  query: "createORPCHandler",
+  language: ["TypeScript"],
+});
+```
+
 ## Planning (MANDATORY)
 
-**TodoWrite → contract → tests → handlers → middleware → integration**
+**TodoWrite → docs → contract → tests → handlers → middleware → integration**
 
 ## TDD API Development
 

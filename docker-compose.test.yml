@@ -1,0 +1,72 @@
+# Additional services for integration testing
+# This file extends the main docker-compose.yml
+services:
+  dapp:
+    build:
+      context: ./kit/dapp
+      dockerfile: Dockerfile
+    container_name: ${CONTAINER_PREFIX:-atk}-dapp
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      txsigner:
+        condition: service_healthy
+      graph-node:
+        condition: service_healthy
+      portal:
+        condition: service_healthy
+      hasura:
+        condition: service_healthy
+    environment:
+      SETTLEMINT_INSTANCE: local
+      # Database
+      DATABASE_URL: postgresql://dapp:dapp@postgres:5432/dapp?sslmode=disable
+      # Auth
+      BETTER_AUTH_URL: http://localhost:${DAPP_PORT:-13000}
+      BETTER_AUTH_SECRET: secret-key-for-testing
+      # Redis
+      REDIS_URL: redis://default:${REDIS_PASSWORD:-shared}@redis:6379
+      # RPC - Internal service communication
+      VITE_RPC_URL: http://txsigner:3000
+      VITE_CHAIN_ID: ${CHAIN_ID:-1337}
+      # API URLs - Internal service communication
+      VITE_HASURA_URL: http://hasura:8080/v1/graphql
+      VITE_HASURA_WS_URL: ws://hasura:8080/v1/graphql
+      VITE_HASURA_ADMIN_SECRET: ${HASURA_ADMIN_SECRET:-hasura}
+      VITE_PORTAL_URL: http://portal:7700
+      VITE_THEGRAPH_URL: http://graph-node:8000
+      VITE_MINIO_URL: http://minio:9000
+      VITE_BLOCKSCOUT_URL: http://blockscout-backend:4000
+      # External URLs for client-side access (using test ports)
+      VITE_PUBLIC_RPC_URL: http://localhost:${TXSIGNER_PORT:-18547}
+      VITE_PUBLIC_HASURA_URL: http://localhost:${HASURA_PORT:-18080}/v1/graphql
+      VITE_PUBLIC_HASURA_WS_URL: ws://localhost:${HASURA_PORT:-18080}/v1/graphql
+      VITE_PUBLIC_PORTAL_URL: http://localhost:${PORTAL_PORT:-17700}
+      VITE_PUBLIC_THEGRAPH_URL: http://localhost:${GRAPH_NODE_PORT:-18000}
+      VITE_PUBLIC_MINIO_URL: http://localhost:${MINIO_PORT:-19000}
+      VITE_PUBLIC_BLOCKSCOUT_URL: http://localhost:${BLOCKSCOUT_BACKEND_PORT:-14000}
+      # MinIO
+      MINIO_ACCESS_KEY: ${MINIO_SERVICE_ACCESS_KEY:-atk-service}
+      MINIO_SECRET_KEY: ${MINIO_SERVICE_SECRET:-atk-service-secret}
+      MINIO_BUCKET: assets
+      # Node
+      NODE_ENV: production
+      # Required server env vars
+      SETTLEMINT_HASURA_ADMIN_SECRET: ${HASURA_ADMIN_SECRET:-hasura}
+      SETTLEMINT_HD_PRIVATE_KEY: atk-hd-private-key
+      SETTLEMINT_LOG_LEVEL: info
+      # Client env vars
+      VITE_APP_URL: http://localhost:${DAPP_PORT:-13000}
+      VITE_EXPLORER_URL: http://localhost:${BLOCKSCOUT_FRONTEND_PORT:-14001}
+      VITE_SETTLEMINT_LOG_LEVEL: info
+    ports:
+      - "${DAPP_PORT:-3000}:3000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:3000 || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 30s

@@ -19,7 +19,7 @@
   },
   "tasks": {
     "ci": {
-      "dependsOn": ["ci:base", "format"]
+      "dependsOn": ["ci:base", "format", "test:integration"]
     },
     "ci:base": {
       "dependsOn": [
@@ -85,7 +85,9 @@
     "docs": {},
     "test": {},
     "artifacts": {},
-    "test:integration": {},
+    "test:integration": {
+      "dependsOn": ["build"]
+    },
     "db:studio": {
       "cache": false,
       "persistent": true

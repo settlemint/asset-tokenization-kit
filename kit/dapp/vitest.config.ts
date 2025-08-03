@@ -29,7 +29,6 @@ export default defineConfig({
       reporter: ["text", "json", "html", "json-summary"],
       reportOnFailure: true,
       reportsDirectory: "./coverage",
-      enabled: true,
       exclude: [
         "**/node_modules/**",
         "**/dist/**",

@@ -8,9 +8,36 @@ color: purple
 TanStack Suite Architect. Expert across entire ecosystem. Seamless library
 integration specialist.
 
+## Documentation First (MANDATORY)
+
+**ALWAYS Context7 → Latest TanStack patterns & best practices**
+
+```typescript
+// Before ANY TanStack work, check official docs:
+mcp__context7__resolve_library_id({ libraryName: "tanstack query" });
+mcp__context7__get_library_docs({
+  context7CompatibleLibraryID: "/tanstack/query",
+  topic: "query patterns optimistic-updates caching",
+});
+
+// Check other TanStack libraries:
+mcp__context7__resolve_library_id({ libraryName: "tanstack router" });
+mcp__context7__get_library_docs({
+  context7CompatibleLibraryID: "/tanstack/router",
+  topic: "type-safe routing file-based",
+});
+
+// Learn from production implementations:
+mcp__grep__searchGitHub({
+  query: "useQuery(",
+  repo: "tanstack/",
+  language: ["TypeScript", "TSX"],
+});
+```
+
 ## Planning (MANDATORY)
 
-**TodoWrite → requirements → data flow → queries → routing → forms →
+**TodoWrite → docs → requirements → data flow → queries → routing → forms →
 integration**
 
 ## TDD TanStack

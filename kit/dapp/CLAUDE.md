@@ -8,10 +8,11 @@ Tailwind v4 | Vite
 ## Commands
 
 ```bash
-bun run dev          # Port 3000
-bun run codegen      # MANDATORY after API changes
-bun run test         # vitest only (NOT bun:test)
-bun run db:migrate   # After schema changes
+bun run dev               # Port 3000
+bun run codegen           # MANDATORY after API changes
+bun run test              # Unit tests - vitest only (NOT bun:test)
+bun run test:integration  # Integration tests - full stack testing
+bun run db:migrate        # After schema changes
 ```
 
 ## Architecture
@@ -90,11 +91,24 @@ URL-synced pagination/sorting/filtering
 
 ## Testing
 
+### Unit Tests
+
 ```typescript
 // React Testing Library + vitest
 render(<Component />);
 await user.click(button);
 expect(result).toBeInTheDocument();
+```
+
+### Integration Tests
+
+```bash
+# Clean test environment with test:reset
+bun run test:integration
+
+# Uses separate config: vitest.config.integration.ts
+# Runs in Node environment with full Docker stack
+# Tests complete user flows and API interactions
 ```
 
 ## Common Errors
@@ -104,3 +118,10 @@ expect(result).toBeInTheDocument();
 - Modifying ui/\* files
 - Missing error boundaries
 - No loading states
+
+## Refactoring Rules
+
+- NO compatibility layers or helper functions during refactors
+- Apply changes directly throughout the entire codebase
+- Write clean, modern code without temporary bridges
+- Complete transformations, not partial migrations

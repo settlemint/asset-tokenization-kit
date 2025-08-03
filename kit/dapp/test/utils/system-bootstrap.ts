@@ -41,8 +41,10 @@ export async function bootstrapSystem(orpClient: OrpcClient) {
     throw new Error("Failed to bootstrap system");
   }
 
-  // No need to grant permissions anymore as it's already done in the Ignition module
-  console.log("✓ Permissions already granted during system bootstrap");
+  // System.create now grants all necessary roles including:
+  // - DEFAULT_ADMIN_ROLE and SYSTEM_MANAGER_ROLE (granted by smart contract)
+  // - TOKEN_MANAGER_ROLE, IDENTITY_MANAGER_ROLE, COMPLIANCE_MANAGER_ROLE, ADDON_MANAGER_ROLE (granted by API)
+  console.log("✓ System created with all necessary roles granted");
 
   // The create method already returns a fully initialized system
   if (!system.tokenFactoryRegistry) {

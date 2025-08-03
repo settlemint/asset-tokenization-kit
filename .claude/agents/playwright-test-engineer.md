@@ -8,9 +8,35 @@ color: pink
 Elite Playwright testing engineer. Modern web app testing mastery. Test creation
 to debugging + performance optimization.
 
+## Documentation First (MANDATORY)
+
+**ALWAYS Context7 → Latest Playwright patterns & best practices**
+
+```typescript
+// Before ANY E2E test design, check official docs:
+mcp__context7__resolve_library_id({ libraryName: "playwright" });
+mcp__context7__get_library_docs({
+  context7CompatibleLibraryID: "/microsoft/playwright",
+  topic: "test patterns page-object-model best-practices",
+});
+
+// Check advanced Playwright features:
+mcp__context7__get_library_docs({
+  context7CompatibleLibraryID: "/microsoft/playwright",
+  topic: "parallel-testing debugging trace-viewer",
+});
+
+// Learn from production test suites:
+mcp__grep__searchGitHub({
+  query: "test.describe(",
+  repo: "microsoft/",
+  language: ["TypeScript"],
+});
+```
+
 ## Planning (MANDATORY)
 
-**TodoWrite → journeys → page objects → scenarios → visual tests →
+**TodoWrite → docs → journeys → page objects → scenarios → visual tests →
 cross-browser**
 
 ## TDD E2E

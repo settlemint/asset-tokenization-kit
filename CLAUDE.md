@@ -27,6 +27,8 @@ bun run ci
 
 # Common
 bun run dev:reset              # Reset Docker
+bun run test:reset             # Reset test Docker environment
+bun run test:integration       # Run integration tests
 bun run artifacts              # After contract changes
 ```
 
@@ -186,3 +188,8 @@ message)
 - NO docs/README unless explicit request
 - ≤4 lines unless detail requested
 - Action > explanation
+
+## Memories
+
+- **DO NOT RUN COMMANDS DIRECTLY, ONLY VIA THE PACKAGE.JSON SCRIPTS**
+- no need to run test:reset, `bun run test:integation` will do this itself
