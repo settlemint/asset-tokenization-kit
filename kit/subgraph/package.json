@@ -4,12 +4,12 @@
   "license": "FSL-1.1-MIT",
   "scripts": {
     "codegen": "settlemint scs subgraph codegen ${CLAUDECODE:+2>&1 | grep -E 'Error|Failed|✔' || true}",
-    "codegen:interfaceid": "bun run tools/interfaceid.ts ${CLAUDECODE:+2>&1 | grep -E 'Error|Failed' || true}",
+    "codegen:interfaceid": "bun run tools/interfaceid.ts",
     "test:codegen:gql-tada": "n=0; until [ $n -ge 3 ]; do (gql-tada generate-schema http://localhost:8000/subgraphs/name/kit-integration-tests ${CLAUDECODE:+2>&1 >/dev/null} && gql-tada generate-output ${CLAUDECODE:+2>&1 >/dev/null}) && break || { n=$((n+1)); sleep 5; }; done",
     "format": "prettier --experimental-cli --write .",
     "compile": "mkdir -p .generated && (test -f .generated/subgraph-env || echo 'SUBGRAPH=kit:' > .generated/subgraph-env) && settlemint scs subgraph build --ipfs=https://ipfs.console.settlemint.com ${CLAUDECODE:+2>&1} | ${CLAUDECODE:+grep -E 'Error|Failed|Qm[a-zA-Z0-9]*' ||} tee /dev/tty | grep -o 'Qm[a-zA-Z0-9]*' | tail -1 | tee .generated/subgraph-hash.txt | xargs -I {} echo 'SUBGRAPH=kit:{}' > .generated/subgraph-env",
-    "publish": "bun run tools/graph-deploy.ts --local ${CLAUDECODE:+2>&1 | grep -E 'Error|Failed|Deployed' || true}",
-    "publish:remote": "bun run tools/graph-deploy.ts --remote ${CLAUDECODE:+2>&1 | grep -E 'Error|Failed|Deployed' || true}",
+    "publish": "bun run tools/graph-deploy.ts --local",
+    "publish:remote": "bun run tools/graph-deploy.ts --remote",
     "test:integration": "bun test --preload ./test/scripts/setup.ts ${CLAUDECODE:+--bail 1}"
   },
   "dependencies": {

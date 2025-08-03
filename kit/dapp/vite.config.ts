@@ -25,6 +25,7 @@ export default defineConfig({
   define: {
     "process.env.BUILD_ID": JSON.stringify(BUILD_ID),
   },
+  logLevel: process.env.CLAUDECODE ? "warn" : "info",
   optimizeDeps: {
     include: [
       "@radix-ui/react-accordion",

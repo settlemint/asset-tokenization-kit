@@ -70,44 +70,69 @@ height 60px→80px" | "API timeout 30s→10s" | "Add index on user_id"
 
 **Protocol**: Task → TodoWrite → in_progress → completed
 
-## Agent Usage (MANDATORY)
+## Agent Orchestration (Simplified & Efficient)
 
-**PROACTIVELY use ALL specialized agents from .claude/agents/**
+**Available Agents (4 total)**
 
-### CRITICAL: You MUST use agents for their designated tasks
+1. **researcher**: Documentation fetcher, pattern finder, implementation planner
+2. **code-reviewer**: Code quality, architecture, SOLID, reality validation
+3. **solidity-auditor**: Smart contract security, gas optimization, ERC
+   compliance
+4. **test-validator**: Test execution, linting, parallel validation
 
-#### All Available Agents (USE THEM!)
+### Agent Workflow (MANDATORY)
 
-- **code-reviewer**: ALWAYS after writing/modifying code
-- **architect-reviewer**: ALWAYS after structural changes, new services, API
-  modifications
-- **react-performance-architect**: ALWAYS for React components, hooks, state
-  management
-- **vitest-test-architect**: ALWAYS for unit tests, test coverage, mocking
-  strategies
-- **playwright-test-engineer**: ALWAYS for E2E tests, browser automation
-- **kubernetes-orchestration-expert**: ALWAYS for K8s deployments, manifests,
-  scaling
-- **github-actions-architect**: ALWAYS for CI/CD workflows, automation
-- **solidity-security-auditor**: ALWAYS for smart contract review, gas
-  optimization
-- **tanstack-suite-architect**: ALWAYS for TanStack Query/Router/Table usage
-- **typescript-type-architect**: ALWAYS for type system design, generics, type
-  safety
-- **bun-runtime-specialist**: ALWAYS for Bun optimization, bundling, performance
-- **orpc-api-architect**: ALWAYS for oRPC routes, middleware, API design
-- **tailwind-css-architect**: ALWAYS for styling, Tailwind utilities, responsive
-  design
-- **reality-check-manager**: ALWAYS to validate actual vs claimed progress
+```typescript
+// 1. Research FIRST (avoids duplication)
+researcher → gathers all docs, patterns, best practices
 
-### Agent Usage Protocol
+// 2. Implementation (main thread)
+You write code based on research
 
-1. **Immediate invocation**: Use agents AS SOON as you perform their designated
-   task
-2. **No exceptions**: EVERY code change → code-reviewer, EVERY React component →
-   react-performance-architect
-3. **Multiple agents**: Often need multiple agents for one task (e.g., new API
-   endpoint → orpc-api-architect + code-reviewer + architect-reviewer)
+// 3. Validation (parallel agents)
+code-reviewer & test-validator → quality check
+
+// 4. Specialized (when needed)
+solidity-auditor → for smart contracts only
+```
+
+### When to Use Each Agent
+
+**researcher** (ALWAYS FIRST):
+
+- Before implementing ANY new feature
+- When integrating third-party services
+- When optimizing existing code
+- Before writing > 50 lines
+
+**code-reviewer** (AFTER CODING):
+
+- After ANY code changes
+- Before ANY pull request
+- When claiming task complete
+- To validate implementation
+
+**test-validator** (PROACTIVE):
+
+- After code changes
+- Before commits
+- Before PR creation
+- To debug test failures
+
+**solidity-auditor** (CONTRACTS ONLY):
+
+- After contract modifications
+- For gas optimization
+- For security review
+- For ERC compliance
+
+### Development Expertise Location
+
+- **React/Frontend**: kit/dapp/CLAUDE.md
+- **Solidity**: kit/contracts/CLAUDE.md
+- **Testing**: kit/dapp/CLAUDE.md
+- **K8s/Infrastructure**: kit/charts/CLAUDE.md
+- **API**: kit/dapp/src/orpc/CLAUDE.md
 
 ## MCP Workflows (MANDATORY)
 
@@ -195,3 +220,4 @@ message)
 - no need to run test:reset, `bun run test:integation` will do this itself
 - we are in a turborepo with complex dependencies, run ALL commands from the
   root so turbo is used
+- NEVER run test:reset manually! test:integration will handle it

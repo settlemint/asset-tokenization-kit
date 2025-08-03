@@ -3,6 +3,14 @@
 Executes complete test suite including unit, integration, and subgraph tests.
 Auto-fixes all errors/warnings for 100% pass rate.
 
+## Agent Usage
+
+**Primary agent**: test-validator (handles all test execution) **Support
+agents**:
+
+- researcher: For finding test patterns and best practices
+- code-reviewer: For reviewing test coverage and quality
+
 ## Step 1: Analyze Scope
 
 Select testing strategy based on changes:

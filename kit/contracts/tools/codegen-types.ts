@@ -39,10 +39,11 @@ interface ContractArtifact {
 // =============================================================================
 
 const logger = createLogger({
-  level:
-    (process.env.LOG_LEVEL as LogLevel) ||
-    (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ||
-    "info",
+  level: process.env.CLAUDECODE
+    ? "error"
+    : (process.env.LOG_LEVEL as LogLevel) ||
+      (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ||
+      "info",
 });
 const CONTRACTS_ROOT = await getKitProjectPath("contracts");
 const ARTIFACTS_DIR = join(CONTRACTS_ROOT, ".generated", "artifacts");

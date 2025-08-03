@@ -83,6 +83,8 @@ export const env = createEnv({
       .default("info"),
 
     SETTLEMINT_INSTANCE: z.string().optional(),
+
+    SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT: z.url(),
   },
 
   /**

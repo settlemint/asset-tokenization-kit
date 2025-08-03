@@ -74,6 +74,48 @@ Utils: SystemUtils, TokenUtils, IdentityUtils
 4. Access control
 5. Input validation
 
+### Security Audit Checklist
+
+**ALWAYS check before deployment:**
+
+- Reentrancy vulnerabilities (use nonReentrant modifier)
+- Integer overflow/underflow (Solidity 0.8+ built-in protection)
+- Access control gaps (check all onlyRole modifiers)
+- Front-running vulnerabilities (commit-reveal patterns)
+- Storage collision in upgrades (use \_\_gap arrays)
+- Unchecked external calls (check return values)
+- DOS vulnerabilities (gas limits, array bounds)
+
+### Gas Optimization Patterns
+
+```solidity
+// Pack structs (32-byte slots)
+struct User {
+    uint128 balance;    // slot 1
+    uint64 timestamp;   // slot 1
+    uint64 nonce;       // slot 1
+    address owner;      // slot 2
+}
+
+// Use custom errors (save ~50 gas)
+error InsufficientBalance(uint256 requested, uint256 available);
+
+// Batch operations
+function batchTransfer(address[] calldata recipients, uint256[] calldata amounts)
+
+// Cache storage reads
+uint256 _balance = balance[msg.sender];  // Read once
+require(_balance >= amount);
+balance[msg.sender] = _balance - amount;
+```
+
+### ERC Standards Compliance
+
+- **ERC-3643**: Security token standard with compliance
+- **ERC-734/735**: Identity claims for KYC/AML
+- **ERC-20**: Basic fungible token interface
+- **ERC-2771**: Meta transactions support
+
 ## Common Errors
 
 - Storage collision in upgrades

@@ -19,8 +19,14 @@ export default defineConfig({
       },
     },
     isolate: false,
-    reporters: process.env.CI ? ["dot", "github-actions"] : [],
-    onConsoleLog: process.env.CI ? () => false : undefined,
+    reporters: process.env.CLAUDECODE
+      ? ["dot"]
+      : process.env.CI
+        ? ["dot", "github-actions"]
+        : ["default"],
+    onConsoleLog:
+      process.env.CI || process.env.CLAUDECODE ? () => false : undefined,
+    silent: process.env.CLAUDECODE ? true : undefined,
     typecheck: {
       enabled: true,
     },

@@ -122,8 +122,11 @@ export const factoryCreate = portalRouter.token.factoryCreate
       (factory) => !existingFactoryNames.has(factory.name.toLowerCase())
     );
 
-    // Process all factories in parallel for better performance
-    const deploymentPromises = factoriesToDeploy.map(async (factory, index) => {
+    // Process factories sequentially to avoid challenge reuse issues
+    // Each challenge response can only be used once, and we can't modify pincodes
+    const deploymentResults = [];
+
+    for (const factory of factoriesToDeploy) {
       const { type, name } = factory;
       const defaults = getDefaultImplementations(type);
 
@@ -134,19 +137,10 @@ export const factoryCreate = portalRouter.token.factoryCreate
         factory.tokenImplementation ?? defaults.tokenImplementation;
 
       try {
-        // Every request needs a unique challenge response
-        // For batch operations, append index to make each code unique
-        const uniqueVerification = {
-          verificationCode:
-            factoriesToDeploy.length > 1
-              ? `${verification.verificationCode}_${index}`
-              : verification.verificationCode,
-          verificationType: verification.verificationType,
-        };
-
+        // Generate a fresh challenge response for each factory
         const challengeResponse = await handleChallenge(sender, {
-          code: uniqueVerification.verificationCode,
-          type: uniqueVerification.verificationType,
+          code: verification.verificationCode,
+          type: verification.verificationType,
         });
 
         // Execute the factory creation transaction
@@ -160,24 +154,27 @@ export const factoryCreate = portalRouter.token.factoryCreate
         };
 
         // Use the Portal client's mutate method that returns the transaction hash
-        return await context.portalClient.mutate(
+        const txHash = await context.portalClient.mutate(
           CREATE_TOKEN_FACTORY_MUTATION,
           variables
         );
+
+        deploymentResults.push({ status: "success", factory: name, txHash });
       } catch (error) {
         logger.error(`Failed to create factory ${name}:`, error);
-        // Throw error to be caught by Promise.allSettled
-        throw error;
+        deploymentResults.push({ status: "failed", factory: name, error });
       }
-    });
+    }
 
-    // Execute all deployments in parallel with partial success handling
-    const results = await Promise.allSettled(deploymentPromises);
-
-    // Log any failures for debugging
-    results.forEach((result, index) => {
-      if (result.status === "rejected") {
-        logger.error(`Factory deployment ${index} failed:`, result.reason);
+    // Log results
+    deploymentResults.forEach((result) => {
+      if (result.status === "failed") {
+        logger.error(
+          `Factory deployment failed for ${result.factory}:`,
+          result.error
+        );
+      } else {
+        logger.info(`Factory ${result.factory} deployed successfully`);
       }
     });
 

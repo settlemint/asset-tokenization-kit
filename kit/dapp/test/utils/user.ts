@@ -173,9 +173,11 @@ export async function setupUser(user: User) {
           },
         },
       });
+      const createdWallet = sessionAfterWallet.data?.user.wallet;
       console.log(
-        `[setupUser] User ${user.email} wallet after creation: ${sessionAfterWallet.data?.user.wallet}`
+        `[setupUser] User ${user.email} wallet after creation: ${createdWallet}`
       );
+      // Wallet funding is now handled in wallet.ts createWallet function
     }
 
     // Step 3: Enable pincode
