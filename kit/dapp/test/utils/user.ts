@@ -319,7 +319,6 @@ export async function getUserData(user: User) {
     {
       headers: {
         ...Object.fromEntries(headers.entries()),
-        "x-forwarded-for": "127.0.0.1",
       },
     }
   );
