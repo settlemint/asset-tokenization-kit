@@ -58,6 +58,7 @@ export default defineConfig({
         "**/*.d.ts",
         "**/*.gen.ts",
         "**/tools/**",
+        "**/src/lib/settlemint/**",
         ...defaultExclude,
       ],
     },
