@@ -55,7 +55,7 @@ export function ComplianceDetailBreadcrumb({
       size="sm"
       onClick={onClose}
       className={cn(
-        "flex items-center gap-2 text-muted-foreground hover:text-foreground",
+        "flex items-center gap-2 text-muted-foreground hover:text-foreground press-effect",
         className
       )}
       {...props}

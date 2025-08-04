@@ -139,7 +139,7 @@ export function CountryRestrictionModuleDetail({
       </ComplianceDetailContent>
 
       <ComplianceDetailFooter>
-        <Button variant="outline" onClick={onClose}>
+        <Button variant="outline" onClick={onClose} className="press-effect">
           {t("form:buttons.back")}
         </Button>
         <Button
@@ -148,6 +148,7 @@ export function CountryRestrictionModuleDetail({
             handleEnable();
             onClose();
           }}
+          className="press-effect"
         >
           {t("form:buttons.save")}
         </Button>
