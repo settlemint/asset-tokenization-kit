@@ -1,4 +1,4 @@
-import { AddressSelectOrInput } from "@/components/address-select-or-input/address-select-or-input-field";
+import { AddressSelectOrInputToggle } from "@/components/address-select-or-input/address-select-or-input-toggle";
 import {
   commonFields,
   CommonFields,
@@ -61,7 +61,7 @@ export const BondBasics = withForm({
               />
             )}
           />
-          <AddressSelectOrInput
+          <AddressSelectOrInputToggle
             children={({ mode }) => (
               <>
                 {mode === "select" && (

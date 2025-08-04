@@ -7,7 +7,9 @@ interface AddressFieldToggleProps {
   children: (props: { mode: "select" | "manual" }) => React.ReactNode;
 }
 
-export function AddressSelectOrInput({ children }: AddressFieldToggleProps) {
+export function AddressSelectOrInputToggle({
+  children,
+}: AddressFieldToggleProps) {
   const { t } = useTranslation("form");
   const [mode, setMode] = useState<"select" | "manual">("select");
 
