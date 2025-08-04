@@ -1,18 +1,21 @@
+/**
+ * @vitest-environment happy-dom
+ */
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi, beforeAll } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { TokenFactoryRelated } from "./token-factory-related";
 import type { AssetType } from "@/lib/zod/validators/asset-types";
 
-// Mock react-i18next with hoisting
+// Mock react-i18next
 vi.mock("react-i18next", () => ({
-  useTranslation: vi.fn(() => ({
-    t: vi.fn((key: string) => key),
+  useTranslation: () => ({
+    t: (key: string) => key,
     i18n: {
-      changeLanguage: vi.fn(),
+      changeLanguage: () => Promise.resolve(),
       language: "en",
     },
     ready: true,
-  })),
+  }),
 }));
 
 describe("TokenFactoryRelated", () => {
