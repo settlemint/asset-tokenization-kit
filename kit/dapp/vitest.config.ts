@@ -12,15 +12,9 @@ export default defineConfig({
     environmentOptions: {
       happyDOM: {
         // Ensure happy-dom properly supports React 18+ features
-        settings: {
-          navigation: {
-            userAgent: "Mozilla/5.0 (jsdom)",
-          },
-          device: {
-            prefersColorScheme: "light",
-            mediaType: "screen",
-          },
-        },
+        url: "http://localhost:3000",
+        width: 1024,
+        height: 768,
       },
     },
     include: ["src/**/*.test.{ts,tsx}"],

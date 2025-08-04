@@ -1,7 +1,6 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup, configure } from "@testing-library/react";
 import { afterEach, vi } from "vitest";
-import * as React from "react";
 
 // Configure React Testing Library to work properly with act
 configure({
@@ -14,7 +13,9 @@ configure({
 
 // Make React's act available globally for happy-dom compatibility
 // This prevents "not wrapped in act" warnings
-globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+(
+  globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT: boolean }
+).IS_REACT_ACT_ENVIRONMENT = true;
 
 // Set up environment variables for tests
 process.env.SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS =

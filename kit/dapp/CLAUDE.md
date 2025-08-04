@@ -207,38 +207,49 @@ bun run test:integration
 
 ### shadcn Component Pattern
 
-All custom components should follow the shadcn pattern for consistency:
+All custom components should follow the modern shadcn pattern for consistency:
 
 ```typescript
-// 1. Use forwardRef + displayName for all components
-const Component = React.forwardRef<HTMLDivElement, ComponentProps>(
-  ({ className, variant, ...props }, ref) => {
-    return <div ref={ref} className={cn(...)} {...props} />;
-  }
-);
-Component.displayName = "Component";
+// 1. NO forwardRef - use simple function components (shadcn removed forwardRef)
+function Component({
+  className,
+  variant,
+  asChild = false,
+  ...props
+}: React.ComponentProps<"div"> &
+  VariantProps<typeof componentVariants> & {
+    asChild?: boolean;
+  }) {
+  const Comp = asChild ? Slot : "div";
+  return (
+    <Comp
+      data-slot="component-name"
+      className={cn(componentVariants({ variant }), className)}
+      {...props}
+    />
+  );
+}
 
 // 2. Use cva for variants
 const componentVariants = cva("base-classes", {
   variants: {
     variant: { default: "...", secondary: "..." },
-    size: { sm: "...", md: "...", lg: "..." }
+    size: { sm: "...", md: "...", lg: "..." },
   },
-  defaultVariants: { variant: "default", size: "md" }
+  defaultVariants: { variant: "default", size: "md" },
 });
 
-// 3. TypeScript interfaces extending HTML props
-interface ComponentProps
-  extends React.ComponentPropsWithoutRef<"div">,
-    VariantProps<typeof componentVariants> {
-  asChild?: boolean;
-}
+// 3. TypeScript: Use React.ComponentProps directly
+type ComponentProps = React.ComponentProps<"div"> &
+  VariantProps<typeof componentVariants> & {
+    asChild?: boolean;
+  };
 
 // 4. Support composition with Radix Slot
 const Comp = asChild ? Slot : "div";
 
 // 5. Use data-slot attributes for styling hooks
-<div data-slot="component-name" />
+<div data-slot="component-name" />;
 ```
 
 ### Animation Guidelines
@@ -297,3 +308,81 @@ This pattern provides:
 - Clear component hierarchy
 - Easy customization per use case
 - Consistent API across components
+
+### Component Testing Guidelines
+
+**Write comprehensive tests for all custom components:**
+
+```typescript
+// 1. Mock external dependencies (NOT component internals)
+vi.mock("react-i18next", () => ({
+  useTranslation: () => ({ t: (key: string) => key }),
+}));
+
+// 2. Test component structure and variations
+describe("Component", () => {
+  describe("Structure and Layout", () => {
+    it("should render with default props", () => {
+      render(<Component />);
+      expect(screen.getByTestId("component")).toBeInTheDocument();
+    });
+
+    it("should apply custom className", () => {
+      render(<Component className="custom" />);
+      expect(screen.getByTestId("component")).toHaveClass("custom");
+    });
+  });
+
+  describe("Variants", () => {
+    it.each(["default", "secondary", "ghost"] as const)(
+      "should render %s variant",
+      (variant) => {
+        render(<Component variant={variant} />);
+        // Test variant-specific classes
+      }
+    );
+  });
+
+  describe("Compound Composition", () => {
+    it("should render with all sub-components", () => {
+      render(
+        <Component>
+          <ComponentHeader>Header</ComponentHeader>
+          <ComponentContent>Content</ComponentContent>
+        </Component>
+      );
+      expect(screen.getByText("Header")).toBeInTheDocument();
+      expect(screen.getByText("Content")).toBeInTheDocument();
+    });
+  });
+
+  describe("Accessibility", () => {
+    it("should have proper ARIA attributes", () => {
+      render(<Component aria-label="Test component" />);
+      expect(screen.getByLabelText("Test component")).toBeInTheDocument();
+    });
+  });
+});
+
+// 3. Test data-slot attributes for component identification
+const element = container.querySelector('[data-slot="component-name"]');
+expect(element).toBeInTheDocument();
+
+// 4. Test animation classes when applicable
+expect(element).toHaveClass("press-effect", "hover-lift");
+
+// 5. DO NOT test:
+// - Translation content (just verify keys are used)
+// - External library behavior (e.g., Radix UI internals)
+// - CSS styling details (use visual regression tests instead)
+```
+
+**Testing Best Practices:**
+
+1. **Focus on behavior, not implementation**
+2. **Test all variants and props combinations**
+3. **Verify compound component composition**
+4. **Check accessibility attributes**
+5. **Mock at the boundary (external deps only)**
+6. **Use data-testid sparingly (prefer accessible queries)**
+7. **Group tests logically with describe blocks**
