@@ -11,6 +11,7 @@ import { z } from "zod";
 const TOKEN_BOND_STATUS_QUERY = theGraphGraphql(`
   query TokenBondStatus($tokenId: String!) {
     tokenBondStats_collection(
+      interval: hour
       where: { token: $tokenId }
       orderBy: timestamp
       orderDirection: desc
