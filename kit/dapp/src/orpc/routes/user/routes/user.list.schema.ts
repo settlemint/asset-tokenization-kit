@@ -11,7 +11,6 @@ import { z } from "zod";
  */
 export const UserListInputSchema = ListSchema.extend({
   orderBy: ListSchema.shape.orderBy.default("createdAt"),
-  searchByAddress: z.string().min(1).optional(),
 });
 
 export const UserListOutputSchema = UserSchema.array();

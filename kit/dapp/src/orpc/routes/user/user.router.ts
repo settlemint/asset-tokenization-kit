@@ -3,6 +3,8 @@ import kyc from "@/orpc/routes/user/kyc/kyc.router";
 import { createWallet } from "@/orpc/routes/user/routes/mutations/create-wallet";
 import { list } from "@/orpc/routes/user/routes/user.list";
 import { me } from "@/orpc/routes/user/routes/user.me";
+import { read } from "@/orpc/routes/user/routes/user.read";
+import { search } from "@/orpc/routes/user/routes/user.search";
 import { stats } from "@/orpc/routes/user/routes/user.stats";
 import { statsGrowthOverTime } from "@/orpc/routes/user/routes/user.stats.growth-over-time";
 import { statsUserCount } from "@/orpc/routes/user/routes/user.stats.user-count";
@@ -16,7 +18,9 @@ import { statsUserCount } from "@/orpc/routes/user/routes/user.stats.user-count"
  *
  * Current routes:
  * - me: GET /user/me - Retrieve current authenticated user information
- * - list: GET /user/list - List users with filtering and pagination
+ * - search: GET /user/search - Search users by name or wallet address
+ * - list: GET /user/list - List users with pagination
+ * - read: GET /user/read - Get specific user by ID or wallet address
  * - stats: GET /user/stats - User statistics and metrics
  * - kyc: KYC profile management routes (nested namespace)
  * - actions: GET /user/actions - User's accessible actions (alias for /actions/list)
@@ -31,7 +35,9 @@ import { statsUserCount } from "@/orpc/routes/user/routes/user.stats.user-count"
 const routes = {
   me,
   actions: actionsList,
+  search,
   list,
+  read,
   stats,
   statsGrowthOverTime,
   statsUserCount,
