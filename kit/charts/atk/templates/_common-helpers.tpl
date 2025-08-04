@@ -154,7 +154,13 @@ Usage: {{ include "atk.common.imagePullSecrets" . }}
   {{- end -}}
 {{- else if .Values.global -}}
   {{- if .Values.global.imagePullSecrets -}}
-    {{- $secrets = .Values.global.imagePullSecrets -}}
+    {{- range .Values.global.imagePullSecrets -}}
+      {{- if kindIs "string" . -}}
+        {{- $secrets = append $secrets . -}}
+      {{- else if kindIs "map" . -}}
+        {{- $secrets = append $secrets .name -}}
+      {{- end -}}
+    {{- end -}}
   {{- end -}}
 {{- end -}}
 {{- if .Values.imagePullSecrets -}}
@@ -166,8 +172,6 @@ Usage: {{ include "atk.common.imagePullSecrets" . }}
         {{- $secrets = append $secrets .name -}}
       {{- end -}}
     {{- end -}}
-  {{- else -}}
-    {{- $secrets = .Values.imagePullSecrets -}}
   {{- end -}}
 {{- end -}}
 {{- if $secrets }}
