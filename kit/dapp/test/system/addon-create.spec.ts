@@ -23,6 +23,8 @@ describe("System Addon create", () => {
       ],
     });
 
+    console.error(result);
+
     expect(result.systemAddons.length).toBeGreaterThanOrEqual(3);
   });
 });
