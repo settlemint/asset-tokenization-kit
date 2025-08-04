@@ -28,15 +28,8 @@ import {
   Search,
   SquareStack,
 } from "lucide-react";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getAddress } from "viem";
-
-export interface AddressOption {
-  address: EthereumAddress;
-  displayName?: string;
-  secondaryInfo?: string;
-}
 
 export interface AddressSelectProps {
   value: EthereumAddress | undefined;
@@ -63,51 +56,16 @@ export function AddressSelect({
   const debouncedSearch = useDebouncedCallback((term: string) => {
     setSearchTerm(term);
   }, SEARCH_DEBOUNCE_MS);
-  const { users, assets, isLoading } = useSearchAddresses({
+  const { searchResults, isLoading } = useSearchAddresses({
     searchTerm,
     scope,
   });
-  const searchResults = useMemo(() => {
-    const list =
-      scope === "user"
-        ? users
-        : scope === "asset"
-          ? assets
-          : [...users, ...assets];
-
-    return list
-      .filter((item) => {
-        // For assets, check if id exists
-        if ("symbol" in item) {
-          return item.id;
-        }
-        // For users, check if wallet address exists
-        return item.wallet;
-      })
-      .map((item) => {
-        const isAsset = "symbol" in item;
-        const addressValue = isAsset ? item.id : item.wallet;
-
-        return {
-          address: getAddress(addressValue as string),
-          displayName: item.name,
-          secondaryInfo: isAsset ? item.symbol : item.email,
-        };
-      });
-  }, [scope, users, assets]);
 
   const { recentItems: recentAddresses, addItem: addToRecents } =
     useRecentCache<EthereumAddress>({
       storageKey: scope,
       maxItems: MAX_RECENT_ADDRESSES,
     });
-  const recentAddressOptions = useMemo(() => {
-    return recentAddresses.map((address) => ({
-      address,
-      displayName: undefined,
-      secondaryInfo: undefined,
-    }));
-  }, [recentAddresses]);
 
   // Handle address selection from search results
   const handleAddressSelect = useCallback(
@@ -162,7 +120,7 @@ export function AddressSelect({
                   : t("address.noAddressesCreated")}
             </CommandEmpty>
 
-            {!searchTerm && recentAddressOptions.length > 0 && (
+            {!searchTerm && recentAddresses.length > 0 && (
               <CommandGroup
                 heading={
                   <div className="flex items-center gap-2">
@@ -171,11 +129,11 @@ export function AddressSelect({
                   </div>
                 }
               >
-                {recentAddressOptions.map((option) => (
+                {recentAddresses.map((address) => (
                   <AddressCommandItem
-                    key={`recent-${option.address}`}
-                    option={option}
-                    isSelected={value === option.address}
+                    key={`recent-${address}`}
+                    address={address}
+                    isSelected={value === address}
                     onSelect={handleAddressSelect}
                     section="recent"
                   />
@@ -202,11 +160,11 @@ export function AddressSelect({
                   </>
                 }
               >
-                {searchResults.map((option) => (
+                {searchResults.map((address) => (
                   <AddressCommandItem
-                    key={`all-${option.address}`}
-                    option={option}
-                    isSelected={value === option.address}
+                    key={`all-${address}`}
+                    address={address}
+                    isSelected={value === address}
                     onSelect={handleAddressSelect}
                     section="all"
                   />
@@ -222,26 +180,26 @@ export function AddressSelect({
 
 const AddressCommandItem = memo(
   ({
-    option,
+    address,
     isSelected,
     onSelect,
     section,
   }: {
-    option: AddressOption;
+    address: EthereumAddress;
     isSelected: boolean;
     onSelect: (address: EthereumAddress) => void;
     section: string;
   }) => {
     return (
       <CommandItem
-        value={section ? `${section}-${option.address}` : option.address}
+        value={section ? `${section}-${address}` : address}
         onSelect={() => {
-          onSelect(option.address);
+          onSelect(address);
         }}
         className="flex items-center gap-2"
       >
         <Web3Address
-          address={option.address}
+          address={address}
           size="tiny"
           showBadge={false}
           className="flex-1"

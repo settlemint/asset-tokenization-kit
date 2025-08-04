@@ -1,8 +1,8 @@
 import { orpc } from "@/orpc/orpc-client";
-import { TokenSearchResult } from "@/orpc/routes/token/routes/token.search.schema";
-import { UserSearchOutput } from "@/orpc/routes/user/routes/user.search.schema";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { getAddress } from "viem";
 
 export type AddressSearchScope = "user" | "asset" | "all";
 
@@ -12,10 +12,7 @@ export interface UseSearchAddressesOptions {
 }
 
 export interface UseSearchAddressesReturn {
-  users: UserSearchOutput;
-  assets: TokenSearchResult[];
-  isLoadingUsers: boolean;
-  isLoadingAssets: boolean;
+  searchResults: EthereumAddress[];
   isLoading: boolean;
 }
 
@@ -62,17 +59,41 @@ export function useSearchAddresses({
         })
   );
 
-  const result = useMemo(() => {
-    const isLoading = isLoadingUsers || isLoadingAssets;
+  const searchResults = useMemo(() => {
+    const addresses: EthereumAddress[] = [];
 
-    return {
-      users: users || [],
-      assets: assets || [],
-      isLoadingUsers,
-      isLoadingAssets,
-      isLoading,
-    };
-  }, [users, assets, isLoadingUsers, isLoadingAssets]);
+    // Process based on scope
+    if (scope === "user" || scope === "all") {
+      users.forEach((user) => {
+        if (!user.wallet) return;
 
-  return result;
+        try {
+          const validAddress = getAddress(user.wallet);
+          addresses.push(validAddress);
+        } catch {
+          // Invalid address format, skip
+        }
+      });
+    }
+
+    if (scope === "asset" || scope === "all") {
+      assets.forEach((asset) => {
+        if (!asset.id) return;
+
+        try {
+          const validAddress = getAddress(asset.id);
+          addresses.push(validAddress);
+        } catch {
+          // Invalid address format, skip
+        }
+      });
+    }
+
+    return addresses;
+  }, [users, assets, scope]);
+
+  return {
+    searchResults,
+    isLoading: isLoadingUsers || isLoadingAssets,
+  };
 }
