@@ -18,10 +18,18 @@ import {
 import { kycContract } from "@/orpc/routes/user/kyc/kyc.contract";
 import { createWalletContract } from "@/orpc/routes/user/routes/mutations/create-wallet.contract";
 import {
+  UserListInputSchema,
   UserListOutputSchema,
-  UserListSchema,
 } from "@/orpc/routes/user/routes/user.list.schema";
 import { UserMeSchema } from "@/orpc/routes/user/routes/user.me.schema";
+import {
+  UserReadInputSchema,
+  UserReadOutputSchema,
+} from "@/orpc/routes/user/routes/user.read.schema";
+import {
+  UserSearchInputSchema,
+  UserSearchOutputSchema,
+} from "@/orpc/routes/user/routes/user.search.schema";
 import {
   UserStatsGrowthOverTimeInputSchema,
   UserStatsGrowthOverTimeOutputSchema,
@@ -80,6 +88,29 @@ const actions = baseContract
   .input(ActionsListSchema)
   .output(ActionsListResponseSchema);
 
+/**
+ * Search for users by name or wallet address.
+ *
+ * This endpoint provides flexible search functionality across user fields
+ * including firstName, lastName, name, and wallet address. It's optimized for
+ * autocomplete and quick user lookups.
+ * @auth Required - User must be authenticated
+ * @function GET
+ * @endpoint /user/search
+ * @input UserSearchInputSchema - Search query and limit parameters
+ * @returns UserSearchOutputSchema - Array of matching users
+ */
+const search = baseContract
+  .route({
+    method: "GET",
+    path: "/user/search",
+    description: "Search users by name or wallet address",
+    successDescription: "Matching users found",
+    tags: ["user"],
+  })
+  .input(UserSearchInputSchema)
+  .output(UserSearchOutputSchema);
+
 const list = baseContract
   .route({
     method: "GET",
@@ -88,8 +119,31 @@ const list = baseContract
     successDescription: "List of users",
     tags: ["user"],
   })
-  .input(UserListSchema)
+  .input(UserListInputSchema)
   .output(UserListOutputSchema);
+
+/**
+ * Get specific user by ID or wallet address.
+ *
+ * This endpoint retrieves detailed information about a specific user
+ * identified by either their internal ID or wallet address. Used for
+ * user profile views and admin user management.
+ * @auth Required - User must be authenticated
+ * @function GET
+ * @endpoint /user/read
+ * @input UserReadInputSchema - User ID or wallet address
+ * @returns UserReadOutputSchema - Complete user information
+ */
+const read = baseContract
+  .route({
+    method: "GET",
+    path: "/user/read",
+    description: "Get specific user by ID or wallet address",
+    successDescription: "User found",
+    tags: ["user"],
+  })
+  .input(UserReadInputSchema)
+  .output(UserReadOutputSchema);
 
 /**
  * Get user statistics and metrics.
@@ -142,7 +196,9 @@ const statsGrowthOverTime = baseContract
 export const userContract = {
   me,
   actions,
+  search,
   list,
+  read,
   stats,
   statsGrowthOverTime,
   statsUserCount,
