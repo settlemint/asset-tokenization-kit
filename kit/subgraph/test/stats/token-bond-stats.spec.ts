@@ -81,7 +81,7 @@ describe("TokenBondStats", () => {
     const query = theGraphGraphql(
       `query($tokenId: String!) {
         tokenBondStatsHours: tokenBondStats_collection(
-          where: { token: $tokenId }
+          where: { bond: $tokenId }
           orderBy: timestamp
           orderDirection: desc
           first: 5

@@ -67,7 +67,7 @@ export function updateTokenBondStats(token: Token): void {
 function trackTokenBondStats(state: TokenBondStatsState): void {
   // Create stats data entry for timeseries
   const statsData = new TokenBondStatsData(1);
-  statsData.token = state.token;
+  statsData.bond = state.bond;
   statsData.underlyingAssetBalanceAvailable =
     state.underlyingAssetBalanceAvailable;
   statsData.underlyingAssetBalanceAvailableExact =
@@ -87,9 +87,9 @@ function fetchTokenBondStatsState(tokenAddress: Address): TokenBondStatsState {
   let state = TokenBondStatsState.load(tokenAddress);
 
   if (!state) {
-    const token = fetchToken(tokenAddress);
+    const bond = fetchBond(tokenAddress);
     state = new TokenBondStatsState(tokenAddress);
-    state.token = token.id;
+    state.bond = bond.id;
     state.underlyingAssetBalanceAvailable = BigDecimal.zero();
     state.underlyingAssetBalanceAvailableExact = BigInt.zero();
     state.underlyingAssetBalanceRequired = BigDecimal.zero();

@@ -481,6 +481,8 @@ type TokenBond @entity(immutable: false) {
   maturityDate: BigInt!
   isMatured: Boolean!
   underlyingAsset: Token!
+  # Stats
+  stats: TokenBondStatsState @derivedFrom(field: "bond")
 }
 
 type TokenFund @entity(immutable: false) {
@@ -942,8 +944,8 @@ type TokenCollateralStats
 type TokenBondStatsState @entity(immutable: false) {
   # Unique identifier for the bond stats state (typically the token address)
   id: Bytes!
-  # Reference to the associated token
-  token: Token!
+  # Reference to the associated bond
+  bond: TokenBond!
   # Available balance of the underlying asset (human-readable)
   underlyingAssetBalanceAvailable: BigDecimal!
   # Available balance of the underlying asset (exact, raw units)
@@ -959,8 +961,8 @@ type TokenBondStatsState @entity(immutable: false) {
 type TokenBondStatsData @entity(timeseries: true) {
   id: Int8!
   timestamp: Timestamp!
-  # Reference to the associated token
-  token: Token!
+  # Reference to the associated bond
+  bond: TokenBond!
   # Available balance of the underlying asset (human-readable)
   underlyingAssetBalanceAvailable: BigDecimal!
   # Available balance of the underlying asset (exact, raw units)
@@ -978,7 +980,7 @@ type TokenBondStats
   id: Int8!
   timestamp: Timestamp!
 
-  token: Token!
+  bond: TokenBond!
 
   underlyingAssetBalanceAvailable: BigDecimal!
     @aggregate(fn: "last", arg: "underlyingAssetBalanceAvailable")
