@@ -138,6 +138,32 @@ const virtualizer = useVirtualizer({ ... });
 
 ### Unit Tests (Vitest)
 
+#### Test Environment Configuration
+
+**Default environment: `happy-dom`** (configured in vitest.config.ts)
+
+```typescript
+// Component tests (UI) - Uses default happy-dom, no directive needed
+import { render, screen } from "@testing-library/react";
+
+// Server-side tests (API/utilities) - Requires node environment
+/**
+ * @vitest-environment node
+ */
+import { describe, it, expect } from "vitest";
+```
+
+**Environment Guidelines:**
+
+- **NO directive needed** for React component tests (uses default happy-dom)
+- **Use `@vitest-environment node`** ONLY for:
+  - API route tests (orpc routes)
+  - Server-side utilities
+  - Node.js specific code
+  - Tests that fail with "This function can only be used on the server"
+- **NEVER use `@vitest-environment jsdom`** (we use happy-dom instead)
+- **NEVER use `@vitest-environment happy-dom`** (it's the default)
+
 ```typescript
 // React Testing Library + vitest
 render(<Component />);
