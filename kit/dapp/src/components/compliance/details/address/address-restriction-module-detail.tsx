@@ -5,6 +5,7 @@ import { complianceModuleConfig } from "@/components/compliance/config";
 import type { ComplianceModuleDetailProps } from "@/components/compliance/details/types";
 import { ArrayFieldsLayout } from "@/components/layout/array-fields-layout";
 import { Button } from "@/components/ui/button";
+import { encodeAddressParams } from "@/lib/compliance/encoding/encode-address-params";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { ArrowLeftIcon } from "lucide-react";
 import { useState } from "react";
@@ -51,12 +52,17 @@ export function AddressRestrictionModuleDetail({
   };
 
   const handleEnable = () => {
-    // TODO: Implement address encoding when needed
+    // Filter out empty addresses and encode the valid ones
+    const validAddresses = selectedAddresses.filter(
+      (addr) => addr && addr.trim() !== ""
+    );
+    const encodedParams = encodeAddressParams(validAddresses);
+
     onEnable({
       typeId,
       module,
-      values: selectedAddresses,
-      params: "", // TODO: Encode address parameters
+      values: validAddresses,
+      params: encodedParams,
     });
   };
 
