@@ -82,7 +82,8 @@ export function AddressSelectField({
           : [...users, ...assets];
 
     return list.map((item) => ({
-      address: getAddress(item.id),
+      address:
+        "symbol" in item ? getAddress(item.id) : getAddress(item.wallet ?? ""),
       displayName: item.name,
       secondaryInfo: "symbol" in item ? item.symbol : item.email,
     }));
