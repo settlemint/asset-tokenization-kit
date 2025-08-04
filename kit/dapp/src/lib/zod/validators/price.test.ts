@@ -33,7 +33,7 @@ describe("price", () => {
         "Invalid price format. Please provide a valid numeric string"
       );
 
-      // The defensive check on lines 57-62 ensures that even if Zod's validation
+      // The defensive check in the price validator implementation ensures that even if Zod's validation
       // changes in the future, our validator will still reject non-finite numbers.
       // This is an example of defensive programming where we handle edge cases
       // that shouldn't occur under normal circumstances.
