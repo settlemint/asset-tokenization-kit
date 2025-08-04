@@ -1,6 +1,6 @@
 import { orpc } from "@/orpc/orpc-client";
-import { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
-import { UserList } from "@/orpc/routes/user/routes/user.list.schema";
+import { TokenSearchResult } from "@/orpc/routes/token/routes/token.search.schema";
+import { UserSearchOutput } from "@/orpc/routes/user/routes/user.search.schema";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
@@ -12,8 +12,8 @@ export interface UseSearchAddressesOptions {
 }
 
 export interface UseSearchAddressesReturn {
-  users: UserList;
-  assets: TokenList;
+  users: UserSearchOutput;
+  assets: TokenSearchResult[];
   isLoadingUsers: boolean;
   isLoadingAssets: boolean;
   isLoading: boolean;
@@ -28,24 +28,23 @@ export function useSearchAddresses({
 
   // Query for users
   const { data: users = [], isLoading: isLoadingUsers } = useQuery(
-    orpc.user.list.queryOptions({
-      enabled: shouldSearchUsers,
+    orpc.user.search.queryOptions({
+      enabled: shouldSearchUsers && searchTerm.length > 0,
       input: {
-        searchByAddress: searchTerm.length > 0 ? searchTerm : undefined,
+        query: searchTerm,
+        limit: 10,
       },
-
-      staleTime: 1000 * 60 * 30, // Cache user data for 30 minutes as it rarely changes
     })
   );
 
   // Query for assets
   const { data: assets = [], isLoading: isLoadingAssets } = useQuery(
-    orpc.token.list.queryOptions({
-      enabled: shouldSearchAssets,
+    orpc.token.search.queryOptions({
+      enabled: shouldSearchAssets && searchTerm.length > 0,
       input: {
-        searchByAddress: searchTerm.length > 0 ? searchTerm : undefined,
+        query: searchTerm,
+        limit: 10,
       },
-      staleTime: 1000 * 60 * 30, // Cache token data for 30 minutes as it rarely changes
     })
   );
 
