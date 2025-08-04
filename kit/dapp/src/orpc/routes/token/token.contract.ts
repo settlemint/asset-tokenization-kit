@@ -29,6 +29,7 @@ import { tokenEventsContract } from "@/orpc/routes/token/routes/token.events.con
 import { tokenHoldersContract } from "@/orpc/routes/token/routes/token.holders.contract";
 import { tokenListContract } from "@/orpc/routes/token/routes/token.list.contract";
 import { tokenReadContract } from "@/orpc/routes/token/routes/token.read.contract";
+import { tokenSearchContract } from "@/orpc/routes/token/routes/token.search.contract";
 
 // Stats contracts
 import { statsBondStatusContract } from "@/orpc/routes/token/routes/stats/bond-status.contract";
@@ -67,6 +68,7 @@ export const tokenContract = {
   actions: tokenActionsContract,
   list: tokenListContract,
   read: tokenReadContract,
+  search: tokenSearchContract,
   events: tokenEventsContract,
   holders: tokenHoldersContract,
 

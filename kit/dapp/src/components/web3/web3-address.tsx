@@ -30,25 +30,23 @@ function Web3AddressComponent({
   showSymbol = true,
   showPrettyName = true,
 }: Web3AddressProps) {
-  // Select only the first user from the list to minimize re-renders
+  // Query for user data by wallet address
   const { data: user } = useQuery(
-    orpc.user.list.queryOptions({
-      input: {
-        searchByAddress: address,
-      },
-      select: (users) => users[0],
-      staleTime: 1000 * 60 * 30, // Cache user data for 30 minutes as it rarely changes
+    orpc.user.read.queryOptions({
+      input: { wallet: address },
+      staleTime: 1000 * 60 * 30, // Cache user data for 30 minutes
+      retry: false, // Don't retry if address is not a user
+      throwOnError: false, // Don't throw if address is not a user
     })
   );
 
-  // Select only the first token from the list to minimize re-renders
+  // Query for token data by address
   const { data: token } = useQuery(
-    orpc.token.list.queryOptions({
-      input: {
-        searchByAddress: address,
-      },
-      select: (tokens) => tokens[0],
-      staleTime: 1000 * 60 * 30, // Cache token metadata for 30 minutes as it rarely changes
+    orpc.token.read.queryOptions({
+      input: { tokenAddress: address },
+      staleTime: 1000 * 60 * 30, // Cache token data for 30 minutes
+      retry: false, // Don't retry if address is not a token
+      throwOnError: false, // Don't throw if address is not a token
     })
   );
 

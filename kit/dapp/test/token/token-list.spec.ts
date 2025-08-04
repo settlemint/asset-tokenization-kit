@@ -61,15 +61,4 @@ describe("Token list", () => {
     expect(tokens.find((t) => t.id === depositToken.id)).toBeDefined();
     expect(tokens.find((t) => t.id === stablecoinToken.id)).toBeUndefined();
   });
-
-  it("can list tokens by id", async () => {
-    const headers = await signInWithUser(DEFAULT_ADMIN);
-    const client = getOrpcClient(headers);
-    const tokens = await client.token.list({
-      searchByAddress: stablecoinToken.id,
-    });
-    expect(tokens.length).toBeGreaterThanOrEqual(1);
-    expect(tokens.find((t) => t.id === stablecoinToken.id)).toBeDefined();
-    expect(tokens.find((t) => t.id === depositToken.id)).toBeUndefined();
-  });
 });
