@@ -15,7 +15,7 @@ describe("price", () => {
       //
       // The defensive code exists for future-proofing and type safety,
       // but cannot be tested without bypassing Zod's built-in validations.
-      // These lines (57-62) are defensive programming best practices.
+      // This defensive check in the price validator implementation is a best practice.
 
       // Verify that Zod properly rejects non-finite numbers
       expect(() => validator.parse(Infinity)).toThrow();
