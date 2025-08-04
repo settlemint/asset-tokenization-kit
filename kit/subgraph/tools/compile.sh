@@ -16,12 +16,12 @@ if grep -q '0x5e771e1417100000000000000000000000020088' subgraph.yaml; then
     BUILD_OUTPUT=$(bunx settlemint scs subgraph build --ipfs=https://ipfs.console.settlemint.com)
     echo "$BUILD_OUTPUT"
 
-    # Extract IPFS hash and save to files
-    IPFS_HASH=$(echo "$BUILD_OUTPUT" | grep -o 'Qm[a-zA-Z0-9]*' | tail -1)
-    if [ -n "$IPFS_HASH" ]; then
-        echo "$IPFS_HASH" > .generated/subgraph-hash.txt
-        echo "SUBGRAPH=kit:$IPFS_HASH" > .generated/subgraph-env
-        echo "Saved IPFS hash: $IPFS_HASH"
+    # Extract subgraph hash and save to files
+    SUBGRAPH_HASH=$(echo "$BUILD_OUTPUT" | grep -o 'Qm[a-zA-Z0-9]*' | tail -1)
+    if [ -n "$SUBGRAPH_HASH" ]; then
+        echo "$SUBGRAPH_HASH" > .generated/subgraph-hash.txt
+        echo "SUBGRAPH=kit:$SUBGRAPH_HASH" > .generated/subgraph-env
+        echo "Saved IPFS hash: $SUBGRAPH_HASH"
     else
         echo "Warning: No IPFS hash found in build output"
     fi
