@@ -51,7 +51,7 @@ describe("isin", () => {
     test("validates ISINs with proper character handling", () => {
       // The validation function uses codePointAt() which could theoretically return undefined
       // However, for valid string characters this won't happen in practice
-      // The defensive check on lines 32-33 is for robustness
+      // The defensive check for undefined from codePointAt() in the validation function is for robustness
 
       // Test with various valid ISINs that exercise the character processing
       const testISINs = [
