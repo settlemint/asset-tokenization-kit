@@ -1,6 +1,11 @@
+import { AddressInput } from "@/components/address/address-input";
+import { AddressSelect } from "@/components/address/address-select";
+import { AddressSelectOrInputToggle } from "@/components/address/address-select-or-input-toggle";
 import { complianceModuleConfig } from "@/components/compliance/config";
 import type { ComplianceModuleDetailProps } from "@/components/compliance/details/types";
+import { ArrayFieldsLayout } from "@/components/layout/array-fields-layout";
 import { Button } from "@/components/ui/button";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { ArrowLeftIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -23,13 +28,30 @@ export function AddressRestrictionModuleDetail({
   // Translation key for address block list
   const moduleKey = "addressBlockList";
 
-  // TODO: Initialize addresses from initialValues when input fields are added
-  const [selectedAddresses, _setSelectedAddresses] = useState<string[]>(
-    initialValues?.values ?? []
+  // Initialize addresses from initialValues
+  const [selectedAddresses, setSelectedAddresses] = useState<EthereumAddress[]>(
+    (initialValues?.values as EthereumAddress[]) ?? []
   );
 
+  // Helper function to update a specific address by index
+  const updateAddress = (index: number, newAddress: EthereumAddress) => {
+    setSelectedAddresses((prev) =>
+      prev.map((addr, i) => (i === index ? newAddress : addr))
+    );
+  };
+
+  // Add new empty address
+  const handleAddAddress = () => {
+    setSelectedAddresses((prev) => [...prev, "" as EthereumAddress]);
+  };
+
+  // Remove address by index
+  const handleRemoveAddress = (_: EthereumAddress, index: number) => {
+    setSelectedAddresses((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleEnable = () => {
-    // TODO: Implement address encoding when input fields are added
+    // TODO: Implement address encoding when needed
     onEnable({
       typeId,
       module,
@@ -47,9 +69,14 @@ export function AddressRestrictionModuleDetail({
     });
   };
 
-  // TODO: Implement proper change detection when input fields are added
-  const isInputChanged =
-    selectedAddresses.length !== (initialValues?.values.length ?? 0);
+  // Check if addresses have changed from initial values
+  const isInputChanged = (() => {
+    const initialAddresses = (initialValues?.values as EthereumAddress[]) ?? [];
+    if (selectedAddresses.length !== initialAddresses.length) return true;
+    return selectedAddresses.some(
+      (addr, index) => addr !== initialAddresses[index]
+    );
+  })();
 
   return (
     <div className="flex flex-col h-full">
@@ -100,15 +127,41 @@ export function AddressRestrictionModuleDetail({
               {t(`modules.${moduleKey}.description`)}
             </p>
           </div>
-          {/* TODO: Add address input fields here when ready */}
           {isEnabled && (
             <div className="w-full">
-              {/* Placeholder for address input fields */}
-              <div className="p-4 border border-dashed border-muted-foreground/30 rounded-md">
-                <p className="text-muted-foreground text-sm text-center">
-                  Address input fields will be added here
-                </p>
-              </div>
+              <ArrayFieldsLayout
+                values={selectedAddresses}
+                onAdd={handleAddAddress}
+                onRemove={handleRemoveAddress}
+                component={(address, index) => (
+                  <AddressSelectOrInputToggle>
+                    {({ mode }) => (
+                      <>
+                        {mode === "select" && (
+                          <AddressSelect
+                            value={address || undefined}
+                            onChange={(newAddress) => {
+                              updateAddress(index, newAddress);
+                            }}
+                            scope="user"
+                            placeholder="Select an address to block"
+                          />
+                        )}
+                        {mode === "manual" && (
+                          <AddressInput
+                            value={address}
+                            onChange={(newAddress) => {
+                              updateAddress(index, newAddress);
+                            }}
+                            placeholder="Enter address to block"
+                          />
+                        )}
+                      </>
+                    )}
+                  </AddressSelectOrInputToggle>
+                )}
+                addButtonLabel="Add Address"
+              />
             </div>
           )}
         </div>
