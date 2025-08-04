@@ -122,11 +122,8 @@ export const factoryCreate = portalRouter.token.factoryCreate
       (factory) => !existingFactoryNames.has(factory.name.toLowerCase())
     );
 
-    // Process factories sequentially to avoid challenge reuse issues
-    // Each challenge response can only be used once, and we can't modify pincodes
-    const deploymentResults = [];
-
-    for (const factory of factoriesToDeploy) {
+    // Process factories in parallel for better performance
+    const deploymentPromises = factoriesToDeploy.map(async (factory) => {
       const { type, name } = factory;
       const defaults = getDefaultImplementations(type);
 
@@ -159,21 +156,40 @@ export const factoryCreate = portalRouter.token.factoryCreate
           variables
         );
 
-        deploymentResults.push({ status: "success", factory: name, txHash });
+        return { status: "success" as const, factory: name, txHash };
       } catch (error) {
         logger.error(`Failed to create factory ${name}:`, error);
-        deploymentResults.push({ status: "failed", factory: name, error });
+        return { status: "failed" as const, factory: name, error };
       }
-    }
+    });
 
-    // Log results
-    deploymentResults.forEach((result) => {
+    // Wait for all factory deployments to complete
+    const deploymentResults = await Promise.allSettled(deploymentPromises);
+
+    // Extract and process results from Promise.allSettled
+    const results = deploymentResults.map((result) => {
+      if (result.status === "fulfilled") {
+        // The promise resolved successfully, return the actual result
+        return result.value;
+      } else {
+        // The promise was rejected, create a failed result
+        logger.error(`Factory deployment promise rejected:`, result.reason);
+        return {
+          status: "failed" as const,
+          factory: "unknown",
+          error: result.reason,
+        };
+      }
+    });
+
+    // Log the actual deployment results
+    results.forEach((result) => {
       if (result.status === "failed") {
         logger.error(
           `Factory deployment failed for ${result.factory}:`,
           result.error
         );
-      } else {
+      } else if (result.status === "success") {
         logger.info(`Factory ${result.factory} deployed successfully`);
       }
     });

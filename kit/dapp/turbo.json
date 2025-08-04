@@ -24,7 +24,7 @@
       "outputs": ["coverage/**"]
     },
     "test:integration": {
-      "dependsOn": ["codegen", "build", "artifacts", "^test:integration"]
+      "dependsOn": ["codegen", "build", "artifacts"]
     },
     "lint": {
       "dependsOn": ["codegen"],

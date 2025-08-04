@@ -26,7 +26,6 @@ import { createLogger } from "@settlemint/sdk-utils/logging";
 import { encodeFunctionData, getAddress } from "viem";
 import {
   type SystemAddonConfig,
-  type SystemAddonCreateOutput,
   type SystemAddonCreateSchema,
   getDefaultAddonImplementations,
 } from "./addon.create.schema";
@@ -167,62 +166,57 @@ export const addonCreate = portalRouter.system.addonCreate
     const sender = context.auth.user;
     const { system } = context;
 
-    const contract = system?.systemAddonRegistry;
-    if (!contract) {
+    if (!system?.systemAddonRegistry) {
+      const cause = new Error("System addon registry not found");
       throw errors.INTERNAL_SERVER_ERROR({
-        message: `No addon registry found for system ${system?.address}`,
+        message: cause.message,
+        cause,
       });
     }
+
+    // Store registry address to satisfy TypeScript's null checks
+    const systemAddonRegistry = system.systemAddonRegistry;
 
     // Normalize to array
     const addonList = Array.isArray(addons) ? addons : [addons];
 
-    // Query existing system addons to check for duplicates
-    const existingAddonNames =
-      system?.systemAddons.map((addon) => addon.name) ?? [];
+    // Query existing system addons using the system context
+    let existingAddonNames = new Set<string>();
+    try {
+      const systemData = context.system;
 
-    const results: SystemAddonCreateOutput["results"] = [];
+      existingAddonNames = new Set(
+        systemData.systemAddons.map((addon) => addon.name.toLowerCase())
+      );
+    } catch (error) {
+      // If we can't fetch existing addons, proceed anyway
+      // The contract will reject duplicates
+      logger.debug(`Could not fetch existing addons: ${String(error)}`);
+    }
 
-    // Process each addon using a generator pattern for batch operations
-    for (const addonConfig of addonList) {
-      const { type, name } = addonConfig;
+    // Filter out existing addons
+    const addonsToRegister = addonList.filter(
+      (addon) => !existingAddonNames.has(addon.name.toLowerCase())
+    );
 
-      // Check if addon already exists (if we had that data)
-      if (existingAddonNames.includes(name)) {
-        results.push({
-          type,
-          name,
-          transactionHash: "",
-          error: `Addon already exists: ${name}`,
-        });
-
-        continue; // Skip to next addon
-      }
+    // Process addons in parallel for better performance
+    const deploymentPromises = addonsToRegister.map(async (addonConfig) => {
+      const { name } = addonConfig;
 
       try {
         // Get implementation address and initialization data
         const implementationAddress = getImplementationAddress(addonConfig);
         const initializationData = generateInitializationData(context);
 
-        // Log the implementation details for debugging
-        logger.info(`Registering addon with details:`, {
-          addonType: type,
-          addonName: name,
-          contract: contract,
-          implementationAddress,
-          initializationData,
-          userWallet: sender.wallet,
-        });
-
-        // Every transaction needs a challenge response (can only be used once)
+        // Generate a fresh challenge response for each addon
         const challengeResponse = await handleChallenge(sender, {
           code: verification.verificationCode,
           type: verification.verificationType,
         });
 
-        // Execute the addon registration transaction (reuse challenge response)
+        // Execute the addon registration transaction
         const variables: VariablesOf<typeof REGISTER_SYSTEM_ADDON_MUTATION> = {
-          address: contract,
+          address: systemAddonRegistry,
           from: sender.wallet,
           name: name,
           implementation: implementationAddress,
@@ -230,35 +224,54 @@ export const addonCreate = portalRouter.system.addonCreate
           ...challengeResponse,
         };
 
-        // Execute the mutation
-        const transactionHash = await context.portalClient.mutate(
+        // Use the Portal client's mutate method that returns the transaction hash
+        const txHash = await context.portalClient.mutate(
           REGISTER_SYSTEM_ADDON_MUTATION,
           variables
         );
 
-        const implementationName = ADDON_TYPE_TO_IMPLEMENTATION_NAME[type];
-        results.push({
-          type,
-          name,
-          transactionHash,
-          implementations: { [implementationName]: implementationAddress },
-        });
+        return { status: "success" as const, addon: name, txHash };
       } catch (error) {
-        results.push({
-          type,
-          name,
-          error: error instanceof Error ? error.message : String(error),
-        });
+        logger.error(`Failed to create addon ${name}:`, error);
+        return { status: "failed" as const, addon: name, error };
       }
-    }
+    });
 
-    // We don't need the final message anymore since we're returning the system
+    // Wait for all addon deployments to complete
+    const deploymentResults = await Promise.allSettled(deploymentPromises);
 
-    // Return the updated system details
+    // Extract and process results from Promise.allSettled
+    const results = deploymentResults.map((result) => {
+      if (result.status === "fulfilled") {
+        // The promise resolved successfully, return the actual result
+        return result.value;
+      } else {
+        // The promise was rejected, create a failed result
+        logger.error(`Addon registration promise rejected:`, result.reason);
+        return {
+          status: "failed" as const,
+          addon: "unknown",
+          error: result.reason,
+        };
+      }
+    });
+
+    // Log the actual deployment results
+    results.forEach((result) => {
+      if (result.status === "failed") {
+        logger.error(
+          `Addon registration failed for ${result.addon}:`,
+          result.error
+        );
+      } else if (result.status === "success") {
+        logger.info(`Addon ${result.addon} registered successfully`);
+      }
+    });
+
     return await call(
       read,
       {
-        id: "default",
+        id: context.system.address,
       },
       { context }
     );

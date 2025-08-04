@@ -22,8 +22,8 @@ export async function bootstrapSystem(orpClient: OrpcClient) {
           }
           return sys;
         },
-        5, // max retries
-        2000 // wait 2 seconds between retries
+        10, // max retries
+        1000 // wait 1 second between retries
       );
     }
     return system;
@@ -106,6 +106,8 @@ export async function bootstrapTokenFactories(
     },
     factories: nonExistingFactories,
   });
+
+  console.error(result);
 
   // The factoryCreate method now returns the updated system details
   if (!result.id || !result.tokenFactories) {

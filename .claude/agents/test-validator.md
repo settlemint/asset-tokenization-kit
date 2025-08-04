@@ -1,7 +1,7 @@
 ---
 name: test-validator
 description: Use this agent when you need to run tests, linting, or validation checks on code. This agent should be used proactively after code changes, before commits, or when verifying that modifications haven't broken existing functionality. The agent executes multiple test suites and linters in parallel and returns only structured error/warning information to minimize context usage in the main thread.\n\nExamples:\n<example>\nContext: The user has just written a new React component and wants to ensure it passes all tests and linting.\nuser: "I've added a new TokenTransfer component to the dapp"\nassistant: "I've added the TokenTransfer component. Now let me validate it with our test and lint suite."\n<commentary>\nSince new code was written, proactively use the test-lint-validator agent to run all relevant tests and linting in parallel.\n</commentary>\n</example>\n<example>\nContext: The user is preparing to create a pull request.\nuser: "I think I'm ready to create a PR for the compliance module updates"\nassistant: "Before creating the PR, let me run our comprehensive test and lint validation."\n<commentary>\nBefore PR creation, proactively use the test-lint-validator to ensure all tests pass and code meets quality standards.\n</commentary>\n</example>\n<example>\nContext: The user has modified smart contracts.\nuser: "I've updated the TokenFactory contract to add a new minting function"\nassistant: "Contract updated. Let me validate all tests and security checks."\n<commentary>\nAfter contract modifications, proactively run the test-lint-validator to catch any issues early.\n</commentary>\n</example>
-model: haiku
+model: sonnet
 color: green
 ---
 

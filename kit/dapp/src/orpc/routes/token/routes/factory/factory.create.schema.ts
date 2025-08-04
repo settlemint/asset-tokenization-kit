@@ -116,43 +116,10 @@ export const FactoryCreateSchema = MutationInputSchema.extend({
     .describe("Factory or factories to create"),
 });
 
-/**
- * Schema for individual factory result in streaming output
- */
-const FactoryResultSchema = z.object({
-  type: TokenTypeEnum,
-  name: z.string(),
-  transactionHash: z.string().optional(),
-  error: z.string().optional(),
-});
-
-/**
- * Output schema for streaming events
- *
- * TypeScript features:
- * - Discriminated union via status enum for type-safe event handling
- * - Optional fields allow progressive enhancement of event data
- * - The 'result' field provides compatibility with useStreamingMutation hook's ExtractResultType
- */
-export const FactoryCreateOutputSchema = z.object({
-  status: z.enum(["pending", "confirmed", "failed", "completed"]),
-  message: z.string(),
-  currentFactory: FactoryResultSchema.optional(),
-  results: z.array(FactoryResultSchema).optional(),
-  result: z.array(FactoryResultSchema).optional(), // Added for useStreamingMutation hook type extraction compatibility
-  progress: z
-    .object({
-      current: z.number(),
-      total: z.number(),
-    })
-    .optional(),
-});
-
 // Type exports using Zod's type inference
 // These provide compile-time TypeScript types derived from runtime schemas
 // ensuring perfect alignment between validation and type checking
 export type FactoryCreateInput = z.infer<typeof FactoryCreateSchema>;
-export type FactoryCreateOutput = z.infer<typeof FactoryCreateOutputSchema>;
 export type SingleFactory = z.infer<typeof SingleFactorySchema>;
 
 /**

@@ -151,13 +151,7 @@ export interface SystemContext {
  */
 export const systemMiddleware = baseRouter.middleware(
   async ({ context, next, errors }) => {
-    if (context.system) {
-      return next({
-        context: {
-          system: context.system,
-        },
-      });
-    }
+    // Always fetch fresh system data - no caching
     const systemAddressHeader = context.headers["x-system-address"];
     const systemAddress =
       typeof systemAddressHeader === "string"
@@ -201,7 +195,7 @@ export const getSystemContext = async (
       systemAddress,
     },
   });
-  logger.error("system", { system });
+
   if (!system) {
     return null;
   }

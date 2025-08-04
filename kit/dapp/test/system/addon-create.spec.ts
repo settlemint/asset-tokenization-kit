@@ -23,7 +23,6 @@ describe("System Addon create", () => {
       ],
     });
 
-    const updatedSystem = await client.system.read({ id: result.id });
-    expect(updatedSystem.systemAddons.length).toBeGreaterThanOrEqual(3);
+    expect(result.systemAddons.length).toBeGreaterThanOrEqual(3);
   });
 });

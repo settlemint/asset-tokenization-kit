@@ -64,14 +64,7 @@ const READ_TOKEN_QUERY = theGraphGraphql(
  */
 export const tokenMiddleware = baseRouter.middleware(
   async ({ next, context, errors }, input) => {
-    if (context.token) {
-      return next({
-        context: {
-          token: context.token,
-        },
-      });
-    }
-
+    // Always fetch fresh token data - no caching
     const { auth, userClaimTopics } = context;
 
     // Early authorization check before making expensive queries
