@@ -29,11 +29,13 @@ const StatsBondStatusResponseSchema = z.object({
     id: z.string(),
     bond: z
       .object({
-        stats: z.object({
-          underlyingAssetBalanceAvailable: z.string(),
-          underlyingAssetBalanceRequired: z.string(),
-          coveredPercentage: z.string(),
-        }),
+        stats: z
+          .object({
+            underlyingAssetBalanceAvailable: z.string(),
+            underlyingAssetBalanceRequired: z.string(),
+            coveredPercentage: z.string(),
+          })
+          .nullable(),
       })
       .nullable(),
   }),
