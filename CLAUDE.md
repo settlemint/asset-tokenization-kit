@@ -88,13 +88,14 @@ height 60px→80px" | "API timeout 30s→10s" | "Add index on user_id"
 
 ## Agent Orchestration (MANDATORY WORKFLOW)
 
-**Available Agents (4 total) - USE IN THIS EXACT ORDER:**
+**Available Agents (4 total @ .claude/agents/) - USE IN THIS EXACT ORDER:**
 
 1. **researcher** (🔴 ALWAYS FIRST - NO EXCEPTIONS):
    - **MANDATORY before writing ANY code**
    - Fetches ALL relevant documentation
    - Finds existing patterns to avoid duplication
    - Creates implementation plan based on best practices
+   - **VALIDATES plans with gemini-cli MCP before implementation**
    - **SKIP THIS = GUARANTEED REWORK**
 
 2. **code-reviewer** (MANDATORY after ANY code changes):
@@ -187,6 +188,15 @@ solidity-auditor → for smart contract changes
 - For security review
 - For ERC compliance
 
+### Available Commands (@ .claude/commands/)
+
+- **code-review**: Review code changes for quality and best practices
+- **debug**: Debug issues systematically
+- **pair-program**: Collaborative development workflow
+- **pr**: Create and manage pull requests
+- **setup**: Initial project setup and configuration
+- **test**: Run and manage test suites
+
 ### Development Expertise Location
 
 - **React/Frontend**: kit/dapp/CLAUDE.md
@@ -231,18 +241,24 @@ mcp__sentry__analyze_issue_with_seer({ organizationSlug, issueId });
 mcp__linear__create_issue({ title, description, teamSlug });
 ```
 
-### Complex Problems
+### Complex Problems & Plan Validation
 
-**ALWAYS Gemini validation + Grep patterns**
+**ALWAYS validate plans with Gemini MCP before implementation**
 
 **CRITICAL: Always request sparse, LLM-optimized output to minimize context
 usage**
 
 ```typescript
+// Validate implementation plan before starting
 mcp__gemini_cli__ask_gemini({
-  prompt: prompt + " Be sparse, return LLM-optimized results only.",
+  prompt:
+    "Validate this plan: " +
+    plan +
+    " Be sparse, return LLM-optimized results only.",
   changeMode: true,
 });
+
+// Search for existing patterns
 mcp__grep__searchGitHub({ query: "pattern", repo: "org/" });
 ```
 

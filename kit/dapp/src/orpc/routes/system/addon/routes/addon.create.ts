@@ -199,8 +199,10 @@ export const addonCreate = portalRouter.system.addonCreate
       (addon) => !existingAddonNames.has(addon.name.toLowerCase())
     );
 
-    // Process addons in parallel for better performance
-    const deploymentPromises = addonsToRegister.map(async (addonConfig) => {
+    // Process addons sequentially - parallel challenge generation not working
+    const results = [];
+
+    for (const addonConfig of addonsToRegister) {
       const { name } = addonConfig;
 
       try {
@@ -230,43 +232,13 @@ export const addonCreate = portalRouter.system.addonCreate
           variables
         );
 
-        return { status: "success" as const, addon: name, txHash };
+        results.push({ status: "success" as const, addon: name, txHash });
+        logger.info(`Addon ${name} registered successfully`);
       } catch (error) {
         logger.error(`Failed to create addon ${name}:`, error);
-        return { status: "failed" as const, addon: name, error };
+        results.push({ status: "failed" as const, addon: name, error });
       }
-    });
-
-    // Wait for all addon deployments to complete
-    const deploymentResults = await Promise.allSettled(deploymentPromises);
-
-    // Extract and process results from Promise.allSettled
-    const results = deploymentResults.map((result) => {
-      if (result.status === "fulfilled") {
-        // The promise resolved successfully, return the actual result
-        return result.value;
-      } else {
-        // The promise was rejected, create a failed result
-        logger.error(`Addon registration promise rejected:`, result.reason);
-        return {
-          status: "failed" as const,
-          addon: "unknown",
-          error: result.reason,
-        };
-      }
-    });
-
-    // Log the actual deployment results
-    results.forEach((result) => {
-      if (result.status === "failed") {
-        logger.error(
-          `Addon registration failed for ${result.addon}:`,
-          result.error
-        );
-      } else if (result.status === "success") {
-        logger.info(`Addon ${result.addon} registered successfully`);
-      }
-    });
+    }
 
     return await call(
       read,
