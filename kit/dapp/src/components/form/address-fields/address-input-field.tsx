@@ -1,3 +1,4 @@
+import { AddressInput } from "@/components/address/address-input";
 import {
   errorClassNames,
   FieldDescription,
@@ -5,7 +6,6 @@ import {
   FieldLabel,
   FieldLayout,
 } from "@/components/form/field";
-import { Input } from "@/components/ui/input";
 import { useFieldContext } from "@/hooks/use-form-contexts";
 import { cn } from "@/lib/utils";
 import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
@@ -27,13 +27,9 @@ export function AddressInputField({
     <FieldLayout>
       <FieldLabel htmlFor={field.name} label={label} required={required} />
       <FieldDescription description={description} />
-      <Input
-        id={field.name}
-        type="text"
+      <AddressInput
         value={field.state.value}
-        onChange={(e) => {
-          field.handleChange(e.target.value as EthereumAddress);
-        }}
+        onChange={field.handleChange}
         className={cn(errorClassNames(field.state.meta))}
       />
       <FieldErrors {...field.state.meta} />
