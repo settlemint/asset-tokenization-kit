@@ -81,12 +81,25 @@ export function AddressSelectField({
           ? assets
           : [...users, ...assets];
 
-    return list.map((item) => ({
-      address:
-        "symbol" in item ? getAddress(item.id) : getAddress(item.wallet ?? ""),
-      displayName: item.name,
-      secondaryInfo: "symbol" in item ? item.symbol : item.email,
-    }));
+    return list
+      .filter((item) => {
+        // For assets, check if id exists
+        if ("symbol" in item) {
+          return item.id;
+        }
+        // For users, check if wallet address exists
+        return item.wallet;
+      })
+      .map((item) => {
+        const isAsset = "symbol" in item;
+        const addressValue = isAsset ? item.id : item.wallet;
+
+        return {
+          address: getAddress(addressValue as string),
+          displayName: item.name,
+          secondaryInfo: isAsset ? item.symbol : item.email,
+        };
+      });
   }, [scope, users, assets]);
 
   const { recentItems: recentAddresses, addItem: addToRecents } =

@@ -5,7 +5,7 @@ import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { TRPCError } from "@trpc/server";
-import { eq, ilike } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 /**
  * User read route handler.
@@ -42,7 +42,7 @@ import { eq, ilike } from "drizzle-orm";
  * @remarks
  * - Input uses discriminated union: either {userId} or {wallet} object
  * - TypeScript properly narrows the input type for better type safety
- * - Wallet address matching is case-insensitive
+ * - Wallet address matching uses exact comparison after normalization
  * - Returns complete user information including KYC data
  * - User roles are transformed from internal codes to display names
  */
@@ -57,7 +57,7 @@ export const read = authRouter.user.read
     const whereCondition =
       "userId" in input
         ? eq(user.id, input.userId)
-        : ilike(user.wallet, input.wallet);
+        : eq(user.wallet, input.wallet);
 
     // Execute query to find the user with KYC data
     const result = await context.db
