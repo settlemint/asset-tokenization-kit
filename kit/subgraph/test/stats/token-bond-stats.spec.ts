@@ -63,8 +63,11 @@ describe("TokenBondStats", () => {
       Number(bondToken.totalSupplyExact) *
       Number(bondToken.bond?.faceValueExact ?? 0);
     const coveredPercentage =
-      (Number(underlyingAssetBalance?.valueExact ?? 0) / requiredBalanceExact) *
-      100;
+      requiredBalanceExact > 0
+        ? (Number(underlyingAssetBalance?.valueExact ?? 0) /
+            requiredBalanceExact) *
+          100
+        : 0;
     expect(
       Number(response.tokenBondStatsState?.underlyingAssetBalanceAvailableExact)
     ).toBeCloseTo(Number(underlyingAssetBalance?.valueExact ?? 0), 2);
