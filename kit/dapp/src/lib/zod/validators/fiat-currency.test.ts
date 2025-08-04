@@ -334,7 +334,7 @@ describe("edge cases and special scenarios", () => {
   });
 
   test("fiatCurrencyMetadata handles all supported currencies", () => {
-    // This tests the mapping that includes the fallback in line 77
+    // This tests the mapping that includes the fallback logic for currencies with non-numeric digits
     // All supported currencies should have valid metadata
     fiatCurrencies.forEach((code) => {
       const metadata = fiatCurrencyMetadata[code];
