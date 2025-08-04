@@ -215,12 +215,7 @@ contract ATKSystemAccessManagerImplementation is
     /// @param roles Array of role identifiers to renounce
     /// @param callerConfirmation Address confirmation (must match msg.sender)
     /// @dev Can only renounce roles for yourself
-    function renounceMultipleRoles(
-        bytes32[] calldata roles,
-        address callerConfirmation
-    )
-        external
-    {
+    function renounceMultipleRoles(bytes32[] calldata roles, address callerConfirmation) external {
         for (uint256 i = 0; i < roles.length;) {
             renounceRole(roles[i], callerConfirmation);
             unchecked {

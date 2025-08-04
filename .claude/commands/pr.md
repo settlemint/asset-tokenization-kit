@@ -38,16 +38,13 @@ mcp__linear__list_issues({
 - Create PR with title describing the most important changes (for squash merges)
 - Include summary and test plan
 
-## Parallel Agents
+## Agent Workflow
 
-Use concurrent agents for efficiency:
+Use agents in proper sequence:
 
-1. **Analysis**: Suggest commit splits
-2. **Commit**: Create commits with messages
-3. **Description**: Generate PR content
-4. **Quality**: Run checks
-
-Agents sync before PR creation.
+1. **researcher**: Gather docs and patterns for PR creation
+2. **test-validator**: Run quality checks (parallel)
+3. **code-reviewer**: Final review before PR (if needed)
 
 ### Gemini-CLI PR Enhancement
 

@@ -1,5 +1,3 @@
-import type { ChildProcessByStdio } from "node:child_process";
-import type Stream from "node:stream";
 import { getOrpcClient } from "../utils/orpc-client";
 import {
   bootstrapSystem,
@@ -13,13 +11,10 @@ import {
   signInWithUser,
 } from "../utils/user";
 
-let runningDevServer:
-  | ChildProcessByStdio<null, Stream.Readable, Stream.Readable>
-  | undefined;
-
 export async function setup() {
   try {
-    await startDevServerIfNotRunning();
+    // Wait for containerized dapp to be ready
+    await waitForDapp();
 
     console.log("Setting up admin account");
     await setupUser(DEFAULT_ADMIN);
@@ -39,98 +34,30 @@ export async function setup() {
   }
 }
 
-export const teardown = stopDevServer;
+export const teardown = () => {
+  // Nothing to teardown as containers are managed by docker-compose
+};
 
-process.on("SIGINT", stopDevServer);
-process.on("exit", stopDevServer);
+async function waitForDapp() {
+  console.log("Waiting for containerized dapp to be ready...");
+  const maxAttempts = 60; // 60 seconds timeout
+  const delayMs = 1000;
 
-async function startDevServerIfNotRunning() {
-  if (await isDevServerRunning()) {
-    console.log("Dev server already running");
-    return;
-  }
-
-  // Just call startDevServer directly - it has its own timeout logic
-  await startDevServer();
-}
-
-async function isDevServerRunning() {
-  try {
-    const response = await fetch("http://localhost:3000");
-    return response.ok;
-  } catch {
-    return false;
-  }
-}
-
-async function startDevServer() {
-  console.log("Starting dev server");
-
-  // Use child_process.spawn for better control over streams
-  const { spawn } = await import("child_process");
-  runningDevServer = spawn("bun", ["run", "dev", "--", "--no-open"], {
-    stdio: ["ignore", "pipe", "pipe"],
-  });
-
-  let output = "";
-  let serverStarted = false;
-
-  // Handle stdout streaming
-  if (runningDevServer.stdout) {
-    runningDevServer.stdout.on("data", (data: Buffer) => {
-      const chunk = data.toString();
-      output += chunk;
-      process.stdout.write(chunk);
-
-      // Check if server is ready
-      const cleanText = output.replace(
-        // eslint-disable-next-line no-control-regex
-        /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
-        ""
-      );
-
-      if (/VITE\s+v(.*)\s+ready\s+in/i.test(cleanText) && !serverStarted) {
-        serverStarted = true;
-        console.log("\nDev server is ready!");
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const response = await fetch("http://localhost:13000");
+      if (response.ok) {
+        console.log("Containerized dapp is ready!");
+        return;
       }
-    });
-  }
+    } catch {
+      // Ignore connection errors
+    }
 
-  // Handle stderr streaming
-  if (runningDevServer.stderr) {
-    runningDevServer.stderr.on("data", (data: Buffer) => {
-      process.stderr.write(data.toString());
-    });
-  }
-
-  // Wait for server to be ready or timeout
-  const startTime = Date.now();
-  while (!serverStarted && Date.now() - startTime < 10_000) {
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    // Check if process is still running
-    if (
-      runningDevServer.exitCode !== null &&
-      runningDevServer.exitCode !== undefined
-    ) {
-      throw new Error(
-        `Dev server exited with code ${runningDevServer.exitCode}`
-      );
+    if (attempt < maxAttempts) {
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
     }
   }
 
-  if (!serverStarted) {
-    throw new Error("Dev server did not start in time");
-  }
-
-  return true;
-}
-
-async function stopDevServer() {
-  if (!runningDevServer) {
-    return;
-  }
-  console.log("Stopping dev server");
-  runningDevServer.kill();
-  runningDevServer = undefined;
+  throw new Error("Containerized dapp did not become ready in time");
 }

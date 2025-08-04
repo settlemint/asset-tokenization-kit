@@ -1,6 +1,6 @@
 import type { AssetType } from "@/lib/zod/validators/asset-types";
 import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
-import type { TransactionHash } from "@/lib/zod/validators/transaction-hash";
+import type { EthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { bondCreateHandler } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/bond.create";
 import { depositCreateHandler } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/deposit.create";
 import { equityCreateHandler } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/equity.create";
@@ -14,7 +14,7 @@ export const tokenCreateHandlerMap: Record<
   (
     input: TokenCreateInput,
     context: TokenCreateContext
-  ) => Promise<TransactionHash>
+  ) => Promise<EthereumHash>
 > = {
   [AssetTypeEnum.deposit]: depositCreateHandler,
   [AssetTypeEnum.bond]: bondCreateHandler,

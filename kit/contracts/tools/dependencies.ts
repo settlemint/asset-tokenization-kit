@@ -13,10 +13,11 @@ import { getKitProjectPath } from "../../../tools/root";
  */
 
 const logger = createLogger({
-  level:
-    (process.env.LOG_LEVEL as LogLevel) ||
-    (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ||
-    "info",
+  level: process.env.CLAUDECODE
+    ? "error"
+    : (process.env.LOG_LEVEL as LogLevel) ||
+      (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ||
+      "info",
 });
 
 /**

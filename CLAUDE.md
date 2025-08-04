@@ -20,10 +20,16 @@ bun run dev:up && bun run dev
 
 # Before PR (MANDATORY)
 bun run ci
+bun run test:integration  # CRITICAL: Not included in ci, must run separately
 [[ "$(git branch --show-current)" =~ ^(main|master)$ ]] && git checkout -b feature/name
+# PR title must follow semantic commit format: type(scope): description
+# Focus on main code changes - ignore docs/tests if code changes exist
+# Examples: feat(dapp): add user authentication | fix(contracts): resolve overflow issue
 
 # Common
 bun run dev:reset              # Reset Docker
+bun run test:reset             # Reset test Docker environment
+bun run test:integration       # Run integration tests
 bun run artifacts              # After contract changes
 ```
 
@@ -43,63 +49,163 @@ TxSigner:8547 | Portal:7701 | Hasura:8080 | Graph:8000 | MinIO:9000
 
 ## Critical Rules
 
-1. NEVER commit to main
-2. ALWAYS `bun run ci` before PR
-3. Check module-specific CLAUDE.md files
-4. Use TodoWrite for task planning
-5. Use specialized agents
+1. **ALWAYS use researcher agent FIRST before ANY coding**
+2. NEVER commit to main
+3. ALWAYS `bun run ci` AND `bun run test:integration` before PR
+4. Check module-specific CLAUDE.md files
+5. Use TodoWrite for task planning
+6. Use ALL specialized agents in correct order
 
-## Test Execution
+## Test Execution (MANDATORY test-validator agent)
 
 - ALWAYS use `bun run test`, NEVER use `bun test`
+- **MANDATORY**: MUST use test-validator agent for ALL test runs (especially
+  integration tests)
+- **CRITICAL**: When running `bun run test:integration`, ALWAYS use
+  test-validator agent
+- If test fails with "Error: This function can only be used on the server as
+  including it in the browser will expose your access token." set
+  @vitest-environment node
 
 ## Task Planning (MANDATORY)
 
-**ALWAYS TodoWrite before starting ANY task**
+**WORKFLOW: researcher agent → TodoWrite → implementation → validation agents**
+
+**ALWAYS use researcher agent FIRST, then TodoWrite based on research**
 
 ❌ VAGUE: "Style navbar" | "Optimize API" | "Update schema" ✅ SPECIFIC: "navbar
 height 60px→80px" | "API timeout 30s→10s" | "Add index on user_id"
 
 **Protocol**: Task → TodoWrite → in_progress → completed
 
-## Agent Usage (MANDATORY)
+## 🚨 CRITICAL: Agent Usage is MANDATORY (NOT OPTIONAL) 🚨
 
-**PROACTIVELY use ALL specialized agents from .claude/agents/**
+**⚠️ WARNING: Failure to use agents in the correct order will result in:**
 
-### CRITICAL: You MUST use agents for their designated tasks
+- **Duplicated work and wasted effort**
+- **Incorrect implementations that need rework**
+- **Missing critical patterns and best practices**
+- **Security vulnerabilities and performance issues**
 
-#### All Available Agents (USE THEM!)
+## Agent Orchestration (MANDATORY WORKFLOW)
 
-- **code-reviewer**: ALWAYS after writing/modifying code
-- **architect-reviewer**: ALWAYS after structural changes, new services, API
-  modifications
-- **react-performance-architect**: ALWAYS for React components, hooks, state
-  management
-- **vitest-test-architect**: ALWAYS for unit tests, test coverage, mocking
-  strategies
-- **playwright-test-engineer**: ALWAYS for E2E tests, browser automation
-- **kubernetes-orchestration-expert**: ALWAYS for K8s deployments, manifests,
-  scaling
-- **github-actions-architect**: ALWAYS for CI/CD workflows, automation
-- **solidity-security-auditor**: ALWAYS for smart contract review, gas
-  optimization
-- **tanstack-suite-architect**: ALWAYS for TanStack Query/Router/Table usage
-- **typescript-type-architect**: ALWAYS for type system design, generics, type
-  safety
-- **bun-runtime-specialist**: ALWAYS for Bun optimization, bundling, performance
-- **orpc-api-architect**: ALWAYS for oRPC routes, middleware, API design
-- **tailwind-css-architect**: ALWAYS for styling, Tailwind utilities, responsive
-  design
-- **reality-check-manager**: ALWAYS to validate actual vs claimed progress
+**Available Agents (4 total @ .claude/agents/) - USE IN THIS EXACT ORDER:**
 
-### Agent Usage Protocol
+1. **researcher** (🔴 ALWAYS FIRST - NO EXCEPTIONS):
+   - **MANDATORY before writing ANY code**
+   - Fetches ALL relevant documentation
+   - Finds existing patterns to avoid duplication
+   - Creates implementation plan based on best practices
+   - **VALIDATES plans with gemini-cli MCP before implementation**
+   - **SKIP THIS = GUARANTEED REWORK**
 
-1. **Immediate invocation**: Use agents AS SOON as you perform their designated
-   task
-2. **No exceptions**: EVERY code change → code-reviewer, EVERY React component →
-   react-performance-architect
-3. **Multiple agents**: Often need multiple agents for one task (e.g., new API
-   endpoint → orpc-api-architect + code-reviewer + architect-reviewer)
+2. **code-reviewer** (MANDATORY after ANY code changes):
+   - Validates quality, architecture, SOLID principles
+   - Checks implementation correctness
+   - Identifies security issues and performance problems
+   - **SKIP THIS = TECHNICAL DEBT**
+
+3. **solidity-auditor** (MANDATORY for smart contracts):
+   - Security audits and vulnerability detection
+   - Gas optimization analysis
+   - ERC compliance verification
+   - **SKIP THIS = SECURITY RISKS**
+
+4. **test-validator** (MANDATORY for ALL tests & linting):
+   - Runs ALL test types in parallel
+   - Executes linters and formatters
+   - **NEVER run tests/lint directly - ALWAYS use this agent**
+
+### 🎯 THE ONLY ACCEPTABLE WORKFLOW (NO DEVIATIONS)
+
+```typescript
+// ⚡ STEP 1: RESEARCH (NON-NEGOTIABLE - ALWAYS FIRST)
+researcher agent → gathers ALL docs, patterns, best practices
+  ↓
+// 📝 STEP 2: IMPLEMENTATION (based on research output)
+You write code ONLY after researcher provides guidance
+  ↓
+// ✅ STEP 3: VALIDATION (parallel execution)
+code-reviewer & test-validator → run simultaneously
+  ↓
+// 🔒 STEP 4: SPECIALIZED (when applicable)
+solidity-auditor → for smart contract changes
+
+// 🚫 FORBIDDEN ACTIONS:
+// ❌ Writing code without researcher agent
+// ❌ Running tests without test-validator agent
+// ❌ Running lint without test-validator agent
+// ❌ Claiming completion without code-reviewer agent
+// ❌ Deploying contracts without solidity-auditor agent
+
+// ✅ CORRECT EXAMPLES:
+// User: "Add user authentication"
+// You: Use researcher agent FIRST → then implement → then validate
+
+// User: "Fix the bug in token transfer"
+// You: Use researcher agent FIRST → understand patterns → fix → validate
+```
+
+### 🔴 MANDATORY Agent Usage Rules
+
+**researcher** (🚨 ALWAYS FIRST - NO EXCEPTIONS):
+
+- **BEFORE writing ANY code (even 1 line)**
+- **BEFORE ANY implementation task**
+- **BEFORE modifying existing code**
+- **BEFORE adding new features**
+- **BEFORE fixing bugs**
+- **BEFORE refactoring**
+- **Even for "simple" tasks - NO EXCEPTIONS**
+
+**Why researcher MUST be first:**
+
+- Prevents reinventing existing solutions
+- Ensures correct patterns are used
+- Identifies the right approach immediately
+- Saves hours of rework
+
+**code-reviewer** (AFTER CODING):
+
+- After ANY code changes
+- Before ANY pull request
+- When claiming task complete
+- To validate implementation
+
+**test-validator** (MANDATORY for tests):
+
+- **MANDATORY**: When user asks to run ANY tests (unit, integration, e2e)
+- **MANDATORY**: For `bun run test:integration` command
+- After code changes
+- Before commits
+- Before PR creation (runs both `bun run ci` AND `bun run test:integration`)
+- To debug test failures
+- **NEVER** run tests directly - ALWAYS through test-validator agent
+- **NOTE**: `bun run ci` does NOT include integration tests
+
+**solidity-auditor** (CONTRACTS ONLY):
+
+- After contract modifications
+- For gas optimization
+- For security review
+- For ERC compliance
+
+### Available Commands (@ .claude/commands/)
+
+- **code-review**: Review code changes for quality and best practices
+- **debug**: Debug issues systematically
+- **pair-program**: Collaborative development workflow
+- **pr**: Create and manage pull requests
+- **setup**: Initial project setup and configuration
+- **test**: Run and manage test suites
+
+### Development Expertise Location
+
+- **React/Frontend**: kit/dapp/CLAUDE.md
+- **Solidity**: kit/contracts/CLAUDE.md
+- **Testing**: kit/dapp/CLAUDE.md
+- **K8s/Infrastructure**: kit/charts/CLAUDE.md
+- **API**: kit/dapp/src/orpc/CLAUDE.md
 
 ## MCP Workflows (MANDATORY)
 
@@ -137,12 +243,24 @@ mcp__sentry__analyze_issue_with_seer({ organizationSlug, issueId });
 mcp__linear__create_issue({ title, description, teamSlug });
 ```
 
-### Complex Problems
+### Complex Problems & Plan Validation
 
-**ALWAYS Gemini validation + Grep patterns**
+**ALWAYS validate plans with Gemini MCP before implementation**
+
+**CRITICAL: Always request sparse, LLM-optimized output to minimize context
+usage**
 
 ```typescript
-mcp__gemini_cli__ask_gemini({ prompt, changeMode: true });
+// Validate implementation plan before starting
+mcp__gemini_cli__ask_gemini({
+  prompt:
+    "Validate this plan: " +
+    plan +
+    " Be sparse, return LLM-optimized results only.",
+  changeMode: true,
+});
+
+// Search for existing patterns
 mcp__grep__searchGitHub({ query: "pattern", repo: "org/" });
 ```
 
@@ -174,3 +292,11 @@ message)
 - NO docs/README unless explicit request
 - ≤4 lines unless detail requested
 - Action > explanation
+
+## Memories
+
+- **DO NOT RUN COMMANDS DIRECTLY, ONLY VIA THE PACKAGE.JSON SCRIPTS**
+- no need to run test:reset, `bun run test:integation` will do this itself
+- we are in a turborepo with complex dependencies, run ALL commands from the
+  root so turbo is used
+- NEVER run test:reset manually! test:integration will handle it

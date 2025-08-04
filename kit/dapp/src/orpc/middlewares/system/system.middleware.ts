@@ -11,8 +11,8 @@ import {
   type EthereumAddress,
 } from "@/lib/zod/validators/ethereum-address";
 import {
-  parseSystemComponent,
   getComponentId,
+  parseSystemComponent,
 } from "@/orpc/helpers/system-component-helpers";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { read } from "@/orpc/routes/settings/routes/settings.read";
@@ -37,9 +37,6 @@ const SYSTEM_QUERY = theGraphGraphql(
           id
           name
           typeId
-          accessControl {
-            ...AccessControlFragment
-          }
         }
       }
       complianceModuleRegistry {
@@ -48,9 +45,6 @@ const SYSTEM_QUERY = theGraphGraphql(
           id
           typeId
           name
-          accessControl {
-            ...AccessControlFragment
-          }
         }
       }
       identityFactory {
@@ -74,9 +68,6 @@ const SYSTEM_QUERY = theGraphGraphql(
           id
           name
           typeId
-          accessControl {
-            ...AccessControlFragment
-          }
         }
       }
     }
@@ -92,7 +83,7 @@ const SYSTEM_QUERY = theGraphGraphql(
  */
 interface SystemComponent {
   id: EthereumAddress;
-  accessControl: AccessControl;
+  accessControl?: AccessControl;
 }
 
 /**
@@ -157,13 +148,7 @@ export interface SystemContext {
  */
 export const systemMiddleware = baseRouter.middleware(
   async ({ context, next, errors }) => {
-    if (context.system) {
-      return next({
-        context: {
-          system: context.system,
-        },
-      });
-    }
+    // Always fetch fresh system data - no caching
     const systemAddressHeader = context.headers["x-system-address"];
     const systemAddress =
       typeof systemAddressHeader === "string"
@@ -207,36 +192,31 @@ export const getSystemContext = async (
       systemAddress,
     },
   });
+
   if (!system) {
     return null;
   }
   const tokenFactories =
-    system.tokenFactoryRegistry?.tokenFactories.map(
-      ({ id, name, typeId, accessControl }) => ({
-        name,
-        typeId: typeId as AssetFactoryTypeId,
-        id: getEthereumAddress(id),
-        accessControl,
-      })
-    ) ?? [];
+    system.tokenFactoryRegistry?.tokenFactories.map(({ id, name, typeId }) => ({
+      name,
+      typeId: typeId as AssetFactoryTypeId,
+      id: getEthereumAddress(id),
+    })) ?? [];
   const systemAddons =
-    system.systemAddonRegistry?.systemAddons.map(
-      ({ id, name, typeId, accessControl }): SystemAddon => ({
-        name,
-        typeId: typeId as AddonFactoryTypeId,
-        id: getEthereumAddress(id),
-        accessControl,
-      })
-    ) ?? [];
+    system.systemAddonRegistry?.systemAddons.map(({ id, name, typeId }) => ({
+      name,
+      typeId: typeId as AddonFactoryTypeId,
+      id: getEthereumAddress(id),
+    })) ?? [];
   const complianceModules =
     system.complianceModuleRegistry?.complianceModules.map(
-      ({ id, typeId, name, accessControl }) => ({
+      ({ id, typeId, name }) => ({
         id: getEthereumAddress(id),
         typeId: typeId as ComplianceTypeId,
         name,
-        accessControl,
       })
     ) ?? [];
+
   return {
     address: systemAddress,
     deployedInTransaction: system.deployedInTransaction as Hex,

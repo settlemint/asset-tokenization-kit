@@ -34,10 +34,11 @@ interface InterfaceMetadata {
 // =============================================================================
 
 const logger = createLogger({
-  level:
-    (process.env.LOG_LEVEL as LogLevel) ||
-    (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ||
-    "info",
+  level: process.env.CLAUDECODE
+    ? "error"
+    : (process.env.LOG_LEVEL as LogLevel) ||
+      (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ||
+      "info",
 });
 const DEFAULT_OUTPUT_DIR = "src/erc165/utils";
 const DEFAULT_OUTPUT_FILE = "interfaceids.ts";

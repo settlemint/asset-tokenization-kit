@@ -16,10 +16,10 @@ describe("Token factory create", () => {
       factories: [{ type: "equity", name: "Test Token" }],
     });
 
-    // The factoryCreate method returns a FactoryCreateOutput with status and results
-    expect(result.status).toBe("completed");
-    expect(result.results).toBeDefined();
-    expect(result.results?.length).toBeGreaterThan(0);
+    // The factoryCreate method now returns the updated system details
+    expect(result.id).toBeDefined();
+    expect(result.tokenFactories).toBeDefined();
+    expect(result.tokenFactories.length).toBeGreaterThan(0);
 
     const factories = await client.token.factoryList({});
     expect(factories.length).toBeGreaterThan(0);
