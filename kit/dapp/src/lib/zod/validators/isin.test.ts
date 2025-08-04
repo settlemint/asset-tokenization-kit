@@ -47,6 +47,35 @@ describe("isin", () => {
     });
   });
 
+  describe("character handling", () => {
+    test("validates ISINs with various character combinations", () => {
+      // Test with valid ISINs that exercise the character processing
+      const validISINs = [
+        "US0378331005", // Apple Inc. - has letters and numbers
+        "GB0002634946", // BAE Systems - different letters
+      ];
+
+      validISINs.forEach((isinCode) => {
+        const result = validator.safeParse(isinCode);
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.data).toBe(isinCode);
+        }
+      });
+
+      // Test with ISINs that have valid format but invalid checksum
+      const invalidChecksumISINs = [
+        "US0378331006", // Valid format but wrong checksum (should be 5)
+        "GB0002634947", // Valid format but wrong checksum (should be 6)
+      ];
+
+      invalidChecksumISINs.forEach((isinCode) => {
+        const result = validator.safeParse(isinCode);
+        expect(result.success).toBe(false);
+      });
+    });
+  });
+
   describe("invalid ISINs", () => {
     test("should reject ISINs with wrong length", () => {
       expect(() => validator.parse("US037833100")).toThrow(

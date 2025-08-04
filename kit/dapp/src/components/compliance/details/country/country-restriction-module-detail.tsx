@@ -1,14 +1,14 @@
 import { complianceModuleConfig } from "@/components/compliance/config";
 import {
-  ComplianceDetailCard,
-  ComplianceDetailHeader,
   ComplianceDetailBreadcrumb,
+  ComplianceDetailCard,
   ComplianceDetailContent,
+  ComplianceDetailDescription,
+  ComplianceDetailFooter,
+  ComplianceDetailForm,
+  ComplianceDetailHeader,
   ComplianceDetailSection,
   ComplianceDetailTitle,
-  ComplianceDetailDescription,
-  ComplianceDetailForm,
-  ComplianceDetailFooter,
 } from "@/components/compliance/details/compliance-detail-card";
 import type { ComplianceModuleDetailProps } from "@/components/compliance/details/types";
 import { CountryMultiselect } from "@/components/country/country-multiselect";

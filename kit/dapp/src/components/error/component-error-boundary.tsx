@@ -76,7 +76,12 @@ function DefaultErrorFallback({
             </pre>
           </details>
         )}
-        <Button onClick={onReset} variant="outline" size="sm">
+        <Button
+          onClick={onReset}
+          variant="outline"
+          size="sm"
+          className="press-effect"
+        >
           <RefreshCw className="mr-2 h-4 w-4" />
           Try Again
         </Button>

@@ -21,7 +21,11 @@ export function StepSubmitButton<T extends readonly string[]>({
         const disabled = isStepSubmitDisabled(validate, form, checkRequiredFn);
         return (
           <div>
-            <Button onClick={onStepSubmit} disabled={disabled}>
+            <Button
+              onClick={onStepSubmit}
+              disabled={disabled}
+              className="press-effect"
+            >
               {label}
             </Button>
           </div>

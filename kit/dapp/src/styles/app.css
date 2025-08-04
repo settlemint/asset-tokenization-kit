@@ -238,6 +238,60 @@
     @apply shadow-[var(--shadow-inset-button)];
   }
 
+  /* Interactive element press effect */
+  .press-effect {
+    @apply transition-transform duration-150 ease-out;
+  }
+
+  .press-effect:active {
+    @apply scale-[0.97];
+  }
+
+  /* Subtle hover lift effect for cards */
+  .hover-lift {
+    @apply transition-transform duration-200 ease-out;
+  }
+
+  .hover-lift:hover {
+    @apply -translate-y-0.5;
+  }
+
+  /* Staggered entry animation for grid items */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-in-grid {
+    animation: fadeInUp 0.3s ease forwards;
+    opacity: 0;
+  }
+
+  .animate-in-grid:nth-child(1) {
+    animation-delay: 0ms;
+  }
+  .animate-in-grid:nth-child(2) {
+    animation-delay: 50ms;
+  }
+  .animate-in-grid:nth-child(3) {
+    animation-delay: 100ms;
+  }
+  .animate-in-grid:nth-child(4) {
+    animation-delay: 150ms;
+  }
+  .animate-in-grid:nth-child(5) {
+    animation-delay: 200ms;
+  }
+  .animate-in-grid:nth-child(6) {
+    animation-delay: 250ms;
+  }
+
   [data-slot="data-table"] {
     background: linear-gradient(
         45deg,

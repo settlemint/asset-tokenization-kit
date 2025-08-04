@@ -1,5 +1,12 @@
-import { RelatedGrid } from "@/components/related/related-grid";
-import { RelatedGridItem } from "@/components/related/related-grid-item";
+import {
+  RelatedGrid,
+  RelatedGridContent,
+  RelatedGridItem,
+  RelatedGridItemContent,
+  RelatedGridItemDescription,
+  RelatedGridItemFooter,
+  RelatedGridItemTitle,
+} from "@/components/related/related-grid";
 import { Button } from "@/components/ui/button";
 import type { AssetType } from "@/lib/zod/validators/asset-types";
 import { useTranslation } from "react-i18next";
@@ -28,30 +35,55 @@ export function TokenFactoryRelated({ assetType }: TokenFactoryRelatedProps) {
 
   return (
     <RelatedGrid>
-      <RelatedGridItem
-        title={t(`factory.related.${assetType}.box1.title`)}
-        description={t(`factory.related.${assetType}.box1.description`)}
-      >
-        <Button variant="outline" size="sm">
-          {t(`factory.related.${assetType}.box1.button`)}
-        </Button>
-      </RelatedGridItem>
-      <RelatedGridItem
-        title={t(`factory.related.${assetType}.box2.title`)}
-        description={t(`factory.related.${assetType}.box2.description`)}
-      >
-        <Button variant="outline" size="sm">
-          {t(`factory.related.${assetType}.box2.button`)}
-        </Button>
-      </RelatedGridItem>
-      <RelatedGridItem
-        title={t(`factory.related.${assetType}.box3.title`)}
-        description={t(`factory.related.${assetType}.box3.description`)}
-      >
-        <Button variant="outline" size="sm">
-          {t(`factory.related.${assetType}.box3.button`)}
-        </Button>
-      </RelatedGridItem>
+      <RelatedGridContent columns={3} animate>
+        <RelatedGridItem>
+          <RelatedGridItemContent>
+            <RelatedGridItemTitle>
+              {t(`factory.related.${assetType}.box1.title`)}
+            </RelatedGridItemTitle>
+            <RelatedGridItemDescription>
+              {t(`factory.related.${assetType}.box1.description`)}
+            </RelatedGridItemDescription>
+          </RelatedGridItemContent>
+          <RelatedGridItemFooter>
+            <Button variant="outline" size="sm" className="press-effect">
+              {t(`factory.related.${assetType}.box1.button`)}
+            </Button>
+          </RelatedGridItemFooter>
+        </RelatedGridItem>
+
+        <RelatedGridItem>
+          <RelatedGridItemContent>
+            <RelatedGridItemTitle>
+              {t(`factory.related.${assetType}.box2.title`)}
+            </RelatedGridItemTitle>
+            <RelatedGridItemDescription>
+              {t(`factory.related.${assetType}.box2.description`)}
+            </RelatedGridItemDescription>
+          </RelatedGridItemContent>
+          <RelatedGridItemFooter>
+            <Button variant="outline" size="sm" className="press-effect">
+              {t(`factory.related.${assetType}.box2.button`)}
+            </Button>
+          </RelatedGridItemFooter>
+        </RelatedGridItem>
+
+        <RelatedGridItem>
+          <RelatedGridItemContent>
+            <RelatedGridItemTitle>
+              {t(`factory.related.${assetType}.box3.title`)}
+            </RelatedGridItemTitle>
+            <RelatedGridItemDescription>
+              {t(`factory.related.${assetType}.box3.description`)}
+            </RelatedGridItemDescription>
+          </RelatedGridItemContent>
+          <RelatedGridItemFooter>
+            <Button variant="outline" size="sm" className="press-effect">
+              {t(`factory.related.${assetType}.box3.button`)}
+            </Button>
+          </RelatedGridItemFooter>
+        </RelatedGridItem>
+      </RelatedGridContent>
     </RelatedGrid>
   );
 }
