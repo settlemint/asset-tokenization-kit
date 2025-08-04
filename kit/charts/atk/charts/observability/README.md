@@ -63,9 +63,7 @@ A Helm chart for the observability components
 | alloy.endpoints.internal.prometheus.enabled | bool | `true` |  |
 | alloy.endpoints.internal.prometheus.url | string | `"http://metrics:8428/api/v1/write"` |  |
 | alloy.fullnameOverride | string | `"alloy"` |  |
-| alloy.global.image.pullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| alloy.global.image.pullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| alloy.global.image.pullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
+| alloy.global.image.pullSecrets | list | `[]` |  |
 | alloy.image.registry | string | `"docker.io"` |  |
 | grafana.adminPassword | string | `"atk"` |  |
 | grafana.adminUser | string | `"settlemint"` |  |
@@ -230,9 +228,7 @@ A Helm chart for the observability components
 | prometheus-node-exporter.fullnameOverride | string | `"node-exporter"` |  |
 | prometheus-node-exporter.global.imageRegistry | string | `"quay.io"` |  |
 | prometheus-node-exporter.image.registry | string | `"quay.io"` |  |
-| prometheus-node-exporter.imagePullSecrets[0] | string | `"image-pull-secret-docker"` |  |
-| prometheus-node-exporter.imagePullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
-| prometheus-node-exporter.imagePullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
+| prometheus-node-exporter.imagePullSecrets | list | `[]` |  |
 | prometheus-node-exporter.kubeRBACProxy.image.registry | string | `"quay.io"` |  |
 | prometheus-node-exporter.nameOverride | string | `"node-exporter"` |  |
 | prometheus-node-exporter.podAnnotations."cluster-autoscaler.kubernetes.io/safe-to-evict" | string | `"true"` |  |
@@ -256,9 +252,7 @@ A Helm chart for the observability components
 | tempo.tempo.overrides.defaults.global.max_bytes_per_trace | int | `20000000` |  |
 | tempo.tempo.overrides.defaults.ingestion.max_traces_per_user | int | `100000` |  |
 | tempo.tempo.overrides.defaults.ingestion.rate_limit_bytes | int | `30000000` |  |
-| tempo.tempo.pullSecrets[0] | string | `"image-pull-secret-docker"` |  |
-| tempo.tempo.pullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
-| tempo.tempo.pullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
+| tempo.tempo.pullSecrets | list | `[]` |  |
 | tempo.tempo.reportingEnabled | bool | `false` |  |
 | tempo.tempo.repository | string | `"docker.io/grafana/tempo"` |  |
 | tempo.tempo.retention | string | `"168h"` |  |
@@ -271,9 +265,7 @@ A Helm chart for the observability components
 | tempo.tempoQuery.ingress.hosts[0] | string | `"traces.k8s.orb.local"` |  |
 | tempo.tempoQuery.ingress.ingressClassName | string | `"atk-nginx"` |  |
 | tempo.tempoQuery.ingress.pathType | string | `"Prefix"` |  |
-| tempo.tempoQuery.pullSecrets[0] | string | `"image-pull-secret-docker"` |  |
-| tempo.tempoQuery.pullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
-| tempo.tempoQuery.pullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
+| tempo.tempoQuery.pullSecrets | list | `[]` |  |
 | tempo.tempoQuery.repository | string | `"docker.io/grafana/tempo-query"` |  |
 | victoria-metrics-single.enabled | bool | `true` |  |
 | victoria-metrics-single.global.image.registry | string | `"docker.io"` |  |

@@ -36,9 +36,7 @@ A Helm chart for the hasura components
 | graphql-engine.extraEnvs[1].name | string | `"HASURA_GRAPHQL_DATABASE_URL"` |  |
 | graphql-engine.extraEnvs[1].valueFrom.secretKeyRef.key | string | `"DEFAULT_DB_URL"` |  |
 | graphql-engine.extraEnvs[1].valueFrom.secretKeyRef.name | string | `"atk-secrets"` |  |
-| graphql-engine.global.imagePullSecrets[0] | string | `"image-pull-secret-docker"` |  |
-| graphql-engine.global.imagePullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
-| graphql-engine.global.imagePullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
+| graphql-engine.global.imagePullSecrets | list | `[]` |  |
 | graphql-engine.image.repository | string | `"docker.io/hasura/graphql-engine"` |  |
 | graphql-engine.ingress.enabled | bool | `true` |  |
 | graphql-engine.ingress.hostName | string | `"hasura.k8s.orb.local"` |  |
@@ -64,9 +62,7 @@ A Helm chart for the hasura components
 | graphql-engine.secret.metadataDbUrl | string | `"postgresql://hasura:atk@postgresql:5432/hasura"` |  |
 | graphql-engine.secret.rateLimitRedisUrl | string | `"redis://default:atk@redis:6379"` |  |
 | graphql-engine.secret.redisUrl | string | `"redis://default:atk@redis:6379"` |  |
-| imagePullSecrets[0] | string | `"image-pull-secret-docker"` |  |
-| imagePullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
-| imagePullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
+| imagePullSecrets | list | `[]` |  |
 | job.workspace.accessMode | string | `"ReadWriteOnce"` |  |
 | job.workspace.enabled | bool | `true` | Configure the persistent volume claim for the job workspace |
 | job.workspace.size | string | `"1Gi"` |  |

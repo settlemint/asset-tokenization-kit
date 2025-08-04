@@ -59,6 +59,11 @@ global:
 # graph-node imagePullSecrets are now automatically generated
 
 # hasura imagePullSecrets are now automatically generated
+hasura:
+  imagePullSecrets:
+    - name: image-pull-secret-docker
+    - name: image-pull-secret-ghcr
+    - name: image-pull-secret-harbor
 
 # portal imagePullSecrets are now automatically generated
 
@@ -69,8 +74,76 @@ support:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
+  postgresql:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  reloader:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+  minio:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
 
 # observability services imagePullSecrets are now automatically generated
+observability:
+  metrics-server:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  kube-state-metrics:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  victoria-metrics-single:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+  loki:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  grafana:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+  prometheus-node-exporter:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  alloy:
+    global:
+      image:
+        pullSecrets:
+          - name: image-pull-secret-docker
+          - name: image-pull-secret-ghcr
+          - name: image-pull-secret-harbor
+  tempo:
+    tempo:
+      pullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+    tempoQuery:
+      pullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
 
 txsigner:
   # txsigner imagePullSecrets are now automatically generated

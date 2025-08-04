@@ -36,9 +36,7 @@ Besu Genesis generator with Helm chart in Kubernetes
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/settlemint/quorum-genesis-tool"` |  |
 | image.tag | string | `"sha-49c40f5"` |  |
-| imagePullSecrets[0] | string | `"image-pull-secret-harbor"` |  |
-| imagePullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
-| imagePullSecrets[2] | string | `"image-pull-secret-docker"` |  |
+| imagePullSecrets | list | `[]` |  |
 | initJob.annotations."helm.sh/hook" | string | `"pre-install"` |  |
 | initJob.annotations."helm.sh/hook-delete-policy" | string | `"hook-succeeded"` |  |
 | initJob.annotations."helm.sh/hook-weight" | string | `"-10"` |  |

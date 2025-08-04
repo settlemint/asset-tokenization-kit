@@ -273,10 +273,7 @@ reloader:
   enabled: true
   fullnameOverride: 'reloader'
   global:
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
+    imagePullSecrets: []
   image:
     name: stakater/reloader
     repository: ghcr.io/stakater/reloader

@@ -235,10 +235,7 @@ alloy:
   clustername: ''
   global:
     image:
-      pullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
+      pullSecrets: []
   endpoints:
     internal:
       prometheus:
@@ -706,10 +703,7 @@ prometheus-node-exporter:
   enabled: true
   image:
     registry: quay.io
-  imagePullSecrets:
-    - image-pull-secret-docker
-    - image-pull-secret-ghcr
-    - image-pull-secret-harbor
+  imagePullSecrets: []
   kubeRBACProxy:
     image:
       registry: quay.io
@@ -730,10 +724,7 @@ tempo:
   fullnameOverride: tempo
   tempo:
     repository: docker.io/grafana/tempo
-    pullSecrets:
-      - image-pull-secret-docker
-      - image-pull-secret-ghcr
-      - image-pull-secret-harbor
+    pullSecrets: []
     reportingEnabled: false
     retention: 168h
     metricsGenerator:
@@ -748,10 +739,7 @@ tempo:
           max_bytes_per_trace: 20000000
   tempoQuery:
     repository: docker.io/grafana/tempo-query
-    pullSecrets:
-      - image-pull-secret-docker
-      - image-pull-secret-ghcr
-      - image-pull-secret-harbor
+    pullSecrets: []
     ingress:
       enabled: false
       annotations:

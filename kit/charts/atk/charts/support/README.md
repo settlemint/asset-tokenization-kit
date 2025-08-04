@@ -126,9 +126,7 @@ A Helm chart for the supporting components
 | ingress-nginx.enabled | bool | `true` |  |
 | ingress-nginx.fullnameOverride | string | `"ingress-nginx"` |  |
 | ingress-nginx.global.image.registry | string | `"registry.k8s.io"` |  |
-| ingress-nginx.imagePullSecrets[0] | string | `"image-pull-secret-docker"` |  |
-| ingress-nginx.imagePullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
-| ingress-nginx.imagePullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
+| ingress-nginx.imagePullSecrets | list | `[]` |  |
 | minio.buckets[0].name | string | `"atk"` |  |
 | minio.buckets[0].policy | string | `"none"` |  |
 | minio.buckets[0].purge | bool | `false` |  |
@@ -138,9 +136,7 @@ A Helm chart for the supporting components
 | minio.consoleIngress.path | string | `"/"` |  |
 | minio.enabled | bool | `true` |  |
 | minio.fullnameOverride | string | `"minio"` |  |
-| minio.global.imagePullSecrets[0] | string | `"image-pull-secret-docker"` |  |
-| minio.global.imagePullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
-| minio.global.imagePullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
+| minio.global.imagePullSecrets | list | `[]` |  |
 | minio.image.repository | string | `"docker.io/minio/minio"` |  |
 | minio.image.tag | string | `"RELEASE.2025-07-18T21-56-31Z"` |  |
 | minio.ingress.enabled | bool | `true` |  |
@@ -168,9 +164,7 @@ A Helm chart for the supporting components
 | postgresql.image.registry | string | `"docker.io"` |  |
 | postgresql.image.repository | string | `"postgres"` |  |
 | postgresql.image.tag | string | `"17.5-alpine"` |  |
-| postgresql.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| postgresql.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| postgresql.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
+| postgresql.imagePullSecrets | list | `[]` |  |
 | postgresql.initdb.scripts."create_databases.sql" | string | `"-- Create databases and users for all ATK services\nCREATE DATABASE blockscout;\nCREATE USER blockscout WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE blockscout TO blockscout;\n\\c blockscout;\nGRANT ALL ON SCHEMA public TO blockscout;\n\n\\c postgres;\nCREATE DATABASE thegraph WITH ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' TEMPLATE template0;\nCREATE USER thegraph WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE thegraph TO thegraph;\n\\c thegraph;\nGRANT ALL ON SCHEMA public TO thegraph;\n\n\\c postgres;\nCREATE DATABASE hasura;\nCREATE USER hasura WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE hasura TO hasura;\n\\c hasura;\nGRANT ALL ON SCHEMA public TO hasura;\n\n\\c postgres;\nCREATE DATABASE portal;\nCREATE USER portal WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE portal TO portal;\n\\c portal;\nGRANT ALL ON SCHEMA public TO portal;\n\n\\c postgres;\nCREATE DATABASE txsigner;\nCREATE USER txsigner WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE txsigner TO txsigner;\n\\c txsigner;\nGRANT ALL ON SCHEMA public TO txsigner;\n"` |  |
 | postgresql.persistence.accessModes[0] | string | `"ReadWriteOnce"` |  |
 | postgresql.persistence.enabled | bool | `true` |  |
@@ -200,9 +194,7 @@ A Helm chart for the supporting components
 | postgresql.service.type | string | `"ClusterIP"` |  |
 | reloader.enabled | bool | `true` |  |
 | reloader.fullnameOverride | string | `"reloader"` |  |
-| reloader.global.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| reloader.global.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| reloader.global.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
+| reloader.global.imagePullSecrets | list | `[]` |  |
 | reloader.image.name | string | `"stakater/reloader"` |  |
 | reloader.image.repository | string | `"ghcr.io/stakater/reloader"` |  |
 | reloader.reloader.autoReloadAll | bool | `true` |  |

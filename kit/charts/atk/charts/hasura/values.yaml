@@ -35,10 +35,7 @@ graphql-engine:
           key: DEFAULT_DB_URL
           name: atk-secrets
   global:
-    imagePullSecrets:
-      - image-pull-secret-docker
-      - image-pull-secret-ghcr
-      - image-pull-secret-harbor
+    imagePullSecrets: []
   postgres:
     enabled: false
   initContainers:
@@ -111,7 +108,4 @@ job:
     storageClass: "" # Optional: specify storage class, otherwise use default
     accessMode: ReadWriteOnce
 
-imagePullSecrets:
-  - image-pull-secret-docker
-  - image-pull-secret-ghcr
-  - image-pull-secret-harbor
+imagePullSecrets: []
