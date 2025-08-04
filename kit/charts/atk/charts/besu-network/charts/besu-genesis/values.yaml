@@ -80,8 +80,5 @@ genesisServer:
     tag: 1.29.0-alpine
     pullPolicy: IfNotPresent
 
-imagePullSecrets:
-  - image-pull-secret-harbor
-  - image-pull-secret-ghcr
-  - image-pull-secret-docker
+imagePullSecrets: []
 

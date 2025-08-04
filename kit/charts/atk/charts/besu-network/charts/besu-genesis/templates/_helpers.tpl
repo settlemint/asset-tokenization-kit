@@ -69,25 +69,9 @@ Create the name of the service account to use
 
 {{/*
 Common image pull secrets for all deployments/statefulsets
+This is now handled by atk.common.imagePullSecrets in _common-helpers.tpl
 */}}
 {{- define "atk.imagePullSecrets" -}}
-{{- if .Values.global }}
-{{- if .Values.global.imagePullSecrets }}
-imagePullSecrets:
-{{- range .Values.global.imagePullSecrets }}
-  - name: {{ . }}
-{{- end }}
-{{- else }}
-imagePullSecrets:
-  - name: image-pull-secret-docker
-  - name: image-pull-secret-ghcr
-  - name: image-pull-secret-harbor
-{{- end }}
-{{- else }}
-imagePullSecrets:
-  - name: image-pull-secret-docker
-  - name: image-pull-secret-ghcr
-  - name: image-pull-secret-harbor
-{{- end }}
+{{- include "atk.common.imagePullSecrets" . -}}
 {{- end }}
 

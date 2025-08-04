@@ -62,10 +62,15 @@ dapp:            # Sub-chart overrides
 
 ### Image Pull Secrets
 ```yaml
-# Environment-specific (values-orbstack.1p.yaml)
-dapp:
-  imagePullSecrets:
-    - name: image-pull-secret-docker
+# Dynamic registry configuration (values-orbstack.1p.yaml)
+imagePullCredentials:
+  registries:
+    docker:
+      enabled: true
+      registry: docker.io
+      username: "op://platform/dockerhub/username"
+      password: "op://platform/dockerhub/credential"
+      email: "op://platform/dockerhub/email"
 ```
 
 ### Common Helpers

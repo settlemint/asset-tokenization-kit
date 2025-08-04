@@ -146,7 +146,6 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | global.artifacts.image.registry | string | `"ghcr.io"` |  |
 | global.artifacts.image.repository | string | `"settlemint/asset-tokenization-kit-artifacts"` |  |
 | global.artifacts.image.tag | string | `"2.0.0"` |  |
-| global.ingressNamespace | string | `"ingress-nginx"` |  |
 | global.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | global.networkPolicy.enabled | bool | `false` |  |
 | graph-node.enabled | bool | `true` |  |

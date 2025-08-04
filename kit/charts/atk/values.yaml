@@ -10,8 +10,6 @@ global:
   networkPolicy:
     # Enable NetworkPolicies across all services
     enabled: false
-  # Namespace where ingress controller is deployed
-  ingressNamespace: ingress-nginx
   # Artifacts container configuration
   artifacts:
     # Image containing contract ABIs and genesis files
@@ -20,7 +18,6 @@ global:
       repository: settlemint/asset-tokenization-kit-artifacts
       tag: 2.0.0
       pullPolicy: IfNotPresent
-
 
 imagePullCredentials:
   registries: {}
