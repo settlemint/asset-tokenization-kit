@@ -1,7 +1,7 @@
 import { Address } from "@graphprotocol/graph-ts";
 import { Token, TokenBond } from "../../../generated/schema";
 import { fetchToken } from "../../token/fetch/token";
-import { trackTokenBondStats } from "../token-bond-stats";
+import { updateTokenBondStats } from "../token-bond-stats";
 
 /**
  * Updates bond stats for all bonds that use the given token as underlying asset
@@ -18,7 +18,7 @@ export function updateBondStatsForUnderlyingAssetBalanceChange(
     // Check if this bond uses the transferred token as underlying asset
     if (potentialBondToken.underlyingAsset == underlyingAsset.id) {
       const token = fetchToken(Address.fromBytes(potentialBondToken.id));
-      trackTokenBondStats(token);
+      updateTokenBondStats(token);
     }
   }
 }

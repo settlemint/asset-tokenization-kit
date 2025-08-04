@@ -39,17 +39,13 @@ describe("TokenBondStats", () => {
   it("should track bond statistics with underlying asset balance", async () => {
     const query = theGraphGraphql(
       `query($tokenId: String!) {
-        tokenBondStatsDatas(
-          where: { token: $tokenId }
-          orderBy: timestamp
-          orderDirection: desc
-          first: 1
-        ) {
+        tokenBondStatsState(id: $tokenId) {
           id
-          timestamp
           underlyingAssetBalanceAvailable
           underlyingAssetBalanceAvailableExact
           underlyingAssetBalanceRequired
+          underlyingAssetBalanceRequiredExact
+          coveredPercentage
         }
       }
     `
@@ -64,19 +60,21 @@ describe("TokenBondStats", () => {
         (balance) => balance.account.id === bondToken.id
       );
     const requiredBalanceExact =
-      (Number(bondToken.totalSupplyExact) *
-        Number(bondToken.bond?.faceValueExact ?? 0)) /
-      10 ** Number(bondToken.decimals);
-
-    expect(response.tokenBondStatsDatas.length).toBe(1);
+      Number(bondToken.totalSupplyExact) *
+      Number(bondToken.bond?.faceValueExact ?? 0);
+    const coveredPercentage =
+      (Number(underlyingAssetBalance?.valueExact ?? 0) / requiredBalanceExact) *
+      100;
     expect(
-      Number(
-        response.tokenBondStatsDatas[0].underlyingAssetBalanceAvailableExact
-      )
+      Number(response.tokenBondStatsState?.underlyingAssetBalanceAvailableExact)
     ).toBeCloseTo(Number(underlyingAssetBalance?.valueExact ?? 0), 2);
     expect(
-      Number(response.tokenBondStatsDatas[0].underlyingAssetBalanceRequired)
+      Number(response.tokenBondStatsState?.underlyingAssetBalanceRequiredExact)
     ).toBeCloseTo(requiredBalanceExact, 2);
+    expect(Number(response.tokenBondStatsState?.coveredPercentage)).toBeCloseTo(
+      coveredPercentage,
+      2
+    );
   });
 
   it("should track aggregated bond statistics over time", async () => {
