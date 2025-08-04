@@ -22,10 +22,10 @@ interface IATKXvPSettlementFactory is IERC165 {
     /// @return The address of the XvPSettlement logic contract
     function xvpSettlementImplementation() external view returns (address);
 
-    /// @notice Initializes the factory with a trusted forwarder and an admin address
-    /// @param forwarder The address of the trusted forwarder
-    /// @param initialAdmin The address that will be granted admin role
-    function initialize(address forwarder, address initialAdmin) external;
+    /// @notice Initializes the factory with access manager and system address
+    /// @param accessManager The address of the access manager.
+    /// @param systemAddress The address of the `IATKSystem` contract.
+    function initialize(address accessManager, address systemAddress) external;
 
     /// @notice Creates a new XvPSettlement contract
     /// @param name The name of the settlement

@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import { Test, console } from "forge-std/Test.sol";
 import { ATKSystemImplementation } from "../../contracts/system/ATKSystemImplementation.sol";
 import { IATKSystem } from "../../contracts/system/IATKSystem.sol";
+import { ATKPeopleRoles } from "../../contracts/system/ATKPeopleRoles.sol";
 import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
@@ -27,6 +28,8 @@ import { SMARTComplianceModuleParamPair } from
     "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IATKTypedImplementationRegistry } from "../../contracts/system/IATKTypedImplementationRegistry.sol";
 import { IATKCompliance } from "../../contracts/system/compliance/IATKCompliance.sol";
+import { IATKSystemAccessManaged } from "../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
+import { ATKRoles } from "../../contracts/system/ATKRoles.sol";
 
 // Import system errors
 import {
@@ -236,6 +239,7 @@ contract ATKSystemTest is Test {
         bytes memory initData = abi.encodeWithSelector(
             systemImplementation.initialize.selector,
             admin,
+            impls.systemAccessManager,
             impls.compliance,
             impls.identityRegistry,
             impls.identityRegistryStorage,
@@ -248,8 +252,7 @@ contract ATKSystemTest is Test {
             impls.identityVerificationModule,
             impls.tokenFactoryRegistry,
             impls.complianceModuleRegistry,
-            impls.addonRegistry,
-            impls.systemAccessManager
+            impls.addonRegistry
         );
         ERC1967Proxy proxy = new ERC1967Proxy(address(systemImplementation), initData);
         return IATKSystem(address(proxy));
@@ -286,7 +289,7 @@ contract ATKSystemTest is Test {
         // Compliance module should be set via compliance module registry
 
         // Admin should have default admin role
-        assertTrue(IAccessControl(address(atkSystem)).hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(IATKSystemAccessManaged(address(atkSystem)).hasSystemRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
     }
 
     function test_SetComplianceImplementation_OnlyAdmin_AccessControl() public {
@@ -307,21 +310,26 @@ contract ATKSystemTest is Test {
         atkSystem.bootstrap();
     }
 
-    function test_Bootstrap_OnlyDeployer() public {
-        // Test that bootstrap function requires DEPLOYER_ROLE
-        // Since the system is already bootstrapped, we test by checking role requirements
+    function test_Bootstrap_RoleVerification() public {
+        // Test role verification after bootstrap
+        // Since the system is already bootstrapped in setUp
 
-        // Verify admin has DEPLOYER_ROLE (should be granted during initialization)
-        assertTrue(IAccessControl(address(atkSystem)).hasRole(ATKSystemRoles.DEPLOYER_ROLE, admin));
+        // Verify admin has DEFAULT_ADMIN_ROLE (should be granted during initialization)
+        assertTrue(systemUtils.systemAccessManager().hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(systemUtils.systemAccessManager().hasRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE, admin));
 
-        // Verify user does not have DEPLOYER_ROLE
-        assertFalse(IAccessControl(address(atkSystem)).hasRole(ATKSystemRoles.DEPLOYER_ROLE, user));
+        // Verify user does not have DEFAULT_ADMIN_ROLE
+        assertFalse(systemUtils.systemAccessManager().hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, user));
+        assertFalse(systemUtils.systemAccessManager().hasRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE, user));
 
         // Since the system is already bootstrapped, calling bootstrap should revert with SystemAlreadyBootstrapped
-        // But the access control check happens first, so we can test that users without DEPLOYER_ROLE get access
-        // control errors
+        vm.prank(admin);
+        vm.expectRevert(SystemAlreadyBootstrapped.selector);
+        atkSystem.bootstrap();
+
+        // Also test with non-admin user
         vm.prank(user);
-        vm.expectRevert(); // Should revert due to lack of DEPLOYER_ROLE
+        vm.expectRevert(); // Should revert due to lack of permissions or already bootstrapped
         atkSystem.bootstrap();
     }
 
@@ -438,7 +446,7 @@ contract ATKSystemTest is Test {
     function test_SupportsInterface() public view {
         assertTrue(atkSystem.supportsInterface(type(IATKSystem).interfaceId));
         assertTrue(atkSystem.supportsInterface(type(IERC165).interfaceId));
-        assertTrue(atkSystem.supportsInterface(type(IAccessControl).interfaceId));
+        assertTrue(atkSystem.supportsInterface(type(IATKSystemAccessManaged).interfaceId));
         assertFalse(atkSystem.supportsInterface(bytes4(0xffffffff)));
     }
 
@@ -451,6 +459,7 @@ contract ATKSystemTest is Test {
         bytes memory initData1 = abi.encodeWithSelector(
             systemImplementation.initialize.selector,
             admin,
+            impls.systemAccessManager,
             impls.compliance,
             impls.identityRegistry,
             impls.identityRegistryStorage,
@@ -463,8 +472,7 @@ contract ATKSystemTest is Test {
             impls.identityVerificationModule,
             impls.tokenFactoryRegistry,
             impls.complianceModuleRegistry,
-            impls.addonRegistry,
-            impls.systemAccessManager
+            impls.addonRegistry
         );
         vm.expectRevert(abi.encodeWithSelector(ComplianceImplementationNotSet.selector));
         new ERC1967Proxy(address(systemImplementation), initData1);
@@ -475,6 +483,7 @@ contract ATKSystemTest is Test {
         bytes memory initData2 = abi.encodeWithSelector(
             systemImplementation.initialize.selector,
             admin,
+            impls.systemAccessManager,
             impls.compliance,
             impls.identityRegistry,
             impls.identityRegistryStorage,
@@ -487,8 +496,7 @@ contract ATKSystemTest is Test {
             impls.identityVerificationModule,
             impls.tokenFactoryRegistry,
             impls.complianceModuleRegistry,
-            impls.addonRegistry,
-            impls.systemAccessManager
+            impls.addonRegistry
         );
         vm.expectRevert(abi.encodeWithSelector(IdentityRegistryImplementationNotSet.selector));
         new ERC1967Proxy(address(systemImplementation), initData2);
@@ -502,6 +510,7 @@ contract ATKSystemTest is Test {
         bytes memory initData = abi.encodeWithSelector(
             systemImplementation.initialize.selector,
             admin,
+            impls.systemAccessManager,
             impls.compliance,
             impls.identityRegistry,
             impls.identityRegistryStorage,
@@ -514,8 +523,7 @@ contract ATKSystemTest is Test {
             impls.identityVerificationModule,
             impls.tokenFactoryRegistry,
             impls.complianceModuleRegistry,
-            impls.addonRegistry,
-            impls.systemAccessManager
+            impls.addonRegistry
         );
         vm.expectRevert(
             abi.encodeWithSelector(

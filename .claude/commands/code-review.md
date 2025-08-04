@@ -5,10 +5,11 @@ that is reviewing a kernel patch.
 
 # Explore
 
-First, use parallel subagents to find and read all files that may be useful for
-this review, either as examples or as edit targets. The subagents should return
-relevant file paths, and any other info that may be useful. If you are not sure
-about something, ask the user for clarification.
+First, use the researcher agent to gather documentation and patterns, then use
+code-reviewer agent to analyze the changes. The agents work in sequence:
+
+1. researcher: Gather relevant docs, patterns, and best practices
+2. code-reviewer: Perform deep analysis of changes
 
 Compare the changes to the previous version of the codebase in origin/main and
 explore how the logic has changed. If there are changes to the codebase, you
@@ -21,6 +22,7 @@ Make sure to read the @CLAUDE.md file to understand the conventions of this
 repo.
 
 Check for proper documentation:
+
 - Verify README.md files exist for new modules
 - Ensure CLAUDE.md is updated with new patterns
 - Check that test coverage matches documentation claims
@@ -36,6 +38,7 @@ your judgement as to what is necessary, given the standards of this repo.
 Before writing your review, leverage gemini-cli for deeper insights:
 
 1. **Security Vulnerability Scan**: Use Gemini to detect hidden vulnerabilities
+
    ```
    mcp__gemini-cli__ask-gemini({
      prompt: "@changed-files analyze for security vulnerabilities, race conditions, and edge cases",
@@ -45,6 +48,7 @@ Before writing your review, leverage gemini-cli for deeper insights:
    ```
 
 2. **Performance Analysis**: Identify optimization opportunities
+
    ```
    mcp__gemini-cli__ask-gemini({
      prompt: "@changed-files analyze for performance bottlenecks, N+1 queries, and inefficient algorithms",
@@ -54,6 +58,7 @@ Before writing your review, leverage gemini-cli for deeper insights:
    ```
 
 3. **Best Practices Check**: Ensure code follows project standards
+
    ```
    mcp__gemini-cli__ask-gemini({
      prompt: "@changed-files check against @CLAUDE.md standards and identify deviations",
@@ -140,9 +145,9 @@ Do cover the following topics:
 - Verify success/failure feedback is clear
 - Ensure no operations fail silently
 
-If there are things you are not sure about, use parallel subagents to do
-extensive web and MCP research. They should only return useful information, no
-noise.
+If there are things you are not sure about, use the researcher agent to do
+extensive web and MCP research. The agent should only return useful information,
+no noise.
 
 # Write up your work
 
@@ -156,10 +161,14 @@ During code reviews, automatically capture and integrate learnings:
 
 ## Learning Integration Process
 
-1. **Pattern Detection**: Identify recurring issues, conventions, or project-specific patterns
-2. **Silent Documentation**: Add learnings directly to this file under "Learned Patterns" section
-3. **Global Patterns**: If a pattern applies project-wide, update CLAUDE.md instead
-4. **No User Interruption**: Integrate learnings silently - user will review in PR
+1. **Pattern Detection**: Identify recurring issues, conventions, or
+   project-specific patterns
+2. **Silent Documentation**: Add learnings directly to this file under "Learned
+   Patterns" section
+3. **Global Patterns**: If a pattern applies project-wide, update CLAUDE.md
+   instead
+4. **No User Interruption**: Integrate learnings silently - user will review in
+   PR
 
 ## Categories to Learn
 

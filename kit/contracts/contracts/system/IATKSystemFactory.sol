@@ -12,7 +12,8 @@ interface IATKSystemFactory {
     /// @notice Emitted when a new `ATKSystem` instance is successfully created and deployed by this factory.
     /// @param sender The address that called the `createSystem` function.
     /// @param systemAddress The blockchain address of the newly deployed `ATKSystem` contract.
-    event ATKSystemCreated(address indexed sender, address indexed systemAddress);
+    /// @param accessManager The blockchain address of the access manager contract.
+    event ATKSystemCreated(address indexed sender, address indexed systemAddress, address indexed accessManager);
 
     // --- View Functions ---
 

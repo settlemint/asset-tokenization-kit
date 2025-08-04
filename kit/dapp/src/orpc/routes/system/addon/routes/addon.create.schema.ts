@@ -50,40 +50,7 @@ export const SystemAddonCreateSchema = MutationInputSchema.extend({
 });
 
 /**
- * Schema for individual addon result in streaming output
- */
-const AddonResultSchema = z.object({
-  type: addonType(),
-  name: z.string(),
-  proxyAddress: z.string().optional(),
-  transactionHash: z.string().optional(),
-  error: z.string().optional(),
-  implementations: z.record(z.string(), z.string()).optional(),
-});
-
-/**
- * Output schema for streaming events during addon registration
- */
-export const SystemAddonCreateOutputSchema = z.object({
-  status: z.enum(["pending", "confirmed", "failed", "completed"]),
-  message: z.string(),
-  currentAddon: AddonResultSchema.optional(),
-  results: z.array(AddonResultSchema).optional(),
-  result: z.array(AddonResultSchema).optional(), // For useStreamingMutation compatibility
-  progress: z
-    .object({
-      current: z.number(),
-      total: z.number(),
-    })
-    .optional(),
-});
-
-/**
  * Type definitions
  */
 export type SystemAddonCreateInput = z.infer<typeof SystemAddonCreateSchema>;
-export type SystemAddonCreateOutput = z.infer<
-  typeof SystemAddonCreateOutputSchema
->;
 export type SystemAddonConfig = z.infer<typeof SystemAddonConfigSchema>;
-export type AddonResult = z.infer<typeof AddonResultSchema>;

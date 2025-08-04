@@ -27,9 +27,10 @@ import { TokenUtils } from "../utils/TokenUtils.sol";
 import { ClaimUtils } from "../utils/ClaimUtils.sol";
 import { TestConstants } from "../Constants.sol";
 import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
+import { ATKPeopleRoles } from "../../contracts/system/ATKPeopleRoles.sol";
 import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
-// Mock Access Manager that always returns true for canCall
 
+// Mock Access Manager that always returns true for canCall
 contract MockAccessManager is IAccessManager {
     mapping(address => mapping(bytes4 => bool)) public restrictions;
 
@@ -224,14 +225,6 @@ contract SMARTCrossExtensionTest is Test {
 
         // Grant necessary roles to owner
         _grantRoles();
-
-        // Grant REGISTRAR_ROLE to the token contract on the Identity Registry
-        // Needed for custody address recovery
-        address registryAddress = address(systemUtils.identityRegistry());
-        address tokenAddress = address(crossExtToken);
-
-        vm.prank(owner);
-        IAccessControl(payable(registryAddress)).grantRole(ATKSystemRoles.REGISTRAR_ROLE, tokenAddress);
     }
 
     function _setupTestIdentities() private {
@@ -534,10 +527,6 @@ contract SMARTCrossExtensionTest is Test {
     // ============ Helper Functions ============
 
     function _setupTokenIdentity() private {
-        // Grant CLAIM_MANAGER_ROLE to owner on the token identity's access manager
-        vm.prank(owner);
-        IAccessControl(address(accessManager)).grantRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, owner);
-
         // Issue a large collateral claim to the token to allow minting
         claimUtils.issueCollateralClaim(
             address(crossExtToken),

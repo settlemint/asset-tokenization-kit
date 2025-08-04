@@ -13,7 +13,9 @@ import { ISMARTIdentityRegistryStorage } from "../../../contracts/smart/interfac
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { IdentityUtils } from "../../utils/IdentityUtils.sol";
+import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { ATKRoles } from "../../../contracts/system/ATKRoles.sol";
 
 contract ATKIdentityRegistryStorageImplementationTest is Test {
     ATKIdentityRegistryStorageImplementation public implementation;
@@ -81,7 +83,7 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
 
         // Grant necessary roles to system through the access manager
         vm.startPrank(admin);
-        accessManager.grantRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE, system);
+        accessManager.grantRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE, system);
         accessManager.grantRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, admin); // For testing
         vm.stopPrank();
 
@@ -107,9 +109,9 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
 
     function test_Initialize() public view {
         // Check roles via the centralized access manager, not the storage contract
-        assertTrue(accessManager.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(accessManager.hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
         assertTrue(accessManager.hasRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, admin));
-        assertTrue(accessManager.hasRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE, system));
+        assertTrue(accessManager.hasRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE, system));
 
         // Note: Role admin relationships are now managed by the centralized access manager
         // The storage contract delegates access control to the access manager
@@ -117,7 +119,7 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
 
     function test_InitializeTwice_ShouldRevert() public {
         vm.expectRevert();
-        storageContract.initialize(address(accessManager), system);
+        storageContract.initialize(address(accessManager));
     }
 
     function test_AddIdentityToStorage() public {

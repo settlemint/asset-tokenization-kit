@@ -7,6 +7,7 @@ import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/I
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import { UUPSUpgradeable } from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 /// @title ATKSystemAccessManagerImplementation
 /// @author SettleMint
@@ -16,7 +17,8 @@ contract ATKSystemAccessManagerImplementation is
     Initializable,
     AccessControlUpgradeable,
     ERC2771ContextUpgradeable,
-    IATKSystemAccessManager
+    IATKSystemAccessManager,
+    UUPSUpgradeable
 {
     error NoInitialAdmins();
 
@@ -31,6 +33,7 @@ contract ATKSystemAccessManagerImplementation is
     /// @dev Reverts if no initial admins are provided
     function initialize(address[] calldata initialAdmins) public initializer {
         __AccessControl_init();
+        __UUPSUpgradeable_init();
 
         if (initialAdmins.length == 0) {
             revert NoInitialAdmins();
@@ -39,6 +42,19 @@ contract ATKSystemAccessManagerImplementation is
         for (uint256 i = 0; i < initialAdmins.length; ++i) {
             _grantRole(DEFAULT_ADMIN_ROLE, initialAdmins[i]);
         }
+    }
+
+    // -- Access Control Modifiers --
+
+    /// @notice Modifier that checks if the caller has any of the specified roles
+    /// @dev This implements the pattern mentioned in the ticket: onlyRoles(MANAGER_ROLE, [SYSTEM_ROLES])
+    /// @param roles Array of roles, where the caller must have at least one
+    modifier onlyRoles(bytes32[] memory roles) {
+        if (!_hasAnyRole(roles, _msgSender())) {
+            // Use OpenZeppelin's standard AccessControl error
+            revert AccessControlUnauthorizedAccount(_msgSender(), roles.length > 0 ? roles[0] : bytes32(0));
+        }
+        _;
     }
 
     // --- Internal Role Checking Functions ---
@@ -54,29 +70,6 @@ contract ATKSystemAccessManagerImplementation is
             }
         }
         return false;
-    }
-
-    // --- Access Control Modifiers ---
-
-    /// @notice Modifier that checks if the caller has any of the specified roles
-    /// @dev This implements the pattern mentioned in the ticket: onlyRoles(MANAGER_ROLE, [SYSTEM_ROLES])
-    /// @param roles Array of roles, where the caller must have at least one
-    modifier onlyRoles(bytes32[] memory roles) {
-        if (!_hasAnyRole(roles, _msgSender())) {
-            // Use OpenZeppelin's standard AccessControl error
-            revert AccessControlUnauthorizedAccount(_msgSender(), roles.length > 0 ? roles[0] : bytes32(0));
-        }
-        _;
-    }
-
-    /// @notice Modifier that checks if the caller has a specific single role
-    /// @dev For backward compatibility with existing contracts
-    /// @param role The role to check
-    modifier onlySystemRole(bytes32 role) {
-        if (!hasRole(role, _msgSender())) {
-            revert AccessControlUnauthorizedAccount(_msgSender(), role);
-        }
-        _;
     }
 
     // --- Role Checking Functions ---
@@ -118,7 +111,7 @@ contract ATKSystemAccessManagerImplementation is
     )
         public
         override(IATKSystemAccessManager, AccessControlUpgradeable)
-        onlyRole(getRoleAdmin(role))
+        onlyRoles(_getRoleAdmins(role))
     {
         super.grantRole(role, account);
     }
@@ -133,7 +126,7 @@ contract ATKSystemAccessManagerImplementation is
     )
         public
         override(IATKSystemAccessManager, AccessControlUpgradeable)
-        onlyRole(getRoleAdmin(role))
+        onlyRoles(_getRoleAdmins(role))
     {
         super.revokeRole(role, account);
     }
@@ -156,7 +149,14 @@ contract ATKSystemAccessManagerImplementation is
     /// @param role The role identifier to grant
     /// @param accounts Array of addresses to grant the role to
     /// @dev Caller must have the role's admin role for each grant
-    function batchGrantRole(bytes32 role, address[] calldata accounts) external override {
+    function batchGrantRole(
+        bytes32 role,
+        address[] calldata accounts
+    )
+        external
+        override
+        onlyRoles(_getRoleAdmins(role))
+    {
         for (uint256 i = 0; i < accounts.length;) {
             grantRole(role, accounts[i]);
             unchecked {
@@ -169,7 +169,14 @@ contract ATKSystemAccessManagerImplementation is
     /// @param role The role identifier to revoke
     /// @param accounts Array of addresses to revoke the role from
     /// @dev Caller must have the role's admin role for each revocation
-    function batchRevokeRole(bytes32 role, address[] calldata accounts) external override {
+    function batchRevokeRole(
+        bytes32 role,
+        address[] calldata accounts
+    )
+        external
+        override
+        onlyRoles(_getRoleAdmins(role))
+    {
         for (uint256 i = 0; i < accounts.length;) {
             revokeRole(role, accounts[i]);
             unchecked {
@@ -182,7 +189,7 @@ contract ATKSystemAccessManagerImplementation is
     /// @param account The address to grant roles to
     /// @param roles Array of role identifiers to grant
     /// @dev Caller must have the admin role for each role being granted
-    function grantMultipleRoles(address account, bytes32[] calldata roles) external {
+    function grantMultipleRoles(address account, bytes32[] calldata roles) external onlyRole(DEFAULT_ADMIN_ROLE) {
         for (uint256 i = 0; i < roles.length;) {
             grantRole(roles[i], account);
             unchecked {
@@ -195,7 +202,7 @@ contract ATKSystemAccessManagerImplementation is
     /// @param account The address to revoke roles from
     /// @param roles Array of role identifiers to revoke
     /// @dev Caller must have the admin role for each role being revoked
-    function revokeMultipleRoles(address account, bytes32[] calldata roles) external {
+    function revokeMultipleRoles(address account, bytes32[] calldata roles) external onlyRole(DEFAULT_ADMIN_ROLE) {
         for (uint256 i = 0; i < roles.length;) {
             revokeRole(roles[i], account);
             unchecked {
@@ -216,6 +223,62 @@ contract ATKSystemAccessManagerImplementation is
             }
         }
     }
+
+    /// @notice Sets the admin role for a given role.
+    /// @param role The role identifier to set the admin role for.
+    /// @param adminRole The admin role to set for the given role.
+    function setRoleAdmin(bytes32 role, bytes32 adminRole) external override onlyRoles(_getRoleAdmins(role)) {
+        _setRoleAdmin(role, adminRole);
+    }
+
+    // -- Internal Role Management Functions --
+
+    /// @notice Gets all admin roles in the hierarchy chain for a given role
+    /// @param role The role to get admin roles for
+    /// @return Array of admin roles including the full hierarchy chain up to DEFAULT_ADMIN_ROLE
+    /// @dev Traverses the admin role hierarchy until reaching DEFAULT_ADMIN_ROLE and includes all roles in the chain
+    function _getRoleAdmins(bytes32 role) internal view returns (bytes32[] memory) {
+        // Handle the special case where the role is already DEFAULT_ADMIN_ROLE
+        if (role == DEFAULT_ADMIN_ROLE) {
+            bytes32[] memory adminRoleResult = new bytes32[](1);
+            adminRoleResult[0] = DEFAULT_ADMIN_ROLE;
+            return adminRoleResult;
+        }
+
+        // Create a temporary array to collect admin roles (max depth 256 to prevent infinite loops)
+        bytes32[] memory adminChain = new bytes32[](256);
+        uint256 count = 0;
+
+        bytes32 currentAdminRole = getRoleAdmin(role);
+
+        // Follow the admin chain until we reach DEFAULT_ADMIN_ROLE
+        while (currentAdminRole != DEFAULT_ADMIN_ROLE && count < 255) {
+            adminChain[count] = currentAdminRole;
+            ++count;
+            currentAdminRole = getRoleAdmin(currentAdminRole);
+        }
+
+        // Always add DEFAULT_ADMIN_ROLE at the end
+        adminChain[count] = DEFAULT_ADMIN_ROLE;
+        ++count;
+
+        // Create the final array with the exact size
+        bytes32[] memory result = new bytes32[](count);
+        for (uint256 i = 0; i < count; ++i) {
+            result[i] = adminChain[i];
+        }
+
+        return result;
+    }
+
+    // --- UUPS Upgrade Functions ---
+
+    /// @notice Authorizes an upgrade to a new implementation contract
+    /// @dev Authorizes an upgrade to a new implementation contract.
+    /// The UUPS upgrade mechanism is used.
+    /// Only the `DEFAULT_ADMIN_ROLE` can authorize an upgrade.
+    /// @param newImplementation The address of the new implementation contract
+    function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) { }
 
     // --- Meta-transaction Support ---
 

@@ -26,7 +26,6 @@ import { createLogger } from "@settlemint/sdk-utils/logging";
 import { encodeFunctionData, getAddress } from "viem";
 import {
   type SystemAddonConfig,
-  type SystemAddonCreateOutput,
   type SystemAddonCreateSchema,
   getDefaultAddonImplementations,
 } from "./addon.create.schema";
@@ -83,8 +82,12 @@ const ADDON_TYPE_TO_IMPLEMENTATION_NAME = {
  * Generates initialization data for different addon types
  */
 function generateInitializationData(context: Context): string {
+  // The addon factories expect accessManager as first param and systemAddress as second
+  const accessManagerAddress = getAddress(
+    context.system?.systemAccessManager?.id ?? ""
+  );
   const systemAddress = getAddress(context.system?.address ?? "");
-  const initialAdmin = getAddress(context.auth?.user.wallet ?? "");
+
   return encodeFunctionData({
     abi: [
       {
@@ -92,12 +95,12 @@ function generateInitializationData(context: Context): string {
         name: "initialize",
         inputs: [
           {
-            name: "systemAddress_",
+            name: "accessManager",
             type: "address",
             internalType: "address",
           },
           {
-            name: "initialAdmin_",
+            name: "systemAddress",
             type: "address",
             internalType: "address",
           },
@@ -107,7 +110,7 @@ function generateInitializationData(context: Context): string {
       },
     ],
     functionName: "initialize",
-    args: [systemAddress, initialAdmin],
+    args: [accessManagerAddress, systemAddress],
   });
 }
 
@@ -156,7 +159,7 @@ function getImplementationAddress(addonConfig: SystemAddonConfig): string {
 export const addonCreate = portalRouter.system.addonCreate
   .use(
     blockchainPermissionsMiddleware<typeof SystemAddonCreateSchema>({
-      requiredRoles: ["registrar"],
+      requiredRoles: { any: ["addonManager", "systemManager"] },
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },
@@ -167,62 +170,59 @@ export const addonCreate = portalRouter.system.addonCreate
     const sender = context.auth.user;
     const { system } = context;
 
-    const contract = system?.systemAddonRegistry;
-    if (!contract) {
+    if (!system?.systemAddonRegistry) {
+      const cause = new Error("System addon registry not found");
       throw errors.INTERNAL_SERVER_ERROR({
-        message: `No addon registry found for system ${system?.address}`,
+        message: cause.message,
+        cause,
       });
     }
+
+    // Store registry address to satisfy TypeScript's null checks
+    const systemAddonRegistry = system.systemAddonRegistry;
 
     // Normalize to array
     const addonList = Array.isArray(addons) ? addons : [addons];
 
-    // Query existing system addons to check for duplicates
-    const existingAddonNames =
-      system?.systemAddons.map((addon) => addon.name) ?? [];
+    // Query existing system addons using the system context
+    let existingAddonNames = new Set<string>();
+    try {
+      const systemData = context.system;
 
-    const results: SystemAddonCreateOutput["results"] = [];
+      existingAddonNames = new Set(
+        systemData.systemAddons.map((addon) => addon.name.toLowerCase())
+      );
+    } catch (error) {
+      // If we can't fetch existing addons, proceed anyway
+      // The contract will reject duplicates
+      logger.debug(`Could not fetch existing addons: ${String(error)}`);
+    }
 
-    // Process each addon using a generator pattern for batch operations
-    for (const addonConfig of addonList) {
-      const { type, name } = addonConfig;
+    // Filter out existing addons
+    const addonsToRegister = addonList.filter(
+      (addon) => !existingAddonNames.has(addon.name.toLowerCase())
+    );
 
-      // Check if addon already exists (if we had that data)
-      if (existingAddonNames.includes(name)) {
-        results.push({
-          type,
-          name,
-          transactionHash: "",
-          error: `Addon already exists: ${name}`,
-        });
+    // Process addons sequentially - parallel challenge generation not working
+    const results = [];
 
-        continue; // Skip to next addon
-      }
+    for (const addonConfig of addonsToRegister) {
+      const { name } = addonConfig;
 
       try {
         // Get implementation address and initialization data
         const implementationAddress = getImplementationAddress(addonConfig);
         const initializationData = generateInitializationData(context);
 
-        // Log the implementation details for debugging
-        logger.info(`Registering addon with details:`, {
-          addonType: type,
-          addonName: name,
-          contract: contract,
-          implementationAddress,
-          initializationData,
-          userWallet: sender.wallet,
-        });
-
-        // Every transaction needs a challenge response (can only be used once)
+        // Generate a fresh challenge response for each addon
         const challengeResponse = await handleChallenge(sender, {
           code: verification.verificationCode,
           type: verification.verificationType,
         });
 
-        // Execute the addon registration transaction (reuse challenge response)
+        // Execute the addon registration transaction
         const variables: VariablesOf<typeof REGISTER_SYSTEM_ADDON_MUTATION> = {
-          address: contract,
+          address: systemAddonRegistry,
           from: sender.wallet,
           name: name,
           implementation: implementationAddress,
@@ -230,35 +230,24 @@ export const addonCreate = portalRouter.system.addonCreate
           ...challengeResponse,
         };
 
-        // Execute the mutation
-        const transactionHash = await context.portalClient.mutate(
+        // Use the Portal client's mutate method that returns the transaction hash
+        const txHash = await context.portalClient.mutate(
           REGISTER_SYSTEM_ADDON_MUTATION,
           variables
         );
 
-        const implementationName = ADDON_TYPE_TO_IMPLEMENTATION_NAME[type];
-        results.push({
-          type,
-          name,
-          transactionHash,
-          implementations: { [implementationName]: implementationAddress },
-        });
+        results.push({ status: "success" as const, addon: name, txHash });
+        logger.info(`Addon ${name} registered successfully`);
       } catch (error) {
-        results.push({
-          type,
-          name,
-          error: error instanceof Error ? error.message : String(error),
-        });
+        logger.error(`Failed to create addon ${name}:`, error);
+        results.push({ status: "failed" as const, addon: name, error });
       }
     }
 
-    // We don't need the final message anymore since we're returning the system
-
-    // Return the updated system details
     return await call(
       read,
       {
-        id: "default",
+        id: context.system.address,
       },
       { context }
     );

@@ -9,7 +9,7 @@ import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.s
 import { AbstractATKSystemAddonFactoryImplementation } from
     "../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
 import { ATKXvPSettlementProxy } from "./ATKXvPSettlementProxy.sol";
-import { ATKSystemRoles } from "../../system/ATKSystemRoles.sol";
+import { ATKPeopleRoles } from "../../system/ATKPeopleRoles.sol";
 
 /// @title ATKXvPSettlementFactoryImplementation - A factory contract for creating XvPSettlement contracts
 /// @author SettleMint
@@ -61,14 +61,10 @@ contract ATKXvPSettlementFactoryImplementation is
 
     /// @notice Initializes the factory with system address and admin
     /// @dev Can only be called once, sets up initial roles and system integration
-    /// @param systemAddress The address of the ATK system contract
-    /// @param initialAdmin The address that will be granted admin role
-    function initialize(address systemAddress, address initialAdmin) public initializer {
-        if (systemAddress == address(0)) revert ZeroAddressNotAllowed();
-        if (initialAdmin == address(0)) revert ZeroAddressNotAllowed();
-
-        __ERC165_init();
-        _initializeAbstractSystemAddonFactory(systemAddress, initialAdmin);
+    /// @param accessManager The address of the access manager.
+    /// @param systemAddress The address of the `IATKSystem` contract.
+    function initialize(address accessManager, address systemAddress) public initializer {
+        _initializeAbstractSystemAddonFactory(accessManager, systemAddress);
 
         // Deploy the initial XvPSettlement implementation
         ATKXvPSettlementImplementation initialImplementation = new ATKXvPSettlementImplementation(trustedForwarder());
@@ -84,7 +80,7 @@ contract ATKXvPSettlementFactoryImplementation is
     /// @param _newImplementation The address of the new XvPSettlement logic contract.
     function updateImplementation(address _newImplementation)
         external
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (_newImplementation == address(0)) revert InvalidAddress();
         if (_newImplementation == xvpSettlementImplementation) revert SameAddress();
@@ -111,7 +107,7 @@ contract ATKXvPSettlementFactoryImplementation is
         bool autoExecute
     )
         external
-        onlyRole(ATKSystemRoles.DEPLOYER_ROLE)
+        onlySystemRole(ATKPeopleRoles.ADDON_MANAGER_ROLE)
         returns (address contractAddress)
     {
         if (cutoffDate < block.timestamp + 1) revert InvalidCutoffDate();

@@ -34,7 +34,7 @@ const IDENTITY_REGISTER_MUTATION = portalGraphql(`
 export const identityRegister = portalRouter.system.identityRegister
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: ["registrar"],
+      requiredRoles: { any: ["identityManager", "systemManager"] },
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },

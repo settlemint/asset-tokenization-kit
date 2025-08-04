@@ -3,12 +3,13 @@ pragma solidity ^0.8.28;
 
 import { ISMARTCompliance } from "../../smart/interface/ISMARTCompliance.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 /// @title ATK Compliance Bypass List Interface
 /// @author SettleMint
 /// @notice Interface for managing the compliance bypass list functionality.
 /// @dev This interface defines the standard functions for managing addresses that bypass compliance checks.
-interface IATKCompliance is ISMARTCompliance {
+interface IATKCompliance is ISMARTCompliance, IATKSystemAccessManaged {
     // --- Events ---
     /// @notice Emitted when an address is added to the compliance bypass list.
     /// @param account The address that was added to the bypass list.
@@ -53,15 +54,10 @@ interface IATKCompliance is ISMARTCompliance {
     /// @notice Error thrown when the system access manager is not set.
     error SystemAccessManagerNotSet();
 
-    /// @notice Error thrown when the caller is not authorized to perform the action.
-    error UnauthorizedAccess();
-
     // --- Functions ---
     /// @notice Initializes the compliance contract
-    /// @dev Sets up the initial admin and bypass list managers
-    /// @param initialAdmin The address that will have initial admin privileges
-    /// @param initialBypassListManagers Array of addresses that will have bypass list manager privileges
-    function initialize(address initialAdmin, address[] calldata initialBypassListManagers) external;
+    /// @param accessManager The address of the access manager
+    function initialize(address accessManager) external;
 
     // --- Functions ---
     /// @notice Adds an address to the compliance bypass list.
@@ -94,19 +90,19 @@ interface IATKCompliance is ISMARTCompliance {
     // --- Global Compliance Module Management Functions ---
 
     /// @notice Adds a global compliance module that applies to all tokens
-    /// @dev Only addresses with GLOBAL_COMPLIANCE_MANAGER_ROLE can call this function.
+    /// @dev Only addresses with COMPLIANCE_MANAGER_ROLE can call this function.
     /// This module will be executed in addition to token-specific modules for all compliance checks.
     /// @param module The address of the compliance module to add
     /// @param params The ABI-encoded parameters for the module
     function addGlobalComplianceModule(address module, bytes calldata params) external;
 
     /// @notice Removes a specific global compliance module
-    /// @dev Only addresses with GLOBAL_COMPLIANCE_MANAGER_ROLE can call this function.
+    /// @dev Only addresses with COMPLIANCE_MANAGER_ROLE can call this function.
     /// @param module The address of the compliance module to remove
     function removeGlobalComplianceModule(address module) external;
 
     /// @notice Updates parameters for an existing global compliance module
-    /// @dev Only addresses with GLOBAL_COMPLIANCE_MANAGER_ROLE can call this function.
+    /// @dev Only addresses with COMPLIANCE_MANAGER_ROLE can call this function.
     /// @param module The address of the compliance module to update
     /// @param params The new ABI-encoded parameters for the module
     function setParametersForGlobalComplianceModule(address module, bytes calldata params) external;

@@ -8,7 +8,8 @@
     "CI",
     "BUILD_ID",
     "GITHUB_SHA",
-    "GIT_COMMIT"
+    "GIT_COMMIT",
+    "CLAUDECODE"
   ],
   "remoteCache": {
     "enabled": true,
@@ -85,7 +86,9 @@
     "docs": {},
     "test": {},
     "artifacts": {},
-    "test:integration": {},
+    "test:integration": {
+      "dependsOn": ["build"]
+    },
     "db:studio": {
       "cache": false,
       "persistent": true

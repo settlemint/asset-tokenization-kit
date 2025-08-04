@@ -11,7 +11,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 
 // Constants
-import { ATKRoles } from "../ATKRoles.sol";
+import { ATKAssetRoles } from "../ATKAssetRoles.sol";
 
 // Interface imports
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
@@ -103,20 +103,20 @@ contract ATKDepositImplementation is
     /// @inheritdoc IContractWithIdentity
     function canAddClaim(address actor) external view override returns (bool) {
         // Delegate to AccessManager - only GOVERNANCE_ROLE can manage claims
-        return _hasRole(ATKRoles.GOVERNANCE_ROLE, actor);
+        return _hasRole(ATKAssetRoles.GOVERNANCE_ROLE, actor);
     }
 
     /// @inheritdoc IContractWithIdentity
     function canRemoveClaim(address actor) external view override returns (bool) {
         // Delegate to AccessManager - only GOVERNANCE_ROLE can manage claims
-        return _hasRole(ATKRoles.GOVERNANCE_ROLE, actor);
+        return _hasRole(ATKAssetRoles.GOVERNANCE_ROLE, actor);
     }
 
     // --- ISMART Implementation ---
 
     /// @notice Sets the OnchainID contract address for this token
     /// @param _onchainID The address of the OnchainID contract
-    function setOnchainID(address _onchainID) external override onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) {
+    function setOnchainID(address _onchainID) external override onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE) {
         _smart_setOnchainID(_onchainID);
     }
 
@@ -125,14 +125,18 @@ contract ATKDepositImplementation is
     function setIdentityRegistry(address _identityRegistry)
         external
         override
-        onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
     {
         _smart_setIdentityRegistry(_identityRegistry);
     }
 
     /// @notice Sets the compliance contract address for the token
     /// @param _compliance The address of the compliance contract
-    function setCompliance(address _compliance) external override onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) {
+    function setCompliance(address _compliance)
+        external
+        override
+        onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
+    {
         _smart_setCompliance(_compliance);
     }
 
@@ -145,7 +149,7 @@ contract ATKDepositImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
     {
         _smart_setParametersForComplianceModule(_module, _params);
     }
@@ -159,7 +163,7 @@ contract ATKDepositImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
     {
         _smart_mint(_to, _amount);
     }
@@ -173,7 +177,7 @@ contract ATKDepositImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
     {
         _smart_batchMint(_toList, _amounts);
     }
@@ -204,7 +208,7 @@ contract ATKDepositImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.EMERGENCY_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.EMERGENCY_ROLE)
     {
         _smart_recoverERC20(token, to, amount);
     }
@@ -218,7 +222,7 @@ contract ATKDepositImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
     {
         _smart_addComplianceModule(_module, _params);
     }
@@ -228,7 +232,7 @@ contract ATKDepositImplementation is
     function removeComplianceModule(address _module)
         external
         override
-        onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
     {
         _smart_removeComplianceModule(_module);
     }
@@ -244,7 +248,7 @@ contract ATKDepositImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
     {
         _smart_burn(userAddress, amount);
     }
@@ -258,7 +262,7 @@ contract ATKDepositImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
     {
         _smart_batchBurn(userAddresses, amounts);
     }
@@ -274,7 +278,7 @@ contract ATKDepositImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
     {
         _smart_setAddressFrozen(userAddress, freeze);
     }
@@ -288,7 +292,7 @@ contract ATKDepositImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
     {
         _smart_freezePartialTokens(userAddress, amount);
     }
@@ -302,7 +306,7 @@ contract ATKDepositImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
     {
         _smart_unfreezePartialTokens(userAddress, amount);
     }
@@ -316,7 +320,7 @@ contract ATKDepositImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
     {
         _smart_batchSetAddressFrozen(userAddresses, freeze);
     }
@@ -330,7 +334,7 @@ contract ATKDepositImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
     {
         _smart_batchFreezePartialTokens(userAddresses, amounts);
     }
@@ -344,7 +348,7 @@ contract ATKDepositImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
     {
         _smart_batchUnfreezePartialTokens(userAddresses, amounts);
     }
@@ -361,7 +365,7 @@ contract ATKDepositImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
         returns (bool)
     {
         return _smart_forcedTransfer(from, to, amount);
@@ -378,7 +382,7 @@ contract ATKDepositImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
     {
         _smart_batchForcedTransfer(fromList, toList, amounts);
     }
@@ -392,7 +396,7 @@ contract ATKDepositImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
     {
         _smart_recoverTokens(lostWallet, newWallet);
     }
@@ -400,12 +404,12 @@ contract ATKDepositImplementation is
     // --- ISMARTPausable Implementation ---
 
     /// @notice Pauses all token transfers
-    function pause() external override onlyAccessManagerRole(ATKRoles.EMERGENCY_ROLE) {
+    function pause() external override onlyAccessManagerRole(ATKAssetRoles.EMERGENCY_ROLE) {
         _smart_pause();
     }
 
     /// @notice Unpauses token transfers
-    function unpause() external override onlyAccessManagerRole(ATKRoles.EMERGENCY_ROLE) {
+    function unpause() external override onlyAccessManagerRole(ATKAssetRoles.EMERGENCY_ROLE) {
         _smart_unpause();
     }
 

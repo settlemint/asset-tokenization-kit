@@ -11,13 +11,17 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 
 // Constants
+import { ATKPeopleRoles } from "../ATKPeopleRoles.sol";
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
 // Interface imports
 import { IERC3643IdentityRegistryStorage } from "./../../smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol";
 import { ISMARTIdentityRegistryStorage } from "./../../smart/interface/ISMARTIdentityRegistryStorage.sol";
 import { IATKIdentityRegistryStorage } from "./IATKIdentityRegistryStorage.sol";
-import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
+
+// Extensions
+import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
 
 // --- Custom Errors for Lost Wallet Management ---
 // It's good practice to define specific errors if not already available for clarity.
@@ -50,48 +54,10 @@ import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManag
 contract ATKIdentityRegistryStorageImplementation is
     Initializable,
     ERC2771ContextUpgradeable,
+    ATKSystemAccessManaged,
     ERC165Upgradeable,
     IATKIdentityRegistryStorage
 {
-    // --- Access Control ---
-    /// @notice The centralized access manager contract
-    IATKSystemAccessManager private _accessManager;
-
-    // --- Custom Errors ---
-    error UnauthorizedAccess(address caller, bytes32 role);
-    error InvalidAccessManager();
-
-    // --- Access Control Modifiers ---
-    modifier onlyRole(bytes32 role) {
-        if (!_accessManager.hasRole(role, _msgSender())) {
-            revert UnauthorizedAccess(_msgSender(), role);
-        }
-        _;
-    }
-
-    /// @notice Modifier that checks if the caller has any of the specified roles
-    /// @dev This implements the new centralized access pattern: onlyRoles(MANAGER_ROLE, [SYSTEM_ROLES])
-    /// @param roles Array of roles, where the caller must have at least one
-    modifier onlyRoles(bytes32[] memory roles) {
-        if (!_accessManager.hasAnyRole(roles, _msgSender())) {
-            // Show the first role in the error for clarity
-            revert UnauthorizedAccess(_msgSender(), roles.length > 0 ? roles[0] : bytes32(0));
-        }
-        _;
-    }
-
-    // --- Internal Helper Functions ---
-
-    /// @notice Returns the roles that can perform identity management operations
-    /// @dev Implements the pattern from the ticket: MANAGER_ROLE + [SYSTEM_ROLES]
-    /// @return roles Array of roles that can manage identity registries
-    function _getIdentityManagementRoles() internal pure returns (bytes32[] memory roles) {
-        roles = new bytes32[](3);
-        roles[0] = ATKSystemRoles.SYSTEM_MANAGER_ROLE; // Primary manager role
-        roles[1] = ATKSystemRoles.IDENTITY_MANAGER_ROLE; // Identity-specific manager
-        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE; // System module role
-    }
-
     // --- Storage Variables ---
     /// @notice Defines a structure to hold the comprehensive information for a registered identity.
     /// An `Identity` struct links a user's wallet address to their on-chain identity representation, country, and
@@ -252,24 +218,9 @@ contract ATKIdentityRegistryStorageImplementation is
     /// re-initialization.
     /// @param accessManager The address of the centralized ATKSystemAccessManager contract that will handle role
     /// checks.
-    /// @param system The address of the system-level contract (e.g., `ATKSystem` or a factory) that will be granted
-    /// the `SYSTEM_MANAGER_ROLE`. This role allows it to control which identity registry contracts can interact with
-    /// and modify the data in this storage.
-    function initialize(address accessManager, address system) public initializer {
-        if (accessManager == address(0)) revert InvalidAccessManager();
-
+    function initialize(address accessManager) public initializer {
+        __ATKSystemAccessManaged_init(accessManager);
         __ERC165_init_unchained(); // Base for interface detection.
-        // ERC2771Context is initialized by its own constructor when this contract is created.
-
-        _accessManager = IATKSystemAccessManager(accessManager);
-
-        // Note: Role grants are now handled by the centralized access manager
-        // The system should already have the SYSTEM_MANAGER_ROLE granted through the access manager
-        // Individual registries will be granted IDENTITY_REGISTRY_MODULE_ROLE when bound via bindIdentityRegistry
-
-        // The system parameter is kept for interface compatibility but not actively used
-        // as role management is now centralized through the access manager
-        (system); // Acknowledge parameter to avoid unused variable warning
     }
 
     // --- Storage Modification Functions (IDENTITY_REGISTRY_MODULE_ROLE required) ---
@@ -307,7 +258,8 @@ contract ATKIdentityRegistryStorageImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE) // Ensures only authorized contracts can modify storage.
+        onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKPeopleRoles.SYSTEM_MANAGER_ROLE) // Ensures
+            // only authorized contracts can modify storage.
     {
         if (_userAddress == address(0)) revert InvalidIdentityWalletAddress();
         if (address(_identity) == address(0)) revert InvalidIdentityAddress();
@@ -347,7 +299,7 @@ contract ATKIdentityRegistryStorageImplementation is
     function removeIdentityFromStorage(address _userAddress)
         external
         override
-        onlyRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE)
+        onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         // Ensure an identity exists for this user address before attempting removal.
         if (_identities[_userAddress].identityContract == address(0)) revert IdentityDoesNotExist(_userAddress);
@@ -399,7 +351,7 @@ contract ATKIdentityRegistryStorageImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE)
+        onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (_identities[_userAddress].identityContract == address(0)) revert IdentityDoesNotExist(_userAddress);
         if (address(_identity) == address(0)) revert InvalidIdentityAddress();
@@ -426,7 +378,7 @@ contract ATKIdentityRegistryStorageImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE)
+        onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (_identities[_userAddress].identityContract == address(0)) revert IdentityDoesNotExist(_userAddress);
 
@@ -455,7 +407,10 @@ contract ATKIdentityRegistryStorageImplementation is
     /// @dev Reverts with:
     ///      - `InvalidIdentityRegistryAddress()` if `_identityRegistry` is `address(0)`.
     ///      - `IdentityRegistryAlreadyBound(_identityRegistry)` if the registry is already bound.
-    function bindIdentityRegistry(address _identityRegistry) external onlyRoles(_getIdentityManagementRoles()) {
+    function bindIdentityRegistry(address _identityRegistry)
+        external
+        onlySystemRoles2(ATKPeopleRoles.SYSTEM_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
+    {
         if (_identityRegistry == address(0)) revert InvalidIdentityRegistryAddress();
         if (_boundIdentityRegistries[_identityRegistry]) revert IdentityRegistryAlreadyBound(_identityRegistry);
 
@@ -484,7 +439,10 @@ contract ATKIdentityRegistryStorageImplementation is
     /// @param _identityRegistry The address of the `SMARTIdentityRegistry` contract to unbind. This registry will no
     /// longer be able to modify storage data.
     /// @dev Reverts with `IdentityRegistryNotBound(_identityRegistry)` if the registry is not currently bound.
-    function unbindIdentityRegistry(address _identityRegistry) external onlyRoles(_getIdentityManagementRoles()) {
+    function unbindIdentityRegistry(address _identityRegistry)
+        external
+        onlySystemRoles2(ATKPeopleRoles.SYSTEM_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
+    {
         if (!_boundIdentityRegistries[_identityRegistry]) revert IdentityRegistryNotBound(_identityRegistry);
 
         // Note: Role revoking is now handled by the centralized access manager
@@ -576,7 +534,7 @@ contract ATKIdentityRegistryStorageImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE)
+        onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (userWallet == address(0)) revert InvalidIdentityWalletAddress();
         if (identityContract == address(0)) revert InvalidIdentityAddress();
@@ -602,7 +560,7 @@ contract ATKIdentityRegistryStorageImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE)
+        onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (lostWallet == address(0)) revert InvalidIdentityWalletAddress();
         if (newWallet == address(0)) revert InvalidIdentityWalletAddress();
@@ -636,34 +594,14 @@ contract ATKIdentityRegistryStorageImplementation is
     /// attributed to the correct originating user, even when gas is paid by a third party.
     /// @return The address of the original transaction sender (user) if relayed via a trusted forwarder,
     /// or `msg.sender` if called directly.
-    function _msgSender() internal view virtual override(ERC2771ContextUpgradeable) returns (address) {
+    function _msgSender()
+        internal
+        view
+        virtual
+        override(ERC2771ContextUpgradeable, ATKSystemAccessManaged)
+        returns (address)
+    {
         return ERC2771ContextUpgradeable._msgSender();
-    }
-
-    /// @notice Provides the actual transaction data, supporting meta-transactions via ERC2771.
-    /// @dev Similar to `_msgSender()`, this function overrides the standard `_msgData()` from `ContextUpgradeable`
-    /// and `ERC2771ContextUpgradeable`.
-    /// When a transaction is relayed by a trusted forwarder, this function returns the original `msg.data` (calldata)
-    /// that was sent by the user to the forwarder. This `msg.data` typically contains the encoded function call
-    /// intended for this contract.
-    /// If the transaction is not relayed, this function returns the current `msg.data` as usual.
-    /// This ensures that the contract logic operates on the user's intended call, even if it's wrapped by a forwarder.
-    /// @return The original transaction data (calldata) if relayed via a trusted forwarder,
-    /// or the current `msg.data` if called directly.
-    function _msgData() internal view virtual override(ERC2771ContextUpgradeable) returns (bytes calldata) {
-        return ERC2771ContextUpgradeable._msgData();
-    }
-
-    /// @notice Returns the length of the suffix appended to transaction data by an ERC2771 trusted forwarder.
-    /// @dev This function is part of the ERC2771 standard and is used internally by `ERC2771ContextUpgradeable`.
-    /// When a trusted forwarder relays a transaction, it typically appends the original sender's address to the end of
-    /// the `msg.data`. This function tells the `ERC2771ContextUpgradeable` logic how many bytes at the end of
-    /// `msg.data` constitute this appended sender address.
-    /// For Ethereum addresses, this length is 20 bytes.
-    /// This allows `_msgSender()` to extract the original sender if the call is coming from a trusted forwarder.
-    /// @return The length of the context suffix in bytes (e.g., 20 for an Ethereum address).
-    function _contextSuffixLength() internal view virtual override(ERC2771ContextUpgradeable) returns (uint256) {
-        return ERC2771ContextUpgradeable._contextSuffixLength();
     }
 
     /// @inheritdoc IERC165
@@ -689,6 +627,7 @@ contract ATKIdentityRegistryStorageImplementation is
         returns (bool)
     {
         return interfaceId == type(IATKIdentityRegistryStorage).interfaceId
-            || interfaceId == type(ISMARTIdentityRegistryStorage).interfaceId || super.supportsInterface(interfaceId);
+            || interfaceId == type(ISMARTIdentityRegistryStorage).interfaceId
+            || interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
     }
 }

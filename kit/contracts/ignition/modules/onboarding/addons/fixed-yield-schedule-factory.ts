@@ -5,7 +5,7 @@ import ATKOnboardingSystemModule from "../system";
 const ATKOnboardingFixedYieldScheduleFactoryModule = buildModule(
   "ATKOnboardingFixedYieldScheduleFactoryModule",
   (m) => {
-    const { system, systemAddonRegistry } = m.useModule(
+    const { system, systemAddonRegistry, systemAccessManager } = m.useModule(
       ATKOnboardingSystemModule
     );
     const { fixedYieldScheduleFactoryImplementation } = m.useModule(ATKModule);
@@ -15,7 +15,7 @@ const ATKOnboardingFixedYieldScheduleFactoryModule = buildModule(
     const encodedInitializationData = m.encodeFunctionCall(
       fixedYieldScheduleFactoryImplementation,
       "initialize",
-      [system.address, platformAdmin]
+      [systemAccessManager.address, system.address]
     );
 
     const createFixedYieldScheduleFactoryAddon = m.call(

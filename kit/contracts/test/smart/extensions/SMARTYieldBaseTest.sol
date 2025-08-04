@@ -7,7 +7,9 @@ import { SMARTYieldHelpers, MockERC20 } from "./../../utils/SMARTYieldHelpers.so
 import { IATKFixedYieldScheduleFactory } from "../../../contracts/addons/yield/IATKFixedYieldScheduleFactory.sol";
 import { ATKFixedYieldScheduleFactoryImplementation } from
     "../../../contracts/addons/yield/ATKFixedYieldScheduleFactoryImplementation.sol";
+import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { ATKSystemImplementation } from "../../../contracts/system/ATKSystemImplementation.sol";
 
 /// @title Base test contract for SMART Yield functionality
 /// @notice Provides shared state and setup for yield tests
@@ -35,19 +37,14 @@ abstract contract SMARTYieldBaseTest is AbstractSMARTTest, SMARTYieldHelpers {
                 address(fixedYieldScheduleFactoryImpl),
                 abi.encodeWithSelector(
                     ATKFixedYieldScheduleFactoryImplementation.initialize.selector,
-                    address(systemUtils.system()),
-                    platformAdmin
+                    address(systemUtils.systemAccessManager()),
+                    address(systemUtils.system())
                 )
             )
         );
         vm.label(address(yieldScheduleFactory), "Yield Schedule Factory");
 
-        IAccessControl(address(yieldScheduleFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, tokenIssuer);
-
-        // Grant SYSTEM_MODULE_ROLE to the factory so it can access compliance functions like addToBypassList
-        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
-            ATKSystemRoles.SYSTEM_MODULE_ROLE, address(yieldScheduleFactory)
-        );
+        systemUtils.systemAccessManager().grantRole(ATKPeopleRoles.ADDON_MANAGER_ROLE, tokenIssuer);
 
         vm.stopPrank();
 

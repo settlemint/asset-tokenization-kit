@@ -1,1 +1,1 @@
-AGENT.md
+CLAUDE.md

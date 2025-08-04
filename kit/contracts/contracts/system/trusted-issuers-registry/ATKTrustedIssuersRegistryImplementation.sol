@@ -3,9 +3,6 @@ pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-// import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
@@ -17,14 +14,14 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IERC3643TrustedIssuersRegistry } from "../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 import { IATKTrustedIssuersRegistry } from "./IATKTrustedIssuersRegistry.sol";
 import { IClaimAuthorizer } from "../../onchainid/extensions/IClaimAuthorizer.sol";
-import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 // Constants
+import { ATKPeopleRoles } from "../ATKPeopleRoles.sol";
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
-/// @dev Custom errors for ATKTrustedIssuersRegistry
-error UnauthorizedAccess();
-error MissingRegistrarRole();
+// Extensions
+import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
 
 /// @title ATK Trusted Issuers Registry Implementation
 /// @author SettleMint
@@ -53,14 +50,11 @@ contract ATKTrustedIssuersRegistryImplementation is
     Initializable,
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
-    AccessControlUpgradeable,
+    ATKSystemAccessManaged,
     IATKTrustedIssuersRegistry,
     IClaimAuthorizer
 {
     // --- Storage Variables ---
-    /// @notice Optional centralized access manager for enhanced role checking
-    /// @dev If set, enables multi-role access patterns alongside existing AccessControl
-    IATKSystemAccessManager private _systemAccessManager;
 
     /// @notice Defines a structure to hold the details for a trusted claim issuer.
     /// @param issuer The Ethereum address of the `IClaimIssuer` compliant contract. This contract is responsible for
@@ -212,64 +206,13 @@ contract ATKTrustedIssuersRegistryImplementation is
     ///     This allows the `initialAdmin` to immediately start adding trusted issuers. This role can later be
     ///     transferred or granted to other operational addresses/contracts.
     /// The `initializer` modifier from `Initializable` ensures this function can only be executed once.
-    /// @param initialAdmin The address that will receive the initial `DEFAULT_ADMIN_ROLE` and `REGISTRAR_ROLE`.
-    /// This address will have full control over the registry's setup and initial population of trusted issuers.
-    /// @param initialRegistrars The addresses that will receive the initial `REGISTRAR_ROLE`.
-    /// These addresses will have the ability to add and remove trusted issuers.
+    /// @param accessManager The address of the access manager
     /// @dev Reverts with:
     ///      - `InvalidAdminAddress()` if `initialAdmin` is `address(0)`.
     ///      - `InvalidRegistrarAddress()` if any address in `initialRegistrars` is `address(0)`.
-    function initialize(address initialAdmin, address[] calldata initialRegistrars) public initializer {
-        if (initialAdmin == address(0)) revert InvalidAdminAddress();
-
+    function initialize(address accessManager) public initializer {
+        __ATKSystemAccessManaged_init(accessManager);
         __ERC165_init_unchained();
-        __AccessControl_init_unchained();
-
-        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin); // Manually grant DEFAULT_ADMIN_ROLE
-
-        for (uint256 i = 0; i < initialRegistrars.length; ++i) {
-            if (initialRegistrars[i] == address(0)) revert InvalidRegistrarAddress();
-            _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialRegistrars[i]);
-        }
-    }
-
-    // --- System Access Manager Functions ---
-
-    /// @notice Sets the system access manager for enhanced role checking
-    /// @dev Only callable by accounts with DEFAULT_ADMIN_ROLE. Setting to address(0) disables centralized access
-    /// control
-    /// @param systemAccessManager The address of the ATK system access manager, or address(0) to disable
-    function setSystemAccessManager(address systemAccessManager) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        _systemAccessManager = IATKSystemAccessManager(systemAccessManager);
-        emit SystemAccessManagerSet(_msgSender(), systemAccessManager);
-    }
-
-    /// @notice Returns the current system access manager address
-    /// @return The address of the system access manager, or address(0) if not set
-    function getSystemAccessManager() external view returns (address) {
-        return address(_systemAccessManager);
-    }
-
-    /// @notice Event emitted when the system access manager is updated
-    /// @param admin The address that updated the system access manager
-    /// @param systemAccessManager The new system access manager address
-    event SystemAccessManagerSet(address indexed admin, address indexed systemAccessManager);
-
-    // --- Access Control Modifiers ---
-
-    /// @notice Modifier that checks if the caller has any of the specified roles in the system access manager
-    /// @dev This implements the new centralized access pattern: onlySystemRoles(MANAGER_ROLE, [SYSTEM_ROLES])
-    /// Falls back to AccessControl if system access manager is not set
-    /// @param roles Array of roles, where the caller must have at least one
-    modifier onlySystemRoles(bytes32[] memory roles) {
-        if (address(_systemAccessManager) != address(0)) {
-            // Use centralized access manager when available
-            if (!_systemAccessManager.hasAnyRole(roles, _msgSender())) revert UnauthorizedAccess();
-        } else {
-            // Fall back to traditional AccessControl during bootstrap
-            if (!hasRole(ATKSystemRoles.REGISTRAR_ROLE, _msgSender())) revert MissingRegistrarRole();
-        }
-        _;
     }
 
     // --- Internal Helper Functions ---
@@ -279,8 +222,8 @@ contract ATKTrustedIssuersRegistryImplementation is
     /// @return roles Array of roles that can manage trusted issuers and claim policies
     function _getClaimPolicyManagementRoles() internal pure returns (bytes32[] memory roles) {
         roles = new bytes32[](3);
-        roles[0] = ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE; // Primary claim policy manager
-        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE; // System manager
+        roles[0] = ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE; // Primary claim policy manager
+        roles[1] = ATKPeopleRoles.SYSTEM_MANAGER_ROLE; // System manager
         roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE; // System module role
     }
 
@@ -312,7 +255,7 @@ contract ATKTrustedIssuersRegistryImplementation is
     )
         external
         override
-        onlySystemRoles(_getClaimPolicyManagementRoles())
+        onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
     {
         address issuerAddress = address(_trustedIssuer);
         if (issuerAddress == address(0)) revert InvalidIssuerAddress();
@@ -354,7 +297,7 @@ contract ATKTrustedIssuersRegistryImplementation is
     function removeTrustedIssuer(IClaimIssuer _trustedIssuer)
         external
         override
-        onlySystemRoles(_getClaimPolicyManagementRoles())
+        onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
     {
         address issuerAddress = address(_trustedIssuer);
         if (!_trustedIssuers[issuerAddress].exists) revert IssuerDoesNotExist(issuerAddress);
@@ -405,7 +348,7 @@ contract ATKTrustedIssuersRegistryImplementation is
     )
         external
         override
-        onlySystemRoles(_getClaimPolicyManagementRoles())
+        onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
     {
         address issuerAddress = address(_trustedIssuer);
         if (!_trustedIssuers[issuerAddress].exists) revert IssuerDoesNotExist(issuerAddress);
@@ -665,42 +608,10 @@ contract ATKTrustedIssuersRegistryImplementation is
         internal
         view
         virtual
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        override(ERC2771ContextUpgradeable, ATKSystemAccessManaged)
         returns (address)
     {
         return ERC2771ContextUpgradeable._msgSender();
-    }
-
-    /// @notice Provides the actual transaction data, supporting meta-transactions via ERC2771.
-    /// @dev Similar to `_msgSender()`, this overrides `_msgData()` from `ContextUpgradeable` and
-    /// `ERC2771ContextUpgradeable`.
-    /// If a transaction is relayed by a trusted forwarder, this returns the original `msg.data` (calldata) from the
-    /// user's signed transaction. If direct, it returns the current `msg.data`.
-    /// This ensures contract logic operates on the user's intended call data.
-    /// @return The original transaction data or current `msg.data`.
-    function _msgData()
-        internal
-        view
-        virtual
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (bytes calldata)
-    {
-        return ERC2771ContextUpgradeable._msgData();
-    }
-
-    /// @notice Returns the length of the suffix appended to transaction data by an ERC2771 trusted forwarder.
-    /// @dev Part of the ERC2771 standard, used by `ERC2771ContextUpgradeable` to parse the original sender.
-    /// A trusted forwarder appends the original sender's address to the `msg.data`. This function indicates the
-    /// length of this appended data (e.g., 20 bytes for an Ethereum address).
-    /// @return The length of the context suffix in bytes.
-    function _contextSuffixLength()
-        internal
-        view
-        virtual
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (uint256)
-    {
-        return ERC2771ContextUpgradeable._contextSuffixLength();
     }
 
     /// @inheritdoc IERC165
@@ -719,12 +630,13 @@ contract ATKTrustedIssuersRegistryImplementation is
         public
         view
         virtual
-        override(AccessControlUpgradeable, ERC165Upgradeable, IERC165) // Specifies primary parents being
+        override(ERC165Upgradeable, IERC165) // Specifies primary parents being
             // extended.
         returns (bool)
     {
         return interfaceId == type(IATKTrustedIssuersRegistry).interfaceId
             || interfaceId == type(IERC3643TrustedIssuersRegistry).interfaceId
-            || interfaceId == type(IClaimAuthorizer).interfaceId || super.supportsInterface(interfaceId);
+            || interfaceId == type(IClaimAuthorizer).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId
+            || super.supportsInterface(interfaceId);
     }
 }

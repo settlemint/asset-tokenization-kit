@@ -3,6 +3,9 @@ import {
   getEthereumAddress,
   type EthereumAddress,
 } from "@/lib/zod/validators/ethereum-address";
+import { createLogger } from "@settlemint/sdk-utils/logging";
+
+const logger = createLogger();
 
 /**
  * Type guard to check if a value has an id property
@@ -29,16 +32,29 @@ export function parseSystemComponent(
   component: unknown
 ): { id: EthereumAddress; accessControl: AccessControl } | null {
   if (!component) {
+    logger.error("parseSystemComponent: component is null or undefined");
     return null;
   }
 
   // Check if it has the required structure
   if (!hasId(component) || !hasAccessControl(component)) {
+    logger.error(
+      "parseSystemComponent: component missing required properties",
+      {
+        hasId: hasId(component),
+        hasAccessControl: hasAccessControl(component),
+        component: JSON.stringify(component),
+      }
+    );
     return null;
   }
 
   // Validate the id is a string
   if (typeof component.id !== "string") {
+    logger.error("parseSystemComponent: component.id is not a string", {
+      idType: typeof component.id,
+      id: component.id,
+    });
     return null;
   }
 
@@ -51,8 +67,12 @@ export function parseSystemComponent(
       id,
       accessControl: component.accessControl as AccessControl,
     };
-  } catch {
+  } catch (error) {
     // Invalid ethereum address
+    logger.error("parseSystemComponent: invalid ethereum address", {
+      id: component.id,
+      error: error instanceof Error ? error.message : String(error),
+    });
     return null;
   }
 }
@@ -64,16 +84,28 @@ export function parseSystemComponent(
  */
 export function getComponentId(component: unknown): EthereumAddress | null {
   if (!component || !hasId(component)) {
+    logger.error("getComponentId: component is null or missing id", {
+      component: component ? JSON.stringify(component) : "null",
+      hasId: component ? hasId(component) : false,
+    });
     return null;
   }
 
   if (typeof component.id !== "string") {
+    logger.error("getComponentId: component.id is not a string", {
+      idType: typeof component.id,
+      id: component.id,
+    });
     return null;
   }
 
   try {
     return getEthereumAddress(component.id);
-  } catch {
+  } catch (error) {
+    logger.error("getComponentId: invalid ethereum address", {
+      id: component.id,
+      error: error instanceof Error ? error.message : String(error),
+    });
     return null;
   }
 }

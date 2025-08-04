@@ -14,7 +14,8 @@ import { ATKLinearVestingStrategy } from
     "../../../contracts/addons/airdrop/vesting-airdrop/ATKLinearVestingStrategy.sol";
 import { IATKVestingStrategy } from "../../../contracts/addons/airdrop/vesting-airdrop/IATKVestingStrategy.sol";
 import { MockedERC20Token } from "../../utils/mocks/MockedERC20Token.sol";
-import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
+import { ATKSystemImplementation } from "../../../contracts/system/ATKSystemImplementation.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { AirdropUtils } from "../../utils/AirdropUtils.sol";
 
@@ -79,7 +80,9 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
 
         // Encode initialization data for the factory
         bytes memory encodedInitializationData = abi.encodeWithSelector(
-            ATKVestingAirdropFactoryImplementation.initialize.selector, address(systemUtils.system()), platformAdmin
+            ATKVestingAirdropFactoryImplementation.initialize.selector,
+            address(systemUtils.systemAccessManager()),
+            address(systemUtils.system())
         );
 
         // Create system addon for vesting airdrop factory
@@ -90,12 +93,7 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
         );
 
         // Grant DEPLOYER_ROLE to owner so they can create vesting airdrops
-        IAccessControl(address(vestingAirdropFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
-
-        // Grant SYSTEM_MODULE_ROLE to the factory so it can access compliance functions like addToBypassList
-        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
-            ATKSystemRoles.SYSTEM_MODULE_ROLE, address(vestingAirdropFactory)
-        );
+        systemUtils.systemAccessManager().grantRole(ATKPeopleRoles.ADDON_MANAGER_ROLE, owner);
 
         vm.stopPrank();
 

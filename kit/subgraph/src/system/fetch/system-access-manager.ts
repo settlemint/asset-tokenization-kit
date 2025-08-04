@@ -11,8 +11,6 @@ export function fetchSystemAccessManager(
     systemAccessManager = new SystemAccessManager(address);
     systemAccessManager.deployedInTransaction = Bytes.empty();
     systemAccessManager.accessControl = fetchAccessControl(address).id;
-    systemAccessManager.system = Address.empty();
-    systemAccessManager.save();
   }
 
   return systemAccessManager;

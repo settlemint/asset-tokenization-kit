@@ -15,7 +15,7 @@ import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 // Constants
-import { ATKRoles } from "../ATKRoles.sol";
+import { ATKAssetRoles } from "../ATKAssetRoles.sol";
 
 // Interface imports
 import { IATKFund } from "./IATKFund.sol";
@@ -139,13 +139,13 @@ contract ATKFundImplementation is
     /// @inheritdoc IContractWithIdentity
     function canAddClaim(address actor) external view override returns (bool) {
         // Delegate to AccessManager - only GOVERNANCE_ROLE can manage claims
-        return _hasRole(ATKRoles.GOVERNANCE_ROLE, actor);
+        return _hasRole(ATKAssetRoles.GOVERNANCE_ROLE, actor);
     }
 
     /// @inheritdoc IContractWithIdentity
     function canRemoveClaim(address actor) external view override returns (bool) {
         // Delegate to AccessManager - only GOVERNANCE_ROLE can manage claims
-        return _hasRole(ATKRoles.GOVERNANCE_ROLE, actor);
+        return _hasRole(ATKAssetRoles.GOVERNANCE_ROLE, actor);
     }
 
     // --- State-Changing Functions ---
@@ -153,7 +153,7 @@ contract ATKFundImplementation is
     /// @dev Only callable by addresses with GOVERNANCE_ROLE. Fee is calculated as:
     /// (AUM * fee_rate * time_elapsed) / (100% * 1 year)
     /// @return uint256 The amount of tokens minted as management fee
-    function collectManagementFee() public onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) returns (uint256) {
+    function collectManagementFee() public onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE) returns (uint256) {
         uint256 timeElapsed = block.timestamp - _lastFeeCollection;
         uint256 aum = totalSupply();
 
@@ -174,7 +174,7 @@ contract ATKFundImplementation is
     /// @notice Sets the OnchainID contract address for the fund token
     /// @dev Only callable by addresses with GOVERNANCE_ROLE
     /// @param _onchainID The address of the OnchainID contract to associate with this token
-    function setOnchainID(address _onchainID) external override onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) {
+    function setOnchainID(address _onchainID) external override onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE) {
         _smart_setOnchainID(_onchainID);
     }
 
@@ -184,7 +184,7 @@ contract ATKFundImplementation is
     function setIdentityRegistry(address _identityRegistry)
         external
         override
-        onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
     {
         _smart_setIdentityRegistry(_identityRegistry);
     }
@@ -192,7 +192,11 @@ contract ATKFundImplementation is
     /// @notice Sets the Compliance contract address
     /// @dev Only callable by addresses with GOVERNANCE_ROLE
     /// @param _compliance The address of the main compliance contract
-    function setCompliance(address _compliance) external override onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) {
+    function setCompliance(address _compliance)
+        external
+        override
+        onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
+    {
         _smart_setCompliance(_compliance);
     }
 
@@ -206,7 +210,7 @@ contract ATKFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
     {
         _smart_setParametersForComplianceModule(_module, _params);
     }
@@ -221,7 +225,7 @@ contract ATKFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
     {
         _smart_mint(_to, _amount);
     }
@@ -236,7 +240,7 @@ contract ATKFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
     {
         _smart_batchMint(_toList, _amounts);
     }
@@ -269,7 +273,7 @@ contract ATKFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.EMERGENCY_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.EMERGENCY_ROLE)
     {
         _smart_recoverERC20(token, to, amount);
     }
@@ -284,7 +288,7 @@ contract ATKFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
     {
         _smart_addComplianceModule(_module, _params);
     }
@@ -295,7 +299,7 @@ contract ATKFundImplementation is
     function removeComplianceModule(address _module)
         external
         override
-        onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
     {
         _smart_removeComplianceModule(_module);
     }
@@ -312,7 +316,7 @@ contract ATKFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
     {
         _smart_burn(userAddress, amount);
     }
@@ -327,7 +331,7 @@ contract ATKFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
     {
         _smart_batchBurn(userAddresses, amounts);
     }
@@ -344,7 +348,7 @@ contract ATKFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
     {
         _smart_setAddressFrozen(userAddress, freeze);
     }
@@ -359,7 +363,7 @@ contract ATKFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
     {
         _smart_freezePartialTokens(userAddress, amount);
     }
@@ -374,7 +378,7 @@ contract ATKFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
     {
         _smart_unfreezePartialTokens(userAddress, amount);
     }
@@ -389,7 +393,7 @@ contract ATKFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
     {
         _smart_batchSetAddressFrozen(userAddresses, freeze);
     }
@@ -404,7 +408,7 @@ contract ATKFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
     {
         _smart_batchFreezePartialTokens(userAddresses, amounts);
     }
@@ -419,7 +423,7 @@ contract ATKFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
     {
         _smart_batchUnfreezePartialTokens(userAddresses, amounts);
     }
@@ -437,7 +441,7 @@ contract ATKFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
         returns (bool)
     {
         return _smart_forcedTransfer(from, to, amount);
@@ -456,7 +460,7 @@ contract ATKFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
     {
         _smart_batchForcedTransfer(fromList, toList, amounts);
     }
@@ -471,7 +475,7 @@ contract ATKFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
     {
         _smart_recoverTokens(lostWallet, newWallet);
     }
@@ -480,13 +484,13 @@ contract ATKFundImplementation is
 
     /// @notice Pauses all token transfers
     /// @dev Only callable by addresses with EMERGENCY_ROLE
-    function pause() external override onlyAccessManagerRole(ATKRoles.EMERGENCY_ROLE) {
+    function pause() external override onlyAccessManagerRole(ATKAssetRoles.EMERGENCY_ROLE) {
         _smart_pause();
     }
 
     /// @notice Unpauses token transfers
     /// @dev Only callable by addresses with EMERGENCY_ROLE
-    function unpause() external override onlyAccessManagerRole(ATKRoles.EMERGENCY_ROLE) {
+    function unpause() external override onlyAccessManagerRole(ATKAssetRoles.EMERGENCY_ROLE) {
         _smart_unpause();
     }
 

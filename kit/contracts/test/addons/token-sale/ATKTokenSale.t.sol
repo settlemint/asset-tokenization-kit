@@ -168,14 +168,6 @@ contract ATKTokenSaleTest is Test {
         IAccessControl(address(tokenSale)).grantRole(keccak256("FUNDS_MANAGER_ROLE"), fundsManager);
         vm.stopPrank();
 
-        // For this test, we'll configure collateral requirements differently
-        // or use a token that doesn't require collateral backing
-        // TODO: Configure collateral properly for token sale scenario
-
-        // Temporarily comment out token minting due to collateral requirements
-        // vm.prank(tokenIssuer);
-        // smartToken.mint(address(tokenSale), HARD_CAP);
-
         // Setup identities and claims for test buyers
         _setupBuyerIdentities();
 

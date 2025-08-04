@@ -5,27 +5,31 @@ import { formatValue, safeToString } from "./format-value";
 import { from } from "dnum";
 
 // Mock the components used by formatValue (hoisted)
-vi.mock("@/components/ui/badge", () => ({
-  Badge: ({
-    children,
-    variant,
-    className,
-  }: {
-    children: React.ReactNode;
-    variant?: string;
-    className?: string;
-  }) => (
-    <span data-testid="badge" data-variant={variant} className={className}>
-      {children}
-    </span>
-  ),
-}));
+vi.mock("@/components/ui/badge", () => {
+  return {
+    Badge: ({
+      children,
+      variant,
+      className,
+    }: {
+      children: React.ReactNode;
+      variant?: string;
+      className?: string;
+    }) => (
+      <span data-testid="badge" data-variant={variant} className={className}>
+        {children}
+      </span>
+    ),
+  };
+});
 
-vi.mock("@/components/web3/web3-address", () => ({
-  Web3Address: ({ address }: { address: string }) => (
-    <span data-testid="web3-address">{address}</span>
-  ),
-}));
+vi.mock("@/components/web3/web3-address", () => {
+  return {
+    Web3Address: ({ address }: { address: string }) => (
+      <span data-testid="web3-address">{address}</span>
+    ),
+  };
+});
 
 vi.mock("@/lib/zod/validators/ethereum-address", () => ({
   getEthereumAddress: (value: unknown) => {

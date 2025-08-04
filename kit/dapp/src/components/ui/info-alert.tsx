@@ -1,5 +1,3 @@
-"use no memo";
-
 import { memo } from "react";
 
 interface InfoAlertProps {

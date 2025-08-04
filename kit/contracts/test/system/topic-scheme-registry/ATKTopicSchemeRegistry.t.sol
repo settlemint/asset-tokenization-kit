@@ -8,7 +8,10 @@ import { ISMARTTopicSchemeRegistry } from "../../../contracts/smart/interface/IS
 import { IATKTopicSchemeRegistry } from "../../../contracts/system/topic-scheme-registry/IATKTopicSchemeRegistry.sol";
 import { ATKTopicSchemeRegistryImplementation } from
     "../../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
+import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { ATKRoles } from "../../../contracts/system/ATKRoles.sol";
+import { ATKSystemImplementation } from "../../../contracts/system/ATKSystemImplementation.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IATKSystemAccessManager } from "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
 
@@ -20,7 +23,6 @@ contract ATKTopicSchemeRegistryTest is Test {
 
     address public admin = makeAddr("admin");
     address public claimPolicyManager = makeAddr("claimPolicyManager");
-    address public systemManager = makeAddr("systemManager");
     address public systemModule = makeAddr("systemModule");
     address public user = makeAddr("user");
 
@@ -59,7 +61,7 @@ contract ATKTopicSchemeRegistryTest is Test {
         topicSchemeRegistry = IATKTopicSchemeRegistry(systemUtils.system().topicSchemeRegistry());
 
         // Get the system access manager from the system
-        systemAccessManager = IATKSystemAccessManager(systemUtils.system().systemAccessManager());
+        systemAccessManager = IATKSystemAccessManager(systemUtils.systemAccessManager());
 
         // Capture the initial state after system bootstrap (includes default topic schemes)
         initialTopicSchemeCount = topicSchemeRegistry.getTopicSchemeCount();
@@ -67,8 +69,7 @@ contract ATKTopicSchemeRegistryTest is Test {
 
         // Grant roles to test accounts through the system access manager
         vm.startPrank(admin);
-        systemAccessManager.grantRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager);
-        systemAccessManager.grantRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE, systemManager);
+        systemAccessManager.grantRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager);
         systemAccessManager.grantRole(ATKSystemRoles.SYSTEM_MODULE_ROLE, systemModule);
         vm.stopPrank();
     }
@@ -86,7 +87,8 @@ contract ATKTopicSchemeRegistryTest is Test {
     }
 
     function test_SystemAccessManager() public view {
-        address accessManagerAddress = topicSchemeRegistry.getSystemAccessManager();
+        address accessManagerAddress =
+            ATKTopicSchemeRegistryImplementation(address(topicSchemeRegistry)).accessManager();
         assertEq(accessManagerAddress, address(systemAccessManager), "System access manager address should match");
     }
 
@@ -103,21 +105,6 @@ contract ATKTopicSchemeRegistryTest is Test {
         assertTrue(topicSchemeRegistry.hasTopicSchemeByName(TOPIC_NAME_1));
         assertEq(topicSchemeRegistry.getTopicSchemeSignature(expectedTopicId), SIGNATURE_1);
         assertEq(topicSchemeRegistry.getTopicSchemeSignatureByName(TOPIC_NAME_1), SIGNATURE_1);
-        assertEq(topicSchemeRegistry.getTopicSchemeCount(), initialTopicSchemeCount + 1);
-    }
-
-    function test_RegisterTopicScheme_BySystemManager() public {
-        uint256 expectedTopicId = topicSchemeRegistry.getTopicId(TOPIC_NAME_4);
-
-        vm.prank(systemManager);
-        vm.expectEmit(true, true, false, true);
-        emit TopicSchemeRegistered(systemManager, expectedTopicId, TOPIC_NAME_4, SIGNATURE_4);
-
-        topicSchemeRegistry.registerTopicScheme(TOPIC_NAME_4, SIGNATURE_4);
-
-        assertTrue(topicSchemeRegistry.hasTopicScheme(expectedTopicId));
-        assertTrue(topicSchemeRegistry.hasTopicSchemeByName(TOPIC_NAME_4));
-        assertEq(topicSchemeRegistry.getTopicSchemeSignature(expectedTopicId), SIGNATURE_4);
         assertEq(topicSchemeRegistry.getTopicSchemeCount(), initialTopicSchemeCount + 1);
     }
 
@@ -195,33 +182,6 @@ contract ATKTopicSchemeRegistryTest is Test {
         assertTrue(topicSchemeRegistry.hasTopicSchemeByName(TOPIC_NAME_3));
     }
 
-    function test_BatchRegisterTopicSchemes_BySystemManager() public {
-        string[] memory names = new string[](2);
-        names[0] = TOPIC_NAME_4;
-        names[1] = TOPIC_NAME_5;
-
-        string[] memory signatures = new string[](2);
-        signatures[0] = SIGNATURE_4;
-        signatures[1] = SIGNATURE_5;
-
-        // Calculate expected topic IDs
-        uint256[] memory expectedTopicIds = new uint256[](2);
-        expectedTopicIds[0] = topicSchemeRegistry.getTopicId(TOPIC_NAME_4);
-        expectedTopicIds[1] = topicSchemeRegistry.getTopicId(TOPIC_NAME_5);
-
-        vm.prank(systemManager);
-        vm.expectEmit(true, false, false, false);
-        emit TopicSchemesBatchRegistered(systemManager, expectedTopicIds, names, signatures);
-
-        topicSchemeRegistry.batchRegisterTopicSchemes(names, signatures);
-
-        assertEq(topicSchemeRegistry.getTopicSchemeCount(), initialTopicSchemeCount + 2);
-        assertTrue(topicSchemeRegistry.hasTopicScheme(expectedTopicIds[0]));
-        assertTrue(topicSchemeRegistry.hasTopicScheme(expectedTopicIds[1]));
-        assertTrue(topicSchemeRegistry.hasTopicSchemeByName(TOPIC_NAME_4));
-        assertTrue(topicSchemeRegistry.hasTopicSchemeByName(TOPIC_NAME_5));
-    }
-
     function test_UpdateTopicScheme_BySystemModule() public {
         // First register with claim policy manager
         vm.prank(claimPolicyManager);
@@ -243,50 +203,8 @@ contract ATKTopicSchemeRegistryTest is Test {
         );
     }
 
-    function test_RemoveTopicScheme_BySystemManager() public {
-        // First register with claim policy manager
-        vm.prank(claimPolicyManager);
-        topicSchemeRegistry.registerTopicScheme(TOPIC_NAME_1, SIGNATURE_1);
-
-        // Verify it exists
-        assertTrue(topicSchemeRegistry.hasTopicSchemeByName(TOPIC_NAME_1));
-
-        // Then remove with system manager role
-        uint256 topicId = topicSchemeRegistry.getTopicId(TOPIC_NAME_1);
-
-        vm.prank(systemManager);
-        vm.expectEmit(true, true, false, true);
-        emit TopicSchemeRemoved(systemManager, topicId, TOPIC_NAME_1);
-
-        topicSchemeRegistry.removeTopicScheme(TOPIC_NAME_1);
-
-        // Verify it's gone
-        assertFalse(
-            topicSchemeRegistry.hasTopicSchemeByName(TOPIC_NAME_1), "Topic scheme should be removed by system manager"
-        );
-    }
-
-    function test_SetSystemAccessManager() public {
-        // Create a mock access manager
-        address mockAccessManager = address(0x9999);
-
-        // Only admin should be able to set access manager
-        vm.prank(admin);
-        vm.expectEmit(true, true, false, true);
-        emit SystemAccessManagerSet(admin, mockAccessManager);
-
-        topicSchemeRegistry.setSystemAccessManager(mockAccessManager);
-
-        // Verify it was set
-        assertEq(
-            topicSchemeRegistry.getSystemAccessManager(), mockAccessManager, "System access manager should be updated"
-        );
-
-        // Try with unauthorized user
-        vm.prank(user);
-        vm.expectRevert(); // Should revert with UnauthorizedAccess error
-        topicSchemeRegistry.setSystemAccessManager(address(0x8888));
-    }
+    // Test removed: setSystemAccessManager no longer exists - access manager is set during initialization and cannot be
+    // changed
 
     function test_GetTopicId_Deterministic() public view {
         uint256 topicId1 = topicSchemeRegistry.getTopicId(TOPIC_NAME_1);
@@ -340,12 +258,12 @@ contract ATKTopicSchemeRegistryTest is Test {
         // Test that the topic scheme registry correctly references the system access manager
         ATKTopicSchemeRegistryImplementation registry =
             ATKTopicSchemeRegistryImplementation(address(topicSchemeRegistry));
-        assertEq(registry.getSystemAccessManager(), address(systemAccessManager));
+        assertEq(registry.accessManager(), address(systemAccessManager));
 
-        // Test hasRole delegation
-        assertTrue(registry.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
-        assertTrue(registry.hasRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager));
-        assertFalse(registry.hasRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, user));
+        // Test hasRole delegation through access manager
+        assertTrue(systemAccessManager.hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(systemAccessManager.hasRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager));
+        assertFalse(systemAccessManager.hasRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, user));
     }
 
     function test_ComplexWorkflow() public {
@@ -404,16 +322,5 @@ contract ATKTopicSchemeRegistryTest is Test {
         assertEq(topicSchemeRegistry.getTopicSchemeCount(), countBefore + 1);
     }
 
-    function test_Initialize_ZeroAddressSystemAccessManager() public pure {
-        // NOTE: This test verifies that our validation exists by checking the error selector
-        // The actual runtime validation is tested during system bootstrap
-        bytes4 expectedSelector = ATKTopicSchemeRegistryImplementation.SystemAccessManagerCannotBeZeroAddress.selector;
-
-        // Verify the error selector exists and has the expected value
-        assertTrue(expectedSelector != bytes4(0), "Error selector should be defined");
-        assertEq(expectedSelector, bytes4(keccak256("SystemAccessManagerCannotBeZeroAddress()")));
-
-        // The validation is automatically tested during bootstrap since a zero address
-        // would cause the bootstrap to fail, which is verified by other passing tests
-    }
+    // Test removed: Zero address validation is now handled by ATKSystemAccessManaged base contract
 }

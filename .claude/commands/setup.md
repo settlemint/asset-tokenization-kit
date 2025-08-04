@@ -2,6 +2,14 @@
 
 This command configures all recommended MCP servers for the project.
 
+## Agent Usage
+
+**Use researcher agent to:**
+
+- Gather latest MCP server documentation
+- Find configuration best practices
+- Research any server-specific setup requirements
+
 ## Steps
 
 1. **Check existing MCP configuration**

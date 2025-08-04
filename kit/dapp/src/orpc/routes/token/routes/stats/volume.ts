@@ -105,16 +105,13 @@ export const statsVolume = tokenRouter.token.statsVolume
 
     // Fetch token total volume history from TheGraph
     // tokenAddress is already validated and checksummed by ethereumAddress schema
-    const response = await context.theGraphClient.query(
-      TOKEN_VOLUME_QUERY,
-      {
-        input: {
-          tokenId: tokenAddress.toLowerCase(),
-          since: sinceTimestamp.toString(),
-        },
-        output: StatsVolumeResponseSchema,
-      }
-    );
+    const response = await context.theGraphClient.query(TOKEN_VOLUME_QUERY, {
+      input: {
+        tokenId: tokenAddress.toLowerCase(),
+        since: sinceTimestamp.toString(),
+      },
+      output: StatsVolumeResponseSchema,
+    });
 
     // Process the raw data into the expected output format
     const volumeHistory = processVolumeHistoryData(

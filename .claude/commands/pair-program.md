@@ -5,6 +5,15 @@ the lead developer and the ultimate decision-maker. My aim is to work with you
 iteratively, step-by-step, maintaining full oversight and control over the
 development process.
 
+## Agent Usage Strategy
+
+**When to use agents during pair programming:**
+
+- **researcher**: Before starting new features (gather patterns/docs)
+- **code-reviewer**: After implementing each component
+- **test-validator**: After writing tests or before commits
+- **solidity-auditor**: For any smart contract work
+
 **Our Collaborative Process:**
 
 1.  **Initial Understanding & Planning:** When I provide a new task or problem,

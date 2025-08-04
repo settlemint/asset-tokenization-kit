@@ -29,8 +29,12 @@
       "cache": false,
       "dependsOn": ["package", "^publish"]
     },
+    "publish:test": {
+      "cache": false,
+      "dependsOn": ["package", "^publish"]
+    },
     "test:integration": {
-      "dependsOn": ["test:codegen:gql-tada"]
+      "dependsOn": ["test:codegen:gql-tada", "test"]
     },
     "translate": {},
     "artifacts": {
