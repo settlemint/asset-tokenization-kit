@@ -23,8 +23,6 @@ export function useSearchAddresses({
   searchTerm,
   scope,
 }: UseSearchAddressesOptions): UseSearchAddressesReturn {
-  const searchByAddress = searchTerm;
-
   const shouldSearchUsers = scope === "user" || scope === "all";
   const shouldSearchAssets = scope === "asset" || scope === "all";
 
@@ -33,7 +31,7 @@ export function useSearchAddresses({
     orpc.user.list.queryOptions({
       enabled: shouldSearchUsers,
       input: {
-        searchByAddress: searchTerm.length > 0 ? searchByAddress : undefined,
+        searchByAddress: searchTerm.length > 0 ? searchTerm : undefined,
       },
 
       staleTime: 1000 * 60 * 30, // Cache user data for 30 minutes as it rarely changes
@@ -45,7 +43,7 @@ export function useSearchAddresses({
     orpc.token.list.queryOptions({
       enabled: shouldSearchAssets,
       input: {
-        searchByAddress: searchTerm.length > 0 ? searchByAddress : undefined,
+        searchByAddress: searchTerm.length > 0 ? searchTerm : undefined,
       },
       staleTime: 1000 * 60 * 30, // Cache token data for 30 minutes as it rarely changes
     })

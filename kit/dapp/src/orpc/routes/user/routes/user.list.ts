@@ -1,11 +1,10 @@
 import { kycProfiles, user } from "@/lib/db/schema";
-import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { getUserRole } from "@/lib/zod/validators/user-roles";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
-import { asc, desc, eq, type AnyColumn } from "drizzle-orm";
+import { asc, desc, eq, ilike, type AnyColumn } from "drizzle-orm";
 
 /**
  * User listing route handler.
@@ -78,7 +77,7 @@ export const list = authRouter.user.list
 
     const result = await (
       searchByAddress
-        ? baseQuery.where(eq(user.wallet, getEthereumAddress(searchByAddress)))
+        ? baseQuery.where(ilike(user.wallet, `%${searchByAddress}%`))
         : baseQuery
     )
       .orderBy(order(orderColumn))
