@@ -19,19 +19,14 @@ export default defineConfig({
     },
     include: ["src/**/*.test.{ts,tsx}"],
     passWithNoTests: true,
-    // Use forks in CI for better isolation and stability
-    // Threads with isolate:false can cause race conditions in resource-constrained CI environments
-    pool: process.env.CI ? "forks" : "threads",
+    // Always use forks pool for consistency between local and CI environments
+    pool: "forks",
     poolOptions: {
-      threads: {
-        useAtomics: true,
-        isolate: false,
-      },
       forks: {
         isolate: true,
       },
     },
-    isolate: process.env.CI ? true : false,
+    isolate: true,
     reporters: process.env.CLAUDECODE
       ? ["dot"]
       : process.env.CI
