@@ -21,7 +21,7 @@ export function AddressInput({
 }: AddressInputProps) {
   // Validate the current value
   const isValid = value === "" || isAddress(value);
-  const shouldShowError = showError && value !== "" && !isValid;
+  const shouldShowError = showError && !isValid;
 
   return (
     <div>

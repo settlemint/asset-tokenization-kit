@@ -1,5 +1,6 @@
 import { complianceModuleConfig } from "@/components/compliance/config";
 import {
+  ComplianceDetailActions,
   ComplianceDetailBreadcrumb,
   ComplianceDetailCard,
   ComplianceDetailContent,
@@ -84,26 +85,6 @@ export function CountryRestrictionModuleDetail({
     initialValues?.values ?? []
   );
 
-  // Enable/Disable action buttons
-  const actionButtons = (
-    <>
-      {isEnabled && (
-        <Button
-          variant="outline"
-          onClick={() => {
-            handleDisable();
-            onClose();
-          }}
-        >
-          {t("form:buttons.disable")}
-        </Button>
-      )}
-      {!isEnabled && (
-        <Button onClick={handleEnable}>{t("form:buttons.enable")}</Button>
-      )}
-    </>
-  );
-
   return (
     <ComplianceDetailCard>
       <ComplianceDetailHeader>
@@ -116,7 +97,14 @@ export function CountryRestrictionModuleDetail({
         <ComplianceDetailSection>
           <ComplianceDetailTitle
             icon={<config.icon className="w-5 h-5" />}
-            action={actionButtons}
+            action={
+              <ComplianceDetailActions
+                isEnabled={isEnabled}
+                onEnable={handleEnable}
+                onDisable={handleDisable}
+                onClose={onClose}
+              />
+            }
           >
             {t(`modules.${moduleKey}.title`)}
           </ComplianceDetailTitle>

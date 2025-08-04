@@ -3,6 +3,7 @@ import { AddressSelect } from "@/components/address/address-select";
 import { AddressSelectOrInputToggle } from "@/components/address/address-select-or-input-toggle";
 import { complianceModuleConfig } from "@/components/compliance/config";
 import {
+  ComplianceDetailActions,
   ComplianceDetailBreadcrumb,
   ComplianceDetailCard,
   ComplianceDetailContent,
@@ -96,27 +97,17 @@ export function AddressRestrictionModuleDetail({
       .map((a) => a.toLowerCase())
       .sort();
 
-    return JSON.stringify(initial) !== JSON.stringify(current);
+    const initialSet = new Set(initial);
+    const currentSet = new Set(current);
+
+    return (
+      initialSet.size !== currentSet.size ||
+      JSON.stringify(initialSet) !== JSON.stringify(currentSet)
+    );
   })();
 
-  // Enable/Disable action buttons
-  const actionButtons = (
-    <>
-      {isEnabled && (
-        <Button
-          variant="outline"
-          onClick={() => {
-            handleDisable();
-            onClose();
-          }}
-        >
-          {t("form:buttons.disable")}
-        </Button>
-      )}
-      {!isEnabled && (
-        <Button onClick={handleEnable}>{t("form:buttons.enable")}</Button>
-      )}
-    </>
+  const hasInvalidAddresses = selectedAddresses.some(
+    (addr) => !isAddress(addr)
   );
 
   return (
@@ -131,7 +122,14 @@ export function AddressRestrictionModuleDetail({
         <ComplianceDetailSection>
           <ComplianceDetailTitle
             icon={<config.icon className="w-5 h-5" />}
-            action={actionButtons}
+            action={
+              <ComplianceDetailActions
+                isEnabled={isEnabled}
+                onEnable={handleEnable}
+                onDisable={handleDisable}
+                onClose={onClose}
+              />
+            }
           >
             {t(`modules.${moduleKey}.title`)}
           </ComplianceDetailTitle>
@@ -189,7 +187,7 @@ export function AddressRestrictionModuleDetail({
           {t("form:buttons.back")}
         </Button>
         <Button
-          disabled={!isEnabled || !isInputChanged}
+          disabled={!isEnabled || hasInvalidAddresses || !isInputChanged}
           onClick={() => {
             handleEnable();
             onClose();

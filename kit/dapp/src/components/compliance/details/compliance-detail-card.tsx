@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ArrowLeftIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 // Main container component
 export type ComplianceDetailCardProps = React.HTMLAttributes<HTMLDivElement>;
@@ -181,5 +182,44 @@ export function ComplianceDetailFooter({
       className={cn("flex items-center justify-between gap-3 pt-6", className)}
       {...props}
     />
+  );
+}
+
+// Actions component for enable/disable buttons
+export type ComplianceDetailActionsProps = {
+  isEnabled: boolean;
+  onEnable: () => void;
+  onDisable: () => void;
+  onClose: () => void;
+};
+
+export function ComplianceDetailActions({
+  isEnabled,
+  onEnable,
+  onDisable,
+  onClose,
+}: ComplianceDetailActionsProps) {
+  const { t } = useTranslation("form");
+
+  return (
+    <>
+      {isEnabled && (
+        <Button
+          variant="outline"
+          onClick={() => {
+            onDisable();
+            onClose();
+          }}
+          className="press-effect"
+        >
+          {t("buttons.disable")}
+        </Button>
+      )}
+      {!isEnabled && (
+        <Button onClick={onEnable} className="press-effect">
+          {t("buttons.enable")}
+        </Button>
+      )}
+    </>
   );
 }
