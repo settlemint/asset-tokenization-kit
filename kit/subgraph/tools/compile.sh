@@ -21,9 +21,9 @@ if grep -q '0x5e771e1417100000000000000000000000020088' subgraph.yaml; then
     if [ -n "$SUBGRAPH_HASH" ]; then
         echo "$SUBGRAPH_HASH" > .generated/subgraph-hash.txt
         echo "SUBGRAPH=kit:$SUBGRAPH_HASH" > .generated/subgraph-env
-        echo "Saved IPFS hash: $SUBGRAPH_HASH"
+        echo "Saved subgraph hash: $SUBGRAPH_HASH"
     else
-        echo "Warning: No IPFS hash found in build output"
+        echo "Warning: No subgraph hash found in build output"
     fi
 else
     # Address doesn't match, just build without updating generated files
