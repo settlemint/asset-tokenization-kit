@@ -18,11 +18,11 @@
     "package:push:harbor": "helm push ./atk-*.tgz oci://harbor.settlemint.com/atk",
     "package:ecr": "bun run tools/package-ecr.ts",
     "helm:secrets": "op inject --force -i tools/values-orbstack.1p.yaml -o tools/values-orbstack.yaml ",
-    "helm:check-context": "[ \"$(kubectl config current-context)\" = \"orbstack\" ] || (echo \"Error: Not in orbstack context. Current context: $(kubectl config current-context)\" && exit 1)",
+    "helm:check-context": "bash tools/helm-check-context.sh",
     "helm": "bun run helm:secrets && helm upgrade --install atk ./atk -f ./tools/values-orbstack.yaml -n atk --create-namespace --timeout 15m",
     "helm:extract-env": "bun run tools/extract-env.ts",
     "helm:connect": "cd ../../ && bunx settlemint connect -a",
-    "helm:subgraph": "yq eval '.graph-node.graphNodeDefaults.env.SUBGRAPH = \"kit:'$(cat ../subgraph/.generated/subgraph-hash.txt | tr -d '\\n')'\"' -i atk/charts/thegraph/values.yaml ",
+    "helm:subgraph": "bash tools/helm-subgraph.sh",
     "docs": "helm-docs --chart-search-root=. --skip-version-footer"
   },
   "dependencies": {},
