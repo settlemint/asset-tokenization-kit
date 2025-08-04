@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Plus, X } from "lucide-react";
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 export interface ArrayFieldsLayoutProps<T> {
   values: T[];
@@ -17,9 +18,10 @@ export function ArrayFieldsLayout<T>({
   onAdd,
   onRemove,
   component,
-  addButtonLabel = "Add Item",
+  addButtonLabel,
   className,
 }: ArrayFieldsLayoutProps<T>) {
+  const { t } = useTranslation("common");
   return (
     <div className={cn("space-y-3", className)}>
       {values.map((value, index) => (
@@ -46,7 +48,7 @@ export function ArrayFieldsLayout<T>({
         className="flex items-center gap-2"
       >
         <Plus className="size-4" />
-        {addButtonLabel}
+        {addButtonLabel || t("actions.add")}
       </Button>
     </div>
   );
