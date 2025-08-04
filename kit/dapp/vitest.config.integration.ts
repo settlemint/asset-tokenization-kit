@@ -16,6 +16,13 @@ export default defineConfig({
     },
     include: ["test/**/*.spec.ts"],
     exclude: ["node_modules", "dist", "src/**/*.test.ts", "src/**/*.spec.ts"],
+    reporters: process.env.CLAUDECODE
+      ? ["dot"]
+      : process.env.CI
+        ? ["dot", "github-actions"]
+        : ["default"],
+    onConsoleLog: process.env.CLAUDECODE ? () => false : undefined,
+    silent: process.env.CLAUDECODE ? true : undefined,
   },
   resolve: {
     alias: {

@@ -32,46 +32,48 @@ User provided context: "$ARGUMENTS"
 ## Step 0: Gather Context from Linear and Sentry
 
 ### Linear Bug Tracking
+
 ```javascript
 // Search for related bug reports
 mcp__linear__list_issues({
   organizationSlug: "your-org",
   query: "error message or symptom",
   includeArchived: true,
-  limit: 10
-})
+  limit: 10,
+});
 
 // Check specific issue details
 mcp__linear__get_issue({
-  id: "BUG-123"
-})
+  id: "BUG-123",
+});
 
 // Review comments for debugging insights
 mcp__linear__list_comments({
-  issueId: "BUG-123"
-})
+  issueId: "BUG-123",
+});
 ```
 
 ### Sentry Error Analysis
+
 ```javascript
 // Search for production errors
 mcp__sentry__search_issues({
   organizationSlug: "your-org",
   naturalLanguageQuery: "error message or stack trace fragment",
-  limit: 10
-})
+  limit: 10,
+});
 
 // Get detailed error information
 mcp__sentry__get_issue_details({
   organizationSlug: "your-org",
-  issueId: "ERROR-456"
-})
+  issueId: "ERROR-456",
+});
 
 // Analyze with Seer AI
 mcp__sentry__analyze_issue_with_seer({
   organizationSlug: "your-org",
-  issueId: "ERROR-456"
-})
+  issueId: "ERROR-456",
+});
 ```
 
 ## Step 1: Analyze Problem Scope and Select Strategy
@@ -121,19 +123,25 @@ mcp__gemini-cli__ask-gemini({
 - Cross-system failures
 - Production incidents
 
-## Step 2: Execute Multi-Agent Debugging Protocol
+## Step 2: Execute Agent-Based Debugging Protocol
 
-**CRITICAL:** Generate specialized debugging agents based on the problem type.
-All agents must work in parallel for efficiency.
+**Use specific agents based on problem type:**
 
-### Dynamic Agent Allocation Pattern:
+### Agent Selection Guide:
 
 ```
-Simple issues (clear errors): 1-2 agents (Data Collector, Solution Implementer)
-Medium complexity: 3-4 agents (+ Hypothesis Generator, Test Designer)
-Complex issues: 5+ agents (+ Performance Profiler, Security Auditor)
-Production incidents: All agents + incident responders
+Initial Research: researcher agent (gather docs, patterns, similar issues)
+Code Analysis: code-reviewer agent (architecture, dependencies, complexity)
+Test Validation: test-validator agent (run tests, check coverage)
+Contract Issues: solidity-auditor agent (security, gas, standards)
 ```
+
+### Recommended Workflow:
+
+1. **researcher**: Gather relevant documentation and known solutions
+2. **code-reviewer**: Analyze code structure and dependencies
+3. **test-validator**: Run targeted tests to isolate issue
+4. For smart contracts: **solidity-auditor** for deep analysis
 
 ### Core Agent Templates:
 

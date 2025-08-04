@@ -21,10 +21,27 @@ export default defineConfig({
   build: {
     sourcemap: IS_DEV,
     minify: IS_DEV ? false : "esbuild",
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // Suppress unused import warnings from external modules
+        if (warning.code === "UNUSED_EXTERNAL_IMPORT") {
+          return;
+        }
+        // Suppress sourcemap warnings for plugins that don't generate them
+        if (
+          warning.message &&
+          warning.message.includes("Sourcemap is likely to be incorrect")
+        ) {
+          return;
+        }
+        warn(warning);
+      },
+    },
   },
   define: {
     "process.env.BUILD_ID": JSON.stringify(BUILD_ID),
   },
+  logLevel: process.env.CLAUDECODE ? "warn" : "info",
   optimizeDeps: {
     include: [
       "@radix-ui/react-accordion",

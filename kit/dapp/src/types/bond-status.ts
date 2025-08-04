@@ -68,7 +68,7 @@ export interface BondStatusStrategy {
    * Get display data for this bond state
    */
   getDisplayData(
-    t: TFunction<readonly ["stats", "tokens"], undefined>,
+    t: TFunction<readonly ["stats", "tokens"]>,
     progress: number
   ): BondDisplayData;
 }

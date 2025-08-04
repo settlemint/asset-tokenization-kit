@@ -13,6 +13,7 @@ const TOKEN_BOND_STATUS_QUERY = theGraphGraphql(`
     tokenBondStats_collection(
       interval: hour
       where: { token: $tokenId }
+      interval: hour
       orderBy: timestamp
       orderDirection: desc
       first: 1

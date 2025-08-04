@@ -3,7 +3,7 @@ import {
   addonType,
 } from "@/lib/zod/validators/addon-types";
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { transactionHash } from "@/lib/zod/validators/transaction-hash";
+import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { z } from "zod";
 
@@ -29,7 +29,7 @@ export const SystemAddonSchema = z.object({
   /**
    * The transaction hash where the addon was deployed
    */
-  deployedInTransaction: transactionHash.describe(
+  deployedInTransaction: ethereumHash.describe(
     "The transaction hash where the addon was deployed"
   ),
 
@@ -78,7 +78,7 @@ const TheGraphSystemAddonSchema = z.object({
   id: ethereumAddress.describe("The addon contract address"),
   name: z.string().describe("The name of the system addon"),
   typeId: addonFactoryTypeId().describe("The type ID of the system addon"),
-  deployedInTransaction: transactionHash.describe(
+  deployedInTransaction: ethereumHash.describe(
     "The transaction hash where the addon was deployed"
   ),
   account: z

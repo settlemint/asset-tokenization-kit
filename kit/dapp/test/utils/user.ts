@@ -126,7 +126,9 @@ export async function setupUser(user: User) {
     );
     const sessionBeforeWallet = await authClient.getSession({
       fetchOptions: {
-        headers: signInHeaders,
+        headers: {
+          ...Object.fromEntries(signInHeaders.entries()),
+        },
       },
     });
 
@@ -166,12 +168,16 @@ export async function setupUser(user: User) {
       // Verify wallet was created
       const sessionAfterWallet = await authClient.getSession({
         fetchOptions: {
-          headers: freshHeaders,
+          headers: {
+            ...Object.fromEntries(freshHeaders.entries()),
+          },
         },
       });
+      const createdWallet = sessionAfterWallet.data?.user.wallet;
       console.log(
-        `[setupUser] User ${user.email} wallet after creation: ${sessionAfterWallet.data?.user.wallet}`
+        `[setupUser] User ${user.email} wallet after creation: ${createdWallet}`
       );
+      // Wallet funding is now handled in wallet.ts createWallet function
     }
 
     // Step 3: Enable pincode
@@ -181,7 +187,11 @@ export async function setupUser(user: User) {
       {
         pincode: DEFAULT_PINCODE,
       },
-      { headers: pincodeHeaders }
+      {
+        headers: {
+          ...Object.fromEntries(pincodeHeaders.entries()),
+        },
+      }
     );
 
     if (pincodeError) {
@@ -212,7 +222,9 @@ export async function setupUser(user: User) {
         password: user.password,
       },
       {
-        headers: secretCodeHeaders,
+        headers: {
+          ...Object.fromEntries(secretCodeHeaders.entries()),
+        },
       }
     );
 
@@ -240,7 +252,11 @@ export async function setupUser(user: User) {
         {
           stored: true,
         },
-        { headers: confirmSecretCodeHeaders }
+        {
+          headers: {
+            ...Object.fromEntries(confirmSecretCodeHeaders.entries()),
+          },
+        }
       );
     if (confirmSecretCodeError) {
       console.log(`[setupUser] Confirm secret code error for ${user.email}:`, {
@@ -260,7 +276,9 @@ export async function setupUser(user: User) {
     const sessionHeaders = await signInWithUser(user);
     const session = await authClient.getSession({
       fetchOptions: {
-        headers: sessionHeaders,
+        headers: {
+          ...Object.fromEntries(sessionHeaders.entries()),
+        },
       },
     });
 
@@ -298,7 +316,14 @@ export async function setupUser(user: User) {
 
 export async function getUserData(user: User) {
   const headers = await signInWithUser(user);
-  const session = await authClient.getSession({}, { headers });
+  const session = await authClient.getSession(
+    {},
+    {
+      headers: {
+        ...Object.fromEntries(headers.entries()),
+      },
+    }
+  );
   const userInfo = session.data?.user;
   if (!userInfo) {
     throw new Error(`User ${user.email} not found`);

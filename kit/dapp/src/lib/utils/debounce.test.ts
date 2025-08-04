@@ -2,10 +2,18 @@
  * Tests for debounce utility
  */
 
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { debounce, debounceLeading } from "./debounce";
 
 describe("debounce", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("should debounce function calls", async () => {
     const fn = vi.fn();
     const debouncedFn = debounce(fn, 100);
@@ -16,7 +24,7 @@ describe("debounce", () => {
 
     expect(fn).not.toHaveBeenCalled();
 
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    await vi.advanceTimersByTimeAsync(150);
 
     expect(fn).toHaveBeenCalledTimes(1);
     expect(fn).toHaveBeenCalledWith("third");
@@ -32,7 +40,7 @@ describe("debounce", () => {
     debouncedFn.cancel();
     expect(debouncedFn.pending()).toBe(false);
 
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    await vi.advanceTimersByTimeAsync(150);
 
     expect(fn).not.toHaveBeenCalled();
   });
@@ -59,7 +67,7 @@ describe("debounce", () => {
     debouncedFn("test");
     expect(debouncedFn.pending()).toBe(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    await vi.advanceTimersByTimeAsync(150);
     expect(debouncedFn.pending()).toBe(false);
   });
 
@@ -70,13 +78,13 @@ describe("debounce", () => {
     // Rapid calls
     for (let i = 0; i < 10; i++) {
       debouncedFn(i);
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      await vi.advanceTimersByTimeAsync(10);
     }
 
     expect(fn).not.toHaveBeenCalled();
 
     // Wait for debounce
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await vi.advanceTimersByTimeAsync(100);
 
     expect(fn).toHaveBeenCalledTimes(1);
     expect(fn).toHaveBeenCalledWith(9); // Last value
@@ -84,6 +92,14 @@ describe("debounce", () => {
 });
 
 describe("debounceLeading", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("should execute immediately on first call", () => {
     const fn = vi.fn();
     const debouncedFn = debounceLeading(fn, 100);
@@ -104,7 +120,7 @@ describe("debounceLeading", () => {
     expect(fn).toHaveBeenCalledTimes(1);
     expect(fn).toHaveBeenCalledWith("first");
 
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    await vi.advanceTimersByTimeAsync(150);
 
     expect(fn).toHaveBeenCalledTimes(2);
     expect(fn.mock.calls[1]).toEqual(["third"]);
@@ -117,7 +133,7 @@ describe("debounceLeading", () => {
     debouncedFn("first");
     expect(fn).toHaveBeenCalledTimes(1);
 
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    await vi.advanceTimersByTimeAsync(150);
 
     debouncedFn("second");
     expect(fn).toHaveBeenCalledTimes(2);
@@ -134,7 +150,7 @@ describe("debounceLeading", () => {
     expect(fn).toHaveBeenCalledTimes(1);
 
     debouncedFn.cancel();
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    await vi.advanceTimersByTimeAsync(150);
 
     expect(fn).toHaveBeenCalledTimes(1); // No additional call
   });

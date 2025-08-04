@@ -22,8 +22,8 @@ export async function bootstrapSystem(orpClient: OrpcClient) {
           }
           return sys;
         },
-        5, // max retries
-        2000 // wait 2 seconds between retries
+        10, // max retries
+        1000 // wait 1 second between retries
       );
     }
     return system;
@@ -41,8 +41,10 @@ export async function bootstrapSystem(orpClient: OrpcClient) {
     throw new Error("Failed to bootstrap system");
   }
 
-  // No need to grant permissions anymore as it's already done in the Ignition module
-  console.log("✓ Permissions already granted during system bootstrap");
+  // System.create now grants all necessary roles including:
+  // - DEFAULT_ADMIN_ROLE and SYSTEM_MANAGER_ROLE (granted by smart contract)
+  // - TOKEN_MANAGER_ROLE, IDENTITY_MANAGER_ROLE, COMPLIANCE_MANAGER_ROLE, ADDON_MANAGER_ROLE (granted by API)
+  console.log("✓ System created with all necessary roles granted");
 
   // The create method already returns a fully initialized system
   if (!system.tokenFactoryRegistry) {
@@ -95,6 +97,8 @@ export async function bootstrapTokenFactories(
     return;
   }
 
+  const initialFactoryCount = tokenFactories.length;
+
   const result = await orpClient.token.factoryCreate({
     verification: {
       verificationCode: DEFAULT_PINCODE,
@@ -103,23 +107,16 @@ export async function bootstrapTokenFactories(
     factories: nonExistingFactories,
   });
 
-  // The factoryCreate method returns a FactoryCreateOutput with status and results
-  if (result.status !== "completed") {
-    throw new Error(`Factory creation failed: ${result.message}`);
+  console.error(result);
+
+  // The factoryCreate method now returns the updated system details
+  if (!result.id || !result.tokenFactories) {
+    throw new Error(`Factory creation failed: invalid response`);
   }
 
-  const transactionHashes: string[] = [];
+  const finalFactoryCount = result.tokenFactories.length;
+  const successfulCreations = finalFactoryCount - initialFactoryCount;
 
-  if (result.results) {
-    result.results.forEach((r) => {
-      if (r.transactionHash) {
-        transactionHashes.push(r.transactionHash);
-      }
-    });
-  }
-
-  const successfulCreations =
-    result.results?.filter((r) => !r.error).length || 0;
   if (successfulCreations !== nonExistingFactories.length) {
     throw new Error(
       `Token factories attempted: ${nonExistingFactories.length}, succeeded: ${successfulCreations}`

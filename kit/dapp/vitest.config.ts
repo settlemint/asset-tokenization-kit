@@ -12,9 +12,21 @@ export default defineConfig({
     include: ["src/**/*.test.{ts,tsx}"],
     passWithNoTests: true,
     pool: "threads",
+    poolOptions: {
+      threads: {
+        useAtomics: true,
+        isolate: false,
+      },
+    },
     isolate: false,
-    reporters: process.env.CI ? ["dot", "github-actions"] : [],
-    onConsoleLog: process.env.CI ? () => false : undefined,
+    reporters: process.env.CLAUDECODE
+      ? ["dot"]
+      : process.env.CI
+        ? ["dot", "github-actions"]
+        : ["default"],
+    onConsoleLog:
+      process.env.CI || process.env.CLAUDECODE ? () => false : undefined,
+    silent: process.env.CLAUDECODE ? true : undefined,
     typecheck: {
       enabled: true,
     },
@@ -23,7 +35,7 @@ export default defineConfig({
       reporter: ["text", "json", "html", "json-summary"],
       reportOnFailure: true,
       reportsDirectory: "./coverage",
-      enabled: true,
+      enabled: process.env.CI ? true : false,
       exclude: [
         "**/node_modules/**",
         "**/dist/**",

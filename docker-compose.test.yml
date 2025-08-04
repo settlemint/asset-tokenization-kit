@@ -1,0 +1,52 @@
+# Additional services for integration testing
+# This file extends the main docker-compose.yml
+services:
+  dapp:
+    build:
+      context: ./kit/dapp
+      dockerfile: Dockerfile
+    container_name: ${CONTAINER_PREFIX:-atk}-dapp
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      txsigner:
+        condition: service_healthy
+      graph-node:
+        condition: service_healthy
+      portal:
+        condition: service_healthy
+      hasura:
+        condition: service_healthy
+    environment:
+      # EXACTLY the env vars from kit/dapp/.env (with Docker hostnames)
+      SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT: http://txsigner:3000/
+      SETTLEMINT_BLOCKCHAIN_NODE_OR_LOAD_BALANCER_JSON_RPC_ENDPOINT: http://txsigner:3000/
+      SETTLEMINT_BLOCKSCOUT_GRAPHQL_ENDPOINT: http://blockscout-backend:4000/api/v1/graphql
+      SETTLEMINT_HASURA_ENDPOINT: http://hasura:8080/v1/graphql
+      SETTLEMINT_INSTANCE: local
+      SETTLEMINT_IPFS_API_ENDPOINT: https://ipfs.console.settlemint.com/
+      SETTLEMINT_MINIO_ACCESS_KEY: atk-service
+      SETTLEMINT_MINIO_ENDPOINT: s3://minio:9000
+      SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT: http://portal:7701/graphql
+      SETTLEMINT_THEGRAPH_DEFAULT_SUBGRAPH: kit
+      SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS: '["http://graph-node:8000/subgraphs/name/kit"]'
+      # EXACTLY the env vars from kit/dapp/.env.local
+      SETTLEMINT_HASURA_ADMIN_SECRET: hasura
+      SETTLEMINT_HASURA_DATABASE_URL: postgresql://hasura:hasura@postgres:5432/hasura
+      SETTLEMINT_MINIO_SECRET_KEY: atk-service-secret
+    ports:
+      - "${DAPP_PORT:-13000}:3000"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'bun -e ''fetch("http://localhost:3000").then(() =>
+          process.exit(0)).catch(() => process.exit(1))''',
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 30s

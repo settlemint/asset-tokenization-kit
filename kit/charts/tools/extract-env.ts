@@ -5,7 +5,9 @@ import { $ } from "bun";
 import { join, resolve } from "node:path";
 
 const logger = createLogger({
-  level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel || "info",
+  level: process.env.CLAUDECODE
+    ? "error"
+    : (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || "info",
 });
 
 interface ExtractOptions {
