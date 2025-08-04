@@ -1,99 +1,195 @@
+"use client";
+
+import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import { type ReactNode } from "react";
 
-export interface SelectableCardProps {
-  /** Whether the card is currently selected */
+/* -------------------------------------------------------------------------- */
+/*                           SelectableCard Container                         */
+/* -------------------------------------------------------------------------- */
+
+const selectableCardVariants = cva(
+  "flex cursor-pointer select-none rounded-lg border transition-all h-full",
+  {
+    variants: {
+      variant: {
+        default:
+          "border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        selected: "border-primary bg-primary/5 text-primary",
+        ghost:
+          "border-transparent hover:bg-accent hover:text-accent-foreground",
+        outline: "border-2 bg-transparent hover:bg-accent/50",
+      },
+      size: {
+        sm: "p-3",
+        md: "p-4",
+        lg: "p-6",
+      },
+      interactive: {
+        true: "hover:scale-[1.02] active:scale-[0.98]",
+        false: "",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "md",
+      interactive: true,
+    },
+  }
+);
+
+interface SelectableCardProps
+  extends React.ComponentProps<"div">,
+    VariantProps<typeof selectableCardVariants> {
+  asChild?: boolean;
   selected?: boolean;
-  /** Click handler */
-  onClick?: () => void;
-  /** Additional CSS classes */
-  className?: string;
-  /** Children content */
-  children: ReactNode;
 }
 
-export interface SelectableCardTitleProps {
-  /** Icon component to display */
-  icon?: ReactNode;
-  /** Title content */
-  children: ReactNode;
-  /** Additional CSS classes */
-  className?: string;
-}
-
-export interface SelectableCardDescriptionProps {
-  /** Description content */
-  children: ReactNode;
-  /** Additional CSS classes */
-  className?: string;
-}
-
-/**
- * Main selectable card container.
- * Matches the style from compliance-modules-grid.
- */
-export function SelectableCard({
+function SelectableCard({
+  className,
+  variant = "default",
+  size,
+  interactive,
   selected = false,
   onClick,
-  className,
+  asChild = false,
   children,
+  ...props
 }: SelectableCardProps) {
+  const Comp = asChild ? Slot : "div";
+  const effectiveVariant = selected ? "selected" : variant;
+
+  const componentProps = {
+    "data-slot": "selectable-card",
+    onClick,
+    className: cn(
+      selectableCardVariants({
+        variant: effectiveVariant,
+        size,
+        interactive,
+      }),
+      className
+    ),
+    ...props,
+  };
+
+  if (asChild) {
+    return <Comp {...componentProps}>{children}</Comp>;
+  }
+
   return (
-    <div
-      onClick={onClick}
-      className={cn(
-        "flex cursor-pointer select-none rounded-lg border border-input bg-background p-4 hover:bg-accent hover:text-accent-foreground transition-all h-full",
-        selected && "border-primary bg-primary/5 text-primary",
-        className
-      )}
-    >
+    <Comp {...componentProps}>
       <div className="flex items-start space-x-3 h-full">{children}</div>
-    </div>
+    </Comp>
   );
 }
 
-/**
- * Icon component for the selectable card.
- */
-export function SelectableCardIcon({ children }: { children: ReactNode }) {
+/* -------------------------------------------------------------------------- */
+/*                            SelectableCard Icon                             */
+/* -------------------------------------------------------------------------- */
+
+interface SelectableCardIconProps extends React.ComponentProps<"div"> {
+  asChild?: boolean;
+}
+
+function SelectableCardIcon({
+  className,
+  asChild = false,
+  children,
+  ...props
+}: SelectableCardIconProps) {
+  const Comp = asChild ? Slot : "div";
   return (
-    <div className="flex items-center justify-center">
+    <Comp
+      data-slot="selectable-card-icon"
+      className={cn("flex items-center justify-center", className)}
+      {...props}
+    >
       <div className="w-4 h-4">{children}</div>
-    </div>
+    </Comp>
   );
 }
 
-/**
- * Content wrapper for title and description.
- */
-export function SelectableCardContent({ children }: { children: ReactNode }) {
-  return <div className="min-w-0 flex-1 flex flex-col">{children}</div>;
+/* -------------------------------------------------------------------------- */
+/*                          SelectableCard Content                            */
+/* -------------------------------------------------------------------------- */
+
+interface SelectableCardContentProps extends React.ComponentProps<"div"> {
+  asChild?: boolean;
 }
 
-/**
- * Title component for the selectable card.
- */
-export function SelectableCardTitle({
-  children,
+function SelectableCardContent({
   className,
-}: Omit<SelectableCardTitleProps, "icon">) {
+  asChild = false,
+  ...props
+}: SelectableCardContentProps) {
+  const Comp = asChild ? Slot : "div";
   return (
-    <div className={cn("text-sm font-medium leading-6 mb-1", className)}>
-      {children}
-    </div>
+    <Comp
+      data-slot="selectable-card-content"
+      className={cn("min-w-0 flex-1 flex flex-col", className)}
+      {...props}
+    />
   );
 }
 
-/**
- * Description component for the selectable card.
- */
-export function SelectableCardDescription({
-  children,
+/* -------------------------------------------------------------------------- */
+/*                           SelectableCard Title                             */
+/* -------------------------------------------------------------------------- */
+
+interface SelectableCardTitleProps extends React.ComponentProps<"div"> {
+  asChild?: boolean;
+}
+
+function SelectableCardTitle({
   className,
+  asChild = false,
+  ...props
+}: SelectableCardTitleProps) {
+  const Comp = asChild ? Slot : "div";
+  return (
+    <Comp
+      data-slot="selectable-card-title"
+      className={cn("text-sm font-medium leading-6 mb-1", className)}
+      {...props}
+    />
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*                        SelectableCard Description                          */
+/* -------------------------------------------------------------------------- */
+
+interface SelectableCardDescriptionProps extends React.ComponentProps<"p"> {
+  asChild?: boolean;
+}
+
+function SelectableCardDescription({
+  className,
+  asChild = false,
+  ...props
 }: SelectableCardDescriptionProps) {
+  const Comp = asChild ? Slot : "p";
   return (
-    <div className={cn("text-sm text-muted-foreground flex-1", className)}>
-      {children}
-    </div>
+    <Comp
+      data-slot="selectable-card-description"
+      className={cn("text-sm text-muted-foreground flex-1", className)}
+      {...props}
+    />
   );
 }
+
+export {
+  SelectableCard,
+  SelectableCardIcon,
+  SelectableCardContent,
+  SelectableCardTitle,
+  SelectableCardDescription,
+  selectableCardVariants,
+  type SelectableCardProps,
+  type SelectableCardIconProps,
+  type SelectableCardContentProps,
+  type SelectableCardTitleProps,
+  type SelectableCardDescriptionProps,
+};
