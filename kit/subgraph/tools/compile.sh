@@ -13,7 +13,7 @@ if grep -q '0x5e771e1417100000000000000000000000020088' subgraph.yaml; then
 
     echo "SystemFactory address is the default, building and updating generated files"
     # Build and capture IPFS hash
-    BUILD_OUTPUT=$(bunx settlemint scs subgraph build --ipfs=https://ipfs.console.settlemint.com)
+    BUILD_OUTPUT=$(bunx settlemint scs subgraph build --ipfs=https://ipfs.console.settlemint.com) || { echo "Error: Subgraph build failed." >&2; exit 1; }
     echo "$BUILD_OUTPUT"
 
     # Extract subgraph hash and save to files
