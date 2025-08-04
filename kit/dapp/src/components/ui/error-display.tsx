@@ -49,7 +49,7 @@ export function ErrorDisplay({
       </p>
       <div className="mt-10 flex flex-col sm:flex-row sm:items-center sm:justify-center gap-y-3 gap-x-4">
         {showRetry && onRetry && (
-          <Button onClick={onRetry} className="group">
+          <Button onClick={onRetry} className="group press-effect">
             <RefreshCw
               className="me-2 transition-transform group-hover:rotate-180"
               size={16}

@@ -150,7 +150,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="secondary" size="sm" className="gap-2">
+          <Button variant="secondary" size="sm" className="gap-2 press-effect">
             {t("tokens:manage")}
             <ChevronDown className="h-4 w-4" />
           </Button>

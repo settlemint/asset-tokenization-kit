@@ -112,7 +112,7 @@ export function CountryRestrictionModuleDetail({
                 </Button>
               )}
               {!isEnabled && (
-                <Button onClick={handleEnable}>
+                <Button onClick={handleEnable} className="press-effect">
                   {t("form:buttons.enable")}
                 </Button>
               )}
@@ -135,7 +135,7 @@ export function CountryRestrictionModuleDetail({
       </div>
 
       <div className="flex items-center justify-between gap-3 pt-6">
-        <Button variant="outline" onClick={onClose}>
+        <Button variant="outline" onClick={onClose} className="press-effect">
           {t("form:buttons.back")}
         </Button>
         <Button
