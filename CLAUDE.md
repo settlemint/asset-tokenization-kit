@@ -300,4 +300,3 @@ message)
 - we are in a turborepo with complex dependencies, run ALL commands from the
   root so turbo is used
 - NEVER run test:reset manually! test:integration will handle it
-- use ONLY happydom, never "@testing-library/react"

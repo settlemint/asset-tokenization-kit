@@ -9,6 +9,20 @@ export default defineConfig({
     globals: true,
     environment: "happy-dom",
     setupFiles: "./test/setup.ts",
+    environmentOptions: {
+      happyDOM: {
+        // Ensure happy-dom properly supports React 18+ features
+        settings: {
+          navigation: {
+            userAgent: "Mozilla/5.0 (jsdom)",
+          },
+          device: {
+            prefersColorScheme: "light",
+            mediaType: "screen",
+          },
+        },
+      },
+    },
     include: ["src/**/*.test.{ts,tsx}"],
     passWithNoTests: true,
     pool: "threads",
