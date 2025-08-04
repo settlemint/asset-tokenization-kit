@@ -36,9 +36,10 @@ src/
 
 ### Component Rules
 
-- NO `components/ui/*` edits
-- Compound patterns
+- NO `components/ui/*` edits (these are shadcn components)
+- Compound patterns with sub-components
 - Loading states required
+- Follow shadcn component patterns (see Component Best Practices)
 
 ## Patterns
 
@@ -201,3 +202,98 @@ bun run test:integration
 - Apply changes directly throughout the entire codebase
 - Write clean, modern code without temporary bridges
 - Complete transformations, not partial migrations
+
+## Component Best Practices
+
+### shadcn Component Pattern
+
+All custom components should follow the shadcn pattern for consistency:
+
+```typescript
+// 1. Use forwardRef + displayName for all components
+const Component = React.forwardRef<HTMLDivElement, ComponentProps>(
+  ({ className, variant, ...props }, ref) => {
+    return <div ref={ref} className={cn(...)} {...props} />;
+  }
+);
+Component.displayName = "Component";
+
+// 2. Use cva for variants
+const componentVariants = cva("base-classes", {
+  variants: {
+    variant: { default: "...", secondary: "..." },
+    size: { sm: "...", md: "...", lg: "..." }
+  },
+  defaultVariants: { variant: "default", size: "md" }
+});
+
+// 3. TypeScript interfaces extending HTML props
+interface ComponentProps
+  extends React.ComponentPropsWithoutRef<"div">,
+    VariantProps<typeof componentVariants> {
+  asChild?: boolean;
+}
+
+// 4. Support composition with Radix Slot
+const Comp = asChild ? Slot : "div";
+
+// 5. Use data-slot attributes for styling hooks
+<div data-slot="component-name" />
+```
+
+### Animation Guidelines
+
+**Use animations sparingly and purposefully:**
+
+1. **Interactive Feedback** - Use `press-effect` class on buttons/clickable
+   elements
+2. **Hover States** - Use `hover-lift` class for cards that are interactive
+3. **Entry Animations** - Use `animate-in-grid` for staggered grid items
+4. **Duration** - Keep animations between 150-300ms
+5. **CSS-first** - Use CSS transitions/animations over JavaScript
+
+```css
+/* Available utility classes in app.css */
+.press-effect     /* Scale down on click (0.98) */
+.hover-lift       /* Subtle lift on hover (-2px) */
+.animate-in-grid  /* Staggered fade-in for grid items */
+```
+
+### Performance Guidelines
+
+**Avoid premature optimization:**
+
+1. **NO unnecessary useCallback/useMemo** - Only use for:
+   - Referential stability in dependencies
+   - Expensive computations (proven by profiling)
+   - Props to React.memo components
+2. **React 19 Compiler** handles most optimizations automatically
+
+3. **Profile first** - Don't optimize without measuring
+
+### Compound Component Pattern
+
+Build flexible, composable components:
+
+```typescript
+// Parent container
+<RelatedGrid>
+  <RelatedGridHeader>
+    <RelatedGridTitle>Title</RelatedGridTitle>
+    <RelatedGridDescription>Description</RelatedGridDescription>
+  </RelatedGridHeader>
+  <RelatedGridContent columns={3} animate>
+    <RelatedGridItem variant="gradient">
+      <RelatedGridItemContent>...</RelatedGridItemContent>
+      <RelatedGridItemFooter>...</RelatedGridItemFooter>
+    </RelatedGridItem>
+  </RelatedGridContent>
+</RelatedGrid>
+```
+
+This pattern provides:
+
+- Maximum flexibility
+- Clear component hierarchy
+- Easy customization per use case
+- Consistent API across components
