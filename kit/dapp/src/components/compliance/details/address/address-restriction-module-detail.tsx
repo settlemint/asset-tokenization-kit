@@ -89,20 +89,18 @@ export function AddressRestrictionModuleDetail({
 
   // Check if addresses have changed from initial values
   const isInputChanged = (() => {
-    const initial = (initialValues?.values ?? [])
-      .map((a) => a.toLowerCase())
-      .sort();
+    const initial = (initialValues?.values ?? []).map((a) => a.toLowerCase());
     const current = selectedAddresses
       .filter((addr) => isAddress(addr))
-      .map((a) => a.toLowerCase())
-      .sort();
+      .map((a) => a.toLowerCase());
 
-    const initialSet = new Set(initial);
-    const currentSet = new Set(current);
+    // Convert to Sets to remove duplicates, then to sorted arrays for comparison
+    const initialUnique = [...new Set(initial)].sort();
+    const currentUnique = [...new Set(current)].sort();
 
     return (
-      initialSet.size !== currentSet.size ||
-      JSON.stringify(initialSet) !== JSON.stringify(currentSet)
+      initialUnique.length !== currentUnique.length ||
+      JSON.stringify(initialUnique) !== JSON.stringify(currentUnique)
     );
   })();
 
