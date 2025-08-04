@@ -18,7 +18,7 @@ import { eq, ilike } from "drizzle-orm";
  * Permissions: Requires "list" permission on users resource
  * Method: GET /user/read
  *
- * @param input - Read parameters with either userId or wallet address
+ * @param input - Read parameters with either {userId: string} or {wallet: Address}
  * @param context - Request context with database connection and authenticated user
  * @returns Promise<User> - Single user object with complete information
  * @throws UNAUTHORIZED - If user is not authenticated
@@ -40,7 +40,8 @@ import { eq, ilike } from "drizzle-orm";
  * ```
  *
  * @remarks
- * - Exactly one of userId or wallet must be provided
+ * - Input uses discriminated union: either {userId} or {wallet} object
+ * - TypeScript properly narrows the input type for better type safety
  * - Wallet address matching is case-insensitive
  * - Returns complete user information including KYC data
  * - User roles are transformed from internal codes to display names
@@ -51,12 +52,12 @@ export const read = authRouter.user.read
   )
   .use(databaseMiddleware)
   .handler(async ({ context, input }) => {
-    const { userId, wallet } = input;
-
-    // Build the query condition based on input
-    const whereCondition = userId
-      ? eq(user.id, userId)
-      : ilike(user.wallet, wallet); // wallet is guaranteed to exist by schema validation
+    // Build the query condition based on input type
+    // TypeScript now properly narrows the union type
+    const whereCondition =
+      "userId" in input
+        ? eq(user.id, input.userId)
+        : ilike(user.wallet, input.wallet);
 
     // Execute query to find the user with KYC data
     const result = await context.db
@@ -73,16 +74,24 @@ export const read = authRouter.user.read
       .limit(1);
 
     // Check if user was found
+    const userNotFoundError = new TRPCError({
+      code: "NOT_FOUND",
+      message:
+        "userId" in input
+          ? `User with ID ${input.userId} not found`
+          : `User with wallet ${input.wallet} not found`,
+    });
+
     if (result.length === 0) {
-      throw new TRPCError({
-        code: "NOT_FOUND",
-        message: userId
-          ? `User with ID ${userId} not found`
-          : `User with wallet ${wallet} not found`,
-      });
+      throw userNotFoundError;
     }
 
-    const { user: userData, kyc } = result[0];
+    const userResult = result[0];
+    if (!userResult) {
+      throw userNotFoundError;
+    }
+
+    const { user: userData, kyc } = userResult;
 
     // Validate user has wallet
     if (!userData.wallet) {

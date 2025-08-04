@@ -14,38 +14,29 @@ import { z } from "zod";
  * Input schema for user read endpoint.
  *
  * Allows retrieving a user by either their internal ID or their wallet address.
- * Exactly one of userId or wallet must be provided.
+ * Uses a discriminated union to ensure exactly one lookup method is provided
+ * with proper TypeScript type safety.
  */
-export const UserReadInputSchema = z
-  .object({
+export const UserReadInputSchema = z.union([
+  z.object({
     /**
      * User ID for lookup.
      *
      * The internal database ID of the user to retrieve.
      * Use this when you have the user's ID from other API calls.
      */
-    userId: z.string().optional(),
-
+    userId: z.string(),
+  }),
+  z.object({
     /**
      * Wallet address for lookup.
      *
      * The Ethereum wallet address of the user to retrieve.
      * Use this when you only have the user's wallet address.
      */
-    wallet: ethereumAddress.optional(),
-  })
-  .refine(
-    (data) => {
-      // Exactly one of userId or wallet must be provided
-      const hasUserId = Boolean(data.userId);
-      const hasWallet = Boolean(data.wallet);
-      return hasUserId !== hasWallet; // XOR: exactly one must be true
-    },
-    {
-      message: "Exactly one of userId or wallet must be provided",
-      path: ["userId", "wallet"],
-    }
-  );
+    wallet: ethereumAddress,
+  }),
+]);
 
 /**
  * Output schema for user read result.
