@@ -209,7 +209,7 @@ describe("getCurrencyMetadata", () => {
 
   it("should handle currency with non-numeric digits property", () => {
     // Test the edge case where currency.digits might not be a number
-    // This covers line 66 where we default to 2 if digits is not a number
+    // This covers the behavior where we default to 2 if digits is not a number
     const metadata = getCurrencyMetadata("USD");
     expect(metadata).toBeDefined();
     expect(metadata?.decimals).toBe(2); // Should be 2 for USD
