@@ -29,8 +29,11 @@ export function AddressInputField({
       <FieldDescription description={description} />
       <AddressInput
         value={field.state.value}
-        onChange={field.handleChange}
+        onChange={(value) => {
+          field.handleChange(value as EthereumAddress);
+        }}
         className={cn(errorClassNames(field.state.meta))}
+        showError={false} // We handle errors in the field layout
       />
       <FieldErrors {...field.state.meta} />
     </FieldLayout>
