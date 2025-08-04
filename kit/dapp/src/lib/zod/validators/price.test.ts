@@ -4,19 +4,8 @@ import { price, isPrice, getPrice } from "./price";
 describe("price", () => {
   const validator = price();
 
-  describe("defensive code documentation", () => {
-    test("defensive non-finite check is unreachable due to Zod's validation", () => {
-      // The price validator includes a defensive check for non-finite numbers:
-      // if (!Number.isFinite(value)) { ... } (in the price validator implementation)
-      //
-      // This check is actually unreachable in practice because:
-      // 1. Zod's z.number() already rejects Infinity, -Infinity, and NaN
-      // 2. The string parsing with parseFloat followed by isFinite check handles string inputs
-      //
-      // The defensive code exists for future-proofing and type safety,
-      // but cannot be tested without bypassing Zod's built-in validations.
-      // This defensive check in the price validator implementation is a best practice.
-
+  describe("non-finite number handling", () => {
+    test("properly rejects non-finite numbers", () => {
       // Verify that Zod properly rejects non-finite numbers
       expect(() => validator.parse(Infinity)).toThrow();
       expect(() => validator.parse(-Infinity)).toThrow();
@@ -32,11 +21,6 @@ describe("price", () => {
       expect(() => validator.parse("NaN")).toThrow(
         "Invalid price format. Please provide a valid numeric string"
       );
-
-      // The defensive check in the price validator implementation ensures that even if Zod's validation
-      // changes in the future, our validator will still reject non-finite numbers.
-      // This is an example of defensive programming where we handle edge cases
-      // that shouldn't occur under normal circumstances.
     });
   });
 

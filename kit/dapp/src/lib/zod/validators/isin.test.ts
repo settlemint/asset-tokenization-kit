@@ -47,29 +47,31 @@ describe("isin", () => {
     });
   });
 
-  describe("edge cases for code coverage", () => {
-    test("validates ISINs with proper character handling", () => {
-      // The validation function uses codePointAt() which could theoretically return undefined
-      // However, for valid string characters this won't happen in practice
-      // The defensive check for undefined from codePointAt() in the validation function is for robustness
-
-      // Test with various valid ISINs that exercise the character processing
-      const testISINs = [
-        "US0378331005", // Has letters and numbers
-        "GB0002634946", // Different letters
-        "ZA1234567890", // Z is at the end of alphabet
-        "AA0000000001", // A is at the start
+  describe("character handling", () => {
+    test("validates ISINs with various character combinations", () => {
+      // Test with valid ISINs that exercise the character processing
+      const validISINs = [
+        "US0378331005", // Apple Inc. - has letters and numbers
+        "GB0002634946", // BAE Systems - different letters
       ];
 
-      testISINs.forEach((isinCode) => {
-        // Each character should be properly processed
-        const upperCase = isinCode.toUpperCase();
-        if (/^[A-Z]{2}[A-Z0-9]{9}[0-9]$/.test(upperCase)) {
-          // Valid format - test the validation
-          const result = validator.safeParse(upperCase);
-          // Some may be invalid due to checksum
-          expect(typeof result.success).toBe("boolean");
+      validISINs.forEach((isinCode) => {
+        const result = validator.safeParse(isinCode);
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.data).toBe(isinCode);
         }
+      });
+
+      // Test with ISINs that have valid format but invalid checksum
+      const invalidChecksumISINs = [
+        "US0378331006", // Valid format but wrong checksum (should be 5)
+        "GB0002634947", // Valid format but wrong checksum (should be 6)
+      ];
+
+      invalidChecksumISINs.forEach((isinCode) => {
+        const result = validator.safeParse(isinCode);
+        expect(result.success).toBe(false);
       });
     });
   });

@@ -345,7 +345,7 @@ describe("RelatedGrid", () => {
     it("should handle all gap variants for RelatedGrid", () => {
       const gaps = ["sm", "md", "lg", "xl"] as const;
       gaps.forEach((gap) => {
-        const { container } = render(
+        render(
           <RelatedGrid gap={gap} data-testid={`grid-${gap}`}>
             Content
           </RelatedGrid>
@@ -366,7 +366,7 @@ describe("RelatedGrid", () => {
     it("should handle all column variants for RelatedGridContent", () => {
       const columns = [1, 2, 3, 4, "auto-fit", "auto-fill"] as const;
       columns.forEach((col) => {
-        const { container } = render(
+        render(
           <RelatedGridContent columns={col} data-testid={`content-${col}`}>
             <div>Item</div>
           </RelatedGridContent>
@@ -379,7 +379,7 @@ describe("RelatedGrid", () => {
     it("should handle all gap variants for RelatedGridContent", () => {
       const gaps = ["sm", "md", "lg", "xl"] as const;
       gaps.forEach((gap) => {
-        const { container } = render(
+        render(
           <RelatedGridContent gap={gap} data-testid={`content-gap-${gap}`}>
             <div>Item</div>
           </RelatedGridContent>
@@ -403,7 +403,7 @@ describe("RelatedGrid", () => {
 
       variants.forEach((variant) => {
         paddings.forEach((padding) => {
-          const { container } = render(
+          render(
             <RelatedGridItem
               variant={variant}
               padding={padding}
@@ -420,7 +420,7 @@ describe("RelatedGrid", () => {
 
     it("should handle asChild prop for all components", () => {
       // Test RelatedGridHeader with asChild
-      const { container: headerContainer } = render(
+      render(
         <RelatedGridHeader asChild>
           <header data-testid="custom-header">Header</header>
         </RelatedGridHeader>
@@ -428,7 +428,7 @@ describe("RelatedGrid", () => {
       expect(screen.getByTestId("custom-header").tagName).toBe("HEADER");
 
       // Test RelatedGridDescription with asChild
-      const { container: descContainer } = render(
+      render(
         <RelatedGridDescription asChild>
           <span data-testid="custom-desc">Description</span>
         </RelatedGridDescription>
@@ -436,7 +436,7 @@ describe("RelatedGrid", () => {
       expect(screen.getByTestId("custom-desc").tagName).toBe("SPAN");
 
       // Test RelatedGridContent with asChild
-      const { container: contentContainer } = render(
+      render(
         <RelatedGridContent asChild>
           <section data-testid="custom-content">Content</section>
         </RelatedGridContent>
@@ -444,7 +444,7 @@ describe("RelatedGrid", () => {
       expect(screen.getByTestId("custom-content").tagName).toBe("SECTION");
 
       // Test RelatedGridItem with asChild
-      const { container: itemContainer } = render(
+      render(
         <RelatedGridItem asChild>
           <article data-testid="custom-item">Item</article>
         </RelatedGridItem>
@@ -452,7 +452,7 @@ describe("RelatedGrid", () => {
       expect(screen.getByTestId("custom-item").tagName).toBe("ARTICLE");
 
       // Test RelatedGridItemHeader with asChild
-      const { container: itemHeaderContainer } = render(
+      render(
         <RelatedGridItemHeader asChild>
           <header data-testid="custom-item-header">Item Header</header>
         </RelatedGridItemHeader>
@@ -460,7 +460,7 @@ describe("RelatedGrid", () => {
       expect(screen.getByTestId("custom-item-header").tagName).toBe("HEADER");
 
       // Test RelatedGridItemTitle with asChild
-      const { container: itemTitleContainer } = render(
+      render(
         <RelatedGridItemTitle asChild>
           <h4 data-testid="custom-item-title">Item Title</h4>
         </RelatedGridItemTitle>
@@ -468,7 +468,7 @@ describe("RelatedGrid", () => {
       expect(screen.getByTestId("custom-item-title").tagName).toBe("H4");
 
       // Test RelatedGridItemDescription with asChild
-      const { container: itemDescContainer } = render(
+      render(
         <RelatedGridItemDescription asChild>
           <span data-testid="custom-item-desc">Item Desc</span>
         </RelatedGridItemDescription>
@@ -476,7 +476,7 @@ describe("RelatedGrid", () => {
       expect(screen.getByTestId("custom-item-desc").tagName).toBe("SPAN");
 
       // Test RelatedGridItemContent with asChild
-      const { container: itemContentContainer } = render(
+      render(
         <RelatedGridItemContent asChild>
           <main data-testid="custom-item-content">Item Content</main>
         </RelatedGridItemContent>
@@ -484,7 +484,7 @@ describe("RelatedGrid", () => {
       expect(screen.getByTestId("custom-item-content").tagName).toBe("MAIN");
 
       // Test RelatedGridItemFooter with asChild
-      const { container: itemFooterContainer } = render(
+      render(
         <RelatedGridItemFooter asChild>
           <footer data-testid="custom-item-footer">Item Footer</footer>
         </RelatedGridItemFooter>

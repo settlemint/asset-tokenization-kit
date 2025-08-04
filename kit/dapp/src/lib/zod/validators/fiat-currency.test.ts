@@ -206,18 +206,6 @@ describe("getCurrencyMetadata", () => {
       expect(metadata).toBeUndefined();
     }
   });
-
-  it("should handle currency with non-numeric digits property", () => {
-    // Test the edge case where currency.digits might not be a number
-    // This covers the behavior where we default to 2 if digits is not a number
-    const metadata = getCurrencyMetadata("USD");
-    expect(metadata).toBeDefined();
-    expect(metadata?.decimals).toBe(2); // Should be 2 for USD
-
-    // Test invalid currency to ensure undefined is returned
-    const invalidMetadata = getCurrencyMetadata("NOTREAL");
-    expect(invalidMetadata).toBeUndefined();
-  });
 });
 
 describe("allFiatCurrencies", () => {
@@ -321,20 +309,7 @@ describe("edge cases and special scenarios", () => {
     });
   });
 
-  test("getCurrencyMetadata handles edge case with non-numeric digits", () => {
-    // Test the fallback case when currency.digits is not a number
-    // Most real currencies have numeric digits, but the code handles the edge case
-    // We can test with special ISO codes that might not have standard digits
-    const metadata = getCurrencyMetadata("INVALID"); // Invalid currency code
-    expect(metadata).toBeUndefined();
-
-    // Test with a known currency to ensure the digits fallback works
-    const usd = getCurrencyMetadata("USD");
-    expect(usd?.decimals).toBe(2);
-  });
-
   test("fiatCurrencyMetadata handles all supported currencies", () => {
-    // This tests the mapping that includes the fallback logic for currencies with non-numeric digits
     // All supported currencies should have valid metadata
     fiatCurrencies.forEach((code) => {
       const metadata = fiatCurrencyMetadata[code];
