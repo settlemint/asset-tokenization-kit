@@ -177,7 +177,7 @@ export function AddressRestrictionModuleDetail({
                     )}
                   </AddressSelectOrInputToggle>
                 )}
-                addButtonLabel="Add address"
+                addButtonLabel={t(`modules.${moduleKey}.addButtonLabel`)}
               />
             </ComplianceDetailForm>
           )}
