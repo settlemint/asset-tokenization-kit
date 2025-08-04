@@ -64,6 +64,7 @@
     "dev:reset": "bash tools/dev-reset.sh",
     "postdev:reset": "bun run dev:up",
     "test:up": "TIMESTAMP=$(date +'%s') docker compose --env-file .env.test -f docker-compose.yml -f docker-compose.test.yml -p atk-test up -d --build",
+    "test:down": "docker compose -p atk-test down -v --remove-orphans && (docker volume ls -q --filter name=^atk-test | xargs -r docker volume rm 2>/dev/null || true)",
     "test:reset": "bash tools/test-reset.sh",
     "posttest:reset": "bun run test:up",
     "artifacts": "turbo run artifacts ",
