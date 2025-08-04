@@ -3,15 +3,15 @@ import { AddressSelect } from "@/components/address/address-select";
 import { AddressSelectOrInputToggle } from "@/components/address/address-select-or-input-toggle";
 import { complianceModuleConfig } from "@/components/compliance/config";
 import {
-  ComplianceDetailCard,
-  ComplianceDetailHeader,
   ComplianceDetailBreadcrumb,
+  ComplianceDetailCard,
   ComplianceDetailContent,
+  ComplianceDetailDescription,
+  ComplianceDetailFooter,
+  ComplianceDetailForm,
+  ComplianceDetailHeader,
   ComplianceDetailSection,
   ComplianceDetailTitle,
-  ComplianceDetailDescription,
-  ComplianceDetailForm,
-  ComplianceDetailFooter,
 } from "@/components/compliance/details/compliance-detail-card";
 import type { ComplianceModuleDetailProps } from "@/components/compliance/details/types";
 import { ArrayFieldsLayout } from "@/components/layout/array-fields-layout";
@@ -168,7 +168,7 @@ export function AddressRestrictionModuleDetail({
                     )}
                   </AddressSelectOrInputToggle>
                 )}
-                addButtonLabel="Add Address"
+                addButtonLabel="Add address"
               />
             </ComplianceDetailForm>
           )}

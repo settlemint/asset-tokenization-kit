@@ -27,7 +27,7 @@ export function AddressSelectOrInputToggle({
             setMode("select");
           }
         }}
-        className="mt-2 text-xs"
+        className="text-xs"
       >
         {mode === "manual" && <Search className="h-3 w-3" />}
         {mode === "select" && <Pencil className="h-3 w-3" />}
