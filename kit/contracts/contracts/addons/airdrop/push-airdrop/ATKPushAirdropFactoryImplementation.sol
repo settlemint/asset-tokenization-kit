@@ -15,7 +15,7 @@ import { ATKPushAirdropImplementation } from "./ATKPushAirdropImplementation.sol
 import { ATKPushAirdropProxy } from "./ATKPushAirdropProxy.sol";
 
 // Constants
-import { ATKSystemRoles } from "../../../system/ATKSystemRoles.sol";
+import { ATKPeopleRoles } from "../../../system/ATKPeopleRoles.sol";
 
 /// @title Factory for Creating ATKPushAirdrop Proxies
 /// @author SettleMint
@@ -52,10 +52,10 @@ contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImp
     /// @notice Initializes the `ATKPushAirdropFactory`.
     /// @dev Initializes the factory, deploys the initial `ATKPushAirdrop` implementation,
     /// and sets up support for meta-transactions via ERC2771Context.
-    /// @param systemAddress_ The address of the `IATKSystem` contract.
-    /// @param initialAdmin_ The address of the initial admin.
-    function initialize(address systemAddress_, address initialAdmin_) public initializer {
-        _initializeAbstractSystemAddonFactory(systemAddress_, initialAdmin_);
+    /// @param accessManager The address of the access manager.
+    /// @param systemAddress The address of the `IATKSystem` contract.
+    function initialize(address accessManager, address systemAddress) public initializer {
+        _initializeAbstractSystemAddonFactory(accessManager, systemAddress);
 
         address forwarder = trustedForwarder();
         // Deploy the initial implementation contract for ATKPushAirdrop.
@@ -72,7 +72,7 @@ contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImp
     /// @param _newImplementation The address of the new `ATKPushAirdrop` logic contract.
     function updateImplementation(address _newImplementation)
         external
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (_newImplementation == address(0)) revert IATKPushAirdropFactory.InvalidAddress();
         if (_newImplementation == atkPushAirdropImplementation) revert IATKPushAirdropFactory.SameAddress();
@@ -109,7 +109,7 @@ contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImp
     )
         external
         override(IATKPushAirdropFactory)
-        onlyRole(ATKSystemRoles.DEPLOYER_ROLE)
+        onlySystemRole(ATKPeopleRoles.ADDON_MANAGER_ROLE)
         returns (address airdropProxyAddress)
     {
         bytes memory saltInputData = abi.encode(address(this), name, token, root, owner, distributionCap);

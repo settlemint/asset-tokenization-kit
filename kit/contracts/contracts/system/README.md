@@ -85,15 +85,19 @@ The central coordinator that manages all protocol components:
 - **Bootstrap Function**: One-time setup of the entire infrastructure
 - **Implementation Management**: Upgrades for all system components
 - **Registry Discovery**: Single source of truth for all component addresses
-- **Access Control**: Role-based security for all operations
+- **Access Control**: Centralized role-based security for all operations
 
 ### Key Components
 
 1. **ATKSystemImplementation**: Main logic contract
-2. **ATKSystemFactory**: Factory that creates new ATK System instances
-3. **ATKSystemRoles**: Defines all access control roles
-4. **ATKTopics**: Standard claim topics for identity verification
-5. **ATKTypedImplementationProxy**: Proxy pattern for typed implementations
+2. **ATKSystemFactory**: Factory that creates new ATK System instances with
+   centralized access control
+3. **ATKPeopleRoles**: Defines roles for human operators (EOAs)
+4. **ATKSystemRoles**: Defines roles for system contracts and modules
+5. **ATKTopics**: Standard claim topics for identity verification
+6. **ATKTypedImplementationProxy**: Proxy pattern for typed implementations
+7. **ATKSystemAccessManager**: Centralized access control manager created by the
+   factory
 
 ## 🏭 Infrastructure Layer
 
@@ -359,31 +363,81 @@ graph TD
 
 ## 🔐 Security & Access Control
 
-### Role-Based Access Control
+### Centralized Access Control Architecture
 
-The ATK System implements a comprehensive RBAC system:
+The ATK System implements a **centralized access control** model where a single
+`ATKSystemAccessManager` is created by the `ATKSystemFactory` and shared across
+all system components. This replaces the previous per-contract access control
+approach.
 
-#### System-Level Roles
+#### Key Benefits of Centralization
 
-- **DEFAULT_ADMIN_ROLE**: Super admin with all permissions
-- **IMPLEMENTATION_MANAGER_ROLE**: Can upgrade system implementations
-- **REGISTRAR_ROLE**: Can register users and identities
-- **DEPLOYER_ROLE**: Can deploy new tokens and contracts
+1. **Single Point of Authority**: All role assignments managed in one place
+2. **Consistent Permissions**: Same roles work across all system components
+3. **Simplified Management**: No need to manage roles on individual contracts
+4. **Enhanced Security**: Reduced attack surface with centralized control
+5. **Audit Trail**: All permission changes tracked in one contract
 
-#### Token-Level Roles
+### Role Categories
 
-- **CLAIM_MANAGER_ROLE**: Manages identity claims
-- **BYPASS_LIST_MANAGER_ROLE**: Manages compliance bypass lists
-- **STORAGE_MODIFIER_ROLE**: Can modify identity storage
-- **REGISTRY_MANAGER_ROLE**: Manages registry bindings
+The system separates roles into two distinct categories:
+
+#### 1. People Roles (ATKPeopleRoles)
+
+These roles are assigned to human operators (EOAs) who manage and operate the
+system:
+
+- **SYSTEM_MANAGER_ROLE**: Bootstrap system, manage upgrades, register
+  factories/modules
+- **IDENTITY_MANAGER_ROLE**: Register and recover identities, manage user
+  onboarding
+- **TOKEN_MANAGER_ROLE**: Deploy and configure tokens
+- **COMPLIANCE_MANAGER_ROLE**: Register compliance modules, configure bypass
+  lists
+- **ADDON_MANAGER_ROLE**: Manage system addons and extensions
+- **CLAIM_POLICY_MANAGER_ROLE**: Manage trusted issuers and claim topics
+- **AUDITOR_ROLE**: View-only access for compliance and monitoring
+
+#### 2. System Roles (ATKSystemRoles)
+
+These roles are assigned to smart contracts for automated operations:
+
+- **SYSTEM_MODULE_ROLE**: Core system modules that manage infrastructure
+- **IDENTITY_REGISTRY_MODULE_ROLE**: Identity registry contract permissions
+- **TOKEN_FACTORY_REGISTRY_MODULE_ROLE**: Token factory registry permissions
+- **TOKEN_FACTORY_MODULE_ROLE**: Individual token factory permissions
+- **ADDON_FACTORY_REGISTRY_MODULE_ROLE**: Addon registry permissions
+- **ADDON_FACTORY_MODULE_ROLE**: Individual addon factory permissions
+
+### Access Control Flow
+
+```mermaid
+graph TD
+    Factory[ATKSystemFactory] -->|creates| AM[ATKSystemAccessManager]
+    Factory -->|creates| System[ATKSystem]
+    Factory -->|links AM to| System
+
+    System -->|shares AM with| IR[Identity Registry]
+    System -->|shares AM with| CC[Compliance Contract]
+    System -->|shares AM with| TF[Token Factories]
+    System -->|shares AM with| All[All Other Components]
+
+    Admin[Admin EOA] -->|manages roles via| AM
+    AM -->|controls access for| All
+
+    style AM fill:#f9f,stroke:#333,stroke-width:4px
+    style Factory fill:#9ff,stroke:#333,stroke-width:2px
+```
 
 ### Security Features
 
-1. **Reentrancy Protection**: All state-changing functions protected
-2. **Access Control**: Role-based permissions for all operations
-3. **Upgrade Safety**: System-managed implementation updates with admin controls
-4. **Input Validation**: Comprehensive parameter validation
-5. **Event Logging**: Complete audit trail for all operations
+1. **Centralized Access Control**: Single access manager for entire system
+2. **Role Separation**: Clear distinction between human and system roles
+3. **Reentrancy Protection**: All state-changing functions protected
+4. **Upgrade Safety**: System-managed implementation updates with admin controls
+5. **Input Validation**: Comprehensive parameter validation
+6. **Event Logging**: Complete audit trail for all operations
+7. **Batch Operations**: Efficient role management with batch grant/revoke
 
 ## 🚀 System Lifecycle
 
@@ -395,14 +449,17 @@ The ATK System starts with the SystemFactory that creates new system instances:
 sequenceDiagram
     participant Admin
     participant SystemFactory
+    participant AccessManager
     participant ATKSystem
 
     Admin->>SystemFactory: createSystem(params)
+    SystemFactory->>AccessManager: Deploy Access Manager
     SystemFactory->>ATKSystem: Deploy System Instance
-    SystemFactory->>ATKSystem: Initialize with Admin
-    SystemFactory->>Admin: System Created (not bootstrapped)
+    SystemFactory->>ATKSystem: Initialize with Access Manager
+    SystemFactory->>AccessManager: Grant Admin Role
+    SystemFactory->>Admin: System + Access Manager Created
 
-    Note over Admin,ATKSystem: System exists but not functional yet
+    Note over Admin,ATKSystem: System exists with centralized access control<br/>but infrastructure not yet bootstrapped
 ```
 
 ### 2. Bootstrap Phase
@@ -584,7 +641,8 @@ functions, ensuring consistent and secure updates across the entire protocol.
 ```
 system/
 ├── ATKSystem*.sol                          # Core system contracts
-├── ATKSystemRoles.sol                      # Role definitions
+├── ATKPeopleRoles.sol                     # Human operator role definitions
+├── ATKSystemRoles.sol                     # System contract role definitions
 ├── ATKTopics.sol                          # Standard claim topics
 ├── access-manager/                        # Token access management
 ├── addons/                                # System addon registry
@@ -597,6 +655,30 @@ system/
 ├── topic-scheme-registry/                 # Claim topic management
 └── trusted-issuers-registry/              # Trust management
 ```
+
+## 🔑 Centralized Access Control Details
+
+### How It Works
+
+1. **Factory Creates Access Manager**: When `ATKSystemFactory.createSystem()` is
+   called, it first deploys a dedicated `ATKSystemAccessManager` instance
+
+2. **System Components Use Shared Access Manager**: All system components
+   (Identity Registry, Compliance, Token Factories, etc.) receive a reference to
+   this single access manager during initialization
+
+3. **Role Checks**: Components inherit from `ATKSystemAccessManaged` which
+   provides modifiers like:
+   - `onlyRole(bytes32 role)`: Requires specific role
+   - `onlyRoles(bytes32[] roles)`: Requires any of the specified roles
+   - `onlyAllRoles(bytes32[] roles)`: Requires all specified roles
+
+4. **Unified Management**: Administrators manage all permissions through the
+   central access manager's functions:
+   - `grantRole(bytes32 role, address account)`
+   - `revokeRole(bytes32 role, address account)`
+   - `batchGrantRole(bytes32 role, address[] accounts)`
+   - `grantMultipleRoles(address account, bytes32[] roles)`
 
 ## ✅ Conclusion
 

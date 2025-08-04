@@ -4,16 +4,12 @@ import { TimeBoundAirdrop } from "../../entities/airdrop/timebound-airdrop";
 import { Asset } from "../../entities/asset";
 import { atkDeployer } from "../../services/deployer";
 import { getAnvilTimeSeconds } from "../../utils/anvil";
-import { grantAirdropFactoryPermissions } from "./utils/permissions";
 
 export const createTimeBoundAirdrop = async (
   asset: Asset<any>,
   merkleTree: AirdropMerkleTree
 ) => {
   console.log("\n=== Creating timebound airdrop... ===\n");
-
-  // Grant necessary permissions to the timebound airdrop factory
-  await grantAirdropFactoryPermissions("timeBoundAirdropFactory");
 
   const timeBoundAirdropFactory =
     atkDeployer.getTimeBoundAirdropFactoryContract();

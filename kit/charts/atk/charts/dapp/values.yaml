@@ -8,12 +8,7 @@ image:
   repository: ghcr.io/settlemint/asset-tokenization-kit
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1.1.1"
-
-imagePullSecrets:
-  - name: image-pull-secret-docker
-  - name: image-pull-secret-ghcr
-  - name: image-pull-secret-harbor
+  tag: "2.0.0-main0d06815fc"
 
 nameOverride: "dapp"
 fullnameOverride: "dapp"
@@ -236,22 +231,24 @@ initContainer:
       - name: blockscout # Add Blockscout if needed, determine correct service/port
         endpoint: "blockscout-frontend-svc.atk.svc.cluster.local:80"
 
+
+
+
   # Specific check for GraphQL endpoint readiness (e.g., The Graph subgraph)
   graphQLCheck:
     enabled: true
-    name: wait-for-graph-subgraph-kit # Name for the init container
+    name: "wait-for-graphql"
     image:
       registry: docker.io
       repository: curlimages/curl
-      tag: 8.15.0 # Or pin to a specific version like 8.7.1
+      tag: "8.15.0"
       pullPolicy: IfNotPresent
-    # Target GraphQL endpoint URL (where POST requests are sent)
+    # Wait for subgraph to finish syncing (extended timeout)
     url: "http://graph-node-combined.atk.svc.cluster.local:8000/subgraphs/name/kit"
-    query: '{ __typename }' # Basic query to check for GraphQL errors
-    retryDelaySeconds: 20
-    timeoutSeconds: 10 # Max time per curl attempt
-    connectTimeoutSeconds: 5 # Max time to connect
-    retries: 24 # Total attempts (e.g., 24 * 5s = 120s total wait time)
+    retries: 10
+    retryDelaySeconds: 10
+    # Use a more sophisticated query to check sync status
+    query: "{ _meta { hasIndexingErrors block { number } } }"
 
 job:
   enabled: true

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
 /**
  * @title IATKComplianceModuleRegistry
@@ -11,7 +11,7 @@ import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.so
  *      in the ATK ecosystem. Compliance modules implement various regulatory requirements such as
  *      identity verification, country restrictions, and allowlisting.
  */
-interface IATKComplianceModuleRegistry is IAccessControl {
+interface IATKComplianceModuleRegistry is IATKSystemAccessManaged {
     /// @notice Emitted when a new compliance module is registered
     /// @param sender The address that registered the module
     /// @param name The name of the compliance module
@@ -34,6 +34,6 @@ interface IATKComplianceModuleRegistry is IAccessControl {
     function complianceModule(bytes32 moduleTypeHash) external view returns (address);
 
     /// @notice Initializes the compliance module registry with initial admin accounts
-    /// @param initialAdmins Array of addresses to be granted the default admin role
-    function initialize(address[] calldata initialAdmins) external;
+    /// @param accessManager The address of the access manager
+    function initialize(address accessManager) external;
 }

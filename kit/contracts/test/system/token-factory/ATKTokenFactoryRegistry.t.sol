@@ -5,16 +5,18 @@ import { Test } from "forge-std/Test.sol";
 import { console } from "forge-std/console.sol";
 import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { IATKTokenFactoryRegistry } from "../../../contracts/system/token-factory/IATKTokenFactoryRegistry.sol";
-import {
-    ATKTokenFactoryRegistryImplementation,
-    UnauthorizedAccess
-} from "../../../contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol";
+import { ATKTokenFactoryRegistryImplementation } from
+    "../../../contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol";
 import { IATKSystem } from "../../../contracts/system/IATKSystem.sol";
 import { IATKTokenFactory } from "../../../contracts/system/token-factory/IATKTokenFactory.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { IATKSystemAccessManager } from "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
 import { IWithTypeIdentifier } from "../../../contracts/smart/interface/IWithTypeIdentifier.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { ATKRoles } from "../../../contracts/system/ATKRoles.sol";
+import { ATKSystemImplementation } from "../../../contracts/system/ATKSystemImplementation.sol";
 import { IATKTypedImplementationRegistry } from "../../../contracts/system/IATKTypedImplementationRegistry.sol";
 import {
     InvalidTokenFactoryAddress,
@@ -23,6 +25,7 @@ import {
     InvalidTokenImplementationInterface,
     InvalidImplementationInterface
 } from "../../../contracts/system/ATKSystemErrors.sol";
+import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
 
 // Mock for IATKTokenFactory that can be instantiated
 contract MockTokenFactory is IATKTokenFactory, IWithTypeIdentifier {
@@ -36,6 +39,14 @@ contract MockTokenFactory is IATKTokenFactory, IWithTypeIdentifier {
 
     function tokenImplementation() external pure override returns (address) {
         return address(0);
+    }
+
+    function accessManager() external pure override returns (address) {
+        return address(0);
+    }
+
+    function hasSystemRole(bytes32, address) external pure override returns (bool) {
+        return true;
     }
 
     function typeId() external pure override returns (bytes32) {
@@ -64,6 +75,14 @@ contract MockInvalidTokenFactory is IATKTokenFactory {
         return address(0);
     }
 
+    function accessManager() external pure override returns (address) {
+        return address(0);
+    }
+
+    function hasSystemRole(bytes32, address) external pure override returns (bool) {
+        return true;
+    }
+
     function supportsInterface(bytes4 interfaceId) external pure override returns (bool) {
         return interfaceId == type(IATKTokenFactory).interfaceId;
     }
@@ -89,7 +108,7 @@ contract ATKTokenFactoryRegistryTest is Test {
     }
 
     function test_Initialize() public view {
-        assertTrue(registry.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(registry.hasSystemRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
     }
 
     function test_RegisterTokenFactory_Success() public {
@@ -108,20 +127,19 @@ contract ATKTokenFactoryRegistryTest is Test {
         assertTrue(registry.tokenFactory(factoryTypeHash) == proxyAddress);
 
         // check roles granted
-        assertTrue(
-            IAccessControl(address(systemUtils.system().systemAccessManager())).hasRole(
-                ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, proxyAddress
-            )
-        );
+        assertTrue(systemUtils.systemAccessManager().hasRole(ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, proxyAddress));
     }
 
-    // Test skipped since onlySystemRoles modifier is commented out in implementation
     function test_RegisterTokenFactory_Fail_NotAdmin() public {
         vm.prank(user);
-        // Access control is currently disabled, so this should succeed instead of reverting
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector,
+                user,
+                ATKPeopleRoles.SYSTEM_MANAGER_ROLE
+            )
+        );
         registry.registerTokenFactory("TestFactory", address(mockTokenFactory), address(mockTokenImplementation));
-        // Skip test by adding a simple assertion that will pass
-        assertTrue(true);
     }
 
     function test_RegisterTokenFactory_Fail_ZeroFactoryAddress() public {
@@ -197,10 +215,14 @@ contract ATKTokenFactoryRegistryTest is Test {
         MockTokenFactory newMockTokenFactory = new MockTokenFactory();
 
         vm.prank(user);
-        // Access control is currently disabled, so this should succeed instead of reverting
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector,
+                user,
+                ATKPeopleRoles.SYSTEM_MANAGER_ROLE
+            )
+        );
         registry.setTokenFactoryImplementation(factoryTypeHash, address(newMockTokenFactory));
-        // Skip test by adding a simple assertion that will pass
-        assertTrue(true);
     }
 
     function test_SetTokenFactoryImplementation_Fail_ZeroAddress() public {
@@ -243,7 +265,7 @@ contract ATKTokenFactoryRegistryTest is Test {
 
     function test_SupportsInterface() public view {
         assertTrue(registry.supportsInterface(type(IATKTokenFactoryRegistry).interfaceId));
-        assertTrue(registry.supportsInterface(type(IAccessControl).interfaceId));
+        assertTrue(registry.supportsInterface(type(IATKSystemAccessManaged).interfaceId));
         assertTrue(registry.supportsInterface(type(IERC165).interfaceId));
         assertTrue(registry.supportsInterface(type(IATKTypedImplementationRegistry).interfaceId));
     }

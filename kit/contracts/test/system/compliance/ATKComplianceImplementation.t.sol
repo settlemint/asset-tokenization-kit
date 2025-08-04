@@ -11,6 +11,7 @@ import { IATKCompliance } from "../../../contracts/system/compliance/IATKComplia
 import { ISMART } from "../../../contracts/smart/interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { ATKSystemAccessManagerImplementation } from
     "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
@@ -19,6 +20,7 @@ import { MockedComplianceModule } from "../../utils/mocks/MockedComplianceModule
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
 
 contract MockATKToken {
     SMARTComplianceModuleParamPair[] private _modules;
@@ -133,22 +135,18 @@ contract ATKComplianceImplementationTest is Test {
 
         // Grant compliance manager role to our test user
         vm.prank(admin);
-        systemAccessManager.grantRole(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, complianceManager);
+        systemAccessManager.grantRole(ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE, complianceManager);
 
         // Deploy compliance implementation
         implementation = new ATKComplianceImplementation(trustedForwarder);
 
         // Deploy compliance as proxy
-        address[] memory initialBypassListManagers = new address[](1);
-        initialBypassListManagers[0] = admin;
         bytes memory initData =
-            abi.encodeWithSelector(ATKComplianceImplementation.initialize.selector, admin, initialBypassListManagers);
+            abi.encodeWithSelector(ATKComplianceImplementation.initialize.selector, address(systemAccessManager));
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
         compliance = ATKComplianceImplementation(address(proxy));
 
-        // Set the system access manager
-        vm.prank(admin);
-        compliance.setSystemAccessManager(address(systemAccessManager));
+        // System access manager is set during initialization
 
         // Deploy mock token
         token = new MockATKToken(address(compliance));
@@ -161,9 +159,7 @@ contract ATKComplianceImplementationTest is Test {
 
     function testInitializeCanOnlyBeCalledOnce() public {
         vm.expectRevert();
-        address[] memory initialBypassListManagers = new address[](1);
-        initialBypassListManagers[0] = admin;
-        compliance.initialize(admin, initialBypassListManagers);
+        compliance.initialize(address(systemAccessManager));
     }
 
     function testSupportsInterface() public view {
@@ -377,7 +373,13 @@ contract ATKComplianceImplementationTest is Test {
 
     function testAddToBypassListAsUnauthorized() public {
         vm.prank(unauthorizedUser);
-        vm.expectRevert(abi.encodeWithSelector(IATKCompliance.UnauthorizedAccess.selector));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector,
+                unauthorizedUser,
+                ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE
+            )
+        );
         IATKCompliance(address(compliance)).addToBypassList(charlie);
     }
 
@@ -412,7 +414,13 @@ contract ATKComplianceImplementationTest is Test {
         IATKCompliance(address(compliance)).addToBypassList(charlie);
 
         vm.prank(unauthorizedUser);
-        vm.expectRevert(abi.encodeWithSelector(IATKCompliance.UnauthorizedAccess.selector));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector,
+                unauthorizedUser,
+                ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE
+            )
+        );
         IATKCompliance(address(compliance)).removeFromBypassList(charlie);
     }
 
@@ -641,7 +649,13 @@ contract ATKComplianceImplementationTest is Test {
         bytes memory params = abi.encode(uint256(500));
 
         vm.prank(unauthorizedUser);
-        vm.expectRevert(abi.encodeWithSelector(IATKCompliance.UnauthorizedAccess.selector));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector,
+                unauthorizedUser,
+                ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE
+            )
+        );
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), params);
     }
 
@@ -708,7 +722,13 @@ contract ATKComplianceImplementationTest is Test {
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), params);
 
         vm.prank(unauthorizedUser);
-        vm.expectRevert(abi.encodeWithSelector(IATKCompliance.UnauthorizedAccess.selector));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector,
+                unauthorizedUser,
+                ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE
+            )
+        );
         IATKCompliance(address(compliance)).removeGlobalComplianceModule(address(validModule));
     }
 
@@ -790,7 +810,13 @@ contract ATKComplianceImplementationTest is Test {
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), initialParams);
 
         vm.prank(unauthorizedUser);
-        vm.expectRevert(abi.encodeWithSelector(IATKCompliance.UnauthorizedAccess.selector));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IATKSystemAccessManaged.AccessControlUnauthorizedAccount.selector,
+                unauthorizedUser,
+                ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE
+            )
+        );
         IATKCompliance(address(compliance)).setParametersForGlobalComplianceModule(address(validModule), newParams);
     }
 

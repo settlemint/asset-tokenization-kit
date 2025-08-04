@@ -9,10 +9,15 @@ import { IERC3643TrustedIssuersRegistry } from
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { ATKRoles } from "../../../contracts/system/ATKRoles.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ATKSystemAccessManagerImplementation } from
     "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
+import { IATKTrustedIssuersRegistry } from
+    "../../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
+import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
 
 // Mock claim issuer for testing
 contract MockClaimIssuer {
@@ -24,7 +29,7 @@ contract MockClaimIssuer {
 
 contract ATKTrustedIssuersRegistryImplementationTest is Test {
     ATKTrustedIssuersRegistryImplementation public implementation;
-    IERC3643TrustedIssuersRegistry public registry;
+    IATKTrustedIssuersRegistry public registry;
     ATKSystemAccessManagerImplementation public systemAccessManager;
 
     // Test addresses
@@ -65,30 +70,25 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
 
         // Grant claim policy manager role to our test user
         vm.prank(admin);
-        systemAccessManager.grantRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager);
+        systemAccessManager.grantRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager);
 
         // Deploy trusted issuers registry implementation
         implementation = new ATKTrustedIssuersRegistryImplementation(forwarder);
 
         // Deploy proxy with initialization data
-        address[] memory initialRegistrars = new address[](1);
-        initialRegistrars[0] = admin;
-        bytes memory initData = abi.encodeWithSelector(implementation.initialize.selector, admin, initialRegistrars);
+        bytes memory initData = abi.encodeWithSelector(implementation.initialize.selector, address(systemAccessManager));
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
-        registry = IERC3643TrustedIssuersRegistry(address(proxy));
-
-        // Set the system access manager
-        vm.prank(admin);
-        ATKTrustedIssuersRegistryImplementation(address(registry)).setSystemAccessManager(address(systemAccessManager));
+        registry = IATKTrustedIssuersRegistry(address(proxy));
     }
 
     function test_InitializeSuccess() public view {
         // Verify admin has both roles
-        assertTrue(IAccessControl(address(registry)).hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
-        assertTrue(IAccessControl(address(registry)).hasRole(ATKSystemRoles.REGISTRAR_ROLE, admin));
+        assertTrue(registry.hasSystemRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
+        // Admin should not directly have claim policy manager role on the registry itself
+        // The role is managed through the system access manager
 
         // Verify claimPolicyManager has claim policy manager role
-        assertTrue(systemAccessManager.hasRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager));
+        assertTrue(systemAccessManager.hasRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager));
 
         // Verify initial state
         IClaimIssuer[] memory issuers = registry.getTrustedIssuers();
@@ -97,7 +97,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
 
     function test_CannotInitializeTwice() public {
         vm.expectRevert();
-        ATKTrustedIssuersRegistryImplementation(address(registry)).initialize(user1, new address[](0));
+        ATKTrustedIssuersRegistryImplementation(address(registry)).initialize(address(systemAccessManager));
     }
 
     function test_AddTrustedIssuerSuccess() public {
@@ -394,7 +394,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         // Test ERC165 support
         assertTrue(implementation.supportsInterface(type(IERC165).interfaceId));
         assertTrue(implementation.supportsInterface(type(IERC3643TrustedIssuersRegistry).interfaceId));
-        assertTrue(implementation.supportsInterface(type(IAccessControl).interfaceId));
+        assertTrue(implementation.supportsInterface(type(IATKSystemAccessManaged).interfaceId));
 
         // Test unsupported interface
         assertFalse(implementation.supportsInterface(0x12345678));
@@ -403,7 +403,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
     function test_DirectCallToImplementation() public {
         // Direct calls to implementation should fail for initialize
         vm.expectRevert();
-        implementation.initialize(admin, new address[](0));
+        implementation.initialize(address(systemAccessManager));
     }
 
     function test_ERC2771ContextIntegration() public view {

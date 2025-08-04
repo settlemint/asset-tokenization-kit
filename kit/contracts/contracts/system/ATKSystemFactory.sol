@@ -22,6 +22,11 @@ import {
 } from "./ATKSystemErrors.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import { ATKSystemAccessManagerImplementation } from "./access-manager/ATKSystemAccessManagerImplementation.sol";
+import { IATKSystemAccessManager } from "./access-manager/IATKSystemAccessManager.sol";
+import { ATKPeopleRoles } from "./ATKPeopleRoles.sol";
+import { ATKRoles } from "./ATKRoles.sol";
+import { ATKSystemRoles } from "./ATKSystemRoles.sol";
 
 // --- Contract Definition ---
 
@@ -39,6 +44,11 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
 
     /// @notice The address of the ATKSystem implementation contract.
     address public immutable ATK_SYSTEM_IMPLEMENTATION;
+
+    /// @notice The default contract address for the system access manager module's logic.
+    /// @dev This address will be passed to newly created `ATKSystem` instances as the initial system access manager
+    /// implementation.
+    address public immutable ATK_SYSTEM_ACCESS_MANAGER_IMPLEMENTATION;
 
     /// @notice The default contract address for the compliance module's logic (implementation).
     /// @dev This address will be passed to newly created `ATKSystem` instances as the initial compliance
@@ -92,10 +102,6 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// @dev This address will be passed to newly created `ATKSystem` instances as the initial token factory
     /// registry implementation.
     address public immutable DEFAULT_TOKEN_FACTORY_REGISTRY_IMPLEMENTATION;
-    /// @notice The default contract address for the system access manager module's logic.
-    /// @dev This address will be passed to newly created `ATKSystem` instances as the initial system access manager
-    /// implementation.
-    address public immutable DEFAULT_SYSTEM_ACCESS_MANAGER_IMPLEMENTATION;
 
     /// @notice An array storing the addresses of all `ATKSystem` instances that have been created by this factory.
     /// @dev This allows for easy tracking and retrieval of deployed systems.
@@ -173,6 +179,8 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
 
         // Set the immutable state variables with the provided addresses.
         ATK_SYSTEM_IMPLEMENTATION = atkSystemImplementation_;
+        ATK_SYSTEM_ACCESS_MANAGER_IMPLEMENTATION = systemAccessManagerImplementation_;
+
         DEFAULT_COMPLIANCE_IMPLEMENTATION = complianceImplementation_;
         DEFAULT_IDENTITY_REGISTRY_IMPLEMENTATION = identityRegistryImplementation_;
         DEFAULT_IDENTITY_REGISTRY_STORAGE_IMPLEMENTATION = identityRegistryStorageImplementation_;
@@ -185,7 +193,6 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         DEFAULT_TOKEN_FACTORY_REGISTRY_IMPLEMENTATION = tokenFactoryRegistryImplementation_;
         DEFAULT_COMPLIANCE_MODULE_REGISTRY_IMPLEMENTATION = complianceModuleRegistryImplementation_;
         DEFAULT_ADDON_REGISTRY_IMPLEMENTATION = addonRegistryImplementation_;
-        DEFAULT_SYSTEM_ACCESS_MANAGER_IMPLEMENTATION = systemAccessManagerImplementation_;
 
         FACTORY_FORWARDER = forwarder_; // Store the forwarder address for use by this factory and new systems.
     }
@@ -206,12 +213,24 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         // _msgSender() correctly identifies the original user even if called via a trusted forwarder (ERC2771).
         address sender = _msgSender();
 
+        // Deploy the ATKSystemAccessManagerProxy first, as other contracts need to reference it.
+        address[] memory initialSystemAccessManagerAdmins = new address[](2);
+        initialSystemAccessManagerAdmins[0] = sender;
+        initialSystemAccessManagerAdmins[1] = address(this); // Grant the system contract admin role so it can grant
+            // other roles during bootstrap
+        bytes memory systemAccessManagerCallData = abi.encodeWithSelector(
+            ATKSystemAccessManagerImplementation.initialize.selector, initialSystemAccessManagerAdmins
+        );
+        ERC1967Proxy systemAccessManagerProxy =
+            new ERC1967Proxy(ATK_SYSTEM_ACCESS_MANAGER_IMPLEMENTATION, systemAccessManagerCallData);
+
         // Deploy a new ATKSystem contract instance.
         // It passes all the default implementation addresses stored in this factory, plus the factory's forwarder
         // address.
-        bytes memory callData = abi.encodeWithSelector(
+        bytes memory systemCallData = abi.encodeWithSelector(
             ATKSystemImplementation.initialize.selector,
             sender,
+            systemAccessManagerProxy,
             DEFAULT_COMPLIANCE_IMPLEMENTATION,
             DEFAULT_IDENTITY_REGISTRY_IMPLEMENTATION,
             DEFAULT_IDENTITY_REGISTRY_STORAGE_IMPLEMENTATION,
@@ -223,19 +242,29 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
             DEFAULT_TOKEN_ACCESS_MANAGER_IMPLEMENTATION,
             DEFAULT_TOKEN_FACTORY_REGISTRY_IMPLEMENTATION,
             DEFAULT_COMPLIANCE_MODULE_REGISTRY_IMPLEMENTATION,
-            DEFAULT_ADDON_REGISTRY_IMPLEMENTATION,
-            DEFAULT_SYSTEM_ACCESS_MANAGER_IMPLEMENTATION
+            DEFAULT_ADDON_REGISTRY_IMPLEMENTATION
         );
 
-        ERC1967Proxy proxy = new ERC1967Proxy(ATK_SYSTEM_IMPLEMENTATION, callData);
+        ERC1967Proxy systemProxy = new ERC1967Proxy(ATK_SYSTEM_IMPLEMENTATION, systemCallData);
 
         // Get the address of the newly deployed contract.
-        systemAddress = address(proxy);
+        systemAddress = address(systemProxy);
         // Add the new system's address to our tracking array.
         atkSystems.push(systemAddress);
 
+        // Grant the initial admin the default admin, deployer, and implementation manager roles.
+        bytes32[] memory senderRoles = new bytes32[](2);
+        senderRoles[0] = ATKRoles.DEFAULT_ADMIN_ROLE;
+        senderRoles[1] = ATKPeopleRoles.SYSTEM_MANAGER_ROLE;
+        IATKSystemAccessManager(address(systemAccessManagerProxy)).grantMultipleRoles(sender, senderRoles);
+
+        bytes32[] memory systemRoles = new bytes32[](2);
+        systemRoles[0] = ATKRoles.DEFAULT_ADMIN_ROLE; // needs to be able to grant roles to system modules
+        systemRoles[1] = ATKSystemRoles.SYSTEM_MODULE_ROLE;
+        IATKSystemAccessManager(address(systemAccessManagerProxy)).grantMultipleRoles(systemAddress, systemRoles);
+
         // Emit an event to log the creation, including the new system's address and its initial admin.
-        emit ATKSystemCreated(sender, systemAddress);
+        emit ATKSystemCreated(sender, systemAddress, address(systemAccessManagerProxy));
 
         // Return the address of the newly created system.
         return systemAddress;

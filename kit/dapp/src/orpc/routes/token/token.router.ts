@@ -18,8 +18,12 @@ import { recoverTokens } from "@/orpc/routes/token/routes/mutations/recovery/tok
 import { redeem } from "@/orpc/routes/token/routes/mutations/redeem/token.redeem";
 import { transfer } from "@/orpc/routes/token/routes/mutations/transfer/token.transfer";
 import { setYieldSchedule } from "@/orpc/routes/token/routes/mutations/yield/token.set-yield-schedule";
+import { statsBondStatus } from "@/orpc/routes/token/routes/stats/bond-status";
+import { statsCollateralRatio } from "@/orpc/routes/token/routes/stats/collateral-ratio";
 import { statsSupplyChanges } from "@/orpc/routes/token/routes/stats/supply-changes";
 import { statsTotalSupply } from "@/orpc/routes/token/routes/stats/total-supply";
+import { statsVolume } from "@/orpc/routes/token/routes/stats/volume";
+import { statsWalletDistribution } from "@/orpc/routes/token/routes/stats/wallet-distribution";
 import { actions } from "@/orpc/routes/token/routes/token.actions";
 import { events } from "@/orpc/routes/token/routes/token.events";
 import { holders } from "@/orpc/routes/token/routes/token.holders";
@@ -54,8 +58,12 @@ const routes = {
   setYieldSchedule,
   addComplianceModule,
   removeComplianceModule,
+  statsBondStatus,
+  statsCollateralRatio,
   statsTotalSupply,
   statsSupplyChanges,
+  statsVolume,
+  statsWalletDistribution,
 };
 
 export default routes;

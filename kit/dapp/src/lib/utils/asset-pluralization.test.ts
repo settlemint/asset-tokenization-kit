@@ -2,16 +2,25 @@ import { describe, expect, test, vi } from "vitest";
 import { renderHook } from "@testing-library/react";
 import { getAssetTypePlural, useAssetTypePlural } from "./asset-pluralization";
 
-// Mock react-i18next (hoisted)
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: vi.fn((key, options) => {
+// Create mock functions using vi.hoisted
+const mocks = vi.hoisted(() => {
+  return {
+    t: vi.fn((key: string, options?: { count?: number }) => {
       // Simulate i18next pluralization behavior
       if (options?.count === 1) {
         return key.toLowerCase().slice(0, -1); // Remove 's' for singular
       }
       return key.toLowerCase();
     }),
+  };
+});
+
+// Mock react-i18next
+vi.mock("react-i18next", () => ({
+  useTranslation: () => ({
+    t: mocks.t,
+    i18n: {},
+    ready: true,
   }),
 }));
 

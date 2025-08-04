@@ -10,7 +10,6 @@ import countries from "i18n-iso-countries";
 import { z } from "zod";
 
 // Preload supported locales
-import { alpha2ToNumeric, getAlpha2Code } from "i18n-iso-countries";
 import localeAr from "i18n-iso-countries/langs/ar.json";
 import localeDe from "i18n-iso-countries/langs/de.json";
 import localeEn from "i18n-iso-countries/langs/en.json";
@@ -182,12 +181,12 @@ export function getNumericCodeByName(
   name: string,
   locale: SupportedLocale = "en"
 ) {
-  const alpha2Code = getAlpha2Code(name, locale);
+  const alpha2Code = countries.getAlpha2Code(name, locale);
   if (!alpha2Code) {
     return undefined;
   }
 
-  return alpha2ToNumeric(alpha2Code);
+  return countries.alpha2ToNumeric(alpha2Code);
 }
 
 /**

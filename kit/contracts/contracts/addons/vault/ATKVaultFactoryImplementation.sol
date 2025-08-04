@@ -11,7 +11,7 @@ import { AbstractATKSystemAddonFactoryImplementation } from
 import { ATKVault } from "./ATKVault.sol";
 
 // Constants
-import { ATKSystemRoles } from "../../system/ATKSystemRoles.sol";
+import { ATKPeopleRoles } from "../../system/ATKPeopleRoles.sol";
 
 /// @title Factory for Creating ATKVault Proxies
 /// @author SettleMint
@@ -48,10 +48,10 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
 
     /// @notice Initializes the `ATKVaultFactory`.
     /// @dev Initializes the factory and sets up support for meta-transactions via ERC2771Context.
-    /// @param systemAddress_ The address of the `IATKSystem` contract.
-    /// @param initialAdmin_ The address of the initial admin.
-    function initialize(address systemAddress_, address initialAdmin_) public initializer {
-        _initializeAbstractSystemAddonFactory(systemAddress_, initialAdmin_);
+    /// @param accessManager The address of the access manager.
+    /// @param systemAddress The address of the `IATKSystem` contract.
+    function initialize(address accessManager, address systemAddress) public initializer {
+        _initializeAbstractSystemAddonFactory(accessManager, systemAddress);
     }
 
     /// @notice Generates consistent deployment data for vault creation and address prediction
@@ -107,7 +107,7 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
     )
         external
         override(IATKVaultFactory)
-        onlyRole(ATKSystemRoles.DEPLOYER_ROLE)
+        onlySystemRole(ATKPeopleRoles.ADDON_MANAGER_ROLE)
         returns (address contractAddress)
     {
         (bytes memory saltInputData, bytes memory constructorArgs, bytes memory vaultBytecode) =

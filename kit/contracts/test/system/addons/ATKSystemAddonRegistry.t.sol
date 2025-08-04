@@ -8,15 +8,19 @@ import { ATKSystemAddonRegistryImplementation } from
     "../../../contracts/system/addons/ATKSystemAddonRegistryImplementation.sol";
 import { IATKSystem } from "../../../contracts/system/IATKSystem.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { IATKSystemAccessManager } from "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
 import { IWithTypeIdentifier } from "../../../contracts/smart/interface/IWithTypeIdentifier.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { ATKRoles } from "../../../contracts/system/ATKRoles.sol";
 import { IATKTypedImplementationRegistry } from "../../../contracts/system/IATKTypedImplementationRegistry.sol";
 import {
     InvalidAddonAddress,
     SystemAddonTypeAlreadyRegistered,
     SystemAddonImplementationNotSet
 } from "../../../contracts/system/ATKSystemErrors.sol";
+import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
 
 // Mock for an addon implementation
 contract MockAddon is IWithTypeIdentifier {
@@ -69,7 +73,7 @@ contract ATKSystemAddonRegistryTest is Test {
     }
 
     function test_Initialize() public view {
-        assertTrue(registry.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(systemUtils.systemAccessManager().hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin));
     }
 
     function test_RegisterSystemAddon_Success() public {
@@ -87,11 +91,7 @@ contract ATKSystemAddonRegistryTest is Test {
         assertEq(registry.addon(addonTypeHash), proxyAddress);
 
         // check roles granted
-        assertTrue(
-            IAccessControl(address(systemUtils.compliance())).hasRole(
-                ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, proxyAddress
-            )
-        );
+        assertTrue(systemUtils.systemAccessManager().hasRole(ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE, proxyAddress));
 
         // check if addon was initialized
         assertTrue(MockAddon(proxyAddress).initialized());
@@ -109,18 +109,19 @@ contract ATKSystemAddonRegistryTest is Test {
         address proxyAddress = registry.registerSystemAddon(addonName, address(mockAddonWithoutTypeId), initData);
         Vm.Log[] memory logs = vm.getRecordedLogs();
 
-        assertEq(logs.length, 3);
+        assertEq(logs.length, 2);
 
         // Manual check of event
-        bytes32 eventSignature = IATKSystemAddonRegistry.SystemAddonRegistered.selector;
-        assertEq(logs[2].topics[0], eventSignature);
-        assertEq(logs[2].topics.length, 4); // 3 indexed topics
-        assertEq(address(uint160(uint256(logs[2].topics[1]))), admin);
-        assertEq(address(uint160(uint256(logs[2].topics[2]))), proxyAddress);
-        assertEq(address(uint160(uint256(logs[2].topics[3]))), address(mockAddonWithoutTypeId));
+        bytes32 eventSignature =
+            keccak256("SystemAddonRegistered(address,string,bytes32,address,address,bytes,uint256)");
+        assertEq(logs[1].topics[0], eventSignature);
+        assertEq(logs[1].topics.length, 4); // 3 indexed topics
+        assertEq(address(uint160(uint256(logs[1].topics[1]))), admin);
+        assertEq(address(uint160(uint256(logs[1].topics[2]))), proxyAddress);
+        assertEq(address(uint160(uint256(logs[1].topics[3]))), address(mockAddonWithoutTypeId));
 
         (string memory name, bytes32 typeId, bytes memory data, uint256 timestamp) =
-            abi.decode(logs[2].data, (string, bytes32, bytes, uint256));
+            abi.decode(logs[1].data, (string, bytes32, bytes, uint256));
 
         assertEq(name, addonName);
         assertEq(typeId, bytes32(0));
@@ -135,7 +136,7 @@ contract ATKSystemAddonRegistryTest is Test {
         bytes memory initData = abi.encodeWithSelector(mockAddon.initialize.selector, address(systemUtils.system()));
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user, ATKSystemRoles.REGISTRAR_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user, ATKPeopleRoles.SYSTEM_MANAGER_ROLE
             )
         );
         registry.registerSystemAddon("TestAddon", address(mockAddon), initData);
@@ -192,9 +193,7 @@ contract ATKSystemAddonRegistryTest is Test {
         vm.prank(user);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector,
-                user,
-                ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user, ATKPeopleRoles.SYSTEM_MANAGER_ROLE
             )
         );
         registry.setAddonImplementation(addonTypeHash, address(newMockAddon));
@@ -229,7 +228,9 @@ contract ATKSystemAddonRegistryTest is Test {
             )
         );
         assertTrue(
-            ATKSystemAddonRegistryImplementation(address(registry)).supportsInterface(type(IAccessControl).interfaceId)
+            ATKSystemAddonRegistryImplementation(address(registry)).supportsInterface(
+                type(IATKSystemAccessManaged).interfaceId
+            )
         );
         assertTrue(ATKSystemAddonRegistryImplementation(address(registry)).supportsInterface(type(IERC165).interfaceId));
         assertTrue(

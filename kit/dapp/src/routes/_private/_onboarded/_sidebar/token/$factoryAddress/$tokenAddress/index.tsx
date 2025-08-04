@@ -2,8 +2,12 @@ import { ChartSkeleton } from "@/components/charts/chart-skeleton";
 import { DetailGrid } from "@/components/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
+import { AssetBondStatusProgressChart } from "@/components/stats/charts/asset-bond-status-progress-chart";
+import { AssetCollateralRatioChart } from "@/components/stats/charts/asset-collateral-ratio-chart";
 import { AssetSupplyChangesAreaChart } from "@/components/stats/charts/asset-supply-changes-area-chart";
 import { AssetTotalSupplyAreaChart } from "@/components/stats/charts/asset-total-supply-area-chart";
+import { AssetTotalVolumeAreaChart } from "@/components/stats/charts/asset-total-volume-area-chart";
+import { AssetWalletDistributionChart } from "@/components/stats/charts/asset-wallet-distribution-chart";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
@@ -217,7 +221,17 @@ function RouteComponent() {
           {t("stats:title")}
         </h2>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {asset.bond && (
+            <Suspense fallback={<ChartSkeleton />}>
+              <AssetBondStatusProgressChart assetAddress={asset.id} />
+            </Suspense>
+          )}
+          {asset.collateral && (
+            <Suspense fallback={<ChartSkeleton />}>
+              <AssetCollateralRatioChart assetAddress={asset.id} />
+            </Suspense>
+          )}
           <Suspense fallback={<ChartSkeleton />}>
             <AssetTotalSupplyAreaChart assetAddress={asset.id} timeRange={30} />
           </Suspense>
@@ -226,6 +240,12 @@ function RouteComponent() {
               assetAddress={asset.id}
               timeRange={30}
             />
+          </Suspense>
+          <Suspense fallback={<ChartSkeleton />}>
+            <AssetTotalVolumeAreaChart assetAddress={asset.id} timeRange={30} />
+          </Suspense>
+          <Suspense fallback={<ChartSkeleton />}>
+            <AssetWalletDistributionChart assetAddress={asset.id} />
           </Suspense>
         </div>
       </section>

@@ -9,7 +9,8 @@ import { IATKStableCoinFactory } from "../../contracts/assets/stable-coin/IATKSt
 import { ATKStableCoinFactoryImplementation } from
     "../../contracts/assets/stable-coin/ATKStableCoinFactoryImplementation.sol";
 import { ATKStableCoinImplementation } from "../../contracts/assets/stable-coin/ATKStableCoinImplementation.sol";
-import { ATKRoles } from "../../contracts/assets/ATKRoles.sol";
+import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
+import { ATKPeopleRoles } from "../../contracts/system/ATKPeopleRoles.sol";
 import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { ClaimUtils } from "../../test/utils/ClaimUtils.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
@@ -59,9 +60,6 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
                 "StableCoin", address(stableCoinFactoryImpl), address(stableCoinImpl)
             )
         );
-
-        // Grant registrar role to owner so that he can create the stable coin
-        IAccessControl(address(stableCoinFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
         vm.stopPrank();
 
         // Initialize identities
@@ -123,8 +121,8 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
         assertEq(stableCoin.symbol(), "STBL");
         assertEq(stableCoin.decimals(), DECIMALS);
         assertEq(stableCoin.totalSupply(), 0);
-        assertTrue(stableCoin.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, owner));
-        assertTrue(stableCoin.hasRole(ATKRoles.GOVERNANCE_ROLE, owner));
+        assertTrue(stableCoin.hasRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, owner));
+        assertTrue(stableCoin.hasRole(ATKAssetRoles.GOVERNANCE_ROLE, owner));
     }
 
     function test_DifferentDecimals() public {
@@ -166,7 +164,7 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
         vm.startPrank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKRoles.SUPPLY_MANAGEMENT_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE
             )
         );
         stableCoin.mint(user1, 100);
@@ -175,11 +173,11 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
 
     function test_RoleManagement() public {
         vm.startPrank(owner);
-        ISMARTTokenAccessManager(stableCoin.accessManager()).grantRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1);
-        assertTrue(stableCoin.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1));
+        ISMARTTokenAccessManager(stableCoin.accessManager()).grantRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, user1);
+        assertTrue(stableCoin.hasRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, user1));
 
-        ISMARTTokenAccessManager(stableCoin.accessManager()).revokeRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1);
-        assertFalse(stableCoin.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1));
+        ISMARTTokenAccessManager(stableCoin.accessManager()).revokeRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, user1);
+        assertFalse(stableCoin.hasRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, user1));
         vm.stopPrank();
     }
 
@@ -199,7 +197,7 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
         vm.startPrank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKRoles.EMERGENCY_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKAssetRoles.EMERGENCY_ROLE
             )
         );
         stableCoin.pause();
@@ -262,7 +260,7 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
         vm.startPrank(user2);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, ATKRoles.CUSTODIAN_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, ATKAssetRoles.CUSTODIAN_ROLE
             )
         );
         stableCoin.freezePartialTokens(user1, 100);
@@ -317,7 +315,7 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
         vm.startPrank(user2);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, ATKRoles.CUSTODIAN_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, ATKAssetRoles.CUSTODIAN_ROLE
             )
         );
         stableCoin.forcedTransfer(user1, user2, INITIAL_SUPPLY);

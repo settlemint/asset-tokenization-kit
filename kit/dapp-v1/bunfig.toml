@@ -1,5 +1,0 @@
-[test]
-timeout = 5000
-coverage = true
-files = ["**/*.test.ts", "**/*.spec.ts"]
-ignore-files = ["node_modules/**", ".next/**"]

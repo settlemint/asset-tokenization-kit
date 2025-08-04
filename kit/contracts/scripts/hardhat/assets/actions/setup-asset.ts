@@ -34,7 +34,7 @@ export const setupAsset = async (
   } = {}
 ) => {
   // needs to be done so that he can update the topics and compliance modules
-  await grantRoles(asset, owner, [ATKRoles.governanceRole]);
+  await grantRoles(asset, owner, [ATKRoles.assets.governanceRole]);
 
   // set extra topic
   await updateRequiredTopics(
@@ -63,7 +63,7 @@ export const setupAsset = async (
   }
 
   // needs to be done so that he can add the claims
-  await grantRoles(asset, owner, [ATKRoles.claimManagerRole]);
+  await grantRoles(asset, owner, [ATKRoles.assets.governanceRole]);
 
   // issue isin claim
   await issueIsinClaim(asset, asset.isin);
@@ -92,9 +92,9 @@ export const setupAsset = async (
   // needs supply management role to mint
   // needs custodian role for custodian actions
   await grantRoles(asset, owner, [
-    ATKRoles.supplyManagementRole,
-    ATKRoles.custodianRole,
-    ATKRoles.emergencyRole, // for unpausing
+    ATKRoles.assets.supplyManagementRole,
+    ATKRoles.assets.custodianRole,
+    ATKRoles.assets.emergencyRole, // for unpausing
   ]);
 
   await unpauseAsset(asset);
