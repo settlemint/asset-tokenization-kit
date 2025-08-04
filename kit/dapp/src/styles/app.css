@@ -243,8 +243,8 @@
     @apply transition-transform duration-150 ease-out;
   }
 
-  .press-effect:active:not(:disabled) {
-    @apply scale-[0.98];
+  .press-effect:active {
+    @apply scale-[0.97];
   }
 
   /* Subtle hover lift effect for cards */
