@@ -497,7 +497,7 @@ describe("isoCountryCode validator", () => {
       const numericCountries = getNumericCountries();
 
       // All entries should have a non-empty string value
-      Object.entries(numericCountries).forEach(([numeric, name]) => {
+      Object.entries(numericCountries).forEach(([_numeric, name]) => {
         expect(name).toBeDefined();
         expect(typeof name).toBe("string");
         expect(name.length).toBeGreaterThan(0);
@@ -515,16 +515,19 @@ describe("isoCountryCode validator", () => {
 
       // Each entry should be [code, name] tuple
       const firstEntry = sorted[0];
+      expect(firstEntry).toBeDefined();
       expect(Array.isArray(firstEntry)).toBe(true);
       expect(firstEntry).toHaveLength(2);
-      expect(typeof firstEntry[0]).toBe("string"); // country code
-      expect(typeof firstEntry[1]).toBe("string"); // country name
+      expect(typeof firstEntry![0]).toBe("string"); // country code
+      expect(typeof firstEntry![1]).toBe("string"); // country name
 
       // Should be sorted alphabetically by name
       for (let i = 1; i < sorted.length; i++) {
-        const prevName = sorted[i - 1][1];
-        const currName = sorted[i][1];
-        expect(prevName.localeCompare(currName)).toBeLessThanOrEqual(0);
+        const prevName = sorted[i - 1]?.[1];
+        const currName = sorted[i]?.[1];
+        expect(prevName).toBeDefined();
+        expect(currName).toBeDefined();
+        expect(prevName!.localeCompare(currName!)).toBeLessThanOrEqual(0);
       }
     });
 
@@ -535,9 +538,11 @@ describe("isoCountryCode validator", () => {
 
       // Check German sorting
       for (let i = 1; i < sortedDe.length; i++) {
-        const prevName = sortedDe[i - 1][1];
-        const currName = sortedDe[i][1];
-        expect(prevName.localeCompare(currName)).toBeLessThanOrEqual(0);
+        const prevName = sortedDe[i - 1]?.[1];
+        const currName = sortedDe[i]?.[1];
+        expect(prevName).toBeDefined();
+        expect(currName).toBeDefined();
+        expect(prevName!.localeCompare(currName!)).toBeLessThanOrEqual(0);
       }
 
       // Japanese
@@ -573,16 +578,19 @@ describe("isoCountryCode validator", () => {
 
       // Each entry should be [numericCode, name] tuple
       const firstEntry = sorted[0];
+      expect(firstEntry).toBeDefined();
       expect(Array.isArray(firstEntry)).toBe(true);
       expect(firstEntry).toHaveLength(2);
-      expect(typeof firstEntry[0]).toBe("string"); // numeric code as string
-      expect(typeof firstEntry[1]).toBe("string"); // country name
+      expect(typeof firstEntry![0]).toBe("string"); // numeric code as string
+      expect(typeof firstEntry![1]).toBe("string"); // country name
 
       // Should be sorted alphabetically by name
       for (let i = 1; i < sorted.length; i++) {
-        const prevName = sorted[i - 1][1];
-        const currName = sorted[i][1];
-        expect(prevName.localeCompare(currName)).toBeLessThanOrEqual(0);
+        const prevName = sorted[i - 1]?.[1];
+        const currName = sorted[i]?.[1];
+        expect(prevName).toBeDefined();
+        expect(currName).toBeDefined();
+        expect(prevName!.localeCompare(currName!)).toBeLessThanOrEqual(0);
       }
     });
 
@@ -593,9 +601,11 @@ describe("isoCountryCode validator", () => {
 
       // Check German sorting
       for (let i = 1; i < sortedDe.length; i++) {
-        const prevName = sortedDe[i - 1][1];
-        const currName = sortedDe[i][1];
-        expect(prevName.localeCompare(currName)).toBeLessThanOrEqual(0);
+        const prevName = sortedDe[i - 1]?.[1];
+        const currName = sortedDe[i]?.[1];
+        expect(prevName).toBeDefined();
+        expect(currName).toBeDefined();
+        expect(prevName!.localeCompare(currName!)).toBeLessThanOrEqual(0);
       }
 
       // Should have German names
