@@ -7,7 +7,7 @@ describe("price", () => {
   describe("defensive code documentation", () => {
     test("defensive non-finite check is unreachable due to Zod's validation", () => {
       // The price validator includes a defensive check for non-finite numbers:
-      // if (!Number.isFinite(value)) { ... } (lines 57-62)
+      // if (!Number.isFinite(value)) { ... } (in the price validator implementation)
       //
       // This check is actually unreachable in practice because:
       // 1. Zod's z.number() already rejects Infinity, -Infinity, and NaN
