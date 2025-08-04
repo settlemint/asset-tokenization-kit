@@ -1,13 +1,18 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, beforeAll } from "vitest";
 import { TokenFactoryRelated } from "./token-factory-related";
 import type { AssetType } from "@/lib/zod/validators/asset-types";
 
-// Mock react-i18next
+// Mock react-i18next with hoisting
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: vi.fn(() => ({
+    t: vi.fn((key: string) => key),
+    i18n: {
+      changeLanguage: vi.fn(),
+      language: "en",
+    },
+    ready: true,
+  })),
 }));
 
 describe("TokenFactoryRelated", () => {
@@ -93,38 +98,59 @@ describe("TokenFactoryRelated", () => {
   describe("Asset Type Variations", () => {
     assetTypes.forEach((assetType) => {
       it(`should render correct translation keys for ${assetType}`, () => {
-        render(<TokenFactoryRelated assetType={assetType} />);
+        const { container } = render(
+          <TokenFactoryRelated assetType={assetType} />
+        );
+
+        // First ensure component renders
+        const gridItems = container.querySelectorAll(
+          '[data-slot="related-grid-item"]'
+        );
+        expect(gridItems).toHaveLength(3);
 
         // Verify all translation keys are properly formed for this asset type
-        expect(
-          screen.getByText(`factory.related.${assetType}.box1.title`)
-        ).toBeInTheDocument();
-        expect(
-          screen.getByText(`factory.related.${assetType}.box1.description`)
-        ).toBeInTheDocument();
-        expect(
-          screen.getByText(`factory.related.${assetType}.box1.button`)
-        ).toBeInTheDocument();
+        // Using more flexible text matching to handle potential rendering issues
+        const box1Title = screen.queryByText(
+          `factory.related.${assetType}.box1.title`
+        );
+        const box1Desc = screen.queryByText(
+          `factory.related.${assetType}.box1.description`
+        );
+        const box1Btn = screen.queryByText(
+          `factory.related.${assetType}.box1.button`
+        );
 
-        expect(
-          screen.getByText(`factory.related.${assetType}.box2.title`)
-        ).toBeInTheDocument();
-        expect(
-          screen.getByText(`factory.related.${assetType}.box2.description`)
-        ).toBeInTheDocument();
-        expect(
-          screen.getByText(`factory.related.${assetType}.box2.button`)
-        ).toBeInTheDocument();
+        expect(box1Title).toBeInTheDocument();
+        expect(box1Desc).toBeInTheDocument();
+        expect(box1Btn).toBeInTheDocument();
 
-        expect(
-          screen.getByText(`factory.related.${assetType}.box3.title`)
-        ).toBeInTheDocument();
-        expect(
-          screen.getByText(`factory.related.${assetType}.box3.description`)
-        ).toBeInTheDocument();
-        expect(
-          screen.getByText(`factory.related.${assetType}.box3.button`)
-        ).toBeInTheDocument();
+        const box2Title = screen.queryByText(
+          `factory.related.${assetType}.box2.title`
+        );
+        const box2Desc = screen.queryByText(
+          `factory.related.${assetType}.box2.description`
+        );
+        const box2Btn = screen.queryByText(
+          `factory.related.${assetType}.box2.button`
+        );
+
+        expect(box2Title).toBeInTheDocument();
+        expect(box2Desc).toBeInTheDocument();
+        expect(box2Btn).toBeInTheDocument();
+
+        const box3Title = screen.queryByText(
+          `factory.related.${assetType}.box3.title`
+        );
+        const box3Desc = screen.queryByText(
+          `factory.related.${assetType}.box3.description`
+        );
+        const box3Btn = screen.queryByText(
+          `factory.related.${assetType}.box3.button`
+        );
+
+        expect(box3Title).toBeInTheDocument();
+        expect(box3Desc).toBeInTheDocument();
+        expect(box3Btn).toBeInTheDocument();
       });
     });
   });
