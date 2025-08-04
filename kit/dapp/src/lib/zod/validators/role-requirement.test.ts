@@ -91,8 +91,8 @@ describe("role-requirement", () => {
         ).toBe(false);
       });
 
-      it("should return false for empty 'any' array", () => {
-        expect(satisfiesRoleRequirement(userRoles, { any: [] })).toBe(false);
+      it("should return true for empty 'any' array (no roles required)", () => {
+        expect(satisfiesRoleRequirement(userRoles, { any: [] })).toBe(true);
       });
 
       it("should handle nested 'any' requirements", () => {

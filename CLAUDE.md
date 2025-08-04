@@ -20,6 +20,7 @@ bun run dev:up && bun run dev
 
 # Before PR (MANDATORY)
 bun run ci
+bun run test:integration  # CRITICAL: Not included in ci, must run separately
 [[ "$(git branch --show-current)" =~ ^(main|master)$ ]] && git checkout -b feature/name
 # PR title must follow semantic commit format: type(scope): description
 # Focus on main code changes - ignore docs/tests if code changes exist
@@ -50,7 +51,7 @@ TxSigner:8547 | Portal:7701 | Hasura:8080 | Graph:8000 | MinIO:9000
 
 1. **ALWAYS use researcher agent FIRST before ANY coding**
 2. NEVER commit to main
-3. ALWAYS `bun run ci` before PR
+3. ALWAYS `bun run ci` AND `bun run test:integration` before PR
 4. Check module-specific CLAUDE.md files
 5. Use TodoWrite for task planning
 6. Use ALL specialized agents in correct order
@@ -177,9 +178,10 @@ solidity-auditor → for smart contract changes
 - **MANDATORY**: For `bun run test:integration` command
 - After code changes
 - Before commits
-- Before PR creation
+- Before PR creation (runs both `bun run ci` AND `bun run test:integration`)
 - To debug test failures
 - **NEVER** run tests directly - ALWAYS through test-validator agent
+- **NOTE**: `bun run ci` does NOT include integration tests
 
 **solidity-auditor** (CONTRACTS ONLY):
 

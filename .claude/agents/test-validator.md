@@ -24,6 +24,9 @@ Structured, actionable output only. Maximum validation, minimum context.
 
 Groups: Unit | Integration | E2E | Lint | Type | Security | Performance
 
+**CRITICAL**: `bun run ci` does NOT include integration tests. Always run
+`bun run test:integration` separately after CI passes.
+
 ## Core Expertise
 
 - **Parallel Orchestration**: Maximize concurrency without conflicts
@@ -43,6 +46,8 @@ bun run lint & \
 bun run test:unit
 ```
 
+**Note**: These are included in `bun run ci`
+
 ### Group 2: Integration Layer (< 30s)
 
 ```bash
@@ -50,6 +55,9 @@ bun run test:unit
 bun run test:integration & \
 bun run test:api
 ```
+
+**IMPORTANT**: Integration tests are NOT included in `bun run ci` and MUST be
+run separately
 
 ### Group 3: Full Validation (< 60s)
 
@@ -155,8 +163,9 @@ const testStrategy = {
 
 - After ANY code changes
 - Before ANY commit
-- Before PR creation
+- Before PR creation (run `bun run ci` THEN `bun run test:integration`)
 - After dependency updates
 - When debugging test failures
+- **ALWAYS for integration tests** (never run directly)
 
 **Mission**: Fast feedback, quality enforcement, parallel excellence

@@ -13,11 +13,23 @@ bun run ci
 This single command handles:
 
 - Unit tests
-- Integration tests
 - Type checking
 - Linting
 - Coverage validation
-- All quality gates
+- Most quality gates
+
+**IMPORTANT**: Integration tests are NOT included in `bun run ci` and must be
+run separately:
+
+```bash
+bun run test:integration
+```
+
+## Complete Validation Process
+
+1. Run CI suite: `bun run ci`
+2. Run integration tests: `bun run test:integration`
+3. Both must pass before PR
 
 ## Result
 

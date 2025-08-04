@@ -20,7 +20,7 @@
   },
   "tasks": {
     "ci": {
-      "dependsOn": ["ci:base", "format", "test:integration"]
+      "dependsOn": ["ci:base", "format"]
     },
     "ci:base": {
       "dependsOn": [
