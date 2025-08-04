@@ -1,6 +1,6 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import { SystemAddonCreateSchema } from "@/orpc/routes/system/addon/routes/addon.create.schema";
-import { SystemReadSchema } from "@/orpc/routes/system/routes/system.read.schema";
+import { SystemReadOutputSchema } from "@/orpc/routes/system/routes/system.read.schema";
 
 /**
  * Contract definition for the system addon creation endpoint.
@@ -25,7 +25,7 @@ const addonCreate = baseContract
     tags: ["system"],
   })
   .input(SystemAddonCreateSchema)
-  .output(SystemReadSchema);
+  .output(SystemReadOutputSchema);
 
 export const addonContract = {
   addonCreate,

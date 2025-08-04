@@ -96,3 +96,69 @@ dapp:
 - External secrets (Vault, K8s)
 - Network policies in prod
 - Registry auth required
+
+## K8s Best Practices
+
+### Resource Management
+```yaml
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+```
+
+### Health Checks
+```yaml
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 3000
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /ready
+    port: 3000
+  initialDelaySeconds: 5
+  periodSeconds: 5
+```
+
+### Autoscaling
+```yaml
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+```
+
+### Pod Disruption Budgets
+```yaml
+podDisruptionBudget:
+  minAvailable: 1
+  maxUnavailable: 50%
+```
+
+### Network Policies
+```yaml
+networkPolicy:
+  enabled: true
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: atk
+```
+
+### RBAC
+```yaml
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+```

@@ -1,10 +1,10 @@
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
 import {
-  getTransactionHash,
-  type TransactionHash,
-} from "@/lib/zod/validators/transaction-hash";
+  ethereumHash,
+  getEthereumHash as getTransactionHash,
+  type EthereumHash as TransactionHash,
+} from "@/lib/zod/validators/ethereum-hash";
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import type { TadaDocumentNode } from "gql.tada";

@@ -13,7 +13,9 @@ import { getKitProjectPath } from "../../../tools/root";
 
 const HARBOR_PROXY = "harbor.settlemint.com";
 const logger = createLogger({
-  level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel || "info",
+  level: process.env.CLAUDECODE
+    ? "error"
+    : (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || "info",
 });
 
 /**
