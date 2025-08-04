@@ -152,10 +152,16 @@ export function BaseActionSheet({
             variant="outline"
             onClick={handleCancel}
             disabled={isSubmitting}
+            className="press-effect"
           >
             {cancelLabel || t("common:actions.cancel")}
           </Button>
-          <Button type="button" onClick={handleProceed} disabled={isSubmitting}>
+          <Button
+            type="button"
+            onClick={handleProceed}
+            disabled={isSubmitting}
+            className="press-effect"
+          >
             {submitLabel || t("common:continue")}
           </Button>
         </SheetFooter>

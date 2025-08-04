@@ -126,7 +126,7 @@ function RouteComponent() {
             handleSaveAndContinue();
           }}
           disabled={isSettingUpdating}
-          className="min-w-[120px]"
+          className="min-w-[120px] press-effect"
         >
           {isSettingUpdating
             ? t("system-settings.buttons.saving")

@@ -14,11 +14,19 @@ export function RecoveryCodesActions({
   const { t } = useTranslation(["onboarding"]);
   return (
     <div className="flex flex-wrap gap-3 justify-center">
-      <Button variant="outline" onClick={onCopyAll} className="gap-2">
+      <Button
+        variant="outline"
+        onClick={onCopyAll}
+        className="gap-2 press-effect"
+      >
         <Copy className="h-4 w-4" />
         {t("wallet-security.recovery-codes.copy-all")}
       </Button>
-      <Button variant="outline" onClick={onDownload} className="gap-2">
+      <Button
+        variant="outline"
+        onClick={onDownload}
+        className="gap-2 press-effect"
+      >
         <Download className="h-4 w-4" />
         {t("wallet-security.recovery-codes.download")}
       </Button>
