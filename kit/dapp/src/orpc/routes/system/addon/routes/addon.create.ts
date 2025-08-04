@@ -82,8 +82,12 @@ const ADDON_TYPE_TO_IMPLEMENTATION_NAME = {
  * Generates initialization data for different addon types
  */
 function generateInitializationData(context: Context): string {
+  // The addon factories expect accessManager as first param and systemAddress as second
+  const accessManagerAddress = getAddress(
+    context.system?.systemAccessManager?.id ?? ""
+  );
   const systemAddress = getAddress(context.system?.address ?? "");
-  const initialAdmin = getAddress(context.auth?.user.wallet ?? "");
+
   return encodeFunctionData({
     abi: [
       {
@@ -91,12 +95,12 @@ function generateInitializationData(context: Context): string {
         name: "initialize",
         inputs: [
           {
-            name: "systemAddress_",
+            name: "accessManager",
             type: "address",
             internalType: "address",
           },
           {
-            name: "initialAdmin_",
+            name: "systemAddress",
             type: "address",
             internalType: "address",
           },
@@ -106,7 +110,7 @@ function generateInitializationData(context: Context): string {
       },
     ],
     functionName: "initialize",
-    args: [systemAddress, initialAdmin],
+    args: [accessManagerAddress, systemAddress],
   });
 }
 
