@@ -25,6 +25,7 @@ import { events } from "@/orpc/routes/token/routes/token.events";
 import { holders } from "@/orpc/routes/token/routes/token.holders";
 import { list } from "@/orpc/routes/token/routes/token.list";
 import { read } from "@/orpc/routes/token/routes/token.read";
+import { search } from "@/orpc/routes/token/routes/token.search";
 
 const routes = {
   actions,
@@ -37,6 +38,7 @@ const routes = {
   holders,
   list,
   read,
+  search,
   pause,
   unpause,
   mint,

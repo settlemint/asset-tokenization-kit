@@ -83,24 +83,12 @@ const LIST_TOKEN_QUERY = theGraphGraphql(`
 export const list = authRouter.token.list
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
-    // Build where clause, mapping searchByAddress to id
-    const where: {
-      id?: string;
-      tokenFactory_?: { id: string };
-    } = {};
-    if (input.tokenFactory !== undefined) {
-      where.tokenFactory_ = {
-        id: input.tokenFactory,
-      };
-    }
-    if (input.searchByAddress !== undefined) {
-      where.id = input.searchByAddress.toLowerCase();
-    }
-
-    // Manually construct GraphQL variables since we need to handle searchByAddress mapping
+    // Manually construct GraphQL variables for pagination and filtering
     const response = await context.theGraphClient.query(LIST_TOKEN_QUERY, {
       input: {
-        where: Object.keys(where).length > 0 ? where : undefined,
+        where: input.tokenFactory
+          ? { tokenFactory_: { id: input.tokenFactory } }
+          : undefined,
       },
       output: TokensResponseSchema,
     });
