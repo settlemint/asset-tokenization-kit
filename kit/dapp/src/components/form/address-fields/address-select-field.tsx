@@ -74,8 +74,14 @@ export function AddressSelectField({
     scope,
   });
   const searchResults = useMemo(() => {
-    const addressList = scope === "user" ? users : assets;
-    return addressList.map((item) => ({
+    const list =
+      scope === "user"
+        ? users
+        : scope === "asset"
+          ? assets
+          : [...users, ...assets];
+
+    return list.map((item) => ({
       address: getAddress(item.id),
       displayName: item.name,
       secondaryInfo: "symbol" in item ? item.symbol : item.email,
@@ -94,15 +100,6 @@ export function AddressSelectField({
       secondaryInfo: undefined,
     }));
   }, [recentAddresses]);
-
-  // Display addresses: search results, then initial
-  const displayAddresses = useMemo(() => {
-    if (searchTerm) {
-      return searchResults;
-    }
-
-    return searchResults;
-  }, [searchResults, searchTerm]);
 
   // Handle address selection from search results
   const handleAddressSelect = useCallback(
@@ -186,7 +183,7 @@ export function AddressSelectField({
                 </CommandGroup>
               )}
 
-              {displayAddresses.length > 0 && (
+              {searchResults.length > 0 && (
                 <CommandGroup
                   heading={
                     <>
@@ -205,7 +202,7 @@ export function AddressSelectField({
                     </>
                   }
                 >
-                  {displayAddresses.map((option) => (
+                  {searchResults.map((option) => (
                     <AddressCommandItem
                       key={`all-${option.address}`}
                       option={option}
