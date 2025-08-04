@@ -1,5 +1,3 @@
-"use no memo";
-
 import { cn } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
 import React from "react";

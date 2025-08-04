@@ -53,6 +53,10 @@ export function satisfiesRoleRequirement(
 
   if (isAnyRoleRequirement(requirement)) {
     // OR logic - at least one must be satisfied
+    // Empty array means no roles required (everyone can perform this action)
+    if (requirement.any.length === 0) {
+      return true;
+    }
     return requirement.any.some((req) =>
       satisfiesRoleRequirement(userRoles, req)
     );

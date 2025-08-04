@@ -11,7 +11,7 @@ to other agents to avoid duplication.
 
 ## Documentation First (MANDATORY)
 
-**ALWAYS Context7 → Grep → DeepWiki → Validate**
+**ALWAYS (Context7 + Grep + DeepWiki in parallel) → Validate**
 
 ```typescript
 // Phase 1: Official Documentation

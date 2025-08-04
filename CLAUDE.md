@@ -48,11 +48,12 @@ TxSigner:8547 | Portal:7701 | Hasura:8080 | Graph:8000 | MinIO:9000
 
 ## Critical Rules
 
-1. NEVER commit to main
-2. ALWAYS `bun run ci` before PR
-3. Check module-specific CLAUDE.md files
-4. Use TodoWrite for task planning
-5. Use specialized agents
+1. **ALWAYS use researcher agent FIRST before ANY coding**
+2. NEVER commit to main
+3. ALWAYS `bun run ci` before PR
+4. Check module-specific CLAUDE.md files
+5. Use TodoWrite for task planning
+6. Use ALL specialized agents in correct order
 
 ## Test Execution (MANDATORY test-validator agent)
 
@@ -67,57 +68,100 @@ TxSigner:8547 | Portal:7701 | Hasura:8080 | Graph:8000 | MinIO:9000
 
 ## Task Planning (MANDATORY)
 
-**ALWAYS TodoWrite before starting ANY task**
+**WORKFLOW: researcher agent → TodoWrite → implementation → validation agents**
+
+**ALWAYS use researcher agent FIRST, then TodoWrite based on research**
 
 ❌ VAGUE: "Style navbar" | "Optimize API" | "Update schema" ✅ SPECIFIC: "navbar
 height 60px→80px" | "API timeout 30s→10s" | "Add index on user_id"
 
 **Protocol**: Task → TodoWrite → in_progress → completed
 
-## Agent Orchestration (Simplified & Efficient)
+## 🚨 CRITICAL: Agent Usage is MANDATORY (NOT OPTIONAL) 🚨
 
-**Available Agents (4 total)**
+**⚠️ WARNING: Failure to use agents in the correct order will result in:**
 
-1. **researcher**: MANDATORY before ANY implementation - fetches docs, finds
-   patterns, plans implementation to avoid duplication
-2. **code-reviewer**: MANDATORY after code changes - validates quality,
-   architecture, SOLID principles, implementation correctness
-3. **solidity-auditor**: MANDATORY for smart contracts - security audits, gas
-   optimization, ERC compliance checks
-4. **test-validator**: MANDATORY for ALL tests & linting - runs tests
-   (unit/integration/e2e), executes linters, validates in parallel. NEVER run
-   tests/lint directly!
+- **Duplicated work and wasted effort**
+- **Incorrect implementations that need rework**
+- **Missing critical patterns and best practices**
+- **Security vulnerabilities and performance issues**
 
-### Agent Workflow (MANDATORY)
+## Agent Orchestration (MANDATORY WORKFLOW)
+
+**Available Agents (4 total) - USE IN THIS EXACT ORDER:**
+
+1. **researcher** (🔴 ALWAYS FIRST - NO EXCEPTIONS):
+   - **MANDATORY before writing ANY code**
+   - Fetches ALL relevant documentation
+   - Finds existing patterns to avoid duplication
+   - Creates implementation plan based on best practices
+   - **SKIP THIS = GUARANTEED REWORK**
+
+2. **code-reviewer** (MANDATORY after ANY code changes):
+   - Validates quality, architecture, SOLID principles
+   - Checks implementation correctness
+   - Identifies security issues and performance problems
+   - **SKIP THIS = TECHNICAL DEBT**
+
+3. **solidity-auditor** (MANDATORY for smart contracts):
+   - Security audits and vulnerability detection
+   - Gas optimization analysis
+   - ERC compliance verification
+   - **SKIP THIS = SECURITY RISKS**
+
+4. **test-validator** (MANDATORY for ALL tests & linting):
+   - Runs ALL test types in parallel
+   - Executes linters and formatters
+   - **NEVER run tests/lint directly - ALWAYS use this agent**
+
+### 🎯 THE ONLY ACCEPTABLE WORKFLOW (NO DEVIATIONS)
 
 ```typescript
-// 1. Research FIRST (avoids duplication)
-researcher → gathers all docs, patterns, best practices
+// ⚡ STEP 1: RESEARCH (NON-NEGOTIABLE - ALWAYS FIRST)
+researcher agent → gathers ALL docs, patterns, best practices
+  ↓
+// 📝 STEP 2: IMPLEMENTATION (based on research output)
+You write code ONLY after researcher provides guidance
+  ↓
+// ✅ STEP 3: VALIDATION (parallel execution)
+code-reviewer & test-validator → run simultaneously
+  ↓
+// 🔒 STEP 4: SPECIALIZED (when applicable)
+solidity-auditor → for smart contract changes
 
-// 2. Implementation (main thread)
-You write code based on research
+// 🚫 FORBIDDEN ACTIONS:
+// ❌ Writing code without researcher agent
+// ❌ Running tests without test-validator agent
+// ❌ Running lint without test-validator agent
+// ❌ Claiming completion without code-reviewer agent
+// ❌ Deploying contracts without solidity-auditor agent
 
-// 3. Validation (parallel agents - ALWAYS USE)
-code-reviewer & test-validator → quality check
+// ✅ CORRECT EXAMPLES:
+// User: "Add user authentication"
+// You: Use researcher agent FIRST → then implement → then validate
 
-// 4. Specialized (when needed)
-solidity-auditor → for smart contracts only
-
-// CRITICAL: Test/Lint Commands
-// ❌ NEVER: bun run test:integration (direct)
-// ✅ ALWAYS: test-validator agent → bun run test:integration
-// ❌ NEVER: bun run lint (direct)
-// ✅ ALWAYS: test-validator agent → bun run lint
+// User: "Fix the bug in token transfer"
+// You: Use researcher agent FIRST → understand patterns → fix → validate
 ```
 
-### When to Use Each Agent
+### 🔴 MANDATORY Agent Usage Rules
 
-**researcher** (ALWAYS FIRST):
+**researcher** (🚨 ALWAYS FIRST - NO EXCEPTIONS):
 
-- Before implementing ANY new feature
-- When integrating third-party services
-- When optimizing existing code
-- Before writing > 50 lines
+- **BEFORE writing ANY code (even 1 line)**
+- **BEFORE ANY implementation task**
+- **BEFORE modifying existing code**
+- **BEFORE adding new features**
+- **BEFORE fixing bugs**
+- **BEFORE refactoring**
+- **Even for "simple" tasks - NO EXCEPTIONS**
+
+**Why researcher MUST be first:**
+
+- Prevents reinventing existing solutions
+- Ensures correct patterns are used
+- Identifies the right approach immediately
+- Saves hours of rework
 
 **code-reviewer** (AFTER CODING):
 
