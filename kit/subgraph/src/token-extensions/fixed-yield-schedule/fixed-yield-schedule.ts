@@ -49,18 +49,6 @@ export function handleFixedYieldScheduleSet(
     tokenDecimals
   );
   fixedYieldSchedule.underlyingAsset = event.params.underlyingAsset;
-  /* TODO: implement stats
-  const underlyingAsset = fetchToken(event.params.underlyingAsset);
-  const underlyingAssetBalance = fetchTokenBalance(
-    underlyingAsset,
-    fetchAccount(event.address)
-  );
-  setBigNumber(
-    fixedYieldSchedule,
-    "underlyingAssetBalanceAvailable",
-    underlyingAssetBalance.availableExact,
-    underlyingAsset.decimals
-  );*/
   for (let i = 1; i <= event.params.periodEndTimestamps.length; i++) {
     const period = fetchFixedYieldSchedulePeriod(getPeriodId(event.address, i));
     if (period.deployedInTransaction.equals(Bytes.empty())) {
