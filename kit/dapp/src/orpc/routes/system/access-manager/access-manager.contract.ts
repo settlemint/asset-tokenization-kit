@@ -7,6 +7,10 @@ import {
   RevokeRoleInputSchema,
   RevokeRoleOutputSchema,
 } from "@/orpc/routes/system/access-manager/routes/revoke-role.schema";
+import {
+  SystemRolesInputSchema,
+  SystemRolesOutputSchema,
+} from "@/orpc/routes/system/access-manager/routes/roles.list.schema";
 
 const TAGS = ["system", "access-manager"];
 
@@ -34,7 +38,19 @@ const revokeRole = baseContract
   .input(RevokeRoleInputSchema)
   .output(RevokeRoleOutputSchema);
 
+const rolesList = baseContract
+  .route({
+    method: "GET",
+    path: "/system/access-manager/roles",
+    description: "List all accounts and their roles",
+    successDescription: "List of all accounts and their roles",
+    tags: TAGS,
+  })
+  .input(SystemRolesInputSchema)
+  .output(SystemRolesOutputSchema);
+
 export const accessManagerContract = {
   grantRole,
   revokeRole,
+  rolesList,
 };
