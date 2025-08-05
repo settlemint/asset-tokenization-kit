@@ -1,6 +1,4 @@
 // @vitest-environment node
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
-import { ORPCError } from "@orpc/server";
 import { getAddress } from "viem";
 import { beforeAll, describe, expect, it } from "vitest";
 import { getOrpcClient } from "../../utils/orpc-client";
@@ -11,14 +9,14 @@ import {
   signInWithUser,
 } from "../../utils/user";
 
-describe("Access Manager - Revoke Role ORPC routes", () => {
+describe("Access Manager - Grant Role ORPC routes", () => {
   let adminClient: ReturnType<typeof getOrpcClient>;
   let investorClient: ReturnType<typeof getOrpcClient>;
 
   const testAddresses = {
-    valid1: getAddress("0xabcdefabcdefabcdefabcdefabcdefabcdefabcd"),
-    valid2: getAddress("0xbcdefabcdefabcdefabcdefabcdefabcdefabcde"),
-    valid3: getAddress("0xcdefabcdefabcdefabcdefabcdefabcdefabcdef"),
+    valid1: getAddress("0x1234567890123456789012345678901234567890"),
+    valid2: getAddress("0x2345678901234567890123456789012345678901"),
+    valid3: getAddress("0x3456789012345678901234567890123456789012"),
     invalid: "0xinvalid",
   };
 
@@ -28,34 +26,11 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
 
     const investorHeaders = await signInWithUser(DEFAULT_INVESTOR);
     investorClient = getOrpcClient(investorHeaders);
-
-    // Grant roles to the test addresses
-    const rolesToGrant: AccessControlRoles[] = [
-      "systemManager",
-      "complianceManager",
-      "tokenManager",
-    ];
-    await Promise.all(
-      rolesToGrant.map((role) =>
-        adminClient.system.grantRole({
-          verification: {
-            verificationCode: DEFAULT_PINCODE,
-            verificationType: "pincode",
-          },
-          accounts: [
-            testAddresses.valid1,
-            testAddresses.valid2,
-            testAddresses.valid3,
-          ],
-          role,
-        })
-      )
-    );
   });
 
-  describe("successful role revokes", () => {
-    it("should revoke a single role from a single account", async () => {
-      const result = await adminClient.system.revokeRole({
+  describe("successful role grants", () => {
+    it("should grant a single role to a single account", async () => {
+      const result = await adminClient.system.grantRole({
         verification: {
           verificationCode: DEFAULT_PINCODE,
           verificationType: "pincode",
@@ -75,11 +50,11 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
         (role) => role.account === testAddresses.valid1
       );
       expect(updatedSystemRoles).toBeDefined();
-      expect(updatedSystemRoles?.roles).not.toContain("tokenManager");
+      expect(updatedSystemRoles?.roles).toContain("tokenManager");
     });
 
-    it("should revoke a role from multiple accounts", async () => {
-      const result = await adminClient.system.revokeRole({
+    it("should grant a role to multiple accounts", async () => {
+      const result = await adminClient.system.grantRole({
         verification: {
           verificationCode: DEFAULT_PINCODE,
           verificationType: "pincode",
@@ -104,14 +79,17 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
         excludeContracts: true,
       });
       const updatedSystemRoles = systemRoles.find(
-        (role) => role.account === testAddresses.valid1
+        (role) =>
+          role.account === testAddresses.valid1 ||
+          role.account === testAddresses.valid2 ||
+          role.account === testAddresses.valid3
       );
       expect(updatedSystemRoles).toBeDefined();
-      expect(updatedSystemRoles?.roles).not.toContain("complianceManager");
+      expect(updatedSystemRoles?.roles).toContain("complianceManager");
     });
 
     it("should handle empty accounts array", async () => {
-      const result = await adminClient.system.revokeRole({
+      const result = await adminClient.system.grantRole({
         verification: {
           verificationCode: DEFAULT_PINCODE,
           verificationType: "pincode",
@@ -127,8 +105,8 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
   });
 
   describe("permission validation", () => {
-    it("should allow admin users to revoke roles", async () => {
-      const result = await adminClient.system.revokeRole({
+    it("should allow admin users to grant roles", async () => {
+      const result = await adminClient.system.grantRole({
         verification: {
           verificationCode: DEFAULT_PINCODE,
           verificationType: "pincode",
@@ -142,9 +120,9 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
       });
     });
 
-    it("should reject non-admin users from revoking roles", async () => {
+    it("should reject non-admin users from granting roles", async () => {
       await expect(
-        investorClient.system.revokeRole({
+        investorClient.system.grantRole({
           verification: {
             verificationCode: DEFAULT_PINCODE,
             verificationType: "pincode",
@@ -153,10 +131,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
           role: "tokenManager",
         })
       ).rejects.toThrow(
-        new ORPCError("USER_NOT_AUTHORIZED", {
-          message:
-            "User does not have the required role to execute this action.",
-        })
+        "User does not have the required role to execute this action."
       );
     });
   });
@@ -164,7 +139,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
   describe("error handling", () => {
     it("should reject invalid role names", async () => {
       await expect(
-        adminClient.system.revokeRole({
+        adminClient.system.grantRole({
           verification: {
             verificationCode: DEFAULT_PINCODE,
             verificationType: "pincode",
@@ -172,12 +147,12 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
           accounts: [testAddresses.valid1],
           role: "invalidRole" as never,
         })
-      ).rejects.toThrow(new ORPCError("INPUT_VALIDATION_FAILED"));
+      ).rejects.toThrow("INPUT_VALIDATION_FAILED");
     });
 
     it("should reject invalid wallet addresses", async () => {
       await expect(
-        adminClient.system.revokeRole({
+        adminClient.system.grantRole({
           verification: {
             verificationCode: DEFAULT_PINCODE,
             verificationType: "pincode",
@@ -185,12 +160,12 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
           accounts: [testAddresses.invalid],
           role: "tokenManager",
         })
-      ).rejects.toThrow(new ORPCError("INPUT_VALIDATION_FAILED"));
+      ).rejects.toThrow("INPUT_VALIDATION_FAILED");
     });
 
     it("should reject mixed valid and invalid addresses", async () => {
       await expect(
-        adminClient.system.revokeRole({
+        adminClient.system.grantRole({
           verification: {
             verificationCode: DEFAULT_PINCODE,
             verificationType: "pincode",
@@ -202,12 +177,12 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
           ],
           role: "tokenManager",
         })
-      ).rejects.toThrow(new ORPCError("INPUT_VALIDATION_FAILED"));
+      ).rejects.toThrow("INPUT_VALIDATION_FAILED");
     });
 
     it("should reject incorrect pincode verification", async () => {
       await expect(
-        adminClient.system.revokeRole({
+        adminClient.system.grantRole({
           verification: {
             verificationCode: "000000",
             verificationType: "pincode",
@@ -215,17 +190,13 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
           accounts: [testAddresses.valid1],
           role: "tokenManager",
         })
-      ).rejects.toThrow(
-        new ORPCError("PORTAL_ERROR", {
-          message: "Invalid authentication challenge",
-        })
-      );
+      ).rejects.toThrow("Invalid authentication challenge");
     });
   });
 
   describe("edge cases", () => {
     it("should handle duplicate accounts in the array", async () => {
-      const result = await adminClient.system.revokeRole({
+      const result = await adminClient.system.grantRole({
         verification: {
           verificationCode: DEFAULT_PINCODE,
           verificationType: "pincode",

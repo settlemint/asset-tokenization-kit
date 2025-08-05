@@ -1,10 +1,10 @@
 import { retryWhenFailed } from "@settlemint/sdk-utils";
-import { OrpcClient } from "./orpc-client";
+import { getOrpcClient, OrpcClient } from "./orpc-client";
 import {
-  DEFAULT_ADMIN,
   DEFAULT_ISSUER,
   DEFAULT_PINCODE,
   getUserData,
+  signInWithUser,
 } from "./user";
 
 export async function bootstrapSystem(orpClient: OrpcClient) {
@@ -130,34 +130,34 @@ export async function bootstrapTokenFactories(
   console.log("Token factories created");
 }
 
-export async function setupDefaultAccountRoles(orpClient: OrpcClient) {
-  const admin = await getUserData(DEFAULT_ADMIN);
-  console.log("Granting identity manager role to admin");
-  await orpClient.system.grantRole({
-    verification: {
-      verificationCode: DEFAULT_PINCODE,
-      verificationType: "pincode",
-    },
-    accounts: [admin.wallet],
-    role: "identityManager",
-  });
+export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
   const issuer = await getUserData(DEFAULT_ISSUER);
-  console.log("Granting token manager role to issuer");
-  await orpClient.system.grantRole({
-    verification: {
-      verificationCode: DEFAULT_PINCODE,
-      verificationType: "pincode",
-    },
-    accounts: [issuer.wallet],
-    role: "tokenManager",
-  });
-  console.log("Granting compliance manager role to issuer");
-  await orpClient.system.grantRole({
-    verification: {
-      verificationCode: DEFAULT_PINCODE,
-      verificationType: "pincode",
-    },
-    accounts: [issuer.wallet],
-    role: "complianceManager",
-  });
+  const issuerOrpcClient = getOrpcClient(await signInWithUser(DEFAULT_ISSUER));
+  const issuerMe = await issuerOrpcClient.user.me({});
+  if (issuerMe.userSystemPermissions.roles.tokenManager) {
+    console.log("Issuer already has token manager role");
+  } else {
+    console.log("Granting token manager role to issuer");
+    await orpClient.system.grantRole({
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+      accounts: [issuer.wallet],
+      role: "tokenManager",
+    });
+  }
+  if (issuerMe.userSystemPermissions.roles.complianceManager) {
+    console.log("Issuer already has compliance manager role");
+  } else {
+    console.log("Granting compliance manager role to issuer");
+    await orpClient.system.grantRole({
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+      accounts: [issuer.wallet],
+      role: "complianceManager",
+    });
+  }
 }

@@ -24,6 +24,7 @@ import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middle
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
 import { upsert } from "@/orpc/routes/settings/routes/settings.upsert";
+import { grantRole } from "@/orpc/routes/system/access-manager/routes/grant-role";
 import { complianceModuleCreate } from "@/orpc/routes/system/compliance-module/routes/compliance-module.create";
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { call } from "@orpc/server";
@@ -273,6 +274,26 @@ export const create = onboardedRouter.system.create
         logger.error("Failed to create compliance modules", error);
       }
     }
+
+    // Grant token manager and identity manager roles to the sender
+    await call(
+      grantRole,
+      {
+        role: "tokenManager",
+        accounts: [sender.wallet],
+        verification,
+      },
+      { context }
+    );
+    await call(
+      grantRole,
+      {
+        role: "identityManager",
+        accounts: [sender.wallet],
+        verification,
+      },
+      { context }
+    );
 
     const updatedSystemDetails = await call(
       read,

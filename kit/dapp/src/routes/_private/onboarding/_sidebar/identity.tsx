@@ -59,11 +59,6 @@ function RouteComponent() {
       })
     );
 
-  const {
-    mutateAsync: grantIdentityManagerRole,
-    isPending: isGrantingIdentityManagerRole,
-  } = useMutation(orpc.system.grantRole.mutationOptions());
-
   const { mutateAsync: updateKyc, isPending: isUpdatingKyc } = useMutation(
     orpc.user.kyc.upsert.mutationOptions({
       onSuccess: async () => {
@@ -112,11 +107,6 @@ function RouteComponent() {
       toast.promise(
         (async () => {
           if (shouldRegisterIdentity) {
-            await grantIdentityManagerRole({
-              role: "identityManager",
-              accounts: [session.user.wallet],
-              verification,
-            });
             await registerIdentity({
               country: kycFormValues.country,
               verification,
@@ -136,7 +126,6 @@ function RouteComponent() {
       );
     },
     [
-      grantIdentityManagerRole,
       kycFormValues,
       registerIdentity,
       session?.user,
@@ -157,11 +146,7 @@ function RouteComponent() {
       />
       <KycForm
         onComplete={handleComplete}
-        disabled={
-          isRegisteringIdentity ||
-          isUpdatingKyc ||
-          isGrantingIdentityManagerRole
-        }
+        disabled={isRegisteringIdentity || isUpdatingKyc}
       />
       <VerificationDialog
         open={showVerificationModal}

@@ -1,8 +1,9 @@
+import { getDappUrl } from "../utils/dapp";
 import { getOrpcClient } from "../utils/orpc-client";
 import {
   bootstrapSystem,
   bootstrapTokenFactories,
-  setupDefaultAccountRoles,
+  setupDefaultIssuerRoles
 } from "../utils/system-bootstrap";
 import {
   DEFAULT_ADMIN,
@@ -11,7 +12,6 @@ import {
   setupUser,
   signInWithUser,
 } from "../utils/user";
-import { getDappUrl } from "../utils/dapp";
 
 export async function setup() {
   try {
@@ -31,7 +31,7 @@ export async function setup() {
     console.log("Bootstrapping token factories");
     await bootstrapTokenFactories(orpClient, system);
     console.log("Granting roles to default accounts");
-    await setupDefaultAccountRoles(orpClient);
+    await setupDefaultIssuerRoles(orpClient);
   } catch (error: unknown) {
     console.error("Failed to setup test environment", error);
     process.exit(1);
