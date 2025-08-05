@@ -1,6 +1,8 @@
 import { test } from "@playwright/test";
+import * as fs from "node:fs";
 import { OnboardingPage } from "../pages/onboarding-page";
 import { onboardingTestData } from "../test-data/user-data";
+import { getSetupUserPath } from "../utils/setup-user";
 
 test.setTimeout(600_000);
 
@@ -54,6 +56,22 @@ test.describe.serial("Complete Onboarding Flow", () => {
     await onboardingPage.completeIdentityVerification(testData.pinCode);
     await onboardingPage.verifyOnboardingComplete(
       `${testData.kycData.firstName} ${testData.kycData.lastName}`
+    );
+
+    const setupDataPath = getSetupUserPath();
+    fs.writeFileSync(
+      setupDataPath,
+      JSON.stringify(
+        {
+          email: testData.email,
+          password: testData.password,
+          pinCode: testData.pinCode,
+          fullName: `${testData.kycData.firstName} ${testData.kycData.lastName}`,
+          createdAt: new Date().toISOString(),
+        },
+        null,
+        2
+      )
     );
   });
 });

@@ -93,4 +93,58 @@ export class SignInPage {
       );
     }
   }
+
+  async fillEmail(email: string): Promise<void> {
+    const emailField = this.page.getByRole("textbox", { name: "Email" });
+    await emailField.waitFor({ state: "visible", timeout: 10000 });
+    await emailField.fill(email);
+  }
+
+  async fillPassword(password: string): Promise<void> {
+    const passwordField = this.page.getByRole("textbox", { name: "Password" });
+    await passwordField.waitFor({ state: "visible", timeout: 10000 });
+    await passwordField.fill(password);
+  }
+
+  async clickEmailField(): Promise<void> {
+    const emailField = this.page.getByRole("textbox", { name: "Email" });
+    await emailField.waitFor({ state: "visible", timeout: 10000 });
+    await emailField.click();
+  }
+
+  async clickPasswordField(): Promise<void> {
+    const passwordField = this.page.getByRole("textbox", { name: "Password" });
+    await passwordField.waitFor({ state: "visible", timeout: 10000 });
+    await passwordField.click();
+  }
+
+  async clickLoginButton(): Promise<void> {
+    const loginButton = this.page.getByRole("button", { name: "Login" });
+    await expect(loginButton).toBeEnabled({ timeout: 10000 });
+    await loginButton.click();
+  }
+
+  async expectValidationError(errorMessage: string): Promise<void> {
+    await expect(this.page.getByText(errorMessage)).toBeVisible({
+      timeout: 10000,
+    });
+  }
+
+  async expectSuccessfulNavigation(): Promise<void> {
+    await expect(this.page).toHaveURL("/", { timeout: 10000 });
+  }
+
+  async expectSuccessfulLoginWithDashboard(): Promise<void> {
+    await expect(this.page).toHaveURL("/", { timeout: 10000 });
+
+    const assetDesignerButton = this.page.getByRole("button", {
+      name: "Asset designer",
+    });
+    await expect(assetDesignerButton).toBeVisible({ timeout: 15000 });
+
+    const addonDesignerButton = this.page.getByRole("button", {
+      name: "Addon designer",
+    });
+    await expect(addonDesignerButton).toBeVisible({ timeout: 15000 });
+  }
 }
