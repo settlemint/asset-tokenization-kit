@@ -4,20 +4,21 @@
  * Synchronizes exchange rates with external providers.
  * @module ExchangeRatesSync
  */
+import type * as schema from "@/lib/db/schema";
 import {
   currencies,
-  fxRates,
-  fxRatesLatest,
   currencyDataSchema,
   fxRateDataSchema,
   fxRateLatestDataSchema,
+  fxRates,
+  fxRatesLatest,
 } from "@/lib/db/schema";
-import type * as schema from "@/lib/db/schema";
 import { safeParse } from "@/lib/zod";
 import {
   fiatCurrencies,
   fiatCurrencyMetadata,
 } from "@/lib/zod/validators/fiat-currency";
+import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { sql } from "drizzle-orm";
@@ -214,6 +215,11 @@ export async function syncExchangeRatesInternal(
  * Method: POST /exchange-rates/sync
  */
 export const sync = authRouter.exchangeRates.sync
+  .use(
+    offChainPermissionsMiddleware({
+      requiredPermissions: { exchangeRates: ["sync"] },
+    })
+  )
   .use(databaseMiddleware)
   .handler(async ({ input, context }) => {
     const { force } = input;

@@ -16,7 +16,7 @@ import type { UserVerification } from "@/orpc/routes/common/schemas/user-verific
 import {
   type TokenType,
   TokenTypeEnum,
-} from "@/orpc/routes/token/routes/factory/factory.create.schema";
+} from "@/orpc/routes/system/token-factory/routes/factory.create.schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { TriangleAlert } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
@@ -75,7 +75,7 @@ export function AssetTypeSelection() {
 
   const { mutateAsync: createFactories, isPending: isFactoriesCreating } =
     useMutation(
-      orpc.token.factoryCreate.mutationOptions({
+      orpc.system.tokenFactoryCreate.mutationOptions({
         onSuccess: async () => {
           // Refetch all relevant data
           await Promise.all([

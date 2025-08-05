@@ -23,37 +23,37 @@ export type AccessControl = FragmentOf<typeof AccessControlFragment>;
  */
 export const AccessControlFragment = theGraphGraphql(`
   fragment AccessControlFragment on AccessControl {
-    addonManager { id }
-    addonModule { id }
-    addonRegistryModule { id }
-    admin { id }
-    auditor { id }
-    burner { id }
-    capManagement { id }
-    claimPolicyManager { id }
-    complianceAdmin { id }
-    complianceManager { id }
-    custodian { id }
-    emergency { id }
-    forcedTransfer { id }
-    freezer { id }
-    fundsManager { id }
-    globalListManager { id }
-    governance { id }
-    identityManager { id }
-    identityRegistryModule { id }
-    minter { id }
-    pauser { id }
-    recovery { id }
-    saleAdmin { id }
-    signer { id }
-    supplyManagement { id }
-    systemManager { id }
-    systemModule { id }
-    tokenAdmin { id }
-    tokenFactoryModule { id }
-    tokenFactoryRegistryModule { id }
-    tokenManager { id }
-    verificationAdmin { id }
+    addonManager { id isContract }
+    addonModule { id isContract }
+    addonRegistryModule { id isContract }
+    admin { id isContract }
+    auditor { id isContract }
+    burner { id isContract }
+    capManagement { id isContract }
+    claimPolicyManager { id isContract }
+    complianceAdmin { id isContract }
+    complianceManager { id isContract }
+    custodian { id isContract }
+    emergency { id isContract }
+    forcedTransfer { id isContract }
+    freezer { id isContract }
+    fundsManager { id isContract }
+    globalListManager { id isContract }
+    governance { id isContract }
+    identityManager { id isContract }
+    identityRegistryModule { id isContract }
+    minter { id isContract }
+    pauser { id isContract }
+    recovery { id isContract }
+    saleAdmin { id isContract }
+    signer { id isContract }
+    supplyManagement { id isContract }
+    systemManager { id isContract }
+    systemModule { id isContract }
+    tokenAdmin { id isContract }
+    tokenFactoryModule { id isContract }
+    tokenFactoryRegistryModule { id isContract }
+    tokenManager { id isContract }
+    verificationAdmin { id isContract }
   }
 `);

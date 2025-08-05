@@ -33,7 +33,7 @@ const READ_ACCOUNT_QUERY = theGraphGraphql(`
 export const read = publicRouter.account.read
   .use(
     offChainPermissionsMiddleware<typeof AccountReadSchema>({
-      requiredPermissions: { account: ["list"] },
+      requiredPermissions: { account: ["read"] },
       alwaysAllowIf: (context, input) =>
         input.wallet === context.auth?.user.wallet,
     })

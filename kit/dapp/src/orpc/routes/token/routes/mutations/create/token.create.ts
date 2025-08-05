@@ -2,7 +2,7 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
-import { getTokenFactory } from "@/orpc/routes/token/routes/factory/helpers/factory-context";
+import { getTokenFactory } from "@/orpc/routes/system/token-factory/helpers/factory-context";
 import { tokenCreateHandlerMap } from "@/orpc/routes/token/routes/mutations/create/helpers/handler-map";
 import type { TokenCreateSchema } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 import { read } from "@/orpc/routes/token/routes/token.read";

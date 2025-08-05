@@ -3,8 +3,8 @@ import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
 import type {
   PredictAddressInput,
   PredictAddressOutput,
-} from "@/orpc/routes/token/routes/factory/factory.predict-address.schema";
-import { PredictAddressOutputSchema } from "@/orpc/routes/token/routes/factory/factory.predict-address.schema";
+} from "@/orpc/routes/system/token-factory/routes/factory.predict-address.schema";
+import { PredictAddressOutputSchema } from "@/orpc/routes/system/token-factory/routes/factory.predict-address.schema";
 import z from "zod";
 import type { PredictHandlerContext } from "./handler-map";
 

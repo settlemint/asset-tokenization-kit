@@ -4,26 +4,24 @@ import {
   PredictAddressOutputSchema,
   type PredictAddressInput,
   type PredictAddressOutput,
-} from "@/orpc/routes/token/routes/factory/factory.predict-address.schema";
+} from "@/orpc/routes/system/token-factory/routes/factory.predict-address.schema";
 import z from "zod";
 import type { PredictHandlerContext } from "./handler-map";
 
-const PREDICT_FUND_ADDRESS_QUERY = portalGraphql(`
-  query PredictFundAddress(
+const PREDICT_STABLECOIN_ADDRESS_QUERY = portalGraphql(`
+  query PredictStableCoinAddress(
     $address: String!
     $symbol: String!
     $name: String!
     $decimals: Int!
-    $initialModulePairs: [ATKFundFactoryImplementationPredictFundAddressInitialModulePairsInput!]!
-    $managementFeeBps: Int!
+    $initialModulePairs: [ATKStableCoinFactoryImplementationPredictStableCoinAddressInitialModulePairsInput!]!
   ) {
-    ATKFundFactoryImplementation(address: $address) {
-      predictFundAddress(
+    ATKStableCoinFactoryImplementation(address: $address) {
+      predictStableCoinAddress(
         symbol_: $symbol
         name_: $name
         decimals_: $decimals
         initialModulePairs_: $initialModulePairs
-        managementFeeBps_: $managementFeeBps
       ) {
         predictedAddress
       }
@@ -31,26 +29,26 @@ const PREDICT_FUND_ADDRESS_QUERY = portalGraphql(`
   }
 `);
 
-export const fundPredictHandler = async (
+export const stablecoinPredictHandler = async (
   input: PredictAddressInput,
   context: PredictHandlerContext
 ): Promise<PredictAddressOutput> => {
-  if (input.type !== AssetTypeEnum.fund) {
+  if (input.type !== AssetTypeEnum.stablecoin) {
     throw new Error("Invalid token type");
   }
 
   const result = await context.portalClient.query(
-    PREDICT_FUND_ADDRESS_QUERY,
+    PREDICT_STABLECOIN_ADDRESS_QUERY,
     {
       address: context.factoryAddress,
       ...input,
     },
     z.object({
-      ATKFundFactoryImplementation: z.object({
-        predictFundAddress: PredictAddressOutputSchema,
+      ATKStableCoinFactoryImplementation: z.object({
+        predictStableCoinAddress: PredictAddressOutputSchema,
       }),
     })
   );
 
-  return result.ATKFundFactoryImplementation.predictFundAddress;
+  return result.ATKStableCoinFactoryImplementation.predictStableCoinAddress;
 };

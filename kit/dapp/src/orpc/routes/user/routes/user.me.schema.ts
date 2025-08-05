@@ -6,10 +6,11 @@
  * data throughout the application.
  */
 
+import { accessControlRoles } from "@/lib/zod/validators/access-control-roles";
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { userRoles } from "@/lib/zod/validators/user-roles";
 import { verificationType } from "@/lib/zod/validators/verification-type";
-import { type TOKEN_FACTORY_PERMISSIONS } from "@/orpc/routes/token/routes/factory/factory.permissions";
+import { type SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { z } from "zod";
 
 const onboardingStateSchema = z.object({
@@ -43,23 +44,33 @@ const onboardingStateSchema = z.object({
 export type OnboardingState = z.infer<typeof onboardingStateSchema>;
 
 const userPermissionsSchema = z.object({
-  tokenFactory: z
-    .object({
-      actions: z.object(
-        (() => {
-          const actionsSchema: Record<
-            keyof typeof TOKEN_FACTORY_PERMISSIONS,
-            z.ZodType<boolean>
-          > = {
-            create: z
-              .boolean()
-              .describe("Whether the user can execute the create action"),
-          };
-          return actionsSchema;
-        })()
-      ),
-    })
-    .describe("The actions on the token the user is allowed to execute"),
+  roles: accessControlRoles.describe("The roles of the user for the system"),
+  actions: z
+    .object(
+      (() => {
+        const actionsSchema: Record<
+          keyof typeof SYSTEM_PERMISSIONS,
+          z.ZodType<boolean>
+        > = {
+          tokenFactoryCreate: z
+            .boolean()
+            .describe("Whether the user can create token factories"),
+          addonCreate: z
+            .boolean()
+            .describe("Whether the user can create addons"),
+          grantRole: z.boolean().describe("Whether the user can grant roles"),
+          revokeRole: z.boolean().describe("Whether the user can revoke roles"),
+          complianceModuleCreate: z
+            .boolean()
+            .describe("Whether the user can create compliance modules"),
+          identityRegister: z
+            .boolean()
+            .describe("Whether the user can register identities"),
+        };
+        return actionsSchema;
+      })()
+    )
+    .describe("The actions on the system the user is allowed to execute"),
 });
 
 export type UserPermissions = z.infer<typeof userPermissionsSchema>;
@@ -150,7 +161,7 @@ export const UserMeSchema = z.object({
    * User's permissions.
    * This is used to track the user's permissions.
    */
-  userPermissions: userPermissionsSchema,
+  userSystemPermissions: userPermissionsSchema,
 });
 
 /**

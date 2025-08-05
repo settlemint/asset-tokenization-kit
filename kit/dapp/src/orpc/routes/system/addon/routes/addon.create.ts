@@ -20,13 +20,13 @@ import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import { read } from "@/orpc/routes/system/routes/system.read";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { encodeFunctionData, getAddress } from "viem";
 import {
   type SystemAddonConfig,
-  type SystemAddonCreateSchema,
   getDefaultAddonImplementations,
 } from "./addon.create.schema";
 
@@ -158,8 +158,8 @@ function getImplementationAddress(addonConfig: SystemAddonConfig): string {
  */
 export const addonCreate = portalRouter.system.addonCreate
   .use(
-    blockchainPermissionsMiddleware<typeof SystemAddonCreateSchema>({
-      requiredRoles: { any: ["addonManager", "systemManager"] },
+    blockchainPermissionsMiddleware({
+      requiredRoles: SYSTEM_PERMISSIONS.addonCreate,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },

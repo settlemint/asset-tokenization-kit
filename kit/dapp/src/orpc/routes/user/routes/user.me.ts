@@ -9,19 +9,19 @@
  */
 
 import { kycProfiles, user as userTable } from "@/lib/db/schema";
+import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { AssetFactoryTypeIdEnum } from "@/lib/zod/validators/asset-types";
 import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { satisfiesRoleRequirement } from "@/lib/zod/validators/role-requirement";
 import type { VerificationType } from "@/lib/zod/validators/verification-type";
 import { VerificationType as VerificationTypeEnum } from "@/lib/zod/validators/verification-type";
 import { mapUserRoles } from "@/orpc/helpers/role-validation";
-import { satisfiesRoleRequirement } from "@/lib/zod/validators/role-requirement";
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { getSystemContext } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
-import { TOKEN_FACTORY_PERMISSIONS } from "@/orpc/routes/token/routes/factory/factory.permissions";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call, ORPCError } from "@orpc/server";
 import { eq } from "drizzle-orm";
 import { zeroAddress } from "viem";
@@ -135,17 +135,9 @@ export const me = authRouter.user.me
           ? [VerificationTypeEnum.secretCode]
           : []),
       ] as VerificationType[],
-      userPermissions: {
-        tokenFactory: {
-          actions: {
-            create: satisfiesRoleRequirement(
-              Object.entries(userRoles)
-                .filter(([_, hasRole]) => hasRole)
-                .map(([role]) => role) as AccessControlRoles[],
-              TOKEN_FACTORY_PERMISSIONS.create
-            ),
-          },
-        },
+      userSystemPermissions: {
+        roles: userRoles,
+        actions: getSystemPermissions(userRoles),
       },
       onboardingState: {
         wallet: authUser.wallet !== zeroAddress,
@@ -221,4 +213,27 @@ async function getSystemInfo(
     ...systemOnboardingState,
     accessControl: null,
   };
+}
+
+function getSystemPermissions(userRoles: ReturnType<typeof mapUserRoles>) {
+  // Initialize all actions as false
+  const initialActions: Record<keyof typeof SYSTEM_PERMISSIONS, boolean> = {
+    tokenFactoryCreate: false,
+    addonCreate: false,
+    grantRole: false,
+    revokeRole: false,
+    complianceModuleCreate: false,
+    identityRegister: false,
+  };
+
+  // Update based on user roles using the flexible role requirement system
+  Object.entries(SYSTEM_PERMISSIONS).forEach(([action, roleRequirement]) => {
+    const userRoleList = Object.entries(userRoles)
+      .filter(([_, hasRole]) => hasRole)
+      .map(([role]) => role) as AccessControlRoles[];
+
+    initialActions[action as keyof typeof SYSTEM_PERMISSIONS] =
+      satisfiesRoleRequirement(userRoleList, roleRequirement);
+  });
+  return initialActions;
 }

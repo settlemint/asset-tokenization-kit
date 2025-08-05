@@ -19,7 +19,7 @@ export function useAssetClass() {
 
   // Pre-group factories by asset class using select function
   const { data: groupedFactories } = useSuspenseQuery(
-    orpc.token.factoryList.queryOptions({
+    orpc.system.tokenFactoryList.queryOptions({
       input: {},
       select: (factories) => ({
         hasFactories: factories.length > 0,

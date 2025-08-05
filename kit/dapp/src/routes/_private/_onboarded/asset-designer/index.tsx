@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_private/_onboarded/asset-designer/")({
   validateSearch: searchSchema,
   beforeLoad: async ({ context: { queryClient, orpc } }) => {
     const factories = await queryClient.ensureQueryData(
-      orpc.token.factoryList.queryOptions({ input: {} })
+      orpc.system.tokenFactoryList.queryOptions({ input: {} })
     );
 
     const complianceModules = await queryClient.ensureQueryData(

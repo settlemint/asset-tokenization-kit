@@ -1,7 +1,9 @@
+import { getDappUrl } from "../utils/dapp";
 import { getOrpcClient } from "../utils/orpc-client";
 import {
   bootstrapSystem,
   bootstrapTokenFactories,
+  setupDefaultIssuerRoles
 } from "../utils/system-bootstrap";
 import {
   DEFAULT_ADMIN,
@@ -28,6 +30,8 @@ export async function setup() {
     const system = await bootstrapSystem(orpClient);
     console.log("Bootstrapping token factories");
     await bootstrapTokenFactories(orpClient, system);
+    console.log("Granting roles to default accounts");
+    await setupDefaultIssuerRoles(orpClient);
   } catch (error: unknown) {
     console.error("Failed to setup test environment", error);
     process.exit(1);
@@ -45,7 +49,7 @@ async function waitForDapp() {
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      const response = await fetch("http://localhost:13000");
+      const response = await fetch(getDappUrl());
       if (response.ok) {
         console.log("Containerized dapp is ready!");
         return;

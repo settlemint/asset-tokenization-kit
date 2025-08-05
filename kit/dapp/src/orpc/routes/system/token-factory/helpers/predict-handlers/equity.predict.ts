@@ -4,7 +4,7 @@ import {
   PredictAddressOutputSchema,
   type PredictAddressInput,
   type PredictAddressOutput,
-} from "@/orpc/routes/token/routes/factory/factory.predict-address.schema";
+} from "@/orpc/routes/system/token-factory/routes/factory.predict-address.schema";
 import z from "zod";
 import type { PredictHandlerContext } from "./handler-map";
 
