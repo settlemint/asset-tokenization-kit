@@ -4,7 +4,6 @@ import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
-import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 
 /**
@@ -51,7 +50,7 @@ export const read = authRouter.user.read
     offChainPermissionsMiddleware({ requiredPermissions: { user: ["list"] } })
   )
   .use(databaseMiddleware)
-  .handler(async ({ context, input }) => {
+  .handler(async ({ context, input, errors }) => {
     // Build the query condition based on input type
     // TypeScript now properly narrows the union type
     const whereCondition =
@@ -73,29 +72,32 @@ export const read = authRouter.user.read
       .where(whereCondition)
       .limit(1);
 
-    // Check if user was found
-    const userNotFoundError = new TRPCError({
-      code: "NOT_FOUND",
-      message:
-        "userId" in input
-          ? `User with ID ${input.userId} not found`
-          : `User with wallet ${input.wallet} not found`,
-    });
-
     if (result.length === 0) {
-      throw userNotFoundError;
+      throw errors.NOT_FOUND({
+        message:
+          "userId" in input
+            ? `User with ID ${input.userId} not found`
+            : `User with wallet ${input.wallet} not found`,
+      });
     }
 
     const userResult = result[0];
     if (!userResult) {
-      throw userNotFoundError;
+      throw errors.NOT_FOUND({
+        message:
+          "userId" in input
+            ? `User with ID ${input.userId} not found`
+            : `User with wallet ${input.wallet} not found`,
+      });
     }
 
     const { user: userData, kyc } = userResult;
 
     // Validate user has wallet
     if (!userData.wallet) {
-      throw new Error(`User ${userData.id} has no wallet`);
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: `User ${userData.id} has no wallet`,
+      });
     }
 
     // Transform result to include human-readable role

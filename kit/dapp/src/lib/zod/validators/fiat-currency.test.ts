@@ -308,4 +308,29 @@ describe("edge cases and special scenarios", () => {
       expect(fiatCurrencies).toContain(currency);
     });
   });
+
+  test("fiatCurrencyMetadata handles all supported currencies", () => {
+    // All supported currencies should have valid metadata
+    fiatCurrencies.forEach((code) => {
+      const metadata = fiatCurrencyMetadata[code];
+      expect(metadata).toBeDefined();
+      expect(metadata.name).toBeDefined();
+      expect(metadata.decimals).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  test("getValidFiatCurrencies filters correctly", () => {
+    // Test that the filtering logic works properly
+    const validCurrencies = allFiatCurrencies;
+
+    // Should not include X-prefixed codes (test currencies, precious metals)
+    validCurrencies.forEach((code) => {
+      expect(code.startsWith("X")).toBe(false);
+    });
+
+    // Should include major currencies
+    expect(validCurrencies).toContain("USD");
+    expect(validCurrencies).toContain("EUR");
+    expect(validCurrencies).toContain("GBP");
+  });
 });

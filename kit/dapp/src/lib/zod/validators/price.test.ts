@@ -4,18 +4,8 @@ import { price, isPrice, getPrice } from "./price";
 describe("price", () => {
   const validator = price();
 
-  describe("defensive code documentation", () => {
-    test("defensive non-finite check is unreachable due to Zod's validation", () => {
-      // The price validator includes a defensive check for non-finite numbers:
-      // if (!Number.isFinite(value)) { ... }
-      //
-      // This check is actually unreachable in practice because:
-      // 1. Zod's z.number() already rejects Infinity, -Infinity, and NaN
-      // 2. The string parsing with parseFloat followed by isFinite check handles string inputs
-      //
-      // The defensive code exists for future-proofing and type safety,
-      // but cannot be tested without bypassing Zod's built-in validations.
-
+  describe("non-finite number handling", () => {
+    test("properly rejects non-finite numbers", () => {
       // Verify that Zod properly rejects non-finite numbers
       expect(() => validator.parse(Infinity)).toThrow();
       expect(() => validator.parse(-Infinity)).toThrow();

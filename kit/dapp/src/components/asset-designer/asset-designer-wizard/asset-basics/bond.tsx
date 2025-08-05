@@ -1,4 +1,4 @@
-import { AddressSelectOrInputToggle } from "@/components/address-select-or-input/address-select-or-input-toggle";
+import { AddressSelectOrInputToggle } from "@/components/address/address-select-or-input-toggle";
 import {
   commonFields,
   CommonFields,

@@ -15,6 +15,7 @@ import { redeem } from "@/orpc/routes/token/routes/mutations/redeem/token.redeem
 import { transfer } from "@/orpc/routes/token/routes/mutations/transfer/token.transfer";
 import { setYieldSchedule } from "@/orpc/routes/token/routes/mutations/yield/token.set-yield-schedule";
 import { statsBondStatus } from "@/orpc/routes/token/routes/stats/bond-status";
+import { statsBondYieldCoverage } from "@/orpc/routes/token/routes/stats/bond-yield-coverage";
 import { statsCollateralRatio } from "@/orpc/routes/token/routes/stats/collateral-ratio";
 import { statsSupplyChanges } from "@/orpc/routes/token/routes/stats/supply-changes";
 import { statsTotalSupply } from "@/orpc/routes/token/routes/stats/total-supply";
@@ -52,6 +53,7 @@ const routes = {
   addComplianceModule,
   removeComplianceModule,
   statsBondStatus,
+  statsBondYieldCoverage,
   statsCollateralRatio,
   statsTotalSupply,
   statsSupplyChanges,

@@ -59,7 +59,7 @@ export function AssetDeployment() {
             Cancel
           </Button>
 
-          <Button type="button" onClick={onNext}>
+          <Button type="button" onClick={onNext} className="press-effect">
             {t("common:continue")}
           </Button>
         </>

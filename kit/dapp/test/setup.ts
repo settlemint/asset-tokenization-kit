@@ -1,6 +1,21 @@
 import "@testing-library/jest-dom/vitest";
-import { cleanup } from "@testing-library/react";
+import { cleanup, configure } from "@testing-library/react";
 import { afterEach, vi } from "vitest";
+
+// Configure React Testing Library to work properly with act
+configure({
+  // This ensures act() warnings are properly handled
+  asyncUtilTimeout: 2000,
+  // Note: reactStrictMode causes double-mounting in tests which can break
+  // tests that count function calls. Keeping it false for test stability.
+  reactStrictMode: false,
+});
+
+// Make React's act available globally for happy-dom compatibility
+// This prevents "not wrapped in act" warnings
+(
+  globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT: boolean }
+).IS_REACT_ACT_ENVIRONMENT = true;
 
 // Set up environment variables for tests
 process.env.SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS =
