@@ -1,4 +1,14 @@
 {
+  "expressionBuilder": {
+    "topics": {
+      "kyc": "التحقق من الهوية",
+      "aml": "امتثال مكافحة غسل الأموال",
+      "collateral": "متطلبات الضمانات",
+      "isin": "تصنيف ISIN",
+      "assetClassification": "تصنيف الأصول",
+      "basePrice": "معلومات السعر الأساسي"
+    }
+  },
   "kycForm": {
     "country": "بلد الإقامة",
     "dob": "تاريخ الميلاد",

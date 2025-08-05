@@ -1,4 +1,14 @@
 {
+  "expressionBuilder": {
+    "topics": {
+      "kyc": "KYC Verifizierung",
+      "aml": "AML Compliance",
+      "collateral": "Sicherheitenanforderungen",
+      "isin": "ISIN Klassifizierung",
+      "assetClassification": "Asset-Klassifizierung",
+      "basePrice": "Grundpreisinformationen"
+    }
+  },
   "kycForm": {
     "country": "Wohnsitzland",
     "dob": "Geburtsdatum",

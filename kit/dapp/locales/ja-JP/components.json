@@ -1,4 +1,14 @@
 {
+  "expressionBuilder": {
+    "topics": {
+      "kyc": "本人確認",
+      "aml": "AMLコンプライアンス",
+      "collateral": "担保要件",
+      "isin": "ISIN分類",
+      "assetClassification": "資産分類",
+      "basePrice": "基準価格情報"
+    }
+  },
   "kycForm": {
     "country": "居住国",
     "dob": "生年月日",

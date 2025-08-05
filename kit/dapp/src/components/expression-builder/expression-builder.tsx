@@ -19,8 +19,9 @@ import {
 import { getPrettyName } from "@/lib/zod/validators/expression-type";
 import type { ATKTopic } from "@/lib/zod/validators/topics";
 import { atkTopics } from "@/lib/zod/validators/topics";
-import { Check, Eye, EyeOff, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   canAddEndGroup,
   getOpenGroupCount,
@@ -39,11 +40,11 @@ export function ExpressionBuilder({
   onChange,
   onValidityChange,
 }: ExpressionBuilderProps) {
+  const { t } = useTranslation("components");
   const [expression, setExpression] = useState<ExpressionWithGroups>(value);
   const [inputMode, setInputMode] = useState<"topic" | "operator">("topic");
   const [selectedTopic, setSelectedTopic] = useState<ATKTopic | "">("");
   const [negateSelected, setNegateSelected] = useState(false);
-  const [showInfix, setShowInfix] = useState(true);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const isValid = validateUIExpression(expression);
@@ -200,26 +201,9 @@ export function ExpressionBuilder({
                 })}
               </div>
 
-              <div className="flex gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setShowInfix(!showInfix);
-                  }}
-                  className="gap-2"
-                >
-                  {showInfix ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
-                  {showInfix ? "Hide" : "Show"} Infix
-                </Button>
-                <Button variant="outline" size="sm" onClick={handleClearAll}>
-                  Clear All
-                </Button>
-              </div>
+              <Button variant="outline" size="sm" onClick={handleClearAll}>
+                Clear All
+              </Button>
             </div>
           </div>
         )}
@@ -241,7 +225,7 @@ export function ExpressionBuilder({
                   <SelectContent>
                     {atkTopics.map((topic) => (
                       <SelectItem key={topic} value={topic}>
-                        {topic.toUpperCase()}
+                        {t(`expressionBuilder.topics.${topic}`)}
                       </SelectItem>
                     ))}
                   </SelectContent>
