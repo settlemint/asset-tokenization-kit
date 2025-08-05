@@ -18,6 +18,7 @@ import {
   identityBlockListValues,
   smartIdentityVerificationValues,
 } from "./compliance";
+import { getTopicId } from "./topics";
 
 describe("complianceTypeId", () => {
   const validator = complianceTypeId();
@@ -184,36 +185,50 @@ describe("complianceParams", () => {
   });
 
   describe("IdentityAllowListComplianceModule", () => {
-    it("should accept valid identity addresses", () => {
+    it("should accept valid expression nodes", () => {
       const validParams = {
         typeId: "IdentityAllowListComplianceModule" as const,
-        values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"],
+        values: [
+          { nodeType: 0, value: getTopicId("kyc") }, // TOPIC node with real KYC topic ID
+          "(",
+          { nodeType: 0, value: getTopicId("aml") }, // TOPIC node with real AML topic ID
+          { nodeType: 0, value: getTopicId("collateral") }, // TOPIC node with real collateral topic ID
+          { nodeType: 1, value: 0n }, // AND node
+          ")",
+        ],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
         params:
           "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       const result = validator.parse(validParams);
       expect(result.typeId).toBe("IdentityAllowListComplianceModule");
-      expect(result.values[0]).toBe(
-        "0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
-      );
+      expect(result.values).toHaveLength(6);
+      expect(result.values[0]).toEqual({
+        nodeType: 0,
+        value: getTopicId("kyc"),
+      });
     });
   });
 
   describe("IdentityBlockListComplianceModule", () => {
-    it("should accept valid identity addresses", () => {
+    it("should accept valid expression nodes", () => {
       const validParams = {
         typeId: "IdentityBlockListComplianceModule" as const,
-        values: ["0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed"],
+        values: [
+          { nodeType: 0, value: getTopicId("isin") }, // TOPIC node with ISIN topic ID
+          { nodeType: 3, value: 0n }, // NOT node
+        ],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
         params:
           "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       const result = validator.parse(validParams);
       expect(result.typeId).toBe("IdentityBlockListComplianceModule");
-      expect(result.values[0]).toBe(
-        "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"
-      );
+      expect(result.values).toHaveLength(2);
+      expect(result.values[0]).toEqual({
+        nodeType: 0,
+        value: getTopicId("isin"),
+      });
     });
   });
 
@@ -276,10 +291,10 @@ describe("complianceParams", () => {
       };
       expect(() => validator.parse(wrongParams1)).toThrow();
 
-      // Country module with addresses should fail
+      // Country module with expression nodes should fail
       const wrongParams2 = {
         typeId: "CountryAllowListComplianceModule" as const,
-        values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"], // Address instead of numeric country codes
+        values: [{ nodeType: 0, value: 1n }], // Expression node instead of numeric country codes
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
         params:
           "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
@@ -580,6 +595,20 @@ describe("integration with Zod schemas", () => {
     };
     expect(() => complianceConfigSchema.parse(validConfig)).not.toThrow();
 
+    const validIdentityConfig = {
+      name: "Identity Allowlist",
+      config: {
+        typeId: "IdentityAllowListComplianceModule" as const,
+        values: [{ nodeType: 0, value: getTopicId("assetClassification") }],
+        module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
+        params:
+          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      },
+    };
+    expect(() =>
+      complianceConfigSchema.parse(validIdentityConfig)
+    ).not.toThrow();
+
     const invalidConfig = {
       name: "Invalid Config",
       config: {
@@ -749,19 +778,41 @@ describe("Individual value validators", () => {
   describe("identityAllowListValues", () => {
     const validator = identityAllowListValues();
 
-    it("should accept valid identity contract addresses", () => {
-      const addresses = [
-        "0x1234567890123456789012345678901234567890",
-        "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
+    it("should accept valid expression nodes and groups", () => {
+      const values = [
+        { nodeType: 0, value: getTopicId("basePrice") }, // TOPIC node with basePrice topic ID
+        "(",
+        { nodeType: 0, value: getTopicId("kyc") }, // TOPIC node with KYC topic ID
+        { nodeType: 0, value: getTopicId("aml") }, // TOPIC node with AML topic ID
+        { nodeType: 2, value: 0n }, // OR node
+        ")",
+        { nodeType: 1, value: 0n }, // AND node
       ];
-      const result = validator.parse(addresses);
-      expect(result[0]).toBe("0x1234567890123456789012345678901234567890");
-      expect(result[1]).toBe("0xABcdEFABcdEFabcdEfAbCdefabcdeFABcDEFabCD");
+      const result = validator.parse(values);
+      expect(result).toHaveLength(7);
+      expect(result[0]).toEqual({
+        nodeType: 0,
+        value: getTopicId("basePrice"),
+      });
+      expect(result[1]).toBe("(");
+      expect(result[6]).toEqual({ nodeType: 1, value: 0n });
     });
 
     it("should accept empty array", () => {
       const result = validator.parse([]);
       expect(result).toEqual([]);
+    });
+
+    it("should reject invalid values", () => {
+      expect(() =>
+        validator.parse(["0x1234567890123456789012345678901234567890"])
+      ).toThrow();
+      expect(() =>
+        validator.parse([{ nodeType: "invalid", value: 1n }])
+      ).toThrow();
+      expect(() =>
+        validator.parse([{ nodeType: 0, value: "not-bigint" }])
+      ).toThrow();
     });
 
     it("should have proper description", () => {
@@ -774,10 +825,24 @@ describe("Individual value validators", () => {
   describe("identityBlockListValues", () => {
     const validator = identityBlockListValues();
 
-    it("should accept valid identity contract addresses", () => {
-      const addresses = ["0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"];
-      const result = validator.parse(addresses);
-      expect(result[0]).toBe("0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF");
+    it("should accept valid expression nodes and groups", () => {
+      const values = [
+        { nodeType: 0, value: getTopicId("basePrice") }, // TOPIC node with basePrice topic ID
+        "(",
+        { nodeType: 0, value: getTopicId("kyc") }, // TOPIC node with KYC topic ID
+        { nodeType: 0, value: getTopicId("aml") }, // TOPIC node with AML topic ID
+        { nodeType: 2, value: 0n }, // OR node
+        ")",
+        { nodeType: 1, value: 0n }, // AND node
+      ];
+      const result = validator.parse(values);
+      expect(result).toHaveLength(7);
+      expect(result[0]).toEqual({
+        nodeType: 0,
+        value: getTopicId("basePrice"),
+      });
+      expect(result[1]).toBe("(");
+      expect(result[6]).toEqual({ nodeType: 1, value: 0n });
     });
 
     it("should accept empty array", () => {
