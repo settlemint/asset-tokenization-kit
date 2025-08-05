@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_private/_onboarded/_sidebar")({
         })
       ),
       queryClient.ensureQueryData(
-        orpc.addons.list.queryOptions({
+        orpc.system.addonList.queryOptions({
           input: {},
         })
       ),
