@@ -143,7 +143,12 @@ Usage: {{ include "atk.common.imagePullSecrets" . }}
 {{- define "atk.common.imagePullSecrets" -}}
 {{- $root := . -}}
 {{- $secrets := list -}}
-{{- $credentials := .Values.imagePullCredentials | default .Values.global.imagePullCredentials -}}
+{{- $localCredentials := .Values.imagePullCredentials }}
+{{- $globalCredentials := .Values.global.imagePullCredentials }}
+{{- $credentials := $globalCredentials }}
+{{- if and $localCredentials $localCredentials.registries (gt (len $localCredentials.registries) 0) }}
+  {{- $credentials = $localCredentials }}
+{{- end }}
 {{- if $credentials -}}
   {{- if $credentials.registries -}}
     {{- range $name, $registry := $credentials.registries -}}
