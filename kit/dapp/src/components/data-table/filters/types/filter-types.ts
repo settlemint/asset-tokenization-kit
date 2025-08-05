@@ -56,6 +56,28 @@ export interface FilterTypes {
   multiOption: string[];
 }
 
+/* Date range for date filters */
+export interface DateRange {
+  from?: Date;
+  to?: Date;
+}
+
+/* Number range for number filters */
+export interface NumberRange {
+  min?: number;
+  max?: number;
+}
+
+/* General filter operator type */
+export type FilterOperator = TextFilterOperator | NumberFilterOperator | DateFilterOperator | OptionFilterOperator | MultiOptionFilterOperator;
+
+/* Individual operator types for backwards compatibility */
+export type TextOperator = TextFilterOperator;
+export type NumberOperator = NumberFilterOperator;
+export type DateOperator = DateFilterOperator;
+export type OptionOperator = OptionFilterOperator;
+export type MultiOptionOperator = MultiOptionFilterOperator;
+
 /*
  *
  * FilterValue is a type that represents a filter value for a specific column.

@@ -245,7 +245,7 @@ describe("DataTableExport", () => {
         getAllLeafColumns: vi.fn().mockReturnValue([]),
       });
       if (mockTable.options.meta) {
-        delete (mockTable.options.meta as Record<string, unknown>).name;
+        delete (mockTable.options.meta as unknown as Record<string, unknown>).name;
       }
 
       renderWithProviders(<DataTableExport table={mockTable} />);

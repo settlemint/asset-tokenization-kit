@@ -12,6 +12,7 @@ import {
 } from "./operator-controller";
 import { renderWithProviders } from "../../test-utils";
 import type { Column, ColumnMeta } from "@tanstack/react-table";
+import type { TextFilterOperator, ColumnDataType } from "../types/filter-types";
 
 // Removed unused TestData interface to fix TS6196
 

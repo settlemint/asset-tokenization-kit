@@ -298,8 +298,8 @@ describe("operator-utils", () => {
         expect(
           determineNewOperator(
             "multiOption",
-            ["tag1", "tag2"],
-            ["tag3", "tag4"],
+            [["tag1", "tag2"]],
+            [["tag3", "tag4"]],
             "include all of"
           )
         ).toBe("include all of");
@@ -309,8 +309,8 @@ describe("operator-utils", () => {
         expect(
           determineNewOperator(
             "multiOption",
-            ["tag1", "tag2"],
-            ["tag3", "tag4"],
+            [["tag1", "tag2"]],
+            [["tag3", "tag4"]],
             "exclude if all"
           )
         ).toBe("exclude if all");
@@ -326,8 +326,8 @@ describe("operator-utils", () => {
       });
 
       it("should handle very large array transitions", () => {
-        const largeOld = Array.from({ length: 10 }).fill(1);
-        const largeSingle = [1];
+        const largeOld = Array.from({ length: 10 }).fill("option") as string[];
+        const largeSingle = ["option"];
 
         // For option type with "is any of" -> single value
         expect(
@@ -342,7 +342,7 @@ describe("operator-utils", () => {
         );
 
         // This is an invalid date value for the operator, but testing edge case
-        expect(determineNewOperator("date", [1, 2, 3], [4], "is before")).toBe(
+        expect(determineNewOperator("date", [new Date(1), new Date(2), new Date(3)], [new Date(4)], "is before")).toBe(
           "is before"
         );
       });

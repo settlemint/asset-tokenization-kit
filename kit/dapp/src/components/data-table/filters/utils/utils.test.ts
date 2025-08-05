@@ -4,13 +4,13 @@
 import { describe, it, expect, vi } from "vitest";
 import { defineMeta } from "./meta-definition";
 import { getColumn, getColumnMeta } from "./table-helpers";
-import type { Table, Column } from "@tanstack/react-table";
+import type { Table, Column, AccessorFn } from "@tanstack/react-table";
 
 describe("Meta Definition Utils", () => {
   it("should define meta with accessor function", () => {
     const accessor = (row: { name: string }) => row.name;
 
-    const meta = defineMeta(accessor, {
+    const meta = defineMeta(accessor as AccessorFn<unknown>, {
       displayName: "Name",
       type: "text",
     });
@@ -22,7 +22,7 @@ describe("Meta Definition Utils", () => {
   it("should preserve all meta properties", () => {
     const accessor = (row: { age: number }) => row.age;
 
-    const meta = defineMeta(accessor, {
+    const meta = defineMeta(accessor as AccessorFn<unknown>, {
       displayName: "Age",
       type: "number",
       min: 0,
@@ -39,7 +39,7 @@ describe("Meta Definition Utils", () => {
     const accessor = (row: { user: { profile: { email: string } } }) =>
       row.user.profile.email;
 
-    const meta = defineMeta(accessor, {
+    const meta = defineMeta(accessor as AccessorFn<unknown>, {
       displayName: "Email",
       type: "text",
       placeholder: "Enter email",
@@ -53,7 +53,7 @@ describe("Meta Definition Utils", () => {
   it("should work with option type columns", () => {
     const accessor = (row: { status: string }) => row.status;
 
-    const meta = defineMeta(accessor, {
+    const meta = defineMeta(accessor as AccessorFn<unknown>, {
       displayName: "Status",
       type: "option",
       options: [
@@ -65,13 +65,13 @@ describe("Meta Definition Utils", () => {
     expect(meta.displayName).toBe("Status");
     expect(meta.type).toBe("option");
     expect(meta.options).toHaveLength(2);
-    expect(meta.options?.[0].label).toBe("Active");
+    expect(meta.options?.[0]?.label).toBe("Active");
   });
 
   it("should work with date type columns", () => {
     const accessor = (row: { createdAt: Date }) => row.createdAt;
 
-    const meta = defineMeta(accessor, {
+    const meta = defineMeta(accessor as AccessorFn<unknown>, {
       displayName: "Created Date",
       type: "date",
       dateFormat: "yyyy-MM-dd",

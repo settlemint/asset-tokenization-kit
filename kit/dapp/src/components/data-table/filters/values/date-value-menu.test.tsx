@@ -6,13 +6,9 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { PropertyFilterDateValueMenu } from "./date-value-menu";
 import { renderWithProviders } from "../../test-utils";
-import type { Column, ColumnMeta } from "@tanstack/react-table";
-import type { FilterValue } from "../types/filter-types";
-// Define test data type
-interface _TestData {
-  id: string;
-  name: string;
-}
+import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
+import type { FilterValue, DateFilterOperator } from "../types/filter-types";
+// Test data interface removed as it was unused
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
@@ -46,7 +42,7 @@ vi.mock("@/components/ui/calendar", () => ({
   }: {
     mode: string;
     selected: unknown;
-    onSelect: (date: Date) => void;
+    onSelect: (date: Date | { from?: Date; to?: Date } | undefined) => void;
     defaultMonth?: Date;
     numberOfMonths?: number;
   }) => (
@@ -233,7 +229,7 @@ describe("PropertyFilterDateValueMenu", () => {
       );
 
       const calendar = screen.getByTestId("calendar");
-      const selected = JSON.parse(calendar.dataset.selected || "{}");
+      const selected = JSON.parse(calendar.dataset.selected || "{}") as { from?: string; to?: string };
 
       // Should have a from date but no to date
       expect(selected.from).toBeDefined();
@@ -261,7 +257,7 @@ describe("PropertyFilterDateValueMenu", () => {
       );
 
       const calendar = screen.getByTestId("calendar");
-      const selected = JSON.parse(calendar.dataset.selected || "{}");
+      const selected = JSON.parse(calendar.dataset.selected || "{}") as { from?: string; to?: string };
 
       expect(new Date(selected.from)).toEqual(testDate);
       expect(selected.to).toBeUndefined();
@@ -289,7 +285,7 @@ describe("PropertyFilterDateValueMenu", () => {
       );
 
       const calendar = screen.getByTestId("calendar");
-      const selected = JSON.parse(calendar.dataset.selected || "{}");
+      const selected = JSON.parse(calendar.dataset.selected || "{}") as { from?: string; to?: string };
 
       expect(new Date(selected.from)).toEqual(startDate);
       expect(new Date(selected.to)).toEqual(endDate);
@@ -502,7 +498,7 @@ describe("PropertyFilterDateValueMenu", () => {
       const setFilterValue = vi.fn();
       const column = createMockColumn({
         filterValue: {
-          operator: "is after" as unknown, // Custom operator
+          operator: "is after" as DateFilterOperator, // Custom operator
           values: [new Date("2024-01-10")],
           columnMeta: { type: "date" },
         },
@@ -625,7 +621,7 @@ describe("PropertyFilterDateValueMenu", () => {
       );
 
       const calendar = screen.getByTestId("calendar");
-      const selected = JSON.parse(calendar.dataset.selected || "{}");
+      const selected = JSON.parse(calendar.dataset.selected || "{}") as { from?: string; to?: string };
 
       // Should default to today's date
       expect(selected.from).toBeDefined();
@@ -652,7 +648,7 @@ describe("PropertyFilterDateValueMenu", () => {
       );
 
       const calendar = screen.getByTestId("calendar");
-      const selected = JSON.parse(calendar.dataset.selected || "{}");
+      const selected = JSON.parse(calendar.dataset.selected || "{}") as { from?: string; to?: string };
 
       // Should handle gracefully
       expect(selected.from).toBeDefined(); // Defaults to today
@@ -674,7 +670,7 @@ describe("PropertyFilterDateValueMenu", () => {
 
       // Initially check state
       let calendar = screen.getByTestId("calendar");
-      let selected = JSON.parse(calendar.dataset.selected || "{}");
+      let selected = JSON.parse(calendar.dataset.selected || "{}") as { from?: string; to?: string };
       const initialFrom = selected.from;
 
       // Select a date range

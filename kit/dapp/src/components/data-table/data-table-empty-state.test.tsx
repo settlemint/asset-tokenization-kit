@@ -14,6 +14,7 @@ import {
   FileQuestion,
   Filter,
   Inbox,
+  type LucideIcon,
 } from "lucide-react";
 
 describe("DataTableEmptyState", () => {
@@ -289,7 +290,7 @@ describe("DataTableEmptyState", () => {
 
       renderWithProviders(
         <DataTableEmptyState
-          icon={CustomIcon as React.ComponentType}
+          icon={CustomIcon as LucideIcon}
           title="Custom Icon"
           description="With custom icon component"
         />

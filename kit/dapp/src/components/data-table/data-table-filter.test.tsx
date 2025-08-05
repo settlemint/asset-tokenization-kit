@@ -31,7 +31,7 @@ vi.mock("./filters/operators/operator-controller", () => ({
     filter: Record<string, unknown>;
   }) => (
     <div data-testid="property-filter-operator">
-      Operator: {columnMeta?.type} - {JSON.stringify(filter)}
+      Operator: {columnMeta?.type as string} - {JSON.stringify(filter)}
     </div>
   ),
 }));
@@ -39,7 +39,7 @@ vi.mock("./filters/operators/operator-controller", () => ({
 vi.mock("./filters/property-filter-subject", () => ({
   PropertyFilterSubject: ({ meta }: { meta: Record<string, unknown> }) => (
     <div data-testid="property-filter-subject">
-      Subject: {meta?.displayName || meta?.type}
+      Subject: {(meta?.displayName as string) || (meta?.type as string)}
     </div>
   ),
 }));
@@ -53,7 +53,7 @@ vi.mock("./filters/values/value-controller", () => ({
     columnMeta: Record<string, unknown>;
   }) => (
     <div data-testid="property-filter-value">
-      Value: {id} - {columnMeta?.type}
+      Value: {id} - {columnMeta?.type as string}
     </div>
   ),
 }));

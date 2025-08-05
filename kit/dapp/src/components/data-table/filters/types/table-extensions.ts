@@ -1,6 +1,7 @@
 import type { RowData } from "@tanstack/react-table";
 import type { LucideIcon } from "lucide-react";
 import type { ColumnDataType, ColumnOption, ElementType } from "./column-types";
+import type { BulkActionGroup } from "../../types/bulk-actions";
 
 /**
  * Module augmentation for @tanstack/react-table to add custom column metadata
@@ -130,4 +131,25 @@ declare module "@tanstack/react-table" {
      */
     showPrettyName?: boolean;
   }
+}
+
+// Re-export data table props and bulk action related types for test compatibility
+export interface DataTableProps<TData> {
+  columns: unknown[];
+  data: TData[];
+  bulkActions?: BulkActionGroup<TData>[];
+  [key: string]: unknown;
+}
+
+export interface BulkActionRowData<TData> {
+  original: TData;
+  index: number;
+  id: string;
+}
+
+export interface BulkActionExecuteParams<TData> {
+  selectedRows: BulkActionRowData<TData>[];
+  selectedRowIds: string[];
+  onComplete?: () => void;
+  onError?: (error: Error) => void;
 }

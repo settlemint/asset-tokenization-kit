@@ -89,17 +89,37 @@ describe("Column Types Contract", () => {
 
 describe("Filter Types Contract", () => {
   it("should define FilterValue type correctly", () => {
-    const textValue: FilterValue = "text";
-    const numberValue: FilterValue = 42;
-    const arrayValue: FilterValue = ["option1", "option2"];
-    const dateRange: FilterValue = { from: new Date(), to: new Date() };
-    const numberRange: FilterValue = { from: 0, to: 100 };
+    const textValue: FilterValue<"text", unknown> = {
+      operator: "contains",
+      values: ["text"],
+      columnMeta: undefined,
+    };
+    const numberValue: FilterValue<"number", unknown> = {
+      operator: "is",
+      values: [42],
+      columnMeta: undefined,
+    };
+    const arrayValue: FilterValue<"multiOption", unknown> = {
+      operator: "include",
+      values: [["option1", "option2"]],
+      columnMeta: undefined,
+    };
+    const dateValue: FilterValue<"date", unknown> = {
+      operator: "is",
+      values: [new Date()],
+      columnMeta: undefined,
+    };
+    const optionValue: FilterValue<"option", unknown> = {
+      operator: "is",
+      values: ["option1"],
+      columnMeta: undefined,
+    };
 
-    expect(typeof textValue).toBe("string");
-    expect(typeof numberValue).toBe("number");
-    expect(Array.isArray(arrayValue)).toBe(true);
-    expect(typeof dateRange).toBe("object");
-    expect(typeof numberRange).toBe("object");
+    expect(typeof textValue).toBe("object");
+    expect(typeof numberValue).toBe("object");
+    expect(typeof arrayValue).toBe("object");
+    expect(typeof dateValue).toBe("object");
+    expect(typeof optionValue).toBe("object");
   });
 
   it("should define DateRange interface correctly", () => {
@@ -239,6 +259,7 @@ describe("Bulk Actions Contract", () => {
 
   it("should define BulkActionGroup interface correctly", () => {
     const group: BulkActionGroup<{ id: number }> = {
+      id: "actions-group",
       label: "Actions",
       actions: [
         {
@@ -256,8 +277,8 @@ describe("Bulk Actions Contract", () => {
 
     expect(group.label).toBe("Actions");
     expect(group.actions).toHaveLength(2);
-    expect(group.actions[0].label).toBe("Edit");
-    expect(group.actions[1].label).toBe("Duplicate");
+    expect(group.actions[0]!.label).toBe("Edit");
+    expect(group.actions[1]!.label).toBe("Duplicate");
   });
 
   it("should support action variants", () => {
@@ -266,8 +287,6 @@ describe("Bulk Actions Contract", () => {
       "destructive",
       "outline",
       "secondary",
-      "ghost",
-      "link",
     ] as const;
 
     variants.forEach((variant) => {

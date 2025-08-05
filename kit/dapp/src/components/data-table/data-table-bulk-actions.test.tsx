@@ -34,7 +34,7 @@ beforeEach(() => {
     remove: vi.fn(),
   };
 
-  createElementSpy = vi.spyOn(document, "createElement");
+  createElementSpy = vi.spyOn(document, "createElement") as unknown as vi.MockInstance<(this: unknown, ...args: unknown[]) => unknown>;
   createElementSpy.mockReturnValue(mockLink as unknown as HTMLElement);
   vi.spyOn(document.body, "append").mockImplementation(() => {});
 });
