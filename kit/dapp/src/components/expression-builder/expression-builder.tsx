@@ -5,7 +5,6 @@ import {
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  canAddEndGroup,
   getOpenGroupCount,
   removeItemAtIndex,
 } from "./expression-builder.utils";
@@ -63,7 +62,7 @@ export function ExpressionBuilder({
   };
 
   const openGroups = getOpenGroupCount(expressionWithGroups);
-  const canEndGroup = canAddEndGroup(expressionWithGroups);
+  const showEndGroup = openGroups > 0;
 
   return (
     <div className="space-y-6">
@@ -89,7 +88,7 @@ export function ExpressionBuilder({
             <OperatorInput
               onAddOperator={handleAddOperator}
               onEndGroup={handleEndGroup}
-              canEndGroup={canEndGroup}
+              showEndGroup={showEndGroup}
             />
           )}
         </div>

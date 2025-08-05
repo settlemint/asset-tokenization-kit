@@ -27,27 +27,6 @@ export function removeItemAtIndex(
 }
 
 /**
- * Check if we can add an end group (closing parenthesis)
- */
-export function canAddEndGroup(expression: ExpressionWithGroups): boolean {
-  let openGroups = 0;
-  let hasValidLastItem = false;
-
-  for (const item of expression) {
-    if (item === "(") {
-      openGroups++;
-    } else if (item === ")") {
-      openGroups--;
-    } else if (typeof item === "object" && "nodeType" in item) {
-      // This is an ExpressionNode - check if it's not an operator that needs more operands
-      hasValidLastItem = true;
-    }
-  }
-
-  return openGroups > 0 && hasValidLastItem && expression.length > 0;
-}
-
-/**
  * Get the count of open groups (unclosed parentheses)
  */
 export function getOpenGroupCount(expression: ExpressionWithGroups): number {

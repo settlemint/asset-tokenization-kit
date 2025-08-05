@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { getExpressionColor } from "@/components/expression-builder/expression-colors";
+import { Button } from "@/components/ui/button";
 import {
   createAndExpressionNode,
   createOrExpressionNode,
@@ -11,13 +11,13 @@ import { useTranslation } from "react-i18next";
 export interface OperatorInputProps {
   onAddOperator: (node: ExpressionNode) => void;
   onEndGroup: () => void;
-  canEndGroup: boolean;
+  showEndGroup: boolean;
 }
 
 export function OperatorInput({
   onAddOperator,
   onEndGroup,
-  canEndGroup,
+  showEndGroup,
 }: OperatorInputProps) {
   const { t } = useTranslation("components");
 
@@ -44,7 +44,7 @@ export function OperatorInput({
           {t("expressionBuilder.operatorInput.orButton")}
         </Button>
       </div>
-      {canEndGroup && (
+      {showEndGroup && (
         <Button
           variant="link"
           onClick={onEndGroup}
