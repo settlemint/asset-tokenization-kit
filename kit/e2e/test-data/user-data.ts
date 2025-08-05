@@ -83,18 +83,9 @@ export const adminApiUser: SignUpData = {
 
 export const signInTestData = {
   wrongPassword: "WrongPassword123!",
-  invalidEmails: [
-    "not-an-email",
-    "invalid-email",
-    "missing@domain",
-    "@missing-local.com",
-    "spaces in@email.com",
-    "double..dots@email.com",
-  ],
 } as const;
 
 export const onboardingTestData = {
-  // Generate unique data for each test run
   email: `admin-onboarding-${Date.now()}-${Math.random().toString(36).substring(7)}@settlemint.com`,
   password: "TestPassword123!",
   pinCode: "987654",

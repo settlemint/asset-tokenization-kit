@@ -1,4 +1,7 @@
 import { test } from "@playwright/test";
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 import { OnboardingPage } from "../pages/onboarding-page";
 import { onboardingTestData } from "../test-data/user-data";
 
@@ -54,6 +57,23 @@ test.describe.serial("Complete Onboarding Flow", () => {
     await onboardingPage.completeIdentityVerification(testData.pinCode);
     await onboardingPage.verifyOnboardingComplete(
       `${testData.kycData.firstName} ${testData.kycData.lastName}`
+    );
+
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    const setupDataPath = path.join(__dirname, "../test-data/setup-user.json");
+    fs.writeFileSync(
+      setupDataPath,
+      JSON.stringify(
+        {
+          email: testData.email,
+          password: testData.password,
+          pinCode: testData.pinCode,
+          fullName: `${testData.kycData.firstName} ${testData.kycData.lastName}`,
+          createdAt: new Date().toISOString(),
+        },
+        null,
+        2
+      )
     );
   });
 });
