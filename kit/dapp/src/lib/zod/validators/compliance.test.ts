@@ -185,9 +185,97 @@ describe("complianceParams", () => {
   });
 
   describe("IdentityAllowListComplianceModule", () => {
-    it("should accept valid expression nodes", () => {
+    it("should accept valid identity addresses", () => {
       const validParams = {
         typeId: "IdentityAllowListComplianceModule" as const,
+        values: [
+          "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
+          "0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed",
+        ],
+        module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
+        params:
+          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      };
+      const result = validator.parse(validParams);
+      expect(result.typeId).toBe("IdentityAllowListComplianceModule");
+      expect(result.values).toHaveLength(2);
+      // Addresses should be normalized to checksummed format
+      expect(result.values[0]).toBe(
+        "0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
+      );
+    });
+
+    it("should reject invalid addresses", () => {
+      const invalidParams = {
+        typeId: "IdentityAllowListComplianceModule" as const,
+        values: ["0xinvalid", "not-an-address"],
+        module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
+        params:
+          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      };
+      expect(() => validator.parse(invalidParams)).toThrow();
+    });
+
+    it("should accept empty address array", () => {
+      const emptyParams = {
+        typeId: "IdentityAllowListComplianceModule" as const,
+        values: [],
+        module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
+        params:
+          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      };
+      expect(() => validator.parse(emptyParams)).not.toThrow();
+    });
+  });
+
+  describe("IdentityBlockListComplianceModule", () => {
+    it("should accept valid identity addresses", () => {
+      const validParams = {
+        typeId: "IdentityBlockListComplianceModule" as const,
+        values: [
+          "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
+          "0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed",
+        ],
+        module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
+        params:
+          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      };
+      const result = validator.parse(validParams);
+      expect(result.typeId).toBe("IdentityBlockListComplianceModule");
+      expect(result.values).toHaveLength(2);
+      // Addresses should be normalized to checksummed format
+      expect(result.values[0]).toBe(
+        "0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
+      );
+    });
+
+    it("should reject invalid addresses", () => {
+      const invalidParams = {
+        typeId: "IdentityBlockListComplianceModule" as const,
+        values: ["0xinvalid", "not-an-address"],
+        module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
+        params:
+          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      };
+      expect(() => validator.parse(invalidParams)).toThrow();
+    });
+
+    it("should accept empty address array", () => {
+      const emptyParams = {
+        typeId: "IdentityBlockListComplianceModule" as const,
+        values: [],
+        module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
+        params:
+          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      };
+      expect(() => validator.parse(emptyParams)).not.toThrow();
+    });
+  });
+
+  describe("SMARTIdentityVerificationComplianceModule", () => {
+    it("should accept valid expression nodes", () => {
+      const validParams = {
+        typeId: "SMARTIdentityVerificationComplianceModule" as const,
         values: [
           { nodeType: 0, value: getTopicId("kyc") }, // TOPIC node with real KYC topic ID
           "(",
@@ -201,60 +289,25 @@ describe("complianceParams", () => {
           "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       const result = validator.parse(validParams);
-      expect(result.typeId).toBe("IdentityAllowListComplianceModule");
+      expect(result.typeId).toBe("SMARTIdentityVerificationComplianceModule");
       expect(result.values).toHaveLength(6);
       expect(result.values[0]).toEqual({
         nodeType: 0,
         value: getTopicId("kyc"),
       });
     });
-  });
 
-  describe("IdentityBlockListComplianceModule", () => {
-    it("should accept valid expression nodes", () => {
-      const validParams = {
-        typeId: "IdentityBlockListComplianceModule" as const,
-        values: [
-          { nodeType: 0, value: getTopicId("isin") }, // TOPIC node with ISIN topic ID
-          { nodeType: 3, value: 0n }, // NOT node
-        ],
-        module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-      };
-      const result = validator.parse(validParams);
-      expect(result.typeId).toBe("IdentityBlockListComplianceModule");
-      expect(result.values).toHaveLength(2);
-      expect(result.values[0]).toEqual({
-        nodeType: 0,
-        value: getTopicId("isin"),
-      });
-    });
-  });
-
-  describe("SMARTIdentityVerificationComplianceModule", () => {
-    it("should accept empty parameters", () => {
-      const validParams = {
+    it("should accept empty expression array", () => {
+      const emptyParams = {
         typeId: "SMARTIdentityVerificationComplianceModule" as const,
         values: [],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
         params:
           "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
-      const result = validator.parse(validParams);
+      const result = validator.parse(emptyParams);
       expect(result.typeId).toBe("SMARTIdentityVerificationComplianceModule");
       expect(result.values).toEqual([]);
-    });
-
-    it("should reject non-empty values array", () => {
-      const invalidParams = {
-        typeId: "SMARTIdentityVerificationComplianceModule" as const,
-        values: ["anything"],
-        module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-      };
-      expect(() => validator.parse(invalidParams)).toThrow();
     });
   });
 
@@ -291,15 +344,35 @@ describe("complianceParams", () => {
       };
       expect(() => validator.parse(wrongParams1)).toThrow();
 
-      // Country module with expression nodes should fail
+      // Country module with addresses should fail
       const wrongParams2 = {
         typeId: "CountryAllowListComplianceModule" as const,
-        values: [{ nodeType: 0, value: 1n }], // Expression node instead of numeric country codes
+        values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"], // Address instead of numeric country codes
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
         params:
           "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       expect(() => validator.parse(wrongParams2)).toThrow();
+
+      // Identity module with expression nodes should fail
+      const wrongParams3 = {
+        typeId: "IdentityAllowListComplianceModule" as const,
+        values: [{ nodeType: 0, value: 1n }], // Expression node instead of addresses
+        module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
+        params:
+          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      };
+      expect(() => validator.parse(wrongParams3)).toThrow();
+
+      // SMART Identity Verification with addresses should fail
+      const wrongParams4 = {
+        typeId: "SMARTIdentityVerificationComplianceModule" as const,
+        values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"], // Address instead of expression nodes
+        module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
+        params:
+          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      };
+      expect(() => validator.parse(wrongParams4)).toThrow();
     });
   });
 
@@ -599,7 +672,7 @@ describe("integration with Zod schemas", () => {
       name: "Identity Allowlist",
       config: {
         typeId: "IdentityAllowListComplianceModule" as const,
-        values: [{ nodeType: 0, value: getTopicId("assetClassification") }],
+        values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
         params:
           "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
@@ -634,6 +707,9 @@ describe("integration with Zod schemas", () => {
         "CountryAllowListComplianceModule",
         "CountryBlockListComplianceModule",
       ].includes(typeId),
+      isExpressionBased: ["SMARTIdentityVerificationComplianceModule"].includes(
+        typeId
+      ),
     }));
 
     const result = complianceWithMeta.parse("AddressBlockListComplianceModule");
@@ -641,6 +717,7 @@ describe("integration with Zod schemas", () => {
       typeId: "AddressBlockListComplianceModule",
       isAddressBased: true,
       isCountryBased: false,
+      isExpressionBased: false,
     });
   });
 });
@@ -778,24 +855,17 @@ describe("Individual value validators", () => {
   describe("identityAllowListValues", () => {
     const validator = identityAllowListValues();
 
-    it("should accept valid expression nodes and groups", () => {
-      const values = [
-        { nodeType: 0, value: getTopicId("basePrice") }, // TOPIC node with basePrice topic ID
-        "(",
-        { nodeType: 0, value: getTopicId("kyc") }, // TOPIC node with KYC topic ID
-        { nodeType: 0, value: getTopicId("aml") }, // TOPIC node with AML topic ID
-        { nodeType: 2, value: 0n }, // OR node
-        ")",
-        { nodeType: 1, value: 0n }, // AND node
+    it("should accept valid identity addresses", () => {
+      const addresses = [
+        "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
+        "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed",
+        "0x0000000000000000000000000000000000000000",
       ];
-      const result = validator.parse(values);
-      expect(result).toHaveLength(7);
-      expect(result[0]).toEqual({
-        nodeType: 0,
-        value: getTopicId("basePrice"),
-      });
-      expect(result[1]).toBe("(");
-      expect(result[6]).toEqual({ nodeType: 1, value: 0n });
+      const result = validator.parse(addresses);
+      // Should normalize to checksummed addresses
+      expect(result[0]).toBe("0x71C7656EC7ab88b098defB751B7401B5f6d8976F");
+      expect(result[1]).toBe("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed");
+      expect(result[2]).toBe("0x0000000000000000000000000000000000000000");
     });
 
     it("should accept empty array", () => {
@@ -803,15 +873,25 @@ describe("Individual value validators", () => {
       expect(result).toEqual([]);
     });
 
-    it("should reject invalid values", () => {
+    it("should reject invalid addresses", () => {
+      expect(() => validator.parse(["0xinvalid"])).toThrow();
       expect(() =>
-        validator.parse(["0x1234567890123456789012345678901234567890"])
-      ).toThrow();
+        validator.parse(["71c7656ec7ab88b098defb751b7401b5f6d8976f"])
+      ).toThrow(); // missing 0x
       expect(() =>
-        validator.parse([{ nodeType: "invalid", value: 1n }])
-      ).toThrow();
+        validator.parse(["0x71c7656ec7ab88b098defb751b7401b5f6d8976"])
+      ).toThrow(); // too short
       expect(() =>
-        validator.parse([{ nodeType: 0, value: "not-bigint" }])
+        validator.parse(["0x71c7656ec7ab88b098defb751b7401b5f6d8976fg"])
+      ).toThrow(); // invalid hex
+    });
+
+    it("should reject mixed valid and invalid addresses", () => {
+      expect(() =>
+        validator.parse([
+          "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
+          "invalid-address",
+        ])
       ).toThrow();
     });
 
@@ -825,6 +905,56 @@ describe("Individual value validators", () => {
   describe("identityBlockListValues", () => {
     const validator = identityBlockListValues();
 
+    it("should accept valid identity addresses", () => {
+      const addresses = [
+        "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
+        "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed",
+        "0x0000000000000000000000000000000000000000",
+      ];
+      const result = validator.parse(addresses);
+      // Should normalize to checksummed addresses
+      expect(result[0]).toBe("0x71C7656EC7ab88b098defB751B7401B5f6d8976F");
+      expect(result[1]).toBe("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed");
+      expect(result[2]).toBe("0x0000000000000000000000000000000000000000");
+    });
+
+    it("should accept empty array", () => {
+      const result = validator.parse([]);
+      expect(result).toEqual([]);
+    });
+
+    it("should reject invalid addresses", () => {
+      expect(() => validator.parse(["0xinvalid"])).toThrow();
+      expect(() =>
+        validator.parse(["71c7656ec7ab88b098defb751b7401b5f6d8976f"])
+      ).toThrow(); // missing 0x
+      expect(() =>
+        validator.parse(["0x71c7656ec7ab88b098defb751b7401b5f6d8976"])
+      ).toThrow(); // too short
+      expect(() =>
+        validator.parse(["0x71c7656ec7ab88b098defb751b7401b5f6d8976fg"])
+      ).toThrow(); // invalid hex
+    });
+
+    it("should reject mixed valid and invalid addresses", () => {
+      expect(() =>
+        validator.parse([
+          "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
+          "invalid-address",
+        ])
+      ).toThrow();
+    });
+
+    it("should have proper description", () => {
+      expect(validator.description).toBe(
+        "Array of identity contract addresses to block"
+      );
+    });
+  });
+
+  describe("smartIdentityVerificationValues", () => {
+    const validator = smartIdentityVerificationValues();
+
     it("should accept valid expression nodes and groups", () => {
       const values = [
         { nodeType: 0, value: getTopicId("basePrice") }, // TOPIC node with basePrice topic ID
@@ -850,53 +980,20 @@ describe("Individual value validators", () => {
       expect(result).toEqual([]);
     });
 
-    it("should have proper description", () => {
-      expect(validator.description).toBe(
-        "Array of identity contract addresses to block"
-      );
-    });
-  });
-
-  describe("smartIdentityVerificationValues", () => {
-    const validator = smartIdentityVerificationValues();
-
-    it("should accept empty array", () => {
-      const result = validator.parse([]);
-      expect(result).toEqual([]);
-    });
-
-    it("should reject non-empty arrays", () => {
-      expect(() => validator.parse(["anything"])).toThrow();
-      expect(() => validator.parse([""])).toThrow();
-      expect(() => validator.parse([123])).toThrow();
-      expect(() => validator.parse([null])).toThrow();
-    });
-
-    it("should reject arrays with multiple items", () => {
-      expect(() => validator.parse(["a", "b", "c"])).toThrow();
+    it("should reject invalid expression values", () => {
+      expect(() =>
+        validator.parse(["0x1234567890123456789012345678901234567890"])
+      ).toThrow();
+      expect(() =>
+        validator.parse([{ nodeType: "invalid", value: 1n }])
+      ).toThrow();
+      expect(() =>
+        validator.parse([{ nodeType: 0, value: "not-bigint" }])
+      ).toThrow();
     });
 
     it("should have proper description", () => {
-      expect(validator.description).toBe(
-        "Empty array (no parameters required)"
-      );
-    });
-
-    it("should provide clear error message for non-empty arrays", () => {
-      try {
-        validator.parse(["not-empty"]);
-        expect.fail("Should have thrown");
-      } catch (error) {
-        if (error instanceof z.ZodError) {
-          expect(error.issues).toBeDefined();
-          expect(error.issues.length).toBeGreaterThan(0);
-          if (error.issues[0]) {
-            expect(error.issues[0].message).toContain(
-              "Too big: expected array to have <=0 items"
-            );
-          }
-        }
-      }
+      expect(validator.description).toBe("Array of expression nodes");
     });
   });
 });
