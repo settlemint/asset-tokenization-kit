@@ -16,9 +16,10 @@ import {
   passkeyClient,
 } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
+import { getDappUrl } from "./dapp";
 
 export const authClient = createAuthClient({
-  baseURL: "http://localhost:13000/api/auth",
+  baseURL: `${getDappUrl()}/api/auth`,
   plugins: [
     customSessionClient<typeof auth>(),
     inferAdditionalFields<typeof auth>(),

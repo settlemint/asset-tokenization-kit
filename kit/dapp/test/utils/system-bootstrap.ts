@@ -1,6 +1,11 @@
 import { retryWhenFailed } from "@settlemint/sdk-utils";
 import { OrpcClient } from "./orpc-client";
-import { DEFAULT_PINCODE } from "./user";
+import {
+  DEFAULT_ADMIN,
+  DEFAULT_ISSUER,
+  DEFAULT_PINCODE,
+  getUserData,
+} from "./user";
 
 export async function bootstrapSystem(orpClient: OrpcClient) {
   const systems = await orpClient.system.list({});
@@ -123,4 +128,36 @@ export async function bootstrapTokenFactories(
     );
   }
   console.log("Token factories created");
+}
+
+export async function setupDefaultAccountRoles(orpClient: OrpcClient) {
+  const admin = await getUserData(DEFAULT_ADMIN);
+  console.log("Granting identity manager role to admin");
+  await orpClient.system.grantRole({
+    verification: {
+      verificationCode: DEFAULT_PINCODE,
+      verificationType: "pincode",
+    },
+    accounts: [admin.wallet],
+    role: "identityManager",
+  });
+  const issuer = await getUserData(DEFAULT_ISSUER);
+  console.log("Granting token manager role to issuer");
+  await orpClient.system.grantRole({
+    verification: {
+      verificationCode: DEFAULT_PINCODE,
+      verificationType: "pincode",
+    },
+    accounts: [issuer.wallet],
+    role: "tokenManager",
+  });
+  console.log("Granting compliance manager role to issuer");
+  await orpClient.system.grantRole({
+    verification: {
+      verificationCode: DEFAULT_PINCODE,
+      verificationType: "pincode",
+    },
+    accounts: [issuer.wallet],
+    role: "complianceManager",
+  });
 }

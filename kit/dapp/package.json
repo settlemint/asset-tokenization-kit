@@ -31,6 +31,7 @@
     "test:coverage": "vitest run --coverage",
     "pretest:integration": "cd ../.. && bun run test:reset",
     "test:integration": "DOTENV_CONFIG_PATH=.env.test vitest run --config vitest.config.integration.ts",
+    "test:integration:local": "TEST_DAPP_PORT=3000 vitest run --config vitest.config.integration.ts",
     "posttest:integration": "cd ../.. && bun run test:down",
     "route:gen": "tsr generate",
     "knip": "knip"
