@@ -1,3 +1,4 @@
+import { validateUIExpression } from "@/components/expression-builder/expression-builder.utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -11,7 +12,7 @@ export interface ExpressionDisplayProps {
   expression: ExpressionWithGroups;
   onRemoveItem: (index: number) => void;
   onClearAll: () => void;
-  isValid: boolean;
+
   openGroups: number;
 }
 
@@ -19,7 +20,6 @@ export function ExpressionDisplay({
   expression,
   onRemoveItem,
   onClearAll,
-  isValid,
   openGroups,
 }: ExpressionDisplayProps) {
   const { t } = useTranslation("components");
@@ -73,6 +73,8 @@ export function ExpressionDisplay({
     return null;
   }
 
+  const isValid = validateUIExpression(expression);
+
   return (
     <div className="mb-6 space-y-4">
       <div className="flex items-center justify-between">
@@ -121,23 +123,19 @@ export function ExpressionDisplay({
 
       {/* Validation Status */}
       <div className="flex items-center gap-2">
-        {isValid ? (
+        {isValid && (
           <>
             <Check className="w-4 h-4 text-sm-state-success" />
             <span className="text-sm text-sm-state-success">
               {t("expressionBuilder.display.validExpression")}
             </span>
           </>
-        ) : (
-          <span className="text-sm text-muted-foreground">
-            {openGroups > 0
-              ? t("expressionBuilder.display.closeGroupsPrompt", {
-                  count: openGroups,
-                  plural: openGroups > 1 ? "s" : "",
-                })
-              : t("expressionBuilder.display.addTopicPrompt")}
-          </span>
         )}
+        {openGroups > 0 &&
+          t("expressionBuilder.display.closeGroupsPrompt", {
+            count: openGroups,
+            plural: openGroups > 1 ? "s" : "",
+          })}
       </div>
     </div>
   );

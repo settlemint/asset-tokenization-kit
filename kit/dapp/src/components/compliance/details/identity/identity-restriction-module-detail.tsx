@@ -16,10 +16,7 @@ import type { ComplianceModuleDetailProps } from "@/components/compliance/detail
 import { ExpressionBuilder } from "@/components/expression-builder/expression-builder";
 import { validateUIExpression } from "@/components/expression-builder/expression-builder.utils";
 import { Button } from "@/components/ui/button";
-import {
-  decodeExpressionParams,
-  encodeExpressionParams,
-} from "@/lib/compliance/encoding/encode-expression-params";
+import { encodeExpressionParams } from "@/lib/compliance/encoding/encode-expression-params";
 import {
   convertInfixToPostfix,
   ExpressionWithGroups,
@@ -49,13 +46,8 @@ export function IdentityRestrictionModuleDetail({
       ? "identityAllowList"
       : "identityBlockList";
 
-  // Initialize expression from params if available
-  const initialExpression: ExpressionWithGroups = initialValues?.params
-    ? decodeExpressionParams(initialValues.params)
-    : [];
-
   const [expressionWithGroups, setExpressionWithGroups] =
-    useState<ExpressionWithGroups>(initialExpression);
+    useState<ExpressionWithGroups>(initialValues?.values ?? []);
 
   const handleEnable = () => {
     const expression = convertInfixToPostfix(expressionWithGroups) ?? [];
@@ -63,7 +55,7 @@ export function IdentityRestrictionModuleDetail({
     onEnable({
       typeId,
       module,
-      values: expression,
+      values: expressionWithGroups,
       params: encodedParams,
     });
   };

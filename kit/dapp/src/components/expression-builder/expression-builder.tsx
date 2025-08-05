@@ -8,7 +8,6 @@ import {
   canAddEndGroup,
   getOpenGroupCount,
   removeItemAtIndex,
-  validateUIExpression,
 } from "./expression-builder.utils";
 import { ExpressionDisplay } from "./expression-display";
 import { OperatorInput } from "./operator-input";
@@ -31,7 +30,6 @@ export function ExpressionBuilder({
       : "topic"
   );
 
-  const isValid = validateUIExpression(expressionWithGroups);
   const openGroups = getOpenGroupCount(expressionWithGroups);
   const canEndGroup = canAddEndGroup(expressionWithGroups);
 
@@ -80,7 +78,6 @@ export function ExpressionBuilder({
           expression={expressionWithGroups}
           onRemoveItem={handleRemoveItem}
           onClearAll={handleClearAll}
-          isValid={isValid}
           openGroups={openGroups}
         />
 
