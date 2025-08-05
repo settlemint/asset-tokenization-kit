@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
+import { getExpressionColor } from "@/components/expression-builder/expression-colors";
 import {
   createAndExpressionNode,
   createOrExpressionNode,
   type ExpressionNode,
 } from "@/lib/zod/validators/expression-node";
+import { ExpressionTypeEnum } from "@/lib/zod/validators/expression-type";
 import { useTranslation } from "react-i18next";
 
 export interface OperatorInputProps {
@@ -29,7 +31,7 @@ export function OperatorInput({
           onClick={() => {
             onAddOperator(createAndExpressionNode());
           }}
-          className="bg-chart-4 hover:bg-chart-4/90"
+          className={getExpressionColor(ExpressionTypeEnum.AND)}
         >
           {t("expressionBuilder.operatorInput.andButton")}
         </Button>
@@ -37,7 +39,7 @@ export function OperatorInput({
           onClick={() => {
             onAddOperator(createOrExpressionNode());
           }}
-          className="bg-chart-2 hover:bg-chart-2/90"
+          className={getExpressionColor(ExpressionTypeEnum.OR)}
         >
           {t("expressionBuilder.operatorInput.orButton")}
         </Button>

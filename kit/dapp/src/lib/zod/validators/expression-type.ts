@@ -104,9 +104,7 @@ export function getPrettyName(
       return "OR";
     case ExpressionTypeEnum.NOT:
       return "NOT";
-    // TypeScript will error if we miss any enum values due to exhaustive checking
     default: {
-      // This ensures we get a compile-time error for unhandled cases
       const _exhaustiveCheck: never = nodeType;
       throw new Error(`Unhandled expression type: ${_exhaustiveCheck}`);
     }

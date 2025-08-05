@@ -25,13 +25,8 @@ export function ExpressionBuilder({
   const { t } = useTranslation("components");
 
   const [inputMode, setInputMode] = useState<"topic" | "operator">(
-    expressionWithGroups && expressionWithGroups.length > 0
-      ? "operator"
-      : "topic"
+    expressionWithGroups.length > 0 ? "operator" : "topic"
   );
-
-  const openGroups = getOpenGroupCount(expressionWithGroups);
-  const canEndGroup = canAddEndGroup(expressionWithGroups);
 
   const handleAddTopic = (nodes: ExpressionNode[]) => {
     const newExpression = [...expressionWithGroups, ...nodes];
@@ -67,6 +62,9 @@ export function ExpressionBuilder({
     setInputMode("topic");
   };
 
+  const openGroups = getOpenGroupCount(expressionWithGroups);
+  const canEndGroup = canAddEndGroup(expressionWithGroups);
+
   return (
     <div className="space-y-6">
       <div>
@@ -75,7 +73,7 @@ export function ExpressionBuilder({
         </h3>
 
         <ExpressionDisplay
-          expression={expressionWithGroups}
+          expressionWithGroups={expressionWithGroups}
           onRemoveItem={handleRemoveItem}
           onClearAll={handleClearAll}
           openGroups={openGroups}

@@ -1,15 +1,22 @@
 import { validateUIExpression } from "@/components/expression-builder/expression-builder.utils";
+import {
+  getExpressionColor,
+  getParenthesesColor,
+} from "@/components/expression-builder/expression-colors";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { ExpressionWithGroups } from "@/lib/zod/validators/expression-node";
-import { getPrettyName } from "@/lib/zod/validators/expression-type";
+import {
+  ExpressionTypeEnum,
+  getPrettyName,
+} from "@/lib/zod/validators/expression-type";
 import { Check, X } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export interface ExpressionDisplayProps {
-  expression: ExpressionWithGroups;
+  expressionWithGroups: ExpressionWithGroups;
   onRemoveItem: (index: number) => void;
   onClearAll: () => void;
 
@@ -17,7 +24,7 @@ export interface ExpressionDisplayProps {
 }
 
 export function ExpressionDisplay({
-  expression,
+  expressionWithGroups,
   onRemoveItem,
   onClearAll,
   openGroups,
@@ -26,60 +33,60 @@ export function ExpressionDisplay({
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const getItemDisplayProps = (item: ExpressionWithGroups[number]) => {
-    if (typeof item === "string") {
-      // Parentheses
+    if (item === "(" || item === ")") {
       return {
-        className: "bg-secondary hover:bg-secondary/90 text-white border-0",
+        className: cn(getParenthesesColor(), "text-white border-0"),
         children: item,
       };
     }
 
-    // ExpressionNode
+    const nodeType = item.nodeType;
     const nodeName = getPrettyName(
-      item.nodeType,
-      item.nodeType === 0 ? item.value : undefined
+      nodeType,
+      nodeType === ExpressionTypeEnum.TOPIC ? item.value : undefined
     );
 
-    switch (item.nodeType) {
-      case 0: // TOPIC
+    const className = cn(getExpressionColor(nodeType), "text-white border-0");
+
+    switch (nodeType) {
+      case ExpressionTypeEnum.TOPIC:
         return {
-          className: "bg-chart-1 hover:bg-chart-1/90 text-white border-0",
+          className,
           children: nodeName,
         };
-      case 1: // AND
+      case ExpressionTypeEnum.AND:
         return {
-          className: "bg-chart-3 hover:bg-chart-3/90 text-white border-0",
+          className,
           children: t("expressionBuilder.operatorInput.andButton"),
         };
-      case 2: // OR
+      case ExpressionTypeEnum.OR:
         return {
-          className: "bg-chart-4 hover:bg-chart-4/90 text-white border-0",
+          className,
           children: t("expressionBuilder.operatorInput.orButton"),
         };
-      case 3: // NOT
+      case ExpressionTypeEnum.NOT:
         return {
-          className: "bg-chart-5 hover:bg-chart-5/90 text-white border-0",
+          className,
           children: t("expressionBuilder.topicInput.notLabel"),
         };
-      default:
-        return {
-          className: "bg-secondary hover:bg-secondary/90 text-white border-0",
-          children: t("expressionBuilder.display.unknownNode"),
-        };
+      default: {
+        const _exhaustiveCheck: never = nodeType;
+        throw new Error(`Unhandled expression type: ${_exhaustiveCheck}`);
+      }
     }
   };
 
-  if (expression.length === 0) {
+  if (expressionWithGroups.length === 0) {
     return null;
   }
 
-  const isValid = validateUIExpression(expression);
+  const isValid = validateUIExpression(expressionWithGroups);
 
   return (
     <div className="mb-6 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex flex-wrap gap-2">
-          {expression.map((item, index) => {
+          {expressionWithGroups.map((item, index) => {
             const displayProps = getItemDisplayProps(item);
             return (
               <div
