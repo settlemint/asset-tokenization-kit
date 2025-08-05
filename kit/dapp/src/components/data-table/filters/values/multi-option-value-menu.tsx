@@ -93,7 +93,7 @@ export function PropertyFilterMultiOptionValueMenu<
               ? columnMeta.transformOptionFn(
                   curr as ElementType<NonNullable<TValue>>
                 ).value
-              : (curr as ColumnOption).value;
+              : (curr as unknown as ColumnOption).value;
             if (!seen.has(key)) {
               seen.add(key);
               result.push(curr);
@@ -122,7 +122,7 @@ export function PropertyFilterMultiOptionValueMenu<
   else if (isColumnOptionArray(uniqueVals)) {
     // Deduplicate by value property since uniq() doesn't work with objects
     const seen = new Set<string>();
-    options = uniqueVals.filter((option) => {
+    options = (uniqueVals as unknown as ColumnOption[]).filter((option: ColumnOption) => {
       if (seen.has(option.value)) {
         return false;
       }
@@ -147,7 +147,7 @@ export function PropertyFilterMultiOptionValueMenu<
         ? columnMeta.transformOptionFn(curr as ElementType<NonNullable<TValue>>)
             .value
         : isColumnOptionArray([curr])
-          ? (curr as ColumnOption).value
+          ? (curr as unknown as ColumnOption).value
           : (curr as string);
 
     if (value) {

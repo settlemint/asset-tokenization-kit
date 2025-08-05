@@ -447,7 +447,7 @@ describe("PropertyFilterOptionValueMenu", () => {
       await user.click(activeOption);
 
       expect(setFilterValue).toHaveBeenCalledTimes(1);
-      const updateFn = setFilterValue.mock.calls[0][0];
+      const updateFn = setFilterValue.mock.calls[0]![0]!
       const result = updateFn();
       expect(result).toEqual({
         operator: "is",
@@ -489,7 +489,7 @@ describe("PropertyFilterOptionValueMenu", () => {
       await user.click(activeOption);
 
       expect(setFilterValue).toHaveBeenCalledTimes(1);
-      const updateFn = setFilterValue.mock.calls[0][0];
+      const updateFn = setFilterValue.mock.calls[0]![0]!
       const result = updateFn();
       expect(result).toBeUndefined();
     });
@@ -526,7 +526,7 @@ describe("PropertyFilterOptionValueMenu", () => {
       await user.click(inactiveOption);
 
       expect(setFilterValue).toHaveBeenCalledTimes(1);
-      const updateFn = setFilterValue.mock.calls[0][0];
+      const updateFn = setFilterValue.mock.calls[0]![0]!
       const result = updateFn();
       expect(result).toEqual({
         operator: "is",

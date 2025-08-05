@@ -75,7 +75,7 @@ function TestCell<TData, TValue>({
     },
     getValue: () => {
       if ("accessorKey" in column && column.accessorKey) {
-        return (data as Record<string, unknown>)[column.accessorKey];
+        return (data as Record<string, unknown>)[column.accessorKey as string];
       }
       if ("accessorFn" in column && column.accessorFn) {
         return column.accessorFn(data, 0);

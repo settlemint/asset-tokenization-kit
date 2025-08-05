@@ -10,6 +10,7 @@ import {
   PropertyFilterOptionValueDisplay,
 } from "./value-controller";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
+import type { ColumnDataType } from "../types/column-types";
 import {
   renderWithProviders,
   generateMockData,
@@ -331,7 +332,7 @@ describe("PropertyFilterValueDisplay", () => {
         id: "test-column",
         accessorFn: (row: TestDataItem) => row,
         meta: {
-          type: "unknown" as unknown,
+          type: "unknown" as ColumnDataType,
           displayName: "Unknown",
         },
       },

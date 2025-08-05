@@ -39,7 +39,7 @@ vi.mock("../../data-table-array", () => ({
 
 // Mock determineNewOperator
 vi.mock("../operators/operator-utils", () => ({
-  determineNewOperator: vi.fn((type, oldValues, newValues, oldOperator) => {
+  determineNewOperator: vi.fn((_type, _oldValues, newValues, oldOperator) => {
     // Simple mock logic
     if (newValues[0]?.length === 0) return oldOperator;
     if (newValues[0]?.length > 0 && oldOperator === "include")
@@ -56,10 +56,10 @@ vi.mock("./multi-option-item", () => ({
     count,
     onSelect,
   }: {
-    option: unknown;
+    option: { value: string; label: string };
     checked: boolean;
     count?: number;
-    onSelect: () => void;
+    onSelect: (value: string, checked: boolean) => void;
   }) => (
     <div
       data-testid={`multi-option-item-${option.value}`}
@@ -466,7 +466,7 @@ describe("PropertyFilterMultiOptionValueMenu", () => {
       await user.click(tag1Option);
 
       expect(setFilterValue).toHaveBeenCalledTimes(1);
-      const updateFn = setFilterValue.mock.calls[0][0];
+      const updateFn = setFilterValue.mock.calls[0]![0]!
       const result = updateFn(undefined);
       expect(result).toEqual({
         operator: "include any of",
@@ -506,7 +506,7 @@ describe("PropertyFilterMultiOptionValueMenu", () => {
       await user.click(tag2Option);
 
       expect(setFilterValue).toHaveBeenCalledTimes(1);
-      const updateFn = setFilterValue.mock.calls[0][0];
+      const updateFn = setFilterValue.mock.calls[0]![0]!
       const result = updateFn({
         operator: "include any of",
         values: [["tag1"]],
@@ -550,7 +550,7 @@ describe("PropertyFilterMultiOptionValueMenu", () => {
       await user.click(tag1Option);
 
       expect(setFilterValue).toHaveBeenCalledTimes(1);
-      const updateFn = setFilterValue.mock.calls[0][0];
+      const updateFn = setFilterValue.mock.calls[0]![0]!
       const result = updateFn({
         operator: "include any of",
         values: [["tag1", "tag2"]],
@@ -594,7 +594,7 @@ describe("PropertyFilterMultiOptionValueMenu", () => {
       await user.click(tag1Option);
 
       expect(setFilterValue).toHaveBeenCalledTimes(1);
-      const updateFn = setFilterValue.mock.calls[0][0];
+      const updateFn = setFilterValue.mock.calls[0]![0]!
       const result = updateFn({
         operator: "include any of",
         values: [["tag1"]],
@@ -840,7 +840,7 @@ describe("PropertyFilterMultiOptionValueMenu", () => {
       const tag2Option = screen.getByTestId("multi-option-item-tag2");
       await user.click(tag2Option);
 
-      const updateFn = setFilterValue.mock.calls[0][0];
+      const updateFn = setFilterValue.mock.calls[0]![0]!
       const result = updateFn({
         operator: "include any of",
         values: [["tag1", "tag1"]],

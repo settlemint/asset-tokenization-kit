@@ -8,11 +8,7 @@ import { PropertyFilterNumberValueMenu } from "./number-value-menu";
 import { renderWithProviders } from "../../test-utils";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import type { FilterValue } from "../types/filter-types";
-// Define test data type
-interface _TestData {
-  id: string;
-  name: string;
-}
+// Test data interface removed as it was unused
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
@@ -425,8 +421,8 @@ describe("PropertyFilterNumberValueMenu", () => {
       await user.click(rangeButton);
 
       const inputs = screen.getAllByRole("spinbutton");
-      const minInput = inputs[0];
-      const maxInput = inputs[1];
+      const minInput = inputs[0]!;
+      const maxInput = inputs[1]!
 
       await user.clear(minInput);
       await user.type(minInput, "10");
@@ -481,8 +477,8 @@ describe("PropertyFilterNumberValueMenu", () => {
       // Verify slider updates the max value
       // Note: Due to the way the component handles state, only the max value updates
       const inputs = screen.getAllByRole("spinbutton");
-      expect((inputs[0] as HTMLInputElement).value).toBe("0"); // Min stays at 0
-      expect((inputs[1] as HTMLInputElement).value).toBe("75"); // Max updates to 75
+      expect((inputs[0]! as HTMLInputElement).value).toBe("0"); // Min stays at 0
+      expect((inputs[1]! as HTMLInputElement).value).toBe("75"); // Max updates to 75
     });
   });
 
@@ -541,10 +537,10 @@ describe("PropertyFilterNumberValueMenu", () => {
       await user.click(rangeButton);
 
       const inputs = screen.getAllByRole("spinbutton");
-      await user.clear(inputs[0]);
-      await user.type(inputs[0], "20");
-      await user.clear(inputs[1]);
-      await user.type(inputs[1], "80");
+      await user.clear(inputs[0]!);
+      await user.type(inputs[0]!, "20");
+      await user.clear(inputs[1]!);
+      await user.type(inputs[1]!, "80");
 
       const applyButton = screen.getByText("apply");
       await user.click(applyButton);
@@ -580,10 +576,10 @@ describe("PropertyFilterNumberValueMenu", () => {
 
       const inputs = screen.getAllByRole("spinbutton");
       // Enter values in reverse order
-      await user.clear(inputs[0]);
-      await user.type(inputs[0], "80");
-      await user.clear(inputs[1]);
-      await user.type(inputs[1], "20");
+      await user.clear(inputs[0]!);
+      await user.type(inputs[0]!, "80");
+      await user.clear(inputs[1]!);
+      await user.type(inputs[1]!, "20");
 
       const applyButton = screen.getByText("apply");
       await user.click(applyButton);
@@ -781,10 +777,10 @@ describe("PropertyFilterNumberValueMenu", () => {
       await user.click(rangeButton);
 
       const inputs = screen.getAllByRole("spinbutton");
-      await user.clear(inputs[0]);
-      await user.type(inputs[0], "50");
-      await user.clear(inputs[1]);
-      await user.type(inputs[1], "200"); // Exceeds max
+      await user.clear(inputs[0]!);
+      await user.type(inputs[0]!, "50");
+      await user.clear(inputs[1]!);
+      await user.type(inputs[1]!, "200"); // Exceeds max
 
       const applyButton = screen.getByText("apply");
       await user.click(applyButton);
@@ -864,8 +860,8 @@ describe("PropertyFilterNumberValueMenu", () => {
 
       // In range mode, there are two spinbutton inputs
       const inputs = screen.getAllByRole("spinbutton");
-      expect((inputs[0] as HTMLInputElement).value).toBe("0"); // Falls back to dataset min
-      expect((inputs[1] as HTMLInputElement).value).toBe("100+"); // Falls back to max with + suffix
+      expect((inputs[0]! as HTMLInputElement).value).toBe("0"); // Falls back to dataset min
+      expect((inputs[1]! as HTMLInputElement).value).toBe("100+"); // Falls back to max with + suffix
     });
 
     it("should preserve existing values when switching modes multiple times", async () => {
@@ -895,8 +891,8 @@ describe("PropertyFilterNumberValueMenu", () => {
 
       // Values should be preserved
       const inputs = screen.getAllByRole("spinbutton");
-      expect((inputs[0] as HTMLInputElement).value).toBe("0");
-      expect((inputs[1] as HTMLInputElement).value).toBe("50");
+      expect((inputs[0]! as HTMLInputElement).value).toBe("0");
+      expect((inputs[1]! as HTMLInputElement).value).toBe("50");
 
       // Switch back to single
       const singleButton = screen.getByText("filters.number.single");
