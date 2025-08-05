@@ -26,7 +26,6 @@ import {
   getDefaultComplianceModuleImplementations,
   SystemComplianceModuleConfig,
   type SystemComplianceModuleCreateOutput,
-  type SystemComplianceModuleCreateSchema,
 } from "@/orpc/routes/system/compliance-module/routes/compliance-module.create.schema";
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
@@ -96,7 +95,7 @@ function getComplianceImplementationAddress(
 
 export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
   .use(
-    blockchainPermissionsMiddleware<typeof SystemComplianceModuleCreateSchema>({
+    blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.complianceModuleCreate,
       getAccessControl: ({ context }) => {
         const systemData = context.system;

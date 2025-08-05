@@ -135,7 +135,7 @@ export const me = authRouter.user.me
           ? [VerificationTypeEnum.secretCode]
           : []),
       ] as VerificationType[],
-      userPermissions: {
+      userSystemPermissions: {
         roles: userRoles,
         actions: getSystemPermissions(userRoles),
       },
@@ -220,6 +220,10 @@ function getSystemPermissions(userRoles: ReturnType<typeof mapUserRoles>) {
   const initialActions: Record<keyof typeof SYSTEM_PERMISSIONS, boolean> = {
     tokenFactoryCreate: false,
     addonCreate: false,
+    grantRole: false,
+    revokeRole: false,
+    complianceModuleCreate: false,
+    identityRegister: false,
   };
 
   // Update based on user roles using the flexible role requirement system

@@ -161,7 +161,7 @@ export const UserMeSchema = z.object({
    * User's permissions.
    * This is used to track the user's permissions.
    */
-  userPermissions: userPermissionsSchema,
+  userSystemPermissions: userPermissionsSchema,
 });
 
 /**

@@ -27,7 +27,6 @@ import { createLogger } from "@settlemint/sdk-utils/logging";
 import { encodeFunctionData, getAddress } from "viem";
 import {
   type SystemAddonConfig,
-  type SystemAddonCreateSchema,
   getDefaultAddonImplementations,
 } from "./addon.create.schema";
 
@@ -159,7 +158,7 @@ function getImplementationAddress(addonConfig: SystemAddonConfig): string {
  */
 export const addonCreate = portalRouter.system.addonCreate
   .use(
-    blockchainPermissionsMiddleware<typeof SystemAddonCreateSchema>({
+    blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.addonCreate,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
