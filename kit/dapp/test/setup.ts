@@ -2,6 +2,9 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup, configure } from "@testing-library/react";
 import { afterEach, vi } from "vitest";
 
+// Make vi globally available for module-level mocking
+(globalThis as any).vi = vi;
+
 // Configure React Testing Library to work properly with act
 configure({
   // This ensures act() warnings are properly handled
