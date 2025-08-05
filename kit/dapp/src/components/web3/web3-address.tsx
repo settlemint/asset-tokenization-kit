@@ -17,6 +17,7 @@ interface Web3AddressProps {
   showBadge?: boolean;
   showSymbol?: boolean;
   showPrettyName?: boolean;
+  skipDataQueries?: boolean; // Skip user/token queries during onboarding
 }
 
 function Web3AddressComponent({
@@ -29,6 +30,7 @@ function Web3AddressComponent({
   showBadge = true,
   showSymbol = true,
   showPrettyName = true,
+  skipDataQueries = false,
 }: Web3AddressProps) {
   // Query for user data by wallet address
   const { data: user } = useQuery(
@@ -37,6 +39,7 @@ function Web3AddressComponent({
       staleTime: 1000 * 60 * 30, // Cache user data for 30 minutes
       retry: false, // Don't retry if address is not a user
       throwOnError: false, // Don't throw if address is not a user
+      enabled: !skipDataQueries, // Disable during onboarding
     })
   );
 
@@ -47,6 +50,7 @@ function Web3AddressComponent({
       staleTime: 1000 * 60 * 30, // Cache token data for 30 minutes
       retry: false, // Don't retry if address is not a token
       throwOnError: false, // Don't throw if address is not a token
+      enabled: !skipDataQueries, // Disable during onboarding
     })
   );
 
