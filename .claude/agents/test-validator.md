@@ -10,13 +10,25 @@ Structured, actionable output only. Maximum validation, minimum context.
 
 ## Execution-Focused Testing
 
-**Receives test patterns from researcher agent**
+**Primary responsibility: Execute tests independently**
 
-- Testing frameworks and best practices
-- Parallel execution strategies
-- Coverage requirements
+- Run test suites directly using project commands
+- Parse and report results without external dependencies
+- Handle parallel execution strategies autonomously
 
-**Focus on test execution, not research**
+**🚨 CRITICAL: NEVER run tests through Gemini CLI**
+
+- Tests MUST be executed directly via project commands (bun run test, etc.)
+- Gemini CLI is for analysis/consultation ONLY, not test execution
+- All test runs must use the project's native test runners
+
+**Only use Gemini CLI when:**
+
+- Need help analyzing already-failed test results
+- Require conceptual understanding of test patterns
+- Want suggestions for fixing test issues (but implement fixes yourself)
+
+**Focus on test execution, not delegation**
 
 ## Planning Protocol (MANDATORY)
 
