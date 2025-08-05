@@ -9,19 +9,19 @@
  */
 
 import { kycProfiles, user as userTable } from "@/lib/db/schema";
+import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { AssetFactoryTypeIdEnum } from "@/lib/zod/validators/asset-types";
 import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { satisfiesRoleRequirement } from "@/lib/zod/validators/role-requirement";
 import type { VerificationType } from "@/lib/zod/validators/verification-type";
 import { VerificationType as VerificationTypeEnum } from "@/lib/zod/validators/verification-type";
 import { mapUserRoles } from "@/orpc/helpers/role-validation";
-import { satisfiesRoleRequirement } from "@/lib/zod/validators/role-requirement";
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { getSystemContext } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
-import { TOKEN_FACTORY_PERMISSIONS } from "@/orpc/routes/token/routes/factory/factory.permissions";
+import { TOKEN_FACTORY_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call, ORPCError } from "@orpc/server";
 import { eq } from "drizzle-orm";
 import { zeroAddress } from "viem";

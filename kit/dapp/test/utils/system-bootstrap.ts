@@ -81,10 +81,10 @@ export async function bootstrapTokenFactories(
     );
   }
 
-  const tokenFactories = await orpClient.token.factoryList({});
+  const tokenFactories = await orpClient.system.tokenFactoryList({});
 
   const factories: Parameters<
-    typeof orpClient.token.factoryCreate
+    typeof orpClient.system.tokenFactoryCreate
   >[0]["factories"] = [
     { type: "bond", name: "Bond Factory" },
     { type: "deposit", name: "Deposit Factory" },
@@ -104,7 +104,7 @@ export async function bootstrapTokenFactories(
 
   const initialFactoryCount = tokenFactories.length;
 
-  const result = await orpClient.token.factoryCreate({
+  const result = await orpClient.system.tokenFactoryCreate({
     verification: {
       verificationCode: DEFAULT_PINCODE,
       verificationType: "pincode",

@@ -1,10 +1,3 @@
-// Factory contracts
-import { factoryCreateContract } from "@/orpc/routes/token/routes/factory/factory.create.contract";
-import { factoryListContract } from "@/orpc/routes/token/routes/factory/factory.list.contract";
-import { factoryReadContract } from "@/orpc/routes/token/routes/factory/factory.read.contract";
-
-import { factoryPredictAddressContract } from "@/orpc/routes/token/routes/factory/factory.predict-address.contract";
-
 // Mutation contracts
 import { tokenApproveContract } from "@/orpc/routes/token/routes/mutations/approve/token.approve.contract";
 import { tokenBurnContract } from "@/orpc/routes/token/routes/mutations/burn/token.burn.contract";
@@ -40,12 +33,6 @@ import { statsVolumeContract } from "@/orpc/routes/token/routes/stats/volume.con
 import { statsWalletDistributionContract } from "@/orpc/routes/token/routes/stats/wallet-distribution.contract";
 
 export const tokenContract = {
-  // Factory
-  factoryCreate: factoryCreateContract,
-  factoryList: factoryListContract,
-  factoryRead: factoryReadContract,
-  factoryPredictAddress: factoryPredictAddressContract,
-
   // Mutations
   create: tokenCreateContract,
   pause: tokenPauseContract,

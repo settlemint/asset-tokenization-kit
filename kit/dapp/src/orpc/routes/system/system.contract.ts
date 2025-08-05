@@ -9,6 +9,7 @@ import {
   SystemReadSchema,
 } from "@/orpc/routes/system/routes/system.read.schema";
 import { statsContract } from "@/orpc/routes/system/stats/stats.contract";
+import { factoryContract } from "@/orpc/routes/system/token-factory/factory.contract";
 import { z } from "zod";
 import { baseContract } from "../../procedures/base.contract";
 import { SystemSchema } from "./routes/system.list.schema";
@@ -114,4 +115,5 @@ export const systemContract = {
   ...complianceModuleContract,
   ...statsContract,
   ...accessManagerContract,
+  ...factoryContract,
 };

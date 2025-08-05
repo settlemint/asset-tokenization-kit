@@ -19,7 +19,6 @@ import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import { read } from "@/orpc/routes/system/routes/system.read";
-import { TOKEN_FACTORY_PERMISSIONS } from "@/orpc/routes/token/routes/factory/factory.permissions";
 import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
@@ -75,10 +74,10 @@ const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
  * @throws {ORPCError} UNAUTHORIZED - If user is not authenticated
  * @throws {ORPCError} INTERNAL_SERVER_ERROR - If system not bootstrapped or transaction fails
  */
-export const factoryCreate = portalRouter.token.factoryCreate
+export const factoryCreate = portalRouter.system.tokenFactoryCreate
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: TOKEN_FACTORY_PERMISSIONS.create,
+      requiredRoles: { any: ["systemManager"] },
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },
