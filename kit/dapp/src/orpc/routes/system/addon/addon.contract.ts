@@ -49,12 +49,12 @@ const addonCreate = baseContract
 const addonList = baseContract
   .route({
     method: "GET",
-    path: "/addons",
+    path: "/systems/addons",
     description:
       "List system addons (extensions that add functionality to tokens)",
     successDescription:
       "List of system addons with their types and deployment info",
-    tags: ["addons"],
+    tags: TAGS,
   })
   .input(SystemAddonListSchema) // Extended list schema with addon-specific filters
   .output(z.array(SystemAddonSchema)); // Return array of system addon objects

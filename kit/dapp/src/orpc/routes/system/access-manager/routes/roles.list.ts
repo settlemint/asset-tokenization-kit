@@ -1,11 +1,7 @@
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import {
-  SystemRolesOutput,
-  SystemRolesOutputSchema,
-} from "@/orpc/routes/system/access-manager/routes/roles.list.schema";
+import { SystemRolesOutputSchema } from "@/orpc/routes/system/access-manager/routes/roles.list.schema";
 
 export const rolesList = onboardedRouter.system.rolesList
   .use(systemMiddleware)
@@ -19,28 +15,29 @@ export const rolesList = onboardedRouter.system.rolesList
       return [];
     }
 
-    const roles = Object.entries(systemRoles).reduce<SystemRolesOutput>(
-      (acc, [role, accounts]) => {
-        accounts.forEach((account) => {
-          if (excludeContracts && account.isContract) {
-            return acc;
-          }
-          const accountAddress = getEthereumAddress(account.id);
-          const existingAccount = acc.find((a) => a.account === accountAddress);
-          if (existingAccount) {
-            existingAccount.roles.push(role as AccessControlRoles);
-          } else {
-            acc.push({
-              roles: [role as AccessControlRoles],
-              account: accountAddress,
-            });
-          }
-          return acc;
-        });
-        return acc;
-      },
-      []
-    );
+    const rolesByAccount = new Map<
+      string,
+      { roles: string[]; account: string }
+    >();
 
-    return SystemRolesOutputSchema.parse(roles);
+    for (const [role, accounts] of Object.entries(systemRoles)) {
+      for (const account of accounts) {
+        if (excludeContracts && account.isContract) {
+          continue;
+        }
+        const accountAddress = getEthereumAddress(account.id);
+        const existingAccount = rolesByAccount.get(accountAddress);
+
+        if (existingAccount) {
+          existingAccount.roles.push(role);
+        } else {
+          rolesByAccount.set(accountAddress, {
+            roles: [role],
+            account: accountAddress,
+          });
+        }
+      }
+    }
+
+    return SystemRolesOutputSchema.parse([...rolesByAccount.values()]);
   });
