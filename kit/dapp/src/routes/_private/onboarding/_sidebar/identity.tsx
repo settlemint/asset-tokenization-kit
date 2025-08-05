@@ -29,9 +29,7 @@ function RouteComponent() {
   const queryClient = useQueryClient();
   const { completeStepAndNavigate } = useOnboardingNavigation();
   const { data: session } = authClient.useSession();
-  // Only admins can register identity
-  // TODO: use system access control to check this, not role
-  const canRegisterIdentity = session?.user.role === "admin";
+  const shouldRegisterIdentity = session?.user.role === "admin";
 
   // Verification dialog state
   const [showVerificationModal, setShowVerificationModal] = useState(false);
@@ -61,6 +59,11 @@ function RouteComponent() {
       })
     );
 
+  const {
+    mutateAsync: grantIdentityManagerRole,
+    isPending: isGrantingIdentityManagerRole,
+  } = useMutation(orpc.system.grantRole.mutationOptions());
+
   const { mutateAsync: updateKyc, isPending: isUpdatingKyc } = useMutation(
     orpc.user.kyc.upsert.mutationOptions({
       onSuccess: async () => {
@@ -77,7 +80,7 @@ function RouteComponent() {
   const handleComplete = useCallback(
     (values: KycFormValues) => {
       setKycFormValues(values);
-      if (canRegisterIdentity) {
+      if (shouldRegisterIdentity) {
         setShowVerificationModal(true);
       } else {
         toast.promise(
@@ -94,7 +97,7 @@ function RouteComponent() {
         );
       }
     },
-    [canRegisterIdentity, session?.user.id, t, updateKyc]
+    [shouldRegisterIdentity, session?.user.id, t, updateKyc]
   );
 
   const handleVerificationSubmit = useCallback(
@@ -108,7 +111,12 @@ function RouteComponent() {
 
       toast.promise(
         (async () => {
-          if (canRegisterIdentity) {
+          if (shouldRegisterIdentity) {
+            await grantIdentityManagerRole({
+              role: "identityManager",
+              accounts: [session.user.wallet],
+              verification,
+            });
             await registerIdentity({
               country: kycFormValues.country,
               verification,
@@ -128,10 +136,11 @@ function RouteComponent() {
       );
     },
     [
-      canRegisterIdentity,
+      grantIdentityManagerRole,
       kycFormValues,
       registerIdentity,
-      session?.user.id,
+      session?.user,
+      shouldRegisterIdentity,
       t,
       updateKyc,
     ]
@@ -148,7 +157,11 @@ function RouteComponent() {
       />
       <KycForm
         onComplete={handleComplete}
-        disabled={isRegisteringIdentity || isUpdatingKyc}
+        disabled={
+          isRegisteringIdentity ||
+          isUpdatingKyc ||
+          isGrantingIdentityManagerRole
+        }
       />
       <VerificationDialog
         open={showVerificationModal}

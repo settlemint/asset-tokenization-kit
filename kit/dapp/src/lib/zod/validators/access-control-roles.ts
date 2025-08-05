@@ -49,4 +49,6 @@ export const accessControlRoles: z.ZodObject<
  * This schema is used to validate the role of a user in the access control system.
  * It is used to ensure that the role is one of the possible roles defined in the AccessControlRoles union type.
  */
-export const accessControlRole = z.enum(Object.keys(accessControlRoles.shape));
+export const accessControlRole = z.enum(
+  Object.keys(accessControlRoles.shape) as AccessControlRoles[]
+);

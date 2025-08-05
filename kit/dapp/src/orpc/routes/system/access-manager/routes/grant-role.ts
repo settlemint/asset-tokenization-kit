@@ -1,3 +1,4 @@
+import { getRoleByFieldName } from "@/lib/constants/roles";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
@@ -46,6 +47,13 @@ export const grantRole = portalRouter.system.grantRole
       });
     }
 
+    const roleInfo = getRoleByFieldName(role);
+    if (!roleInfo) {
+      throw errors.NOT_FOUND({
+        message: `Role '${role}' not found`,
+      });
+    }
+
     const challengeResponse = await handleChallenge(sender, {
       code: verification.verificationCode,
       type: verification.verificationType,
@@ -55,7 +63,7 @@ export const grantRole = portalRouter.system.grantRole
       address: system.systemAccessManager.id,
       from: sender.wallet,
       accounts,
-      role,
+      role: roleInfo.bytes,
       ...challengeResponse,
     });
 
