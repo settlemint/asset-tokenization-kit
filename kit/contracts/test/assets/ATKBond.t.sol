@@ -38,7 +38,7 @@ contract ATKBondTest is AbstractATKAssetTest {
 
     uint256 public initialSupply;
     uint256 public faceValue;
-    uint256 public initialdenominationAssetSupply;
+    uint256 public initialDenominationAssetSupply;
     uint256 public maturityDate;
 
     uint8 public constant WHOLE_INITIAL_SUPPLY = 100;
@@ -114,11 +114,11 @@ contract ATKBondTest is AbstractATKAssetTest {
         // Initialize supply and face value using toDecimals
         initialSupply = toDecimals(WHOLE_INITIAL_SUPPLY); // 100.00 bonds
         faceValue = toDecimals(WHOLE_FACE_FALUE); // 100.00 denomination tokens per bond
-        initialdenominationAssetSupply = initialSupply * faceValue / (10 ** DECIMALS);
+        initialDenominationAssetSupply = initialSupply * faceValue / (10 ** DECIMALS);
 
         // Deploy mock denomination asset with same decimals
         denominationAsset = new MockedERC20Token("Mock USD", "MUSD", DECIMALS);
-        denominationAsset.mint(owner, initialdenominationAssetSupply); // Mint enough for all bonds
+        denominationAsset.mint(owner, initialDenominationAssetSupply); // Mint enough for all bonds
 
         bond = _createBondAndMint(
             "Test Bond",
@@ -380,7 +380,7 @@ contract ATKBondTest is AbstractATKAssetTest {
 
         // Add required denomination assets
         vm.startPrank(owner);
-        uint256 requiredAmount = initialdenominationAssetSupply;
+        uint256 requiredAmount = initialDenominationAssetSupply;
         denominationAsset.mint(owner, requiredAmount);
         denominationAsset.approve(address(bond), requiredAmount);
         denominationAsset.transfer(address(bond), requiredAmount);
@@ -402,8 +402,8 @@ contract ATKBondTest is AbstractATKAssetTest {
 
         // Add sufficient denomination assets first
         vm.startPrank(owner);
-        denominationAsset.approve(address(bond), initialdenominationAssetSupply);
-        denominationAsset.transfer(address(bond), initialdenominationAssetSupply);
+        denominationAsset.approve(address(bond), initialDenominationAssetSupply);
+        denominationAsset.transfer(address(bond), initialDenominationAssetSupply);
 
         bond.mature();
         vm.expectRevert(IATKBond.BondAlreadyMatured.selector);
@@ -411,11 +411,11 @@ contract ATKBondTest is AbstractATKAssetTest {
         vm.stopPrank();
     }
 
-    function test_CannotMatureWithoutSufficientdenominationAsset() public {
+    function test_CannotMatureWithoutSufficientDenominationAsset() public {
         vm.warp(maturityDate + 2);
         vm.startPrank(owner);
 
-        uint256 requiredAmount = initialdenominationAssetSupply;
+        uint256 requiredAmount = initialDenominationAssetSupply;
 
         // Try to mature without any denomination assets
         vm.expectRevert(abi.encodeWithSelector(IATKBond.InsufficientDenominationAssetBalance.selector, 0, requiredAmount));
@@ -438,7 +438,7 @@ contract ATKBondTest is AbstractATKAssetTest {
 
     function test_WithdrawReserveAfterPartialRedemption() public {
         // Setup: Add required denomination assets
-        uint256 requiredAmount = initialdenominationAssetSupply;
+        uint256 requiredAmount = initialDenominationAssetSupply;
         uint256 excessAmount = toDecimals(50);
         uint256 totalAmount = requiredAmount + excessAmount;
 
@@ -481,7 +481,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         vm.startPrank(owner);
 
         // Top up with more than needed
-        uint256 requiredAmount = initialdenominationAssetSupply;
+        uint256 requiredAmount = initialDenominationAssetSupply;
         uint256 excessAmount = toDecimals(5); // 5.00 excess tokens
         uint256 totalAmount = requiredAmount + excessAmount;
 
@@ -501,7 +501,7 @@ contract ATKBondTest is AbstractATKAssetTest {
 
     function test_RedeemBonds() public {
         // Setup: Add required denomination assets
-        uint256 requiredAmount = initialdenominationAssetSupply;
+        uint256 requiredAmount = initialDenominationAssetSupply;
         vm.startPrank(owner);
         denominationAsset.approve(address(bond), requiredAmount);
         denominationAsset.transfer(address(bond), requiredAmount);
@@ -517,12 +517,12 @@ contract ATKBondTest is AbstractATKAssetTest {
 
         // User1 redeems their bonds
         vm.startPrank(user1);
-        uint256 expecteddenominationAssetAmount = user1Bonds * faceValue / (10 ** DECIMALS);
+        uint256 expectedDenominationAssetAmount = user1Bonds * faceValue / (10 ** DECIMALS);
         bond.redeem(user1Bonds);
 
         // Verify redemption
         assertEq(bond.balanceOf(user1), 0);
-        assertEq(denominationAsset.balanceOf(user1), expecteddenominationAssetAmount);
+        assertEq(denominationAsset.balanceOf(user1), expectedDenominationAssetAmount);
         vm.stopPrank();
     }
 
@@ -927,9 +927,9 @@ contract ATKBondTest is AbstractATKAssetTest {
 
         vm.startPrank(owner);
         uint256 requiredAmount = bond.totalDenominationAssetNeeded();
-        // The owner already has initialdenominationAssetSupply. We need to mint the difference
-        uint256 additionaldenominationAsset = requiredAmount - initialdenominationAssetSupply;
-        denominationAsset.mint(owner, additionaldenominationAsset);
+        // The owner already has initialDenominationAssetSupply. We need to mint the difference
+        uint256 additionalDenominationAsset = requiredAmount - initialDenominationAssetSupply;
+        denominationAsset.mint(owner, additionalDenominationAsset);
 
         denominationAsset.approve(address(bond), requiredAmount);
         denominationAsset.transfer(address(bond), requiredAmount);
