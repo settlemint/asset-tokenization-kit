@@ -3,7 +3,8 @@
     "addressBlockList": {
       "description": "Block specific wallet addresses from accessing your asset. Prevents sanctioned or problematic addresses from participating.",
       "shortDescription": "Block specific wallet addresses",
-      "title": "Block Addresses"
+      "title": "Block addresses",
+      "addButtonLabel": "Add address"
     },
     "countryAllowList": {
       "description": "Allow investors only from specific countries. Helps meet regional compliance requirements.",

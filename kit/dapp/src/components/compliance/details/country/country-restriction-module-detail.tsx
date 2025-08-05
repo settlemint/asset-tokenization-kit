@@ -1,11 +1,22 @@
 import { complianceModuleConfig } from "@/components/compliance/config";
+import {
+  ComplianceDetailActions,
+  ComplianceDetailBreadcrumb,
+  ComplianceDetailCard,
+  ComplianceDetailContent,
+  ComplianceDetailDescription,
+  ComplianceDetailFooter,
+  ComplianceDetailForm,
+  ComplianceDetailHeader,
+  ComplianceDetailSection,
+  ComplianceDetailTitle,
+} from "@/components/compliance/details/compliance-detail-card";
 import type { ComplianceModuleDetailProps } from "@/components/compliance/details/types";
 import { CountryMultiselect } from "@/components/country/country-multiselect";
 import { Button } from "@/components/ui/button";
 import { useCountries } from "@/hooks/use-countries";
 import { encodeCountryParams } from "@/lib/compliance/encoding/encode-country-params";
 import { haveSameNumbers } from "@/lib/utils/array";
-import { ArrowLeftIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -75,66 +86,47 @@ export function CountryRestrictionModuleDetail({
   );
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center mb-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onClose}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeftIcon className="w-4 h-4" />
+    <ComplianceDetailCard>
+      <ComplianceDetailHeader>
+        <ComplianceDetailBreadcrumb onClose={onClose}>
           {t("compliance-modules:title")}
-        </Button>
-      </div>
+        </ComplianceDetailBreadcrumb>
+      </ComplianceDetailHeader>
 
-      <div className="flex-1">
-        <div className="flex flex-col items-start mb-6 space-y-6">
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center justify-center space-x-4 mb-4">
-              <div>
-                <config.icon className="w-5 h-5" />
-              </div>
-              <h2 className="text-2xl font-semibold leading-none tracking-tight">
-                {t(`modules.${moduleKey}.title`)}
-              </h2>
-            </div>
-            <div>
-              {isEnabled && (
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    handleDisable();
-                    onClose();
-                  }}
-                >
-                  {t("form:buttons.disable")}
-                </Button>
-              )}
-              {!isEnabled && (
-                <Button onClick={handleEnable} className="press-effect">
-                  {t("form:buttons.enable")}
-                </Button>
-              )}
-            </div>
-          </div>
-          <div>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              {t(`modules.${moduleKey}.description`)}
-            </p>
-          </div>
+      <ComplianceDetailContent>
+        <ComplianceDetailSection>
+          <ComplianceDetailTitle
+            icon={<config.icon className="w-5 h-5" />}
+            action={
+              <ComplianceDetailActions
+                isEnabled={isEnabled}
+                onEnable={handleEnable}
+                onDisable={handleDisable}
+                onClose={onClose}
+              />
+            }
+          >
+            {t(`modules.${moduleKey}.title`)}
+          </ComplianceDetailTitle>
+
+          <ComplianceDetailDescription>
+            {t(`modules.${moduleKey}.description`)}
+          </ComplianceDetailDescription>
+
           {isEnabled && (
-            <CountryMultiselect
-              value={selectedCountries}
-              onChange={(countries) => {
-                setSelectedCountries(countries);
-              }}
-            />
+            <ComplianceDetailForm>
+              <CountryMultiselect
+                value={selectedCountries}
+                onChange={(countries) => {
+                  setSelectedCountries(countries);
+                }}
+              />
+            </ComplianceDetailForm>
           )}
-        </div>
-      </div>
+        </ComplianceDetailSection>
+      </ComplianceDetailContent>
 
-      <div className="flex items-center justify-between gap-3 pt-6">
+      <ComplianceDetailFooter>
         <Button variant="outline" onClick={onClose} className="press-effect">
           {t("form:buttons.back")}
         </Button>
@@ -144,10 +136,11 @@ export function CountryRestrictionModuleDetail({
             handleEnable();
             onClose();
           }}
+          className="press-effect"
         >
           {t("form:buttons.save")}
         </Button>
-      </div>
-    </div>
+      </ComplianceDetailFooter>
+    </ComplianceDetailCard>
   );
 }

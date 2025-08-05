@@ -1,8 +1,8 @@
 import { orpc } from "@/orpc/orpc-client";
-import { TokenSearchResult } from "@/orpc/routes/token/routes/token.search.schema";
-import { UserSearchOutput } from "@/orpc/routes/user/routes/user.search.schema";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { getAddress } from "viem";
 
 export type AddressSearchScope = "user" | "asset" | "all";
 
@@ -12,10 +12,7 @@ export interface UseSearchAddressesOptions {
 }
 
 export interface UseSearchAddressesReturn {
-  users: UserSearchOutput;
-  assets: TokenSearchResult[];
-  isLoadingUsers: boolean;
-  isLoadingAssets: boolean;
+  searchResults: EthereumAddress[];
   isLoading: boolean;
 }
 
@@ -26,39 +23,77 @@ export function useSearchAddresses({
   const shouldSearchUsers = scope === "user" || scope === "all";
   const shouldSearchAssets = scope === "asset" || scope === "all";
 
-  // Query for users
+  // Query for users - search when there's a term, list first 5 when empty
   const { data: users = [], isLoading: isLoadingUsers } = useQuery(
-    orpc.user.search.queryOptions({
-      enabled: shouldSearchUsers && searchTerm.length > 0,
-      input: {
-        query: searchTerm,
-        limit: 10,
-      },
-    })
+    searchTerm.length > 0
+      ? orpc.user.search.queryOptions({
+          enabled: shouldSearchUsers,
+          input: {
+            query: searchTerm,
+            limit: 10,
+          },
+        })
+      : orpc.user.list.queryOptions({
+          enabled: shouldSearchUsers,
+          input: {
+            limit: 5,
+          },
+        })
   );
 
-  // Query for assets
+  // Query for assets - search when there's a term, list first 5 when empty
   const { data: assets = [], isLoading: isLoadingAssets } = useQuery(
-    orpc.token.search.queryOptions({
-      enabled: shouldSearchAssets && searchTerm.length > 0,
-      input: {
-        query: searchTerm,
-        limit: 10,
-      },
-    })
+    searchTerm.length > 0
+      ? orpc.token.search.queryOptions({
+          enabled: shouldSearchAssets,
+          input: {
+            query: searchTerm,
+            limit: 10,
+          },
+        })
+      : orpc.token.list.queryOptions({
+          enabled: shouldSearchAssets,
+          input: {
+            limit: 5,
+          },
+        })
   );
 
-  const result = useMemo(() => {
-    const isLoading = isLoadingUsers || isLoadingAssets;
+  const searchResults = useMemo(() => {
+    const addresses: EthereumAddress[] = [];
 
-    return {
-      users: users || [],
-      assets: assets || [],
-      isLoadingUsers,
-      isLoadingAssets,
-      isLoading,
-    };
-  }, [users, assets, isLoadingUsers, isLoadingAssets]);
+    // Process based on scope
+    if (scope === "user" || scope === "all") {
+      users.forEach((user) => {
+        if (!user.wallet) return;
 
-  return result;
+        try {
+          const validAddress = getAddress(user.wallet);
+          addresses.push(validAddress);
+        } catch {
+          // Invalid address format, skip
+        }
+      });
+    }
+
+    if (scope === "asset" || scope === "all") {
+      assets.forEach((asset) => {
+        if (!asset.id) return;
+
+        try {
+          const validAddress = getAddress(asset.id);
+          addresses.push(validAddress);
+        } catch {
+          // Invalid address format, skip
+        }
+      });
+    }
+
+    return addresses;
+  }, [users, assets, scope]);
+
+  return {
+    searchResults,
+    isLoading: isLoadingUsers || isLoadingAssets,
+  };
 }
