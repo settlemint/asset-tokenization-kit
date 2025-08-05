@@ -47,6 +47,12 @@ export const revokeRole = portalRouter.system.revokeRole
       });
     }
 
+    if (accounts.length === 0) {
+      return {
+        accounts: [],
+      };
+    }
+
     const roleInfo = getRoleByFieldName(role);
     if (!roleInfo) {
       throw errors.NOT_FOUND({
@@ -59,15 +65,17 @@ export const revokeRole = portalRouter.system.revokeRole
       type: verification.verificationType,
     });
 
+    const accountsWithoutDuplicates = [...new Set(accounts)];
+
     await context.portalClient.mutate(REVOKE_ROLE_MUTATION, {
       address: system.systemAccessManager.id,
       from: sender.wallet,
-      accounts,
+      accounts: accountsWithoutDuplicates,
       role: roleInfo.bytes,
       ...challengeResponse,
     });
 
     return {
-      accounts,
+      accounts: accountsWithoutDuplicates,
     };
   });

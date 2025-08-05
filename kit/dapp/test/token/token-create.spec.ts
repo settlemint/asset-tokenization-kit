@@ -1,3 +1,4 @@
+import { ORPCError } from "@orpc/server";
 import { from } from "dnum";
 import { describe, expect, test } from "vitest";
 import { getOrpcClient } from "../utils/orpc-client";
@@ -69,7 +70,9 @@ describe("Token create", () => {
         countryCode: "056", // Belgium numeric code for testing
       })
     ).rejects.toThrow(
-      "User does not have the required role to execute this action."
+      new ORPCError("USER_NOT_AUTHORIZED", {
+        message: "User does not have the required role to execute this action.",
+      })
     );
   });
 });

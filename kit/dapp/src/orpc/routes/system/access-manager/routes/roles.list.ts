@@ -1,7 +1,11 @@
+import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { type SystemRolesOutput } from "@/orpc/routes/system/access-manager/routes/roles.list.schema";
+import {
+  SystemRolesOutput,
+  SystemRolesOutputSchema,
+} from "@/orpc/routes/system/access-manager/routes/roles.list.schema";
 
 export const rolesList = onboardedRouter.system.rolesList
   .use(systemMiddleware)
@@ -15,7 +19,7 @@ export const rolesList = onboardedRouter.system.rolesList
       return [];
     }
 
-    return Object.entries(systemRoles).reduce<SystemRolesOutput>(
+    const roles = Object.entries(systemRoles).reduce<SystemRolesOutput>(
       (acc, [role, accounts]) => {
         accounts.forEach((account) => {
           if (excludeContracts && account.isContract) {
@@ -24,10 +28,10 @@ export const rolesList = onboardedRouter.system.rolesList
           const accountAddress = getEthereumAddress(account.id);
           const existingAccount = acc.find((a) => a.account === accountAddress);
           if (existingAccount) {
-            existingAccount.roles.push(role);
+            existingAccount.roles.push(role as AccessControlRoles);
           } else {
             acc.push({
-              roles: [role],
+              roles: [role as AccessControlRoles],
               account: accountAddress,
             });
           }
@@ -37,4 +41,6 @@ export const rolesList = onboardedRouter.system.rolesList
       },
       []
     );
+
+    return SystemRolesOutputSchema.parse(roles);
   });

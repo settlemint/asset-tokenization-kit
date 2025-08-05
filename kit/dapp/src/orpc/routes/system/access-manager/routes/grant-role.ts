@@ -47,6 +47,12 @@ export const grantRole = portalRouter.system.grantRole
       });
     }
 
+    if (accounts.length === 0) {
+      return {
+        accounts: [],
+      };
+    }
+
     const roleInfo = getRoleByFieldName(role);
     if (!roleInfo) {
       throw errors.NOT_FOUND({
@@ -59,15 +65,17 @@ export const grantRole = portalRouter.system.grantRole
       type: verification.verificationType,
     });
 
+    const accountsWithoutDuplicates = [...new Set(accounts)];
+
     await context.portalClient.mutate(GRANT_ROLE_MUTATION, {
       address: system.systemAccessManager.id,
       from: sender.wallet,
-      accounts,
+      accounts: accountsWithoutDuplicates,
       role: roleInfo.bytes,
       ...challengeResponse,
     });
 
     return {
-      accounts,
+      accounts: accountsWithoutDuplicates,
     };
   });

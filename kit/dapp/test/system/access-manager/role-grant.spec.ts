@@ -1,4 +1,7 @@
 // @vitest-environment node
+import { ORPCError } from "@orpc/server";
+import { getAddress } from "viem";
+import { beforeAll, describe, expect, it } from "vitest";
 import { getOrpcClient } from "../../utils/orpc-client";
 import {
   DEFAULT_ADMIN,
@@ -6,8 +9,6 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "../../utils/user";
-import { getAddress } from "viem";
-import { beforeAll, describe, expect, it } from "vitest";
 
 describe("Access Manager - Grant Role ORPC routes", () => {
   let adminClient: ReturnType<typeof getOrpcClient>;
@@ -43,11 +44,14 @@ describe("Access Manager - Grant Role ORPC routes", () => {
         accounts: [testAddresses.valid1],
       });
 
-      const systemRoles = await adminClient.system.rolesList({});
-      expect(systemRoles).toContain({
-        account: testAddresses.valid1,
-        roles: "tokenManager",
+      const systemRoles = await adminClient.system.rolesList({
+        excludeContracts: true,
       });
+      const updatedSystemRoles = systemRoles.find(
+        (role) => role.account === testAddresses.valid1
+      );
+      expect(updatedSystemRoles).toBeDefined();
+      expect(updatedSystemRoles?.roles).toContain("tokenManager");
     });
 
     it("should grant a role to multiple accounts", async () => {
@@ -71,6 +75,18 @@ describe("Access Manager - Grant Role ORPC routes", () => {
           testAddresses.valid3,
         ],
       });
+
+      const systemRoles = await adminClient.system.rolesList({
+        excludeContracts: true,
+      });
+      const updatedSystemRoles = systemRoles.find(
+        (role) =>
+          role.account === testAddresses.valid1 ||
+          role.account === testAddresses.valid2 ||
+          role.account === testAddresses.valid3
+      );
+      expect(updatedSystemRoles).toBeDefined();
+      expect(updatedSystemRoles?.roles).toContain("complianceManager");
     });
 
     it("should handle empty accounts array", async () => {
@@ -116,7 +132,10 @@ describe("Access Manager - Grant Role ORPC routes", () => {
           role: "tokenManager",
         })
       ).rejects.toThrow(
-        "User does not have the required role to execute this action."
+        new ORPCError("USER_NOT_AUTHORIZED", {
+          message:
+            "User does not have the required role to execute this action.",
+        })
       );
     });
   });
@@ -132,7 +151,7 @@ describe("Access Manager - Grant Role ORPC routes", () => {
           accounts: [testAddresses.valid1],
           role: "invalidRole" as never,
         })
-      ).rejects.toThrow("Role not found: invalidRole");
+      ).rejects.toThrow(new ORPCError("INPUT_VALIDATION_FAILED"));
     });
 
     it("should reject invalid wallet addresses", async () => {
@@ -145,7 +164,7 @@ describe("Access Manager - Grant Role ORPC routes", () => {
           accounts: [testAddresses.invalid],
           role: "tokenManager",
         })
-      ).rejects.toThrow();
+      ).rejects.toThrow(new ORPCError("INPUT_VALIDATION_FAILED"));
     });
 
     it("should reject mixed valid and invalid addresses", async () => {
@@ -162,7 +181,7 @@ describe("Access Manager - Grant Role ORPC routes", () => {
           ],
           role: "tokenManager",
         })
-      ).rejects.toThrow();
+      ).rejects.toThrow(new ORPCError("INPUT_VALIDATION_FAILED"));
     });
 
     it("should reject incorrect pincode verification", async () => {
@@ -175,7 +194,11 @@ describe("Access Manager - Grant Role ORPC routes", () => {
           accounts: [testAddresses.valid1],
           role: "tokenManager",
         })
-      ).rejects.toThrow("Invalid authentication challenge");
+      ).rejects.toThrow(
+        new ORPCError("PORTAL_ERROR", {
+          message: "Invalid authentication challenge",
+        })
+      );
     });
   });
 
