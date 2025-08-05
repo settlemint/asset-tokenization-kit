@@ -15,6 +15,7 @@
  * @see {@link @/lib/settlemint/portal} - Portal GraphQL client
  */
 
+import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
@@ -275,25 +276,25 @@ export const create = onboardedRouter.system.create
       }
     }
 
-    // Grant token manager and identity manager roles to the sender
-    await call(
-      grantRole,
-      {
-        role: "tokenManager",
-        accounts: [sender.wallet],
-        verification,
-      },
-      { context }
-    );
-    await call(
-      grantRole,
-      {
-        role: "identityManager",
-        accounts: [sender.wallet],
-        verification,
-      },
-      { context }
-    );
+    // Grant operational roles to the system creator
+    // These roles are required for managing various aspects of the system
+    const operationalRoles: AccessControlRoles[] = [
+      "tokenManager",
+      "identityManager",
+      "complianceManager",
+      "addonManager",
+    ];
+    for (const role of operationalRoles) {
+      await call(
+        grantRole,
+        {
+          role: role,
+          accounts: [sender.wallet],
+          verification,
+        },
+        { context }
+      );
+    }
 
     const updatedSystemDetails = await call(
       read,
