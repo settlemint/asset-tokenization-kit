@@ -480,7 +480,7 @@ type TokenBond @entity(immutable: false) {
   faceValueExact: BigInt!
   maturityDate: BigInt!
   isMatured: Boolean!
-  underlyingAsset: Token!
+  denominationAsset: Token!
   # Stats
   stats: TokenBondStatsState @derivedFrom(field: "bond")
 }
@@ -947,13 +947,13 @@ type TokenBondStatsState @entity(immutable: false) {
   # Reference to the associated bond
   bond: TokenBond!
   # Available balance of the underlying asset (human-readable)
-  underlyingAssetBalanceAvailable: BigDecimal!
+  denominationAssetBalanceAvailable: BigDecimal!
   # Available balance of the underlying asset (exact, raw units)
-  underlyingAssetBalanceAvailableExact: BigInt!
+  denominationAssetBalanceAvailableExact: BigInt!
   # Required balance of the underlying asset to fully collateralize the bond (human-readable)
-  underlyingAssetBalanceRequired: BigDecimal!
+  denominationAssetBalanceRequired: BigDecimal!
   # Required balance of the underlying asset (exact, raw units)
-  underlyingAssetBalanceRequiredExact: BigInt!
+  denominationAssetBalanceRequiredExact: BigInt!
   # Percentage of required collateral that is currently covered (available / required * 100)
   coveredPercentage: BigDecimal!
 }
@@ -964,13 +964,13 @@ type TokenBondStatsData @entity(timeseries: true) {
   # Reference to the associated bond
   bond: TokenBond!
   # Available balance of the underlying asset (human-readable)
-  underlyingAssetBalanceAvailable: BigDecimal!
+  denominationAssetBalanceAvailable: BigDecimal!
   # Available balance of the underlying asset (exact, raw units)
-  underlyingAssetBalanceAvailableExact: BigInt!
+  denominationAssetBalanceAvailableExact: BigInt!
   # Required balance of the underlying asset to fully collateralize the bond (human-readable)
-  underlyingAssetBalanceRequired: BigDecimal!
+  denominationAssetBalanceRequired: BigDecimal!
   # Required balance of the underlying asset (exact, raw units)
-  underlyingAssetBalanceRequiredExact: BigInt!
+  denominationAssetBalanceRequiredExact: BigInt!
   # Percentage of required collateral that is currently covered (available / required * 100)
   coveredPercentage: BigDecimal!
 }
@@ -982,18 +982,18 @@ type TokenBondStats
 
   bond: TokenBond!
 
-  underlyingAssetBalanceAvailable: BigDecimal!
-    @aggregate(fn: "last", arg: "underlyingAssetBalanceAvailable")
-  underlyingAssetBalanceAvailableExact: BigInt!
-    @aggregate(fn: "last", arg: "underlyingAssetBalanceAvailableExact")
-  underlyingAssetBalanceRequired: BigDecimal!
-    @aggregate(fn: "last", arg: "underlyingAssetBalanceRequired")
-  underlyingAssetBalanceRequiredExact: BigInt!
-    @aggregate(fn: "last", arg: "underlyingAssetBalanceRequiredExact")
+  denominationAssetBalanceAvailable: BigDecimal!
+    @aggregate(fn: "last", arg: "denominationAssetBalanceAvailable")
+  denominationAssetBalanceAvailableExact: BigInt!
+    @aggregate(fn: "last", arg: "denominationAssetBalanceAvailableExact")
+  denominationAssetBalanceRequired: BigDecimal!
+    @aggregate(fn: "last", arg: "denominationAssetBalanceRequired")
+  denominationAssetBalanceRequiredExact: BigInt!
+    @aggregate(fn: "last", arg: "denominationAssetBalanceRequiredExact")
   coveredPercentage: BigDecimal!
     @aggregate(
       fn: "last"
-      arg: "(underlyingAssetBalanceAvailable / underlyingAssetBalanceRequired) * 100"
+      arg: "(denominationAssetBalanceAvailable / denominationAssetBalanceRequired) * 100"
     )
 }
 
