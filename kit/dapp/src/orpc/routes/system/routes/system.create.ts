@@ -251,6 +251,26 @@ export const create = onboardedRouter.system.create
       { context }
     );
 
+    // Grant operational roles to the system creator
+    // These roles are required for managing various aspects of the system
+    const operationalRoles: AccessControlRoles[] = [
+      "tokenManager",
+      "identityManager",
+      "complianceManager",
+      "addonManager",
+    ];
+    for (const role of operationalRoles) {
+      await call(
+        grantRole,
+        {
+          role: role,
+          accounts: [sender.wallet],
+          verification,
+        },
+        { context }
+      );
+    }
+
     const systemDetails = await call(
       read,
       {
@@ -274,26 +294,6 @@ export const create = onboardedRouter.system.create
         // Log but don't fail system creation
         logger.error("Failed to create compliance modules", error);
       }
-    }
-
-    // Grant operational roles to the system creator
-    // These roles are required for managing various aspects of the system
-    const operationalRoles: AccessControlRoles[] = [
-      "tokenManager",
-      "identityManager",
-      "complianceManager",
-      "addonManager",
-    ];
-    for (const role of operationalRoles) {
-      await call(
-        grantRole,
-        {
-          role: role,
-          accounts: [sender.wallet],
-          verification,
-        },
-        { context }
-      );
     }
 
     const updatedSystemDetails = await call(
