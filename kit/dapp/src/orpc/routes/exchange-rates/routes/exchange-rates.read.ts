@@ -6,9 +6,10 @@
  * @module ExchangeRatesRead
  */
 import { fxRatesLatest } from "@/lib/db/schema";
+import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { publicRouter } from "@/orpc/procedures/public.router";
-import { and, eq, or, desc } from "drizzle-orm";
+import { and, desc, eq, or } from "drizzle-orm";
 import { syncExchangeRatesInternal } from "./exchange-rates.sync";
 
 /**
@@ -28,6 +29,11 @@ import { syncExchangeRatesInternal } from "./exchange-rates.sync";
  * @returns Current exchange rate or null if not available
  */
 export const read = publicRouter.exchangeRates.read
+  .use(
+    offChainPermissionsMiddleware({
+      requiredPermissions: { exchangeRates: ["read"] },
+    })
+  )
   .use(databaseMiddleware)
   .handler(async ({ input, context }) => {
     const { baseCurrency, quoteCurrency } = input;

@@ -5,6 +5,7 @@
  * @module ExchangeRatesUpdate
  */
 import { currencies, fxRates, fxRatesLatest } from "@/lib/db/schema";
+import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { eq, sql } from "drizzle-orm";
@@ -28,6 +29,11 @@ import { eq, sql } from "drizzle-orm";
  * @returns Success status and updated rate details
  */
 export const update = authRouter.exchangeRates.update
+  .use(
+    offChainPermissionsMiddleware({
+      requiredPermissions: { exchangeRates: ["update"] },
+    })
+  )
   .use(databaseMiddleware)
   .handler(async ({ input, context }) => {
     const {

@@ -19,6 +19,7 @@ import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import { read } from "@/orpc/routes/system/routes/system.read";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
@@ -77,7 +78,7 @@ const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
 export const factoryCreate = portalRouter.system.tokenFactoryCreate
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: { any: ["systemManager"] },
+      requiredRoles: SYSTEM_PERMISSIONS.tokenFactoryCreate,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },

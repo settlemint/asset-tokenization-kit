@@ -3,6 +3,7 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 
 const GRANT_ROLE_MUTATION = portalGraphql(`
   mutation GrantRoleMutation(
@@ -28,7 +29,7 @@ const GRANT_ROLE_MUTATION = portalGraphql(`
 export const grantRole = portalRouter.system.grantRole
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: { any: ["admin"] },
+      requiredRoles: SYSTEM_PERMISSIONS.grantRole,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },

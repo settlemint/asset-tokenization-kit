@@ -3,6 +3,7 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 
 const REVOKE_ROLE_MUTATION = portalGraphql(`
   mutation RevokeRoleMutation(
@@ -28,7 +29,7 @@ const REVOKE_ROLE_MUTATION = portalGraphql(`
 export const revokeRole = portalRouter.system.revokeRole
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: { any: ["admin"] },
+      requiredRoles: SYSTEM_PERMISSIONS.revokeRole,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },
