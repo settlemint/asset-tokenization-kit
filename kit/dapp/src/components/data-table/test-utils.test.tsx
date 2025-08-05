@@ -3,6 +3,7 @@
  */
 import { render } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
+import type { Table } from "@tanstack/react-table";
 import {
   mockIcons,
   mockRouter,
@@ -217,7 +218,7 @@ describe("Test Utils", () => {
         await deleteAction.execute({
           selectedRows: [],
           selectedRowIds: [],
-          table: {} as any,
+          table: {} as Table<unknown>,
           onComplete: vi.fn(),
           onError: vi.fn(),
         });
@@ -245,7 +246,7 @@ describe("Test Utils", () => {
         await archiveAction.execute({
           selectedRows: [],
           selectedRowIds: [],
-          table: {} as any,
+          table: {} as Table<unknown>,
           onComplete: vi.fn(),
           onError: vi.fn(),
         });

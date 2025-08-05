@@ -314,7 +314,6 @@ export function createMockTable<TData = unknown>(
     getIsAllPageRowsSelected: vi.fn().mockReturnValue(false),
     getIsSomeRowsSelected: vi.fn().mockReturnValue(false),
     getIsSomePageRowsSelected: vi.fn().mockReturnValue(false),
-    resetRowSelection: vi.fn(),
     getColumn: vi.fn((id: string) => ({
       id,
       getFilterValue: vi.fn(),
@@ -338,7 +337,7 @@ export function createMockTable<TData = unknown>(
     getRowModel: vi.fn(
       () => ({ rows: [], flatRows: [], rowsById: {} }) as RowModel<TData>
     ),
-    getRow: vi.fn((id: string) => undefined as Row<TData> | undefined),
+    getRow: vi.fn((_id: string) => undefined as Row<TData> | undefined),
     getCenterRows: vi.fn(() => [] as Row<TData>[]),
     getTopRows: vi.fn(() => [] as Row<TData>[]),
     getBottomRows: vi.fn(() => [] as Row<TData>[]),
@@ -430,8 +429,8 @@ export function createMockTable<TData = unknown>(
       onStateChange: vi.fn(),
       renderFallbackValue: null,
       state: {},
-    } as any,
-    initialState: {} as any,
+    } as Record<string, unknown>,
+    initialState: {} as Record<string, unknown>,
     ...overrides,
   } as Table<TData>;
 

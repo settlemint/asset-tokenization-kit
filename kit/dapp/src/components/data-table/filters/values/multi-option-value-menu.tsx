@@ -231,7 +231,7 @@ export function PropertyFilterMultiOptionValueMenu<
       <CommandEmpty>{t("noResults")}</CommandEmpty>
       <CommandList>
         <CommandGroup>
-          {options.map((v, index) => {
+          {options.map((v, _index) => {
             const checked = Boolean(filter?.values[0]?.includes(v.value));
             const count = optionsCount[v.value] ?? 0;
 

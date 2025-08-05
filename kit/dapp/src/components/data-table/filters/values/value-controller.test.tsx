@@ -331,7 +331,7 @@ describe("PropertyFilterValueDisplay", () => {
         id: "test-column",
         accessorFn: (row: TestDataItem) => row,
         meta: {
-          type: "unknown" as any,
+          type: "unknown" as unknown,
           displayName: "Unknown",
         },
       },
@@ -450,9 +450,9 @@ describe("PropertyFilterOptionValueDisplay", () => {
         meta: {
           type: "option",
           displayName: "User Role",
-          transformOptionFn: (user: any) => ({
-            label: user.role,
-            value: user.role,
+          transformOptionFn: (user: unknown) => ({
+            label: (user as { role: string }).role,
+            value: (user as { role: string }).role,
           }),
         },
       },

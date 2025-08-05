@@ -36,6 +36,7 @@ const mockLink = {
 
 describe("DataTableExport", () => {
   // Store original createElement
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
   const originalCreateElement = document.createElement.bind(document);
 
   beforeEach(() => {
@@ -51,6 +52,7 @@ describe("DataTableExport", () => {
     URL.revokeObjectURL = vi.fn();
 
     // Mock document.createElement
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     document.createElement = vi.fn((tagName: string) => {
       if (tagName === "a") {
         return mockLink as unknown as HTMLAnchorElement;
@@ -64,6 +66,7 @@ describe("DataTableExport", () => {
 
   afterEach(() => {
     // Restore original createElement
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     document.createElement = originalCreateElement;
     vi.restoreAllMocks();
   });
@@ -242,7 +245,7 @@ describe("DataTableExport", () => {
         getAllLeafColumns: vi.fn().mockReturnValue([]),
       });
       if (mockTable.options.meta) {
-        delete (mockTable.options.meta as any).name;
+        delete (mockTable.options.meta as Record<string, unknown>).name;
       }
 
       renderWithProviders(<DataTableExport table={mockTable} />);

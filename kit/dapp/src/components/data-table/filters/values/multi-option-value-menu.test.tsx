@@ -10,7 +10,7 @@ import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import type { FilterValue } from "../types/filter-types";
 // import type { ColumnOption } from "../types/column-types";
 // Define test data type
-interface TestData {
+interface _TestData {
   id: string;
   name: string;
 }

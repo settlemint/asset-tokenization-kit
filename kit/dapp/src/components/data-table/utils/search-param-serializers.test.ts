@@ -34,9 +34,7 @@ describe("search-param-serializers", () => {
     it("should return undefined for objects that cannot be serialized", () => {
       const circular: Record<string, unknown> = { a: 1 };
       circular.self = circular; // Create circular reference
-      expect(
-        encodeObjectParam(circular)
-      ).toBeUndefined();
+      expect(encodeObjectParam(circular)).toBeUndefined();
     });
 
     it("should handle objects with undefined values", () => {
@@ -466,11 +464,11 @@ describe("search-param-serializers", () => {
 
     it("should handle null values", () => {
       const result = tableStateToSearchParams({
-        sorting: null as any,
-        columnFilters: null as any,
-        globalFilter: null as any,
-        columnVisibility: null as any,
-        rowSelection: null as any,
+        sorting: null as { id: string; desc: boolean }[] | null,
+        columnFilters: null as { id: string; value: unknown }[] | null,
+        globalFilter: null as string | null,
+        columnVisibility: null as Record<string, boolean> | null,
+        rowSelection: null as Record<string, boolean> | null,
       });
 
       expect(result).toEqual({

@@ -9,7 +9,7 @@ import { renderWithProviders } from "../../test-utils";
 import type { Column, ColumnMeta } from "@tanstack/react-table";
 import type { FilterValue } from "../types/filter-types";
 // Define test data type
-interface TestData {
+interface _TestData {
   id: string;
   name: string;
 }

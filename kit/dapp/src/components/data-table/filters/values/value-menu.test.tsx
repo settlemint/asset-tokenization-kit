@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from "vitest";
 import { PropertyFilterValueMenu } from "./value-menu";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 // Define test data type
-interface TestData {
+interface _TestData {
   id: string;
   name: string;
 }
@@ -154,7 +154,10 @@ describe("PropertyFilterValueMenu", () => {
 
     it("should handle numeric type value", () => {
       const props = createProps("option");
-      props.columnMeta = { type: 123 as any } as ColumnMeta<unknown, unknown>;
+      props.columnMeta = { type: 123 as unknown } as ColumnMeta<
+        unknown,
+        unknown
+      >;
 
       const { container } = render(<PropertyFilterValueMenu {...props} />);
 
@@ -163,7 +166,10 @@ describe("PropertyFilterValueMenu", () => {
 
     it("should handle null columnMeta type", () => {
       const props = createProps("option");
-      props.columnMeta = { type: null as any } as ColumnMeta<unknown, unknown>;
+      props.columnMeta = { type: null as unknown } as ColumnMeta<
+        unknown,
+        unknown
+      >;
 
       const { container } = render(<PropertyFilterValueMenu {...props} />);
 

@@ -289,7 +289,7 @@ describe("DataTableEmptyState", () => {
 
       renderWithProviders(
         <DataTableEmptyState
-          icon={CustomIcon as any}
+          icon={CustomIcon as React.ComponentType}
           title="Custom Icon"
           description="With custom icon component"
         />

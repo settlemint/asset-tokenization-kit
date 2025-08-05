@@ -199,7 +199,7 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
       <CommandEmpty>{t("noResults")}</CommandEmpty>
       <CommandList className="max-h-fit">
         <CommandGroup>
-          {options.map((v, index) => {
+          {options.map((v, _index) => {
             // Determine checked state based ONLY on the first value when operator is 'is'
             const checked =
               filter?.operator === "is" && filter.values[0] === v.value;

@@ -332,7 +332,7 @@ describe("flexible-filter-wrappers", () => {
         columnMeta: {
           type: "text",
           displayName: "Test Column",
-        } as any,
+        } as Record<string, unknown>,
       };
 
       flexibleTextFilterFn(mockRow, "testColumn", complexFilter);

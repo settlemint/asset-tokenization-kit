@@ -8,11 +8,6 @@ import { PropertyFilterTextValueMenu } from "./text-value-menu";
 import { renderWithProviders } from "../../test-utils";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import type { FilterValue } from "../types/filter-types";
-// Define test data type
-interface TestData {
-  id: string;
-  name: string;
-}
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({

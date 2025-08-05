@@ -49,8 +49,8 @@ describe("text-filter", () => {
         const filterValue: FilterValue<"text", TestData> = {
           operator: "contains",
           values: ["hello"],
-        columnMeta: undefined,
-      };
+          columnMeta: undefined,
+        };
 
         expect(__textFilterFn("hello world", filterValue)).toBe(true);
         expect(__textFilterFn("say hello", filterValue)).toBe(true);
@@ -61,8 +61,8 @@ describe("text-filter", () => {
         const filterValue: FilterValue<"text", TestData> = {
           operator: "contains",
           values: ["xyz"],
-        columnMeta: undefined,
-      };
+          columnMeta: undefined,
+        };
 
         expect(__textFilterFn("hello world", filterValue)).toBe(false);
         expect(__textFilterFn("", filterValue)).toBe(false);
@@ -72,8 +72,8 @@ describe("text-filter", () => {
         const filterValue: FilterValue<"text", TestData> = {
           operator: "contains",
           values: ["HELLO"],
-        columnMeta: undefined,
-      };
+          columnMeta: undefined,
+        };
 
         expect(__textFilterFn("hello world", filterValue)).toBe(true);
         expect(__textFilterFn("Hello World", filterValue)).toBe(true);
@@ -84,8 +84,8 @@ describe("text-filter", () => {
         const filterValue: FilterValue<"text", TestData> = {
           operator: "contains",
           values: ["  hello  "],
-        columnMeta: undefined,
-      };
+          columnMeta: undefined,
+        };
 
         expect(__textFilterFn("  hello world  ", filterValue)).toBe(true);
         expect(__textFilterFn("hello", filterValue)).toBe(true);
@@ -97,8 +97,8 @@ describe("text-filter", () => {
         const filterValue: FilterValue<"text", TestData> = {
           operator: "does not contain",
           values: ["hello"],
-        columnMeta: undefined,
-      };
+          columnMeta: undefined,
+        };
 
         expect(__textFilterFn("hello world", filterValue)).toBe(false);
         expect(__textFilterFn("say hello", filterValue)).toBe(false);
@@ -109,8 +109,8 @@ describe("text-filter", () => {
         const filterValue: FilterValue<"text", TestData> = {
           operator: "does not contain",
           values: ["xyz"],
-        columnMeta: undefined,
-      };
+          columnMeta: undefined,
+        };
 
         expect(__textFilterFn("hello world", filterValue)).toBe(true);
         expect(__textFilterFn("", filterValue)).toBe(true);
@@ -120,8 +120,8 @@ describe("text-filter", () => {
         const filterValue: FilterValue<"text", TestData> = {
           operator: "does not contain",
           values: ["HELLO"],
-        columnMeta: undefined,
-      };
+          columnMeta: undefined,
+        };
 
         expect(__textFilterFn("hello world", filterValue)).toBe(false);
         expect(__textFilterFn("Hello World", filterValue)).toBe(false);

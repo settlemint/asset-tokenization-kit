@@ -9,7 +9,7 @@ import { renderWithProviders } from "../../test-utils";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import type { FilterValue } from "../types/filter-types";
 // Define test data type
-interface TestData {
+interface _TestData {
   id: string;
   name: string;
 }
@@ -712,7 +712,8 @@ describe("PropertyFilterNumberValueMenu", () => {
       );
 
       const backButton = screen.getByTestId("chevron-left-icon").parentElement;
-      await user.click(backButton!);
+      if (!backButton) throw new Error("Back button not found");
+      await user.click(backButton);
 
       expect(mockOnBack).toHaveBeenCalled();
     });
@@ -799,7 +800,7 @@ describe("PropertyFilterNumberValueMenu", () => {
   describe("Edge Cases", () => {
     it("should handle undefined faceted min/max values", () => {
       const column = createMockColumn({
-        facetedMinMaxValues: undefined as unknown,
+        facetedMinMaxValues: undefined as [number, number] | undefined,
       });
       const columnMeta = { type: "number" } as ColumnMeta<unknown, unknown>;
 
@@ -905,7 +906,7 @@ describe("PropertyFilterNumberValueMenu", () => {
       const singleInput = screen.getByPlaceholderText(
         "filters.number.placeholder"
       );
-      expect(singleInput.value).toBe("0");
+      expect((singleInput as HTMLInputElement).value).toBe("0");
     });
   });
 

@@ -134,7 +134,7 @@ describe("auto-filter", () => {
 
       const accessorFnColumn: ColumnDef<TestData> = {
         id: "test",
-        accessorFn: (row) => (row as any).test,
+        accessorFn: (row) => (row as Record<string, unknown>).test,
       };
 
       expect(withAutoFilterFn(accessorKeyColumn).filterFn).toBe(
@@ -165,7 +165,7 @@ describe("auto-filter", () => {
         meta: {
           type: "number",
           displayName: "Test Display",
-        } as any,
+        } as Record<string, unknown>,
       };
 
       const result = withAutoFilterFn(column);
@@ -254,12 +254,12 @@ describe("auto-filter", () => {
         {
           accessorKey: "test1",
           header: "Test 1",
-          meta: { type: "text" } as any,
+          meta: { type: "text" } as Record<string, unknown>,
         },
         {
           accessorKey: "test2",
           header: "Test 2",
-          meta: { type: "number" } as any,
+          meta: { type: "number" } as Record<string, unknown>,
         },
       ];
 

@@ -75,7 +75,7 @@ function TestCell<TData, TValue>({
     },
     getValue: () => {
       if ("accessorKey" in column && column.accessorKey) {
-        return (data as any)[column.accessorKey as keyof typeof data];
+        return (data as Record<string, unknown>)[column.accessorKey];
       }
       if ("accessorFn" in column && column.accessorFn) {
         return column.accessorFn(data, 0);
@@ -235,7 +235,7 @@ describe("withAutoCell", () => {
         id: "name",
         accessorKey: "name",
         header: "Name",
-        cell: "Custom String Cell" as any,
+        cell: () => "Custom String Cell",
       });
 
       renderWithProviders(<TestCell column={column} data={testData} />);

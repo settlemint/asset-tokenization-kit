@@ -9,11 +9,6 @@ import { renderWithProviders } from "../../test-utils";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import type { FilterValue } from "../types/filter-types";
 // import type { ColumnOption } from "../types/column-types";
-// Define test data type
-interface TestData {
-  id: string;
-  name: string;
-}
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
@@ -42,10 +37,10 @@ vi.mock("./option-item", () => ({
     count,
     onSelect,
   }: {
-    option: unknown;
+    option: { value: string; label: string };
     checked: boolean;
     count?: number;
-    onSelect: () => void;
+    onSelect: (value: string, selected: boolean) => void;
   }) => (
     <div
       data-testid={`option-item-${option.value}`}
@@ -616,7 +611,7 @@ describe("PropertyFilterOptionValueMenu", () => {
     it("should not check options when operator is not 'is'", () => {
       const column = createMockColumn({
         filterValue: {
-          operator: "is not" as unknown, // Different operator
+          operator: "is not" as const, // Different operator
           values: ["active"],
           columnMeta: { type: "option" },
         },
@@ -711,7 +706,8 @@ describe("PropertyFilterOptionValueMenu", () => {
       );
 
       const backButton = screen.getByTestId("chevron-left-icon").parentElement;
-      await user.click(backButton!);
+      if (!backButton) throw new Error("Back button not found");
+      await user.click(backButton);
 
       expect(mockOnBack).toHaveBeenCalled();
     });

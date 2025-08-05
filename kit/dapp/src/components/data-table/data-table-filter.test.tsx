@@ -27,8 +27,8 @@ vi.mock("./filters/operators/operator-controller", () => ({
     columnMeta,
     filter,
   }: {
-    columnMeta: any;
-    filter: any;
+    columnMeta: Record<string, unknown>;
+    filter: Record<string, unknown>;
   }) => (
     <div data-testid="property-filter-operator">
       Operator: {columnMeta?.type} - {JSON.stringify(filter)}
@@ -37,7 +37,7 @@ vi.mock("./filters/operators/operator-controller", () => ({
 }));
 
 vi.mock("./filters/property-filter-subject", () => ({
-  PropertyFilterSubject: ({ meta }: { meta: any }) => (
+  PropertyFilterSubject: ({ meta }: { meta: Record<string, unknown> }) => (
     <div data-testid="property-filter-subject">
       Subject: {meta?.displayName || meta?.type}
     </div>
@@ -49,8 +49,8 @@ vi.mock("./filters/values/value-controller", () => ({
     id,
     columnMeta,
   }: {
-    id: any;
-    columnMeta: any;
+    id: string;
+    columnMeta: Record<string, unknown>;
   }) => (
     <div data-testid="property-filter-value">
       Value: {id} - {columnMeta?.type}
@@ -59,7 +59,13 @@ vi.mock("./filters/values/value-controller", () => ({
 }));
 
 vi.mock("./filters/values/value-menu", () => ({
-  PropertyFilterValueMenu: ({ id, onBack }: { id: any; onBack: any }) => (
+  PropertyFilterValueMenu: ({
+    id,
+    onBack,
+  }: {
+    id: string;
+    onBack: () => void;
+  }) => (
     <div data-testid="property-filter-value-menu">
       <button
         onClick={onBack as React.MouseEventHandler}
@@ -67,7 +73,7 @@ vi.mock("./filters/values/value-menu", () => ({
       >
         Back
       </button>
-      <div>Value Menu for {String(id)}</div>
+      <div>Value Menu for {id}</div>
     </div>
   ),
 }));
