@@ -189,3 +189,155 @@ export function validateExpressionSyntax(nodes: ExpressionNode[]): boolean {
   // Valid expression should have exactly 1 result on the stack
   return stackSize === 1;
 }
+
+/**
+ * Validate that an expression array with grouping represents a well-formed expression.
+ * Handles parentheses for grouping and validates the logical structure.
+ *
+ * @param nodes - Array of expression nodes with optional grouping parentheses
+ * @returns True if the expression is well-formed
+ *
+ * @example
+ * ```typescript
+ * // Valid: (KYC AND AML) OR COLLATERAL
+ * validateExpressionWithGroups([
+ *   "(",
+ *   { nodeType: ExpressionType.TOPIC, value: 1n }, // KYC
+ *   { nodeType: ExpressionType.TOPIC, value: 2n }, // AML
+ *   { nodeType: ExpressionType.AND, value: 0n },
+ *   ")",
+ *   { nodeType: ExpressionType.TOPIC, value: 3n }, // COLLATERAL
+ *   { nodeType: ExpressionType.OR, value: 0n }
+ * ]); // true
+ *
+ * // Invalid: Unmatched parentheses
+ * validateExpressionWithGroups([
+ *   "(",
+ *   { nodeType: ExpressionType.TOPIC, value: 1n },
+ *   { nodeType: ExpressionType.TOPIC, value: 2n },
+ *   { nodeType: ExpressionType.AND, value: 0n }
+ * ]); // false - missing closing parenthesis
+ * ```
+ */
+export function validateExpressionWithGroups(
+  nodes: ExpressionWithGroups
+): boolean {
+  if (nodes.length === 0) {
+    return false;
+  }
+
+  // First, check for balanced parentheses
+  let parenCount = 0;
+  for (const node of nodes) {
+    if (node === "(") {
+      parenCount++;
+    } else if (node === ")") {
+      parenCount--;
+      if (parenCount < 0) {
+        return false; // Closing parenthesis without matching opening
+      }
+    }
+  }
+
+  if (parenCount !== 0) {
+    return false; // Unmatched parentheses
+  }
+
+  // Convert infix expression with groups to postfix for validation
+  const postfixNodes = convertInfixToPostfix(nodes);
+
+  // If conversion failed, expression is invalid
+  if (postfixNodes === null) {
+    return false;
+  }
+
+  // Validate the postfix expression
+  return validateExpressionSyntax(postfixNodes);
+}
+
+/**
+ * Convert infix expression with groups to postfix notation for validation.
+ * Uses the Shunting Yard algorithm to handle operator precedence and parentheses.
+ *
+ * @param nodes - Infix expression with grouping
+ * @returns Postfix expression array or null if invalid
+ */
+export function convertInfixToPostfix(
+  nodes: ExpressionWithGroups
+): ExpressionNode[] | null {
+  const output: ExpressionNode[] = [];
+  const operatorStack: (ExpressionNode | "(")[] = [];
+
+  // Operator precedence (higher number = higher precedence)
+  const getPrecedence = (nodeType: number): number => {
+    switch (nodeType) {
+      case ExpressionTypeEnum.NOT:
+        return 3; // Highest precedence
+      case ExpressionTypeEnum.AND:
+        return 2;
+      case ExpressionTypeEnum.OR:
+        return 1; // Lowest precedence
+      default:
+        return 0;
+    }
+  };
+
+  for (const node of nodes) {
+    if (typeof node === "string") {
+      if (node === "(") {
+        operatorStack.push("(");
+      } else if (node === ")") {
+        // Pop operators until we find the matching opening parenthesis
+        while (operatorStack.length > 0) {
+          const top = operatorStack.pop();
+          if (top === "(") {
+            break;
+          }
+          if (top && typeof top === "object") {
+            output.push(top);
+          }
+        }
+      }
+    } else {
+      // ExpressionNode
+      if (node.nodeType === ExpressionTypeEnum.TOPIC) {
+        // Operands go directly to output
+        output.push(node);
+      } else {
+        // Operators need precedence handling
+        const currentPrecedence = getPrecedence(node.nodeType);
+
+        // Pop operators with higher or equal precedence
+        while (
+          operatorStack.length > 0 &&
+          operatorStack.at(-1) !== "(" &&
+          typeof operatorStack.at(-1) === "object"
+        ) {
+          const topOp = operatorStack.at(-1) as ExpressionNode;
+          const topPrecedence = getPrecedence(topOp.nodeType);
+
+          if (topPrecedence >= currentPrecedence) {
+            output.push(operatorStack.pop() as ExpressionNode);
+          } else {
+            break;
+          }
+        }
+
+        operatorStack.push(node);
+      }
+    }
+  }
+
+  // Pop remaining operators
+  while (operatorStack.length > 0) {
+    const top = operatorStack.pop();
+    if (top === "(") {
+      return null; // Unmatched opening parenthesis
+    }
+    if (top && typeof top === "object") {
+      output.push(top);
+    }
+  }
+
+  return output;
+}

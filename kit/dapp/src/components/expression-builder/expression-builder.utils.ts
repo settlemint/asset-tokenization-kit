@@ -1,15 +1,17 @@
-import { ExpressionWithGroups } from "@/lib/zod/validators/expression-node";
+import {
+  ExpressionWithGroups,
+  validateExpressionWithGroups,
+} from "@/lib/zod/validators/expression-node";
 
 /**
- * Validate UI expression by converting to postfix and using zod validation
+ * Validate UI expression by converting to postfix and using expression validation
  */
 export function validateUIExpression(
   expression: ExpressionWithGroups
 ): boolean {
   if (expression.length === 0) return false;
 
-  // TODO: return validateExpressionSyntax(expression);
-  return true;
+  return validateExpressionWithGroups(expression);
 }
 
 /**

@@ -15,14 +15,14 @@ import {
 import type { ComplianceModuleDetailProps } from "@/components/compliance/details/types";
 import { ExpressionBuilder } from "@/components/expression-builder/expression-builder";
 import { Button } from "@/components/ui/button";
-import type {
-  ExpressionNode,
+import { encodeExpressionParams } from "@/lib/compliance/encoding/encode-expression-params";
+import {
+  convertInfixToPostfix,
   ExpressionWithGroups,
 } from "@/lib/zod/validators/expression-node";
 import { UserIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { encodeAbiParameters, parseAbiParameters } from "viem";
 
 type IdentityModuleType =
   | "IdentityAllowListComplianceModule"
@@ -50,54 +50,25 @@ export function IdentityRestrictionModuleDetail({
     ? [] // TODO: Decode from initialValues.params when needed
     : [];
 
-  const [expression, setExpression] =
+  const [expressionWithGroups, setExpressionWithGroups] =
     useState<ExpressionWithGroups>(initialExpression);
-  const [isValid, setIsValid] = useState(false);
-  const [isInputChanged, setIsInputChanged] = useState(false);
-
-  const handleExpressionChange = (newExpression: ExpressionWithGroups) => {
-    setExpression(newExpression);
-    setIsInputChanged(
-      JSON.stringify(newExpression, (_, value) =>
-        typeof value === "bigint" ? value.toString() : value
-      ) !==
-        JSON.stringify(initialExpression, (_, value) =>
-          typeof value === "bigint" ? value.toString() : value
-        )
-    );
-  };
-
-  const encodeExpressionParams = (_expr: ExpressionWithGroups): string => {
-    // TODO: const postfixNodes = convertToPostfix(expr);
-    const postfixNodes = [] as ExpressionNode[];
-    if (postfixNodes.length === 0) return "";
-
-    // Encode as (uint8,uint256)[] array
-    return encodeAbiParameters(parseAbiParameters("(uint8,uint256)[]"), [
-      postfixNodes.map(
-        (node) => [node.nodeType as number, node.value] as const
-      ),
-    ]);
-  };
 
   const handleEnable = () => {
-    if (isValid) {
-      const encodedParams = encodeExpressionParams(expression);
-      onEnable({
-        typeId,
-        module,
-        values: expression,
-        params: encodedParams,
-      });
-      setIsInputChanged(false);
-    }
+    const expression = convertInfixToPostfix(expressionWithGroups) ?? [];
+    const encodedParams = encodeExpressionParams(expression);
+    onEnable({
+      typeId,
+      module,
+      values: expression,
+      params: encodedParams,
+    });
   };
 
   const handleDisable = () => {
     onDisable({
       typeId,
       module,
-      values: expression,
+      values: expressionWithGroups,
       params: "",
     });
     onClose();
@@ -133,9 +104,8 @@ export function IdentityRestrictionModuleDetail({
 
           <ComplianceDetailForm>
             <ExpressionBuilder
-              value={expression}
-              onChange={handleExpressionChange}
-              onValidityChange={setIsValid}
+              value={expressionWithGroups}
+              onChange={setExpressionWithGroups}
             />
           </ComplianceDetailForm>
         </ComplianceDetailSection>
@@ -146,7 +116,7 @@ export function IdentityRestrictionModuleDetail({
           {t("form:buttons.back")}
         </Button>
         <Button
-          disabled={!isEnabled || !isInputChanged}
+          disabled={!isEnabled}
           onClick={() => {
             handleEnable();
             onClose();
