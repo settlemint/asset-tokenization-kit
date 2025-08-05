@@ -22,6 +22,22 @@ export const expressionNode = z.object({
 
 export type ExpressionNode = z.infer<typeof expressionNode>;
 
+export const expression = z.array(expressionNode);
+
+export type Expression = z.infer<typeof expression>;
+
+export const expressionNodeWithGroups = z.union([
+  expressionNode,
+  z.literal("(" as const),
+  z.literal(")" as const),
+]);
+
+export type ExpressionNodeWithGroups = z.infer<typeof expressionNodeWithGroups>;
+
+export const expressionWithGroups = z.array(expressionNodeWithGroups);
+
+export type ExpressionWithGroups = z.infer<typeof expressionWithGroups>;
+
 /**
  * Create a TOPIC expression node from various input types.
  *

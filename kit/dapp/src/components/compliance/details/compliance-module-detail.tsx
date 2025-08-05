@@ -1,6 +1,8 @@
 import { AddressBlocklistModuleDetail } from "@/components/compliance/details/address/address-blocklist-module-detail";
 import { CountryAllowlistModuleDetail } from "@/components/compliance/details/country/country-allowlist-module-detail";
 import { CountryBlocklistModuleDetail } from "@/components/compliance/details/country/country-blocklist-module-detail";
+import { IdentityAllowlistModuleDetail } from "@/components/compliance/details/identity/identity-allowlist-module-detail";
+import { IdentityBlocklistModuleDetail } from "@/components/compliance/details/identity/identity-blocklist-module-detail";
 import { getModuleConfig, isModuleEnabled } from "@/lib/compliance/utils";
 import {
   ComplianceTypeIdEnum,
@@ -84,6 +86,30 @@ export function ComplianceModuleDetail({
         {...complianceDetailProps}
       />
     ),
+    [ComplianceTypeIdEnum.IdentityAllowListComplianceModule]: (
+      <IdentityAllowlistModuleDetail
+        typeId="IdentityAllowListComplianceModule"
+        initialValues={
+          initialValues as Extract<
+            ComplianceParams,
+            { typeId: "IdentityAllowListComplianceModule" }
+          >
+        }
+        {...complianceDetailProps}
+      />
+    ),
+    [ComplianceTypeIdEnum.IdentityBlockListComplianceModule]: (
+      <IdentityBlocklistModuleDetail
+        typeId="IdentityBlockListComplianceModule"
+        initialValues={
+          initialValues as Extract<
+            ComplianceParams,
+            { typeId: "IdentityBlockListComplianceModule" }
+          >
+        }
+        {...complianceDetailProps}
+      />
+    ),
     ...hideModules,
   };
 
@@ -91,7 +117,5 @@ export function ComplianceModuleDetail({
 }
 
 export const hideModules = {
-  [ComplianceTypeIdEnum.IdentityAllowListComplianceModule]: <></>,
-  [ComplianceTypeIdEnum.IdentityBlockListComplianceModule]: <></>,
   [ComplianceTypeIdEnum.SMARTIdentityVerificationComplianceModule]: <></>,
 } as const;
