@@ -50,19 +50,6 @@ export const router = baseRouter.router({
   ),
 
   /**
-   * Addons-related API procedures.
-   *
-   * Lazy-loaded module containing system addons management operations.
-   * System addons are modular smart contracts that extend token functionality
-   * with features like airdrops, yield distribution, and XVP settlements.
-   * This module provides endpoints for listing and filtering addons by type
-   * or deploying account, enabling discovery and management of available
-   * token extensions.
-   * @see {@link ./addons/addons.router} - Addons router implementation
-   */
-  addons: baseRouter.addons.lazy(async () => import("./addons/addons.router")),
-
-  /**
    * Exchange rates API procedures.
    *
    * Lazy-loaded module containing foreign exchange rate management operations.

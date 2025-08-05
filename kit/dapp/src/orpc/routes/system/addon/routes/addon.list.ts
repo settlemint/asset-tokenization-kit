@@ -3,7 +3,7 @@ import { getFactoryTypeIdsFromAddonType } from "@/lib/zod/validators/addon-types
 import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { AddonsResponseSchema } from "@/orpc/routes/addons/routes/addons.list.schema";
+import { AddonsResponseSchema } from "@/orpc/routes/system/addon/routes/addon.list.schema";
 
 /**
  * GraphQL query for retrieving system addons from TheGraph.
@@ -86,7 +86,7 @@ const LIST_SYSTEM_ADDONS_QUERY = theGraphGraphql(`
  * });
  * ```
  */
-export const addonsList = authRouter.addons.list
+export const addonList = authRouter.system.addonList
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
     // Build where clause based on filters

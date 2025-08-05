@@ -15,13 +15,6 @@
  * @see {@link @/lib/settlemint/portal} - Portal GraphQL client
  */
 
-import {
-  ADDON_MANAGER_ROLE,
-  COMPLIANCE_MANAGER_ROLE,
-  DEFAULT_ADMIN_ROLE,
-  IDENTITY_MANAGER_ROLE,
-  TOKEN_MANAGER_ROLE,
-} from "@/lib/constants/roles";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
@@ -60,27 +53,6 @@ const CREATE_SYSTEM_MUTATION = portalGraphql(`
       challengeResponse: $challengeResponse
       address: $address
       from: $from
-    ) {
-      transactionHash
-    }
-  }
-`);
-
-const GRANT_ROLE_MUTATION = portalGraphql(`
-  mutation GrantRoleMutation(
-    $verificationId: String
-    $challengeResponse: String!
-    $address: String!
-    $to: String!
-    $role: String!
-    $from: String!
-  ) {
-    IATKSystemAccessManagerGrantRole(
-      verificationId: $verificationId
-      challengeResponse: $challengeResponse
-      address: $address
-      from: $from
-      input: { account: $to, role: $role }
     ) {
       transactionHash
     }
@@ -284,54 +256,6 @@ export const create = onboardedRouter.system.create
       },
       { context }
     );
-
-    // Grant roles to the contracts
-    if (systemDetails.systemAccessManager) {
-      const requiresAdminRole = [
-        systemDetails.tokenFactoryRegistry,
-        systemDetails.systemAddonRegistry,
-        systemDetails.complianceModuleRegistry,
-      ].filter((contract) => contract !== null);
-
-      for (const contract of requiresAdminRole) {
-        const grantRoleChallengeResponse = await handleChallenge(sender, {
-          code: verification.verificationCode,
-          type: verification.verificationType,
-        });
-
-        await context.portalClient.mutate(GRANT_ROLE_MUTATION, {
-          address: systemDetails.systemAccessManager,
-          from: sender.wallet,
-          to: contract,
-          role: DEFAULT_ADMIN_ROLE.bytes,
-          ...grantRoleChallengeResponse,
-        });
-      }
-
-      // Grant operational roles to the system creator
-      // These roles are required for managing various aspects of the system
-      const operationalRoles = [
-        TOKEN_MANAGER_ROLE.bytes,
-        IDENTITY_MANAGER_ROLE.bytes,
-        COMPLIANCE_MANAGER_ROLE.bytes,
-        ADDON_MANAGER_ROLE.bytes,
-      ];
-
-      for (const role of operationalRoles) {
-        const grantRoleChallengeResponse = await handleChallenge(sender, {
-          code: verification.verificationCode,
-          type: verification.verificationType,
-        });
-
-        await context.portalClient.mutate(GRANT_ROLE_MUTATION, {
-          address: systemDetails.systemAccessManager,
-          from: sender.wallet,
-          to: sender.wallet,
-          role,
-          ...grantRoleChallengeResponse,
-        });
-      }
-    }
 
     // Create all compliance modules if compliance module registry exists
     if (systemDetails.complianceModuleRegistry) {

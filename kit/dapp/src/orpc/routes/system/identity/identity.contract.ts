@@ -1,7 +1,9 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
+import { AccountSchema } from "@/orpc/routes/account/routes/account.read.schema";
 import { IdentityCreateSchema } from "@/orpc/routes/system/identity/routes/identity.create.schema";
 import { IdentityRegisterSchema } from "@/orpc/routes/system/identity/routes/identity.register.schema";
-import { AccountSchema } from "@/orpc/routes/account/routes/account.read.schema";
+
+const TAGS = ["system", "identity"];
 
 const identityCreate = baseContract
   .route({
@@ -11,7 +13,7 @@ const identityCreate = baseContract
       "Create a new blockchain identity contract for the authenticated user. This is required before registering claims or interacting with regulated tokens",
     successDescription:
       "Identity created successfully with account details including the new identity contract address",
-    tags: ["identity"],
+    tags: TAGS,
   })
   .input(IdentityCreateSchema)
   .output(AccountSchema);
@@ -24,7 +26,7 @@ const identityRegister = baseContract
       "Register identity claims (country, accreditation status) for the current user. Requires an identity contract to be created first",
     successDescription:
       "Identity claims registered successfully with updated account details",
-    tags: ["identity"],
+    tags: TAGS,
   })
   .input(IdentityRegisterSchema)
   .output(AccountSchema);

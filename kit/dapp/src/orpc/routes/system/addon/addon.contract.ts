@@ -1,6 +1,13 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import { SystemAddonCreateSchema } from "@/orpc/routes/system/addon/routes/addon.create.schema";
+import {
+  SystemAddonListSchema,
+  SystemAddonSchema,
+} from "@/orpc/routes/system/addon/routes/addon.list.schema";
 import { SystemReadOutputSchema } from "@/orpc/routes/system/routes/system.read.schema";
+import { z } from "zod";
+
+const TAGS = ["system", "addon"];
 
 /**
  * Contract definition for the system addon creation endpoint.
@@ -22,11 +29,37 @@ const addonCreate = baseContract
       "Register system add-ons to extend SMART system functionality with additional modules and features",
     successDescription:
       "System add-ons registered successfully with updated system configuration",
-    tags: ["system"],
+    tags: TAGS,
   })
   .input(SystemAddonCreateSchema)
   .output(SystemReadOutputSchema);
 
+/**
+ * Contract definition for the addons list endpoint.
+ *
+ * Defines the type-safe interface for retrieving system addons including:
+ * - HTTP method and path configuration
+ * - Input validation using the extended ListSchema with addon-specific filters
+ * - Output validation ensuring an array of valid SystemAddon objects
+ * - OpenAPI documentation metadata
+ *
+ * This contract is consumed by both the server router and client for
+ * end-to-end type safety.
+ */
+const addonList = baseContract
+  .route({
+    method: "GET",
+    path: "/addons",
+    description:
+      "List system addons (extensions that add functionality to tokens)",
+    successDescription:
+      "List of system addons with their types and deployment info",
+    tags: ["addons"],
+  })
+  .input(SystemAddonListSchema) // Extended list schema with addon-specific filters
+  .output(z.array(SystemAddonSchema)); // Return array of system addon objects
+
 export const addonContract = {
   addonCreate,
+  addonList,
 };
