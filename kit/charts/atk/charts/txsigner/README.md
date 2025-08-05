@@ -162,10 +162,10 @@ The command removes all the Kubernetes components associated with the chart and 
 | image.registry | string | `"ghcr.io"` | TxSigner image registry |
 | image.repository | string | `"settlemint/btp-signer"` | TxSigner image repository |
 | image.tag | string | `"7.13.4"` | TxSigner image tag (immutable tags are recommended) |
-| ingress | object | `{"annotations":{},"apiVersion":"","enabled":false,"extraHosts":[],"extraPaths":[],"extraRules":[],"extraTls":[],"hostname":"txsigner.k8s.orb.local","ingressClassName":"atk-nginx","path":"/","pathType":"ImplementationSpecific","secrets":[],"selfSigned":false,"tls":false}` | Ingress parameters |
+| ingress | object | `{"annotations":{},"apiVersion":"","enabled":true,"extraHosts":[],"extraPaths":[],"extraRules":[],"extraTls":[],"hostname":"txsigner.k8s.orb.local","ingressClassName":"atk-nginx","path":"/","pathType":"ImplementationSpecific","secrets":[],"selfSigned":false,"tls":false}` | Ingress parameters |
 | ingress.annotations | object | `{}` | Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations. |
 | ingress.apiVersion | string | `""` | Force Ingress API version (automatically detected if not set) |
-| ingress.enabled | bool | `false` | Enable ingress record generation for TxSigner |
+| ingress.enabled | bool | `true` | Enable ingress record generation for TxSigner |
 | ingress.extraHosts | list | `[]` | An array with additional hostname(s) to be covered with the ingress record |
 | ingress.extraPaths | list | `[]` | An array with additional arbitrary paths that may need to be added to the ingress under the main host |
 | ingress.extraRules | list | `[]` | Additional rules to be covered with this ingress record |

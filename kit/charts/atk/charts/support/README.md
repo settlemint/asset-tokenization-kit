@@ -14,9 +14,9 @@ A Helm chart for the supporting components
 
 | Repository | Name | Version |
 |------------|------|---------|
+| file://./charts/minio | minio | * |
 | file://./charts/postgresql | postgresql | * |
 | file://./charts/redis | redis | * |
-| https://charts.min.io/ | minio | 5.4.0 |
 | https://kubernetes.github.io/ingress-nginx | ingress-nginx | 4.13.0 |
 | https://stakater.github.io/stakater-charts | reloader | 2.2.0 |
 
@@ -136,7 +136,6 @@ A Helm chart for the supporting components
 | minio.consoleIngress.path | string | `"/"` |  |
 | minio.enabled | bool | `true` |  |
 | minio.fullnameOverride | string | `"minio"` |  |
-| minio.global.imagePullSecrets | list | `[]` |  |
 | minio.image.repository | string | `"docker.io/minio/minio"` |  |
 | minio.image.tag | string | `"RELEASE.2025-07-18T21-56-31Z"` |  |
 | minio.ingress.enabled | bool | `true` |  |

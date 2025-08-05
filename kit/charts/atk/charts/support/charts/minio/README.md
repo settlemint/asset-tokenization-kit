@@ -1,398 +1,191 @@
-# MinIO
+# minio
 
-## Introduction
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: RELEASE.2025-07-18T21-56-31Z](https://img.shields.io/badge/AppVersion-RELEASE.2025--07--18T21--56--31Z-informational?style=flat-square)
 
-[MinIO](https://min.io/) is a high-performance, S3-compatible object storage server designed for large-scale AI/ML, data lake, and database workloads. It is software-defined and runs on any cloud or on-premises infrastructure.
-
-### Key Features
-
-- **S3 Compatible API** - Seamlessly integrate with existing S3-based applications
-- **High Performance** - Optimized for throughput and latency-sensitive workloads
-- **Enterprise Security** - Built-in encryption, IAM, and compliance features
-- **Multi-Cloud Ready** - Deploy across any infrastructure environment
-- **Kubernetes Native** - Cloud-native design with horizontal scalability
-
-### Benefits
-
-- Provides reliable object storage for blockchain data and artifacts
-- Supports high-throughput data ingestion and retrieval
-- Enterprise-grade security and compliance features
-- Cost-effective alternative to cloud storage providers
-- Native Kubernetes integration and management
-
-### Use Cases
-
-- Blockchain artifact storage (ABIs, contracts, metadata)
-- Data lake and analytics storage
-- Backup and archival storage
-- Content distribution and media storage
-- Application data storage
+A simple MinIO deployment for development environments
 
 ## Maintainers
 
 | Name | Email | Url |
 | ---- | ------ | --- |
 | SettleMint | <support@settlemint.com> | <https://settlemint.com> |
-| MinIO Community |  | <https://github.com/minio/minio> |
-
-## Source Code
-
-* <https://github.com/minio/minio>
-* <https://github.com/settlemint/starterkit-asset-tokenization>
-
-## Requirements
-
-Kubernetes: `>=1.19.0-0`
-
-## Prerequisites
-
-- Kubernetes 1.19+
-- Helm 3.2.0+
-- PV provisioner support in the underlying infrastructure (if persistence is enabled)
-
-## Installing the Chart
-
-To install the chart with the release name `my-release`:
-
-```console
-helm install my-release .
-```
-
-The command deploys MinIO on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
-
-> **Tip**: List all releases using `helm list`
-
-## Uninstalling the Chart
-
-To uninstall/delete the `my-release` deployment:
-
-```console
-helm delete my-release
-```
-
-The command removes all the Kubernetes components associated with the chart and deletes the release.
-
-## Parameters
 
 ## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| affinity | object | `{}` | Affinity for pod assignment |
-| buckets | list | `[]` | MinIO buckets to create during initialization |
-| buckets[].name | string |  | Name of the bucket to create |
-| buckets[].policy | string | `"none"` | Bucket policy (none/download/upload/public) |
-| buckets[].purge | bool | `false` | Purge bucket if it already exists |
-| certsPath | string | `"/etc/minio/certs/"` | Path where TLS certificates are stored |
-| clusterDomain | string | `"cluster.local"` | Kubernetes cluster domain |
-| commonAnnotations | object | `{}` | Annotations to add to all deployed objects |
-| commonLabels | object | `{}` | Labels to add to all deployed objects |
-| configPath | string | `"/export"` | Default config file location |
-| configPathmc | string | `"~/.mc"` | Default mc config file location |
-| consoleIngress | object | `{"annotations":{},"enabled":false,"host":"console.local","path":"/","pathType":"Prefix","tls":[]}` | MinIO Console Ingress configuration |
-| consoleService | object | `{"port":9001}` | MinIO Console service configuration |
-| defaultBucket | object | `{"enabled":false,"name":"bucket","policy":"none","purge":false}` | Default bucket configuration |
-| defaultBucket.enabled | bool | `false` | Enable creation of default bucket |
-| defaultBucket.name | string | `"bucket"` | Name of default bucket |
-| defaultBucket.policy | string | `"none"` | Policy for default bucket |
-| defaultBucket.purge | bool | `false` | Purge default bucket if it exists |
-| deployment | object | `{"updateStrategy":"RollingUpdate"}` | Deployment update strategy |
-| environment | object | `{}` | Additional environment variables |
-| existingSecret | string | `""` | Name of existing secret containing MinIO credentials |
-| fullnameOverride | string | `""` | String to fully override minio.fullname template |
-| global | object | `{"imagePullSecrets":[],"imageRegistry":"","minio":{"existingSecret":"","existingSecretKey":"","secretKey":"","userSecret":""}}` | Global configuration |
-| image | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/minio/minio","tag":"RELEASE.2025-01-15T09-52-16Z"}` | MinIO image configuration |
-| image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
-| image.repository | string | `"docker.io/minio/minio"` | MinIO image repository |
-| image.tag | string | `"RELEASE.2025-01-15T09-52-16Z"` | MinIO image tag |
-| imagePullSecrets | list | `[]` | Image pull secrets |
-| ingress | object | `{"annotations":{},"enabled":true,"host":"chart-example.local","path":"/","pathType":"Prefix","tls":[]}` | MinIO API Ingress configuration |
-| ingress.annotations | object | `{}` | Ingress annotations |
-| ingress.enabled | bool | `true` | Enable ingress |
-| ingress.host | string | `"chart-example.local"` | Ingress hostname |
-| ingress.path | string | `"/"` | Ingress path |
-| ingress.pathType | string | `"Prefix"` | Ingress path type |
-| ingress.tls | list | `[]` | Ingress TLS configuration |
-| livenessProbe | object | `{"httpGet":{"path":"/minio/health/live","port":"http","scheme":"HTTP"},"initialDelaySeconds":5,"periodSeconds":30,"timeoutSeconds":20}` | Liveness probe configuration |
-| mcImage | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/minio/mc","tag":"RELEASE.2025-01-15T02-52-12Z"}` | MinIO Client (mc) image configuration |
-| mode | string | `"standalone"` | MinIO deployment mode (standalone/distributed) |
-| mountPath | string | `"/export"` | Default mount path for MinIO data |
-| nameOverride | string | `""` | String to partially override minio.fullname template |
-| networkPolicy | object | `{"allowExternal":true,"enabled":false}` | Network policy configuration |
-| networkPolicy.allowExternal | bool | `true` | Allow external traffic |
-| networkPolicy.enabled | bool | `false` | Enable network policy |
-| nodeSelector | object | `{}` | Node labels for pod assignment |
-| persistence | object | `{"accessMode":"ReadWriteOnce","enabled":true,"existingClaim":"","size":"500Gi","storageClass":"","subPath":""}` | Persistence configuration |
-| persistence.accessMode | string | `"ReadWriteOnce"` | PVC access mode |
-| persistence.enabled | bool | `true` | Enable persistence |
-| persistence.existingClaim | string | `""` | Use existing PVC |
-| persistence.size | string | `"500Gi"` | PVC size |
-| persistence.storageClass | string | `""` | Storage class name |
-| persistence.subPath | string | `""` | Sub path within the volume |
-| podAnnotations | object | `{}` | Pod annotations |
-| podLabels | object | `{}` | Pod labels |
-| podSecurityContext | object | `{"enabled":true,"fsGroup":1001,"runAsGroup":1001,"runAsUser":1001}` | Pod security context |
-| policies | list | `[]` | MinIO policies to create |
-| postJob | object | `{"podAnnotations":{},"resources":{"requests":{"memory":"128Mi"}}}` | Post-installation job configuration |
-| priorityClassName | string | `""` | Priority class name |
-| readinessProbe | object | `{"httpGet":{"path":"/minio/health/ready","port":"http","scheme":"HTTP"},"initialDelaySeconds":5,"periodSeconds":15,"timeoutSeconds":10}` | Readiness probe configuration |
-| replicas | int | `4` | Number of MinIO instances |
-| resources | object | `{}` | Resource limits and requests |
-| rootPassword | string | `""` | MinIO root password (use existingSecret instead) |
-| rootUser | string | `""` | MinIO root username (use existingSecret instead) |
-| securityContext | object | `{"enabled":true,"runAsGroup":1001,"runAsNonRoot":true,"runAsUser":1001}` | Container security context |
-| service | object | `{"clusterIP":"","externalIPs":[],"loadBalancerIP":"","loadBalancerSourceRanges":[],"nodePort":32000,"port":9000,"type":"ClusterIP"}` | Service configuration |
-| service.clusterIP | string | `""` | Service cluster IP |
-| service.externalIPs | list | `[]` | Service external IPs |
-| service.loadBalancerIP | string | `""` | Load balancer IP |
-| service.loadBalancerSourceRanges | list | `[]` | Load balancer source ranges |
-| service.nodePort | int | `32000` | Service node port |
-| service.port | int | `9000` | Service port |
-| service.type | string | `"ClusterIP"` | Service type |
-| serviceAccount | object | `{"annotations":{},"create":true,"name":""}` | Service account configuration |
-| svcaccts | list | `[]` | MinIO service accounts to create |
-| tls | object | `{"certSecret":"","enabled":false,"publicCrt":"","privateKey":""}` | TLS configuration |
-| tolerations | list | `[]` | Tolerations for pod assignment |
-| trustedCertsSecret | string | `""` | Secret containing trusted certificates |
-| users | list | `[]` | MinIO users to create |
-| users[].accessKey | string |  | User access key |
-| users[].existingSecret | string |  | Existing secret containing user credentials |
-| users[].existingSecretKey | string |  | Key in existing secret |
-| users[].policy | string |  | Policy to assign to user |
-| users[].secretKey | string |  | User secret key |
-
-## Configuration and installation details
-
-### Setting up credentials
-
-#### Using existing secret
-
-Create a secret with MinIO credentials:
-
-```console
-kubectl create secret generic minio-secret \
-  --from-literal=rootUser=admin \
-  --from-literal=rootPassword=secretpassword
-```
-
-Then reference it in values:
-
-```yaml
-existingSecret: minio-secret
-```
-
-#### Direct configuration (not recommended for production)
-
-```yaml
-rootUser: admin
-rootPassword: secretpassword
-```
-
-### Creating buckets
-
-Configure buckets to be created during initialization:
-
-```yaml
-buckets:
-  - name: my-bucket
-    policy: public
-    purge: false
-  - name: private-bucket
-    policy: none
-    purge: false
-```
-
-### Creating users and policies
-
-Create MinIO users with specific policies:
-
-```yaml
-users:
-  - accessKey: myuser
-    secretKey: mypassword
-    policy: readwrite
-  - accessKey: readonly-user
-    existingSecret: user-secret
-    existingSecretKey: password
-    policy: readonly
-
-policies:
-  - name: readwrite
-    statements:
-      - resources:
-          - 'arn:aws:s3:::my-bucket'
-          - 'arn:aws:s3:::my-bucket/*'
-        actions:
-          - 's3:ListBucket'
-          - 's3:GetObject'
-          - 's3:PutObject'
-          - 's3:DeleteObject'
-```
-
-### Persistence configuration
-
-#### Using default storage
-
-```yaml
-persistence:
-  enabled: true
-  size: 500Gi
-  storageClass: fast-ssd
-```
-
-#### Using existing PVC
-
-```yaml
-persistence:
-  enabled: true
-  existingClaim: my-minio-pvc
-```
-
-#### Disabling persistence (development only)
-
-```yaml
-persistence:
-  enabled: false
-```
-
-### Exposing MinIO
-
-#### LoadBalancer service
-
-```yaml
-service:
-  type: LoadBalancer
-  port: 9000
-consoleService:
-  type: LoadBalancer
-  port: 9001
-```
-
-#### Ingress configuration
-
-```yaml
-ingress:
-  enabled: true
-  host: minio-api.example.com
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt
-  tls:
-    - secretName: minio-api-tls
-      hosts:
-        - minio-api.example.com
-
-consoleIngress:
-  enabled: true
-  host: minio-console.example.com
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt
-  tls:
-    - secretName: minio-console-tls
-      hosts:
-        - minio-console.example.com
-```
-
-### TLS Configuration
-
-#### Using cert-manager
-
-```yaml
-tls:
-  enabled: true
-  certSecret: minio-tls-secret
-```
-
-#### Using custom certificates
-
-Create a secret with your certificates:
-
-```console
-kubectl create secret tls minio-tls-secret \
-  --cert=path/to/tls.crt \
-  --key=path/to/tls.key
-```
-
-Then configure:
-
-```yaml
-tls:
-  enabled: true
-  certSecret: minio-tls-secret
-```
-
-### Distributed mode
-
-For high availability, use distributed mode:
-
-```yaml
-mode: distributed
-replicas: 4  # Must be 4 or more for distributed mode
-```
-
-### Resource limits and monitoring
-
-Configure resource requirements:
-
-```yaml
-resources:
-  limits:
-    cpu: 250m
-    memory: 256Mi
-  requests:
-    cpu: 250m
-    memory: 256Mi
-```
-
-## Troubleshooting
-
-### MinIO pods not starting
-
-Check pod logs for configuration errors:
-
-```console
-kubectl logs -l app.kubernetes.io/name=minio
-```
-
-### Storage issues
-
-Verify PVC is bound correctly:
-
-```console
-kubectl get pvc
-kubectl describe pvc <pvc-name>
-```
-
-### Connection issues
-
-Test MinIO connectivity from within the cluster:
-
-```console
-kubectl run minio-test --rm -it --image=docker.io/minio/mc:latest -- \
-  mc config host add myminio http://minio:9000 <access-key> <secret-key>
-```
-
-### Browser access issues
-
-For console access, ensure the console service and ingress are configured correctly:
-
-```console
-kubectl get svc -l app.kubernetes.io/name=minio
-kubectl get ingress -l app.kubernetes.io/name=minio
-```
-
-### Performance tuning
-
-For high-throughput workloads, consider:
-
-- Using fast storage (NVMe SSD)
-- Increasing resource limits
-- Enabling distributed mode
-- Tuning network policies for optimal access patterns
-
-### Security considerations
-
-- Always use `existingSecret` for credentials in production
-- Enable TLS for all external communications
-- Configure appropriate bucket policies and user permissions
-- Use network policies to restrict access
-- Regularly rotate access keys and passwords
+| additionalAnnotations | object | `{}` |  |
+| additionalLabels | object | `{}` |  |
+| affinity | object | `{}` |  |
+| bucketRoot | string | `""` |  |
+| buckets | list | `[]` |  |
+| certsPath | string | `"/etc/minio/certs/"` |  |
+| clusterDomain | string | `"cluster.local"` |  |
+| configPathmc | string | `"/etc/minio/mc/"` |  |
+| consoleIngress.annotations | object | `{}` |  |
+| consoleIngress.enabled | bool | `false` |  |
+| consoleIngress.hosts[0] | string | `"console.minio-example.local"` |  |
+| consoleIngress.ingressClassName | string | `nil` |  |
+| consoleIngress.labels | object | `{}` |  |
+| consoleIngress.path | string | `"/"` |  |
+| consoleIngress.tls | list | `[]` |  |
+| consoleService.annotations | object | `{}` |  |
+| consoleService.clusterIP | string | `nil` |  |
+| consoleService.externalIPs | list | `[]` |  |
+| consoleService.externalTrafficPolicy | string | `"Cluster"` |  |
+| consoleService.loadBalancerIP | string | `nil` |  |
+| consoleService.loadBalancerSourceRanges | list | `[]` |  |
+| consoleService.nodePort | int | `32001` |  |
+| consoleService.port | string | `"9001"` |  |
+| consoleService.type | string | `"ClusterIP"` |  |
+| containerSecurityContext.readOnlyRootFilesystem | bool | `false` |  |
+| customCommandJob.exitCommand | string | `""` |  |
+| customCommandJob.extraVolumeMounts | list | `[]` |  |
+| customCommandJob.extraVolumes | list | `[]` |  |
+| customCommandJob.resources.requests.memory | string | `"128Mi"` |  |
+| customCommandJob.securityContext.enabled | bool | `false` |  |
+| customCommandJob.securityContext.runAsGroup | int | `1000` |  |
+| customCommandJob.securityContext.runAsUser | int | `1000` |  |
+| customCommands | string | `nil` |  |
+| deploymentUpdate.maxSurge | string | `"100%"` |  |
+| deploymentUpdate.maxUnavailable | int | `0` |  |
+| deploymentUpdate.type | string | `"RollingUpdate"` |  |
+| drivesPerNode | int | `1` |  |
+| environment | string | `nil` |  |
+| etcd.clientCert | string | `""` |  |
+| etcd.clientCertKey | string | `""` |  |
+| etcd.corednsPathPrefix | string | `""` |  |
+| etcd.endpoints | list | `[]` |  |
+| etcd.pathPrefix | string | `""` |  |
+| existingSecret | string | `""` |  |
+| extraArgs | list | `[]` |  |
+| extraContainers | list | `[]` |  |
+| extraSecret | string | `nil` |  |
+| extraVolumeMounts | list | `[]` |  |
+| extraVolumes | list | `[]` |  |
+| fullnameOverride | string | `""` |  |
+| ignoreChartChecksums | bool | `false` |  |
+| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.repository | string | `"docker.io/minio/minio"` |  |
+| image.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` |  |
+| imagePullSecrets | list | `[]` |  |
+| ingress.annotations | object | `{}` |  |
+| ingress.enabled | bool | `false` |  |
+| ingress.hosts[0] | string | `"minio-example.local"` |  |
+| ingress.ingressClassName | string | `nil` |  |
+| ingress.labels | object | `{}` |  |
+| ingress.path | string | `"/"` |  |
+| ingress.tls | list | `[]` |  |
+| makeBucketJob.exitCommand | string | `""` |  |
+| makeBucketJob.resources.requests.memory | string | `"128Mi"` |  |
+| makeBucketJob.securityContext.enabled | bool | `false` |  |
+| makeBucketJob.securityContext.runAsGroup | int | `1000` |  |
+| makeBucketJob.securityContext.runAsUser | int | `1000` |  |
+| makePolicyJob.exitCommand | string | `""` |  |
+| makePolicyJob.resources.requests.memory | string | `"128Mi"` |  |
+| makePolicyJob.securityContext.enabled | bool | `false` |  |
+| makePolicyJob.securityContext.runAsGroup | int | `1000` |  |
+| makePolicyJob.securityContext.runAsUser | int | `1000` |  |
+| makeServiceAccountJob.exitCommand | string | `""` |  |
+| makeServiceAccountJob.resources.requests.memory | string | `"128Mi"` |  |
+| makeServiceAccountJob.securityContext.enabled | bool | `false` |  |
+| makeServiceAccountJob.securityContext.runAsGroup | int | `1000` |  |
+| makeServiceAccountJob.securityContext.runAsUser | int | `1000` |  |
+| makeUserJob.exitCommand | string | `""` |  |
+| makeUserJob.resources.requests.memory | string | `"128Mi"` |  |
+| makeUserJob.securityContext.enabled | bool | `false` |  |
+| makeUserJob.securityContext.runAsGroup | int | `1000` |  |
+| makeUserJob.securityContext.runAsUser | int | `1000` |  |
+| mcImage.pullPolicy | string | `"IfNotPresent"` |  |
+| mcImage.repository | string | `"docker.io/minio/minio"` |  |
+| mcImage.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` |  |
+| metrics.serviceMonitor.additionalLabels | object | `{}` |  |
+| metrics.serviceMonitor.annotations | object | `{}` |  |
+| metrics.serviceMonitor.enabled | bool | `false` |  |
+| metrics.serviceMonitor.includeNode | bool | `false` |  |
+| metrics.serviceMonitor.interval | string | `nil` |  |
+| metrics.serviceMonitor.namespace | string | `nil` |  |
+| metrics.serviceMonitor.public | bool | `true` |  |
+| metrics.serviceMonitor.relabelConfigs | object | `{}` |  |
+| metrics.serviceMonitor.relabelConfigsCluster | object | `{}` |  |
+| metrics.serviceMonitor.scrapeTimeout | string | `nil` |  |
+| minioAPIPort | string | `"9000"` |  |
+| minioConsolePort | string | `"9001"` |  |
+| mode | string | `"distributed"` |  |
+| mountPath | string | `"/export"` |  |
+| nameOverride | string | `""` |  |
+| networkPolicy.allowExternal | bool | `true` |  |
+| networkPolicy.egressEntities[0] | string | `"kube-apiserver"` |  |
+| networkPolicy.enabled | bool | `false` |  |
+| networkPolicy.flavor | string | `"kubernetes"` |  |
+| nodeSelector | object | `{}` |  |
+| oidc.claimName | string | `"policy"` |  |
+| oidc.claimPrefix | string | `""` |  |
+| oidc.clientId | string | `"minio"` |  |
+| oidc.clientSecret | string | `""` |  |
+| oidc.comment | string | `""` |  |
+| oidc.configUrl | string | `"https://identity-provider-url/.well-known/openid-configuration"` |  |
+| oidc.displayName | string | `""` |  |
+| oidc.enabled | bool | `false` |  |
+| oidc.existingClientIdKey | string | `""` |  |
+| oidc.existingClientSecretKey | string | `""` |  |
+| oidc.existingClientSecretName | string | `""` |  |
+| oidc.redirectUri | string | `"https://console-endpoint-url/oauth_callback"` |  |
+| oidc.scopes | string | `"openid,profile,email"` |  |
+| persistence.accessMode | string | `"ReadWriteOnce"` |  |
+| persistence.annotations | object | `{}` |  |
+| persistence.enabled | bool | `true` |  |
+| persistence.existingClaim | string | `""` |  |
+| persistence.size | string | `"500Gi"` |  |
+| persistence.storageClass | string | `""` |  |
+| persistence.subPath | string | `""` |  |
+| persistence.volumeName | string | `""` |  |
+| podAnnotations | object | `{}` |  |
+| podDisruptionBudget.enabled | bool | `false` |  |
+| podDisruptionBudget.maxUnavailable | int | `1` |  |
+| podLabels | object | `{}` |  |
+| policies | list | `[]` |  |
+| pools | int | `1` |  |
+| postJob.affinity | object | `{}` |  |
+| postJob.annotations | object | `{}` |  |
+| postJob.nodeSelector | object | `{}` |  |
+| postJob.podAnnotations | object | `{}` |  |
+| postJob.securityContext.enabled | bool | `false` |  |
+| postJob.securityContext.fsGroup | int | `1000` |  |
+| postJob.securityContext.runAsGroup | int | `1000` |  |
+| postJob.securityContext.runAsUser | int | `1000` |  |
+| postJob.tolerations | list | `[]` |  |
+| priorityClassName | string | `""` |  |
+| replicas | int | `16` |  |
+| resources.requests.memory | string | `"16Gi"` |  |
+| rootPassword | string | `""` |  |
+| rootUser | string | `""` |  |
+| runtimeClassName | string | `""` |  |
+| securityContext.enabled | bool | `true` |  |
+| securityContext.fsGroup | int | `1000` |  |
+| securityContext.fsGroupChangePolicy | string | `"OnRootMismatch"` |  |
+| securityContext.runAsGroup | int | `1000` |  |
+| securityContext.runAsUser | int | `1000` |  |
+| service.annotations | object | `{}` |  |
+| service.clusterIP | string | `nil` |  |
+| service.externalIPs | list | `[]` |  |
+| service.externalTrafficPolicy | string | `"Cluster"` |  |
+| service.loadBalancerIP | string | `nil` |  |
+| service.loadBalancerSourceRanges | list | `[]` |  |
+| service.nodePort | int | `32000` |  |
+| service.port | string | `"9000"` |  |
+| service.type | string | `"ClusterIP"` |  |
+| serviceAccount.create | bool | `true` |  |
+| serviceAccount.name | string | `"minio-sa"` |  |
+| statefulSetUpdate.updateStrategy | string | `"RollingUpdate"` |  |
+| svcaccts | list | `[]` |  |
+| tls.certSecret | string | `""` |  |
+| tls.enabled | bool | `false` |  |
+| tls.privateKey | string | `"private.key"` |  |
+| tls.publicCrt | string | `"public.crt"` |  |
+| tolerations | list | `[]` |  |
+| topologySpreadConstraints | list | `[]` |  |
+| trustedCertsSecret | string | `""` |  |
+| users[0].accessKey | string | `"console"` |  |
+| users[0].policy | string | `"consoleAdmin"` |  |
+| users[0].secretKey | string | `"console123"` |  |
