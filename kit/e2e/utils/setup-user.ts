@@ -10,9 +10,19 @@ export interface SetupUser {
   createdAt: string;
 }
 
-export function getSetupUser(): SetupUser {
+export function getSetupUserPath(): string {
   const __dirname = path.dirname(fileURLToPath(import.meta.url));
-  const setupDataPath = path.join(__dirname, "../test-data/setup-user.json");
+  return path.join(__dirname, "../test-data/setup-user.json");
+}
+
+let cachedSetupUser: SetupUser | null = null;
+
+export function getSetupUser(): SetupUser {
+  if (cachedSetupUser) {
+    return cachedSetupUser;
+  }
+
+  const setupDataPath = getSetupUserPath();
 
   if (!fs.existsSync(setupDataPath)) {
     throw new Error(
@@ -21,5 +31,8 @@ export function getSetupUser(): SetupUser {
   }
 
   const data = fs.readFileSync(setupDataPath, "utf8");
-  return JSON.parse(data) as SetupUser;
+  const user = JSON.parse(data) as SetupUser;
+
+  cachedSetupUser = user;
+  return user;
 }
