@@ -82,7 +82,7 @@ export function TopicInput({ onAddTopic, onStartGroup }: TopicInputProps) {
           onAddTopic(nodes);
         }}
         disabled={!selectedTopic}
-        variant="secondary"
+        variant="outline"
         className="block press-effect"
       >
         {t("expressionBuilder.topicInput.addButton")}

@@ -9,11 +9,7 @@
  */
 import { getTopicId, type ATKTopic } from "@/lib/zod/validators/topics";
 import z from "zod";
-import {
-  expressionType,
-  ExpressionTypeEnum,
-  getPrettyName,
-} from "./expression-type";
+import { expressionType, ExpressionTypeEnum } from "./expression-type";
 
 export const expressionNode = z.object({
   nodeType: expressionType(),
@@ -105,29 +101,6 @@ export function createNotExpressionNode(): ExpressionNode {
     nodeType: ExpressionTypeEnum.NOT,
     value: 0n,
   };
-}
-
-/**
- * Convert an expression node to a human-readable string.
- * Uses the pretty name functionality from expression-type module.
- *
- * @param node - Expression node to convert
- * @returns Human-readable string representation
- *
- * @example
- * ```typescript
- * const topicNode = { nodeType: ExpressionType.TOPIC, value: 1n };
- * expressionNodeToString(topicNode); // "KYC" (if topic ID 1 maps to KYC)
- *
- * const andNode = { nodeType: ExpressionType.AND, value: 0n };
- * expressionNodeToString(andNode); // "AND"
- * ```
- */
-export function expressionNodeToString(node: ExpressionNode): string {
-  if (node.nodeType === ExpressionTypeEnum.TOPIC) {
-    return getPrettyName(node.nodeType, node.value);
-  }
-  return getPrettyName(node.nodeType);
 }
 
 /**

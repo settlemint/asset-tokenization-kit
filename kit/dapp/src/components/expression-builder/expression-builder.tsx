@@ -74,8 +74,8 @@ export function ExpressionBuilder({
 
         <ExpressionDisplay
           expressionWithGroups={expressionWithGroups}
-          onRemoveItem={handleRemoveItem}
-          onClearAll={handleClearAll}
+          onRemove={handleRemoveItem}
+          onClear={handleClearAll}
           openGroups={openGroups}
         />
 

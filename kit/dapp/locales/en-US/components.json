@@ -2,12 +2,12 @@
   "expressionBuilder": {
     "title": "Expression Builder",
     "topics": {
-      "kyc": "KYC Verification",
-      "aml": "AML Compliance",
-      "collateral": "Collateral Requirements",
-      "isin": "ISIN Classification",
+      "kyc": "KYC",
+      "aml": "AML",
+      "collateral": "Collateral",
+      "isin": "ISIN",
       "assetClassification": "Asset Classification",
-      "basePrice": "Base Price Information"
+      "basePrice": "Base Price"
     },
     "topicInput": {
       "selectPlaceholder": "Select a topic",

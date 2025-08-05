@@ -7,7 +7,6 @@
  * Based on kit/contracts/scripts/hardhat/utils/expression-builder.ts
  * @module ExpressionTypeValidation
  */
-import { getTopicNameFromId } from "@/lib/zod/validators/topics";
 import { z } from "zod";
 
 /**
@@ -68,45 +67,3 @@ export const expressionType = () =>
  * Type representing a validated expression type.
  */
 export type ExpressionType = z.infer<ReturnType<typeof expressionType>>;
-
-/**
- * Get a human-readable name for an expression type with optional topic context.
- * Uses exhaustive switch case to ensure all expression types are handled.
- * When the node type is TOPIC, optionally uses the topic name if value is provided.
- *
- * @param nodeType - The expression type to get a name for
- * @param topicValue - Optional topic ID value for TOPIC nodes
- * @returns Pretty name for the expression type
- *
- * @example
- * ```typescript
- * getPrettyName(ExpressionType.TOPIC); // "TOPIC"
- * getPrettyName(ExpressionType.TOPIC, 1n); // "KYC" (if topic ID 1 maps to KYC)
- * getPrettyName(ExpressionType.AND); // "AND"
- * getPrettyName(ExpressionType.OR); // "OR"
- * getPrettyName(ExpressionType.NOT); // "NOT"
- * ```
- */
-export function getPrettyName(
-  nodeType: ExpressionType,
-  topicValue?: bigint
-): string {
-  // Exhaustive switch case ensures compile-time error if a node type is not covered
-  switch (nodeType) {
-    case ExpressionTypeEnum.TOPIC:
-      if (topicValue !== undefined) {
-        return getTopicNameFromId(topicValue);
-      }
-      return "TOPIC";
-    case ExpressionTypeEnum.AND:
-      return "AND";
-    case ExpressionTypeEnum.OR:
-      return "OR";
-    case ExpressionTypeEnum.NOT:
-      return "NOT";
-    default: {
-      const _exhaustiveCheck: never = nodeType;
-      throw new Error(`Unhandled expression type: ${_exhaustiveCheck}`);
-    }
-  }
-}
