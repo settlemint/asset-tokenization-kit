@@ -6,7 +6,7 @@ import { z } from "zod";
 
 /**
  * GraphQL query to fetch bond status statistics for a specific token
- * Retrieves underlying asset balance information needed for bond status calculations
+ * Retrieves denomination asset balance information needed for bond status calculations
  */
 const TOKEN_BOND_STATUS_QUERY = theGraphGraphql(`
   query TokenBondStatus($tokenId: ID!) {
@@ -44,9 +44,9 @@ const StatsBondStatusResponseSchema = z.object({
 /**
  * Bond status statistics route handler.
  *
- * Fetches current bond status including underlying asset balance information:
- * - Current available underlying asset balance for redemption
- * - Total underlying asset balance required for full redemption
+ * Fetches current bond status including denomination asset balance information:
+ * - Current available denomination asset balance for redemption
+ * - Total denomination asset balance required for full redemption
  * - Coverage percentage (available / required * 100)
  *
  * This endpoint is optimized for bond status progress charts and widgets.
