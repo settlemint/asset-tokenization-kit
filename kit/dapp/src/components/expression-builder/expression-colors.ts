@@ -11,7 +11,7 @@ export const EXPRESSION_COLORS = {
   [ExpressionTypeEnum.TOPIC]: "bg-chart-1 hover:bg-chart-1/90",
   [ExpressionTypeEnum.AND]: "bg-chart-3 hover:bg-chart-3/90",
   [ExpressionTypeEnum.OR]: "bg-chart-4 hover:bg-chart-4/90",
-  [ExpressionTypeEnum.NOT]: "bg-chart-5 hover:bg-chart-5/90",
+  [ExpressionTypeEnum.NOT]: "bg-destructive hover:bg-destructive/90",
   PARENTHESES: "bg-secondary hover:bg-secondary/90",
 } as const;
 
