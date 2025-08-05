@@ -25,10 +25,6 @@ import { UserIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-type IdentityModuleType =
-  | "IdentityAllowListComplianceModule"
-  | "IdentityBlockListComplianceModule";
-
 export function IdentityRestrictionModuleDetail({
   typeId,
   module,
@@ -37,14 +33,10 @@ export function IdentityRestrictionModuleDetail({
   onEnable,
   onDisable,
   onClose,
-}: ComplianceModuleDetailProps<IdentityModuleType>) {
+}: ComplianceModuleDetailProps<"SMARTIdentityVerificationComplianceModule">) {
   const { t } = useTranslation(["compliance-modules", "form"]);
 
-  // Determine translation keys based on module type
-  const moduleKey =
-    typeId === "IdentityAllowListComplianceModule"
-      ? "identityAllowList"
-      : "identityBlockList";
+  const moduleKey = "smartIdentityVerification";
 
   const [expressionWithGroups, setExpressionWithGroups] =
     useState<ExpressionWithGroups>(initialValues?.values ?? []);

@@ -100,15 +100,15 @@ export const addressBlockListValues = () =>
   z.array(ethereumAddress).describe("Array of Ethereum addresses to block");
 export const identityAllowListValues = () =>
   z
-    .array(expressionNodeWithGroups)
+    .array(ethereumAddress)
     .describe("Array of identity contract addresses to allow");
 export const identityBlockListValues = () =>
   z
-    .array(expressionNodeWithGroups)
+    .array(ethereumAddress)
     .describe("Array of identity contract addresses to block");
 
 export const smartIdentityVerificationValues = () =>
-  z.array(z.string()).max(0).describe("Empty array (no parameters required)");
+  z.array(expressionNodeWithGroups).describe("Array of expression nodes");
 
 /**
  * Discriminated union schema for compliance module parameters.

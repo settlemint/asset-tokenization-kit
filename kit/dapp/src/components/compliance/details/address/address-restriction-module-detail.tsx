@@ -22,7 +22,10 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { isAddress } from "viem";
 
-type AddressModuleType = "AddressBlockListComplianceModule";
+type AddressModuleType =
+  | "AddressBlockListComplianceModule"
+  | "IdentityAllowListComplianceModule"
+  | "IdentityBlockListComplianceModule";
 
 export function AddressRestrictionModuleDetail({
   typeId,
@@ -38,7 +41,12 @@ export function AddressRestrictionModuleDetail({
   const config = complianceModuleConfig[typeId];
 
   // Translation key for address block list
-  const moduleKey = "addressBlockList";
+  const moduleKey =
+    typeId === "AddressBlockListComplianceModule"
+      ? "addressBlockList"
+      : typeId === "IdentityAllowListComplianceModule"
+        ? "identityAllowList"
+        : "identityBlockList";
 
   // Initialize addresses from initialValues
   const [selectedAddresses, setSelectedAddresses] = useState<string[]>(
@@ -173,7 +181,7 @@ export function AddressRestrictionModuleDetail({
                     )}
                   </AddressSelectOrInputToggle>
                 )}
-                addButtonLabel={t(`modules.${moduleKey}.addButtonLabel`)}
+                addButtonLabel={t("form:address.addAddress")}
               />
             </ComplianceDetailForm>
           )}
