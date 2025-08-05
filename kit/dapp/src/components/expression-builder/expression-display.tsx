@@ -102,23 +102,24 @@ const useGetExpressionItems = (expressionWithGroups: ExpressionWithGroups) => {
       continue;
     }
 
-    if (index < expressionWithGroups.length - 1) {
+    if (currentItem.nodeType === ExpressionTypeEnum.NOT) {
       const nextItem = expressionWithGroups[index + 1];
-      const hasNotNext =
-        typeof nextItem === "object" &&
-        nextItem.nodeType === ExpressionTypeEnum.NOT;
 
-      if (hasNotNext) {
-        const topicName = getTopicNameFromId(currentItem.value);
-        items.push({
-          removeIndexes: [index, index + 1],
-          className: getExpressionColor(ExpressionTypeEnum.NOT),
-          label: `${t("expressionBuilder.topicInput.notLabel")} ${t(`expressionBuilder.topics.${topicName}`)}`,
-        });
-        // Skip next item, already handled
-        index++;
+      // Only for type safety, the next item will always be a topic
+      if (nextItem === undefined || nextItem === "(" || nextItem === ")") {
         continue;
       }
+
+      const topicName = getTopicNameFromId(nextItem.value);
+      items.push({
+        removeIndexes: [index, index + 1],
+        className: getExpressionColor(ExpressionTypeEnum.NOT),
+        label: `${t("expressionBuilder.topicInput.notLabel")} ${t(`expressionBuilder.topics.${topicName}`)}`,
+      });
+
+      // Skip next item, already handled
+      index++;
+      continue;
     }
 
     items.push({

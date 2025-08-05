@@ -72,12 +72,11 @@ export function TopicInput({ onAddTopic, onStartGroup }: TopicInputProps) {
         onClick={() => {
           if (!selectedTopic) return;
 
-          const nodes: ExpressionNode[] = [
-            createTopicExpressionNode(selectedTopic),
-          ];
+          const nodes: ExpressionNode[] = [];
           if (negateSelected) {
             nodes.push(createNotExpressionNode());
           }
+          nodes.push(createTopicExpressionNode(selectedTopic));
 
           onAddTopic(nodes);
         }}
