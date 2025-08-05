@@ -14,8 +14,12 @@ import {
 } from "@/components/compliance/details/compliance-detail-card";
 import type { ComplianceModuleDetailProps } from "@/components/compliance/details/types";
 import { ExpressionBuilder } from "@/components/expression-builder/expression-builder";
+import { validateUIExpression } from "@/components/expression-builder/expression-builder.utils";
 import { Button } from "@/components/ui/button";
-import { encodeExpressionParams } from "@/lib/compliance/encoding/encode-expression-params";
+import {
+  decodeExpressionParams,
+  encodeExpressionParams,
+} from "@/lib/compliance/encoding/encode-expression-params";
 import {
   convertInfixToPostfix,
   ExpressionWithGroups,
@@ -47,7 +51,7 @@ export function IdentityRestrictionModuleDetail({
 
   // Initialize expression from params if available
   const initialExpression: ExpressionWithGroups = initialValues?.params
-    ? [] // TODO: Decode from initialValues.params when needed
+    ? decodeExpressionParams(initialValues.params)
     : [];
 
   const [expressionWithGroups, setExpressionWithGroups] =
@@ -103,10 +107,12 @@ export function IdentityRestrictionModuleDetail({
           </ComplianceDetailDescription>
 
           <ComplianceDetailForm>
-            <ExpressionBuilder
-              value={expressionWithGroups}
-              onChange={setExpressionWithGroups}
-            />
+            {isEnabled && (
+              <ExpressionBuilder
+                value={expressionWithGroups}
+                onChange={setExpressionWithGroups}
+              />
+            )}
           </ComplianceDetailForm>
         </ComplianceDetailSection>
       </ComplianceDetailContent>
@@ -116,7 +122,11 @@ export function IdentityRestrictionModuleDetail({
           {t("form:buttons.back")}
         </Button>
         <Button
-          disabled={!isEnabled}
+          disabled={
+            !isEnabled ||
+            expressionWithGroups.length === 0 ||
+            !validateUIExpression(expressionWithGroups)
+          }
           onClick={() => {
             handleEnable();
             onClose();

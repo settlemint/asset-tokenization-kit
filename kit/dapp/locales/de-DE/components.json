@@ -17,7 +17,7 @@
       "startGroupButton": "Gruppe starten"
     },
     "operatorInput": {
-      "addOperatorLabel": "Operator hinzufügen:",
+      "chooseOperatorLabel": "Operator hinzufügen:",
       "andButton": "UND",
       "orButton": "ODER",
       "endGroupButton": "Gruppe beenden",

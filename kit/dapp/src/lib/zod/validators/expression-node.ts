@@ -341,3 +341,87 @@ export function convertInfixToPostfix(
 
   return output;
 }
+
+/**
+ * Convert postfix expression back to infix notation with groups for UI editing.
+ * This is a simplified conversion that may not preserve original grouping exactly.
+ *
+ * @param postfixNodes - Postfix expression array
+ * @returns Infix expression with groups or empty array if invalid
+ */
+export function convertPostfixToInfix(
+  postfixNodes: ExpressionNode[]
+): ExpressionWithGroups {
+  if (postfixNodes.length === 0) {
+    return [];
+  }
+
+  // For simple cases, we can convert back to infix
+  // For complex cases with multiple operators, we'll add minimal grouping
+  const stack: ExpressionWithGroups[] = [];
+
+  for (const node of postfixNodes) {
+    switch (node.nodeType) {
+      case ExpressionTypeEnum.TOPIC:
+        // Operands go on the stack as single-element arrays
+        stack.push([node]);
+
+        break;
+
+      case ExpressionTypeEnum.NOT: {
+        // Unary operator
+        if (stack.length === 0) {
+          return []; // Invalid expression
+        }
+        const operand = stack.pop();
+        if (!operand) {
+          return []; // Invalid expression
+        }
+        // Add NOT after the operand: [operand, NOT]
+        stack.push([...operand, node]);
+
+        break;
+      }
+      case ExpressionTypeEnum.AND:
+      case ExpressionTypeEnum.OR: {
+        // Binary operators
+        if (stack.length < 2) {
+          return []; // Invalid expression
+        }
+        const right = stack.pop();
+        const left = stack.pop();
+        if (!right || !left) {
+          return []; // Invalid expression
+        }
+
+        // For binary operators, create: [left, right, operator]
+        // Add parentheses if either operand is complex (more than one element)
+        const result: ExpressionWithGroups = [];
+
+        if (left.length > 1) {
+          result.push("(", ...left, ")");
+        } else {
+          result.push(...left);
+        }
+
+        if (right.length > 1) {
+          result.push("(", ...right, ")");
+        } else {
+          result.push(...right);
+        }
+
+        result.push(node);
+        stack.push(result);
+
+        break;
+      }
+      // No default
+    }
+  }
+
+  if (stack.length !== 1) {
+    return []; // Invalid expression
+  }
+
+  return stack[0] as ExpressionWithGroups;
+}

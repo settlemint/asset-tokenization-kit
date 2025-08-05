@@ -66,39 +66,34 @@ export function TopicInput({ onAddTopic, onStartGroup }: TopicInputProps) {
             {t("expressionBuilder.topicInput.notLabel")}
           </label>
         </div>
-
-        <Button
-          onClick={() => {
-            if (!selectedTopic) return;
-
-            const nodes: ExpressionNode[] = [
-              createTopicExpressionNode(selectedTopic),
-            ];
-            if (negateSelected) {
-              nodes.push(createNotExpressionNode());
-            }
-
-            onAddTopic(nodes);
-          }}
-          disabled={!selectedTopic}
-          className="bg-chart-1 hover:bg-chart-1/90"
-        >
-          {t("expressionBuilder.topicInput.addButton")}
-        </Button>
       </div>
 
-      <div className="flex items-center gap-2">
-        <span className="text-sm text-muted-foreground">
-          {t("expressionBuilder.topicInput.orStartGroup")}
-        </span>
-        <Button
-          variant="outline"
-          onClick={onStartGroup}
-          className="text-chart-4 border-chart-4 hover:bg-chart-4/10 dark:hover:bg-chart-4/10"
-        >
-          {t("expressionBuilder.topicInput.startGroupButton")}
-        </Button>
-      </div>
+      <Button
+        onClick={() => {
+          if (!selectedTopic) return;
+
+          const nodes: ExpressionNode[] = [
+            createTopicExpressionNode(selectedTopic),
+          ];
+          if (negateSelected) {
+            nodes.push(createNotExpressionNode());
+          }
+
+          onAddTopic(nodes);
+        }}
+        disabled={!selectedTopic}
+        variant="secondary"
+        className="block press-effect"
+      >
+        {t("expressionBuilder.topicInput.addButton")}
+      </Button>
+      <Button
+        onClick={onStartGroup}
+        className="block press-effect -ml-4 -mt-3"
+        variant="link"
+      >
+        {t("expressionBuilder.topicInput.orStartGroup")}
+      </Button>
     </div>
   );
 }

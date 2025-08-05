@@ -17,7 +17,7 @@
       "startGroupButton": "グループ開始"
     },
     "operatorInput": {
-      "addOperatorLabel": "演算子を追加:",
+      "chooseOperatorLabel": "演算子を追加:",
       "andButton": "AND",
       "orButton": "OR",
       "endGroupButton": "グループ終了",

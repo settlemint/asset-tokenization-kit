@@ -25,7 +25,7 @@ export function OperatorInput({
     <div className="space-y-4">
       <div className="flex items-center gap-4">
         <span className="text-sm font-medium">
-          {t("expressionBuilder.operatorInput.addOperatorLabel")}
+          {t("expressionBuilder.operatorInput.chooseOperatorLabel")}
         </span>
         <Button
           onClick={() => {
