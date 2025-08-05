@@ -176,7 +176,7 @@ export function ManageDropdown({ token }: ManageDropdownProps) {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="secondary" size="sm" className="gap-2">
+          <Button variant="secondary" size="sm" className="gap-2 press-effect">
             {t("tokens:manage")}
             <ChevronDown className="h-4 w-4" />
           </Button>
@@ -275,10 +275,15 @@ export function ManageDropdown({ token }: ManageDropdownProps) {
                 variant="outline"
                 onClick={handleCancel}
                 disabled={isLoading}
+                className="press-effect"
               >
                 {t("common:actions.cancel")}
               </Button>
-              <Button type="submit" disabled={isLoading}>
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="press-effect"
+              >
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />

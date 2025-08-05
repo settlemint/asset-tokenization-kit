@@ -42,9 +42,8 @@ mcp__linear__list_issues({
 
 Use agents in proper sequence:
 
-1. **researcher**: Gather docs and patterns for PR creation
-2. **test-validator**: Run quality checks (parallel)
-3. **code-reviewer**: Final review before PR (if needed)
+1. **test-validator**: Run quality checks (parallel, if needed)
+2. **code-reviewer**: Final review before PR (if needed)
 
 ### Gemini-CLI PR Enhancement
 

@@ -150,14 +150,23 @@ export function VerificationDialog({
           )}
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={handleClose}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleClose}
+              className="press-effect"
+            >
               {t("verificationDialog.cancel")}
             </Button>
 
             <form.Subscribe
               selector={(state) => state.errors}
               children={(errors) => (
-                <Button type="submit" disabled={Object.keys(errors).length > 0}>
+                <Button
+                  type="submit"
+                  disabled={Object.keys(errors).length > 0}
+                  className="press-effect"
+                >
                   {t("verificationDialog.confirm")}
                 </Button>
               )}
@@ -170,6 +179,7 @@ export function VerificationDialog({
                 onClick={() => {
                   setUseOtp(!useOtp);
                 }}
+                className="press-effect"
               >
                 {useOtp
                   ? t("verificationDialog.usePinInstead")

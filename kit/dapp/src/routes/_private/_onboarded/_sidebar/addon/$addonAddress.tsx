@@ -82,6 +82,7 @@ function RouteComponent() {
             size="icon"
             onClick={handleCopyAddress}
             title="Copy address"
+            className="press-effect"
           >
             <Copy className="h-4 w-4" />
           </Button>

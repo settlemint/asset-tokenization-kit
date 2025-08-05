@@ -54,7 +54,7 @@ export function SystemAddonsDeployment() {
       title={t("system-addons.addon-deployment.title")}
       description={t("system-addons.addon-deployment.description")}
       actions={
-        <Button type="button" onClick={onNext}>
+        <Button type="button" onClick={onNext} className="press-effect">
           {t("common:continue")}
         </Button>
       }

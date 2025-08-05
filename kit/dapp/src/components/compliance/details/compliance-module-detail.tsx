@@ -1,3 +1,4 @@
+import { AddressBlocklistModuleDetail } from "@/components/compliance/details/address/address-blocklist-module-detail";
 import { CountryAllowlistModuleDetail } from "@/components/compliance/details/country/country-allowlist-module-detail";
 import { CountryBlocklistModuleDetail } from "@/components/compliance/details/country/country-blocklist-module-detail";
 import { getModuleConfig, isModuleEnabled } from "@/lib/compliance/utils";
@@ -47,6 +48,18 @@ export function ComplianceModuleDetail({
 
   // Detail component mapping based on compliance module type
   const detailComponents: Record<ComplianceTypeId, React.ReactNode> = {
+    [ComplianceTypeIdEnum.AddressBlockListComplianceModule]: (
+      <AddressBlocklistModuleDetail
+        typeId="AddressBlockListComplianceModule"
+        initialValues={
+          initialValues as Extract<
+            ComplianceParams,
+            { typeId: "AddressBlockListComplianceModule" }
+          >
+        }
+        {...complianceDetailProps}
+      />
+    ),
     [ComplianceTypeIdEnum.CountryAllowListComplianceModule]: (
       <CountryAllowlistModuleDetail
         typeId="CountryAllowListComplianceModule"
@@ -78,7 +91,6 @@ export function ComplianceModuleDetail({
 }
 
 export const hideModules = {
-  [ComplianceTypeIdEnum.AddressBlockListComplianceModule]: <></>,
   [ComplianceTypeIdEnum.IdentityAllowListComplianceModule]: <></>,
   [ComplianceTypeIdEnum.IdentityBlockListComplianceModule]: <></>,
   [ComplianceTypeIdEnum.SMARTIdentityVerificationComplianceModule]: <></>,

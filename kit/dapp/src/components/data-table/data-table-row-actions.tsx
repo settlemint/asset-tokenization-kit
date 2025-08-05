@@ -95,7 +95,12 @@ export function DataTableRowActions({
       {...props}
     >
       {detailUrl && (
-        <Button variant="outline" size="sm" className="border-muted" asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className="border-muted press-effect"
+          asChild
+        >
           <Link to={detailUrl}>{t("details")}</Link>
         </Button>
       )}
@@ -105,7 +110,7 @@ export function DataTableRowActions({
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="flex size-8 p-0 hover:bg-theme-accent-background data-[state=open]:bg-muted dark:hover:text-foreground"
+              className="flex size-8 p-0 hover:bg-theme-accent-background data-[state=open]:bg-muted dark:hover:text-foreground press-effect"
             >
               <MoreHorizontal />
               <span className="sr-only">{t("openMenu")}</span>

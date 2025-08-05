@@ -1,5 +1,4 @@
 import { kycProfiles, user } from "@/lib/db/schema";
-import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { getUserRole } from "@/lib/zod/validators/user-roles";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
@@ -54,7 +53,7 @@ export const list = authRouter.user.list
   )
   .use(databaseMiddleware)
   .handler(async ({ context, input }) => {
-    const { limit, offset, orderDirection, orderBy, searchByAddress } = input;
+    const { limit, offset, orderDirection, orderBy } = input;
 
     // Configure sort direction based on input
     const order = orderDirection === "desc" ? desc : asc;
@@ -65,7 +64,7 @@ export const list = authRouter.user.list
       user.createdAt;
 
     // Execute paginated query with sorting and KYC data
-    const baseQuery = context.db
+    const result = await context.db
       .select({
         user: user,
         kyc: {
@@ -74,13 +73,7 @@ export const list = authRouter.user.list
         },
       })
       .from(user)
-      .leftJoin(kycProfiles, eq(kycProfiles.userId, user.id));
-
-    const result = await (
-      searchByAddress
-        ? baseQuery.where(eq(user.wallet, getEthereumAddress(searchByAddress)))
-        : baseQuery
-    )
+      .leftJoin(kycProfiles, eq(kycProfiles.userId, user.id))
       .orderBy(order(orderColumn))
       .limit(limit ?? 1000)
       .offset(offset);

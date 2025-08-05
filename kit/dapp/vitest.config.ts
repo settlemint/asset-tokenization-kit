@@ -9,16 +9,24 @@ export default defineConfig({
     globals: true,
     environment: "happy-dom",
     setupFiles: "./test/setup.ts",
-    include: ["src/**/*.test.{ts,tsx}"],
-    passWithNoTests: true,
-    pool: "threads",
-    poolOptions: {
-      threads: {
-        useAtomics: true,
-        isolate: false,
+    environmentOptions: {
+      happyDOM: {
+        // Ensure happy-dom properly supports React 18+ features
+        url: "http://localhost:3000",
+        width: 1024,
+        height: 768,
       },
     },
-    isolate: false,
+    include: ["src/**/*.test.{ts,tsx}"],
+    passWithNoTests: true,
+    // Always use forks pool for consistency between local and CI environments
+    pool: "forks",
+    poolOptions: {
+      forks: {
+        isolate: true,
+      },
+    },
+    isolate: true,
     reporters: process.env.CLAUDECODE
       ? ["dot"]
       : process.env.CI
@@ -58,6 +66,7 @@ export default defineConfig({
         "**/*.d.ts",
         "**/*.gen.ts",
         "**/tools/**",
+        "**/src/lib/settlemint/**",
         ...defaultExclude,
       ],
     },

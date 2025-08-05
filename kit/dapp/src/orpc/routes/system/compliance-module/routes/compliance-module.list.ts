@@ -1,4 +1,3 @@
-import { AccessControlFragment } from "@/lib/fragments/the-graph/access-control-fragment";
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
@@ -24,7 +23,7 @@ const COMPLIANCE_MODULES_QUERY = theGraphGraphql(
     }
   }
 `,
-  [AccessControlFragment]
+  []
 );
 
 export const complianceModuleList = portalRouter.system.complianceModuleList

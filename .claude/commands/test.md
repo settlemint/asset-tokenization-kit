@@ -1,39 +1,46 @@
 # /test
 
-Executes complete test suite via CI command.
+Executes complete test suite via test-validator agent.
+
+## Agent Invocation
+
+**MANDATORY**: Always use test-validator agent for ALL test runs:
+
+```javascript
+// Trigger test-validator agent
+Task({
+  description: "Run full test suite",
+  prompt: `Execute the complete test suite including:
+    1. bun run ci (all standard checks)
+    2. bun run test:integration (integration tests)
+    
+    Report any failures with details.`,
+  subagent_type: "test-validator",
+});
+```
 
 ## Execution
 
-Run comprehensive CI test suite:
-
-```bash
-bun run ci
-```
-
-This single command handles:
+The test-validator agent handles:
 
 - Unit tests
 - Type checking
 - Linting
 - Coverage validation
-- Most quality gates
+- Integration tests
+- Parallel execution for speed
 
-**IMPORTANT**: Integration tests are NOT included in `bun run ci` and must be
-run separately:
-
-```bash
-bun run test:integration
-```
+**IMPORTANT**: The agent runs BOTH `bun run ci` AND `bun run test:integration`
 
 ## Complete Validation Process
 
-1. Run CI suite: `bun run ci`
-2. Run integration tests: `bun run test:integration`
+1. Agent runs CI suite: `bun run ci`
+2. Agent runs integration tests: `bun run test:integration`
 3. Both must pass before PR
 
 ## Result
 
-Reports pass/fail status. All checks must pass.
+Reports pass/fail status with detailed output. All checks must pass.
 
 # Self-Learning & Test Patterns
 

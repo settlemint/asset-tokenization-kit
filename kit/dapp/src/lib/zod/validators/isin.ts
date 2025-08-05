@@ -26,11 +26,9 @@ function validateIsinChecksum(isin: string): boolean {
       expandedString += char;
     } else if (char >= "A" && char <= "Z") {
       // A=10, B=11, ..., Z=35
-      const charCode = char.codePointAt(0);
-      const aCode = "A".codePointAt(0);
-      if (charCode === undefined || aCode === undefined) {
-        return false;
-      }
+      // Since we've already validated the character is A-Z, codePointAt will return a value
+      const charCode = char.codePointAt(0) ?? 0;
+      const aCode = "A".codePointAt(0) ?? 0;
       expandedString += (charCode - aCode + 10).toString();
     } else {
       return false;

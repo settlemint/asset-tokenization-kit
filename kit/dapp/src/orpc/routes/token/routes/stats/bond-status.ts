@@ -9,30 +9,36 @@ import { z } from "zod";
  * Retrieves underlying asset balance information needed for bond status calculations
  */
 const TOKEN_BOND_STATUS_QUERY = theGraphGraphql(`
-  query TokenBondStatus($tokenId: String!) {
-    tokenBondStats_collection(
-      where: { token: $tokenId }
-      interval: hour
-      orderBy: timestamp
-      orderDirection: desc
-      first: 1
-    ) {
-      underlyingAssetBalanceAvailable
-      underlyingAssetBalanceRequired
-      coveredPercentage
+  query TokenBondStatus($tokenId: ID!) {
+    token(id: $tokenId) {
+      id
+      bond {
+        stats {
+          underlyingAssetBalanceAvailable
+          underlyingAssetBalanceRequired
+          coveredPercentage
+        }
+      }
     }
   }
 `);
 
 // Schema for the GraphQL response
 const StatsBondStatusResponseSchema = z.object({
-  tokenBondStats_collection: z.array(
-    z.object({
-      underlyingAssetBalanceAvailable: z.string(),
-      underlyingAssetBalanceRequired: z.string(),
-      coveredPercentage: z.string(),
-    })
-  ),
+  token: z.object({
+    id: z.string(),
+    bond: z
+      .object({
+        stats: z
+          .object({
+            underlyingAssetBalanceAvailable: z.string(),
+            underlyingAssetBalanceRequired: z.string(),
+            coveredPercentage: z.string(),
+          })
+          .nullable(),
+      })
+      .nullable(),
+  }),
 });
 
 /**
@@ -83,7 +89,7 @@ export const statsBondStatus = tokenRouter.token.statsBondStatus
     );
 
     // Check if bond stats exist
-    const bondStats = response.tokenBondStats_collection[0];
+    const bondStats = response.token.bond?.stats;
     if (!bondStats) {
       // Return zeros if no bond stats found (token might not be a bond or no stats yet)
       return {

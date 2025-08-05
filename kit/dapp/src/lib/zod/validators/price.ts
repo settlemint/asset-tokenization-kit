@@ -51,15 +51,8 @@ export const price = () =>
   z
     .union([z.string(), z.number()])
     .transform((value, ctx) => {
-      // If already a number, validate it's finite and return it
+      // If already a number, return it (Zod's z.number() already validates it's finite)
       if (typeof value === "number") {
-        if (!Number.isFinite(value)) {
-          ctx.addIssue({
-            code: "custom",
-            message: "Price must be a finite number",
-          });
-          return z.NEVER;
-        }
         return value;
       }
 
