@@ -30,7 +30,7 @@ const PREDICT_BOND_ADDRESS_QUERY = portalGraphql(`
         bondParams: {
           faceValue: $faceValue
           maturityDate: $maturityDate
-          underlyingAsset: $underlyingAsset
+          denominationAsset: $underlyingAsset
         }
       ) {
         predictedAddress

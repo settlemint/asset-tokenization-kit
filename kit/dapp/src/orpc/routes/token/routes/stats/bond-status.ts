@@ -14,8 +14,8 @@ const TOKEN_BOND_STATUS_QUERY = theGraphGraphql(`
       id
       bond {
         stats {
-          underlyingAssetBalanceAvailable
-          underlyingAssetBalanceRequired
+          denominationAssetBalanceAvailable
+          denominationAssetBalanceRequired
           coveredPercentage
         }
       }
@@ -31,8 +31,8 @@ const StatsBondStatusResponseSchema = z.object({
       .object({
         stats: z
           .object({
-            underlyingAssetBalanceAvailable: z.string(),
-            underlyingAssetBalanceRequired: z.string(),
+            denominationAssetBalanceAvailable: z.string(),
+            denominationAssetBalanceRequired: z.string(),
             coveredPercentage: z.string(),
           })
           .nullable(),
@@ -93,19 +93,19 @@ export const statsBondStatus = tokenRouter.token.statsBondStatus
     if (!bondStats) {
       // Return zeros if no bond stats found (token might not be a bond or no stats yet)
       return {
-        underlyingAssetBalanceAvailable: from(0),
-        underlyingAssetBalanceRequired: from(0),
+        denominationAssetBalanceAvailable: from(0),
+        denominationAssetBalanceRequired: from(0),
         coveredPercentage: from(0),
       };
     }
 
     // Convert string values to dnum for precise arithmetic
     return {
-      underlyingAssetBalanceAvailable: from(
-        bondStats.underlyingAssetBalanceAvailable
+      denominationAssetBalanceAvailable: from(
+        bondStats.denominationAssetBalanceAvailable
       ),
-      underlyingAssetBalanceRequired: from(
-        bondStats.underlyingAssetBalanceRequired
+      denominationAssetBalanceRequired: from(
+        bondStats.denominationAssetBalanceRequired
       ),
       coveredPercentage: from(bondStats.coveredPercentage),
     };

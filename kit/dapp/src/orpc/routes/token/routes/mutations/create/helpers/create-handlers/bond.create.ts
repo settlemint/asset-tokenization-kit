@@ -50,7 +50,7 @@ const CREATE_BOND_MUTATION = portalGraphql(`
         bondParams: {
           faceValue: $faceValue
           maturityDate: $maturityDate
-          underlyingAsset: $underlyingAsset
+          denominationAsset: $underlyingAsset
         }
         countryCode_: $countryCode
       }
