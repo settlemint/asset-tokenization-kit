@@ -418,7 +418,9 @@ contract ATKBondTest is AbstractATKAssetTest {
         uint256 requiredAmount = initialDenominationAssetSupply;
 
         // Try to mature without any denomination assets
-        vm.expectRevert(abi.encodeWithSelector(IATKBond.InsufficientDenominationAssetBalance.selector, 0, requiredAmount));
+        vm.expectRevert(
+            abi.encodeWithSelector(IATKBond.InsufficientDenominationAssetBalance.selector, 0, requiredAmount)
+        );
         bond.mature();
 
         // Add some denomination assets but not enough
@@ -429,7 +431,9 @@ contract ATKBondTest is AbstractATKAssetTest {
 
         // Try to mature with insufficient denomination assets
         vm.expectRevert(
-            abi.encodeWithSelector(IATKBond.InsufficientDenominationAssetBalance.selector, partialAmount, requiredAmount)
+            abi.encodeWithSelector(
+                IATKBond.InsufficientDenominationAssetBalance.selector, partialAmount, requiredAmount
+            )
         );
         bond.mature();
 

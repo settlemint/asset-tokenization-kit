@@ -220,7 +220,9 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
         // Verify redemption succeeded
         assertEq(bond.balanceOf(user1), 0, "User1 should have no bonds left");
-        assertEq(maliciousToken.balanceOf(user1), denominationAmountNeeded, "User1 should have received denomination tokens");
+        assertEq(
+            maliciousToken.balanceOf(user1), denominationAmountNeeded, "User1 should have received denomination tokens"
+        );
 
         // Verify attack was attempted but failed
         assertGt(maliciousToken.attackCount(), 0, "Attack should have been attempted");
@@ -376,7 +378,9 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
             initialRedeemed + redeemAmount,
             "Redeemed amount not tracked correctly"
         );
-        assertEq(maliciousToken.balanceOf(user1), denominationAmountNeeded, "Underlying tokens not transferred correctly");
+        assertEq(
+            maliciousToken.balanceOf(user1), denominationAmountNeeded, "Underlying tokens not transferred correctly"
+        );
     }
 
     /**
@@ -406,7 +410,11 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
         // Verify redemption succeeded
         assertEq(bond.balanceOf(user1), 0, "User1 should have no bonds left");
-        assertEq(maliciousToken.balanceOf(user1), denominationAmountNeeded, "User1 should have received all denomination tokens");
+        assertEq(
+            maliciousToken.balanceOf(user1),
+            denominationAmountNeeded,
+            "User1 should have received all denomination tokens"
+        );
 
         // Verify attack was attempted but failed
         assertGt(maliciousToken.attackCount(), 0, "Attack should have been attempted");
