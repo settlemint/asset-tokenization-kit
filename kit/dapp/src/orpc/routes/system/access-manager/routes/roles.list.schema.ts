@@ -14,8 +14,8 @@ export const SystemRolesInputSchema = z.object({
  */
 export const SystemRolesOutputSchema = z.array(
   z.object({
-    roles: z.array(accessControlRole),
-    account: ethereumAddress,
+    roles: z.array(accessControlRole).describe("The roles of the account"),
+    account: ethereumAddress.describe("The account address"),
   })
 );
 
