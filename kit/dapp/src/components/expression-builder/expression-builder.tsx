@@ -3,6 +3,7 @@ import {
   type ExpressionWithGroups,
 } from "@/lib/zod/validators/expression-node";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   canAddEndGroup,
   getOpenGroupCount,
@@ -24,6 +25,7 @@ export function ExpressionBuilder({
   onChange,
   onValidityChange,
 }: ExpressionBuilderProps) {
+  const { t } = useTranslation("components");
   const [expression, setExpression] = useState<ExpressionWithGroups>(value);
   const [inputMode, setInputMode] = useState<"topic" | "operator">("topic");
 
@@ -75,7 +77,9 @@ export function ExpressionBuilder({
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold mb-4">Expression Builder</h3>
+        <h3 className="text-lg font-semibold mb-4">
+          {t("expressionBuilder.title")}
+        </h3>
 
         <ExpressionDisplay
           expression={expression}

@@ -4,6 +4,7 @@ import {
   createOrExpressionNode,
   type ExpressionNode,
 } from "@/lib/zod/validators/expression-node";
+import { useTranslation } from "react-i18next";
 
 export interface OperatorInputProps {
   onSelect: (node: ExpressionNode) => void;
@@ -18,17 +19,21 @@ export function OperatorInput({
   canEndGroup,
   openGroups,
 }: OperatorInputProps) {
+  const { t } = useTranslation("components");
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
-        <span className="text-sm font-medium">Add Operator:</span>
+        <span className="text-sm font-medium">
+          {t("expressionBuilder.operatorInput.addOperatorLabel")}
+        </span>
         <Button
           onClick={() => {
             onSelect(createAndExpressionNode());
           }}
           className="bg-chart-4 hover:bg-chart-4/90"
         >
-          AND
+          {t("expressionBuilder.operatorInput.andButton")}
         </Button>
         <Button
           onClick={() => {
@@ -36,7 +41,7 @@ export function OperatorInput({
           }}
           className="bg-chart-2 hover:bg-chart-2/90"
         >
-          OR
+          {t("expressionBuilder.operatorInput.orButton")}
         </Button>
         {canEndGroup && (
           <>
@@ -46,7 +51,7 @@ export function OperatorInput({
               onClick={onEndGroup}
               className="text-secondary border-secondary hover:bg-secondary/10 dark:hover:bg-secondary/10"
             >
-              ) End Group
+              {t("expressionBuilder.operatorInput.endGroupButton")}
             </Button>
           </>
         )}
@@ -54,7 +59,10 @@ export function OperatorInput({
 
       {openGroups > 0 && (
         <p className="text-sm text-muted-foreground">
-          {openGroups} open group{openGroups > 1 ? "s" : ""} to close
+          {t("expressionBuilder.operatorInput.openGroupsText", {
+            count: openGroups,
+            plural: openGroups > 1 ? "s" : "",
+          })}
         </p>
       )}
     </div>

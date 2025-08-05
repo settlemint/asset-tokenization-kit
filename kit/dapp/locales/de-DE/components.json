@@ -1,5 +1,6 @@
 {
   "expressionBuilder": {
+    "title": "Ausdrucks-Builder",
     "topics": {
       "kyc": "KYC Verifizierung",
       "aml": "AML Compliance",
@@ -7,6 +8,27 @@
       "isin": "ISIN Klassifizierung",
       "assetClassification": "Asset-Klassifizierung",
       "basePrice": "Grundpreisinformationen"
+    },
+    "topicInput": {
+      "selectPlaceholder": "Thema auswählen...",
+      "notLabel": "NICHT",
+      "addButton": "+ Hinzufügen",
+      "orStartGroup": "Oder Gruppe starten:",
+      "startGroupButton": "Gruppe starten"
+    },
+    "operatorInput": {
+      "addOperatorLabel": "Operator hinzufügen:",
+      "andButton": "UND",
+      "orButton": "ODER",
+      "endGroupButton": "Gruppe beenden",
+      "openGroupsText": "{{count}} offene Gruppe{{plural}} zu schließen"
+    },
+    "display": {
+      "clearAllButton": "Alle löschen",
+      "validExpression": "Ausdruck ist vollständig und gültig",
+      "closeGroupsPrompt": "{{count}} Gruppe{{plural}} schließen, um abzuschließen",
+      "addTopicPrompt": "Thema hinzufügen oder Gruppe starten",
+      "unknownNode": "UNBEKANNT"
     }
   },
   "kycForm": {

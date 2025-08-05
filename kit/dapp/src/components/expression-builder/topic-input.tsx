@@ -38,7 +38,9 @@ export function TopicInput({ onAddTopic, onStartGroup }: TopicInputProps) {
           }}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Select a topic..." />
+            <SelectValue
+              placeholder={t("expressionBuilder.topicInput.selectPlaceholder")}
+            />
           </SelectTrigger>
           <SelectContent>
             {atkTopics.map((topic) => (
@@ -61,7 +63,7 @@ export function TopicInput({ onAddTopic, onStartGroup }: TopicInputProps) {
             htmlFor="negate"
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            NOT
+            {t("expressionBuilder.topicInput.notLabel")}
           </label>
         </div>
 
@@ -81,18 +83,20 @@ export function TopicInput({ onAddTopic, onStartGroup }: TopicInputProps) {
           disabled={!selectedTopic}
           className="bg-chart-1 hover:bg-chart-1/90"
         >
-          + Add
+          {t("expressionBuilder.topicInput.addButton")}
         </Button>
       </div>
 
       <div className="flex items-center gap-2">
-        <span className="text-sm text-muted-foreground">Or start a group:</span>
+        <span className="text-sm text-muted-foreground">
+          {t("expressionBuilder.topicInput.orStartGroup")}
+        </span>
         <Button
           variant="outline"
           onClick={onStartGroup}
           className="text-chart-4 border-chart-4 hover:bg-chart-4/10 dark:hover:bg-chart-4/10"
         >
-          ( ) ( Start Group
+          {t("expressionBuilder.topicInput.startGroupButton")}
         </Button>
       </div>
     </div>

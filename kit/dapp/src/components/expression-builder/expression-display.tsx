@@ -5,6 +5,7 @@ import type { ExpressionWithGroups } from "@/lib/zod/validators/expression-node"
 import { getPrettyName } from "@/lib/zod/validators/expression-type";
 import { Check, X } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export interface ExpressionDisplayProps {
   expression: ExpressionWithGroups;
@@ -21,6 +22,7 @@ export function ExpressionDisplay({
   isValid,
   openGroups,
 }: ExpressionDisplayProps) {
+  const { t } = useTranslation("components");
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const getItemDisplayProps = (item: ExpressionWithGroups[number]) => {
@@ -47,22 +49,22 @@ export function ExpressionDisplay({
       case 1: // AND
         return {
           className: "bg-chart-3 hover:bg-chart-3/90 text-white border-0",
-          children: "AND",
+          children: t("expressionBuilder.operatorInput.andButton"),
         };
       case 2: // OR
         return {
           className: "bg-chart-4 hover:bg-chart-4/90 text-white border-0",
-          children: "OR",
+          children: t("expressionBuilder.operatorInput.orButton"),
         };
       case 3: // NOT
         return {
           className: "bg-chart-5 hover:bg-chart-5/90 text-white border-0",
-          children: "NOT",
+          children: t("expressionBuilder.topicInput.notLabel"),
         };
       default:
         return {
           className: "bg-secondary hover:bg-secondary/90 text-white border-0",
-          children: "UNKNOWN",
+          children: t("expressionBuilder.display.unknownNode"),
         };
     }
   };
@@ -113,7 +115,7 @@ export function ExpressionDisplay({
         </div>
 
         <Button variant="outline" size="sm" onClick={onClearAll}>
-          Clear All
+          {t("expressionBuilder.display.clearAllButton")}
         </Button>
       </div>
 
@@ -123,14 +125,17 @@ export function ExpressionDisplay({
           <>
             <Check className="w-4 h-4 text-chart-1" />
             <span className="text-sm text-chart-1 font-medium">
-              Expression is complete and valid
+              {t("expressionBuilder.display.validExpression")}
             </span>
           </>
         ) : (
           <span className="text-sm text-muted-foreground">
             {openGroups > 0
-              ? `Close ${openGroups} group${openGroups > 1 ? "s" : ""} to complete`
-              : "Add a topic or start a group"}
+              ? t("expressionBuilder.display.closeGroupsPrompt", {
+                  count: openGroups,
+                  plural: openGroups > 1 ? "s" : "",
+                })
+              : t("expressionBuilder.display.addTopicPrompt")}
           </span>
         )}
       </div>
