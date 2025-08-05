@@ -2,7 +2,7 @@ import {
   type ExpressionNode,
   type ExpressionWithGroups,
 } from "@/lib/zod/validators/expression-node";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   canAddEndGroup,
@@ -15,62 +15,57 @@ import { OperatorInput } from "./operator-input";
 import { TopicInput } from "./topic-input";
 
 export interface ExpressionBuilderProps {
-  value?: ExpressionWithGroups;
-  onChange?: (expression: ExpressionWithGroups) => void;
-  onValidityChange?: (isValid: boolean) => void;
+  expressionWithGroups: ExpressionWithGroups;
+  onChange: (expression: ExpressionWithGroups) => void;
 }
 
 export function ExpressionBuilder({
-  value = [],
+  expressionWithGroups,
   onChange,
-  onValidityChange,
 }: ExpressionBuilderProps) {
   const { t } = useTranslation("components");
-  const [expression, setExpression] = useState<ExpressionWithGroups>(value);
-  const [inputMode, setInputMode] = useState<"topic" | "operator">("topic");
 
-  const isValid = validateUIExpression(expression);
-  const openGroups = getOpenGroupCount(expression);
-  const canEndGroup = canAddEndGroup(expression);
+  const [inputMode, setInputMode] = useState<"topic" | "operator">(
+    expressionWithGroups && expressionWithGroups.length > 0
+      ? "operator"
+      : "topic"
+  );
 
-  useEffect(() => {
-    onChange?.(expression);
-    onValidityChange?.(isValid);
-  }, [expression, isValid, onChange, onValidityChange]);
+  const isValid = validateUIExpression(expressionWithGroups);
+  const openGroups = getOpenGroupCount(expressionWithGroups);
+  const canEndGroup = canAddEndGroup(expressionWithGroups);
 
   const handleAddTopic = (nodes: ExpressionNode[]) => {
-    const newExpression = [...expression, ...nodes];
+    const newExpression = [...expressionWithGroups, ...nodes];
 
-    setExpression(newExpression);
+    onChange(newExpression);
     setInputMode("operator");
   };
 
-  const handleStartGroup = () => {
-    const newExpression = [...expression, "(" as const];
-    setExpression(newExpression);
-  };
+  const handleAddOperator = (node: ExpressionNode) => {
+    const newExpression = [...expressionWithGroups, node];
 
-  const handleOperatorSelect = (node: ExpressionNode) => {
-    const newExpression = [...expression, node];
-
-    setExpression(newExpression);
+    onChange(newExpression);
     setInputMode("topic");
   };
 
-  const handleEndGroup = () => {
-    if (!canEndGroup) return;
+  const handleStartGroup = () => {
+    const newExpression = [...expressionWithGroups, "(" as const];
+    onChange(newExpression);
+  };
 
-    const newExpression = [...expression, ")" as const];
-    setExpression(newExpression);
+  const handleEndGroup = () => {
+    const newExpression = [...expressionWithGroups, ")" as const];
+    onChange(newExpression);
   };
 
   const handleRemoveItem = (index: number) => {
-    const newExpression = removeItemAtIndex(expression, index);
-    setExpression(newExpression);
+    const newExpression = removeItemAtIndex(expressionWithGroups, index);
+    onChange(newExpression);
   };
 
   const handleClearAll = () => {
-    setExpression([]);
+    onChange([]);
     setInputMode("topic");
   };
 
@@ -82,7 +77,7 @@ export function ExpressionBuilder({
         </h3>
 
         <ExpressionDisplay
-          expression={expression}
+          expression={expressionWithGroups}
           onRemoveItem={handleRemoveItem}
           onClearAll={handleClearAll}
           isValid={isValid}
@@ -97,10 +92,9 @@ export function ExpressionBuilder({
             />
           ) : (
             <OperatorInput
-              onSelect={handleOperatorSelect}
+              onAddOperator={handleAddOperator}
               onEndGroup={handleEndGroup}
               canEndGroup={canEndGroup}
-              openGroups={openGroups}
             />
           )}
         </div>

@@ -104,7 +104,7 @@ export function ExpressionDisplay({
                     onClick={() => {
                       onRemoveItem(index);
                     }}
-                    className="absolute -top-1 -right-1 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute -top-1 -right-1 text-white bg-gray-500 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -114,7 +114,7 @@ export function ExpressionDisplay({
           })}
         </div>
 
-        <Button variant="outline" size="sm" onClick={onClearAll}>
+        <Button variant="link" onClick={onClearAll} className="press-effect">
           {t("expressionBuilder.display.clearAllButton")}
         </Button>
       </div>
@@ -123,8 +123,8 @@ export function ExpressionDisplay({
       <div className="flex items-center gap-2">
         {isValid ? (
           <>
-            <Check className="w-4 h-4 text-chart-1" />
-            <span className="text-sm text-chart-1 font-medium">
+            <Check className="w-4 h-4 text-sm-state-success" />
+            <span className="text-sm text-sm-state-success">
               {t("expressionBuilder.display.validExpression")}
             </span>
           </>

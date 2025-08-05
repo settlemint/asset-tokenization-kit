@@ -109,7 +109,7 @@ export function IdentityRestrictionModuleDetail({
           <ComplianceDetailForm>
             {isEnabled && (
               <ExpressionBuilder
-                value={expressionWithGroups}
+                expressionWithGroups={expressionWithGroups}
                 onChange={setExpressionWithGroups}
               />
             )}
