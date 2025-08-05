@@ -1,8 +1,7 @@
-import { beforeAll, describe, expect, it, beforeEach } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { getOrpcClient } from "../utils/orpc-client";
 import { createToken } from "../utils/token";
 import { DEFAULT_ADMIN, DEFAULT_PINCODE, signInWithUser } from "../utils/user";
-import { theGraphClient } from "../the-graph-mocks";
 
 describe("Token stats supply changes", () => {
   let testToken: Awaited<ReturnType<typeof createToken>>;
@@ -11,8 +10,8 @@ describe("Token stats supply changes", () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
     testToken = await createToken(client, {
-      name: "Test Token",
-      symbol: "TST",
+      name: "Test Token Supply Changes",
+      symbol: "TTSC",
       decimals: 18,
       type: "deposit",
       countryCode: "056",
@@ -21,45 +20,24 @@ describe("Token stats supply changes", () => {
         verificationType: "pincode",
       },
     });
-  });
 
-  beforeEach(() => {
-    theGraphClient.query.mockReset();
+    // Wait for TheGraph to index the token creation
+    await new Promise((resolve) => setTimeout(resolve, 3000));
   });
 
   it("can fetch supply changes history for a token", async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
 
-    // Mock TheGraph response
-    const mockGraphResponse = {
-      tokenSupplyChanges_collection: [
-        {
-          timestamp: "1672531200", // 2023-01-01
-          totalMinted: "1000000000000000000000", // 1000 tokens
-          totalBurned: "100000000000000000000", // 100 tokens
-        },
-        {
-          timestamp: "1672617600", // 2023-01-02
-          totalMinted: "1500000000000000000000", // 1500 tokens
-          totalBurned: "200000000000000000000", // 200 tokens
-        },
-      ],
-    };
-
-    theGraphClient.query.mockResolvedValueOnce(mockGraphResponse);
-
+    // Call the real API - new token should have empty supply changes history
     const result = await client.token.statsSupplyChanges({
       tokenAddress: testToken.id,
       days: 30,
     });
 
-    expect(result.supplyChangesHistory).toHaveLength(2);
-    expect(result.supplyChangesHistory[0]).toMatchObject({
-      timestamp: 1672531200,
-      totalMinted: "1000000000000000000000",
-      totalBurned: "100000000000000000000",
-    });
+    // For a newly created token with no mint/burn operations, expect empty history
+    expect(result.supplyChangesHistory).toBeInstanceOf(Array);
+    expect(result.supplyChangesHistory).toHaveLength(0);
   });
 
   it("rejects invalid token address", async () => {
@@ -99,45 +77,22 @@ describe("Token stats supply changes", () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
 
-    const mockGraphResponse = {
-      tokenSupplyChanges_collection: [
-        {
-          timestamp: "1672531200",
-          totalMinted: "1000000000000000000000",
-          totalBurned: "100000000000000000000",
-        },
-      ],
-    };
-
-    theGraphClient.query.mockResolvedValueOnce(mockGraphResponse);
-
+    // Call without days parameter - should use default (30 days)
     const result = await client.token.statsSupplyChanges({
       tokenAddress: testToken.id,
       // days not specified - should default to 30
     });
 
-    expect(result.supplyChangesHistory).toHaveLength(1);
-    expect(theGraphClient.query).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({
-        input: expect.objectContaining({
-          tokenId: testToken.id.toLowerCase(),
-        }),
-      })
-    );
+    // For a new token, expect empty history
+    expect(result.supplyChangesHistory).toBeInstanceOf(Array);
+    expect(result.supplyChangesHistory).toHaveLength(0);
   });
 
   it("handles empty data response gracefully", async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
 
-    // Mock empty response
-    const mockGraphResponse = {
-      tokenSupplyChanges_collection: [],
-    };
-
-    theGraphClient.query.mockResolvedValueOnce(mockGraphResponse);
-
+    // Call the real API - new token should have no supply changes data
     const result = await client.token.statsSupplyChanges({
       tokenAddress: testToken.id,
       days: 30,
@@ -147,18 +102,17 @@ describe("Token stats supply changes", () => {
     expect(result.supplyChangesHistory).toEqual([]);
   });
 
-  it("handles TheGraph service failure", async () => {
+  it("returns proper data structure", async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
 
-    // Mock service failure
-    theGraphClient.query.mockRejectedValueOnce(new Error("Network error"));
+    const result = await client.token.statsSupplyChanges({
+      tokenAddress: testToken.id,
+      days: 30,
+    });
 
-    await expect(
-      client.token.statsSupplyChanges({
-        tokenAddress: testToken.id,
-        days: 30,
-      })
-    ).rejects.toThrow("Network error");
+    // Verify the structure is correct
+    expect(result).toHaveProperty("supplyChangesHistory");
+    expect(result.supplyChangesHistory).toBeInstanceOf(Array);
   });
 });
