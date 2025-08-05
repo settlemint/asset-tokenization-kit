@@ -62,7 +62,10 @@
       "program": "${file}",
       "cwd": "${workspaceFolder}",
       "stopOnEntry": false,
-      "watchMode": false
+      "watchMode": false,
+      "env": {
+        "TEST_DAPP_PORT": "3000"
+      }
     }
   ]
 }

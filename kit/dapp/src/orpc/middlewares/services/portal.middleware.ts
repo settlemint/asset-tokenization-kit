@@ -103,13 +103,17 @@ function createValidatedPortalClient(
           ) => Promise<D>
         )(document, variables);
       } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
         logger.error(`GraphQL ${operation} failed`, {
           operation,
           ...variables,
-          error: error instanceof Error ? error.message : String(error),
+          error: errorMessage,
         });
         throw errors.PORTAL_ERROR({
-          message: `GraphQL ${operation} failed`,
+          message:
+            mapPortalErrorMessage(errorMessage) ??
+            `GraphQL ${operation} failed`,
           data: {
             document,
             variables,
@@ -425,13 +429,17 @@ function createValidatedPortalClient(
           ) => Promise<D>
         )(document, variables);
       } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
         logger.error(`GraphQL ${operation} failed`, {
           operation,
           ...variables,
-          error: error instanceof Error ? error.message : String(error),
+          error: errorMessage,
         });
         throw errors.PORTAL_ERROR({
-          message: `GraphQL ${operation} failed`,
+          message:
+            mapPortalErrorMessage(errorMessage) ??
+            `GraphQL ${operation} failed`,
           data: {
             document,
             variables,
@@ -606,3 +614,25 @@ export const portalMiddleware = baseRouter.middleware((options) => {
 export type ValidatedPortalClient = ReturnType<
   typeof createValidatedPortalClient
 >;
+
+/**
+ * Maps a Portal error message to a more user-friendly message.
+ * @param message - The error message to map.
+ * @returns The mapped error message.
+ */
+function mapPortalErrorMessage(message: string) {
+  if (message.includes("User rejected the request")) {
+    return "Invalid authentication challenge";
+  }
+  return extractRevertReason(message);
+}
+
+/**
+ * Extracts the revert reason from a message.
+ * @param message - The message to extract the revert reason from.
+ * @returns The revert reason.
+ */
+function extractRevertReason(message: string) {
+  const match = message.match(/reverted with the following reason: (.*)/i);
+  return match && match[1] ? `Transaction reverted: ${match[1]}` : undefined;
+}

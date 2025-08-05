@@ -1,13 +1,13 @@
+import {
+  assetClassBreadcrumbs,
+  createBreadcrumbMetadata,
+} from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { createDataTableSearchParams } from "@/components/data-table/utils/data-table-url-state";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { TokenFactoryRelated } from "@/components/related/token-factory-related";
 import { TokensTable } from "@/components/tables/tokens";
 import { seo } from "@/config/metadata";
-import {
-  assetClassBreadcrumbs,
-  createBreadcrumbMetadata,
-} from "@/components/breadcrumb/metadata";
 import {
   getAssetClassFromFactoryTypeId,
   getAssetTypeFromFactoryTypeId,
@@ -68,7 +68,7 @@ export const Route = createFileRoute(
   }) => {
     // Ensure factory data is loaded
     const factory = await queryClient.ensureQueryData(
-      orpc.token.factoryRead.queryOptions({
+      orpc.system.tokenFactoryRead.queryOptions({
         input: { id: factoryAddress },
       })
     );

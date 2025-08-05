@@ -5,7 +5,7 @@ import type { ValidatedPortalClient } from "@/orpc/middlewares/services/portal.m
 import type {
   PredictAddressInput,
   PredictAddressOutput,
-} from "@/orpc/routes/token/routes/factory/factory.predict-address.schema";
+} from "@/orpc/routes/system/token-factory/routes/factory.predict-address.schema";
 import { bondPredictHandler } from "./bond.predict";
 import { depositPredictHandler } from "./deposit.predict";
 import { equityPredictHandler } from "./equity.predict";

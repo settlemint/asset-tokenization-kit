@@ -6,8 +6,8 @@ import { z } from "zod";
  * Each property corresponds to a boolean indicating if the user has that role.
  * The keys must match the AccessControlRoles union type exactly.
  */
-export const accessControlRoles: z.ZodType<
-  Record<AccessControlRoles, boolean>
+export const accessControlRoles: z.ZodObject<
+  Record<AccessControlRoles, z.ZodDefault<z.ZodBoolean>>
 > = z.object({
   addonManager: z.boolean().default(false),
   addonModule: z.boolean().default(false),
@@ -42,3 +42,13 @@ export const accessControlRoles: z.ZodType<
   tokenManager: z.boolean().default(false),
   verificationAdmin: z.boolean().default(false),
 });
+
+/**
+ * Zod schema for validating an access control role.
+ * @remarks
+ * This schema is used to validate the role of a user in the access control system.
+ * It is used to ensure that the role is one of the possible roles defined in the AccessControlRoles union type.
+ */
+export const accessControlRole = z.enum(
+  Object.keys(accessControlRoles.shape) as AccessControlRoles[]
+);

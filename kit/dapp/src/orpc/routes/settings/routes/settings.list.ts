@@ -1,4 +1,5 @@
 import { settings } from "@/lib/db/schema";
+import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { asc, desc } from "drizzle-orm";
@@ -30,6 +31,11 @@ import { asc, desc } from "drizzle-orm";
  * ```
  */
 export const list = authRouter.settings.list
+  .use(
+    offChainPermissionsMiddleware({
+      requiredPermissions: { setting: ["read"] },
+    })
+  )
   .use(databaseMiddleware)
   .handler(async ({ input, context }) => {
     // Extract pagination parameters

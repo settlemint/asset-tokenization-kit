@@ -29,9 +29,7 @@ function RouteComponent() {
   const queryClient = useQueryClient();
   const { completeStepAndNavigate } = useOnboardingNavigation();
   const { data: session } = authClient.useSession();
-  // Only admins can register identity
-  // TODO: use system access control to check this, not role
-  const canRegisterIdentity = session?.user.role === "admin";
+  const shouldRegisterIdentity = session?.user.role === "admin";
 
   // Verification dialog state
   const [showVerificationModal, setShowVerificationModal] = useState(false);
@@ -77,7 +75,7 @@ function RouteComponent() {
   const handleComplete = useCallback(
     (values: KycFormValues) => {
       setKycFormValues(values);
-      if (canRegisterIdentity) {
+      if (shouldRegisterIdentity) {
         setShowVerificationModal(true);
       } else {
         toast.promise(
@@ -94,7 +92,7 @@ function RouteComponent() {
         );
       }
     },
-    [canRegisterIdentity, session?.user.id, t, updateKyc]
+    [shouldRegisterIdentity, session?.user.id, t, updateKyc]
   );
 
   const handleVerificationSubmit = useCallback(
@@ -108,7 +106,7 @@ function RouteComponent() {
 
       toast.promise(
         (async () => {
-          if (canRegisterIdentity) {
+          if (shouldRegisterIdentity) {
             await registerIdentity({
               country: kycFormValues.country,
               verification,
@@ -128,10 +126,10 @@ function RouteComponent() {
       );
     },
     [
-      canRegisterIdentity,
       kycFormValues,
       registerIdentity,
-      session?.user.id,
+      session?.user,
+      shouldRegisterIdentity,
       t,
       updateKyc,
     ]

@@ -1,4 +1,5 @@
 import { settings } from "@/lib/db/schema";
+import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 
@@ -29,6 +30,11 @@ import { authRouter } from "@/orpc/procedures/auth.router";
  * ```
  */
 export const upsert = authRouter.settings.upsert
+  .use(
+    offChainPermissionsMiddleware({
+      requiredPermissions: { setting: ["upsert"] },
+    })
+  )
   .use(databaseMiddleware)
   .handler(async ({ input, context, errors }) => {
     const { key, value } = input;
