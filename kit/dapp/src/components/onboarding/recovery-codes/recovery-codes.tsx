@@ -156,20 +156,20 @@ function RecoveryCodesContent({
 
       <div className="flex-1 overflow-y-auto">
         <div className="w-full space-y-6">
-          {recoveryCodes.length > 0 && (
-            <RecoveryCodesActions
-              onCopyAll={handleCopyAllWithTracking}
-              onDownload={handleDownloadWithTracking}
-            />
-          )}
-
           <RecoveryCodesDisplay
             isGenerating={false}
             recoveryCodes={recoveryCodes}
           />
 
-          {recoveryCodes.length > 0 && (
-            <div className="flex items-center space-x-2">
+          {recoveryCodes.length > 0 && <RecoveryCodesWarning />}
+        </div>
+      </div>
+
+      {recoveryCodes.length > 0 && (
+        <div className="mt-6 space-y-4 border-t pt-6">
+          {/* Checkbox Section with Better Visual Prominence */}
+          <div className="rounded-lg bg-muted/50 border-2 border-muted p-4">
+            <div className="flex items-start space-x-3">
               <Checkbox
                 id="recovery-codes-stored"
                 checked={isConfirmed}
@@ -177,22 +177,37 @@ function RecoveryCodesContent({
                 onCheckedChange={(checked) => {
                   setIsConfirmed(checked === true);
                 }}
+                className="mt-0.5 h-5 w-5 border-2 border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary"
               />
-              <label
-                htmlFor="recovery-codes-stored"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                {t(
-                  "wallet-security.recovery-codes.confirm-stored",
-                  "Confirm you stored your recovery keys in a safe place."
+              <div className="flex-1 space-y-1">
+                <label
+                  htmlFor="recovery-codes-stored"
+                  className="text-sm font-medium leading-none cursor-pointer"
+                >
+                  {t(
+                    "wallet-security.recovery-codes.confirm-stored",
+                    "Confirm you stored your recovery keys in a safe place."
+                  )}
+                </label>
+                {!hasPerformedAction && (
+                  <p className="text-xs text-muted-foreground">
+                    {t(
+                      "wallet-security.recovery-codes.action-required",
+                      "Copy or download your codes first before confirming"
+                    )}
+                  </p>
                 )}
-              </label>
+              </div>
             </div>
-          )}
+          </div>
 
-          {recoveryCodes.length > 0 && <RecoveryCodesWarning />}
+          {/* Action Buttons in Footer */}
+          <RecoveryCodesActions
+            onCopyAll={handleCopyAllWithTracking}
+            onDownload={handleDownloadWithTracking}
+          />
         </div>
-      </div>
+      )}
     </OnboardingStepLayout>
   );
 }
