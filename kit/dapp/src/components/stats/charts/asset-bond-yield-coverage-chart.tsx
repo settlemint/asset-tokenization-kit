@@ -3,7 +3,7 @@ import { ComponentErrorBoundary } from "@/components/error/component-error-bound
 import { useBondYieldCoverageData } from "@/hooks/use-bond-yield-coverage-data";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
 import { orpc } from "@/orpc/orpc-client";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQueries } from "@tanstack/react-query";
 
 export interface AssetBondYieldCoverageChartProps {
   assetAddress: string;
@@ -29,19 +29,18 @@ export function AssetBondYieldCoverageChart({
   assetAddress,
 }: AssetBondYieldCoverageChartProps) {
   // Fetch token data and bond yield coverage data in parallel
-  const { data: token } = useSuspenseQuery(
-    orpc.token.read.queryOptions({
-      input: { tokenAddress: assetAddress },
-      ...CHART_QUERY_OPTIONS,
-    })
-  );
-
-  const { data: yieldCoverage } = useSuspenseQuery(
-    orpc.token.statsBondYieldCoverage.queryOptions({
-      input: { tokenAddress: assetAddress },
-      ...CHART_QUERY_OPTIONS,
-    })
-  );
+  const [{ data: token }, { data: yieldCoverage }] = useSuspenseQueries({
+    queries: [
+      orpc.token.read.queryOptions({
+        input: { tokenAddress: assetAddress },
+        ...CHART_QUERY_OPTIONS,
+      }),
+      orpc.token.statsBondYieldCoverage.queryOptions({
+        input: { tokenAddress: assetAddress },
+        ...CHART_QUERY_OPTIONS,
+      }),
+    ],
+  });
 
   // Transform data using our custom hook
   const chartData = useBondYieldCoverageData(token, yieldCoverage);

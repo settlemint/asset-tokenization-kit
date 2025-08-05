@@ -102,15 +102,15 @@ export const statsBondYieldCoverage = tokenRouter.token.statsBondYieldCoverage
       }
     );
 
-    // Check if yield schedule exists
-    const hasYieldSchedule = !!response.token.yield_?.schedule;
-
     // Check if yield schedule is running (current time is between start and end date)
+    const schedule = response.token.yield_?.schedule;
+    const hasYieldSchedule = !!schedule;
+
     let isRunning = false;
-    if (hasYieldSchedule && response.token.yield_?.schedule) {
+    if (schedule) {
       const now = Math.floor(Date.now() / 1000);
-      const startDate = Number(response.token.yield_.schedule.startDate);
-      const endDate = Number(response.token.yield_.schedule.endDate);
+      const startDate = Number(schedule.startDate);
+      const endDate = Number(schedule.endDate);
       isRunning = now >= startDate && now <= endDate;
     }
 
