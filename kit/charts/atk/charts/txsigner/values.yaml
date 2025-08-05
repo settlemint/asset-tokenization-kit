@@ -235,7 +235,7 @@ service:
 # -- Ingress parameters
 ingress:
   # -- Enable ingress record generation for TxSigner
-  enabled: false
+  enabled: true
   # -- Ingress path type
   pathType: ImplementationSpecific
   # -- Force Ingress API version (automatically detected if not set)

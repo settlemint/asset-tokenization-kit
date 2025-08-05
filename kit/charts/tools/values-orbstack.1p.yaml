@@ -1,6 +1,6 @@
 # Global configuration that makes imagePullSecrets dynamic for all charts
 global:
-  # For external charts that expect a list of secret names
+  # Global imagePullSecrets in standard object format (compatible with most charts)
   imagePullSecrets:
     - name: image-pull-secret-docker
     - name: image-pull-secret-ghcr
@@ -54,16 +54,17 @@ global:
 
 # erpc imagePullSecrets are now automatically generated
 
-# blockscout imagePullSecrets are now automatically generated
+# blockscout uses a third-party chart that doesn't support our common helpers
+blockscout:
+  blockscout-stack:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
 
 # graph-node imagePullSecrets are now automatically generated
 
-# hasura imagePullSecrets are now automatically generated
-hasura:
-  imagePullSecrets:
-    - name: image-pull-secret-docker
-    - name: image-pull-secret-ghcr
-    - name: image-pull-secret-harbor
+# hasura imagePullSecrets are now automatically generated from global
 
 # portal imagePullSecrets are now automatically generated
 
@@ -74,23 +75,6 @@ support:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
-  postgresql:
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
-  reloader:
-    global:
-      imagePullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
-  minio:
-    global:
-      imagePullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
 
 # observability services imagePullSecrets are now automatically generated
 observability:
@@ -136,20 +120,9 @@ observability:
   tempo:
     tempo:
       pullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
-    tempoQuery:
-      pullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
-
-txsigner:
-  # txsigner imagePullSecrets are now automatically generated
-  ingress:
-    enabled: true
-    hostname: txsigner.k8s.orb.local
+        - image-pull-secret-docker
+        - image-pull-secret-ghcr
+        - image-pull-secret-harbor
 
 dapp:
   enabled: false

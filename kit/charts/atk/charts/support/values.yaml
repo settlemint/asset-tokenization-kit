@@ -352,7 +352,3 @@ minio:
     path: /
     hosts:
       - minio-console.k8s.orb.local
-
-  # Image pull secrets (using global scope to avoid template bug)
-  global:
-    imagePullSecrets: []
