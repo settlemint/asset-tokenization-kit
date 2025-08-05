@@ -6,6 +6,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { DataTableAdvancedToolbar } from "./data-table-advanced-toolbar";
 import { renderWithProviders, createMockTable } from "./test-utils";
+import type { Table } from "@tanstack/react-table";
 
 // Mock child components
 vi.mock("./data-table-filter", () => ({
@@ -60,7 +61,9 @@ describe("DataTableAdvancedToolbar", () => {
       });
 
       renderWithProviders(
-        <DataTableAdvancedToolbar table={mockTable as unknown} />
+        <DataTableAdvancedToolbar
+          table={mockTable as unknown as Table<unknown>}
+        />
       );
 
       // Check global search
@@ -77,7 +80,7 @@ describe("DataTableAdvancedToolbar", () => {
 
       const { container } = renderWithProviders(
         <DataTableAdvancedToolbar
-          table={mockTable as unknown}
+          table={mockTable as unknown as Table<unknown>}
           enableToolbar={false}
         />
       );
@@ -95,7 +98,7 @@ describe("DataTableAdvancedToolbar", () => {
 
       renderWithProviders(
         <DataTableAdvancedToolbar
-          table={mockTable as unknown}
+          table={mockTable as unknown as Table<unknown>}
           placeholder="Custom search placeholder"
         />
       );
@@ -119,7 +122,7 @@ describe("DataTableAdvancedToolbar", () => {
 
       renderWithProviders(
         <DataTableAdvancedToolbar
-          table={mockTable as unknown}
+          table={mockTable as unknown as Table<unknown>}
           customActions={customActions}
         />
       );
@@ -138,7 +141,9 @@ describe("DataTableAdvancedToolbar", () => {
       });
 
       renderWithProviders(
-        <DataTableAdvancedToolbar table={mockTable as unknown} />
+        <DataTableAdvancedToolbar
+          table={mockTable as unknown as Table<unknown>}
+        />
       );
 
       const searchInput = screen.getByDisplayValue("initial search");
@@ -157,7 +162,9 @@ describe("DataTableAdvancedToolbar", () => {
       });
 
       renderWithProviders(
-        <DataTableAdvancedToolbar table={mockTable as unknown} />
+        <DataTableAdvancedToolbar
+          table={mockTable as unknown as Table<unknown>}
+        />
       );
 
       const searchInput = screen.getByPlaceholderText("search");
@@ -199,7 +206,7 @@ describe("DataTableAdvancedToolbar", () => {
 
       renderWithProviders(
         <DataTableAdvancedToolbar
-          table={mockTable as unknown}
+          table={mockTable as unknown as Table<unknown>}
           enableGlobalSearch={false}
         />
       );
@@ -218,7 +225,9 @@ describe("DataTableAdvancedToolbar", () => {
       });
 
       renderWithProviders(
-        <DataTableAdvancedToolbar table={mockTable as unknown} />
+        <DataTableAdvancedToolbar
+          table={mockTable as unknown as Table<unknown>}
+        />
       );
 
       expect(screen.getByText("clearAll")).toBeInTheDocument();
@@ -233,7 +242,9 @@ describe("DataTableAdvancedToolbar", () => {
       });
 
       renderWithProviders(
-        <DataTableAdvancedToolbar table={mockTable as unknown} />
+        <DataTableAdvancedToolbar
+          table={mockTable as unknown as Table<unknown>}
+        />
       );
 
       expect(screen.getByText("clearAll")).toBeInTheDocument();
@@ -248,7 +259,9 @@ describe("DataTableAdvancedToolbar", () => {
       });
 
       renderWithProviders(
-        <DataTableAdvancedToolbar table={mockTable as unknown} />
+        <DataTableAdvancedToolbar
+          table={mockTable as unknown as Table<unknown>}
+        />
       );
 
       expect(screen.queryByText("clearAll")).not.toBeInTheDocument();
@@ -268,7 +281,9 @@ describe("DataTableAdvancedToolbar", () => {
       });
 
       renderWithProviders(
-        <DataTableAdvancedToolbar table={mockTable as unknown} />
+        <DataTableAdvancedToolbar
+          table={mockTable as unknown as Table<unknown>}
+        />
       );
 
       const clearButton = screen.getByText("clearAll");
@@ -290,7 +305,9 @@ describe("DataTableAdvancedToolbar", () => {
       });
 
       renderWithProviders(
-        <DataTableAdvancedToolbar table={mockTable as unknown} />
+        <DataTableAdvancedToolbar
+          table={mockTable as unknown as Table<unknown>}
+        />
       );
 
       const clearButton = screen.getByText("clearAll");
@@ -335,7 +352,7 @@ describe("DataTableAdvancedToolbar", () => {
 
       renderWithProviders(
         <DataTableAdvancedToolbar
-          table={mockTable as unknown}
+          table={mockTable as unknown as Table<unknown>}
           enableFilters={false}
         />
       );
@@ -356,7 +373,7 @@ describe("DataTableAdvancedToolbar", () => {
 
       renderWithProviders(
         <DataTableAdvancedToolbar
-          table={mockTable as unknown}
+          table={mockTable as unknown as Table<unknown>}
           enableExport={false}
         />
       );
@@ -374,7 +391,7 @@ describe("DataTableAdvancedToolbar", () => {
 
       renderWithProviders(
         <DataTableAdvancedToolbar
-          table={mockTable as unknown}
+          table={mockTable as unknown as Table<unknown>}
           enableViewOptions={false}
         />
       );
@@ -393,7 +410,9 @@ describe("DataTableAdvancedToolbar", () => {
       });
 
       renderWithProviders(
-        <DataTableAdvancedToolbar table={mockTable as unknown} />
+        <DataTableAdvancedToolbar
+          table={mockTable as unknown as Table<unknown>}
+        />
       );
 
       expect(screen.getByPlaceholderText("search")).toBeInTheDocument();
@@ -435,7 +454,9 @@ describe("DataTableAdvancedToolbar", () => {
       });
 
       renderWithProviders(
-        <DataTableAdvancedToolbar table={mockTable as unknown} />
+        <DataTableAdvancedToolbar
+          table={mockTable as unknown as Table<unknown>}
+        />
       );
 
       const searchInput = screen.getByPlaceholderText("search");
@@ -451,7 +472,9 @@ describe("DataTableAdvancedToolbar", () => {
       });
 
       renderWithProviders(
-        <DataTableAdvancedToolbar table={mockTable as unknown} />
+        <DataTableAdvancedToolbar
+          table={mockTable as unknown as Table<unknown>}
+        />
       );
 
       const clearButton = screen.getByText("clearAll");
@@ -470,7 +493,7 @@ describe("DataTableAdvancedToolbar", () => {
 
       const { container } = renderWithProviders(
         <DataTableAdvancedToolbar
-          table={mockTable as unknown}
+          table={mockTable as unknown as Table<unknown>}
           customActions={customActions}
         />
       );
@@ -564,7 +587,9 @@ describe("DataTableAdvancedToolbar", () => {
       });
 
       renderWithProviders(
-        <DataTableAdvancedToolbar table={mockTable as unknown} />
+        <DataTableAdvancedToolbar
+          table={mockTable as unknown as Table<unknown>}
+        />
       );
 
       const clearButton = screen.getByText("clearAll");
@@ -588,7 +613,7 @@ describe("DataTableAdvancedToolbar", () => {
 
       const { container } = renderWithProviders(
         <DataTableAdvancedToolbar
-          table={mockTable as unknown}
+          table={mockTable as unknown as Table<unknown>}
           customActions={customActions}
         />
       );
@@ -612,7 +637,7 @@ describe("DataTableAdvancedToolbar", () => {
 
       const { container } = renderWithProviders(
         <DataTableAdvancedToolbar
-          table={mockTable as unknown}
+          table={mockTable as unknown as Table<unknown>}
           enableGlobalSearch={false}
         />
       );
@@ -634,7 +659,7 @@ describe("DataTableAdvancedToolbar", () => {
 
       const { container } = renderWithProviders(
         <DataTableAdvancedToolbar
-          table={mockTable as unknown}
+          table={mockTable as unknown as Table<unknown>}
           enableFilters={false}
         />
       );
@@ -683,7 +708,9 @@ describe("DataTableAdvancedToolbar", () => {
       });
 
       renderWithProviders(
-        <DataTableAdvancedToolbar table={mockTable as unknown} />
+        <DataTableAdvancedToolbar
+          table={mockTable as unknown as Table<unknown>}
+        />
       );
 
       // Verify default behaviors (all features enabled by default)
@@ -731,7 +758,9 @@ describe("DataTableAdvancedToolbar", () => {
       });
 
       renderWithProviders(
-        <DataTableAdvancedToolbar table={mockTable as unknown} />
+        <DataTableAdvancedToolbar
+          table={mockTable as unknown as Table<unknown>}
+        />
       );
 
       const clearButton = screen.getByText("clearAll");
@@ -751,7 +780,9 @@ describe("DataTableAdvancedToolbar", () => {
       });
 
       renderWithProviders(
-        <DataTableAdvancedToolbar table={mockTable as unknown} />
+        <DataTableAdvancedToolbar
+          table={mockTable as unknown as Table<unknown>}
+        />
       );
 
       const clearButton = screen.getByText("clearAll");
@@ -769,7 +800,9 @@ describe("DataTableAdvancedToolbar", () => {
       });
 
       renderWithProviders(
-        <DataTableAdvancedToolbar table={mockTable as unknown} />
+        <DataTableAdvancedToolbar
+          table={mockTable as unknown as Table<unknown>}
+        />
       );
 
       const clearButton = screen.getByText("clearAll");

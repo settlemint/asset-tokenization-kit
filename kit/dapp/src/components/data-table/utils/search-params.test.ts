@@ -456,15 +456,19 @@ describe("search-params schemas", () => {
       };
       const result = dataTableSearchParamsSchema.parse(input);
       expect(result.columnFilters).toHaveLength(4);
-      expect(result.columnFilters[0].value).toEqual(["tag1", "tag2", "tag3"]);
-      expect(result.columnFilters[1].value).toEqual([1, 2, 3, 4, 5]);
-      expect(result.columnFilters[2].value).toEqual([
+      expect(result.columnFilters?.[0]?.value).toEqual([
+        "tag1",
+        "tag2",
+        "tag3",
+      ]);
+      expect(result.columnFilters?.[1]?.value).toEqual([1, 2, 3, 4, 5]);
+      expect(result.columnFilters?.[2]?.value).toEqual([
         "string",
         42,
         true,
         "another",
       ]);
-      expect(result.columnFilters[3].value).toBe(false);
+      expect(result.columnFilters?.[3]?.value).toBe(false);
     });
   });
 });

@@ -225,13 +225,13 @@ export function PropertyFilterOptionValueDisplay<TData, TValue>({
             ? columnMeta.transformOptionFn(
                 curr as ElementType<NonNullable<TValue>>
               ).value
-            : (curr as ColumnOption).value;
+            : (curr as unknown as ColumnOption).value;
           const exists = acc.some((item) => {
             const itemKey = columnMeta.transformOptionFn
               ? columnMeta.transformOptionFn(
                   item as ElementType<NonNullable<TValue>>
                 ).value
-              : (item as ColumnOption).value;
+              : (item as unknown as ColumnOption).value;
             return itemKey === key;
           });
           if (!exists) {
@@ -260,7 +260,7 @@ export function PropertyFilterOptionValueDisplay<TData, TValue>({
   else if (isColumnOptionArray(uniqueVals)) {
     // Deduplicate by value property since uniq() doesn't work with objects
     const seen = new Set<string>();
-    options = uniqueVals.filter((option) => {
+    options = (uniqueVals as ColumnOption[]).filter((option) => {
       if (seen.has(option.value)) {
         return false;
       }
@@ -366,13 +366,13 @@ export function PropertyFilterMultiOptionValueDisplay<TData, TValue>({
             ? columnMeta.transformOptionFn(
                 curr as ElementType<NonNullable<TValue>>
               ).value
-            : (curr as ColumnOption).value;
+            : (curr as unknown as ColumnOption).value;
           const exists = acc.some((item) => {
             const itemKey = columnMeta.transformOptionFn
               ? columnMeta.transformOptionFn(
                   item as ElementType<NonNullable<TValue>>
                 ).value
-              : (item as ColumnOption).value;
+              : (item as unknown as ColumnOption).value;
             return itemKey === key;
           });
           if (!exists) {
@@ -401,7 +401,7 @@ export function PropertyFilterMultiOptionValueDisplay<TData, TValue>({
   else if (isColumnOptionArray(uniqueVals)) {
     // Deduplicate by value property since uniq() doesn't work with objects
     const seen = new Set<string>();
-    options = uniqueVals.filter((option) => {
+    options = (uniqueVals as ColumnOption[]).filter((option) => {
       if (seen.has(option.value)) {
         return false;
       }

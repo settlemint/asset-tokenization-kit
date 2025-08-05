@@ -9,6 +9,7 @@ import {
   PropertyFilterValueDisplay,
   PropertyFilterOptionValueDisplay,
 } from "./value-controller";
+import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import {
   renderWithProviders,
   generateMockData,
@@ -110,6 +111,7 @@ describe("PropertyFilterValueController", () => {
       id: "status",
       columnDef: {
         id: "status",
+        accessorFn: (row: TestDataItem) => row,
         header: "Status",
         accessorKey: "status",
         enableSorting: true,
@@ -132,9 +134,11 @@ describe("PropertyFilterValueController", () => {
       renderWithProviders(
         <PropertyFilterValueController
           id="status"
-          column={mockColumn as unknown}
-          columnMeta={mockColumn.columnDef.meta as unknown}
-          table={mockTable as unknown}
+          column={mockColumn as unknown as Column<unknown, unknown>}
+          columnMeta={
+            mockColumn.columnDef.meta as unknown as ColumnMeta<unknown, unknown>
+          }
+          table={mockTable as unknown as Table<unknown>}
         />
       );
 
@@ -148,9 +152,11 @@ describe("PropertyFilterValueController", () => {
       renderWithProviders(
         <PropertyFilterValueController
           id="status"
-          column={mockColumn as unknown}
-          columnMeta={mockColumn.columnDef.meta as unknown}
-          table={mockTable as unknown}
+          column={mockColumn as unknown as Column<unknown, unknown>}
+          columnMeta={
+            mockColumn.columnDef.meta as unknown as ColumnMeta<unknown, unknown>
+          }
+          table={mockTable as unknown as Table<unknown>}
         />
       );
 
@@ -169,9 +175,11 @@ describe("PropertyFilterValueController", () => {
       renderWithProviders(
         <PropertyFilterValueController
           id="status"
-          column={mockColumn as unknown}
-          columnMeta={mockColumn.columnDef.meta as unknown}
-          table={mockTable as unknown}
+          column={mockColumn as unknown as Column<unknown, unknown>}
+          columnMeta={
+            mockColumn.columnDef.meta as unknown as ColumnMeta<unknown, unknown>
+          }
+          table={mockTable as unknown as Table<unknown>}
         />
       );
 
@@ -198,6 +206,8 @@ describe("PropertyFilterValueDisplay", () => {
   it("should render option type display", () => {
     const column = createMockColumn({
       columnDef: {
+        id: "test-column",
+        accessorFn: (row: TestDataItem) => row,
         meta: {
           type: "option",
           displayName: "Status",
@@ -208,9 +218,9 @@ describe("PropertyFilterValueDisplay", () => {
     renderWithProviders(
       <PropertyFilterValueDisplay
         id="status"
-        column={column as unknown}
-        columnMeta={column.columnDef.meta as unknown}
-        table={mockTable as unknown}
+        column={column as Column<unknown, unknown>}
+        columnMeta={column.columnDef.meta as ColumnMeta<unknown, unknown>}
+        table={mockTable as unknown as Table<unknown>}
       />
     );
 
@@ -220,6 +230,8 @@ describe("PropertyFilterValueDisplay", () => {
   it("should render multiOption type display", () => {
     const column = createMockColumn({
       columnDef: {
+        id: "test-column",
+        accessorFn: (row: TestDataItem) => row,
         meta: {
           type: "multiOption",
           displayName: "Tags",
@@ -230,9 +242,9 @@ describe("PropertyFilterValueDisplay", () => {
     renderWithProviders(
       <PropertyFilterValueDisplay
         id="tags"
-        column={column as unknown}
-        columnMeta={column.columnDef.meta as unknown}
-        table={mockTable as unknown}
+        column={column as Column<unknown, unknown>}
+        columnMeta={column.columnDef.meta as ColumnMeta<unknown, unknown>}
+        table={mockTable as unknown as Table<unknown>}
       />
     );
 
@@ -244,6 +256,8 @@ describe("PropertyFilterValueDisplay", () => {
   it("should render date type display", () => {
     const column = createMockColumn({
       columnDef: {
+        id: "test-column",
+        accessorFn: (row: TestDataItem) => row,
         meta: {
           type: "date",
           displayName: "Created Date",
@@ -254,9 +268,9 @@ describe("PropertyFilterValueDisplay", () => {
     renderWithProviders(
       <PropertyFilterValueDisplay
         id="date"
-        column={column as unknown}
-        columnMeta={column.columnDef.meta as unknown}
-        table={mockTable as unknown}
+        column={column as Column<unknown, unknown>}
+        columnMeta={column.columnDef.meta as ColumnMeta<unknown, unknown>}
+        table={mockTable as unknown as Table<unknown>}
       />
     );
 
@@ -266,6 +280,8 @@ describe("PropertyFilterValueDisplay", () => {
   it("should render text type display", () => {
     const column = createMockColumn({
       columnDef: {
+        id: "test-column",
+        accessorFn: (row: TestDataItem) => row,
         meta: {
           type: "text",
           displayName: "Name",
@@ -276,9 +292,9 @@ describe("PropertyFilterValueDisplay", () => {
     renderWithProviders(
       <PropertyFilterValueDisplay
         id="name"
-        column={column as unknown}
-        columnMeta={column.columnDef.meta as unknown}
-        table={mockTable as unknown}
+        column={column as Column<unknown, unknown>}
+        columnMeta={column.columnDef.meta as ColumnMeta<unknown, unknown>}
+        table={mockTable as unknown as Table<unknown>}
       />
     );
 
@@ -288,6 +304,8 @@ describe("PropertyFilterValueDisplay", () => {
   it("should render number type display", () => {
     const column = createMockColumn({
       columnDef: {
+        id: "test-column",
+        accessorFn: (row: TestDataItem) => row,
         meta: {
           type: "number",
           displayName: "Price",
@@ -298,9 +316,9 @@ describe("PropertyFilterValueDisplay", () => {
     renderWithProviders(
       <PropertyFilterValueDisplay
         id="price"
-        column={column as unknown}
-        columnMeta={column.columnDef.meta as unknown}
-        table={mockTable as unknown}
+        column={column as Column<unknown, unknown>}
+        columnMeta={column.columnDef.meta as ColumnMeta<unknown, unknown>}
+        table={mockTable as unknown as Table<unknown>}
       />
     );
 
@@ -310,8 +328,10 @@ describe("PropertyFilterValueDisplay", () => {
   it("should return null for unknown type", () => {
     const column = createMockColumn({
       columnDef: {
+        id: "test-column",
+        accessorFn: (row: TestDataItem) => row,
         meta: {
-          type: "unknown" as unknown,
+          type: "unknown" as any,
           displayName: "Unknown",
         },
       },
@@ -320,9 +340,9 @@ describe("PropertyFilterValueDisplay", () => {
     const { container } = renderWithProviders(
       <PropertyFilterValueDisplay
         id="unknown"
-        column={column as unknown}
-        columnMeta={column.columnDef.meta as unknown}
-        table={mockTable as unknown}
+        column={column as Column<unknown, unknown>}
+        columnMeta={column.columnDef.meta as ColumnMeta<unknown, unknown>}
+        table={mockTable as unknown as Table<unknown>}
       />
     );
 
@@ -339,9 +359,11 @@ describe("PropertyFilterOptionValueDisplay", () => {
   ];
 
   it("should use static options when provided", () => {
-    const mockTable = createMockTable(mockData as TestDataItem[]);
+    const mockTable = createMockTable(mockData as unknown as TestDataItem[]);
     const column = createMockColumn({
       columnDef: {
+        id: "test-column",
+        accessorFn: (row: TestDataItem) => row,
         meta: {
           type: "option",
           displayName: "Status",
@@ -356,9 +378,9 @@ describe("PropertyFilterOptionValueDisplay", () => {
     renderWithProviders(
       <PropertyFilterOptionValueDisplay
         id="status"
-        column={column as unknown}
-        columnMeta={column.columnDef.meta as unknown}
-        table={mockTable as unknown}
+        column={column as Column<unknown, unknown>}
+        columnMeta={column.columnDef.meta as ColumnMeta<unknown, unknown>}
+        table={mockTable as unknown as Table<unknown>}
       />
     );
 
@@ -384,6 +406,8 @@ describe("PropertyFilterOptionValueDisplay", () => {
 
     const column = createMockColumn({
       columnDef: {
+        id: "test-column",
+        accessorFn: (row: TestDataItem) => row,
         meta: {
           type: "option",
           displayName: "Status",
@@ -395,9 +419,9 @@ describe("PropertyFilterOptionValueDisplay", () => {
     renderWithProviders(
       <PropertyFilterOptionValueDisplay
         id="status"
-        column={column as unknown}
-        columnMeta={column.columnDef.meta as unknown}
-        table={mockTable as unknown}
+        column={column as Column<unknown, unknown>}
+        columnMeta={column.columnDef.meta as ColumnMeta<unknown, unknown>}
+        table={mockTable as unknown as Table<unknown>}
       />
     );
 
@@ -421,10 +445,12 @@ describe("PropertyFilterOptionValueDisplay", () => {
 
     const column = createMockColumn({
       columnDef: {
+        id: "test-column",
+        accessorFn: (row: TestDataItem) => row,
         meta: {
           type: "option",
           displayName: "User Role",
-          transformOptionFn: (user: unknown) => ({
+          transformOptionFn: (user: any) => ({
             label: user.role,
             value: user.role,
           }),
@@ -435,9 +461,9 @@ describe("PropertyFilterOptionValueDisplay", () => {
     renderWithProviders(
       <PropertyFilterOptionValueDisplay
         id="user"
-        column={column as unknown}
-        columnMeta={column.columnDef.meta as unknown}
-        table={mockTable as unknown}
+        column={column as Column<unknown, unknown>}
+        columnMeta={column.columnDef.meta as ColumnMeta<unknown, unknown>}
+        table={mockTable as unknown as Table<unknown>}
       />
     );
 
@@ -464,6 +490,8 @@ describe("PropertyFilterOptionValueDisplay", () => {
 
     const column = createMockColumn({
       columnDef: {
+        id: "test-column",
+        accessorFn: (row: TestDataItem) => row,
         meta: {
           type: "option",
           displayName: "Colors",
@@ -474,9 +502,9 @@ describe("PropertyFilterOptionValueDisplay", () => {
     renderWithProviders(
       <PropertyFilterOptionValueDisplay
         id="colors"
-        column={column as unknown}
-        columnMeta={column.columnDef.meta as unknown}
-        table={mockTable as unknown}
+        column={column as Column<unknown, unknown>}
+        columnMeta={column.columnDef.meta as ColumnMeta<unknown, unknown>}
+        table={mockTable as unknown as Table<unknown>}
       />
     );
 
@@ -502,6 +530,8 @@ describe("PropertyFilterOptionValueDisplay", () => {
 
     const column = createMockColumn({
       columnDef: {
+        id: "test-column",
+        accessorFn: (row: TestDataItem) => row,
         meta: {
           type: "option",
           displayName: "Status",
@@ -516,9 +546,9 @@ describe("PropertyFilterOptionValueDisplay", () => {
     renderWithProviders(
       <PropertyFilterOptionValueDisplay
         id="status"
-        column={column as unknown}
-        columnMeta={column.columnDef.meta as unknown}
-        table={mockTable as unknown}
+        column={column as Column<unknown, unknown>}
+        columnMeta={column.columnDef.meta as ColumnMeta<unknown, unknown>}
+        table={mockTable as unknown as Table<unknown>}
       />
     );
 

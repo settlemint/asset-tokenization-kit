@@ -372,7 +372,9 @@ describe("Selection Column", () => {
       it("should handle single row data", async () => {
         const singleRowData = [testData[0]];
         const column = createBasicSelectionColumn<TestUser>();
-        renderWithProviders(<TestTable column={column} data={singleRowData} />);
+        renderWithProviders(
+          <TestTable column={column} data={singleRowData as TestUser[]} />
+        );
 
         const headerCheckbox = screen.getByLabelText(
           "Select all rows on this page"
@@ -441,7 +443,7 @@ describe("Selection Column", () => {
 
         // Should have a placeholder div
         const columnHeaders = screen.getAllByRole("columnheader");
-        const placeholder = columnHeaders[0].querySelector("div.w-10");
+        const placeholder = columnHeaders[0]?.querySelector("div.w-10");
         expect(placeholder).toBeInTheDocument();
       });
 

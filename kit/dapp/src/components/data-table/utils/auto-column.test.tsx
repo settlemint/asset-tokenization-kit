@@ -10,7 +10,7 @@ import {
   withAutoFeatures,
 } from "./auto-column";
 import { renderWithProviders } from "../test-utils";
-import { createColumnHelper, flexRender } from "@tanstack/react-table";
+import { flexRender } from "@tanstack/react-table";
 import type { CellContext, ColumnDef } from "@tanstack/react-table";
 
 // Mock formatValue
@@ -45,7 +45,7 @@ vi.mock("../filters/functions/auto-filter", () => ({
   withAutoFilterFn: vi.fn((column) => column),
 }));
 
-interface _TestData {
+interface TestData {
   id: number;
   name: string;
   amount: number;
@@ -75,7 +75,7 @@ function TestCell<TData, TValue>({
     },
     getValue: () => {
       if ("accessorKey" in column && column.accessorKey) {
-        return (data as ReturnType<typeof vi.fn>)[column.accessorKey];
+        return (data as any)[column.accessorKey as keyof typeof data];
       }
       if ("accessorFn" in column && column.accessorFn) {
         return column.accessorFn(data, 0);
@@ -94,8 +94,6 @@ function TestCell<TData, TValue>({
 }
 
 describe("withAutoCell", () => {
-  const _columnHelper = createColumnHelper<TestData>();
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -162,7 +160,7 @@ describe("withAutoCell", () => {
     it("should handle null/undefined values", () => {
       const column = withAutoCell({
         id: "missing",
-        accessorKey: "missing" as unknown,
+        accessorKey: "missing" as keyof TestData,
         header: "Missing",
         meta: {
           emptyValue: "N/A",
@@ -237,7 +235,7 @@ describe("withAutoCell", () => {
         id: "name",
         accessorKey: "name",
         header: "Name",
-        cell: "Custom String Cell" as unknown,
+        cell: "Custom String Cell" as any,
       });
 
       renderWithProviders(<TestCell column={column} data={testData} />);
@@ -271,8 +269,8 @@ describe("withAutoCells", () => {
     const result = withAutoCells(columns);
 
     expect(result).toHaveLength(2);
-    expect(result[0].cell).toBeDefined();
-    expect(result[1].cell).toBeDefined();
+    expect(result[0]?.cell).toBeDefined();
+    expect(result[1]?.cell).toBeDefined();
   });
 });
 
@@ -352,10 +350,10 @@ describe("withAutoFeatures", () => {
 
     expect(result).toHaveLength(2);
     // Should have cell functions
-    expect(result[0].cell).toBeDefined();
-    expect(result[1].cell).toBeDefined();
+    expect(result[0]?.cell).toBeDefined();
+    expect(result[1]?.cell).toBeDefined();
     // Currency column should have numeric variant
-    expect(result[1].meta?.variant).toBe("numeric");
+    expect(result[1]?.meta?.variant).toBe("numeric");
   });
 
   it("should preserve all original column properties", () => {
@@ -375,12 +373,16 @@ describe("withAutoFeatures", () => {
 
     const result = withAutoFeatures(columns);
 
-    expect(result[0].id).toBe("test");
-    expect(result[0].accessorKey).toBe("name");
-    expect(result[0].header).toBe("Test Header");
-    expect(result[0].enableSorting).toBe(false);
-    expect(result[0].enableHiding).toBe(true);
-    expect(result[0].meta?.displayName).toBe("Test Display");
+    expect(result[0]?.id).toBe("test");
+    expect(
+      result[0] && "accessorKey" in result[0]
+        ? result[0].accessorKey
+        : undefined
+    ).toBe("name");
+    expect(result[0]?.header).toBe("Test Header");
+    expect(result[0]?.enableSorting).toBe(false);
+    expect(result[0]?.enableHiding).toBe(true);
+    expect(result[0]?.meta?.displayName).toBe("Test Display");
   });
 
   it("should work with accessor functions", () => {
@@ -395,7 +397,9 @@ describe("withAutoFeatures", () => {
 
     const result = withAutoFeatures(columns);
 
-    expect(result[0].accessorFn).toBe(accessorFn);
-    expect(result[0].cell).toBeDefined();
+    expect(
+      result[0] && "accessorFn" in result[0] ? result[0].accessorFn : undefined
+    ).toBe(accessorFn);
+    expect(result[0]?.cell).toBeDefined();
   });
 });

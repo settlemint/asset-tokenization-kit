@@ -12,11 +12,6 @@ import {
   createMinimalSearchParams,
   createDebouncedUrlUpdate,
 } from "./search-param-serializers";
-// Define test data type
-interface _TestData {
-  id: string;
-  name: string;
-}
 
 describe("search-param-serializers", () => {
   describe("encodeObjectParam", () => {
@@ -37,9 +32,11 @@ describe("search-param-serializers", () => {
     });
 
     it("should return undefined for objects that cannot be serialized", () => {
-      const circular: unknown = { a: 1 };
+      const circular: Record<string, unknown> = { a: 1 };
       circular.self = circular; // Create circular reference
-      expect(encodeObjectParam(circular)).toBeUndefined();
+      expect(
+        encodeObjectParam(circular as Record<string, unknown>)
+      ).toBeUndefined();
     });
 
     it("should handle objects with undefined values", () => {
@@ -469,11 +466,11 @@ describe("search-param-serializers", () => {
 
     it("should handle null values", () => {
       const result = tableStateToSearchParams({
-        sorting: null as unknown,
-        columnFilters: null as unknown,
-        globalFilter: null as unknown,
-        columnVisibility: null as unknown,
-        rowSelection: null as unknown,
+        sorting: null as any,
+        columnFilters: null as any,
+        globalFilter: null as any,
+        columnVisibility: null as any,
+        rowSelection: null as any,
       });
 
       expect(result).toEqual({
@@ -498,9 +495,7 @@ describe("search-param-serializers", () => {
         rowSelection: { row1: true },
       };
 
-      const result = searchParamsToTableState(
-        params as ReturnType<typeof vi.fn>
-      );
+      const result = searchParamsToTableState(params);
       expect(result).toEqual(params);
     });
   });

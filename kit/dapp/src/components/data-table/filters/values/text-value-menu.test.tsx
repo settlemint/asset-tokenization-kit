@@ -6,7 +6,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { PropertyFilterTextValueMenu } from "./text-value-menu";
 import { renderWithProviders } from "../../test-utils";
-import type { Column, ColumnMeta } from "@tanstack/react-table";
+import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import type { FilterValue } from "../types/filter-types";
 // Define test data type
 interface _TestData {
@@ -78,7 +78,7 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
           onClose={mockOnClose}
         />
       );
@@ -108,7 +108,7 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -124,7 +124,7 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
           onBack={mockOnBack}
         />
       );
@@ -141,7 +141,7 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -159,7 +159,7 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -188,12 +188,12 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
       const input = screen.getByPlaceholderText("filters.text.placeholder");
-      expect(input.value).toBe("test value");
+      expect((input as HTMLInputElement).value).toBe("test value");
 
       const containsButton = screen.getByText("filters.text.contains");
       const doesNotContainButton = screen.getByText(
@@ -222,7 +222,7 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -242,7 +242,7 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -266,14 +266,14 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
       const input = screen.getByPlaceholderText("filters.text.placeholder");
       await user.type(input, "hello world");
 
-      expect(input.value).toBe("hello world");
+      expect((input as HTMLInputElement).value).toBe("hello world");
     });
 
     it("should handle empty initial value", () => {
@@ -291,12 +291,12 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
       const input = screen.getByPlaceholderText("filters.text.placeholder");
-      expect(input.value).toBe("");
+      expect((input as HTMLInputElement).value).toBe("");
     });
   });
 
@@ -312,7 +312,7 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
           onClose={mockOnClose}
         />
       );
@@ -342,7 +342,7 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
           onClose={mockOnClose}
         />
       );
@@ -384,7 +384,7 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
           onClose={mockOnClose}
         />
       );
@@ -411,7 +411,7 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
           onClose={mockOnClose}
         />
       );
@@ -446,7 +446,7 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
           onClose={mockOnClose}
         />
       );
@@ -458,7 +458,7 @@ describe("PropertyFilterTextValueMenu", () => {
       expect(mockOnClose).toHaveBeenCalled();
 
       const input = screen.getByPlaceholderText("filters.text.placeholder");
-      expect(input.value).toBe("");
+      expect((input as HTMLInputElement).value).toBe("");
     });
 
     it("should clear input value when clear button is clicked", async () => {
@@ -470,7 +470,7 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -496,7 +496,7 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
           onClose={mockOnClose}
         />
       );
@@ -526,7 +526,7 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -550,7 +550,7 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
           onBack={mockOnBack}
         />
       );
@@ -570,7 +570,7 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -597,7 +597,7 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
           onClose={mockOnClose}
         />
       );
@@ -627,7 +627,7 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -664,12 +664,12 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
       const input = screen.getByPlaceholderText("filters.text.placeholder");
-      expect(input.value).toBe("");
+      expect((input as HTMLInputElement).value).toBe("");
     });
 
     it("should handle filter with empty values array", () => {
@@ -687,12 +687,12 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
       const input = screen.getByPlaceholderText("filters.text.placeholder");
-      expect(input.value).toBe("");
+      expect((input as HTMLInputElement).value).toBe("");
     });
 
     it("should handle special characters in input", async () => {
@@ -706,7 +706,7 @@ describe("PropertyFilterTextValueMenu", () => {
           id="name"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
           onClose={mockOnClose}
         />
       );

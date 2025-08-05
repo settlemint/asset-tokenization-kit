@@ -10,32 +10,32 @@ interface _TestData {
 
 // Mock the individual value menu components
 vi.mock("./date-value-menu", () => ({
-  PropertyFilterDateValueMenu: ({ id }: unknown) => (
-    <div data-testid="date-value-menu">{id}</div>
+  PropertyFilterDateValueMenu: ({ id }: { id: unknown }) => (
+    <div data-testid="date-value-menu">{String(id)}</div>
   ),
 }));
 
 vi.mock("./multi-option-value-menu", () => ({
-  PropertyFilterMultiOptionValueMenu: ({ id }: unknown) => (
-    <div data-testid="multi-option-value-menu">{id}</div>
+  PropertyFilterMultiOptionValueMenu: ({ id }: { id: unknown }) => (
+    <div data-testid="multi-option-value-menu">{String(id)}</div>
   ),
 }));
 
 vi.mock("./number-value-menu", () => ({
-  PropertyFilterNumberValueMenu: ({ id }: unknown) => (
-    <div data-testid="number-value-menu">{id}</div>
+  PropertyFilterNumberValueMenu: ({ id }: { id: unknown }) => (
+    <div data-testid="number-value-menu">{String(id)}</div>
   ),
 }));
 
 vi.mock("./option-value-menu", () => ({
-  PropertyFilterOptionValueMenu: ({ id }: unknown) => (
-    <div data-testid="option-value-menu">{id}</div>
+  PropertyFilterOptionValueMenu: ({ id }: { id: unknown }) => (
+    <div data-testid="option-value-menu">{String(id)}</div>
   ),
 }));
 
 vi.mock("./text-value-menu", () => ({
-  PropertyFilterTextValueMenu: ({ id }: unknown) => (
-    <div data-testid="text-value-menu">{id}</div>
+  PropertyFilterTextValueMenu: ({ id }: { id: unknown }) => (
+    <div data-testid="text-value-menu">{String(id)}</div>
   ),
 }));
 
@@ -107,7 +107,7 @@ describe("PropertyFilterValueMenu", () => {
 
     it("should return null for undefined type", () => {
       const props = createProps("");
-      props.columnMeta = { type: undefined } as unknown;
+      props.columnMeta = { type: undefined } as ColumnMeta<unknown, unknown>;
 
       const { container } = render(<PropertyFilterValueMenu {...props} />);
 
@@ -134,8 +134,8 @@ describe("PropertyFilterValueMenu", () => {
 
     it("should handle optional callbacks being undefined", () => {
       const props = createProps("text");
-      props.onClose = undefined;
-      props.onBack = undefined;
+      props.onClose = undefined as unknown as typeof mockOnClose;
+      props.onBack = undefined as unknown as typeof mockOnBack;
 
       render(<PropertyFilterValueMenu {...props} />);
 
@@ -154,7 +154,7 @@ describe("PropertyFilterValueMenu", () => {
 
     it("should handle numeric type value", () => {
       const props = createProps("option");
-      props.columnMeta = { type: 123 } as unknown;
+      props.columnMeta = { type: 123 as any } as ColumnMeta<unknown, unknown>;
 
       const { container } = render(<PropertyFilterValueMenu {...props} />);
 
@@ -163,7 +163,7 @@ describe("PropertyFilterValueMenu", () => {
 
     it("should handle null columnMeta type", () => {
       const props = createProps("option");
-      props.columnMeta = { type: null } as unknown;
+      props.columnMeta = { type: null as any } as ColumnMeta<unknown, unknown>;
 
       const { container } = render(<PropertyFilterValueMenu {...props} />);
 
@@ -201,7 +201,7 @@ describe("PropertyFilterValueMenu", () => {
           { value: "active", label: "Active" },
           { value: "inactive", label: "Inactive" },
         ],
-      } as unknown;
+      } as ColumnMeta<unknown, unknown>;
 
       render(<PropertyFilterValueMenu {...props} />);
 
@@ -213,7 +213,7 @@ describe("PropertyFilterValueMenu", () => {
       props.column = {
         id: "name",
         accessorFn: (row: _TestData) => row.name,
-      } as unknown;
+      } as unknown as Column<unknown>;
 
       render(<PropertyFilterValueMenu {...props} />);
 
@@ -240,14 +240,14 @@ describe("PropertyFilterValueMenu", () => {
         );
 
         if (container.firstChild) {
-          const testId = container.firstChild as HTMLElement.dataset.testid;
+          const testId = (container.firstChild as HTMLElement).dataset?.testid;
           if (testId) renderedMenus.push(testId);
         }
       });
 
       // Should have rendered 6 different menus (unknown returns null)
       expect(renderedMenus).toHaveLength(6);
-      expect(new Set(renderedMenus).size).toBe(6); // 6 unique menus
+      expect(new Set(renderedMenus).size).toBe(5); // 5 unique menus (text and address share the same menu)
     });
   });
 });

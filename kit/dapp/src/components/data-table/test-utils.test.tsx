@@ -16,6 +16,9 @@ describe("Test Utils", () => {
   describe("Mock Icons", () => {
     it("should render Filter icon", () => {
       const FilterIcon = mockIcons.Filter;
+      if (!FilterIcon) {
+        throw new Error("Filter icon not found");
+      }
       const { getByTestId } = render(<FilterIcon className="test-class" />);
 
       const icon = getByTestId("icon-filter");
@@ -26,6 +29,9 @@ describe("Test Utils", () => {
 
     it("should render Download icon", () => {
       const DownloadIcon = mockIcons.Download;
+      if (!DownloadIcon) {
+        throw new Error("Download icon not found");
+      }
       const { getByTestId } = render(
         <DownloadIcon className="download-class" />
       );
@@ -38,6 +44,9 @@ describe("Test Utils", () => {
 
     it("should render Settings icon", () => {
       const SettingsIcon = mockIcons.Settings;
+      if (!SettingsIcon) {
+        throw new Error("Settings icon not found");
+      }
       const { getByTestId } = render(
         <SettingsIcon className="settings-class" />
       );
@@ -50,6 +59,9 @@ describe("Test Utils", () => {
 
     it("should render MoreHorizontal icon", () => {
       const MoreIcon = mockIcons.MoreHorizontal;
+      if (!MoreIcon) {
+        throw new Error("MoreHorizontal icon not found");
+      }
       const { getByTestId } = render(<MoreIcon className="more-class" />);
 
       const icon = getByTestId("icon-more");
@@ -79,7 +91,11 @@ describe("Test Utils", () => {
       expect(column.id).toBe("test");
       expect(column.columnDef.id).toBe("test");
       expect(column.columnDef.header).toBe("Test");
-      expect(column.columnDef.accessorKey).toBe("test");
+      expect(
+        "accessorKey" in column.columnDef
+          ? column.columnDef.accessorKey
+          : undefined
+      ).toBe("test");
       expect(column.columnDef.enableSorting).toBe(true);
       expect(column.columnDef.enableHiding).toBe(true);
       expect(column.columnDef.meta?.displayName).toBe("Test");
@@ -105,7 +121,11 @@ describe("Test Utils", () => {
       expect(column.id).toBe("custom");
       expect(column.columnDef.id).toBe("custom");
       expect(column.columnDef.header).toBe("Custom Header");
-      expect(column.columnDef.accessorKey).toBe("customKey");
+      expect(
+        "accessorKey" in column.columnDef
+          ? column.columnDef.accessorKey
+          : undefined
+      ).toBe("customKey");
       expect(column.columnDef.enableSorting).toBe(false);
       expect(column.columnDef.enableHiding).toBe(false);
       expect(column.columnDef.meta?.displayName).toBe("Custom Display");
@@ -147,17 +167,17 @@ describe("Test Utils", () => {
 
       const [active, inactive, pending] = mockFilterOptions;
 
-      expect(active.label).toBe("Active");
-      expect(active.value).toBe("active");
-      expect(active.icon).toBe(mockIcons.ChevronUp);
+      expect(active?.label).toBe("Active");
+      expect(active?.value).toBe("active");
+      expect(active?.icon).toBe(mockIcons.ChevronUp);
 
-      expect(inactive.label).toBe("Inactive");
-      expect(inactive.value).toBe("inactive");
-      expect(inactive.icon).toBe(mockIcons.ChevronDown);
+      expect(inactive?.label).toBe("Inactive");
+      expect(inactive?.value).toBe("inactive");
+      expect(inactive?.icon).toBe(mockIcons.ChevronDown);
 
-      expect(pending.label).toBe("Pending");
-      expect(pending.value).toBe("pending");
-      expect(pending.icon).toBe(mockIcons.Settings);
+      expect(pending?.label).toBe("Pending");
+      expect(pending?.value).toBe("pending");
+      expect(pending?.icon).toBe(mockIcons.Settings);
     });
   });
 
@@ -194,12 +214,24 @@ describe("Test Utils", () => {
 
       if (deleteAction) {
         const startTime = Date.now();
-        await deleteAction.execute([], []);
+        await deleteAction.execute({
+          selectedRows: [],
+          selectedRowIds: [],
+          table: {} as any,
+          onComplete: vi.fn(),
+          onError: vi.fn(),
+        });
         const endTime = Date.now();
 
         // Should take at least 100ms due to setTimeout
         expect(endTime - startTime).toBeGreaterThanOrEqual(90);
-        expect(deleteAction.execute).toHaveBeenCalledWith([], []);
+        expect(deleteAction.execute).toHaveBeenCalledWith({
+          selectedRows: [],
+          selectedRowIds: [],
+          table: expect.any(Object),
+          onComplete: expect.any(Function),
+          onError: expect.any(Function),
+        });
       }
     });
 
@@ -210,12 +242,24 @@ describe("Test Utils", () => {
 
       if (archiveAction) {
         const startTime = Date.now();
-        await archiveAction.execute([], []);
+        await archiveAction.execute({
+          selectedRows: [],
+          selectedRowIds: [],
+          table: {} as any,
+          onComplete: vi.fn(),
+          onError: vi.fn(),
+        });
         const endTime = Date.now();
 
         // Should take at least 100ms due to setTimeout
         expect(endTime - startTime).toBeGreaterThanOrEqual(90);
-        expect(archiveAction.execute).toHaveBeenCalledWith([], []);
+        expect(archiveAction.execute).toHaveBeenCalledWith({
+          selectedRows: [],
+          selectedRowIds: [],
+          table: expect.any(Object),
+          onComplete: expect.any(Function),
+          onError: expect.any(Function),
+        });
       }
     });
   });

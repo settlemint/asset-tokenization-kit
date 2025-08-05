@@ -6,7 +6,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { PropertyFilterNumberValueMenu } from "./number-value-menu";
 import { renderWithProviders } from "../../test-utils";
-import type { Column, ColumnMeta } from "@tanstack/react-table";
+import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import type { FilterValue } from "../types/filter-types";
 // Define test data type
 interface _TestData {
@@ -127,7 +127,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
           onClose={mockOnClose}
         />
       );
@@ -156,7 +156,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -172,7 +172,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
           onBack={mockOnBack}
         />
       );
@@ -189,7 +189,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -207,7 +207,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -240,7 +240,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -271,12 +271,12 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
       const input = screen.getByPlaceholderText("filters.number.placeholder");
-      expect(input.value).toBe("42");
+      expect((input as HTMLInputElement).value).toBe("42");
     });
 
     it("should handle values at max with '+' suffix", () => {
@@ -297,12 +297,12 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
       const input = screen.getByPlaceholderText("filters.number.placeholder");
-      expect(input.value).toBe("1000+");
+      expect((input as HTMLInputElement).value).toBe("1000+");
     });
   });
 
@@ -316,7 +316,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -344,7 +344,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -374,7 +374,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -382,7 +382,7 @@ describe("PropertyFilterNumberValueMenu", () => {
       await user.click(singleButton);
 
       const input = screen.getByPlaceholderText("filters.number.placeholder");
-      expect(input.value).toBe("25");
+      expect((input as HTMLInputElement).value).toBe("25");
     });
   });
 
@@ -396,7 +396,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -416,7 +416,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -447,7 +447,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -455,7 +455,7 @@ describe("PropertyFilterNumberValueMenu", () => {
       await user.click(sliderButton);
 
       const input = screen.getByPlaceholderText("filters.number.placeholder");
-      expect(input.value).toBe("50");
+      expect((input as HTMLInputElement).value).toBe("50");
     });
 
     it("should handle slider value changes in range mode", async () => {
@@ -467,7 +467,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -499,7 +499,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
           onClose={mockOnClose}
         />
       );
@@ -531,7 +531,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
           onClose={mockOnClose}
         />
       );
@@ -569,7 +569,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
           onClose={mockOnClose}
         />
       );
@@ -610,7 +610,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
           onClose={mockOnClose}
         />
       );
@@ -641,7 +641,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
           onClose={mockOnClose}
         />
       );
@@ -680,7 +680,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
           onClose={mockOnClose}
         />
       );
@@ -692,7 +692,7 @@ describe("PropertyFilterNumberValueMenu", () => {
       expect(mockOnClose).toHaveBeenCalled();
 
       const input = screen.getByPlaceholderText("filters.number.placeholder");
-      expect(input.value).toBe("10"); // Dataset min
+      expect((input as HTMLInputElement).value).toBe("10"); // Dataset min
     });
   });
 
@@ -706,7 +706,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
           onBack={mockOnBack}
         />
       );
@@ -731,7 +731,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -748,7 +748,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -770,7 +770,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
           onClose={mockOnClose}
         />
       );
@@ -808,12 +808,12 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
       const input = screen.getByPlaceholderText("filters.number.placeholder");
-      expect(input.value).toBe("0"); // Falls back to 0
+      expect((input as HTMLInputElement).value).toBe("0"); // Falls back to 0
     });
 
     it("should handle empty filter values array", () => {
@@ -831,12 +831,12 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
       const input = screen.getByPlaceholderText("filters.number.placeholder");
-      expect(input.value).toBe("0");
+      expect((input as HTMLInputElement).value).toBe("0");
     });
 
     it("should handle missing values in range mode", () => {
@@ -857,7 +857,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -879,7 +879,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -919,7 +919,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 
@@ -945,7 +945,7 @@ describe("PropertyFilterNumberValueMenu", () => {
           id="price"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable()}
+          table={createMockTable() as unknown as Table<unknown>}
         />
       );
 

@@ -84,25 +84,22 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
   // For objects, we need to deduplicate based on their content, not reference
   const uniqueVals =
     columnMeta.transformOptionFn || isColumnOptionArray(columnVals)
-      ? columnVals.reduce<NonNullable<TValue>[]>((acc, curr) => {
-          const key = columnMeta.transformOptionFn
-            ? columnMeta.transformOptionFn(
-                curr as ElementType<NonNullable<TValue>>
-              ).value
-            : (curr as ColumnOption).value;
-          const exists = acc.some((item) => {
-            const itemKey = columnMeta.transformOptionFn
+      ? (() => {
+          const seen = new Set<string | number>();
+          const result: NonNullable<TValue>[] = [];
+          for (const curr of columnVals) {
+            const key = columnMeta.transformOptionFn
               ? columnMeta.transformOptionFn(
-                  item as ElementType<NonNullable<TValue>>
+                  curr as ElementType<NonNullable<TValue>>
                 ).value
-              : (item as ColumnOption).value;
-            return itemKey === key;
-          });
-          if (!exists) {
-            acc.push(curr);
+              : (curr as unknown as ColumnOption).value;
+            if (!seen.has(key)) {
+              seen.add(key);
+              result.push(curr);
+            }
           }
-          return acc;
-        }, [])
+          return result;
+        })()
       : uniq(columnVals);
 
   // If static options are provided, use them
@@ -124,7 +121,7 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
   else if (isColumnOptionArray(uniqueVals)) {
     // Deduplicate by value property since uniq() doesn't work with objects
     const seen = new Set<string>();
-    options = uniqueVals.filter((option) => {
+    options = (uniqueVals as ColumnOption[]).filter((option) => {
       if (seen.has(option.value)) {
         return false;
       }
@@ -147,7 +144,7 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
       ? columnMeta.transformOptionFn(curr as ElementType<NonNullable<TValue>>)
           .value
       : isColumnOptionArray([curr])
-        ? (curr as ColumnOption).value
+        ? (curr as unknown as ColumnOption).value
         : (curr as string);
 
     acc[value] = (acc[value] ?? 0) + 1;
@@ -210,7 +207,7 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
 
             return (
               <OptionItem
-                key={`${v.value}-${index}`}
+                key={v.value}
                 option={v}
                 checked={checked}
                 count={count}

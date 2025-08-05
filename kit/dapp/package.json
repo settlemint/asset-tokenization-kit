@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit",
     "posttypecheck": "bun gql-tada check",
     "watch": "tsc --noEmit --watch",
-    "build": "vite build",
+    "build": "vite build --logLevel=error",
     "shadcn": "bunx shadcn@canary",
     "codegen:settlemint": "settlemint codegen",
     "codegen:gql-tada": "echo \"GraphQL codegen disabled\"",

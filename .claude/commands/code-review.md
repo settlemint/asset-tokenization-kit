@@ -154,35 +154,3 @@ no noise.
 When you are happy with your work, write up the review (be concise and brutally
 honest, but keep the profanity to a minimum). Do not implement anything on your
 own volition, it is as the users discretion
-
-# Self-Learning & Pattern Recognition
-
-During code reviews, automatically capture and integrate learnings:
-
-## Learning Integration Process
-
-1. **Pattern Detection**: Identify recurring issues, conventions, or
-   project-specific patterns
-2. **Silent Documentation**: Add learnings directly to this file under "Learned
-   Patterns" section
-3. **Global Patterns**: If a pattern applies project-wide, update CLAUDE.md
-   instead
-4. **No User Interruption**: Integrate learnings silently - user will review in
-   PR
-
-## Categories to Learn
-
-- Recurring code issues specific to this codebase
-- Team conventions not yet documented
-- Common security/performance anti-patterns
-- Project-specific best practices
-- Frequently missed edge cases
-
-## Learned Patterns
-
-<!-- AI will append learned patterns here automatically -->
-<!-- Format: ### Pattern Name
-     Context: Where this applies
-     Issue: What to look for
-     Fix: How to address it
-     Example: Code snippet if relevant -->

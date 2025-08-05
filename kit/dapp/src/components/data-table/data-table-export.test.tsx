@@ -7,6 +7,7 @@ import userEvent from "@testing-library/user-event";
 import { DataTableExport } from "./data-table-export";
 import { renderWithProviders, createMockTable } from "./test-utils";
 import { toast } from "sonner";
+import type { Table } from "@tanstack/react-table";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
@@ -71,7 +72,9 @@ describe("DataTableExport", () => {
   describe("Component Rendering", () => {
     it("should render export button with icon and text", () => {
       const mockTable = createMockTable();
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const button = screen.getByRole("button", { name: /export/i });
       expect(button).toBeInTheDocument();
@@ -91,7 +94,7 @@ describe("DataTableExport", () => {
     it("should render with correct layout", () => {
       const mockTable = createMockTable();
       const { container } = renderWithProviders(
-        <DataTableExport table={mockTable as unknown} />
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
       );
 
       const wrapper = container.firstElementChild;
@@ -100,7 +103,9 @@ describe("DataTableExport", () => {
 
     it("should render with outline variant and sm size", () => {
       const mockTable = createMockTable();
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const button = screen.getByRole("button");
       expect(button).toHaveClass("border");
@@ -143,7 +148,9 @@ describe("DataTableExport", () => {
         options: { meta: { name: "users" } },
       });
 
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -196,7 +203,9 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -218,7 +227,9 @@ describe("DataTableExport", () => {
         getAllLeafColumns: vi.fn().mockReturnValue([]),
       });
 
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -237,7 +248,9 @@ describe("DataTableExport", () => {
         getAllLeafColumns: vi.fn().mockReturnValue([]),
       });
 
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -256,7 +269,9 @@ describe("DataTableExport", () => {
         }),
       });
 
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -276,7 +291,9 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -321,7 +338,9 @@ describe("DataTableExport", () => {
         ),
       });
 
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -365,7 +384,9 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -392,7 +413,9 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -416,7 +439,9 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -440,7 +465,9 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -470,7 +497,9 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -511,7 +540,9 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -552,7 +583,9 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -593,7 +626,9 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -631,7 +666,9 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -669,7 +706,9 @@ describe("DataTableExport", () => {
         ),
       });
 
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -697,7 +736,9 @@ describe("DataTableExport", () => {
         getAllLeafColumns: vi.fn().mockReturnValue([]),
       });
 
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -710,7 +751,9 @@ describe("DataTableExport", () => {
   describe("Accessibility", () => {
     it("should have accessible button label", () => {
       const mockTable = createMockTable();
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const button = screen.getByRole("button");
       expect(button).toHaveTextContent("export");
@@ -718,7 +761,9 @@ describe("DataTableExport", () => {
 
     it("should mark icon as decorative", () => {
       const mockTable = createMockTable();
-      renderWithProviders(<DataTableExport table={mockTable as unknown} />);
+      renderWithProviders(
+        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+      );
 
       const icon = screen.getByRole("button").querySelector("svg");
       expect(icon).toHaveAttribute("aria-hidden", "true");

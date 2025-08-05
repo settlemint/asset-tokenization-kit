@@ -16,6 +16,7 @@ import {
   useBulkActions,
 } from "./data-table-bulk-actions";
 import type { BulkActionContext } from "./types/bulk-actions";
+import type { Table } from "@tanstack/react-table";
 
 // Mock document for download testing
 let createElementSpy: ReturnType<typeof vi.spyOn>;
@@ -33,13 +34,13 @@ beforeEach(() => {
     remove: vi.fn(),
   };
 
-  createElementSpy = vi
-    .spyOn(document, "createElement")
-    .mockReturnValue(mockLink as unknown as HTMLElement);
+  createElementSpy = vi.spyOn(document, "createElement");
+  createElementSpy.mockReturnValue(mockLink as unknown as HTMLElement);
   vi.spyOn(document.body, "append").mockImplementation(() => {});
 });
 
 describe("data-table-bulk-actions", () => {
+  const mockTable = {} as Table<{ id: string; name: string }>;
   const mockContext: BulkActionContext<{ id: string; name: string }> = {
     selectedRows: [
       { id: "1", name: "Item 1" },
@@ -47,6 +48,8 @@ describe("data-table-bulk-actions", () => {
     ],
     selectedRowIds: ["1", "2"],
     onComplete: vi.fn(),
+    onError: vi.fn(),
+    table: mockTable,
   };
 
   describe("createExportAction", () => {
