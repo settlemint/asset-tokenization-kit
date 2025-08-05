@@ -5,8 +5,11 @@ import { screen, within } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { DataTableAdvancedToolbar } from "./data-table-advanced-toolbar";
-import { renderWithProviders, createMockTable } from "./test-utils";
-import type { Table } from "@tanstack/react-table";
+import {
+  renderWithProviders,
+  createMockTable,
+  overrideTableState,
+} from "./test-utils";
 
 // Mock child components
 vi.mock("./data-table-filter", () => ({
@@ -52,19 +55,11 @@ describe("DataTableAdvancedToolbar", () => {
   describe("Component Rendering", () => {
     it("should render toolbar with all components when enabled", () => {
       const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
         setGlobalFilter: vi.fn(),
         setColumnFilters: vi.fn(),
       });
 
-      renderWithProviders(
-        <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
-        />
-      );
+      renderWithProviders(<DataTableAdvancedToolbar table={mockTable} />);
 
       // Check global search
       expect(screen.getByPlaceholderText("search")).toBeInTheDocument();
@@ -79,26 +74,18 @@ describe("DataTableAdvancedToolbar", () => {
       const mockTable = createMockTable();
 
       const { container } = renderWithProviders(
-        <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
-          enableToolbar={false}
-        />
+        <DataTableAdvancedToolbar table={mockTable} enableToolbar={false} />
       );
 
       expect(container.firstChild).toBeNull();
     });
 
     it("should render with custom placeholder text", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+      const mockTable = createMockTable();
 
       renderWithProviders(
         <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
+          table={mockTable}
           placeholder="Custom search placeholder"
         />
       );
@@ -109,12 +96,7 @@ describe("DataTableAdvancedToolbar", () => {
     });
 
     it("should render with custom actions", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+      const mockTable = createMockTable();
 
       const customActions = (
         <button data-testid="custom-action">Custom Action</button>
@@ -122,7 +104,7 @@ describe("DataTableAdvancedToolbar", () => {
 
       renderWithProviders(
         <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
+          table={mockTable}
           customActions={customActions}
         />
       );
@@ -133,18 +115,12 @@ describe("DataTableAdvancedToolbar", () => {
 
   describe("Global Search Functionality", () => {
     it("should initialize search value from table state", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "initial search",
-        })),
+      const mockTable = createMockTable();
+      overrideTableState(mockTable, {
+        globalFilter: "initial search",
       });
 
-      renderWithProviders(
-        <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
-        />
-      );
+      renderWithProviders(<DataTableAdvancedToolbar table={mockTable} />);
 
       const searchInput = screen.getByDisplayValue("initial search");
       expect(searchInput).toBeInTheDocument();
@@ -154,18 +130,10 @@ describe("DataTableAdvancedToolbar", () => {
       const user = userEvent.setup();
       const setGlobalFilter = vi.fn();
       const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
         setGlobalFilter,
       });
 
-      renderWithProviders(
-        <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
-        />
-      );
+      renderWithProviders(<DataTableAdvancedToolbar table={mockTable} />);
 
       const searchInput = screen.getByPlaceholderText("search");
       await user.type(searchInput, "test search");
@@ -175,17 +143,12 @@ describe("DataTableAdvancedToolbar", () => {
 
     it("should prevent event propagation on input click", async () => {
       const user = userEvent.setup();
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+      const mockTable = createMockTable();
 
       const handleClick = vi.fn();
       renderWithProviders(
         <div onClick={handleClick}>
-          <DataTableAdvancedToolbar table={mockTable as unknown} />
+          <DataTableAdvancedToolbar table={mockTable} />
         </div>
       );
 
@@ -197,16 +160,11 @@ describe("DataTableAdvancedToolbar", () => {
     });
 
     it("should not render search input when enableGlobalSearch is false", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+      const mockTable = createMockTable();
 
       renderWithProviders(
         <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
+          table={mockTable}
           enableGlobalSearch={false}
         />
       );
@@ -217,52 +175,31 @@ describe("DataTableAdvancedToolbar", () => {
 
   describe("Filter Management", () => {
     it("should show clear all button when filters exist", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [{ id: "name", value: "test" }],
-          globalFilter: "",
-        })),
+      const mockTable = createMockTable();
+      overrideTableState(mockTable, {
+        columnFilters: [{ id: "name", value: "test" }],
       });
 
-      renderWithProviders(
-        <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
-        />
-      );
+      renderWithProviders(<DataTableAdvancedToolbar table={mockTable} />);
 
       expect(screen.getByText("clearAll")).toBeInTheDocument();
     });
 
     it("should show clear all button when global filter exists", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "search term",
-        })),
+      const mockTable = createMockTable();
+      overrideTableState(mockTable, {
+        globalFilter: "search term",
       });
 
-      renderWithProviders(
-        <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
-        />
-      );
+      renderWithProviders(<DataTableAdvancedToolbar table={mockTable} />);
 
       expect(screen.getByText("clearAll")).toBeInTheDocument();
     });
 
     it("should hide clear all button when no filters exist", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+      const mockTable = createMockTable();
 
-      renderWithProviders(
-        <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
-        />
-      );
+      renderWithProviders(<DataTableAdvancedToolbar table={mockTable} />);
 
       expect(screen.queryByText("clearAll")).not.toBeInTheDocument();
     });
@@ -272,19 +209,15 @@ describe("DataTableAdvancedToolbar", () => {
       const setColumnFilters = vi.fn();
       const setGlobalFilter = vi.fn();
       const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [{ id: "name", value: "test" }],
-          globalFilter: "search",
-        })),
         setColumnFilters,
         setGlobalFilter,
       });
+      overrideTableState(mockTable, {
+        columnFilters: [{ id: "name", value: "test" }],
+        globalFilter: "search",
+      });
 
-      renderWithProviders(
-        <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
-        />
-      );
+      renderWithProviders(<DataTableAdvancedToolbar table={mockTable} />);
 
       const clearButton = screen.getByText("clearAll");
       await user.click(clearButton);
@@ -296,19 +229,15 @@ describe("DataTableAdvancedToolbar", () => {
     it("should clear search input when clear all filters is clicked", async () => {
       const user = userEvent.setup();
       const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [{ id: "name", value: "test" }],
-          globalFilter: "initial search",
-        })),
         setColumnFilters: vi.fn(),
         setGlobalFilter: vi.fn(),
       });
+      overrideTableState(mockTable, {
+        columnFilters: [{ id: "name", value: "test" }],
+        globalFilter: "initial search",
+      });
 
-      renderWithProviders(
-        <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
-        />
-      );
+      renderWithProviders(<DataTableAdvancedToolbar table={mockTable} />);
 
       const clearButton = screen.getByText("clearAll");
       await user.click(clearButton);
@@ -320,18 +249,17 @@ describe("DataTableAdvancedToolbar", () => {
     it("should prevent event propagation on clear filters click", async () => {
       const user = userEvent.setup();
       const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [{ id: "name", value: "test" }],
-          globalFilter: "",
-        })),
         setColumnFilters: vi.fn(),
         setGlobalFilter: vi.fn(),
+      });
+      overrideTableState(mockTable, {
+        columnFilters: [{ id: "name", value: "test" }],
       });
 
       const handleClick = vi.fn();
       renderWithProviders(
         <div onClick={handleClick}>
-          <DataTableAdvancedToolbar table={mockTable as unknown} />
+          <DataTableAdvancedToolbar table={mockTable} />
         </div>
       );
 
@@ -343,18 +271,13 @@ describe("DataTableAdvancedToolbar", () => {
     });
 
     it("should not render filter components when enableFilters is false", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [{ id: "name", value: "test" }],
-          globalFilter: "",
-        })),
+      const mockTable = createMockTable();
+      overrideTableState(mockTable, {
+        columnFilters: [{ id: "name", value: "test" }],
       });
 
       renderWithProviders(
-        <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
-          enableFilters={false}
-        />
+        <DataTableAdvancedToolbar table={mockTable} enableFilters={false} />
       );
 
       expect(screen.queryByTestId("data-table-filter")).not.toBeInTheDocument();
@@ -364,36 +287,20 @@ describe("DataTableAdvancedToolbar", () => {
 
   describe("Component Options", () => {
     it("should not render export component when enableExport is false", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+      const mockTable = createMockTable();
 
       renderWithProviders(
-        <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
-          enableExport={false}
-        />
+        <DataTableAdvancedToolbar table={mockTable} enableExport={false} />
       );
 
       expect(screen.queryByTestId("data-table-export")).not.toBeInTheDocument();
     });
 
     it("should not render view options when enableViewOptions is false", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+      const mockTable = createMockTable();
 
       renderWithProviders(
-        <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
-          enableViewOptions={false}
-        />
+        <DataTableAdvancedToolbar table={mockTable} enableViewOptions={false} />
       );
 
       expect(
@@ -402,18 +309,9 @@ describe("DataTableAdvancedToolbar", () => {
     });
 
     it("should render all components with default options", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+      const mockTable = createMockTable();
 
-      renderWithProviders(
-        <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
-        />
-      );
+      renderWithProviders(<DataTableAdvancedToolbar table={mockTable} />);
 
       expect(screen.getByPlaceholderText("search")).toBeInTheDocument();
       expect(screen.getByTestId("data-table-filter")).toBeInTheDocument();
@@ -429,15 +327,10 @@ describe("DataTableAdvancedToolbar", () => {
     });
 
     it("should render mobile layout when isMobile is true", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+      const mockTable = createMockTable();
 
       const { container } = renderWithProviders(
-        <DataTableAdvancedToolbar table={mockTable as unknown} />
+        <DataTableAdvancedToolbar table={mockTable} />
       );
 
       // Check for mobile-specific layout classes
@@ -446,54 +339,34 @@ describe("DataTableAdvancedToolbar", () => {
     });
 
     it("should render search input with mobile styling", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+      const mockTable = createMockTable();
 
-      renderWithProviders(
-        <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
-        />
-      );
+      renderWithProviders(<DataTableAdvancedToolbar table={mockTable} />);
 
       const searchInput = screen.getByPlaceholderText("search");
       expect(searchInput).toHaveClass("pl-9", "h-9");
     });
 
     it("should render clear button with mobile styling", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [{ id: "name", value: "test" }],
-          globalFilter: "",
-        })),
+      const mockTable = createMockTable();
+      overrideTableState(mockTable, {
+        columnFilters: [{ id: "name", value: "test" }],
       });
 
-      renderWithProviders(
-        <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
-        />
-      );
+      renderWithProviders(<DataTableAdvancedToolbar table={mockTable} />);
 
       const clearButton = screen.getByText("clearAll");
       expect(clearButton).toHaveClass("h-7", "text-xs", "ml-auto");
     });
 
     it("should group actions in flex-wrap container on mobile", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+      const mockTable = createMockTable();
 
       const customActions = <button data-testid="custom-action">Custom</button>;
 
       const { container } = renderWithProviders(
         <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
+          table={mockTable}
           customActions={customActions}
         />
       );
@@ -517,15 +390,10 @@ describe("DataTableAdvancedToolbar", () => {
 
   describe("Desktop Layout", () => {
     it("should render desktop layout when isMobile is false", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+      const mockTable = createMockTable();
 
       const { container } = renderWithProviders(
-        <DataTableAdvancedToolbar table={mockTable as unknown} />
+        <DataTableAdvancedToolbar table={mockTable} />
       );
 
       // Check for desktop-specific layout structure
@@ -539,15 +407,10 @@ describe("DataTableAdvancedToolbar", () => {
     });
 
     it("should render search input with desktop styling and max width", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+      const mockTable = createMockTable();
 
       const { container } = renderWithProviders(
-        <DataTableAdvancedToolbar table={mockTable as unknown} />
+        <DataTableAdvancedToolbar table={mockTable} />
       );
 
       const searchContainer = container.querySelector(
@@ -560,15 +423,10 @@ describe("DataTableAdvancedToolbar", () => {
     });
 
     it("should render separator between search and filters", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+      const mockTable = createMockTable();
 
       const { container } = renderWithProviders(
-        <DataTableAdvancedToolbar table={mockTable as unknown} />
+        <DataTableAdvancedToolbar table={mockTable} />
       );
 
       // Look for separator with vertical orientation
@@ -579,18 +437,12 @@ describe("DataTableAdvancedToolbar", () => {
     });
 
     it("should render clear button with desktop styling", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [{ id: "name", value: "test" }],
-          globalFilter: "",
-        })),
+      const mockTable = createMockTable();
+      overrideTableState(mockTable, {
+        columnFilters: [{ id: "name", value: "test" }],
       });
 
-      renderWithProviders(
-        <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
-        />
-      );
+      renderWithProviders(<DataTableAdvancedToolbar table={mockTable} />);
 
       const clearButton = screen.getByText("clearAll");
       expect(clearButton).toHaveClass(
@@ -602,18 +454,13 @@ describe("DataTableAdvancedToolbar", () => {
     });
 
     it("should render custom actions with separator in desktop layout", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+      const mockTable = createMockTable();
 
       const customActions = <button data-testid="custom-action">Custom</button>;
 
       const { container } = renderWithProviders(
         <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
+          table={mockTable}
           customActions={customActions}
         />
       );
@@ -628,16 +475,11 @@ describe("DataTableAdvancedToolbar", () => {
     });
 
     it("should not render separator when search is disabled", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+      const mockTable = createMockTable();
 
       const { container } = renderWithProviders(
         <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
+          table={mockTable}
           enableGlobalSearch={false}
         />
       );
@@ -650,18 +492,10 @@ describe("DataTableAdvancedToolbar", () => {
     });
 
     it("should not render separator when filters are disabled", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+      const mockTable = createMockTable();
 
       const { container } = renderWithProviders(
-        <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
-          enableFilters={false}
-        />
+        <DataTableAdvancedToolbar table={mockTable} enableFilters={false} />
       );
 
       // Should not have search/filter separator when filters are disabled
@@ -674,15 +508,10 @@ describe("DataTableAdvancedToolbar", () => {
 
   describe("Props Interface and TypeScript", () => {
     it("should accept DataTableAdvancedToolbarOptions interface", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+      const mockTable = createMockTable();
 
       const options = {
-        table: mockTable as unknown,
+        table: mockTable,
         enableToolbar: true,
         enableGlobalSearch: true,
         enableFilters: true,
@@ -700,18 +529,9 @@ describe("DataTableAdvancedToolbar", () => {
     });
 
     it("should have correct default values for optional props", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+      const mockTable = createMockTable();
 
-      renderWithProviders(
-        <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
-        />
-      );
+      renderWithProviders(<DataTableAdvancedToolbar table={mockTable} />);
 
       // Verify default behaviors (all features enabled by default)
       expect(screen.getByPlaceholderText("search")).toBeInTheDocument();
@@ -723,15 +543,10 @@ describe("DataTableAdvancedToolbar", () => {
 
   describe("Search Icon Rendering", () => {
     it("should render search icon with correct styling", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+      const mockTable = createMockTable();
 
       const { container } = renderWithProviders(
-        <DataTableAdvancedToolbar table={mockTable as unknown} />
+        <DataTableAdvancedToolbar table={mockTable} />
       );
 
       const searchIcon = container.querySelector("svg");
@@ -750,18 +565,12 @@ describe("DataTableAdvancedToolbar", () => {
 
   describe("FilterX Icon in Clear Button", () => {
     it("should render FilterX icon in clear button with correct styling", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [{ id: "name", value: "test" }],
-          globalFilter: "",
-        })),
+      const mockTable = createMockTable();
+      overrideTableState(mockTable, {
+        columnFilters: [{ id: "name", value: "test" }],
       });
 
-      renderWithProviders(
-        <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
-        />
-      );
+      renderWithProviders(<DataTableAdvancedToolbar table={mockTable} />);
 
       const clearButton = screen.getByText("clearAll");
       const filterIcon = clearButton.querySelector("svg");
@@ -772,18 +581,12 @@ describe("DataTableAdvancedToolbar", () => {
       const { useIsMobile } = await import("../../hooks/use-mobile");
       vi.mocked(useIsMobile).mockReturnValue(true);
 
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [{ id: "name", value: "test" }],
-          globalFilter: "",
-        })),
+      const mockTable = createMockTable();
+      overrideTableState(mockTable, {
+        columnFilters: [{ id: "name", value: "test" }],
       });
 
-      renderWithProviders(
-        <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
-        />
-      );
+      renderWithProviders(<DataTableAdvancedToolbar table={mockTable} />);
 
       const clearButton = screen.getByText("clearAll");
       const filterIcon = clearButton.querySelector("svg");
@@ -792,18 +595,12 @@ describe("DataTableAdvancedToolbar", () => {
     });
 
     it("should render FilterX icon with desktop styling", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [{ id: "name", value: "test" }],
-          globalFilter: "",
-        })),
+      const mockTable = createMockTable();
+      overrideTableState(mockTable, {
+        columnFilters: [{ id: "name", value: "test" }],
       });
 
-      renderWithProviders(
-        <DataTableAdvancedToolbar
-          table={mockTable as unknown as Table<unknown>}
-        />
-      );
+      renderWithProviders(<DataTableAdvancedToolbar table={mockTable} />);
 
       const clearButton = screen.getByText("clearAll");
       const filterIcon = clearButton.querySelector("svg");

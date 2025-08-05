@@ -403,7 +403,7 @@ describe("DataTable", () => {
       renderWithProviders(
         <DataTable
           {...defaultProps}
-          useURLState={true}
+          urlState={{ enabled: true }}
           bulkActions={{
             enabled: true,
             actions: mockBulkActions,
@@ -416,12 +416,12 @@ describe("DataTable", () => {
     });
 
     it("should handle selection clearing without URL state", () => {
-      const _mockSetLocalSelection = vi.fn();
+      // Local selection would be handled internally
 
       renderWithProviders(
         <DataTable
           {...defaultProps}
-          useURLState={false}
+          urlState={{ enabled: false }}
           bulkActions={{
             enabled: true,
             actions: mockBulkActions,

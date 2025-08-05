@@ -29,14 +29,14 @@ describe("DataTableViewOptions", () => {
       toggleVisibility: mockToggleVisibility,
       getCanHide: () => mockGetCanHide(),
       accessorFn: hasAccessor ? () => {} : undefined,
-    }) as unknown;
+    }) as unknown as Column<unknown>;
 
   const createMockTable = (columns: Column<unknown>[]): Table<unknown> =>
     ({
       getAllColumns: () => columns,
       getColumn: (columnId: string) =>
         columns.find((col) => col.id === columnId),
-    }) as unknown;
+    }) as unknown as Table<unknown>;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -176,7 +176,7 @@ describe("DataTableViewOptions", () => {
           if (id === "status") return statusColumn;
           return undefined;
         }),
-      } as unknown;
+      } as unknown as Table<unknown>;
 
       renderWithProviders(<DataTableViewOptions table={mockTable} />);
 
@@ -198,7 +198,7 @@ describe("DataTableViewOptions", () => {
       const mockTable = {
         getAllColumns: () => [createMockColumn("name")],
         getColumn: () => undefined, // Column not found
-      } as unknown;
+      } as unknown as Table<unknown>;
 
       renderWithProviders(<DataTableViewOptions table={mockTable} />);
 

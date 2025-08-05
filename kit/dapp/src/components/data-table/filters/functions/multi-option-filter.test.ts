@@ -8,8 +8,9 @@ import {
   __multiOptionFilterFn,
 } from "./multi-option-filter";
 import type { FilterValue } from "../types/filter-types";
+import type { ColumnOption } from "../types/column-types";
 // Define test data type
-interface _TestData {
+interface TestData {
   id: string;
   name: string;
 }
@@ -73,7 +74,7 @@ describe("multi-option-filter", () => {
     it("should return true when first filter value is falsy", () => {
       const filterValue: FilterValue<"multiOption", TestData> = {
         operator: "include",
-        values: [null],
+        values: [null as unknown as string[]],
         columnMeta: {},
       };
 
@@ -280,7 +281,7 @@ describe("multi-option-filter", () => {
       const filterValue: FilterValue<"multiOption", TestData> = {
         operator: "include",
         values: [["tag1"]],
-        columnMeta: null,
+        columnMeta: undefined,
       };
 
       const result = multiOptionFilterFn(mockRow, "testColumn", filterValue);
@@ -299,7 +300,9 @@ describe("multi-option-filter", () => {
         columnMeta: {},
       };
 
-      (isStringArray as ReturnType<typeof vi.fn>).mockReturnValue(true);
+      (isStringArray as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
+        true
+      );
 
       const result = multiOptionFilterFn(mockRow, "testColumn", filterValue);
 
@@ -321,8 +324,12 @@ describe("multi-option-filter", () => {
         columnMeta: {},
       };
 
-      (isStringArray as ReturnType<typeof vi.fn>).mockReturnValue(false);
-      (isColumnOptionArray as ReturnType<typeof vi.fn>).mockReturnValue(true);
+      (isStringArray as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
+        false
+      );
+      (
+        isColumnOptionArray as unknown as ReturnType<typeof vi.fn>
+      ).mockReturnValue(true);
 
       const result = multiOptionFilterFn(mockRow, "testColumn", filterValue);
 
@@ -333,7 +340,8 @@ describe("multi-option-filter", () => {
     it("should handle custom values with transformOptionFn", () => {
       const mockTransformFn = vi.fn((item) => ({
         value: `transformed-${item}`,
-      }));
+        label: `transformed-${item}`,
+      })) as (value: unknown) => ColumnOption;
       const mockRow = {
         getValue: vi.fn().mockReturnValue(["item1", "item2"]),
       } as unknown as Row<TestData>;
@@ -346,8 +354,12 @@ describe("multi-option-filter", () => {
         },
       };
 
-      (isStringArray as ReturnType<typeof vi.fn>).mockReturnValue(false);
-      (isColumnOptionArray as ReturnType<typeof vi.fn>).mockReturnValue(false);
+      (isStringArray as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
+        false
+      );
+      (
+        isColumnOptionArray as unknown as ReturnType<typeof vi.fn>
+      ).mockReturnValue(false);
 
       const result = multiOptionFilterFn(mockRow, "testColumn", filterValue);
 
@@ -367,8 +379,12 @@ describe("multi-option-filter", () => {
         columnMeta: {},
       };
 
-      (isStringArray as ReturnType<typeof vi.fn>).mockReturnValue(false);
-      (isColumnOptionArray as ReturnType<typeof vi.fn>).mockReturnValue(false);
+      (isStringArray as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
+        false
+      );
+      (
+        isColumnOptionArray as unknown as ReturnType<typeof vi.fn>
+      ).mockReturnValue(false);
 
       const result = multiOptionFilterFn(mockRow, "testColumn", filterValue);
 
@@ -395,8 +411,12 @@ describe("multi-option-filter", () => {
         },
       };
 
-      (isStringArray as ReturnType<typeof vi.fn>).mockReturnValue(false);
-      (isColumnOptionArray as ReturnType<typeof vi.fn>).mockReturnValue(false);
+      (isStringArray as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
+        false
+      );
+      (
+        isColumnOptionArray as unknown as ReturnType<typeof vi.fn>
+      ).mockReturnValue(false);
 
       const result = multiOptionFilterFn(mockRow, "testColumn", filterValue);
 
@@ -422,8 +442,12 @@ describe("multi-option-filter", () => {
         },
       };
 
-      (isStringArray as ReturnType<typeof vi.fn>).mockReturnValue(false);
-      (isColumnOptionArray as ReturnType<typeof vi.fn>).mockReturnValue(false);
+      (isStringArray as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
+        false
+      );
+      (
+        isColumnOptionArray as unknown as ReturnType<typeof vi.fn>
+      ).mockReturnValue(false);
 
       const result = multiOptionFilterFn(mockRow, "testColumn", filterValue);
 

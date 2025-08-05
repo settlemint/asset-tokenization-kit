@@ -110,7 +110,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={[]}
           selectedRows={[]}
-          table={mockTable as unknown}
+          table={mockTable}
           onSelectionClear={vi.fn()}
         />
       );
@@ -123,7 +123,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1", "2"]}
           selectedRows={[{ id: "1" }, { id: "2" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           onSelectionClear={vi.fn()}
         />
       );
@@ -136,7 +136,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1", "2", "3"]}
           selectedRows={[{ id: "1" }, { id: "2" }, { id: "3" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           onSelectionClear={vi.fn()}
         />
       );
@@ -149,7 +149,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1"]}
           selectedRows={[{ id: "1" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           onSelectionClear={vi.fn()}
           showSelectionCount={false}
         />
@@ -163,7 +163,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1"]}
           selectedRows={[{ id: "1" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           onSelectionClear={vi.fn()}
         />
       );
@@ -186,7 +186,7 @@ describe("DataTableActionBar", () => {
         id: "archive",
         label: "Archive",
         execute: vi.fn(),
-        icon: () => <span>ArchiveIcon</span>,
+        // Don't set icon to avoid type mismatch - icon is optional anyway
       },
     ];
 
@@ -195,7 +195,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1"]}
           selectedRows={[{ id: "1" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           actions={mockActions}
           onSelectionClear={vi.fn()}
         />
@@ -210,7 +210,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1"]}
           selectedRows={[{ id: "1" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           actions={mockActions}
           onSelectionClear={vi.fn()}
         />
@@ -239,7 +239,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1", "2"]}
           selectedRows={[{ id: "1" }, { id: "2" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           actions={actions}
           onSelectionClear={vi.fn()}
         />
@@ -276,7 +276,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1"]}
           selectedRows={[{ id: "1" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           actions={actions}
           onSelectionClear={vi.fn()}
         />
@@ -307,7 +307,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1"]}
           selectedRows={[{ id: "1" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           actions={actions}
           onSelectionClear={vi.fn()}
         />
@@ -342,7 +342,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1"]}
           selectedRows={[{ id: "1" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           actions={actions}
           onSelectionClear={vi.fn()}
         />
@@ -377,7 +377,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1"]}
           selectedRows={[{ id: "1" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           actionGroups={mockActionGroups}
           onSelectionClear={vi.fn()}
         />
@@ -409,7 +409,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1"]}
           selectedRows={[{ id: "1" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           actionGroups={actionGroups}
           onSelectionClear={vi.fn()}
         />
@@ -431,7 +431,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1"]}
           selectedRows={[{ id: "1" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           onSelectionClear={vi.fn()}
         />
       );
@@ -444,7 +444,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1"]}
           selectedRows={[{ id: "1" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           onSelectionClear={vi.fn()}
           enableSelectAll={false}
         />
@@ -466,7 +466,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1"]}
           selectedRows={[{ id: "1" }]}
-          table={table as unknown}
+          table={table}
           onSelectionClear={vi.fn()}
         />
       );
@@ -486,7 +486,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1"]}
           selectedRows={[{ id: "1" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           onSelectionClear={onSelectionClear}
         />
       );
@@ -513,7 +513,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1"]}
           selectedRows={[{ id: "1" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           actions={actions}
           onSelectionClear={onSelectionClear}
         />
@@ -547,7 +547,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1"]}
           selectedRows={[{ id: "1" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           actions={actions}
           onSelectionClear={vi.fn()}
         />
@@ -564,11 +564,11 @@ describe("DataTableActionBar", () => {
     });
 
     it("should disable actions dropdown when action is loading", async () => {
-      const actions = [
+      const actions: BulkAction<{ id: string }>[] = [
         {
           id: "test",
           label: "Test",
-          execute: () => new Promise(() => {}), // Never resolves
+          execute: () => new Promise<void>(() => {}), // Never resolves
         },
       ];
 
@@ -576,7 +576,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1"]}
           selectedRows={[{ id: "1" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           actions={actions}
           onSelectionClear={vi.fn()}
         />
@@ -604,7 +604,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1"]}
           selectedRows={[{ id: "1" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           onSelectionClear={vi.fn()}
         />
       );
@@ -618,7 +618,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1"]}
           selectedRows={[{ id: "1" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           onSelectionClear={vi.fn()}
           position="top"
         />
@@ -633,7 +633,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1"]}
           selectedRows={[{ id: "1" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           onSelectionClear={vi.fn()}
           className="custom-class"
         />
@@ -648,7 +648,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1"]}
           selectedRows={[{ id: "1" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           onSelectionClear={vi.fn()}
           maxHeight="100px"
         />
@@ -670,7 +670,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1"]}
           selectedRows={[{ id: "1" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           actions={actions}
           onSelectionClear={vi.fn()}
         />
@@ -700,7 +700,7 @@ describe("DataTableActionBar", () => {
         <DataTableActionBar
           selectedRowIds={["1", "2"]}
           selectedRows={[{ id: "1" }, { id: "2" }]}
-          table={mockTable as unknown}
+          table={mockTable}
           actions={actions}
           onSelectionClear={vi.fn()}
         />

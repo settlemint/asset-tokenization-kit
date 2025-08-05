@@ -7,7 +7,7 @@ import { textFilterFn, __textFilterFn } from "./text-filter";
 import type { FilterValue } from "../types/filter-types";
 
 // Define test data type
-interface _TestData {
+interface TestData {
   id: string;
   name: string;
 }
@@ -18,6 +18,7 @@ describe("text-filter", () => {
       const filterValue: FilterValue<"text", TestData> = {
         operator: "contains",
         values: [],
+        columnMeta: undefined,
       };
 
       expect(__textFilterFn("test", filterValue)).toBe(true);
@@ -27,6 +28,7 @@ describe("text-filter", () => {
       const filterValue: FilterValue<"text", TestData> = {
         operator: "contains",
         values: [""],
+        columnMeta: undefined,
       };
 
       expect(__textFilterFn("test", filterValue)).toBe(true);
@@ -36,6 +38,7 @@ describe("text-filter", () => {
       const filterValue: FilterValue<"text", TestData> = {
         operator: "contains",
         values: ["   "],
+        columnMeta: undefined,
       };
 
       expect(__textFilterFn("test", filterValue)).toBe(true);
@@ -46,7 +49,8 @@ describe("text-filter", () => {
         const filterValue: FilterValue<"text", TestData> = {
           operator: "contains",
           values: ["hello"],
-        };
+        columnMeta: undefined,
+      };
 
         expect(__textFilterFn("hello world", filterValue)).toBe(true);
         expect(__textFilterFn("say hello", filterValue)).toBe(true);
@@ -57,7 +61,8 @@ describe("text-filter", () => {
         const filterValue: FilterValue<"text", TestData> = {
           operator: "contains",
           values: ["xyz"],
-        };
+        columnMeta: undefined,
+      };
 
         expect(__textFilterFn("hello world", filterValue)).toBe(false);
         expect(__textFilterFn("", filterValue)).toBe(false);
@@ -67,7 +72,8 @@ describe("text-filter", () => {
         const filterValue: FilterValue<"text", TestData> = {
           operator: "contains",
           values: ["HELLO"],
-        };
+        columnMeta: undefined,
+      };
 
         expect(__textFilterFn("hello world", filterValue)).toBe(true);
         expect(__textFilterFn("Hello World", filterValue)).toBe(true);
@@ -78,7 +84,8 @@ describe("text-filter", () => {
         const filterValue: FilterValue<"text", TestData> = {
           operator: "contains",
           values: ["  hello  "],
-        };
+        columnMeta: undefined,
+      };
 
         expect(__textFilterFn("  hello world  ", filterValue)).toBe(true);
         expect(__textFilterFn("hello", filterValue)).toBe(true);
@@ -90,7 +97,8 @@ describe("text-filter", () => {
         const filterValue: FilterValue<"text", TestData> = {
           operator: "does not contain",
           values: ["hello"],
-        };
+        columnMeta: undefined,
+      };
 
         expect(__textFilterFn("hello world", filterValue)).toBe(false);
         expect(__textFilterFn("say hello", filterValue)).toBe(false);
@@ -101,7 +109,8 @@ describe("text-filter", () => {
         const filterValue: FilterValue<"text", TestData> = {
           operator: "does not contain",
           values: ["xyz"],
-        };
+        columnMeta: undefined,
+      };
 
         expect(__textFilterFn("hello world", filterValue)).toBe(true);
         expect(__textFilterFn("", filterValue)).toBe(true);
@@ -111,7 +120,8 @@ describe("text-filter", () => {
         const filterValue: FilterValue<"text", TestData> = {
           operator: "does not contain",
           values: ["HELLO"],
-        };
+        columnMeta: undefined,
+      };
 
         expect(__textFilterFn("hello world", filterValue)).toBe(false);
         expect(__textFilterFn("Hello World", filterValue)).toBe(false);
@@ -124,6 +134,7 @@ describe("text-filter", () => {
       const filterValue: FilterValue<"text", TestData> = {
         operator: "contains",
         values: ["@#$%"],
+        columnMeta: undefined,
       };
 
       expect(__textFilterFn("user@#$%domain.com", filterValue)).toBe(true);
@@ -134,6 +145,7 @@ describe("text-filter", () => {
       const filterValue: FilterValue<"text", TestData> = {
         operator: "contains",
         values: ["café"],
+        columnMeta: undefined,
       };
 
       expect(__textFilterFn("I love café", filterValue)).toBe(true);
@@ -144,6 +156,7 @@ describe("text-filter", () => {
       const filterValue: FilterValue<"text", TestData> = {
         operator: "contains",
         values: ["hello", "world", "ignored"],
+        columnMeta: undefined,
       };
 
       expect(__textFilterFn("hello test", filterValue)).toBe(true);
@@ -160,6 +173,7 @@ describe("text-filter", () => {
       const filterValue: FilterValue<"text", TestData> = {
         operator: "contains",
         values: ["hello"],
+        columnMeta: undefined,
       };
 
       const result = textFilterFn(mockRow, "testColumn", filterValue);
@@ -176,6 +190,7 @@ describe("text-filter", () => {
       const filterValue: FilterValue<"text", TestData> = {
         operator: "contains",
         values: ["test"],
+        columnMeta: undefined,
       };
 
       const result = textFilterFn(mockRow, "testColumn", filterValue);
@@ -191,6 +206,7 @@ describe("text-filter", () => {
       const filterValue: FilterValue<"text", TestData> = {
         operator: "contains",
         values: ["test"],
+        columnMeta: undefined,
       };
 
       const result = textFilterFn(mockRow, "testColumn", filterValue);
@@ -206,6 +222,7 @@ describe("text-filter", () => {
       const filterValue: FilterValue<"text", TestData> = {
         operator: "contains",
         values: ["123"],
+        columnMeta: undefined,
       };
 
       const result = textFilterFn(mockRow, "testColumn", filterValue);
@@ -223,6 +240,7 @@ describe("text-filter", () => {
       const filterValue: FilterValue<"text", TestData> = {
         operator: "contains",
         values: ["test"],
+        columnMeta: undefined,
       };
 
       const result = textFilterFn(mockRow, "testColumn", filterValue);
@@ -238,6 +256,7 @@ describe("text-filter", () => {
       const filterValue: FilterValue<"text", TestData> = {
         operator: "does not contain",
         values: ["xyz"],
+        columnMeta: undefined,
       };
 
       const result = textFilterFn(mockRow, "testColumn", filterValue);

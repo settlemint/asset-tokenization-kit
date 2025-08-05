@@ -6,7 +6,7 @@ import type { Row } from "@tanstack/react-table";
 import { dateFilterFn, __dateFilterFn } from "./date-filter";
 import type { FilterValue } from "../types/filter-types";
 // Define test data type
-interface _TestData {
+interface TestData {
   id: string;
   name: string;
 }
@@ -72,6 +72,7 @@ describe("date-filter", () => {
       const filterValue: FilterValue<"date", TestData> = {
         operator: "is",
         values: [],
+        columnMeta: undefined,
       };
 
       expect(__dateFilterFn(testDate, filterValue)).toBe(true);
@@ -80,7 +81,8 @@ describe("date-filter", () => {
     it("should return false when first filter value is falsy", () => {
       const filterValue: FilterValue<"date", TestData> = {
         operator: "is",
-        values: [null],
+        values: [null as unknown as Date],
+        columnMeta: undefined,
       };
 
       expect(__dateFilterFn(testDate, filterValue)).toBe(false);
@@ -90,6 +92,7 @@ describe("date-filter", () => {
       const filterValue: FilterValue<"date", TestData> = {
         operator: "is",
         values: [filterDate, otherDate],
+        columnMeta: undefined,
       };
 
       expect(() => __dateFilterFn(testDate, filterValue)).toThrow(
@@ -101,6 +104,7 @@ describe("date-filter", () => {
       const filterValue: FilterValue<"date", TestData> = {
         operator: "is between",
         values: [filterDate],
+        columnMeta: undefined,
       };
 
       expect(() => __dateFilterFn(testDate, filterValue)).toThrow(
@@ -113,6 +117,7 @@ describe("date-filter", () => {
         const filterValue: FilterValue<"date", TestData> = {
           operator: "is",
           values: [filterDate],
+          columnMeta: undefined,
         };
 
         expect(__dateFilterFn(testDate, filterValue)).toBe(true);
@@ -122,6 +127,7 @@ describe("date-filter", () => {
         const filterValue: FilterValue<"date", TestData> = {
           operator: "is",
           values: [otherDate],
+          columnMeta: undefined,
         };
 
         expect(__dateFilterFn(testDate, filterValue)).toBe(false);
@@ -133,6 +139,7 @@ describe("date-filter", () => {
         const filterValue: FilterValue<"date", TestData> = {
           operator: "is not",
           values: [filterDate],
+          columnMeta: undefined,
         };
 
         expect(__dateFilterFn(testDate, filterValue)).toBe(false);
@@ -142,6 +149,7 @@ describe("date-filter", () => {
         const filterValue: FilterValue<"date", TestData> = {
           operator: "is not",
           values: [otherDate],
+          columnMeta: undefined,
         };
 
         expect(__dateFilterFn(testDate, filterValue)).toBe(true);
@@ -154,6 +162,7 @@ describe("date-filter", () => {
         const filterValue: FilterValue<"date", TestData> = {
           operator: "is before",
           values: [filterDate],
+          columnMeta: undefined,
         };
 
         expect(__dateFilterFn(beforeDate, filterValue)).toBe(true);
@@ -164,6 +173,7 @@ describe("date-filter", () => {
         const filterValue: FilterValue<"date", TestData> = {
           operator: "is before",
           values: [filterDate],
+          columnMeta: undefined,
         };
 
         expect(__dateFilterFn(afterDate, filterValue)).toBe(false);
@@ -175,6 +185,7 @@ describe("date-filter", () => {
         const filterValue: FilterValue<"date", TestData> = {
           operator: "is on or after",
           values: [filterDate],
+          columnMeta: undefined,
         };
 
         expect(__dateFilterFn(testDate, filterValue)).toBe(true);
@@ -185,6 +196,7 @@ describe("date-filter", () => {
         const filterValue: FilterValue<"date", TestData> = {
           operator: "is on or after",
           values: [filterDate],
+          columnMeta: undefined,
         };
 
         expect(__dateFilterFn(afterDate, filterValue)).toBe(true);
@@ -195,6 +207,7 @@ describe("date-filter", () => {
         const filterValue: FilterValue<"date", TestData> = {
           operator: "is on or after",
           values: [filterDate],
+          columnMeta: undefined,
         };
 
         expect(__dateFilterFn(beforeDate, filterValue)).toBe(false);
@@ -207,6 +220,7 @@ describe("date-filter", () => {
         const filterValue: FilterValue<"date", TestData> = {
           operator: "is after",
           values: [filterDate],
+          columnMeta: undefined,
         };
 
         expect(__dateFilterFn(afterDate, filterValue)).toBe(true);
@@ -216,6 +230,7 @@ describe("date-filter", () => {
         const filterValue: FilterValue<"date", TestData> = {
           operator: "is after",
           values: [filterDate],
+          columnMeta: undefined,
         };
 
         expect(__dateFilterFn(testDate, filterValue)).toBe(false);
@@ -226,6 +241,7 @@ describe("date-filter", () => {
         const filterValue: FilterValue<"date", TestData> = {
           operator: "is after",
           values: [filterDate],
+          columnMeta: undefined,
         };
 
         expect(__dateFilterFn(beforeDate, filterValue)).toBe(false);
@@ -237,6 +253,7 @@ describe("date-filter", () => {
         const filterValue: FilterValue<"date", TestData> = {
           operator: "is on or before",
           values: [filterDate],
+          columnMeta: undefined,
         };
 
         expect(__dateFilterFn(testDate, filterValue)).toBe(true);
@@ -247,6 +264,7 @@ describe("date-filter", () => {
         const filterValue: FilterValue<"date", TestData> = {
           operator: "is on or before",
           values: [filterDate],
+          columnMeta: undefined,
         };
 
         expect(__dateFilterFn(beforeDate, filterValue)).toBe(true);
@@ -257,6 +275,7 @@ describe("date-filter", () => {
         const filterValue: FilterValue<"date", TestData> = {
           operator: "is on or before",
           values: [filterDate],
+          columnMeta: undefined,
         };
 
         expect(__dateFilterFn(afterDate, filterValue)).toBe(false);
@@ -270,6 +289,7 @@ describe("date-filter", () => {
         const filterValue: FilterValue<"date", TestData> = {
           operator: "is between",
           values: [startDate, endDate],
+          columnMeta: undefined,
         };
 
         expect(__dateFilterFn(testDate, filterValue)).toBe(true);
@@ -281,6 +301,7 @@ describe("date-filter", () => {
         const filterValue: FilterValue<"date", TestData> = {
           operator: "is between",
           values: [startDate, endDate],
+          columnMeta: undefined,
         };
 
         expect(__dateFilterFn(testDate, filterValue)).toBe(false);
@@ -290,7 +311,8 @@ describe("date-filter", () => {
         const startDate = new Date("2023-06-10T00:00:00Z");
         const filterValue: FilterValue<"date", TestData> = {
           operator: "is between",
-          values: [startDate, null],
+          values: [startDate, null as unknown as Date],
+          columnMeta: undefined,
         };
 
         expect(__dateFilterFn(testDate, filterValue)).toBe(false);
@@ -304,6 +326,7 @@ describe("date-filter", () => {
         const filterValue: FilterValue<"date", TestData> = {
           operator: "is not between",
           values: [startDate, endDate],
+          columnMeta: undefined,
         };
 
         expect(__dateFilterFn(testDate, filterValue)).toBe(false);
@@ -315,6 +338,7 @@ describe("date-filter", () => {
         const filterValue: FilterValue<"date", TestData> = {
           operator: "is not between",
           values: [startDate, endDate],
+          columnMeta: undefined,
         };
 
         expect(__dateFilterFn(testDate, filterValue)).toBe(true);
@@ -324,7 +348,8 @@ describe("date-filter", () => {
         const startDate = new Date("2023-06-10T00:00:00Z");
         const filterValue: FilterValue<"date", TestData> = {
           operator: "is not between",
-          values: [startDate, null],
+          values: [startDate, null as unknown as Date],
+          columnMeta: undefined,
         };
 
         expect(__dateFilterFn(testDate, filterValue)).toBe(false);
@@ -341,6 +366,7 @@ describe("date-filter", () => {
       const filterValue: FilterValue<"date", TestData> = {
         operator: "is",
         values: [filterDate],
+        columnMeta: undefined,
       };
 
       const result = dateFilterFn(mockRow, "testColumn", filterValue);
@@ -358,6 +384,7 @@ describe("date-filter", () => {
       const filterValue: FilterValue<"date", TestData> = {
         operator: "is after",
         values: [afterDate],
+        columnMeta: undefined,
       };
 
       const result = dateFilterFn(mockRow, "testColumn", filterValue);
@@ -375,6 +402,7 @@ describe("date-filter", () => {
       const filterValue: FilterValue<"date", TestData> = {
         operator: "is between",
         values: [startDate, endDate],
+        columnMeta: undefined,
       };
 
       const result = dateFilterFn(mockRow, "testColumn", filterValue);
@@ -390,6 +418,7 @@ describe("date-filter", () => {
       const filterValue: FilterValue<"date", TestData> = {
         operator: "is",
         values: [filterDate],
+        columnMeta: undefined,
       };
 
       // This will pass null to __dateFilterFn as inputData

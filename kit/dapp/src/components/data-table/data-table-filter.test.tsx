@@ -27,19 +27,19 @@ vi.mock("./filters/operators/operator-controller", () => ({
     columnMeta,
     filter,
   }: {
-    columnMeta: unknown;
-    filter: unknown;
+    columnMeta: any;
+    filter: any;
   }) => (
     <div data-testid="property-filter-operator">
-      Operator: {columnMeta.type} - {JSON.stringify(filter)}
+      Operator: {columnMeta?.type} - {JSON.stringify(filter)}
     </div>
   ),
 }));
 
 vi.mock("./filters/property-filter-subject", () => ({
-  PropertyFilterSubject: ({ meta }: { meta: unknown }) => (
+  PropertyFilterSubject: ({ meta }: { meta: any }) => (
     <div data-testid="property-filter-subject">
-      Subject: {meta.displayName || meta.type}
+      Subject: {meta?.displayName || meta?.type}
     </div>
   ),
 }));
@@ -49,28 +49,25 @@ vi.mock("./filters/values/value-controller", () => ({
     id,
     columnMeta,
   }: {
-    id: unknown;
-    columnMeta: unknown;
+    id: any;
+    columnMeta: any;
   }) => (
     <div data-testid="property-filter-value">
-      Value: {id} - {columnMeta.type}
+      Value: {id} - {columnMeta?.type}
     </div>
   ),
 }));
 
 vi.mock("./filters/values/value-menu", () => ({
-  PropertyFilterValueMenu: ({
-    id,
-    onBack,
-  }: {
-    id: unknown;
-    onBack: unknown;
-  }) => (
+  PropertyFilterValueMenu: ({ id, onBack }: { id: any; onBack: any }) => (
     <div data-testid="property-filter-value-menu">
-      <button onClick={onBack} data-testid="back-button">
+      <button
+        onClick={onBack as React.MouseEventHandler}
+        data-testid="back-button"
+      >
         Back
       </button>
-      <div>Value Menu for {id}</div>
+      <div>Value Menu for {String(id)}</div>
     </div>
   ),
 }));
@@ -116,17 +113,20 @@ describe("DataTableFilter", () => {
 
   describe("Component Layout and Responsive Behavior", () => {
     it("should render desktop layout when isMobile is false", () => {
+      const mockColumn = createMockColumn({
+        id: "name",
+        columnDef: { header: "Name" },
+      });
+      (mockColumn.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
+        true
+      );
+
       const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-        })),
-        getAllColumns: vi.fn(() => [
-          { id: "name", getCanFilter: vi.fn(() => true) },
-        ]),
+        getAllColumns: vi.fn(() => [mockColumn]),
       });
 
       const { container } = renderWithProviders(
-        <DataTableFilter table={mockTable as unknown} />
+        <DataTableFilter table={mockTable} />
       );
 
       // Should contain desktop container
@@ -138,17 +138,20 @@ describe("DataTableFilter", () => {
     it("should render mobile layout when isMobile is true", () => {
       vi.mocked(useIsMobile).mockReturnValue(true);
 
+      const mockColumn = createMockColumn({
+        id: "name",
+        columnDef: { header: "Name" },
+      });
+      (mockColumn.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
+        true
+      );
+
       const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-        })),
-        getAllColumns: vi.fn(() => [
-          { id: "name", getCanFilter: vi.fn(() => true) },
-        ]),
+        getAllColumns: vi.fn(() => [mockColumn]),
       });
 
       const { container } = renderWithProviders(
-        <DataTableFilter table={mockTable as unknown} />
+        <DataTableFilter table={mockTable} />
       );
 
       // Should contain mobile container
@@ -159,25 +162,35 @@ describe("DataTableFilter", () => {
 
     it("should re-render when filter count changes", () => {
       let filterCount = 0;
+
+      const mockColumn = createMockColumn({
+        id: "name",
+        columnDef: { header: "Name" },
+      });
+      (mockColumn.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
+        true
+      );
+
       const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: Array.from({ length: filterCount }, (_, i) => ({
-            id: `filter-test-${i}`,
-            value: `test-${i}`,
-          })),
+        getAllColumns: vi.fn(() => [mockColumn]),
+      });
+
+      // Override getState after creating mockTable
+      (mockTable.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+        ...createMockTable().getState(),
+        columnFilters: Array.from({ length: filterCount }, (_, i) => ({
+          id: `filter-test-${i}`,
+          value: `test-${i}`,
         })),
-        getAllColumns: vi.fn(() => [
-          { id: "name", getCanFilter: vi.fn(() => true) },
-        ]),
       });
 
       const { rerender } = renderWithProviders(
-        <DataTableFilter table={mockTable as unknown} />
+        <DataTableFilter table={mockTable} />
       );
 
       // Change filter count and rerender
       filterCount = 2;
-      rerender(<DataTableFilter table={mockTable as unknown} />);
+      rerender(<DataTableFilter table={mockTable} />);
 
       // Component should handle the change (no crash)
       expect(
@@ -188,14 +201,26 @@ describe("DataTableFilter", () => {
 
   describe("TableFilter Component", () => {
     it("should render filter button when filterable columns exist", () => {
+      const mockColumn1 = createMockColumn({
+        id: "name",
+        columnDef: { header: "Name" },
+      });
+      const mockColumn2 = createMockColumn({
+        id: "email",
+        columnDef: { header: "Email" },
+      });
+      (mockColumn1.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
+        true
+      );
+      (mockColumn2.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
+        true
+      );
+
       const mockTable = createMockTable({
-        getAllColumns: vi.fn(() => [
-          { id: "name", getCanFilter: vi.fn(() => true) },
-          { id: "email", getCanFilter: vi.fn(() => true) },
-        ]),
+        getAllColumns: vi.fn(() => [mockColumn1, mockColumn2]),
       });
 
-      renderWithProviders(<TableFilter table={mockTable as unknown} />);
+      renderWithProviders(<TableFilter table={mockTable} />);
 
       const filterButton = screen.getByRole("button", { name: /filter/i });
       expect(filterButton).toBeInTheDocument();
@@ -208,28 +233,46 @@ describe("DataTableFilter", () => {
     });
 
     it("should return null when no filterable columns exist", () => {
+      const mockColumn1 = createMockColumn({
+        id: "name",
+        columnDef: { header: "Name" },
+      });
+      const mockColumn2 = createMockColumn({
+        id: "email",
+        columnDef: { header: "Email" },
+      });
+      (mockColumn1.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
+        false
+      );
+      (mockColumn2.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
+        false
+      );
+
       const mockTable = createMockTable({
-        getAllColumns: vi.fn(() => [
-          { id: "name", getCanFilter: vi.fn(() => false) },
-          { id: "email", getCanFilter: vi.fn(() => false) },
-        ]),
+        getAllColumns: vi.fn(() => [mockColumn1, mockColumn2]),
       });
 
       const { container } = renderWithProviders(
-        <TableFilter table={mockTable as unknown} />
+        <TableFilter table={mockTable} />
       );
 
       expect(container.firstChild).toBeNull();
     });
 
     it("should show filter text on desktop", () => {
+      const mockColumn = createMockColumn({
+        id: "name",
+        columnDef: { header: "Name" },
+      });
+      (mockColumn.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
+        true
+      );
+
       const mockTable = createMockTable({
-        getAllColumns: vi.fn(() => [
-          { id: "name", getCanFilter: vi.fn(() => true) },
-        ]),
+        getAllColumns: vi.fn(() => [mockColumn]),
       });
 
-      renderWithProviders(<TableFilter table={mockTable as unknown} />);
+      renderWithProviders(<TableFilter table={mockTable} />);
 
       expect(screen.getByText("filter")).toBeInTheDocument();
       expect(screen.getByText("filter")).toHaveClass("hidden", "md:block");
@@ -237,20 +280,25 @@ describe("DataTableFilter", () => {
 
     it("should prevent event propagation on button click", async () => {
       const user = userEvent.setup();
+      const mockColumn = createMockColumn({
+        id: "name",
+        columnDef: {
+          header: "Name",
+          meta: { displayName: "Name", type: "text" },
+        },
+      });
+      (mockColumn.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
+        true
+      );
+
       const mockTable = createMockTable({
-        getAllColumns: vi.fn(() => [
-          {
-            id: "name",
-            getCanFilter: vi.fn(() => true),
-            columnDef: { meta: { displayName: "Name", type: "text" } },
-          },
-        ]),
+        getAllColumns: vi.fn(() => [mockColumn]),
       });
 
       const handleClick = vi.fn();
       renderWithProviders(
         <div onClick={handleClick}>
-          <TableFilter table={mockTable as unknown} />
+          <TableFilter table={mockTable} />
         </div>
       );
 
@@ -263,17 +311,22 @@ describe("DataTableFilter", () => {
 
     it("should open popover when filter button is clicked", async () => {
       const user = userEvent.setup();
+      const mockColumn = createMockColumn({
+        id: "name",
+        columnDef: {
+          header: "Name",
+          meta: { displayName: "Name" },
+        },
+      });
+      (mockColumn.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
+        true
+      );
+
       const mockTable = createMockTable({
-        getAllColumns: vi.fn(() => [
-          {
-            id: "name",
-            getCanFilter: vi.fn(() => true),
-            columnDef: { meta: { displayName: "Name" } },
-          },
-        ]),
+        getAllColumns: vi.fn(() => [mockColumn]),
       });
 
-      renderWithProviders(<TableFilter table={mockTable as unknown} />);
+      renderWithProviders(<TableFilter table={mockTable} />);
 
       const filterButton = screen.getByRole("button", { name: /filter/i });
       await user.click(filterButton);
@@ -284,22 +337,32 @@ describe("DataTableFilter", () => {
 
     it("should display available filterable columns in popover", async () => {
       const user = userEvent.setup();
+      const mockColumn1 = createMockColumn({
+        id: "name",
+        columnDef: {
+          header: "Name",
+          meta: { displayName: "Name" },
+        },
+      });
+      const mockColumn2 = createMockColumn({
+        id: "email",
+        columnDef: {
+          header: "Email",
+          meta: { displayName: "Email" },
+        },
+      });
+      (mockColumn1.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
+        true
+      );
+      (mockColumn2.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
+        true
+      );
+
       const mockTable = createMockTable({
-        getAllColumns: vi.fn(() => [
-          {
-            id: "name",
-            getCanFilter: vi.fn(() => true),
-            columnDef: { meta: { displayName: "Name" } },
-          },
-          {
-            id: "email",
-            getCanFilter: vi.fn(() => true),
-            columnDef: { meta: { displayName: "Email" } },
-          },
-        ]),
+        getAllColumns: vi.fn(() => [mockColumn1, mockColumn2]),
       });
 
-      renderWithProviders(<TableFilter table={mockTable as unknown} />);
+      renderWithProviders(<TableFilter table={mockTable} />);
 
       const filterButton = screen.getByRole("button", { name: /filter/i });
       await user.click(filterButton);
@@ -310,22 +373,32 @@ describe("DataTableFilter", () => {
 
     it("should filter columns based on search input", async () => {
       const user = userEvent.setup();
+      const mockColumn1 = createMockColumn({
+        id: "name",
+        columnDef: {
+          header: "Name",
+          meta: { displayName: "Name" },
+        },
+      });
+      const mockColumn2 = createMockColumn({
+        id: "email",
+        columnDef: {
+          header: "Email Address",
+          meta: { displayName: "Email Address" },
+        },
+      });
+      (mockColumn1.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
+        true
+      );
+      (mockColumn2.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
+        true
+      );
+
       const mockTable = createMockTable({
-        getAllColumns: vi.fn(() => [
-          {
-            id: "name",
-            getCanFilter: vi.fn(() => true),
-            columnDef: { meta: { displayName: "Name" } },
-          },
-          {
-            id: "email",
-            getCanFilter: vi.fn(() => true),
-            columnDef: { meta: { displayName: "Email Address" } },
-          },
-        ]),
+        getAllColumns: vi.fn(() => [mockColumn1, mockColumn2]),
       });
 
-      renderWithProviders(<TableFilter table={mockTable as unknown} />);
+      renderWithProviders(<TableFilter table={mockTable} />);
 
       const filterButton = screen.getByRole("button", { name: /filter/i });
       await user.click(filterButton);
@@ -339,17 +412,22 @@ describe("DataTableFilter", () => {
 
     it("should show no results message when search has no matches", async () => {
       const user = userEvent.setup();
+      const mockColumn = createMockColumn({
+        id: "name",
+        columnDef: {
+          header: "Name",
+          meta: { displayName: "Name", type: "text" },
+        },
+      });
+      (mockColumn.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
+        true
+      );
+
       const mockTable = createMockTable({
-        getAllColumns: vi.fn(() => [
-          {
-            id: "name",
-            getCanFilter: vi.fn(() => true),
-            columnDef: { meta: { displayName: "Name", type: "text" } },
-          },
-        ]),
+        getAllColumns: vi.fn(() => [mockColumn]),
       });
 
-      renderWithProviders(<TableFilter table={mockTable as unknown} />);
+      renderWithProviders(<TableFilter table={mockTable} />);
 
       const filterButton = screen.getByRole("button", { name: /filter/i });
       await user.click(filterButton);
@@ -362,17 +440,22 @@ describe("DataTableFilter", () => {
 
     it("should clear search value when popover closes", async () => {
       const user = userEvent.setup();
+      const mockColumn = createMockColumn({
+        id: "name",
+        columnDef: {
+          header: "Name",
+          meta: { displayName: "Name" },
+        },
+      });
+      (mockColumn.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
+        true
+      );
+
       const mockTable = createMockTable({
-        getAllColumns: vi.fn(() => [
-          {
-            id: "name",
-            getCanFilter: vi.fn(() => true),
-            columnDef: { meta: { displayName: "Name" } },
-          },
-        ]),
+        getAllColumns: vi.fn(() => [mockColumn]),
       });
 
-      renderWithProviders(<TableFilter table={mockTable as unknown} />);
+      renderWithProviders(<TableFilter table={mockTable} />);
 
       const filterButton = screen.getByRole("button", { name: /filter/i });
       await user.click(filterButton);
@@ -394,7 +477,10 @@ describe("DataTableFilter", () => {
     it("should render column display name", () => {
       const mockColumn = createMockColumn({
         id: "name",
-        columnDef: { meta: { displayName: "Full Name", type: "text" } },
+        columnDef: {
+          header: "Full Name",
+          meta: { displayName: "Full Name", type: "text" },
+        },
       });
       const setProperty = vi.fn();
 
@@ -417,7 +503,10 @@ describe("DataTableFilter", () => {
     it("should render column id when no display name", () => {
       const mockColumn = createMockColumn({
         id: "email",
-        columnDef: { meta: { type: "text" } },
+        columnDef: {
+          header: "Email",
+          meta: { type: "text" },
+        },
       });
       const setProperty = vi.fn();
 
@@ -447,6 +536,7 @@ describe("DataTableFilter", () => {
       const mockColumn = createMockColumn({
         id: "status",
         columnDef: {
+          header: "Status",
           meta: {
             displayName: "Status",
             type: "text",
@@ -477,7 +567,10 @@ describe("DataTableFilter", () => {
       const user = userEvent.setup();
       const mockColumn = createMockColumn({
         id: "name",
-        columnDef: { meta: { displayName: "Name", type: "text" } },
+        columnDef: {
+          header: "Name",
+          meta: { displayName: "Name", type: "text" },
+        },
       });
       const setProperty = vi.fn();
 
@@ -503,7 +596,10 @@ describe("DataTableFilter", () => {
     it("should show arrow icon with correct visibility classes", () => {
       const mockColumn = createMockColumn({
         id: "name",
-        columnDef: { meta: { displayName: "Name", type: "text" } },
+        columnDef: {
+          header: "Name",
+          meta: { displayName: "Name", type: "text" },
+        },
       });
       const setProperty = vi.fn();
 
@@ -532,21 +628,39 @@ describe("DataTableFilter", () => {
 
   describe("PropertyFilterList Component", () => {
     it("should render filter chips for active filters", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [
-            { id: "name", value: { operator: "contains", value: "test" } },
-            { id: "status", value: { operator: "equals", value: "active" } },
-          ],
-        })),
-        getColumn: vi.fn((id) => ({
-          id,
-          columnDef: { meta: { type: "text", displayName: id } },
-          setFilterValue: vi.fn(),
-        })),
+      const mockColumn1 = createMockColumn({
+        id: "name",
+        columnDef: {
+          header: "Name",
+          meta: { type: "text", displayName: "name" },
+        },
+      });
+      const mockColumn2 = createMockColumn({
+        id: "status",
+        columnDef: {
+          header: "Status",
+          meta: { type: "text", displayName: "status" },
+        },
       });
 
-      renderWithProviders(<PropertyFilterList table={mockTable as unknown} />);
+      const mockTable = createMockTable({
+        getColumn: vi.fn((id) => {
+          if (id === "name") return mockColumn1;
+          if (id === "status") return mockColumn2;
+          return undefined;
+        }),
+      });
+
+      // Override getState after creating mockTable
+      (mockTable.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+        ...createMockTable().getState(),
+        columnFilters: [
+          { id: "name", value: { operator: "contains", value: "test" } },
+          { id: "status", value: { operator: "equals", value: "active" } },
+        ],
+      });
+
+      renderWithProviders(<PropertyFilterList table={mockTable} />);
 
       expect(screen.getAllByTestId("property-filter-subject")).toHaveLength(2);
       expect(screen.getAllByTestId("property-filter-operator")).toHaveLength(2);
@@ -554,21 +668,29 @@ describe("DataTableFilter", () => {
     });
 
     it("should not render chips for filters without values", () => {
+      const mockColumn = createMockColumn({
+        id: "name",
+        columnDef: {
+          header: "Name",
+          meta: { type: "text", displayName: "name" },
+        },
+      });
+
       const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [
-            { id: "name", value: null },
-            { id: "status", value: undefined },
-          ],
-        })),
-        getColumn: vi.fn((id) => ({
-          id,
-          columnDef: { meta: { type: "text", displayName: id } },
-        })),
+        getColumn: vi.fn(() => mockColumn),
+      });
+
+      // Override getState after creating mockTable
+      (mockTable.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+        ...createMockTable().getState(),
+        columnFilters: [
+          { id: "name", value: null },
+          { id: "status", value: undefined },
+        ],
       });
 
       const { container } = renderWithProviders(
-        <PropertyFilterList table={mockTable as unknown} />
+        <PropertyFilterList table={mockTable} />
       );
 
       expect(
@@ -577,39 +699,48 @@ describe("DataTableFilter", () => {
     });
 
     it("should handle different filter types correctly", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [
-            { id: "name", value: { operator: "contains", value: "test" } },
-            { id: "age", value: { operator: "gte", value: 18 } },
-            {
-              id: "date",
-              value: {
-                operator: "between",
-                value: ["2024-01-01", "2024-12-31"],
-              },
-            },
-            { id: "status", value: { operator: "in", value: ["active"] } },
-            { id: "tags", value: { operator: "in", value: ["tag1", "tag2"] } },
-          ],
-        })),
-        getColumn: vi.fn((id) => {
-          const types: Record<string, string> = {
-            name: "text",
-            age: "number",
-            date: "date",
-            status: "option",
-            tags: "multiOption",
-          };
-          return {
-            id,
-            columnDef: { meta: { type: types[id] || "text", displayName: id } },
-            setFilterValue: vi.fn(),
-          };
-        }),
+      const types: Record<string, string> = {
+        name: "text",
+        age: "number",
+        date: "date",
+        status: "option",
+        tags: "multiOption",
+      };
+
+      const columns: Record<string, ReturnType<typeof createMockColumn>> = {};
+      Object.entries(types).forEach(([id, type]) => {
+        columns[id] = createMockColumn({
+          id,
+          columnDef: {
+            header: id,
+            meta: { type, displayName: id },
+          },
+        });
       });
 
-      renderWithProviders(<PropertyFilterList table={mockTable as unknown} />);
+      const mockTable = createMockTable({
+        getColumn: vi.fn((id) => columns[id]),
+      });
+
+      // Override getState after creating mockTable
+      (mockTable.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+        ...createMockTable().getState(),
+        columnFilters: [
+          { id: "name", value: { operator: "contains", value: "test" } },
+          { id: "age", value: { operator: "gte", value: 18 } },
+          {
+            id: "date",
+            value: {
+              operator: "between",
+              value: ["2024-01-01", "2024-12-31"],
+            },
+          },
+          { id: "status", value: { operator: "in", value: ["active"] } },
+          { id: "tags", value: { operator: "in", value: ["tag1", "tag2"] } },
+        ],
+      });
+
+      renderWithProviders(<PropertyFilterList table={mockTable} />);
 
       // Should render multiple filter chips
       const filterSubjects = screen.getAllByTestId("property-filter-subject");
@@ -619,20 +750,28 @@ describe("DataTableFilter", () => {
     it("should remove filter when remove button is clicked", async () => {
       const user = userEvent.setup();
       const setFilterValue = vi.fn();
+      const mockColumn = createMockColumn({
+        id: "name",
+        columnDef: {
+          header: "Name",
+          meta: { type: "text", displayName: "name" },
+        },
+      });
+      mockColumn.setFilterValue = setFilterValue;
+
       const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [
-            { id: "name", value: { operator: "contains", value: "test" } },
-          ],
-        })),
-        getColumn: vi.fn(() => ({
-          id: "name",
-          columnDef: { meta: { type: "text", displayName: "name" } },
-          setFilterValue,
-        })),
+        getColumn: vi.fn(() => mockColumn),
       });
 
-      renderWithProviders(<PropertyFilterList table={mockTable as unknown} />);
+      // Override getState after creating mockTable
+      (mockTable.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+        ...createMockTable().getState(),
+        columnFilters: [
+          { id: "name", value: { operator: "contains", value: "test" } },
+        ],
+      });
+
+      renderWithProviders(<PropertyFilterList table={mockTable} />);
 
       const removeButton = screen
         .getAllByRole("button")
@@ -644,23 +783,30 @@ describe("DataTableFilter", () => {
 
     it("should prevent event propagation on filter chip click", async () => {
       const user = userEvent.setup();
+      const mockColumn = createMockColumn({
+        id: "name",
+        columnDef: {
+          header: "Name",
+          meta: { type: "text", displayName: "name" },
+        },
+      });
+
       const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [
-            { id: "name", value: { operator: "contains", value: "test" } },
-          ],
-        })),
-        getColumn: vi.fn(() => ({
-          id: "name",
-          columnDef: { meta: { type: "text", displayName: "name" } },
-          setFilterValue: vi.fn(),
-        })),
+        getColumn: vi.fn(() => mockColumn),
+      });
+
+      // Override getState after creating mockTable
+      (mockTable.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+        ...createMockTable().getState(),
+        columnFilters: [
+          { id: "name", value: { operator: "contains", value: "test" } },
+        ],
       });
 
       const handleClick = vi.fn();
       renderWithProviders(
         <div onClick={handleClick}>
-          <PropertyFilterList table={mockTable as unknown} />
+          <PropertyFilterList table={mockTable} />
         </div>
       );
 
@@ -675,23 +821,30 @@ describe("DataTableFilter", () => {
 
     it("should prevent event propagation on remove button click", async () => {
       const user = userEvent.setup();
+      const mockColumn = createMockColumn({
+        id: "name",
+        columnDef: {
+          header: "Name",
+          meta: { type: "text", displayName: "name" },
+        },
+      });
+
       const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [
-            { id: "name", value: { operator: "contains", value: "test" } },
-          ],
-        })),
-        getColumn: vi.fn(() => ({
-          id: "name",
-          columnDef: { meta: { type: "text", displayName: "name" } },
-          setFilterValue: vi.fn(),
-        })),
+        getColumn: vi.fn(() => mockColumn),
+      });
+
+      // Override getState after creating mockTable
+      (mockTable.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+        ...createMockTable().getState(),
+        columnFilters: [
+          { id: "name", value: { operator: "contains", value: "test" } },
+        ],
       });
 
       const handleClick = vi.fn();
       renderWithProviders(
         <div onClick={handleClick}>
-          <PropertyFilterList table={mockTable as unknown} />
+          <PropertyFilterList table={mockTable} />
         </div>
       );
 
@@ -706,29 +859,54 @@ describe("DataTableFilter", () => {
 
     it("should re-render when filter count changes", () => {
       let filterCount = 1;
+      const mockColumns: Record<
+        string,
+        ReturnType<typeof createMockColumn>
+      > = {};
+
+      // Create mock columns for each potential filter
+      for (let i = 0; i < 3; i++) {
+        mockColumns[`filter-name-${i}`] = createMockColumn({
+          id: `filter-name-${i}`,
+          columnDef: {
+            header: `Filter ${i}`,
+            meta: { type: "text", displayName: `filter-name-${i}` },
+          },
+        });
+      }
+
       const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: Array.from({ length: filterCount }, (_, i) => ({
-            id: `filter-name-${i}`,
-            value: { operator: "contains", value: `test-${i}` },
-          })),
-        })),
-        getColumn: vi.fn((id: string) => ({
-          id,
-          columnDef: { meta: { type: "text", displayName: id } },
-          setFilterValue: vi.fn(),
+        getColumn: vi.fn((id: string) => mockColumns[id]),
+      });
+
+      // Override getState after creating mockTable
+      (mockTable.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+        ...createMockTable().getState(),
+        columnFilters: Array.from({ length: filterCount }, (_, i) => ({
+          id: `filter-name-${i}`,
+          value: { operator: "contains", value: `test-${i}` },
         })),
       });
 
       const { rerender } = renderWithProviders(
-        <PropertyFilterList table={mockTable as unknown} />
+        <PropertyFilterList table={mockTable} />
       );
 
       expect(screen.getByTestId("property-filter-subject")).toBeInTheDocument();
 
       // Change filter count
       filterCount = 2;
-      rerender(<PropertyFilterList table={mockTable as unknown} />);
+
+      // Update the mock state for the rerender
+      (mockTable.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+        ...createMockTable().getState(),
+        columnFilters: Array.from({ length: filterCount }, (_, i) => ({
+          id: `filter-name-${i}`,
+          value: { operator: "contains", value: `test-${i}` },
+        })),
+      });
+
+      rerender(<PropertyFilterList table={mockTable} />);
 
       // Should still render without crashing
       expect(
@@ -934,23 +1112,31 @@ describe("DataTableFilter", () => {
 
   describe("Integration Tests", () => {
     it("should integrate all components in desktop mode", () => {
+      const mockColumn = createMockColumn({
+        id: "name",
+        columnDef: {
+          header: "Name",
+          meta: { type: "text", displayName: "name" },
+        },
+      });
+      (mockColumn.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
+        true
+      );
+
       const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [
-            { id: "name", value: { operator: "contains", value: "test" } },
-          ],
-        })),
-        getAllColumns: vi.fn(() => [
-          { id: "name", getCanFilter: vi.fn(() => true) },
-        ]),
-        getColumn: vi.fn(() => ({
-          id: "name",
-          columnDef: { meta: { type: "text", displayName: "name" } },
-          setFilterValue: vi.fn(),
-        })),
+        getAllColumns: vi.fn(() => [mockColumn]),
+        getColumn: vi.fn(() => mockColumn),
       });
 
-      renderWithProviders(<DataTableFilter table={mockTable as unknown} />);
+      // Override getState after creating mockTable
+      (mockTable.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+        ...createMockTable().getState(),
+        columnFilters: [
+          { id: "name", value: { operator: "contains", value: "test" } },
+        ],
+      });
+
+      renderWithProviders(<DataTableFilter table={mockTable} />);
 
       // Should render filter button
       expect(
@@ -968,23 +1154,31 @@ describe("DataTableFilter", () => {
     it("should integrate all components in mobile mode", () => {
       vi.mocked(useIsMobile).mockReturnValue(true);
 
+      const mockColumn = createMockColumn({
+        id: "name",
+        columnDef: {
+          header: "Name",
+          meta: { type: "text", displayName: "name" },
+        },
+      });
+      (mockColumn.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
+        true
+      );
+
       const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [
-            { id: "name", value: { operator: "contains", value: "test" } },
-          ],
-        })),
-        getAllColumns: vi.fn(() => [
-          { id: "name", getCanFilter: vi.fn(() => true) },
-        ]),
-        getColumn: vi.fn(() => ({
-          id: "name",
-          columnDef: { meta: { type: "text", displayName: "name" } },
-          setFilterValue: vi.fn(),
-        })),
+        getAllColumns: vi.fn(() => [mockColumn]),
+        getColumn: vi.fn(() => mockColumn),
       });
 
-      renderWithProviders(<DataTableFilter table={mockTable as unknown} />);
+      // Override getState after creating mockTable
+      (mockTable.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+        ...createMockTable().getState(),
+        columnFilters: [
+          { id: "name", value: { operator: "contains", value: "test" } },
+        ],
+      });
+
+      renderWithProviders(<DataTableFilter table={mockTable} />);
 
       // Should render filter button
       expect(
@@ -997,14 +1191,11 @@ describe("DataTableFilter", () => {
 
     it("should handle empty state correctly", () => {
       const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-        })),
         getAllColumns: vi.fn(() => []),
       });
 
       const { container } = renderWithProviders(
-        <DataTableFilter table={mockTable as unknown} />
+        <DataTableFilter table={mockTable} />
       );
 
       // Should only render the containers but no filter button (no filterable columns)

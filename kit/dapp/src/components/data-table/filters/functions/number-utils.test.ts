@@ -82,27 +82,30 @@ describe("number-utils", () => {
     });
 
     it("should handle null values in array by defaulting to 0", () => {
-      const result = createNumberRange([null as unknown, 5]);
+      const result = createNumberRange([null as unknown as number, 5]);
       expect(result).toEqual([0, 5]);
     });
 
     it("should handle undefined values in array by defaulting to 0", () => {
-      const result = createNumberRange([undefined as unknown, 3]);
+      const result = createNumberRange([undefined as unknown as number, 3]);
       expect(result).toEqual([0, 3]);
     });
 
     it("should handle both null values by defaulting to 0", () => {
-      const result = createNumberRange([null as unknown, null as unknown]);
+      const result = createNumberRange([
+        null as unknown as number,
+        null as unknown as number,
+      ]);
       expect(result).toEqual([0, 0]);
     });
 
     it("should handle single null value", () => {
-      const result = createNumberRange([null as unknown]);
+      const result = createNumberRange([null as unknown as number]);
       expect(result).toEqual([0, 0]);
     });
 
     it("should handle single undefined value", () => {
-      const result = createNumberRange([undefined as unknown]);
+      const result = createNumberRange([undefined as unknown as number]);
       expect(result).toEqual([0, 0]);
     });
 

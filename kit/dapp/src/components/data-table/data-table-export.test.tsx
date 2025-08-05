@@ -7,7 +7,6 @@ import userEvent from "@testing-library/user-event";
 import { DataTableExport } from "./data-table-export";
 import { renderWithProviders, createMockTable } from "./test-utils";
 import { toast } from "sonner";
-import type { Table } from "@tanstack/react-table";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
@@ -72,9 +71,7 @@ describe("DataTableExport", () => {
   describe("Component Rendering", () => {
     it("should render export button with icon and text", () => {
       const mockTable = createMockTable();
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const button = screen.getByRole("button", { name: /export/i });
       expect(button).toBeInTheDocument();
@@ -94,7 +91,7 @@ describe("DataTableExport", () => {
     it("should render with correct layout", () => {
       const mockTable = createMockTable();
       const { container } = renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
+        <DataTableExport table={mockTable} />
       );
 
       const wrapper = container.firstElementChild;
@@ -103,9 +100,7 @@ describe("DataTableExport", () => {
 
     it("should render with outline variant and sm size", () => {
       const mockTable = createMockTable();
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const button = screen.getByRole("button");
       expect(button).toHaveClass("border");
@@ -145,12 +140,14 @@ describe("DataTableExport", () => {
             columnDef: { header: "Active", meta: {} },
           },
         ]),
-        options: { meta: { name: "users" } },
       });
 
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      // Set the table name for the expected filename
+      if (mockTable.options.meta) {
+        mockTable.options.meta.name = "users";
+      }
+
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -162,7 +159,7 @@ describe("DataTableExport", () => {
 
       // Verify Blob was created
       const blobCall = (URL.createObjectURL as ReturnType<typeof vi.fn>).mock
-        .calls[0][0];
+        .calls[0]?.[0];
       expect(blobCall).toBeInstanceOf(Blob);
       expect(blobCall.type).toBe("text/csv;charset=utf-8;");
 
@@ -203,15 +200,13 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const button = screen.getByRole("button");
       await user.click(button);
 
       const blobCall = (URL.createObjectURL as ReturnType<typeof vi.fn>).mock
-        .calls[0][0];
+        .calls[0]?.[0];
       const text = await blobCall.text();
 
       expect(text).toContain("ID");
@@ -222,14 +217,14 @@ describe("DataTableExport", () => {
     it("should use table name from meta for filename", async () => {
       const user = userEvent.setup();
       const mockTable = createMockTable({
-        options: { meta: { name: "custom-table-name" } },
         getRowModel: vi.fn().mockReturnValue({ rows: [] }),
         getAllLeafColumns: vi.fn().mockReturnValue([]),
       });
+      if (mockTable.options.meta) {
+        mockTable.options.meta.name = "custom-table-name";
+      }
 
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -243,14 +238,14 @@ describe("DataTableExport", () => {
     it("should use default filename when table name not provided", async () => {
       const user = userEvent.setup();
       const mockTable = createMockTable({
-        options: { meta: {} },
         getRowModel: vi.fn().mockReturnValue({ rows: [] }),
         getAllLeafColumns: vi.fn().mockReturnValue([]),
       });
+      if (mockTable.options.meta) {
+        delete (mockTable.options.meta as any).name;
+      }
 
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -269,9 +264,7 @@ describe("DataTableExport", () => {
         }),
       });
 
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -291,19 +284,17 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const button = screen.getByRole("button");
       await user.click(button);
 
       const blobCall = (URL.createObjectURL as ReturnType<typeof vi.fn>).mock
-        .calls[0][0];
+        .calls[0]?.[0];
       const text = await blobCall.text();
 
       // BOM character should be at the start
-      expect(text.codePointAt(0)).toBe(0xfe_ff);
+      expect(text.codePointAt(0)).toBe(0xFE_FF);
     });
   });
 
@@ -331,22 +322,20 @@ describe("DataTableExport", () => {
           })),
         }),
         getAllLeafColumns: vi.fn().mockReturnValue(
-          Object.keys(mockData[0]).map((key) => ({
+          Object.keys(mockData[0] || {}).map((key) => ({
             id: key,
             columnDef: { header: key },
           }))
         ),
       });
 
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const button = screen.getByRole("button");
       await user.click(button);
 
       const blobCall = (URL.createObjectURL as ReturnType<typeof vi.fn>).mock
-        .calls[0][0];
+        .calls[0]?.[0];
       const text = await blobCall.text();
       const lines = text.split("\n");
       const dataLine = lines[1];
@@ -384,15 +373,13 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const button = screen.getByRole("button");
       await user.click(button);
 
       const blobCall = (URL.createObjectURL as ReturnType<typeof vi.fn>).mock
-        .calls[0][0];
+        .calls[0]?.[0];
       const text = await blobCall.text();
       const lines = text.split("\n");
 
@@ -413,15 +400,13 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const button = screen.getByRole("button");
       await user.click(button);
 
       const blobCall = (URL.createObjectURL as ReturnType<typeof vi.fn>).mock
-        .calls[0][0];
+        .calls[0]?.[0];
       const text = await blobCall.text();
 
       expect(text).toContain('"Column One"');
@@ -439,15 +424,13 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const button = screen.getByRole("button");
       await user.click(button);
 
       const blobCall = (URL.createObjectURL as ReturnType<typeof vi.fn>).mock
-        .calls[0][0];
+        .calls[0]?.[0];
       const text = await blobCall.text();
 
       expect(text).toContain('"columnId"');
@@ -465,15 +448,13 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const button = screen.getByRole("button");
       await user.click(button);
 
       const blobCall = (URL.createObjectURL as ReturnType<typeof vi.fn>).mock
-        .calls[0][0];
+        .calls[0]?.[0];
       const text = await blobCall.text();
 
       expect(text).toContain('"noHeader"');
@@ -497,15 +478,13 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const button = screen.getByRole("button");
       await user.click(button);
 
       const blobCall = (URL.createObjectURL as ReturnType<typeof vi.fn>).mock
-        .calls[0][0];
+        .calls[0]?.[0];
       const text = await blobCall.text();
       const lines = text.split("\n");
 
@@ -540,15 +519,13 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const button = screen.getByRole("button");
       await user.click(button);
 
       const blobCall = (URL.createObjectURL as ReturnType<typeof vi.fn>).mock
-        .calls[0][0];
+        .calls[0]?.[0];
       const text = await blobCall.text();
 
       expect(text).toContain("Line 1\nLine 2\rLine 3\r\nLine 4\tTabbed");
@@ -583,15 +560,13 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const button = screen.getByRole("button");
       await user.click(button);
 
       const blobCall = (URL.createObjectURL as ReturnType<typeof vi.fn>).mock
-        .calls[0][0];
+        .calls[0]?.[0];
       const text = await blobCall.text();
 
       expect(text).toContain("level1");
@@ -626,15 +601,13 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const button = screen.getByRole("button");
       await user.click(button);
 
       const blobCall = (URL.createObjectURL as ReturnType<typeof vi.fn>).mock
-        .calls[0][0];
+        .calls[0]?.[0];
       const text = await blobCall.text();
 
       // Arrays are JSON.stringify'd and quotes are escaped in CSV
@@ -666,15 +639,13 @@ describe("DataTableExport", () => {
         ]),
       });
 
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const button = screen.getByRole("button");
       await user.click(button);
 
       const blobCall = (URL.createObjectURL as ReturnType<typeof vi.fn>).mock
-        .calls[0][0];
+        .calls[0]?.[0];
       const text = await blobCall.text();
       const lines = text.split("\n");
 
@@ -699,22 +670,20 @@ describe("DataTableExport", () => {
           })),
         }),
         getAllLeafColumns: vi.fn().mockReturnValue(
-          Object.keys(mockData[0]).map((key) => ({
+          Object.keys(mockData[0] || {}).map((key) => ({
             id: key,
             columnDef: { header: key },
           }))
         ),
       });
 
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const button = screen.getByRole("button");
       await user.click(button);
 
       const blobCall = (URL.createObjectURL as ReturnType<typeof vi.fn>).mock
-        .calls[0][0];
+        .calls[0]?.[0];
       const text = await blobCall.text();
 
       expect(text).toContain(String(Number.MAX_SAFE_INTEGER));
@@ -736,9 +705,7 @@ describe("DataTableExport", () => {
         getAllLeafColumns: vi.fn().mockReturnValue([]),
       });
 
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -751,9 +718,7 @@ describe("DataTableExport", () => {
   describe("Accessibility", () => {
     it("should have accessible button label", () => {
       const mockTable = createMockTable();
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const button = screen.getByRole("button");
       expect(button).toHaveTextContent("export");
@@ -761,9 +726,7 @@ describe("DataTableExport", () => {
 
     it("should mark icon as decorative", () => {
       const mockTable = createMockTable();
-      renderWithProviders(
-        <DataTableExport table={mockTable as unknown as Table<unknown>} />
-      );
+      renderWithProviders(<DataTableExport table={mockTable} />);
 
       const icon = screen.getByRole("button").querySelector("svg");
       expect(icon).toHaveAttribute("aria-hidden", "true");

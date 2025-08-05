@@ -70,7 +70,7 @@ describe("SelectionHeader", () => {
           .mockReturnValue({ rows: Array.from({ length: 5 }) }),
       });
 
-      renderWithProviders(<SelectionHeader table={mockTable as unknown} />);
+      renderWithProviders(<SelectionHeader table={mockTable} />);
 
       const checkbox = screen.getByRole("checkbox");
       expect(checkbox).toBeInTheDocument();
@@ -90,7 +90,7 @@ describe("SelectionHeader", () => {
           .mockReturnValue({ rows: Array.from({ length: 5 }) }),
       });
 
-      renderWithProviders(<SelectionHeader table={mockTable as unknown} />);
+      renderWithProviders(<SelectionHeader table={mockTable} />);
 
       const checkbox = screen.getByRole("checkbox");
       expect(checkbox).toBeChecked();
@@ -112,7 +112,7 @@ describe("SelectionHeader", () => {
           .mockReturnValue({ rows: Array.from({ length: 5 }) }),
       });
 
-      renderWithProviders(<SelectionHeader table={mockTable as unknown} />);
+      renderWithProviders(<SelectionHeader table={mockTable} />);
 
       const checkbox = screen.getByRole("checkbox");
       // Indeterminate state is represented as checked="indeterminate"
@@ -133,7 +133,7 @@ describe("SelectionHeader", () => {
           .mockReturnValue({ rows: Array.from({ length: 5 }) }),
       });
 
-      renderWithProviders(<SelectionHeader table={mockTable as unknown} />);
+      renderWithProviders(<SelectionHeader table={mockTable} />);
 
       const checkbox = screen.getByRole("checkbox");
       await user.click(checkbox);
@@ -153,7 +153,7 @@ describe("SelectionHeader", () => {
           .mockReturnValue({ rows: Array.from({ length: 5 }) }),
       });
 
-      renderWithProviders(<SelectionHeader table={mockTable as unknown} />);
+      renderWithProviders(<SelectionHeader table={mockTable} />);
 
       const selectAllButton = screen.getByRole("button", {
         name: "bulkActions.selectAll",
@@ -175,7 +175,7 @@ describe("SelectionHeader", () => {
           .mockReturnValue({ rows: Array.from({ length: 5 }) }),
       });
 
-      renderWithProviders(<SelectionHeader table={mockTable as unknown} />);
+      renderWithProviders(<SelectionHeader table={mockTable} />);
 
       const selectAllButton = screen.getByRole("button", {
         name: "bulkActions.selectAll",
@@ -197,7 +197,7 @@ describe("SelectionHeader", () => {
           .mockReturnValue({ rows: Array.from({ length: 5 }) }),
       });
 
-      renderWithProviders(<SelectionHeader table={mockTable as unknown} />);
+      renderWithProviders(<SelectionHeader table={mockTable} />);
 
       const clearButton = screen.getByRole("button", {
         name: "bulkActions.clearSelection",
@@ -219,7 +219,7 @@ describe("SelectionHeader", () => {
           .mockReturnValue({ rows: Array.from({ length: 5 }) }),
       });
 
-      renderWithProviders(<SelectionHeader table={mockTable as unknown} />);
+      renderWithProviders(<SelectionHeader table={mockTable} />);
 
       const clearButton = screen.getByRole("button", {
         name: "bulkActions.clearSelection",
@@ -244,10 +244,7 @@ describe("SelectionHeader", () => {
       });
 
       renderWithProviders(
-        <SelectionHeader
-          table={mockTable as unknown}
-          showSelectAllButton={false}
-        />
+        <SelectionHeader table={mockTable} showSelectAllButton={false} />
       );
 
       const selectAllButton = screen.queryByRole("button", {
@@ -269,7 +266,7 @@ describe("SelectionHeader", () => {
       });
 
       renderWithProviders(
-        <SelectionHeader table={mockTable as unknown} showClearButton={false} />
+        <SelectionHeader table={mockTable} showClearButton={false} />
       );
 
       const clearButton = screen.queryByRole("button", {
@@ -282,10 +279,7 @@ describe("SelectionHeader", () => {
       const mockTable = createMockTable();
 
       const { container } = renderWithProviders(
-        <SelectionHeader
-          table={mockTable as unknown}
-          className="custom-class"
-        />
+        <SelectionHeader table={mockTable} className="custom-class" />
       );
 
       const wrapper = container.firstElementChild;
@@ -472,9 +466,7 @@ describe("useSelection hook", () => {
       toggleAllRowsSelected: vi.fn(),
     });
 
-    const { result } = renderHook(() =>
-      useSelection(mockTable as ReturnType<typeof vi.fn>)
-    );
+    const { result } = renderHook(() => useSelection(mockTable));
 
     expect(result.current.selectedCount).toBe(2);
     expect(result.current.totalCount).toBe(5);
@@ -492,9 +484,7 @@ describe("useSelection hook", () => {
       toggleAllRowsSelected,
     });
 
-    const { result } = renderHook(() =>
-      useSelection(mockTable as ReturnType<typeof vi.fn>)
-    );
+    const { result } = renderHook(() => useSelection(mockTable));
 
     // Select all
     result.current.selectAll();
@@ -520,9 +510,7 @@ describe("useSelection hook", () => {
       getRowModel: vi.fn().mockReturnValue({ rows }),
     });
 
-    const { result } = renderHook(() =>
-      useSelection(mockTable as ReturnType<typeof vi.fn>)
-    );
+    const { result } = renderHook(() => useSelection(mockTable));
 
     result.current.invertSelection();
 
@@ -537,9 +525,7 @@ describe("useSelection hook", () => {
       getRowModel: vi.fn().mockReturnValue({ rows: [] }),
     });
 
-    const { result } = renderHook(() =>
-      useSelection(mockTable as ReturnType<typeof vi.fn>)
-    );
+    const { result } = renderHook(() => useSelection(mockTable));
 
     expect(result.current.selectedCount).toBe(0);
     expect(result.current.totalCount).toBe(0);

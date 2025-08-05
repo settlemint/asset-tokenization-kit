@@ -7,7 +7,7 @@ import { optionFilterFn, __optionFilterFn } from "./option-filter";
 import type { FilterValue } from "../types/filter-types";
 
 // Define test data type
-interface _TestData {
+interface TestData {
   id: string;
   name: string;
 }
@@ -36,7 +36,7 @@ describe("option-filter", () => {
     it("should return false when first filter value is falsy", () => {
       const filterValue: FilterValue<"option", TestData> = {
         operator: "is",
-        values: [null],
+        values: [null as unknown as string],
         columnMeta: {},
       };
 
@@ -160,7 +160,7 @@ describe("option-filter", () => {
       const filterValue: FilterValue<"option", TestData> = {
         operator: "is",
         values: ["test"],
-        columnMeta: null,
+        columnMeta: undefined,
       };
 
       const result = optionFilterFn(mockRow, "testColumn", filterValue);
@@ -179,7 +179,9 @@ describe("option-filter", () => {
         columnMeta: {},
       };
 
-      (isColumnOption as ReturnType<typeof vi.fn>).mockReturnValue(false);
+      (isColumnOption as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
+        false
+      );
 
       const result = optionFilterFn(mockRow, "testColumn", filterValue);
 
@@ -201,7 +203,9 @@ describe("option-filter", () => {
         columnMeta: {},
       };
 
-      (isColumnOption as ReturnType<typeof vi.fn>).mockReturnValue(true);
+      (isColumnOption as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
+        true
+      );
 
       const result = optionFilterFn(mockRow, "testColumn", filterValue);
 
@@ -228,7 +232,9 @@ describe("option-filter", () => {
         },
       };
 
-      (isColumnOption as ReturnType<typeof vi.fn>).mockReturnValue(false);
+      (isColumnOption as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
+        false
+      );
 
       const result = optionFilterFn(mockRow, "testColumn", filterValue);
 
@@ -247,7 +253,9 @@ describe("option-filter", () => {
         columnMeta: {},
       };
 
-      (isColumnOption as ReturnType<typeof vi.fn>).mockReturnValue(false);
+      (isColumnOption as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
+        false
+      );
 
       const result = optionFilterFn(mockRow, "testColumn", filterValue);
 
@@ -268,7 +276,9 @@ describe("option-filter", () => {
         },
       };
 
-      (isColumnOption as ReturnType<typeof vi.fn>).mockReturnValue(false);
+      (isColumnOption as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
+        false
+      );
 
       const result = optionFilterFn(mockRow, "testColumn", filterValue);
 
@@ -287,7 +297,9 @@ describe("option-filter", () => {
         columnMeta: {},
       };
 
-      (isColumnOption as ReturnType<typeof vi.fn>).mockReturnValue(false);
+      (isColumnOption as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
+        false
+      );
 
       const result = optionFilterFn(mockRow, "testColumn", filterValue);
 
@@ -301,7 +313,7 @@ describe("option-filter", () => {
 
       const filterValue: FilterValue<"option", TestData> = {
         operator: "is",
-        values: [null], // Falsy filter value
+        values: [null as unknown as string], // Falsy filter value
         columnMeta: {},
       };
 

@@ -3,7 +3,6 @@
  */
 import { screen, within } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import type { ComponentType } from "react";
 import { DataTableEmptyState } from "./data-table-empty-state";
 import type { DataTableEmptyStateProps } from "./data-table-empty-state";
 import { renderWithProviders } from "./test-utils";
@@ -282,9 +281,7 @@ describe("DataTableEmptyState", () => {
     });
 
     it("should handle icon as component type", () => {
-      const CustomIcon: ComponentType<{ className?: string }> = ({
-        className,
-      }) => (
+      const CustomIcon = ({ className }: { className?: string }) => (
         <div className={className} data-testid="custom-icon">
           Custom
         </div>
@@ -292,7 +289,7 @@ describe("DataTableEmptyState", () => {
 
       renderWithProviders(
         <DataTableEmptyState
-          icon={CustomIcon}
+          icon={CustomIcon as any}
           title="Custom Icon"
           description="With custom icon component"
         />

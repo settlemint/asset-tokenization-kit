@@ -9,7 +9,7 @@ import { renderWithProviders } from "../../test-utils";
 import type { Column, ColumnMeta } from "@tanstack/react-table";
 import type { FilterValue } from "../types/filter-types";
 // Define test data type
-interface _TestData {
+interface TestData {
   id: string;
   name: string;
 }
@@ -147,7 +147,7 @@ describe("PropertyFilterDateValueMenu", () => {
           id="createdAt"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable() as unknown as Table<unknown>}
+          table={createMockTable() as Table<unknown>}
           onClose={mockOnClose}
         />
       );
@@ -177,7 +177,7 @@ describe("PropertyFilterDateValueMenu", () => {
           id="createdAt"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable() as unknown as Table<unknown>}
+          table={createMockTable() as Table<unknown>}
         />
       );
 
@@ -193,7 +193,7 @@ describe("PropertyFilterDateValueMenu", () => {
           id="createdAt"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable() as unknown as Table<unknown>}
+          table={createMockTable() as Table<unknown>}
           onBack={mockOnBack}
         />
       );
@@ -210,7 +210,7 @@ describe("PropertyFilterDateValueMenu", () => {
           id="createdAt"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable() as unknown as Table<unknown>}
+          table={createMockTable() as Table<unknown>}
         />
       );
 
@@ -228,7 +228,7 @@ describe("PropertyFilterDateValueMenu", () => {
           id="createdAt"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable() as unknown as Table<unknown>}
+          table={createMockTable() as Table<unknown>}
         />
       );
 
@@ -256,7 +256,7 @@ describe("PropertyFilterDateValueMenu", () => {
           id="createdAt"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable() as unknown as Table<unknown>}
+          table={createMockTable() as Table<unknown>}
         />
       );
 
@@ -284,7 +284,7 @@ describe("PropertyFilterDateValueMenu", () => {
           id="createdAt"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable() as unknown as Table<unknown>}
+          table={createMockTable() as Table<unknown>}
         />
       );
 
@@ -308,7 +308,7 @@ describe("PropertyFilterDateValueMenu", () => {
           id="createdAt"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable() as unknown as Table<unknown>}
+          table={createMockTable() as Table<unknown>}
         />
       );
 
@@ -337,7 +337,7 @@ describe("PropertyFilterDateValueMenu", () => {
           id="createdAt"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable() as unknown as Table<unknown>}
+          table={createMockTable() as Table<unknown>}
         />
       );
 
@@ -366,7 +366,7 @@ describe("PropertyFilterDateValueMenu", () => {
           id="createdAt"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable() as unknown as Table<unknown>}
+          table={createMockTable() as Table<unknown>}
         />
       );
 
@@ -402,7 +402,7 @@ describe("PropertyFilterDateValueMenu", () => {
           id="createdAt"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable() as unknown as Table<unknown>}
+          table={createMockTable() as Table<unknown>}
         />
       );
 
@@ -444,7 +444,7 @@ describe("PropertyFilterDateValueMenu", () => {
           id="createdAt"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable() as unknown as Table<unknown>}
+          table={createMockTable() as Table<unknown>}
         />
       );
 
@@ -480,7 +480,7 @@ describe("PropertyFilterDateValueMenu", () => {
           id="createdAt"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable() as unknown as Table<unknown>}
+          table={createMockTable() as Table<unknown>}
         />
       );
 
@@ -516,7 +516,7 @@ describe("PropertyFilterDateValueMenu", () => {
           id="createdAt"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable() as unknown as Table<unknown>}
+          table={createMockTable() as Table<unknown>}
         />
       );
 
@@ -545,7 +545,7 @@ describe("PropertyFilterDateValueMenu", () => {
           id="createdAt"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable() as unknown as Table<unknown>}
+          table={createMockTable() as Table<unknown>}
           onBack={mockOnBack}
         />
       );
@@ -565,7 +565,7 @@ describe("PropertyFilterDateValueMenu", () => {
           id="createdAt"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable() as unknown as Table<unknown>}
+          table={createMockTable() as Table<unknown>}
         />
       );
 
@@ -590,7 +590,7 @@ describe("PropertyFilterDateValueMenu", () => {
           id="createdAt"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable() as unknown as Table<unknown>}
+          table={createMockTable() as Table<unknown>}
         />
       );
 
@@ -620,7 +620,7 @@ describe("PropertyFilterDateValueMenu", () => {
           id="createdAt"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable() as unknown as Table<unknown>}
+          table={createMockTable() as Table<unknown>}
         />
       );
 
@@ -647,7 +647,7 @@ describe("PropertyFilterDateValueMenu", () => {
           id="createdAt"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable() as unknown as Table<unknown>}
+          table={createMockTable() as Table<unknown>}
         />
       );
 
@@ -668,7 +668,7 @@ describe("PropertyFilterDateValueMenu", () => {
           id="createdAt"
           column={column}
           columnMeta={columnMeta}
-          table={createMockTable() as unknown as Table<unknown>}
+          table={createMockTable() as Table<unknown>}
         />
       );
 

@@ -3,6 +3,7 @@
  */
 import { describe, it, expect } from "vitest";
 import { determineNewOperator } from "./operator-utils";
+import type { NumberFilterOperator } from "./number-operators";
 
 describe("operator-utils", () => {
   describe("determineNewOperator", () => {
@@ -108,8 +109,8 @@ describe("operator-utils", () => {
         expect(
           determineNewOperator(
             "date",
-            ["2023-01-01"],
-            ["2023-01-02", "2023-01-03"],
+            [new Date("2023-01-01")],
+            [new Date("2023-01-02"), new Date("2023-01-03")],
             "is"
           )
         ).toBe("is between");
@@ -119,8 +120,8 @@ describe("operator-utils", () => {
         expect(
           determineNewOperator(
             "date",
-            ["2023-01-01", "2023-01-02"],
-            ["2023-01-03"],
+            [new Date("2023-01-01"), new Date("2023-01-02")],
+            [new Date("2023-01-01")],
             "is between"
           )
         ).toBe("is");
@@ -130,8 +131,8 @@ describe("operator-utils", () => {
         expect(
           determineNewOperator(
             "date",
-            ["2023-01-01"],
-            ["2023-01-02", "2023-01-03"],
+            [new Date("2023-01-01")],
+            [new Date("2023-01-02"), new Date("2023-01-03")],
             "is not"
           )
         ).toBe("is not between");
@@ -141,8 +142,8 @@ describe("operator-utils", () => {
         expect(
           determineNewOperator(
             "date",
-            ["2023-01-01", "2023-01-02"],
-            ["2023-01-03"],
+            [new Date("2023-01-01"), new Date("2023-01-02")],
+            [new Date("2023-01-01")],
             "is not between"
           )
         ).toBe("is not");
@@ -152,32 +153,32 @@ describe("operator-utils", () => {
         expect(
           determineNewOperator(
             "date",
-            ["2023-01-01"],
-            ["2023-01-02", "2023-01-03"],
+            [new Date("2023-01-01")],
+            [new Date("2023-01-02"), new Date("2023-01-03")],
             "is before"
           )
         ).toBe("is between");
         expect(
           determineNewOperator(
             "date",
-            ["2023-01-01"],
-            ["2023-01-02", "2023-01-03"],
+            [new Date("2023-01-01")],
+            [new Date("2023-01-02"), new Date("2023-01-03")],
             "is after"
           )
         ).toBe("is between");
         expect(
           determineNewOperator(
             "date",
-            ["2023-01-01"],
-            ["2023-01-02", "2023-01-03"],
+            [new Date("2023-01-01")],
+            [new Date("2023-01-02"), new Date("2023-01-03")],
             "is on or before"
           )
         ).toBe("is between");
         expect(
           determineNewOperator(
             "date",
-            ["2023-01-01"],
-            ["2023-01-02", "2023-01-03"],
+            [new Date("2023-01-01")],
+            [new Date("2023-01-02"), new Date("2023-01-03")],
             "is on or after"
           )
         ).toBe("is between");
@@ -187,8 +188,12 @@ describe("operator-utils", () => {
         expect(
           determineNewOperator(
             "date",
-            ["2023-01-01", "2023-01-31"],
-            ["2023-02-01", "2023-02-28", "2023-03-01"],
+            [new Date("2023-01-01"), new Date("2023-01-31")],
+            [
+              new Date("2023-02-01"),
+              new Date("2023-02-28"),
+              new Date("2023-03-01"),
+            ],
             "is between"
           )
         ).toBe("is between");
@@ -238,8 +243,8 @@ describe("operator-utils", () => {
         expect(
           determineNewOperator(
             "multiOption",
-            ["tag1"],
-            ["tag2", "tag3"],
+            [["tag1"]],
+            [["tag2"], ["tag3"]],
             "include"
           )
         ).toBe("include any of");
@@ -249,8 +254,8 @@ describe("operator-utils", () => {
         expect(
           determineNewOperator(
             "multiOption",
-            ["tag1", "tag2"],
-            ["tag3"],
+            [["tag1"], ["tag2"]],
+            [["tag3"]],
             "include any of"
           )
         ).toBe("include");
@@ -260,8 +265,8 @@ describe("operator-utils", () => {
         expect(
           determineNewOperator(
             "multiOption",
-            ["tag1"],
-            ["tag2", "tag3"],
+            [["tag1"]],
+            [["tag2"], ["tag3"]],
             "exclude"
           )
         ).toBe("exclude if any of");
@@ -271,8 +276,8 @@ describe("operator-utils", () => {
         expect(
           determineNewOperator(
             "multiOption",
-            ["tag1", "tag2"],
-            ["tag3"],
+            [["tag1"], ["tag2"]],
+            [["tag3"]],
             "exclude if any of"
           )
         ).toBe("exclude");
@@ -282,8 +287,8 @@ describe("operator-utils", () => {
         expect(
           determineNewOperator(
             "multiOption",
-            ["tag1", "tag2"],
-            ["tag3"],
+            [["tag1"], ["tag2"]],
+            [["tag3"]],
             "exclude if all"
           )
         ).toBe("exclude");
@@ -353,7 +358,12 @@ describe("operator-utils", () => {
 
         // 0 -> 2+ (single to multiple) - for date type which has mappings
         expect(
-          determineNewOperator("date", [], ["2023-01-01", "2023-01-02"], "is")
+          determineNewOperator(
+            "date",
+            [],
+            [new Date("2023-01-01"), new Date("2023-01-02")],
+            "is"
+          )
         ).toBe("is between");
 
         // 1 -> 0 (still single)
@@ -404,7 +414,7 @@ describe("operator-utils", () => {
             "number",
             [1],
             [2, 3],
-            "is any of" as ReturnType<typeof vi.fn>
+            "is any of" as unknown as NumberFilterOperator
           )
         ).toThrow();
       });

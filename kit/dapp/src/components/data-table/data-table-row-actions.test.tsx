@@ -59,8 +59,12 @@ describe("DataTableRowActions", () => {
 
     it("should render dropdown menu when actions provided", () => {
       const actions = [
-        { id: "edit", label: "Edit", component: <div>Edit Action</div> },
-        { id: "delete", label: "Delete" },
+        {
+          id: "edit",
+          label: "Edit",
+          component: (<div>Edit Action</div>) as React.ReactNode,
+        },
+        { id: "delete", label: "Delete", component: undefined },
       ];
 
       renderWithProviders(<DataTableRowActions actions={actions} />);
@@ -71,7 +75,11 @@ describe("DataTableRowActions", () => {
 
     it("should render both details and actions when both provided", () => {
       const actions = [
-        { id: "edit", label: "Edit", component: <div>Edit Action</div> },
+        {
+          id: "edit",
+          label: "Edit",
+          component: (<div>Edit Action</div>) as React.ReactNode,
+        },
       ];
 
       renderWithProviders(
@@ -88,8 +96,12 @@ describe("DataTableRowActions", () => {
   describe("Dropdown Menu Interactions", () => {
     it("should show dropdown items when menu clicked", async () => {
       const actions = [
-        { id: "edit", label: "Edit", component: <div>Edit Action</div> },
-        { id: "delete", label: "Delete" },
+        {
+          id: "edit",
+          label: "Edit",
+          component: (<div>Edit Action</div>) as React.ReactNode,
+        },
+        { id: "delete", label: "Delete", component: undefined },
       ];
 
       renderWithProviders(<DataTableRowActions actions={actions} />);
@@ -105,8 +117,12 @@ describe("DataTableRowActions", () => {
 
     it("should handle disabled actions", async () => {
       const actions = [
-        { id: "edit", label: "Edit", component: <div>Edit Action</div> },
-        { id: "delete", label: "Delete", disabled: true },
+        {
+          id: "edit",
+          label: "Edit",
+          component: (<div>Edit Action</div>) as React.ReactNode,
+        },
+        { id: "delete", label: "Delete", disabled: true, component: undefined },
       ];
 
       renderWithProviders(<DataTableRowActions actions={actions} />);
@@ -124,17 +140,21 @@ describe("DataTableRowActions", () => {
 
     it("should filter out hidden actions", async () => {
       const actions = [
-        { id: "edit", label: "Edit", component: <div>Edit Action</div> },
+        {
+          id: "edit",
+          label: "Edit",
+          component: (<div>Edit Action</div>) as React.ReactNode,
+        },
         {
           id: "delete",
           label: "Delete",
-          component: <div>Delete Action</div>,
+          component: (<div>Delete Action</div>) as React.ReactNode,
           hidden: true,
         },
         {
           id: "archive",
           label: "Archive",
-          component: <div>Archive Action</div>,
+          component: (<div>Archive Action</div>) as React.ReactNode,
         },
       ];
 
@@ -152,8 +172,12 @@ describe("DataTableRowActions", () => {
 
     it("should close dropdown when item clicked", async () => {
       const actions = [
-        { id: "edit", label: "Edit", component: <div>Edit Action</div> },
-        { id: "delete", label: "Delete" },
+        {
+          id: "edit",
+          label: "Edit",
+          component: (<div>Edit Action</div>) as React.ReactNode,
+        },
+        { id: "delete", label: "Delete", component: undefined },
       ];
 
       renderWithProviders(<DataTableRowActions actions={actions} />);
@@ -174,7 +198,11 @@ describe("DataTableRowActions", () => {
     it("should render action component when item clicked", async () => {
       const TestComponent = () => <div>Test Action Component</div>;
       const actions = [
-        { id: "custom", label: "Custom", component: <TestComponent /> },
+        {
+          id: "custom",
+          label: "Custom",
+          component: (<TestComponent />) as React.ReactNode,
+        },
       ];
 
       renderWithProviders(<DataTableRowActions actions={actions} />);
@@ -271,7 +299,11 @@ describe("DataTableRowActions", () => {
   describe("Styling and Props", () => {
     it("should apply custom className", () => {
       const actions = [
-        { id: "edit", label: "Edit", component: <div>Edit Action</div> },
+        {
+          id: "edit",
+          label: "Edit",
+          component: (<div>Edit Action</div>) as React.ReactNode,
+        },
       ];
 
       renderWithProviders(
@@ -286,7 +318,11 @@ describe("DataTableRowActions", () => {
 
     it("should apply variant styles", () => {
       const actions = [
-        { id: "edit", label: "Edit", component: <div>Edit Action</div> },
+        {
+          id: "edit",
+          label: "Edit",
+          component: (<div>Edit Action</div>) as React.ReactNode,
+        },
       ];
 
       renderWithProviders(
@@ -301,7 +337,11 @@ describe("DataTableRowActions", () => {
 
     it("should pass through additional HTML props", () => {
       const actions = [
-        { id: "edit", label: "Edit", component: <div>Edit Action</div> },
+        {
+          id: "edit",
+          label: "Edit",
+          component: (<div>Edit Action</div>) as React.ReactNode,
+        },
       ];
 
       renderWithProviders(
@@ -358,7 +398,11 @@ describe("DataTableRowActions", () => {
 
     it("should handle menu state changes", async () => {
       const actions = [
-        { id: "edit", label: "Edit", component: <div>Edit Action</div> },
+        {
+          id: "edit",
+          label: "Edit",
+          component: (<div>Edit Action</div>) as React.ReactNode,
+        },
       ];
 
       renderWithProviders(<DataTableRowActions actions={actions} />);
@@ -378,7 +422,11 @@ describe("DataTableRowActions", () => {
 
     it("should manage menu visibility state", async () => {
       const actions = [
-        { id: "edit", label: "Edit", component: <div>Edit Action</div> },
+        {
+          id: "edit",
+          label: "Edit",
+          component: (<div>Edit Action</div>) as React.ReactNode,
+        },
       ];
 
       renderWithProviders(<DataTableRowActions actions={actions} />);

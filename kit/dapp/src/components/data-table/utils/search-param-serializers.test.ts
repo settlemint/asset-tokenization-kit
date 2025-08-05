@@ -35,7 +35,7 @@ describe("search-param-serializers", () => {
       const circular: Record<string, unknown> = { a: 1 };
       circular.self = circular; // Create circular reference
       expect(
-        encodeObjectParam(circular as Record<string, unknown>)
+        encodeObjectParam(circular)
       ).toBeUndefined();
     });
 

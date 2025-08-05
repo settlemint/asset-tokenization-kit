@@ -13,12 +13,7 @@ import {
 import { renderWithProviders } from "../../test-utils";
 import type { Column, ColumnMeta } from "@tanstack/react-table";
 
-interface _TestData {
-  id: string;
-  name: string;
-  status: string;
-  tags?: string[];
-}
+// Removed unused TestData interface to fix TS6196
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
@@ -230,7 +225,11 @@ describe("PropertyFilterOperatorController", () => {
   describe("Basic Rendering", () => {
     it("should render with trigger button", () => {
       const column = createMockColumn({
-        filterValue: { operator: "contains", values: ["test"] },
+        filterValue: {
+          operator: "contains",
+          values: ["test"],
+          columnMeta: undefined,
+        },
         meta: { type: "text" },
       });
 
@@ -238,7 +237,11 @@ describe("PropertyFilterOperatorController", () => {
         <PropertyFilterOperatorController
           column={column}
           columnMeta={{ type: "text" }}
-          filter={{ operator: "contains", values: ["test"] }}
+          filter={{
+            operator: "contains",
+            values: ["test"],
+            columnMeta: undefined,
+          }}
         />
       );
 
@@ -249,7 +252,11 @@ describe("PropertyFilterOperatorController", () => {
 
     it("should display current operator", () => {
       const column = createMockColumn({
-        filterValue: { operator: "contains", values: ["test"] },
+        filterValue: {
+          operator: "contains",
+          values: ["test"],
+          columnMeta: undefined,
+        },
         meta: { type: "text" },
       });
 
@@ -257,7 +264,11 @@ describe("PropertyFilterOperatorController", () => {
         <PropertyFilterOperatorController
           column={column}
           columnMeta={{ type: "text" }}
-          filter={{ operator: "contains", values: ["test"] }}
+          filter={{
+            operator: "contains",
+            values: ["test"],
+            columnMeta: undefined,
+          }}
         />
       );
 
@@ -266,7 +277,11 @@ describe("PropertyFilterOperatorController", () => {
 
     it("should open popover when clicked", async () => {
       const column = createMockColumn({
-        filterValue: { operator: "contains", values: ["test"] },
+        filterValue: {
+          operator: "contains",
+          values: ["test"],
+          columnMeta: undefined,
+        },
         meta: { type: "text" },
       });
 
@@ -274,7 +289,11 @@ describe("PropertyFilterOperatorController", () => {
         <PropertyFilterOperatorController
           column={column}
           columnMeta={{ type: "text" }}
-          filter={{ operator: "contains", values: ["test"] }}
+          filter={{
+            operator: "contains",
+            values: ["test"],
+            columnMeta: undefined,
+          }}
         />
       );
 
@@ -291,7 +310,11 @@ describe("PropertyFilterOperatorController", () => {
     it("should show command input and empty state", async () => {
       const column = createMockColumn({
         id: "name",
-        filterValue: { operator: "contains", values: ["test"] },
+        filterValue: {
+          operator: "contains",
+          values: ["test"],
+          columnMeta: undefined,
+        },
         meta: { type: "text" },
       });
 
@@ -299,7 +322,11 @@ describe("PropertyFilterOperatorController", () => {
         <PropertyFilterOperatorController
           column={column}
           columnMeta={{ type: "text" }}
-          filter={{ operator: "contains", values: ["test"] }}
+          filter={{
+            operator: "contains",
+            values: ["test"],
+            columnMeta: undefined,
+          }}
         />
       );
 
@@ -315,7 +342,11 @@ describe("PropertyFilterOperatorController", () => {
     it("should render operator menu based on column type", async () => {
       const column = createMockColumn({
         id: "name",
-        filterValue: { operator: "contains", values: ["test"] },
+        filterValue: {
+          operator: "contains",
+          values: ["test"],
+          columnMeta: undefined,
+        },
         meta: { type: "text" },
       });
 
@@ -323,7 +354,11 @@ describe("PropertyFilterOperatorController", () => {
         <PropertyFilterOperatorController
           column={column}
           columnMeta={{ type: "text" }}
-          filter={{ operator: "contains", values: ["test"] }}
+          filter={{
+            operator: "contains",
+            values: ["test"],
+            columnMeta: undefined,
+          }}
         />
       );
 
@@ -341,7 +376,11 @@ describe("PropertyFilterOperatorController", () => {
     it("should close popover when operator is selected", async () => {
       const column = createMockColumn({
         id: "name",
-        filterValue: { operator: "contains", values: ["test"] },
+        filterValue: {
+          operator: "contains",
+          values: ["test"],
+          columnMeta: undefined,
+        },
         meta: { type: "text" },
       });
 
@@ -349,7 +388,11 @@ describe("PropertyFilterOperatorController", () => {
         <PropertyFilterOperatorController
           column={column}
           columnMeta={{ type: "text" }}
-          filter={{ operator: "contains", values: ["test"] }}
+          filter={{
+            operator: "contains",
+            values: ["test"],
+            columnMeta: undefined,
+          }}
         />
       );
 
@@ -381,7 +424,11 @@ describe("PropertyFilterOperatorDisplay", () => {
     it("should display text operator label", () => {
       renderWithProviders(
         <PropertyFilterOperatorDisplay
-          filter={{ operator: "contains", values: ["test"] }}
+          filter={{
+            operator: "contains",
+            values: ["test"],
+            columnMeta: undefined,
+          }}
           filterType="text"
         />
       );
@@ -394,7 +441,11 @@ describe("PropertyFilterOperatorDisplay", () => {
     it("should display number operator label", () => {
       renderWithProviders(
         <PropertyFilterOperatorDisplay
-          filter={{ operator: "is greater than", values: [10] }}
+          filter={{
+            operator: "is greater than",
+            values: [10],
+            columnMeta: undefined,
+          }}
           filterType="number"
         />
       );
@@ -405,7 +456,11 @@ describe("PropertyFilterOperatorDisplay", () => {
     it("should display date operator label", () => {
       renderWithProviders(
         <PropertyFilterOperatorDisplay
-          filter={{ operator: "is after", values: ["2024-01-01"] }}
+          filter={{
+            operator: "is after",
+            values: [new Date("2024-01-01")],
+            columnMeta: undefined,
+          }}
           filterType="date"
         />
       );
@@ -416,7 +471,7 @@ describe("PropertyFilterOperatorDisplay", () => {
     it("should display option operator label", () => {
       renderWithProviders(
         <PropertyFilterOperatorDisplay
-          filter={{ operator: "is", values: ["active"] }}
+          filter={{ operator: "is", values: ["active"], columnMeta: undefined }}
           filterType="option"
         />
       );
@@ -427,7 +482,11 @@ describe("PropertyFilterOperatorDisplay", () => {
     it("should display multiOption operator label", () => {
       renderWithProviders(
         <PropertyFilterOperatorDisplay
-          filter={{ operator: "include any of", values: [["tag1", "tag2"]] }}
+          filter={{
+            operator: "include any of",
+            values: [["tag1", "tag2"]],
+            columnMeta: undefined,
+          }}
           filterType="multiOption"
         />
       );
@@ -440,7 +499,11 @@ describe("PropertyFilterOperatorDisplay", () => {
     it("should display raw operator and log warning for unknown operator", () => {
       renderWithProviders(
         <PropertyFilterOperatorDisplay
-          filter={{ operator: "unknown-operator", values: [] }}
+          filter={{
+            operator: "unknown-operator" as unknown as TextFilterOperator,
+            values: [],
+            columnMeta: undefined,
+          }}
           filterType="text"
         />
       );
@@ -454,8 +517,8 @@ describe("PropertyFilterOperatorDisplay", () => {
     it("should handle unknown filter type", () => {
       renderWithProviders(
         <PropertyFilterOperatorDisplay
-          filter={{ operator: "is", values: [] }}
-          filterType={"unknown" as unknown}
+          filter={{ operator: "is", values: [], columnMeta: undefined }}
+          filterType={"unknown" as unknown as ColumnDataType}
         />
       );
 
@@ -478,7 +541,11 @@ describe("PropertyFilterOperatorMenu", () => {
   describe("Column Type Routing", () => {
     it("should render text operator menu for text columns", () => {
       const column = createMockColumn({
-        filterValue: { operator: "contains", values: ["test"] },
+        filterValue: {
+          operator: "contains",
+          values: ["test"],
+          columnMeta: undefined,
+        },
         meta: { type: "text" },
       });
 
@@ -493,7 +560,7 @@ describe("PropertyFilterOperatorMenu", () => {
 
     it("should render number operator menu for number columns", () => {
       const column = createMockColumn({
-        filterValue: { operator: "is", values: [10] },
+        filterValue: { operator: "is", values: [10], columnMeta: undefined },
         meta: { type: "number" },
       });
 
@@ -508,7 +575,11 @@ describe("PropertyFilterOperatorMenu", () => {
 
     it("should render date operator menu for date columns", () => {
       const column = createMockColumn({
-        filterValue: { operator: "is", values: ["2024-01-01"] },
+        filterValue: {
+          operator: "is",
+          values: ["2024-01-01"],
+          columnMeta: undefined,
+        },
         meta: { type: "date" },
       });
 
@@ -523,7 +594,11 @@ describe("PropertyFilterOperatorMenu", () => {
 
     it("should render option operator menu for option columns", () => {
       const column = createMockColumn({
-        filterValue: { operator: "is", values: ["active"] },
+        filterValue: {
+          operator: "is",
+          values: ["active"],
+          columnMeta: undefined,
+        },
         meta: { type: "option" },
       });
 
@@ -537,7 +612,11 @@ describe("PropertyFilterOperatorMenu", () => {
 
     it("should render multiOption operator menu for multiOption columns", () => {
       const column = createMockColumn({
-        filterValue: { operator: "include any of", values: [["tag1"]] },
+        filterValue: {
+          operator: "include any of",
+          values: [["tag1"]],
+          columnMeta: undefined,
+        },
         meta: { type: "multiOption" },
       });
 
@@ -552,8 +631,8 @@ describe("PropertyFilterOperatorMenu", () => {
 
     it("should return null for unknown column type", () => {
       const column = createMockColumn({
-        filterValue: { operator: "is", values: [] },
-        meta: { type: "unknown" as unknown },
+        filterValue: { operator: "is", values: [], columnMeta: undefined },
+        meta: { type: "unknown" as unknown as ColumnDataType },
       });
 
       const { container } = renderWithProviders(
@@ -565,7 +644,7 @@ describe("PropertyFilterOperatorMenu", () => {
 
     it("should return null when column has no meta type", () => {
       const column = createMockColumn({
-        filterValue: { operator: "is", values: [] },
+        filterValue: { operator: "is", values: [], columnMeta: undefined },
         meta: {},
       });
 
@@ -591,7 +670,11 @@ describe("Type-Specific Operator Menus", () => {
   describe("Text Operator Menu", () => {
     it("should display all text operators", () => {
       const column = createMockColumn({
-        filterValue: { operator: "contains", values: ["test"] },
+        filterValue: {
+          operator: "contains",
+          values: ["test"],
+          columnMeta: undefined,
+        },
         meta: { type: "text" },
       });
 
@@ -615,7 +698,11 @@ describe("Type-Specific Operator Menus", () => {
       const setFilterValue = vi.fn();
       const column = createMockColumn({
         id: "name",
-        filterValue: { operator: "contains", values: ["test"] },
+        filterValue: {
+          operator: "contains",
+          values: ["test"],
+          columnMeta: undefined,
+        },
         meta: { type: "text" },
       });
       column.setFilterValue = setFilterValue;
@@ -633,7 +720,7 @@ describe("Type-Specific Operator Menus", () => {
       await user.click(startsWithOption);
 
       expect(setFilterValue).toHaveBeenCalled();
-      const updateFn = setFilterValue.mock.calls[0][0];
+      const updateFn = setFilterValue.mock.calls[0]?.[0];
       const result = updateFn({ operator: "contains", values: ["test"] });
       expect(result).toEqual({
         operator: "starts with",
@@ -646,7 +733,11 @@ describe("Type-Specific Operator Menus", () => {
   describe("Option Operator Menu with Related Filters", () => {
     it("should only show operators with same target", () => {
       const column = createMockColumn({
-        filterValue: { operator: "is", values: ["active"] },
+        filterValue: {
+          operator: "is",
+          values: ["active"],
+          columnMeta: undefined,
+        },
         meta: { type: "option" },
       });
 
@@ -663,7 +754,11 @@ describe("Type-Specific Operator Menus", () => {
       const setFilterValue = vi.fn();
       const column = createMockColumn({
         id: "status",
-        filterValue: { operator: "is", values: ["active"] },
+        filterValue: {
+          operator: "is",
+          values: ["active"],
+          columnMeta: undefined,
+        },
         meta: { type: "option" },
       });
       column.setFilterValue = setFilterValue;
@@ -681,7 +776,7 @@ describe("Type-Specific Operator Menus", () => {
       await user.click(isNotOption);
 
       expect(setFilterValue).toHaveBeenCalled();
-      const updateFn = setFilterValue.mock.calls[0][0];
+      const updateFn = setFilterValue.mock.calls[0]?.[0];
       const result = updateFn({ operator: "is", values: ["active"] });
       expect(result).toEqual({
         operator: "is not",
@@ -693,7 +788,11 @@ describe("Type-Specific Operator Menus", () => {
   describe("MultiOption Operator Menu", () => {
     it("should filter operators by target", () => {
       const column = createMockColumn({
-        filterValue: { operator: "include any of", values: [["tag1", "tag2"]] },
+        filterValue: {
+          operator: "include any of",
+          values: [["tag1", "tag2"]],
+          columnMeta: undefined,
+        },
         meta: { type: "multiOption" },
       });
 
@@ -711,7 +810,11 @@ describe("Type-Specific Operator Menus", () => {
   describe("Date Operator Menu", () => {
     it("should show all date operators without filtering", () => {
       const column = createMockColumn({
-        filterValue: { operator: "is", values: ["2024-01-01"] },
+        filterValue: {
+          operator: "is",
+          values: ["2024-01-01"],
+          columnMeta: undefined,
+        },
         meta: { type: "date" },
       });
 
@@ -730,7 +833,7 @@ describe("Type-Specific Operator Menus", () => {
   describe("Number Operator Menu", () => {
     it("should show all number operators", () => {
       const column = createMockColumn({
-        filterValue: { operator: "is", values: [10] },
+        filterValue: { operator: "is", values: [10], columnMeta: undefined },
         meta: { type: "number" },
       });
 
@@ -749,7 +852,7 @@ describe("Type-Specific Operator Menus", () => {
       const setFilterValue = vi.fn();
       const column = createMockColumn({
         id: "price",
-        filterValue: { operator: "is", values: [100] },
+        filterValue: { operator: "is", values: [100], columnMeta: undefined },
         meta: { type: "number" },
       });
       column.setFilterValue = setFilterValue;
@@ -767,7 +870,7 @@ describe("Type-Specific Operator Menus", () => {
       await user.click(isBetweenOption);
 
       expect(setFilterValue).toHaveBeenCalled();
-      const updateFn = setFilterValue.mock.calls[0][0];
+      const updateFn = setFilterValue.mock.calls[0]?.[0];
       const result = updateFn({ operator: "is", values: [100] });
       expect(result).toEqual({
         operator: "is between",
@@ -780,7 +883,7 @@ describe("Type-Specific Operator Menus", () => {
 describe("Edge Cases and Error Handling", () => {
   it("should handle missing column meta gracefully", () => {
     const column = createMockColumn({
-      filterValue: { operator: "is", values: [] },
+      filterValue: { operator: "is", values: [], columnMeta: undefined },
     });
 
     const { container } = renderWithProviders(
@@ -800,7 +903,7 @@ describe("Edge Cases and Error Handling", () => {
       <PropertyFilterOperatorController
         column={column}
         columnMeta={{ type: "text" }}
-        filter={{ operator: "contains", values: [] }}
+        filter={{ operator: "contains", values: [], columnMeta: undefined }}
       />
     );
 
@@ -810,7 +913,11 @@ describe("Edge Cases and Error Handling", () => {
   it("should handle popover state changes", async () => {
     const user = userEvent.setup();
     const column = createMockColumn({
-      filterValue: { operator: "contains", values: ["test"] },
+      filterValue: {
+        operator: "contains",
+        values: ["test"],
+        columnMeta: undefined,
+      },
       meta: { type: "text" },
     });
 
@@ -818,7 +925,11 @@ describe("Edge Cases and Error Handling", () => {
       <PropertyFilterOperatorController
         column={column}
         columnMeta={{ type: "text" }}
-        filter={{ operator: "contains", values: ["test"] }}
+        filter={{
+          operator: "contains",
+          values: ["test"],
+          columnMeta: undefined,
+        }}
       />
     );
 
@@ -841,7 +952,11 @@ describe("Edge Cases and Error Handling", () => {
 describe("Accessibility", () => {
   it("should have proper ARIA attributes on trigger button", () => {
     const column = createMockColumn({
-      filterValue: { operator: "contains", values: ["test"] },
+      filterValue: {
+        operator: "contains",
+        values: ["test"],
+        columnMeta: undefined,
+      },
       meta: { type: "text" },
     });
 
@@ -849,7 +964,11 @@ describe("Accessibility", () => {
       <PropertyFilterOperatorController
         column={column}
         columnMeta={{ type: "text" }}
-        filter={{ operator: "contains", values: ["test"] }}
+        filter={{
+          operator: "contains",
+          values: ["test"],
+          columnMeta: undefined,
+        }}
       />
     );
 
@@ -861,7 +980,11 @@ describe("Accessibility", () => {
   it("should support keyboard navigation in command menu", async () => {
     const user = userEvent.setup();
     const column = createMockColumn({
-      filterValue: { operator: "contains", values: ["test"] },
+      filterValue: {
+        operator: "contains",
+        values: ["test"],
+        columnMeta: undefined,
+      },
       meta: { type: "text" },
     });
 
@@ -869,7 +992,11 @@ describe("Accessibility", () => {
       <PropertyFilterOperatorController
         column={column}
         columnMeta={{ type: "text" }}
-        filter={{ operator: "contains", values: ["test"] }}
+        filter={{
+          operator: "contains",
+          values: ["test"],
+          columnMeta: undefined,
+        }}
       />
     );
 

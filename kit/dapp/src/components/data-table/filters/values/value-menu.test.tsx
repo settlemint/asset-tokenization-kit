@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from "vitest";
 import { PropertyFilterValueMenu } from "./value-menu";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 // Define test data type
-interface _TestData {
+interface TestData {
   id: string;
   name: string;
 }

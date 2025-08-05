@@ -332,8 +332,7 @@ describe("flexible-filter-wrappers", () => {
         columnMeta: {
           type: "text",
           displayName: "Test Column",
-          customProperty: "custom value",
-        },
+        } as any,
       };
 
       flexibleTextFilterFn(mockRow, "testColumn", complexFilter);

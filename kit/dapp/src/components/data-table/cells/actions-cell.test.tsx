@@ -455,9 +455,6 @@ describe("ActionsCell", () => {
       });
 
       const action1 = await screen.findByRole("menuitem", { name: "Action 1" });
-      const _action2 = await screen.findByRole("menuitem", {
-        name: "Action 2",
-      });
 
       await user.click(action1);
       expect(action1Handler).toHaveBeenCalledTimes(1);

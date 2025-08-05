@@ -45,13 +45,13 @@ describe("filter-factory", () => {
 
     it("should throw error for undefined data type", () => {
       expect(() => {
-        filterFn(undefined as ReturnType<typeof vi.fn>);
+        filterFn(undefined as unknown as ColumnDataType);
       }).toThrow("Invalid column data type");
     });
 
     it("should throw error for null data type", () => {
       expect(() => {
-        filterFn(null as ReturnType<typeof vi.fn>);
+        filterFn(null as unknown as ColumnDataType);
       }).toThrow("Invalid column data type");
     });
 

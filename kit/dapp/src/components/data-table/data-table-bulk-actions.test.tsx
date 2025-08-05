@@ -34,7 +34,7 @@ beforeEach(() => {
     remove: vi.fn(),
   };
 
-  createElementSpy = vi.spyOn(document, "createElement");
+  createElementSpy = vi.spyOn(document, "createElement") as any;
   createElementSpy.mockReturnValue(mockLink as unknown as HTMLElement);
   vi.spyOn(document.body, "append").mockImplementation(() => {});
 });
@@ -330,7 +330,7 @@ describe("data-table-bulk-actions", () => {
       });
 
       expect(group.actions).toHaveLength(1);
-      expect(group.actions[0].id).toBe("export");
+      expect(group.actions[0]?.id).toBe("export");
     });
 
     it("should include all actions when all handlers provided", () => {
@@ -357,8 +357,8 @@ describe("data-table-bulk-actions", () => {
       });
 
       // Export should come before delete based on implementation
-      expect(group.actions[0].id).toBe("export");
-      expect(group.actions[1].id).toBe("delete");
+      expect(group.actions[0]?.id).toBe("export");
+      expect(group.actions[1]?.id).toBe("delete");
     });
   });
 
@@ -386,8 +386,8 @@ describe("data-table-bulk-actions", () => {
       );
 
       expect(group.actions).toHaveLength(2);
-      expect(group.actions[0].label).toBe("Assign to Alice");
-      expect(group.actions[1].label).toBe("Assign to Bob");
+      expect(group.actions[0]?.label).toBe("Assign to Alice");
+      expect(group.actions[1]?.label).toBe("Assign to Bob");
     });
 
     it("should create tag action when tags provided", () => {
@@ -401,7 +401,7 @@ describe("data-table-bulk-actions", () => {
       );
 
       expect(group.actions).toHaveLength(1);
-      expect(group.actions[0].id).toBe("tag");
+      expect(group.actions[0]?.id).toBe("tag");
     });
 
     it("should not create actions without options", () => {
@@ -427,8 +427,8 @@ describe("data-table-bulk-actions", () => {
       );
 
       expect(group.actions).toHaveLength(2);
-      expect(group.actions[0].label).toBe("Assign to Alice");
-      expect(group.actions[1].id).toBe("tag");
+      expect(group.actions[0]?.label).toBe("Assign to Alice");
+      expect(group.actions[1]?.id).toBe("tag");
     });
   });
 
@@ -438,7 +438,7 @@ describe("data-table-bulk-actions", () => {
 
       expect(actions).toHaveLength(0);
       expect(actionGroups).toHaveLength(1);
-      expect(actionGroups[0].actions).toHaveLength(0);
+      expect(actionGroups[0]?.actions).toHaveLength(0);
     });
 
     it("should include custom actions", () => {
@@ -462,9 +462,9 @@ describe("data-table-bulk-actions", () => {
         onDelete: vi.fn(),
       });
 
-      expect(actionGroups[0].actions).toHaveLength(2);
-      expect(actionGroups[0].actions.map((a) => a.id)).toContain("export");
-      expect(actionGroups[0].actions.map((a) => a.id)).toContain("delete");
+      expect(actionGroups[0]?.actions).toHaveLength(2);
+      expect(actionGroups[0]?.actions.map((a) => a.id)).toContain("export");
+      expect(actionGroups[0]?.actions.map((a) => a.id)).toContain("delete");
     });
   });
 

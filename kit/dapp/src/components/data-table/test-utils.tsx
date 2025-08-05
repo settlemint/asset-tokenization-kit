@@ -3,6 +3,9 @@ import {
   type Column,
   type ColumnDef,
   type Header,
+  type Table,
+  type Row,
+  type RowModel,
 } from "@tanstack/react-table";
 import { render, type RenderOptions } from "@testing-library/react";
 import { type ComponentType, type ReactElement, type ReactNode } from "react";
@@ -253,57 +256,187 @@ export const mockLocation = {
   state: null,
 };
 
-// Create mock table instance
-export const createMockTable = (overrides: Record<string, unknown> = {}) => ({
-  getState: vi.fn().mockReturnValue({
-    sorting: [],
-    columnFilters: [],
-    globalFilter: "",
-    pagination: { pageIndex: 0, pageSize: 10 },
-    columnVisibility: {},
-    rowSelection: {},
-  }),
-  getAllColumns: vi.fn().mockReturnValue([
-    { id: "id", getCanHide: vi.fn().mockReturnValue(false) },
-    { id: "name", getCanHide: vi.fn().mockReturnValue(true) },
-    { id: "email", getCanHide: vi.fn().mockReturnValue(true) },
-  ]),
-  getIsAllColumnsVisible: vi.fn().mockReturnValue(false),
-  toggleAllColumnsVisible: vi.fn(),
-  setColumnVisibility: vi.fn(),
-  getFilteredSelectedRowModel: vi.fn().mockReturnValue({ rows: [] }),
-  getFilteredRowModel: vi.fn().mockReturnValue({ rows: [] }),
-  getSelectedRowModel: vi.fn().mockReturnValue({ rows: [] }),
-  toggleAllRowsSelected: vi.fn(),
-  toggleAllPageRowsSelected: vi.fn(),
-  getIsAllRowsSelected: vi.fn().mockReturnValue(false),
-  getIsAllPageRowsSelected: vi.fn().mockReturnValue(false),
-  getIsSomeRowsSelected: vi.fn().mockReturnValue(false),
-  getIsSomePageRowsSelected: vi.fn().mockReturnValue(false),
-  resetRowSelection: vi.fn(),
-  getColumn: vi.fn((id: string) => ({
-    id,
-    getFilterValue: vi.fn(),
-    setFilterValue: vi.fn(),
-    getFacetedUniqueValues: vi.fn().mockReturnValue(new Map()),
-    getCanSort: vi.fn().mockReturnValue(true),
-    getIsSorted: vi.fn().mockReturnValue(false),
-    toggleSorting: vi.fn(),
-    clearSorting: vi.fn(),
-    getCanHide: vi.fn().mockReturnValue(true),
-    getIsVisible: vi.fn().mockReturnValue(true),
-    toggleVisibility: vi.fn(),
-  })),
-  getPageCount: vi.fn().mockReturnValue(5),
-  getCanPreviousPage: vi.fn().mockReturnValue(false),
-  getCanNextPage: vi.fn().mockReturnValue(true),
-  previousPage: vi.fn(),
-  nextPage: vi.fn(),
-  setPageIndex: vi.fn(),
-  setPageSize: vi.fn(),
-  getRowModel: vi.fn().mockReturnValue({ rows: [] }),
-  ...overrides,
-});
+// Helper to override specific state values while maintaining the complete TableState
+export function overrideTableState<TData = unknown>(
+  mockTable: Table<TData>,
+  stateOverrides: Partial<ReturnType<Table<TData>["getState"]>>
+) {
+  const defaultState =
+    (mockTable.getState as ReturnType<typeof vi.fn>).mock.results[0]?.value ||
+    (mockTable.getState as ReturnType<typeof vi.fn>)();
+  (mockTable.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+    ...defaultState,
+    ...stateOverrides,
+  });
+}
+
+// Create mock table instance with proper typing
+export function createMockTable<TData = unknown>(
+  overrides: Partial<Table<TData>> = {}
+): Table<TData> {
+  const mockTable = {
+    getState: vi.fn(() => ({
+      sorting: [],
+      columnFilters: [],
+      globalFilter: "",
+      pagination: { pageIndex: 0, pageSize: 10 },
+      columnVisibility: {},
+      rowSelection: {},
+      columnOrder: [],
+      columnPinning: { left: [], right: [] },
+      rowPinning: { top: [], bottom: [] },
+      expanded: {},
+      grouping: [],
+      columnSizing: {},
+      columnSizingInfo: {
+        startOffset: null,
+        startSize: null,
+        deltaOffset: null,
+        deltaPercentage: null,
+        isResizingColumn: false,
+        columnSizingStart: [],
+      },
+    })),
+    getAllColumns: vi.fn().mockReturnValue([
+      { id: "id", getCanHide: vi.fn().mockReturnValue(false) },
+      { id: "name", getCanHide: vi.fn().mockReturnValue(true) },
+      { id: "email", getCanHide: vi.fn().mockReturnValue(true) },
+    ]),
+    getIsAllColumnsVisible: vi.fn().mockReturnValue(false),
+    toggleAllColumnsVisible: vi.fn(),
+    setColumnVisibility: vi.fn(),
+    getFilteredSelectedRowModel: vi.fn().mockReturnValue({ rows: [] }),
+    getFilteredRowModel: vi.fn().mockReturnValue({ rows: [] }),
+    getSelectedRowModel: vi.fn().mockReturnValue({ rows: [] }),
+    toggleAllRowsSelected: vi.fn(),
+    toggleAllPageRowsSelected: vi.fn(),
+    getIsAllRowsSelected: vi.fn().mockReturnValue(false),
+    getIsAllPageRowsSelected: vi.fn().mockReturnValue(false),
+    getIsSomeRowsSelected: vi.fn().mockReturnValue(false),
+    getIsSomePageRowsSelected: vi.fn().mockReturnValue(false),
+    resetRowSelection: vi.fn(),
+    getColumn: vi.fn((id: string) => ({
+      id,
+      getFilterValue: vi.fn(),
+      setFilterValue: vi.fn(),
+      getFacetedUniqueValues: vi.fn().mockReturnValue(new Map()),
+      getCanSort: vi.fn().mockReturnValue(true),
+      getIsSorted: vi.fn().mockReturnValue(false),
+      toggleSorting: vi.fn(),
+      clearSorting: vi.fn(),
+      getCanHide: vi.fn().mockReturnValue(true),
+      getIsVisible: vi.fn().mockReturnValue(true),
+      toggleVisibility: vi.fn(),
+    })),
+    getPageCount: vi.fn().mockReturnValue(5),
+    getCanPreviousPage: vi.fn().mockReturnValue(false),
+    getCanNextPage: vi.fn().mockReturnValue(true),
+    previousPage: vi.fn(),
+    nextPage: vi.fn(),
+    setPageIndex: vi.fn(),
+    setPageSize: vi.fn(),
+    getRowModel: vi.fn(
+      () => ({ rows: [], flatRows: [], rowsById: {} }) as RowModel<TData>
+    ),
+    getRow: vi.fn((id: string) => undefined as Row<TData> | undefined),
+    getCenterRows: vi.fn(() => [] as Row<TData>[]),
+    getTopRows: vi.fn(() => [] as Row<TData>[]),
+    getBottomRows: vi.fn(() => [] as Row<TData>[]),
+    getFlatHeaders: vi.fn(() => []),
+    getHeaderGroups: vi.fn(() => []),
+    getLeafHeaders: vi.fn(() => []),
+    getCenterHeaderGroups: vi.fn(() => []),
+    getCenterLeafHeaders: vi.fn(() => []),
+    getLeftHeaderGroups: vi.fn(() => []),
+    getLeftLeafHeaders: vi.fn(() => []),
+    getRightHeaderGroups: vi.fn(() => []),
+    getRightLeafHeaders: vi.fn(() => []),
+    getFooterGroups: vi.fn(() => []),
+    getCenterFooterGroups: vi.fn(() => []),
+    getLeftFooterGroups: vi.fn(() => []),
+    getRightFooterGroups: vi.fn(() => []),
+    getTotalSize: vi.fn(() => 0),
+    getLeftTotalSize: vi.fn(() => 0),
+    getCenterTotalSize: vi.fn(() => 0),
+    getRightTotalSize: vi.fn(() => 0),
+    setGlobalFilter: vi.fn(),
+    resetGlobalFilter: vi.fn(),
+    setColumnFilters: vi.fn(),
+    resetColumnFilters: vi.fn(),
+    setSorting: vi.fn(),
+    resetSorting: vi.fn(),
+    setGrouping: vi.fn(),
+    resetGrouping: vi.fn(),
+    setExpanded: vi.fn(),
+    resetExpanded: vi.fn(),
+    setColumnOrder: vi.fn(),
+    resetColumnOrder: vi.fn(),
+    setColumnPinning: vi.fn(),
+    resetColumnPinning: vi.fn(),
+    setColumnSizing: vi.fn(),
+    resetColumnSizing: vi.fn(),
+    setColumnSizingInfo: vi.fn(),
+    resetColumnSizingInfo: vi.fn(),
+    setRowSelection: vi.fn(),
+    resetRowSelection: vi.fn(),
+    setPagination: vi.fn(),
+    resetPagination: vi.fn(),
+    resetPageIndex: vi.fn(),
+    resetPageSize: vi.fn(),
+    getPageOptions: vi.fn(() => []),
+    getCanExpandRow: vi.fn(() => false),
+    getExpandedDepth: vi.fn(() => 0),
+    getPreExpandedRowModel: vi.fn(
+      () => ({ rows: [], flatRows: [], rowsById: {} }) as RowModel<TData>
+    ),
+    getCoreRowModel: vi.fn(
+      () => ({ rows: [], flatRows: [], rowsById: {} }) as RowModel<TData>
+    ),
+    getPrePaginationRowModel: vi.fn(
+      () => ({ rows: [], flatRows: [], rowsById: {} }) as RowModel<TData>
+    ),
+    getPaginationRowModel: vi.fn(
+      () => ({ rows: [], flatRows: [], rowsById: {} }) as RowModel<TData>
+    ),
+    getExpandedRowModel: vi.fn(
+      () => ({ rows: [], flatRows: [], rowsById: {} }) as RowModel<TData>
+    ),
+    getGroupedRowModel: vi.fn(
+      () => ({ rows: [], flatRows: [], rowsById: {} }) as RowModel<TData>
+    ),
+    getSortedRowModel: vi.fn(
+      () => ({ rows: [], flatRows: [], rowsById: {} }) as RowModel<TData>
+    ),
+    getIsAllRowsExpanded: vi.fn(() => false),
+    getIsSomeRowsExpanded: vi.fn(() => false),
+    getToggleAllRowsExpandedHandler: vi.fn(() => vi.fn()),
+    getIsSomeColumnsVisible: vi.fn(() => true),
+    getToggleAllColumnsVisibilityHandler: vi.fn(() => vi.fn()),
+    getIsSomeColumnsPinned: vi.fn(() => false),
+    getLeftVisibleLeafColumns: vi.fn(() => []),
+    getRightVisibleLeafColumns: vi.fn(() => []),
+    getCenterVisibleLeafColumns: vi.fn(() => []),
+    getVisibleFlatColumns: vi.fn(() => []),
+    getVisibleLeafColumns: vi.fn(() => []),
+    getAllFlatColumns: vi.fn(() => []),
+    getAllLeafColumns: vi.fn(() => []),
+    getColumnCanGlobalFilter: vi.fn(() => true),
+    setOptions: vi.fn(),
+    options: {
+      meta: { name: "test-table" },
+      data: [],
+      columns: [],
+      getCoreRowModel: vi.fn(),
+      onStateChange: vi.fn(),
+      renderFallbackValue: null,
+      state: {},
+    } as any,
+    initialState: {} as any,
+    ...overrides,
+  } as Table<TData>;
+
+  return mockTable;
+}
 
 // Create mock column that satisfies TanStack Table Column interface
 export const createMockColumn = (

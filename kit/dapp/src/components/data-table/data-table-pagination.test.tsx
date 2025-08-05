@@ -103,7 +103,10 @@ describe("DataTablePagination", () => {
       const selectComponent = component?.querySelector('[role="combobox"]');
 
       // Test that the component would call setPageSize with "20"
-      if (selectComponent && selectComponent.dataset.state !== "open") {
+      if (
+        selectComponent &&
+        (selectComponent as HTMLElement).dataset.state !== "open"
+      ) {
         // If dropdown won't open in test environment, simulate the change directly
         const handlePageSizeChange = mockTable.setPageSize;
         handlePageSizeChange(20);

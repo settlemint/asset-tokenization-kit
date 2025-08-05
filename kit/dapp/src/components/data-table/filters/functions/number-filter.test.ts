@@ -5,8 +5,9 @@ import { describe, it, expect, vi } from "vitest";
 import type { Row } from "@tanstack/react-table";
 import { numberFilterFn, __numberFilterFn } from "./number-filter";
 import type { FilterValue } from "../types/filter-types";
+import type { NumberFilterOperator } from "../operators/number-operators";
 // Define test data type
-interface _TestData {
+interface TestData {
   id: string;
   name: string;
 }
@@ -17,6 +18,7 @@ describe("number-filter", () => {
       const filterValue: FilterValue<"number", TestData> = {
         operator: "is",
         values: [],
+        columnMeta: undefined,
       };
 
       expect(__numberFilterFn(5, filterValue)).toBe(true);
@@ -25,7 +27,8 @@ describe("number-filter", () => {
     it("should return true when filter value is undefined", () => {
       const filterValue: FilterValue<"number", TestData> = {
         operator: "is",
-        values: [undefined],
+        values: [undefined as unknown as number],
+        columnMeta: undefined,
       };
 
       expect(__numberFilterFn(5, filterValue)).toBe(true);
@@ -36,6 +39,7 @@ describe("number-filter", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is",
           values: [5],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(5, filterValue)).toBe(true);
@@ -46,6 +50,7 @@ describe("number-filter", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is",
           values: [5],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(4, filterValue)).toBe(false);
@@ -57,6 +62,7 @@ describe("number-filter", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is",
           values: [0],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(0, filterValue)).toBe(true);
@@ -68,6 +74,7 @@ describe("number-filter", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is",
           values: [-5],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(-5, filterValue)).toBe(true);
@@ -78,6 +85,7 @@ describe("number-filter", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is",
           values: [3.14],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(3.14, filterValue)).toBe(true);
@@ -90,6 +98,7 @@ describe("number-filter", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is not",
           values: [5],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(5, filterValue)).toBe(false);
@@ -99,6 +108,7 @@ describe("number-filter", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is not",
           values: [5],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(4, filterValue)).toBe(true);
@@ -112,6 +122,7 @@ describe("number-filter", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is greater than",
           values: [5],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(6, filterValue)).toBe(true);
@@ -123,6 +134,7 @@ describe("number-filter", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is greater than",
           values: [5],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(5, filterValue)).toBe(false);
@@ -137,6 +149,7 @@ describe("number-filter", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is greater than or equal to",
           values: [5],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(5, filterValue)).toBe(true);
@@ -148,6 +161,7 @@ describe("number-filter", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is greater than or equal to",
           values: [5],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(4, filterValue)).toBe(false);
@@ -161,6 +175,7 @@ describe("number-filter", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is less than",
           values: [5],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(4, filterValue)).toBe(true);
@@ -173,6 +188,7 @@ describe("number-filter", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is less than",
           values: [5],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(5, filterValue)).toBe(false);
@@ -186,6 +202,7 @@ describe("number-filter", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is less than or equal to",
           values: [5],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(5, filterValue)).toBe(true);
@@ -198,6 +215,7 @@ describe("number-filter", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is less than or equal to",
           values: [5],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(6, filterValue)).toBe(false);
@@ -211,6 +229,7 @@ describe("number-filter", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is between",
           values: [5, 10],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(5, filterValue)).toBe(true);
@@ -223,6 +242,7 @@ describe("number-filter", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is between",
           values: [5, 10],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(4, filterValue)).toBe(false);
@@ -234,14 +254,16 @@ describe("number-filter", () => {
       it("should return true when bounds are undefined", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is between",
-          values: [undefined, 10],
+          values: [undefined as unknown as number, 10],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(5, filterValue)).toBe(true);
 
         const filterValue2: FilterValue<"number", TestData> = {
           operator: "is between",
-          values: [5, undefined],
+          values: [5, undefined as unknown as number],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(5, filterValue2)).toBe(true);
@@ -251,6 +273,7 @@ describe("number-filter", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is between",
           values: [-10, -5],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(-7, filterValue)).toBe(true);
@@ -266,6 +289,7 @@ describe("number-filter", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is not between",
           values: [5, 10],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(5, filterValue)).toBe(false);
@@ -278,6 +302,7 @@ describe("number-filter", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is not between",
           values: [5, 10],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(4, filterValue)).toBe(true);
@@ -289,14 +314,16 @@ describe("number-filter", () => {
       it("should return true when bounds are undefined", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is not between",
-          values: [undefined, 10],
+          values: [undefined as unknown as number, 10],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(5, filterValue)).toBe(true);
 
         const filterValue2: FilterValue<"number", TestData> = {
           operator: "is not between",
-          values: [5, undefined],
+          values: [5, undefined as unknown as number],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(5, filterValue2)).toBe(true);
@@ -306,8 +333,9 @@ describe("number-filter", () => {
     describe("unknown operator", () => {
       it("should return true for unknown operators", () => {
         const filterValue: FilterValue<"number", TestData> = {
-          operator: "unknown" as unknown,
+          operator: "unknown" as unknown as NumberFilterOperator,
           values: [5],
+          columnMeta: undefined,
         };
 
         expect(__numberFilterFn(3, filterValue)).toBe(true);
@@ -320,6 +348,7 @@ describe("number-filter", () => {
       const filterValue: FilterValue<"number", TestData> = {
         operator: "is",
         values: [5, 10, 15], // Extra values should be ignored
+        columnMeta: undefined,
       };
 
       expect(__numberFilterFn(5, filterValue)).toBe(true);
@@ -336,6 +365,7 @@ describe("number-filter", () => {
       const filterValue: FilterValue<"number", TestData> = {
         operator: "is",
         values: [5],
+        columnMeta: undefined,
       };
 
       const result = numberFilterFn(mockRow, "testColumn", filterValue);
@@ -360,6 +390,7 @@ describe("number-filter", () => {
         const filterValue: FilterValue<"number", TestData> = {
           operator: "is",
           values: [5],
+          columnMeta: undefined,
         };
 
         const result = numberFilterFn(mockRow, "testColumn", filterValue);
@@ -375,6 +406,7 @@ describe("number-filter", () => {
       const filterValue: FilterValue<"number", TestData> = {
         operator: "is greater than",
         values: [5],
+        columnMeta: undefined,
       };
 
       const result = numberFilterFn(mockRow, "testColumn", filterValue);
@@ -390,6 +422,7 @@ describe("number-filter", () => {
       const filterValue: FilterValue<"number", TestData> = {
         operator: "is between",
         values: [5, 10],
+        columnMeta: undefined,
       };
 
       const result = numberFilterFn(mockRow, "testColumn", filterValue);

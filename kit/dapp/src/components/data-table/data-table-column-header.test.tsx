@@ -429,7 +429,10 @@ describe("DataTableColumnHeader", () => {
     it("should handle column with no getCanSort method", () => {
       const brokenColumn = createMockColumn({
         id: "broken",
-        columnDef: {},
+        columnDef: {
+          header: "Broken",
+          id: "broken",
+        },
         getCanSort: vi.fn().mockReturnValue(false),
       });
 

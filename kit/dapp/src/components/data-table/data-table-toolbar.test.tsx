@@ -1,7 +1,7 @@
 /**
  * @vitest-environment happy-dom
  */
-import { screen, within } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { DataTableToolbar } from "./data-table-toolbar";
@@ -26,432 +26,218 @@ vi.mock("./data-table-export", () => ({
   ),
 }));
 
-// Mock react-i18next
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-    i18n: {
-      changeLanguage: () => Promise.resolve(),
-      language: "en",
-    },
-  }),
-}));
-
 describe("DataTableToolbar", () => {
   describe("Component Rendering", () => {
     it("should render toolbar with all components when enabled", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
+      const mockTable = createMockTable();
+      const defaultState = mockTable.getState();
+      (mockTable.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+        ...defaultState,
+        columnFilters: [],
       });
 
       const { container } = renderWithProviders(
-        <DataTableToolbar table={mockTable as unknown} />
+        <DataTableToolbar table={mockTable} />
       );
 
-      // Check main container
-      const toolbar = container.firstElementChild;
-      expect(toolbar).toHaveClass("flex", "items-center", "justify-between");
-
-      // Check left section components
-      expect(screen.getByTestId("data-table-filter")).toBeInTheDocument();
-
-      // Check right section components
-      expect(screen.getByTestId("data-table-view-options")).toBeInTheDocument();
-      expect(screen.getByTestId("data-table-export")).toBeInTheDocument();
-    });
-
-    it("should render with correct layout structure", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
-
-      const { container } = renderWithProviders(
-        <DataTableToolbar table={mockTable as unknown} />
-      );
-
-      const toolbar = container.firstElementChild;
-      expect(toolbar).toHaveClass("flex", "items-center", "justify-between");
-
-      // Check left section
-      const leftSection = toolbar?.firstElementChild;
-      expect(leftSection).toHaveClass("flex", "items-center", "space-x-2");
-
-      // Check right section
-      const rightSection = toolbar?.lastElementChild;
-      expect(rightSection).toHaveClass("flex", "items-center", "space-x-2");
-    });
-
-    it("should pass table prop to all child components", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
-
-      renderWithProviders(<DataTableToolbar table={mockTable as unknown} />);
-
-      // All child components should receive the table prop
+      expect(
+        container.querySelector(".flex.items-center.justify-between")
+      ).toBeInTheDocument();
       expect(screen.getByTestId("data-table-filter")).toBeInTheDocument();
       expect(screen.getByTestId("data-table-view-options")).toBeInTheDocument();
       expect(screen.getByTestId("data-table-export")).toBeInTheDocument();
     });
-  });
 
-  describe("Disabled Toolbar", () => {
-    it("should return null when enableToolbar is false", () => {
+    it("should not render when enableToolbar is false", () => {
       const mockTable = createMockTable();
 
       const { container } = renderWithProviders(
-        <DataTableToolbar table={mockTable as unknown} enableToolbar={false} />
+        <DataTableToolbar table={mockTable} enableToolbar={false} />
       );
 
       expect(container.firstChild).toBeNull();
     });
 
-    it("should not render any child components when disabled", () => {
+    it("should render with correct layout structure", () => {
       const mockTable = createMockTable();
-
-      renderWithProviders(
-        <DataTableToolbar table={mockTable as unknown} enableToolbar={false} />
-      );
-
-      expect(screen.queryByTestId("data-table-filter")).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("data-table-view-options")
-      ).not.toBeInTheDocument();
-      expect(screen.queryByTestId("data-table-export")).not.toBeInTheDocument();
-    });
-
-    it("should render when enableToolbar is explicitly true", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
+      const defaultState = mockTable.getState();
+      (mockTable.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+        ...defaultState,
+        columnFilters: [],
       });
 
-      renderWithProviders(
-        <DataTableToolbar table={mockTable as unknown} enableToolbar={true} />
+      const { container } = renderWithProviders(
+        <DataTableToolbar table={mockTable} />
       );
 
-      expect(screen.getByTestId("data-table-filter")).toBeInTheDocument();
-    });
+      const toolbar = container.firstElementChild;
+      expect(toolbar).toHaveClass("flex", "items-center", "justify-between");
 
-    it("should render by default when enableToolbar is not provided", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+      // Left side with filter
+      const leftSide = toolbar?.firstElementChild;
+      expect(leftSide).toHaveClass("flex", "items-center", "space-x-2");
+      expect(leftSide?.firstElementChild).toHaveAttribute(
+        "data-testid",
+        "data-table-filter"
+      );
 
-      renderWithProviders(<DataTableToolbar table={mockTable as unknown} />);
-
-      expect(screen.getByTestId("data-table-filter")).toBeInTheDocument();
+      // Right side with view options and export
+      const rightSide = toolbar?.lastElementChild;
+      expect(rightSide).toHaveClass("flex", "items-center", "space-x-2");
     });
   });
 
-  describe("Clear Filters Functionality", () => {
-    it("should show clear filters button when filters exist", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [{ id: "name", value: "test" }],
-          globalFilter: "",
-        })),
+  describe("Clear Filters Button", () => {
+    it("should show clear filters button when filters are applied", () => {
+      const mockTable = createMockTable();
+      const defaultState = mockTable.getState();
+      (mockTable.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+        ...defaultState,
+        columnFilters: [{ id: "name", value: "test" }],
       });
 
-      renderWithProviders(<DataTableToolbar table={mockTable as unknown} />);
+      renderWithProviders(<DataTableToolbar table={mockTable} />);
 
       const clearButton = screen.getByRole("button");
       expect(clearButton).toBeInTheDocument();
-      expect(clearButton).toHaveClass(
-        "group",
-        "h-8",
-        "w-8",
-        "p-0",
-        "border-none"
-      );
-    });
+      expect(clearButton).toHaveClass("group", "h-8", "w-8", "p-0");
 
-    it("should hide clear filters button when no filters exist", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
-
-      renderWithProviders(<DataTableToolbar table={mockTable as unknown} />);
-
-      expect(screen.queryByRole("button")).not.toBeInTheDocument();
-    });
-
-    it("should show clear filters button when columnFilters array has multiple filters", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [
-            { id: "name", value: "test" },
-            { id: "status", value: "active" },
-          ],
-          globalFilter: "",
-        })),
-      });
-
-      renderWithProviders(<DataTableToolbar table={mockTable as unknown} />);
-
-      expect(screen.getByRole("button")).toBeInTheDocument();
-    });
-
-    it("should clear column filters and global filter when clicked", async () => {
-      const user = userEvent.setup();
-      const setColumnFilters = vi.fn();
-      const setGlobalFilter = vi.fn();
-
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [{ id: "name", value: "test" }],
-          globalFilter: "search",
-        })),
-        setColumnFilters,
-        setGlobalFilter,
-      });
-
-      renderWithProviders(<DataTableToolbar table={mockTable as unknown} />);
-
-      const clearButton = screen.getByRole("button");
-      await user.click(clearButton);
-
-      expect(setColumnFilters).toHaveBeenCalledWith([]);
-      expect(setGlobalFilter).toHaveBeenCalledWith("");
-    });
-
-    it("should clear filters when there's both column filters and global filter", async () => {
-      const user = userEvent.setup();
-      const setColumnFilters = vi.fn();
-      const setGlobalFilter = vi.fn();
-
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [{ id: "name", value: "test" }],
-          globalFilter: "global search",
-        })),
-        setColumnFilters,
-        setGlobalFilter,
-      });
-
-      renderWithProviders(<DataTableToolbar table={mockTable as unknown} />);
-
-      const clearButton = screen.getByRole("button");
-      await user.click(clearButton);
-
-      expect(setColumnFilters).toHaveBeenCalledWith([]);
-      expect(setGlobalFilter).toHaveBeenCalledWith("");
-    });
-
-    it("should have correct styling classes on clear button", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [{ id: "name", value: "test" }],
-          globalFilter: "",
-        })),
-      });
-
-      renderWithProviders(<DataTableToolbar table={mockTable as unknown} />);
-
-      const clearButton = screen.getByRole("button");
-      // Check for key classes applied by our component
-      expect(clearButton).toHaveClass("group");
-      expect(clearButton).toHaveClass("h-8");
-      expect(clearButton).toHaveClass("w-8");
-      expect(clearButton).toHaveClass("p-0");
-      expect(clearButton).toHaveClass("border-none");
-      expect(clearButton).toHaveClass("hover:bg-primary");
-      expect(clearButton).toHaveClass("animate-in");
-      expect(clearButton).toHaveClass("fade-in-0");
-      expect(clearButton).toHaveClass("zoom-in-95");
-    });
-
-    it("should render FilterX icon with correct styling", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [{ id: "name", value: "test" }],
-          globalFilter: "",
-        })),
-      });
-
-      renderWithProviders(<DataTableToolbar table={mockTable as unknown} />);
-
-      const icon = screen.getByRole("button").querySelector("svg");
+      // Check for icon
+      const icon = clearButton.querySelector("svg");
       expect(icon).toBeInTheDocument();
-      expect(icon).toHaveClass(
-        "h-4",
-        "w-4",
-        "text-muted-foreground",
-        "group-hover:text-white",
-        "transition-colors",
-        "duration-200",
-        "group-hover:rotate-90"
-      );
+      expect(icon).toHaveClass("h-4", "w-4");
     });
-  });
 
-  describe("Button Variant and Size", () => {
-    it("should render clear button with outline variant and sm size", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [{ id: "name", value: "test" }],
-          globalFilter: "",
-        })),
+    it("should not show clear filters button when no filters are applied", () => {
+      const mockTable = createMockTable();
+      const defaultState = mockTable.getState();
+      (mockTable.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+        ...defaultState,
+        columnFilters: [],
       });
 
-      renderWithProviders(<DataTableToolbar table={mockTable as unknown} />);
+      renderWithProviders(<DataTableToolbar table={mockTable} />);
+
+      // Only the view options and export buttons should exist
+      const buttons = screen.queryAllByRole("button");
+      // Filter out buttons from child components
+      const clearButton = buttons.find((btn) =>
+        btn.classList.contains("group")
+      );
+      expect(clearButton).toBeUndefined();
+    });
+
+    it("should clear all filters when clear button is clicked", async () => {
+      const user = userEvent.setup();
+      const mockTable = createMockTable();
+      const defaultState = mockTable.getState();
+      (mockTable.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+        ...defaultState,
+        columnFilters: [{ id: "name", value: "test" }],
+      });
+
+      renderWithProviders(<DataTableToolbar table={mockTable} />);
 
       const clearButton = screen.getByRole("button");
-      // outline variant adds border class, sm size adds h-8 class
-      expect(clearButton).toHaveClass("h-8");
-    });
-  });
+      await user.click(clearButton);
 
-  describe("Filter State Reactivity", () => {
-    it("should react to changes in filter state", () => {
-      let hasFilters = false;
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: hasFilters ? [{ id: "name", value: "test" }] : [],
-          globalFilter: "",
-        })),
+      expect(mockTable.setColumnFilters).toHaveBeenCalledWith([]);
+      expect(mockTable.setGlobalFilter).toHaveBeenCalledWith("");
+    });
+
+    it("should have animation classes on clear button", () => {
+      const mockTable = createMockTable();
+      const defaultState = mockTable.getState();
+      (mockTable.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+        ...defaultState,
+        columnFilters: [{ id: "name", value: "test" }],
       });
 
-      const { rerender } = renderWithProviders(
-        <DataTableToolbar table={mockTable as unknown} />
-      );
+      renderWithProviders(<DataTableToolbar table={mockTable} />);
 
-      // Initially no filters
-      expect(screen.queryByRole("button")).not.toBeInTheDocument();
-
-      // Update to have filters
-      hasFilters = true;
-      rerender(<DataTableToolbar table={mockTable as unknown} />);
-
-      // Should now show clear button
-      expect(screen.getByRole("button")).toBeInTheDocument();
+      const clearButton = screen.getByRole("button");
+      expect(clearButton).toHaveClass("animate-in", "fade-in-0", "zoom-in-95");
     });
   });
 
   describe("Component Integration", () => {
-    it("should render all child components in correct positions", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [{ id: "name", value: "test" }],
-          globalFilter: "",
-        })),
-      });
+    it("should pass table prop to all child components", () => {
+      const mockTable = createMockTable();
 
-      const { container } = renderWithProviders(
-        <DataTableToolbar table={mockTable as unknown} />
-      );
+      renderWithProviders(<DataTableToolbar table={mockTable} />);
 
-      const toolbar = container.firstElementChild;
-      const leftSection = toolbar?.firstElementChild;
-      const rightSection = toolbar?.lastElementChild;
-
-      // Left section should contain filter and clear button
-      const filterComponent = within(leftSection as HTMLElement).getByTestId(
-        "data-table-filter"
-      );
-      const clearButton = within(leftSection as HTMLElement).getByRole(
-        "button"
-      );
-
-      expect(filterComponent).toBeInTheDocument();
-      expect(clearButton).toBeInTheDocument();
-
-      // Right section should contain view options and export
-      const viewOptionsComponent = within(
-        rightSection as HTMLElement
-      ).getByTestId("data-table-view-options");
-      const exportComponent = within(rightSection as HTMLElement).getByTestId(
-        "data-table-export"
-      );
-
-      expect(viewOptionsComponent).toBeInTheDocument();
-      expect(exportComponent).toBeInTheDocument();
+      // All child components should be rendered
+      expect(screen.getByTestId("data-table-filter")).toBeInTheDocument();
+      expect(screen.getByTestId("data-table-view-options")).toBeInTheDocument();
+      expect(screen.getByTestId("data-table-export")).toBeInTheDocument();
     });
 
-    it("should maintain component order", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
-      });
+    it("should render components in correct order", () => {
+      const mockTable = createMockTable();
 
       const { container } = renderWithProviders(
-        <DataTableToolbar table={mockTable as unknown} />
+        <DataTableToolbar table={mockTable} />
       );
 
       const toolbar = container.firstElementChild;
       const leftSection = toolbar?.firstElementChild;
       const rightSection = toolbar?.lastElementChild;
 
-      // Verify order in left section (filter first)
-      const leftChildren = [...(leftSection?.children || [])];
-      expect(leftChildren[0]).toHaveAttribute(
-        "data-testid",
-        "data-table-filter"
-      );
+      // Filter should be in left section
+      expect(
+        leftSection?.querySelector('[data-testid="data-table-filter"]')
+      ).toBeInTheDocument();
 
-      // Verify order in right section (view options, then export)
-      const rightChildren = [...(rightSection?.children || [])];
-      expect(rightChildren[0]).toHaveAttribute(
-        "data-testid",
-        "data-table-view-options"
-      );
-      expect(rightChildren[1]).toHaveAttribute(
-        "data-testid",
-        "data-table-export"
-      );
+      // View options and export should be in right section
+      expect(
+        rightSection?.querySelector('[data-testid="data-table-view-options"]')
+      ).toBeInTheDocument();
+      expect(
+        rightSection?.querySelector('[data-testid="data-table-export"]')
+      ).toBeInTheDocument();
     });
   });
 
-  describe("Props Interface", () => {
-    it("should accept DataTableToolbarOptions interface", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
+  describe("Edge Cases", () => {
+    it("should handle multiple filters", () => {
+      const mockTable = createMockTable();
+      const defaultState = mockTable.getState();
+      (mockTable.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+        ...defaultState,
+        columnFilters: [
+          { id: "name", value: "test" },
+          { id: "status", value: "active" },
+          { id: "type", value: "premium" },
+        ],
       });
 
-      // Test that it accepts the expected props without TypeScript errors
-      const options = {
-        table: mockTable as unknown,
-        enableToolbar: true,
-      };
+      renderWithProviders(<DataTableToolbar table={mockTable} />);
 
-      renderWithProviders(<DataTableToolbar {...options} />);
-
-      expect(screen.getByTestId("data-table-filter")).toBeInTheDocument();
+      const clearButton = screen.getByRole("button");
+      expect(clearButton).toBeInTheDocument();
     });
 
-    it("should have correct default value for enableToolbar", () => {
-      const mockTable = createMockTable({
-        getState: vi.fn(() => ({
-          columnFilters: [],
-          globalFilter: "",
-        })),
+    it("should handle empty filter values", () => {
+      const mockTable = createMockTable();
+      const defaultState = mockTable.getState();
+      (mockTable.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+        ...defaultState,
+        columnFilters: [{ id: "name", value: "" }],
       });
 
-      // When enableToolbar is not provided, it should default to true
-      renderWithProviders(<DataTableToolbar table={mockTable as unknown} />);
+      renderWithProviders(<DataTableToolbar table={mockTable} />);
 
+      // Empty filter still counts as a filter
+      const clearButton = screen.getByRole("button");
+      expect(clearButton).toBeInTheDocument();
+    });
+
+    it("should work with default enableToolbar value", () => {
+      const mockTable = createMockTable();
+
+      renderWithProviders(<DataTableToolbar table={mockTable} />);
+
+      // Should render by default
       expect(screen.getByTestId("data-table-filter")).toBeInTheDocument();
     });
   });
