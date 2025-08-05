@@ -81,7 +81,30 @@ export function PropertyFilterMultiOptionValueMenu<
     .getCoreRowModel()
     .rows.flatMap((r) => r.getValue<TValue>(id))
     .filter((v): v is NonNullable<TValue> => v !== undefined && v !== null);
-  const uniqueVals = uniq(columnVals);
+
+  // For objects, we need to deduplicate based on their content, not reference
+  const uniqueVals =
+    columnMeta.transformOptionFn || isColumnOptionArray(columnVals)
+      ? columnVals.reduce<NonNullable<TValue>[]>((acc, curr) => {
+          const key = columnMeta.transformOptionFn
+            ? columnMeta.transformOptionFn(
+                curr as ElementType<NonNullable<TValue>>
+              ).value
+            : (curr as ColumnOption).value;
+          const exists = acc.some((item) => {
+            const itemKey = columnMeta.transformOptionFn
+              ? columnMeta.transformOptionFn(
+                  item as ElementType<NonNullable<TValue>>
+                ).value
+              : (item as ColumnOption).value;
+            return itemKey === key;
+          });
+          if (!exists) {
+            acc.push(curr);
+          }
+          return acc;
+        }, [])
+      : uniq(columnVals);
 
   // If static options are provided, use them
   if (columnMeta.options) {
@@ -100,7 +123,15 @@ export function PropertyFilterMultiOptionValueMenu<
 
   // Make sure the column data conforms to ColumnOption type
   else if (isColumnOptionArray(uniqueVals)) {
-    options = uniqueVals;
+    // Deduplicate by value property since uniq() doesn't work with objects
+    const seen = new Set<string>();
+    options = uniqueVals.filter((option) => {
+      if (seen.has(option.value)) {
+        return false;
+      }
+      seen.add(option.value);
+      return true;
+    });
   }
 
   // Invalid configuration
@@ -118,7 +149,9 @@ export function PropertyFilterMultiOptionValueMenu<
       : columnMeta.transformOptionFn
         ? columnMeta.transformOptionFn(curr as ElementType<NonNullable<TValue>>)
             .value
-        : (curr as string);
+        : isColumnOptionArray([curr])
+          ? (curr as ColumnOption).value
+          : (curr as string);
 
     if (value) {
       acc[value] = (acc[value] ?? 0) + 1;
@@ -201,13 +234,13 @@ export function PropertyFilterMultiOptionValueMenu<
       <CommandEmpty>{t("noResults")}</CommandEmpty>
       <CommandList>
         <CommandGroup>
-          {options.map((v) => {
+          {options.map((v, index) => {
             const checked = Boolean(filter?.values[0]?.includes(v.value));
             const count = optionsCount[v.value] ?? 0;
 
             return (
               <MultiOptionItem
-                key={v.value}
+                key={`${v.value}-${index}`}
                 option={v}
                 checked={checked}
                 count={count}

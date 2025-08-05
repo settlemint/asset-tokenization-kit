@@ -140,7 +140,7 @@ export function SelectionCell({
           checked={isSelected}
           onCheckedChange={useCallback(
             (value: boolean) => {
-              row.toggleSelected(!!value);
+              row.toggleSelected(value);
             },
             [row]
           )}

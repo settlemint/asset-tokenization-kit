@@ -99,6 +99,7 @@ export function PropertyFilterValueController<TData, TValue>({
         side="bottom"
         className="w-fit p-0 origin-(--radix-popover-content-transform-origin)"
         onInteractOutside={handleInteractOutside}
+        data-testid="value-menu"
       >
         <PropertyFilterValueMenu
           id={id}
@@ -215,7 +216,30 @@ export function PropertyFilterOptionValueDisplay<TData, TValue>({
     .getCoreRowModel()
     .rows.flatMap((r) => r.getValue<TValue>(id))
     .filter((v): v is NonNullable<TValue> => v !== undefined && v !== null);
-  const uniqueVals = uniq(columnVals);
+
+  // For objects, we need to deduplicate based on their content, not reference
+  const uniqueVals =
+    columnMeta.transformOptionFn || isColumnOptionArray(columnVals)
+      ? columnVals.reduce<NonNullable<TValue>[]>((acc, curr) => {
+          const key = columnMeta.transformOptionFn
+            ? columnMeta.transformOptionFn(
+                curr as ElementType<NonNullable<TValue>>
+              ).value
+            : (curr as ColumnOption).value;
+          const exists = acc.some((item) => {
+            const itemKey = columnMeta.transformOptionFn
+              ? columnMeta.transformOptionFn(
+                  item as ElementType<NonNullable<TValue>>
+                ).value
+              : (item as ColumnOption).value;
+            return itemKey === key;
+          });
+          if (!exists) {
+            acc.push(curr);
+          }
+          return acc;
+        }, [])
+      : uniq(columnVals);
 
   // If static options are provided, use them
   if (columnMeta.options) {
@@ -234,7 +258,15 @@ export function PropertyFilterOptionValueDisplay<TData, TValue>({
 
   // Make sure the column data conforms to ColumnOption type
   else if (isColumnOptionArray(uniqueVals)) {
-    options = uniqueVals;
+    // Deduplicate by value property since uniq() doesn't work with objects
+    const seen = new Set<string>();
+    options = uniqueVals.filter((option) => {
+      if (seen.has(option.value)) {
+        return false;
+      }
+      seen.add(option.value);
+      return true;
+    });
   }
 
   // Invalid configuration
@@ -245,7 +277,7 @@ export function PropertyFilterOptionValueDisplay<TData, TValue>({
   }
 
   const filter = column.getFilterValue() as FilterValue<"option", TData>;
-  const selected = options.filter((o) => filter.values.includes(o.value));
+  const selected = options.filter((o) => filter?.values?.includes(o.value));
 
   // We display the selected options based on how many are selected
   //
@@ -277,15 +309,18 @@ export function PropertyFilterOptionValueDisplay<TData, TValue>({
   const hasOptionIcons = options.every((o) => o.icon);
 
   return (
-    <div className="inline-flex items-center gap-0.5 text-xs">
+    <div
+      className="inline-flex items-center gap-0.5 text-xs"
+      data-testid="option-value-display"
+    >
       {hasOptionIcons &&
-        take(selected, 3).map(({ value, icon }) => {
+        take(selected, 3).map(({ value, icon }, index) => {
           if (!icon) return null;
           const Icon = icon;
           return isValidElement(Icon) ? (
             Icon
           ) : (
-            <Icon key={value} className="size-3.5" />
+            <Icon key={`${value}-${index}`} className="size-3.5" />
           );
         })}
       <span className={cn(hasOptionIcons && "ml-1.5")}>
@@ -322,7 +357,30 @@ export function PropertyFilterMultiOptionValueDisplay<TData, TValue>({
     .getCoreRowModel()
     .rows.flatMap((r) => r.getValue<TValue>(id))
     .filter((v): v is NonNullable<TValue> => v !== undefined && v !== null);
-  const uniqueVals = uniq(columnVals);
+
+  // For objects, we need to deduplicate based on their content, not reference
+  const uniqueVals =
+    columnMeta.transformOptionFn || isColumnOptionArray(columnVals)
+      ? columnVals.reduce<NonNullable<TValue>[]>((acc, curr) => {
+          const key = columnMeta.transformOptionFn
+            ? columnMeta.transformOptionFn(
+                curr as ElementType<NonNullable<TValue>>
+              ).value
+            : (curr as ColumnOption).value;
+          const exists = acc.some((item) => {
+            const itemKey = columnMeta.transformOptionFn
+              ? columnMeta.transformOptionFn(
+                  item as ElementType<NonNullable<TValue>>
+                ).value
+              : (item as ColumnOption).value;
+            return itemKey === key;
+          });
+          if (!exists) {
+            acc.push(curr);
+          }
+          return acc;
+        }, [])
+      : uniq(columnVals);
 
   // If static options are provided, use them
   if (columnMeta.options) {
@@ -341,7 +399,15 @@ export function PropertyFilterMultiOptionValueDisplay<TData, TValue>({
 
   // Make sure the column data conforms to ColumnOption type
   else if (isColumnOptionArray(uniqueVals)) {
-    options = uniqueVals;
+    // Deduplicate by value property since uniq() doesn't work with objects
+    const seen = new Set<string>();
+    options = uniqueVals.filter((option) => {
+      if (seen.has(option.value)) {
+        return false;
+      }
+      seen.add(option.value);
+      return true;
+    });
   }
 
   // Invalid configuration
@@ -352,7 +418,9 @@ export function PropertyFilterMultiOptionValueDisplay<TData, TValue>({
   }
 
   const filter = column.getFilterValue() as FilterValue<"multiOption", TData>;
-  const selected = options.filter((o) => filter.values[0]?.includes(o.value));
+  const selected = options.filter((o) =>
+    filter?.values?.[0]?.includes(o.value)
+  );
 
   if (selected.length === 1) {
     const selectedOption = selected[0];
@@ -378,16 +446,19 @@ export function PropertyFilterMultiOptionValueDisplay<TData, TValue>({
   const hasOptionIcons = columnMeta.options?.every((o) => o.icon) ?? false;
 
   return (
-    <div className="inline-flex items-center gap-1.5 text-xs">
+    <div
+      className="inline-flex items-center gap-1.5 text-xs"
+      data-testid="multi-option-value-display"
+    >
       {hasOptionIcons && (
         <div key="icons" className="inline-flex items-center gap-0.5">
-          {take(selected, 3).map(({ value, icon }) => {
+          {take(selected, 3).map(({ value, icon }, index) => {
             if (!icon) return null;
             const Icon = icon;
             return isValidElement(Icon) ? (
-              cloneElement(Icon, { key: value })
+              cloneElement(Icon, { key: `${value}-${index}` })
             ) : (
-              <Icon key={value} className="size-3.5" />
+              <Icon key={`${value}-${index}`} className="size-3.5" />
             );
           })}
         </div>
@@ -421,23 +492,39 @@ export function PropertyFilterDateValueDisplay<TData, TValue>({
     ? (column.getFilterValue() as FilterValue<"date", TData>)
     : undefined;
 
-  if (!filter) return <span className="text-xs">empty</span>;
-  if (filter.values.length === 0) return <Ellipsis className="size-3.5" />;
+  if (!filter)
+    return (
+      <span className="text-xs" data-testid="date-value-display">
+        empty
+      </span>
+    );
+  if (filter.values.length === 0)
+    return <Ellipsis className="size-3.5" data-testid="date-value-display" />;
   if (filter.values.length === 1) {
     const value = filter.values[0];
-    if (!value) return <Ellipsis className="size-3.5" />;
+    if (!value)
+      return <Ellipsis className="size-3.5" data-testid="date-value-display" />;
     const formattedDateStr = formatDate(value, "MMM d, yyyy", locale);
 
-    return <span className="text-xs">{formattedDateStr}</span>;
+    return (
+      <span className="text-xs" data-testid="date-value-display">
+        {formattedDateStr}
+      </span>
+    );
   }
 
   const firstValue = filter.values[0];
   const secondValue = filter.values[1];
-  if (!firstValue || !secondValue) return <Ellipsis className="size-3.5" />;
+  if (!firstValue || !secondValue)
+    return <Ellipsis className="size-3.5" data-testid="date-value-display" />;
 
   const formattedRangeStr = formatDateRange(firstValue, secondValue, locale);
 
-  return <span className="text-xs">{formattedRangeStr}</span>;
+  return (
+    <span className="text-xs" data-testid="date-value-display">
+      {formattedRangeStr}
+    </span>
+  );
 }
 
 /**
@@ -459,13 +546,22 @@ export function PropertyFilterTextValueDisplay<TData, TValue>({
     ? (column.getFilterValue() as FilterValue<"text", TData>)
     : undefined;
 
-  if (!filter) return <span className="text-xs">empty</span>;
+  if (!filter)
+    return (
+      <span className="text-xs" data-testid="text-value-display">
+        empty
+      </span>
+    );
   if (filter.values.length === 0 || filter.values[0]?.trim() === "")
-    return <Ellipsis className="size-3.5" />;
+    return <Ellipsis className="size-3.5" data-testid="text-value-display" />;
 
   const value = filter.values[0];
 
-  return <span className="text-xs">{value}</span>;
+  return (
+    <span className="text-xs" data-testid="text-value-display">
+      {value}
+    </span>
+  );
 }
 
 /**
@@ -494,7 +590,12 @@ export function PropertyFilterNumberValueDisplay<TData, TValue>({
     ? (column.getFilterValue() as FilterValue<"number", TData>)
     : undefined;
 
-  if (!filter) return <span className="text-xs">empty</span>;
+  if (!filter)
+    return (
+      <span className="text-xs" data-testid="number-value-display">
+        empty
+      </span>
+    );
 
   if (
     filter.operator === "is between" ||
@@ -508,12 +609,22 @@ export function PropertyFilterNumberValueDisplay<TData, TValue>({
         : filter.values[1];
 
     return (
-      <span className="text-xs tabular-nums tracking-tight">
+      <span
+        className="text-xs tabular-nums tracking-tight"
+        data-testid="number-value-display"
+      >
         {minValue} and {maxValue}
       </span>
     );
   }
 
   const value = filter.values[0];
-  return <span className="text-xs tabular-nums tracking-tight">{value}</span>;
+  return (
+    <span
+      className="text-xs tabular-nums tracking-tight"
+      data-testid="number-value-display"
+    >
+      {value}
+    </span>
+  );
 }

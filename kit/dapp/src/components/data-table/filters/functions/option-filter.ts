@@ -24,6 +24,7 @@ export function optionFilterFn<TData>(
 
   if (!columnMeta.transformOptionFn) return false;
   const sanitizedValue = columnMeta.transformOptionFn(value as never);
+  if (!sanitizedValue) return false;
   return __optionFilterFn(sanitizedValue.value, filterValue);
 }
 
@@ -31,12 +32,18 @@ export function __optionFilterFn<TData>(
   inputData: string,
   filterValue: FilterValue<"option", TData>
 ) {
-  if (!inputData) return false;
+  // If filter has no values, match everything
   if (filterValue.values.length === 0) return true;
 
-  const value = inputData.toString().toLowerCase();
+  // If filter has empty string as value and input is empty, it's a match
+  if (inputData === "" && filterValue.values.includes("")) return true;
 
-  const found = filterValue.values.some((v) => v.toLowerCase() === value);
+  // Otherwise, empty input doesn't match non-empty filter values
+  if (!inputData) return false;
+
+  const value = inputData.toLowerCase();
+
+  const found = filterValue.values.some((v) => v && v.toLowerCase() === value);
 
   switch (filterValue.operator) {
     case "is":
