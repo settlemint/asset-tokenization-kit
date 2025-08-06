@@ -18,7 +18,7 @@ const PREDICT_BOND_ADDRESS_QUERY = portalGraphql(`
     $cap: String!
     $faceValue: String!
     $maturityDate: String!
-    $underlyingAsset: String!
+    $denominationAsset: String!
   ) {
     ATKBondFactoryImplementation(address: $address) {
       predictBondAddress(
@@ -30,7 +30,7 @@ const PREDICT_BOND_ADDRESS_QUERY = portalGraphql(`
         bondParams: {
           faceValue: $faceValue
           maturityDate: $maturityDate
-          denominationAsset: $underlyingAsset
+          denominationAsset: $denominationAsset
         }
       ) {
         predictedAddress

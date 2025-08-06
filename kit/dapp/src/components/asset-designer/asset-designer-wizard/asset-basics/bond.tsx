@@ -19,7 +19,7 @@ const bondFields: KeysOfUnion<AssetDesignerFormInputData>[] = [
   "cap",
   "faceValue",
   "maturityDate",
-  "underlyingAsset",
+  "denominationAsset",
 ];
 
 export const BondBasics = withForm({
@@ -66,23 +66,23 @@ export const BondBasics = withForm({
               <>
                 {mode === "select" && (
                   <form.AppField
-                    name="underlyingAsset"
+                    name="denominationAsset"
                     children={(field) => (
                       <field.AddressSelectField
                         scope="asset"
-                        label={t("form.fields.underlyingAsset.label")}
-                        required={isRequiredField("underlyingAsset")}
+                        label={t("form.fields.denominationAsset.label")}
+                        required={isRequiredField("denominationAsset")}
                       />
                     )}
                   />
                 )}
                 {mode === "manual" && (
                   <form.AppField
-                    name="underlyingAsset"
+                    name="denominationAsset"
                     children={(field) => (
                       <field.AddressInputField
-                        label={t("form.fields.underlyingAsset.label")}
-                        required={isRequiredField("underlyingAsset")}
+                        label={t("form.fields.denominationAsset.label")}
+                        required={isRequiredField("denominationAsset")}
                       />
                     )}
                   />

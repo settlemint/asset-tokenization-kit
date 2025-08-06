@@ -75,9 +75,9 @@
         "description": "Wählen Sie den Typ des Assets, das Sie erstellen möchten. Nur Asset-Typen mit bereitgestellten Fabriken sind verfügbar.",
         "label": "Asset-Typ"
       },
-      "underlyingAsset": {
-        "description": "Die Ethereum-Adresse des zugrunde liegenden Assets",
-        "label": "Zugrunde liegendes Asset",
+      "denominationAsset": {
+        "description": "Die Ethereum-Adresse des Denominationsvermögenswerts",
+        "label": "Denominationsvermögenswert",
         "placeholder": "z.B. 0x..."
       }
     },

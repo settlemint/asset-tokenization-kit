@@ -75,9 +75,9 @@
         "description": "作成したい資産のタイプを選択してください。デプロイされたファクトリーを持つ資産タイプのみが利用可能です。",
         "label": "資産タイプ"
       },
-      "underlyingAsset": {
-        "description": "基礎資産のEthereumアドレス",
-        "label": "基礎資産",
+      "denominationAsset": {
+        "description": "額面資産のEthereumアドレス",
+        "label": "額面資産",
         "placeholder": "例：0x..."
       }
     },
