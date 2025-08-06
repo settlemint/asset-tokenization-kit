@@ -123,10 +123,10 @@ abstract contract SMARTIdentityVerificationTest is AbstractSMARTTest {
         vm.stopPrank();
 
         vm.prank(clientBE);
-        token.transfer(clientUS, TRANSFER_AMOUNT_1);
+        assertTrue(token.transfer(clientUS, TRANSFER_AMOUNT_1), "Transfer failed");
 
         vm.prank(clientUS);
-        token.transfer(clientUnverified, TRANSFER_AMOUNT_1 / 2);
+        assertTrue(token.transfer(clientUnverified, TRANSFER_AMOUNT_1 / 2), "Transfer failed");
 
         assertEq(token.balanceOf(clientBE), INITIAL_MINT_AMOUNT - TRANSFER_AMOUNT_1, "BE balance incorrect");
         assertEq(

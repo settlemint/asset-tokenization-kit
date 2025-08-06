@@ -352,7 +352,7 @@ contract SMARTCrossExtensionTest is Test {
         // Create historical checkpoint
         vm.roll(block.number + 1);
         vm.prank(user1);
-        crossExtToken.transfer(user2, 100e18); // Creates checkpoint
+        assertTrue(crossExtToken.transfer(user2, 100e18), "Transfer failed"); // Creates checkpoint
 
         // Recover address
         address newIdentity = identityUtils.getIdentity(user3);
