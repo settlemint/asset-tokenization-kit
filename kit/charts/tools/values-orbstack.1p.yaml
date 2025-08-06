@@ -125,7 +125,4 @@ observability:
         - image-pull-secret-harbor
 
 dapp:
-  enabled: false
-  # dapp imagePullSecrets are now automatically generated
-
-
+  enabled: true
