@@ -6,10 +6,12 @@ type TokenInput = Parameters<OrpcClient["token"]["create"]>[0];
 export async function createToken(orpClient: OrpcClient, input: TokenInput) {
   const name = `${input.name} ${randomUUID()}`;
 
-  const result = await orpClient.token.create({
+  const payload = {
     ...input,
     name,
-  });
+  };
+
+  const result = await orpClient.token.create(payload);
 
   // The create method now returns the token object directly
   if (!result || !result.id || !result.type) {
