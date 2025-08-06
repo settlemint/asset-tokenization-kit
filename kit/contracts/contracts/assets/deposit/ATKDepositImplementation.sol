@@ -28,7 +28,6 @@ import { SMARTHooks } from "../../smart/extensions/common/SMARTHooks.sol";
 import { SMARTPausableUpgradeable } from "../../smart/extensions/pausable/SMARTPausableUpgradeable.sol";
 import { SMARTBurnableUpgradeable } from "../../smart/extensions/burnable/SMARTBurnableUpgradeable.sol";
 import { SMARTCustodianUpgradeable } from "../../smart/extensions/custodian/SMARTCustodianUpgradeable.sol";
-import { SMARTCollateralUpgradeable } from "../../smart/extensions/collateral/SMARTCollateralUpgradeable.sol";
 import { SMARTTokenAccessManagedUpgradeable } from
     "../../smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
 
@@ -44,7 +43,6 @@ contract ATKDepositImplementation is
     IContractWithIdentity,
     SMARTUpgradeable,
     SMARTTokenAccessManagedUpgradeable,
-    SMARTCollateralUpgradeable,
     SMARTCustodianUpgradeable,
     SMARTPausableUpgradeable,
     SMARTBurnableUpgradeable,
@@ -62,7 +60,6 @@ contract ATKDepositImplementation is
     /// @param name_ The name of the token.
     /// @param symbol_ The symbol of the token.
     /// @param decimals_ The number of decimals the token uses.
-    /// @param collateralTopicId_ The topic ID of the collateral claim.
     /// @param initialModulePairs_ Initial compliance module configurations.
     /// @param identityRegistry_ The address of the Identity Registry contract.
     /// @param compliance_ The address of the main compliance contract.
@@ -71,7 +68,6 @@ contract ATKDepositImplementation is
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        uint256 collateralTopicId_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,
@@ -85,7 +81,6 @@ contract ATKDepositImplementation is
         __SMARTBurnable_init();
         __SMARTPausable_init(true);
         __SMARTTokenAccessManaged_init(accessManager_);
-        __SMARTCollateral_init(collateralTopicId_);
 
         _registerInterface(type(IATKDeposit).interfaceId);
         _registerInterface(type(IContractWithIdentity).interfaceId);
@@ -456,7 +451,6 @@ contract ATKDepositImplementation is
 
     /// @notice Hook that is called before tokens are minted
     /// @dev This hook chains validation logic from multiple extensions:
-    ///      1. SMARTCollateralUpgradeable: Validates collateral requirements
     ///      2. SMARTCustodianUpgradeable: Checks if recipient is frozen
     ///      3. SMARTUpgradeable: Performs compliance and identity checks
     /// @param to The address that will receive the minted tokens
@@ -468,7 +462,7 @@ contract ATKDepositImplementation is
     )
         internal
         virtual
-        override(SMARTCollateralUpgradeable, SMARTCustodianUpgradeable, SMARTUpgradeable, SMARTHooks)
+        override(SMARTCustodianUpgradeable, SMARTUpgradeable, SMARTHooks)
     {
         super._beforeMint(to, amount);
     }
@@ -585,8 +579,8 @@ contract ATKDepositImplementation is
 
     // --- Internal Functions (Overrides) ---
 
-    /// @notice Internal function to update token balances with pausable and collateral checks
-    /// @dev Overrides _update to ensure Pausable and Collateral checks are applied
+    /// @notice Internal function to update token balances with pausable checks
+    /// @dev Overrides _update to ensure Pausable checks are applied
     /// @param from The address tokens are transferred from
     /// @param to The address tokens are transferred to
     /// @param value The amount of tokens being transferred
@@ -599,7 +593,7 @@ contract ATKDepositImplementation is
         virtual
         override(SMARTUpgradeable, SMARTPausableUpgradeable, ERC20Upgradeable)
     {
-        // Calls chain: ERC20Collateral -> SMARTPausable -> SMART -> ERC20
+        // Calls chain:  SMARTPausable -> SMART -> ERC20
         super._update(from, to, value);
     }
 

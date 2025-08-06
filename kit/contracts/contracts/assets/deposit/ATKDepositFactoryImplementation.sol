@@ -24,7 +24,7 @@ import { ATKDepositProxy } from "./ATKDepositProxy.sol";
 /// @title Implementation of the ATK Deposit Factory
 /// @author SettleMint
 /// @notice This contract is responsible for creating instances of ATK Deposit tokens.
-/// @dev This factory deploys ATK Deposit tokens with collateral support, using the SMART protocol
+/// @dev This factory deploys ATK Deposit tokens using the SMART protocol
 ///      for compliance and identity verification. It inherits from AbstractATKTokenFactoryImplementation
 ///      for common factory functionality.
 contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKTokenFactoryImplementation {
@@ -36,9 +36,6 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
     function typeId() external pure override returns (bytes32) {
         return TYPE_ID;
     }
-
-    /// @notice The collateral claim topic ID.
-    uint256 internal _collateralClaimTopicId;
 
     /// @notice Constructor for the ATKDepositFactoryImplementation.
     /// @param forwarder The address of the trusted forwarder for meta-transactions.
@@ -59,10 +56,6 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
     {
         super.initialize(systemAddress, tokenImplementation_, initialAdmin);
 
-        ISMARTTopicSchemeRegistry topicSchemeRegistry =
-            ISMARTTopicSchemeRegistry(IATKSystem(_systemAddress).topicSchemeRegistry());
-
-        _collateralClaimTopicId = topicSchemeRegistry.getTopicId(ATKTopics.TOPIC_COLLATERAL);
     }
 
     /// @notice Creates a new ATK Deposit token.
@@ -95,7 +88,6 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
             name_,
             symbol_,
             decimals_,
-            _collateralClaimTopicId,
             initialModulePairs_,
             _identityRegistry(),
             _compliance(),
@@ -155,7 +147,6 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
             name_,
             symbol_,
             decimals_,
-            _collateralClaimTopicId,
             initialModulePairs_,
             _identityRegistry(),
             _compliance(),
