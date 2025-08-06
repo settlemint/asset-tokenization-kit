@@ -5,8 +5,8 @@ import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware"
 import { tokenMiddleware } from "@/orpc/middlewares/system/token.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { read } from "../../token.read";
 import { call } from "@orpc/server";
+import { read } from "../../token.read";
 
 const TOKEN_UNPAUSE_MUTATION = portalGraphql(`
   mutation TokenUnpause(
@@ -21,7 +21,7 @@ const TOKEN_UNPAUSE_MUTATION = portalGraphql(`
       verificationId: $verificationId
       challengeResponse: $challengeResponse
     ) {
-      ethereumHash: transactionHash
+      transactionHash
     }
   }
 `);
