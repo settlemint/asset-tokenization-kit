@@ -12,11 +12,6 @@ import { ISMARTTokenAccessManager } from "../../smart/extensions/access-managed/
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IATKDepositFactory } from "./IATKDepositFactory.sol";
 import { IATKTokenFactory } from "../../system/token-factory/IATKTokenFactory.sol";
-import { IATKSystem } from "../../system/IATKSystem.sol";
-import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
-
-// Constants
-import { ATKTopics } from "../../system/ATKTopics.sol";
 
 // Local imports
 import { ATKDepositProxy } from "./ATKDepositProxy.sol";
