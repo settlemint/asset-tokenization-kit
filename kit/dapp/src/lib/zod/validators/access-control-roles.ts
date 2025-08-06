@@ -1,5 +1,41 @@
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { z } from "zod";
+
+const _accessControlRoles = [
+  "addonManager",
+  "addonModule",
+  "addonRegistryModule",
+  "admin",
+  "auditor",
+  "burner",
+  "capManagement",
+  "claimPolicyManager",
+  "complianceAdmin",
+  "complianceManager",
+  "custodian",
+  "emergency",
+  "forcedTransfer",
+  "freezer",
+  "fundsManager",
+  "globalListManager",
+  "governance",
+  "identityManager",
+  "identityRegistryModule",
+  "minter",
+  "pauser",
+  "recovery",
+  "saleAdmin",
+  "signer",
+  "supplyManagement",
+  "systemManager",
+  "systemModule",
+  "tokenAdmin",
+  "tokenFactoryModule",
+  "tokenFactoryRegistryModule",
+  "tokenManager",
+  "verificationAdmin",
+] as const;
+
+type AccessControlRoles = (typeof _accessControlRoles)[number];
 
 /**
  * Zod schema for validating all possible access control roles.
