@@ -31,6 +31,22 @@ describe("Token redeemable extension", () => {
           redeemedAmountExact: "11000000",
         },
       },
+      {
+        name: "Paused Stablecoin",
+        type: "stablecoin",
+        redeemable: {
+          redeemedAmount: "0",
+          redeemedAmountExact: "0",
+        },
+      },
+      {
+        name: "Tether",
+        type: "stablecoin",
+        redeemable: {
+          redeemedAmount: "0",
+          redeemedAmountExact: "0",
+        },
+      },
     ]);
   });
 });
