@@ -229,11 +229,14 @@ describe("PropertyFilterDateValueMenu", () => {
       );
 
       const calendar = screen.getByTestId("calendar");
-      const selected = JSON.parse(calendar.dataset.selected || "{}") as { from?: string; to?: string };
+      const selected = JSON.parse(calendar.dataset.selected || "{}") as {
+        from?: string;
+        to?: string;
+      };
 
       // Should have a from date but no to date
-      expect(selected.from).toBeDefined();
-      expect(selected.to).toBeUndefined();
+      expect(selected?.from).toBeDefined();
+      expect(selected?.to).toBeUndefined();
     });
 
     it("should initialize with existing single date filter", () => {
@@ -257,10 +260,15 @@ describe("PropertyFilterDateValueMenu", () => {
       );
 
       const calendar = screen.getByTestId("calendar");
-      const selected = JSON.parse(calendar.dataset.selected || "{}") as { from?: string; to?: string };
+      const selected = JSON.parse(calendar.dataset.selected || "{}") as {
+        from?: string;
+        to?: string;
+      };
 
-      expect(new Date(selected.from)).toEqual(testDate);
-      expect(selected.to).toBeUndefined();
+      expect(selected.from ? new Date(selected.from) : undefined).toEqual(
+        testDate
+      );
+      expect(selected?.to).toBeUndefined();
     });
 
     it("should initialize with existing date range filter", () => {
@@ -285,10 +293,15 @@ describe("PropertyFilterDateValueMenu", () => {
       );
 
       const calendar = screen.getByTestId("calendar");
-      const selected = JSON.parse(calendar.dataset.selected || "{}") as { from?: string; to?: string };
+      const selected = JSON.parse(calendar.dataset.selected || "{}") as {
+        from?: string;
+        to?: string;
+      };
 
-      expect(new Date(selected.from)).toEqual(startDate);
-      expect(new Date(selected.to)).toEqual(endDate);
+      expect(selected.from ? new Date(selected.from) : undefined).toEqual(
+        startDate
+      );
+      expect(selected.to ? new Date(selected.to) : undefined).toEqual(endDate);
     });
   });
 
@@ -312,8 +325,8 @@ describe("PropertyFilterDateValueMenu", () => {
       await user.click(selectButton);
 
       expect(setFilterValue).toHaveBeenCalledTimes(1);
-      const updateFn = setFilterValue.mock.calls[0][0];
-      const result = updateFn(undefined);
+      const updateFn = setFilterValue.mock.calls[0]?.[0];
+      const result = updateFn?.(undefined);
 
       expect(result).toEqual({
         operator: "is",
@@ -341,8 +354,8 @@ describe("PropertyFilterDateValueMenu", () => {
       await user.click(selectButton);
 
       expect(setFilterValue).toHaveBeenCalledTimes(1);
-      const updateFn = setFilterValue.mock.calls[0][0];
-      const result = updateFn(undefined);
+      const updateFn = setFilterValue.mock.calls[0]?.[0];
+      const result = updateFn?.(undefined);
 
       expect(result).toEqual({
         operator: "is between",
@@ -370,8 +383,8 @@ describe("PropertyFilterDateValueMenu", () => {
       await user.click(selectButton);
 
       expect(setFilterValue).toHaveBeenCalledTimes(1);
-      const updateFn = setFilterValue.mock.calls[0][0];
-      const result = updateFn(undefined);
+      const updateFn = setFilterValue.mock.calls[0]?.[0];
+      const result = updateFn?.(undefined);
 
       expect(result).toEqual({
         operator: "is",
@@ -406,8 +419,8 @@ describe("PropertyFilterDateValueMenu", () => {
       await user.click(clearButton);
 
       expect(setFilterValue).toHaveBeenCalledTimes(1);
-      const updateFn = setFilterValue.mock.calls[0][0];
-      const result = updateFn({
+      const updateFn = setFilterValue.mock.calls[0]?.[0];
+      const result = updateFn?.({
         operator: "is",
         values: [new Date("2024-01-10")],
         columnMeta: columnMeta,
@@ -447,8 +460,8 @@ describe("PropertyFilterDateValueMenu", () => {
       const selectButton = screen.getByTestId("select-date-range");
       await user.click(selectButton);
 
-      const updateFn = setFilterValue.mock.calls[0][0];
-      const result = updateFn({
+      const updateFn = setFilterValue.mock.calls[0]?.[0];
+      const result = updateFn?.({
         operator: "is",
         values: [new Date("2024-01-10")],
         columnMeta: { type: "date" },
@@ -483,8 +496,8 @@ describe("PropertyFilterDateValueMenu", () => {
       const selectButton = screen.getByTestId("select-single-date");
       await user.click(selectButton);
 
-      const updateFn = setFilterValue.mock.calls[0][0];
-      const result = updateFn({
+      const updateFn = setFilterValue.mock.calls[0]?.[0];
+      const result = updateFn?.({
         operator: "is between",
         values: [new Date("2024-01-10"), new Date("2024-01-20")],
         columnMeta: { type: "date" },
@@ -519,8 +532,8 @@ describe("PropertyFilterDateValueMenu", () => {
       const selectButton = screen.getByTestId("select-single-date");
       await user.click(selectButton);
 
-      const updateFn = setFilterValue.mock.calls[0][0];
-      const result = updateFn({
+      const updateFn = setFilterValue.mock.calls[0]?.[0];
+      const result = updateFn?.({
         operator: "is after",
         values: [new Date("2024-01-10")],
         columnMeta: { type: "date" },
@@ -621,18 +634,21 @@ describe("PropertyFilterDateValueMenu", () => {
       );
 
       const calendar = screen.getByTestId("calendar");
-      const selected = JSON.parse(calendar.dataset.selected || "{}") as { from?: string; to?: string };
+      const selected = JSON.parse(calendar.dataset.selected || "{}") as {
+        from?: string;
+        to?: string;
+      };
 
       // Should default to today's date
-      expect(selected.from).toBeDefined();
-      expect(selected.to).toBeUndefined();
+      expect(selected?.from).toBeDefined();
+      expect(selected?.to).toBeUndefined();
     });
 
     it("should handle undefined values in filter", () => {
       const column = createMockColumn({
         filterValue: {
           operator: "is between",
-          values: [undefined as unknown, undefined as unknown],
+          values: [undefined as unknown as Date, undefined as unknown as Date],
           columnMeta: { type: "date" },
         },
       });
@@ -648,11 +664,14 @@ describe("PropertyFilterDateValueMenu", () => {
       );
 
       const calendar = screen.getByTestId("calendar");
-      const selected = JSON.parse(calendar.dataset.selected || "{}") as { from?: string; to?: string };
+      const selected = JSON.parse(calendar.dataset.selected || "{}") as {
+        from?: string;
+        to?: string;
+      };
 
       // Should handle gracefully
-      expect(selected.from).toBeDefined(); // Defaults to today
-      expect(selected.to).toBeUndefined();
+      expect(selected?.from).toBeDefined(); // Defaults to today
+      expect(selected?.to).toBeUndefined();
     });
 
     it("should update local state when date changes", async () => {
@@ -670,7 +689,10 @@ describe("PropertyFilterDateValueMenu", () => {
 
       // Initially check state
       let calendar = screen.getByTestId("calendar");
-      let selected = JSON.parse(calendar.dataset.selected || "{}") as { from?: string; to?: string };
+      let selected = JSON.parse(calendar.dataset.selected || "{}") as {
+        from?: string;
+        to?: string;
+      };
       const initialFrom = selected.from;
 
       // Select a date range
@@ -681,9 +703,11 @@ describe("PropertyFilterDateValueMenu", () => {
       calendar = screen.getByTestId("calendar");
       selected = JSON.parse(calendar.dataset.selected || "{}");
 
-      expect(selected.from).toBeDefined();
-      expect(selected.to).toBeDefined();
-      expect(new Date(selected.from)).not.toEqual(new Date(initialFrom));
+      expect(selected?.from).toBeDefined();
+      expect(selected?.to).toBeDefined();
+      expect(
+        selected.from && initialFrom ? new Date(selected.from) : undefined
+      ).not.toEqual(initialFrom ? new Date(initialFrom) : undefined);
     });
   });
 });

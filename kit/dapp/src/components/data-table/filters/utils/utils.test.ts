@@ -25,14 +25,10 @@ describe("Meta Definition Utils", () => {
     const meta = defineMeta(accessor as AccessorFn<unknown>, {
       displayName: "Age",
       type: "number",
-      min: 0,
-      max: 120,
     });
 
     expect(meta.displayName).toBe("Age");
     expect(meta.type).toBe("number");
-    expect(meta.min).toBe(0);
-    expect(meta.max).toBe(120);
   });
 
   it("should work with complex accessor functions", () => {
@@ -42,12 +38,10 @@ describe("Meta Definition Utils", () => {
     const meta = defineMeta(accessor as AccessorFn<unknown>, {
       displayName: "Email",
       type: "text",
-      placeholder: "Enter email",
     });
 
     expect(meta.displayName).toBe("Email");
     expect(meta.type).toBe("text");
-    expect(meta.placeholder).toBe("Enter email");
   });
 
   it("should work with option type columns", () => {
@@ -74,12 +68,10 @@ describe("Meta Definition Utils", () => {
     const meta = defineMeta(accessor as AccessorFn<unknown>, {
       displayName: "Created Date",
       type: "date",
-      dateFormat: "yyyy-MM-dd",
     });
 
     expect(meta.displayName).toBe("Created Date");
     expect(meta.type).toBe("date");
-    expect(meta.dateFormat).toBe("yyyy-MM-dd");
   });
 });
 

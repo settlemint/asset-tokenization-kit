@@ -9,11 +9,6 @@ import { renderWithProviders } from "../../test-utils";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import type { FilterValue } from "../types/filter-types";
 // import type { ColumnOption } from "../types/column-types";
-// Define test data type
-interface _TestData {
-  id: string;
-  name: string;
-}
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
@@ -466,7 +461,7 @@ describe("PropertyFilterMultiOptionValueMenu", () => {
       await user.click(tag1Option);
 
       expect(setFilterValue).toHaveBeenCalledTimes(1);
-      const updateFn = setFilterValue.mock.calls[0]![0]!
+      const updateFn = setFilterValue.mock.calls[0]![0]!;
       const result = updateFn(undefined);
       expect(result).toEqual({
         operator: "include any of",
@@ -506,7 +501,7 @@ describe("PropertyFilterMultiOptionValueMenu", () => {
       await user.click(tag2Option);
 
       expect(setFilterValue).toHaveBeenCalledTimes(1);
-      const updateFn = setFilterValue.mock.calls[0]![0]!
+      const updateFn = setFilterValue.mock.calls[0]![0]!;
       const result = updateFn({
         operator: "include any of",
         values: [["tag1"]],
@@ -550,7 +545,7 @@ describe("PropertyFilterMultiOptionValueMenu", () => {
       await user.click(tag1Option);
 
       expect(setFilterValue).toHaveBeenCalledTimes(1);
-      const updateFn = setFilterValue.mock.calls[0]![0]!
+      const updateFn = setFilterValue.mock.calls[0]![0]!;
       const result = updateFn({
         operator: "include any of",
         values: [["tag1", "tag2"]],
@@ -594,7 +589,7 @@ describe("PropertyFilterMultiOptionValueMenu", () => {
       await user.click(tag1Option);
 
       expect(setFilterValue).toHaveBeenCalledTimes(1);
-      const updateFn = setFilterValue.mock.calls[0]![0]!
+      const updateFn = setFilterValue.mock.calls[0]![0]!;
       const result = updateFn({
         operator: "include any of",
         values: [["tag1"]],
@@ -840,7 +835,7 @@ describe("PropertyFilterMultiOptionValueMenu", () => {
       const tag2Option = screen.getByTestId("multi-option-item-tag2");
       await user.click(tag2Option);
 
-      const updateFn = setFilterValue.mock.calls[0]![0]!
+      const updateFn = setFilterValue.mock.calls[0]![0]!;
       const result = updateFn({
         operator: "include any of",
         values: [["tag1", "tag1"]],

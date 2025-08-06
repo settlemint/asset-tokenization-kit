@@ -15,7 +15,7 @@ export interface ColumnOptionWithIcon extends ColumnOption {
   icon: React.ReactElement | React.ElementType;
 }
 
-export interface FilterableColumnMeta<TData = unknown> {
+export interface FilterableColumnMeta {
   /* The data type of the column for filtering purposes */
   dataType?: ColumnDataType;
   /* Transform function for option-based filters */

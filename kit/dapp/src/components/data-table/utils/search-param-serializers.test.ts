@@ -464,11 +464,11 @@ describe("search-param-serializers", () => {
 
     it("should handle null values", () => {
       const result = tableStateToSearchParams({
-        sorting: null as { id: string; desc: boolean }[] | null,
-        columnFilters: null as { id: string; value: unknown }[] | null,
-        globalFilter: null as string | null,
-        columnVisibility: null as Record<string, boolean> | null,
-        rowSelection: null as Record<string, boolean> | null,
+        sorting: undefined,
+        columnFilters: undefined,
+        globalFilter: undefined,
+        columnVisibility: undefined,
+        rowSelection: undefined,
       });
 
       expect(result).toEqual({

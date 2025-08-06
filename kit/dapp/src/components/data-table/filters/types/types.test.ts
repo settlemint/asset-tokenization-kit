@@ -54,13 +54,11 @@ describe("Column Types Contract", () => {
   });
 
   it("should define FilterableColumnMeta interface correctly", () => {
-    const meta: FilterableColumnMeta<unknown, unknown> = {
-      displayName: "Test Column",
-      type: "text" as ColumnType,
+    const meta: FilterableColumnMeta = {
+      dataType: "text",
     };
 
-    expect(meta.displayName).toBe("Test Column");
-    expect(meta.type).toBe("text");
+    expect(meta.dataType).toBe("text");
   });
 
   it("should support all column types", () => {
@@ -134,48 +132,44 @@ describe("Filter Types Contract", () => {
 
   it("should define NumberRange interface correctly", () => {
     const numberRange: NumberRange = {
-      from: 10,
-      to: 100,
+      min: 10,
+      max: 100,
     };
 
-    expect(numberRange.from).toBe(10);
-    expect(numberRange.to).toBe(100);
+    expect(numberRange.min).toBe(10);
+    expect(numberRange.max).toBe(100);
   });
 
   it("should define all operator types", () => {
     const textOp: TextOperator = "contains";
-    const numberOp: NumberOperator = "equals";
-    const dateOp: DateOperator = "equals";
-    const optionOp: OptionOperator = "equals";
-    const multiOptionOp: MultiOptionOperator = "includesAny";
+    const numberOp: NumberOperator = "is";
+    const dateOp: DateOperator = "is";
+    const optionOp: OptionOperator = "is";
+    const multiOptionOp: MultiOptionOperator = "include";
 
     expect(textOp).toBe("contains");
-    expect(numberOp).toBe("equals");
-    expect(dateOp).toBe("equals");
-    expect(optionOp).toBe("equals");
-    expect(multiOptionOp).toBe("includesAny");
+    expect(numberOp).toBe("is");
+    expect(dateOp).toBe("is");
+    expect(optionOp).toBe("is");
+    expect(multiOptionOp).toBe("include");
   });
 
   it("should define FilterOperator union correctly", () => {
     const operators: FilterOperator[] = [
       "contains",
-      "equals",
-      "startsWith",
-      "endsWith",
-      "isEmpty",
-      "isNotEmpty",
-      "greaterThan",
-      "lessThan",
-      "greaterThanOrEqual",
-      "lessThanOrEqual",
-      "between",
-      "after",
-      "before",
-      "onOrAfter",
-      "onOrBefore",
-      "includesAny",
-      "includesAll",
-      "excludes",
+      "does not contain",
+      "is greater than",
+      "is less than",
+      "is greater than or equal to",
+      "is less than or equal to",
+      "is between",
+      "is after",
+      "is before",
+      "is on or after",
+      "is on or before",
+      "include any of",
+      "include all of",
+      "exclude",
     ];
 
     operators.forEach((op) => {
@@ -217,13 +211,12 @@ describe("Table Extensions Contract", () => {
         { original: { id: 1 }, index: 0, id: "1" },
         { original: { id: 2 }, index: 1, id: "2" },
       ],
-      selectedData: [{ id: 1 }, { id: 2 }],
+      selectedRowIds: ["1", "2"],
     };
 
     expect(params.selectedRows).toHaveLength(2);
-    expect(params.selectedData).toHaveLength(2);
-    expect(params.selectedRows[0].original.id).toBe(1);
-    expect(params.selectedData[0].id).toBe(1);
+    expect(params.selectedRows[0]?.original.id).toBe(1);
+    expect(params.selectedRows[1]?.original.id).toBe(2);
   });
 });
 
