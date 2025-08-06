@@ -11,6 +11,8 @@ import {
 } from "@/orpc/routes/system/access-manager/routes/grant-role.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 
+import { AddressSelectOrInputToggle } from "@/components/address/address-select-or-input-toggle";
+import { ArrayFieldsLayout } from "@/components/layout/array-fields-layout";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Shield } from "lucide-react";
 import { useCallback, useState } from "react";
@@ -48,7 +50,9 @@ export function GrantRoleSheet({
   );
 
   const form = useAppForm({
-    defaultValues: {} as GrantRoleInput,
+    defaultValues: {
+      accounts: [] as string[],
+    } as GrantRoleInput,
     validators: {
       onChange: GrantRoleInputSchema,
     },
@@ -135,10 +139,55 @@ export function GrantRoleSheet({
                 <CardTitle className="text-base">Target Accounts</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-sm text-muted-foreground">
-                  {/* Placeholder for accounts field - to be implemented */}
-                  Account selection will be added here
-                </div>
+                <form.Field
+                  name="accounts"
+                  mode="array"
+                  children={(field) => {
+                    return (
+                      <ArrayFieldsLayout
+                        values={field.state.value}
+                        onAdd={() => {
+                          field.pushValue("");
+                        }}
+                        onRemove={(_, index) => {
+                          field.removeValue(index);
+                        }}
+                        component={(_address, index) => (
+                          <AddressSelectOrInputToggle>
+                            {({ mode }) => (
+                              <>
+                                {mode === "select" && (
+                                  <form.AppField
+                                    name={`accounts[${index}]`}
+                                    children={(field) => (
+                                      <field.AddressSelectField
+                                        scope="user"
+                                        label="Account"
+                                        required={true}
+                                      />
+                                    )}
+                                  />
+                                )}
+                                {mode === "manual" && (
+                                  <form.AppField
+                                    name={`accounts[${index}]`}
+                                    children={(field) => (
+                                      <field.AddressInputField
+                                        label="Account"
+                                        required={true}
+                                      />
+                                    )}
+                                  />
+                                )}
+                              </>
+                            )}
+                          </AddressSelectOrInputToggle>
+                        )}
+                        addButtonLabel="Add account"
+                      />
+                    );
+                  }}
+                />
               </CardContent>
             </Card>
           </div>
