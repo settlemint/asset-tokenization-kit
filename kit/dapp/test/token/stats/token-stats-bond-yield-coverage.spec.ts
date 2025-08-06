@@ -20,7 +20,21 @@ describe.concurrent("Token Stats: Bond Yield Coverage", () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
 
-    // Create bond token
+    // First create stablecoin token to use as denomination asset
+    stablecoinToken = await createToken(client, {
+      name: "Test Stablecoin Token Yield Coverage",
+      symbol: "TSTYC",
+      decimals: 18,
+      type: "stablecoin",
+      countryCode: "056",
+      initialModulePairs: [],
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+    });
+
+    // Create bond token using the stablecoin as denomination asset
     bondToken = await createToken(client, {
       name: "Test Bond Token Yield Coverage",
       symbol: "TBTYC",
@@ -30,21 +44,7 @@ describe.concurrent("Token Stats: Bond Yield Coverage", () => {
       cap: "1000000",
       faceValue: "1000",
       maturityDate: (Date.now() + 365 * 24 * 60 * 60 * 1000).toString(),
-      denominationAsset: "0x0000000000000000000000000000000001",
-      initialModulePairs: [],
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
-      },
-    });
-
-    // Create stablecoin token
-    stablecoinToken = await createToken(client, {
-      name: "Test Stablecoin Token Yield Coverage",
-      symbol: "TSTYC",
-      decimals: 18,
-      type: "stablecoin",
-      countryCode: "056",
+      denominationAsset: stablecoinToken.id,
       initialModulePairs: [],
       verification: {
         verificationCode: DEFAULT_PINCODE,
