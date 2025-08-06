@@ -83,8 +83,8 @@ export function useBondStatusData(
     token.totalSupply,
     token.redeemable?.redeemedAmount,
     bondStatus.coveredPercentage,
-    bondStatus.underlyingAssetBalanceAvailable,
-    bondStatus.underlyingAssetBalanceRequired,
+    bondStatus.denominationAssetBalanceAvailable,
+    bondStatus.denominationAssetBalanceRequired,
     t,
   ]);
 }

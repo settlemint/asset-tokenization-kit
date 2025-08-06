@@ -71,13 +71,13 @@ contract ATKBondImplementation is
     /// @dev Set to true when mature() is called after maturity date
     bool public isMatured;
 
-    /// @notice The face value of the bond in underlying asset base units
+    /// @notice The face value of the bond in denomination asset base units
     /// @dev Set at deployment and cannot be changed
     uint256 private _faceValue;
 
-    /// @notice The underlying asset contract used for face value denomination
+    /// @notice The denomination asset contract used for face value denomination
     /// @dev Must be a valid ERC20 token contract
-    IERC20 private _underlyingAsset;
+    IERC20 private _denominationAsset;
 
     /// @notice Tracks how many bonds each holder has redeemed
     /// @dev Maps holder address to amount of bonds redeemed
@@ -97,7 +97,7 @@ contract ATKBondImplementation is
     /// @param symbol_ The symbol of the token.
     /// @param decimals_ The number of decimals the token uses.
     /// @param cap_ Token cap
-    /// @param bondParams Bond-specific parameters (maturityDate, faceValue, underlyingAsset)
+    /// @param bondParams Bond-specific parameters (maturityDate, faceValue, denominationAsset)
     /// @param initialModulePairs_ Initial compliance module configurations.
     /// @param identityRegistry_ The address of the Identity Registry contract.
     /// @param compliance_ The address of the main compliance contract.
@@ -119,13 +119,13 @@ contract ATKBondImplementation is
     {
         if (bondParams.maturityDate < block.timestamp + 1) revert BondInvalidMaturityDate();
         if (bondParams.faceValue == 0) revert InvalidFaceValue();
-        if (bondParams.underlyingAsset == address(0)) revert InvalidUnderlyingAsset();
+        if (bondParams.denominationAsset == address(0)) revert InvalidDenominationAsset();
 
-        // Verify the underlying asset contract exists by attempting to call a view function
-        try IERC20(bondParams.underlyingAsset).totalSupply() returns (uint256) {
+        // Verify the denomination asset contract exists by attempting to call a view function
+        try IERC20(bondParams.denominationAsset).totalSupply() returns (uint256) {
             // Contract exists and implements IERC20
         } catch {
-            revert InvalidUnderlyingAsset();
+            revert InvalidDenominationAsset();
         }
 
         __SMART_init(name_, symbol_, decimals_, address(0), identityRegistry_, compliance_, initialModulePairs_);
@@ -144,7 +144,7 @@ contract ATKBondImplementation is
 
         _maturityDate = bondParams.maturityDate;
         _faceValue = bondParams.faceValue;
-        _underlyingAsset = IERC20(bondParams.underlyingAsset);
+        _denominationAsset = IERC20(bondParams.denominationAsset);
     }
 
     // --- View Functions ---
@@ -156,42 +156,42 @@ contract ATKBondImplementation is
     }
 
     /// @notice Returns the face value of the bond
-    /// @return The bond's face value in underlying asset base units
+    /// @return The bond's face value in denomination asset base units
     function faceValue() external view override returns (uint256) {
         return _faceValue;
     }
 
-    /// @notice Returns the underlying asset contract
-    /// @return The ERC20 contract of the underlying asset
-    function underlyingAsset() external view override returns (IERC20) {
-        return _underlyingAsset;
+    /// @notice Returns the denomination asset contract
+    /// @return The ERC20 contract of the denomination asset
+    function denominationAsset() external view override returns (IERC20) {
+        return _denominationAsset;
     }
 
-    /// @notice Returns the amount of underlying assets held by the contract
-    /// @return The balance of underlying assets
-    function underlyingAssetBalance() public view override returns (uint256) {
-        return _underlyingAsset.balanceOf(address(this));
+    /// @notice Returns the amount of denomination assets held by the contract
+    /// @return The balance of denomination assets
+    function denominationAssetBalance() public view override returns (uint256) {
+        return _denominationAsset.balanceOf(address(this));
     }
 
-    /// @notice Returns the total amount of underlying assets needed for all potential redemptions
-    /// @return The total amount of underlying assets needed
-    function totalUnderlyingNeeded() public view override returns (uint256) {
-        return _calculateUnderlyingAmount(totalSupply());
+    /// @notice Returns the total amount of denomination assets needed for all potential redemptions
+    /// @return The total amount of denomination assets needed
+    function totalDenominationAssetNeeded() public view override returns (uint256) {
+        return _calculateDenominationAssetAmount(totalSupply());
     }
 
-    /// @notice Returns the amount of underlying assets missing for all potential redemptions
-    /// @return The amount of underlying assets missing (0 if there's enough or excess)
-    function missingUnderlyingAmount() public view override returns (uint256) {
-        uint256 needed = totalUnderlyingNeeded();
-        uint256 current = underlyingAssetBalance();
+    /// @notice Returns the amount of denomination assets missing for all potential redemptions
+    /// @return The amount of denomination assets missing (0 if there's enough or excess)
+    function missingDenominationAssetAmount() public view override returns (uint256) {
+        uint256 needed = totalDenominationAssetNeeded();
+        uint256 current = denominationAssetBalance();
         return needed > current ? needed - current : 0;
     }
 
-    /// @notice Returns the amount of excess underlying assets that can be withdrawn
-    /// @return The amount of excess underlying assets
-    function withdrawableUnderlyingAmount() public view override returns (uint256) {
-        uint256 needed = totalUnderlyingNeeded();
-        uint256 current = underlyingAssetBalance();
+    /// @notice Returns the amount of excess denomination assets that can be withdrawn
+    /// @return The amount of excess denomination assets
+    function withdrawableDenominationAssetAmount() public view override returns (uint256) {
+        uint256 needed = totalDenominationAssetNeeded();
+        uint256 current = denominationAssetBalance();
         return current > needed ? current - needed : 0;
     }
 
@@ -199,14 +199,14 @@ contract ATKBondImplementation is
 
     /// @notice Closes off the bond at maturity
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE after maturity date
-    /// @dev Requires sufficient underlying assets for all potential redemptions
+    /// @dev Requires sufficient denomination assets for all potential redemptions
     function mature() external override onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE) {
         if (block.timestamp < _maturityDate) revert BondNotYetMatured();
         if (isMatured) revert BondAlreadyMatured();
 
-        uint256 needed = totalUnderlyingNeeded();
-        uint256 current = underlyingAssetBalance();
-        if (current < needed) revert InsufficientUnderlyingBalance(current, needed);
+        uint256 needed = totalDenominationAssetNeeded();
+        uint256 current = denominationAssetBalance();
+        if (current < needed) revert InsufficientDenominationAssetBalance(current, needed);
 
         isMatured = true;
         emit BondMatured(block.timestamp);
@@ -567,10 +567,10 @@ contract ATKBondImplementation is
     }
 
     /// @notice Returns the token used for yield payments
-    /// @dev Returns the underlying asset contract
+    /// @dev Returns the denomination asset contract
     /// @return The IERC20 token used for yield payments
     function yieldToken() external view override returns (IERC20) {
-        return _underlyingAsset;
+        return _denominationAsset;
     }
 
     // --- View Functions (Overrides) ---
@@ -613,12 +613,12 @@ contract ATKBondImplementation is
 
     // --- Internal Functions ---
 
-    /// @notice Calculates the underlying asset amount for a given bond amount
+    /// @notice Calculates the denomination asset amount for a given bond amount
     /// @dev Multiplies the bond amount with the face value before dividing by decimals
     ///      to maintain precision
     /// @param bondAmount The amount of bonds to calculate for
-    /// @return The amount of underlying assets
-    function _calculateUnderlyingAmount(uint256 bondAmount) private view returns (uint256) {
+    /// @return The amount of denomination assets
+    function _calculateDenominationAssetAmount(uint256 bondAmount) private view returns (uint256) {
         return (bondAmount * _faceValue) / (10 ** decimals());
     }
 
@@ -771,11 +771,11 @@ contract ATKBondImplementation is
         // Simple check: user can only redeem what they currently have
         if (amount > currentBalance) revert InsufficientRedeemableBalance(currentBalance, amount);
 
-        uint256 underlyingAmount = _calculateUnderlyingAmount(amount);
+        uint256 denominationAssetAmount = _calculateDenominationAssetAmount(amount);
 
-        uint256 contractBalance = underlyingAssetBalance();
-        if (contractBalance < underlyingAmount) {
-            revert InsufficientUnderlyingBalance(contractBalance, underlyingAmount);
+        uint256 contractBalance = denominationAssetBalance();
+        if (contractBalance < denominationAssetAmount) {
+            revert InsufficientDenominationAssetBalance(contractBalance, denominationAssetAmount);
         }
 
         // State changes BEFORE external calls (checks-effects-interactions pattern)
@@ -784,9 +784,9 @@ contract ATKBondImplementation is
         _burn(from, amount);
 
         // External call AFTER all state changes
-        _underlyingAsset.safeTransfer(from, underlyingAmount);
+        _denominationAsset.safeTransfer(from, denominationAssetAmount);
 
-        emit BondRedeemed(_msgSender(), from, amount, underlyingAmount);
+        emit BondRedeemed(_msgSender(), from, amount, denominationAssetAmount);
     }
 
     // --- IContractWithIdentity Implementation ---

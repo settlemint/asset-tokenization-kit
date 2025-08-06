@@ -16,7 +16,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
  * @title Malicious ERC20 Token for Reentrancy Testing
- * @notice This contract simulates a malicious underlying asset that attempts reentrancy attacks
+ * @notice This contract simulates a malicious denomination asset that attempts reentrancy attacks
  */
 contract MaliciousERC20Token is MockedERC20Token {
     IATKBond public targetBond;
@@ -75,7 +75,7 @@ contract ReentrancyAttacker {
     }
 
     /**
-     * @notice Attempts to re-enter bond redemption when receiving underlying tokens
+     * @notice Attempts to re-enter bond redemption when receiving denomination tokens
      */
     receive() external payable {
         // This won't be called for ERC20 transfers, but kept for completeness
@@ -142,7 +142,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         // Deploy malicious token
         maliciousToken = new MaliciousERC20Token();
 
-        // Create bond with malicious underlying asset
+        // Create bond with malicious denomination asset
         bond = _createBondWithMaliciousToken();
 
         // Set up attacker contract
@@ -161,7 +161,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         IATKBond.BondInitParams memory bondParams = IATKBond.BondInitParams({
             maturityDate: maturityDate,
             faceValue: faceValue,
-            underlyingAsset: address(maliciousToken)
+            denominationAsset: address(maliciousToken)
         });
 
         address bondAddress = bondFactory.createBond(
@@ -194,12 +194,12 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
     function test_ReentrancyProtectionDuringRedemption() public {
         // Setup: Prepare bond for redemption
         uint256 redeemAmount = 10 * 10 ** DECIMALS; // 10 bonds
-        uint256 underlyingNeeded = redeemAmount * faceValue / (10 ** DECIMALS);
+        uint256 denominationAmountNeeded = redeemAmount * faceValue / (10 ** DECIMALS);
         uint256 totalUnderlyingNeeded = initialSupply * faceValue / (10 ** DECIMALS); // For all bonds
 
         vm.startPrank(owner);
 
-        // Mint underlying tokens and transfer to bond contract
+        // Mint denomination tokens and transfer to bond contract
         maliciousToken.mint(address(bond), totalUnderlyingNeeded);
 
         // Transfer some bonds to user1
@@ -220,7 +220,9 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
         // Verify redemption succeeded
         assertEq(bond.balanceOf(user1), 0, "User1 should have no bonds left");
-        assertEq(maliciousToken.balanceOf(user1), underlyingNeeded, "User1 should have received underlying tokens");
+        assertEq(
+            maliciousToken.balanceOf(user1), denominationAmountNeeded, "User1 should have received denomination tokens"
+        );
 
         // Verify attack was attempted but failed
         assertGt(maliciousToken.attackCount(), 0, "Attack should have been attempted");
@@ -238,7 +240,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
         vm.startPrank(owner);
 
-        // Mint enough underlying tokens for multiple redemptions
+        // Mint enough denomination tokens for multiple redemptions
         maliciousToken.mint(address(bond), totalUnderlyingNeeded);
 
         // Transfer bonds to user1
@@ -307,9 +309,9 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
     }
 
     /**
-     * @notice Test redemption with insufficient underlying balance
+     * @notice Test redemption with insufficient denomination balance
      */
-    function test_RedeemInsufficientUnderlyingBalance() public {
+    function test_RedeemInsufficientDenominationAssetBalance() public {
         uint256 redeemAmount = 10 * 10 ** DECIMALS;
         uint256 totalUnderlyingNeeded = initialSupply * faceValue / (10 ** DECIMALS);
 
@@ -322,7 +324,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         vm.warp(maturityDate + 1);
         bond.mature();
 
-        // Now remove most of the underlying tokens to simulate insufficient balance for redemption
+        // Now remove most of the denomination tokens to simulate insufficient balance for redemption
         uint256 currentBalance = maliciousToken.balanceOf(address(bond));
         uint256 amountToRemove = currentBalance - (redeemAmount * faceValue / (10 ** DECIMALS)) + 1; // Leave just
             // slightly less than needed
@@ -330,11 +332,11 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
         vm.stopPrank();
 
-        // Try to redeem with insufficient underlying balance
+        // Try to redeem with insufficient denomination balance
         vm.startPrank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IATKBond.InsufficientUnderlyingBalance.selector, currentBalance - amountToRemove, 1000e18
+                IATKBond.InsufficientDenominationAssetBalance.selector, currentBalance - amountToRemove, 1000e18
             )
         );
         bond.redeem(redeemAmount);
@@ -346,7 +348,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
      */
     function test_StateChangesAppliedBeforeExternalCall() public {
         uint256 redeemAmount = 10 * 10 ** DECIMALS;
-        uint256 underlyingNeeded = redeemAmount * faceValue / (10 ** DECIMALS);
+        uint256 denominationAmountNeeded = redeemAmount * faceValue / (10 ** DECIMALS);
         uint256 totalUnderlyingNeeded = initialSupply * faceValue / (10 ** DECIMALS);
 
         vm.startPrank(owner);
@@ -376,7 +378,9 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
             initialRedeemed + redeemAmount,
             "Redeemed amount not tracked correctly"
         );
-        assertEq(maliciousToken.balanceOf(user1), underlyingNeeded, "Underlying tokens not transferred correctly");
+        assertEq(
+            maliciousToken.balanceOf(user1), denominationAmountNeeded, "Underlying tokens not transferred correctly"
+        );
     }
 
     /**
@@ -384,7 +388,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
      */
     function test_RedeemAllReentrancyProtection() public {
         uint256 userBonds = 20 * 10 ** DECIMALS;
-        uint256 underlyingNeeded = userBonds * faceValue / (10 ** DECIMALS);
+        uint256 denominationAmountNeeded = userBonds * faceValue / (10 ** DECIMALS);
         uint256 totalUnderlyingNeeded = initialSupply * faceValue / (10 ** DECIMALS);
 
         vm.startPrank(owner);
@@ -406,7 +410,11 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
         // Verify redemption succeeded
         assertEq(bond.balanceOf(user1), 0, "User1 should have no bonds left");
-        assertEq(maliciousToken.balanceOf(user1), underlyingNeeded, "User1 should have received all underlying tokens");
+        assertEq(
+            maliciousToken.balanceOf(user1),
+            denominationAmountNeeded,
+            "User1 should have received all denomination tokens"
+        );
 
         // Verify attack was attempted but failed
         assertGt(maliciousToken.attackCount(), 0, "Attack should have been attempted");
@@ -430,14 +438,14 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         vm.warp(maturityDate + 1);
         bond.mature();
 
-        // Remove all underlying tokens to cause transfer failure
+        // Remove all denomination tokens to cause transfer failure
         maliciousToken.burn(address(bond), maliciousToken.balanceOf(address(bond)));
 
         vm.stopPrank();
 
-        // Try to redeem when underlying transfer will fail
+        // Try to redeem when denomination transfer will fail
         vm.startPrank(user1);
-        vm.expectRevert(abi.encodeWithSelector(IATKBond.InsufficientUnderlyingBalance.selector, 0, 1000e18));
+        vm.expectRevert(abi.encodeWithSelector(IATKBond.InsufficientDenominationAssetBalance.selector, 0, 1000e18));
         bond.redeem(redeemAmount);
         vm.stopPrank();
 
@@ -485,7 +493,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         IATKBond.BondInitParams memory normalBondParams = IATKBond.BondInitParams({
             maturityDate: maturityDate,
             faceValue: faceValue,
-            underlyingAsset: address(normalToken)
+            denominationAsset: address(normalToken)
         });
 
         address normalBondAddress = bondFactory.createBond(
@@ -507,7 +515,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         normalBond.unpause();
 
         uint256 redeemAmount = 10 * 10 ** DECIMALS;
-        uint256 underlyingNeeded = redeemAmount * faceValue / (10 ** DECIMALS);
+        uint256 denominationAmountNeeded = redeemAmount * faceValue / (10 ** DECIMALS);
         uint256 totalUnderlyingNeeded = initialSupply * faceValue / (10 ** DECIMALS);
 
         vm.startPrank(owner);
@@ -526,6 +534,6 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         normalBond.redeem(redeemAmount);
 
         assertEq(normalBond.balanceOf(user1), 0, "Normal redemption should work");
-        assertEq(normalToken.balanceOf(user1), underlyingNeeded, "Should receive underlying tokens");
+        assertEq(normalToken.balanceOf(user1), denominationAmountNeeded, "Should receive denomination tokens");
     }
 }

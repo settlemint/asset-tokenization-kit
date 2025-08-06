@@ -6,7 +6,7 @@ import { z } from "zod";
 
 /**
  * GraphQL query to fetch bond status statistics for a specific token
- * Retrieves underlying asset balance information needed for bond status calculations
+ * Retrieves denomination asset balance information needed for bond status calculations
  */
 const TOKEN_BOND_STATUS_QUERY = theGraphGraphql(`
   query TokenBondStatus($tokenId: ID!) {
@@ -14,8 +14,8 @@ const TOKEN_BOND_STATUS_QUERY = theGraphGraphql(`
       id
       bond {
         stats {
-          underlyingAssetBalanceAvailable
-          underlyingAssetBalanceRequired
+          denominationAssetBalanceAvailable
+          denominationAssetBalanceRequired
           coveredPercentage
         }
       }
@@ -31,8 +31,8 @@ const StatsBondStatusResponseSchema = z.object({
       .object({
         stats: z
           .object({
-            underlyingAssetBalanceAvailable: z.string(),
-            underlyingAssetBalanceRequired: z.string(),
+            denominationAssetBalanceAvailable: z.string(),
+            denominationAssetBalanceRequired: z.string(),
             coveredPercentage: z.string(),
           })
           .nullable(),
@@ -44,9 +44,9 @@ const StatsBondStatusResponseSchema = z.object({
 /**
  * Bond status statistics route handler.
  *
- * Fetches current bond status including underlying asset balance information:
- * - Current available underlying asset balance for redemption
- * - Total underlying asset balance required for full redemption
+ * Fetches current bond status including denomination asset balance information:
+ * - Current available denomination asset balance for redemption
+ * - Total denomination asset balance required for full redemption
  * - Coverage percentage (available / required * 100)
  *
  * This endpoint is optimized for bond status progress charts and widgets.
@@ -93,19 +93,19 @@ export const statsBondStatus = tokenRouter.token.statsBondStatus
     if (!bondStats) {
       // Return zeros if no bond stats found (token might not be a bond or no stats yet)
       return {
-        underlyingAssetBalanceAvailable: from(0),
-        underlyingAssetBalanceRequired: from(0),
+        denominationAssetBalanceAvailable: from(0),
+        denominationAssetBalanceRequired: from(0),
         coveredPercentage: from(0),
       };
     }
 
     // Convert string values to dnum for precise arithmetic
     return {
-      underlyingAssetBalanceAvailable: from(
-        bondStats.underlyingAssetBalanceAvailable
+      denominationAssetBalanceAvailable: from(
+        bondStats.denominationAssetBalanceAvailable
       ),
-      underlyingAssetBalanceRequired: from(
-        bondStats.underlyingAssetBalanceRequired
+      denominationAssetBalanceRequired: from(
+        bondStats.denominationAssetBalanceRequired
       ),
       coveredPercentage: from(bondStats.coveredPercentage),
     };

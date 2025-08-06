@@ -11,7 +11,9 @@ export const BondSchema = z.object({
   maturityDate: timestamp()
     .transform((date) => date.getTime().toString())
     .describe("The maturity date of the bond"),
-  underlyingAsset: ethereumAddress.describe("The underlying asset of the bond"),
+  denominationAsset: ethereumAddress.describe(
+    "The denomination asset of the bond"
+  ),
 });
 
 /**
