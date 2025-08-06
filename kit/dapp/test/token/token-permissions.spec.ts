@@ -73,6 +73,7 @@ describe("Token permissions", () => {
       actions: {
         burn: false,
         create: false,
+        grantRole: true,
         mint: false,
         pause: false,
         addComplianceModule: false,
@@ -136,6 +137,7 @@ describe("Token permissions", () => {
       actions: {
         burn: false,
         create: false,
+        grantRole: false,
         mint: false,
         pause: false,
         addComplianceModule: false,

@@ -1,9 +1,7 @@
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { tokenMiddleware } from "@/orpc/middlewares/system/token.middleware";
 import { userClaimsMiddleware } from "@/orpc/middlewares/system/user-claims.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { portalRouter } from "@/orpc/procedures/portal.router";
 
-export const tokenRouter = onboardedRouter
-  .use(systemMiddleware)
+export const tokenRouter = portalRouter
   .use(userClaimsMiddleware)
   .use(tokenMiddleware);

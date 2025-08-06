@@ -87,7 +87,7 @@ describe("AccessControlFragment", () => {
             return "";
           });
 
-        expect(fieldNames).toHaveLength(32);
+        expect(fieldNames).toHaveLength(33);
         expectedRoles.forEach((role) => {
           expect(fieldNames).toContain(role);
         });
@@ -100,9 +100,15 @@ describe("AccessControlFragment", () => {
       if (fragmentDef && fragmentDef.kind === Kind.FRAGMENT_DEFINITION) {
         const selections = fragmentDef.selectionSet.selections;
 
-        // Each selection should have a nested selection for 'id'
+        // Each selection should have a nested selection for 'id' (except for the top-level 'id' field)
         selections.forEach((selection) => {
           if (selection.kind === Kind.FIELD) {
+            // The top-level 'id' field is a scalar and doesn't have nested selections
+            if (selection.name.value === "id") {
+              expect(selection.selectionSet).toBeUndefined();
+              return;
+            }
+
             expect(selection.selectionSet).toBeDefined();
             expect(selection.selectionSet?.selections).toHaveLength(2);
 

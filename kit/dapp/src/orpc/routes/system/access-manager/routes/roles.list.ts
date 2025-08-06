@@ -1,5 +1,5 @@
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { getAccessControlEntries } from "@/orpc/helpers/access-control-helpers";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import {
@@ -21,7 +21,7 @@ export const rolesList = onboardedRouter.system.rolesList
 
     const rolesByAccount = new Map<string, SystemRolesOutput[number]>();
 
-    for (const [role, accounts] of Object.entries(systemRoles)) {
+    for (const [role, accounts] of getAccessControlEntries(systemRoles)) {
       for (const account of accounts) {
         if (excludeContracts && account.isContract) {
           continue;
@@ -30,10 +30,10 @@ export const rolesList = onboardedRouter.system.rolesList
         const existingAccount = rolesByAccount.get(accountAddress);
 
         if (existingAccount) {
-          existingAccount.roles.push(role as AccessControlRoles);
+          existingAccount.roles.push(role);
         } else {
           rolesByAccount.set(accountAddress, {
-            roles: [role as AccessControlRoles],
+            roles: [role],
             account: accountAddress,
           });
         }

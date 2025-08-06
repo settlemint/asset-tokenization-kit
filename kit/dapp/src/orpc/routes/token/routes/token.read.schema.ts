@@ -1,4 +1,5 @@
 import { accessControlRoles } from "@/lib/zod/validators/access-control-roles";
+import type { AccessControl } from "@/lib/fragments/the-graph/access-control-fragment";
 import { assetExtensionArray } from "@/lib/zod/validators/asset-extensions";
 import { assetType } from "@/lib/zod/validators/asset-types";
 import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
@@ -95,6 +96,10 @@ export const RawTokenSchema = z.object({
     })
     .nullable()
     .describe("The fund of the token"),
+  accessControl: z
+    .custom<AccessControl>()
+    .describe("The access control of the token")
+    .optional(),
   userPermissions: z
     .object({
       roles: accessControlRoles.describe("The roles of the user for the token"),
@@ -120,6 +125,9 @@ export const RawTokenSchema = z.object({
               create: z
                 .boolean()
                 .describe("Whether the user can execute the create action"),
+              grantRole: z
+                .boolean()
+                .describe("Whether the user can execute the grantRole action"),
               mint: z
                 .boolean()
                 .describe("Whether the user can execute the mint action"),
