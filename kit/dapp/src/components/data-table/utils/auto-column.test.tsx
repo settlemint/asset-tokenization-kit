@@ -1,17 +1,17 @@
 /**
  * @vitest-environment happy-dom
  */
+import type { CellContext, ColumnDef } from "@tanstack/react-table";
+import { flexRender } from "@tanstack/react-table";
 import { screen } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "../../../../test/test-utils";
 import {
   withAutoCell,
   withAutoCells,
-  withAutoVariant,
   withAutoFeatures,
+  withAutoVariant,
 } from "./auto-column";
-import { renderWithProviders } from "../test-utils";
-import { flexRender } from "@tanstack/react-table";
-import type { CellContext, ColumnDef } from "@tanstack/react-table";
 
 // Mock formatValue
 vi.mock("@/lib/utils/format-value", () => ({

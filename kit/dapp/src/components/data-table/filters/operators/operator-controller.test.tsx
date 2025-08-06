@@ -1,19 +1,19 @@
 /**
  * @vitest-environment happy-dom
  */
+import type { Column, ColumnMeta } from "@tanstack/react-table";
 import { screen, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "../../../../../test/test-utils";
+import type { ColumnDataType } from "../types/column-types";
+import type { TextFilterOperator } from "../types/filter-types";
 import {
   PropertyFilterOperatorController,
   PropertyFilterOperatorDisplay,
   PropertyFilterOperatorMenu,
   PropertyFilterTextOperatorMenu,
 } from "./operator-controller";
-import { renderWithProviders } from "../../test-utils";
-import type { Column, ColumnMeta } from "@tanstack/react-table";
-import type { TextFilterOperator } from "../types/filter-types";
-import type { ColumnDataType } from "../types/column-types";
 
 // Removed unused TestData interface to fix TS6196
 

@@ -3,14 +3,14 @@ import {
   type Column,
   type ColumnDef,
   type Header,
-  type Table,
   type Row,
   type RowModel,
+  type Table,
 } from "@tanstack/react-table";
 import { render, type RenderOptions } from "@testing-library/react";
 import { type ComponentType, type ReactElement, type ReactNode } from "react";
 import { vi } from "vitest";
-import type { BulkAction } from "./types/bulk-actions";
+import type { BulkAction } from "../src/components/data-table/types/bulk-actions";
 
 // Make vi globally available for module-level mocking in test files
 if (typeof globalThis !== "undefined") {
@@ -32,6 +32,13 @@ vi.mock("react-i18next", () => ({
             ? JSON.stringify(params.count)
             : (params.count as string);
         return `${countStr} selected`;
+      }
+      if (key === "bulkActions.selectRow" && params?.row !== undefined) {
+        const rowStr =
+          typeof params.row === "object" && params.row !== null
+            ? JSON.stringify(params.row)
+            : (params.row as string | number).toString();
+        return `Select row ${rowStr}`;
       }
       return key;
     },
@@ -337,6 +344,7 @@ export function createMockTable<TData = unknown>(
     getRowModel: vi.fn(
       () => ({ rows: [], flatRows: [], rowsById: {} }) as RowModel<TData>
     ),
+    // eslint-disable-next-line no-unused-vars
     getRow: vi.fn((_id: string) => undefined as Row<TData> | undefined),
     getCenterRows: vi.fn(() => [] as Row<TData>[]),
     getTopRows: vi.fn(() => [] as Row<TData>[]),

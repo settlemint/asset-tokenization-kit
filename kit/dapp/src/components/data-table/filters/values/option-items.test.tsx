@@ -2,11 +2,11 @@
  * @vitest-environment happy-dom
  */
 import { screen } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "../../../../../test/test-utils";
 import { MultiOptionItem } from "./multi-option-item";
 import { OptionItem } from "./option-item";
-import { renderWithProviders } from "../../test-utils";
 
 // Mock the UI components
 vi.mock("@/components/ui/checkbox", () => ({

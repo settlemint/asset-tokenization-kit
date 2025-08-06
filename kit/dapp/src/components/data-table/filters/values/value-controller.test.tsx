@@ -1,22 +1,22 @@
 /**
  * @vitest-environment happy-dom
  */
-import { screen } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import userEvent from "@testing-library/user-event";
-import {
-  PropertyFilterValueController,
-  PropertyFilterValueDisplay,
-  PropertyFilterOptionValueDisplay,
-} from "./value-controller";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  createMockColumn,
+  generateMockData,
+  renderWithProviders,
+  type TestDataItem,
+} from "../../../../../test/test-utils";
 import type { ColumnDataType } from "../types/column-types";
 import {
-  renderWithProviders,
-  generateMockData,
-  createMockColumn,
-  type TestDataItem,
-} from "../../test-utils";
+  PropertyFilterOptionValueDisplay,
+  PropertyFilterValueController,
+  PropertyFilterValueDisplay,
+} from "./value-controller";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({

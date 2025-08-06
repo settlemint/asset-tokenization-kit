@@ -1,25 +1,25 @@
 /**
  * @vitest-environment happy-dom
  */
+import { Command, CommandGroup, CommandList } from "@/components/ui/command";
 import { screen } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  createMockColumn,
+  createMockTable,
+  renderWithProviders,
+} from "../../../test/test-utils";
+import { useIsMobile } from "../../hooks/use-mobile";
+import { useScrollBlur } from "../../hooks/use-scroll-blur";
 import {
   DataTableFilter,
   DataTableFilterDesktopContainer,
   DataTableFilterMobileContainer,
+  PropertyFilterList,
   TableFilter,
   TableFilterMenuItem,
-  PropertyFilterList,
 } from "./data-table-filter";
-import { Command, CommandGroup, CommandList } from "@/components/ui/command";
-import {
-  renderWithProviders,
-  createMockTable,
-  createMockColumn,
-} from "./test-utils";
-import { useIsMobile } from "../../hooks/use-mobile";
-import { useScrollBlur } from "../../hooks/use-scroll-blur";
 
 // Mock child components that have complex implementations
 vi.mock("./filters/operators/operator-controller", () => ({

@@ -24,7 +24,6 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
 /**
@@ -156,8 +155,23 @@ export type NewFxRateLatest = typeof fxRatesLatest.$inferInsert;
  */
 
 // Currency schemas
-export const insertCurrencySchema = createInsertSchema(currencies);
-export const selectCurrencySchema = createSelectSchema(currencies);
+export const insertCurrencySchema = z.object({
+  code: z.string().length(3),
+  name: z.string().max(64),
+  decimals: z
+    .string()
+    .regex(/^[0-8]$/)
+    .optional(),
+});
+
+export const selectCurrencySchema = z.object({
+  code: z.string().length(3),
+  name: z.string().max(64),
+  decimals: z
+    .string()
+    .regex(/^[0-8]$/)
+    .nullable(),
+});
 
 // Exchange rate providers
 const exchangeRateProvider = z.enum(["er-api", "ECB", "manual"]);
@@ -243,12 +257,42 @@ export const fxRateLatestDataSchema = z.object({
 });
 
 // FX rates schemas
-export const insertFxRateSchema = createInsertSchema(fxRates);
-export const selectFxRateSchema = createSelectSchema(fxRates);
+export const insertFxRateSchema = z.object({
+  baseCode: z.string().length(3),
+  quoteCode: z.string().length(3),
+  provider: z.string().max(32),
+  effectiveAt: z.date(),
+  rate: z.string(),
+  createdAt: z.date().optional(),
+});
+
+export const selectFxRateSchema = z.object({
+  baseCode: z.string().length(3),
+  quoteCode: z.string().length(3),
+  provider: z.string().max(32),
+  effectiveAt: z.date(),
+  rate: z.string(),
+  createdAt: z.date(),
+});
 
 // FX rates latest schemas
-export const insertFxRateLatestSchema = createInsertSchema(fxRatesLatest);
-export const selectFxRateLatestSchema = createSelectSchema(fxRatesLatest);
+export const insertFxRateLatestSchema = z.object({
+  baseCode: z.string().length(3),
+  quoteCode: z.string().length(3),
+  provider: z.string().max(32),
+  rate: z.string(),
+  effectiveAt: z.date(),
+  updatedAt: z.date().optional(),
+});
+
+export const selectFxRateLatestSchema = z.object({
+  baseCode: z.string().length(3),
+  quoteCode: z.string().length(3),
+  provider: z.string().max(32),
+  rate: z.string(),
+  effectiveAt: z.date(),
+  updatedAt: z.date(),
+});
 
 // Parsed types from schemas
 export type InsertCurrency = z.infer<typeof insertCurrencySchema>;

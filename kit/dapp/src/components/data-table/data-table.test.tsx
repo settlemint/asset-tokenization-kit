@@ -2,18 +2,18 @@
  * @vitest-environment happy-dom
  */
 import { screen } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { Search } from "lucide-react";
-import { DataTable } from "./data-table";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  renderWithProviders,
-  generateMockData,
   defaultColumns,
-  mockBulkActions,
+  generateMockData,
   mockActionGroups,
+  mockBulkActions,
+  renderWithProviders,
   type TestDataItem,
-} from "./test-utils";
+} from "../../../test/test-utils";
+import { DataTable } from "./data-table";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({

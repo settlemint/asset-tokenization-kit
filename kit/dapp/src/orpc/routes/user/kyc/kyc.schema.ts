@@ -1,22 +1,42 @@
-import { kycProfiles } from "@/lib/db/schema";
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import { residencyStatusEnum } from "@/lib/db/schemas/kyc";
 import { z } from "zod";
 
-export const KycProfileSelectSchema = createSelectSchema(kycProfiles);
-export const KycProfileInsertSchema = createInsertSchema(kycProfiles, {
-  firstName: (schema) => schema.min(1).max(64).trim(),
-  lastName: (schema) => schema.min(1).max(64).trim(),
-  country: (schema) =>
-    schema
-      .length(2)
-      .toUpperCase()
-      .regex(/^[A-Z]{2}$/, "Must be a valid ISO 3166-1 alpha-2 country code"),
-  dob: (schema) =>
-    schema.max(
-      new Date(Date.now() - 18 * 365.25 * 24 * 3600 * 1000),
-      "Must be at least 18 years old"
-    ),
-  residencyStatus: (schema) => schema,
+// Define the residency status enum values as a Zod enum
+const residencyStatusValues = residencyStatusEnum.enumValues;
+const residencyStatusZod = z.enum(residencyStatusValues);
+
+export const KycProfileSelectSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
+  dob: z.date(),
+  country: z.string(),
+  residencyStatus: residencyStatusZod,
+  nationalIdEncrypted: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export const KycProfileInsertSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  firstName: z.string().min(1).max(64).trim(),
+  lastName: z.string().min(1).max(64).trim(),
+  dob: z.date().refine((date) => {
+    const eighteenYearsAgo = new Date();
+    eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
+    return date <= eighteenYearsAgo;
+  }, "Must be at least 18 years old"),
+  country: z
+    .string()
+    .length(2)
+    .toUpperCase()
+    .regex(/^[A-Z]{2}$/, "Must be a valid ISO 3166-1 alpha-2 country code"),
+  residencyStatus: residencyStatusZod,
+  nationalIdEncrypted: z.string(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
 });
 
 export const KycProfileUpsertSchema = KycProfileInsertSchema.omit({

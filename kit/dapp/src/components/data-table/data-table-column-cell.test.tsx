@@ -1,7 +1,7 @@
-import { screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { fireEvent, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { renderWithProviders } from "../../../test/test-utils";
 import { DataTableColumnCell } from "./data-table-column-cell";
-import { renderWithProviders } from "./test-utils";
 
 describe("DataTableColumnCell", () => {
   describe("Structure and Layout", () => {

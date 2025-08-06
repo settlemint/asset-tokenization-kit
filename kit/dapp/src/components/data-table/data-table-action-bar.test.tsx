@@ -2,15 +2,15 @@
  * @vitest-environment happy-dom
  */
 import { screen, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import userEvent from "@testing-library/user-event";
+import { toast } from "sonner";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { createMockTable, renderWithProviders } from "../../../test/test-utils";
 import {
   DataTableActionBar,
   SimpleDataTableActionBar,
 } from "./data-table-action-bar";
-import { renderWithProviders, createMockTable } from "./test-utils";
 import type { BulkAction, BulkActionGroup } from "./types/bulk-actions";
-import { toast } from "sonner";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
