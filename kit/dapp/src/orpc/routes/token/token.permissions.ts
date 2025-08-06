@@ -14,7 +14,7 @@ export const TOKEN_PERMISSIONS: Record<
 > = {
   burn: "supplyManagement",
   create: "tokenManager",
-  grantRole: "governance",
+  grantRole: "admin",
   mint: "supplyManagement",
   pause: "emergency",
   addComplianceModule: "governance",
