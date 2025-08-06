@@ -31,6 +31,7 @@ import { SMARTCustodianUpgradeable } from "../../smart/extensions/custodian/SMAR
 import { SMARTCollateralUpgradeable } from "../../smart/extensions/collateral/SMARTCollateralUpgradeable.sol";
 import { SMARTTokenAccessManagedUpgradeable } from
     "../../smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
+import { SMARTRedeemableUpgradeable } from "../../smart/extensions/redeemable/SMARTRedeemableUpgradeable.sol";
 
 /// @title ATKStableCoin
 /// @author SettleMint
@@ -45,6 +46,7 @@ contract ATKStableCoinImplementation is
     SMARTUpgradeable,
     SMARTTokenAccessManagedUpgradeable,
     SMARTCollateralUpgradeable,
+    SMARTRedeemableUpgradeable,
     SMARTCustodianUpgradeable,
     SMARTPausableUpgradeable,
     SMARTBurnableUpgradeable,
@@ -86,6 +88,7 @@ contract ATKStableCoinImplementation is
         __SMARTPausable_init(true);
         __SMARTTokenAccessManaged_init(accessManager_);
         __SMARTCollateral_init(collateralTopicId_);
+        __SMARTRedeemable_init();
 
         _registerInterface(type(IATKStableCoin).interfaceId);
         _registerInterface(type(IContractWithIdentity).interfaceId);
