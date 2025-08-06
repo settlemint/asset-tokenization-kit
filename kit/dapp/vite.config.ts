@@ -17,7 +17,8 @@ export default defineConfig({
         // Suppress sourcemap warnings for plugins that don't generate them
         if (
           warning.message &&
-          warning.message.includes("Sourcemap is likely to be incorrect")
+          (warning.message.includes("Sourcemap is likely to be incorrect") ||
+            warning.message.includes("Error when using sourcemap"))
         ) {
           return;
         }

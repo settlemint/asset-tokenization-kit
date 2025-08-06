@@ -104,8 +104,7 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
 
 function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   const { errors, formMessageId } = useFieldContext();
-  const body =
-    errors.length > 0 ? String(errors[0]?.message ?? "") : props.children;
+  const body = errors.length > 0 ? (errors[0]?.message ?? "") : props.children;
   if (!body) return null;
 
   return (

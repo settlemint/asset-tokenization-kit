@@ -200,7 +200,7 @@ function EventDetailsSheet({
                           });
                         } else {
                           // For any other value, display as text
-                          formattedValue = String(value.value);
+                          formattedValue = value.value ?? "";
                         }
 
                         return (

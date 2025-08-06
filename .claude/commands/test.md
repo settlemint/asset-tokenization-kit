@@ -1,23 +1,6 @@
 # /test
 
-Executes complete test suite via test-validator agent.
-
-## Agent Invocation
-
-**MANDATORY**: Always use test-validator agent for ALL test runs:
-
-```javascript
-// Trigger test-validator agent
-Task({
-  description: "Run full test suite",
-  prompt: `Execute the complete test suite including:
-    1. bun run ci (all standard checks)
-    2. bun run test:integration (integration tests)
-    
-    Report any failures with details.`,
-  subagent_type: "test-validator",
-});
-```
+Executes complete test suite.
 
 ## Execution
 
@@ -30,13 +13,9 @@ The test-validator agent handles:
 - Integration tests
 - Parallel execution for speed
 
-**IMPORTANT**: The agent runs BOTH `bun run ci` AND `bun run test:integration`
-
 ## Complete Validation Process
 
-1. Agent runs CI suite: `bun run ci`
-2. Agent runs integration tests: `bun run test:integration`
-3. Both must pass before PR
+1. Run CI suite: `bun run ci`
 
 ## Result
 
@@ -60,70 +39,6 @@ Silently capture and apply test learnings:
 - Update CLAUDE.md for project-wide test conventions
 - Apply fixes automatically based on past learnings
 - Build knowledge of test suite peculiarities
-
-## Gemini-CLI Test Intelligence
-
-Leverage gemini-cli for advanced test capabilities:
-
-### 1. **Test Coverage Analysis**
-
-```javascript
-mcp__gemini -
-  cli__ask -
-  gemini({
-    prompt: "@coverage-report.json identify critical untested paths",
-    changeMode: false,
-    model: "gemini-2.5-pro",
-  });
-```
-
-### 2. **Performance Test Generation**
-
-```javascript
-mcp__gemini -
-  cli__brainstorm({
-    prompt: "Generate performance test scenarios for API endpoints",
-    domain: "software",
-    constraints: "Focus on load testing, concurrent requests, and memory usage",
-    ideaCount: 10,
-  });
-```
-
-### 3. **Test Refactoring**
-
-```javascript
-mcp__gemini -
-  cli__ask -
-  gemini({
-    prompt:
-      "@test-suite/* suggest refactoring to reduce duplication and improve maintainability",
-    changeMode: true,
-  });
-```
-
-### 4. **Flaky Test Detection**
-
-```javascript
-mcp__gemini -
-  cli__ask -
-  gemini({
-    prompt:
-      "@test-history.log identify flaky tests and suggest stabilization strategies",
-    changeMode: true,
-  });
-```
-
-### 5. **Mock Generation**
-
-```javascript
-mcp__gemini -
-  cli__ask -
-  gemini({
-    prompt: "@interface.ts generate comprehensive mocks for testing",
-    changeMode: true,
-    model: "gemini-2.5-pro",
-  });
-```
 
 ## Sentry Test Monitoring
 
@@ -224,13 +139,3 @@ Automate browser testing for critical user flows:
    // Monitor network failures
    mcp__playwright__browser_network_requests();
    ```
-
-## Learned Test Patterns
-
-<!-- AI appends patterns here -->
-<!-- Format: ### Pattern Name
-     Test Type: Unit/Integration/E2E
-     Failure Mode: What typically breaks
-     Root Cause: Why it happens
-     Auto-Fix: How to resolve automatically
-     Prevention: Long-term solution -->

@@ -108,7 +108,7 @@ export const redeem = tokenRouter.token.redeem
       txHash: result,
       data: {
         amountRedeemed,
-        redeemedAll: Boolean(redeemAll),
+        redeemedAll: redeemAll,
         tokenName: updatedToken.name,
         tokenSymbol: updatedToken.symbol,
         totalRedeemedAmount: updatedToken.redeemable?.redeemedAmount,

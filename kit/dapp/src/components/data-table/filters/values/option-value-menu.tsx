@@ -80,7 +80,27 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
     .getCoreRowModel()
     .rows.flatMap((r) => r.getValue<TValue>(id))
     .filter((v): v is NonNullable<TValue> => v !== undefined && v !== null);
-  const uniqueVals = uniq(columnVals);
+
+  // For objects, we need to deduplicate based on their content, not reference
+  const uniqueVals =
+    columnMeta.transformOptionFn || isColumnOptionArray(columnVals)
+      ? (() => {
+          const seen = new Set<string | number>();
+          const result: NonNullable<TValue>[] = [];
+          for (const curr of columnVals) {
+            const key = columnMeta.transformOptionFn
+              ? columnMeta.transformOptionFn(
+                  curr as ElementType<NonNullable<TValue>>
+                ).value
+              : (curr as unknown as ColumnOption).value;
+            if (!seen.has(key)) {
+              seen.add(key);
+              result.push(curr);
+            }
+          }
+          return result;
+        })()
+      : uniq(columnVals);
 
   // If static options are provided, use them
   if (columnMeta.options) {
@@ -99,7 +119,15 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
 
   // Make sure the column data conforms to ColumnOption type
   else if (isColumnOptionArray(uniqueVals)) {
-    options = uniqueVals;
+    // Deduplicate by value property since uniq() doesn't work with objects
+    const seen = new Set<string>();
+    options = (uniqueVals as ColumnOption[]).filter((option) => {
+      if (seen.has(option.value)) {
+        return false;
+      }
+      seen.add(option.value);
+      return true;
+    });
   }
 
   // Invalid configuration
@@ -112,9 +140,12 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
   const optionsCount: Record<ColumnOption["value"], number> = columnVals.reduce<
     Record<string, number>
   >((acc, curr) => {
-    const { value } = columnMeta.transformOptionFn
+    const value = columnMeta.transformOptionFn
       ? columnMeta.transformOptionFn(curr as ElementType<NonNullable<TValue>>)
-      : { value: curr as string };
+          .value
+      : isColumnOptionArray([curr])
+        ? (curr as unknown as ColumnOption).value
+        : (curr as string);
 
     acc[value] = (acc[value] ?? 0) + 1;
     return acc;
@@ -156,6 +187,7 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
             size="icon"
             className="h-4 w-4 p-0 hover:bg-transparent -ml-1"
             onClick={onBack}
+            data-testid="close-menu"
           >
             <ChevronLeft className="h-3 w-3" />
           </Button>
@@ -167,11 +199,10 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
       <CommandEmpty>{t("noResults")}</CommandEmpty>
       <CommandList className="max-h-fit">
         <CommandGroup>
-          {options.map((v) => {
+          {options.map((v, _index) => {
             // Determine checked state based ONLY on the first value when operator is 'is'
-            const checked = Boolean(
-              filter?.operator === "is" && filter.values[0] === v.value
-            );
+            const checked =
+              filter?.operator === "is" && filter.values[0] === v.value;
             const count = optionsCount[v.value] ?? 0;
 
             return (

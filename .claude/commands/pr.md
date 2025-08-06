@@ -30,60 +30,13 @@ mcp__linear__list_issues({
 ## Behavior
 
 - Create feature branch if on main
-- Format files: `bun run format`
+- Test before pushing: `bun run ci`
 - Analyze and split changes into logical commits with semantic messages
   (type(scope): description)
 - Types: feat, fix, chore, docs, style, refactor, perf, test, build, ci, revert
 - Push branch
 - Create PR with title describing the most important changes (for squash merges)
 - Include summary and test plan
-
-## Agent Workflow
-
-Use agents in proper sequence:
-
-1. **test-validator**: Run quality checks (parallel, if needed)
-2. **code-reviewer**: Final review before PR (if needed)
-
-### Gemini-CLI PR Enhancement
-
-Leverage gemini-cli for intelligent PR creation:
-
-1. **Change Analysis & Commit Strategy**:
-
-   ```javascript
-   mcp__gemini -
-     cli__ask -
-     gemini({
-       prompt:
-         "@git-diff analyze changes and suggest logical commit splits with semantic messages",
-       changeMode: true,
-       model: "gemini-2.5-pro",
-     });
-   ```
-
-2. **PR Description Generation**:
-
-   ```javascript
-   mcp__gemini -
-     cli__ask -
-     gemini({
-       prompt:
-         "@commits generate comprehensive PR description with summary, changes, and test plan",
-       changeMode: true,
-     });
-   ```
-
-3. **Breaking Change Detection**:
-   ```javascript
-   mcp__gemini -
-     cli__ask -
-     gemini({
-       prompt: "@changes identify breaking changes and suggest migration guide",
-       changeMode: true,
-       sandbox: true,
-     });
-   ```
 
 ## Commit Splitting Guidelines
 
@@ -214,20 +167,7 @@ During PR creation, silently learn and document:
 
 Advanced PR capabilities with gemini-cli:
 
-### 1. **Commit Message Optimization**
-
-```javascript
-mcp__gemini -
-  cli__ask -
-  gemini({
-    prompt:
-      "Generate semantic commit message for @staged-changes following conventional commits",
-    changeMode: true,
-    model: "gemini-2.5-pro",
-  });
-```
-
-### 2. **PR Review Prediction**
+### 1. **PR Review Prediction**
 
 ```javascript
 mcp__gemini -
@@ -240,19 +180,7 @@ mcp__gemini -
   });
 ```
 
-### 3. **Test Plan Generation**
-
-```javascript
-mcp__gemini -
-  cli__ask -
-  gemini({
-    prompt:
-      "@pr-changes generate comprehensive test plan with manual and automated steps",
-    changeMode: true,
-  });
-```
-
-### 4. **Documentation Updates**
+### 2. **Documentation Updates**
 
 ```javascript
 mcp__gemini -
@@ -281,36 +209,3 @@ mcp__gemini -
     changeMode: false,
   });
 ```
-
-### 5. **Dependency Impact Analysis**
-
-```javascript
-mcp__gemini -
-  cli__ask -
-  gemini({
-    prompt:
-      "@package.json analyze dependency changes for security and compatibility",
-    changeMode: false,
-  });
-```
-
-### 6. **PR Title Optimization**
-
-```javascript
-mcp__gemini -
-  cli__ask -
-  gemini({
-    prompt:
-      "@commits generate concise PR title that captures main value proposition",
-    changeMode: false,
-  });
-```
-
-## Learned PR Patterns
-
-<!-- AI appends patterns here -->
-<!-- Format: ### Pattern Name
-     Context: When this applies
-     Convention: What the team prefers
-     Example: Specific instance
-     Automation: How to apply automatically -->

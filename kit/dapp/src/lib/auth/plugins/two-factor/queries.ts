@@ -111,7 +111,7 @@ export async function verifyTwoFactorOTP(
     {
       address: user.wallet,
       verificationId: user.twoFactorVerificationId,
-      otp: code.toString(),
+      otp: code,
     }
   );
   return {
