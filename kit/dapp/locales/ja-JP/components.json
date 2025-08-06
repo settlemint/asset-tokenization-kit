@@ -1,4 +1,36 @@
 {
+  "expressionBuilder": {
+    "title": "式ビルダー",
+    "topics": {
+      "kyc": "本人確認",
+      "aml": "AMLコンプライアンス",
+      "collateral": "担保要件",
+      "isin": "ISIN分類",
+      "assetClassification": "資産分類",
+      "basePrice": "基準価格情報"
+    },
+    "topicInput": {
+      "selectPlaceholder": "トピックを選択...",
+      "notLabel": "否定",
+      "addButton": "+ 追加",
+      "orStartGroup": "またはグループを開始:",
+      "startGroupButton": "グループ開始"
+    },
+    "operatorInput": {
+      "chooseOperatorLabel": "演算子を追加:",
+      "andButton": "AND",
+      "orButton": "OR",
+      "endGroupButton": "グループ終了",
+      "openGroupsText": "{{count}}個の開いているグループ{{plural}}を閉じてください"
+    },
+    "display": {
+      "clearAllButton": "すべてクリア",
+      "validExpression": "式は完全で有効です",
+      "closeGroupsPrompt": "{{count}}個のグループ{{plural}}を閉じて完了",
+      "addTopicPrompt": "トピックを追加するかグループを開始してください",
+      "unknownNode": "不明"
+    }
+  },
   "kycForm": {
     "country": "居住国",
     "dob": "生年月日",

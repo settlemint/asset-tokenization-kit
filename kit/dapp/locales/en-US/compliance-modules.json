@@ -3,8 +3,7 @@
     "addressBlockList": {
       "description": "Block specific wallet addresses from accessing your asset. Prevents sanctioned or problematic addresses from participating.",
       "shortDescription": "Block specific wallet addresses",
-      "title": "Block addresses",
-      "addButtonLabel": "Add address"
+      "title": "Block addresses"
     },
     "countryAllowList": {
       "description": "Allow investors only from specific countries. Helps meet regional compliance requirements.",
@@ -29,7 +28,7 @@
     "smartIdentityVerification": {
       "description": "Require identity verification for all investors. Provides KYC and AML compliance through the SMART protocol.",
       "shortDescription": "Require identity verification",
-      "title": "Identity Verification"
+      "title": "SMART Identity Verification"
     }
   },
   "title": "Compliance",

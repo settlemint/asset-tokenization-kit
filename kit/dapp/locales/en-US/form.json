@@ -12,7 +12,8 @@
     "searchResults": "Results",
     "allAddresses": "All",
     "searchInstead": "Search instead",
-    "enterManually": "Enter manually"
+    "enterManually": "Enter manually",
+    "addAddress": "Add address"
   },
   "buttons": {
     "back": "Back",
