@@ -22,13 +22,18 @@ export function updateTokenBondStats(token: Token): void {
 
   const bond = fetchBond(Address.fromBytes(token.bond!));
 
-  // Get underlying asset balance of the bond
-  const underlyingAsset = fetchToken(Address.fromBytes(bond.denominationAsset));
+  // Get denomination asset balance of the bond
+  const denominationAsset = fetchToken(
+    Address.fromBytes(bond.denominationAsset)
+  );
   const bondAccount = fetchAccount(Address.fromBytes(token.account));
-  const underlyingBalance = fetchTokenBalance(underlyingAsset, bondAccount);
-  const underlyingBalanceExact = underlyingBalance.valueExact;
+  const denominationAssetBalance = fetchTokenBalance(
+    denominationAsset,
+    bondAccount
+  );
+  const denominationAssetBalanceExact = denominationAssetBalance.valueExact;
 
-  // Calculate required underlying asset balance
+  // Calculate required denomination asset balance
   // Required = totalSupply * faceValue
   const requiredBalanceExact = token.totalSupplyExact.times(
     bond.faceValueExact
@@ -38,20 +43,20 @@ export function updateTokenBondStats(token: Token): void {
   const state = fetchTokenBondStatsState(Address.fromBytes(token.id));
   setBigNumber(
     state,
-    "underlyingAssetBalanceAvailable",
-    underlyingBalanceExact,
-    underlyingAsset.decimals
+    "denominationAssetBalanceAvailable",
+    denominationAssetBalanceExact,
+    denominationAsset.decimals
   );
   setBigNumber(
     state,
-    "underlyingAssetBalanceRequired",
+    "denominationAssetBalanceRequired",
     requiredBalanceExact,
-    underlyingAsset.decimals
+    denominationAsset.decimals
   );
 
   // Calculate covered percentage
   if (requiredBalanceExact.gt(BigInt.zero())) {
-    state.coveredPercentage = underlyingBalanceExact
+    state.coveredPercentage = denominationAssetBalanceExact
       .toBigDecimal()
       .div(requiredBalanceExact.toBigDecimal())
       .times(BigDecimal.fromString("100"));
