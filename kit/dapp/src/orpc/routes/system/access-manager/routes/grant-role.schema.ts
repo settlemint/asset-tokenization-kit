@@ -28,5 +28,5 @@ export const GrantRoleOutputSchema = z.object({
 /**
  * Type definitions
  */
-export type GrantRoleInput = z.infer<typeof GrantRoleInputSchema>;
+export type GrantRoleInput = z.input<typeof GrantRoleInputSchema>;
 export type GrantRoleOutput = z.infer<typeof GrantRoleOutputSchema>;

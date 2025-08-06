@@ -1,3 +1,5 @@
+import { GrantRoleSheet } from "@/components/manage-dropdown/grant-role-sheet";
+import { PauseUnpauseConfirmationSheet } from "@/components/manage-dropdown/pause-unpause-confirmation-sheet";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -6,13 +8,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { PauseUnpauseConfirmationSheet } from "@/components/manage-dropdown/pause-unpause-confirmation-sheet";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ChevronDown, Pause, Play } from "lucide-react";
+import { ChevronDown, Pause, Play, Shield } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -29,7 +30,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   );
   const [showConfirmationSheet, setShowConfirmationSheet] = useState(false);
   const [showVerificationDialog, setShowVerificationDialog] = useState(false);
-
+  const [showGrantRoleSheet, setShowGrantRoleSheet] = useState(false);
   const isPaused = asset.pausable.paused;
 
   // Pause mutation
@@ -126,6 +127,14 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         },
         disabled: false,
       },
+      {
+        id: "grant-role",
+        label: "Grant role",
+        icon: Shield,
+        onClick: () => {
+          setShowGrantRoleSheet(true);
+        },
+      },
     ],
     [isPaused, t]
   );
@@ -185,6 +194,12 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         action={openAction || "pause"}
         onProceed={handleConfirmationProceed}
         onCancel={handleConfirmationCancel}
+      />
+
+      <GrantRoleSheet
+        open={showGrantRoleSheet}
+        onOpenChange={setShowGrantRoleSheet}
+        asset={asset}
       />
 
       <VerificationDialog
