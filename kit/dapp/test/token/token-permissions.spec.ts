@@ -1,11 +1,11 @@
-import { getOrpcClient } from "test/utils/orpc-client";
-import { createToken } from "test/utils/token";
+import { getOrpcClient } from "@test/utils/orpc-client";
+import { createToken } from "@test/utils/token";
 import {
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
   DEFAULT_PINCODE,
   signInWithUser,
-} from "test/utils/user";
+} from "@test/utils/user";
 import { beforeAll, describe, expect, test } from "vitest";
 
 describe("Token permissions", () => {

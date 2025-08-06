@@ -274,6 +274,7 @@ export default defineConfig([
       parserOptions: {
         project: true,
         tsconfigRootDir: import.meta.dirname,
+        EXPERIMENTAL_useSourceOfProjectReferenceRedirect: true,
       },
     },
   })),
