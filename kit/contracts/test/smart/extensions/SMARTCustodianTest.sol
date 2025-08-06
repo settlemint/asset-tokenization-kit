@@ -2,7 +2,6 @@
 pragma solidity ^0.8.28;
 
 import { AbstractSMARTTest } from "./AbstractSMARTTest.sol"; // Inherit from the logic base
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 import { TestConstants } from "../../Constants.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";

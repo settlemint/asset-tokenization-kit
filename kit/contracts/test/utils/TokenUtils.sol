@@ -2,22 +2,16 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import { SMARTComplianceModuleParamPair } from
-    "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { SMART } from "../../contracts/smart/extensions/core/SMART.sol";
 import { SMARTPausable } from "../../contracts/smart/extensions/pausable/SMARTPausable.sol";
 import { SMARTBurnable } from "../../contracts/smart/extensions/burnable/SMARTBurnable.sol";
 import { SMARTRedeemable } from "../../contracts/smart/extensions/redeemable/SMARTRedeemable.sol";
 import { SMARTCustodian } from "../../contracts/smart/extensions/custodian/SMARTCustodian.sol";
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
-import { SMARTToken } from "../smart/examples/SMARTToken.sol";
 
 import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 import { IATKIdentityFactory } from "../../contracts/system/identity-factory/IATKIdentityFactory.sol";
 import { ISMARTCompliance } from "../../contracts/smart/interface/ISMARTCompliance.sol";
-import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 
 contract TokenUtils is Test {
     address internal _platformAdmin;
@@ -81,7 +75,8 @@ contract TokenUtils is Test {
      */
     function transferToken(address tokenAddress, address from, address to, uint256 amount) public {
         vm.startPrank(from);
-        ISMART(tokenAddress).transfer(to, amount);
+        bool success = ISMART(tokenAddress).transfer(to, amount);
+        assertTrue(success, "Transfer failed");
         vm.stopPrank();
     }
 

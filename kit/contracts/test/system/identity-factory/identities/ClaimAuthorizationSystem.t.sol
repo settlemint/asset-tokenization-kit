@@ -4,22 +4,18 @@ pragma solidity ^0.8.28;
 import { Test } from "forge-std/Test.sol";
 import { ATKIdentityImplementation } from
     "../../../../contracts/system/identity-factory/identities/ATKIdentityImplementation.sol";
-import { ATKIdentityProxy } from "../../../../contracts/system/identity-factory/identities/ATKIdentityProxy.sol";
 import { ATKTrustedIssuersRegistryImplementation } from
     "../../../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersRegistryImplementation.sol";
 import { ATKSystemAccessManagerImplementation } from
     "../../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
 import { IClaimAuthorizer } from "../../../../contracts/onchainid/extensions/IClaimAuthorizer.sol";
-import { ClaimAuthorizationExtension } from "../../../../contracts/onchainid/extensions/ClaimAuthorizationExtension.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
-import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ERC734KeyPurposes } from "../../../../contracts/onchainid/ERC734KeyPurposes.sol";
 import { ERC734KeyTypes } from "../../../../contracts/onchainid/ERC734KeyTypes.sol";
 import { ATKPeopleRoles } from "../../../../contracts/system/ATKPeopleRoles.sol";
-import { ATKSystemRoles } from "../../../../contracts/system/ATKSystemRoles.sol";
 
 /// @title ClaimAuthorizationSystem Test
 /// @notice Tests for the new claim authorization system (SRT-754)

@@ -155,7 +155,7 @@ contract SMARTHistoricalBalancesTest is Test {
         // Transfer tokens
         vm.warp(1200);
         vm.prank(alice);
-        token.transfer(bob, 100 * 10 ** 18);
+        assertTrue(token.transfer(bob, 100 * 10 ** 18), "Transfer failed");
         uint256 time2 = 1200; // Record transfer time
 
         // Advance time to query the past
@@ -180,7 +180,7 @@ contract SMARTHistoricalBalancesTest is Test {
         for (uint256 i = 1; i < 5; i++) {
             vm.warp(1000 + (i * 100));
             vm.prank(alice);
-            token.transfer(bob, 50 * 10 ** 18);
+            assertTrue(token.transfer(bob, 50 * 10 ** 18), "Transfer failed");
             timepoints[i] = 1000 + (i * 100); // Record explicit time
         }
 
@@ -231,7 +231,7 @@ contract SMARTHistoricalBalancesTest is Test {
             amounts[i] = (i + 1) * 10 ** 18;
 
             vm.prank(alice);
-            token.transfer(bob, amounts[i]);
+            assertTrue(token.transfer(bob, amounts[i]), "Transfer failed");
             times[i] = block.timestamp; // Record time after transfer
 
             // Ensure we advance time for next iteration
@@ -269,7 +269,7 @@ contract SMARTHistoricalBalancesTest is Test {
         // Test zero amount transfer
         vm.warp(1500);
         vm.prank(alice);
-        token.transfer(bob, 0);
+        assertTrue(token.transfer(bob, 0), "Transfer failed");
         uint256 timeAfterZeroTransfer = 1500;
 
         // Advance time and check
@@ -281,8 +281,8 @@ contract SMARTHistoricalBalancesTest is Test {
         vm.warp(1700);
         uint256 time1 = 1700;
         vm.startPrank(alice);
-        token.transfer(bob, 10 * 10 ** 18);
-        token.transfer(charlie, 20 * 10 ** 18);
+        assertTrue(token.transfer(bob, 10 * 10 ** 18), "Transfer failed");
+        assertTrue(token.transfer(charlie, 20 * 10 ** 18), "Transfer failed");
         vm.stopPrank();
 
         // Advance time to query
@@ -322,7 +322,7 @@ contract SMARTHistoricalBalancesTest is Test {
         emit CheckpointUpdated(alice, bob, bobCurrentBalance, bobCurrentBalance + 50 * 10 ** 18);
 
         vm.prank(alice);
-        token.transfer(bob, 50 * 10 ** 18);
+        assertTrue(token.transfer(bob, 50 * 10 ** 18), "Transfer failed");
 
         // Test burn event
         uint256 bobBalanceBeforeBurn = token.balanceOf(bob);
@@ -387,13 +387,13 @@ contract SMARTHistoricalBalancesTest is Test {
         // Step 1: Alice transfers to Bob
         vm.warp(1100);
         vm.prank(alice);
-        token.transfer(bob, 200 * 10 ** 18);
+        assertTrue(token.transfer(bob, 200 * 10 ** 18), "Transfer failed");
         checkpoints[1] = 1100;
 
         // Step 2: Bob transfers to Charlie
         vm.warp(1200);
         vm.prank(bob);
-        token.transfer(charlie, 50 * 10 ** 18);
+        assertTrue(token.transfer(charlie, 50 * 10 ** 18), "Transfer failed");
         checkpoints[2] = 1200;
 
         // Step 3: Mint new tokens to Charlie
@@ -404,7 +404,7 @@ contract SMARTHistoricalBalancesTest is Test {
         // Step 4: Charlie transfers back to Alice
         vm.warp(1400);
         vm.prank(charlie);
-        token.transfer(alice, 100 * 10 ** 18);
+        assertTrue(token.transfer(alice, 100 * 10 ** 18), "Transfer failed");
         checkpoints[4] = 1400;
 
         // Advance time to query historical data

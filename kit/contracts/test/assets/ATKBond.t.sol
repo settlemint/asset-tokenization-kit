@@ -10,9 +10,7 @@ import { IATKBond } from "../../contracts/assets/bond/IATKBond.sol";
 import { IATKBondFactory } from "../../contracts/assets/bond/IATKBondFactory.sol";
 import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
 import { ATKPeopleRoles } from "../../contracts/system/ATKPeopleRoles.sol";
-import { ATKSystemImplementation } from "../../contracts/system/ATKSystemImplementation.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
-import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { TestConstants } from "../Constants.sol";
 import { ISMARTCapped } from "../../contracts/smart/extensions/capped/ISMARTCapped.sol";
@@ -236,7 +234,7 @@ contract ATKBondTest is AbstractATKAssetTest {
     function test_Transfer() public {
         uint256 amount = toDecimals(10); // 10.00 bonds
         vm.prank(owner);
-        bond.transfer(user1, amount);
+        assertTrue(bond.transfer(user1, amount), "Transfer failed");
 
         assertEq(bond.balanceOf(user1), amount);
         assertEq(bond.balanceOf(owner), initialSupply - amount);
@@ -254,7 +252,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         vm.stopPrank();
 
         vm.prank(user1);
-        bond.transferFrom(owner, user2, amount);
+        assertTrue(bond.transferFrom(owner, user2, amount), "TransferFrom failed");
 
         assertEq(bond.balanceOf(user2), amount);
         assertEq(bond.balanceOf(owner), initialSupply - amount);
@@ -293,12 +291,13 @@ contract ATKBondTest is AbstractATKAssetTest {
         assertTrue(bond.paused());
 
         vm.expectRevert();
+        /// forge-lint: disable-next-line(erc20-unchecked-transfer)
         bond.transfer(user1, toDecimals(10)); // 10.00 bonds
 
         bond.unpause();
         assertFalse(bond.paused());
 
-        bond.transfer(user1, toDecimals(10)); // 10.00 bonds
+        assertTrue(bond.transfer(user1, toDecimals(10)), "Transfer failed"); // 10.00 bonds
         assertEq(bond.balanceOf(user1), toDecimals(10));
         vm.stopPrank();
     }
@@ -322,7 +321,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         uint256 burnAmount = toDecimals(10); // 10.00 bonds
 
         vm.startPrank(owner);
-        bond.transfer(user1, burnAmount);
+        assertTrue(bond.transfer(user1, burnAmount), "Transfer failed");
 
         assertEq(bond.totalSupply(), initialSupply);
         assertEq(bond.balanceOf(user1), burnAmount);
@@ -348,6 +347,7 @@ contract ATKBondTest is AbstractATKAssetTest {
 
         vm.expectRevert();
         vm.startPrank(user1);
+        /// forge-lint: disable-next-line(erc20-unchecked-transfer)
         bond.transfer(user2, 100);
 
         // Set frozen amount to 0 and verify
@@ -360,7 +360,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         // Now transfer should work
         vm.stopPrank();
         vm.startPrank(user1);
-        bond.transfer(user2, 100);
+        assertTrue(bond.transfer(user2, 100), "Transfer failed");
         assertEq(bond.balanceOf(user2), 100);
     }
 
@@ -383,7 +383,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         uint256 requiredAmount = initialDenominationAssetSupply;
         denominationAsset.mint(owner, requiredAmount);
         denominationAsset.approve(address(bond), requiredAmount);
-        denominationAsset.transfer(address(bond), requiredAmount);
+        assertTrue(denominationAsset.transfer(address(bond), requiredAmount), "Transfer failed");
 
         // Now mature as supply manager
         bond.mature();
@@ -403,7 +403,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         // Add sufficient denomination assets first
         vm.startPrank(owner);
         denominationAsset.approve(address(bond), initialDenominationAssetSupply);
-        denominationAsset.transfer(address(bond), initialDenominationAssetSupply);
+        assertTrue(denominationAsset.transfer(address(bond), initialDenominationAssetSupply), "Transfer failed");
 
         bond.mature();
         vm.expectRevert(IATKBond.BondAlreadyMatured.selector);
@@ -427,7 +427,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         uint256 partialAmount = requiredAmount / 2;
         denominationAsset.mint(owner, partialAmount);
         denominationAsset.approve(address(bond), partialAmount);
-        denominationAsset.transfer(address(bond), partialAmount);
+        assertTrue(denominationAsset.transfer(address(bond), partialAmount), "Transfer failed");
 
         // Try to mature with insufficient denomination assets
         vm.expectRevert(
@@ -449,11 +449,11 @@ contract ATKBondTest is AbstractATKAssetTest {
         vm.startPrank(owner);
         denominationAsset.mint(owner, totalAmount); // Mint additional tokens
         denominationAsset.approve(address(bond), totalAmount);
-        denominationAsset.transfer(address(bond), totalAmount);
+        assertTrue(denominationAsset.transfer(address(bond), totalAmount), "Transfer failed");
 
         // Transfer some bonds to user1
         uint256 user1Bonds = toDecimals(10);
-        bond.transfer(user1, user1Bonds);
+        assertTrue(bond.transfer(user1, user1Bonds), "Transfer failed");
 
         // Mature the bond
         vm.warp(maturityDate + 1);
@@ -491,7 +491,7 @@ contract ATKBondTest is AbstractATKAssetTest {
 
         denominationAsset.mint(owner, totalAmount);
         denominationAsset.approve(address(bond), totalAmount);
-        denominationAsset.transfer(address(bond), totalAmount);
+        assertTrue(denominationAsset.transfer(address(bond), totalAmount), "Transfer failed");
 
         assertEq(bond.denominationAssetBalance(), totalAmount);
         assertEq(bond.totalDenominationAssetNeeded(), requiredAmount);
@@ -508,11 +508,11 @@ contract ATKBondTest is AbstractATKAssetTest {
         uint256 requiredAmount = initialDenominationAssetSupply;
         vm.startPrank(owner);
         denominationAsset.approve(address(bond), requiredAmount);
-        denominationAsset.transfer(address(bond), requiredAmount);
+        assertTrue(denominationAsset.transfer(address(bond), requiredAmount), "Transfer failed");
 
         // Transfer some bonds to user1
         uint256 user1Bonds = toDecimals(10);
-        bond.transfer(user1, user1Bonds);
+        assertTrue(bond.transfer(user1, user1Bonds), "Transfer failed");
 
         // Mature the bond
         vm.warp(maturityDate + 1);
@@ -536,7 +536,7 @@ contract ATKBondTest is AbstractATKAssetTest {
 
         vm.startPrank(owner);
         denominationAsset.approve(address(bond), topUpAmount);
-        denominationAsset.transfer(address(bond), topUpAmount);
+        assertTrue(denominationAsset.transfer(address(bond), topUpAmount), "Transfer failed");
         vm.stopPrank();
 
         assertEq(bond.denominationAssetBalance(), topUpAmount);
@@ -566,7 +566,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         // Step 2: First transfer - owner sends 10 bonds to user1
         vm.warp(2000);
         vm.prank(owner);
-        bond.transfer(user1, amount);
+        assertTrue(bond.transfer(user1, amount), "Transfer failed");
 
         // Move forward one second to query the state after first transfer
         vm.warp(2001);
@@ -577,7 +577,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         // Step 3: Second transfer - user1 sends 5 bonds to user2
         vm.warp(3000);
         vm.prank(user1);
-        bond.transfer(user2, amount / 2);
+        assertTrue(bond.transfer(user2, amount / 2), "Transfer failed");
 
         // Move forward one second to query the state after second transfer
         vm.warp(3001);
@@ -619,7 +619,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         // Step 2: First transfer at t1 = 2000
         vm.warp(2000);
         vm.prank(owner);
-        bond.transfer(user1, transferAmount);
+        assertTrue(bond.transfer(user1, transferAmount), "Transfer failed");
 
         // Move forward one second to query state after first transfer
         vm.warp(2001);
@@ -630,7 +630,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         // Step 3: Second transfer at t2 = 3000
         vm.warp(3000);
         vm.prank(user1);
-        bond.transfer(user2, halfTransfer);
+        assertTrue(bond.transfer(user2, halfTransfer), "Transfer failed");
 
         // Move forward one second to query state after second transfer
         vm.warp(3001);
@@ -641,7 +641,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         // Step 4: Third transfer at t3 = 4000
         vm.warp(4000);
         vm.prank(owner);
-        bond.transfer(user2, transferAmount);
+        assertTrue(bond.transfer(user2, transferAmount), "Transfer failed");
 
         // Move forward one second to query state after third transfer
         vm.warp(4001);
@@ -654,7 +654,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         // Step 5: Fourth transfer at t4 = 5000
         vm.warp(5000);
         vm.prank(user2);
-        bond.transfer(user1, quarterTransfer);
+        assertTrue(bond.transfer(user1, quarterTransfer), "Transfer failed");
 
         // Move forward one second to query state after fourth transfer
         vm.warp(5001);
@@ -761,7 +761,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         uint256 amount = toDecimals(10);
 
         vm.prank(owner);
-        bond.transfer(user1, amount);
+        assertTrue(bond.transfer(user1, amount), "Transfer failed");
 
         assertEq(bond.totalSupply(), initialSupply, "Total supply should remain unchanged after transfer");
         assertTrue(bond.totalSupply() <= CAP, "Total supply should still be within cap");
@@ -936,7 +936,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         denominationAsset.mint(owner, additionalDenominationAsset);
 
         denominationAsset.approve(address(bond), requiredAmount);
-        denominationAsset.transfer(address(bond), requiredAmount);
+        assertTrue(denominationAsset.transfer(address(bond), requiredAmount), "Transfer failed");
 
         bond.mature();
         assertTrue(bond.isMatured());
@@ -945,6 +945,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         // 3. A regular transfer from user1 should fail
         vm.prank(user1);
         vm.expectRevert(IATKBond.BondAlreadyMatured.selector);
+        /// forge-lint: disable-next-line(erc20-unchecked-transfer)
         bond.transfer(user2, amount);
 
         // 4. A forced transfer should succeed

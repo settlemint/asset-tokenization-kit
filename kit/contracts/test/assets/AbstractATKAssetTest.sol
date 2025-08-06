@@ -7,17 +7,11 @@ import { TestConstants } from "../Constants.sol";
 import { TokenUtils } from "../utils/TokenUtils.sol";
 import { ClaimUtils } from "../utils/ClaimUtils.sol";
 import { IdentityUtils } from "../utils/IdentityUtils.sol";
-import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
-import { ISMARTCompliance } from "../../contracts/smart/interface/ISMARTCompliance.sol";
 import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
 import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
 import { ATKPeopleRoles } from "../../contracts/system/ATKPeopleRoles.sol";
-import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
-import { ATKSystemImplementation } from "../../contracts/system/ATKSystemImplementation.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ATKForwarder } from "../../contracts/vendor/ATKForwarder.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 abstract contract AbstractATKAssetTest is Test {
     address public platformAdmin;

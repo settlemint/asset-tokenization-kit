@@ -17,7 +17,7 @@
   btp = "${BTP_RPC_URL}"
 
 [dependencies]
-  forge-std = "1.9.7"
+  forge-std = "1.10.0"
   "@openzeppelin-contracts" = "5.4.0"
   "@openzeppelin-contracts-upgradeable" = "5.4.0"
   "@onchainid" = { version = "v2.2.1", git = "https://github.com/onchain-id/solidity.git", rev = "2.2.1" }
@@ -45,7 +45,11 @@
   cbor_metadata = true
   cache = true
   force = false
+  dynamic_test_linking = true
+  lint_on_build = false
 
 [soldeer]
   remappings_version = false
 
+[lint]
+  exclude_lints = ["mixed-case-function", "mixed-case-variable", "screaming-snake-case-const", "screaming-snake-case-immutable", "pascal-case-struct", "asm-keccak256"]

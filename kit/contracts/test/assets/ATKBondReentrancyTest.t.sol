@@ -7,12 +7,9 @@ import { SMARTComplianceModuleParamPair } from
     "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IATKBond } from "../../contracts/assets/bond/IATKBond.sol";
 import { IATKBondFactory } from "../../contracts/assets/bond/IATKBondFactory.sol";
-import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
 import { ATKBondFactoryImplementation } from "../../contracts/assets/bond/ATKBondFactoryImplementation.sol";
 import { ATKBondImplementation } from "../../contracts/assets/bond/ATKBondImplementation.sol";
-import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { TestConstants } from "../Constants.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
  * @title Malicious ERC20 Token for Reentrancy Testing
@@ -203,7 +200,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         maliciousToken.mint(address(bond), totalUnderlyingNeeded);
 
         // Transfer some bonds to user1
-        bond.transfer(user1, redeemAmount);
+        assertTrue(bond.transfer(user1, redeemAmount), "Transfer failed");
 
         // Mature the bond
         vm.warp(maturityDate + 1);
@@ -244,7 +241,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         maliciousToken.mint(address(bond), totalUnderlyingNeeded);
 
         // Transfer bonds to user1
-        bond.transfer(user1, redeemAmount * 2);
+        assertTrue(bond.transfer(user1, redeemAmount * 2), "Transfer failed");
 
         // Mature the bond
         vm.warp(maturityDate + 1);
@@ -277,7 +274,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         vm.startPrank(owner);
 
         maliciousToken.mint(address(bond), totalUnderlyingNeeded);
-        bond.transfer(user1, redeemAmount);
+        assertTrue(bond.transfer(user1, redeemAmount), "Transfer failed");
 
         vm.warp(maturityDate + 1);
         bond.mature();
@@ -298,7 +295,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         uint256 redeemAmount = 10 * 10 ** DECIMALS;
 
         vm.startPrank(owner);
-        bond.transfer(user1, redeemAmount);
+        assertTrue(bond.transfer(user1, redeemAmount), "Transfer failed");
         vm.stopPrank();
 
         // Try to redeem before maturity
@@ -319,7 +316,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
         // First provide enough tokens to mature the bond
         maliciousToken.mint(address(bond), totalUnderlyingNeeded);
-        bond.transfer(user1, redeemAmount);
+        assertTrue(bond.transfer(user1, redeemAmount), "Transfer failed");
 
         vm.warp(maturityDate + 1);
         bond.mature();
@@ -354,7 +351,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         vm.startPrank(owner);
 
         maliciousToken.mint(address(bond), totalUnderlyingNeeded);
-        bond.transfer(user1, redeemAmount);
+        assertTrue(bond.transfer(user1, redeemAmount), "Transfer failed");
 
         vm.warp(maturityDate + 1);
         bond.mature();
@@ -394,7 +391,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         vm.startPrank(owner);
 
         maliciousToken.mint(address(bond), totalUnderlyingNeeded);
-        bond.transfer(user1, userBonds);
+        assertTrue(bond.transfer(user1, userBonds), "Transfer failed");
 
         vm.warp(maturityDate + 1);
         bond.mature();
@@ -433,7 +430,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
         // Mint enough to mature the bond
         maliciousToken.mint(address(bond), totalUnderlyingNeeded);
-        bond.transfer(user1, redeemAmount);
+        assertTrue(bond.transfer(user1, redeemAmount), "Transfer failed");
 
         vm.warp(maturityDate + 1);
         bond.mature();
@@ -464,7 +461,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         vm.startPrank(owner);
 
         maliciousToken.mint(address(bond), totalUnderlyingNeeded);
-        bond.transfer(user1, redeemAmount);
+        assertTrue(bond.transfer(user1, redeemAmount), "Transfer failed");
 
         vm.warp(maturityDate + 1);
         bond.mature();
@@ -522,7 +519,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
         normalBond.mint(owner, initialSupply);
         normalToken.mint(address(normalBond), totalUnderlyingNeeded);
-        normalBond.transfer(user1, redeemAmount);
+        assertTrue(normalBond.transfer(user1, redeemAmount), "Transfer failed");
 
         vm.warp(maturityDate + 1);
         normalBond.mature();

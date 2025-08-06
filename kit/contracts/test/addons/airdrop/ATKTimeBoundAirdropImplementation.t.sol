@@ -11,9 +11,6 @@ import { IATKTimeBoundAirdrop } from "../../../contracts/addons/airdrop/time-bou
 import { IATKAirdrop } from "../../../contracts/addons/airdrop/IATKAirdrop.sol";
 import { MockedERC20Token } from "../../utils/mocks/MockedERC20Token.sol";
 import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
-import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
-import { ATKSystemImplementation } from "../../../contracts/system/ATKSystemImplementation.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import {
     InvalidMerkleProof,
     InvalidInputArrayLengths,

@@ -6,9 +6,7 @@ import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { IATKSystemAddonRegistry } from "../../../contracts/system/addons/IATKSystemAddonRegistry.sol";
 import { ATKSystemAddonRegistryImplementation } from
     "../../../contracts/system/addons/ATKSystemAddonRegistryImplementation.sol";
-import { IATKSystem } from "../../../contracts/system/IATKSystem.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
-import { IATKSystemAccessManager } from "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
 import { IWithTypeIdentifier } from "../../../contracts/smart/interface/IWithTypeIdentifier.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";

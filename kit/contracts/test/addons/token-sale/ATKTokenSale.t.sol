@@ -6,12 +6,10 @@ import { ATKTokenSaleTestable } from "../../mocks/ATKTokenSaleTestable.sol";
 import { ATKTokenSaleProxy } from "../../../contracts/addons/token-sale/ATKTokenSaleProxy.sol";
 import { ATKTokenSaleFactoryTestable } from "../../mocks/ATKTokenSaleFactoryTestable.sol";
 import { IATKTokenSale } from "../../../contracts/addons/token-sale/IATKTokenSale.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 // Real SMART token imports (using correct paths)
 import { SMARTToken } from "../../smart/examples/SMARTToken.sol";
-import { ISMART } from "../../../contracts/smart/interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 

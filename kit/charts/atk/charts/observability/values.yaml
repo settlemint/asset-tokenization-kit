@@ -106,6 +106,8 @@ loki:
             period: 24h
     storage:
       type: 'filesystem'
+      filesystem:
+        admin_api_directory: null
     ingester:
       chunk_encoding: snappy
     tracing:

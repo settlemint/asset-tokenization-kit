@@ -123,11 +123,12 @@ contract IdentityAllowListComplianceModuleTest is AbstractComplianceModuleTest {
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity not in allowlist"
             )
         );
-        smartToken.transfer(user1, 100);
+        bool result = smartToken.transfer(user1, 100);
+        result; // Explicitly unused - we expect this to revert
 
         // Transfer to user2 (identity2) should succeed
         vm.prank(tokenIssuer);
-        smartToken.transfer(user2, 100);
+        assertTrue(smartToken.transfer(user2, 100), "Transfer failed");
         assertEq(smartToken.balanceOf(user2), 100);
     }
 

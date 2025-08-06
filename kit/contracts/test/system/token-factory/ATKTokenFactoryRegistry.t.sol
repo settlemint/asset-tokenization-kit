@@ -2,21 +2,16 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { console } from "forge-std/console.sol";
 import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { IATKTokenFactoryRegistry } from "../../../contracts/system/token-factory/IATKTokenFactoryRegistry.sol";
 import { ATKTokenFactoryRegistryImplementation } from
     "../../../contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol";
-import { IATKSystem } from "../../../contracts/system/IATKSystem.sol";
 import { IATKTokenFactory } from "../../../contracts/system/token-factory/IATKTokenFactory.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
-import { IATKSystemAccessManager } from "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
 import { IWithTypeIdentifier } from "../../../contracts/smart/interface/IWithTypeIdentifier.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { ATKRoles } from "../../../contracts/system/ATKRoles.sol";
-import { ATKSystemImplementation } from "../../../contracts/system/ATKSystemImplementation.sol";
 import { IATKTypedImplementationRegistry } from "../../../contracts/system/IATKTypedImplementationRegistry.sol";
 import {
     InvalidTokenFactoryAddress,
