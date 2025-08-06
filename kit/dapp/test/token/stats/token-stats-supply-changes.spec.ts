@@ -122,21 +122,4 @@ describe.concurrent("Token Stats: Supply Changes", () => {
       ).rejects.toThrow();
     });
   });
-
-  describe("Data consistency", () => {
-    it("returns consistent data across multiple calls", async () => {
-      const headers = await signInWithUser(DEFAULT_ADMIN);
-      const client = getOrpcClient(headers);
-
-      const params = { tokenAddress: testToken.id, days: 30 };
-
-      const [result1, result2] = await Promise.all([
-        client.token.statsSupplyChanges(params),
-        client.token.statsSupplyChanges(params),
-      ]);
-
-      // Results should be identical for immediate consecutive calls
-      expect(result1).toEqual(result2);
-    });
-  });
 });

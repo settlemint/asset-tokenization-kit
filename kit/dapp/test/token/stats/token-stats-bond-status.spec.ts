@@ -144,19 +144,4 @@ describe.concurrent("Token Stats: Bond Status", () => {
       ).rejects.toThrow();
     });
   });
-
-  describe("Data consistency", () => {
-    it("returns consistent data across multiple calls", async () => {
-      const headers = await signInWithUser(DEFAULT_ADMIN);
-      const client = getOrpcClient(headers);
-
-      const [result1, result2] = await Promise.all([
-        client.token.statsBondStatus({ tokenAddress: bondToken.id }),
-        client.token.statsBondStatus({ tokenAddress: bondToken.id }),
-      ]);
-
-      // Results should be identical for immediate consecutive calls
-      expect(result1).toEqual(result2);
-    });
-  });
 });

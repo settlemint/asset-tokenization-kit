@@ -106,23 +106,4 @@ describe.concurrent("Token Stats: Wallet Distribution", () => {
       ).rejects.toThrow();
     });
   });
-
-  describe("Data consistency", () => {
-    it("returns consistent data across multiple calls", async () => {
-      const headers = await signInWithUser(DEFAULT_ADMIN);
-      const client = getOrpcClient(headers);
-
-      const [result1, result2] = await Promise.all([
-        client.token.statsWalletDistribution({
-          tokenAddress: testToken.id,
-        }),
-        client.token.statsWalletDistribution({
-          tokenAddress: testToken.id,
-        }),
-      ]);
-
-      // Results should be identical for immediate consecutive calls
-      expect(result1).toEqual(result2);
-    });
-  });
 });

@@ -75,38 +75,37 @@ describe.concurrent("Token Stats: Bond Yield Coverage", () => {
     await new Promise((resolve) => setTimeout(resolve, 5000));
   });
 
-  describe("Business logic", () => {
-    // TODO: Re-enable once yield schedule creation is working
-    // it("bonds with yield schedule return valid coverage data", async () => {
-    //   const headers = await signInWithUser(DEFAULT_ADMIN);
-    //   const client = getOrpcClient(headers);
-    //   const result = await client.token.statsBondYieldCoverage({
-    //     tokenAddress: bondTokenWithYield.id,
-    //   });
-    //   // Verify the response structure and data types
-    //   expect(result).toHaveProperty("hasYieldSchedule");
-    //   expect(result).toHaveProperty("isRunning");
-    //   expect(result).toHaveProperty("yieldCoverage");
-    //   // Business logic: bond with yield schedule should have valid data
-    //   expect(result.hasYieldSchedule).toBe(true);
-    //   expect(typeof result.isRunning).toBe("boolean");
-    //   // Coverage should be a valid percentage (0-100%)
-    //   const coverage = toNumber(result.yieldCoverage);
-    //   expect(coverage).toBeGreaterThanOrEqual(0);
-    //   expect(coverage).toBeLessThanOrEqual(100);
-    // });
-    // TODO: Re-enable once yield schedule creation is working
-    // it("yield schedule running status is correctly determined", async () => {
-    //   const headers = await signInWithUser(DEFAULT_ADMIN);
-    //   const client = getOrpcClient(headers);
-    //   const result = await client.token.statsBondYieldCoverage({
-    //     tokenAddress: bondTokenWithYield.id,
-    //   });
-    //   // Since we created a yield schedule starting now, it should be running
-    //   expect(result.hasYieldSchedule).toBe(true);
-    //   expect(result.isRunning).toBe(true);
-    // });
-  });
+  // TODO: Re-enable once yield schedule creation is working
+  // describe("Business logic", () => {
+  // it("bonds with yield schedule return valid coverage data", async () => {
+  //   const headers = await signInWithUser(DEFAULT_ADMIN);
+  //   const client = getOrpcClient(headers);
+  //   const result = await client.token.statsBondYieldCoverage({
+  //     tokenAddress: bondTokenWithYield.id,
+  //   });
+  //   // Verify the response structure and data types
+  //   expect(result).toHaveProperty("hasYieldSchedule");
+  //   expect(result).toHaveProperty("isRunning");
+  //   expect(result).toHaveProperty("yieldCoverage");
+  //   // Business logic: bond with yield schedule should have valid data
+  //   expect(result.hasYieldSchedule).toBe(true);
+  //   expect(typeof result.isRunning).toBe("boolean");
+  //   // Coverage should be a valid percentage (0-100%)
+  //   const coverage = toNumber(result.yieldCoverage);
+  //   expect(coverage).toBeGreaterThanOrEqual(0);
+  //   expect(coverage).toBeLessThanOrEqual(100);
+  // });
+  // it("yield schedule running status is correctly determined", async () => {
+  //   const headers = await signInWithUser(DEFAULT_ADMIN);
+  //   const client = getOrpcClient(headers);
+  //   const result = await client.token.statsBondYieldCoverage({
+  //     tokenAddress: bondTokenWithYield.id,
+  //   });
+  //   // Since we created a yield schedule starting now, it should be running
+  //   expect(result.hasYieldSchedule).toBe(true);
+  //   expect(result.isRunning).toBe(true);
+  // });
+  // });
 
   describe("Error handling", () => {
     it("rejects zero address", async () => {

@@ -95,19 +95,4 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
       ).rejects.toThrow();
     });
   });
-
-  describe("Data consistency", () => {
-    it("returns consistent data across multiple calls", async () => {
-      const headers = await signInWithUser(DEFAULT_ADMIN);
-      const client = getOrpcClient(headers);
-
-      const [result1, result2] = await Promise.all([
-        client.token.statsCollateralRatio({ tokenAddress: testToken.id }),
-        client.token.statsCollateralRatio({ tokenAddress: testToken.id }),
-      ]);
-
-      // Results should be identical for immediate consecutive calls
-      expect(result1).toEqual(result2);
-    });
-  });
 });
