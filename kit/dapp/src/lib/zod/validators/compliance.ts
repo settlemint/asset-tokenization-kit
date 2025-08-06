@@ -8,6 +8,7 @@
  */
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { ethereumHex } from "@/lib/zod/validators/ethereum-hex";
+import { expressionNodeWithGroups } from "@/lib/zod/validators/expression-node";
 import { isoCountryCodeNumeric } from "@/lib/zod/validators/iso-country-code";
 import { z } from "zod";
 
@@ -107,7 +108,7 @@ export const identityBlockListValues = () =>
     .describe("Array of identity contract addresses to block");
 
 export const smartIdentityVerificationValues = () =>
-  z.array(z.string()).max(0).describe("Empty array (no parameters required)");
+  z.array(expressionNodeWithGroups).describe("Array of expression nodes");
 
 /**
  * Discriminated union schema for compliance module parameters.

@@ -1,13 +1,13 @@
 /**
  * @vitest-environment happy-dom
  */
-import { screen } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import userEvent from "@testing-library/user-event";
-import { PropertyFilterDateValueMenu } from "./date-value-menu";
-import { renderWithProviders } from "../../test-utils";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
-import type { FilterValue, DateFilterOperator } from "../types/filter-types";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "../../../../../test/test-utils";
+import type { DateFilterOperator, FilterValue } from "../types/filter-types";
+import { PropertyFilterDateValueMenu } from "./date-value-menu";
 // Test data interface removed as it was unused
 
 // Mock react-i18next

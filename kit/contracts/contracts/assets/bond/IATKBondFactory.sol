@@ -19,7 +19,7 @@ interface IATKBondFactory is IATKTokenFactory {
     /// @param cap The maximum total supply of the bond tokens.
     /// @param maturityDate The Unix timestamp representing the bond's maturity date.
     /// @param faceValue The face value of each bond token in the underlying asset's base units.
-    /// @param underlyingAsset The address of the ERC20 token used as the underlying asset for the bond.
+    /// @param denominationAsset The address of the ERC20 token used as the underlying asset for the bond.
     /// @param countryCode The ISO 3166-1 numeric country code for jurisdiction
     event BondCreated(
         address indexed sender,
@@ -31,7 +31,7 @@ interface IATKBondFactory is IATKTokenFactory {
         uint256 cap,
         uint256 maturityDate,
         uint256 faceValue,
-        address underlyingAsset,
+        address denominationAsset,
         uint16 countryCode
     );
 
@@ -40,7 +40,7 @@ interface IATKBondFactory is IATKTokenFactory {
     /// @param symbol_ The symbol of the bond.
     /// @param decimals_ The number of decimals for the bond tokens.
     /// @param cap_ The maximum total supply of the bond tokens.
-    /// @param bondParams Bond-specific parameters (maturityDate, faceValue, underlyingAsset).
+    /// @param bondParams Bond-specific parameters (maturityDate, faceValue, denominationAsset).
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return deployedBondAddress The address of the newly deployed bond contract.
@@ -61,7 +61,7 @@ interface IATKBondFactory is IATKTokenFactory {
     /// @param symbol_ The symbol of the bond.
     /// @param decimals_ The number of decimals for the bond tokens.
     /// @param cap_ The maximum total supply of the bond tokens.
-    /// @param bondParams Bond-specific parameters (maturityDate, faceValue, underlyingAsset).
+    /// @param bondParams Bond-specific parameters (maturityDate, faceValue, denominationAsset).
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @return predictedAddress The predicted address of the bond contract.
     function predictBondAddress(

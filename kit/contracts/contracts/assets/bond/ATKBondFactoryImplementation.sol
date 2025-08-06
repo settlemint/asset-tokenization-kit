@@ -38,7 +38,7 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
     /// @param symbol_ The symbol of the bond.
     /// @param decimals_ The number of decimals for the bond tokens.
     /// @param cap_ The maximum total supply of the bond tokens.
-    /// @param bondParams Bond-specific parameters (maturityDate, faceValue, underlyingAsset).
+    /// @param bondParams Bond-specific parameters (maturityDate, faceValue, denominationAsset).
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return deployedBondAddress The address of the newly deployed bond contract.
@@ -97,7 +97,7 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
             cap_,
             bondParams.maturityDate,
             bondParams.faceValue,
-            bondParams.underlyingAsset,
+            bondParams.denominationAsset,
             countryCode_
         );
 
@@ -116,7 +116,7 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
     /// @param symbol_ The symbol of the bond.
     /// @param decimals_ The decimals of the bond.
     /// @param cap_ The cap of the bond.
-    /// @param bondParams Bond-specific parameters (maturityDate, faceValue, underlyingAsset).
+    /// @param bondParams Bond-specific parameters (maturityDate, faceValue, denominationAsset).
     /// @param initialModulePairs_ The initial compliance module pairs for the bond.
     /// @return predictedAddress The predicted address of the bond contract.
     function predictBondAddress(

@@ -1,56 +1,16 @@
 /**
  * @vitest-environment happy-dom
  */
-import { screen } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { renderHook, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderHook } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { createMockTable, renderWithProviders } from "../../../test/test-utils";
 import {
-  SelectionHeader,
   SelectionCell,
+  SelectionHeader,
   SelectionSummary,
   useSelection,
 } from "./data-table-selection";
-import { renderWithProviders, createMockTable } from "./test-utils";
-
-// Mock react-i18next
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, params?: Record<string, unknown>) => {
-      if (key === "bulkActions.selectedCount" && params?.count !== undefined) {
-        let countStr: string;
-        if (typeof params.count === "object" && params.count !== null) {
-          countStr = JSON.stringify(params.count);
-        } else if (typeof params.count === "string") {
-          countStr = params.count;
-        } else if (typeof params.count === "number") {
-          countStr = params.count.toString();
-        } else {
-          countStr = "";
-        }
-        return `${countStr} selected`;
-      }
-      if (key === "bulkActions.selectRow" && params?.row !== undefined) {
-        let rowStr: string;
-        if (typeof params.row === "object" && params.row !== null) {
-          rowStr = JSON.stringify(params.row);
-        } else if (typeof params.row === "string") {
-          rowStr = params.row;
-        } else if (typeof params.row === "number") {
-          rowStr = params.row.toString();
-        } else {
-          rowStr = "";
-        }
-        return `Select row ${rowStr}`;
-      }
-      return key;
-    },
-    i18n: {
-      changeLanguage: () => Promise.resolve(),
-      language: "en",
-    },
-  }),
-}));
 
 describe("SelectionHeader", () => {
   const user = userEvent.setup();

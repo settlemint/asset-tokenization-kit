@@ -1,8 +1,5 @@
 import { ComplianceModulesGrid } from "@/components/compliance/compliance-modules-grid";
-import {
-  ComplianceModuleDetail,
-  hideModules,
-} from "@/components/compliance/details/compliance-module-detail";
+import { ComplianceModuleDetail } from "@/components/compliance/details/compliance-module-detail";
 import {
   type ComplianceModulePairInput,
   type ComplianceModulePairInputArray,
@@ -50,13 +47,11 @@ export function ComplianceModules({
     );
   }
 
-  const hiddenModules = Object.keys(hideModules) as ComplianceTypeId[];
   const availableModules = allModules.filter((module) => {
-    const isHidden = hiddenModules.includes(module.typeId);
     const isEnabled = enabledModules?.some(
       (enabledModule) => enabledModule.typeId === module.typeId
     );
-    return !isHidden && !isEnabled;
+    return !isEnabled;
   });
 
   return (

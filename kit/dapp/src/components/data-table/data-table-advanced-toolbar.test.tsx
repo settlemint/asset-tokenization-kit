@@ -2,14 +2,14 @@
  * @vitest-environment happy-dom
  */
 import { screen, within } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { DataTableAdvancedToolbar } from "./data-table-advanced-toolbar";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  renderWithProviders,
   createMockTable,
   overrideTableState,
-} from "./test-utils";
+  renderWithProviders,
+} from "../../../test/test-utils";
+import { DataTableAdvancedToolbar } from "./data-table-advanced-toolbar";
 
 // Mock child components
 vi.mock("./data-table-filter", () => ({

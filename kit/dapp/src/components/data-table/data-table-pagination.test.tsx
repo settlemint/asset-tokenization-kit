@@ -1,16 +1,16 @@
 /**
  * @vitest-environment happy-dom
  */
-import { screen, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import userEvent from "@testing-library/user-event";
 import type { Table } from "@tanstack/react-table";
-import { DataTablePagination } from "./data-table-pagination";
+import { screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  renderWithProviders,
   createMockTable,
+  renderWithProviders,
   type TestDataItem,
-} from "./test-utils";
+} from "../../../test/test-utils";
+import { DataTablePagination } from "./data-table-pagination";
 
 // Mock react-i18next specifically for this test file
 vi.mock("react-i18next", () => ({

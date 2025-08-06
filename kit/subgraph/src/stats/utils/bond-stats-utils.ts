@@ -14,7 +14,7 @@ export function updateBondStatsForUnderlyingAssetBalanceChange(
   const potentialBondToken = TokenBond.load(bond);
   if (potentialBondToken != null) {
     // Check if this bond uses the transferred token as underlying asset
-    if (potentialBondToken.underlyingAsset == underlyingAsset.id) {
+    if (potentialBondToken.denominationAsset == underlyingAsset.id) {
       const token = fetchToken(Address.fromBytes(potentialBondToken.id));
       updateTokenBondStats(token);
     }

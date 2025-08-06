@@ -33,7 +33,7 @@ const CREATE_BOND_MUTATION = portalGraphql(`
     $cap: String!
     $faceValue: String!
     $maturityDate: String!
-    $underlyingAsset: String!
+    $denominationAsset: String!
     $verificationId: String
     $challengeResponse: String!
     $countryCode: Int!
@@ -50,7 +50,7 @@ const CREATE_BOND_MUTATION = portalGraphql(`
         bondParams: {
           faceValue: $faceValue
           maturityDate: $maturityDate
-          underlyingAsset: $underlyingAsset
+          denominationAsset: $denominationAsset
         }
         countryCode_: $countryCode
       }

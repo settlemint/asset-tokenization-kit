@@ -1,19 +1,19 @@
 /**
  * @vitest-environment node
  */
-import { describe, expect, test } from "vitest";
-import type { TFunction } from "i18next";
+import type { StatsBondStatusOutput } from "@/orpc/routes/token/routes/stats/bond-status.schema";
+import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { from } from "dnum";
+import type { TFunction } from "i18next";
+import { describe, expect, test } from "vitest";
 import type {
-  BondStatus,
-  BondProgressData,
+  BondChartData,
   BondDisplayData,
   BondFooterData,
-  BondChartData,
+  BondProgressData,
+  BondStatus,
   BondStatusStrategy,
 } from "./bond-status";
-import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import type { StatsBondStatusOutput } from "@/orpc/routes/token/routes/stats/bond-status.schema";
 
 describe("bond-status types", () => {
   describe("BondStatus", () => {
@@ -289,8 +289,8 @@ describe("bond-status types", () => {
         fund: null,
       };
       const mockBondStatus: StatsBondStatusOutput = {
-        underlyingAssetBalanceAvailable: from(500),
-        underlyingAssetBalanceRequired: from(1000),
+        denominationAssetBalanceAvailable: from(500),
+        denominationAssetBalanceRequired: from(1000),
         coveredPercentage: from(50),
       };
       const progressResult = mockStrategy.calculateProgress(
@@ -385,8 +385,8 @@ describe("bond-status types", () => {
         fund: null,
       };
       const mockBondStatus: StatsBondStatusOutput = {
-        underlyingAssetBalanceAvailable: from(500),
-        underlyingAssetBalanceRequired: from(1000),
+        denominationAssetBalanceAvailable: from(500),
+        denominationAssetBalanceRequired: from(1000),
         coveredPercentage: from(50),
       };
       const mockT = ((key: string) => key) as TFunction<
@@ -480,8 +480,8 @@ describe("bond-status types", () => {
         fund: null,
       };
       const mockBondStatusForCalc: StatsBondStatusOutput = {
-        underlyingAssetBalanceAvailable: from(800),
-        underlyingAssetBalanceRequired: from(1000),
+        denominationAssetBalanceAvailable: from(800),
+        denominationAssetBalanceRequired: from(1000),
         coveredPercentage: from(80),
       };
       const progressData = mockStrategy.calculateProgress(
@@ -577,8 +577,8 @@ describe("bond-status types", () => {
         fund: null,
       };
       const mockBondStatus: StatsBondStatusOutput = {
-        underlyingAssetBalanceAvailable: from(1000),
-        underlyingAssetBalanceRequired: from(1000),
+        denominationAssetBalanceAvailable: from(1000),
+        denominationAssetBalanceRequired: from(1000),
         coveredPercentage: from(100),
       };
       const progressData = mockStrategy.calculateProgress(

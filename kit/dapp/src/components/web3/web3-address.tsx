@@ -27,32 +27,34 @@ function Web3AddressComponent({
   showFullAddress = true,
   className,
   avatarOnly = false,
-  showBadge = true,
+  showBadge = false,
   showSymbol = true,
   showPrettyName = true,
   skipDataQueries = false,
 }: Web3AddressProps) {
   // Query for user data by wallet address
-  const { data: user } = useQuery(
-    orpc.user.read.queryOptions({
-      input: { wallet: address },
+  const { data: userSearch } = useQuery(
+    orpc.user.search.queryOptions({
+      input: { query: address, limit: 1 },
       staleTime: 1000 * 60 * 30, // Cache user data for 30 minutes
       retry: false, // Don't retry if address is not a user
       throwOnError: false, // Don't throw if address is not a user
       enabled: !skipDataQueries, // Disable during onboarding
     })
   );
+  const user = userSearch?.[0];
 
   // Query for token data by address
-  const { data: token } = useQuery(
-    orpc.token.read.queryOptions({
-      input: { tokenAddress: address },
+  const { data: tokenSearch } = useQuery(
+    orpc.token.search.queryOptions({
+      input: { query: address, limit: 1 },
       staleTime: 1000 * 60 * 30, // Cache token data for 30 minutes
       retry: false, // Don't retry if address is not a token
       throwOnError: false, // Don't throw if address is not a token
       enabled: !skipDataQueries, // Disable during onboarding
     })
   );
+  const token = tokenSearch?.[0];
 
   // Memoize truncated address display
   const truncatedAddressDisplay = useMemo(() => {

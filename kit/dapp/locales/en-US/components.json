@@ -1,4 +1,36 @@
 {
+  "expressionBuilder": {
+    "title": "Expression Builder",
+    "topics": {
+      "kyc": "KYC",
+      "aml": "AML",
+      "collateral": "Collateral",
+      "isin": "ISIN",
+      "assetClassification": "Asset Classification",
+      "basePrice": "Base Price"
+    },
+    "topicInput": {
+      "selectPlaceholder": "Select a topic",
+      "notLabel": "NOT",
+      "addButton": "Add",
+      "orStartGroup": "Or start a group",
+      "startGroupButton": "Start group"
+    },
+    "operatorInput": {
+      "chooseOperatorLabel": "Choose operator",
+      "andButton": "AND",
+      "orButton": "OR",
+      "endGroupButton": "End group",
+      "openGroupsText": "{{count}} open group{{plural}} to close"
+    },
+    "display": {
+      "clearAllButton": "Clear all",
+      "validExpression": "Expression is complete and valid",
+      "closeGroupsPrompt": "Close {{count}} group{{plural}} to complete",
+      "addTopicPrompt": "Add a topic or start a group",
+      "unknownNode": "UNKNOWN"
+    }
+  },
   "kycForm": {
     "country": "Country of residence",
     "dob": "Date of birth",

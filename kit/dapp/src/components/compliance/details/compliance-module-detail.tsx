@@ -1,6 +1,9 @@
 import { AddressBlocklistModuleDetail } from "@/components/compliance/details/address/address-blocklist-module-detail";
 import { CountryAllowlistModuleDetail } from "@/components/compliance/details/country/country-allowlist-module-detail";
 import { CountryBlocklistModuleDetail } from "@/components/compliance/details/country/country-blocklist-module-detail";
+import { IdentityAllowlistModuleDetail } from "@/components/compliance/details/identity/identity-allowlist-module-detail";
+import { IdentityBlocklistModuleDetail } from "@/components/compliance/details/identity/identity-blocklist-module-detail";
+import { IdentityRestrictionModuleDetail } from "@/components/compliance/details/smart-identity/smart-identity-verification-module-detail";
 import { getModuleConfig, isModuleEnabled } from "@/lib/compliance/utils";
 import {
   ComplianceTypeIdEnum,
@@ -84,14 +87,43 @@ export function ComplianceModuleDetail({
         {...complianceDetailProps}
       />
     ),
-    ...hideModules,
+    [ComplianceTypeIdEnum.IdentityAllowListComplianceModule]: (
+      <IdentityAllowlistModuleDetail
+        typeId="IdentityAllowListComplianceModule"
+        initialValues={
+          initialValues as Extract<
+            ComplianceParams,
+            { typeId: "IdentityAllowListComplianceModule" }
+          >
+        }
+        {...complianceDetailProps}
+      />
+    ),
+    [ComplianceTypeIdEnum.IdentityBlockListComplianceModule]: (
+      <IdentityBlocklistModuleDetail
+        typeId="IdentityBlockListComplianceModule"
+        initialValues={
+          initialValues as Extract<
+            ComplianceParams,
+            { typeId: "IdentityBlockListComplianceModule" }
+          >
+        }
+        {...complianceDetailProps}
+      />
+    ),
+    [ComplianceTypeIdEnum.SMARTIdentityVerificationComplianceModule]: (
+      <IdentityRestrictionModuleDetail
+        typeId="SMARTIdentityVerificationComplianceModule"
+        initialValues={
+          initialValues as Extract<
+            ComplianceParams,
+            { typeId: "SMARTIdentityVerificationComplianceModule" }
+          >
+        }
+        {...complianceDetailProps}
+      />
+    ),
   };
 
   return detailComponents[activeModule.typeId];
 }
-
-export const hideModules = {
-  [ComplianceTypeIdEnum.IdentityAllowListComplianceModule]: <></>,
-  [ComplianceTypeIdEnum.IdentityBlockListComplianceModule]: <></>,
-  [ComplianceTypeIdEnum.SMARTIdentityVerificationComplianceModule]: <></>,
-} as const;

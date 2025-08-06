@@ -2,10 +2,10 @@
  * @vitest-environment happy-dom
  */
 import { screen, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "../../../../test/test-utils";
 import { ActionsCell, type ActionItem } from "./actions-cell";
-import { renderWithProviders } from "../test-utils";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
