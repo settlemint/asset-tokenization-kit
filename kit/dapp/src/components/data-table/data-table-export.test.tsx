@@ -2,11 +2,11 @@
  * @vitest-environment happy-dom
  */
 import { screen } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { DataTableExport } from "./data-table-export";
-import { renderWithProviders, createMockTable } from "./test-utils";
 import { toast } from "sonner";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { createMockTable, renderWithProviders } from "../../../test/test-utils";
+import { DataTableExport } from "./data-table-export";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
@@ -298,7 +298,7 @@ describe("DataTableExport", () => {
       const text = await blobCall.text();
 
       // BOM character should be at the start
-      expect(text.codePointAt(0)).toBe(0xfe_ff);
+      expect(text.codePointAt(0)).toBe(0xFE_FF);
     });
   });
 

@@ -2,20 +2,20 @@
  * @vitest-environment happy-dom
  */
 import { screen, within } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
-import { DataTableEmptyState } from "./data-table-empty-state";
-import type { DataTableEmptyStateProps } from "./data-table-empty-state";
-import { renderWithProviders } from "./test-utils";
 import {
-  PackageOpen,
-  Search,
-  Database,
   AlertCircle,
+  Database,
   FileQuestion,
   Filter,
   Inbox,
+  PackageOpen,
+  Search,
   type LucideIcon,
 } from "lucide-react";
+import { describe, expect, it } from "vitest";
+import { renderWithProviders } from "../../../test/test-utils";
+import type { DataTableEmptyStateProps } from "./data-table-empty-state";
+import { DataTableEmptyState } from "./data-table-empty-state";
 
 describe("DataTableEmptyState", () => {
   describe("Basic Rendering", () => {

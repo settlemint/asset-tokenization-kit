@@ -1,13 +1,13 @@
 /**
  * @vitest-environment happy-dom
  */
-import { screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import userEvent from "@testing-library/user-event";
-import { PropertyFilterTextValueMenu } from "./text-value-menu";
-import { renderWithProviders } from "../../test-utils";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
+import { fireEvent, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "../../../../../test/test-utils";
 import type { FilterValue } from "../types/filter-types";
+import { PropertyFilterTextValueMenu } from "./text-value-menu";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({

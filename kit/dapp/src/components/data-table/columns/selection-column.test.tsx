@@ -1,20 +1,20 @@
 /**
  * @vitest-environment happy-dom
  */
-import { screen, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import userEvent from "@testing-library/user-event";
-import {
-  createBasicSelectionColumn,
-  createSelectionColumn,
-} from "./selection-column";
-import { renderWithProviders } from "../test-utils";
 import {
   createColumnHelper,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { useState } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "../../../../test/test-utils";
+import {
+  createBasicSelectionColumn,
+  createSelectionColumn,
+} from "./selection-column";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
