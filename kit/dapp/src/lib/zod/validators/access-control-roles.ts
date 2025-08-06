@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const _accessControlRoles = [
+export const roles = [
   "addonManager",
   "addonModule",
   "addonRegistryModule",
@@ -35,7 +35,7 @@ const _accessControlRoles = [
   "verificationAdmin",
 ] as const;
 
-type AccessControlRoles = (typeof _accessControlRoles)[number];
+type AccessControlRoles = (typeof roles)[number];
 
 /**
  * Zod schema for validating all possible access control roles.
