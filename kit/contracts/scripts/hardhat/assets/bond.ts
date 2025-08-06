@@ -61,7 +61,7 @@ export const createBond = async (depositToken: Asset<any>) => {
     {
       maturityDate: BigInt(anvilTimeSeconds + 365 * 24 * 60 * 60), // 1 year
       faceValue: faceValue,
-      underlyingAsset: depositToken.address!,
+      denominationAsset: depositToken.address!,
     },
     [
       ...getDefaultComplianceModules(),

@@ -78,9 +78,9 @@
         "description": "Select the type of asset you want to create. Only asset types with deployed factories are available.",
         "label": "Asset Type"
       },
-      "underlyingAsset": {
-        "description": "The Ethereum address of the underlying asset",
-        "label": "Underlying Asset",
+      "denominationAsset": {
+        "description": "The Ethereum address of the denomination asset",
+        "label": "Denomination Asset",
         "placeholder": "e.g., 0x..."
       }
     },

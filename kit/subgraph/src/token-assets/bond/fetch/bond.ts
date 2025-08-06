@@ -13,7 +13,7 @@ export function fetchBond(address: Address): TokenBond {
     setBigNumber(bond, "faceValue", BigInt.zero(), token.decimals);
     bond.maturityDate = BigInt.zero();
     bond.isMatured = false;
-    bond.underlyingAsset = Address.zero();
+    bond.denominationAsset = Address.zero();
     bond.save();
     BondTemplate.create(address);
   }

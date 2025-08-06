@@ -13,17 +13,17 @@ export const StatsBondStatusInputSchema = z.object({
 
 /**
  * Output schema for bond status statistics
- * Contains current bond status and underlying asset information
+ * Contains current bond status and denomination asset information
  */
 export const StatsBondStatusOutputSchema = z.object({
-  underlyingAssetBalanceAvailable: bigDecimal().describe(
-    "Current available underlying asset balance for redemption"
+  denominationAssetBalanceAvailable: bigDecimal().describe(
+    "Current available denomination asset balance for redemption"
   ),
-  underlyingAssetBalanceRequired: bigDecimal().describe(
-    "Total underlying asset balance required for full redemption"
+  denominationAssetBalanceRequired: bigDecimal().describe(
+    "Total denomination asset balance required for full redemption"
   ),
   coveredPercentage: bigDecimal().describe(
-    "Percentage of underlying assets available (0-100)"
+    "Percentage of denomination assets available (0-100)"
   ),
 });
 

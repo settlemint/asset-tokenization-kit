@@ -22,13 +22,18 @@ export function updateTokenBondStats(token: Token): void {
 
   const bond = fetchBond(Address.fromBytes(token.bond!));
 
-  // Get underlying asset balance of the bond
-  const underlyingAsset = fetchToken(Address.fromBytes(bond.underlyingAsset));
+  // Get denomination asset balance of the bond
+  const denominationAsset = fetchToken(
+    Address.fromBytes(bond.denominationAsset)
+  );
   const bondAccount = fetchAccount(Address.fromBytes(token.account));
-  const underlyingBalance = fetchTokenBalance(underlyingAsset, bondAccount);
-  const underlyingBalanceExact = underlyingBalance.valueExact;
+  const denominationAssetBalance = fetchTokenBalance(
+    denominationAsset,
+    bondAccount
+  );
+  const denominationAssetBalanceExact = denominationAssetBalance.valueExact;
 
-  // Calculate required underlying asset balance
+  // Calculate required denomination asset balance
   // Required = totalSupply * faceValue
   const requiredBalanceExact = token.totalSupplyExact.times(
     bond.faceValueExact
@@ -38,20 +43,20 @@ export function updateTokenBondStats(token: Token): void {
   const state = fetchTokenBondStatsState(Address.fromBytes(token.id));
   setBigNumber(
     state,
-    "underlyingAssetBalanceAvailable",
-    underlyingBalanceExact,
-    underlyingAsset.decimals
+    "denominationAssetBalanceAvailable",
+    denominationAssetBalanceExact,
+    denominationAsset.decimals
   );
   setBigNumber(
     state,
-    "underlyingAssetBalanceRequired",
+    "denominationAssetBalanceRequired",
     requiredBalanceExact,
-    underlyingAsset.decimals
+    denominationAsset.decimals
   );
 
   // Calculate covered percentage
   if (requiredBalanceExact.gt(BigInt.zero())) {
-    state.coveredPercentage = underlyingBalanceExact
+    state.coveredPercentage = denominationAssetBalanceExact
       .toBigDecimal()
       .div(requiredBalanceExact.toBigDecimal())
       .times(BigDecimal.fromString("100"));
@@ -68,14 +73,14 @@ function trackTokenBondStats(state: TokenBondStatsState): void {
   // Create stats data entry for timeseries
   const statsData = new TokenBondStatsData(1);
   statsData.bond = state.bond;
-  statsData.underlyingAssetBalanceAvailable =
-    state.underlyingAssetBalanceAvailable;
-  statsData.underlyingAssetBalanceAvailableExact =
-    state.underlyingAssetBalanceAvailableExact;
-  statsData.underlyingAssetBalanceRequired =
-    state.underlyingAssetBalanceRequired;
-  statsData.underlyingAssetBalanceRequiredExact =
-    state.underlyingAssetBalanceRequiredExact;
+  statsData.denominationAssetBalanceAvailable =
+    state.denominationAssetBalanceAvailable;
+  statsData.denominationAssetBalanceAvailableExact =
+    state.denominationAssetBalanceAvailableExact;
+  statsData.denominationAssetBalanceRequired =
+    state.denominationAssetBalanceRequired;
+  statsData.denominationAssetBalanceRequiredExact =
+    state.denominationAssetBalanceRequiredExact;
   statsData.coveredPercentage = state.coveredPercentage;
   statsData.save();
 }
@@ -90,10 +95,10 @@ function fetchTokenBondStatsState(tokenAddress: Address): TokenBondStatsState {
     const bond = fetchBond(tokenAddress);
     state = new TokenBondStatsState(tokenAddress);
     state.bond = bond.id;
-    state.underlyingAssetBalanceAvailable = BigDecimal.zero();
-    state.underlyingAssetBalanceAvailableExact = BigInt.zero();
-    state.underlyingAssetBalanceRequired = BigDecimal.zero();
-    state.underlyingAssetBalanceRequiredExact = BigInt.zero();
+    state.denominationAssetBalanceAvailable = BigDecimal.zero();
+    state.denominationAssetBalanceAvailableExact = BigInt.zero();
+    state.denominationAssetBalanceRequired = BigDecimal.zero();
+    state.denominationAssetBalanceRequiredExact = BigInt.zero();
     state.coveredPercentage = BigDecimal.zero();
     state.save();
   }

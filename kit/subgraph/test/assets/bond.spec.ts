@@ -12,7 +12,7 @@ describe("Bonds", () => {
             isMatured
             maturityDate
             faceValue
-            underlyingAsset {
+            denominationAsset {
               name
             }
           }
@@ -34,7 +34,7 @@ describe("Bonds", () => {
           isMatured: true,
           maturityDate: expect.not.stringMatching(/^0$/),
           faceValue: "0.000123",
-          underlyingAsset: {
+          denominationAsset: {
             name: "Euro Deposits",
           },
         },
