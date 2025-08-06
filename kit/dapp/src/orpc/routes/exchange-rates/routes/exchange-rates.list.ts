@@ -6,6 +6,7 @@
  */
 import { fxRatesLatest } from "@/lib/db/schema";
 import { type FiatCurrency } from "@/lib/zod/validators/fiat-currency";
+import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { publicRouter } from "@/orpc/procedures/public.router";
 import { and, count, eq, sql } from "drizzle-orm";
@@ -23,6 +24,11 @@ import { and, count, eq, sql } from "drizzle-orm";
  * @returns Paginated list of exchange rates
  */
 export const list = publicRouter.exchangeRates.list
+  .use(
+    offChainPermissionsMiddleware({
+      requiredPermissions: { exchangeRates: ["list"] },
+    })
+  )
   .use(databaseMiddleware)
   .handler(async ({ input, context }) => {
     const {

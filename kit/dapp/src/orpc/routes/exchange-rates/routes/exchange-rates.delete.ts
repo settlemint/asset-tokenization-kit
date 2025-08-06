@@ -5,6 +5,7 @@
  * @module ExchangeRatesDelete
  */
 import { fxRatesLatest } from "@/lib/db/schema";
+import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { and, eq } from "drizzle-orm";
@@ -28,6 +29,11 @@ import { and, eq } from "drizzle-orm";
  * @returns Success status
  */
 export const del = authRouter.exchangeRates.delete
+  .use(
+    offChainPermissionsMiddleware({
+      requiredPermissions: { exchangeRates: ["remove"] },
+    })
+  )
   .use(databaseMiddleware)
   .handler(async ({ input, context, errors }) => {
     const { baseCurrency, quoteCurrency } = input;

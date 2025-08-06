@@ -189,6 +189,46 @@ export class PortfolioPage extends BasePage {
     await expect(addressCell).toBeVisible();
   }
 
+  async signOut(): Promise<void> {
+    try {
+      await this.page.waitForLoadState("networkidle");
+      const userButton = this.page
+        .locator("button")
+        .filter({
+          hasText: /@.*\.com/,
+        })
+        .first();
+
+      if (await userButton.isVisible({ timeout: 5000 })) {
+        await userButton.click();
+
+        const logoutMenuItem = this.page.getByRole("menuitem", {
+          name: "Log out",
+        });
+        await logoutMenuItem.waitFor({ state: "visible", timeout: 3000 });
+        await logoutMenuItem.click();
+
+        return;
+      }
+
+      throw new Error(
+        "Could not find user button for sign out. Please check the UI structure."
+      );
+    } catch (error) {
+      throw new Error(
+        `Sign out failed: ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
+  }
+
+  async expectSignOutSuccess(): Promise<void> {
+    await this.page.waitForURL(/auth\/sign-in/, { timeout: 10000 });
+
+    await this.page
+      .getByRole("button", { name: "Login" })
+      .waitFor({ state: "visible" });
+  }
+
   private parseAmountString(text: string): number {
     return parseAmountString(text);
   }

@@ -1,3 +1,4 @@
+import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { encodePacked, keccak256 } from "viem";
 
 /**
@@ -7,9 +8,9 @@ import { encodePacked, keccak256 } from "viem";
 export class RoleConfig {
   readonly name: string;
   readonly bytes: `0x${string}`;
-  readonly fieldName: string;
+  readonly fieldName: AccessControlRoles;
 
-  constructor(name: string, fieldName: string) {
+  constructor(name: string, fieldName: AccessControlRoles) {
     this.name = name;
     this.fieldName = fieldName;
 
@@ -164,6 +165,13 @@ export const ALL_ROLES = [
 // Helper function to get role by name
 export function getRoleByName(name: string): RoleConfig | undefined {
   return ALL_ROLES.find((role) => role.name === name);
+}
+
+// Helper function to get role by field name
+export function getRoleByFieldName(
+  fieldName: AccessControlRoles
+): RoleConfig | undefined {
+  return ALL_ROLES.find((role) => role.fieldName === fieldName);
 }
 
 // Helper function to get role by bytes/hash

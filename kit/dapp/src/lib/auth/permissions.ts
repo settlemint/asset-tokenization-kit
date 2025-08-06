@@ -4,10 +4,11 @@ import { adminAc, defaultStatements } from "better-auth/plugins/admin/access";
 
 const customPermissions = {
   ...defaultStatements,
-  account: ["list"],
+  account: ["read", "list"],
   kyc: ["list", "upsert", "remove"],
-  setting: ["read", "update"],
-  system: ["read", "create"],
+  setting: ["read", "list", "upsert", "remove"],
+  system: ["read", "list", "create"],
+  exchangeRates: ["read", "list", "remove", "sync", "update"],
 } as const;
 
 type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> };
@@ -26,8 +27,9 @@ export const adminRole = accessControl.newRole({
   ...adminAc.statements,
   account: ["list"],
   kyc: ["list", "upsert", "remove"],
-  setting: ["read", "update"],
-  system: ["read", "create"],
+  setting: ["read", "list", "upsert", "remove"],
+  system: ["read", "list", "create"],
+  exchangeRates: ["read", "list", "remove", "sync", "update"],
 });
 
 /**
@@ -37,8 +39,9 @@ export const adminRole = accessControl.newRole({
 export const issuerRole = accessControl.newRole({
   account: ["list"],
   kyc: ["list", "upsert", "remove"],
-  setting: ["read"],
-  system: ["read"],
+  setting: ["read", "list"],
+  system: ["read", "list"],
+  exchangeRates: ["read", "list"],
   user: ["list"],
 });
 
@@ -46,6 +49,7 @@ export const issuerRole = accessControl.newRole({
  * Investor role, regular user on the platform.
  */
 export const investorRole = accessControl.newRole({
-  setting: ["read"],
-  system: ["read"],
+  setting: ["read", "list"],
+  system: ["read", "list"],
+  exchangeRates: ["read", "list"],
 });

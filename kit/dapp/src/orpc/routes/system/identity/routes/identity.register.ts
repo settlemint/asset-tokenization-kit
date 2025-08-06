@@ -3,6 +3,7 @@ import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call } from "@orpc/server";
 import countries from "i18n-iso-countries";
 
@@ -34,7 +35,7 @@ const IDENTITY_REGISTER_MUTATION = portalGraphql(`
 export const identityRegister = portalRouter.system.identityRegister
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: { any: ["identityManager", "systemManager"] },
+      requiredRoles: SYSTEM_PERMISSIONS.identityRegister,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },

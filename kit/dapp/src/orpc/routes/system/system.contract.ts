@@ -1,13 +1,15 @@
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
+import { accessManagerContract } from "@/orpc/routes/system/access-manager/access-manager.contract";
 import { addonContract } from "@/orpc/routes/system/addon/addon.contract";
 import { complianceModuleContract } from "@/orpc/routes/system/compliance-module/compliance-module.contract";
 import { identityContract } from "@/orpc/routes/system/identity/identity.contract";
-import { statsContract } from "@/orpc/routes/system/stats/stats.contract";
 import { SystemCreateSchema } from "@/orpc/routes/system/routes/system.create.schema";
 import {
   SystemReadOutputSchema,
   SystemReadSchema,
 } from "@/orpc/routes/system/routes/system.read.schema";
+import { statsContract } from "@/orpc/routes/system/stats/stats.contract";
+import { factoryContract } from "@/orpc/routes/system/token-factory/factory.contract";
 import { z } from "zod";
 import { baseContract } from "../../procedures/base.contract";
 import { SystemSchema } from "./routes/system.list.schema";
@@ -112,4 +114,6 @@ export const systemContract = {
   ...identityContract,
   ...complianceModuleContract,
   ...statsContract,
+  ...accessManagerContract,
+  ...factoryContract,
 };

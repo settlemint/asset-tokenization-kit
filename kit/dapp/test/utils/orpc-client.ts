@@ -5,6 +5,7 @@ import type { router } from "@/orpc/routes/router";
 import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
 import type { RouterClient } from "@orpc/server";
+import { getDappUrl } from "./dapp";
 
 export type OrpcClient = RouterClient<typeof router>;
 
@@ -12,7 +13,7 @@ export const getOrpcClient = (
   headers: Headers
 ): RouterClient<typeof router> => {
   const link = new RPCLink({
-    url: "http://localhost:13000/api/rpc",
+    url: `${getDappUrl()}/api/rpc`,
     headers: () => ({
       cookie: headers.get("Cookie") as string,
     }),
