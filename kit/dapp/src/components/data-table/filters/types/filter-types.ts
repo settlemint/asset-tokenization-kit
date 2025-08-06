@@ -69,7 +69,12 @@ export interface NumberRange {
 }
 
 /* General filter operator type */
-export type FilterOperator = TextFilterOperator | NumberFilterOperator | DateFilterOperator | OptionFilterOperator | MultiOptionFilterOperator;
+export type FilterOperator =
+  | TextFilterOperator
+  | NumberFilterOperator
+  | DateFilterOperator
+  | OptionFilterOperator
+  | MultiOptionFilterOperator;
 
 /* Individual operator types for backwards compatibility */
 export type TextOperator = TextFilterOperator;

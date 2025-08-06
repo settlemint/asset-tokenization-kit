@@ -422,7 +422,7 @@ describe("PropertyFilterNumberValueMenu", () => {
 
       const inputs = screen.getAllByRole("spinbutton");
       const minInput = inputs[0]!;
-      const maxInput = inputs[1]!
+      const maxInput = inputs[1]!;
 
       await user.clear(minInput);
       await user.type(minInput, "10");

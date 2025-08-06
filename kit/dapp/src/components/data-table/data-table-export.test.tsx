@@ -245,7 +245,8 @@ describe("DataTableExport", () => {
         getAllLeafColumns: vi.fn().mockReturnValue([]),
       });
       if (mockTable.options.meta) {
-        delete (mockTable.options.meta as unknown as Record<string, unknown>).name;
+        delete (mockTable.options.meta as unknown as Record<string, unknown>)
+          .name;
       }
 
       renderWithProviders(<DataTableExport table={mockTable} />);
@@ -297,7 +298,7 @@ describe("DataTableExport", () => {
       const text = await blobCall.text();
 
       // BOM character should be at the start
-      expect(text.codePointAt(0)).toBe(0xFE_FF);
+      expect(text.codePointAt(0)).toBe(0xfe_ff);
     });
   });
 

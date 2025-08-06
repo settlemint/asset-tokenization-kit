@@ -122,13 +122,15 @@ export function PropertyFilterMultiOptionValueMenu<
   else if (isColumnOptionArray(uniqueVals)) {
     // Deduplicate by value property since uniq() doesn't work with objects
     const seen = new Set<string>();
-    options = (uniqueVals as unknown as ColumnOption[]).filter((option: ColumnOption) => {
-      if (seen.has(option.value)) {
-        return false;
+    options = (uniqueVals as unknown as ColumnOption[]).filter(
+      (option: ColumnOption) => {
+        if (seen.has(option.value)) {
+          return false;
+        }
+        seen.add(option.value);
+        return true;
       }
-      seen.add(option.value);
-      return true;
-    });
+    );
   }
 
   // Invalid configuration

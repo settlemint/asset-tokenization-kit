@@ -1,6 +1,4 @@
-import type { FilterDetails, NumberFilterOperator } from "../types/filter-types";
-
-export type { NumberFilterOperator };
+import type { FilterDetails } from "../types/filter-types";
 
 /* Details for all the filter operators for number data type */
 export const numberFilterDetails = {

@@ -4,8 +4,7 @@
 import { describe, it, expect, vi } from "vitest";
 import type { Row } from "@tanstack/react-table";
 import { numberFilterFn, __numberFilterFn } from "./number-filter";
-import type { FilterValue } from "../types/filter-types";
-import type { NumberFilterOperator } from "../operators/number-operators";
+import type { FilterValue, NumberFilterOperator } from "../types/filter-types";
 // Define test data type
 interface TestData {
   id: string;

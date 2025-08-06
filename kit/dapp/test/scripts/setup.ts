@@ -3,7 +3,7 @@ import { getOrpcClient } from "../utils/orpc-client";
 import {
   bootstrapSystem,
   bootstrapTokenFactories,
-  setupDefaultIssuerRoles
+  setupDefaultIssuerRoles,
 } from "../utils/system-bootstrap";
 import {
   DEFAULT_ADMIN,

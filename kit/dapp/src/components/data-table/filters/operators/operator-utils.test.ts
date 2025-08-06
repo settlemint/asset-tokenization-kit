@@ -3,7 +3,7 @@
  */
 import { describe, it, expect } from "vitest";
 import { determineNewOperator } from "./operator-utils";
-import type { NumberFilterOperator } from "./number-operators";
+import type { NumberFilterOperator } from "../types/filter-types";
 
 describe("operator-utils", () => {
   describe("determineNewOperator", () => {
@@ -342,9 +342,14 @@ describe("operator-utils", () => {
         );
 
         // This is an invalid date value for the operator, but testing edge case
-        expect(determineNewOperator("date", [new Date(1), new Date(2), new Date(3)], [new Date(4)], "is before")).toBe(
-          "is before"
-        );
+        expect(
+          determineNewOperator(
+            "date",
+            [new Date(1), new Date(2), new Date(3)],
+            [new Date(4)],
+            "is before"
+          )
+        ).toBe("is before");
       });
 
       it("should handle all array length transition scenarios", () => {
