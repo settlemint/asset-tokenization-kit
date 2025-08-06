@@ -1,8 +1,6 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { tokenMiddleware } from "@/orpc/middlewares/system/token.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { read } from "../../token.read";
@@ -33,14 +31,12 @@ const TOKEN_FREEZE_ADDRESS_MUTATION = portalGraphql(`
 `);
 
 export const freezeAddress = tokenRouter.token.freezeAddress
-  .use(portalMiddleware)
   .use(
     tokenPermissionMiddleware({
       requiredRoles: TOKEN_PERMISSIONS.freezeAddress,
       requiredExtensions: ["CUSTODIAN"],
     })
   )
-  .use(tokenMiddleware)
   .handler(async ({ input, context }) => {
     const { contract, verification, userAddress, freeze } = input;
     const { auth } = context;

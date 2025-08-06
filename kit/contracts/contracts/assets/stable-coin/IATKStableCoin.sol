@@ -10,6 +10,7 @@ import { ISMARTCustodian } from "../../smart/extensions/custodian/ISMARTCustodia
 import { ISMARTPausable } from "../../smart/extensions/pausable/ISMARTPausable.sol";
 import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.sol";
 import { ISMARTCollateral } from "../../smart/extensions/collateral/ISMARTCollateral.sol";
+import { ISMARTRedeemable } from "../../smart/extensions/redeemable/ISMARTRedeemable.sol";
 
 /// @title Interface for a ATK Stable Coin
 /// @author SettleMint
@@ -18,6 +19,7 @@ interface IATKStableCoin is
     ISMART,
     ISMARTTokenAccessManaged,
     ISMARTCollateral,
+    ISMARTRedeemable,
     ISMARTCustodian,
     ISMARTPausable,
     ISMARTBurnable

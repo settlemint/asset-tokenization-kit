@@ -32,7 +32,6 @@
     "noPropertyAccessFromIndexSignature": false,
     "forceConsistentCasingInFileNames": true,
     "allowArbitraryExtensions": true,
-    "baseUrl": "./",
     "paths": {
       "@/*": [
         "./src/*"
@@ -42,6 +41,9 @@
       ],
       "@/locales/*": [
         "./locales/*"
+      ],
+      "@test/*": [
+        "./test/*"
       ]
     },
     "noImplicitAny": true,

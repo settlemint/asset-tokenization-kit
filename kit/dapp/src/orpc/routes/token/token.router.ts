@@ -1,3 +1,4 @@
+import { grantRole } from "@/orpc/routes/token/routes/mutations/access/token.grant-role";
 import { approve } from "@/orpc/routes/token/routes/mutations/approve/token.approve";
 import { burn } from "@/orpc/routes/token/routes/mutations/burn/token.burn";
 import { setCap } from "@/orpc/routes/token/routes/mutations/cap/token.set-cap";
@@ -32,7 +33,7 @@ const routes = {
   actions,
   create,
   events,
-
+  grantRole,
   holders,
   list,
   read,

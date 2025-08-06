@@ -5,7 +5,6 @@
   "scripts": {
     "codegen": "settlemint scs subgraph codegen",
     "codegen:interfaceid": "bun run tools/interfaceid.ts",
-    "test:codegen:gql-tada": "bash tools/codegen-gql-tada.sh",
     "format": "prettier --experimental-cli --write .",
     "compile": "bash tools/compile.sh",
     "publish": "bun run tools/graph-deploy.ts --local",

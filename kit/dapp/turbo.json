@@ -1,15 +1,8 @@
 {
   "extends": ["//"],
   "tasks": {
-    "codegen": {
-      "dependsOn": ["codegen:gql-tada"]
-    },
     "codegen:settlemint": {
       "cache": false
-    },
-    "codegen:gql-tada": {
-      "cache": false,
-      "dependsOn": ["codegen:settlemint"]
     },
     "build": {
       "dependsOn": ["codegen:settlemint"],

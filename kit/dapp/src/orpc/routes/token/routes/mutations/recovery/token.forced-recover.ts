@@ -1,7 +1,6 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { read } from "../../token.read";
@@ -38,7 +37,6 @@ export const forcedRecover = tokenRouter.token.forcedRecover
       requiredExtensions: ["CUSTODIAN"],
     })
   )
-  .use(portalMiddleware)
   .handler(async ({ input, context }) => {
     const { contract, verification, lostWallet, newWallet } = input;
     const { auth } = context;

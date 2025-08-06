@@ -4,8 +4,9 @@ import type { FragmentOf, ResultOf } from "@settlemint/sdk-thegraph";
 /**
  * The roles of the access control system
  */
-export type AccessControlRoles = keyof NonNullable<
-  NonNullable<ResultOf<typeof AccessControlFragment>>
+export type AccessControlRoles = Exclude<
+  keyof NonNullable<NonNullable<ResultOf<typeof AccessControlFragment>>>,
+  "id"
 >;
 
 /**
@@ -23,6 +24,7 @@ export type AccessControl = FragmentOf<typeof AccessControlFragment>;
  */
 export const AccessControlFragment = theGraphGraphql(`
   fragment AccessControlFragment on AccessControl {
+    id
     addonManager { id isContract }
     addonModule { id isContract }
     addonRegistryModule { id isContract }
