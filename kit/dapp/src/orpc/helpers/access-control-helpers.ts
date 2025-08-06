@@ -4,9 +4,11 @@ import type {
 } from "@/lib/fragments/the-graph/access-control-fragment";
 
 /**
- * Type guard to check if a value is an array of objects with id property
+ * Type guard to check if a value is an array of objects with id and isContract properties
  */
-function isAccountArray(value: unknown): value is Array<{ id: string }> {
+function isAccountArray(
+  value: unknown
+): value is Array<{ id: string; isContract: boolean }> {
   return (
     Array.isArray(value) &&
     value.every(
@@ -14,7 +16,9 @@ function isAccountArray(value: unknown): value is Array<{ id: string }> {
         typeof item === "object" &&
         item !== null &&
         "id" in item &&
-        typeof item.id === "string"
+        typeof item.id === "string" &&
+        "isContract" in item &&
+        typeof item.isContract === "boolean"
     )
   );
 }
@@ -26,18 +30,20 @@ function isAccountArray(value: unknown): value is Array<{ id: string }> {
  */
 export function getAccessControlEntries(
   accessControl: AccessControl | null | undefined
-): Array<[AccessControlRoles, Array<{ id: string }>]> {
+): Array<[AccessControlRoles, Array<{ id: string; isContract: boolean }>]> {
   if (!accessControl) {
     return [];
   }
 
   const entries = Object.entries(accessControl);
 
-  const validEntries: Array<[AccessControlRoles, Array<{ id: string }>]> = [];
+  const validEntries: Array<
+    [AccessControlRoles, Array<{ id: string; isContract: boolean }>]
+  > = [];
 
   for (const [role, value] of entries) {
-    // Skip GraphQL internal fields
-    if (role.startsWith("__")) {
+    // Skip GraphQL internal fields and the 'id' field
+    if (role.startsWith("__") || role === "id") {
       continue;
     }
 

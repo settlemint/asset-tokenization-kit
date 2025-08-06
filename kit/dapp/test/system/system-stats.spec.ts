@@ -1,5 +1,5 @@
-import { getOrpcClient } from "test/utils/orpc-client";
-import { DEFAULT_ADMIN, signInWithUser } from "test/utils/user";
+import { getOrpcClient } from "@test/utils/orpc-client";
+import { DEFAULT_ADMIN, signInWithUser } from "@test/utils/user";
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe("system stats ORPC routes", () => {

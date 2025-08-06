@@ -1,211 +1,45 @@
 # /pr
 
-Create a high-quality pull request using multi-agent analysis.
+Create pull request with quality checks and Linear integration.
 
-## Linear Context Gathering
-
-Before creating PR, gather Linear context:
-
-```javascript
-// 1. Find my active issues
-mcp__linear__list_my_issues({
-  limit: 10,
-  orderBy: "updatedAt",
-});
-
-// 2. Check issue details and linked PRs
-mcp__linear__get_issue({
-  id: "ISSUE-123",
-});
-
-// 3. Review similar completed issues
-mcp__linear__list_issues({
-  organizationSlug: "your-org",
-  stateId: "done-state-id",
-  query: "similar feature keywords",
-  limit: 5,
-});
-```
-
-## Behavior
-
-- Create feature branch if on main
-- Test before pushing: `bun run ci`
-- Analyze and split changes into logical commits with semantic messages
-  (type(scope): description)
-- Types: feat, fix, chore, docs, style, refactor, perf, test, build, ci, revert
-- Push branch
-- Create PR with title describing the most important changes (for squash merges)
-- Include summary and test plan
-
-## Commit Splitting Guidelines
-
-- By feature/component
-- Group related files
-- Separate refactors from features
-- Independent commits
-- Split unrelated changes
-
-## Pre-flight Checks
-
-### Branch Check (CRITICAL)
+## Workflow
 
 ```bash
-current_branch=$(git branch --show-current)
-[[ "$current_branch" == "main" || "$current_branch" == "master" ]] && git checkout -b feature/name || echo "Using: $current_branch"
+# 1. Branch check (exit main)
+[[ "$(git branch --show-current)" =~ ^(main|master)$ ]] && git checkout -b feature/name
+
+# 2. Quality gates
+bun run ci  # MUST pass
+
+# 3. Create PR
+gh pr create --title "type(scope): description" --body "..."
 ```
 
-### Status Check
+## Commit Guidelines
 
-```bash
-[ -n "$(git status --porcelain)" ] && echo "Commit changes first"
-```
+- Semantic format: `type(scope): description`
+- Types: feat, fix, chore, docs, refactor, test
+- Split by feature/component
+- Squash DB migrations if multiple
 
-### Quality Gates
+## Linear Integration
 
-```bash
-bun run ci  # Must pass
-```
+<example>
+# Find related issues
+mcp__linear__list_issues({ query: "feature name" })
 
-### Database Migration Handling
+# Link PR to issue
 
-**IMPORTANT**: If PR includes database schema changes:
+mcp**linear**create_comment({ issueId: "ISSUE-123", body: "PR: [#123](url)" })
 
-1. Check for multiple migration files in `kit/dapp/src/lib/db/migrations/`
-2. Squash all new migrations into a single migration file to maintain clean
-   history
-3. Ensure migration is properly tested with:
-   ```bash
-   bun run db:migrate  # Apply migrations
-   bun run db:check   # Verify migration integrity
-   ```
+# Update status
 
-## Post-Creation
+mcp**linear**update_issue({ id: "ISSUE-123", stateId: "in-review" }) </example>
 
-### Linear Integration
+## Checklist
 
-Comprehensive Linear integration for PR tracking:
-
-1. **Find Related Issues**:
-
-   ```javascript
-   mcp__linear__list_issues({
-     organizationSlug: "your-org",
-     query: "feature name or bug description",
-     limit: 10,
-   });
-   ```
-
-2. **Link PR to Issue**:
-
-   ```javascript
-   mcp__linear__create_comment({
-     issueId: "ISSUE-123",
-     body: "🚀 PR Created: [#PR-NUMBER](PR_URL)\n\n**Changes:**\n- Feature implementation\n- Tests added\n- Documentation updated",
-   });
-   ```
-
-3. **Update Issue Status**:
-
-   ```javascript
-   mcp__linear__update_issue({
-     id: "ISSUE-123",
-     stateId: "in-review-state-id",
-   });
-   ```
-
-4. **Create PR Checklist**:
-   ```javascript
-   mcp__linear__create_comment({
-     issueId: "ISSUE-123",
-     body: "## PR Checklist\n- [ ] Code review passed\n- [ ] Tests green\n- [ ] Documentation updated\n- [ ] Breaking changes documented",
-   });
-   ```
-
-## Escape Hatches
-
-1. **Conflicts**: Rebase or merge main
-2. **Breaking Changes**: Document migrations
-3. **Test Failures**: Fix before PR
-
-## Quality Checklist
-
-- [ ] Semantic commits
-- [ ] PR description
 - [ ] Tests pass
-- [ ] Docs complete
-- [ ] No vulnerabilities
-- [ ] Performance assessed
-- [ ] Breaking changes doc'd
-- [ ] Reviewers assigned
-- [ ] Ticket linked
+- [ ] Semantic commits
+- [ ] PR description complete
+- [ ] Linear issue linked
 - [ ] CI green
-- [ ] README.md files updated
-- [ ] CLAUDE.md patterns documented
-- [ ] Database migrations squashed (if applicable)
-
-# Self-Learning & PR Patterns
-
-## Automatic Learning Capture
-
-During PR creation, silently learn and document:
-
-1. **Commit Patterns**: How this team structures commits
-2. **PR Conventions**: Title/description preferences
-3. **Review Feedback**: Common review comments to preempt
-4. **CI Failures**: Typical CI issues and fixes
-5. **Workflow Optimizations**: Efficient PR processes
-
-## Integration Approach
-
-- Append learnings to this file under "Learned PR Patterns"
-- Update CLAUDE.md for project-wide conventions
-- No user interruption - changes reviewed in PR
-- Focus on actionable improvements
-
-## Gemini-CLI PR Intelligence
-
-Advanced PR capabilities with gemini-cli:
-
-### 1. **PR Review Prediction**
-
-```javascript
-mcp__gemini -
-  cli__brainstorm({
-    prompt: "Predict potential review comments for this PR based on changes",
-    domain: "software",
-    constraints: "Focus on security, performance, and code quality issues",
-    ideaCount: 10,
-    includeAnalysis: true,
-  });
-```
-
-### 2. **Documentation Updates**
-
-```javascript
-mcp__gemini -
-  cli__ask -
-  gemini({
-    prompt:
-      "@code-changes identify required documentation updates and generate content",
-    changeMode: true,
-  });
-
-// Check for documentation created by agents
-mcp__gemini -
-  cli__ask -
-  gemini({
-    prompt:
-      "@README.md @CLAUDE.md verify documentation is complete and accurate",
-    changeMode: false,
-  });
-
-// Verify README files are comprehensive
-mcp__gemini -
-  cli__ask -
-  gemini({
-    prompt:
-      "@*/README.md check for clear overview, examples, and getting started sections",
-    changeMode: false,
-  });
-```

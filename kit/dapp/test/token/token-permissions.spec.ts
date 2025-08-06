@@ -1,11 +1,11 @@
-import { getOrpcClient } from "test/utils/orpc-client";
-import { createToken } from "test/utils/token";
+import { getOrpcClient } from "@test/utils/orpc-client";
+import { createToken } from "@test/utils/token";
 import {
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
   DEFAULT_PINCODE,
   signInWithUser,
-} from "test/utils/user";
+} from "@test/utils/user";
 import { beforeAll, describe, expect, test } from "vitest";
 
 describe("Token permissions", () => {
@@ -73,6 +73,7 @@ describe("Token permissions", () => {
       actions: {
         burn: false,
         create: false,
+        grantRole: true,
         mint: false,
         pause: false,
         addComplianceModule: false,
@@ -136,6 +137,7 @@ describe("Token permissions", () => {
       actions: {
         burn: false,
         create: false,
+        grantRole: false,
         mint: false,
         pause: false,
         addComplianceModule: false,
