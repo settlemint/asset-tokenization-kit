@@ -123,7 +123,8 @@ contract CountryAllowListComplianceModuleTest is AbstractComplianceModuleTest {
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver country not in allowlist"
             )
         );
-        smartToken.transfer(user1, 100);
+        bool result = smartToken.transfer(user1, 100);
+        result; // Explicitly unused - we expect this to revert
 
         // Transfer to user2 (Belgium) should succeed
         vm.prank(tokenIssuer);
@@ -135,7 +136,8 @@ contract CountryAllowListComplianceModuleTest is AbstractComplianceModuleTest {
         vm.expectRevert(
             abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity unknown")
         );
-        smartToken.transfer(user3, 100);
+        bool result2 = smartToken.transfer(user3, 100);
+        result2; // Explicitly unused - we expect this to revert
     }
 
     function test_CountryAllowList_SupportsInterface() public view {

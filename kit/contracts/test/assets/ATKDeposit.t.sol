@@ -251,7 +251,8 @@ contract ATKDepositTest is AbstractATKAssetTest {
 
         vm.prank(user1);
         vm.expectRevert(abi.encodeWithSelector(IERC20Errors.ERC20InsufficientBalance.selector, user1, 0, 100));
-        deposit.transfer(user2, 100);
+        bool result = deposit.transfer(user2, 100);
+        result; // Explicitly unused - we expect this to revert
 
         vm.prank(owner);
         deposit.unfreezePartialTokens(user1, 100);

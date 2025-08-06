@@ -52,4 +52,4 @@
   remappings_version = false
 
 [lint]
-  exclude_lints = ["mixed-case-function", "mixed-case-variable", "screaming-snake-case-const", "screaming-snake-case-immutable", "pascal-case-struct"]
+  exclude_lints = ["mixed-case-function", "mixed-case-variable", "screaming-snake-case-const", "screaming-snake-case-immutable", "pascal-case-struct", "asm-keccak256"]

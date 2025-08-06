@@ -1,10 +1,12 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with
+code in this repository.
 
 ## Contracts Module - ATK ERC-3643 Implementation
 
-You are working with the Asset Tokenization Kit's smart contracts module implementing ERC-3643 compliant security tokens with Foundry.
+You are working with the Asset Tokenization Kit's smart contracts module
+implementing ERC-3643 compliant security tokens with Foundry.
 
 ### Core Commands
 
@@ -64,17 +66,20 @@ kit/contracts/
 ### Key Architecture Patterns
 
 **ERC-3643 Token System:**
+
 - SMART tokens implement ERC-3643 standard for regulated securities
 - Identity registry for KYC/AML compliance
 - Modular compliance rules via compliance modules
 - On-chain identity claims following ERC-734/735
 
 **Proxy & Upgradeability:**
+
 - Uses typed proxy pattern (ATKTypedImplementationProxy)
 - UUPS upgradeable pattern for key contracts
 - Access control via ATKTokenAccessManager
 
 **Testing Strategy:**
+
 - Inheritance-based test organization (SMARTCoreTest, SMARTBurnableTest, etc.)
 - Comprehensive test utilities in test/utils/
 - Fuzz testing with bounded inputs
@@ -94,7 +99,7 @@ pragma solidity ^0.8.28;  // Latest contracts use 0.8.28
 
 ```solidity
 test_FunctionName_Success         // Happy path tests
-test_RevertWhen_Condition        // Revert tests  
+test_RevertWhen_Condition        // Revert tests
 testFuzz_FunctionName            // Fuzz tests
 invariant_PropertyName           // Invariant tests
 ```

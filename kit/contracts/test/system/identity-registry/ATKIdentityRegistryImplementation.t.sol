@@ -3,7 +3,8 @@ pragma solidity ^0.8.19;
 
 import { Test } from "forge-std/Test.sol";
 import { ISMARTIdentityRegistry } from "../../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
-import { ATKIdentityRegistryImplementation } from "../../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
+import { ATKIdentityRegistryImplementation } from
+    "../../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
 import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { IdentityUtils } from "../../utils/IdentityUtils.sol";
 import { ClaimUtils } from "../../utils/ClaimUtils.sol";

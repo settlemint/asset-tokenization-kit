@@ -86,7 +86,8 @@ abstract contract SMARTIdentityVerificationTest is AbstractSMARTTest {
 
         vm.prank(clientBE);
         vm.expectRevert(SMARTIdentityVerificationComplianceModule.RecipientNotVerified.selector);
-        token.transfer(clientUnverified, INITIAL_MINT_AMOUNT / 2);
+        bool result = token.transfer(clientUnverified, INITIAL_MINT_AMOUNT / 2);
+        result; // Explicitly unused - we expect this to revert
 
         assertEq(token.balanceOf(clientBE), INITIAL_MINT_AMOUNT, "BE balance should be unchanged");
         assertEq(token.balanceOf(clientUnverified), 0, "Unverified client balance should remain zero");

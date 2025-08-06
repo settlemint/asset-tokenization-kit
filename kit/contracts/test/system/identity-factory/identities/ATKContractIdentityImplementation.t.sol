@@ -2,8 +2,10 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { ATKContractIdentityImplementation } from "../../../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
-import { ATKContractIdentityProxy } from "../../../../contracts/system/identity-factory/identities/ATKContractIdentityProxy.sol";
+import { ATKContractIdentityImplementation } from
+    "../../../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
+import { ATKContractIdentityProxy } from
+    "../../../../contracts/system/identity-factory/identities/ATKContractIdentityProxy.sol";
 import { IATKContractIdentity } from "../../../../contracts/system/identity-factory/identities/IATKContractIdentity.sol";
 import { ZeroAddressNotAllowed } from "../../../../contracts/system/identity-factory/ATKIdentityErrors.sol";
 import { IContractWithIdentity } from "../../../../contracts/system/identity-factory/IContractWithIdentity.sol";
