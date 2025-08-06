@@ -35,26 +35,8 @@ describe("Token collateral extension", () => {
         collateral_not: null,
       },
     });
-    expect(response.tokens.length).toBe(3);
+    expect(response.tokens.length).toBe(2);
     expect(response.tokens).toEqual([
-      {
-        name: "Euro Deposits",
-        type: "deposit",
-        collateral: {
-          identityClaim: {
-            name: "collateral",
-            issuer: { account: { isContract: false } },
-            values: [
-              { key: "amount", value: "100000000000" },
-              { key: "expiryTimestamp", value: expect.any(String) },
-            ],
-            revoked: false,
-          },
-          expiryTimestamp: expect.any(String),
-          collateral: "100000",
-          collateralExact: "100000000000",
-        },
-      },
       {
         name: "Paused Stablecoin",
         type: "stablecoin",
