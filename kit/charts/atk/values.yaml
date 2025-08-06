@@ -488,7 +488,7 @@ observability:
         # -- Memcached Docker image repository
         repository: docker.io/memcached
         # -- Memcached Docker image tag
-        tag: 1.6.38-alpine
+        tag: 1.6.39-alpine
     memcachedExporter:
       image:
         repository: docker.io/prom/memcached-exporter
