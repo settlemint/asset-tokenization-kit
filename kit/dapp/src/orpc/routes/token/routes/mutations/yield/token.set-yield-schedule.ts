@@ -3,7 +3,6 @@ import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { getTransactionReceipt } from "@/orpc/helpers/transaction-receipt";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { read } from "../../token.read";
@@ -70,7 +69,6 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
       requiredExtensions: ["YIELD"],
     })
   )
-  .use(portalMiddleware)
   .handler(async ({ input, context, errors }) => {
     const {
       contract,

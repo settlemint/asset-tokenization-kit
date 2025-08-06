@@ -2,12 +2,10 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import { validateBatchArrays } from "@/orpc/helpers/array-validation";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { tokenMiddleware } from "@/orpc/middlewares/system/token.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { read } from "../../token.read";
 import { call } from "@orpc/server";
+import { read } from "../../token.read";
 
 const TOKEN_SINGLE_BURN_MUTATION = portalGraphql(`
   mutation TokenBurn(
@@ -64,8 +62,7 @@ export const burn = tokenRouter.token.burn
       requiredExtensions: ["BURNABLE"],
     })
   )
-  .use(portalMiddleware)
-  .use(tokenMiddleware)
+
   .handler(async ({ input, context, errors }) => {
     const { contract, verification, addresses, amounts } = input;
     const { auth } = context;

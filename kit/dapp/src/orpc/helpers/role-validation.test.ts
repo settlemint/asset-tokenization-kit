@@ -58,8 +58,9 @@ describe("role-validation", () => {
 
     test("should correctly identify user roles when user has single role", () => {
       const accessControl = {
-        admin: [{ id: mockWallet }],
-        minter: [{ id: anotherWallet }],
+        id: "access-manager-address",
+        admin: [{ id: mockWallet, isContract: false }],
+        minter: [{ id: anotherWallet, isContract: false }],
         burner: [],
       } as unknown as AccessControl;
 
@@ -73,12 +74,19 @@ describe("role-validation", () => {
     });
 
     test("should correctly identify user roles when user has multiple roles", () => {
-      const accessControl: AccessControl = {
-        admin: [{ id: mockWallet }],
-        minter: [{ id: mockWallet }, { id: anotherWallet }],
-        tokenManager: [{ id: anotherWallet }, { id: mockWallet }],
-        pauser: [{ id: anotherWallet }],
-      } as AccessControl;
+      const accessControl = {
+        id: "access-manager-address",
+        admin: [{ id: mockWallet, isContract: false }],
+        minter: [
+          { id: mockWallet, isContract: false },
+          { id: anotherWallet, isContract: false },
+        ],
+        tokenManager: [
+          { id: anotherWallet, isContract: false },
+          { id: mockWallet, isContract: false },
+        ],
+        pauser: [{ id: anotherWallet, isContract: false }],
+      } as unknown as AccessControl;
 
       const result = mapUserRoles(mockWallet, accessControl);
 
@@ -90,11 +98,12 @@ describe("role-validation", () => {
 
     test("should handle case-insensitive wallet address comparison", () => {
       const walletAddress = "0xabCDef1234567890aBCdEF1234567890abCDef";
-      const accessControl: AccessControl = {
-        admin: [{ id: walletAddress.toLowerCase() }],
-        minter: [{ id: walletAddress.toUpperCase() }],
-        burner: [{ id: walletAddress }], // mixed case
-      } as AccessControl;
+      const accessControl = {
+        id: "access-manager-address",
+        admin: [{ id: walletAddress.toLowerCase(), isContract: false }],
+        minter: [{ id: walletAddress.toUpperCase(), isContract: false }],
+        burner: [{ id: walletAddress, isContract: false }], // mixed case
+      } as unknown as AccessControl;
 
       // Test with lowercase wallet
       const resultForLowercase = mapUserRoles(
@@ -125,7 +134,9 @@ describe("role-validation", () => {
     });
 
     test("should handle empty accessControl object", () => {
-      const accessControl = {} as AccessControl;
+      const accessControl = {
+        id: "access-manager-address",
+      } as unknown as AccessControl;
       const result = mapUserRoles(mockWallet, accessControl);
 
       // All roles should be false
@@ -138,8 +149,9 @@ describe("role-validation", () => {
       const accessControl = {
         __typename: "AccessControl",
         __proto__: {},
-        admin: [{ id: mockWallet }],
-        minter: [{ id: anotherWallet }],
+        id: "access-manager-address",
+        admin: [{ id: mockWallet, isContract: false }],
+        minter: [{ id: anotherWallet, isContract: false }],
       } as unknown as AccessControl;
 
       const result = mapUserRoles(mockWallet, accessControl);
@@ -150,7 +162,8 @@ describe("role-validation", () => {
 
     test("should handle accessControl with invalid role values", () => {
       const accessControl = {
-        admin: [{ id: mockWallet }],
+        id: "access-manager-address",
+        admin: [{ id: mockWallet, isContract: false }],
         minter: null, // Invalid value
         burner: "invalid", // Invalid value
         pauser: undefined, // Invalid value
@@ -172,7 +185,8 @@ describe("role-validation", () => {
       // The getAccessControlEntries function validates arrays, so malformed values
       // like null/undefined/non-arrays will be filtered out
       const accessControl = {
-        admin: [{ id: mockWallet }], // Valid
+        id: "access-manager-address",
+        admin: [{ id: mockWallet, isContract: false }], // Valid
         minter: null, // Will be filtered out
         burner: undefined, // Will be filtered out
         pauser: "not-an-array", // Will be filtered out
@@ -189,11 +203,17 @@ describe("role-validation", () => {
     });
 
     test("should return false for all roles when wallet is not in any role", () => {
-      const accessControl: AccessControl = {
-        admin: [{ id: anotherWallet }],
-        minter: [{ id: anotherWallet }],
-        burner: [{ id: "0x9999999999999999999999999999999999999999" }],
-      } as AccessControl;
+      const accessControl = {
+        id: "access-manager-address",
+        admin: [{ id: anotherWallet, isContract: false }],
+        minter: [{ id: anotherWallet, isContract: false }],
+        burner: [
+          {
+            id: "0x9999999999999999999999999999999999999999",
+            isContract: false,
+          },
+        ],
+      } as unknown as AccessControl;
 
       const result = mapUserRoles(mockWallet, accessControl);
 
@@ -211,10 +231,18 @@ describe("role-validation", () => {
       const wallet3 =
         "0x3333333333333333333333333333333333333333" as EthereumAddress;
 
-      const accessControl: AccessControl = {
-        admin: [{ id: wallet1 }, { id: wallet2 }, { id: wallet3 }],
-        minter: [{ id: wallet1 }, { id: wallet3 }],
-      } as AccessControl;
+      const accessControl = {
+        id: "access-manager-address",
+        admin: [
+          { id: wallet1, isContract: false },
+          { id: wallet2, isContract: false },
+          { id: wallet3, isContract: false },
+        ],
+        minter: [
+          { id: wallet1, isContract: false },
+          { id: wallet3, isContract: false },
+        ],
+      } as unknown as AccessControl;
 
       const result1 = mapUserRoles(wallet1, accessControl);
       const result2 = mapUserRoles(wallet2, accessControl);
@@ -273,10 +301,10 @@ describe("role-validation", () => {
           acc[role] = [{ id: mockWallet, isContract: false }];
           return acc;
         },
-        {} as Record<
+        { id: "access-manager-address" } as Record<
           AccessControlRoles,
           { id: EthereumAddress; isContract: boolean }[]
-        >
+        > & { id: string }
       );
 
       const result = mapUserRoles(mockWallet, accessControl);

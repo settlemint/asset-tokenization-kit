@@ -124,6 +124,7 @@ export const tokenMiddleware = baseRouter.middleware(
           > = {
             burn: false,
             create: false,
+            grantRole: false,
             mint: false,
             pause: false,
             addComplianceModule: false,
