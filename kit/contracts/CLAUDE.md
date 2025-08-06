@@ -518,7 +518,7 @@ contract DeployScript is Script {
 }
 
 // Deployment commands:
-// forge script script/Deploy.s.sol --rpc-url sepolia --broadcast --verify -vvvv --interactives 1
+// forge script script/Deploy.s.sol --rpc-url sepolia --broadcast --verify -vvvv --interactive 1
 // forge script script/Deploy.s.sol --rpc-url sepolia --broadcast --verify --resume  # Resume failed
 ```
 
