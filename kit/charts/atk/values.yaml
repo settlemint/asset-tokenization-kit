@@ -514,7 +514,7 @@ observability:
         # -- Repository to get config reloader image from.
         repository: prometheus-operator/prometheus-config-reloader
         # -- Tag of image to use for config reloading.
-        tag: v0.81.0
+        tag: v0.84.1
 
   grafana:
     image:
