@@ -4,7 +4,7 @@
   "private": false,
   "license": "FSL-1.1-MIT",
   "scripts": {
-    "compile:typescript": "tsc --noEmit",
+    "compile:typescript": "tsgo --noEmit",
     "dependencies": "bun run tools/dependencies.ts",
     "compile:forge": "settlemint scs foundry build --sizes",
     "compile:hardhat": "settlemint scs hardhat build",
