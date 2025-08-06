@@ -232,8 +232,6 @@ initContainer:
         endpoint: "blockscout-frontend-svc.atk.svc.cluster.local:80"
 
 
-
-
   # Specific check for GraphQL endpoint readiness (e.g., The Graph subgraph)
   graphQLCheck:
     enabled: true

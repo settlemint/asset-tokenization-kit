@@ -98,18 +98,5 @@ A Helm chart for Graph Node
 | store | object | `{"primary":{"connection":"postgresql://${PRIMARY_SUBGRAPH_DATA_PGUSER}:${PRIMARY_SUBGRAPH_DATA_PGPASSWORD}@${PRIMARY_SUBGRAPH_DATA_PGHOST}:${PRIMARY_SUBGRAPH_DATA_PGPORT}/${PRIMARY_SUBGRAPH_DATA_PGDATABASE}","enabled":true}}` | Store configuration for Graph Node |
 | store.primary.connection | string | `"postgresql://${PRIMARY_SUBGRAPH_DATA_PGUSER}:${PRIMARY_SUBGRAPH_DATA_PGPASSWORD}@${PRIMARY_SUBGRAPH_DATA_PGHOST}:${PRIMARY_SUBGRAPH_DATA_PGPORT}/${PRIMARY_SUBGRAPH_DATA_PGDATABASE}"` | PostgreSQL connection string for primary shard |
 | store.primary.enabled | bool | `true` | Enable this store for Graph Node |
-| subgraphDeploy.backoffLimit | int | `2` | Job configuration |
-| subgraphDeploy.contractCheckDelay | int | `10` |  |
-| subgraphDeploy.contractCheckMaxAttempts | int | `12` | Contract deployment check configuration |
-| subgraphDeploy.curlImage | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/curlimages/curl","tag":"8.15.0"}` | Curl image for health checks |
-| subgraphDeploy.enabled | bool | `true` | Enable automated subgraph deployment |
-| subgraphDeploy.graphNodeCheckDelay | int | `10` |  |
-| subgraphDeploy.graphNodeCheckMaxAttempts | int | `30` | Graph node readiness check configuration |
-| subgraphDeploy.image | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/asset-tokenization-kit","tag":"2.0.0-main0d06815fc"}` | Docker image for subgraph deployment (ATK image with bun and git) |
-| subgraphDeploy.logLevel | string | `"info"` | Log level for deployment |
-| subgraphDeploy.resources | object | `{"container":{"limits":{"cpu":2,"memory":"2Gi"},"requests":{"cpu":"500m","memory":"1Gi"}},"initContainer":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}}` | Resource requirements |
-| subgraphDeploy.serviceAccount | object | `{"create":true}` | Service account configuration for subgraph deployment |
-| subgraphDeploy.ttlSecondsAfterFinished | int | `300` |  |
-| subgraphDeploy.workspaceSize | string | `"2Gi"` | Workspace size for job |
 | terminationGracePeriodSeconds | int | `60` |  |
 | tolerations | list | `[]` | Specify [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
