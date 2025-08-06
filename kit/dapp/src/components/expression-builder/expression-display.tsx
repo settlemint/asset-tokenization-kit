@@ -15,8 +15,7 @@ import { useTranslation } from "react-i18next";
 
 export interface ExpressionDisplayProps {
   expressionWithGroups: ExpressionWithGroups;
-  onRemove: (index: number) => void;
-
+  onRemove: (index: number | [number, number]) => void;
   onClear: () => void;
 
   openGroups: number;
@@ -143,7 +142,7 @@ function ExpressionItem({
   onRemove,
 }: {
   expressionItem: ExpressionItem;
-  onRemove: (index: number) => void;
+  onRemove: (index: number | [number, number]) => void;
 }) {
   const [hover, setHover] = useState(false);
   return (
@@ -169,12 +168,7 @@ function ExpressionItem({
         {hover && (
           <button
             onClick={() => {
-              if (typeof expressionItem.removeIndexes === "number") {
-                onRemove(expressionItem.removeIndexes);
-              } else {
-                onRemove(expressionItem.removeIndexes[0]);
-                onRemove(expressionItem.removeIndexes[1]);
-              }
+              onRemove(expressionItem.removeIndexes);
             }}
             className="absolute -top-1 -right-1 text-white bg-gray-500 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
           >

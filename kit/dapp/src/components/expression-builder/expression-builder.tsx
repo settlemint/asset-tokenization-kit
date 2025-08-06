@@ -51,7 +51,7 @@ export function ExpressionBuilder({
     onChange(newExpression);
   };
 
-  const handleRemoveItem = (index: number) => {
+  const handleRemoveItem = (index: number | number[]) => {
     const newExpression = removeItemAtIndex(expressionWithGroups, index);
     onChange(newExpression);
   };

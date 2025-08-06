@@ -28,7 +28,7 @@
     "smartIdentityVerification": {
       "description": "Require identity verification for all investors. Provides KYC and AML compliance through the SMART protocol.",
       "shortDescription": "Require identity verification",
-      "title": "Identity Verification"
+      "title": "SMART Identity Verification"
     }
   },
   "title": "Compliance",

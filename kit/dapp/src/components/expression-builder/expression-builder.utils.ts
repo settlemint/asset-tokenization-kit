@@ -19,10 +19,22 @@ export function validateUIExpression(
  */
 export function removeItemAtIndex(
   expression: ExpressionWithGroups,
-  index: number
+  index: number | number[]
 ): ExpressionWithGroups {
-  const newExpression = [...expression];
-  newExpression.splice(index, 1);
+  if (typeof index === "number") {
+    const newExpression = [...expression];
+    newExpression.splice(index, 1);
+
+    return newExpression;
+  }
+
+  const newExpression: ExpressionWithGroups = [];
+  for (const [currentIndex, item] of expression.entries()) {
+    if (index.includes(currentIndex)) {
+      continue;
+    }
+    newExpression.push(item);
+  }
   return newExpression;
 }
 
