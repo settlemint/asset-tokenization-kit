@@ -41,7 +41,7 @@ export function GrantRoleSheet({
             input: { tokenAddress: asset.id },
           }).queryKey,
         });
-        toast.success("Role granted successfully");
+
         handleClose();
       },
       onError: (error) => {
@@ -62,7 +62,6 @@ export function GrantRoleSheet({
         success: "Role granted successfully",
         error: "Failed to grant role",
       });
-      form.reset();
     },
   });
 
