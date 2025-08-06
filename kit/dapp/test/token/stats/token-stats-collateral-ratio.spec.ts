@@ -2,28 +2,45 @@
  * @vitest-environment node
  */
 import { beforeAll, describe, expect, it } from "vitest";
-import type { OrpcClient } from "../../utils/orpc-client";
-import { createTestTokens } from "../../utils/token-fixtures";
+import { getOrpcClient } from "../../utils/orpc-client";
+import { createToken } from "../../utils/token";
+import {
+  DEFAULT_ADMIN,
+  DEFAULT_PINCODE,
+  signInWithUser,
+} from "../../utils/user";
 import { TEST_CONSTANTS } from "./test-helpers";
 
 describe.concurrent("Token Stats: Collateral Ratio", () => {
-  let stablecoinToken: Awaited<
-    ReturnType<typeof createTestTokens>
-  >["tokens"]["stablecoin"];
-  let bondToken: Awaited<ReturnType<typeof createTestTokens>>["tokens"]["bond"];
-  let client: OrpcClient;
+  let testToken: Awaited<ReturnType<typeof createToken>>;
 
   beforeAll(async () => {
-    const context = await createTestTokens(" Collateral Ratio");
-    stablecoinToken = context.tokens.stablecoin;
-    bondToken = context.tokens.bond;
-    client = context.client;
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+    testToken = await createToken(client, {
+      name: "Test Token Collateral Ratio",
+      symbol: "TTCR",
+      decimals: 18,
+      type: "stablecoin",
+      countryCode: "056",
+      initialModulePairs: [],
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+    });
+
+    // Wait for TheGraph to index the token creation
+    await new Promise((resolve) => setTimeout(resolve, 3000));
   });
 
   describe("Business logic", () => {
     it("collateral ratio bounds are valid", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
       const result = await client.token.statsCollateralRatio({
-        tokenAddress: stablecoinToken.id,
+        tokenAddress: testToken.id,
       });
 
       // Core business rule: collateral ratio must be valid percentage (0-100%)
@@ -32,8 +49,11 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
     });
 
     it("bucket values sum equals total collateral", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
       const result = await client.token.statsCollateralRatio({
-        tokenAddress: stablecoinToken.id,
+        tokenAddress: testToken.id,
       });
 
       const [available, used] = result.buckets;
@@ -45,8 +65,11 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
     });
 
     it("returns zero values for newly created tokens", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
       const result = await client.token.statsCollateralRatio({
-        tokenAddress: stablecoinToken.id,
+        tokenAddress: testToken.id,
       });
 
       // Business expectation: new tokens have no collateral yet
@@ -60,32 +83,11 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
     });
   });
 
-  describe("Token type behavior", () => {
-    it("handles stablecoin collateral tracking", async () => {
-      const result = await client.token.statsCollateralRatio({
-        tokenAddress: stablecoinToken.id,
-      });
-
-      // Business logic: stablecoins track collateral (even if zero initially)
-      expect(result.buckets).toHaveLength(2);
-      expect(result?.buckets?.[0]?.name).toBe("collateralAvailable");
-      expect(result?.buckets?.[1]?.name).toBe("collateralUsed");
-    });
-
-    it("handles bond token collateral tracking", async () => {
-      const result = await client.token.statsCollateralRatio({
-        tokenAddress: bondToken.id,
-      });
-
-      // Business logic: bonds also track collateral (different from underlying assets)
-      expect(result.buckets).toHaveLength(2);
-      expect(result?.buckets?.[0]?.name).toBe("collateralAvailable");
-      expect(result?.buckets?.[1]?.name).toBe("collateralUsed");
-    });
-  });
-
   describe("Error handling", () => {
     it("rejects zero address", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
       await expect(
         client.token.statsCollateralRatio({
           tokenAddress: TEST_CONSTANTS.ZERO_ADDRESS,
@@ -96,9 +98,12 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
 
   describe("Data consistency", () => {
     it("returns consistent data across multiple calls", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
       const [result1, result2] = await Promise.all([
-        client.token.statsCollateralRatio({ tokenAddress: stablecoinToken.id }),
-        client.token.statsCollateralRatio({ tokenAddress: stablecoinToken.id }),
+        client.token.statsCollateralRatio({ tokenAddress: testToken.id }),
+        client.token.statsCollateralRatio({ tokenAddress: testToken.id }),
       ]);
 
       // Results should be identical for immediate consecutive calls

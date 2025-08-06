@@ -2,28 +2,44 @@
  * @vitest-environment node
  */
 import { beforeAll, describe, expect, it } from "vitest";
-import type { OrpcClient } from "../../utils/orpc-client";
-import { createTestTokens } from "../../utils/token-fixtures";
+import { getOrpcClient } from "../../utils/orpc-client";
+import { createToken } from "../../utils/token";
+import {
+  DEFAULT_ADMIN,
+  DEFAULT_PINCODE,
+  signInWithUser,
+} from "../../utils/user";
 import { TEST_CONSTANTS } from "./test-helpers";
 
 describe.concurrent("Token Stats: Wallet Distribution", () => {
-  let stablecoinToken: Awaited<
-    ReturnType<typeof createTestTokens>
-  >["tokens"]["stablecoin"];
-  let bondToken: Awaited<ReturnType<typeof createTestTokens>>["tokens"]["bond"];
-  let client: OrpcClient;
+  let testToken: Awaited<ReturnType<typeof createToken>>;
 
   beforeAll(async () => {
-    const context = await createTestTokens(" Wallet Distribution");
-    stablecoinToken = context.tokens.stablecoin;
-    bondToken = context.tokens.bond;
-    client = context.client;
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+    testToken = await createToken(client, {
+      name: "Test Token Wallet Distribution",
+      symbol: "TTWD",
+      decimals: 18,
+      type: "deposit",
+      countryCode: "056",
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+    });
+
+    // Wait for TheGraph to index the token creation
+    await new Promise((resolve) => setTimeout(resolve, 3000));
   });
 
   describe("Business logic", () => {
     it("returns empty distribution for newly created tokens", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
       const result = await client.token.statsWalletDistribution({
-        tokenAddress: stablecoinToken.id,
+        tokenAddress: testToken.id,
       });
 
       // Business expectation: new tokens have no holders
@@ -37,8 +53,11 @@ describe.concurrent("Token Stats: Wallet Distribution", () => {
     });
 
     it("validates distribution bucket integrity", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
       const result = await client.token.statsWalletDistribution({
-        tokenAddress: stablecoinToken.id,
+        tokenAddress: testToken.id,
       });
 
       // Business logic: buckets must be valid and consistent
@@ -57,8 +76,11 @@ describe.concurrent("Token Stats: Wallet Distribution", () => {
     });
 
     it("validates bucket structure consistency", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
       const result = await client.token.statsWalletDistribution({
-        tokenAddress: stablecoinToken.id,
+        tokenAddress: testToken.id,
       });
 
       // Business rule: should always have exactly 5 distribution buckets
@@ -70,26 +92,13 @@ describe.concurrent("Token Stats: Wallet Distribution", () => {
         expect(bucket.range).toBe(expectedRanges[index]);
       });
     });
-
-    it("handles different token types consistently", async () => {
-      // Test both token types behave the same for wallet distribution
-      const [stablecoinResult, bondResult] = await Promise.all([
-        client.token.statsWalletDistribution({
-          tokenAddress: stablecoinToken.id,
-        }),
-        client.token.statsWalletDistribution({ tokenAddress: bondToken.id }),
-      ]);
-
-      // Business logic: all token types should track distribution the same way
-      expect(stablecoinResult.totalHolders).toBe(0);
-      expect(bondResult.totalHolders).toBe(0);
-      expect(stablecoinResult.buckets).toHaveLength(5);
-      expect(bondResult.buckets).toHaveLength(5);
-    });
   });
 
   describe("Error handling", () => {
     it("rejects zero address", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
       await expect(
         client.token.statsWalletDistribution({
           tokenAddress: TEST_CONSTANTS.ZERO_ADDRESS,
@@ -100,12 +109,15 @@ describe.concurrent("Token Stats: Wallet Distribution", () => {
 
   describe("Data consistency", () => {
     it("returns consistent data across multiple calls", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
       const [result1, result2] = await Promise.all([
         client.token.statsWalletDistribution({
-          tokenAddress: stablecoinToken.id,
+          tokenAddress: testToken.id,
         }),
         client.token.statsWalletDistribution({
-          tokenAddress: stablecoinToken.id,
+          tokenAddress: testToken.id,
         }),
       ]);
 

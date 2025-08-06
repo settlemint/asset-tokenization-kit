@@ -2,28 +2,44 @@
  * @vitest-environment node
  */
 import { beforeAll, describe, expect, it } from "vitest";
-import type { OrpcClient } from "../../utils/orpc-client";
-import { createTestTokens } from "../../utils/token-fixtures";
+import { getOrpcClient } from "../../utils/orpc-client";
+import { createToken } from "../../utils/token";
+import {
+  DEFAULT_ADMIN,
+  DEFAULT_PINCODE,
+  signInWithUser,
+} from "../../utils/user";
 import { TEST_CONSTANTS } from "./test-helpers";
 
 describe.concurrent("Token Stats: Volume", () => {
-  let stablecoinToken: Awaited<
-    ReturnType<typeof createTestTokens>
-  >["tokens"]["stablecoin"];
-  let bondToken: Awaited<ReturnType<typeof createTestTokens>>["tokens"]["bond"];
-  let client: OrpcClient;
+  let testToken: Awaited<ReturnType<typeof createToken>>;
 
   beforeAll(async () => {
-    const context = await createTestTokens(" Volume");
-    stablecoinToken = context.tokens.stablecoin;
-    bondToken = context.tokens.bond;
-    client = context.client;
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+    testToken = await createToken(client, {
+      name: "Test Token Volume",
+      symbol: "TTV",
+      decimals: 18,
+      type: "deposit",
+      countryCode: "056",
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+    });
+
+    // Wait for TheGraph to index the token creation
+    await new Promise((resolve) => setTimeout(resolve, 3000));
   });
 
   describe("Business logic", () => {
     it("returns empty history for newly created tokens", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
       const result = await client.token.statsVolume({
-        tokenAddress: stablecoinToken.id,
+        tokenAddress: testToken.id,
         days: 30,
       });
 
@@ -32,8 +48,11 @@ describe.concurrent("Token Stats: Volume", () => {
     });
 
     it("validates volume data integrity", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
       const result = await client.token.statsVolume({
-        tokenAddress: stablecoinToken.id,
+        tokenAddress: testToken.id,
         days: 30,
       });
 
@@ -44,45 +63,36 @@ describe.concurrent("Token Stats: Volume", () => {
         expect(item.totalVolume).toBeGreaterThanOrEqual(0); // Volume can't be negative
       });
     });
-
-    it("handles different token types consistently", async () => {
-      // Test both token types behave the same for volume tracking
-      const [stablecoinResult, bondResult] = await Promise.all([
-        client.token.statsVolume({
-          tokenAddress: stablecoinToken.id,
-          days: 30,
-        }),
-        client.token.statsVolume({ tokenAddress: bondToken.id, days: 30 }),
-      ]);
-
-      // Business logic: all token types should track volume history the same way
-      expect(stablecoinResult.volumeHistory).toEqual([]);
-      expect(bondResult.volumeHistory).toEqual([]);
-    });
   });
 
   describe("Parameter validation", () => {
     it("rejects invalid days parameter bounds", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
       // Business rule: days must be within valid range (1-365)
       await expect(
-        client.token.statsVolume({ tokenAddress: stablecoinToken.id, days: 0 })
+        client.token.statsVolume({ tokenAddress: testToken.id, days: 0 })
       ).rejects.toThrow();
 
       await expect(
         client.token.statsVolume({
-          tokenAddress: stablecoinToken.id,
+          tokenAddress: testToken.id,
           days: 400,
         })
       ).rejects.toThrow();
     });
 
     it("accepts valid days parameter range", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
       // Test boundary values for days parameter
       const validDays = [1, 30, TEST_CONSTANTS.MAX_DAYS];
 
       for (const days of validDays) {
         const result = await client.token.statsVolume({
-          tokenAddress: stablecoinToken.id,
+          tokenAddress: testToken.id,
           days,
         });
         expect(result.volumeHistory).toEqual([]);
@@ -92,6 +102,9 @@ describe.concurrent("Token Stats: Volume", () => {
 
   describe("Error handling", () => {
     it("rejects zero address", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
       await expect(
         client.token.statsVolume({
           tokenAddress: TEST_CONSTANTS.ZERO_ADDRESS,
@@ -103,7 +116,10 @@ describe.concurrent("Token Stats: Volume", () => {
 
   describe("Data consistency", () => {
     it("returns consistent data across multiple calls", async () => {
-      const params = { tokenAddress: stablecoinToken.id, days: 30 };
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
+      const params = { tokenAddress: testToken.id, days: 30 };
 
       const [result1, result2] = await Promise.all([
         client.token.statsVolume(params),

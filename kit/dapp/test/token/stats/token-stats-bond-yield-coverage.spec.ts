@@ -3,26 +3,64 @@
  */
 import { toNumber } from "dnum";
 import { beforeAll, describe, expect, it } from "vitest";
-import type { OrpcClient } from "../../utils/orpc-client";
-import { createTestTokens } from "../../utils/token-fixtures";
+import { getOrpcClient } from "../../utils/orpc-client";
+import { createToken } from "../../utils/token";
+import {
+  DEFAULT_ADMIN,
+  DEFAULT_PINCODE,
+  signInWithUser,
+} from "../../utils/user";
 import { TEST_CONSTANTS } from "./test-helpers";
 
 describe.concurrent("Token Stats: Bond Yield Coverage", () => {
-  let bondToken: Awaited<ReturnType<typeof createTestTokens>>["tokens"]["bond"];
-  let stablecoinToken: Awaited<
-    ReturnType<typeof createTestTokens>
-  >["tokens"]["stablecoin"];
-  let client: OrpcClient;
+  let bondToken: Awaited<ReturnType<typeof createToken>>;
+  let stablecoinToken: Awaited<ReturnType<typeof createToken>>;
 
   beforeAll(async () => {
-    const context = await createTestTokens(" Yield Coverage");
-    bondToken = context.tokens.bond;
-    stablecoinToken = context.tokens.stablecoin;
-    client = context.client;
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+
+    // Create bond token
+    bondToken = await createToken(client, {
+      name: "Test Bond Token Yield Coverage",
+      symbol: "TBTYC",
+      decimals: 18,
+      type: "bond",
+      countryCode: "056",
+      cap: "1000000",
+      faceValue: "1000",
+      maturityDate: (Date.now() + 365 * 24 * 60 * 60 * 1000).toString(),
+      denominationAsset: "0x0000000000000000000000000000000001",
+      initialModulePairs: [],
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+    });
+
+    // Create stablecoin token
+    stablecoinToken = await createToken(client, {
+      name: "Test Stablecoin Token Yield Coverage",
+      symbol: "TSTYC",
+      decimals: 18,
+      type: "stablecoin",
+      countryCode: "056",
+      initialModulePairs: [],
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+    });
+
+    // Wait for TheGraph to index the token creation
+    await new Promise((resolve) => setTimeout(resolve, 3000));
   });
 
   describe("Business logic", () => {
     it("yield schedule logic is consistent", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
       const result = await client.token.statsBondYieldCoverage({
         tokenAddress: bondToken.id,
       });
@@ -34,6 +72,9 @@ describe.concurrent("Token Stats: Bond Yield Coverage", () => {
     });
 
     it("coverage percentage is valid", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
       const result = await client.token.statsBondYieldCoverage({
         tokenAddress: bondToken.id,
       });
@@ -45,6 +86,9 @@ describe.concurrent("Token Stats: Bond Yield Coverage", () => {
     });
 
     it("newly created bonds have no yield schedule", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
       const result = await client.token.statsBondYieldCoverage({
         tokenAddress: bondToken.id,
       });
@@ -58,6 +102,9 @@ describe.concurrent("Token Stats: Bond Yield Coverage", () => {
 
   describe("Non-bond tokens", () => {
     it("returns default values for non-bond tokens", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
       const result = await client.token.statsBondYieldCoverage({
         tokenAddress: stablecoinToken.id,
       });
@@ -71,6 +118,9 @@ describe.concurrent("Token Stats: Bond Yield Coverage", () => {
 
   describe("Error handling", () => {
     it("rejects zero address", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
       await expect(
         client.token.statsBondYieldCoverage({
           tokenAddress: TEST_CONSTANTS.ZERO_ADDRESS,
@@ -81,6 +131,9 @@ describe.concurrent("Token Stats: Bond Yield Coverage", () => {
 
   describe("Data consistency", () => {
     it("returns consistent data across multiple calls", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
       const [result1, result2] = await Promise.all([
         client.token.statsBondYieldCoverage({ tokenAddress: bondToken.id }),
         client.token.statsBondYieldCoverage({ tokenAddress: bondToken.id }),
