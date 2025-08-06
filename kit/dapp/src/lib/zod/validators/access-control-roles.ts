@@ -88,3 +88,10 @@ export const accessControlRoles: z.ZodObject<
 export const accessControlRole = z.enum(
   Object.keys(accessControlRoles.shape) as AccessControlRoles[]
 );
+
+export const assetAccessControlRoles: AccessControlRoles[] = [
+  "governance",
+  "supplyManagement",
+  "custodian",
+  "emergency",
+];
