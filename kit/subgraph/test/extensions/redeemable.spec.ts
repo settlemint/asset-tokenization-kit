@@ -21,7 +21,7 @@ describe("Token redeemable extension", () => {
         redeemable_not: null,
       },
     });
-    expect(response.tokens.length).toBe(1);
+    expect(response.tokens.length).toBe(3);
     expect(response.tokens).toEqual([
       {
         name: "Euro Bonds",
