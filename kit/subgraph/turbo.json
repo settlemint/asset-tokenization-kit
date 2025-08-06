@@ -29,7 +29,7 @@
       "dependsOn": ["package", "^publish"]
     },
     "test:integration": {
-      "dependsOn": ["test"]
+      "dependsOn": ["publish", "test"]
     },
     "translate": {},
     "artifacts": {
