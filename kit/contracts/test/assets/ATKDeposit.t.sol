@@ -139,7 +139,6 @@ contract ATKDepositTest is AbstractATKAssetTest {
         assertEq(deposit.balanceOf(user1), INITIAL_SUPPLY);
         assertEq(deposit.totalSupply(), INITIAL_SUPPLY);
 
-
         vm.startPrank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -183,7 +182,6 @@ contract ATKDepositTest is AbstractATKAssetTest {
 
         assertTrue(deposit.paused());
     }
-
 
     // ERC20 custodian tests
     function test_OnlyUserManagementCanFreeze() public {

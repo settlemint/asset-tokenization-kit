@@ -451,8 +451,8 @@ contract ATKDepositImplementation is
 
     /// @notice Hook that is called before tokens are minted
     /// @dev This hook chains validation logic from multiple extensions:
-    ///      2. SMARTCustodianUpgradeable: Checks if recipient is frozen
-    ///      3. SMARTUpgradeable: Performs compliance and identity checks
+    ///      1. SMARTCustodianUpgradeable: Checks if recipient is frozen
+    ///      2. SMARTUpgradeable: Performs compliance and identity checks
     /// @param to The address that will receive the minted tokens
     /// @param amount The amount of tokens to be minted
     /// @inheritdoc SMARTHooks
