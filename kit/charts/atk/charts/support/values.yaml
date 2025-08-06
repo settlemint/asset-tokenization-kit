@@ -11,10 +11,7 @@ postgresql:
     pullPolicy: IfNotPresent
 
   # Image pull secrets
-  imagePullSecrets:
-    - name: image-pull-secret-docker
-    - name: image-pull-secret-ghcr
-    - name: image-pull-secret-harbor
+  imagePullSecrets: []
 
   # PostgreSQL configuration
   postgresql:
@@ -112,10 +109,7 @@ ingress-nginx:
     image:
       registry: registry.k8s.io
   fullnameOverride: 'ingress-nginx'
-  imagePullSecrets:
-    - image-pull-secret-docker
-    - image-pull-secret-ghcr
-    - image-pull-secret-harbor
+  imagePullSecrets: []
   defaultBackend:
     enabled: false
   controller:
@@ -279,10 +273,7 @@ reloader:
   enabled: true
   fullnameOverride: 'reloader'
   global:
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
+    imagePullSecrets: []
   image:
     name: stakater/reloader
     repository: ghcr.io/stakater/reloader
@@ -361,10 +352,3 @@ minio:
     path: /
     hosts:
       - minio-console.k8s.orb.local
-
-  # Image pull secrets (using global scope to avoid template bug)
-  global:
-    imagePullSecrets:
-      - image-pull-secret-docker
-      - image-pull-secret-ghcr
-      - image-pull-secret-harbor

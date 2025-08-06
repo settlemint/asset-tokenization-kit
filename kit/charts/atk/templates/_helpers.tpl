@@ -88,46 +88,37 @@ Common annotations
 
 {{/*
 Common image pull secrets for all deployments/statefulsets
+This is now handled by atk.common.imagePullSecrets in _common-helpers.tpl
 */}}
 {{- define "atk.imagePullSecrets" -}}
-{{- if .Values.global }}
-{{- if .Values.global.imagePullSecrets }}
-imagePullSecrets:
-{{- range .Values.global.imagePullSecrets }}
-  - name: {{ . }}
-{{- end }}
-{{- else }}
-imagePullSecrets:
-  - name: image-pull-secret-docker
-  - name: image-pull-secret-ghcr
-  - name: image-pull-secret-harbor
-{{- end }}
-{{- else }}
-imagePullSecrets:
-  - name: image-pull-secret-docker
-  - name: image-pull-secret-ghcr
-  - name: image-pull-secret-harbor
-{{- end }}
+{{- include "atk.common.imagePullSecrets" . -}}
 {{- end }}
 
 {{/*
 Common image pull secrets list (without the key, for flexible usage)
 */}}
 {{- define "atk.imagePullSecretsList" -}}
-{{- if .Values.global }}
-{{- if .Values.global.imagePullSecrets }}
-{{- range .Values.global.imagePullSecrets }}
+{{- $root := . -}}
+{{- $secrets := list -}}
+{{- $credentials := .Values.imagePullCredentials | default .Values.global.imagePullCredentials -}}
+{{- if $credentials -}}
+  {{- if $credentials.registries -}}
+    {{- range $name, $registry := $credentials.registries -}}
+      {{- if $registry.enabled -}}
+        {{- $secrets = append $secrets (printf "image-pull-secret-%s" $name) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- else if .Values.global -}}
+  {{- if .Values.global.imagePullSecrets -}}
+    {{- $secrets = .Values.global.imagePullSecrets -}}
+  {{- end -}}
+{{- end -}}
+{{- if .Values.imagePullSecrets -}}
+  {{- $secrets = .Values.imagePullSecrets -}}
+{{- end -}}
+{{- range $secrets }}
 - name: {{ . }}
-{{- end }}
-{{- else }}
-- name: image-pull-secret-docker
-- name: image-pull-secret-ghcr
-- name: image-pull-secret-harbor
-{{- end }}
-{{- else }}
-- name: image-pull-secret-docker
-- name: image-pull-secret-ghcr
-- name: image-pull-secret-harbor
 {{- end }}
 {{- end }}
 

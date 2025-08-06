@@ -146,7 +146,6 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | global.artifacts.image.registry | string | `"ghcr.io"` |  |
 | global.artifacts.image.repository | string | `"settlemint/asset-tokenization-kit-artifacts"` |  |
 | global.artifacts.image.tag | string | `"2.0.0"` |  |
-| global.ingressNamespace | string | `"ingress-nginx"` |  |
 | global.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | global.networkPolicy.enabled | bool | `false` |  |
 | graph-node.enabled | bool | `true` |  |
@@ -187,7 +186,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | support.ingress-nginx.replicaCount | int | `1` |  |
 | support.minio.enabled | bool | `true` |  |
 | support.minio.image.repository | string | `"docker.io/minio/minio"` |  |
-| support.minio.image.tag | string | `"RELEASE.2025-07-18T21-56-31Z"` |  |
+| support.minio.image.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` |  |
 | support.minio.ingress.enabled | bool | `true` |  |
 | support.minio.ingress.hosts[0] | string | `"minio.k8s.orb.local"` |  |
 | support.minio.ingress.ingressClassName | string | `"atk-nginx"` |  |

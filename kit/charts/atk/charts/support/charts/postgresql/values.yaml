@@ -8,12 +8,6 @@ image:
   tag: "17.5-alpine"
   pullPolicy: IfNotPresent
 
-# Image pull secrets
-imagePullSecrets:
-  - name: image-pull-secret-docker
-  - name: image-pull-secret-ghcr
-  - name: image-pull-secret-harbor
-
 # PostgreSQL configuration
 postgresql:
   # Default superuser

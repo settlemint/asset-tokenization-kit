@@ -1,41 +1,48 @@
-imagePullCredentials:
-  registries:
-    #-- lowercase, no points or special caracters unique identifier for the registry, ghcr and docker have special meaning, but you can add more
-    harbor:
-      # -- Enable this if you want this chart to create an image pull secret for you
-      enabled: true
-      # -- The registry hosting the packages, e.g docker.io or ghcr.io
-      registry: "harbor.settlemint.com"
-      # -- The username to access the registry
-      username: "op://platform/harbor-release/username"
-      # -- The password or access token to access the registry
-      password: "op://platform/harbor-release/password"
-      # -- The email to access the registry
-      email: "op://platform/email/username"
-    #-- lowercase, no points or special caracters unique identifier for the registry, ghcr and docker have special meaning, but you can add more
-    ghcr:
-      # -- Enable this if you want this chart to create an image pull secret for you
-      enabled: true
-      # -- The registry hosting the packages, e.g docker.io or ghcr.io
-      registry: ghcr.io
-      # -- The username to access the registry
-      username: "op://platform/github-commit-pat/username"
-      # -- The password or access token to access the registry
-      password: "op://platform/github-commit-pat/package-token-harbor"
-      # -- The email to access the registry
-      email: "op://platform/github-commit-pat/email"
-    #-- lowercase, no points or special caracters unique identifier for the registry, ghcr and docker have special meaning, but you can add more
-    docker:
-      # -- Enable this if you want this chart to create an image pull secret for you
-      enabled: true
-      # -- The registry hosting the packages, e.g docker.io or ghcr.io
-      registry: "docker.io"
-      # -- The username to access the registry
-      username: "op://platform/dockerhub/username"
-      # -- The password or access token to access the registry
-      password: "op://platform/dockerhub/credential"
-      # -- The email to access the registry
-      email: "op://platform/dockerhub/email"
+# Global configuration that makes imagePullSecrets dynamic for all charts
+global:
+  # Global imagePullSecrets in standard object format (compatible with most charts)
+  imagePullSecrets:
+    - name: image-pull-secret-docker
+    - name: image-pull-secret-ghcr
+    - name: image-pull-secret-harbor
+  imagePullCredentials:
+    registries:
+      #-- lowercase, no points or special caracters unique identifier for the registry, ghcr and docker have special meaning, but you can add more
+      harbor:
+        # -- Enable this if you want this chart to create an image pull secret for you
+        enabled: true
+        # -- The registry hosting the packages, e.g docker.io or ghcr.io
+        registry: "harbor.settlemint.com"
+        # -- The username to access the registry
+        username: "op://platform/harbor-release/username"
+        # -- The password or access token to access the registry
+        password: "op://platform/harbor-release/password"
+        # -- The email to access the registry
+        email: "op://platform/email/username"
+      #-- lowercase, no points or special caracters unique identifier for the registry, ghcr and docker have special meaning, but you can add more
+      ghcr:
+        # -- Enable this if you want this chart to create an image pull secret for you
+        enabled: true
+        # -- The registry hosting the packages, e.g docker.io or ghcr.io
+        registry: ghcr.io
+        # -- The username to access the registry
+        username: "op://platform/github-commit-pat/username"
+        # -- The password or access token to access the registry
+        password: "op://platform/github-commit-pat/package-token-harbor"
+        # -- The email to access the registry
+        email: "op://platform/github-commit-pat/email"
+      #-- lowercase, no points or special caracters unique identifier for the registry, ghcr and docker have special meaning, but you can add more
+      docker:
+        # -- Enable this if you want this chart to create an image pull secret for you
+        enabled: true
+        # -- The registry hosting the packages, e.g docker.io or ghcr.io
+        registry: "docker.io"
+        # -- The username to access the registry
+        username: "op://platform/dockerhub/username"
+        # -- The password or access token to access the registry
+        password: "op://platform/dockerhub/credential"
+        # -- The email to access the registry
+        email: "op://platform/dockerhub/email"
 
 # Resource configurations for development environment
 # These are reasonable defaults for OrbStack/local development
@@ -43,46 +50,11 @@ imagePullCredentials:
 # PodDisruptionBudget configurations
 # For development, we typically don't need PDBs, but for production they should be enabled
 
-# Configure imagePullSecrets for all services
-besu-network:
-  besu-validator-1:
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
-  besu-validator-2:
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
-  besu-validator-3:
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
-  besu-validator-4:
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
-  besu-rpc-1:
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
-  besu-rpc-2:
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
+# No need to configure imagePullSecrets anymore - they are automatically generated from global.imagePullCredentials
 
-erpc:
-  image:
-    pullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
+# erpc imagePullSecrets are now automatically generated
 
+# blockscout uses a third-party chart that doesn't support our common helpers
 blockscout:
   blockscout-stack:
     imagePullSecrets:
@@ -90,40 +62,21 @@ blockscout:
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
 
-graph-node:
-  imagePullSecrets:
-    - name: image-pull-secret-docker
-    - name: image-pull-secret-ghcr
-    - name: image-pull-secret-harbor
+# graph-node imagePullSecrets are now automatically generated
 
-hasura:
-  graphql-engine:
-    global:
-      imagePullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
+# hasura imagePullSecrets are now automatically generated from global
 
-portal:
-  image:
-    pullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
+# portal imagePullSecrets are now automatically generated
 
+# support services imagePullSecrets are now automatically generated
 support:
   ingress-nginx:
     imagePullSecrets:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
-  redis:
-    image:
-      pullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
 
+# observability services imagePullSecrets are now automatically generated
 observability:
   metrics-server:
     imagePullSecrets:
@@ -146,6 +99,17 @@ observability:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
+  grafana:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+  prometheus-node-exporter:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
   alloy:
     global:
       image:
@@ -153,47 +117,15 @@ observability:
           - name: image-pull-secret-docker
           - name: image-pull-secret-ghcr
           - name: image-pull-secret-harbor
-  alertmanager:
-    alertmanager:
-      global:
-        imagePullSecrets:
-          - name: image-pull-secret-docker
-          - name: image-pull-secret-ghcr
-          - name: image-pull-secret-harbor
-  prometheus-stack:
-    global:
-      imagePullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
-  grafana:
-    global:
-      imagePullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
   tempo:
-    global:
-      imagePullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
-
-txsigner:
-  image:
-    pullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
-  ingress:
-    enabled: true
-    hostname: txsigner.k8s.orb.local
+    tempo:
+      pullSecrets:
+        - image-pull-secret-docker
+        - image-pull-secret-ghcr
+        - image-pull-secret-harbor
 
 dapp:
   enabled: false
-  imagePullSecrets:
-    - name: image-pull-secret-docker
-    - name: image-pull-secret-ghcr
-    - name: image-pull-secret-harbor
+  # dapp imagePullSecrets are now automatically generated
 
 

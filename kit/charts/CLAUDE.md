@@ -7,6 +7,7 @@ Helm v3 | K8s | Umbrella pattern | Bitnami dependencies
 ```bash
 bun run helm:secrets    # 1Password injection (REQUIRED)
 bun run helm           # Deploy to OrbStack
+bun run reset          # Reset cluster (DO NOT use helm uninstall)
 helm lint atk          # Validate syntax
 bun run helm:extract-env # Get .env files
 ```
@@ -62,10 +63,15 @@ dapp:            # Sub-chart overrides
 
 ### Image Pull Secrets
 ```yaml
-# Environment-specific (values-orbstack.1p.yaml)
-dapp:
-  imagePullSecrets:
-    - name: image-pull-secret-docker
+# Dynamic registry configuration (values-orbstack.1p.yaml)
+imagePullCredentials:
+  registries:
+    docker:
+      enabled: true
+      registry: docker.io
+      username: "op://platform/dockerhub/username"
+      password: "op://platform/dockerhub/credential"
+      email: "op://platform/dockerhub/email"
 ```
 
 ### Common Helpers
@@ -74,6 +80,17 @@ dapp:
 {{- include "atk.common.labels" . }}
 {{- include "atk.common.imagePullSecrets" . }}
 ```
+
+### Third-party Chart Integration
+For third-party charts (like blockscout-stack) that don't support our common helpers:
+- Pass imagePullSecrets explicitly in their values
+- Reference the global secret names:
+  ```yaml
+  imagePullSecrets:
+    - name: image-pull-secret-docker
+    - name: image-pull-secret-ghcr
+    - name: image-pull-secret-harbor
+  ```
 
 ## Testing
 
