@@ -23,6 +23,7 @@ export type AccessControl = FragmentOf<typeof AccessControlFragment>;
  */
 export const AccessControlFragment = theGraphGraphql(`
   fragment AccessControlFragment on AccessControl {
+    id
     addonManager { id isContract }
     addonModule { id isContract }
     addonRegistryModule { id isContract }

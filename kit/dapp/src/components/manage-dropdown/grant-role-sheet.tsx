@@ -6,13 +6,14 @@ import { assetAccessControlRoles } from "@/lib/zod/validators/access-control-rol
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import {
-  GrantRoleInput,
-  GrantRoleInputSchema,
-} from "@/orpc/routes/system/access-manager/routes/grant-role.schema";
+  TokenGrantRoleInput,
+  TokenGrantRoleInputSchema,
+} from "@/orpc/routes/token/routes/mutations/access/token.grant-role.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 
 import { AddressSelectOrInputToggle } from "@/components/address/address-select-or-input-toggle";
 import { ArrayFieldsLayout } from "@/components/layout/array-fields-layout";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Shield } from "lucide-react";
 import { useCallback, useState } from "react";
@@ -33,11 +34,11 @@ export function GrantRoleSheet({
   const [showVerification, setShowVerification] = useState(false);
 
   const { mutateAsync: grantRole, isPending } = useMutation(
-    orpc.system.grantRole.mutationOptions({
+    orpc.token.grantRole.mutationOptions({
       onSuccess: async () => {
         await queryClient.invalidateQueries({
-          queryKey: orpc.system.rolesList.queryOptions({
-            input: { assetId: asset.id },
+          queryKey: orpc.token.read.queryOptions({
+            input: { tokenAddress: asset.id },
           }).queryKey,
         });
         toast.success("Role granted successfully");
@@ -52,12 +53,9 @@ export function GrantRoleSheet({
   const form = useAppForm({
     defaultValues: {
       accounts: [] as string[],
-    } as GrantRoleInput,
-    validators: {
-      onChange: GrantRoleInputSchema,
-    },
+    } as TokenGrantRoleInput,
     onSubmit: (value) => {
-      const parsedValues = GrantRoleInputSchema.parse(value.value);
+      const parsedValues = TokenGrantRoleInputSchema.parse(value.value);
       toast.promise(grantRole(parsedValues), {
         loading: "Granting role...",
         success: "Role granted successfully",
@@ -147,7 +145,7 @@ export function GrantRoleSheet({
                       <ArrayFieldsLayout
                         values={field.state.value}
                         onAdd={() => {
-                          field.pushValue("");
+                          field.pushValue("" as EthereumAddress);
                         }}
                         onRemove={(_, index) => {
                           field.removeValue(index);

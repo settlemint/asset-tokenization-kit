@@ -60,3 +60,5 @@ export const assetAccessControlRoles: AccessControlRoles[] = [
   "custodian",
   "emergency",
 ];
+
+export const assetAccessControlRole = z.enum(assetAccessControlRoles);
