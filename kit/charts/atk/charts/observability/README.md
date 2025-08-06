@@ -200,6 +200,7 @@ A Helm chart for the observability components
 | loki.loki.schemaConfig.configs[0].store | string | `"tsdb"` |  |
 | loki.loki.server.grpc_server_max_recv_msg_size | int | `100982429` |  |
 | loki.loki.server.grpc_server_max_send_msg_size | int | `100982429` |  |
+| loki.loki.storage.filesystem.admin_api_directory | string | `nil` |  |
 | loki.loki.storage.type | string | `"filesystem"` |  |
 | loki.loki.tracing.enabled | bool | `true` |  |
 | loki.lokiCanary.enabled | bool | `false` |  |

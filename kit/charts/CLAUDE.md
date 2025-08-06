@@ -12,6 +12,17 @@ helm lint atk          # Validate syntax
 bun run helm:extract-env # Get .env files
 ```
 
+## CRITICAL: Deployment Validation After Changes
+
+**MANDATORY**: After ANY Helm chart changes, you MUST:
+1. Run `bun run reset` to clean the cluster
+2. Deploy with `bun run helm`
+3. Verify ALL pods are running: `kubectl get pods -n atk`
+4. Check for any Init/Pending/CrashLoopBackOff states
+5. If any pods fail, investigate with `kubectl describe pod <pod-name> -n atk`
+
+**NEVER** consider a Helm chart change complete without successful deployment verification!
+
 ## Architecture
 
 ### Umbrella Pattern
