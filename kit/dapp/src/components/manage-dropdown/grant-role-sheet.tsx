@@ -53,6 +53,7 @@ export function GrantRoleSheet({
   const form = useAppForm({
     defaultValues: {
       accounts: [] as string[],
+      contract: asset.id,
     } as TokenGrantRoleInput,
     onSubmit: (value) => {
       const parsedValues = TokenGrantRoleInputSchema.parse(value.value);
