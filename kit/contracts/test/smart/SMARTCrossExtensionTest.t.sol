@@ -5,30 +5,19 @@ import { Test } from "forge-std/Test.sol";
 import { console2 } from "forge-std/console2.sol";
 
 import { SMARTToken } from "./examples/SMARTToken.sol";
-import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
-import { ISMARTCompliance } from "../../contracts/smart/interface/ISMARTCompliance.sol";
 import { IATKSystem } from "../../contracts/system/IATKSystem.sol";
-import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import { Context } from "@openzeppelin/contracts/utils/Context.sol";
-import { IAccessManaged } from "@openzeppelin/contracts/access/manager/IAccessManaged.sol";
 import { IAccessManager } from "@openzeppelin/contracts/access/manager/IAccessManager.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
-import { MockedERC20Token } from "../utils/mocks/MockedERC20Token.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { ISMARTPausable } from "../../contracts/smart/extensions/pausable/ISMARTPausable.sol";
 
 import { SystemUtils } from "../utils/SystemUtils.sol";
 import { IdentityUtils } from "../utils/IdentityUtils.sol";
-import { TokenUtils } from "../utils/TokenUtils.sol";
 import { ClaimUtils } from "../utils/ClaimUtils.sol";
 import { TestConstants } from "../Constants.sol";
 import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
-import { ATKPeopleRoles } from "../../contracts/system/ATKPeopleRoles.sol";
-import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 
 // Mock Access Manager that always returns true for canCall
 contract MockAccessManager is IAccessManager {
@@ -262,6 +251,7 @@ contract SMARTCrossExtensionTest is Test {
         // Test: Regular transfer should fail due to pause
         vm.expectRevert(abi.encodeWithSignature("TokenPaused()"));
         vm.prank(user1);
+        /// forge-lint: disable-next-line(erc20-unchecked-transfer)
         crossExtToken.transfer(user2, 100e18);
     }
 
@@ -392,6 +382,7 @@ contract SMARTCrossExtensionTest is Test {
         // Test various operations
         vm.prank(user1);
         vm.expectRevert(abi.encodeWithSignature("TokenPaused()"));
+        /// forge-lint: disable-next-line(erc20-unchecked-transfer)
         crossExtToken.transfer(user2, 100e18);
 
         vm.prank(user1);
@@ -419,7 +410,7 @@ contract SMARTCrossExtensionTest is Test {
                 _mintTokens(user1, 10_000e18);
                 // Transfer from user1 to other users
                 vm.prank(user1);
-                crossExtToken.transfer(user, 1000e18);
+                assertTrue(crossExtToken.transfer(user, 1000e18), "Transfer failed");
             }
 
             // Add various states
@@ -434,7 +425,7 @@ contract SMARTCrossExtensionTest is Test {
         uint256 gasBefore = gasleft();
 
         vm.prank(testUser);
-        crossExtToken.transfer(address(uint160(1001)), 50e18);
+        assertTrue(crossExtToken.transfer(address(uint160(1001)), 50e18), "Transfer failed");
 
         uint256 gasUsed = gasBefore - gasleft();
         console2.log("Gas used for transfer with all extensions:", gasUsed);

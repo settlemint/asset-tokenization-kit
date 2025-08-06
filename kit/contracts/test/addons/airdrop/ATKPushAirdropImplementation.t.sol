@@ -9,9 +9,6 @@ import { IATKPushAirdrop } from "../../../contracts/addons/airdrop/push-airdrop/
 import { IATKAirdrop } from "../../../contracts/addons/airdrop/IATKAirdrop.sol";
 import { MockedERC20Token } from "../../utils/mocks/MockedERC20Token.sol";
 import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
-import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
-import { ATKSystemImplementation } from "../../../contracts/system/ATKSystemImplementation.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { AirdropUtils } from "../../utils/AirdropUtils.sol";
 import {
     InvalidMerkleProof,

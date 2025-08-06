@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { Test } from "forge-std/Test.sol";
 import { AbstractATKAssetTest } from "./AbstractATKAssetTest.sol";
 
 import { ClaimUtils } from "../utils/ClaimUtils.sol";
@@ -269,7 +268,8 @@ contract ATKDepositTest is AbstractATKAssetTest {
         assertEq(deposit.allowance(user1, spender), 100);
 
         vm.prank(spender);
-        deposit.transferFrom(user1, user2, 50);
+        bool success = deposit.transferFrom(user1, user2, 50);
+        assertTrue(success, "TransferFrom failed");
         assertEq(deposit.balanceOf(user2), 50);
         assertEq(deposit.allowance(user1, spender), 50);
     }

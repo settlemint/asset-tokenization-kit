@@ -1,19 +1,16 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import "forge-std/Test.sol";
-import "../../../contracts/system/identity-factory/IATKIdentityFactory.sol";
-import "../../utils/SystemUtils.sol";
-import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { Test } from "forge-std/Test.sol";
+import { IATKIdentityFactory } from "../../../contracts/system/identity-factory/IATKIdentityFactory.sol";
+import { SystemUtils } from "../../utils/SystemUtils.sol";
+import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { SMARTToken } from "../../smart/examples/SMARTToken.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
-import { IATKContractIdentity } from "../../../contracts/system/identity-factory/identities/IATKContractIdentity.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
-import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
 import { IERC735 } from "@onchainid/contracts/interface/IERC735.sol";
-import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IContractWithIdentity } from "../../../contracts/system/identity-factory/IContractWithIdentity.sol";
 
 contract ATKIdentityFactoryImplementationTest is Test {

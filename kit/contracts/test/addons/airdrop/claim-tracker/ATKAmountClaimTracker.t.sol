@@ -3,7 +3,6 @@ pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { ATKAmountClaimTracker } from "../../../../contracts/addons/airdrop/claim-tracker/ATKAmountClaimTracker.sol";
-import { IATKClaimTracker } from "../../../../contracts/addons/airdrop/claim-tracker/IATKClaimTracker.sol";
 
 contract ATKAmountClaimTrackerTest is Test {
     ATKAmountClaimTracker public claimTracker;
@@ -26,8 +25,9 @@ contract ATKAmountClaimTrackerTest is Test {
         vm.label(nonOwner, "NonOwner");
 
         // Deploy claim tracker
-        vm.prank(owner);
+        vm.startPrank(owner);
         claimTracker = new ATKAmountClaimTracker(owner);
+        vm.stopPrank();
 
         vm.label(address(claimTracker), "ClaimTracker");
     }

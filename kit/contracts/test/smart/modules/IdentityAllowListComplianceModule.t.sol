@@ -127,7 +127,7 @@ contract IdentityAllowListComplianceModuleTest is AbstractComplianceModuleTest {
 
         // Transfer to user2 (identity2) should succeed
         vm.prank(tokenIssuer);
-        smartToken.transfer(user2, 100);
+        assertTrue(smartToken.transfer(user2, 100), "Transfer failed");
         assertEq(smartToken.balanceOf(user2), 100);
     }
 

@@ -1,19 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.19;
 
-import "forge-std/Test.sol";
-import "../../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
-import "../../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
-import "../../utils/SystemUtils.sol";
-import "../../utils/IdentityUtils.sol";
-import "../../utils/ClaimUtils.sol";
+import { Test } from "forge-std/Test.sol";
+import { ISMARTIdentityRegistry } from "../../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
+import { ATKIdentityRegistryImplementation } from "../../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
+import { SystemUtils } from "../../utils/SystemUtils.sol";
+import { IdentityUtils } from "../../utils/IdentityUtils.sol";
+import { ClaimUtils } from "../../utils/ClaimUtils.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
-import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import "@openzeppelin/contracts/access/IAccessControl.sol";
-import { IATKSystemAccessManager } from "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
+import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
-import { IERC3643TrustedIssuersRegistry } from
-    "../../../contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 import { ExpressionNode, ExpressionType } from "../../../contracts/smart/interface/structs/ExpressionNode.sol";
 import { ClaimExpressionUtils } from "../../utils/ClaimExpressionUtils.sol";
 

@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import "forge-std/Test.sol";
-import "../../../contracts/system/token-factory/AbstractATKTokenFactoryImplementation.sol";
-import "../../../contracts/system/token-factory/IATKTokenFactory.sol";
-import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import "@openzeppelin/contracts/access/IAccessControl.sol";
-import "@openzeppelin/contracts/utils/Create2.sol";
+import { Test } from "forge-std/Test.sol";
+import { AbstractATKTokenFactoryImplementation } from "../../../contracts/system/token-factory/AbstractATKTokenFactoryImplementation.sol";
+import { IATKTokenFactory } from "../../../contracts/system/token-factory/IATKTokenFactory.sol";
+import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
+import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
 
 // Simple concrete implementation for testing
 contract TestableTokenFactory is AbstractATKTokenFactoryImplementation {

@@ -1,15 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import { Test } from "forge-std/Test.sol";
-import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
 // ISMARTIdentityRegistry is not directly used for adding claims here, but good for context.
 // import { ISMARTIdentityRegistry } from "../../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 import { SMARTIdentityVerificationComplianceModule } from
     "../../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
-import { ATKTopics } from "../../../contracts/system/ATKTopics.sol"; // Import ATKTopics
-import { TestConstants } from "../../Constants.sol"; // Keep if used, e.g. INITIAL_MINT_AMOUNT
-import { SystemUtils } from "../../utils/SystemUtils.sol"; // Keep for systemUtils access
 import { AbstractSMARTTest } from "./AbstractSMARTTest.sol";
 import { ClaimExpressionUtils } from "../../utils/ClaimExpressionUtils.sol";
 
@@ -50,13 +45,13 @@ abstract contract SMARTIdentityVerificationTest is AbstractSMARTTest {
         vm.stopPrank();
 
         vm.prank(clientBE);
-        token.transfer(clientJP, TRANSFER_AMOUNT_1);
+        assertTrue(token.transfer(clientJP, TRANSFER_AMOUNT_1), "Transfer failed");
 
         vm.prank(clientJP);
-        token.transfer(clientUS, TRANSFER_AMOUNT_2);
+        assertTrue(token.transfer(clientUS, TRANSFER_AMOUNT_2), "Transfer failed");
 
         vm.prank(clientUS);
-        token.transfer(clientBE, TRANSFER_AMOUNT_1 / 2);
+        assertTrue(token.transfer(clientBE, TRANSFER_AMOUNT_1 / 2), "Transfer failed");
 
         vm.startPrank(tokenIssuer);
         vm.expectRevert(SMARTIdentityVerificationComplianceModule.RecipientNotVerified.selector);

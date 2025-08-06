@@ -127,7 +127,7 @@ contract CountryBlockListComplianceModuleTest is AbstractComplianceModuleTest {
 
         // Transfer to user2 (Belgium) should succeed
         vm.prank(tokenIssuer);
-        smartToken.transfer(user2, 100);
+        assertTrue(smartToken.transfer(user2, 100), "Transfer failed");
         assertEq(smartToken.balanceOf(user2), 100);
 
         // Transfer to user3 (no identity) should fail

@@ -342,7 +342,7 @@ contract ATKTokenSale is
         purchase.withdrawn += withdrawable;
 
         // Transfer tokens to buyer
-        token.transfer(buyer, withdrawable);
+        IERC20(address(token)).safeTransfer(buyer, withdrawable);
 
         emit TokensWithdrawn(buyer, withdrawable);
 
@@ -538,7 +538,7 @@ contract ATKTokenSale is
 
         // If no vesting, transfer tokens immediately; otherwise they'll be claimed later
         if (!vesting.enabled) {
-            token.transfer(buyer, tokenAmount);
+            IERC20(address(token)).safeTransfer(buyer, tokenAmount);
             purchase.withdrawn += tokenAmount;
         }
 

@@ -6,8 +6,6 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ISMARTYield } from "../../../contracts/smart/extensions/yield/ISMARTYield.sol";
 import { ISMARTFixedYieldSchedule } from
     "../../../contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
-import { ATKFixedYieldScheduleUpgradeable } from "../../../contracts/addons/yield/ATKFixedYieldScheduleUpgradeable.sol";
 
 /// @title Integration tests for SMART Yield with other extensions
 /// @notice Tests yield functionality with historical balances, compliance, and financial calculations

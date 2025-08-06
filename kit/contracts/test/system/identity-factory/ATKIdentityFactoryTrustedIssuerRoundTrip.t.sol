@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.28;
 
-import "forge-std/Test.sol";
-import "../../utils/SystemUtils.sol";
-import "../../utils/ClaimUtils.sol";
+import { Test } from "forge-std/Test.sol";
+import { SystemUtils } from "../../utils/SystemUtils.sol";
+import { ClaimUtils } from "../../utils/ClaimUtils.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
