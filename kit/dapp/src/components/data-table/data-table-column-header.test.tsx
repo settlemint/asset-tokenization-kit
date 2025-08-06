@@ -2,10 +2,13 @@
  * @vitest-environment happy-dom
  */
 import { screen, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  createMockColumn,
+  renderWithProviders,
+} from "../../../test/test-utils";
 import { DataTableColumnHeader } from "./data-table-column-header";
-import { renderWithProviders, createMockColumn } from "./test-utils";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({

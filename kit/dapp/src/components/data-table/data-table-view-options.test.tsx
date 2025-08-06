@@ -1,9 +1,9 @@
+import type { Column, Table } from "@tanstack/react-table";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "../../../test/test-utils";
 import { DataTableViewOptions } from "./data-table-view-options";
-import { renderWithProviders } from "./test-utils";
-import type { Table, Column } from "@tanstack/react-table";
 
 // Mock translations
 vi.mock("react-i18next", () => ({

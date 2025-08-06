@@ -2,10 +2,10 @@
  * @vitest-environment happy-dom
  */
 import { screen } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import userEvent from "@testing-library/user-event";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "../../../../test/test-utils";
 import { DebouncedInput } from "./debounced-input";
-import { renderWithProviders } from "../test-utils";
 
 describe("DebouncedInput", () => {
   let user: ReturnType<typeof userEvent.setup>;

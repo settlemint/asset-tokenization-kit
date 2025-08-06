@@ -2,10 +2,10 @@
  * @vitest-environment happy-dom
  */
 import { screen, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "../../../test/test-utils";
 import { DataTableRowActions } from "./data-table-row-actions";
-import { renderWithProviders } from "./test-utils";
 
 // Mock @tanstack/react-router
 vi.mock("@tanstack/react-router", () => ({
