@@ -1,15 +1,12 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { Test } from "forge-std/Test.sol";
 import { AbstractATKAssetTest } from "./AbstractATKAssetTest.sol";
 import { IATKEquityFactory } from "../../contracts/assets/equity/IATKEquityFactory.sol";
 import { ATKEquityFactoryImplementation } from "../../contracts/assets/equity/ATKEquityFactoryImplementation.sol";
 import { IATKEquity } from "../../contracts/assets/equity/IATKEquity.sol";
 import { ATKEquityImplementation } from "../../contracts/assets/equity/ATKEquityImplementation.sol";
 import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
-import { ATKPeopleRoles } from "../../contracts/system/ATKPeopleRoles.sol";
-import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
@@ -179,7 +176,7 @@ contract ATKEquityTest is AbstractATKAssetTest {
         vm.stopPrank();
 
         vm.startPrank(user1);
-        smartEquity.transfer(user2, 500 * 10 ** DECIMALS);
+        assertTrue(smartEquity.transfer(user2, 500 * 10 ** DECIMALS), "Transfer failed");
         vm.stopPrank();
 
         assertEq(smartEquity.balanceOf(user1), 500 * 10 ** DECIMALS);
@@ -204,7 +201,7 @@ contract ATKEquityTest is AbstractATKAssetTest {
         vm.stopPrank();
 
         vm.startPrank(spender);
-        smartEquity.transferFrom(user1, user2, 500 * 10 ** DECIMALS);
+        assertTrue(smartEquity.transferFrom(user1, user2, 500 * 10 ** DECIMALS), "TransferFrom failed");
         vm.stopPrank();
 
         assertEq(smartEquity.balanceOf(user1), 500 * 10 ** DECIMALS);
@@ -248,6 +245,7 @@ contract ATKEquityTest is AbstractATKAssetTest {
 
         vm.startPrank(user1);
         vm.expectRevert(abi.encodeWithSignature("TokenPaused()"));
+        /// forge-lint: disable-next-line(erc20-unchecked-transfer)
         smartEquity.transfer(user2, 500 * 10 ** DECIMALS);
         vm.stopPrank();
     }
@@ -265,6 +263,7 @@ contract ATKEquityTest is AbstractATKAssetTest {
 
         // Try to transfer while paused - should revert with TokenPaused error
         vm.expectRevert(abi.encodeWithSignature("TokenPaused()"));
+        /// forge-lint: disable-next-line(erc20-unchecked-transfer)
         smartEquity.transfer(user1, amount);
 
         // Unpause
@@ -272,7 +271,7 @@ contract ATKEquityTest is AbstractATKAssetTest {
         assertFalse(smartEquity.paused());
 
         // Transfer should now succeed
-        smartEquity.transfer(user1, amount);
+        assertTrue(smartEquity.transfer(user1, amount), "Transfer failed");
         assertEq(smartEquity.balanceOf(user1), amount);
 
         vm.stopPrank();
@@ -306,10 +305,11 @@ contract ATKEquityTest is AbstractATKAssetTest {
                 IERC20Errors.ERC20InsufficientBalance.selector, user1, 50 * 10 ** DECIMALS, 100 * 10 ** DECIMALS
             )
         );
+        /// forge-lint: disable-next-line(erc20-unchecked-transfer)
         smartEquity.transfer(user2, 100 * 10 ** DECIMALS);
 
         // But can transfer less than the unfrozen amount
-        smartEquity.transfer(user2, 10 * 10 ** DECIMALS);
+        assertTrue(smartEquity.transfer(user2, 10 * 10 ** DECIMALS), "Transfer failed");
         vm.stopPrank();
 
         assertEq(smartEquity.balanceOf(user2), 10 * 10 ** DECIMALS);
@@ -320,7 +320,7 @@ contract ATKEquityTest is AbstractATKAssetTest {
         vm.stopPrank();
 
         vm.startPrank(user1);
-        smartEquity.transfer(user2, 40 * 10 ** DECIMALS);
+        assertTrue(smartEquity.transfer(user2, 40 * 10 ** DECIMALS), "Transfer failed");
         vm.stopPrank();
 
         assertEq(smartEquity.balanceOf(user2), 50 * 10 ** DECIMALS);
@@ -353,7 +353,7 @@ contract ATKEquityTest is AbstractATKAssetTest {
         assertEq(smartEquity.getVotes(user1), amount);
 
         vm.startPrank(user1);
-        smartEquity.transfer(user2, 500 * 10 ** DECIMALS);
+        assertTrue(smartEquity.transfer(user2, 500 * 10 ** DECIMALS), "Transfer failed");
         vm.stopPrank();
         assertEq(smartEquity.getVotes(user1), 500 * 10 ** DECIMALS);
     }
@@ -369,7 +369,7 @@ contract ATKEquityTest is AbstractATKAssetTest {
         emit Transfer(user1, user2, 500 * 10 ** DECIMALS);
 
         vm.startPrank(user1);
-        smartEquity.transfer(user2, 500 * 10 ** DECIMALS);
+        assertTrue(smartEquity.transfer(user2, 500 * 10 ** DECIMALS), "Transfer failed");
         vm.stopPrank();
     }
 

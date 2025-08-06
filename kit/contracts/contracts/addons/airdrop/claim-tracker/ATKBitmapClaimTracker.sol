@@ -77,6 +77,7 @@ contract ATKBitmapClaimTracker is IATKClaimTracker, Ownable {
         uint256 wordIndex = index / 256;
         uint256 bitIndex = index % 256;
         uint256 word = _claimedBitMap[wordIndex];
+        /// forge-lint: disable-next-line(incorrect-shift)
         uint256 mask = 1 << bitIndex;
         return (word & mask) != 0;
     }
@@ -87,6 +88,7 @@ contract ATKBitmapClaimTracker is IATKClaimTracker, Ownable {
     function _setClaimedBitmap(uint256 index) internal {
         uint256 wordIndex = index / 256;
         uint256 bitIndex = index % 256;
+        /// forge-lint: disable-next-line(incorrect-shift)
         _claimedBitMap[wordIndex] |= (1 << bitIndex);
     }
 }

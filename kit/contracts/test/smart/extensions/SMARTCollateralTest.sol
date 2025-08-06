@@ -1,11 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import { TestConstants } from "../../Constants.sol";
 import { AbstractSMARTTest } from "./AbstractSMARTTest.sol";
-import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { ClaimUtils } from "../../utils/ClaimUtils.sol";
-import { ISMART } from "../../../contracts/smart/interface/ISMART.sol";
 import { ISMARTCollateral } from "../../../contracts/smart/extensions/collateral/ISMARTCollateral.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { Test } from "forge-std/Test.sol";
 import { AbstractATKAssetTest } from "./AbstractATKAssetTest.sol";
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -14,8 +13,6 @@ import { ATKFundImplementation } from "../../contracts/assets/fund/ATKFundImplem
 import { SMARTComplianceModuleParamPair } from
     "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
-import { ATKPeopleRoles } from "../../contracts/system/ATKPeopleRoles.sol";
-import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ISMARTPausable } from "../../contracts/smart/extensions/pausable/ISMARTPausable.sol";
@@ -165,6 +162,7 @@ contract ATKFundTest is AbstractATKAssetTest {
 
         // Try to transfer while paused - should revert with EnforcedPause error
         vm.expectRevert(abi.encodeWithSelector(ISMARTPausable.TokenPaused.selector));
+        /// forge-lint: disable-next-line(erc20-unchecked-transfer)
         fund.transfer(investor1, INVESTMENT_AMOUNT);
 
         // Unpause
@@ -172,7 +170,7 @@ contract ATKFundTest is AbstractATKAssetTest {
         assertFalse(fund.paused());
 
         // Transfer should now succeed
-        fund.transfer(investor1, INVESTMENT_AMOUNT);
+        assertTrue(fund.transfer(investor1, INVESTMENT_AMOUNT), "Transfer failed");
         assertEq(fund.balanceOf(investor1), INVESTMENT_AMOUNT);
 
         vm.stopPrank();

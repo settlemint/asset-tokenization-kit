@@ -7,7 +7,6 @@ import { MockedERC20Token } from "../../utils/mocks/MockedERC20Token.sol";
 import { ISMARTFixedYieldSchedule } from
     "../../../contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
 import { ATKFixedYieldScheduleUpgradeable } from "../../../contracts/addons/yield/ATKFixedYieldScheduleUpgradeable.sol";
-import { ISMARTYield } from "../../../contracts/smart/extensions/yield/ISMARTYield.sol";
 
 contract MockATKToken is MockedERC20Token {
     mapping(address => uint256) private _yieldBasisPerUnit;
@@ -247,7 +246,8 @@ contract ATKFixedYieldScheduleTest is Test {
     function test_YieldCalculations_MultipleClaimsAcrossPeriods() public {
         // Fund the contract
         uint256 fundAmount = 100_000e18;
-        underlyingToken.transfer(address(yieldSchedule), fundAmount);
+        bool success = underlyingToken.transfer(address(yieldSchedule), fundAmount);
+        assertTrue(success, "Transfer failed");
 
         uint256 initialBalance = underlyingToken.balanceOf(user1);
 
@@ -288,7 +288,8 @@ contract ATKFixedYieldScheduleTest is Test {
         // Current balances: user1: 1000e18, user2: 500e18 (from setUp)
         // Target balances: user1: 1250e18, user2: 250e18
         vm.prank(user2);
-        atkToken.transfer(user1, 250e18); // user1: 1250e18, user2: 250e18
+        bool success = atkToken.transfer(user1, 250e18); // user1: 1250e18, user2: 250e18
+        assertTrue(success, "Transfer failed");
 
         // Update total supply accordingly
         atkToken.setTotalSupplyAt(startDate + (2 * INTERVAL), 1500e18); // Keep total same
@@ -328,7 +329,7 @@ contract ATKFixedYieldScheduleTest is Test {
 
         // Transfer user2's tokens away to make current balance 0
         vm.prank(user2);
-        atkToken.transfer(user1, user2Balance);
+        assertTrue(atkToken.transfer(user1, user2Balance), "Transfer failed");
 
         vm.warp(startDate + INTERVAL + 1);
 
@@ -376,7 +377,8 @@ contract ATKFixedYieldScheduleTest is Test {
     function test_ClaimYield() public {
         // Setup: Fund the contract and move to after first period
         uint256 fundAmount = 100_000e18;
-        underlyingToken.transfer(address(yieldSchedule), fundAmount);
+        bool success = underlyingToken.transfer(address(yieldSchedule), fundAmount);
+        assertTrue(success, "Transfer failed");
         vm.warp(startDate + INTERVAL + 1);
 
         uint256 initialBalance = underlyingToken.balanceOf(user1);
@@ -412,7 +414,8 @@ contract ATKFixedYieldScheduleTest is Test {
 
     function test_WithdrawUnderlyingAsset() public {
         uint256 withdrawAmount = 1000e18;
-        underlyingToken.transfer(address(yieldSchedule), withdrawAmount);
+        bool success = underlyingToken.transfer(address(yieldSchedule), withdrawAmount);
+        assertTrue(success, "Transfer failed");
 
         vm.prank(owner);
         vm.expectEmit(true, false, false, true);
@@ -431,7 +434,8 @@ contract ATKFixedYieldScheduleTest is Test {
 
     function test_WithdrawAllUnderlyingAsset() public {
         uint256 depositAmount = 1000e18;
-        underlyingToken.transfer(address(yieldSchedule), depositAmount);
+        bool success = underlyingToken.transfer(address(yieldSchedule), depositAmount);
+        assertTrue(success, "Transfer failed");
 
         vm.prank(owner);
         yieldSchedule.withdrawAllUnderlyingAsset(user1);

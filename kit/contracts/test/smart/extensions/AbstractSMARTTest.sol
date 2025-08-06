@@ -4,26 +4,20 @@ pragma solidity ^0.8.28;
 // Adjust import path assuming SMARTInfrastructureSetup will be in ./utils/
 import { Test } from "forge-std/Test.sol";
 import { ISMART } from "../../../contracts/smart/interface/ISMART.sol";
-import { ISMARTCompliance } from "../../../contracts/smart/interface/ISMARTCompliance.sol";
 import { ISMARTTokenAccessManager } from
     "../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ExpressionNode, ExpressionType } from "../../../contracts/smart/interface/structs/ExpressionNode.sol";
+import { ExpressionNode } from "../../../contracts/smart/interface/structs/ExpressionNode.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
-import { ISMARTIdentityRegistry } from "../../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 import { TestConstants } from "../../Constants.sol";
 import { ClaimUtils } from "../../utils/ClaimUtils.sol";
 import { IdentityUtils } from "../../utils/IdentityUtils.sol";
 import { TokenUtils } from "../../utils/TokenUtils.sol";
 import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { MockedComplianceModule } from "../../utils/mocks/MockedComplianceModule.sol";
-import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 import { SMARTToken } from "../examples/SMARTToken.sol";
 import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
-import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
-import { SMARTIdentityVerificationComplianceModule } from
-    "../../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
 import { ClaimExpressionUtils } from "../../utils/ClaimExpressionUtils.sol";
 
 abstract contract AbstractSMARTTest is Test {

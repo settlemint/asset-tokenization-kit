@@ -11,7 +11,6 @@ import { ISMART } from "../../../contracts/smart/interface/ISMART.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { MockedERC20Token } from "../../utils/mocks/MockedERC20Token.sol";
 import { SMARTToken } from "../examples/SMARTToken.sol";
-import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { TestConstants } from "../../Constants.sol";
 import { SMARTIdentityVerificationComplianceModule } from
     "../../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.28;
 
-import { Test, console } from "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
 import { ERC734 } from "../../contracts/onchainid/extensions/ERC734.sol";
 import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
 import { ERC734KeyPurposes } from "../../contracts/onchainid/ERC734KeyPurposes.sol";

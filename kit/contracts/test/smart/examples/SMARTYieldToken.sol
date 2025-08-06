@@ -2,10 +2,7 @@
 pragma solidity ^0.8.28;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { ERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import { SMARTToken } from "./SMARTToken.sol";
-import { SMART } from "../../../contracts/smart/extensions/core/SMART.sol";
 import { ISMARTYield } from "../../../contracts/smart/extensions/yield/ISMARTYield.sol";
 import { ISMARTYieldSchedule } from "../../../contracts/smart/extensions/yield/schedules/ISMARTYieldSchedule.sol";
 import { SMARTComplianceModuleParamPair } from

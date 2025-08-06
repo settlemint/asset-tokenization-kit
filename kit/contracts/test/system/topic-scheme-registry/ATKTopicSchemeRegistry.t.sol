@@ -11,7 +11,6 @@ import { ATKTopicSchemeRegistryImplementation } from
 import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { ATKRoles } from "../../../contracts/system/ATKRoles.sol";
-import { ATKSystemImplementation } from "../../../contracts/system/ATKSystemImplementation.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IATKSystemAccessManager } from "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
 

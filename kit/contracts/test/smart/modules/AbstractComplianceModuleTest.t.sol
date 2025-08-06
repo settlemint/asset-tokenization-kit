@@ -14,11 +14,8 @@ import { SMARTComplianceModuleParamPair } from
 import { ISMARTTokenAccessManager } from
     "../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { TestConstants } from "../../Constants.sol";
 import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
-import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
-import { ATKSystemImplementation } from "../../../contracts/system/ATKSystemImplementation.sol";
 import { IATKCompliance } from "../../../contracts/system/compliance/IATKCompliance.sol";
 
 abstract contract AbstractComplianceModuleTest is Test {

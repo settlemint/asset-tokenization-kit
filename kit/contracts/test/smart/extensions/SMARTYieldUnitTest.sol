@@ -6,11 +6,6 @@ import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.so
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ISMARTYield } from "../../../contracts/smart/extensions/yield/ISMARTYield.sol";
-import { ISMARTYieldSchedule } from "../../../contracts/smart/extensions/yield/schedules/ISMARTYieldSchedule.sol";
-import { ISMARTFixedYieldSchedule } from
-    "../../../contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
-import { SMARTFixedYieldSchedule } from
-    "../../../contracts/smart/extensions/yield/schedules/fixed/SMARTFixedYieldSchedule.sol";
 import { ISMART } from "../../../contracts/smart/interface/ISMART.sol";
 import { SMARTYieldToken } from "../examples/SMARTYieldToken.sol";
 

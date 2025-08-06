@@ -192,7 +192,6 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
         address[] memory initialAdmins
     )
         ERC2771Context(forwarder)
-        AccessControlEnumerable()
     {
         uint256 len = _signers.length;
         // Validate that the required confirmations is a sensible number

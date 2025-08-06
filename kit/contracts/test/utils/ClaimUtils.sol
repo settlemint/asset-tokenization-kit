@@ -8,7 +8,6 @@ import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTId
 import { IATKIdentityFactory } from "../../contracts/system/identity-factory/IATKIdentityFactory.sol";
 import { ISMARTTopicSchemeRegistry } from "../../contracts/smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
-import { ERC734KeyTypes } from "../../contracts/onchainid/ERC734KeyTypes.sol";
 import { ERC735ClaimSchemes } from "../../contracts/onchainid/ERC735ClaimSchemes.sol";
 
 contract ClaimUtils is Test {
