@@ -37,7 +37,7 @@ interface IATKBond is
     struct BondInitParams {
         uint256 maturityDate;
         uint256 faceValue;
-        address underlyingAsset;
+        address denominationAsset;
     }
     // --- Custom Errors ---
     /// @notice Error an action is attempted on a bond that has already matured.
@@ -47,14 +47,14 @@ interface IATKBond is
     error BondNotYetMatured();
     /// @notice Error an invalid maturity date was provided during initialization (e.g., in the past).
     error BondInvalidMaturityDate();
-    /// @notice Error an invalid underlying asset address was provided (e.g., zero address).
-    error InvalidUnderlyingAsset();
+    /// @notice Error an invalid denomination asset address was provided (e.g., zero address).
+    error InvalidDenominationAsset();
     /// @notice Error an invalid face value was provided (e.g., zero).
     error InvalidFaceValue();
-    /// @notice Error the contract does not hold enough underlying asset balance for an operation.
-    /// @param currentBalance The current balance of the underlying asset in the contract.
-    /// @param requiredBalance The required balance of the underlying asset for the operation.
-    error InsufficientUnderlyingBalance(uint256 currentBalance, uint256 requiredBalance);
+    /// @notice Error the contract does not hold enough denomination asset balance for an operation.
+    /// @param currentBalance The current balance of the denomination asset in the contract.
+    /// @param requiredBalance The required balance of the denomination asset for the operation.
+    error InsufficientDenominationAssetBalance(uint256 currentBalance, uint256 requiredBalance);
     /// @notice Error an invalid redemption amount was specified.
     error InvalidRedemptionAmount();
     /// @notice Error the caller does not have enough redeemable bond tokens for the operation.
@@ -66,13 +66,13 @@ interface IATKBond is
     /// @param timestamp The block timestamp when the bond matured
     event BondMatured(uint256 indexed timestamp);
 
-    /// @notice Emitted when a bond is redeemed for underlying assets
+    /// @notice Emitted when a bond is redeemed for denomination assets
     /// @param sender The address that initiated the redemption
     /// @param holder The address redeeming the bonds
     /// @param bondAmount The amount of bonds redeemed
-    /// @param underlyingAmount The amount of underlying assets received
+    /// @param denominationAssetAmount The amount of denomination assets received
     event BondRedeemed(
-        address indexed sender, address indexed holder, uint256 indexed bondAmount, uint256 underlyingAmount
+        address indexed sender, address indexed holder, uint256 indexed bondAmount, uint256 denominationAssetAmount
     );
 
     /// @notice Initializes the SMART Bond contract.
@@ -80,7 +80,7 @@ interface IATKBond is
     /// @param symbol_ The symbol of the bond.
     /// @param decimals_ The number of decimals for the bond tokens.
     /// @param cap_ The maximum total supply of the bond tokens.
-    /// @param bondParams Bond-specific parameters (maturityDate, faceValue, underlyingAsset).
+    /// @param bondParams Bond-specific parameters (maturityDate, faceValue, denominationAsset).
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param identityRegistry_ The address of the identity registry contract.
     /// @param compliance_ The address of the compliance contract.
@@ -109,36 +109,36 @@ interface IATKBond is
     function maturityDate() external view returns (uint256);
 
     /// @notice Returns the face value of the bond per token.
-    /// @return The bond's face value in the underlying asset's base units.
+    /// @return The bond's face value in the denomination asset's base units.
     function faceValue() external view returns (uint256);
 
-    /// @notice Returns the ERC20 contract address of the underlying asset.
-    /// @return The IERC20 contract instance of the underlying asset.
-    function underlyingAsset() external view returns (IERC20);
+    /// @notice Returns the ERC20 contract address of the denomination asset.
+    /// @return The IERC20 contract instance of the denomination asset.
+    function denominationAsset() external view returns (IERC20);
 
-    /// @notice Returns the amount of underlying assets currently held by this bond contract.
-    /// @return The balance of underlying assets.
-    function underlyingAssetBalance() external view returns (uint256);
+    /// @notice Returns the amount of denomination assets currently held by this bond contract.
+    /// @return The balance of denomination assets.
+    function denominationAssetBalance() external view returns (uint256);
 
-    /// @notice Returns the total amount of underlying assets needed to cover all potential redemptions of outstanding
+    /// @notice Returns the total amount of denomination assets needed to cover all potential redemptions of outstanding
     /// bond tokens.
-    /// @return The total amount of underlying assets needed.
-    function totalUnderlyingNeeded() external view returns (uint256);
+    /// @return The total amount of denomination assets needed.
+    function totalDenominationAssetNeeded() external view returns (uint256);
 
-    /// @notice Returns the amount of underlying assets missing to cover all potential redemptions.
-    /// @return The amount of underlying assets missing (0 if there's enough or an excess).
-    function missingUnderlyingAmount() external view returns (uint256);
+    /// @notice Returns the amount of denomination assets missing to cover all potential redemptions.
+    /// @return The amount of denomination assets missing (0 if there's enough or an excess).
+    function missingDenominationAssetAmount() external view returns (uint256);
 
-    /// @notice Returns the amount of excess underlying assets that can be withdrawn by the issuer after ensuring all
+    /// @notice Returns the amount of excess denomination assets that can be withdrawn by the issuer after ensuring all
     /// redemptions can be met.
-    /// @return The amount of excess underlying assets that are withdrawable.
-    function withdrawableUnderlyingAmount() external view returns (uint256);
+    /// @return The amount of excess denomination assets that are withdrawable.
+    function withdrawableDenominationAssetAmount() external view returns (uint256);
 
     // --- State-Changing Functions ---
 
     /// @notice Closes off the bond at maturity, performing necessary state changes.
     /// @dev Typically callable by addresses with a specific role (e.g., SUPPLY_MANAGEMENT_ROLE) only after the maturity
     /// date.
-    /// @dev May require sufficient underlying assets to be present for all potential redemptions before execution.
+    /// @dev May require sufficient denomination assets to be present for all potential redemptions before execution.
     function mature() external;
 }

@@ -19,7 +19,7 @@ contract ATKBondProxy is ATKAssetProxy {
     /// @param symbol_ The symbol of the bond.
     /// @param decimals_ The number of decimals of the bond.
     /// @param cap_ The cap of the bond.
-    /// @param bondParams Bond-specific parameters (maturityDate, faceValue, underlyingAsset).
+    /// @param bondParams Bond-specific parameters (maturityDate, faceValue, denominationAsset).
     /// @param initialModulePairs_ The initial module pairs of the bond.
     /// @param identityRegistry_ The identity registry of the bond.
     /// @param compliance_ The compliance of the bond.

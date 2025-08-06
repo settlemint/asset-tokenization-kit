@@ -29,7 +29,7 @@ contract ATKBondTest is AbstractATKAssetTest {
     IATKBondFactory public bondFactory;
     IATKFixedYieldScheduleFactory public fixedYieldScheduleFactory;
     IATKBond public bond;
-    MockedERC20Token public underlyingAsset;
+    MockedERC20Token public denominationAsset;
 
     address public owner;
     address public user1;
@@ -38,7 +38,7 @@ contract ATKBondTest is AbstractATKAssetTest {
 
     uint256 public initialSupply;
     uint256 public faceValue;
-    uint256 public initialUnderlyingSupply;
+    uint256 public initialdenominationAssetSupply;
     uint256 public maturityDate;
 
     uint8 public constant WHOLE_INITIAL_SUPPLY = 100;
@@ -60,9 +60,9 @@ contract ATKBondTest is AbstractATKAssetTest {
     event Paused(address account);
     event Unpaused(address account);
     event BondMatured(uint256 timestamp);
-    event UnderlyingAssetTopUp(address indexed from, uint256 amount);
-    event BondRedeemed(address indexed holder, uint256 bondAmount, uint256 underlyingAmount);
-    event UnderlyingAssetWithdrawn(address indexed to, uint256 amount);
+    event DenominationAssetTopUp(address indexed from, uint256 amount);
+    event BondRedeemed(address indexed holder, uint256 bondAmount, uint256 denominationAssetAmount);
+    event DenominationAssetWithdrawn(address indexed to, uint256 amount);
 
     function setUp() public {
         // Create identities
@@ -113,12 +113,12 @@ contract ATKBondTest is AbstractATKAssetTest {
 
         // Initialize supply and face value using toDecimals
         initialSupply = toDecimals(WHOLE_INITIAL_SUPPLY); // 100.00 bonds
-        faceValue = toDecimals(WHOLE_FACE_FALUE); // 100.00 underlying tokens per bond
-        initialUnderlyingSupply = initialSupply * faceValue / (10 ** DECIMALS);
+        faceValue = toDecimals(WHOLE_FACE_FALUE); // 100.00 denomination tokens per bond
+        initialdenominationAssetSupply = initialSupply * faceValue / (10 ** DECIMALS);
 
-        // Deploy mock underlying asset with same decimals
-        underlyingAsset = new MockedERC20Token("Mock USD", "MUSD", DECIMALS);
-        underlyingAsset.mint(owner, initialUnderlyingSupply); // Mint enough for all bonds
+        // Deploy mock denomination asset with same decimals
+        denominationAsset = new MockedERC20Token("Mock USD", "MUSD", DECIMALS);
+        denominationAsset.mint(owner, initialdenominationAssetSupply); // Mint enough for all bonds
 
         bond = _createBondAndMint(
             "Test Bond",
@@ -127,7 +127,7 @@ contract ATKBondTest is AbstractATKAssetTest {
             CAP,
             maturityDate,
             faceValue,
-            address(underlyingAsset),
+            address(denominationAsset),
             new SMARTComplianceModuleParamPair[](0)
         );
         vm.label(address(bond), "Bond");
@@ -140,7 +140,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         uint256 cap_,
         uint256 maturityDate_,
         uint256 faceValue_,
-        address underlyingAsset_,
+        address denominationAsset_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         internal
@@ -150,7 +150,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         IATKBond.BondInitParams memory bondParams = IATKBond.BondInitParams({
             maturityDate: maturityDate_,
             faceValue: faceValue_,
-            underlyingAsset: underlyingAsset_
+            denominationAsset: denominationAsset_
         });
         address bondAddress = bondFactory.createBond(
             name_, symbol_, decimals_, cap_, bondParams, initialModulePairs_, TestConstants.COUNTRY_CODE_US
@@ -181,7 +181,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         assertEq(bond.balanceOf(owner), initialSupply);
         assertEq(bond.maturityDate(), maturityDate);
         assertEq(bond.faceValue(), faceValue);
-        assertEq(address(bond.underlyingAsset()), address(underlyingAsset));
+        assertEq(address(bond.denominationAsset()), address(denominationAsset));
         assertFalse(bond.isMatured());
         assertTrue(bond.hasRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, owner));
         assertTrue(bond.hasRole(ATKAssetRoles.GOVERNANCE_ROLE, owner));
@@ -204,7 +204,7 @@ contract ATKBondTest is AbstractATKAssetTest {
                 CAP,
                 maturityDate,
                 faceValue,
-                address(underlyingAsset),
+                address(denominationAsset),
                 new SMARTComplianceModuleParamPair[](0)
             );
             assertEq(newBond.decimals(), decimalValues[i]);
@@ -218,7 +218,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         IATKBond.BondInitParams memory bondParams = IATKBond.BondInitParams({
             maturityDate: maturityDate,
             faceValue: faceValue,
-            underlyingAsset: address(underlyingAsset)
+            denominationAsset: address(denominationAsset)
         });
         bondFactory.createBond(
             "Test Bond 19",
@@ -378,12 +378,12 @@ contract ATKBondTest is AbstractATKAssetTest {
         bond.mature();
         vm.stopPrank();
 
-        // Add required underlying assets
+        // Add required denomination assets
         vm.startPrank(owner);
-        uint256 requiredAmount = initialUnderlyingSupply;
-        underlyingAsset.mint(owner, requiredAmount);
-        underlyingAsset.approve(address(bond), requiredAmount);
-        underlyingAsset.transfer(address(bond), requiredAmount);
+        uint256 requiredAmount = initialdenominationAssetSupply;
+        denominationAsset.mint(owner, requiredAmount);
+        denominationAsset.approve(address(bond), requiredAmount);
+        denominationAsset.transfer(address(bond), requiredAmount);
 
         // Now mature as supply manager
         bond.mature();
@@ -400,10 +400,10 @@ contract ATKBondTest is AbstractATKAssetTest {
     function test_CannotMatureTwice() public {
         vm.warp(maturityDate + 1);
 
-        // Add sufficient underlying assets first
+        // Add sufficient denomination assets first
         vm.startPrank(owner);
-        underlyingAsset.approve(address(bond), initialUnderlyingSupply);
-        underlyingAsset.transfer(address(bond), initialUnderlyingSupply);
+        denominationAsset.approve(address(bond), initialdenominationAssetSupply);
+        denominationAsset.transfer(address(bond), initialdenominationAssetSupply);
 
         bond.mature();
         vm.expectRevert(IATKBond.BondAlreadyMatured.selector);
@@ -411,25 +411,25 @@ contract ATKBondTest is AbstractATKAssetTest {
         vm.stopPrank();
     }
 
-    function test_CannotMatureWithoutSufficientUnderlying() public {
+    function test_CannotMatureWithoutSufficientdenominationAsset() public {
         vm.warp(maturityDate + 2);
         vm.startPrank(owner);
 
-        uint256 requiredAmount = initialUnderlyingSupply;
+        uint256 requiredAmount = initialdenominationAssetSupply;
 
-        // Try to mature without any underlying assets
-        vm.expectRevert(abi.encodeWithSelector(IATKBond.InsufficientUnderlyingBalance.selector, 0, requiredAmount));
+        // Try to mature without any denomination assets
+        vm.expectRevert(abi.encodeWithSelector(IATKBond.InsufficientDenominationAssetBalance.selector, 0, requiredAmount));
         bond.mature();
 
-        // Add some underlying assets but not enough
+        // Add some denomination assets but not enough
         uint256 partialAmount = requiredAmount / 2;
-        underlyingAsset.mint(owner, partialAmount);
-        underlyingAsset.approve(address(bond), partialAmount);
-        underlyingAsset.transfer(address(bond), partialAmount);
+        denominationAsset.mint(owner, partialAmount);
+        denominationAsset.approve(address(bond), partialAmount);
+        denominationAsset.transfer(address(bond), partialAmount);
 
-        // Try to mature with insufficient underlying assets
+        // Try to mature with insufficient denomination assets
         vm.expectRevert(
-            abi.encodeWithSelector(IATKBond.InsufficientUnderlyingBalance.selector, partialAmount, requiredAmount)
+            abi.encodeWithSelector(IATKBond.InsufficientDenominationAssetBalance.selector, partialAmount, requiredAmount)
         );
         bond.mature();
 
@@ -437,15 +437,15 @@ contract ATKBondTest is AbstractATKAssetTest {
     }
 
     function test_WithdrawReserveAfterPartialRedemption() public {
-        // Setup: Add required underlying assets
-        uint256 requiredAmount = initialUnderlyingSupply;
+        // Setup: Add required denomination assets
+        uint256 requiredAmount = initialdenominationAssetSupply;
         uint256 excessAmount = toDecimals(50);
         uint256 totalAmount = requiredAmount + excessAmount;
 
         vm.startPrank(owner);
-        underlyingAsset.mint(owner, totalAmount); // Mint additional tokens
-        underlyingAsset.approve(address(bond), totalAmount);
-        underlyingAsset.transfer(address(bond), totalAmount);
+        denominationAsset.mint(owner, totalAmount); // Mint additional tokens
+        denominationAsset.approve(address(bond), totalAmount);
+        denominationAsset.transfer(address(bond), totalAmount);
 
         // Transfer some bonds to user1
         uint256 user1Bonds = toDecimals(10);
@@ -466,45 +466,45 @@ contract ATKBondTest is AbstractATKAssetTest {
 
         // Owner should be able to withdraw excess plus freed up reserve
         vm.startPrank(owner);
-        uint256 withdrawableAmount = bond.withdrawableUnderlyingAmount();
-        bond.recoverERC20(address(underlyingAsset), owner, withdrawableAmount);
+        uint256 withdrawableAmount = bond.withdrawableDenominationAssetAmount();
+        bond.recoverERC20(address(denominationAsset), owner, withdrawableAmount);
 
         // Verify final state
-        assertEq(bond.underlyingAssetBalance(), newRequiredReserve);
+        assertEq(bond.denominationAssetBalance(), newRequiredReserve);
         vm.stopPrank();
     }
 
     function test_WithdrawableAmount() public {
         // Initially no excess
-        assertEq(bond.withdrawableUnderlyingAmount(), 0);
+        assertEq(bond.withdrawableDenominationAssetAmount(), 0);
 
         vm.startPrank(owner);
 
         // Top up with more than needed
-        uint256 requiredAmount = initialUnderlyingSupply;
+        uint256 requiredAmount = initialdenominationAssetSupply;
         uint256 excessAmount = toDecimals(5); // 5.00 excess tokens
         uint256 totalAmount = requiredAmount + excessAmount;
 
-        underlyingAsset.mint(owner, totalAmount);
-        underlyingAsset.approve(address(bond), totalAmount);
-        underlyingAsset.transfer(address(bond), totalAmount);
+        denominationAsset.mint(owner, totalAmount);
+        denominationAsset.approve(address(bond), totalAmount);
+        denominationAsset.transfer(address(bond), totalAmount);
 
-        assertEq(bond.underlyingAssetBalance(), totalAmount);
-        assertEq(bond.totalUnderlyingNeeded(), requiredAmount);
+        assertEq(bond.denominationAssetBalance(), totalAmount);
+        assertEq(bond.totalDenominationAssetNeeded(), requiredAmount);
 
         // Verify withdrawable amount equals excess
-        uint256 withdrawable = bond.withdrawableUnderlyingAmount();
+        uint256 withdrawable = bond.withdrawableDenominationAssetAmount();
         assertEq(withdrawable, excessAmount);
 
         vm.stopPrank();
     }
 
     function test_RedeemBonds() public {
-        // Setup: Add required underlying assets
-        uint256 requiredAmount = initialUnderlyingSupply;
+        // Setup: Add required denomination assets
+        uint256 requiredAmount = initialdenominationAssetSupply;
         vm.startPrank(owner);
-        underlyingAsset.approve(address(bond), requiredAmount);
-        underlyingAsset.transfer(address(bond), requiredAmount);
+        denominationAsset.approve(address(bond), requiredAmount);
+        denominationAsset.transfer(address(bond), requiredAmount);
 
         // Transfer some bonds to user1
         uint256 user1Bonds = toDecimals(10);
@@ -517,25 +517,25 @@ contract ATKBondTest is AbstractATKAssetTest {
 
         // User1 redeems their bonds
         vm.startPrank(user1);
-        uint256 expectedUnderlyingAmount = user1Bonds * faceValue / (10 ** DECIMALS);
+        uint256 expecteddenominationAssetAmount = user1Bonds * faceValue / (10 ** DECIMALS);
         bond.redeem(user1Bonds);
 
         // Verify redemption
         assertEq(bond.balanceOf(user1), 0);
-        assertEq(underlyingAsset.balanceOf(user1), expectedUnderlyingAmount);
+        assertEq(denominationAsset.balanceOf(user1), expecteddenominationAssetAmount);
         vm.stopPrank();
     }
 
-    // Tests for underlying asset management
-    function test_TopUpUnderlyingAsset() public {
+    // Tests for denomination asset management
+    function test_TopUpDenominationAsset() public {
         uint256 topUpAmount = toDecimals(100);
 
         vm.startPrank(owner);
-        underlyingAsset.approve(address(bond), topUpAmount);
-        underlyingAsset.transfer(address(bond), topUpAmount);
+        denominationAsset.approve(address(bond), topUpAmount);
+        denominationAsset.transfer(address(bond), topUpAmount);
         vm.stopPrank();
 
-        assertEq(bond.underlyingAssetBalance(), topUpAmount);
+        assertEq(bond.denominationAssetBalance(), topUpAmount);
     }
 
     function test_HistoricalBalances() public {
@@ -550,7 +550,7 @@ contract ATKBondTest is AbstractATKAssetTest {
             CAP,
             maturityDate,
             faceValue,
-            address(underlyingAsset),
+            address(denominationAsset),
             new SMARTComplianceModuleParamPair[](0)
         );
 
@@ -602,7 +602,7 @@ contract ATKBondTest is AbstractATKAssetTest {
             CAP,
             maturityDate,
             faceValue,
-            address(underlyingAsset),
+            address(denominationAsset),
             new SMARTComplianceModuleParamPair[](0)
         );
 
@@ -675,7 +675,7 @@ contract ATKBondTest is AbstractATKAssetTest {
             CAP,
             maturityDate,
             faceValue,
-            address(underlyingAsset),
+            address(denominationAsset),
             new SMARTComplianceModuleParamPair[](0)
         );
 
@@ -926,13 +926,13 @@ contract ATKBondTest is AbstractATKAssetTest {
         vm.warp(maturityDate + 1);
 
         vm.startPrank(owner);
-        uint256 requiredAmount = bond.totalUnderlyingNeeded();
-        // The owner already has initialUnderlyingSupply. We need to mint the difference
-        uint256 additionalUnderlying = requiredAmount - initialUnderlyingSupply;
-        underlyingAsset.mint(owner, additionalUnderlying);
+        uint256 requiredAmount = bond.totalDenominationAssetNeeded();
+        // The owner already has initialdenominationAssetSupply. We need to mint the difference
+        uint256 additionaldenominationAsset = requiredAmount - initialdenominationAssetSupply;
+        denominationAsset.mint(owner, additionaldenominationAsset);
 
-        underlyingAsset.approve(address(bond), requiredAmount);
-        underlyingAsset.transfer(address(bond), requiredAmount);
+        denominationAsset.approve(address(bond), requiredAmount);
+        denominationAsset.transfer(address(bond), requiredAmount);
 
         bond.mature();
         assertTrue(bond.isMatured());
