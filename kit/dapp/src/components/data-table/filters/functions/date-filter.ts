@@ -24,6 +24,7 @@ export function __dateFilterFn<TData>(
   inputData: Date,
   filterValue: FilterValue<"date", TData>
 ) {
+  if (!inputData) return false;
   if (filterValue.values.length === 0) return true;
 
   if (
@@ -33,7 +34,7 @@ export function __dateFilterFn<TData>(
     throw new Error("Singular operators require at most one filter value");
 
   if (
-    filterValue.operator in ["is between", "is not between"] &&
+    ["is between", "is not between"].includes(filterValue.operator) &&
     filterValue.values.length !== 2
   )
     throw new Error("Plural operators require two filter values");
@@ -56,7 +57,7 @@ export function __dateFilterFn<TData>(
     case "is on or after":
       return isSameDay(value, d1) || isAfter(value, startOfDay(d1));
     case "is after":
-      return isAfter(value, startOfDay(d1));
+      return isAfter(value, endOfDay(d1));
     case "is on or before":
       return isSameDay(value, d1) || isBefore(value, startOfDay(d1));
     case "is between":

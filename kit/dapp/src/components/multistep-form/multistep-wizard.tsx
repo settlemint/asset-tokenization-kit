@@ -88,8 +88,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
   const progress = useMemo(() => {
     if (steps.length === 0) return 0;
     // Progress should include the current step being worked on
-    const currentProgress =
-      ((Number(safeCurrentStepIndex) + 1) / Number(steps.length)) * 100;
+    const currentProgress = ((safeCurrentStepIndex + 1) / steps.length) * 100;
     const finalProgress = Math.round(currentProgress);
 
     // Temporary debug logging
@@ -123,7 +122,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
       return (
         stepIndex < safeCurrentStepIndex || // Allow going back to any previous step
         completedSteps.includes(targetStep.id) ||
-        stepIndex === Number(safeCurrentStepIndex) + 1
+        stepIndex === safeCurrentStepIndex + 1
       );
     },
     [steps, safeCurrentStepIndex, completedSteps, allowStepSkipping]
@@ -143,9 +142,9 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
 
   const nextStep = useCallback(() => {
     if (safeCurrentStepIndex < steps.length - 1) {
-      setCurrentStepIndex(Number(safeCurrentStepIndex) + 1);
+      setCurrentStepIndex(safeCurrentStepIndex + 1);
       if (typeof onStepChange === "function") {
-        onStepChange(Number(safeCurrentStepIndex) + 1);
+        onStepChange(safeCurrentStepIndex + 1);
       }
     }
   }, [safeCurrentStepIndex, steps.length, setCurrentStepIndex, onStepChange]);
@@ -290,10 +289,9 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
               {showProgressBar && (
                 <div>
                   <div className="flex justify-between text-xs text-primary-foreground/80 mb-2">
-                    <span>Step {Number(safeCurrentStepIndex) + 1}</span>
+                    <span>Step {safeCurrentStepIndex + 1}</span>
                     <span>
-                      {Number(safeCurrentStepIndex) + 1} /{" "}
-                      {Number(steps.length)}
+                      {safeCurrentStepIndex + 1} / {steps.length}
                     </span>
                   </div>
                   <Progress

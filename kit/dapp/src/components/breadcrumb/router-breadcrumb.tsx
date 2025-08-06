@@ -38,7 +38,7 @@ function useAsyncBreadcrumbTitle(
 
   // Create a stable key for the breadcrumb to track changes
   const breadcrumbKey = breadcrumbMeta
-    ? `${breadcrumbMeta.title}-${String(breadcrumbMeta.isI18nKey ?? false)}-${breadcrumbMeta.i18nNamespace ?? ""}`
+    ? `${breadcrumbMeta.title}-${breadcrumbMeta.isI18nKey ?? false}-${breadcrumbMeta.i18nNamespace ?? ""}`
     : null;
 
   useEffect(() => {
@@ -296,8 +296,7 @@ export function RouterBreadcrumb({
           } else if (routePart && !routePart.startsWith("$")) {
             // Capitalize first letter of route segment
             fallbackTitle =
-              String(routePart.charAt(0)).toUpperCase() +
-              String(routePart.slice(1));
+              routePart.charAt(0).toUpperCase() + routePart.slice(1);
           }
         }
 

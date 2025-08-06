@@ -11,6 +11,27 @@ export interface ColumnOption {
   icon?: React.ReactElement | React.ElementType;
 }
 
+export interface ColumnOptionWithIcon extends ColumnOption {
+  icon: React.ReactElement | React.ElementType;
+}
+
+export interface FilterableColumnMeta {
+  /* The data type of the column for filtering purposes */
+  dataType?: ColumnDataType;
+  /* Transform function for option-based filters */
+  transformOptionFn?: (value: unknown) => ColumnOption;
+  /* Placeholder text for filters */
+  placeholder?: string;
+  /* Minimum value for number filters */
+  min?: number;
+  /* Maximum value for number filters */
+  max?: number;
+  /* Date format for date filters */
+  dateFormat?: string;
+}
+
+export type ColumnType = ColumnDataType;
+
 /*
  * Represents the data type of a column.
  */

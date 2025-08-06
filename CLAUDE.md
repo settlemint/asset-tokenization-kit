@@ -6,7 +6,8 @@ Expert ATK blockchain tokenization specialist. Direct, precise, results-focused.
 
 **CRITICAL**: Think carefully and only action the specific task I have given you
 with the most concise and elegant solution that changes as little code as
-possible
+possible. Do not stop halfway through a task list, always complete the task
+list. Having ANY lint, tsc, or test errors is a critical failure.
 
 ## Context
 
@@ -20,21 +21,18 @@ Foundry/Hardhat
 ```bash
 # Setup
 bun install && bunx settlemint connect --instance local && bun run artifacts
-bun run dev:up && bun run dev
+
+# Testing
+bun run lint # CRITICAL: Use a lot as you make a lot of errors against our rules
+bun run test # CRITICAL: Use often, as you usually introduce errors
+bun run test:integration # CRITICAL: Use sparingly, is a very heavy step
 
 # Before PR (MANDATORY)
 bun run ci
-bun run test:integration  # CRITICAL: Not included in ci, must run separately
 [[ "$(git branch --show-current)" =~ ^(main|master)$ ]] && git checkout -b feature/name
 # PR title must follow semantic commit format: type(scope): description
 # Focus on main code changes - ignore docs/tests if code changes exist
 # Examples: feat(dapp): add user authentication | fix(contracts): resolve overflow issue
-
-# Common
-bun run dev:reset              # Reset Docker
-bun run test:reset             # Reset test Docker environment
-bun run test:integration       # Run integration tests
-bun run artifacts              # After contract changes
 ```
 
 ## Architecture
@@ -63,10 +61,6 @@ TxSigner:8547 | Portal:7701 | Hasura:8080 | Graph:8000 | MinIO:9000
 ## Test Execution (MANDATORY test-validator agent)
 
 - ALWAYS use `bun run test`, NEVER use `bun test`
-- **MANDATORY**: MUST use test-validator agent for ALL test runs (especially
-  integration tests)
-- **CRITICAL**: When running `bun run test:integration`, ALWAYS use
-  test-validator agent
 - If test fails with "Error: This function can only be used on the server as
   including it in the browser will expose your access token." set
   @vitest-environment node
@@ -115,30 +109,23 @@ height 60px→80px" | "API timeout 30s→10s" | "Add index on user_id"
    - ERC compliance verification
    - **SKIP THIS = SECURITY RISKS**
 
-4. **test-validator** (MANDATORY for ALL tests & linting):
-   - Runs ALL test types in parallel
-   - Executes linters and formatters
-   - **NEVER run tests/lint directly - ALWAYS use this agent**
-
 ### 🎯 THE ONLY ACCEPTABLE WORKFLOW (NO DEVIATIONS)
 
 ```typescript
-// ⚡ STEP 1: RESEARCH (NON-NEGOTIABLE - ALWAYS FIRST)
+// ⚡ STEP 1: RESEARCH (NON-NEGOTIABLE - ALWAYS FIRST - WHEN CODING, NOT WHEN OPENING A PR OR RUNNING TESTS)
 researcher agent → gathers ALL docs, patterns, best practices
   ↓
 // 📝 STEP 2: IMPLEMENTATION (based on research output)
 You write code ONLY after researcher provides guidance
   ↓
 // ✅ STEP 3: VALIDATION (parallel execution)
-code-reviewer & test-validator → run simultaneously
+code-reviewer
   ↓
 // 🔒 STEP 4: SPECIALIZED (when applicable)
 solidity-auditor → for smart contract changes
 
 // 🚫 FORBIDDEN ACTIONS:
 // ❌ Writing code without researcher agent
-// ❌ Running tests without test-validator agent
-// ❌ Running lint without test-validator agent
 // ❌ Claiming completion without code-reviewer agent
 // ❌ Deploying contracts without solidity-auditor agent
 
@@ -175,17 +162,6 @@ solidity-auditor → for smart contract changes
 - Before ANY pull request
 - When claiming task complete
 - To validate implementation
-
-**test-validator** (MANDATORY for tests):
-
-- **MANDATORY**: When user asks to run ANY tests (unit, integration, e2e)
-- **MANDATORY**: For `bun run test:integration` command
-- After code changes
-- Before commits
-- Before PR creation (runs both `bun run ci` AND `bun run test:integration`)
-- To debug test failures
-- **NEVER** run tests directly - ALWAYS through test-validator agent
-- **NOTE**: `bun run ci` does NOT include integration tests
 
 **solidity-auditor** (CONTRACTS ONLY):
 

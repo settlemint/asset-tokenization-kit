@@ -6,7 +6,23 @@ export function textFilterFn<TData>(
   columnId: string,
   filterValue: FilterValue<"text", TData>
 ) {
-  const value = row.getValue<string>(columnId) || "";
+  const rawValue = row.getValue(columnId);
+  let value = "";
+
+  if (rawValue != null) {
+    // Handle different types explicitly
+    if (typeof rawValue === "string") {
+      value = rawValue;
+    } else if (typeof rawValue === "number" || typeof rawValue === "boolean") {
+      value = String(rawValue);
+    } else if (typeof rawValue === "object") {
+      // For objects, use JSON.stringify to get a searchable representation
+      value = JSON.stringify(rawValue);
+    } else {
+      // For other types (undefined, function, symbol), use empty string
+      value = "";
+    }
+  }
 
   return __textFilterFn(value, filterValue);
 }
@@ -17,7 +33,7 @@ export function __textFilterFn<TData>(
 ) {
   if (filterValue.values.length === 0) return true;
 
-  const value = inputData.toLowerCase().trim();
+  const value = (inputData || "").toLowerCase().trim();
   const filterStr = filterValue.values[0]?.toLowerCase().trim() ?? "";
 
   if (filterStr === "") return true;
