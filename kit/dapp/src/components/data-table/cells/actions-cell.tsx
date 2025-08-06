@@ -79,14 +79,11 @@ export function ActionsCell({
     e.stopPropagation();
   }, []);
 
-  // Memoize the dropdown item click handler
-  const createItemClickHandler = useCallback(
-    (action: ActionItem) => () => {
-      logger.debug("Dropdown item clicked:", action.label);
-      action.onClick?.();
-    },
-    []
-  );
+  // Create click handler for dropdown items
+  const createItemClickHandler = (action: ActionItem) => () => {
+    logger.debug("Dropdown item clicked:", action.label);
+    action.onClick?.();
+  };
 
   return (
     <DropdownMenu>

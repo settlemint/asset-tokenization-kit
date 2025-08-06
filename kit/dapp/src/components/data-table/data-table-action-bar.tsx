@@ -113,6 +113,8 @@ export function DataTableActionBar<TData>({
         if (action.successMessage) {
           toast.success(action.successMessage);
         }
+        // Complete the action (this will clear selection)
+        actionContext.onComplete();
       } catch (error) {
         // Show error message if provided
         const errorMessage =

@@ -21,7 +21,7 @@
     "artifacts": {},
     "test": {
       "dependsOn": ["codegen"],
-      "outputs": ["coverage/**"]
+      "outputs": []
     },
     "test:integration": {
       "dependsOn": ["codegen", "build", "artifacts"]

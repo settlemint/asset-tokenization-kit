@@ -284,10 +284,7 @@ job:
   podAnnotations: {}
 
   # Image pull secrets
-  imagePullSecrets:
-    - image-pull-secret-docker
-    - image-pull-secret-ghcr
-    - image-pull-secret-harbor
+  imagePullSecrets: []
 
   # Resource configuration
   resources: {}

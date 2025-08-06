@@ -1,4 +1,5 @@
 import { AssetStatusBadge } from "@/components/assets/asset-status-badge";
+import { TabBadge } from "@/components/assets/tab-badge";
 import {
   assetClassBreadcrumbs,
   createBreadcrumbMetadata,
@@ -6,6 +7,7 @@ import {
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { ManageAssetDropdown } from "@/components/manage-dropdown/asset";
+import { getAssetTabConfiguration } from "@/components/tab-navigation/asset-tab-configuration";
 import { TabNavigation } from "@/components/tab-navigation/tab-navigation";
 import { seo } from "@/config/metadata";
 import {
@@ -17,13 +19,11 @@ import {
   ethereumAddress,
   type EthereumAddress,
 } from "@/lib/zod/validators/ethereum-address";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
-import { TabBadge } from "@/components/assets/tab-badge";
-import { useQuery } from "@tanstack/react-query";
-import { getAssetTabConfiguration } from "@/components/tab-navigation/asset-tab-configuration";
 
 const routeParamsSchema = z.object({
   factoryAddress: ethereumAddress,
@@ -45,7 +45,7 @@ export const Route = createFileRoute(
         })
       ),
       queryClient.fetchQuery(
-        orpc.token.factoryRead.queryOptions({
+        orpc.system.tokenFactoryRead.queryOptions({
           input: { id: factoryAddress },
         })
       ),

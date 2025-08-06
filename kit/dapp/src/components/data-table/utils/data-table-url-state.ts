@@ -8,6 +8,7 @@
 
 import { z } from "zod";
 import type { DataTableSearchParams } from "./search-params";
+import { dataTableSearchParamsSchema } from "./search-params";
 
 /**
  * Creates a clean search params validator that removes empty values.
@@ -74,6 +75,11 @@ export function cleanEmptyValues(
       continue;
     }
 
+    // Remove default page size to clean URLs
+    if (key === "limit" && value === defaultPageSize) {
+      continue;
+    }
+
     // For flat params, check defaults
     if (key === "page" && value === 1) {
       continue;
@@ -103,11 +109,11 @@ export function cleanEmptyValues(
 }
 
 /**
- * Base schema for all data table search params.
+ * Base schema for flat URL parameters that transforms to nested structure.
  * Can be extended for specific table needs.
  * Transforms flat URL params into nested structure expected by DataTable.
  */
-export const dataTableSearchParamsSchema = z
+export const flatDataTableSearchParamsSchema = z
   .object({
     // Pagination
     page: z.coerce.number().min(1).optional(),

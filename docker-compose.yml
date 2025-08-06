@@ -15,7 +15,7 @@ services:
     container_name: ${CONTAINER_PREFIX:-atk}-anvil
     restart: unless-stopped
     environment:
-      - TIMESTAMP=${TIMESTAMP}
+      - TIMESTAMP=${TIMESTAMP:-0}
     # No Gas network
     entrypoint:
       [

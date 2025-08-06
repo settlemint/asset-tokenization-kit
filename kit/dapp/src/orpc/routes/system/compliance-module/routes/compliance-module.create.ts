@@ -26,9 +26,9 @@ import {
   getDefaultComplianceModuleImplementations,
   SystemComplianceModuleConfig,
   type SystemComplianceModuleCreateOutput,
-  type SystemComplianceModuleCreateSchema,
 } from "@/orpc/routes/system/compliance-module/routes/compliance-module.create.schema";
 import { read } from "@/orpc/routes/system/routes/system.read";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
@@ -95,8 +95,8 @@ function getComplianceImplementationAddress(
 
 export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
   .use(
-    blockchainPermissionsMiddleware<typeof SystemComplianceModuleCreateSchema>({
-      requiredRoles: { any: ["complianceManager", "systemManager"] },
+    blockchainPermissionsMiddleware({
+      requiredRoles: SYSTEM_PERMISSIONS.complianceModuleCreate,
       getAccessControl: ({ context }) => {
         const systemData = context.system;
         return systemData?.systemAccessManager?.accessControl;

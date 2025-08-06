@@ -1,4 +1,5 @@
 import { settings } from "@/lib/db/schema";
+import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { eq } from "drizzle-orm";
@@ -28,6 +29,11 @@ import { eq } from "drizzle-orm";
  * ```
  */
 export const read = authRouter.settings.read
+  .use(
+    offChainPermissionsMiddleware({
+      requiredPermissions: { setting: ["read"] },
+    })
+  )
   .use(databaseMiddleware)
   .handler(async ({ input, context }) => {
     const { key } = input;

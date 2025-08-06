@@ -17,7 +17,7 @@ import {
   type AssetType,
 } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
-import { FactoryList } from "@/orpc/routes/token/routes/factory/factory.list.schema";
+import { FactoryList } from "@/orpc/routes/system/token-factory/routes/factory.list.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useRouteContext } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
@@ -47,7 +47,7 @@ export const AssetDesignerWizard = ({ type }: AssetDesignerFormProps) => {
         await Promise.all([
           // Invalidate factory list queries
           queryClient.invalidateQueries({
-            queryKey: orpc.token.factoryList.queryOptions({
+            queryKey: orpc.system.tokenFactoryList.queryOptions({
               input: { hasTokens: true },
             }).queryKey,
           }),

@@ -43,6 +43,7 @@ export function WalletCreated() {
               showPrettyName={false}
               showFullAddress
               copyToClipboard
+              skipDataQueries // Skip queries during onboarding
             />
           </div>
         </div>

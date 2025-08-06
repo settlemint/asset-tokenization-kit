@@ -128,7 +128,14 @@ export function PropertyFilterOperatorDisplay<TData, T extends ColumnDataType>({
   filterType: T;
 }) {
   const operatorDetails = filterTypeOperatorDetails[filterType];
-  const details = operatorDetails[filter.operator];
+  const details = operatorDetails?.[filter.operator];
+
+  if (!details) {
+    logger.warn(
+      `Unknown operator "${filter.operator}" for filter type "${filterType}"`
+    );
+    return <span className="text-xs">{filter.operator}</span>;
+  }
 
   return <span className="text-xs">{details.label}</span>;
 }

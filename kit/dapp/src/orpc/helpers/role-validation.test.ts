@@ -1,12 +1,12 @@
 /**
  * @vitest-environment node
  */
-import { describe, expect, test } from "vitest";
 import type {
   AccessControl,
   AccessControlRoles,
 } from "@/lib/fragments/the-graph/access-control-fragment";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { describe, expect, test } from "vitest";
 import { mapUserRoles } from "./role-validation";
 
 describe("role-validation", () => {
@@ -270,10 +270,13 @@ describe("role-validation", () => {
       // Create accessControl with user having all roles
       const accessControl = allRoles.reduce(
         (acc, role) => {
-          acc[role] = [{ id: mockWallet }];
+          acc[role] = [{ id: mockWallet, isContract: false }];
           return acc;
         },
-        {} as Record<AccessControlRoles, { id: EthereumAddress }[]>
+        {} as Record<
+          AccessControlRoles,
+          { id: EthereumAddress; isContract: boolean }[]
+        >
       );
 
       const result = mapUserRoles(mockWallet, accessControl);

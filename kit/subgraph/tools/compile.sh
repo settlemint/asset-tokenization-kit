@@ -27,6 +27,6 @@ if grep -q '0x5e771e1417100000000000000000000000020088' subgraph.yaml; then
     fi
 else
     # Address doesn't match, just build without updating generated files
-    echo "SystemFactory address doesn't match the default, just building without updating generated files"
-    bunx settlemint scs subgraph build --ipfs=https://ipfs.console.settlemint.com
+    echo "SystemFactory address doesn't match the default"
+    exit 1
 fi

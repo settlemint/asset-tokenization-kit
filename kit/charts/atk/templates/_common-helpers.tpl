@@ -137,20 +137,83 @@ Usage: {{ include "atk.common.tplvalues.render" (dict "value" .Values.someValue 
 
 {{/*
 Common image pull secrets for all deployments/statefulsets
+This dynamically generates the list based on enabled registries in imagePullCredentials
 Usage: {{ include "atk.common.imagePullSecrets" . }}
 */}}
 {{- define "atk.common.imagePullSecrets" -}}
-{{- $defaultSecrets := list "image-pull-secret-docker" "image-pull-secret-ghcr" "image-pull-secret-harbor" -}}
-{{- $secrets := $defaultSecrets -}}
-{{- if .Values.global -}}
-  {{- if .Values.global.imagePullSecrets -}}
-    {{- $secrets = .Values.global.imagePullSecrets -}}
+{{- $root := . -}}
+{{- $secrets := list -}}
+{{- $localCredentials := .Values.imagePullCredentials }}
+{{- $globalCredentials := .Values.global.imagePullCredentials }}
+{{- $credentials := $globalCredentials }}
+{{- if and $localCredentials $localCredentials.registries (gt (len $localCredentials.registries) 0) }}
+  {{- $credentials = $localCredentials }}
+{{- end }}
+{{- if $credentials -}}
+  {{- if $credentials.registries -}}
+    {{- range $name, $registry := $credentials.registries -}}
+      {{- if $registry.enabled -}}
+        {{- $secrets = append $secrets (printf "image-pull-secret-%s" $name) -}}
+      {{- end -}}
+    {{- end -}}
   {{- end -}}
 {{- end -}}
+{{- if not $credentials -}}
+  {{- if .Values.global -}}
+    {{- if .Values.global.imagePullSecrets -}}
+      {{- range .Values.global.imagePullSecrets -}}
+        {{- if kindIs "string" . -}}
+          {{- $secrets = append $secrets . -}}
+        {{- else if kindIs "map" . -}}
+          {{- if .name -}}
+            {{- $secrets = append $secrets .name -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if .Values.imagePullSecrets -}}
+  {{- if kindIs "slice" .Values.imagePullSecrets -}}
+    {{- range .Values.imagePullSecrets -}}
+      {{- if kindIs "string" . -}}
+        {{- $secrets = append $secrets . -}}
+      {{- else if kindIs "map" . -}}
+        {{- if .name -}}
+          {{- $secrets = append $secrets .name -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if $secrets }}
 imagePullSecrets:
 {{- range $secrets }}
   - name: {{ . }}
 {{- end }}
+{{- end }}
+{{- end }}
+
+{{/*
+Generate docker config for image pull secret
+Usage: {{ include "atk.common.imagePullSecret" (dict "registry" "docker.io" "username" "user" "password" "pass" "email" "email@example.com") }}
+*/}}
+{{- define "atk.common.imagePullSecret" -}}
+{{- $registry := .registry -}}
+{{- $username := .username -}}
+{{- $password := .password -}}
+{{- $email := .email -}}
+{{- $auth := printf "%s:%s" $username $password | b64enc -}}
+{
+  "auths": {
+    "{{ $registry }}": {
+      "username": "{{ $username }}",
+      "password": "{{ $password }}",
+      "email": "{{ $email }}",
+      "auth": "{{ $auth }}"
+    }
+  }
+}
 {{- end }}
 
 {{/*
@@ -280,22 +343,7 @@ Usage: {{ include "common.images.renderPullSecrets" (dict "images" .Values.image
 */}}
 {{- define "common.images.renderPullSecrets" -}}
 {{- $context := .context | default . -}}
-{{- $images := .images | default list -}}
-{{- $pullSecrets := list -}}
-{{- range $images -}}
-  {{- if .pullSecrets -}}
-    {{- $pullSecrets = concat $pullSecrets .pullSecrets -}}
-  {{- end -}}
-{{- end -}}
-{{- if $context.Values.global.imagePullSecrets -}}
-  {{- $pullSecrets = concat $pullSecrets $context.Values.global.imagePullSecrets -}}
-{{- end -}}
-{{- if $pullSecrets -}}
-imagePullSecrets:
-{{- range $pullSecrets | uniq }}
-  - name: {{ . }}
-{{- end -}}
-{{- end -}}
+{{- include "atk.common.imagePullSecrets" $context -}}
 {{- end -}}
 
 {{/*

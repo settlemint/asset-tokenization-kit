@@ -1,8 +1,8 @@
 /**
  * @vitest-environment node
  */
+import { Kind, print } from "graphql";
 import { describe, expect, it } from "vitest";
-import { print, Kind } from "graphql";
 import type { AccessControlRoles } from "./access-control-fragment";
 import { AccessControlFragment } from "./access-control-fragment";
 
@@ -104,11 +104,19 @@ describe("AccessControlFragment", () => {
         selections.forEach((selection) => {
           if (selection.kind === Kind.FIELD) {
             expect(selection.selectionSet).toBeDefined();
-            expect(selection.selectionSet?.selections).toHaveLength(1);
+            expect(selection.selectionSet?.selections).toHaveLength(2);
 
             const idSelection = selection.selectionSet?.selections[0];
             if (idSelection && idSelection.kind === Kind.FIELD) {
               expect(idSelection.name.value).toBe("id");
+            }
+
+            const isContractSelection = selection.selectionSet?.selections[1];
+            if (
+              isContractSelection &&
+              isContractSelection.kind === Kind.FIELD
+            ) {
+              expect(isContractSelection.name.value).toBe("isContract");
             }
           }
         });
@@ -121,7 +129,7 @@ describe("AccessControlFragment", () => {
 
       expect(fragmentString).toContain("fragment AccessControlFragment");
       expect(fragmentString).toContain("on AccessControl");
-      expect(fragmentString).toMatch(/\{\s*id\s*\}/);
+      expect(fragmentString).toMatch(/\{\s*id\s*isContract\s*\}/);
     });
   });
 

@@ -34,7 +34,7 @@ export default defineConfig({
         : ["default"],
     onConsoleLog:
       process.env.CI || process.env.CLAUDECODE ? () => false : undefined,
-    silent: process.env.CLAUDECODE ? true : undefined,
+    silent: process.env.CLAUDECODE ? "passed-only" : undefined,
     typecheck: {
       enabled: true,
     },

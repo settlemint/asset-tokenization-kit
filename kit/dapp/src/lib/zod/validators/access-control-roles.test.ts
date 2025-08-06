@@ -1,10 +1,10 @@
+import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
-import { accessControlRoles } from "./access-control-roles";
+import { accessControlRole, accessControlRoles } from "./access-control-roles";
 
 describe("accessControlRoles", () => {
-  describe("schema validation", () => {
+  describe("schema validation for access control roles", () => {
     it("should parse valid access control roles object with all roles true", () => {
       const validRoles: Record<AccessControlRoles, boolean> = {
         addonManager: true,
@@ -221,6 +221,22 @@ describe("accessControlRoles", () => {
     });
   });
 
+  describe("schema validation for access control role", () => {
+    it("should parse valid access control role", () => {
+      const result = accessControlRole.parse("tokenManager");
+      expect(result).toEqual("tokenManager");
+    });
+
+    it("should throw on invalid access control role", () => {
+      expect(() => accessControlRole.parse("invalidRole")).toThrow();
+    });
+
+    it("should throw on null or undefined input", () => {
+      expect(() => accessControlRole.parse(null)).toThrow();
+      expect(() => accessControlRole.parse(undefined)).toThrow();
+    });
+  });
+
   describe("type safety", () => {
     it("should ensure all AccessControlRoles are covered", () => {
       // This test ensures that if a new role is added to AccessControlRoles,
@@ -273,6 +289,11 @@ describe("accessControlRoles", () => {
       expectedRoles.forEach((role) => {
         expect(schemaKeys).toContain(role);
       });
+
+      // Check that the enum has all the roles
+      expect(Object.keys(accessControlRole.enum)).toHaveLength(
+        expectedRoles.length
+      );
     });
   });
 });

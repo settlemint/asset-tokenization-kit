@@ -19,7 +19,7 @@
   "devDependencies": {
     "@settlemint/sdk-thegraph": "2.5.5",
     "matchstick-as": "0.6.0",
-    "yaml": "2.8.0",
+    "yaml": "2.8.1",
     "contracts": "workspace:*"
   },
   "peerDependencies": {}

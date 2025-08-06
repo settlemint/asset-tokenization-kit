@@ -12,7 +12,7 @@ dependencies:
   repository: https://stakater.github.io/stakater-charts
   version: 2.2.0
 - name: minio
-  repository: https://charts.min.io/
-  version: 5.4.0
-digest: sha256:28ca5beb750a945629e6b6936c7a4db41d6c9898134624efccc72f36c0062786
-generated: "2025-07-31T00:04:15.877975263Z"
+  repository: file://./charts/minio
+  version: 0.1.0
+digest: sha256:6a8db560ecf571317eab9a33119840a9ab8260570212172a0a41be4e6057fbcd
+generated: "2025-08-05T16:33:30.20237+03:00"

@@ -23,7 +23,7 @@ export function DataTableViewOptions<TData>({
 
   const handleColumnVisibilityChange = useCallback(
     (columnId: string) => (value: boolean) => {
-      table.getColumn(columnId)?.toggleVisibility(!!value);
+      table.getColumn(columnId)?.toggleVisibility(value);
     },
     [table]
   );

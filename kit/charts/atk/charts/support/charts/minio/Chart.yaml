@@ -1,0 +1,11 @@
+apiVersion: v2
+name: minio
+description: A simple MinIO deployment for development environments
+type: application
+version: 0.1.0
+appVersion: "RELEASE.2025-07-18T21-56-31Z"
+icon: https://console.settlemint.com/android-chrome-512x512.png
+maintainers:
+  - name: SettleMint
+    email: support@settlemint.com
+    url: https://settlemint.com

@@ -5,6 +5,7 @@
  * @module ExchangeRatesHistory
  */
 import { fxRates } from "@/lib/db/schema";
+import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { publicRouter } from "@/orpc/procedures/public.router";
 import { and, between, desc, eq, gte, lte } from "drizzle-orm";
@@ -28,6 +29,11 @@ import { and, between, desc, eq, gte, lte } from "drizzle-orm";
  * @returns Array of historical rates
  */
 export const history = publicRouter.exchangeRates.history
+  .use(
+    offChainPermissionsMiddleware({
+      requiredPermissions: { exchangeRates: ["list"] },
+    })
+  )
   .use(databaseMiddleware)
   .handler(async ({ input, context }) => {
     const {
