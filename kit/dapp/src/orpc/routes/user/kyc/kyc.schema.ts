@@ -23,12 +23,11 @@ export const KycProfileInsertSchema = z.object({
   userId: z.string(),
   firstName: z.string().min(1).max(64).trim(),
   lastName: z.string().min(1).max(64).trim(),
-  dob: z
-    .date()
-    .max(
-      new Date(Date.now() - 18 * 365.25 * 24 * 3600 * 1000),
-      "Must be at least 18 years old"
-    ),
+  dob: z.date().refine((date) => {
+    const eighteenYearsAgo = new Date();
+    eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
+    return date <= eighteenYearsAgo;
+  }, "Must be at least 18 years old"),
   country: z
     .string()
     .length(2)
