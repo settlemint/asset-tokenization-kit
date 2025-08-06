@@ -1,9 +1,9 @@
-import { getOrpcClient } from "test/utils/orpc-client";
+import { getOrpcClient } from "@test/utils/orpc-client";
 import {
   DEFAULT_ADMIN,
   DEFAULT_PINCODE,
   signInWithUser,
-} from "test/utils/user";
+} from "@test/utils/user";
 import { describe, expect, test } from "vitest";
 
 describe("System Addon create", () => {
