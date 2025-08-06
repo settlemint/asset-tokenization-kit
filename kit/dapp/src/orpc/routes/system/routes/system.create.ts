@@ -177,7 +177,7 @@ export const create = onboardedRouter.system.create
       createSystemVariables
     );
 
-    // Query for the deployed system contract
+    // Query for the deployed system contract with retry logic
     const queryVariables: VariablesOf<
       typeof FIND_SYSTEM_FOR_TRANSACTION_QUERY
     > = {
@@ -193,18 +193,72 @@ export const create = onboardedRouter.system.create
       ),
     });
 
-    const result = await context.theGraphClient.query(
-      FIND_SYSTEM_FOR_TRANSACTION_QUERY,
-      {
-        input: queryVariables,
-        output: SystemQueryResultSchema,
-      }
-    );
+    // Retry logic for TheGraph indexing delay with exponential backoff
+    const maxRetries = 60; // Max attempts
+    const baseDelay = 500; // Start with 500ms
+    const maxDelay = 5000; // Cap at 5 seconds
+    let result;
 
-    if (result.systems.length === 0) {
-      throw errors.NOT_FOUND({
-        message: "System not found after creation",
-        cause: new Error(`System not found for transaction ${transactionHash}`),
+    for (let i = 0; i < maxRetries; i++) {
+      try {
+        result = await context.theGraphClient.query(
+          FIND_SYSTEM_FOR_TRANSACTION_QUERY,
+          {
+            input: queryVariables,
+            output: SystemQueryResultSchema,
+          }
+        );
+
+        if (result.systems.length > 0) {
+          logger.info(`System indexed after ${i + 1} attempts`);
+          break; // Found the system, exit retry loop
+        }
+
+        // If not found and not last retry, wait before next attempt
+        if (i < maxRetries - 1) {
+          // Exponential backoff: 500ms, 1s, 2s, 4s, 5s, 5s, ...
+          const delay = Math.min(
+            baseDelay * Math.pow(2, Math.floor(i / 10)),
+            maxDelay
+          );
+          logger.debug(
+            `System not indexed yet, retrying in ${delay}ms (attempt ${i + 1}/${maxRetries})`
+          );
+          await new Promise((resolve) => setTimeout(resolve, delay));
+        }
+      } catch (error) {
+        // If query fails and not last retry, wait and try again
+        if (i < maxRetries - 1) {
+          const delay = Math.min(
+            baseDelay * Math.pow(2, Math.floor(i / 10)),
+            maxDelay
+          );
+          logger.debug(
+            `TheGraph query failed, retrying in ${delay}ms (attempt ${i + 1}/${maxRetries}): ${error}`
+          );
+          await new Promise((resolve) => setTimeout(resolve, delay));
+        } else {
+          throw error; // Re-throw on last attempt
+        }
+      }
+    }
+
+    if (!result || result.systems.length === 0) {
+      // Before giving up, let's check if the transaction was actually successful
+      logger.warn(
+        `System deployment transaction ${transactionHash} confirmed but not indexed after ${maxRetries} attempts`
+      );
+
+      throw errors.TIMEOUT({
+        message:
+          "TheGraph indexing timeout - system deployed but not indexed yet",
+        data: {
+          details: {
+            transactionHash,
+            message:
+              "The system was successfully deployed on-chain but TheGraph hasn't indexed it yet. The deployment was successful - you can refresh the page in a moment to continue.",
+          },
+        },
       });
     }
 
