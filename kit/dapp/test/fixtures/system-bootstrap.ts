@@ -132,30 +132,36 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
   const issuer = await getUserData(DEFAULT_ISSUER);
   const issuerOrpcClient = getOrpcClient(await signInWithUser(DEFAULT_ISSUER));
   const issuerMe = await issuerOrpcClient.user.me({});
-  if (issuerMe.userSystemPermissions.roles.tokenManager) {
-    console.log("Issuer already has token manager role");
-  } else {
-    console.log("Granting token manager role to issuer");
-    await orpClient.system.grantRole({
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
-      },
-      accounts: [issuer.wallet],
-      role: "tokenManager",
-    });
+
+  const rolesToGrant: ("tokenManager" | "complianceManager")[] = [];
+  if (!issuerMe.userSystemPermissions.roles.tokenManager) {
+    rolesToGrant.push("tokenManager");
   }
-  if (issuerMe.userSystemPermissions.roles.complianceManager) {
-    console.log("Issuer already has compliance manager role");
-  } else {
-    console.log("Granting compliance manager role to issuer");
+  if (!issuerMe.userSystemPermissions.roles.complianceManager) {
+    rolesToGrant.push("complianceManager");
+  }
+
+  if (rolesToGrant.length === 0) {
+    return; // Issuer already has all required roles
+  } else if (rolesToGrant.length === 1) {
+    const singleRole = rolesToGrant[0];
+    if (!singleRole) return; // Type guard
     await orpClient.system.grantRole({
       verification: {
         verificationCode: DEFAULT_PINCODE,
         verificationType: "pincode",
       },
-      accounts: [issuer.wallet],
-      role: "complianceManager",
+      address: issuer.wallet,
+      role: singleRole,
+    });
+  } else {
+    await orpClient.system.grantRole({
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+      address: issuer.wallet,
+      role: rolesToGrant,
     });
   }
 }

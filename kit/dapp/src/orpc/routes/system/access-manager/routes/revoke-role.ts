@@ -5,8 +5,31 @@ import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockch
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 
+// Single address, single role
 const REVOKE_ROLE_MUTATION = portalGraphql(`
   mutation RevokeRoleMutation(
+    $verificationId: String
+    $challengeResponse: String!
+    $address: String!
+    $account: String!
+    $role: String!
+    $from: String!
+  ) {
+    IATKSystemAccessManagerRevokeRole(
+      verificationId: $verificationId
+      challengeResponse: $challengeResponse
+      address: $address
+      from: $from
+      input: { role: $role, account: $account }
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+// Multiple addresses, single role
+const BATCH_REVOKE_ROLE_MUTATION = portalGraphql(`
+  mutation BatchRevokeRoleMutation(
     $verificationId: String
     $challengeResponse: String!
     $address: String!
@@ -26,6 +49,28 @@ const REVOKE_ROLE_MUTATION = portalGraphql(`
   }
 `);
 
+// Single address, multiple roles
+const REVOKE_MULTIPLE_ROLES_MUTATION = portalGraphql(`
+  mutation RevokeMultipleRolesMutation(
+    $verificationId: String
+    $challengeResponse: String!
+    $address: String!
+    $account: String!
+    $roles: [String!]!
+    $from: String!
+  ) {
+    IATKSystemAccessManagerRevokeMultipleRoles(
+      verificationId: $verificationId
+      challengeResponse: $challengeResponse
+      address: $address
+      from: $from
+      input: { account: $account, roles: $roles }
+    ) {
+      transactionHash
+    }
+  }
+`);
+
 export const revokeRole = portalRouter.system.revokeRole
   .use(
     blockchainPermissionsMiddleware({
@@ -36,7 +81,7 @@ export const revokeRole = portalRouter.system.revokeRole
     })
   )
   .handler(async ({ input, context, errors }) => {
-    const { verification, accounts, role } = input;
+    const { verification, address, role } = input;
     const { auth, system } = context;
     const sender = auth.user;
 
@@ -48,35 +93,100 @@ export const revokeRole = portalRouter.system.revokeRole
       });
     }
 
-    if (accounts.length === 0) {
+    // Normalize inputs to arrays
+    const addresses = Array.isArray(address) ? address : [address];
+    const roles = Array.isArray(role) ? role : [role];
+
+    // Remove duplicates
+    const uniqueAddresses = [...new Set(addresses)];
+    const uniqueRoles = [...new Set(roles)];
+
+    if (uniqueAddresses.length === 0 || uniqueRoles.length === 0) {
       return {
-        accounts: [],
+        addresses: [],
+        roles: [],
       };
     }
 
-    const roleInfo = getRoleByFieldName(role);
-    if (!roleInfo) {
-      throw errors.NOT_FOUND({
-        message: `Role '${role}' not found`,
-      });
-    }
+    // Validate all roles exist
+    const roleInfos = uniqueRoles.map((r) => {
+      const roleInfo = getRoleByFieldName(r);
+      if (!roleInfo) {
+        throw errors.NOT_FOUND({
+          message: `Role '${r}' not found`,
+        });
+      }
+      return roleInfo;
+    });
 
     const challengeResponse = await handleChallenge(sender, {
       code: verification.verificationCode,
       type: verification.verificationType,
     });
 
-    const accountsWithoutDuplicates = [...new Set(accounts)];
-
-    await context.portalClient.mutate(REVOKE_ROLE_MUTATION, {
-      address: system.systemAccessManager.id,
-      from: sender.wallet,
-      accounts: accountsWithoutDuplicates,
-      role: roleInfo.bytes,
-      ...challengeResponse,
-    });
+    // Execute the appropriate mutation based on the use case
+    if (uniqueAddresses.length === 1 && uniqueRoles.length === 1) {
+      // Single address, single role - use revokeRole
+      const account = uniqueAddresses[0];
+      const roleInfo = roleInfos[0];
+      if (!account || !roleInfo) {
+        throw errors.INTERNAL_SERVER_ERROR({
+          message: "Invalid address or role configuration",
+        });
+      }
+      await context.portalClient.mutate(REVOKE_ROLE_MUTATION, {
+        address: system.systemAccessManager.id,
+        from: sender.wallet,
+        account,
+        role: roleInfo.bytes,
+        ...challengeResponse,
+      });
+    } else if (uniqueAddresses.length > 1 && uniqueRoles.length === 1) {
+      // Multiple addresses, single role - use batchRevokeRole
+      const roleInfo = roleInfos[0];
+      if (!roleInfo) {
+        throw errors.INTERNAL_SERVER_ERROR({
+          message: "Invalid role configuration",
+        });
+      }
+      await context.portalClient.mutate(BATCH_REVOKE_ROLE_MUTATION, {
+        address: system.systemAccessManager.id,
+        from: sender.wallet,
+        accounts: uniqueAddresses,
+        role: roleInfo.bytes,
+        ...challengeResponse,
+      });
+    } else if (uniqueAddresses.length === 1 && uniqueRoles.length > 1) {
+      // Single address, multiple roles - use revokeMultipleRoles
+      const account = uniqueAddresses[0];
+      if (!account) {
+        throw errors.INTERNAL_SERVER_ERROR({
+          message: "Invalid address configuration",
+        });
+      }
+      const roleBytes = roleInfos.map((r) => r.bytes);
+      await context.portalClient.mutate(REVOKE_MULTIPLE_ROLES_MUTATION, {
+        address: system.systemAccessManager.id,
+        from: sender.wallet,
+        account,
+        roles: roleBytes,
+        ...challengeResponse,
+      });
+    } else {
+      // Multiple addresses, multiple roles - not supported in a single transaction
+      throw errors.INPUT_VALIDATION_FAILED({
+        message:
+          "Cannot revoke multiple roles from multiple addresses in a single transaction. Please use separate requests.",
+        data: {
+          errors: [
+            "Cannot revoke multiple roles from multiple addresses in a single transaction. Please use separate requests.",
+          ],
+        },
+      });
+    }
 
     return {
-      accounts: accountsWithoutDuplicates,
+      addresses: uniqueAddresses,
+      roles: uniqueRoles,
     };
   });
