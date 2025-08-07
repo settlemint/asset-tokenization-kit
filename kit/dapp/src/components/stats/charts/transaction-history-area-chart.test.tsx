@@ -3,8 +3,11 @@
  */
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  createMockSuspenseQueryError,
+  createMockSuspenseQueryResult,
+} from "../../../../test/mocks/suspense-query";
 import { renderWithProviders } from "../../../../test/test-utils";
-import { createMockSuspenseQueryResult, createMockSuspenseQueryError } from "../../../../test/mock-utils";
 import { TransactionHistoryAreaChart } from "./transaction-history-area-chart";
 
 // Mock useSuspenseQuery while keeping other exports
@@ -79,7 +82,9 @@ describe("TransactionHistoryAreaChart", () => {
   it("should handle ORPC error gracefully", async () => {
     const { useSuspenseQuery } = await import("@tanstack/react-query");
     vi.mocked(useSuspenseQuery).mockImplementation(
-      createMockSuspenseQueryError(new Error("ORPC Error: Failed to fetch transaction history"))
+      createMockSuspenseQueryError(
+        new Error("ORPC Error: Failed to fetch transaction history")
+      )
     );
 
     // Mock console.error to avoid noise in test output
