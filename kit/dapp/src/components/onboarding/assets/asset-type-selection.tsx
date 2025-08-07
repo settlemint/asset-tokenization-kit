@@ -98,131 +98,133 @@ export function AssetTypeSelection() {
   };
 
   return (
-    <OnboardingStepLayout
-      title={t("assets.select-asset-types")}
-      description={t("assets.choose-asset-types")}
-      actions={
-        <div className="flex justify-end w-full">
-          <form.SecureSubmitButton
-            label={
-              isFactoriesCreating ? t("assets.deploying") : t("assets.deploy")
-            }
-            onSubmit={() => {
+    <form.AppForm>
+      <OnboardingStepLayout
+        title={t("assets.select-asset-types")}
+        description={t("assets.choose-asset-types")}
+        actions={
+          <div className="flex justify-end w-full">
+            <form.SecureSubmitButton
+              label={
+                isFactoriesCreating ? t("assets.deploying") : t("assets.deploy")
+              }
+              onSubmit={() => {
+                void form.handleSubmit();
+              }}
+              disabled={
+                isFactoriesCreating ||
+                !form.state.values.factories ||
+                form.state.values.factories.length === 0
+              }
+              verification={{
+                label: t("assets.confirm-deployment-title"),
+                description: t("assets.confirm-deployment-description"),
+                setField: (verification) => {
+                  form.setFieldValue("verification", verification);
+                },
+              }}
+            />
+          </div>
+        }
+      >
+        <div className="max-w-2xl space-y-6">
+          <div className="rounded-lg bg-sm-state-warning-background/50 border border-sm-state-warning-background p-4">
+            <div className="flex items-start gap-3">
+              <TriangleAlert className="h-5 w-5 text-sm-state-warning mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm text-sm-state-warning">
+                  {t("assets.deployment-warning")}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <InfoAlert
+            title={t("assets.what-are-asset-factories")}
+            description={t("assets.asset-factories-description")}
+          />
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               void form.handleSubmit();
             }}
-            disabled={
-              isFactoriesCreating ||
-              !form.state.values.factories ||
-              form.state.values.factories.length === 0
-            }
-            verification={{
-              label: t("assets.confirm-deployment-title"),
-              description: t("assets.confirm-deployment-description"),
-              setField: (verification) => {
-                form.setFieldValue("verification", verification);
-              },
-            }}
-          />
-        </div>
-      }
-    >
-      <div className="max-w-2xl space-y-6">
-        <div className="rounded-lg bg-sm-state-warning-background/50 border border-sm-state-warning-background p-4">
-          <div className="flex items-start gap-3">
-            <TriangleAlert className="h-5 w-5 text-sm-state-warning mt-0.5 flex-shrink-0" />
+            className="flex flex-col h-full"
+          >
             <div className="flex-1">
-              <p className="text-sm text-sm-state-warning">
-                {t("assets.deployment-warning")}
-              </p>
-            </div>
-          </div>
-        </div>
+              <div className="space-y-6">
+                <form.Field name="factories">
+                  {(field) => (
+                    <>
+                      <div className="space-y-4">
+                        <div>
+                          <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">
+                            {t("assets.available-asset-types")}
+                          </h3>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {t("assets.select-all-asset-types")}
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                          {availableAssets.map((assetType) => {
+                            const Icon = getAssetIcon(assetType);
+                            const isDisabled =
+                              deployedAssetTypes.has(assetType) ||
+                              isFactoriesCreating;
+                            const isChecked =
+                              field.state.value.some(
+                                (factory) => factory.type === assetType
+                              ) || isDisabled;
 
-        <InfoAlert
-          title={t("assets.what-are-asset-factories")}
-          description={t("assets.asset-factories-description")}
-        />
+                            const handleToggle = (checked: boolean) => {
+                              if (isDisabled) {
+                                return;
+                              }
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            void form.handleSubmit();
-          }}
-          className="flex flex-col h-full"
-        >
-          <div className="flex-1">
-            <div className="space-y-6">
-              <form.Field name="factories">
-                {(field) => (
-                  <>
-                    <div className="space-y-4">
-                      <div>
-                        <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">
-                          {t("assets.available-asset-types")}
-                        </h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {t("assets.select-all-asset-types")}
+                              if (checked) {
+                                handleAddFactory({
+                                  type: assetType,
+                                  name: t(`asset-types.${assetType}`, {
+                                    ns: "tokens",
+                                  }),
+                                });
+                              } else {
+                                handleRemoveFactory({
+                                  type: assetType,
+                                  name: t(`asset-types.${assetType}`, {
+                                    ns: "tokens",
+                                  }),
+                                });
+                              }
+                            };
+
+                            return (
+                              <AssetTypeCard
+                                key={assetType}
+                                assetType={assetType}
+                                icon={Icon}
+                                isChecked={isChecked}
+                                isDisabled={isDisabled}
+                                onToggle={handleToggle}
+                              />
+                            );
+                          })}
+                        </div>
+                      </div>
+                      {field.state.meta.errors.length > 0 && (
+                        <p className="text-sm text-red-600 dark:text-red-400">
+                          {field.state.meta.errors[0]}
                         </p>
-                      </div>
-                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        {availableAssets.map((assetType) => {
-                          const Icon = getAssetIcon(assetType);
-                          const isDisabled =
-                            deployedAssetTypes.has(assetType) ||
-                            isFactoriesCreating;
-                          const isChecked =
-                            field.state.value.some(
-                              (factory) => factory.type === assetType
-                            ) || isDisabled;
-
-                          const handleToggle = (checked: boolean) => {
-                            if (isDisabled) {
-                              return;
-                            }
-
-                            if (checked) {
-                              handleAddFactory({
-                                type: assetType,
-                                name: t(`asset-types.${assetType}`, {
-                                  ns: "tokens",
-                                }),
-                              });
-                            } else {
-                              handleRemoveFactory({
-                                type: assetType,
-                                name: t(`asset-types.${assetType}`, {
-                                  ns: "tokens",
-                                }),
-                              });
-                            }
-                          };
-
-                          return (
-                            <AssetTypeCard
-                              key={assetType}
-                              assetType={assetType}
-                              icon={Icon}
-                              isChecked={isChecked}
-                              isDisabled={isDisabled}
-                              onToggle={handleToggle}
-                            />
-                          );
-                        })}
-                      </div>
-                    </div>
-                    {field.state.meta.errors.length > 0 && (
-                      <p className="text-sm text-red-600 dark:text-red-400">
-                        {field.state.meta.errors[0]}
-                      </p>
-                    )}
-                  </>
-                )}
-              </form.Field>
+                      )}
+                    </>
+                  )}
+                </form.Field>
+              </div>
             </div>
-          </div>
-        </form>
-      </div>
-    </OnboardingStepLayout>
+          </form>
+        </div>
+      </OnboardingStepLayout>
+    </form.AppForm>
   );
 }
