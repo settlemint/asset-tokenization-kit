@@ -112,8 +112,6 @@ export async function bootstrapTokenFactories(
     factories: nonExistingFactories,
   });
 
-  console.error(result);
-
   // The factoryCreate method now returns the updated system details
   if (!result.id || !result.tokenFactories) {
     throw new Error(`Factory creation failed: invalid response`);
