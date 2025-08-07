@@ -6,7 +6,7 @@ import { z } from "zod";
 
 /**
  * GraphQL query to fetch bond yield coverage statistics for a specific token
- * Retrieves yield schedule information and coverage data
+ * Retrieves yield information and coverage data
  */
 const TOKEN_BOND_YIELD_COVERAGE_QUERY = theGraphGraphql(`
   query TokenBondYieldCoverage($tokenId: ID!) {
@@ -18,11 +18,7 @@ const TOKEN_BOND_YIELD_COVERAGE_QUERY = theGraphGraphql(`
         }
       }
       yield_ {
-        schedule {
-          id
-          startDate
-          endDate
-        }
+        id
       }
     }
   }
@@ -43,13 +39,7 @@ const StatsBondYieldCoverageResponseSchema = z.object({
       .nullable(),
     yield_: z
       .object({
-        schedule: z
-          .object({
-            id: z.string(),
-            startDate: z.string(),
-            endDate: z.string(),
-          })
-          .nullable(),
+        id: z.string(),
       })
       .nullable(),
   }),
@@ -102,17 +92,16 @@ export const statsBondYieldCoverage = tokenRouter.token.statsBondYieldCoverage
       }
     );
 
-    // Check if yield schedule is running (current time is between start and end date)
-    const schedule = response.token.yield_?.schedule;
-    const hasYieldSchedule = !!schedule;
+    // Check if yield extension exists and has a valid schedule
+    // A valid schedule means yield_ exists and its ID is not Address.zero()
+    const yieldExtension = response.token.yield_;
+    const hasYieldSchedule =
+      !!yieldExtension &&
+      yieldExtension.id !== "0x0000000000000000000000000000000000000000";
 
-    let isRunning = false;
-    if (schedule) {
-      const now = Math.floor(Date.now() / 1000);
-      const startDate = Number(schedule.startDate);
-      const endDate = Number(schedule.endDate);
-      isRunning = now >= startDate && now <= endDate;
-    }
+    // Since we don't have schedule dates anymore, we can't determine if it's running
+    // For now, return false - this could be enhanced with a separate query if needed
+    const isRunning = false;
 
     // Get coverage percentage from bond stats with proper validation
     const bondStats = response.token.bond?.stats;
