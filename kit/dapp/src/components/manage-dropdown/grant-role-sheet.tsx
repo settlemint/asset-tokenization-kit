@@ -37,11 +37,6 @@ export function GrantRoleSheet({
             input: { tokenAddress: asset.id },
           }).queryKey,
         });
-
-        handleClose();
-      },
-      onError: (error) => {
-        toast.error(`Failed to grant role: ${error.message}`);
       },
     })
   );

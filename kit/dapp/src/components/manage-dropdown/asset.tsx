@@ -1,4 +1,5 @@
 import { GrantRoleSheet } from "@/components/manage-dropdown/grant-role-sheet";
+import { PauseUnpauseConfirmationSheet } from "@/components/manage-dropdown/pause-unpause-confirmation-sheet";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -91,14 +92,17 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* <PauseUnpauseConfirmationSheet
-        open={showConfirmationSheet}
-        onOpenChange={setShowConfirmationSheet}
+      <PauseUnpauseConfirmationSheet
+        open={isCurrentAction({
+          target: isPaused ? "unpause" : "pause",
+          current: openAction,
+        })}
+        onOpenChange={(open) => {
+          const action = isPaused ? "unpause" : "pause";
+          setOpenAction(open ? action : null);
+        }}
         asset={asset}
-        action={openAction || "pause"}
-        onProceed={handleConfirmationProceed}
-        onCancel={handleConfirmationCancel}
-      /> */}
+      />
 
       <GrantRoleSheet
         open={isCurrentAction({ target: "grantRole", current: openAction })}
