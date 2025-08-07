@@ -8,8 +8,8 @@ import { Errors } from "@/components/form/errors";
 import { StepSubmitButton } from "@/components/form/multi-step/step-submit-button";
 import { NumberField } from "@/components/form/number-field";
 import { RadioField } from "@/components/form/radio-field";
+import { SecureSubmitButton } from "@/components/form/secure-submit-button";
 import { SelectField } from "@/components/form/select-field";
-import { SubmitButton } from "@/components/form/submit-button";
 import { TextField } from "@/components/form/text-field";
 import { TextAreaField } from "@/components/form/textarea-field";
 import { fieldContext, formContext } from "@/hooks/use-form-contexts";
@@ -31,7 +31,7 @@ export const { useAppForm, withForm } = createFormHook({
   },
   formComponents: {
     StepSubmitButton,
-    SubmitButton,
+    SecureSubmitButton,
     Errors,
   },
   fieldContext,

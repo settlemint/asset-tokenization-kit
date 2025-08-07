@@ -7,10 +7,8 @@ import {
   FormStepSubmit,
   FormStepTitle,
 } from "@/components/form/multi-step/form-step";
-import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Summary = withForm({
@@ -20,7 +18,6 @@ export const Summary = withForm({
   },
   render: function Render({ form, onSubmit }) {
     const { t } = useTranslation("asset-designer");
-    const [showVerificationModal, setShowVerificationModal] = useState(false);
 
     return (
       <FormStep>
@@ -41,27 +38,16 @@ export const Summary = withForm({
         </FormStepContent>
 
         <FormStepSubmit>
-          <form.SubmitButton
+          <form.SecureSubmitButton
             label="Submit"
-            onSubmit={() => {
-              setShowVerificationModal(true);
+            onSubmit={onSubmit}
+            verification={{
+              label: t("verification.confirm-title"),
+              description: t("verification.confirm-description"),
+              setField: (verification) => {
+                form.setFieldValue("verification", verification);
+              },
             }}
-          />
-          <VerificationDialog
-            open={showVerificationModal}
-            onOpenChange={setShowVerificationModal}
-            onSubmit={async ({ verificationCode, verificationType }) => {
-              form.setFieldValue("verification", {
-                verificationCode,
-                verificationType,
-              });
-              await form.validate("change");
-              if (form.state.isValid) {
-                onSubmit();
-              }
-            }}
-            title={t("verification.confirm-title")}
-            description={t("verification.confirm-description")}
           />
         </FormStepSubmit>
       </FormStep>
