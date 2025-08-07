@@ -144,14 +144,7 @@ export function AssetTypeSelection() {
             description={t("assets.asset-factories-description")}
           />
 
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              void form.handleSubmit();
-            }}
-            className="flex flex-col h-full"
-          >
+          <div className="flex flex-col h-full">
             <div className="flex-1">
               <div className="space-y-6">
                 <form.Field name="factories">
@@ -172,10 +165,9 @@ export function AssetTypeSelection() {
                             const isDisabled =
                               deployedAssetTypes.has(assetType) ||
                               isFactoriesCreating;
-                            const isChecked =
-                              field.state.value.some(
-                                (factory) => factory.type === assetType
-                              ) || isDisabled;
+                            const isChecked = field.state.value.some(
+                              (factory) => factory.type === assetType
+                            );
 
                             const handleToggle = (checked: boolean) => {
                               if (isDisabled) {
@@ -222,7 +214,7 @@ export function AssetTypeSelection() {
                 </form.Field>
               </div>
             </div>
-          </form>
+          </div>
         </div>
       </OnboardingStepLayout>
     </form.AppForm>
