@@ -12,10 +12,9 @@ export default defineConfig({
     reporters: process.env.CLAUDECODE
       ? ["dot"]
       : process.env.CI
-        ? ["dot", "github-actions"]
+        ? ["default", "github-actions"]
         : ["default"],
-    onConsoleLog:
-      process.env.CI || process.env.CLAUDECODE ? () => false : undefined,
+    onConsoleLog: process.env.CLAUDECODE ? () => false : undefined,
     silent: process.env.CLAUDECODE ? "passed-only" : undefined,
     typecheck: {
       enabled: true,
