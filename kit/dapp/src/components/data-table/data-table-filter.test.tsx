@@ -9,7 +9,7 @@ import {
   createMockColumn,
   createMockTable,
   renderWithProviders,
-} from "../../../test/test-utils";
+} from "@test/helpers/test-utils";
 import { useIsMobile } from "../../hooks/use-mobile";
 import { useScrollBlur } from "../../hooks/use-scroll-blur";
 import {

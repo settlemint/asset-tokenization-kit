@@ -2,12 +2,12 @@ import { kycProfiles } from "@/lib/db/schema";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { UserIdSchema } from "@/orpc/routes/user/kyc/kyc.schema";
 import { eq } from "drizzle-orm";
+import { KycReadInputSchema } from "./kyc.read.schema";
 
 export const read = authRouter.user.kyc.read
   .use(
-    offChainPermissionsMiddleware<typeof UserIdSchema>({
+    offChainPermissionsMiddleware<typeof KycReadInputSchema>({
       requiredPermissions: { kyc: ["list"] },
       alwaysAllowIf: (context, input) => input.userId === context.auth?.user.id,
     })
@@ -29,9 +29,5 @@ export const read = authRouter.user.kyc.read
       });
     }
 
-    return {
-      ...profile,
-      nationalIdEncrypted: undefined,
-      hasNationalId: !!profile.nationalIdEncrypted,
-    };
+    return profile;
   });

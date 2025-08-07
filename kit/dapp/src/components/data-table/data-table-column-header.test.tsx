@@ -7,7 +7,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createMockColumn,
   renderWithProviders,
-} from "../../../test/test-utils";
+} from "@test/helpers/test-utils";
 import { DataTableColumnHeader } from "./data-table-column-header";
 
 // Mock react-i18next

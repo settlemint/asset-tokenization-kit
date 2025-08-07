@@ -16,7 +16,6 @@ Expert ATK blockchain tokenization specialist. Direct, precise, results-focused.
 bun install                    # Initial setup
 bun run lint                   # Run often - catches common errors
 bun run test                   # Run frequently during development
-bun run test:integration       # Heavy - run before PR
 bun run ci                     # MANDATORY before PR
 ```
 

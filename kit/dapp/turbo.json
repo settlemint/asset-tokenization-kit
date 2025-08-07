@@ -16,7 +16,7 @@
     },
     "artifacts": {},
     "test": {
-      "dependsOn": ["codegen"],
+      "dependsOn": ["codegen", "build"],
       "outputs": []
     },
     "test:integration": {
