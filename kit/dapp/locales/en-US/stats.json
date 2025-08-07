@@ -72,18 +72,6 @@
       "available": "Available collateral",
       "used": "Used collateral",
       "ratio": "Collateralization: {{ratio}}%"
-    },
-    "yieldCoverage": {
-      "title": "Yield Coverage",
-      "description": "Coverage of yield payments by underlying assets",
-      "notBond": "This asset is not a bond",
-      "noSchedule": "No yield schedule configured",
-      "notActive": "Yield schedule is not active",
-      "covered": "Covered",
-      "uncovered": "Uncovered",
-      "insufficient": "Insufficient Coverage",
-      "currentPeriod": "Current Period Covered",
-      "fullCoverage": "Full Coverage"
     }
   },
   "title": "Statistics",

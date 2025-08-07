@@ -3,13 +3,11 @@ import { DetailGrid } from "@/components/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { AssetBondStatusProgressChart } from "@/components/stats/charts/asset-bond-status-progress-chart";
-import { AssetBondYieldCoverageChart } from "@/components/stats/charts/asset-bond-yield-coverage-chart";
 import { AssetCollateralRatioChart } from "@/components/stats/charts/asset-collateral-ratio-chart";
 import { AssetSupplyChangesAreaChart } from "@/components/stats/charts/asset-supply-changes-area-chart";
 import { AssetTotalSupplyAreaChart } from "@/components/stats/charts/asset-total-supply-area-chart";
 import { AssetTotalVolumeAreaChart } from "@/components/stats/charts/asset-total-volume-area-chart";
 import { AssetWalletDistributionChart } from "@/components/stats/charts/asset-wallet-distribution-chart";
-import { AssetExtensionEnum } from "@/lib/zod/validators/asset-extensions";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
@@ -229,12 +227,6 @@ function RouteComponent() {
               <AssetBondStatusProgressChart assetAddress={asset.id} />
             </Suspense>
           )}
-          {asset.bond &&
-            asset.extensions.includes(AssetExtensionEnum.YIELD) && (
-              <Suspense fallback={<ChartSkeleton />}>
-                <AssetBondYieldCoverageChart assetAddress={asset.id} />
-              </Suspense>
-            )}
           {asset.collateral && (
             <Suspense fallback={<ChartSkeleton />}>
               <AssetCollateralRatioChart assetAddress={asset.id} />
