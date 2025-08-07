@@ -42,6 +42,23 @@ export function SystemAddonsSelection() {
     [systemDetails?.tokenFactories]
   );
 
+  // Create a set of already deployed addons for easy lookup
+  const deployedAddons = useMemo(
+    () =>
+      new Set(
+        systemDetails?.systemAddons.map((addon) =>
+          getAddonTypeFromTypeId(addon.typeId)
+        ) ?? []
+      ),
+    [systemDetails?.systemAddons]
+  );
+  const deployedAddonsConfig = useMemo(() => {
+    return Array.from(deployedAddons).map((addon) => ({
+      type: addon,
+      name: t(`system-addons.addon-selection.addon-types.${addon}.title`),
+    }));
+  }, [deployedAddons, t]);
+
   const form = useAppForm({
     defaultValues: {
       addons: hasBondFactory
@@ -50,8 +67,9 @@ export function SystemAddonsSelection() {
               type: "yield",
               name: t(`system-addons.addon-selection.addon-types.yield.title`),
             },
+            ...deployedAddonsConfig,
           ]
-        : ([] as SystemAddonConfig[]),
+        : deployedAddonsConfig,
     } as SystemAddonCreateInput,
     onSubmit: ({ value }) => {
       if (!systemDetails?.systemAddonRegistry) {
@@ -98,17 +116,6 @@ export function SystemAddonsSelection() {
   );
 
   const availableAddons = addonTypes;
-
-  // Create a set of already deployed addons for easy lookup
-  const deployedAddons = useMemo(
-    () =>
-      new Set(
-        systemDetails?.systemAddons.map((addon) =>
-          getAddonTypeFromTypeId(addon.typeId)
-        ) ?? []
-      ),
-    [systemDetails?.systemAddons]
-  );
 
   const handleAddAddon = (addon: SystemAddonConfig) => {
     const alreadyIncluded = form.state.values.addons.some(
@@ -229,8 +236,8 @@ export function SystemAddonsSelection() {
                               addon === "yield" && hasBondFactory;
                             const isAlreadyDeployed = deployedAddons.has(addon);
                             const isDisabled =
-                              isAlreadyDeployed ||
                               isAddonsCreating ||
+                              isAlreadyDeployed ||
                               isYieldRequiredForBond;
                             const isChecked = field.state.value.some(
                               (a) => a.type === addon
