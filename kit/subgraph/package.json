@@ -9,7 +9,8 @@
     "compile": "bash tools/compile.sh",
     "publish": "bun run tools/graph-deploy.ts --local",
     "publish:remote": "bun run tools/graph-deploy.ts --remote",
-    "test:integration": "bun test --preload ./test/scripts/setup.ts"
+    "test:codegen:gql-tada": "bash tools/codegen-gql-tada.sh",
+    "test:integration": "bun run test:codegen:gql-tada && bun test --preload ./test/scripts/setup.ts"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.97.1",

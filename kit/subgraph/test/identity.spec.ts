@@ -17,9 +17,9 @@ describe("Identity", () => {
     );
     const response = await theGraphClient.request(query);
     expect(response.tokens.length).toBe(6);
-    expect(response.tokens.every((token) => token.identity !== null)).toBe(
-      true
-    );
+    expect(
+      response.tokens.every((token) => token.account.identity !== null)
+    ).toBe(true);
   });
 
   it("there should be no identities and accounts with the same address", async () => {
@@ -42,5 +42,32 @@ describe("Identity", () => {
       .filter((id): id is string => Boolean(id));
     // Ensure no account ID is also used as an identity ID
     expect(accountIds.every((id) => !identityIds.includes(id))).toBe(true);
+  });
+
+  it("all users should have kyc and aml claims", async () => {
+    const query = theGraphGraphql(
+      `query {
+        accounts(where: { identity_not: null, isContract: false }) {
+          id
+          identity {
+            id
+            claims {
+              name
+              revoked
+            }
+          }
+        }
+      }
+    `
+    );
+    const response = await theGraphClient.request(query);
+    const accountsWithClaims = response.accounts.filter(
+      (account) => (account.identity?.claims?.length ?? 0) > 0
+    );
+    expect(accountsWithClaims.length).toBe(6);
+    for (const account of accountsWithClaims) {
+      const claims = account.identity?.claims.map((claim) => claim.name);
+      expect(claims?.sort()).toEqual(["aml", "kyc"]);
+    }
   });
 });

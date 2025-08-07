@@ -1,33 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
 
-interface ComplianceModule {
-  name: string;
-  typeId: string;
-  globalConfigs: Array<{
-    parameters: {
-      countries: number[];
-      addresses: string[];
-    };
-  }>;
-}
-
-interface ComplianceModulesResponse {
-  complianceModules: ComplianceModule[];
-}
-
-interface GlobalComplianceConfigResponse {
-  globalComplianceModuleConfigs: Array<{
-    complianceModule: {
-      name: string;
-    };
-    parameters: {
-      countries?: number[];
-      addresses?: string[];
-    };
-  }>;
-}
-
 describe("Compliance Modules", () => {
   it("should fetch a list of all compliance modules registered", async () => {
     const query = theGraphGraphql(
@@ -45,10 +18,7 @@ describe("Compliance Modules", () => {
     }
     `
     );
-    const response = await theGraphClient.request<ComplianceModulesResponse>(
-      query,
-      {}
-    );
+    const response = await theGraphClient.request(query, {});
     const complianceModules = response.complianceModules;
     expect(complianceModules.length).toBe(6);
 
@@ -100,8 +70,7 @@ describe("Compliance Modules", () => {
       }
     `
     );
-    const response =
-      await theGraphClient.request<GlobalComplianceConfigResponse>(query, {});
+    const response = await theGraphClient.request(query, {});
     expect(response.globalComplianceModuleConfigs).toEqual([
       {
         complianceModule: {
@@ -128,8 +97,7 @@ describe("Compliance Modules", () => {
       }
     `
     );
-    const response =
-      await theGraphClient.request<GlobalComplianceConfigResponse>(query, {});
+    const response = await theGraphClient.request(query, {});
     const expected = [
       {
         complianceModule: {
@@ -155,5 +123,29 @@ describe("Compliance Modules", () => {
     expect(response.globalComplianceModuleConfigs).toEqual(
       expect.arrayContaining(expected)
     );
+  });
+
+  it("should receive the list of globally bypassed i", async () => {
+    const query = theGraphGraphql(
+      `query {
+        systems {
+          compliance {
+            id
+            bypassList(where: { isContract: false }) {
+              id
+            }
+          }
+        }
+      }`
+    );
+    const response = await theGraphClient.request(query, {});
+    expect(response.systems).toEqual([
+      {
+        compliance: {
+          id: expect.any(String),
+          bypassList: [{ id: expect.any(String) }],
+        },
+      },
+    ]);
   });
 });

@@ -79,7 +79,8 @@ export function handleAddressAddedToBypassList(
 
   const compliance = fetchCompliance(event.address);
   if (!compliance.bypassList.includes(event.params.account)) {
-    compliance.bypassList.push(event.params.account);
+    const newBypassList = compliance.bypassList.concat([event.params.account]);
+    compliance.bypassList = newBypassList;
   }
   compliance.save();
 }
