@@ -313,17 +313,8 @@ templates:
         - name: IdentityRegistry
           file: ../contracts/.generated/artifacts/contracts/smart/interface/ISMARTIdentityRegistry.sol/ISMARTIdentityRegistry.json
       eventHandlers:
-        - event: CountryUpdated(indexed address,indexed address,indexed uint16)
-          handler: handleCountryUpdated
-        - event: IdentityRegistered(indexed address,indexed address,indexed
-            address,uint16)
-          handler: handleIdentityRegistered
-        - event: IdentityRemoved(indexed address,indexed address,indexed address)
-          handler: handleIdentityRemoved
         - event: IdentityStorageSet(indexed address,indexed address)
           handler: handleIdentityStorageSet
-        - event: IdentityUpdated(indexed address,indexed address,indexed address)
-          handler: handleIdentityUpdated
         - event: TopicSchemeRegistrySet(indexed address,indexed address)
           handler: handleTopicSchemeRegistrySet
         - event: TrustedIssuersRegistrySet(indexed address,indexed address)

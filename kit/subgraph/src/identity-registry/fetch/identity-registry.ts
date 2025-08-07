@@ -10,6 +10,7 @@ export function fetchIdentityRegistry(address: Address): IdentityRegistry {
     identityRegistry = new IdentityRegistry(address);
     identityRegistry.account = fetchAccount(address).id;
     identityRegistry.deployedInTransaction = Bytes.empty();
+    identityRegistry.identityRegistryStorage = null;
     identityRegistry.save();
     IdentityRegistryTemplate.create(address);
   }
