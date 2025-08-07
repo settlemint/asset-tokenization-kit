@@ -141,20 +141,7 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
     rolesToGrant.push("complianceManager");
   }
 
-  if (rolesToGrant.length === 0) {
-    return; // Issuer already has all required roles
-  } else if (rolesToGrant.length === 1) {
-    const singleRole = rolesToGrant[0];
-    if (!singleRole) return; // Type guard
-    await orpClient.system.grantRole({
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
-      },
-      address: issuer.wallet,
-      role: singleRole,
-    });
-  } else {
+  if (rolesToGrant.length > 0) {
     await orpClient.system.grantRole({
       verification: {
         verificationCode: DEFAULT_PINCODE,
