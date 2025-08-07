@@ -5,12 +5,13 @@ import {
   ClaimAdded,
   ClaimChanged,
   ClaimRemoved,
+  ClaimRevoked,
   Executed,
   ExecutionFailed,
   ExecutionRequested,
   KeyAdded,
   KeyRemoved,
-} from "../../generated/templates/Identity/Identity";
+} from "../../generated/templates/Identity/ClaimIssuer";
 import { fetchEvent } from "../event/fetch/event";
 import { updateAccountStatsForPriceChange } from "../stats/account-stats";
 import { updateSystemStatsForPriceChange } from "../stats/system-stats";
@@ -68,6 +69,7 @@ export function handleClaimAdded(event: ClaimAdded): void {
   }
   identityClaim.issuer = fetchIdentity(event.params.issuer).id;
   identityClaim.uri = event.params.uri;
+  identityClaim.signature = event.params.signature;
   identityClaim.save();
 
   // Decode claim data and create IdentityClaimValue entities
@@ -109,6 +111,7 @@ export function handleClaimChanged(event: ClaimChanged): void {
   const identityClaim = fetchIdentityClaim(identity, event.params.claimId);
   identityClaim.issuer = fetchIdentity(event.params.issuer).id;
   identityClaim.uri = event.params.uri;
+  identityClaim.signature = event.params.signature;
   identityClaim.save();
 
   // Get old price before updating claim
@@ -208,8 +211,24 @@ export function handleExecutionRequested(event: ExecutionRequested): void {
 
 export function handleKeyAdded(event: KeyAdded): void {
   fetchEvent(event, "KeyAdded");
+  // TODO: track keys KeyAdded and KeyRemoved
+  // see kit/contracts/scripts/hardhat/constants/key-purposes.ts
+  // see kit/contracts/scripts/hardhat/constants/key-types.ts
 }
 
 export function handleKeyRemoved(event: KeyRemoved): void {
   fetchEvent(event, "KeyRemoved");
+}
+
+export function handleClaimRevoked(event: ClaimRevoked): void {
+  fetchEvent(event, "ClaimRevoked");
+  const identity = fetchIdentity(event.address);
+  const identityClaims = identity.claims.load();
+  for (let i = 0; i < identityClaims.length; i++) {
+    const identityClaim = identityClaims[i];
+    if (identityClaim.signature.equals(event.params.signature)) {
+      identityClaim.revoked = true;
+      identityClaim.save();
+    }
+  }
 }

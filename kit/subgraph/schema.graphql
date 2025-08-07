@@ -267,6 +267,7 @@ type IdentityClaim @entity(immutable: false) {
   name: String!
   issuer: Identity!
   uri: String
+  signature: Bytes!
   revoked: Boolean!
   values: [IdentityClaimValue!]! @derivedFrom(field: "claim")
   deployedInTransaction: Bytes!
@@ -277,6 +278,10 @@ type IdentityClaimValue @entity(immutable: false) {
   claim: IdentityClaim!
   key: String!
   value: String!
+}
+
+type TrustedIssuer @entity(immutable: false) {
+  id: Bytes!
 }
 
 # ==================================================

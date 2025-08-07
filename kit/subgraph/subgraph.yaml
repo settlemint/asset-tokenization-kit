@@ -165,6 +165,9 @@ templates:
           handler: handleTransferCompleted
         - event: UpdatedTokenInformation(indexed address,indexed uint8,indexed address)
           handler: handleUpdatedTokenInformation
+        - event: ERC20TokenRecovered(indexed address,indexed address,indexed
+            address,uint256)
+          handler: handleERC20TokenRecovered
       file: ./src/token/token.ts
   - kind: ethereum
     name: Pausable
@@ -210,7 +213,7 @@ templates:
     name: Identity
     network: settlemint
     source:
-      abi: Identity
+      abi: ClaimIssuer
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
@@ -219,8 +222,8 @@ templates:
         - Address
         - Event
       abis:
-        - name: Identity
-          file: ../contracts/.generated/artifacts/@onchainid/contracts/interface/IIdentity.sol/IIdentity.json
+        - name: ClaimIssuer
+          file: ../contracts/.generated/artifacts/@onchainid/contracts/interface/IClaimIssuer.sol/IClaimIssuer.json
       eventHandlers:
         - event: Approved(indexed uint256,bool)
           handler: handleApproved
@@ -233,6 +236,8 @@ templates:
         - event: ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimRemoved
+        - event: ClaimRevoked(indexed bytes)
+          handler: handleClaimRevoked
         - event: Executed(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecuted
         - event: ExecutionFailed(indexed uint256,indexed address,indexed uint256,bytes)
@@ -953,4 +958,141 @@ templates:
         - event: GlobalComplianceModuleParametersUpdated(indexed address,indexed
             address,bytes)
           handler: handleGlobalComplianceModuleParametersUpdated
+        - event: AddressAddedToBypassList(indexed address,indexed address)
+          handler: handleAddressAddedToBypassList
+        - event: AddressRemovedFromBypassList(indexed address,indexed address)
+          handler: handleAddressRemovedFromBypassList
       file: ./src/compliance/compliance.ts
+  - kind: ethereum
+    name: SystemAccessManaged
+    network: settlemint
+    source:
+      abi: SystemAccessManaged
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - AccessManagerSet
+      abis:
+        - name: SystemAccessManaged
+          file: ../contracts/.generated/out/IATKSystemAccessManaged.sol/IATKSystemAccessManaged.json
+      eventHandlers:
+        - event: AccessManagerSet(indexed address,indexed address)
+          handler: handleAccessManagerSet
+      file: ./src/system-access-managed.ts
+  - kind: ethereum
+    name: ClaimTracker
+    network: settlemint
+    source:
+      abi: ClaimTracker
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - ClaimRecorded
+      abis:
+        - name: ClaimTracker
+          file: ../contracts/.generated/out/IATKClaimTracker.sol/IATKClaimTracker.json
+      eventHandlers:
+        - event: ClaimRecorded(indexed uint256,indexed uint256,indexed uint256)
+          handler: handleClaimRecorded
+      file: ./src/claim-tracker.ts
+  - kind: ethereum
+    name: TrustedIssuersRegistry
+    network: settlemint
+    source:
+      abi: TrustedIssuersRegistry
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - TrustedIssuersRegistryAccessManagerSet
+        - ClaimTopicsUpdated
+        - Initialized
+        - TrustedIssuerAdded
+        - TrustedIssuerRemoved
+      abis:
+        - name: TrustedIssuersRegistry
+          file: ../contracts/.generated/out/ATKTrustedIssuersRegistryImplementation.sol/ATKTrustedIssuersRegistryImplementation.json
+      eventHandlers:
+        - event: AccessManagerSet(indexed address,indexed address)
+          handler: handleAccessManagerSet
+        - event: ClaimTopicsUpdated(indexed address,indexed address,uint256[])
+          handler: handleClaimTopicsUpdated
+        - event: Initialized(uint64)
+          handler: handleInitialized
+        - event: TrustedIssuerAdded(indexed address,indexed address,uint256[])
+          handler: handleTrustedIssuerAdded
+        - event: TrustedIssuerRemoved(indexed address,indexed address)
+          handler: handleTrustedIssuerRemoved
+      file: ./src/trusted-issuers-registry.ts
+  - kind: ethereum
+    name: IdentityRegistryStorage
+    network: settlemint
+    source:
+      abi: IdentityRegistryStorage
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - IdentityRegistryStorageAccessManagerSet
+        - CountryModified
+        - IdentityModified
+        - IdentityRegistryBound
+        - IdentityRegistryUnbound
+        - IdentityStored
+        - IdentityUnstored
+        - IdentityWalletMarkedAsLost
+        - WalletRecoveryLinked
+      abis:
+        - name: IdentityRegistryStorage
+          file: ../contracts/.generated/out/IATKIdentityRegistryStorage.sol/IATKIdentityRegistryStorage.json
+      eventHandlers:
+        - event: AccessManagerSet(indexed address,indexed address)
+          handler: handleAccessManagerSet
+        - event: CountryModified(indexed address,indexed uint16)
+          handler: handleCountryModified
+        - event: IdentityModified(indexed address,indexed address)
+          handler: handleIdentityModified
+        - event: IdentityRegistryBound(indexed address)
+          handler: handleIdentityRegistryBound
+        - event: IdentityRegistryUnbound(indexed address)
+          handler: handleIdentityRegistryUnbound
+        - event: IdentityStored(indexed address,indexed address)
+          handler: handleIdentityStored
+        - event: IdentityUnstored(indexed address,indexed address)
+          handler: handleIdentityUnstored
+        - event: IdentityWalletMarkedAsLost(indexed address,indexed address,indexed
+            address)
+          handler: handleIdentityWalletMarkedAsLost
+        - event: WalletRecoveryLinked(indexed address,indexed address,indexed address)
+          handler: handleWalletRecoveryLinked
+      file: ./src/identity-registry-storage.ts
+  - kind: ethereum
+    name: ERC20Votes
+    network: settlemint
+    source:
+      abi: ERC20Votes
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Approval
+        - DelegateChanged
+        - DelegateVotesChanged
+        - EIP712DomainChanged
+        - Transfer
+      abis:
+        - name: ERC20Votes
+          file: ../contracts/.generated/artifacts/@openzeppelin/contracts/governance/utils/IVotes.sol/IVotes.json
+      eventHandlers:
+        - event: DelegateChanged(indexed address,indexed address,indexed address)
+          handler: handleDelegateChanged
+        - event: DelegateVotesChanged(indexed address,uint256,uint256)
+          handler: handleDelegateVotesChanged
+      file: ./src/erc-20-votes.ts

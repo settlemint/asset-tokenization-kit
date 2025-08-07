@@ -15,6 +15,7 @@ export function fetchIdentityClaim(
     identityClaim.name = "";
     identityClaim.revoked = false;
     identityClaim.deployedInTransaction = Bytes.empty();
+    identityClaim.signature = Bytes.empty();
     identityClaim.save();
   }
 
