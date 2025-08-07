@@ -104,10 +104,7 @@ export function AssetTypeSelection() {
         description={t("assets.choose-asset-types")}
         actions={
           <div className="flex justify-end w-full">
-            <form.VerificationSubmitButton
-              label={
-                isFactoriesCreating ? t("assets.deploying") : t("assets.deploy")
-              }
+            <form.VerificationButton
               onSubmit={() => {
                 void form.handleSubmit();
               }}
@@ -117,13 +114,15 @@ export function AssetTypeSelection() {
                 form.state.values.factories.length === 0
               }
               verification={{
-                label: t("assets.confirm-deployment-title"),
+                title: t("assets.confirm-deployment-title"),
                 description: t("assets.confirm-deployment-description"),
                 setField: (verification) => {
                   form.setFieldValue("verification", verification);
                 },
               }}
-            />
+            >
+              {isFactoriesCreating ? t("assets.deploying") : t("assets.deploy")}
+            </form.VerificationButton>
           </div>
         }
       >

@@ -38,17 +38,18 @@ export const Summary = withForm({
         </FormStepContent>
 
         <FormStepSubmit>
-          <form.VerificationSubmitButton
-            label="Submit"
+          <form.VerificationButton
             onSubmit={onSubmit}
             verification={{
-              label: t("verification.confirm-title"),
+              title: t("verification.confirm-title"),
               description: t("verification.confirm-description"),
               setField: (verification) => {
                 form.setFieldValue("verification", verification);
               },
             }}
-          />
+          >
+            {t("form.actions.create")}
+          </form.VerificationButton>
         </FormStepSubmit>
       </FormStep>
     );

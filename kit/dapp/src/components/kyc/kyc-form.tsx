@@ -175,9 +175,9 @@ export function KycForm({ onComplete }: KycFormProps) {
             <field.TextField label={t("kycForm.nationalId")} required={true} />
           )}
         />
-        <form.VerificationSubmitButton
+        <form.VerificationButton
           verification={{
-            label: t("kycForm.identity.confirm-title"),
+            title: t("kycForm.identity.confirm-title"),
             description: t("kycForm.identity.confirm-description"),
             setField: (verification) => {
               form.setFieldValue("verification", verification);
@@ -186,8 +186,9 @@ export function KycForm({ onComplete }: KycFormProps) {
           onSubmit={() => {
             void form.handleSubmit();
           }}
-          label={t("kycForm.submit")}
-        />
+        >
+          {t("kycForm.submit")}
+        </form.VerificationButton>
       </form.AppForm>
     </div>
   );

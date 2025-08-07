@@ -144,12 +144,7 @@ export function SystemAddonsSelection() {
               </Button>
             )}
 
-            <form.VerificationSubmitButton
-              label={
-                isAddonsCreating
-                  ? t("system-addons.addon-selection.deploying")
-                  : t("system-addons.addon-selection.deploy-addons")
-              }
+            <form.VerificationButton
               onSubmit={() => {
                 void form.handleSubmit();
               }}
@@ -157,7 +152,7 @@ export function SystemAddonsSelection() {
                 isAddonsCreating || form.state.values.addons.length === 0
               }
               verification={{
-                label: t(
+                title: t(
                   "system-addons.addon-selection.confirm-deployment-title"
                 ),
                 description: t(
@@ -167,7 +162,11 @@ export function SystemAddonsSelection() {
                   form.setFieldValue("verification", verification);
                 },
               }}
-            />
+            >
+              {isAddonsCreating
+                ? t("system-addons.addon-selection.deploying")
+                : t("system-addons.addon-selection.deploy-addons")}
+            </form.VerificationButton>
           </>
         }
       >
