@@ -4,8 +4,11 @@
     "codegen:settlemint": {
       "cache": false
     },
+    "codegen": {
+      "dependsOn": ["codegen:settlemint"]
+    },
     "build": {
-      "dependsOn": ["codegen", "codegen:settlemint"],
+      "dependsOn": ["codegen"],
       "outputs": [".output/**"]
     },
     "publish": {
@@ -31,7 +34,7 @@
       "outputs": [".eslintcache"]
     },
     "dev": {
-      "dependsOn": ["codegen", "codegen:settlemint"]
+      "dependsOn": ["codegen"]
     }
   }
 }
