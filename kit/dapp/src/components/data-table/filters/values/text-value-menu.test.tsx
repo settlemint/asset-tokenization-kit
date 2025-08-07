@@ -5,7 +5,7 @@ import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { renderWithProviders } from "../../../../../test/test-utils";
+import { renderWithProviders } from "@test/helpers/test-utils";
 import type { FilterValue } from "../types/filter-types";
 import { PropertyFilterTextValueMenu } from "./text-value-menu";
 

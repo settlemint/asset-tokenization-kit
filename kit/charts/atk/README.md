@@ -224,7 +224,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.alloy.alloy.resources | object | `{}` |  |
 | observability.alloy.configReloader.image.registry | string | `"quay.io"` |  |
 | observability.alloy.configReloader.image.repository | string | `"prometheus-operator/prometheus-config-reloader"` | Repository to get config reloader image from. |
-| observability.alloy.configReloader.image.tag | string | `"v0.81.0"` | Tag of image to use for config reloading. |
+| observability.alloy.configReloader.image.tag | string | `"v0.84.1"` | Tag of image to use for config reloading. |
 | observability.alloy.image.registry | string | `"docker.io"` |  |
 | observability.alloy.image.repository | string | `"grafana/alloy"` | Grafana Alloy image repository. |
 | observability.alloy.image.tag | string | `"v1.10.0"` |  |
@@ -244,7 +244,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.loki.loki.image.tag | string | `"3.5.3"` | Overrides the image tag whose default is the chart's appVersion |
 | observability.loki.memcached.enabled | bool | `true` | Enable the built in memcached server provided by the chart |
 | observability.loki.memcached.image.repository | string | `"docker.io/memcached"` | Memcached Docker image repository |
-| observability.loki.memcached.image.tag | string | `"1.6.38-alpine"` | Memcached Docker image tag |
+| observability.loki.memcached.image.tag | string | `"1.6.39-alpine"` | Memcached Docker image tag |
 | observability.loki.memcachedExporter.image.repository | string | `"docker.io/prom/memcached-exporter"` |  |
 | observability.loki.memcachedExporter.image.tag | string | `"v0.15.3"` |  |
 | observability.loki.sidecar.image.repository | string | `"docker.io/kiwigrid/k8s-sidecar"` | The Docker registry and image for the k8s sidecar |

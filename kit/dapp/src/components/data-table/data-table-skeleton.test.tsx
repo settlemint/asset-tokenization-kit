@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { renderWithProviders } from "../../../test/test-utils";
+import { renderWithProviders } from "@test/helpers/test-utils";
 import { DataTableSkeleton } from "./data-table-skeleton";
 
 describe("DataTableSkeleton", () => {

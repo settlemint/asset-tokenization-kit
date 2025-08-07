@@ -2,12 +2,12 @@ import { kycProfiles } from "@/lib/db/schema";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { UserIdSchema } from "@/orpc/routes/user/kyc/kyc.schema";
 import { eq } from "drizzle-orm";
+import { KycDeleteInputSchema } from "./kyc.delete.schema";
 
 export const remove = authRouter.user.kyc.remove
   .use(
-    offChainPermissionsMiddleware<typeof UserIdSchema>({
+    offChainPermissionsMiddleware<typeof KycDeleteInputSchema>({
       requiredPermissions: { kyc: ["remove"] },
       alwaysAllowIf: (context, input) => input.userId === context.auth?.user.id,
     })
@@ -28,8 +28,5 @@ export const remove = authRouter.user.kyc.remove
       });
     }
 
-    return {
-      ...deleted,
-      message: context.t("user:kyc.actions.delete.success"),
-    };
+    return deleted;
   });
