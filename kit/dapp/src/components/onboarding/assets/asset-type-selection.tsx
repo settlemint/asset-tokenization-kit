@@ -104,7 +104,7 @@ export function AssetTypeSelection() {
         description={t("assets.choose-asset-types")}
         actions={
           <div className="flex justify-end w-full">
-            <form.SecureSubmitButton
+            <form.VerificationSubmitButton
               label={
                 isFactoriesCreating ? t("assets.deploying") : t("assets.deploy")
               }

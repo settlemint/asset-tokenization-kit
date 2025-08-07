@@ -144,7 +144,7 @@ export function SystemAddonsSelection() {
               </Button>
             )}
 
-            <form.SecureSubmitButton
+            <form.VerificationSubmitButton
               label={
                 isAddonsCreating
                   ? t("system-addons.addon-selection.deploying")

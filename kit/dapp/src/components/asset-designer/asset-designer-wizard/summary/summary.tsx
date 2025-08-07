@@ -38,7 +38,7 @@ export const Summary = withForm({
         </FormStepContent>
 
         <FormStepSubmit>
-          <form.SecureSubmitButton
+          <form.VerificationSubmitButton
             label="Submit"
             onSubmit={onSubmit}
             verification={{

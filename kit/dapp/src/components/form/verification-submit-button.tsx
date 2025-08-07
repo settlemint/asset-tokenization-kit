@@ -4,7 +4,7 @@ import type { UserVerification } from "@/orpc/routes/common/schemas/user-verific
 import { useState } from "react";
 import { VerificationDialog } from "../verification-dialog/verification-dialog";
 
-export function SecureSubmitButton({
+export function VerificationSubmitButton({
   label,
   onSubmit,
   disabled = false,
@@ -19,6 +19,11 @@ export function SecureSubmitButton({
     setField: (verfication: UserVerification) => void;
   };
 }) {
+  // TODO: handle verification errors
+  // const [verificationError, setVerificationError] = useState<string | null>(
+  //   null
+  // );
+
   const [showVerificationDialog, setShowVerificationDialog] = useState(false);
   const form = useFormContext();
 
