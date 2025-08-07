@@ -8,7 +8,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "happy-dom",
-    setupFiles: "./test/setup.ts",
+    setupFiles: "./test/setup/unit.ts",
     environmentOptions: {
       happyDOM: {
         // Ensure happy-dom properly supports React 18+ features
@@ -40,7 +40,7 @@ export default defineConfig({
     },
     coverage: {
       provider: "v8",
-      reporter: ["text", "json", "html", "json-summary"],
+      reporter: ["text", "json", "json-summary"],
       reportOnFailure: true,
       reportsDirectory: "./coverage",
       enabled: process.env.CI ? true : false,
@@ -75,17 +75,23 @@ export default defineConfig({
     alias: {
       "@": resolve(__dirname, "./src"),
       "@test": resolve(__dirname, "./test"),
-      "@settlemint/sdk-utils/logging": resolve(__dirname, "./test/mocks.ts"),
-      "@/lib/settlemint/portal": resolve(__dirname, "./test/portal-mocks.ts"),
+      "@settlemint/sdk-utils/logging": resolve(
+        __dirname,
+        "./test/mocks/logger.ts"
+      ),
+      "@/lib/settlemint/portal": resolve(
+        __dirname,
+        "./test/mocks/portal-mocks.ts"
+      ),
       "@/lib/settlemint/the-graph": resolve(
         __dirname,
-        "./test/the-graph-mocks.ts"
+        "./test/mocks/the-graph-mocks.ts"
       ),
       "@settlemint/sdk-portal": resolve(
         __dirname,
-        "./test/sdk-portal-mocks.ts"
+        "./test/mocks/sdk-portal-mocks.ts"
       ),
-      "better-auth": resolve(__dirname, "./test/better-auth-mocks.ts"),
+      "better-auth": resolve(__dirname, "./test/mocks/better-auth-mocks.ts"),
     },
   },
 });

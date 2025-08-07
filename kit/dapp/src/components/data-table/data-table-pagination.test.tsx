@@ -9,7 +9,7 @@ import {
   createMockTable,
   renderWithProviders,
   type TestDataItem,
-} from "../../../test/test-utils";
+} from "@test/helpers/test-utils";
 import { DataTablePagination } from "./data-table-pagination";
 
 // Mock react-i18next specifically for this test file

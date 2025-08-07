@@ -13,7 +13,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { describe, expect, it } from "vitest";
-import { renderWithProviders } from "../../../test/test-utils";
+import { renderWithProviders } from "@test/helpers/test-utils";
 import type { DataTableEmptyStateProps } from "./data-table-empty-state";
 import { DataTableEmptyState } from "./data-table-empty-state";
 

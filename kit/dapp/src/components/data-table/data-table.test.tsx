@@ -12,7 +12,7 @@ import {
   mockBulkActions,
   renderWithProviders,
   type TestDataItem,
-} from "../../../test/test-utils";
+} from "@test/helpers/test-utils";
 import { DataTable } from "./data-table";
 
 // Mock react-i18next

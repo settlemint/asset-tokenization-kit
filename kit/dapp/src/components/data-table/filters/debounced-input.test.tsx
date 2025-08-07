@@ -4,7 +4,7 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { renderWithProviders } from "../../../../test/test-utils";
+import { renderWithProviders } from "@test/helpers/test-utils";
 import { DebouncedInput } from "./debounced-input";
 
 describe("DebouncedInput", () => {

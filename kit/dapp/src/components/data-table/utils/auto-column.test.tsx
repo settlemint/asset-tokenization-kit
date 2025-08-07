@@ -5,7 +5,7 @@ import type { CellContext, ColumnDef } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { renderWithProviders } from "../../../../test/test-utils";
+import { renderWithProviders } from "@test/helpers/test-utils";
 import {
   withAutoCell,
   withAutoCells,
