@@ -1,20 +1,20 @@
+import { AddressSelectOrInputToggle } from "@/components/address/address-select-or-input-toggle";
+import { ArrayFieldsLayout } from "@/components/layout/array-fields-layout";
 import { BaseActionSheet } from "@/components/manage-dropdown/base-action-sheet";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppForm } from "@/hooks/use-app-form";
 import { assetAccessControlRoles } from "@/lib/zod/validators/access-control-roles";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { orpc } from "@/orpc/orpc-client";
 import {
   TokenGrantRoleInput,
   TokenGrantRoleInputSchema,
 } from "@/orpc/routes/token/routes/mutations/access/token.grant-role.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-
-import { AddressSelectOrInputToggle } from "@/components/address/address-select-or-input-toggle";
-import { ArrayFieldsLayout } from "@/components/layout/array-fields-layout";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Shield } from "lucide-react";
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 interface GrantRoleSheetProps {
@@ -28,6 +28,7 @@ export function GrantRoleSheet({
   onOpenChange,
   asset,
 }: GrantRoleSheetProps) {
+  const { t } = useTranslation(["tokens", "common"]);
   const queryClient = useQueryClient();
   const { mutateAsync: grantRole, isPending: isGrantingRole } = useMutation(
     orpc.token.grantRole.mutationOptions({
@@ -49,9 +50,9 @@ export function GrantRoleSheet({
     onSubmit: (value) => {
       const parsedValues = TokenGrantRoleInputSchema.parse(value.value);
       toast.promise(grantRole(parsedValues), {
-        loading: "Granting role...",
-        success: "Role granted successfully",
-        error: "Failed to grant role",
+        loading: t("actions.grantRole.messages.submitting"),
+        success: t("actions.grantRole.messages.success"),
+        error: t("actions.grantRole.messages.error"),
       });
       handleClose();
     },
@@ -65,7 +66,7 @@ export function GrantRoleSheet({
         .slice(1)
         .replaceAll(/([A-Z])/g, " $1")
         .trim(),
-    description: `Grant ${role} permissions to the selected accounts`,
+    description: t("actions.grantRole.form.roleOptionDescription", { role }),
     icon: Shield,
   }));
 
@@ -85,13 +86,13 @@ export function GrantRoleSheet({
         open={open}
         onOpenChange={onOpenChange}
         asset={asset}
-        title="Grant role"
-        description="Grant access control roles to specified accounts"
+        title={t("tokens:actions.grantRole.title")}
+        description={t("tokens:actions.grantRole.description")}
         submit={
           <form.VerificationButton
             verification={{
-              title: "Grant role",
-              description: "Grant access control roles to specified accounts",
+              title: t("tokens:actions.grantRole.title"),
+              description: t("tokens:actions.grantRole.description"),
               setField: (verification) => {
                 form.setFieldValue("verification", verification);
               },
@@ -101,7 +102,9 @@ export function GrantRoleSheet({
             }}
             disabled={isGrantingRole}
           >
-            {isGrantingRole ? "Granting role..." : "Grant role"}
+            {isGrantingRole
+              ? t("actions.grantRole.submitting")
+              : t("actions.grantRole.submit")}
           </form.VerificationButton>
         }
         onCancel={handleCancel}
@@ -111,7 +114,9 @@ export function GrantRoleSheet({
           {/* Role Selection Card */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Select Role</CardTitle>
+              <CardTitle className="text-base">
+                {t("tokens:actions.grantRole.form.selectRoleTitle")}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <form.AppField
@@ -132,7 +137,9 @@ export function GrantRoleSheet({
           {/* Accounts Field Card - Empty for now */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Target Accounts</CardTitle>
+              <CardTitle className="text-base">
+                {t("tokens:actions.grantRole.form.targetAccountsTitle")}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <form.Field
@@ -158,7 +165,9 @@ export function GrantRoleSheet({
                                   children={(field) => (
                                     <field.AddressSelectField
                                       scope="user"
-                                      label="Account"
+                                      label={t(
+                                        "tokens:actions.grantRole.form.accountLabel"
+                                      )}
                                       required={true}
                                     />
                                   )}
@@ -169,7 +178,9 @@ export function GrantRoleSheet({
                                   name={`accounts[${index}]`}
                                   children={(field) => (
                                     <field.AddressInputField
-                                      label="Account"
+                                      label={t(
+                                        "tokens:actions.grantRole.form.accountLabel"
+                                      )}
                                       required={true}
                                     />
                                   )}
@@ -179,7 +190,9 @@ export function GrantRoleSheet({
                           )}
                         </AddressSelectOrInputToggle>
                       )}
-                      addButtonLabel="Add account"
+                      addButtonLabel={t(
+                        "tokens:actions.grantRole.form.addAccount"
+                      )}
                     />
                   );
                 }}
