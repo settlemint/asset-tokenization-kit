@@ -6,8 +6,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createMockSuspenseQueryError,
   createMockSuspenseQueryResult,
-} from "../../../../test/mocks/suspense-query";
-import { renderWithProviders } from "../../../../test/test-utils";
+} from "@test/mocks/suspense-query";
+import { renderWithProviders } from "@test/helpers/test-utils";
 import { UserGrowthAreaChart } from "./user-growth-area-chart";
 
 // Mock useSuspenseQuery while keeping other exports

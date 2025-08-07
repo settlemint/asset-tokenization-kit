@@ -1,0 +1,20 @@
+---
+globs: kit/subgraph/**/*
+description: TheGraph subgraph rules and AssemblyScript constraints
+---
+**Stack**: TheGraph v0.38.1 · AssemblyScript (NOT TypeScript) · GraphQL.
+
+**Key commands**
+`bun run codegen` · `bun run compile` · `bun run publish`.
+
+**AssemblyScript rules**
+- No async/await; no optional chaining; no spread syntax
+- Load/create entities with `Entity.load`; always `entity.save()`
+- Guard nulls with `== null`
+- Arrays: mutate then reassign the field
+
+**Event handlers**
+- Use composite IDs (`txHash-logIndex`) to avoid collisions
+- Update related entities and save all changes
+
+See [kit/subgraph/CLAUDE.md](mdc:kit/subgraph/CLAUDE.md).

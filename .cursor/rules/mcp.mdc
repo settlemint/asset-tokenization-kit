@@ -1,0 +1,58 @@
+---
+alwaysApply: false
+description:
+  MCP servers setup and usage patterns (Context7, Linear, DeepWiki, Sentry,
+  Playwright, Gemini, Grep, OpenZeppelin)
+---
+
+**Usage patterns**
+
+- Prefer non-interactive flags; avoid pagers.
+- Use docs search before coding; reference outputs succinctly.
+
+**Context7 (docs)**
+
+```ts
+// 1) Resolve, 2) Fetch docs
+mcp__context7__resolve_library_id({ libraryName: "react" });
+mcp__context7__get_library_docs({
+  context7CompatibleLibraryID: "/facebook/react",
+  tokens: 12000,
+});
+```
+
+**Linear (issues)**
+
+```ts
+mcp__linear__list_issues({ query: "feature name" });
+mcp__linear__create_issue({ title: "feat: add X", teamId: "TEAM_ID" });
+```
+
+**DeepWiki (repo docs)**
+
+```ts
+mcp__deepwiki__read_wiki_contents({ repoName: "facebook/react" });
+```
+
+**Sentry (errors)**
+
+```ts
+mcp__sentry__search_issues({
+  organizationSlug: "org",
+  naturalLanguageQuery: "errors today",
+});
+```
+
+**Playwright MCP (local run)**
+
+**OpenZeppelin (contracts scaffolding)**
+
+```ts
+mcp__OpenZeppelinSolidityContracts__solidity_erc20({
+  name: "Token",
+  symbol: "TKN",
+  upgradeable: "uups",
+});
+```
+
+Validate approach via brief model check before heavy coding.

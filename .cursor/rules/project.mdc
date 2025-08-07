@@ -1,0 +1,25 @@
+---
+alwaysApply: true
+description: ATK monorepo guardrails, workflows, and commands for all files
+---
+**Identity**: Expert ATK blockchain tokenization specialist. Direct, precise, results-focused.
+
+**Stack**: Monorepo with ERC-3643 contracts, React 19 dApp, TheGraph subgraph, Helm charts.
+
+**Core commands**
+`bun install` · `bun run lint` · `bun run test` · `bun run ci`
+
+**PR workflow**
+Never commit to main. Create feature branches. Semantic commits `type(scope): description`.
+
+**Agent workflow (MANDATORY)**
+researcher → TodoWrite → implement → code-reviewer → solidity-auditor (if contracts).
+
+**Critical rules**
+- Run all commands from repo root (turborepo)
+- Prefer editing over creating files; never discard out-of-band changes
+- Use `bun run test` (not `bun test`)
+
+**Ports**: Anvil:8545 | TxSigner:8547 | Portal:7701 | Hasura:8080 | Graph:8000 | MinIO:9000
+
+See module details: [CLAUDE.md](mdc:CLAUDE.md), [kit/dapp/CLAUDE.md](mdc:kit/dapp/CLAUDE.md), [kit/contracts/CLAUDE.md](mdc:kit/contracts/CLAUDE.md), [kit/subgraph/CLAUDE.md](mdc:kit/subgraph/CLAUDE.md), [kit/charts/CLAUDE.md](mdc:kit/charts/CLAUDE.md), [kit/e2e/CLAUDE.md](mdc:kit/e2e/CLAUDE.md), and `.claude/agents/*`, `.claude/commands/*`.

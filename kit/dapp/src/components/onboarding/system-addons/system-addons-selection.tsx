@@ -53,7 +53,7 @@ export function SystemAddonsSelection() {
     [systemDetails?.systemAddons]
   );
   const deployedAddonsConfig = useMemo(() => {
-    return Array.from(deployedAddons).map((addon) => ({
+    return [...deployedAddons].map((addon) => ({
       type: addon,
       name: t(`system-addons.addon-selection.addon-types.${addon}.title`),
     }));

@@ -1,0 +1,29 @@
+---
+globs: kit/contracts/**/*
+description: Solidity Auditor workflow for ERC-3643 contracts
+---
+
+**Purpose**: Audit smart contracts for security, gas, and ERC compliance.
+
+**Audit checklist**
+
+- Security: reentrancy, overflow/underflow, access control, frontrunning, DoS
+- Gas: storage packing, SLOAD/SSTORE reduction, loops, batching, redundant calcs
+- ERC compliance: required functions/events/returns
+- UUPS safety: storage collisions, initialization, gaps
+
+**Tools**
+
+- `forge test --gas-report`
+- `slither .` · `mythril analyze <file>`
+- Echidna for fuzz if needed
+
+**ATK focus**
+
+- UUPS proxy upgrade safety
+- AccessManager RBAC correctness
+- ERC-3643 compliance modules
+- Factory pattern and cross-contract calls
+
+See [.claude/agents/solidity-auditor.md](mdc:.claude/agents/solidity-auditor.md)
+and [kit/contracts/CLAUDE.md](mdc:kit/contracts/CLAUDE.md).

@@ -50,7 +50,6 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
         initializer
     {
         super.initialize(systemAddress, tokenImplementation_, initialAdmin);
-
     }
 
     /// @notice Creates a new ATK Deposit token.

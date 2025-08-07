@@ -1,0 +1,15 @@
+---
+alwaysApply: true
+description: Standard commands for review, debugging, tests, PRs, and MCP setup
+---
+**Quality gates**: `bun run lint` · `bun run test` · `bun run ci` · `bun run typecheck` (if present).
+
+**/code-review**: Use code-reviewer; for contracts also solidity-auditor. See [.claude/commands/code-review.md](mdc:.claude/commands/code-review.md).
+
+**/debug**: Reproduce → gather context → analyze logs → test fix. See [.claude/commands/debug.md](mdc:.claude/commands/debug.md).
+
+**/test**: `bun run test`, `bun run test:integration`, `bun run ci`. See [.claude/commands/test.md](mdc:.claude/commands/test.md).
+
+**/pr**: Ensure CI green; semantic commits; create PR and link Linear. See [.claude/commands/pr.md](mdc:.claude/commands/pr.md).
+
+**/setup**: Configure MCP servers (Linear, Context7, DeepWiki, Sentry, Playwright, Gemini, OpenZeppelin). See [.claude/commands/setup.md](mdc:.claude/commands/setup.md).

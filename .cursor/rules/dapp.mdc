@@ -1,0 +1,37 @@
+---
+globs: kit/dapp/**/*
+description: React 19 dApp rules, testing, and architecture from kit/dapp/CLAUDE.md
+---
+**Stack**: React 19 · TanStack (Start/Query/Form/Router) · oRPC · Drizzle · Tailwind v4 · Vite.
+
+**Key commands**
+- `bun run dev` (port 3000)
+- `bun run codegen` after API changes
+- `bun run test` (Vitest)
+- `bun run test:integration`
+
+**Architecture**
+- `src/components/ui/*` are shadcn – do not modify
+- File-based routing in `src/routes/`
+- API in `src/orpc/`
+- Auth in `src/lib/auth/`
+- Custom hooks in `src/hooks/`
+
+**Critical patterns**
+- Data fetching with React Query: do not copy server state to local React state
+- Forms with TanStack Form + Zod validators
+- Component pattern (shadcn style), no forwardRef
+
+**Testing**
+- Default env: happy-dom for components
+- For server/API code add `@vitest-environment node`
+
+**Performance**
+- React Compiler optimizations; avoid premature memo
+- Route-based code splitting, Suspense boundaries, prefer Server Components
+
+**Common issues**
+- Use `bun run test` (not bun:test)
+- Do not modify `src/components/ui/*`
+- Use React Query state, avoid duplicating server state
+- Add `@vitest-environment node` for server code

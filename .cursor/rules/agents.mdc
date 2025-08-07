@@ -1,0 +1,11 @@
+---
+alwaysApply: true
+description: Mandatory agent workflow and responsibilities
+---
+**Workflow (NEVER skip)**: researcher → TodoWrite → implement → code-reviewer → solidity-auditor (contracts).
+
+**Researcher**: Comprehensive research and planning before coding. See [.claude/agents/researcher.md](mdc:.claude/agents/researcher.md).
+
+**Code Reviewer**: Review all changes for quality, architecture, security. See [.claude/agents/code-reviewer.md](mdc:.claude/agents/code-reviewer.md).
+
+**Solidity Auditor**: Audit smart contracts for security, gas, and ERC compliance. See [.claude/agents/solidity-auditor.md](mdc:.claude/agents/solidity-auditor.md).

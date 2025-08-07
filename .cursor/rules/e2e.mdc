@@ -1,0 +1,22 @@
+---
+globs: kit/e2e/**/*
+description: Playwright E2E rules, page object model, testing constraints
+---
+**Stack**: Playwright 1.54.2 · TypeScript · Page Object Model.
+
+**Commands**
+`NODE_NO_WARNINGS=1 playwright test` · `--ui` · `--debug`.
+
+**Locators**
+- Use semantic: `getByRole`, `getByLabel`, `getByTestId`
+- Avoid CSS/XPath selectors in tests
+
+**Waiting**
+- `expect(locator).toBeVisible()`; `page.waitForLoadState('networkidle')`
+- Do not use arbitrary `waitForTimeout`
+
+**Rules**
+- Always Page Object Model
+- Independent tests; clean up after tests
+
+See [kit/e2e/CLAUDE.md](mdc:kit/e2e/CLAUDE.md).

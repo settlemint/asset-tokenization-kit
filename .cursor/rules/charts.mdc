@@ -1,0 +1,23 @@
+---
+globs: kit/charts/**/*
+description: Helm umbrella charts rules and deployment verification
+---
+**Stack**: Helm v3 · K8s · Umbrella pattern · Bitnami dependencies.
+
+**Key commands**
+- `bun run helm:secrets` (1Password injection)
+- `bun run helm` (deploy to OrbStack)
+- `bun run reset` (cluster reset; prefer over helm uninstall)
+- `helm lint atk`
+
+**MANDATORY post-change validation**
+1. `bun run reset`
+2. `bun run helm`
+3. `kubectl get pods -n atk` (all running)
+4. If any fail: `kubectl describe pod <pod> -n atk`
+
+**Best practices**
+- No hardcoded secrets; resource limits; health checks; network policies (prod)
+- Values use `{}` for empty objects; secrets as list `- name:`; init order waits for deps
+
+See [kit/charts/CLAUDE.md](mdc:kit/charts/CLAUDE.md).

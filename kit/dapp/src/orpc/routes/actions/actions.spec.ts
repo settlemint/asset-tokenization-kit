@@ -15,7 +15,11 @@
 import { beforeAll, describe, expect, test } from "vitest";
 import type { OrpcClient } from "@test/fixtures/orpc-client";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
-import { signInWithUser, DEFAULT_ADMIN, DEFAULT_INVESTOR } from "@test/fixtures/user";
+import {
+  signInWithUser,
+  DEFAULT_ADMIN,
+  DEFAULT_INVESTOR,
+} from "@test/fixtures/user";
 
 let client: OrpcClient;
 let investorClient: OrpcClient;

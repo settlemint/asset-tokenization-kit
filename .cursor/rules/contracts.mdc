@@ -1,0 +1,29 @@
+---
+globs: kit/contracts/**/*
+description: Solidity ERC-3643 contracts rules, testing, security and tooling
+---
+**Module**: ERC-3643 SMART tokens, identity registry, compliance modules, addons.
+
+**Core commands**
+- Build/Test: `settlemint scs foundry build --sizes`, `settlemint scs foundry test`
+- Lint/Format: `solhint ...`, `settlemint scs foundry format`
+- Codegen: `bun run codegen:types`, `bun run artifacts:genesis`, `bun run artifacts:abi`
+
+**Compiler**
+Solidity ^0.8.28 (compile 0.8.30). EVM Cancun. Optimizer 200. viaIR enabled where noted.
+
+**Testing**
+- Conventions: `test_Function_Success`, `test_RevertWhen_Condition`, `testFuzz_*`, `invariant_*`
+- Use utilities in `test/utils/`, fuzz with bounded inputs, no assertions in `setUp()`
+
+**Security**
+- CEI, reentrancy guards where needed, strict access control, validate external calls
+- Consider MEV/front-running; proxy upgrade safety (UUPS) and storage layout
+
+**Naming**
+PascalCase contracts; interface `I*`; abstract `Abstract*`; tests `*.t.sol`.
+
+**Deployment**
+Local Anvil 8545; track via ignition; gas buffer 20%, 10M limit.
+
+Refer to details in [kit/contracts/CLAUDE.md](mdc:kit/contracts/CLAUDE.md).
