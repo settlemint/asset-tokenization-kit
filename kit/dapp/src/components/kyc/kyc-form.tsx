@@ -2,13 +2,13 @@ import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/use-app-form";
 import { authClient } from "@/lib/auth/auth.client";
 import { orpc } from "@/orpc/orpc-client";
-import type { KycProfileUpsert } from "@/orpc/routes/user/kyc/kyc.schema";
-import { KycProfileUpsertSchema } from "@/orpc/routes/user/kyc/kyc.schema";
+import type { KycUpsertInput } from "@/orpc/routes/user/kyc/routes/kyc.upsert.schema";
+import { KycUpsertInputSchema } from "@/orpc/routes/user/kyc/routes/kyc.upsert.schema";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-export type KycFormValues = KycProfileUpsert;
+export type KycFormValues = KycUpsertInput;
 
 interface KycFormProps {
   disabled?: boolean;
@@ -36,7 +36,7 @@ export function KycForm({ onComplete, disabled }: KycFormProps) {
       ...kyc,
     } as KycFormValues,
     validators: {
-      onChange: KycProfileUpsertSchema,
+      onChange: KycUpsertInputSchema,
     },
     onSubmit: ({ value }) => {
       onComplete(value);

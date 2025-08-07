@@ -41,11 +41,7 @@ export const list = authRouter.user.kyc.list
       .offset(offset);
 
     return {
-      items: items.map((item) => ({
-        ...item,
-        nationalIdEncrypted: undefined,
-        hasNationalId: !!item.nationalIdEncrypted,
-      })),
+      items,
       total: countResult?.count ?? 0,
       limit,
       offset,
