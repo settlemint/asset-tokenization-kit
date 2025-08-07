@@ -24,8 +24,8 @@ import { fetchIdentityRegistryStorage } from "../identity-registry/fetch/identit
 import { fetchSystemAddonRegistry } from "../system-addons/fetch/system-addon-registry";
 import { fetchTokenFactoryRegistry } from "../token-factory/fetch/token-factory-registry";
 import { fetchTopicSchemeRegistry } from "../topic-scheme-registry/fetch/topic-scheme-registry";
+import { fetchTrustedIssuersRegistry } from "../trusted-issuers-registry/fetch/trusted-issuers-registry";
 import { fetchSystem } from "./fetch/system";
-import { fetchTrustedIssuersRegistry } from "./fetch/trusted-issuers-registry";
 
 export function handleBootstrapped(event: Bootstrapped): void {
   fetchEvent(event, "Bootstrapped");

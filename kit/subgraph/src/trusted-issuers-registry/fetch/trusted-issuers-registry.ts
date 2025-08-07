@@ -1,5 +1,6 @@
 import { Address, Bytes } from "@graphprotocol/graph-ts";
 import { TrustedIssuersRegistry } from "../../../generated/schema";
+import { TrustedIssuersRegistry as TrustedIssuersRegistryTemplate } from "../../../generated/templates";
 import { fetchAccount } from "../../account/fetch/account";
 
 export function fetchTrustedIssuersRegistry(
@@ -12,7 +13,7 @@ export function fetchTrustedIssuersRegistry(
     trustedIssuersRegistry.account = fetchAccount(address).id;
     trustedIssuersRegistry.deployedInTransaction = Bytes.empty();
     trustedIssuersRegistry.save();
-    // TrustedIssuersRegistryTemplate.create(address);
+    TrustedIssuersRegistryTemplate.create(address);
   }
 
   return trustedIssuersRegistry;

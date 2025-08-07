@@ -231,29 +231,6 @@ type IdentityRegistry @entity(immutable: false) {
   deployedInTransaction: Bytes!
 }
 
-type TrustedIssuersRegistry @entity(immutable: false) {
-  id: Bytes!
-  account: Account!
-  deployedInTransaction: Bytes!
-}
-
-type TopicSchemeRegistry @entity(immutable: false) {
-  id: Bytes!
-  account: Account!
-  schemes: [TopicScheme!]! @derivedFrom(field: "registry")
-  deployedInTransaction: Bytes!
-}
-
-type TopicScheme @entity(immutable: false) {
-  id: Bytes!
-  registry: TopicSchemeRegistry!
-  name: String!
-  topicId: BigInt!
-  signature: String!
-  enabled: Boolean!
-  deployedInTransaction: Bytes!
-}
-
 type Identity @entity(immutable: false) {
   id: Bytes!
   registry: IdentityRegistry
@@ -282,8 +259,44 @@ type IdentityClaimValue @entity(immutable: false) {
   value: String!
 }
 
+# ==================================================
+# TOPIC SCHEME MANAGEMENT
+# ==================================================
+
+
+type TopicSchemeRegistry @entity(immutable: false) {
+  id: Bytes!
+  account: Account!
+  schemes: [TopicScheme!]! @derivedFrom(field: "registry")
+  deployedInTransaction: Bytes!
+}
+
+type TopicScheme @entity(immutable: false) {
+  id: Bytes!
+  registry: TopicSchemeRegistry!
+  name: String!
+  topicId: BigInt!
+  signature: String!
+  enabled: Boolean!
+  deployedInTransaction: Bytes!
+}
+
+# ==================================================
+# TRUSTED ISSUERS MANAGEMENT
+# ==================================================
+
+type TrustedIssuersRegistry @entity(immutable: false) {
+  id: Bytes!
+  account: Account!
+  deployedInTransaction: Bytes!
+  trustedIssuers: [TrustedIssuer!]! @derivedFrom(field: "registry")
+}
+
 type TrustedIssuer @entity(immutable: false) {
   id: Bytes!
+  deployedInTransaction: Bytes!
+  registry: TrustedIssuersRegistry!
+  claimTopics: [TopicScheme!]!
 }
 
 # ==================================================

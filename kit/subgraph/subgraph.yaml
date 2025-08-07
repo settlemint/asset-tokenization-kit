@@ -966,25 +966,6 @@ templates:
           handler: handleAddressRemovedFromBypassList
       file: ./src/compliance/compliance.ts
   - kind: ethereum
-    name: SystemAccessManaged
-    network: settlemint
-    source:
-      abi: SystemAccessManaged
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - Address
-        - Event
-      abis:
-        - name: SystemAccessManaged
-          file: ../contracts/.generated/out/IATKSystemAccessManaged.sol/IATKSystemAccessManaged.json
-      eventHandlers:
-        - event: AccessManagerSet(indexed address,indexed address)
-          handler: handleAccessManagerSet
-      file: ./src/access-manager/access-manager.ts
-  - kind: ethereum
     name: TrustedIssuersRegistry
     network: settlemint
     source:

@@ -11,8 +11,8 @@ import {
 import { fetchAccount } from "../account/fetch/account";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentity } from "../identity/fetch/identity";
-import { fetchTrustedIssuersRegistry } from "../system/fetch/trusted-issuers-registry";
 import { fetchTopicSchemeRegistry } from "../topic-scheme-registry/fetch/topic-scheme-registry";
+import { fetchTrustedIssuersRegistry } from "../trusted-issuers-registry/fetch/trusted-issuers-registry";
 import { fetchIdentityRegistry } from "./fetch/identity-registry";
 import { fetchIdentityRegistryStorage } from "./fetch/identity-registry-storage";
 
