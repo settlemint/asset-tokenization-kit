@@ -17,20 +17,12 @@ export async function setup() {
   try {
     // Wait for containerized dapp to be ready
     await waitForDapp();
-
-    console.log("Setting up admin account");
     await setupUser(DEFAULT_ADMIN);
-    console.log("Setting up investor account");
     await setupUser(DEFAULT_INVESTOR);
-    console.log("Setting up issuer account");
     await setupUser(DEFAULT_ISSUER);
-
     const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));
-    console.log("Bootstrapping system");
     const system = await bootstrapSystem(orpClient);
-    console.log("Bootstrapping token factories");
     await bootstrapTokenFactories(orpClient, system);
-    console.log("Granting roles to default accounts");
     await setupDefaultIssuerRoles(orpClient);
   } catch (error: unknown) {
     console.error("Failed to setup test environment", error);
