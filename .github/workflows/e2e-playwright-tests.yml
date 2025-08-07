@@ -78,6 +78,13 @@ jobs:
         run: |
           bun run dev:reset
 
+      - name: Wait for services to be healthy
+        run: |
+          echo "Waiting for Docker services to be healthy..."
+          timeout 300 bash -c 'until docker compose -p atk ps --format "table {{.Service}}\t{{.Status}}" | grep -E "(postgres|redis|portal|anvil|txsigner)" | grep -v "healthy" | wc -l | grep -q "^0$"; do echo "Services not ready yet, waiting..."; sleep 5; done'
+          echo "All required services are healthy!"
+          docker compose -p atk ps
+
       - name: Start dev server
         run: |
           echo "Starting dev server..."
