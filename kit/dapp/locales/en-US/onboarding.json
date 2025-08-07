@@ -138,7 +138,7 @@
     "deploying": "Deploying...",
     "deploying-toast": "Deploying system...",
     "deployment-details-description": "View the details of the system deployment",
-    "deployment-details-title": "Deployment details",
+    "deployment-details-title": "System deployed successfully",
     "deployment-warning": "Note: This step may take 2–3 minutes as the system deploys smart contracts on-chain. Please keep this tab open and don’t refresh.",
     "failed-toast": "Failed to deploy system: ",
     "identity-registry": "• Identity Registry for user verification",
@@ -156,7 +156,16 @@
     "trusted-issuers-label": "Trusted issuers registry",
     "trusted-issuers-name": "Trusted Issuers Registry",
     "view-deployment-details": "View deployment details",
-    "what-gets-deployed": "What gets deployed:"
+    "what-gets-deployed": "What gets deployed:",
+    "admin-role-granted": "You are now the initial administrator of the platform.",
+    "admin-capabilities-intro": "From here, you'll be able to:",
+    "admin-capability-assets": "Configure supported assets",
+    "admin-capability-admins": "Invite additional admins",
+    "admin-capability-compliance": "Manage compliance and identity modules",
+    "contracts-live-message": "The smart contracts powering your platform are now live on the blockchain.",
+    "deployed-contracts": "Deployed Contracts",
+    "system-contract": "System Contract",
+    "configure-assets": "Configure assets"
   },
   "system-addons": {
     "addon-deployment": {

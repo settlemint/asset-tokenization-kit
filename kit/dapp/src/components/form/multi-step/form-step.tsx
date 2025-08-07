@@ -6,7 +6,7 @@ export function FormStep({ children }: PropsWithChildren) {
 }
 
 export function FormStepTitle({ children }: PropsWithChildren) {
-  return <h2 className="text-2xl font-semibold -mt-2 mb-2">{children}</h2>;
+  return <h2 className="text-2xl font-semibold -mt-1 mb-2">{children}</h2>;
 }
 
 export function FormStepSubtitle({ children }: PropsWithChildren) {
