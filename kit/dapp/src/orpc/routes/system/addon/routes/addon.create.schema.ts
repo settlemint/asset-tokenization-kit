@@ -46,11 +46,11 @@ const SystemAddonConfigSchema = z.object({
  * Input schema for system addon creation
  */
 export const SystemAddonCreateSchema = MutationInputSchema.extend({
-  addons: z.union([SystemAddonConfigSchema, z.array(SystemAddonConfigSchema)]),
+  addons: z.array(SystemAddonConfigSchema).min(1),
 });
 
 /**
  * Type definitions
  */
-export type SystemAddonCreateInput = z.infer<typeof SystemAddonCreateSchema>;
+export type SystemAddonCreateInput = z.input<typeof SystemAddonCreateSchema>;
 export type SystemAddonConfig = z.infer<typeof SystemAddonConfigSchema>;

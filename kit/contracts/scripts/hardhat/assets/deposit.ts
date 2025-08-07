@@ -50,7 +50,6 @@ export const createDeposit = async () => {
   await deposit.waitUntilDeployed(transactionHash);
 
   await setupAsset(deposit, {
-    collateral: 100000n,
     basePrice: 1,
     removeBlockedCountriesComplianceModule: false,
   });

@@ -25,5 +25,8 @@
       "description": "Enter your 6-digit verification code",
       "label": "Verification Code"
     }
+  },
+  "errors": {
+    "somethingWentWrong": "Something went wrong here"
   }
 }

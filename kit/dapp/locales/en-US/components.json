@@ -44,7 +44,14 @@
       "resident": "Sole resident - I live in and am legally/tax resident only in the country above",
       "unknown": "Prefer not to say"
     },
-    "submit": "Save and continue"
+    "submit": "Save and continue",
+    "identity": {
+      "confirm-description": "Please verify your identity to create your on-chain identity.",
+      "confirm-title": "Confirm identity creation",
+      "deployed-toast": "Identity registered successfully!",
+      "deploying-toast": "Registering identity...",
+      "failed-toast": "Failed to register identity: "
+    }
   },
   "verificationDialog": {
     "authenticatorCode": "Authenticator Code",
