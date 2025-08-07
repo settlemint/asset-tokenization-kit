@@ -1,7 +1,5 @@
 // @vitest-environment node
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
-import { getAddress } from "viem";
-import { beforeAll, describe, expect, it } from "vitest";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   DEFAULT_ADMIN,
@@ -9,6 +7,8 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
+import { getAddress } from "viem";
+import { beforeAll, describe, expect, it } from "vitest";
 
 describe("Access Manager - Revoke Role ORPC routes", () => {
   let adminClient: ReturnType<typeof getOrpcClient>;
@@ -35,7 +35,6 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
       "tokenManager",
     ];
     for (const role of rolesToGrant) {
-      console.log(`Granting ${role} to test addresses`);
       await adminClient.system.grantRole({
         verification: {
           verificationCode: DEFAULT_PINCODE,
