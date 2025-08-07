@@ -51,7 +51,9 @@ export function GrantRoleSheet({
       const parsedValues = TokenGrantRoleInputSchema.parse(value.value);
       toast.promise(grantRole(parsedValues), {
         loading: t("actions.grantRole.messages.submitting"),
-        success: t("actions.grantRole.messages.success"),
+        success: t("actions.grantRole.messages.success", {
+          role: parsedValues.role,
+        }),
         error: t("actions.grantRole.messages.error"),
       });
       handleClose();
