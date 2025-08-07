@@ -15,7 +15,7 @@
     "shadcn": "bunx shadcn@canary",
     "codegen:settlemint": "settlemint codegen",
     "codegen:interface-ids": "bun run ./tools/generate-interface-ids.ts",
-    "codegen": "bun run codegen:interface-ids && bun run codegen:settlemint",
+    "codegen": "bun run codegen:interface-ids",
     "format": "prettier --experimental-cli --write .",
     "lint": "eslint ./src --fix --max-warnings 0 --cache --cache-location .eslintcache",
     "publish": "bash tools/publish-docker.sh",
