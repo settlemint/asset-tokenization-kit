@@ -16,7 +16,7 @@ export function VerificationButton({
     title: string;
     description: string;
   };
-  onSubmit: (verification: UserVerification) => void;
+  onSubmit: (verification: UserVerification) => void | Promise<void>;
 }) {
   const { t } = useTranslation(["common"]);
 
@@ -27,11 +27,11 @@ export function VerificationButton({
   );
 
   const handleSubmit = useCallback(
-    (verification: UserVerification) => {
+    async (verification: UserVerification) => {
       setVerificationError(null);
-      setShowVerificationModal(false);
       try {
-        onSubmit(verification);
+        await onSubmit(verification);
+        setShowVerificationModal(false);
       } catch (error) {
         setVerificationError(
           error instanceof Error
