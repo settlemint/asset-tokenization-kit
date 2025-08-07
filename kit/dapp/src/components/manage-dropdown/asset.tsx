@@ -1,5 +1,4 @@
 import { GrantRoleSheet } from "@/components/manage-dropdown/grant-role-sheet";
-import { PauseUnpauseConfirmationSheet } from "@/components/manage-dropdown/pause-unpause-confirmation-sheet";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,152 +7,55 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
-import { orpc } from "@/orpc/orpc-client";
-import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, Pause, Play, Shield } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 
 interface ManageAssetDropdownProps {
   asset: Token; // Keep Token type to maintain API compatibility
 }
 
+type Action = "pause" | "unpause" | "grantRole" | "viewEvents";
+
+function isCurrentAction({
+  target,
+  current,
+}: {
+  target: Action;
+  current: Action | null;
+}) {
+  return target === current;
+}
+
 export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   const { t } = useTranslation(["tokens", "common"]);
-  const queryClient = useQueryClient();
-  const [openAction, setOpenAction] = useState<"pause" | "unpause" | null>(
-    null
-  );
-  const [showConfirmationSheet, setShowConfirmationSheet] = useState(false);
-  const [showVerificationDialog, setShowVerificationDialog] = useState(false);
-  const [showGrantRoleSheet, setShowGrantRoleSheet] = useState(false);
+  const [openAction, setOpenAction] = useState<Action | null>(null);
+
   const isPaused = asset.pausable.paused;
 
-  // Pause mutation
-  const { mutate: pauseAsset } = useMutation(
-    orpc.token.pause.mutationOptions({
-      onSuccess: async (data) => {
-        // Invalidate both single asset and list queries
-        await Promise.all([
-          queryClient.invalidateQueries({
-            queryKey: orpc.token.read.key({
-              input: { tokenAddress: asset.id },
-            }),
-          }),
-          queryClient.invalidateQueries({
-            queryKey: orpc.token.list.key(),
-          }),
-        ]);
-        setShowVerificationDialog(false);
-        setOpenAction(null);
-        toast.success(
-          t("actions.pause.messages.success", {
-            defaultValue: `Asset '${data.name} (${data.symbol})' paused successfully`,
-            name: data.name,
-            symbol: data.symbol,
-          })
-        );
-      },
-      onError: (error) => {
-        toast.error(t("actions.pause.messages.error"), {
-          description: error.message,
-        });
-      },
-    })
-  );
-
-  // Unpause mutation
-  const { mutate: unpauseAsset } = useMutation(
-    orpc.token.unpause.mutationOptions({
-      onSuccess: async (data) => {
-        // Invalidate both single asset and list queries
-        await Promise.all([
-          queryClient.invalidateQueries({
-            queryKey: orpc.token.read.key({
-              input: { tokenAddress: asset.id },
-            }),
-          }),
-          queryClient.invalidateQueries({
-            queryKey: orpc.token.list.key(),
-          }),
-        ]);
-        setShowVerificationDialog(false);
-        setOpenAction(null);
-        toast.success(
-          t("actions.unpause.messages.success", {
-            defaultValue: `Asset '${data.name} (${data.symbol})' resumed successfully`,
-            name: data.name,
-            symbol: data.symbol,
-          })
-        );
-      },
-      onError: (error) => {
-        toast.error(t("actions.unpause.messages.error"), {
-          description: error.message,
-        });
-      },
-    })
-  );
-
-  const handleVerificationSubmit = (verification: UserVerification) => {
-    if (openAction === "pause") {
-      pauseAsset({
-        contract: asset.id,
-        verification,
-      });
-    } else if (openAction === "unpause") {
-      unpauseAsset({
-        contract: asset.id,
-        verification,
-      });
-    }
-  };
-
   const actions = useMemo(
-    () => [
-      {
-        id: isPaused ? "unpause" : "pause",
-        label: isPaused
-          ? t("tokens:actions.unpause.label")
-          : t("tokens:actions.pause.label"),
-        icon: isPaused ? Play : Pause,
-        onClick: () => {
-          setOpenAction(isPaused ? "unpause" : "pause");
-          setShowConfirmationSheet(true);
+    () =>
+      [
+        {
+          id: isPaused ? "unpause" : "pause",
+          label: isPaused
+            ? t("tokens:actions.unpause.label")
+            : t("tokens:actions.pause.label"),
+          icon: isPaused ? Play : Pause,
+          openAction: isPaused ? "unpause" : "pause",
+          disabled: false,
         },
-        disabled: false,
-      },
-      {
-        id: "grant-role",
-        label: "Grant role",
-        icon: Shield,
-        onClick: () => {
-          setShowGrantRoleSheet(true);
+        {
+          id: "grant-role",
+          label: "Grant role",
+          icon: Shield,
+          openAction: "grantRole",
+          disabled: false,
         },
-      },
-    ],
+      ] as const,
     [isPaused, t]
   );
-
-  const handleCancel = () => {
-    setShowVerificationDialog(false);
-    setShowConfirmationSheet(false);
-    setOpenAction(null);
-  };
-
-  const handleConfirmationProceed = () => {
-    setShowConfirmationSheet(false);
-    setShowVerificationDialog(true);
-  };
-
-  const handleConfirmationCancel = () => {
-    setShowConfirmationSheet(false);
-    setOpenAction(null);
-  };
 
   return (
     <>
@@ -172,7 +74,9 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
           {actions.map((action) => (
             <DropdownMenuItem
               key={action.id}
-              onSelect={action.onClick}
+              onSelect={() => {
+                setOpenAction(action.openAction);
+              }}
               disabled={action.disabled}
               className="cursor-pointer"
             >
@@ -187,41 +91,21 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <PauseUnpauseConfirmationSheet
+      {/* <PauseUnpauseConfirmationSheet
         open={showConfirmationSheet}
         onOpenChange={setShowConfirmationSheet}
         asset={asset}
         action={openAction || "pause"}
         onProceed={handleConfirmationProceed}
         onCancel={handleConfirmationCancel}
-      />
+      /> */}
 
       <GrantRoleSheet
-        open={showGrantRoleSheet}
-        onOpenChange={setShowGrantRoleSheet}
-        asset={asset}
-      />
-
-      <VerificationDialog
-        open={showVerificationDialog}
+        open={isCurrentAction({ target: "grantRole", current: openAction })}
         onOpenChange={(open) => {
-          if (!open) {
-            setShowVerificationDialog(false);
-            setOpenAction(null);
-          }
+          setOpenAction(open ? "grantRole" : null);
         }}
-        title={
-          openAction === "pause"
-            ? t("tokens:actions.pause.title")
-            : t("tokens:actions.unpause.title")
-        }
-        description={
-          openAction === "pause"
-            ? t("tokens:actions.pause.description")
-            : t("tokens:actions.unpause.description")
-        }
-        onSubmit={handleVerificationSubmit}
-        onCancel={handleCancel}
+        asset={asset}
       />
     </>
   );

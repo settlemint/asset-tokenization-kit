@@ -1,10 +1,8 @@
 import { BaseActionSheet } from "@/components/manage-dropdown/base-action-sheet";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import { useAppForm } from "@/hooks/use-app-form";
 import { assetAccessControlRoles } from "@/lib/zod/validators/access-control-roles";
 import { orpc } from "@/orpc/orpc-client";
-import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import {
   TokenGrantRoleInput,
   TokenGrantRoleInputSchema,
@@ -16,7 +14,7 @@ import { ArrayFieldsLayout } from "@/components/layout/array-fields-layout";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Shield } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { toast } from "sonner";
 
 interface GrantRoleSheetProps {
@@ -31,9 +29,7 @@ export function GrantRoleSheet({
   asset,
 }: GrantRoleSheetProps) {
   const queryClient = useQueryClient();
-  const [showVerification, setShowVerification] = useState(false);
-
-  const { mutateAsync: grantRole, isPending } = useMutation(
+  const { mutateAsync: grantRole, isPending: isGrantingRole } = useMutation(
     orpc.token.grantRole.mutationOptions({
       onSuccess: async () => {
         await queryClient.invalidateQueries({
@@ -62,6 +58,7 @@ export function GrantRoleSheet({
         success: "Role granted successfully",
         error: "Failed to grant role",
       });
+      handleClose();
     },
   });
 
@@ -79,7 +76,6 @@ export function GrantRoleSheet({
 
   const handleClose = useCallback(() => {
     form.reset();
-    setShowVerification(false);
 
     onOpenChange(false);
   }, [form, onOpenChange]);
@@ -89,128 +85,114 @@ export function GrantRoleSheet({
   }, [handleClose]);
 
   return (
-    <>
+    <form.AppForm>
       <BaseActionSheet
-        open={open && !showVerification}
+        open={open}
         onOpenChange={onOpenChange}
         asset={asset}
-        title="Grant Role"
+        title="Grant role"
         description="Grant access control roles to specified accounts"
-        onProceed={() => {
-          setShowVerification(true);
-        }}
+        submit={
+          <form.VerificationButton
+            verification={{
+              title: "Grant role",
+              description: "Grant access control roles to specified accounts",
+              setField: (verification) => {
+                form.setFieldValue("verification", verification);
+              },
+            }}
+            onSubmit={() => {
+              void form.handleSubmit();
+            }}
+            disabled={isGrantingRole}
+          >
+            {isGrantingRole ? "Granting role..." : "Grant role"}
+          </form.VerificationButton>
+        }
         onCancel={handleCancel}
-        submitLabel="Grant role"
-        isSubmitting={isPending}
+        isSubmitting={isGrantingRole}
       >
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          }}
-        >
-          <div className="space-y-4">
-            {/* Role Selection Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Select Role</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form.AppField
-                  name="role"
-                  children={(field) => (
-                    <field.RadioField
-                      label=""
-                      options={roleOptions}
-                      variant="card"
-                      className="grid grid-cols-2 gap-4"
-                      required
+        <div className="space-y-4">
+          {/* Role Selection Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Select Role</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form.AppField
+                name="role"
+                children={(field) => (
+                  <field.RadioField
+                    label=""
+                    options={roleOptions}
+                    variant="card"
+                    className="grid grid-cols-2 gap-4"
+                    required
+                  />
+                )}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Accounts Field Card - Empty for now */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Target Accounts</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form.Field
+                name="accounts"
+                mode="array"
+                children={(field) => {
+                  return (
+                    <ArrayFieldsLayout
+                      values={field.state.value}
+                      onAdd={() => {
+                        field.pushValue("" as EthereumAddress);
+                      }}
+                      onRemove={(_, index) => {
+                        field.removeValue(index);
+                      }}
+                      component={(_address, index) => (
+                        <AddressSelectOrInputToggle>
+                          {({ mode }) => (
+                            <>
+                              {mode === "select" && (
+                                <form.AppField
+                                  name={`accounts[${index}]`}
+                                  children={(field) => (
+                                    <field.AddressSelectField
+                                      scope="user"
+                                      label="Account"
+                                      required={true}
+                                    />
+                                  )}
+                                />
+                              )}
+                              {mode === "manual" && (
+                                <form.AppField
+                                  name={`accounts[${index}]`}
+                                  children={(field) => (
+                                    <field.AddressInputField
+                                      label="Account"
+                                      required={true}
+                                    />
+                                  )}
+                                />
+                              )}
+                            </>
+                          )}
+                        </AddressSelectOrInputToggle>
+                      )}
+                      addButtonLabel="Add account"
                     />
-                  )}
-                />
-              </CardContent>
-            </Card>
-
-            {/* Accounts Field Card - Empty for now */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Target Accounts</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form.Field
-                  name="accounts"
-                  mode="array"
-                  children={(field) => {
-                    return (
-                      <ArrayFieldsLayout
-                        values={field.state.value}
-                        onAdd={() => {
-                          field.pushValue("" as EthereumAddress);
-                        }}
-                        onRemove={(_, index) => {
-                          field.removeValue(index);
-                        }}
-                        component={(_address, index) => (
-                          <AddressSelectOrInputToggle>
-                            {({ mode }) => (
-                              <>
-                                {mode === "select" && (
-                                  <form.AppField
-                                    name={`accounts[${index}]`}
-                                    children={(field) => (
-                                      <field.AddressSelectField
-                                        scope="user"
-                                        label="Account"
-                                        required={true}
-                                      />
-                                    )}
-                                  />
-                                )}
-                                {mode === "manual" && (
-                                  <form.AppField
-                                    name={`accounts[${index}]`}
-                                    children={(field) => (
-                                      <field.AddressInputField
-                                        label="Account"
-                                        required={true}
-                                      />
-                                    )}
-                                  />
-                                )}
-                              </>
-                            )}
-                          </AddressSelectOrInputToggle>
-                        )}
-                        addButtonLabel="Add account"
-                      />
-                    );
-                  }}
-                />
-              </CardContent>
-            </Card>
-          </div>
-        </form>
+                  );
+                }}
+              />
+            </CardContent>
+          </Card>
+        </div>
       </BaseActionSheet>
-
-      {/* Verification Dialog */}
-      {showVerification && (
-        <VerificationDialog
-          open={showVerification}
-          onOpenChange={setShowVerification}
-          title="Verify Transaction"
-          description="Please verify your identity to grant the role"
-          onSubmit={async (verification: UserVerification) => {
-            form.setFieldValue("verification", verification);
-            await form.validate("change");
-            if (form.state.isValid) {
-              await form.handleSubmit();
-            }
-          }}
-          onCancel={() => {
-            setShowVerification(false);
-          }}
-        />
-      )}
-    </>
+    </form.AppForm>
   );
 }
