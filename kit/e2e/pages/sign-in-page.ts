@@ -67,7 +67,9 @@ export class SignInPage {
     }
 
     try {
-      await expect(this.page).toHaveURL(/dashboard/, { timeout: 15000 });
+      await expect(this.page).toHaveURL(/^http:\/\/localhost:3000\/$/, {
+        timeout: 15000,
+      });
     } catch (urlError) {
       const currentUrl = this.page.url();
       const isStillOnSignIn = currentUrl.includes("/auth/sign-in");

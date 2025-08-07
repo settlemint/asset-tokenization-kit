@@ -16,7 +16,6 @@ const uiConfig: PlaywrightTestConfig = {
       name: "setup",
       testMatch: "**/complete-onboarding-flow.spec.ts",
       fullyParallel: false,
-      teardown: "cleanup",
     },
     {
       name: "ui-tests",
@@ -27,6 +26,12 @@ const uiConfig: PlaywrightTestConfig = {
         "**/create-*.spec.ts",
         "**/xvp-settlement.spec.ts",
       ],
+      fullyParallel: true,
+      dependencies: ["setup"],
+    },
+    {
+      name: "stablecoin-tests",
+      testMatch: "**/create-stablecoin-validation.spec.ts",
       fullyParallel: true,
       dependencies: ["setup"],
     },

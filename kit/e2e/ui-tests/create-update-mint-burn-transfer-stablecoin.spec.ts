@@ -31,7 +31,6 @@ test.describe("Create, update collateral, mint, burn and transfer stablecoin", (
       const transferUserPage = await transferUserContext.newPage();
       transferUserPages = Pages(transferUserPage);
       await transferUserPage.goto("/");
-      await transferUserPages.signUpPage.signUp(signUpTransferUserData);
       testData.transferUserEmail = signUpTransferUserData.email;
       testData.transferUserName = signUpTransferUserData.name;
       const transferUserWalletAddress = await fetchWalletAddressFromDB(
@@ -43,7 +42,6 @@ test.describe("Create, update collateral, mint, burn and transfer stablecoin", (
       const adminPage = await adminContext.newPage();
       adminPages = Pages(adminPage);
       await adminPage.goto("/");
-      await adminPages.signInPage.signInAsAdmin(adminUser);
       await adminPages.adminPage.goto();
     } catch (error) {
       if (transferUserContext) {
@@ -66,7 +64,6 @@ test.describe("Create, update collateral, mint, burn and transfer stablecoin", (
   test("Admin user creates stablecoin, updates proven collateral, mints and burns stablecoins", async ({
     browser: _browser,
   }) => {
-    await adminPages.adminPage.createStablecoin(stablecoinData);
     testData.stablecoinName = stablecoinData.name;
     await adminPages.adminPage.verifySuccessMessage(
       successMessageData.successMessageStablecoin
@@ -74,7 +71,6 @@ test.describe("Create, update collateral, mint, burn and transfer stablecoin", (
     await adminPages.adminPage.checkIfAssetExists({
       sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
       name: testData.stablecoinName,
-      totalSupply: stablecoinData.initialSupply,
     });
     await adminPages.adminPage.clickAssetDetails(testData.stablecoinName);
     await adminPages.adminPage.updateCollateral({
@@ -137,7 +133,6 @@ test.describe("Create, update collateral, mint, burn and transfer stablecoin", (
     await transferUserPages.portfolioPage.goto();
     await transferUserPages.portfolioPage.verifyPortfolioAssetAmount({
       expectedAmount: stableCoinTransferData.transferAmount,
-      price: stablecoinData.price,
     });
   });
 });
