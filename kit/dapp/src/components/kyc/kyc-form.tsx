@@ -1,23 +1,59 @@
-import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/use-app-form";
 import { authClient } from "@/lib/auth/auth.client";
 import { orpc } from "@/orpc/orpc-client";
+import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { KycProfileUpsert } from "@/orpc/routes/user/kyc/kyc.schema";
 import { KycProfileUpsertSchema } from "@/orpc/routes/user/kyc/kyc.schema";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
-export type KycFormValues = KycProfileUpsert;
+export type KycFormValues = KycProfileUpsert & {
+  verification?: UserVerification;
+};
 
 interface KycFormProps {
-  disabled?: boolean;
-  onComplete: (values: KycFormValues) => void;
+  onComplete: () => void | Promise<void>;
 }
 
-export function KycForm({ onComplete, disabled }: KycFormProps) {
+export function KycForm({ onComplete }: KycFormProps) {
   const { t } = useTranslation(["components"]);
   const { data: session } = authClient.useSession();
+  const queryClient = useQueryClient();
+  const shouldRegisterIdentity = session?.user.role === "admin";
+
+  const { mutateAsync: registerIdentity, isPending: isRegisteringIdentity } =
+    useMutation(
+      orpc.system.identityRegister.mutationOptions({
+        onSuccess: async () => {
+          // Refetch all relevant data
+          await Promise.all([
+            queryClient.invalidateQueries({
+              queryKey: orpc.account.me.queryOptions().queryKey,
+              refetchType: "all",
+            }),
+            queryClient.invalidateQueries({
+              queryKey: orpc.user.me.queryOptions().queryKey,
+              refetchType: "all",
+            }),
+          ]);
+        },
+      })
+    );
+
+  const { mutateAsync: updateKyc, isPending: isUpdatingKyc } = useMutation(
+    orpc.user.kyc.upsert.mutationOptions({
+      onSuccess: async () => {
+        // Invalidate user data to update sidebar and dropdown
+        await queryClient.invalidateQueries({
+          queryKey: orpc.user.me.queryOptions().queryKey,
+          refetchType: "all",
+        });
+        await onComplete();
+      },
+    })
+  );
 
   const { data: kyc } = useQuery(
     orpc.user.kyc.read.queryOptions({
@@ -39,7 +75,30 @@ export function KycForm({ onComplete, disabled }: KycFormProps) {
       onChange: KycProfileUpsertSchema,
     },
     onSubmit: ({ value }) => {
-      onComplete(value);
+      const promise = async () => {
+        if (shouldRegisterIdentity) {
+          if (!value.verification) {
+            throw new Error("Verification is required");
+          }
+
+          await registerIdentity({
+            country: value.country,
+            verification: value.verification,
+          });
+        }
+
+        await updateKyc({
+          ...value,
+          userId: session?.user.id ?? "",
+        });
+      };
+
+      toast.promise(promise(), {
+        loading: t("kycForm.identity.deploying-toast"),
+        success: t("kycForm.identity.deployed-toast"),
+        error: (error: Error) =>
+          `${t("kycForm.identity.failed-toast")}${error.message}`,
+      });
     },
   });
 
@@ -66,13 +125,7 @@ export function KycForm({ onComplete, disabled }: KycFormProps) {
   );
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        void form.handleSubmit();
-      }}
-      className="space-y-6"
-    >
+    <div className="space-y-6">
       <form.AppForm>
         <form.AppField
           name="firstName"
@@ -121,21 +174,29 @@ export function KycForm({ onComplete, disabled }: KycFormProps) {
             <field.TextField label={t("kycForm.nationalId")} required={true} />
           )}
         />
-        <form.Subscribe>
-          {({ errors, isDirty }) => {
+        <form.VerificationButton
+          verification={{
+            title: t("kycForm.identity.confirm-title"),
+            description: t("kycForm.identity.confirm-description"),
+            setField: (verification) => {
+              form.setFieldValue("verification", verification);
+            },
+          }}
+          disabled={({ isDirty, errors }) => {
             return (
-              <Button
-                type="submit"
-                disabled={
-                  disabled || !isDirty || Object.keys(errors).length > 0
-                }
-              >
-                {t("kycForm.submit")}
-              </Button>
+              isRegisteringIdentity ||
+              isUpdatingKyc ||
+              !isDirty ||
+              Object.keys(errors).length > 0
             );
           }}
-        </form.Subscribe>
+          onSubmit={() => {
+            void form.handleSubmit();
+          }}
+        >
+          {t("kycForm.submit")}
+        </form.VerificationButton>
       </form.AppForm>
-    </form>
+    </div>
   );
 }
