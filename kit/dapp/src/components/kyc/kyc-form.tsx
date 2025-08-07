@@ -182,6 +182,9 @@ export function KycForm({ onComplete }: KycFormProps) {
               form.setFieldValue("verification", verification);
             },
           }}
+          disabled={({ isDirty, errors }) => {
+            return !isDirty || Object.keys(errors).length > 0;
+          }}
           onSubmit={() => {
             void form.handleSubmit();
           }}
