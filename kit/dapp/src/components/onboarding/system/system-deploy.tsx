@@ -1,12 +1,13 @@
 import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
-import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
+import { VerificationButton } from "@/components/verification-dialog/verification-button";
 import { orpc } from "@/orpc/orpc-client";
+import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { TriangleAlert } from "lucide-react";
-import { useState } from "react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -14,8 +15,6 @@ export function SystemDeploy() {
   const { t } = useTranslation(["onboarding", "common"]);
   const { refreshUserState } = useOnboardingNavigation();
   const navigate = useNavigate();
-  // Modal state
-  const [showVerificationModal, setShowVerificationModal] = useState(false);
 
   // System deployment mutation
   const { mutateAsync: createSystem, isPending: isCreatingSystem } =
@@ -26,6 +25,23 @@ export function SystemDeploy() {
         },
       })
     );
+
+  const handleSubmit = useCallback(
+    (verification: UserVerification) => {
+      toast.promise(
+        createSystem({
+          verification,
+        }),
+        {
+          loading: t("system.deploying-toast"),
+          success: t("system.deployed-toast"),
+          error: (error: Error) =>
+            `${t("system.failed-toast")}${error.message}`,
+        }
+      );
+    },
+    [createSystem, t]
+  );
 
   return (
     <OnboardingStepLayout
@@ -42,14 +58,16 @@ export function SystemDeploy() {
           >
             {t("common:actions.skip")}
           </Button>
-          <Button
-            onClick={() => {
-              setShowVerificationModal(true);
+          <VerificationButton
+            verification={{
+              title: t("system.confirm-deployment-title"),
+              description: t("system.confirm-deployment-description"),
             }}
+            onSubmit={handleSubmit}
             disabled={isCreatingSystem}
           >
             {isCreatingSystem ? t("system.deploying") : t("system.deploy")}
-          </Button>
+          </VerificationButton>
         </>
       }
     >
@@ -93,30 +111,6 @@ export function SystemDeploy() {
             </div>
           </div>
         </div>
-
-        {/* Verification Modal */}
-        <VerificationDialog
-          open={showVerificationModal}
-          onOpenChange={setShowVerificationModal}
-          onSubmit={({ verificationCode, verificationType }) => {
-            toast.promise(
-              createSystem({
-                verification: {
-                  verificationCode,
-                  verificationType,
-                },
-              }),
-              {
-                loading: t("system.deploying-toast"),
-                success: t("system.deployed-toast"),
-                error: (error: Error) =>
-                  `${t("system.failed-toast")}${error.message}`,
-              }
-            );
-          }}
-          title={t("system.confirm-deployment-title")}
-          description={t("system.confirm-deployment-description")}
-        />
       </>
     </OnboardingStepLayout>
   );

@@ -9,7 +9,6 @@ import { ISMARTTokenAccessManaged } from "../../smart/extensions/access-managed/
 import { ISMARTCustodian } from "../../smart/extensions/custodian/ISMARTCustodian.sol";
 import { ISMARTPausable } from "../../smart/extensions/pausable/ISMARTPausable.sol";
 import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.sol";
-import { ISMARTCollateral } from "../../smart/extensions/collateral/ISMARTCollateral.sol";
 
 /// @title Interface for ATK Deposit token
 /// @author SettleMint
@@ -19,7 +18,6 @@ import { ISMARTCollateral } from "../../smart/extensions/collateral/ISMARTCollat
 interface IATKDeposit is
     ISMART,
     ISMARTTokenAccessManaged,
-    ISMARTCollateral,
     ISMARTCustodian,
     ISMARTPausable,
     ISMARTBurnable
@@ -28,7 +26,6 @@ interface IATKDeposit is
     /// @param name_ The name of the deposit token.
     /// @param symbol_ The symbol of the deposit token.
     /// @param decimals_ The number of decimals for the deposit token.
-    /// @param collateralTopicId_ The topic ID of the collateral claim.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param identityRegistry_ The address of the identity registry contract.
     /// @param compliance_ The address of the compliance contract.
@@ -37,7 +34,6 @@ interface IATKDeposit is
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        uint256 collateralTopicId_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,
