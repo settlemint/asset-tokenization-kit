@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { Test, console } from "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
 import { ATKSystemImplementation } from "../../contracts/system/ATKSystemImplementation.sol";
 import { IATKSystem } from "../../contracts/system/IATKSystem.sol";
 import { ATKPeopleRoles } from "../../contracts/system/ATKPeopleRoles.sol";
-import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 // Import SystemUtils for proper setup
@@ -21,11 +19,6 @@ import { IERC3643TrustedIssuersRegistry } from
 import { ISMARTIdentityRegistryStorage } from "../../contracts/smart/interface/ISMARTIdentityRegistryStorage.sol";
 import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 import { ISMARTTopicSchemeRegistry } from "../../contracts/smart/interface/ISMARTTopicSchemeRegistry.sol";
-import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
-import { IATKTokenFactory } from "../../contracts/system/token-factory/IATKTokenFactory.sol";
-import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
-import { SMARTComplianceModuleParamPair } from
-    "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IATKTypedImplementationRegistry } from "../../contracts/system/IATKTypedImplementationRegistry.sol";
 import { IATKCompliance } from "../../contracts/system/compliance/IATKCompliance.sol";
 import { IATKSystemAccessManaged } from "../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
@@ -69,7 +62,6 @@ import { ATKComplianceModuleRegistryImplementation } from
 // Import compliance module
 import { SMARTIdentityVerificationComplianceModule } from
     "../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
-import { ISMARTComplianceModule } from "../../contracts/smart/interface/ISMARTComplianceModule.sol";
 
 // Mock contracts for testing edge cases that require invalid contracts
 contract MockInvalidContract {

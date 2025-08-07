@@ -112,16 +112,17 @@ contract IdentityBlockListComplianceModuleTest is AbstractComplianceModuleTest {
         vm.expectRevert(
             abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity blocked")
         );
-        smartToken.transfer(user1, 100);
+        bool result = smartToken.transfer(user1, 100);
+        result; // Explicitly unused - we expect this to revert
 
         // Transfer to user2 (identity2) should succeed
         vm.prank(tokenIssuer);
-        smartToken.transfer(user2, 100);
+        assertTrue(smartToken.transfer(user2, 100), "Transfer failed");
         assertEq(smartToken.balanceOf(user2), 100);
 
         // Transfer to user3 (no identity) should succeed
         vm.prank(tokenIssuer);
-        smartToken.transfer(user3, 100);
+        assertTrue(smartToken.transfer(user3, 100), "Transfer failed");
         assertEq(smartToken.balanceOf(user3), 100);
     }
 

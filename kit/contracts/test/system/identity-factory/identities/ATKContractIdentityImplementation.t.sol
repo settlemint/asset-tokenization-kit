@@ -1,21 +1,22 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.28;
 
-import "forge-std/Test.sol";
-import "../../../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
-import "../../../../contracts/system/identity-factory/identities/ATKContractIdentityProxy.sol";
-import "../../../../contracts/system/identity-factory/identities/IATKContractIdentity.sol";
+import { Test } from "forge-std/Test.sol";
+import { ATKContractIdentityImplementation } from
+    "../../../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
+import { ATKContractIdentityProxy } from
+    "../../../../contracts/system/identity-factory/identities/ATKContractIdentityProxy.sol";
+import { IATKContractIdentity } from "../../../../contracts/system/identity-factory/identities/IATKContractIdentity.sol";
 import { ZeroAddressNotAllowed } from "../../../../contracts/system/identity-factory/ATKIdentityErrors.sol";
-import "../../../../contracts/system/identity-factory/IContractWithIdentity.sol";
-import "../../../../contracts/onchainid/extensions/IClaimAuthorizer.sol";
+import { IContractWithIdentity } from "../../../../contracts/system/identity-factory/IContractWithIdentity.sol";
+import { IClaimAuthorizer } from "../../../../contracts/onchainid/extensions/IClaimAuthorizer.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IERC735 } from "@onchainid/contracts/interface/IERC735.sol";
 import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
 import { ERC735 } from "../../../../contracts/onchainid/extensions/ERC735.sol";
-import { ERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import "../../../utils/SystemUtils.sol";
-import { ERC734KeyTypes } from "../../../../contracts/onchainid/ERC734KeyTypes.sol";
+import { ERC165, IERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import { SystemUtils } from "../../../utils/SystemUtils.sol";
 import { ERC735ClaimSchemes } from "../../../../contracts/onchainid/ERC735ClaimSchemes.sol";
 import { OnChainContractIdentity } from "../../../../contracts/onchainid/extensions/OnChainContractIdentity.sol";
 

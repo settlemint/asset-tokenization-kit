@@ -11,6 +11,7 @@ if (
 // Mock theGraphClientKit with proper structure
 export const theGraphClientKit = {
   request: vi.fn(),
+  query: vi.fn(),
 };
 
 // Mock theGraphGraphqlKit

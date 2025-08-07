@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { Test } from "forge-std/Test.sol";
 import { AbstractATKAssetTest } from "./AbstractATKAssetTest.sol";
 
 import { IATKStableCoin } from "../../contracts/assets/stable-coin/IATKStableCoin.sol";
@@ -10,8 +9,6 @@ import { ATKStableCoinFactoryImplementation } from
     "../../contracts/assets/stable-coin/ATKStableCoinFactoryImplementation.sol";
 import { ATKStableCoinImplementation } from "../../contracts/assets/stable-coin/ATKStableCoinImplementation.sol";
 import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
-import { ATKPeopleRoles } from "../../contracts/system/ATKPeopleRoles.sol";
-import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { ClaimUtils } from "../../test/utils/ClaimUtils.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
@@ -274,6 +271,7 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
 
         vm.startPrank(user1);
         vm.expectRevert();
+        /// forge-lint: disable-next-line(erc20-unchecked-transfer)
         stableCoin.transfer(user2, 100);
         vm.stopPrank();
 
@@ -293,7 +291,7 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
         assertEq(stableCoin.allowance(user1, spender), 100);
 
         vm.prank(spender);
-        stableCoin.transferFrom(user1, user2, 50);
+        assertTrue(stableCoin.transferFrom(user1, user2, 50), "TransferFrom failed");
         assertEq(stableCoin.balanceOf(user2), 50);
         assertEq(stableCoin.allowance(user1, spender), 50);
     }
