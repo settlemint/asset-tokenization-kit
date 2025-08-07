@@ -4,7 +4,7 @@
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { renderWithProviders } from "../../../../test/test-utils";
+import { renderWithProviders } from "@test/helpers/test-utils";
 import { ActionsCell, type ActionItem } from "./actions-cell";
 
 // Mock react-i18next

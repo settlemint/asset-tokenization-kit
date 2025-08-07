@@ -34,7 +34,7 @@ export const kycProfiles = pgTable(
 
     residencyStatus: residencyStatusEnum("residency_status").notNull(),
 
-    nationalIdEncrypted: text("national_id_encrypted").notNull(),
+    nationalId: text("national_id").notNull(),
 
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()

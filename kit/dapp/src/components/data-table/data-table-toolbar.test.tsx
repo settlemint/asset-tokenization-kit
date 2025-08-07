@@ -4,7 +4,7 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { createMockTable, renderWithProviders } from "../../../test/test-utils";
+import { createMockTable, renderWithProviders } from "@test/helpers/test-utils";
 import { DataTableToolbar } from "./data-table-toolbar";
 
 // Mock child components
