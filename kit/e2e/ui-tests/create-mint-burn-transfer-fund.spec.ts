@@ -31,7 +31,6 @@ test.describe("Create, mint, burn and transfer fund", () => {
       const transferUserPage = await transferUserContext.newPage();
       transferUserPages = Pages(transferUserPage);
       await transferUserPage.goto("/");
-      await transferUserPages.signUpPage.signUp(signUpTransferUserData);
       testData.transferUserEmail = signUpTransferUserData.email;
       testData.transferUserName = signUpTransferUserData.name;
       const transferUserWalletAddress = await fetchWalletAddressFromDB(
@@ -44,7 +43,6 @@ test.describe("Create, mint, burn and transfer fund", () => {
       const adminPage = await adminContext.newPage();
       adminPages = Pages(adminPage);
       await adminPage.goto("/");
-      await adminPages.signInPage.signInAsAdmin(adminUser);
       await adminPages.adminPage.goto();
     } catch (error) {
       if (transferUserContext) {

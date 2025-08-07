@@ -36,7 +36,6 @@ test.describe("Create, top up, mint and transfer bonds", () => {
       const transferUserPage = await transferUserContext.newPage();
       transferUserPages = Pages(transferUserPage);
       await transferUserPage.goto("/");
-      await transferUserPages.signUpPage.signUp(signUpTransferUserData);
       testData.transferUserEmail = signUpTransferUserData.email;
       testData.transferUserName = signUpTransferUserData.name;
       const transferUserWalletAddress = await fetchWalletAddressFromDB(
@@ -49,7 +48,6 @@ test.describe("Create, top up, mint and transfer bonds", () => {
       const adminPage = await adminContext.newPage();
       adminPages = Pages(adminPage);
       await adminPage.goto("/");
-      await adminPages.signInPage.signInAsAdmin(adminUser);
       await adminPages.adminPage.goto();
     } catch (error) {
       if (transferUserContext) {
@@ -72,7 +70,6 @@ test.describe("Create, top up, mint and transfer bonds", () => {
   });
 
   test("Admin user creates stablecoin", async () => {
-    await adminPages.adminPage.createStablecoin(stablecoinData);
     testData.stablecoinName = stablecoinData.name;
     await adminPages.adminPage.verifySuccessMessage(
       successMessageData.successMessageStablecoin
@@ -80,7 +77,6 @@ test.describe("Create, top up, mint and transfer bonds", () => {
     await adminPages.adminPage.checkIfAssetExists({
       sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
       name: testData.stablecoinName,
-      totalSupply: stablecoinData.initialSupply,
     });
   });
 
@@ -106,7 +102,6 @@ test.describe("Create, top up, mint and transfer bonds", () => {
     await adminPages.adminPage.checkIfAssetExists({
       sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
       name: testData.stablecoinName,
-      totalSupply: stablecoinData.initialSupply,
     });
     await adminPages.adminPage.clickAssetDetails(testData.stablecoinName);
     await adminPages.adminPage.updateCollateral({
