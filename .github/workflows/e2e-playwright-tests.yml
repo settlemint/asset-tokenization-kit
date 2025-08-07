@@ -81,17 +81,61 @@ jobs:
       - name: Wait for services to be healthy
         run: |
           echo "Waiting for Docker services to be healthy..."
-          timeout 300 bash -c 'until docker compose -p atk ps --format "table {{.Service}}\t{{.Status}}" | grep -E "(postgres|redis|portal|anvil|txsigner)" | grep -v "healthy" | wc -l | grep -q "^0$"; do echo "Services not ready yet, waiting..."; sleep 5; done'
-          echo "All required services are healthy!"
+          echo "Current service status:"
           docker compose -p atk ps
+
+          # Wait for services to be healthy
+          timeout 300 bash -c '
+            while true; do
+              unhealthy_count=$(docker compose -p atk ps --format "table {{.Service}}\t{{.Status}}" | grep -E "(postgres|redis|portal|anvil|txsigner)" | grep -v "healthy" | wc -l)
+              if [ "$unhealthy_count" -eq 0 ]; then
+                echo "All services are healthy!"
+                break
+              fi
+              echo "Services not ready yet, $unhealthy_count services still unhealthy. Waiting..."
+              docker compose -p atk ps --format "table {{.Service}}\t{{.Status}}" | grep -E "(postgres|redis|portal|anvil|txsigner)"
+              sleep 5
+            done
+          '
+
+          echo "Final service status:"
+          docker compose -p atk ps
+
+          # Test portal connectivity specifically
+          echo "Testing portal connectivity..."
+          curl -f http://localhost:7701/graphql || echo "Portal GraphQL not responding"
+          curl -f http://localhost:7700/health || echo "Portal health endpoint not responding"
 
       - name: Start dev server
         run: |
           echo "Starting dev server..."
+
+          # Check environment variables first
+          echo "Environment check:"
+          echo "SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT=${SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT:-not set}"
+          if [ -n "${SETTLEMINT_ACCESS_TOKEN:-}" ]; then
+            echo "SETTLEMINT_ACCESS_TOKEN: configured"
+          else
+            echo "SETTLEMINT_ACCESS_TOKEN: not set"
+          fi
+
+          # Start server with detailed logging
+          echo "Starting bun run dev..."
           nohup bun run dev > server.log 2>&1 &
-          echo "SERVER_PID=$!" >> $GITHUB_ENV
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
+          echo "Dev server started with PID: $SERVER_PID"
+
           echo "Waiting 30 seconds for Next.js to initialize all routes..."
           sleep 30
+
+          # Check if process is still running
+          if ! kill -0 $SERVER_PID 2>/dev/null; then
+            echo "ERROR: Dev server process died! Last logs:"
+            tail -50 server.log
+            exit 1
+          fi
+
           echo "Performing initial server check..."
           curl -v http://localhost:${PORT}/ || echo "Initial check failed, will retry"
           timeout_seconds=120
