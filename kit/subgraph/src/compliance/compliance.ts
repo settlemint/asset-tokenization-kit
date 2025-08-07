@@ -1,4 +1,4 @@
-import { store } from "@graphprotocol/graph-ts";
+import { Bytes, store } from "@graphprotocol/graph-ts";
 import {
   AddressAddedToBypassList as AddressAddedToBypassListEvent,
   AddressRemovedFromBypassList as AddressRemovedFromBypassListEvent,
@@ -91,9 +91,13 @@ export function handleAddressRemovedFromBypassList(
 
   const compliance = fetchCompliance(event.address);
   if (compliance.bypassList.includes(event.params.account)) {
-    compliance.bypassList = compliance.bypassList.filter(
-      (account) => !account.equals(event.params.account)
-    );
+    const newBypassList: Bytes[] = [];
+    for (let i = 0; i < compliance.bypassList.length; i++) {
+      if (!compliance.bypassList[i].equals(event.params.account)) {
+        newBypassList.push(compliance.bypassList[i]);
+      }
+    }
+    compliance.bypassList = newBypassList;
   }
   compliance.save();
 }

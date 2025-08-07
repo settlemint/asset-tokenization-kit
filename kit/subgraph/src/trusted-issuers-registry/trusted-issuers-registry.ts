@@ -1,4 +1,4 @@
-import { store } from "@graphprotocol/graph-ts";
+import { Bytes, store } from "@graphprotocol/graph-ts";
 import {
   ClaimTopicsUpdated as ClaimTopicsUpdatedEvent,
   TrustedIssuerAdded as TrustedIssuerAddedEvent,
@@ -13,7 +13,7 @@ export function handleClaimTopicsUpdated(event: ClaimTopicsUpdatedEvent): void {
   fetchEvent(event, "ClaimTopicsUpdated");
 
   const trustedIssuer = fetchTrustedIssuer(event.params._issuer);
-  trustedIssuer.claimTopics = event.params._claimTopics.map(
+  trustedIssuer.claimTopics = event.params._claimTopics.map<Bytes>(
     (topic) => fetchTopicScheme(topic).id
   );
   trustedIssuer.save();
@@ -26,7 +26,7 @@ export function handleTrustedIssuerAdded(event: TrustedIssuerAddedEvent): void {
   const trustedIssuer = fetchTrustedIssuer(event.params._issuer);
   trustedIssuer.registry = trustedIssuerRegistry.id;
   trustedIssuer.deployedInTransaction = event.transaction.hash;
-  trustedIssuer.claimTopics = event.params._claimTopics.map(
+  trustedIssuer.claimTopics = event.params._claimTopics.map<Bytes>(
     (topic) => fetchTopicScheme(topic).id
   );
   trustedIssuer.save();

@@ -29,7 +29,7 @@ export function handleIdentityModified(event: IdentityModifiedEvent): void {
   const newIdentity = fetchIdentity(event.params._newIdentity);
 
   if (oldIdentity.account) {
-    const account = fetchAccount(Address.fromBytes(oldIdentity.account));
+    const account = fetchAccount(Address.fromBytes(oldIdentity.account!));
     account.identity = newIdentity.id;
     account.save();
 
@@ -63,7 +63,9 @@ export function handleIdentityRegistryUnbound(
 
 export function handleIdentityStored(event: IdentityStoredEvent): void {
   fetchEvent(event, "IdentityStored");
+  const identityRegistryStorage = fetchIdentityRegistryStorage(event.address);
   const identity = fetchIdentity(event.params._identity);
+  identity.registryStorage = identityRegistryStorage.id;
   const account = fetchAccount(event.params._investorAddress);
   account.identity = identity.id;
   account.save();
