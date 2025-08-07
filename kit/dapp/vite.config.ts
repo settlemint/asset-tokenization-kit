@@ -2,7 +2,6 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import { analyzer } from "vite-bundle-analyzer";
-import Terminal from "vite-plugin-terminal";
 import tsConfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
@@ -38,10 +37,6 @@ export default defineConfig({
     port: 3000,
   },
   plugins: [
-    Terminal({
-      console: "terminal",
-      output: ["terminal", "console"],
-    }),
     tsConfigPaths(),
     tanstackStart({
       target: "bun",
