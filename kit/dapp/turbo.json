@@ -32,9 +32,6 @@
         "tsconfig.json"
       ],
       "outputs": [".eslintcache"]
-    },
-    "dev": {
-      "dependsOn": ["codegen"]
     }
   }
 }
