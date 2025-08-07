@@ -39,15 +39,6 @@ researcher → TodoWrite → implement → code-reviewer → solidity-auditor (i
 - **code-reviewer**: After ANY code changes
 - **solidity-auditor**: Smart contracts only
 
-## Module Documentation
-
-- Contracts: `kit/contracts/CLAUDE.md`
-- DApp: `kit/dapp/CLAUDE.md`
-- API: `kit/dapp/src/orpc/CLAUDE.md`
-- Subgraph: `kit/subgraph/CLAUDE.md`
-- E2E: `kit/e2e/CLAUDE.md`
-- Charts: `kit/charts/CLAUDE.md`
-
 ## MCP Usage Examples
 
 <example>
