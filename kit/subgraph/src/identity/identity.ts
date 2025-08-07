@@ -229,6 +229,7 @@ export function handleClaimRevoked(event: ClaimRevoked): void {
     if (identityClaim.signature.equals(event.params.signature)) {
       identityClaim.revoked = true;
       identityClaim.save();
+      break;
     }
   }
 }
