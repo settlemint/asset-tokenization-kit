@@ -1,58 +1,91 @@
 ---
 alwaysApply: false
-description:
-  MCP servers setup and usage patterns (Context7, Linear, DeepWiki, Sentry,
-  Playwright, Gemini, Grep, OpenZeppelin)
+description: MCP Usage Examples - Library docs, contracts, error tracking
 ---
 
-**Usage patterns**
+# MCP Usage Examples
 
-- Prefer non-interactive flags; avoid pagers.
-- Use docs search before coding; reference outputs succinctly.
+## Library Documentation
 
-**Context7 (docs)**
-
-```ts
-// 1) Resolve, 2) Fetch docs
+```javascript
+// Context7 - Get library docs
 mcp__context7__resolve_library_id({ libraryName: "react" });
 mcp__context7__get_library_docs({
   context7CompatibleLibraryID: "/facebook/react",
-  tokens: 12000,
 });
-```
 
-**Linear (issues)**
-
-```ts
-mcp__linear__list_issues({ query: "feature name" });
-mcp__linear__create_issue({ title: "feat: add X", teamId: "TEAM_ID" });
-```
-
-**DeepWiki (repo docs)**
-
-```ts
+// DeepWiki - Repository docs
 mcp__deepwiki__read_wiki_contents({ repoName: "facebook/react" });
 ```
 
-**Sentry (errors)**
+## Smart Contracts
 
-```ts
-mcp__sentry__search_issues({
-  organizationSlug: "org",
-  naturalLanguageQuery: "errors today",
-});
-```
-
-**Playwright MCP (local run)**
-
-**OpenZeppelin (contracts scaffolding)**
-
-```ts
+```javascript
+// OpenZeppelin - Generate contracts
 mcp__OpenZeppelinSolidityContracts__solidity_erc20({
   name: "Token",
   symbol: "TKN",
   upgradeable: "uups",
 });
+
+mcp__OpenZeppelinSolidityContracts__solidity_erc721({
+  name: "NFT",
+  symbol: "NFT",
+  mintable: true,
+});
 ```
 
-Validate approach via brief model check before heavy coding.
+## Issue Tracking
+
+```javascript
+// Sentry - Error tracking
+mcp__sentry__search_issues({
+  organizationSlug: "org",
+  naturalLanguageQuery: "errors today",
+});
+mcp__sentry__analyze_issue_with_seer({ issueId: "ERROR-123" });
+
+// Linear - Project management
+mcp__linear__create_issue({
+  title: "Bug: Fix overflow",
+  teamSlug: "team",
+  description: "Details...",
+});
+mcp__linear__list_issues({ query: "in progress" });
+```
+
+## Browser Automation
+
+```javascript
+// Playwright - Browser control
+mcp__playwright__browser_navigate({ url: "https://example.com" });
+mcp__playwright__browser_snapshot();
+mcp__playwright__browser_click({ element: "button", ref: "#submit" });
+```
+
+## Code Search
+
+```javascript
+// Grep - Search GitHub code
+mcp__grep__searchGitHub({
+  query: "useState(",
+  language: ["TypeScript", "TSX"],
+});
+```
+
+## AI Assistance
+
+```javascript
+// Gemini - Analysis
+mcp__gemini_cli__ask_gemini({
+  prompt: "@largefile.js explain",
+  changeMode: true, // For structured edits
+});
+```
+
+## Usage Rules
+
+- Prefer non-interactive flags
+- Search docs BEFORE coding
+- Reference outputs concisely
+- Validate approach before implementation

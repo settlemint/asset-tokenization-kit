@@ -1,22 +1,52 @@
 ---
 globs: kit/e2e/**/*
-description: Playwright E2E rules, page object model, testing constraints
+description: Playwright E2E testing - Page Object Model pattern
 ---
-**Stack**: Playwright 1.54.2 · TypeScript · Page Object Model.
 
-**Commands**
-`NODE_NO_WARNINGS=1 playwright test` · `--ui` · `--debug`.
+# E2E Testing Module
 
-**Locators**
-- Use semantic: `getByRole`, `getByLabel`, `getByTestId`
-- Avoid CSS/XPath selectors in tests
+## Stack
 
-**Waiting**
-- `expect(locator).toBeVisible()`; `page.waitForLoadState('networkidle')`
-- Do not use arbitrary `waitForTimeout`
+- **Framework**: Playwright 1.54.2
+- **Language**: TypeScript
+- **Pattern**: Page Object Model (POM)
 
-**Rules**
-- Always Page Object Model
-- Independent tests; clean up after tests
+## Commands
 
-See [kit/e2e/CLAUDE.md](mdc:kit/e2e/CLAUDE.md).
+```bash
+NODE_NO_WARNINGS=1 playwright test
+playwright test --ui           # Interactive UI
+playwright test --debug        # Debug mode
+```
+
+## Locator Strategy
+
+```typescript
+// ✅ PREFERRED
+page.getByRole("button", { name: "Submit" });
+page.getByLabel("Email");
+page.getByTestId("user-profile");
+
+// ❌ AVOID
+page.locator(".btn-submit"); // CSS selectors
+page.locator("//button"); // XPath
+```
+
+## Waiting Patterns
+
+```typescript
+// ✅ CORRECT
+await expect(locator).toBeVisible();
+await page.waitForLoadState("networkidle");
+
+// ❌ WRONG
+await page.waitForTimeout(1000); // Arbitrary timeouts
+```
+
+## Critical Rules
+
+1. ALWAYS use Page Object Model
+2. Semantic locators only
+3. NO hardcoded waits
+4. Test isolation mandatory
+5. Cleanup in afterEach

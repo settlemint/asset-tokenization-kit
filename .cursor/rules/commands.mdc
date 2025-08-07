@@ -1,15 +1,64 @@
 ---
 alwaysApply: true
-description: Standard commands for review, debugging, tests, PRs, and MCP setup
+description: Core commands and quality gates - MANDATORY before PR
 ---
-**Quality gates**: `bun run lint` · `bun run test` · `bun run ci` · `bun run typecheck` (if present).
 
-**/code-review**: Use code-reviewer; for contracts also solidity-auditor. See [.claude/commands/code-review.md](mdc:.claude/commands/code-review.md).
+# Core Commands
 
-**/debug**: Reproduce → gather context → analyze logs → test fix. See [.claude/commands/debug.md](mdc:.claude/commands/debug.md).
+## Quality Gates (MANDATORY)
 
-**/test**: `bun run test`, `bun run test:integration`, `bun run ci`. See [.claude/commands/test.md](mdc:.claude/commands/test.md).
+```bash
+bun run lint                   # Catches common errors
+bun run test                   # Unit and component tests
+bun run ci                     # MANDATORY before PR
+bun run typecheck              # If present in package.json
+```
 
-**/pr**: Ensure CI green; semantic commits; create PR and link Linear. See [.claude/commands/pr.md](mdc:.claude/commands/pr.md).
+## Standard Commands
 
-**/setup**: Configure MCP servers (Linear, Context7, DeepWiki, Sentry, Playwright, Gemini, OpenZeppelin). See [.claude/commands/setup.md](mdc:.claude/commands/setup.md).
+### /code-review
+
+- Use `code-reviewer` agent
+- For contracts: also use `solidity-auditor`
+- Focus: quality, architecture, security
+
+### /debug
+
+1. Reproduce issue
+2. Gather context
+3. Analyze logs
+4. Test fix
+5. Verify no regressions
+
+### /test
+
+```bash
+bun run test                   # Unit tests
+bun run test:integration       # Integration tests
+bun run ci                     # Full test suite
+```
+
+### /pr
+
+1. Ensure CI green (`bun run ci`)
+2. Semantic commits: `type(scope): description`
+3. Create PR from feature branch
+4. Link Linear issue if applicable
+
+### /setup
+
+Configure MCP servers:
+
+- Linear (issues)
+- Context7 (docs)
+- DeepWiki (repos)
+- Sentry (errors)
+- Playwright (browser)
+- Gemini (AI)
+- OpenZeppelin (contracts)
+
+## Critical Rules
+
+- ALWAYS run from repo root
+- Use `bun run test` NOT `bun test`
+- CI must pass before PR
