@@ -73,6 +73,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      "@/locales": resolve(__dirname, "./locales"),
       "@": resolve(__dirname, "./src"),
       "@test": resolve(__dirname, "./test"),
       "@settlemint/sdk-utils/logging": resolve(__dirname, "./test/mocks.ts"),

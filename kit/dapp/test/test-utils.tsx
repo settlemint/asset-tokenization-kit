@@ -51,6 +51,11 @@ vi.mock("react-i18next", () => ({
   I18nextProvider: ({ children }: { children: ReactNode }) => children,
   // Add withTranslation in case it's used somewhere
   withTranslation: () => (Component: ComponentType) => Component,
+  // Mock initReactI18next
+  initReactI18next: {
+    type: "3rdParty",
+    init: vi.fn(),
+  },
 }));
 
 // Mock data types for testing

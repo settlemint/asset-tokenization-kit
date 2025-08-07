@@ -4,7 +4,17 @@
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../../test/test-utils";
+import { createMockSuspenseQueryResult, createMockSuspenseQueryError } from "../../../../test/mock-utils";
 import { AssetSupplyPieChart } from "./asset-supply-pie-chart";
+
+// Mock useSuspenseQuery while keeping other exports
+vi.mock("@tanstack/react-query", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@tanstack/react-query")>();
+  return {
+    ...actual,
+    useSuspenseQuery: vi.fn(),
+  };
+});
 
 // Mock the orpc client
 vi.mock("@/orpc/orpc-client", () => ({
@@ -23,23 +33,23 @@ describe("AssetSupplyPieChart", () => {
   });
 
   it("should render chart with asset data", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(orpc.system.statsAssets.queryOptions).mockImplementation(
-      (options) => ({
-        queryKey: ["system", "statsAssets"],
-        queryFn: () => {
-          const mockResponse = {
-            assetBreakdown: {
-              bond: 150,
-              equity: 75,
-              fund: 50,
-              stablecoin: 25,
-              deposit: 100,
-            },
-          };
-          return options?.select ? options.select(mockResponse) : mockResponse;
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockReturnValue(
+      createMockSuspenseQueryResult({
+        chartData: [
+          { assetType: "bond", totalSupply: 150 },
+          { assetType: "equity", totalSupply: 75 },
+          { assetType: "fund", totalSupply: 50 },
+          { assetType: "stablecoin", totalSupply: 25 },
+          { assetType: "deposit", totalSupply: 100 },
+        ],
+        activeChartConfig: {
+          bond: { label: "Bonds", color: "var(--chart-1)" },
+          equity: { label: "Equity", color: "var(--chart-3)" },
+          fund: { label: "Funds", color: "var(--chart-4)" },
+          stablecoin: { label: "Stablecoins", color: "var(--chart-5)" },
+          deposit: { label: "Deposits", color: "var(--chart-6)" },
         },
-        enabled: true,
       })
     );
 
@@ -55,23 +65,11 @@ describe("AssetSupplyPieChart", () => {
   });
 
   it("should show empty state when no assets exist", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(orpc.system.statsAssets.queryOptions).mockImplementation(
-      (options) => ({
-        queryKey: ["system", "statsAssets"],
-        queryFn: () => {
-          const mockResponse = {
-            assetBreakdown: {
-              bond: 0,
-              equity: 0,
-              fund: 0,
-              stablecoin: 0,
-              deposit: 0,
-            },
-          };
-          return options?.select ? options.select(mockResponse) : mockResponse;
-        },
-        enabled: true,
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockReturnValue(
+      createMockSuspenseQueryResult({
+        chartData: [],
+        activeChartConfig: {},
       })
     );
 
@@ -88,26 +86,18 @@ describe("AssetSupplyPieChart", () => {
   });
 
   it("should handle ORPC error gracefully", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(orpc.system.statsAssets.queryOptions).mockImplementation(() => ({
-      queryKey: ["system", "statsAssets"],
-      queryFn: () => {
-        throw new Error("ORPC Error: Failed to fetch stats");
-      },
-      enabled: true,
-    }));
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockImplementation(
+      createMockSuspenseQueryError(new Error("ORPC Error: Failed to fetch stats"))
+    );
 
     // Mock console.error to avoid noise in test output
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-    renderWithProviders(<AssetSupplyPieChart />);
-
-    // Wait a bit for the error to be processed
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    // The component should be rendered within the app structure
-    // The error boundary will handle the error appropriately
-    expect(document.body).toBeInTheDocument();
+    // Expect the component to throw an error, which will be caught by error boundary
+    expect(() => {
+      renderWithProviders(<AssetSupplyPieChart />);
+    }).toThrow("ORPC Error: Failed to fetch stats");
 
     consoleSpy.mockRestore();
   });
