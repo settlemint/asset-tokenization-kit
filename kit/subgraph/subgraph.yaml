@@ -364,7 +364,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - CapSet
+        - Address
+        - Event
       abis:
         - name: Capped
           file: ../contracts/.generated/artifacts/contracts/smart/extensions/capped/ISMARTCapped.sol/ISMARTCapped.json
@@ -382,8 +383,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - CheckpointUpdated
-        - YieldScheduleSet
+        - Address
+        - Event
       abis:
         - name: Yield
           file: ../contracts/.generated/artifacts/contracts/smart/extensions/yield/ISMARTYield.sol/ISMARTYield.json
@@ -404,10 +405,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - FixedYieldScheduleSet
-        - UnderlyingAssetTopUp
-        - UnderlyingAssetWithdrawn
-        - YieldClaimed
+        - Address
+        - Event
       abis:
         - name: FixedYieldSchedule
           file: ../contracts/.generated/artifacts/contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json
@@ -432,7 +431,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - Redeemed
+        - Address
+        - Event
       abis:
         - name: Redeemable
           file: ../contracts/.generated/artifacts/contracts/smart/extensions/redeemable/ISMARTRedeemable.sol/ISMARTRedeemable.json
@@ -450,8 +450,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - BondMatured
-        - BondRedeemed
+        - Address
+        - Event
       abis:
         - name: Bond
           file: ../contracts/.generated/artifacts/contracts/assets/bond/IATKBond.sol/IATKBond.json
@@ -471,7 +471,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - BondCreated
+        - Address
+        - Event
       abis:
         - name: BondFactory
           file: ../contracts/.generated/artifacts/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json
@@ -492,7 +493,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - DepositCreated
+        - Address
+        - Event
       abis:
         - name: DepositFactory
           file: ../contracts/.generated/artifacts/contracts/assets/deposit/IATKDepositFactory.sol/IATKDepositFactory.json
@@ -511,7 +513,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - EquityCreated
+        - Address
+        - Event
       abis:
         - name: EquityFactory
           file: ../contracts/.generated/artifacts/contracts/assets/equity/IATKEquityFactory.sol/IATKEquityFactory.json
@@ -530,7 +533,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - ManagementFeeCollected
+        - Address
+        - Event
       abis:
         - name: Fund
           file: ../contracts/.generated/artifacts/contracts/assets/fund/IATKFund.sol/IATKFund.json
@@ -548,7 +552,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - FundCreated
+        - Address
+        - Event
       abis:
         - name: FundFactory
           file: ../contracts/.generated/artifacts/contracts/assets/fund/IATKFundFactory.sol/IATKFundFactory.json
@@ -567,7 +572,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - StableCoinCreated
+        - Address
+        - Event
       abis:
         - name: StableCoinFactory
           file: ../contracts/.generated/artifacts/contracts/assets/stable-coin/IATKStableCoinFactory.sol/IATKStableCoinFactory.json
@@ -586,7 +592,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - ATKFixedYieldScheduleCreated
+        - Address
+        - Event
       abis:
         - name: FixedYieldScheduleFactory
           file: ../contracts/.generated/artifacts/contracts/addons/yield/IATKFixedYieldScheduleFactory.sol/IATKFixedYieldScheduleFactory.json
@@ -604,7 +611,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - VaultCreated
+        - Address
+        - Event
       abis:
         - name: VaultFactory
           file: ../contracts/.generated/artifacts/contracts/addons/vault/IATKVaultFactory.sol/IATKVaultFactory.json
@@ -624,12 +632,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - VaultDeposit
-        - VaultTransactionSubmitted
-        - VaultTransactionConfirmed
-        - VaultTransactionRevoked
-        - VaultTransactionExecuted
-        - VaultRequirementChanged
+        - Address
+        - Event
       abis:
         - name: Vault
           file: ../contracts/.generated/artifacts/contracts/addons/vault/ATKVault.sol/ATKVault.json
@@ -680,7 +684,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - ATKXvPSettlementCreated
+        - Address
+        - Event
       abis:
         - name: XvPSettlementFactory
           file: ../contracts/.generated/artifacts/contracts/addons/xvp/IATKXvPSettlementFactory.sol/IATKXvPSettlementFactory.json
@@ -700,10 +705,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - XvPSettlementApproved
-        - XvPSettlementApprovalRevoked
-        - XvPSettlementExecuted
-        - XvPSettlementCancelled
+        - Address
+        - Event
       abis:
         - name: XvPSettlement
           file: ../contracts/.generated/artifacts/contracts/addons/xvp/IATKXvPSettlement.sol/IATKXvPSettlement.json
@@ -727,10 +730,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - AirdropTokensTransferred
-        - AirdropBatchTokensTransferred
-        - OwnershipTransferred
-        - TokensWithdrawn
+        - Address
+        - Event
       abis:
         - name: Airdrop
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
@@ -754,7 +755,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - ATKPushAirdropCreated
+        - Address
+        - Event
       abis:
         - name: Airdrop
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
@@ -776,9 +778,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - TokensDistributed
-        - BatchTokensDistributed
-        - DistributionCapUpdated
+        - Address
+        - Event
       abis:
         - name: Airdrop
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
@@ -798,7 +799,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - ATKVestingAirdropCreated
+        - Address
+        - Event
       abis:
         - name: VestingAirdropFactory
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/IATKVestingAirdropFactory.sol/IATKVestingAirdropFactory.json
@@ -825,9 +827,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - VestingInitialized
-        - BatchVestingInitialized
-        - VestingStrategyUpdated
+        - Address
+        - Event
       abis:
         - name: VestingAirdrop
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/ATKVestingAirdropImplementation.sol/ATKVestingAirdropImplementation.json
@@ -855,7 +856,8 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - ATKTimeBoundAirdropCreated
+        - Address
+        - Event
       abis:
         - name: TimeBoundAirdropFactory
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/time-bound-airdrop/IATKTimeBoundAirdropFactory.sol/IATKTimeBoundAirdropFactory.json
@@ -973,32 +975,15 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - AccessManagerSet
+        - Address
+        - Event
       abis:
         - name: SystemAccessManaged
           file: ../contracts/.generated/out/IATKSystemAccessManaged.sol/IATKSystemAccessManaged.json
       eventHandlers:
         - event: AccessManagerSet(indexed address,indexed address)
           handler: handleAccessManagerSet
-      file: ./src/system-access-managed.ts
-  - kind: ethereum
-    name: ClaimTracker
-    network: settlemint
-    source:
-      abi: ClaimTracker
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - ClaimRecorded
-      abis:
-        - name: ClaimTracker
-          file: ../contracts/.generated/out/IATKClaimTracker.sol/IATKClaimTracker.json
-      eventHandlers:
-        - event: ClaimRecorded(indexed uint256,indexed uint256,indexed uint256)
-          handler: handleClaimRecorded
-      file: ./src/claim-tracker.ts
+      file: ./src/access-manager/access-manager.ts
   - kind: ethereum
     name: TrustedIssuersRegistry
     network: settlemint
@@ -1009,26 +994,19 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - TrustedIssuersRegistryAccessManagerSet
-        - ClaimTopicsUpdated
-        - Initialized
-        - TrustedIssuerAdded
-        - TrustedIssuerRemoved
+        - Address
+        - Event
       abis:
         - name: TrustedIssuersRegistry
           file: ../contracts/.generated/out/ATKTrustedIssuersRegistryImplementation.sol/ATKTrustedIssuersRegistryImplementation.json
       eventHandlers:
-        - event: AccessManagerSet(indexed address,indexed address)
-          handler: handleAccessManagerSet
         - event: ClaimTopicsUpdated(indexed address,indexed address,uint256[])
           handler: handleClaimTopicsUpdated
-        - event: Initialized(uint64)
-          handler: handleInitialized
         - event: TrustedIssuerAdded(indexed address,indexed address,uint256[])
           handler: handleTrustedIssuerAdded
         - event: TrustedIssuerRemoved(indexed address,indexed address)
           handler: handleTrustedIssuerRemoved
-      file: ./src/trusted-issuers-registry.ts
+      file: ./src/trusted-issuers-registry/trusted-issuers-registry.ts
   - kind: ethereum
     name: IdentityRegistryStorage
     network: settlemint
@@ -1039,21 +1017,12 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - IdentityRegistryStorageAccessManagerSet
-        - CountryModified
-        - IdentityModified
-        - IdentityRegistryBound
-        - IdentityRegistryUnbound
-        - IdentityStored
-        - IdentityUnstored
-        - IdentityWalletMarkedAsLost
-        - WalletRecoveryLinked
+        - Address
+        - Event
       abis:
         - name: IdentityRegistryStorage
           file: ../contracts/.generated/out/IATKIdentityRegistryStorage.sol/IATKIdentityRegistryStorage.json
       eventHandlers:
-        - event: AccessManagerSet(indexed address,indexed address)
-          handler: handleAccessManagerSet
         - event: CountryModified(indexed address,indexed uint16)
           handler: handleCountryModified
         - event: IdentityModified(indexed address,indexed address)
@@ -1071,28 +1040,4 @@ templates:
           handler: handleIdentityWalletMarkedAsLost
         - event: WalletRecoveryLinked(indexed address,indexed address,indexed address)
           handler: handleWalletRecoveryLinked
-      file: ./src/identity-registry-storage.ts
-  - kind: ethereum
-    name: ERC20Votes
-    network: settlemint
-    source:
-      abi: ERC20Votes
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - Approval
-        - DelegateChanged
-        - DelegateVotesChanged
-        - EIP712DomainChanged
-        - Transfer
-      abis:
-        - name: ERC20Votes
-          file: ../contracts/.generated/artifacts/@openzeppelin/contracts/governance/utils/IVotes.sol/IVotes.json
-      eventHandlers:
-        - event: DelegateChanged(indexed address,indexed address,indexed address)
-          handler: handleDelegateChanged
-        - event: DelegateVotesChanged(indexed address,uint256,uint256)
-          handler: handleDelegateVotesChanged
-      file: ./src/erc-20-votes.ts
+      file: ./src/identity-registry-storage/identity-registry-storage.ts
