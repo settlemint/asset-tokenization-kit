@@ -9,9 +9,6 @@
     "Linear": {
       "url": "https://mcp.linear.app/sse"
     },
-    "Sentry": {
-      "url": "https://mcp.sentry.dev/mcp"
-    },
     "OpenZeppelinSolidityContracts": {
       "type": "streamable-http",
       "url": "https://mcp.openzeppelin.com/contracts/solidity/mcp"
