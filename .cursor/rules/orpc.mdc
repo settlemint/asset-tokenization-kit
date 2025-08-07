@@ -2,19 +2,20 @@
 globs: kit/dapp/src/orpc/**/*
 description: oRPC router, context, validation and error patterns
 ---
+
 **Stack**: oRPC · Zod · Drizzle · Better Auth · SettleMint Portal.
 
-**Router hierarchy**
-`publicProcedure` (no auth) → `baseProcedure` (auth) → `onboardedProcedure` (KYC) → `contractProcedure` (blockchain ops).
+**Router hierarchy** `publicProcedure` (no auth) → `baseProcedure` (auth) →
+`onboardedProcedure` (KYC) → `contractProcedure` (blockchain ops).
 
-**Context**
-Access `ctx.user`, `ctx.db`, `ctx.portal`, `ctx.blockchain` in handlers.
+**Context** Access `ctx.user`, `ctx.db`, `ctx.portal`, `ctx.blockchain` in
+handlers.
 
 **Key patterns**
+
 - Contract-first (see `routes/contract.ts`)
 - Zod on all inputs/outputs
 - Throw `ORPCError` with user-friendly messages
 - Return transaction receipts for blockchain operations
 
-**Structure**
-`procedures/`, `middlewares/`, `helpers/`, `services/`.
+**Structure** `procedures/`, `middlewares/`, `helpers/`, `services/`.
