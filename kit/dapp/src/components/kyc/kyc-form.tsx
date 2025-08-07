@@ -23,7 +23,7 @@ export function KycForm({ onComplete }: KycFormProps) {
   const queryClient = useQueryClient();
   const shouldRegisterIdentity = session?.user.role === "admin";
 
-  const { mutateAsync: registerIdentity, isPending: _isRegisteringIdentity } =
+  const { mutateAsync: registerIdentity, isPending: isRegisteringIdentity } =
     useMutation(
       orpc.system.identityRegister.mutationOptions({
         onSuccess: async () => {
@@ -42,7 +42,7 @@ export function KycForm({ onComplete }: KycFormProps) {
       })
     );
 
-  const { mutateAsync: updateKyc, isPending: _isUpdatingKyc } = useMutation(
+  const { mutateAsync: updateKyc, isPending: isUpdatingKyc } = useMutation(
     orpc.user.kyc.upsert.mutationOptions({
       onSuccess: async () => {
         // Invalidate user data to update sidebar and dropdown
@@ -183,7 +183,12 @@ export function KycForm({ onComplete }: KycFormProps) {
             },
           }}
           disabled={({ isDirty, errors }) => {
-            return !isDirty || Object.keys(errors).length > 0;
+            return (
+              isRegisteringIdentity ||
+              isUpdatingKyc ||
+              !isDirty ||
+              Object.keys(errors).length > 0
+            );
           }}
           onSubmit={() => {
             void form.handleSubmit();
