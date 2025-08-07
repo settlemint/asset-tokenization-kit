@@ -16,6 +16,7 @@ const uiConfig: PlaywrightTestConfig = {
       name: "setup",
       testMatch: "**/complete-onboarding-flow.spec.ts",
       fullyParallel: false,
+      teardown: "cleanup",
     },
     {
       name: "ui-tests",
