@@ -1,0 +1,49 @@
+---
+alwaysApply: true
+description: Mandatory agent workflow - NEVER skip these steps
+---
+
+# Agent Workflow (MANDATORY)
+
+## Workflow Sequence
+
+```
+researcher → TodoWrite → implement → code-reviewer → solidity-auditor (if contracts)
+```
+
+## Agent Responsibilities
+
+### researcher
+
+- **Purpose**: ALWAYS first before coding
+- **Tasks**: Comprehensive research and planning
+- **When**: Before ANY implementation
+- **Output**: Implementation plan and patterns
+
+### TodoWrite
+
+- **Purpose**: Task management and tracking
+- **Tasks**: Break down complex tasks
+- **When**: For multi-step implementations
+- **Output**: Structured task list
+
+### code-reviewer
+
+- **Purpose**: Review ALL code changes
+- **Tasks**: Quality, architecture, security
+- **When**: After ANY code changes
+- **Output**: Issues and improvements
+
+### solidity-auditor
+
+- **Purpose**: Smart contract security
+- **Tasks**: Security, gas optimization, ERC compliance
+- **When**: Smart contracts ONLY
+- **Output**: Vulnerabilities and optimizations
+
+## Critical Rules
+
+- NEVER skip any agent in the sequence
+- ALWAYS use researcher before coding
+- ALWAYS use code-reviewer after changes
+- MANDATORY solidity-auditor for contracts

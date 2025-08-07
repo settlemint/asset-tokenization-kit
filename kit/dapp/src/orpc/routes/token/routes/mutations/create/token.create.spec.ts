@@ -50,7 +50,7 @@ describe("Token create", () => {
       },
       totalSupply: from("0"),
     });
-  }, 10_0000);
+  }, 100_000);
 
   test("regular users cant create tokens", async () => {
     const headers = await signInWithUser(DEFAULT_INVESTOR);

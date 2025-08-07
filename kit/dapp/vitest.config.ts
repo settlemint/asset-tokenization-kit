@@ -12,7 +12,7 @@ export default defineConfig({
     reporters: process.env.CLAUDECODE
       ? ["dot"]
       : process.env.CI
-        ? ["default", "github-actions"]
+        ? ["dot", "github-actions"]
         : ["default"],
     onConsoleLog: process.env.CLAUDECODE ? () => false : undefined,
     silent: process.env.CLAUDECODE ? "passed-only" : undefined,
@@ -77,6 +77,7 @@ export default defineConfig({
         },
         resolve: {
           alias: {
+            "@/locales": path.resolve(__dirname, "./locales"),
             "@": path.resolve(__dirname, "./src"),
             "@test": path.resolve(__dirname, "./test"),
             "@settlemint/sdk-utils/logging": path.resolve(
@@ -120,6 +121,7 @@ export default defineConfig({
         },
         resolve: {
           alias: {
+            "@/locales": path.resolve(__dirname, "./locales"),
             "@test": path.resolve(__dirname, "./test"),
             "@": path.resolve(__dirname, "./src"),
           },

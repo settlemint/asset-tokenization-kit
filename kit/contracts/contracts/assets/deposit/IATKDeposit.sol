@@ -15,13 +15,7 @@ import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.s
 /// @notice Defines the core functionality and extensions for an ATK Deposit token
 /// @dev This interface combines SMART token functionality with access management,
 ///      collateral tracking, custodian controls, pausability, and burning capabilities
-interface IATKDeposit is
-    ISMART,
-    ISMARTTokenAccessManaged,
-    ISMARTCustodian,
-    ISMARTPausable,
-    ISMARTBurnable
-{
+interface IATKDeposit is ISMART, ISMARTTokenAccessManaged, ISMARTCustodian, ISMARTPausable, ISMARTBurnable {
     /// @notice Initializes the ATK Deposit token contract.
     /// @param name_ The name of the deposit token.
     /// @param symbol_ The symbol of the deposit token.

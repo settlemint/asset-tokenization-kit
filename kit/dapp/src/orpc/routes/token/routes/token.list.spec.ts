@@ -1,7 +1,11 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
-import { DEFAULT_ADMIN, DEFAULT_PINCODE, signInWithUser } from "@test/fixtures/user";
+import {
+  DEFAULT_ADMIN,
+  DEFAULT_PINCODE,
+  signInWithUser,
+} from "@test/fixtures/user";
 
 describe("Token list", () => {
   let depositToken: Awaited<ReturnType<typeof createToken>>;
