@@ -58,6 +58,10 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
     [isPaused, t]
   );
 
+  const onActionOpenChange = (open: boolean) => {
+    setOpenAction(open ? openAction : null);
+  };
+
   return (
     <>
       <DropdownMenu>
@@ -97,18 +101,13 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
           target: isPaused ? "unpause" : "pause",
           current: openAction,
         })}
-        onOpenChange={(open) => {
-          const action = isPaused ? "unpause" : "pause";
-          setOpenAction(open ? action : null);
-        }}
+        onOpenChange={onActionOpenChange}
         asset={asset}
       />
 
       <GrantRoleSheet
         open={isCurrentAction({ target: "grantRole", current: openAction })}
-        onOpenChange={(open) => {
-          setOpenAction(open ? "grantRole" : null);
-        }}
+        onOpenChange={onActionOpenChange}
         asset={asset}
       />
     </>
