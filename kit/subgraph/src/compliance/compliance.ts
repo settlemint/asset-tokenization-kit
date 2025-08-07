@@ -1,10 +1,13 @@
 import { store } from "@graphprotocol/graph-ts";
 import {
+  AddressAddedToBypassList as AddressAddedToBypassListEvent,
+  AddressRemovedFromBypassList as AddressRemovedFromBypassListEvent,
   GlobalComplianceModuleAdded as GlobalComplianceModuleAddedEvent,
   GlobalComplianceModuleParametersUpdated as GlobalComplianceModuleParametersUpdatedEvent,
   GlobalComplianceModuleRemoved as GlobalComplianceModuleRemovedEvent,
 } from "../../generated/templates/Compliance/Compliance";
 import { fetchEvent } from "../event/fetch/event";
+import { fetchCompliance } from "./fetch/compliance";
 import { fetchComplianceModule } from "./fetch/compliance-module";
 import {
   fetchComplianceModuleParameters,
@@ -67,4 +70,30 @@ export function handleGlobalComplianceModuleParametersUpdated(
     complianceModule,
     event.params.params
   );
+}
+
+export function handleAddressAddedToBypassList(
+  event: AddressAddedToBypassListEvent
+): void {
+  fetchEvent(event, "AddressAddedToBypassList");
+
+  const compliance = fetchCompliance(event.address);
+  if (!compliance.bypassList.includes(event.params.account)) {
+    compliance.bypassList.push(event.params.account);
+  }
+  compliance.save();
+}
+
+export function handleAddressRemovedFromBypassList(
+  event: AddressRemovedFromBypassListEvent
+): void {
+  fetchEvent(event, "AddressRemovedFromBypassList");
+
+  const compliance = fetchCompliance(event.address);
+  if (compliance.bypassList.includes(event.params.account)) {
+    compliance.bypassList = compliance.bypassList.filter(
+      (account) => !account.equals(event.params.account)
+    );
+  }
+  compliance.save();
 }

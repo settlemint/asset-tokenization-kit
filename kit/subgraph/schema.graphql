@@ -200,6 +200,8 @@ type VaultSigner @entity(immutable: false) {
 type Compliance @entity(immutable: false) {
   id: Bytes!
   account: Account!
+  # Bypass List, account addresses that are exempt from compliance checks
+  bypassList: [Account!]!
   complianceModuleConfigs: [GlobalComplianceModuleConfig!]! @derivedFrom(field: "compliance")
 }
 
