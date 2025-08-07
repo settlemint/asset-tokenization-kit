@@ -3,47 +3,30 @@ import { AssetTypeCard } from "@/components/onboarding/assets/asset-type-card";
 import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
-import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
-import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import { useAppForm } from "@/hooks/use-app-form";
 import {
   type AssetFactoryTypeId,
   getAssetTypeFromFactoryTypeId,
 } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
-import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import {
-  type TokenType,
+  FactoryCreateInput,
+  FactoryCreateSchema,
+  type SingleFactory,
   TokenTypeEnum,
 } from "@/orpc/routes/system/token-factory/routes/factory.create.schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { TriangleAlert } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
-interface AssetSelectionFormValues {
-  assets: TokenType[];
-}
 
 export function AssetTypeSelection() {
   const { refreshUserState, completeStepAndNavigate } =
     useOnboardingNavigation();
   const { t } = useTranslation(["onboarding", "common", "tokens"]);
   const queryClient = useQueryClient();
-  // Verification dialog state
-  const [showVerificationModal, setShowVerificationModal] = useState(false);
-  const [verificationError, setVerificationError] = useState<string | null>(
-    null
-  );
-  const [pendingFactories, setPendingFactories] = useState<
-    | {
-        type: TokenType;
-        name: string;
-      }[]
-    | null
-  >(null);
 
   const { data: systemDetails } = useQuery(
     orpc.system.read.queryOptions({
@@ -53,23 +36,19 @@ export function AssetTypeSelection() {
 
   const form = useAppForm({
     defaultValues: {
-      assets: [] as TokenType[],
-    },
-    onSubmit: ({ value }: { value: AssetSelectionFormValues }) => {
+      factories: [] as FactoryCreateInput["factories"],
+    } as FactoryCreateInput,
+    onSubmit: ({ value }) => {
       if (!systemDetails?.tokenFactoryRegistry) {
         toast.error(t("assets.no-system"));
         return;
       }
-
-      const factories = value.assets.map((assetType) => ({
-        type: assetType,
-        name: t(`asset-types.${assetType}`, { ns: "tokens" }),
-      }));
-
-      // Store the factories and show the verification dialog
-      setPendingFactories(factories);
-      setVerificationError(null);
-      setShowVerificationModal(true);
+      const parsedValues = FactoryCreateSchema.parse(value);
+      toast.promise(createFactories(parsedValues), {
+        loading: t("assets.deploying-toast"),
+        success: t("assets.deployed"),
+        error: (error: Error) => `${t("assets.failed-toast")}${error.message}`,
+      });
     },
   });
 
@@ -94,32 +73,6 @@ export function AssetTypeSelection() {
       })
     );
 
-  // Handle verification code submission
-  const handleVerificationSubmit = useCallback(
-    (verification: UserVerification) => {
-      if (!pendingFactories) {
-        return;
-      }
-
-      setVerificationError(null);
-      setShowVerificationModal(false);
-
-      toast.promise(
-        createFactories({
-          verification,
-          factories: pendingFactories,
-        }),
-        {
-          loading: t("assets.deploying-toast"),
-          success: t("assets.deployed"),
-          error: (error: Error) =>
-            `${t("assets.failed-toast")}${error.message}`,
-        }
-      );
-    },
-    [pendingFactories, createFactories, t]
-  );
-
   const availableAssets = TokenTypeEnum.options;
 
   // Create a set of already deployed asset types for easy lookup
@@ -133,31 +86,43 @@ export function AssetTypeSelection() {
     [systemDetails?.tokenFactories]
   );
 
+  const handleAddFactory = (factory: SingleFactory) => {
+    form.setFieldValue("factories", [...form.state.values.factories, factory]);
+  };
+
+  const handleRemoveFactory = (factory: SingleFactory) => {
+    form.setFieldValue(
+      "factories",
+      form.state.values.factories.filter((f) => f.type !== factory.type)
+    );
+  };
+
   return (
     <OnboardingStepLayout
       title={t("assets.select-asset-types")}
       description={t("assets.choose-asset-types")}
       actions={
         <div className="flex justify-end w-full">
-          <form.Subscribe>
-            {() => (
-              <Button
-                type="button"
-                onClick={() => {
-                  void form.handleSubmit();
-                }}
-                disabled={
-                  isFactoriesCreating ||
-                  !form.state.values.assets ||
-                  form.state.values.assets.length === 0
-                }
-              >
-                {isFactoriesCreating
-                  ? t("assets.deploying")
-                  : t("assets.deploy")}
-              </Button>
-            )}
-          </form.Subscribe>
+          <form.SecureSubmitButton
+            label={
+              isFactoriesCreating ? t("assets.deploying") : t("assets.deploy")
+            }
+            onSubmit={() => {
+              void form.handleSubmit();
+            }}
+            disabled={
+              isFactoriesCreating ||
+              !form.state.values.factories ||
+              form.state.values.factories.length === 0
+            }
+            verification={{
+              label: t("assets.confirm-deployment-title"),
+              description: t("assets.confirm-deployment-description"),
+              setField: (verification) => {
+                form.setFieldValue("verification", verification);
+              },
+            }}
+          />
         </div>
       }
     >
@@ -188,7 +153,7 @@ export function AssetTypeSelection() {
         >
           <div className="flex-1">
             <div className="space-y-6">
-              <form.Field name="assets">
+              <form.Field name="factories">
                 {(field) => (
                   <>
                     <div className="space-y-4">
@@ -207,7 +172,9 @@ export function AssetTypeSelection() {
                             deployedAssetTypes.has(assetType) ||
                             isFactoriesCreating;
                           const isChecked =
-                            field.state.value.includes(assetType) || isDisabled;
+                            field.state.value.some(
+                              (factory) => factory.type === assetType
+                            ) || isDisabled;
 
                           const handleToggle = (checked: boolean) => {
                             if (isDisabled) {
@@ -215,16 +182,19 @@ export function AssetTypeSelection() {
                             }
 
                             if (checked) {
-                              const newValue = [
-                                ...field.state.value,
-                                assetType,
-                              ];
-                              field.handleChange(newValue);
+                              handleAddFactory({
+                                type: assetType,
+                                name: t(`asset-types.${assetType}`, {
+                                  ns: "tokens",
+                                }),
+                              });
                             } else {
-                              const newValue = field.state.value.filter(
-                                (value: string) => value !== assetType
-                              );
-                              field.handleChange(newValue);
+                              handleRemoveFactory({
+                                type: assetType,
+                                name: t(`asset-types.${assetType}`, {
+                                  ns: "tokens",
+                                }),
+                              });
                             }
                           };
 
@@ -253,15 +223,6 @@ export function AssetTypeSelection() {
           </div>
         </form>
       </div>
-
-      <VerificationDialog
-        open={showVerificationModal}
-        onOpenChange={setShowVerificationModal}
-        onSubmit={handleVerificationSubmit}
-        title={t("assets.confirm-deployment-title")}
-        description={t("assets.confirm-deployment-description")}
-        errorMessage={verificationError}
-      />
     </OnboardingStepLayout>
   );
 }

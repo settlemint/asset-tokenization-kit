@@ -7,10 +7,12 @@ import { VerificationDialog } from "../verification-dialog/verification-dialog";
 export function SecureSubmitButton({
   label,
   onSubmit,
+  disabled = false,
   verification,
 }: {
   label: string;
   onSubmit: () => void;
+  disabled?: boolean;
   verification: {
     label: string;
     description: string;
@@ -34,7 +36,7 @@ export function SecureSubmitButton({
               onClick={() => {
                 setShowVerificationDialog(true);
               }}
-              disabled={isSubmitting || !isValid}
+              disabled={disabled || isSubmitting || !isValid}
               type="button"
             >
               {isSubmitting ? "Submitting..." : label}
