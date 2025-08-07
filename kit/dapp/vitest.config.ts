@@ -21,6 +21,7 @@ export default defineConfig({
       enabled: true,
     },
     coverage: {
+      all: true,
       provider: "v8",
       reporter: ["text", "json", "json-summary"],
       reportOnFailure: true,
