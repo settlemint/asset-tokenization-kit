@@ -111,6 +111,12 @@ export function SystemAddonsSelection() {
   );
 
   const handleAddAddon = (addon: SystemAddonConfig) => {
+    const alreadyIncluded = form.state.values.addons.some(
+      (a) => a.type === addon.type
+    );
+    if (alreadyIncluded) {
+      return;
+    }
     form.setFieldValue("addons", [...form.state.values.addons, addon]);
   };
   const handleRemoveAddon = (addon: SystemAddonConfig) => {

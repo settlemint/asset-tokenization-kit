@@ -14,7 +14,6 @@ export type KycFormValues = KycProfileUpsert & {
 };
 
 interface KycFormProps {
-  disabled?: boolean;
   onComplete: () => void | Promise<void>;
 }
 
@@ -94,7 +93,7 @@ export function KycForm({ onComplete }: KycFormProps) {
         });
       };
 
-      toast.promise(promise, {
+      toast.promise(promise(), {
         loading: t("kycForm.identity.deploying-toast"),
         success: t("kycForm.identity.deployed-toast"),
         error: (error: Error) =>

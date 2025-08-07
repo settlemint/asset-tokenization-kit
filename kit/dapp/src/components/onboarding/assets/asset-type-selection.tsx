@@ -89,6 +89,12 @@ export function AssetTypeSelection() {
   );
 
   const handleAddFactory = (factory: SingleFactory) => {
+    const alreadyIncluded = form.state.values.factories.some(
+      (f) => f.type === factory.type
+    );
+    if (alreadyIncluded) {
+      return;
+    }
     form.setFieldValue("factories", [...form.state.values.factories, factory]);
   };
 
@@ -155,8 +161,8 @@ export function AssetTypeSelection() {
                 </div>
                 <form.Field name="factories">
                   {(field) => (
-                    <>
-                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 space-y-4">
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         {availableAssets.map((assetType) => {
                           const Icon = getAssetIcon(assetType);
                           const isDisabled =
@@ -206,7 +212,7 @@ export function AssetTypeSelection() {
                           {field.state.meta.errors[0]}
                         </p>
                       )}
-                    </>
+                    </div>
                   )}
                 </form.Field>
               </div>
