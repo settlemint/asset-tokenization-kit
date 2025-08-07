@@ -18,7 +18,6 @@ contract ATKDepositProxy is ATKAssetProxy {
     /// @param name_ The name of the deposit.
     /// @param symbol_ The symbol of the deposit.
     /// @param decimals_ The number of decimals of the deposit.
-    /// @param collateralTopicId_ The topic ID of the collateral claim.
     /// @param initialModulePairs_ The initial module pairs of the deposit.
     /// @param identityRegistry_ The identity registry of the deposit.
     /// @param compliance_ The compliance of the deposit.
@@ -28,7 +27,6 @@ contract ATKDepositProxy is ATKAssetProxy {
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        uint256 collateralTopicId_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,
@@ -44,7 +42,6 @@ contract ATKDepositProxy is ATKAssetProxy {
             name_,
             symbol_,
             decimals_,
-            collateralTopicId_,
             initialModulePairs_,
             identityRegistry_,
             compliance_,

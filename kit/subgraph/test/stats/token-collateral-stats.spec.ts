@@ -95,36 +95,9 @@ describe("TokenCollateralStats", () => {
     expect(response.tokenCollateralStatsDatas).toBeDefined();
     expect(Array.isArray(response.tokenCollateralStatsDatas)).toBe(true);
 
-    // Find stats for tokens with collateral
-    const eurDepositStats = response.tokenCollateralStatsDatas.find(
-      (stat) => stat.token.symbol === "EURD"
-    );
     const tetherStats = response.tokenCollateralStatsDatas.find(
       (stat) => stat.token.symbol === "USDT"
     );
-
-    // Verify Euro Deposits collateral stats
-    expect(eurDepositStats).toBeDefined();
-    if (eurDepositStats) {
-      expect(eurDepositStats.collateral).toBe("100000");
-      expect(eurDepositStats.collateralExact).toBe("100000000000");
-      expect(eurDepositStats.collateralUsed).toBe(
-        eurDepositStats.token.totalSupply
-      );
-      expect(eurDepositStats.expiryTimestamp).toBeDefined();
-
-      // Verify collateral utilization calculation
-      const totalSupply = BigInt(eurDepositStats.token.totalSupplyExact);
-      const collateral = BigInt(eurDepositStats.collateralExact);
-      const expectedAvailable = collateral - totalSupply;
-
-      expect(eurDepositStats.collateralUsedExact).toBe(
-        eurDepositStats.token.totalSupplyExact
-      );
-      expect(BigInt(eurDepositStats.collateralAvailableExact)).toBe(
-        expectedAvailable
-      );
-    }
 
     // Verify Tether collateral stats
     expect(tetherStats).toBeDefined();
