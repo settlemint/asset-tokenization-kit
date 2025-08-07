@@ -4,7 +4,17 @@
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../../test/test-utils";
+import { createMockSuspenseQueryResult, createMockSuspenseQueryError } from "../../../../test/mock-utils";
 import { AssetCollateralRatioChart } from "./asset-collateral-ratio-chart";
+
+// Mock useSuspenseQuery while keeping other exports
+vi.mock("@tanstack/react-query", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@tanstack/react-query")>();
+  return {
+    ...actual,
+    useSuspenseQuery: vi.fn(),
+  };
+});
 
 // Mock the orpc client
 vi.mock("@/orpc/orpc-client", () => ({
@@ -25,22 +35,25 @@ describe("AssetCollateralRatioChart", () => {
   });
 
   it("should render chart with collateral data", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(orpc.token.statsCollateralRatio.queryOptions).mockImplementation(
-      (options) => ({
-        queryKey: ["token", "statsCollateralRatio"],
-        queryFn: () => {
-          const mockResponse = {
-            buckets: [
-              { name: "collateralAvailable", value: 750 },
-              { name: "collateralUsed", value: 250 },
-            ],
-            totalCollateral: 1000,
-            collateralRatio: 300.0,
-          };
-          return options?.select ? options.select(mockResponse) : mockResponse;
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockReturnValue(
+      createMockSuspenseQueryResult({
+        chartData: [
+          { name: "collateralAvailable", value: 750 },
+          { name: "collateralUsed", value: 250 },
+        ],
+        chartConfig: {
+          collateralAvailable: {
+            label: "Available",
+            color: "var(--chart-1)",
+          },
+          collateralUsed: {
+            label: "Used",
+            color: "var(--chart-2)",
+          },
         },
-        enabled: true,
+        totalCollateral: 1000,
+        collateralRatio: 300,
       })
     );
 
@@ -58,19 +71,22 @@ describe("AssetCollateralRatioChart", () => {
   });
 
   it("should not render when no collateral data exists", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(orpc.token.statsCollateralRatio.queryOptions).mockImplementation(
-      (options) => ({
-        queryKey: ["token", "statsCollateralRatio"],
-        queryFn: () => {
-          const mockResponse = {
-            buckets: [],
-            totalCollateral: 0,
-            collateralRatio: 0,
-          };
-          return options?.select ? options.select(mockResponse) : mockResponse;
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockReturnValue(
+      createMockSuspenseQueryResult({
+        chartData: [],
+        chartConfig: {
+          collateralAvailable: {
+            label: "Available",
+            color: "var(--chart-1)",
+          },
+          collateralUsed: {
+            label: "Used",
+            color: "var(--chart-2)",
+          },
         },
-        enabled: true,
+        totalCollateral: 0,
+        collateralRatio: 0,
       })
     );
 
@@ -86,30 +102,20 @@ describe("AssetCollateralRatioChart", () => {
   });
 
   it("should handle ORPC error gracefully", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(orpc.token.statsCollateralRatio.queryOptions).mockImplementation(
-      () => ({
-        queryKey: ["token", "statsCollateralRatio"],
-        queryFn: () => {
-          throw new Error("ORPC Error: Failed to fetch collateral ratio");
-        },
-        enabled: true,
-      })
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockImplementation(
+      createMockSuspenseQueryError(new Error("ORPC Error: Failed to fetch collateral ratio"))
     );
 
     // Mock console.error to avoid noise in test output
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-    renderWithProviders(
-      <AssetCollateralRatioChart assetAddress={mockAssetAddress} />
-    );
-
-    // Wait a bit for the error to be processed
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    // The component should be rendered within the app structure
-    // The error boundary will handle the error appropriately
-    expect(document.body).toBeInTheDocument();
+    // Expect the component to throw an error, which will be caught by error boundary
+    expect(() => {
+      renderWithProviders(
+        <AssetCollateralRatioChart assetAddress={mockAssetAddress} />
+      );
+    }).toThrow("ORPC Error: Failed to fetch collateral ratio");
 
     consoleSpy.mockRestore();
   });

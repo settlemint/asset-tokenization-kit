@@ -4,7 +4,17 @@
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../../test/test-utils";
+import { createMockSuspenseQueryResult, createMockSuspenseQueryError } from "../../../../test/mock-utils";
 import { AssetTotalVolumeAreaChart } from "./asset-total-volume-area-chart";
+
+// Mock useSuspenseQuery while keeping other exports
+vi.mock("@tanstack/react-query", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@tanstack/react-query")>();
+  return {
+    ...actual,
+    useSuspenseQuery: vi.fn(),
+  };
+});
 
 // Mock the orpc client
 vi.mock("@/orpc/orpc-client", () => ({
@@ -25,23 +35,23 @@ describe("AssetTotalVolumeAreaChart", () => {
   });
 
   it("should render chart with volume data", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(orpc.token.statsVolume.queryOptions).mockImplementation(
-      (options) => ({
-        queryKey: ["token", "statsVolume"],
-        queryFn: () => {
-          const mockResponse = {
-            volumeHistory: [
-              { timestamp: 1640995200, totalVolume: "5000000" },
-              { timestamp: 1641081600, totalVolume: "6200000" },
-              { timestamp: 1641168000, totalVolume: "5800000" },
-              { timestamp: 1641254400, totalVolume: "7100000" },
-              { timestamp: 1641340800, totalVolume: "6900000" },
-            ],
-          };
-          return options?.select ? options.select(mockResponse) : mockResponse;
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockReturnValue(
+      createMockSuspenseQueryResult({
+        chartData: [
+          { timestamp: 1_640_995_200, totalVolume: 5_000_000 },
+          { timestamp: 1_641_081_600, totalVolume: 6_200_000 },
+          { timestamp: 1_641_168_000, totalVolume: 5_800_000 },
+          { timestamp: 1_641_254_400, totalVolume: 7_100_000 },
+          { timestamp: 1_641_340_800, totalVolume: 6_900_000 },
+        ],
+        chartConfig: {
+          totalVolume: {
+            label: "Total Volume",
+            color: "var(--chart-1)",
+          },
         },
-        enabled: true,
+        dataKeys: ["totalVolume"],
       })
     );
 
@@ -59,17 +69,17 @@ describe("AssetTotalVolumeAreaChart", () => {
   });
 
   it("should show empty state when no volume data exists", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(orpc.token.statsVolume.queryOptions).mockImplementation(
-      (options) => ({
-        queryKey: ["token", "statsVolume"],
-        queryFn: () => {
-          const mockResponse = {
-            volumeHistory: [],
-          };
-          return options?.select ? options.select(mockResponse) : mockResponse;
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockReturnValue(
+      createMockSuspenseQueryResult({
+        chartData: [],
+        chartConfig: {
+          totalVolume: {
+            label: "Total Volume",
+            color: "var(--chart-1)",
+          },
         },
-        enabled: true,
+        dataKeys: ["totalVolume"],
       })
     );
 
@@ -87,17 +97,17 @@ describe("AssetTotalVolumeAreaChart", () => {
   });
 
   it("should handle different time ranges", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(orpc.token.statsVolume.queryOptions).mockImplementation(
-      (options) => ({
-        queryKey: ["token", "statsVolume"],
-        queryFn: () => {
-          const mockResponse = {
-            volumeHistory: [{ timestamp: 1640995200, totalVolume: "2500000" }],
-          };
-          return options?.select ? options.select(mockResponse) : mockResponse;
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockReturnValue(
+      createMockSuspenseQueryResult({
+        chartData: [{ timestamp: 1_640_995_200, totalVolume: 2_500_000 }],
+        chartConfig: {
+          totalVolume: {
+            label: "Total Volume",
+            color: "var(--chart-1)",
+          },
         },
-        enabled: true,
+        dataKeys: ["totalVolume"],
       })
     );
 
@@ -115,28 +125,20 @@ describe("AssetTotalVolumeAreaChart", () => {
   });
 
   it("should handle ORPC error gracefully", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(orpc.token.statsVolume.queryOptions).mockImplementation(() => ({
-      queryKey: ["token", "statsVolume"],
-      queryFn: () => {
-        throw new Error("ORPC Error: Failed to fetch volume data");
-      },
-      enabled: true,
-    }));
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockImplementation(
+      createMockSuspenseQueryError(new Error("ORPC Error: Failed to fetch volume data"))
+    );
 
     // Mock console.error to avoid noise in test output
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-    renderWithProviders(
-      <AssetTotalVolumeAreaChart assetAddress={mockAssetAddress} />
-    );
-
-    // Wait a bit for the error to be processed
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    // The component should be rendered within the app structure
-    // The error boundary will handle the error appropriately
-    expect(document.body).toBeInTheDocument();
+    // Expect the component to throw an error, which will be caught by error boundary
+    expect(() => {
+      renderWithProviders(
+        <AssetTotalVolumeAreaChart assetAddress={mockAssetAddress} />
+      );
+    }).toThrow("ORPC Error: Failed to fetch volume data");
 
     consoleSpy.mockRestore();
   });

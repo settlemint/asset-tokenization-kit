@@ -4,7 +4,17 @@
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../../test/test-utils";
+import { createMockSuspenseQueryResult, createMockSuspenseQueryError } from "../../../../test/mock-utils";
 import { AssetWalletDistributionChart } from "./asset-wallet-distribution-chart";
+
+// Mock useSuspenseQuery while keeping other exports
+vi.mock("@tanstack/react-query", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@tanstack/react-query")>();
+  return {
+    ...actual,
+    useSuspenseQuery: vi.fn(),
+  };
+});
 
 // Mock the orpc client
 vi.mock("@/orpc/orpc-client", () => ({
@@ -25,26 +35,25 @@ describe("AssetWalletDistributionChart", () => {
   });
 
   it("should render chart with wallet distribution data", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(
-      orpc.token.statsWalletDistribution.queryOptions
-    ).mockImplementation((options) => ({
-      queryKey: ["token", "statsWalletDistribution"],
-      queryFn: () => {
-        const mockResponse = {
-          buckets: [
-            { range: "0-1K", count: 500 },
-            { range: "1K-10K", count: 150 },
-            { range: "10K-100K", count: 45 },
-            { range: "100K-1M", count: 12 },
-            { range: "1M+", count: 3 },
-          ],
-          totalHolders: 710,
-        };
-        return options?.select ? options.select(mockResponse) : mockResponse;
-      },
-      enabled: true,
-    }));
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockReturnValue(
+      createMockSuspenseQueryResult({
+        chartData: [
+          { range: "0-1K", count: 500 },
+          { range: "1K-10K", count: 150 },
+          { range: "10K-100K", count: 45 },
+          { range: "100K-1M", count: 12 },
+          { range: "1M+", count: 3 },
+        ],
+        chartConfig: {
+          count: {
+            label: "Holders",
+            color: "var(--chart-1)",
+          },
+        },
+        dataKeys: ["count"],
+      })
+    );
 
     renderWithProviders(
       <AssetWalletDistributionChart assetAddress={mockAssetAddress} />
@@ -60,20 +69,19 @@ describe("AssetWalletDistributionChart", () => {
   });
 
   it("should show empty state when no wallet data exists", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(
-      orpc.token.statsWalletDistribution.queryOptions
-    ).mockImplementation((options) => ({
-      queryKey: ["token", "statsWalletDistribution"],
-      queryFn: () => {
-        const mockResponse = {
-          buckets: [],
-          totalHolders: 0,
-        };
-        return options?.select ? options.select(mockResponse) : mockResponse;
-      },
-      enabled: true,
-    }));
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockReturnValue(
+      createMockSuspenseQueryResult({
+        chartData: [],
+        chartConfig: {
+          count: {
+            label: "Holders",
+            color: "var(--chart-1)",
+          },
+        },
+        dataKeys: ["count"],
+      })
+    );
 
     renderWithProviders(
       <AssetWalletDistributionChart assetAddress={mockAssetAddress} />
@@ -89,30 +97,20 @@ describe("AssetWalletDistributionChart", () => {
   });
 
   it("should handle ORPC error gracefully", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(
-      orpc.token.statsWalletDistribution.queryOptions
-    ).mockImplementation(() => ({
-      queryKey: ["token", "statsWalletDistribution"],
-      queryFn: () => {
-        throw new Error("ORPC Error: Failed to fetch wallet distribution");
-      },
-      enabled: true,
-    }));
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockImplementation(
+      createMockSuspenseQueryError(new Error("ORPC Error: Failed to fetch wallet distribution"))
+    );
 
     // Mock console.error to avoid noise in test output
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-    renderWithProviders(
-      <AssetWalletDistributionChart assetAddress={mockAssetAddress} />
-    );
-
-    // Wait a bit for the error to be processed
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    // The component should be rendered within the app structure
-    // The error boundary will handle the error appropriately
-    expect(document.body).toBeInTheDocument();
+    // Expect the component to throw an error, which will be caught by error boundary
+    expect(() => {
+      renderWithProviders(
+        <AssetWalletDistributionChart assetAddress={mockAssetAddress} />
+      );
+    }).toThrow("ORPC Error: Failed to fetch wallet distribution");
 
     consoleSpy.mockRestore();
   });

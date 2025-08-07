@@ -4,7 +4,17 @@
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../../test/test-utils";
+import { createMockSuspenseQueryResult, createMockSuspenseQueryError } from "../../../../test/mock-utils";
 import { AssetTotalSupplyAreaChart } from "./asset-total-supply-area-chart";
+
+// Mock useSuspenseQuery while keeping other exports
+vi.mock("@tanstack/react-query", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@tanstack/react-query")>();
+  return {
+    ...actual,
+    useSuspenseQuery: vi.fn(),
+  };
+});
 
 // Mock the orpc client
 vi.mock("@/orpc/orpc-client", () => ({
@@ -25,23 +35,23 @@ describe("AssetTotalSupplyAreaChart", () => {
   });
 
   it("should render chart with total supply data", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(orpc.token.statsTotalSupply.queryOptions).mockImplementation(
-      (options) => ({
-        queryKey: ["token", "statsTotalSupply"],
-        queryFn: () => {
-          const mockResponse = {
-            totalSupplyHistory: [
-              { timestamp: 1640995200, totalSupply: "1000000" },
-              { timestamp: 1641081600, totalSupply: "1150000" },
-              { timestamp: 1641168000, totalSupply: "1100000" },
-              { timestamp: 1641254400, totalSupply: "1300000" },
-              { timestamp: 1641340800, totalSupply: "1250000" },
-            ],
-          };
-          return options?.select ? options.select(mockResponse) : mockResponse;
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockReturnValue(
+      createMockSuspenseQueryResult({
+        chartData: [
+          { timestamp: 1_640_995_200, totalSupply: 1_000_000 },
+          { timestamp: 1_641_081_600, totalSupply: 1_150_000 },
+          { timestamp: 1_641_168_000, totalSupply: 1_100_000 },
+          { timestamp: 1_641_254_400, totalSupply: 1_300_000 },
+          { timestamp: 1_641_340_800, totalSupply: 1_250_000 },
+        ],
+        chartConfig: {
+          totalSupply: {
+            label: "Total Supply",
+            color: "var(--chart-1)",
+          },
         },
-        enabled: true,
+        dataKeys: ["totalSupply"],
       })
     );
 
@@ -59,17 +69,17 @@ describe("AssetTotalSupplyAreaChart", () => {
   });
 
   it("should show empty state when no supply data exists", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(orpc.token.statsTotalSupply.queryOptions).mockImplementation(
-      (options) => ({
-        queryKey: ["token", "statsTotalSupply"],
-        queryFn: () => {
-          const mockResponse = {
-            totalSupplyHistory: [],
-          };
-          return options?.select ? options.select(mockResponse) : mockResponse;
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockReturnValue(
+      createMockSuspenseQueryResult({
+        chartData: [],
+        chartConfig: {
+          totalSupply: {
+            label: "Total Supply",
+            color: "var(--chart-1)",
+          },
         },
-        enabled: true,
+        dataKeys: ["totalSupply"],
       })
     );
 
@@ -87,19 +97,19 @@ describe("AssetTotalSupplyAreaChart", () => {
   });
 
   it("should handle different time ranges", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(orpc.token.statsTotalSupply.queryOptions).mockImplementation(
-      (options) => ({
-        queryKey: ["token", "statsTotalSupply"],
-        queryFn: () => {
-          const mockResponse = {
-            totalSupplyHistory: [
-              { timestamp: 1640995200, totalSupply: "500000" },
-            ],
-          };
-          return options?.select ? options.select(mockResponse) : mockResponse;
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockReturnValue(
+      createMockSuspenseQueryResult({
+        chartData: [
+          { timestamp: 1_640_995_200, totalSupply: 500_000 },
+        ],
+        chartConfig: {
+          totalSupply: {
+            label: "Total Supply",
+            color: "var(--chart-1)",
+          },
         },
-        enabled: true,
+        dataKeys: ["totalSupply"],
       })
     );
 
@@ -117,30 +127,20 @@ describe("AssetTotalSupplyAreaChart", () => {
   });
 
   it("should handle ORPC error gracefully", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(orpc.token.statsTotalSupply.queryOptions).mockImplementation(
-      () => ({
-        queryKey: ["token", "statsTotalSupply"],
-        queryFn: () => {
-          throw new Error("ORPC Error: Failed to fetch total supply");
-        },
-        enabled: true,
-      })
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockImplementation(
+      createMockSuspenseQueryError(new Error("ORPC Error: Failed to fetch total supply"))
     );
 
     // Mock console.error to avoid noise in test output
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-    renderWithProviders(
-      <AssetTotalSupplyAreaChart assetAddress={mockAssetAddress} />
-    );
-
-    // Wait a bit for the error to be processed
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    // The component should be rendered within the app structure
-    // The error boundary will handle the error appropriately
-    expect(document.body).toBeInTheDocument();
+    // Expect the component to throw an error, which will be caught by error boundary
+    expect(() => {
+      renderWithProviders(
+        <AssetTotalSupplyAreaChart assetAddress={mockAssetAddress} />
+      );
+    }).toThrow("ORPC Error: Failed to fetch total supply");
 
     consoleSpy.mockRestore();
   });

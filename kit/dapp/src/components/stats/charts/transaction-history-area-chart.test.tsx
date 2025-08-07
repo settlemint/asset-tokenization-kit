@@ -4,7 +4,17 @@
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../../test/test-utils";
+import { createMockSuspenseQueryResult, createMockSuspenseQueryError } from "../../../../test/mock-utils";
 import { TransactionHistoryAreaChart } from "./transaction-history-area-chart";
+
+// Mock useSuspenseQuery while keeping other exports
+vi.mock("@tanstack/react-query", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@tanstack/react-query")>();
+  return {
+    ...actual,
+    useSuspenseQuery: vi.fn(),
+  };
+});
 
 // Mock the orpc client
 vi.mock("@/orpc/orpc-client", () => ({
@@ -23,21 +33,17 @@ describe("TransactionHistoryAreaChart", () => {
   });
 
   it("should render chart with transaction data", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(orpc.system.statsTransactionHistory.queryOptions).mockReturnValue(
-      {
-        queryKey: ["system", "statsTransactionHistory"],
-        queryFn: () => ({
-          transactionHistory: [
-            { timestamp: "2024-01-01", transactions: 150 },
-            { timestamp: "2024-01-02", transactions: 200 },
-            { timestamp: "2024-01-03", transactions: 175 },
-            { timestamp: "2024-01-04", transactions: 300 },
-            { timestamp: "2024-01-05", transactions: 250 },
-          ],
-        }),
-        enabled: true,
-      }
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockReturnValue(
+      createMockSuspenseQueryResult({
+        transactionHistory: [
+          { timestamp: "2024-01-01", transactions: 150 },
+          { timestamp: "2024-01-02", transactions: 200 },
+          { timestamp: "2024-01-03", transactions: 175 },
+          { timestamp: "2024-01-04", transactions: 300 },
+          { timestamp: "2024-01-05", transactions: 250 },
+        ],
+      })
     );
 
     renderWithProviders(<TransactionHistoryAreaChart />);
@@ -52,15 +58,11 @@ describe("TransactionHistoryAreaChart", () => {
   });
 
   it("should show empty state when no transactions exist", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(orpc.system.statsTransactionHistory.queryOptions).mockReturnValue(
-      {
-        queryKey: ["system", "statsTransactionHistory"],
-        queryFn: () => ({
-          transactionHistory: [],
-        }),
-        enabled: true,
-      }
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockReturnValue(
+      createMockSuspenseQueryResult({
+        transactionHistory: [],
+      })
     );
 
     renderWithProviders(<TransactionHistoryAreaChart />);
@@ -75,28 +77,18 @@ describe("TransactionHistoryAreaChart", () => {
   });
 
   it("should handle ORPC error gracefully", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(orpc.system.statsTransactionHistory.queryOptions).mockReturnValue(
-      {
-        queryKey: ["system", "statsTransactionHistory"],
-        queryFn: () => {
-          throw new Error("ORPC Error: Failed to fetch transaction history");
-        },
-        enabled: true,
-      }
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockImplementation(
+      createMockSuspenseQueryError(new Error("ORPC Error: Failed to fetch transaction history"))
     );
 
     // Mock console.error to avoid noise in test output
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-    renderWithProviders(<TransactionHistoryAreaChart />);
-
-    // Wait a bit for the error to be processed
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    // The component should be rendered within the app structure
-    // The error boundary will handle the error appropriately
-    expect(document.body).toBeInTheDocument();
+    // Expect the component to throw an error, which will be caught by error boundary
+    expect(() => {
+      renderWithProviders(<TransactionHistoryAreaChart />);
+    }).toThrow("ORPC Error: Failed to fetch transaction history");
 
     consoleSpy.mockRestore();
   });

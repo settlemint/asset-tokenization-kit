@@ -4,7 +4,17 @@
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../../test/test-utils";
+import { createMockSuspenseQueryResult, createMockSuspenseQueryError } from "../../../../test/mock-utils";
 import { UserGrowthAreaChart } from "./user-growth-area-chart";
+
+// Mock useSuspenseQuery while keeping other exports
+vi.mock("@tanstack/react-query", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@tanstack/react-query")>();
+  return {
+    ...actual,
+    useSuspenseQuery: vi.fn(),
+  };
+});
 
 // Mock the orpc client
 vi.mock("@/orpc/orpc-client", () => ({
@@ -23,24 +33,15 @@ describe("UserGrowthAreaChart", () => {
   });
 
   it("should render chart with user growth data", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(orpc.user.statsGrowthOverTime.queryOptions).mockImplementation(
-      (options) => ({
-        queryKey: ["user", "statsGrowthOverTime"],
-        queryFn: () => {
-          const mockResponse = {
-            userGrowth: [
-              { timestamp: "2024-01-01", users: 100 },
-              { timestamp: "2024-01-02", users: 125 },
-              { timestamp: "2024-01-03", users: 150 },
-              { timestamp: "2024-01-04", users: 180 },
-              { timestamp: "2024-01-05", users: 200 },
-            ],
-          };
-          return options?.select ? options.select(mockResponse) : mockResponse;
-        },
-        enabled: true,
-      })
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockReturnValue(
+      createMockSuspenseQueryResult([
+        { timestamp: "2024-01-01", users: 100 },
+        { timestamp: "2024-01-02", users: 125 },
+        { timestamp: "2024-01-03", users: 150 },
+        { timestamp: "2024-01-04", users: 180 },
+        { timestamp: "2024-01-05", users: 200 },
+      ])
     );
 
     renderWithProviders(<UserGrowthAreaChart />);
@@ -55,18 +56,9 @@ describe("UserGrowthAreaChart", () => {
   });
 
   it("should show empty state when no user data exists", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(orpc.user.statsGrowthOverTime.queryOptions).mockImplementation(
-      (options) => ({
-        queryKey: ["user", "statsGrowthOverTime"],
-        queryFn: () => {
-          const mockResponse = {
-            userGrowth: [],
-          };
-          return options?.select ? options.select(mockResponse) : mockResponse;
-        },
-        enabled: true,
-      })
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockReturnValue(
+      createMockSuspenseQueryResult([])
     );
 
     renderWithProviders(<UserGrowthAreaChart />);
@@ -81,28 +73,18 @@ describe("UserGrowthAreaChart", () => {
   });
 
   it("should handle ORPC error gracefully", async () => {
-    const { orpc } = await import("@/orpc/orpc-client");
-    vi.mocked(orpc.user.statsGrowthOverTime.queryOptions).mockImplementation(
-      () => ({
-        queryKey: ["user", "statsGrowthOverTime"],
-        queryFn: () => {
-          throw new Error("ORPC Error: Failed to fetch user growth stats");
-        },
-        enabled: true,
-      })
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockImplementation(
+      createMockSuspenseQueryError(new Error("ORPC Error: Failed to fetch user growth stats"))
     );
 
     // Mock console.error to avoid noise in test output
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-    renderWithProviders(<UserGrowthAreaChart />);
-
-    // Wait a bit for the error to be processed
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    // The component should be rendered within the app structure
-    // The error boundary will handle the error appropriately
-    expect(document.body).toBeInTheDocument();
+    // Expect the component to throw an error, which will be caught by error boundary
+    expect(() => {
+      renderWithProviders(<UserGrowthAreaChart />);
+    }).toThrow("ORPC Error: Failed to fetch user growth stats");
 
     consoleSpy.mockRestore();
   });
