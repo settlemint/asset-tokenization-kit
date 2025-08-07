@@ -16,6 +16,7 @@ import {
   type SingleFactory,
   TokenTypeEnum,
 } from "@/orpc/routes/system/token-factory/routes/factory.create.schema";
+import { useStore } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { TriangleAlert } from "lucide-react";
 import { useMemo } from "react";
@@ -38,6 +39,7 @@ export function AssetTypeSelection() {
     defaultValues: {
       factories: [] as FactoryCreateInput["factories"],
     } as FactoryCreateInput,
+
     onSubmit: ({ value }) => {
       if (!systemDetails?.tokenFactoryRegistry) {
         toast.error(t("assets.no-system"));
@@ -96,6 +98,7 @@ export function AssetTypeSelection() {
       form.state.values.factories.filter((f) => f.type !== factory.type)
     );
   };
+  const factories = useStore(form.store, (state) => state.values.factories);
 
   return (
     <form.AppForm>
@@ -108,11 +111,7 @@ export function AssetTypeSelection() {
               onSubmit={() => {
                 void form.handleSubmit();
               }}
-              disabled={
-                isFactoriesCreating ||
-                !form.state.values.factories ||
-                form.state.values.factories.length === 0
-              }
+              disabled={isFactoriesCreating || factories.length === 0}
               verification={{
                 title: t("assets.confirm-deployment-title"),
                 description: t("assets.confirm-deployment-description"),
@@ -146,63 +145,62 @@ export function AssetTypeSelection() {
           <div className="flex flex-col h-full">
             <div className="flex-1">
               <div className="space-y-6">
+                <div>
+                  <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">
+                    {t("assets.available-asset-types")}
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {t("assets.select-all-asset-types")}
+                  </p>
+                </div>
                 <form.Field name="factories">
                   {(field) => (
                     <>
-                      <div className="space-y-4">
-                        <div>
-                          <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">
-                            {t("assets.available-asset-types")}
-                          </h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {t("assets.select-all-asset-types")}
-                          </p>
-                        </div>
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                          {availableAssets.map((assetType) => {
-                            const Icon = getAssetIcon(assetType);
-                            const isDisabled =
-                              deployedAssetTypes.has(assetType) ||
-                              isFactoriesCreating;
-                            const isChecked = field.state.value.some(
-                              (factory) => factory.type === assetType
-                            );
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 space-y-4">
+                        {availableAssets.map((assetType) => {
+                          const Icon = getAssetIcon(assetType);
+                          const isDisabled =
+                            deployedAssetTypes.has(assetType) ||
+                            isFactoriesCreating;
+                          const isChecked = field.state.value.some(
+                            (factory) => factory.type === assetType
+                          );
 
-                            const handleToggle = (checked: boolean) => {
-                              if (isDisabled) {
-                                return;
-                              }
+                          const handleToggle = (checked: boolean) => {
+                            if (isDisabled) {
+                              return;
+                            }
 
-                              if (checked) {
-                                handleAddFactory({
-                                  type: assetType,
-                                  name: t(`asset-types.${assetType}`, {
-                                    ns: "tokens",
-                                  }),
-                                });
-                              } else {
-                                handleRemoveFactory({
-                                  type: assetType,
-                                  name: t(`asset-types.${assetType}`, {
-                                    ns: "tokens",
-                                  }),
-                                });
-                              }
-                            };
+                            if (checked) {
+                              handleAddFactory({
+                                type: assetType,
+                                name: t(`asset-types.${assetType}`, {
+                                  ns: "tokens",
+                                }),
+                              });
+                            } else {
+                              handleRemoveFactory({
+                                type: assetType,
+                                name: t(`asset-types.${assetType}`, {
+                                  ns: "tokens",
+                                }),
+                              });
+                            }
+                          };
 
-                            return (
-                              <AssetTypeCard
-                                key={assetType}
-                                assetType={assetType}
-                                icon={Icon}
-                                isChecked={isChecked}
-                                isDisabled={isDisabled}
-                                onToggle={handleToggle}
-                              />
-                            );
-                          })}
-                        </div>
+                          return (
+                            <AssetTypeCard
+                              key={assetType}
+                              assetType={assetType}
+                              icon={Icon}
+                              isChecked={isChecked}
+                              isDisabled={isDisabled}
+                              onToggle={handleToggle}
+                            />
+                          );
+                        })}
                       </div>
+
                       {field.state.meta.errors.length > 0 && (
                         <p className="text-sm text-red-600 dark:text-red-400">
                           {field.state.meta.errors[0]}

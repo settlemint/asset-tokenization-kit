@@ -14,6 +14,7 @@ import {
   SystemAddonCreateInput,
   SystemAddonCreateSchema,
 } from "@/orpc/routes/system/addon/routes/addon.create.schema";
+import { useStore } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useMemo } from "react";
@@ -119,6 +120,8 @@ export function SystemAddonsSelection() {
     );
   };
 
+  const addons = useStore(form.store, (state) => state.values.addons);
+
   return (
     <form.AppForm>
       <OnboardingStepLayout
@@ -148,9 +151,7 @@ export function SystemAddonsSelection() {
               onSubmit={() => {
                 void form.handleSubmit();
               }}
-              disabled={
-                isAddonsCreating || form.state.values.addons.length === 0
-              }
+              disabled={isAddonsCreating || addons.length === 0}
               verification={{
                 title: t(
                   "system-addons.addon-selection.confirm-deployment-title"
@@ -222,15 +223,15 @@ export function SystemAddonsSelection() {
                               addon === "yield" && hasBondFactory;
                             const isAlreadyDeployed = deployedAddons.has(addon);
                             const isDisabled =
-                              isAlreadyDeployed || isAddonsCreating;
-                            const isRequired = isYieldRequiredForBond;
-                            const isChecked =
-                              field.state.value.some((a) => a.type === addon) ||
-                              isDisabled ||
-                              isRequired;
+                              isAlreadyDeployed ||
+                              isAddonsCreating ||
+                              isYieldRequiredForBond;
+                            const isChecked = field.state.value.some(
+                              (a) => a.type === addon
+                            );
 
                             const handleToggle = (checked: boolean) => {
-                              if (isDisabled || isRequired) {
+                              if (isDisabled) {
                                 return;
                               }
 
@@ -255,9 +256,8 @@ export function SystemAddonsSelection() {
                                 icon={Icon}
                                 isChecked={isChecked}
                                 isDisabled={isDisabled}
-                                isRequired={isRequired}
                                 disabledLabel={
-                                  isRequired
+                                  isYieldRequiredForBond
                                     ? t(
                                         "system-addons.addon-selection.required-for-bonds"
                                       )

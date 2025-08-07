@@ -11,7 +11,7 @@ import { RadioField } from "@/components/form/radio-field";
 import { SelectField } from "@/components/form/select-field";
 import { TextField } from "@/components/form/text-field";
 import { TextAreaField } from "@/components/form/textarea-field";
-import { VerificationButton } from "@/components/form/verification-submit-button";
+import { VerificationButton } from "@/components/form/verification-button";
 import { fieldContext, formContext } from "@/hooks/use-form-contexts";
 import { createFormHook } from "@tanstack/react-form";
 

@@ -5,7 +5,7 @@ import type { UserVerification } from "@/orpc/routes/common/schemas/user-verific
 export function VerificationButton({
   children,
   onSubmit,
-  disabled = false,
+  disabled,
   verification,
 }: {
   children: React.ReactNode;
@@ -32,7 +32,9 @@ export function VerificationButton({
             verification={verification}
             onSubmit={async (userVerification) => {
               verification.setField(userVerification);
+
               await form.validateAllFields("change");
+
               if (form.state.isValid) {
                 onSubmit();
               }
