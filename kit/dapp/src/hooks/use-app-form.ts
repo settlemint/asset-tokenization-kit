@@ -9,9 +9,9 @@ import { StepSubmitButton } from "@/components/form/multi-step/step-submit-butto
 import { NumberField } from "@/components/form/number-field";
 import { RadioField } from "@/components/form/radio-field";
 import { SelectField } from "@/components/form/select-field";
-import { SubmitButton } from "@/components/form/submit-button";
 import { TextField } from "@/components/form/text-field";
 import { TextAreaField } from "@/components/form/textarea-field";
+import { VerificationButton } from "@/components/form/verification-button";
 import { fieldContext, formContext } from "@/hooks/use-form-contexts";
 import { createFormHook } from "@tanstack/react-form";
 
@@ -31,7 +31,7 @@ export const { useAppForm, withForm } = createFormHook({
   },
   formComponents: {
     StepSubmitButton,
-    SubmitButton,
+    VerificationButton,
     Errors,
   },
   fieldContext,

@@ -39,7 +39,6 @@ describe("Token Factories", () => {
         tokenExtensions: [
           "ACCESS_MANAGED",
           "BURNABLE",
-          "COLLATERAL",
           "CUSTODIAN",
           "PAUSABLE",
         ],

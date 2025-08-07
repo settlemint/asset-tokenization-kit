@@ -17,7 +17,6 @@ import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/acces
 import { MockedERC20Token } from "../utils/mocks/MockedERC20Token.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
-import { ISMARTCollateral } from "../../contracts/smart/extensions/collateral/ISMARTCollateral.sol";
 import { TestConstants } from "../Constants.sol";
 
 contract ATKDepositTest is AbstractATKAssetTest {
@@ -31,7 +30,6 @@ contract ATKDepositTest is AbstractATKAssetTest {
 
     uint8 public constant DECIMALS = 8;
     uint256 public constant INITIAL_SUPPLY = 1_000_000 * 10 ** DECIMALS;
-    uint48 public constant COLLATERAL_LIVENESS = 7 days;
 
     function setUp() public {
         // Create identities
@@ -91,17 +89,8 @@ contract ATKDepositTest is AbstractATKAssetTest {
         return result;
     }
 
-    function _updateCollateral(address token, address tokenIssuer, uint256 collateralAmount) internal {
-        // Use a very large amount and a long expiry
-        uint256 farFutureExpiry = block.timestamp + 3650 days; // ~10 years
-
-        vm.startPrank(tokenIssuer);
-        _issueCollateralClaim(address(token), tokenIssuer, collateralAmount, farFutureExpiry);
-        vm.stopPrank();
-    }
 
     function _mintInitialSupply(address recipient) internal {
-        _updateCollateral(address(deposit), owner, INITIAL_SUPPLY);
         vm.prank(owner);
         deposit.mint(recipient, INITIAL_SUPPLY);
     }
@@ -150,8 +139,6 @@ contract ATKDepositTest is AbstractATKAssetTest {
         assertEq(deposit.balanceOf(user1), INITIAL_SUPPLY);
         assertEq(deposit.totalSupply(), INITIAL_SUPPLY);
 
-        _updateCollateral(address(deposit), owner, INITIAL_SUPPLY + 100);
-
         vm.startPrank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -196,42 +183,8 @@ contract ATKDepositTest is AbstractATKAssetTest {
         assertTrue(deposit.paused());
     }
 
-    function test_OnlyTrustedIssuerCanUpdateCollateral() public {
-        uint256 collateralAmount = 1_000_000;
-
-        uint256 untrustedIssuerPK = 0xBAD155;
-        address untrustedIssuerWallet = vm.addr(untrustedIssuerPK);
-        vm.label(untrustedIssuerWallet, "Untrusted Issuer Wallet");
-        ClaimUtils untrustedClaimUtils = _createClaimUtilsForIssuer(untrustedIssuerWallet, untrustedIssuerPK);
-        _createIdentity(untrustedIssuerWallet);
-
-        uint256 farFutureExpiry = block.timestamp + 3650 days; // ~10 years
-
-        vm.startPrank(untrustedIssuerWallet);
-        untrustedClaimUtils.issueCollateralClaim(address(deposit), owner, collateralAmount, farFutureExpiry);
-
-        (uint256 amount, address claimIssuer, uint256 timestamp) = deposit.findValidCollateralClaim();
-        assertEq(amount, 0); // Check initial state (untrusted issuer)
-        vm.stopPrank();
-
-        vm.startPrank(owner);
-        vm.expectRevert(abi.encodeWithSelector(ISMARTCollateral.InsufficientCollateral.selector, 100, 0));
-        deposit.mint(user1, 100);
-        vm.stopPrank();
-
-        _issueCollateralClaim(address(deposit), owner, collateralAmount, farFutureExpiry);
-
-        (amount, claimIssuer, timestamp) = deposit.findValidCollateralClaim();
-        assertEq(amount, collateralAmount); // Check updated state (trusted issuer)
-
-        vm.startPrank(owner);
-        deposit.mint(user1, 100);
-        vm.stopPrank();
-    }
-
     // ERC20 custodian tests
     function test_OnlyUserManagementCanFreeze() public {
-        _updateCollateral(address(deposit), address(owner), INITIAL_SUPPLY);
 
         vm.prank(owner);
         deposit.mint(user1, 100);

@@ -1,12 +1,11 @@
 import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
-import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
-import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
+import { VerificationButton } from "@/components/verification-dialog/verification-button";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -14,12 +13,6 @@ export function IdentityCreate() {
   const { t } = useTranslation(["onboarding", "common"]);
   const { refreshUserState } = useOnboardingNavigation();
   const queryClient = useQueryClient();
-
-  // Verification dialog state
-  const [showVerificationModal, setShowVerificationModal] = useState(false);
-  const [verificationError, setVerificationError] = useState<string | null>(
-    null
-  );
 
   const { mutateAsync: createIdentity, isPending: isIdentityCreating } =
     useMutation(
@@ -35,12 +28,8 @@ export function IdentityCreate() {
       })
     );
 
-  // Handle verification code submission
-  const handleVerificationSubmit = useCallback(
+  const handleSubmit = useCallback(
     (verification: UserVerification) => {
-      setVerificationError(null);
-      setShowVerificationModal(false);
-
       toast.promise(
         createIdentity({
           verification,
@@ -61,30 +50,23 @@ export function IdentityCreate() {
       title={t("identity-setup.title")}
       description={t("identity-setup.description")}
       actions={
-        <Button
-          onClick={() => {
-            setShowVerificationModal(true);
+        <VerificationButton
+          verification={{
+            title: t("identity-setup.confirm-title"),
+            description: t("identity-setup.confirm-description"),
           }}
+          onSubmit={handleSubmit}
           disabled={isIdentityCreating}
         >
           {isIdentityCreating
             ? t("identity-setup.form.submitting")
             : t("identity-setup.form.submit")}
-        </Button>
+        </VerificationButton>
       }
     >
       <InfoAlert
         title={t("identity-setup.info")}
         description={t("identity-setup.info-description")}
-      />
-
-      <VerificationDialog
-        open={showVerificationModal}
-        onOpenChange={setShowVerificationModal}
-        onSubmit={handleVerificationSubmit}
-        title={t("identity-setup.confirm-title")}
-        description={t("identity-setup.confirm-description")}
-        errorMessage={verificationError}
       />
     </OnboardingStepLayout>
   );
