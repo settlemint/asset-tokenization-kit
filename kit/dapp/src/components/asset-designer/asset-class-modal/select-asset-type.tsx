@@ -18,7 +18,7 @@ import {
   assetClassSelectionFormOptions,
   isRequiredField,
   type AssetClassSelectionInputData,
-} from "./shared-form";
+} from "./asset-class-form";
 
 const validate: KeysOfUnion<AssetClassSelectionInputData>[] = ["assetType"];
 

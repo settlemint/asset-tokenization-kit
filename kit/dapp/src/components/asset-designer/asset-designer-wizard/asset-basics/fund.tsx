@@ -2,8 +2,8 @@ import {
   commonFields,
   CommonFields,
 } from "@/components/asset-designer/asset-designer-wizard/asset-basics/common";
-import type { AssetDesignerFormInputData } from "@/components/asset-designer/asset-designer-wizard/shared-form";
-import { isRequiredField } from "@/components/asset-designer/asset-designer-wizard/shared-form";
+import type { AssetDesignerFormInputData } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
+import { isRequiredField } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
 import {
   FormStepContent,
   FormStepSubmit,

@@ -1,13 +1,13 @@
 import { AssetBasics } from "@/components/asset-designer/asset-designer-wizard/asset-basics/asset";
-import { SelectComplianceModules } from "@/components/asset-designer/asset-designer-wizard/compliance-modules/select-compliance-modules";
 import {
   assetDesignerFormOptions,
   AssetDesignerFormSchema,
-} from "@/components/asset-designer/asset-designer-wizard/shared-form";
+} from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
 import {
   useAssetDesignerSteps,
   type AssetDesignerStepsType,
-} from "@/components/asset-designer/asset-designer-wizard/steps";
+} from "@/components/asset-designer/asset-designer-wizard/asset-designer-steps";
+import { SelectComplianceModules } from "@/components/asset-designer/asset-designer-wizard/compliance-modules/select-compliance-modules";
 import { Summary } from "@/components/asset-designer/asset-designer-wizard/summary/summary";
 import { StepLayout } from "@/components/stepper/step-layout";
 import { getNextStep, getStepById } from "@/components/stepper/utils";

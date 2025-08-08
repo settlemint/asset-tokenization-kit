@@ -1,4 +1,4 @@
-import { AssetDesignerStepSchema } from "@/components/asset-designer/asset-designer-wizard/steps";
+import { AssetDesignerStepSchema } from "@/components/asset-designer/asset-designer-wizard/asset-designer-steps";
 import { isRequiredFieldForZodIntersection } from "@/lib/utils/schema-field";
 import type { KeysOfUnion } from "@/lib/utils/union";
 import { TokenCreateSchema } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";

@@ -10,7 +10,7 @@ import { noop } from "@/lib/utils/noop";
 import { getAssetTypeFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { assetClassSelectionFormOptions } from "./shared-form";
+import { assetClassSelectionFormOptions } from "./asset-class-form";
 
 export const SelectAssetClass = withForm({
   ...assetClassSelectionFormOptions,

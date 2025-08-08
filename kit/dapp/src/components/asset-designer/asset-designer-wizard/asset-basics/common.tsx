@@ -1,8 +1,8 @@
-import type { AssetDesignerFormInputData } from "@/components/asset-designer/asset-designer-wizard/shared-form";
+import type { AssetDesignerFormInputData } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
 import {
   assetDesignerFormOptions,
   isRequiredField,
-} from "@/components/asset-designer/asset-designer-wizard/shared-form";
+} from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
 import {
   FormStepContent,
   FormStepSubmit,

@@ -1,4 +1,4 @@
-import { assetDesignerFormOptions } from "@/components/asset-designer/asset-designer-wizard/shared-form";
+import { assetDesignerFormOptions } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
 import { ComplianceModules } from "@/components/compliance/compliance-modules";
 import {
   FormStep,

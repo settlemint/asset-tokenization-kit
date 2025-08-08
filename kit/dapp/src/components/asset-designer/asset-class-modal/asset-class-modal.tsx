@@ -1,19 +1,19 @@
 import {
   useAssetClassSelectionSteps,
   type AssetClassSelectionStepsType,
-} from "@/components/asset-designer/asset-class-modal/steps";
+} from "@/components/asset-designer/asset-class-modal/asset-class-steps";
 import { getNextStepId, getPreviousStepId } from "@/components/stepper/utils";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useAppForm } from "@/hooks/use-app-form";
 import { useNavigate } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
 import type { JSX } from "react";
-import { SelectAssetClass } from "./select-asset-class";
-import { SelectAssetType } from "./select-asset-type";
 import {
   assetClassSelectionFormOptions,
   AssetClassSelectionSchema,
-} from "./shared-form";
+} from "./asset-class-form";
+import { SelectAssetClass } from "./select-asset-class";
+import { SelectAssetType } from "./select-asset-type";
 
 interface AssetClassModalProps {
   open: boolean;
