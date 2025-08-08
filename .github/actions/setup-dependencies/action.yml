@@ -32,11 +32,7 @@ runs:
           ~/.cache/bun
           ~/.cache/foundry
           ~/.cache/helm
-           # Foundry/Hardhat build artifacts to enable incremental rebuilds in CI
-           ./kit/contracts/.generated/out
-           ./kit/contracts/.generated/cache_forge
-           ./kit/contracts/.generated/artifacts
-           ./kit/contracts/.generated/cache
+           ./**/.generated
 
     - name: Login to npm
       shell: bash
