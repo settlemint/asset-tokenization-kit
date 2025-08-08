@@ -1,6 +1,7 @@
 import { type BrowserContext, test } from "@playwright/test";
 import { Pages } from "../pages/pages";
 import {
+  bondBurnData,
   bondData,
   bondMintData,
   bondTransferData,
@@ -8,7 +9,6 @@ import {
   stableCoinUpdateCollateralData,
   stablecoinData,
   topUpData,
-  bondBurnData,
 } from "../test-data/asset-data";
 import { successMessageData } from "../test-data/message-data";
 import { adminUser, signUpTransferUserData } from "../test-data/user-data";
@@ -83,7 +83,7 @@ test.describe("Create, top up, mint and transfer bonds", () => {
   test("Admin user creates bond", async () => {
     const bondDataWithStablecoin = {
       ...bondData,
-      underlyingAsset: testData.stablecoinName,
+      denominationAsset: testData.stablecoinName,
     };
     await adminPages.adminPage.createBond(bondDataWithStablecoin);
     testData.bondName = bondDataWithStablecoin.name;

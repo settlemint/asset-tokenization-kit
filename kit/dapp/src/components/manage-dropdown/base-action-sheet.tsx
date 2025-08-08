@@ -20,12 +20,10 @@ interface BaseActionSheetProps {
   asset: Token;
   title: string;
   description: string;
-  onProceed: () => void;
+  submit: ReactNode;
   onCancel: () => void;
   children?: ReactNode; // For form fields
   showAssetDetails?: boolean;
-  submitLabel?: string;
-  cancelLabel?: string;
   isSubmitting?: boolean;
 }
 
@@ -61,12 +59,10 @@ export function BaseActionSheet({
   asset,
   title,
   description,
-  onProceed,
+  submit,
   onCancel,
   children,
   showAssetDetails = true,
-  submitLabel,
-  cancelLabel,
   isSubmitting = false,
 }: BaseActionSheetProps) {
   const { t } = useTranslation(["tokens", "common"]);
@@ -79,10 +75,6 @@ export function BaseActionSheet({
     onCancel();
     onOpenChange(false);
   }, [onCancel, onOpenChange]);
-
-  const handleProceed = useCallback(() => {
-    onProceed();
-  }, [onProceed]);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -154,16 +146,9 @@ export function BaseActionSheet({
             disabled={isSubmitting}
             className="press-effect"
           >
-            {cancelLabel || t("common:actions.cancel")}
+            {t("common:actions.cancel")}
           </Button>
-          <Button
-            type="button"
-            onClick={handleProceed}
-            disabled={isSubmitting}
-            className="press-effect"
-          >
-            {submitLabel || t("common:continue")}
-          </Button>
+          {submit}
         </SheetFooter>
       </SheetContent>
     </Sheet>

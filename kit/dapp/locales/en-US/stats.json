@@ -57,7 +57,7 @@
       },
       "active": {
         "title": "Redemption Coverage",
-        "description": "{{percentage}}% of underlying assets available",
+        "description": "{{percentage}}% of denomination assets available",
         "label": "Active"
       },
       "matured": {

@@ -7,7 +7,7 @@ import { waitForEvent } from "../../../utils/wait-for-event";
 
 export const claimYield = async (
   asset: Asset<any>,
-  underlyingAsset: Asset<any>,
+  denominationAsset: Asset<any>,
   actor: Actor
 ) => {
   console.log(`[Claim yield] → Starting yield claim...`);
@@ -41,6 +41,6 @@ export const claimYield = async (
   };
 
   console.log(
-    `[Claim yield] ✓ ${formatBaseUnits(claimedAmount, underlyingAsset.decimals)} ${underlyingAsset.symbol} yield claimed from period ${fromPeriod} to ${toPeriod}`
+    `[Claim yield] ✓ ${formatBaseUnits(claimedAmount, denominationAsset.decimals)} ${denominationAsset.symbol} yield claimed from period ${fromPeriod} to ${toPeriod}`
   );
 };

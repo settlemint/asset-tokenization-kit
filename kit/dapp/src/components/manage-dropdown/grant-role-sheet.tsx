@@ -1,22 +1,20 @@
+import { AddressSelectOrInputToggle } from "@/components/address/address-select-or-input-toggle";
+import { ArrayFieldsLayout } from "@/components/layout/array-fields-layout";
 import { BaseActionSheet } from "@/components/manage-dropdown/base-action-sheet";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import { useAppForm } from "@/hooks/use-app-form";
 import { assetAccessControlRoles } from "@/lib/zod/validators/access-control-roles";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { orpc } from "@/orpc/orpc-client";
-import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import {
   TokenGrantRoleInput,
   TokenGrantRoleInputSchema,
 } from "@/orpc/routes/token/routes/mutations/access/token.grant-role.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-
-import { AddressSelectOrInputToggle } from "@/components/address/address-select-or-input-toggle";
-import { ArrayFieldsLayout } from "@/components/layout/array-fields-layout";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Shield } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 interface GrantRoleSheetProps {
@@ -30,10 +28,9 @@ export function GrantRoleSheet({
   onOpenChange,
   asset,
 }: GrantRoleSheetProps) {
+  const { t } = useTranslation(["tokens", "common"]);
   const queryClient = useQueryClient();
-  const [showVerification, setShowVerification] = useState(false);
-
-  const { mutateAsync: grantRole, isPending } = useMutation(
+  const { mutateAsync: grantRole, isPending: isGrantingRole } = useMutation(
     orpc.token.grantRole.mutationOptions({
       onSuccess: async () => {
         await queryClient.invalidateQueries({
@@ -41,11 +38,6 @@ export function GrantRoleSheet({
             input: { tokenAddress: asset.id },
           }).queryKey,
         });
-
-        handleClose();
-      },
-      onError: (error) => {
-        toast.error(`Failed to grant role: ${error.message}`);
       },
     })
   );
@@ -58,10 +50,13 @@ export function GrantRoleSheet({
     onSubmit: (value) => {
       const parsedValues = TokenGrantRoleInputSchema.parse(value.value);
       toast.promise(grantRole(parsedValues), {
-        loading: "Granting role...",
-        success: "Role granted successfully",
-        error: "Failed to grant role",
+        loading: t("actions.grantRole.messages.submitting"),
+        success: t("actions.grantRole.messages.success", {
+          role: parsedValues.role,
+        }),
+        error: t("actions.grantRole.messages.error"),
       });
+      handleClose();
     },
   });
 
@@ -73,13 +68,12 @@ export function GrantRoleSheet({
         .slice(1)
         .replaceAll(/([A-Z])/g, " $1")
         .trim(),
-    description: `Grant ${role} permissions to the selected accounts`,
+    description: t("actions.grantRole.form.roleOptionDescription", { role }),
     icon: Shield,
   }));
 
   const handleClose = useCallback(() => {
     form.reset();
-    setShowVerification(false);
 
     onOpenChange(false);
   }, [form, onOpenChange]);
@@ -89,128 +83,126 @@ export function GrantRoleSheet({
   }, [handleClose]);
 
   return (
-    <>
+    <form.AppForm>
       <BaseActionSheet
-        open={open && !showVerification}
+        open={open}
         onOpenChange={onOpenChange}
         asset={asset}
-        title="Grant Role"
-        description="Grant access control roles to specified accounts"
-        onProceed={() => {
-          setShowVerification(true);
-        }}
+        title={t("tokens:actions.grantRole.title")}
+        description={t("tokens:actions.grantRole.description")}
+        submit={
+          <form.VerificationButton
+            verification={{
+              title: t("tokens:actions.grantRole.title"),
+              description: t("tokens:actions.grantRole.description"),
+              setField: (verification) => {
+                form.setFieldValue("verification", verification);
+              },
+            }}
+            onSubmit={() => {
+              void form.handleSubmit();
+            }}
+            disabled={isGrantingRole}
+          >
+            {isGrantingRole
+              ? t("actions.grantRole.submitting")
+              : t("actions.grantRole.submit")}
+          </form.VerificationButton>
+        }
         onCancel={handleCancel}
-        submitLabel="Grant role"
-        isSubmitting={isPending}
+        isSubmitting={isGrantingRole}
       >
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          }}
-        >
-          <div className="space-y-4">
-            {/* Role Selection Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Select Role</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form.AppField
-                  name="role"
-                  children={(field) => (
-                    <field.RadioField
-                      label=""
-                      options={roleOptions}
-                      variant="card"
-                      className="grid grid-cols-2 gap-4"
-                      required
+        <div className="space-y-4">
+          {/* Role Selection Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">
+                {t("tokens:actions.grantRole.form.selectRoleTitle")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form.AppField
+                name="role"
+                children={(field) => (
+                  <field.RadioField
+                    label=""
+                    options={roleOptions}
+                    variant="card"
+                    className="grid grid-cols-2 gap-4"
+                    required
+                  />
+                )}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Accounts Field Card - Empty for now */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">
+                {t("tokens:actions.grantRole.form.targetAccountsTitle")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form.Field
+                name="accounts"
+                mode="array"
+                children={(field) => {
+                  return (
+                    <ArrayFieldsLayout
+                      values={field.state.value}
+                      onAdd={() => {
+                        field.pushValue("" as EthereumAddress);
+                      }}
+                      onRemove={(_, index) => {
+                        field.removeValue(index);
+                      }}
+                      component={(_address, index) => (
+                        <AddressSelectOrInputToggle>
+                          {({ mode }) => (
+                            <>
+                              {mode === "select" && (
+                                <form.AppField
+                                  name={`accounts[${index}]`}
+                                  children={(field) => (
+                                    <field.AddressSelectField
+                                      scope="user"
+                                      label={t(
+                                        "tokens:actions.grantRole.form.accountLabel"
+                                      )}
+                                      required={true}
+                                    />
+                                  )}
+                                />
+                              )}
+                              {mode === "manual" && (
+                                <form.AppField
+                                  name={`accounts[${index}]`}
+                                  children={(field) => (
+                                    <field.AddressInputField
+                                      label={t(
+                                        "tokens:actions.grantRole.form.accountLabel"
+                                      )}
+                                      required={true}
+                                    />
+                                  )}
+                                />
+                              )}
+                            </>
+                          )}
+                        </AddressSelectOrInputToggle>
+                      )}
+                      addButtonLabel={t(
+                        "tokens:actions.grantRole.form.addAccount"
+                      )}
                     />
-                  )}
-                />
-              </CardContent>
-            </Card>
-
-            {/* Accounts Field Card - Empty for now */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Target Accounts</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form.Field
-                  name="accounts"
-                  mode="array"
-                  children={(field) => {
-                    return (
-                      <ArrayFieldsLayout
-                        values={field.state.value}
-                        onAdd={() => {
-                          field.pushValue("" as EthereumAddress);
-                        }}
-                        onRemove={(_, index) => {
-                          field.removeValue(index);
-                        }}
-                        component={(_address, index) => (
-                          <AddressSelectOrInputToggle>
-                            {({ mode }) => (
-                              <>
-                                {mode === "select" && (
-                                  <form.AppField
-                                    name={`accounts[${index}]`}
-                                    children={(field) => (
-                                      <field.AddressSelectField
-                                        scope="user"
-                                        label="Account"
-                                        required={true}
-                                      />
-                                    )}
-                                  />
-                                )}
-                                {mode === "manual" && (
-                                  <form.AppField
-                                    name={`accounts[${index}]`}
-                                    children={(field) => (
-                                      <field.AddressInputField
-                                        label="Account"
-                                        required={true}
-                                      />
-                                    )}
-                                  />
-                                )}
-                              </>
-                            )}
-                          </AddressSelectOrInputToggle>
-                        )}
-                        addButtonLabel="Add account"
-                      />
-                    );
-                  }}
-                />
-              </CardContent>
-            </Card>
-          </div>
-        </form>
+                  );
+                }}
+              />
+            </CardContent>
+          </Card>
+        </div>
       </BaseActionSheet>
-
-      {/* Verification Dialog */}
-      {showVerification && (
-        <VerificationDialog
-          open={showVerification}
-          onOpenChange={setShowVerification}
-          title="Verify Transaction"
-          description="Please verify your identity to grant the role"
-          onSubmit={async (verification: UserVerification) => {
-            form.setFieldValue("verification", verification);
-            await form.validate("change");
-            if (form.state.isValid) {
-              await form.handleSubmit();
-            }
-          }}
-          onCancel={() => {
-            setShowVerification(false);
-          }}
-        />
-      )}
-    </>
+    </form.AppForm>
   );
 }
