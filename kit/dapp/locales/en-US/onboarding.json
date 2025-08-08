@@ -64,17 +64,23 @@
     "confirm-title": "Confirm identity creation",
     "deployed-toast": "ONCHAINID created successfully!",
     "deploying-toast": "Creating ONCHAINID...",
-    "description": "Deploying your identity contract to the blockchain",
+    "description": "Connect your verified identity to your wallet",
     "failed-toast": "Failed to create ONCHAINID: ",
     "form": {
-      "submit": "Create ONCHAINID",
+      "submit": "Create My ONCHAINID",
       "submitting": "Creating ONCHAINID..."
     },
     "info": "We're creating your ONCHAINID using the identity factory.",
     "info-description": "This creates your identity smart contract on the blockchain—a secure container for your verified credentials.\n\nNo personal data is stored yet. That comes next. For now, we're establishing your unique identity address that only you control.\n\nThis typically takes 10-30 seconds.",
     "success-message": "Your blockchain identity is ready. Next, you can add your verified information to complete KYC compliance.",
     "success-title": "ONCHAINID created successfully",
-    "title": "Creating your ONCHAINID"
+    "title": "Your On-Chain Identity",
+    "deployment-warning": "This process may take up to 2–3 minutes",
+    "transaction-confirmation-info": "You’ll be asked to confirm each transaction using your PIN or OTP.",
+    "body-1": "Your wallet proves that you control access to your assets, but it doesn’t prove who you are.",
+    "body-2": "ONCHAINID is your on-chain identity, securely linked to your wallet. It holds verified information such as your name, country, or KYC status, which are added by trusted sources. These verifications are called “claims” and help the platform meet compliance requirements and protect users.",
+    "body-3": "Think of it as your digital passport for the blockchain: unique, verifiable, and fully under your control.",
+    "body-4": "Creating your ONCHAINID is quick and happens directly on-chain. You can update or complete your identity at any time from your dashboard."
   },
   "sidebar": {
     "description": "Follow these simple steps to unlock the power of tokenization — from wallet creation to platform deployment.",
