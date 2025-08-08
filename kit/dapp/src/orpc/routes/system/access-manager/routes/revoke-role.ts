@@ -108,16 +108,24 @@ export const revokeRole = portalRouter.system.revokeRole
       };
     }
 
-    // Validate all roles exist
-    const roleInfos = uniqueRoles.map((r) => {
-      const roleInfo = getRoleByFieldName(r);
-      if (!roleInfo) {
-        throw errors.NOT_FOUND({
-          message: `Role '${r}' not found`,
-        });
-      }
-      return roleInfo;
-    });
+    // Validate all roles exist and collect all invalid roles
+    const invalidRoles: string[] = [];
+    const roleInfos = uniqueRoles
+      .map((r) => {
+        const roleInfo = getRoleByFieldName(r);
+        if (!roleInfo) {
+          invalidRoles.push(r);
+          return null;
+        }
+        return roleInfo;
+      })
+      .filter((r): r is NonNullable<typeof r> => r !== null);
+
+    if (invalidRoles.length > 0) {
+      throw errors.NOT_FOUND({
+        message: `Roles not found: ${invalidRoles.join(", ")}`,
+      });
+    }
 
     const challengeResponse = await handleChallenge(sender, {
       code: verification.verificationCode,
@@ -129,9 +137,10 @@ export const revokeRole = portalRouter.system.revokeRole
       // Single address, single role - use revokeRole
       const account = uniqueAddresses[0];
       const roleInfo = roleInfos[0];
+      // These checks should never fail due to length validation above
       if (!account || !roleInfo) {
         throw errors.INTERNAL_SERVER_ERROR({
-          message: "Invalid address or role configuration",
+          message: "Unexpected error: Invalid address or role configuration",
         });
       }
       await context.portalClient.mutate(REVOKE_ROLE_MUTATION, {
@@ -144,9 +153,10 @@ export const revokeRole = portalRouter.system.revokeRole
     } else if (uniqueAddresses.length > 1 && uniqueRoles.length === 1) {
       // Multiple addresses, single role - use batchRevokeRole
       const roleInfo = roleInfos[0];
+      // This check should never fail due to length validation above
       if (!roleInfo) {
         throw errors.INTERNAL_SERVER_ERROR({
-          message: "Invalid role configuration",
+          message: "Unexpected error: Invalid role configuration",
         });
       }
       await context.portalClient.mutate(BATCH_REVOKE_ROLE_MUTATION, {
@@ -159,9 +169,10 @@ export const revokeRole = portalRouter.system.revokeRole
     } else if (uniqueAddresses.length === 1 && uniqueRoles.length > 1) {
       // Single address, multiple roles - use revokeMultipleRoles
       const account = uniqueAddresses[0];
+      // This check should never fail due to length validation above
       if (!account) {
         throw errors.INTERNAL_SERVER_ERROR({
-          message: "Invalid address configuration",
+          message: "Unexpected error: Invalid address configuration",
         });
       }
       const roleBytes = roleInfos.map((r) => r.bytes);

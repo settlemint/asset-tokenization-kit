@@ -133,13 +133,14 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
   const issuerOrpcClient = getOrpcClient(await signInWithUser(DEFAULT_ISSUER));
   const issuerMe = await issuerOrpcClient.user.me({});
 
-  const rolesToGrant: ("tokenManager" | "complianceManager")[] = [];
-  if (!issuerMe.userSystemPermissions.roles.tokenManager) {
-    rolesToGrant.push("tokenManager");
-  }
-  if (!issuerMe.userSystemPermissions.roles.complianceManager) {
-    rolesToGrant.push("complianceManager");
-  }
+  const rolesToGrant = [
+    ...(!issuerMe.userSystemPermissions.roles.tokenManager
+      ? ["tokenManager" as const]
+      : []),
+    ...(!issuerMe.userSystemPermissions.roles.complianceManager
+      ? ["complianceManager" as const]
+      : []),
+  ];
 
   if (rolesToGrant.length > 0) {
     await orpClient.system.grantRole({
