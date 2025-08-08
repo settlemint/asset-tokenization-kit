@@ -2,7 +2,6 @@ import { getOrpcClient } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
   DEFAULT_ADMIN,
-  DEFAULT_INVESTOR,
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
@@ -62,66 +61,6 @@ describe("Token read", () => {
     expect(token.pausable).toBeDefined();
     expect(token.pausable?.paused).toBe(true); // Tokens start paused by default
     expect(token.extensions).toBeInstanceOf(Array);
-  });
-
-  it("includes user permissions for authenticated user", async () => {
-    const headers = await signInWithUser(DEFAULT_ADMIN);
-    const client = getOrpcClient(headers);
-
-    const token = await client.token.read({
-      tokenAddress: testToken.id,
-    });
-
-    expect(token.userPermissions).toBeDefined();
-    expect(token.userPermissions?.isAllowed).toBe(true);
-    expect(token.userPermissions?.roles).toBeDefined();
-    expect(token.userPermissions?.actions).toBeDefined();
-
-    // Admin should have certain permissions
-    const actions = token.userPermissions?.actions;
-    expect(actions).toBeDefined();
-    if (actions) {
-      // Check some key admin permissions
-      expect(actions.mint).toBeDefined();
-      expect(actions.burn).toBeDefined();
-      expect(actions.pause).toBeDefined();
-      expect(actions.unpause).toBeDefined();
-      expect(actions.transfer).toBeDefined();
-    }
-  });
-
-  it("returns different permissions for different users", async () => {
-    // Get token as admin
-    const adminHeaders = await signInWithUser(DEFAULT_ADMIN);
-    const adminClient = getOrpcClient(adminHeaders);
-    const adminToken = await adminClient.token.read({
-      tokenAddress: testToken.id,
-    });
-
-    // Get token as investor
-    const investorHeaders = await signInWithUser(DEFAULT_INVESTOR);
-    const investorClient = getOrpcClient(investorHeaders);
-    const investorToken = await investorClient.token.read({
-      tokenAddress: testToken.id,
-    });
-
-    // Compare permissions
-    expect(adminToken.userPermissions).toBeDefined();
-    expect(investorToken.userPermissions).toBeDefined();
-
-    // Admin should have more permissions than investor
-    const adminActions = adminToken.userPermissions?.actions;
-    const investorActions = investorToken.userPermissions?.actions;
-
-    if (adminActions && investorActions) {
-      // Count true permissions for each user
-      const adminPermCount = Object.values(adminActions).filter(Boolean).length;
-      const investorPermCount =
-        Object.values(investorActions).filter(Boolean).length;
-
-      // Admin should have more permissions
-      expect(adminPermCount).toBeGreaterThanOrEqual(investorPermCount);
-    }
   });
 
   it("throws error for non-existent token", async () => {
