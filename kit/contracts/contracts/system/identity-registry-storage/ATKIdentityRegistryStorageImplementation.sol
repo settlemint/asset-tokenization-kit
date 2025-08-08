@@ -275,6 +275,7 @@ contract ATKIdentityRegistryStorageImplementation is
         _identityWalletsIndex[_userAddress] = _identityWallets.length;
 
         emit IdentityStored(_userAddress, _identity);
+        emit CountryModified(_userAddress, _country);
     }
 
     /// @inheritdoc IERC3643IdentityRegistryStorage

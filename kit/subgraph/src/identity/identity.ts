@@ -69,7 +69,7 @@ export function handleClaimAdded(event: ClaimAdded): void {
   }
   identityClaim.issuer = fetchIdentity(event.params.issuer).id;
   identityClaim.uri = event.params.uri;
-  identityClaim.signature = event.params.signature;
+  identityClaim.signature = event.params.signature.toHexString();
   identityClaim.save();
 
   // Decode claim data and create IdentityClaimValue entities
@@ -111,7 +111,7 @@ export function handleClaimChanged(event: ClaimChanged): void {
   const identityClaim = fetchIdentityClaim(identity, event.params.claimId);
   identityClaim.issuer = fetchIdentity(event.params.issuer).id;
   identityClaim.uri = event.params.uri;
-  identityClaim.signature = event.params.signature;
+  identityClaim.signature = event.params.signature.toHexString();
   identityClaim.save();
 
   // Get old price before updating claim
@@ -226,7 +226,7 @@ export function handleClaimRevoked(event: ClaimRevoked): void {
   const identityClaims = identity.claims.load();
   for (let i = 0; i < identityClaims.length; i++) {
     const identityClaim = identityClaims[i];
-    if (identityClaim.signature.equals(event.params.signature)) {
+    if (identityClaim.signature == event.params.signature.toHexString()) {
       identityClaim.revoked = true;
       identityClaim.save();
       break;

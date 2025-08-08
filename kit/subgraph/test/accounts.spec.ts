@@ -1,0 +1,83 @@
+import { describe, expect, it } from "bun:test";
+import { theGraphClient, theGraphGraphql } from "./utils/thegraph-client";
+
+describe("Accounts", () => {
+  it("all accounts which are not contracts should have an identity and kyc/aml claims", async () => {
+    const query = theGraphGraphql(
+      `query {
+      accounts(where: { identity_not: null, isContract: false }) {
+        id
+        identity {
+          id
+          claims {
+            name
+            revoked
+          }
+        }
+      }
+    }
+  `
+    );
+    const response = await theGraphClient.request(query);
+    const accountsWithClaims = response.accounts.filter(
+      (account) => (account.identity?.claims?.length ?? 0) > 0
+    );
+    expect(accountsWithClaims.length).toBe(6);
+    for (const account of accountsWithClaims) {
+      const claims = account.identity?.claims.map((claim) => claim.name);
+      expect(claims?.sort()).toEqual(["aml", "kyc"]);
+    }
+  });
+
+  it("recovered accounts should have a lost and new account", async () => {
+    const query = theGraphGraphql(
+      `query {
+        accounts(where: { isLost: true }) {
+          id
+          isLost
+          recoveredAccount { id isLost}
+        }
+      }
+    `
+    );
+    const response = await theGraphClient.request(query);
+    expect(response.accounts).toEqual([
+      {
+        id: expect.any(String),
+        isLost: true,
+        recoveredAccount: {
+          id: expect.any(String),
+          isLost: false,
+        },
+      },
+    ]);
+  });
+
+  it("all accounts which are in the identity registry should have a country", async () => {
+    const response = await theGraphClient.request(
+      theGraphGraphql(
+        `query {
+          accounts(where: {identity_not: null}) {
+            id
+            country
+            isContract
+            identity {
+              id
+              registryStorage {
+                id
+              }
+            }
+          }
+        }
+    `
+      )
+    );
+    const accountsInIdentityRegistry = response.accounts.filter(
+      (account) => account.identity?.registryStorage?.id
+    );
+    expect(accountsInIdentityRegistry.length).toBeGreaterThanOrEqual(1);
+    expect(accountsInIdentityRegistry.every((account) => account.country)).toBe(
+      true
+    );
+  });
+});

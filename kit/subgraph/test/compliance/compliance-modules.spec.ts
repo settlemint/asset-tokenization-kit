@@ -125,7 +125,8 @@ describe("Compliance Modules", () => {
     );
   });
 
-  it("should receive the list of globally bypassed i", async () => {
+  it("should receive the list of globally bypassed accounts", async () => {
+    // There is one account which is not a contract and is globally bypassed (owner actor)
     const query = theGraphGraphql(
       `query {
         systems {

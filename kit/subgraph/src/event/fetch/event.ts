@@ -13,9 +13,10 @@ export function convertEthereumValue(value: ethereum.Value): string {
     return value.toAddress().toHexString();
   } else if (value.kind == ethereum.ValueKind.BOOL) {
     return value.toBoolean().toString();
-  } else if (value.kind == ethereum.ValueKind.BYTES) {
-    return value.toBytes().toString();
-  } else if (value.kind == ethereum.ValueKind.FIXED_BYTES) {
+  } else if (
+    value.kind == ethereum.ValueKind.BYTES ||
+    value.kind == ethereum.ValueKind.FIXED_BYTES
+  ) {
     return value.toBytes().toHexString();
   } else if (value.kind == ethereum.ValueKind.INT) {
     return value.toBigInt().toString();
@@ -67,7 +68,11 @@ export function fetchEvent(event: ethereum.Event, eventType: string): Event {
   for (let i = 0; i < event.parameters.length; i++) {
     const param = event.parameters[i];
     if (param.value.kind == ethereum.ValueKind.ADDRESS) {
-      const address = getAccount(param.value.toAddress());
+      const paramAddress = param.value.toAddress();
+      if (paramAddress == Address.zero()) {
+        continue;
+      }
+      const address = getAccount(paramAddress);
       if (param.name == "sender") {
         entry.sender = address.id;
       }
