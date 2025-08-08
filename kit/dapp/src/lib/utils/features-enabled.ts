@@ -19,6 +19,9 @@ export const hasAllowlist = (assetType: AssetType): boolean =>
 export const hasUnderlyingAssets = (assetType: AssetType): boolean =>
   assetType === "fund";
 
+export const hasDenominationAsset = (assetType: AssetType): boolean =>
+  assetType === "bond";
+
 /**
  * Checks if an asset type supports yield functionality
  */
