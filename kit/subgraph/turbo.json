@@ -22,7 +22,7 @@
     },
     "publish": {
       "cache": false,
-      "dependsOn": ["package", "^publish"]
+      "dependsOn": ["package", "^publish", "compile"]
     },
     "publish:test": {
       "cache": false,
