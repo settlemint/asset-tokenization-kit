@@ -13,6 +13,7 @@ import { SelectComplianceModules } from "@/components/asset-designer/asset-desig
 import { Summary } from "@/components/asset-designer/asset-designer-wizard/summary/summary";
 import { StepLayout } from "@/components/stepper/step-layout";
 import {
+  flattenSteps,
   getNextStep,
   getPreviousStep,
   getStepById,
@@ -39,7 +40,7 @@ export const AssetDesignerWizard = () => {
     orpc.system.complianceModuleList.queryOptions({ input: {} })
   );
   const { t } = useTranslation(["asset-designer"]);
-  const steps = useAssetDesignerSteps();
+  const { stepsOrGroups } = useAssetDesignerSteps();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { mutateAsync: createToken } = useMutation(
@@ -102,13 +103,14 @@ export const AssetDesignerWizard = () => {
   });
 
   const stepId = useStore(form.store, (state) => state.values.step);
-  const currentStep = getStepById(steps, stepId);
+  const flatSteps = flattenSteps(stepsOrGroups);
+  const currentStep = getStepById(flatSteps, stepId);
   const incrementStep = () => {
-    const nextStep = getNextStep(steps, currentStep);
+    const nextStep = getNextStep(flatSteps, currentStep);
     form.setFieldValue("step", nextStep.id);
   };
   const decrementStep = () => {
-    const previousStep = getPreviousStep(steps, currentStep);
+    const previousStep = getPreviousStep(flatSteps, currentStep);
     form.setFieldValue("step", previousStep.id);
   };
 
@@ -156,7 +158,7 @@ export const AssetDesignerWizard = () => {
       <StepLayout
         title={t("wizard.title")}
         description={t("wizard.description")}
-        stepsOrGroups={steps}
+        stepsOrGroups={stepsOrGroups}
         currentStep={currentStep}
         onStepSelect={(step) => {
           form.setFieldValue("step", step.id);

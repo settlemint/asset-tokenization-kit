@@ -1,4 +1,4 @@
-import type { Step } from "@/components/stepper/types";
+import type { StepOrGroup } from "@/components/stepper/types";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
@@ -10,62 +10,116 @@ export const AssetDesignerSteps = [
   "summary",
 ] as const;
 
+export const AssetDesignerStepGroups = [
+  "chooseAssetType",
+  "configureAssetDetails",
+  "compliance",
+  "summary",
+] as const;
+
 const AssetDesignerStepsSchema = z.enum(AssetDesignerSteps);
 export type AssetDesignerStepsType = z.infer<typeof AssetDesignerStepsSchema>;
+
+const _AssetDesignerStepGroupsSchema = z.enum(AssetDesignerStepGroups);
+export type AssetDesignerStepGroupsType = z.infer<
+  typeof _AssetDesignerStepGroupsSchema
+>;
 
 export const AssetDesignerStepSchema = z.object({
   step: AssetDesignerStepsSchema,
 });
 
+interface UseAssetDesignerStepsReturn {
+  stepsOrGroups: StepOrGroup<
+    AssetDesignerStepsType,
+    AssetDesignerStepGroupsType
+  >[];
+}
+
 /**
- * Hook that provides translated steps for the Asset Designer wizard.
+ * Hook that provides translated grouped steps for the Asset Designer wizard.
  *
- * @returns Array of steps with translated labels and descriptions
+ * @returns Array of step groups with translated labels and descriptions
  *
  * @example
  * ```tsx
  * function AssetDesignerWizard() {
- *   const steps = useAssetDesignerSteps();
+ *   const { stepsOrGroups } = useAssetDesignerSteps();
  *
  *   return (
- *     <Stepper steps={steps} currentStep="selectAssetType" />
+ *     <Stepper stepsOrGroups={stepsOrGroups} currentStep="assetClass" />
  *   );
  * }
  * ```
  */
-export function useAssetDesignerSteps(): Step<AssetDesignerStepsType>[] {
+export function useAssetDesignerSteps(): UseAssetDesignerStepsReturn {
   const { t } = useTranslation("asset-designer");
 
-  return [
+  const stepsOrGroups = [
     {
-      step: 1,
-      id: "assetClass",
-      label: t("wizard.steps.assetClass.title"),
-      description: t("wizard.steps.assetClass.description"),
+      id: "chooseAssetType",
+      label: t("wizard.groups.chooseAssetType.title"),
+      description: t("wizard.groups.chooseAssetType.description"),
+      steps: [
+        {
+          id: "assetClass",
+          label: t("wizard.steps.assetClass.title"),
+          description: t("wizard.steps.assetClass.description"),
+          step: 1,
+        },
+        {
+          id: "assetType",
+          label: t("wizard.steps.assetType.title"),
+          description: t("wizard.steps.assetType.description"),
+          step: 2,
+        },
+      ],
     },
     {
-      step: 2,
-      id: "assetType",
-      label: t("wizard.steps.assetType.title"),
-      description: t("wizard.steps.assetType.description"),
+      id: "configureAssetDetails",
+      label: t("wizard.groups.configureAssetDetails.title"),
+      description: t("wizard.groups.configureAssetDetails.description"),
+      steps: [
+        {
+          id: "assetBasics",
+          label: t("wizard.steps.assetBasics.title"),
+          description: t("wizard.steps.assetBasics.description"),
+          step: 3,
+        },
+      ],
     },
     {
-      step: 3,
-      id: "assetBasics",
-      label: t("wizard.steps.assetBasics.title"),
-      description: t("wizard.steps.assetBasics.description"),
+      id: "compliance",
+      label: t("wizard.groups.compliance.title"),
+      description: t("wizard.groups.compliance.description"),
+      steps: [
+        {
+          id: "complianceModules",
+          label: t("wizard.steps.complianceModules.title"),
+          description: t("wizard.steps.complianceModules.description"),
+          step: 4,
+        },
+      ],
     },
     {
-      step: 4,
-      id: "complianceModules",
-      label: t("wizard.steps.complianceModules.title"),
-      description: t("wizard.steps.complianceModules.description"),
-    },
-    {
-      step: 5,
       id: "summary",
-      label: t("wizard.steps.summary.title"),
-      description: t("wizard.steps.summary.description"),
+      label: t("wizard.groups.summary.title"),
+      description: t("wizard.groups.summary.description"),
+      steps: [
+        {
+          id: "summary",
+          label: t("wizard.steps.summary.title"),
+          description: t("wizard.steps.summary.description"),
+          step: 5,
+        },
+      ],
     },
-  ];
+  ] as const satisfies StepOrGroup<
+    AssetDesignerStepsType,
+    AssetDesignerStepGroupsType
+  >[];
+
+  return {
+    stepsOrGroups,
+  };
 }

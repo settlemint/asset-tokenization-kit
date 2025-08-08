@@ -121,10 +121,22 @@
   "wizard": {
     "description": "We'll guide you through each step to create your tokenized asset with built-in regulatory compliance and investor protection.",
     "groups": {
-      "chooseAssetType": "Choose asset type",
-      "configureAssetDetails": "Configure asset details",
-      "compliance": "Compliance",
-      "summary": "Summary"
+      "chooseAssetType": {
+        "title": "Choose asset type",
+        "description": "Select the asset class and type you want to tokenize"
+      },
+      "configureAssetDetails": {
+        "title": "Configure asset details",
+        "description": "Define basic properties and settings for your asset"
+      },
+      "compliance": {
+        "title": "Compliance",
+        "description": "Set up regulatory modules to meet legal requirements"
+      },
+      "summary": {
+        "title": "Summary",
+        "description": "Review your asset configuration before deployment"
+      }
     },
     "steps": {
       "assetClass": {
