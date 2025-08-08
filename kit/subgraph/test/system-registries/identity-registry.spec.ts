@@ -29,7 +29,6 @@ describe("Identity registry", () => {
               id
               identities {
                 id
-
               }
             }
           }

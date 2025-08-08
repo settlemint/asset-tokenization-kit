@@ -27,6 +27,12 @@ describe("Accounts", () => {
       const claims = account.identity?.claims.map((claim) => claim.name);
       expect(claims?.sort()).toEqual(["aml", "kyc"]);
     }
+
+    // One account (malicious) should have a revoked aml claim
+    const revokedClaims = accountsWithClaims.filter((account) =>
+      account.identity?.claims.find((claim) => claim.revoked)
+    );
+    expect(revokedClaims.length).toBe(1);
   });
 
   it("recovered accounts should have a lost and new account", async () => {
