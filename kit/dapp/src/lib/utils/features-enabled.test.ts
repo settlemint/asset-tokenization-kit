@@ -1,13 +1,13 @@
+import type { AssetType } from "@/lib/zod/validators/asset-types";
 import { describe, expect, test } from "vitest";
 import {
-  hasBlocklist,
   hasAllowlist,
+  hasBlocklist,
+  hasFreeze,
   hasUnderlyingAssets,
   hasYield,
-  hasFreeze,
   isMicaEnabledForAsset,
 } from "./features-enabled";
-import type { AssetType } from "@/lib/zod/validators/asset-types";
 
 describe("hasBlocklist", () => {
   test("returns true for all asset types except deposit", () => {
@@ -37,7 +37,6 @@ describe("hasAllowlist", () => {
 
 describe("hasUnderlyingAssets", () => {
   test("returns true for bond and fund", () => {
-    expect(hasUnderlyingAssets("bond")).toBe(true);
     expect(hasUnderlyingAssets("fund")).toBe(true);
   });
 
@@ -45,6 +44,7 @@ describe("hasUnderlyingAssets", () => {
     expect(hasUnderlyingAssets("equity")).toBe(false);
     expect(hasUnderlyingAssets("stablecoin")).toBe(false);
     expect(hasUnderlyingAssets("deposit")).toBe(false);
+    expect(hasUnderlyingAssets("bond")).toBe(false);
   });
 });
 

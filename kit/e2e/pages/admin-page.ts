@@ -20,7 +20,7 @@ export class AdminPage extends BasePage {
     decimals: string;
     maximumSupply: string;
     faceValue: string;
-    underlyingAsset: string;
+    denominationAsset: string;
     pincode: string;
   }) {
     const nextButton = this.page.getByRole("button", {
@@ -38,17 +38,17 @@ export class AdminPage extends BasePage {
     const formattedDateTime = tomorrow.toISOString().slice(0, 16);
     await this.page.getByLabel("Maturity date").fill(formattedDateTime);
     await this.page
-      .locator('[id="underlyingAsset"]')
+      .locator('[id="denominationAsset"]')
       .waitFor({ state: "visible" });
     await this.page
-      .locator('button[id="underlyingAsset"][data-slot="popover-trigger"]')
+      .locator('button[id="denominationAsset"][data-slot="popover-trigger"]')
       .click();
     await this.page.getByPlaceholder("Search for an asset...").click();
     await this.page
       .getByPlaceholder("Search for an asset...")
-      .fill(options.underlyingAsset);
+      .fill(options.denominationAsset);
     await this.page
-      .getByRole("option", { name: `Avatar ${options.underlyingAsset}` })
+      .getByRole("option", { name: `Avatar ${options.denominationAsset}` })
       .click();
     await nextButton.click();
     await nextButton.click();

@@ -192,12 +192,12 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         // Setup: Prepare bond for redemption
         uint256 redeemAmount = 10 * 10 ** DECIMALS; // 10 bonds
         uint256 denominationAmountNeeded = redeemAmount * faceValue / (10 ** DECIMALS);
-        uint256 totalUnderlyingNeeded = initialSupply * faceValue / (10 ** DECIMALS); // For all bonds
+        uint256 totalDenominationNeeded = initialSupply * faceValue / (10 ** DECIMALS); // For all bonds
 
         vm.startPrank(owner);
 
         // Mint denomination tokens and transfer to bond contract
-        maliciousToken.mint(address(bond), totalUnderlyingNeeded);
+        maliciousToken.mint(address(bond), totalDenominationNeeded);
 
         // Transfer some bonds to user1
         assertTrue(bond.transfer(user1, redeemAmount), "Transfer failed");
@@ -233,12 +233,12 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
      */
     function test_MultipleRedemptionCallsProtected() public {
         uint256 redeemAmount = 5 * 10 ** DECIMALS; // 5 bonds
-        uint256 totalUnderlyingNeeded = initialSupply * faceValue / (10 ** DECIMALS); // For all bonds
+        uint256 totalDenominationNeeded = initialSupply * faceValue / (10 ** DECIMALS); // For all bonds
 
         vm.startPrank(owner);
 
         // Mint enough denomination tokens for multiple redemptions
-        maliciousToken.mint(address(bond), totalUnderlyingNeeded);
+        maliciousToken.mint(address(bond), totalDenominationNeeded);
 
         // Transfer bonds to user1
         assertTrue(bond.transfer(user1, redeemAmount * 2), "Transfer failed");
@@ -269,11 +269,11 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
     function test_RedeemMoreThanAvailable() public {
         uint256 redeemAmount = 10 * 10 ** DECIMALS;
         uint256 excessAmount = 15 * 10 ** DECIMALS;
-        uint256 totalUnderlyingNeeded = initialSupply * faceValue / (10 ** DECIMALS);
+        uint256 totalDenominationNeeded = initialSupply * faceValue / (10 ** DECIMALS);
 
         vm.startPrank(owner);
 
-        maliciousToken.mint(address(bond), totalUnderlyingNeeded);
+        maliciousToken.mint(address(bond), totalDenominationNeeded);
         assertTrue(bond.transfer(user1, redeemAmount), "Transfer failed");
 
         vm.warp(maturityDate + 1);
@@ -310,12 +310,12 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
      */
     function test_RedeemInsufficientDenominationAssetBalance() public {
         uint256 redeemAmount = 10 * 10 ** DECIMALS;
-        uint256 totalUnderlyingNeeded = initialSupply * faceValue / (10 ** DECIMALS);
+        uint256 totalDenominationNeeded = initialSupply * faceValue / (10 ** DECIMALS);
 
         vm.startPrank(owner);
 
         // First provide enough tokens to mature the bond
-        maliciousToken.mint(address(bond), totalUnderlyingNeeded);
+        maliciousToken.mint(address(bond), totalDenominationNeeded);
         assertTrue(bond.transfer(user1, redeemAmount), "Transfer failed");
 
         vm.warp(maturityDate + 1);
@@ -346,11 +346,11 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
     function test_StateChangesAppliedBeforeExternalCall() public {
         uint256 redeemAmount = 10 * 10 ** DECIMALS;
         uint256 denominationAmountNeeded = redeemAmount * faceValue / (10 ** DECIMALS);
-        uint256 totalUnderlyingNeeded = initialSupply * faceValue / (10 ** DECIMALS);
+        uint256 totalDenominationNeeded = initialSupply * faceValue / (10 ** DECIMALS);
 
         vm.startPrank(owner);
 
-        maliciousToken.mint(address(bond), totalUnderlyingNeeded);
+        maliciousToken.mint(address(bond), totalDenominationNeeded);
         assertTrue(bond.transfer(user1, redeemAmount), "Transfer failed");
 
         vm.warp(maturityDate + 1);
@@ -376,7 +376,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
             "Redeemed amount not tracked correctly"
         );
         assertEq(
-            maliciousToken.balanceOf(user1), denominationAmountNeeded, "Underlying tokens not transferred correctly"
+            maliciousToken.balanceOf(user1), denominationAmountNeeded, "Denomination tokens not transferred correctly"
         );
     }
 
@@ -386,11 +386,11 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
     function test_RedeemAllReentrancyProtection() public {
         uint256 userBonds = 20 * 10 ** DECIMALS;
         uint256 denominationAmountNeeded = userBonds * faceValue / (10 ** DECIMALS);
-        uint256 totalUnderlyingNeeded = initialSupply * faceValue / (10 ** DECIMALS);
+        uint256 totalDenominationNeeded = initialSupply * faceValue / (10 ** DECIMALS);
 
         vm.startPrank(owner);
 
-        maliciousToken.mint(address(bond), totalUnderlyingNeeded);
+        maliciousToken.mint(address(bond), totalDenominationNeeded);
         assertTrue(bond.transfer(user1, userBonds), "Transfer failed");
 
         vm.warp(maturityDate + 1);
@@ -424,12 +424,12 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
      */
     function test_FailedTransferHandling() public {
         uint256 redeemAmount = 10 * 10 ** DECIMALS;
-        uint256 totalUnderlyingNeeded = initialSupply * faceValue / (10 ** DECIMALS);
+        uint256 totalDenominationNeeded = initialSupply * faceValue / (10 ** DECIMALS);
 
         vm.startPrank(owner);
 
         // Mint enough to mature the bond
-        maliciousToken.mint(address(bond), totalUnderlyingNeeded);
+        maliciousToken.mint(address(bond), totalDenominationNeeded);
         assertTrue(bond.transfer(user1, redeemAmount), "Transfer failed");
 
         vm.warp(maturityDate + 1);
@@ -456,11 +456,11 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
      */
     function test_GasConsumptionWithReentrancyProtection() public {
         uint256 redeemAmount = 1 * 10 ** DECIMALS;
-        uint256 totalUnderlyingNeeded = initialSupply * faceValue / (10 ** DECIMALS);
+        uint256 totalDenominationNeeded = initialSupply * faceValue / (10 ** DECIMALS);
 
         vm.startPrank(owner);
 
-        maliciousToken.mint(address(bond), totalUnderlyingNeeded);
+        maliciousToken.mint(address(bond), totalDenominationNeeded);
         assertTrue(bond.transfer(user1, redeemAmount), "Transfer failed");
 
         vm.warp(maturityDate + 1);
@@ -513,12 +513,12 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
         uint256 redeemAmount = 10 * 10 ** DECIMALS;
         uint256 denominationAmountNeeded = redeemAmount * faceValue / (10 ** DECIMALS);
-        uint256 totalUnderlyingNeeded = initialSupply * faceValue / (10 ** DECIMALS);
+        uint256 totalDenominationNeeded = initialSupply * faceValue / (10 ** DECIMALS);
 
         vm.startPrank(owner);
 
         normalBond.mint(owner, initialSupply);
-        normalToken.mint(address(normalBond), totalUnderlyingNeeded);
+        normalToken.mint(address(normalBond), totalDenominationNeeded);
         assertTrue(normalBond.transfer(user1, redeemAmount), "Transfer failed");
 
         vm.warp(maturityDate + 1);

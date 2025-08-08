@@ -8,12 +8,14 @@ import { waitForEvent } from "../../../utils/wait-for-event";
 import { approve } from "../core/approve";
 import { mint } from "../core/mint";
 
-export const topupUnderlyingAsset = async (
+export const topupDenominationAsset = async (
   asset: Asset<any>,
-  underlyingAsset: Asset<any>,
+  denominationAsset: Asset<any>,
   amount: bigint
 ) => {
-  console.log(`[Topup underlying asset] → Starting underlying asset topup...`);
+  console.log(
+    `[Topup denomination asset] → Starting denomination asset topup...`
+  );
 
   const tokenContract = owner.getContractInstance({
     address: asset.address,
@@ -21,26 +23,26 @@ export const topupUnderlyingAsset = async (
   });
 
   const scheduleAddress = await tokenContract.read.yieldSchedule();
-  await mint(underlyingAsset, owner, amount);
-  await approve(underlyingAsset, scheduleAddress, amount);
+  await mint(denominationAsset, owner, amount);
+  await approve(denominationAsset, scheduleAddress, amount);
 
   const scheduleContract = owner.getContractInstance({
     address: scheduleAddress,
     abi: ATKContracts.ismartFixedYieldSchedule,
   });
 
-  const topUpAmount = toBaseUnits(amount, underlyingAsset.decimals);
+  const topUpAmount = toBaseUnits(amount, denominationAsset.decimals);
 
   const topUpTransactionHash = await withDecodedRevertReason(() =>
-    scheduleContract.write.topUpUnderlyingAsset([topUpAmount])
+    scheduleContract.write.topUpDenominationAsset([topUpAmount])
   );
   await waitForEvent({
     transactionHash: topUpTransactionHash,
     contract: scheduleContract,
-    eventName: "UnderlyingAssetTopUp",
+    eventName: "DenominationAssetTopUp",
   });
 
   console.log(
-    `[Topup underlying asset] ✓ ${asset.symbol} underlying asset topped up with ${formatBaseUnits(topUpAmount, underlyingAsset.decimals)} ${underlyingAsset.symbol}`
+    `[Topup denomination asset] ✓ ${asset.symbol} denomination asset topped up with ${formatBaseUnits(topUpAmount, denominationAsset.decimals)} ${denominationAsset.symbol}`
   );
 };

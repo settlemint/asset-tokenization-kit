@@ -4,17 +4,17 @@ import { fetchToken } from "../../token/fetch/token";
 import { updateTokenBondStats } from "../token-bond-stats";
 
 /**
- * Update stats for bond when underlying asset balance changes.
+ * Update stats for bond when denomination asset balance changes.
  */
-export function updateBondStatsForUnderlyingAssetBalanceChange(
-  underlyingAsset: Token,
+export function updateBondStatsForDenominationAssetBalanceChange(
+  denominationAsset: Token,
   bond: Address
 ): void {
   // Check if the bond whose balance changed is a bond contract
   const potentialBondToken = TokenBond.load(bond);
   if (potentialBondToken != null) {
-    // Check if this bond uses the transferred token as underlying asset
-    if (potentialBondToken.denominationAsset == underlyingAsset.id) {
+    // Check if this bond uses the transferred token as denomination asset
+    if (potentialBondToken.denominationAsset == denominationAsset.id) {
       const token = fetchToken(Address.fromBytes(potentialBondToken.id));
       updateTokenBondStats(token);
     }

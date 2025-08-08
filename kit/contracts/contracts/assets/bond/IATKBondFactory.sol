@@ -18,8 +18,8 @@ interface IATKBondFactory is IATKTokenFactory {
     /// @param decimals The number of decimals for the bond tokens.
     /// @param cap The maximum total supply of the bond tokens.
     /// @param maturityDate The Unix timestamp representing the bond's maturity date.
-    /// @param faceValue The face value of each bond token in the underlying asset's base units.
-    /// @param denominationAsset The address of the ERC20 token used as the underlying asset for the bond.
+    /// @param faceValue The face value of each bond token in the denomination asset's base units.
+    /// @param denominationAsset The address of the ERC20 token used as the denomination asset for the bond.
     /// @param countryCode The ISO 3166-1 numeric country code for jurisdiction
     event BondCreated(
         address indexed sender,

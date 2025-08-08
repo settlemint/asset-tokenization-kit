@@ -6,14 +6,14 @@ import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { toBaseUnits } from "../../../utils/to-base-units";
 import { waitForEvent } from "../../../utils/wait-for-event";
 
-export const withdrawnUnderlyingAsset = async (
+export const withdrawnDenominationAsset = async (
   asset: Asset<any>,
-  underlyingAsset: Asset<any>,
+  denominationAsset: Asset<any>,
   to: Address,
   amount: bigint
 ) => {
   console.log(
-    `[Withdrawn underlying asset] → Starting underlying asset withdrawal...`
+    `[Withdrawn denomination asset] → Starting denomination asset withdrawal...`
   );
 
   const tokenContract = owner.getContractInstance({
@@ -27,17 +27,17 @@ export const withdrawnUnderlyingAsset = async (
     abi: ATKContracts.ismartFixedYieldSchedule,
   });
 
-  const withdrawnAmount = toBaseUnits(amount, underlyingAsset.decimals);
+  const withdrawnAmount = toBaseUnits(amount, denominationAsset.decimals);
   const transactionHash = await withDecodedRevertReason(() =>
-    scheduleContract.write.withdrawUnderlyingAsset([to, withdrawnAmount])
+    scheduleContract.write.withdrawDenominationAsset([to, withdrawnAmount])
   );
   await waitForEvent({
     transactionHash,
     contract: scheduleContract,
-    eventName: "UnderlyingAssetWithdrawn",
+    eventName: "DenominationAssetWithdrawn",
   });
 
   console.log(
-    `[Withdrawn underlying asset] ✓ ${asset.symbol} underlying asset withdrawn to ${to} with amount ${amount} ${underlyingAsset.symbol}`
+    `[Withdrawn denomination asset] ✓ ${asset.symbol} denomination asset withdrawn to ${to} with amount ${amount} ${denominationAsset.symbol}`
   );
 };

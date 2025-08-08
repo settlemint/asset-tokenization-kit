@@ -22,7 +22,7 @@ Fixed-term debt instruments with maturity dates and redemption features
 **Key Features:**
 
 - Fixed maturity date and face value
-- Underlying asset backing (collateral)
+- Denomination asset backing (collateral)
 - Yield distribution capabilities
 - Redemption at maturity
 - Historical balance tracking
@@ -56,8 +56,7 @@ Fixed-term debt instruments with maturity dates and redemption features
 #### Redemption Mechanics
 
 - **Maturity Requirement**: Only redeemable after maturation
-- **Collateral Check**: Ensures sufficient underlying assets
-- **Proportional Redemption**: Tokens redeemed for proportional underlying
+- **Proportional Redemption**: Tokens redeemed for proportional denomination
   assets
 
 **Use Cases:**
