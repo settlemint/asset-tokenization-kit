@@ -1,10 +1,13 @@
-import { store } from "@graphprotocol/graph-ts";
+import { Bytes, store } from "@graphprotocol/graph-ts";
 import {
+  AddressAddedToBypassList as AddressAddedToBypassListEvent,
+  AddressRemovedFromBypassList as AddressRemovedFromBypassListEvent,
   GlobalComplianceModuleAdded as GlobalComplianceModuleAddedEvent,
   GlobalComplianceModuleParametersUpdated as GlobalComplianceModuleParametersUpdatedEvent,
   GlobalComplianceModuleRemoved as GlobalComplianceModuleRemovedEvent,
 } from "../../generated/templates/Compliance/Compliance";
 import { fetchEvent } from "../event/fetch/event";
+import { fetchCompliance } from "./fetch/compliance";
 import { fetchComplianceModule } from "./fetch/compliance-module";
 import {
   fetchComplianceModuleParameters,
@@ -67,4 +70,35 @@ export function handleGlobalComplianceModuleParametersUpdated(
     complianceModule,
     event.params.params
   );
+}
+
+export function handleAddressAddedToBypassList(
+  event: AddressAddedToBypassListEvent
+): void {
+  fetchEvent(event, "AddressAddedToBypassList");
+
+  const compliance = fetchCompliance(event.address);
+  if (!compliance.bypassList.includes(event.params.account)) {
+    const newBypassList = compliance.bypassList.concat([event.params.account]);
+    compliance.bypassList = newBypassList;
+  }
+  compliance.save();
+}
+
+export function handleAddressRemovedFromBypassList(
+  event: AddressRemovedFromBypassListEvent
+): void {
+  fetchEvent(event, "AddressRemovedFromBypassList");
+
+  const compliance = fetchCompliance(event.address);
+  if (compliance.bypassList.includes(event.params.account)) {
+    const newBypassList: Bytes[] = [];
+    for (let i = 0; i < compliance.bypassList.length; i++) {
+      if (!compliance.bypassList[i].equals(event.params.account)) {
+        newBypassList.push(compliance.bypassList[i]);
+      }
+    }
+    compliance.bypassList = newBypassList;
+  }
+  compliance.save();
 }

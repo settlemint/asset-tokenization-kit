@@ -17,9 +17,9 @@ describe("Identity", () => {
     );
     const response = await theGraphClient.request(query);
     expect(response.tokens.length).toBe(6);
-    expect(response.tokens.every((token) => token.identity !== null)).toBe(
-      true
-    );
+    expect(
+      response.tokens.every((token) => token.account.identity !== null)
+    ).toBe(true);
   });
 
   it("there should be no identities and accounts with the same address", async () => {

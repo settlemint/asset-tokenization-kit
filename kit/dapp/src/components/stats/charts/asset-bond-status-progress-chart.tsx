@@ -14,7 +14,7 @@ export interface AssetBondStatusProgressChartProps {
  *
  * Displays bond status progress as a donut chart showing different states:
  * - Issuing: Progress of bond issuance against cap
- * - Active: Progress of underlying asset accumulation for redemption
+ * - Active: Progress of denomination asset accumulation for redemption
  * - Matured: Progress of bond redemption
  *
  * This component follows the Strategy Pattern with Custom Hooks:

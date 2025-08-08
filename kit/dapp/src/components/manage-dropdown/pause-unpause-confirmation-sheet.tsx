@@ -1,46 +1,147 @@
 import { BaseActionSheet } from "@/components/manage-dropdown/base-action-sheet";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { VerificationButton } from "@/components/verification-dialog/verification-button";
+import { orpc } from "@/orpc/orpc-client";
+import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 interface PauseUnpauseConfirmationSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   asset: Token;
-  action: "pause" | "unpause";
-  onProceed: () => void;
-  onCancel: () => void;
 }
 
 export function PauseUnpauseConfirmationSheet({
   open,
   onOpenChange,
   asset,
-  action,
-  onProceed,
-  onCancel,
 }: PauseUnpauseConfirmationSheetProps) {
   const { t } = useTranslation(["tokens", "common"]);
+  const queryClient = useQueryClient();
   const isPaused = asset.pausable.paused;
+  const action = isPaused ? "unpause" : "pause";
+
+  const title =
+    action === "pause"
+      ? t("tokens:actions.pause.title")
+      : t("tokens:actions.unpause.title");
+  const description =
+    action === "pause"
+      ? t("tokens:actions.pause.description")
+      : t("tokens:actions.unpause.description");
+  const submit =
+    action === "pause"
+      ? t("tokens:actions.pause.submit")
+      : t("tokens:actions.unpause.submit");
+
+  // Pause mutation
+  const { mutateAsync: pauseAsset, isPending: isPausing } = useMutation(
+    orpc.token.pause.mutationOptions({
+      onSuccess: async () => {
+        // Invalidate both single asset and list queries
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: orpc.token.read.key({
+              input: { tokenAddress: asset.id },
+            }),
+          }),
+          queryClient.invalidateQueries({
+            queryKey: orpc.token.list.key(),
+          }),
+        ]);
+      },
+    })
+  );
+
+  // Unpause mutation
+  const { mutateAsync: unpauseAsset, isPending: isUnpausing } = useMutation(
+    orpc.token.unpause.mutationOptions({
+      onSuccess: async () => {
+        // Invalidate both single asset and list queries
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: orpc.token.read.key({
+              input: { tokenAddress: asset.id },
+            }),
+          }),
+          queryClient.invalidateQueries({
+            queryKey: orpc.token.list.key(),
+          }),
+        ]);
+      },
+    })
+  );
+
+  const handleSubmit = (verification: UserVerification) => {
+    if (action === "pause") {
+      toast.promise(
+        pauseAsset({
+          contract: asset.id,
+          verification,
+        }),
+        {
+          success: t("actions.pause.messages.success", {
+            defaultValue: `Asset '${asset.name} (${asset.symbol})' paused successfully`,
+            name: asset.name,
+            symbol: asset.symbol,
+          }),
+          error: t("actions.pause.messages.error"),
+          loading: t("actions.pause.messages.submitting"),
+        }
+      );
+    } else {
+      toast.promise(
+        unpauseAsset({
+          contract: asset.id,
+          verification,
+        }),
+        {
+          success: t("actions.unpause.messages.success", {
+            defaultValue: `Asset '${asset.name} (${asset.symbol})' unpaused successfully`,
+            name: asset.name,
+            symbol: asset.symbol,
+          }),
+          error: t("actions.unpause.messages.error"),
+          loading: t("actions.unpause.messages.submitting"),
+        }
+      );
+    }
+    handleClose();
+  };
+
+  const handleClose = useCallback(() => {
+    onOpenChange(false);
+  }, [onOpenChange]);
+
+  const handleCancel = useCallback(() => {
+    handleClose();
+  }, [handleClose]);
 
   return (
     <BaseActionSheet
       open={open}
       onOpenChange={onOpenChange}
       asset={asset}
-      title={
-        action === "pause"
-          ? t("tokens:actions.pause.title")
-          : t("tokens:actions.unpause.title")
+      title={title}
+      description={description}
+      onCancel={handleCancel}
+      submit={
+        <VerificationButton
+          verification={{
+            title,
+            description,
+          }}
+          disabled={isPausing || isUnpausing}
+          onSubmit={handleSubmit}
+        >
+          {submit}
+        </VerificationButton>
       }
-      description={
-        action === "pause"
-          ? t("tokens:actions.pause.description")
-          : t("tokens:actions.unpause.description")
-      }
-      onProceed={onProceed}
-      onCancel={onCancel}
     >
       {/* State Change Visualization Card */}
       <Card>

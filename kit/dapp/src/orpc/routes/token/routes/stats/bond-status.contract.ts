@@ -10,7 +10,7 @@ export const statsBondStatusContract = baseContract
     path: "/token/{tokenAddress}/stats/bond-status",
     description: "Get bond status statistics for a specific token",
     successDescription:
-      "Bond status statistics including underlying asset information",
+      "Bond status statistics including denomination asset information",
     tags: ["token", "stats", "bond"],
   })
   .input(StatsBondStatusInputSchema)

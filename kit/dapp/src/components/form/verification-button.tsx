@@ -27,9 +27,11 @@ export function VerificationButton({
       selector={(state) => ({
         isSubmitting: state.isSubmitting,
         isValid: state.isValid,
+        isDirty: state.isDirty,
+        errors: state.errors,
       })}
     >
-      {({ isSubmitting, isValid }) => {
+      {({ isSubmitting, isValid, isDirty, errors }) => {
         return (
           <VerificationButtonComponent
             verification={verification}
@@ -43,12 +45,14 @@ export function VerificationButton({
               }
             }}
             disabled={
-              typeof disabled === "function"
+              (typeof disabled === "function"
                 ? disabled({
-                    isDirty: form.state.isDirty,
-                    errors: form.state.errors,
+                    isDirty,
+                    errors,
                   })
-                : disabled || isSubmitting || !isValid
+                : disabled) ||
+              isSubmitting ||
+              !isValid
             }
           >
             {children}

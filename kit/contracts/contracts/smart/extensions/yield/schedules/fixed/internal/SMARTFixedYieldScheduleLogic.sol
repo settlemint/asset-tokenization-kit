@@ -14,16 +14,16 @@ import { ISMARTYield } from "../../../ISMARTYield.sol";
 /// `ISMARTYield`).
 /// It allows token holders to accrue yield at a predetermined fixed `rate` over specified `interval`s between a
 /// `startDate` and `endDate`.
-/// Yield is paid out in an `underlyingAsset` (which can be the token itself or another ERC20 token).
+/// Yield is paid out in an `denominationAsset` (which can be the token itself or another ERC20 token).
 /// @dev This contract manages the entire lifecycle of a fixed yield distribution:
 /// - **Configuration**: `startDate`, `endDate`, `rate`, `interval`, and the `token` it serves.
 /// - **Period Management**: Calculates and uses period end timestamps for yield accrual.
 /// - **Yield Calculation**: Leverages `balanceOfAt` and `yieldBasisPerUnit` from the `ISMARTYield` token to determine
 /// yield per period for each holder.
 /// - **Claiming**: Token holders can call `claimYield()` to receive their accrued yield.
-/// - **Funding**: The contract can be topped up with the `underlyingAsset` via `topUpUnderlyingAsset()` to ensure
+/// - **Funding**: The contract can be topped up with the `denominationAsset` via `topUpDenominationAsset()` to ensure
 /// payouts can be made.
-/// - **Administration**: Includes `AccessControl` for owner-restricted functions like `withdrawUnderlyingAsset` and
+/// - **Administration**: Includes `AccessControl` for owner-restricted functions like `withdrawDenominationAsset` and
 /// `pause()`/`unpause()`.
 /// - **Meta-transactions**: Inherits `ERC2771Context` to support gasless transactions if a trusted forwarder is
 /// configured.
@@ -56,7 +56,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
     /// @notice The ERC20 token used for making yield payments.
     /// @dev This is also immutable and is determined by calling `_token.yieldToken()` in the constructor.
     /// This is the token that will be transferred to holders when they claim yield.
-    IERC20 private _underlyingAsset;
+    IERC20 private _denominationAsset;
 
     /// @notice The Unix timestamp (seconds since epoch) when the yield schedule starts.
     /// @dev Immutable. Yield calculations and distributions begin from this point.
@@ -86,7 +86,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
     /// Defaults to 0 if no claims have been made.
     mapping(address holder => uint256 lastClaimedPeriod) private _lastClaimedPeriod;
 
-    /// @notice The total cumulative amount of `_underlyingAsset` that has been successfully claimed by all token
+    /// @notice The total cumulative amount of `_denominationAsset` that has been successfully claimed by all token
     /// holders.
     /// @dev This helps in tracking the overall distribution progress and can be used with `totalUnclaimedYield`.
     uint256 private _totalClaimed;
@@ -122,8 +122,8 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
 
         // Set configuration state variables
         _token = ISMARTYield(tokenAddress_);
-        _underlyingAsset = _token.yieldToken(); // Derive underlying asset
-        if (address(_underlyingAsset) == address(0)) revert InvalidUnderlyingAsset();
+        _denominationAsset = _token.yieldToken(); // Derive denomination asset
+        if (address(_denominationAsset) == address(0)) revert InvalidDenominationAsset();
 
         _startDate = startDate_;
         _endDate = endDate_;
@@ -145,7 +145,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         uint256 yieldForNextPeriod = totalYieldForNextPeriod();
 
         emit FixedYieldScheduleSet(
-            startDate_, endDate_, rate_, interval_, _periodEndTimestamps, _underlyingAsset, yieldForNextPeriod
+            startDate_, endDate_, rate_, interval_, _periodEndTimestamps, _denominationAsset, yieldForNextPeriod
         );
     }
 
@@ -387,8 +387,8 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         _lastClaimedPeriod[sender] = lastPeriod; // Update the last period claimed by the user.
         _totalClaimed += totalAmountToClaim; // Increment total yield claimed in the contract.
 
-        // Perform the transfer of the underlying asset to the claimant.
-        _underlyingAsset.safeTransfer(sender, totalAmountToClaim);
+        // Perform the transfer of the denomination asset to the claimant.
+        _denominationAsset.safeTransfer(sender, totalAmountToClaim);
 
         // Calculate the remaining total unclaimed yield in the contract for the event.
         uint256 remainingUnclaimed = totalUnclaimedYield();
@@ -408,48 +408,48 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         );
     }
 
-    /// @notice Implementation of `topUpUnderlyingAsset` from `ISMARTFixedYieldSchedule`
-    /// @dev Internal function to handle topping up the underlying asset
-    /// @param amount The amount of underlying asset to deposit
-    function _topUpUnderlyingAsset(uint256 amount) internal {
-        // Transfer `_underlyingAsset` from the caller to this contract.
-        _underlyingAsset.safeTransferFrom(_msgSender(), address(this), amount);
+    /// @notice Implementation of `topUpDenominationAsset` from `ISMARTFixedYieldSchedule`
+    /// @dev Internal function to handle topping up the denomination asset
+    /// @param amount The amount of denomination asset to deposit
+    function _topUpDenominationAsset(uint256 amount) internal {
+        // Transfer `_denominationAsset` from the caller to this contract.
+        _denominationAsset.safeTransferFrom(_msgSender(), address(this), amount);
 
-        emit UnderlyingAssetTopUp(_msgSender(), amount);
+        emit DenominationAssetTopUp(_msgSender(), amount);
     }
 
-    /// @notice Implementation of `withdrawUnderlyingAsset` from `ISMARTFixedYieldSchedule`
-    /// @dev Internal function to handle withdrawing underlying asset
-    /// @param to The address to send the underlying asset to
-    /// @param underlyingAssetAmount The amount of underlying asset to withdraw
-    function _withdrawUnderlyingAsset(address to, uint256 underlyingAssetAmount) internal {
-        if (to == address(0)) revert InvalidUnderlyingAsset(); // Cannot withdraw to zero
+    /// @notice Implementation of `withdrawDenominationAsset` from `ISMARTFixedYieldSchedule`
+    /// @dev Internal function to handle withdrawing denomination asset
+    /// @param to The address to send the denomination asset to
+    /// @param denominationAssetAmount The amount of denomination asset to withdraw
+    function _withdrawDenominationAsset(address to, uint256 denominationAssetAmount) internal {
+        if (to == address(0)) revert InvalidDenominationAsset(); // Cannot withdraw to zero
             // address.
-        if (underlyingAssetAmount == 0) revert InvalidAmount(); // Cannot withdraw zero amount.
+        if (denominationAssetAmount == 0) revert InvalidAmount(); // Cannot withdraw zero amount.
 
-        uint256 underlyingAssetBalance = _underlyingAsset.balanceOf(address(this));
-        if (underlyingAssetAmount > underlyingAssetBalance) {
-            revert InsufficientUnderlyingBalance(underlyingAssetBalance, underlyingAssetAmount);
+        uint256 denominationAssetBalance = _denominationAsset.balanceOf(address(this));
+        if (denominationAssetAmount > denominationAssetBalance) {
+            revert InsufficientDenominationAssetBalance(denominationAssetBalance, denominationAssetAmount);
         } // Not enough funds in contract.
 
-        _underlyingAsset.safeTransfer(to, underlyingAssetAmount);
+        _denominationAsset.safeTransfer(to, denominationAssetAmount);
 
-        emit UnderlyingAssetWithdrawn(to, underlyingAssetAmount);
+        emit DenominationAssetWithdrawn(to, denominationAssetAmount);
     }
 
-    /// @notice Implementation of `withdrawAllUnderlyingAsset` from `ISMARTFixedYieldSchedule`
-    /// @dev Internal function to handle withdrawing all underlying asset
-    /// @param to The address to send all underlying asset to
-    function _withdrawAllUnderlyingAsset(address to) internal {
-        if (to == address(0)) revert InvalidUnderlyingAsset(); // Cannot withdraw to zero
+    /// @notice Implementation of `withdrawAllDenominationAsset` from `ISMARTFixedYieldSchedule`
+    /// @dev Internal function to handle withdrawing all denomination asset
+    /// @param to The address to send all denomination asset to
+    function _withdrawAllDenominationAsset(address to) internal {
+        if (to == address(0)) revert InvalidDenominationAsset(); // Cannot withdraw to zero
             // address.
 
-        uint256 balance = _underlyingAsset.balanceOf(address(this));
-        if (balance == 0) revert NoUnderlyingBalance(); // No funds to withdraw.
+        uint256 balance = _denominationAsset.balanceOf(address(this));
+        if (balance == 0) revert NoDenominationAssetBalance(); // No funds to withdraw.
 
-        _underlyingAsset.safeTransfer(to, balance);
+        _denominationAsset.safeTransfer(to, balance);
 
-        emit UnderlyingAssetWithdrawn(to, balance);
+        emit DenominationAssetWithdrawn(to, balance);
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -458,8 +458,8 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
-    function underlyingAsset() external view override returns (IERC20) {
-        return _underlyingAsset;
+    function denominationAsset() external view override returns (IERC20) {
+        return _denominationAsset;
     }
 
     /// @notice Returns the Unix timestamp (seconds since epoch) when the yield schedule starts.

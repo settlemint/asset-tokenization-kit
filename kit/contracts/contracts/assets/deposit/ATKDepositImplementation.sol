@@ -33,10 +33,9 @@ import { SMARTTokenAccessManagedUpgradeable } from
 
 /// @title ATKDeposit Implementation
 /// @author SettleMint
-/// @notice An implementation of a deposit token using the SMART extension framework,
-///         backed by collateral and using custom roles.
+/// @notice An implementation of a deposit token using the SMART extension framework using custom roles.
 /// @dev Combines core SMART features (compliance, verification) with extensions for pausing,
-///      burning, custodian actions, and collateral tracking. Access control uses custom roles.
+///      burning, and custodian actions. Access control uses custom roles.
 contract ATKDepositImplementation is
     Initializable,
     IATKDeposit,
@@ -451,8 +450,8 @@ contract ATKDepositImplementation is
 
     /// @notice Hook that is called before tokens are minted
     /// @dev This hook chains validation logic from multiple extensions:
-    ///      1. SMARTCustodianUpgradeable: Checks if recipient is frozen
-    ///      2. SMARTUpgradeable: Performs compliance and identity checks
+    ///      2. SMARTCustodianUpgradeable: Checks if recipient is frozen
+    ///      3. SMARTUpgradeable: Performs compliance and identity checks
     /// @param to The address that will receive the minted tokens
     /// @param amount The amount of tokens to be minted
     /// @inheritdoc SMARTHooks

@@ -52,19 +52,19 @@ export class CreateAssetForm extends BasePage {
     maximumSupply: string;
     faceValue: string;
     maturityDate: string;
-    underlyingAsset?: string;
+    denominationAsset?: string;
   }) {
     await this.page.getByLabel("Decimals").fill(options.decimals);
     await this.page.getByLabel("Maximum supply").fill(options.maximumSupply);
     await this.page.getByLabel("Face value").fill(options.faceValue);
     await this.page.getByLabel("Maturity date").fill(options.maturityDate);
-    if (options.underlyingAsset !== undefined) {
-      await this.page.getByLabel("Underlying asset").click();
+    if (options.denominationAsset !== undefined) {
+      await this.page.getByLabel("Denomination asset").click();
       await this.page
         .getByPlaceholder("Search for an asset...")
-        .fill(options.underlyingAsset);
+        .fill(options.denominationAsset);
       await this.page
-        .getByRole("option", { name: options.underlyingAsset })
+        .getByRole("option", { name: options.denominationAsset })
         .click();
     }
   }

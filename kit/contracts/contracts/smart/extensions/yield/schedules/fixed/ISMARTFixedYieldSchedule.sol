@@ -16,7 +16,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 /// functions for managing and querying the fixed yield mechanism.
 /// @dev Implementing contracts will manage the lifecycle of yield distribution, including calculating yield based on
 /// historical balances,
-/// allowing users to claim their yield, and administrative functions like topping up the underlying asset used for
+/// allowing users to claim their yield, and administrative functions like topping up the denomination asset used for
 /// payments.
 /// Functions are `external`, meaning they are designed to be called from other contracts or off-chain applications.
 /// Many are `view` functions, which read state but don't modify it.
@@ -40,19 +40,19 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     /// @dev Reverted by `calculateAccruedYield` if the schedule has not yet started (i.e., `block.timestamp <
     /// _startDate`).
     error ScheduleNotActive();
-    /// @dev Reverted by `topUpUnderlyingAsset` or `withdrawUnderlyingAsset` if the underlying asset transfer fails or
+    /// @dev Reverted by `topUpDenominationAsset` or `withdrawDenominationAsset` if the denomination asset transfer fails or
     /// if there's not enough balance.
-    /// @param currentBalance The current balance of the underlying asset in the contract.
-    /// @param requiredBalance The required balance of the underlying asset for the operation.
-    error InsufficientUnderlyingBalance(uint256 currentBalance, uint256 requiredBalance); // Could also be used if a
+    /// @param currentBalance The current balance of the denomination asset in the contract.
+    /// @param requiredBalance The required balance of the denomination asset for the operation.
+    error InsufficientDenominationAssetBalance(uint256 currentBalance, uint256 requiredBalance); // Could also be used if a
         // transferFrom fails.
-    /// @dev Reverted if the `_underlyingAsset` (derived from `_token.yieldToken()`) is the zero address, or if `to`
+    /// @dev Reverted if the `_denominationAsset` (derived from `_token.yieldToken()`) is the zero address, or if `to`
     /// address in withdrawal is zero.
-    error InvalidUnderlyingAsset();
-    /// @dev Reverted by `withdrawUnderlyingAsset` if the withdrawal `amount` is zero.
+    error InvalidDenominationAsset();
+    /// @dev Reverted by `withdrawDenominationAsset` if the withdrawal `amount` is zero.
     error InvalidAmount();
-    /// @dev Reverted by `withdrawUnderlyingAsset` if the underlying asset balance is zero.
-    error NoUnderlyingBalance();
+    /// @dev Reverted by `withdrawDenominationAsset` if the denomination asset balance is zero.
+    error NoDenominationAssetBalance();
     /// @dev Reverted by `periodEnd` if an invalid period number (0 or out of bounds) is requested.
     error InvalidPeriod();
 
@@ -70,7 +70,7 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     /// @param rate The rate of the yield schedule.
     /// @param interval The interval of the yield schedule.
     /// @param periodEndTimestamps The timestamps of the end of each period.
-    /// @param underlyingAsset The underlying asset of the yield schedule.
+    /// @param denominationAsset The denomination asset of the yield schedule.
     /// @param yieldForNextPeriod The yield for the next period.
     event FixedYieldScheduleSet(
         uint256 startDate,
@@ -78,24 +78,24 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
         uint256 rate,
         uint256 interval,
         uint256[] periodEndTimestamps,
-        IERC20 underlyingAsset,
+        IERC20 denominationAsset,
         uint256 yieldForNextPeriod
     );
 
-    /// @notice Emitted when an administrator or funder successfully deposits `_underlyingAsset` into the contract to
+    /// @notice Emitted when an administrator or funder successfully deposits `_denominationAsset` into the contract to
     /// fund yield payments.
-    /// @param from The address that sent the `_underlyingAsset` tokens (the funder).
-    /// @param amount The quantity of `_underlyingAsset` tokens deposited.
-    event UnderlyingAssetTopUp(address indexed from, uint256 indexed amount);
+    /// @param from The address that sent the `_denominationAsset` tokens (the funder).
+    /// @param amount The quantity of `_denominationAsset` tokens deposited.
+    event DenominationAssetTopUp(address indexed from, uint256 indexed amount);
 
-    /// @notice Emitted when an administrator successfully withdraws `_underlyingAsset` from the contract.
-    /// @param to The address that received the withdrawn `_underlyingAsset` tokens.
-    /// @param amount The quantity of `_underlyingAsset` tokens withdrawn.
-    event UnderlyingAssetWithdrawn(address indexed to, uint256 indexed amount);
+    /// @notice Emitted when an administrator successfully withdraws `_denominationAsset` from the contract.
+    /// @param to The address that received the withdrawn `_denominationAsset` tokens.
+    /// @param amount The quantity of `_denominationAsset` tokens withdrawn.
+    event DenominationAssetWithdrawn(address indexed to, uint256 indexed amount);
 
     /// @notice Emitted when a token holder successfully claims their accrued yield.
     /// @param holder The address of the token holder who claimed the yield.
-    /// @param claimedAmount The total quantity of `_underlyingAsset` transferred to the holder in this claim.
+    /// @param claimedAmount The total quantity of `_denominationAsset` transferred to the holder in this claim.
     /// @param fromPeriod The first period number (1-indexed) included in this claim.
     /// @param toPeriod The last period number (1-indexed) included in this claim.
     /// @param periodAmounts An array containing the amount of yield claimed for each specific period within the
@@ -171,7 +171,7 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     /// upcoming distribution period.
     /// @dev This is a projection based on current total supply (or relevant historical supply measure) and the yield
     /// rate.
-    /// Useful for administrators to ensure sufficient underlying assets are available in the contract for future
+    /// Useful for administrators to ensure sufficient denomination assets are available in the contract for future
     /// payouts.
     /// @return totalAmount The estimated total yield tokens needed for the next period's distribution.
     function totalYieldForNextPeriod() external view returns (uint256 totalAmount);
@@ -192,35 +192,35 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     /// 1. Determine the periods for which the caller has not yet claimed yield.
     /// 2. Calculate the yield owed for those periods based on their historical token balance at the end of each
     /// respective period.
-    /// 3. Transfer the total calculated yield (in `underlyingAsset()`) to the caller.
+    /// 3. Transfer the total calculated yield (in `denominationAsset()`) to the caller.
     /// 4. Update the caller's `lastClaimedPeriod`.
     /// This is a state-changing function and will emit events (e.g., `YieldClaimed`).
     function claimYield() external; // Consider adding `returns (uint256 claimedAmount)`
 
-    /// @notice Allows anyone to deposit (top-up) the underlying asset into the schedule contract to fund yield
+    /// @notice Allows anyone to deposit (top-up) the denomination asset into the schedule contract to fund yield
     /// payments.
-    /// @dev This function is used to ensure the contract has sufficient reserves of the `underlyingAsset()` to pay out
+    /// @dev This function is used to ensure the contract has sufficient reserves of the `denominationAsset()` to pay out
     /// accrued yield.
-    /// It typically involves the caller first approving the schedule contract to spend their `underlyingAsset` tokens,
+    /// It typically involves the caller first approving the schedule contract to spend their `denominationAsset` tokens,
     /// then this function calls `transferFrom`.
-    /// @param amount The quantity of the `underlyingAsset` to deposit into the schedule contract.
-    function topUpUnderlyingAsset(uint256 amount) external;
+    /// @param amount The quantity of the `denominationAsset` to deposit into the schedule contract.
+    function topUpDenominationAsset(uint256 amount) external;
 
-    /// @notice Allows an authorized administrator to withdraw a specific `amount` of the `underlyingAsset` from the
+    /// @notice Allows an authorized administrator to withdraw a specific `amount` of the `denominationAsset` from the
     /// schedule contract.
     /// @dev This is an administrative function and should be strictly access-controlled (e.g., `onlyRole(ADMIN_ROLE)`).
     /// Useful for managing excess funds or in emergency situations.
-    /// @param to The address to which the withdrawn `underlyingAsset` tokens will be sent.
-    /// @param amount The quantity of `underlyingAsset` tokens to withdraw.
-    function withdrawUnderlyingAsset(address to, uint256 amount) external;
+    /// @param to The address to which the withdrawn `denominationAsset` tokens will be sent.
+    /// @param amount The quantity of `denominationAsset` tokens to withdraw.
+    function withdrawDenominationAsset(address to, uint256 amount) external;
 
-    /// @notice Allows an authorized administrator to withdraw all available `underlyingAsset` tokens from the schedule
+    /// @notice Allows an authorized administrator to withdraw all available `denominationAsset` tokens from the schedule
     /// contract.
-    /// @dev Similar to `withdrawUnderlyingAsset`, but withdraws the entire balance of `underlyingAsset` held by the
+    /// @dev Similar to `withdrawDenominationAsset`, but withdraws the entire balance of `denominationAsset` held by the
     /// contract.
     /// Should also be strictly access-controlled.
-    /// @param to The address to which all `underlyingAsset` tokens will be sent.
-    function withdrawAllUnderlyingAsset(address to) external;
+    /// @param to The address to which all `denominationAsset` tokens will be sent.
+    function withdrawAllDenominationAsset(address to) external;
 
     /// @notice Returns the address of the SMART token contract for which this yield schedule is defined.
     /// @dev The schedule contract needs to interact with this token contract to query historical balances (e.g.,
@@ -233,7 +233,7 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     /// @dev This is the actual token that holders will receive when they claim their yield.
     /// It can be the same as `token()` or a different token (e.g., a stablecoin).
     /// @return assetToken The `IERC20` compliant token contract address used for payments.
-    function underlyingAsset() external view returns (IERC20 assetToken);
+    function denominationAsset() external view returns (IERC20 assetToken);
 
     /// @notice Returns the timestamp representing the end date and time of the entire yield schedule.
     /// @dev After this timestamp, no more yield will typically accrue or be distributed by this schedule.

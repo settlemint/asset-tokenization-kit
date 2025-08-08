@@ -7,7 +7,7 @@ export function fetchIdentity(address: Address): Identity {
 
   if (!identity) {
     identity = new Identity(address);
-    identity.registry = Address.zero();
+    identity.registryStorage = Address.zero();
     identity.deployedInTransaction = Bytes.empty();
     identity.save();
     IdentityTemplate.create(address);

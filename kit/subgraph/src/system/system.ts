@@ -19,13 +19,13 @@ import { fetchCompliance } from "../compliance/fetch/compliance";
 import { fetchComplianceModuleRegistry } from "../compliance/fetch/compliance-module-registry";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentityFactory } from "../identity-factory/fetch/identity-factory";
+import { fetchIdentityRegistryStorage } from "../identity-registry-storage/fetch/identity-registry-storage";
 import { fetchIdentityRegistry } from "../identity-registry/fetch/identity-registry";
-import { fetchIdentityRegistryStorage } from "../identity-registry/fetch/identity-registry-storage";
 import { fetchSystemAddonRegistry } from "../system-addons/fetch/system-addon-registry";
 import { fetchTokenFactoryRegistry } from "../token-factory/fetch/token-factory-registry";
 import { fetchTopicSchemeRegistry } from "../topic-scheme-registry/fetch/topic-scheme-registry";
+import { fetchTrustedIssuersRegistry } from "../trusted-issuers-registry/fetch/trusted-issuers-registry";
 import { fetchSystem } from "./fetch/system";
-import { fetchTrustedIssuersRegistry } from "./fetch/trusted-issuers-registry";
 
 export function handleBootstrapped(event: Bootstrapped): void {
   fetchEvent(event, "Bootstrapped");

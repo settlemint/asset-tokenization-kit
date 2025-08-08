@@ -27,17 +27,23 @@ export function updateCollateral(collateralClaim: IdentityClaim): void {
   const collateral = fetchCollateral(tokenAddress);
   collateral.identityClaim = collateralClaim.id;
 
-  const amount = fetchIdentityClaimValue(collateralClaim, "amount");
-  const expiryTimestamp = fetchIdentityClaimValue(
-    collateralClaim,
-    "expiryTimestamp"
-  );
-  collateral.expiryTimestamp = BigInt.fromString(expiryTimestamp.value);
+  if (collateralClaim.revoked) {
+    setBigNumber(collateral, "collateral", BigInt.zero(), token.decimals);
+    collateral.expiryTimestamp = BigInt.zero();
+    collateral.save();
+  } else {
+    const amount = fetchIdentityClaimValue(collateralClaim, "amount");
+    const expiryTimestamp = fetchIdentityClaimValue(
+      collateralClaim,
+      "expiryTimestamp"
+    );
+    collateral.expiryTimestamp = BigInt.fromString(expiryTimestamp.value);
 
-  const amountValue = BigInt.fromString(amount.value);
-  setBigNumber(collateral, "collateral", amountValue, token.decimals);
+    const amountValue = BigInt.fromString(amount.value);
+    setBigNumber(collateral, "collateral", amountValue, token.decimals);
 
-  collateral.save();
+    collateral.save();
+  }
 
   // Update TokenCollateralStats
   trackTokenCollateralStats(token, collateral);

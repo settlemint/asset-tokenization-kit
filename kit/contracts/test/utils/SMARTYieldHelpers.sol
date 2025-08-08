@@ -102,7 +102,7 @@ abstract contract SMARTYieldHelpers is Test {
         // Approve and fund the schedule
         vm.startPrank(funder);
         IERC20(yieldPaymentToken).approve(scheduleAddress, amount);
-        ISMARTFixedYieldSchedule(scheduleAddress).topUpUnderlyingAsset(amount);
+        ISMARTFixedYieldSchedule(scheduleAddress).topUpDenominationAsset(amount);
         vm.stopPrank();
     }
 }

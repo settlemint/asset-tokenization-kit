@@ -25,8 +25,8 @@ import { redeem } from "./actions/redeemable/redeem";
 import { setupAsset } from "./actions/setup-asset";
 import { claimYield } from "./actions/yield/claim-yield";
 import { setYieldSchedule } from "./actions/yield/set-yield-schedule";
-import { topupUnderlyingAsset } from "./actions/yield/topup-underlying-asset";
-import { withdrawnUnderlyingAsset } from "./actions/yield/withdrawn-underlying-asset";
+import { topupDenominationAsset } from "./actions/yield/topup-denomination-asset";
+import { withdrawnDenominationAsset } from "./actions/yield/withdrawn-denomination-asset";
 import { getDefaultComplianceModules } from "./utils/default-compliance-modules";
 
 export const createBond = async (depositToken: Asset<any>) => {
@@ -111,7 +111,7 @@ export const createBond = async (depositToken: Asset<any>) => {
   const allowedIdentities = await Promise.all([
     investorA.getIdentity(),
     investorB.getIdentity(),
-    // owner also needs to be able to hold deposit token ... topUpUnderlyingAsset will mint to owner
+    // owner also needs to be able to hold deposit token ... topUpDenominationAsset will mint to owner
     owner.getIdentity(),
     bond.address,
     scheduleContract.address,
@@ -126,7 +126,7 @@ export const createBond = async (depositToken: Asset<any>) => {
   // do some mint/burns to change the yield
   await mint(bond, owner, 10n);
   await burn(bond, owner, 1n);
-  await topupUnderlyingAsset(bond, depositToken, 10000n);
+  await topupDenominationAsset(bond, depositToken, 10000n);
   // claim yield for 3 periods
   for (let i = 0; i < 3; i++) {
     const didAdvance = await advanceToNextPeriod();
@@ -141,7 +141,7 @@ export const createBond = async (depositToken: Asset<any>) => {
     await transfer(bond, owner, investorA, 6n);
     await transfer(bond, owner, investorB, 3n);
   }
-  await withdrawnUnderlyingAsset(bond, depositToken, investorA.address, 5n);
+  await withdrawnDenominationAsset(bond, depositToken, investorA.address, 5n);
 
   // mature bond
   await mint(depositToken, bond.address, 150n);

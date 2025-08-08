@@ -273,7 +273,7 @@ test.describe.serial("Bond Creation Validation", () => {
         errorMessageData.errorMessageMaturityDate
       );
     });
-    test("validates underlying asset is required", async () => {
+    test("validates denomination asset is required", async () => {
       await createAssetForm.fillBondDetails({
         decimals: "18",
         maximumSupply: "1000",
@@ -282,7 +282,7 @@ test.describe.serial("Bond Creation Validation", () => {
       });
       await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
-        errorMessageData.errorMessageUnderlyingAsset
+        errorMessageData.errorMessageDenominationAsset
       );
     });
   });
@@ -310,7 +310,7 @@ test.describe.serial("Bond Creation Validation", () => {
     test("Create Bond asset", async () => {
       const bondDataWithStablecoin = {
         ...bondData,
-        underlyingAsset: testData.stablecoinName,
+        denominationAsset: testData.stablecoinName,
       };
       await adminPages.adminPage.createBond(bondDataWithStablecoin);
       await adminPages.adminPage.verifySuccessMessage(

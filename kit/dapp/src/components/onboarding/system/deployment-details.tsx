@@ -41,7 +41,7 @@ export function DeploymentDetails() {
             void completeStepAndNavigate(OnboardingStep.systemSettings)
           }
         >
-          {t("system.configure-system")}
+          {t("system.configure-assets")}
         </Button>
       }
     >
@@ -79,15 +79,16 @@ export function DeploymentDetails() {
             <p>{t("system.contracts-live-message")}</p>
           </div>
 
-          <Button
-            variant="outline"
-            onClick={toggleDetails}
-            className="w-full justify-between"
-          >
-            <span>{t("system.view-deployment-details")}</span>
-            {showDetails ? (
-              <ChevronUp className="h-4 w-4" />
-            ) : (
+      <Button
+        variant="outline"
+        onClick={toggleDetails}
+        className="w-full justify-between"
+        aria-expanded={showDetails}
+      >
+        <span>{t("system.view-deployment-details")}</span>
+        {showDetails ? (
+          <ChevronUp className="h-4 w-4" />
+        ) : (
               <ChevronDown className="h-4 w-4" />
             )}
           </Button>
