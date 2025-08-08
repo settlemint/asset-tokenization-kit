@@ -1,4 +1,10 @@
-import { Address, BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigDecimal,
+  BigInt,
+  Bytes,
+  crypto,
+} from "@graphprotocol/graph-ts";
 import { Token } from "../../generated/schema";
 import {
   Approved,
@@ -226,7 +232,10 @@ export function handleClaimRevoked(event: ClaimRevoked): void {
   const identityClaims = identity.claims.load();
   for (let i = 0; i < identityClaims.length; i++) {
     const identityClaim = identityClaims[i];
-    if (identityClaim.signature == event.params.signature.toHexString()) {
+    const signatureHash = crypto
+      .keccak256(Bytes.fromHexString(identityClaim.signature))
+      .toHexString();
+    if (signatureHash == event.params.signature.toHexString()) {
       identityClaim.revoked = true;
       identityClaim.save();
 
