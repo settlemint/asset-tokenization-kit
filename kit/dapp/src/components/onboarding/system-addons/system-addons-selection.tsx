@@ -5,6 +5,7 @@ import { getAddonTypeFromTypeId } from "@/components/onboarding/system-addons/ad
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
+import { WarningAlert } from "@/components/ui/warning-alert";
 import { useAppForm } from "@/hooks/use-app-form";
 import { addonTypes } from "@/lib/zod/validators/addon-types";
 import { AssetFactoryTypeIdEnum } from "@/lib/zod/validators/asset-types";
@@ -140,6 +141,7 @@ export function SystemAddonsSelection() {
       <OnboardingStepLayout
         title={t("system-addons.addon-selection.title")}
         description={t("system-addons.addon-selection.description")}
+        fullWidth={true}
         actions={
           <>
             {/* Only show Skip button if yield is not required */}
@@ -184,11 +186,22 @@ export function SystemAddonsSelection() {
           </>
         }
       >
-        <div className="max-w-2xl space-y-6">
-          <InfoAlert
-            title={t("system-addons.addon-selection.what-are-addons")}
-            description={t("system-addons.addon-selection.addons-description")}
-          />
+        <div className="space-y-6">
+          <WarningAlert description="This process may take up to 2–3 minutes depending on your selections." />
+
+          <div className="space-y-4">
+            <p className="text-sm text-gray-700 dark:text-gray-300">
+              Platform add-ons allow you to extend the capabilities of your
+              tokenization platform. These features — like Airdrops, Yield, or
+              XVP — are deployed as smart contracts, just like the core system.
+            </p>
+            <p className="text-sm text-gray-700 dark:text-gray-300">
+              You can enable the ones you need now, and easily change or expand
+              them later in Settings.
+            </p>
+          </div>
+
+          <InfoAlert description="You’ll be asked to confirm each transaction using your PIN or OTP." />
 
           <div className="flex flex-col h-full">
             <div className="flex-1">

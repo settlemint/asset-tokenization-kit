@@ -53,14 +53,24 @@ export function SystemAddonsDeployment() {
     <OnboardingStepLayout
       title={t("system-addons.addon-deployment.title")}
       description={t("system-addons.addon-deployment.description")}
+      fullWidth={true}
       actions={
         <Button type="button" onClick={onNext} className="press-effect">
-          {t("common:continue")}
+          Continue to identity setup
         </Button>
       }
     >
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-2xl space-y-6">
+        <div className="space-y-6">
+          <div className="text-sm text-gray-700 dark:text-gray-300 space-y-2">
+            <p>
+              All selected platform add-ons have been successfully deployed.
+            </p>
+            <p>
+              These features are now available for use and configuration. As the
+              platform admin, you control their parameters and access.
+            </p>
+          </div>
           <div className="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4">
             <div className="flex items-center gap-3 mb-3">
               <svg
