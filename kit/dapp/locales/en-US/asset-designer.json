@@ -120,6 +120,12 @@
   },
   "wizard": {
     "description": "We'll guide you through each step to create your tokenized asset with built-in regulatory compliance and investor protection.",
+    "groups": {
+      "chooseAssetType": "Choose asset type",
+      "configureAssetDetails": "Configure asset details",
+      "compliance": "Compliance",
+      "summary": "Summary"
+    },
     "steps": {
       "assetClass": {
         "description": "Select the asset class you want to create",
