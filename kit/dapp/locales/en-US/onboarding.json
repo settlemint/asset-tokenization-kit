@@ -167,7 +167,10 @@
       "addons-deployed-successfully": "Add-ons deployed successfully",
       "deployed-addons": "Deployed add-ons",
       "description": "Your addons are ready for use",
-      "title": "Add-ons Deployed Successfully"
+      "title": "Add-ons Deployed Successfully",
+      "intro-1": "All selected platform add-ons have been successfully deployed.",
+      "intro-2": "These features are now available for use and configuration. As the platform admin, you control their parameters and access.",
+      "continue-to-identity-setup": "Continue to identity setup"
     },
     "addon-selection": {
       "addon-types": {
