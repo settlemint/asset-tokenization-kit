@@ -4,6 +4,7 @@ import {
   BigInt,
   Bytes,
   crypto,
+  store,
 } from "@graphprotocol/graph-ts";
 import { Token } from "../../generated/schema";
 import {
@@ -30,7 +31,12 @@ import { fetchTokenByIdentity } from "../token/fetch/token";
 import { getTokenBasePrice, updateBasePrice } from "../token/utils/token-utils";
 import { fetchIdentity } from "./fetch/identity";
 import { fetchIdentityClaim } from "./fetch/identity-claim";
+import { fetchIdentityKey } from "./fetch/identity-key";
 import { decodeClaimValues } from "./utils/decode-claim";
+import {
+  getIdentityKeyPurpose,
+  getIdentityKeyType,
+} from "./utils/identity-key-utils";
 import { isBasePriceClaim } from "./utils/is-claim";
 
 /**
@@ -217,13 +223,19 @@ export function handleExecutionRequested(event: ExecutionRequested): void {
 
 export function handleKeyAdded(event: KeyAdded): void {
   fetchEvent(event, "KeyAdded");
-  // TODO: track keys KeyAdded and KeyRemoved
-  // see kit/contracts/scripts/hardhat/constants/key-purposes.ts
-  // see kit/contracts/scripts/hardhat/constants/key-types.ts
+  const identity = fetchIdentity(event.address);
+  const identityKey = fetchIdentityKey(identity, event.params.key);
+  identityKey.identity = identity.id;
+  identityKey.type = getIdentityKeyType(event.params.keyType);
+  identityKey.purpose = getIdentityKeyPurpose(event.params.purpose);
+  identityKey.save();
 }
 
 export function handleKeyRemoved(event: KeyRemoved): void {
   fetchEvent(event, "KeyRemoved");
+  const identity = fetchIdentity(event.address);
+  const identityKey = fetchIdentityKey(identity, event.params.key);
+  store.remove("IdentityKey", identityKey.id.toHexString());
 }
 
 export function handleClaimRevoked(event: ClaimRevoked): void {

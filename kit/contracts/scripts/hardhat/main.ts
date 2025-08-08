@@ -6,6 +6,7 @@ import { grantSystemRoles } from "./actions/grant-system-roles";
 import { issueVerificationClaims } from "./actions/issue-verification-claims";
 import { recoverIdentity } from "./actions/recover-identity";
 import { removeFromBypassList } from "./actions/remove-from-bypass-list";
+import { removeIdentityKeys } from "./actions/remove-identity-keys";
 import { revokeClaims } from "./actions/revoke-claims";
 import { setGlobalBlockedAddresses } from "./actions/set-global-blocked-addressess";
 import { setGlobalBlockedCountries } from "./actions/set-global-blocked-countries";
@@ -32,6 +33,7 @@ import {
   owner,
 } from "./constants/actors";
 import { Countries } from "./constants/countries";
+import { KeyPurpose } from "./constants/key-purposes";
 import { ATKRoles } from "./constants/roles";
 import { ATKTopic } from "./constants/topics";
 import { AirdropMerkleTree } from "./entities/airdrop/merkle-tree";
@@ -119,6 +121,9 @@ async function main() {
 
   // Revoke aml claims for malicious investor
   await revokeClaims(maliciousInvestor, ATKTopic.aml);
+
+  // Remove the claim signer key for the malicious investor
+  await removeIdentityKeys(maliciousInvestor, KeyPurpose.claimSigner);
 
   console.log("\n=== Setting up compliance modules... ===\n");
 

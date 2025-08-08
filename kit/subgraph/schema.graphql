@@ -240,8 +240,18 @@ type Identity @entity(immutable: false) {
   id: Bytes!
   registryStorage: IdentityRegistryStorage
   claims: [IdentityClaim!]! @derivedFrom(field: "identity")
+  keys: [IdentityKey!]! @derivedFrom(field: "identity")
   account: Account
   isContract: Boolean
+  deployedInTransaction: Bytes!
+}
+
+type IdentityKey @entity(immutable: false) {
+  id: Bytes!
+  identity: Identity!
+  key: Bytes!
+  purpose: String!
+  type: String!
   deployedInTransaction: Bytes!
 }
 
