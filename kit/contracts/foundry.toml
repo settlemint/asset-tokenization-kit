@@ -51,5 +51,5 @@
 [soldeer]
   remappings_version = false
 
-[profile.default.lint]
+[profile.lint]
   exclude_lints = ["mixed-case-function", "mixed-case-variable", "screaming-snake-case-const", "screaming-snake-case-immutable", "pascal-case-struct", "asm-keccak256"]
