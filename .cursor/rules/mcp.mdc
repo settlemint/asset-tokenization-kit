@@ -1,0 +1,91 @@
+---
+alwaysApply: false
+description: MCP Usage Examples - Library docs, contracts, error tracking
+---
+
+# MCP Usage Examples
+
+## Library Documentation
+
+```javascript
+// Context7 - Get library docs
+mcp__context7__resolve_library_id({ libraryName: "react" });
+mcp__context7__get_library_docs({
+  context7CompatibleLibraryID: "/facebook/react",
+});
+
+// DeepWiki - Repository docs
+mcp__deepwiki__read_wiki_contents({ repoName: "facebook/react" });
+```
+
+## Smart Contracts
+
+```javascript
+// OpenZeppelin - Generate contracts
+mcp__OpenZeppelinSolidityContracts__solidity_erc20({
+  name: "Token",
+  symbol: "TKN",
+  upgradeable: "uups",
+});
+
+mcp__OpenZeppelinSolidityContracts__solidity_erc721({
+  name: "NFT",
+  symbol: "NFT",
+  mintable: true,
+});
+```
+
+## Issue Tracking
+
+```javascript
+// Sentry - Error tracking
+mcp__sentry__search_issues({
+  organizationSlug: "org",
+  naturalLanguageQuery: "errors today",
+});
+mcp__sentry__analyze_issue_with_seer({ issueId: "ERROR-123" });
+
+// Linear - Project management
+mcp__linear__create_issue({
+  title: "Bug: Fix overflow",
+  teamSlug: "team",
+  description: "Details...",
+});
+mcp__linear__list_issues({ query: "in progress" });
+```
+
+## Browser Automation
+
+```javascript
+// Playwright - Browser control
+mcp__playwright__browser_navigate({ url: "https://example.com" });
+mcp__playwright__browser_snapshot();
+mcp__playwright__browser_click({ element: "button", ref: "#submit" });
+```
+
+## Code Search
+
+```javascript
+// Grep - Search GitHub code
+mcp__grep__searchGitHub({
+  query: "useState(",
+  language: ["TypeScript", "TSX"],
+});
+```
+
+## AI Assistance
+
+```javascript
+// Gemini - Analysis
+mcp__gemini_cli__ask_gemini({
+  prompt: "@largefile.js explain",
+  changeMode: true, // For structured edits
+});
+```
+
+## Usage Rules
+
+- Prefer non-interactive flags
+- Search docs BEFORE coding
+- Reference outputs concisely
+- Validate approach before implementation

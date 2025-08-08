@@ -259,17 +259,16 @@ export const create = onboardedRouter.system.create
       "complianceManager",
       "addonManager",
     ];
-    for (const role of operationalRoles) {
-      await call(
-        grantRole,
-        {
-          role: role,
-          accounts: [sender.wallet],
-          verification,
-        },
-        { context }
-      );
-    }
+    // Grant all operational roles in a single transaction
+    await call(
+      grantRole,
+      {
+        address: sender.wallet,
+        role: operationalRoles,
+        verification,
+      },
+      { context }
+    );
 
     const systemDetails = await call(
       read,

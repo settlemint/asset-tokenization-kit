@@ -23,7 +23,7 @@ blockscout-stack:
       prometheus.io/path: "/metrics"
     image:
       repository: ghcr.io/blockscout/blockscout
-      tag: "8.1.2"
+      tag: "9.0.0"
     ingress:
       enabled: true
       className: "atk-nginx"

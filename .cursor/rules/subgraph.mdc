@@ -1,0 +1,55 @@
+---
+globs: kit/subgraph/**/*
+description: TheGraph subgraph - AssemblyScript event indexing
+---
+
+# TheGraph Subgraph Module
+
+## Stack
+
+- **Core**: TheGraph v0.38.1
+- **Language**: AssemblyScript (NOT TypeScript!)
+- **Query**: GraphQL
+
+## Key Commands
+
+```bash
+bun run codegen                # Generate types
+bun run compile                # Build subgraph
+bun run publish                # Deploy to Graph
+```
+
+## AssemblyScript Constraints
+
+```typescript
+// ❌ NOT ALLOWED
+await, async                   // No async/await
+obj?.prop                       // No optional chaining
+...spread                       // No spread operator
+
+// ✅ REQUIRED PATTERNS
+let entity = Entity.load(id)   // Load entities
+if (entity == null) { }         // Null checks
+entity.save()                   // Always save
+```
+
+## Event Handler Patterns
+
+```typescript
+// Composite IDs prevent collisions
+let id = event.transaction.hash.toHex() + "-" + event.logIndex.toString();
+
+// Array mutations
+let array = entity.items;
+array.push(newItem);
+entity.items = array; // Reassign after mutation
+entity.save();
+```
+
+## Critical Rules
+
+1. ALWAYS use AssemblyScript syntax
+2. NULL checks with `== null`
+3. Composite IDs for uniqueness
+4. Save ALL modified entities
+5. Test with local Graph node

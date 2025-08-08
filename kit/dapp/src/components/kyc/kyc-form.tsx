@@ -2,14 +2,14 @@ import { useAppForm } from "@/hooks/use-app-form";
 import { authClient } from "@/lib/auth/auth.client";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
-import type { KycProfileUpsert } from "@/orpc/routes/user/kyc/kyc.schema";
-import { KycProfileUpsertSchema } from "@/orpc/routes/user/kyc/kyc.schema";
+import type { KycUpsertInput } from "@/orpc/routes/user/kyc/routes/kyc.upsert.schema";
+import { KycUpsertInputSchema } from "@/orpc/routes/user/kyc/routes/kyc.upsert.schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-export type KycFormValues = KycProfileUpsert & {
+export type KycFormValues = KycUpsertInput & {
   verification?: UserVerification;
 };
 
@@ -72,7 +72,7 @@ export function KycForm({ onComplete }: KycFormProps) {
       ...kyc,
     } as KycFormValues,
     validators: {
-      onChange: KycProfileUpsertSchema,
+      onChange: KycUpsertInputSchema,
     },
     onSubmit: ({ value }) => {
       const promise = async () => {

@@ -74,3 +74,4 @@ kit/dapp/next-env.d.ts
 
 # Personal claude commands
 .claude/commands/*.personal.md
+*.ts.tmp

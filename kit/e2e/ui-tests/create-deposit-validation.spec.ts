@@ -19,7 +19,6 @@ test.describe("Deposit Creation Validation", () => {
     const adminPage = await adminContext.newPage();
     adminPages = Pages(adminPage);
     createAssetForm = new CreateAssetForm(adminPage);
-    await adminPages.signInPage.signInAsAdmin(adminUser);
     await adminPages.adminPage.goto();
   });
 

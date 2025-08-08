@@ -1,0 +1,55 @@
+---
+globs: kit/charts/**/*
+description: Helm charts - K8s deployment with umbrella pattern
+---
+
+# Helm Charts Module
+
+## Stack
+
+- **Tool**: Helm v3
+- **Platform**: Kubernetes (OrbStack local)
+- **Pattern**: Umbrella chart
+- **Dependencies**: Bitnami charts
+
+## Key Commands
+
+```bash
+bun run helm:secrets           # 1Password injection
+bun run helm                   # Deploy to OrbStack
+bun run reset                  # Clean cluster (prefer over uninstall)
+helm lint atk                  # Validate charts
+```
+
+## MANDATORY Validation
+
+```bash
+# After ANY chart changes:
+1. bun run reset               # Clean state
+2. bun run helm                # Deploy
+3. kubectl get pods -n atk     # Verify running
+4. kubectl describe pod <name> -n atk  # Debug failures
+```
+
+## Best Practices
+
+```yaml
+# Secrets management
+secrets:
+  - name: api-key # List format
+
+# Empty objects
+resources: {} # Use {} not null
+
+# Init containers
+initContainers:
+  - name: wait-for-db # Dependency ordering
+```
+
+## Critical Rules
+
+1. NO hardcoded secrets
+2. Resource limits required
+3. Health checks mandatory
+4. Network policies (production)
+5. Test with `bun run reset` + `bun run helm`

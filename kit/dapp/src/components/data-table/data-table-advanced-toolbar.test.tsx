@@ -8,7 +8,7 @@ import {
   createMockTable,
   overrideTableState,
   renderWithProviders,
-} from "../../../test/test-utils";
+} from "@test/helpers/test-utils";
 import { DataTableAdvancedToolbar } from "./data-table-advanced-toolbar";
 
 // Mock child components

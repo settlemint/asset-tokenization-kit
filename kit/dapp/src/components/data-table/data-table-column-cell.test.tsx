@@ -1,6 +1,6 @@
 import { fireEvent, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { renderWithProviders } from "../../../test/test-utils";
+import { renderWithProviders } from "@test/helpers/test-utils";
 import { DataTableColumnCell } from "./data-table-column-cell";
 
 describe("DataTableColumnCell", () => {

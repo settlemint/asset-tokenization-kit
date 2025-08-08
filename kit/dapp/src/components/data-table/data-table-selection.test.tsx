@@ -4,7 +4,7 @@
 import { renderHook, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createMockTable, renderWithProviders } from "../../../test/test-utils";
+import { createMockTable, renderWithProviders } from "@test/helpers/test-utils";
 import {
   SelectionCell,
   SelectionHeader,

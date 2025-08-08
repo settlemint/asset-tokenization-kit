@@ -203,6 +203,49 @@ const getUniqueId = (): string => {
   return `${sequenceCounter}-${getRandomString(2)}-${getRandomInt(10, 99)}`;
 };
 
+const generateValidISIN = (countryCode: string = "US"): string => {
+  const securityId =
+    getRandomString(3) + getRandomInt(100000, 999999).toString();
+
+  const baseISIN = countryCode + securityId;
+
+  const checkDigit = calculateISINCheckDigit(baseISIN);
+
+  return baseISIN + checkDigit;
+};
+
+const calculateISINCheckDigit = (isinWithoutCheckDigit: string): string => {
+  let digits = "";
+  for (let i = 0; i < isinWithoutCheckDigit.length; i++) {
+    const char = isinWithoutCheckDigit[i];
+    if (char >= "A" && char <= "Z") {
+      digits += (char.charCodeAt(0) - "A".charCodeAt(0) + 10).toString();
+    } else {
+      digits += char;
+    }
+  }
+
+  let sum = 0;
+  let isEven = true;
+
+  for (let i = digits.length - 1; i >= 0; i--) {
+    let digit = parseInt(digits[i]);
+
+    if (isEven) {
+      digit *= 2;
+      if (digit > 9) {
+        digit = Math.floor(digit / 10) + (digit % 10);
+      }
+    }
+
+    sum += digit;
+    isEven = !isEven;
+  }
+
+  const checkDigit = (10 - (sum % 10)) % 10;
+  return checkDigit.toString();
+};
+
 export const generateBondName = (): string => {
   const companyName = `${getRandomElement(prefixes)}${getRandomElement(middles)}`;
   const type = getRandomElement(bondTypes);
@@ -282,7 +325,7 @@ export const bondData = {
   assetType: "Bond",
   name: generateBondName(),
   symbol: generateSymbol(generateBondName()),
-  isin: `US${getRandomInt(1000000000, 9999999999)}`,
+  isin: generateValidISIN("US"),
   internalId: getUniqueId().substring(0, 12),
   decimals: "18",
   maximumSupply: "1000",
@@ -389,14 +432,11 @@ export const stablecoinData = {
   assetType: "Stablecoin",
   name: generateStablecoinName(),
   symbol: generateSymbol(generateStablecoinName()),
-  isin: `US${getRandomInt(1000000000, 9999999999)}`,
-  internalId: getUniqueId().substring(0, 12),
+  isin: generateValidISIN("US"),
   decimals: "16",
-  price: "3",
-  validityPeriod: "600",
+  country: "United States of America",
   pincode: pincode,
   sidebarAssetTypes: "Stablecoins",
-  initialSupply: "0",
 };
 
 export const depositData = {

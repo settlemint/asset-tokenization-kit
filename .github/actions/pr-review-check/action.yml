@@ -1,35 +1,41 @@
-name: 'PR Review Check'
-description: 'Check PR approval status and QA status'
+name: "PR Review Check"
+description: "Check PR approval status and QA status"
 inputs:
   pr_number:
-    description: 'Pull request number'
+    description: "Pull request number"
     required: true
   pr_author:
-    description: 'Pull request author login'
+    description: "Pull request author login"
     required: true
   event_name:
-    description: 'GitHub event name'
+    description: "GitHub event name"
     required: true
   qa_result:
-    description: 'QA job result (for pull_request events)'
+    description: "QA job result (for pull_request events)"
     required: false
   secret_scanning_result:
-    description: 'Secret scanning job result (for pull_request events)'
+    description: "Secret scanning job result (for pull_request events)"
     required: false
+  log_level:
+    description: "Log verbosity (error, warn, info, debug)"
+    required: false
+    default: "error"
 outputs:
   has_approval:
-    description: 'Whether PR has approval'
+    description: "Whether PR has approval"
     value: ${{ steps.check_approval.outputs.has_approval }}
   qa_status:
-    description: 'QA status (success, failed, running, pending)'
+    description: "QA status (success, failed, running, pending)"
     value: ${{ steps.qa_status.outputs.qa_status }}
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Get PR reviews
       id: check_approval
       uses: actions/github-script@v7
+      env:
+        LOG_LEVEL: ${{ inputs.log_level }}
       with:
         script: |
           const { checkApproval } = require('${{ github.action_path }}/pr-review-checker.js');
@@ -44,6 +50,8 @@ runs:
     - name: Determine QA status
       id: qa_status
       uses: actions/github-script@v7
+      env:
+        LOG_LEVEL: ${{ inputs.log_level }}
       with:
         script: |
           const { determineQAStatus } = require('${{ github.action_path }}/pr-review-checker.js');

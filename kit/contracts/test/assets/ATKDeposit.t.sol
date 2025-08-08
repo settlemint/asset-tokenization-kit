@@ -3,7 +3,6 @@ pragma solidity ^0.8.28;
 
 import { AbstractATKAssetTest } from "./AbstractATKAssetTest.sol";
 
-import { ClaimUtils } from "../utils/ClaimUtils.sol";
 import { IATKDeposit } from "../../contracts/assets/deposit/IATKDeposit.sol";
 import { IATKDepositFactory } from "../../contracts/assets/deposit/IATKDepositFactory.sol";
 import { ATKDepositFactoryImplementation } from "../../contracts/assets/deposit/ATKDepositFactoryImplementation.sol";
@@ -88,7 +87,6 @@ contract ATKDepositTest is AbstractATKAssetTest {
 
         return result;
     }
-
 
     function _mintInitialSupply(address recipient) internal {
         vm.prank(owner);
@@ -185,7 +183,6 @@ contract ATKDepositTest is AbstractATKAssetTest {
 
     // ERC20 custodian tests
     function test_OnlyUserManagementCanFreeze() public {
-
         vm.prank(owner);
         deposit.mint(user1, 100);
 
