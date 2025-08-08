@@ -110,6 +110,16 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
     });
 
     it("should revoke multiple roles from a single account", async () => {
+      // Grant the roles first since previous tests may have revoked them
+      await adminClient.system.grantRole({
+        verification: {
+          verificationCode: DEFAULT_PINCODE,
+          verificationType: "pincode",
+        },
+        address: testAddresses.valid1,
+        role: ["systemManager", "tokenManager"],
+      });
+
       const result = await adminClient.system.revokeRole({
         verification: {
           verificationCode: DEFAULT_PINCODE,
