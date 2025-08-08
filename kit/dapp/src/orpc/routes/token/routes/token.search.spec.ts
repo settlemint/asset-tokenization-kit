@@ -1,4 +1,4 @@
-import { getOrpcClient } from "@test/fixtures/orpc-client";
+import { getOrpcClient, type OrpcClient } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
   DEFAULT_ADMIN,
@@ -56,9 +56,6 @@ describe("Token search", () => {
   });
 
   it("can search tokens by name", async () => {
-    const headers = await signInWithUser(DEFAULT_ADMIN);
-    const client = getOrpcClient(headers);
-
     const results = await client.token.search({
       query: "USD",
       limit: 10,
@@ -72,9 +69,6 @@ describe("Token search", () => {
   });
 
   it("can search tokens by symbol", async () => {
-    const headers = await signInWithUser(DEFAULT_ADMIN);
-    const client = getOrpcClient(headers);
-
     const results = await client.token.search({
       query: "EUR",
       limit: 10,
@@ -88,9 +82,6 @@ describe("Token search", () => {
   });
 
   it("can search tokens by address", async () => {
-    const headers = await signInWithUser(DEFAULT_ADMIN);
-    const client = getOrpcClient(headers);
-
     // Search by the exact token address
     const results = await client.token.search({
       query: ethToken.id,
@@ -104,9 +95,6 @@ describe("Token search", () => {
   });
 
   it("performs case-insensitive search", async () => {
-    const headers = await signInWithUser(DEFAULT_ADMIN);
-    const client = getOrpcClient(headers);
-
     // Search with lowercase
     const lowercaseResults = await client.token.search({
       query: "eth",
@@ -125,9 +113,6 @@ describe("Token search", () => {
   });
 
   it("respects the limit parameter", async () => {
-    const headers = await signInWithUser(DEFAULT_ADMIN);
-    const client = getOrpcClient(headers);
-
     // Create a generic search that might match multiple tokens
     const results = await client.token.search({
       query: "e", // This should match Euro, Ethereum, and potentially others
@@ -138,9 +123,6 @@ describe("Token search", () => {
   });
 
   it("returns empty array for non-matching search", async () => {
-    const headers = await signInWithUser(DEFAULT_ADMIN);
-    const client = getOrpcClient(headers);
-
     const results = await client.token.search({
       query: "NONEXISTENTTOKEN123",
       limit: 10,
@@ -150,9 +132,6 @@ describe("Token search", () => {
   });
 
   it("can perform partial matches", async () => {
-    const headers = await signInWithUser(DEFAULT_ADMIN);
-    const client = getOrpcClient(headers);
-
     // Search for partial name match
     const nameResults = await client.token.search({
       query: "Stable", // Should match "USD Stablecoin"
