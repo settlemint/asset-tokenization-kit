@@ -3,10 +3,21 @@
   "tasks": {
     "dependencies": {
       "outputs": ["**/Chart.lock", "**/charts/**/*.tgz"],
-      "inputs": ["**/Chart.yaml", "tools/dependencies.ts"]
+      "inputs": [
+        "**/Chart.yaml",
+        "**/values.yaml",
+        "**/values-*.yaml",
+        "tools/dependencies.ts"
+      ]
     },
     "compile": {
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**"],
+      "inputs": [
+        "atk/**",
+        "**/*.gotmpl",
+        "**/values*.yaml",
+        "**/Chart.yaml"
+      ]
     },
     "package": {
       "cache": false,
@@ -47,7 +58,7 @@
       "dependsOn": ["contracts#artifacts:genesis", "contracts#artifacts:abi"]
     },
     "docs": {
-      "inputs": ["**/values.yaml"]
+      "inputs": ["**/values.yaml", "**/Chart.yaml"]
     }
   }
 }

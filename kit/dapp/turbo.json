@@ -5,11 +5,20 @@
       "cache": false
     },
     "codegen": {
-      "dependsOn": ["codegen:settlemint"]
+      "dependsOn": ["codegen:settlemint", "contracts#compile"],
+      "outputs": ["src/lib/interface-ids.ts"],
+      "inputs": ["tools/generate-interface-ids.ts"]
     },
     "build": {
       "dependsOn": ["codegen"],
-      "outputs": [".output/**"]
+      "outputs": [".output/**", "dist/**"],
+      "inputs": [
+        "src/**/*.{js,jsx,ts,tsx,css}",
+        "public/**",
+        "tsconfig.json",
+        "vite.config.*",
+        "package.json"
+      ]
     },
     "publish": {
       "dependsOn": ["build"]
