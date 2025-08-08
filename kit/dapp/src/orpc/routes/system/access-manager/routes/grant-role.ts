@@ -108,21 +108,16 @@ export const grantRole = portalRouter.system.grantRole
       };
     }
 
-    // Validate all roles exist and collect all invalid roles
-    const invalidRoles: string[] = [];
+    // Validate all roles exist
     const roleInfos = uniqueRoles.map((r) => {
       const roleInfo = getRoleByFieldName(r);
       if (!roleInfo) {
-        invalidRoles.push(r);
+        throw errors.NOT_FOUND({
+          message: `Role '${r}' not found`,
+        });
       }
       return roleInfo;
-    }).filter(Boolean);
-
-    if (invalidRoles.length > 0) {
-      throw errors.NOT_FOUND({
-        message: `Roles not found: ${invalidRoles.join(', ')}`,
-      });
-    }
+    });
 
     const challengeResponse = await handleChallenge(sender, {
       code: verification.verificationCode,
@@ -134,6 +129,11 @@ export const grantRole = portalRouter.system.grantRole
       // Single address, single role - use grantRole
       const account = uniqueAddresses[0];
       const roleInfo = roleInfos[0];
+      if (!account || !roleInfo) {
+        throw errors.INTERNAL_SERVER_ERROR({
+          message: "Invalid address or role configuration",
+        });
+      }
       await context.portalClient.mutate(GRANT_ROLE_MUTATION, {
         address: system.systemAccessManager.id,
         from: sender.wallet,
@@ -144,6 +144,11 @@ export const grantRole = portalRouter.system.grantRole
     } else if (uniqueAddresses.length > 1 && uniqueRoles.length === 1) {
       // Multiple addresses, single role - use batchGrantRole
       const roleInfo = roleInfos[0];
+      if (!roleInfo) {
+        throw errors.INTERNAL_SERVER_ERROR({
+          message: "Invalid role configuration",
+        });
+      }
       await context.portalClient.mutate(BATCH_GRANT_ROLE_MUTATION, {
         address: system.systemAccessManager.id,
         from: sender.wallet,
@@ -154,6 +159,11 @@ export const grantRole = portalRouter.system.grantRole
     } else if (uniqueAddresses.length === 1 && uniqueRoles.length > 1) {
       // Single address, multiple roles - use grantMultipleRoles
       const account = uniqueAddresses[0];
+      if (!account) {
+        throw errors.INTERNAL_SERVER_ERROR({
+          message: "Invalid address configuration",
+        });
+      }
       const roleBytes = roleInfos.map((r) => r.bytes);
       await context.portalClient.mutate(GRANT_MULTIPLE_ROLES_MUTATION, {
         address: system.systemAccessManager.id,
