@@ -2,8 +2,8 @@ import {
   useAssetClassSelectionSteps,
   type AssetClassSelectionStepsType,
 } from "@/components/asset-designer/asset-class-modal/asset-class-steps";
+import { FullScreenModalLayout } from "@/components/layout/fullscreen-modal-layout";
 import { getNextStepId, getPreviousStepId } from "@/components/stepper/utils";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useAppForm } from "@/hooks/use-app-form";
 import { useNavigate } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
@@ -78,17 +78,15 @@ export function AssetClassModal({ open, onOpenChange }: AssetClassModalProps) {
 
   return (
     <form.AppForm>
-      <Dialog
+      <FullScreenModalLayout
         open={open}
         onOpenChange={(open) => {
           form.reset();
           onOpenChange(open);
         }}
       >
-        <DialogContent className="sm:max-w-2xl md:max-w-4xl lg:max-w-6xl overflow-hidden">
-          {stepComponent[currentStep]}
-        </DialogContent>
-      </Dialog>
+        {stepComponent[currentStep]}
+      </FullScreenModalLayout>
     </form.AppForm>
   );
 }
