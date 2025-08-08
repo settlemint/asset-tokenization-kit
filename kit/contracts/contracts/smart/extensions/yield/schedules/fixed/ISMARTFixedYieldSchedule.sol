@@ -46,7 +46,7 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     /// @param requiredBalance The required balance of the denomination asset for the operation.
     error InsufficientDenominationAssetBalance(uint256 currentBalance, uint256 requiredBalance); // Could also be used if a
         // transferFrom fails.
-    /// @dev Reverted if the `_DenominationAsset` (derived from `_token.yieldToken()`) is the zero address, or if `to`
+    /// @dev Reverted if the `_denominationAsset` (derived from `_token.yieldToken()`) is the zero address, or if `to`
     /// address in withdrawal is zero.
     error InvalidDenominationAsset();
     /// @dev Reverted by `withdrawDenominationAsset` if the withdrawal `amount` is zero.
@@ -70,7 +70,7 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     /// @param rate The rate of the yield schedule.
     /// @param interval The interval of the yield schedule.
     /// @param periodEndTimestamps The timestamps of the end of each period.
-    /// @param DenominationAsset The denomination asset of the yield schedule.
+    /// @param denominationAsset The denomination asset of the yield schedule.
     /// @param yieldForNextPeriod The yield for the next period.
     event FixedYieldScheduleSet(
         uint256 startDate,
@@ -78,20 +78,20 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
         uint256 rate,
         uint256 interval,
         uint256[] periodEndTimestamps,
-        IERC20 DenominationAsset,
+        IERC20 denominationAsset,
         uint256 yieldForNextPeriod
     );
 
-    /// @notice Emitted when an administrator or funder successfully deposits `_DenominationAsset` into the contract to
+    /// @notice Emitted when an administrator or funder successfully deposits `_denominationAsset` into the contract to
     /// fund yield payments.
-    /// @param from The address that sent the `_DenominationAsset` tokens (the funder).
-    /// @param amount The quantity of `_DenominationAsset` tokens deposited.
-    event DenominationAssetTopUp(address indexed from, uint256 indexed amount);
+    /// @param from The address that sent the `_denominationAsset` tokens (the funder).
+    /// @param amount The quantity of `_denominationAsset` tokens deposited.
+    event denominationAssetTopUp(address indexed from, uint256 indexed amount);
 
-    /// @notice Emitted when an administrator successfully withdraws `_DenominationAsset` from the contract.
-    /// @param to The address that received the withdrawn `_DenominationAsset` tokens.
-    /// @param amount The quantity of `_DenominationAsset` tokens withdrawn.
-    event DenominationAssetWithdrawn(address indexed to, uint256 indexed amount);
+    /// @notice Emitted when an administrator successfully withdraws `_denominationAsset` from the contract.
+    /// @param to The address that received the withdrawn `_denominationAsset` tokens.
+    /// @param amount The quantity of `_denominationAsset` tokens withdrawn.
+    event denominationAssetWithdrawn(address indexed to, uint256 indexed amount);
 
     /// @notice Emitted when a token holder successfully claims their accrued yield.
     /// @param holder The address of the token holder who claimed the yield.
