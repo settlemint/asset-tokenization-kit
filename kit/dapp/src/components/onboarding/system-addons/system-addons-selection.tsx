@@ -187,21 +187,24 @@ export function SystemAddonsSelection() {
         }
       >
         <div className="space-y-6">
-          <WarningAlert description="This process may take up to 2–3 minutes depending on your selections." />
+          <WarningAlert
+            description={t("system-addons.addon-selection.deployment-warning")}
+          />
 
           <div className="space-y-4">
             <p className="text-sm text-gray-700 dark:text-gray-300">
-              Platform add-ons allow you to extend the capabilities of your
-              tokenization platform. These features — like Airdrops, Yield, or
-              XVP — are deployed as smart contracts, just like the core system.
+              {t("system-addons.addon-selection.intro-1")}
             </p>
             <p className="text-sm text-gray-700 dark:text-gray-300">
-              You can enable the ones you need now, and easily change or expand
-              them later in Settings.
+              {t("system-addons.addon-selection.intro-2")}
             </p>
           </div>
 
-          <InfoAlert description="You’ll be asked to confirm each transaction using your PIN or OTP." />
+          <InfoAlert
+            description={t(
+              "system-addons.addon-selection.transaction-confirmation-info"
+            )}
+          />
 
           <div className="flex flex-col h-full">
             <div className="flex-1">

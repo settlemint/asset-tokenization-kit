@@ -189,6 +189,7 @@
       },
       "addons-description": "Addons are additional features and integrations for your platform. They can be enabled or disabled here.",
       "available-addons": "Available add-ons",
+      "deployment-warning": "This process may take up to 2–3 minutes depending on your selections.",
       "confirm-deployment-description": "Please verify your identity to deploy the addons.",
       "confirm-deployment-title": "Confirm add-on deployment",
       "deploy-addons": "Deploy Selected add-ons",
@@ -199,6 +200,9 @@
       "failed-toast": "Failed to deploy addons: ",
       "no-system": "System not found. Please deploy the system first.",
       "required-for-bonds": "Required for bonds",
+      "intro-1": "Platform add-ons allow you to extend the capabilities of your tokenization platform. These features — like Airdrops, Yield, or XVP — are deployed as smart contracts, just like the core system.",
+      "intro-2": "You can enable the ones you need now, and easily change or expand them later in Settings.",
+      "transaction-confirmation-info": "You’ll be asked to confirm each transaction using your PIN or OTP.",
       "select-all-addons": "Select all the addons you plan to enable",
       "title": "Configure Platform Add-ons",
       "validation": {
