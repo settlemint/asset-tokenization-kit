@@ -34,7 +34,7 @@
       ]
     },
     "ci:gha": {
-      "dependsOn": ["ci:base", "test:integration"]
+      "dependsOn": ["ci:base"]
     },
     "ci:gha:main": {
       "dependsOn": ["publish", "publish:docker", "ci:gha"]

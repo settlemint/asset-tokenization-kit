@@ -1,0 +1,64 @@
+---
+alwaysApply: true
+description: Core commands and quality gates - MANDATORY before PR
+---
+
+# Core Commands
+
+## Quality Gates (MANDATORY)
+
+```bash
+bun run lint                   # Catches common errors
+bun run test                   # Unit and component tests
+bun run ci                     # MANDATORY before PR
+bun run typecheck              # If present in package.json
+```
+
+## Standard Commands
+
+### /code-review
+
+- Use `code-reviewer` agent
+- For contracts: also use `solidity-auditor`
+- Focus: quality, architecture, security
+
+### /debug
+
+1. Reproduce issue
+2. Gather context
+3. Analyze logs
+4. Test fix
+5. Verify no regressions
+
+### /test
+
+```bash
+bun run test                   # Unit tests
+bun run test:integration       # Integration tests
+bun run ci                     # Full test suite
+```
+
+### /pr
+
+1. Ensure CI green (`bun run ci`)
+2. Semantic commits: `type(scope): description`
+3. Create PR from feature branch
+4. Link Linear issue if applicable
+
+### /setup
+
+Configure MCP servers:
+
+- Linear (issues)
+- Context7 (docs)
+- DeepWiki (repos)
+- Sentry (errors)
+- Playwright (browser)
+- Gemini (AI)
+- OpenZeppelin (contracts)
+
+## Critical Rules
+
+- ALWAYS run from repo root
+- Use `bun run test` NOT `bun test`
+- CI must pass before PR

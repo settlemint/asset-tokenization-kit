@@ -8,10 +8,7 @@ import {
   depositTransferData,
 } from "../test-data/asset-data";
 import { successMessageData } from "../test-data/message-data";
-import {
-  adminUser,
-  signUpTransferUserData,
-} from "../test-data/user-data";
+import { adminUser, signUpTransferUserData } from "../test-data/user-data";
 import { ensureUserIsAdmin, fetchWalletAddressFromDB } from "../utils/db-utils";
 
 const testData = {
@@ -34,7 +31,6 @@ test.describe("Create, update collateral, mint and transfer deposit", () => {
       const transferUserPage = await transferUserContext.newPage();
       transferUserPages = Pages(transferUserPage);
       await transferUserPage.goto("/");
-      await transferUserPages.signUpPage.signUp(signUpTransferUserData);
       testData.transferUserEmail = signUpTransferUserData.email;
       testData.transferUserName = signUpTransferUserData.name;
       const transferUserWalletAddress = await fetchWalletAddressFromDB(
@@ -47,7 +43,6 @@ test.describe("Create, update collateral, mint and transfer deposit", () => {
       const adminPage = await adminContext.newPage();
       adminPages = Pages(adminPage);
       await adminPage.goto("/");
-      await adminPages.signInPage.signInAsAdmin(adminUser);
       await adminPages.adminPage.goto();
     } catch (error) {
       if (transferUserContext) {

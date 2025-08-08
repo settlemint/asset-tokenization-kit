@@ -2,10 +2,10 @@
  * @vitest-environment happy-dom
  */
 import type { Column, ColumnMeta } from "@tanstack/react-table";
+import { renderWithProviders } from "@test/helpers/test-utils";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { renderWithProviders } from "../../../../../test/test-utils";
 import type { ColumnDataType } from "../types/column-types";
 import type { TextFilterOperator } from "../types/filter-types";
 import {

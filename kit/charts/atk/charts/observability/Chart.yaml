@@ -15,7 +15,7 @@ dependencies:
     repository: https://victoriametrics.github.io/helm-charts/
     condition: victoria-metrics-single.enabled
   - name: alloy
-    version: 1.2.0
+    version: 1.2.1
     repository: https://grafana.github.io/helm-charts
     condition: alloy.enabled
   - name: metrics-server
@@ -23,7 +23,7 @@ dependencies:
     repository: https://kubernetes-sigs.github.io/metrics-server/
     condition: metrics-server.enabled
   - name: kube-state-metrics
-    version: 6.1.0
+    version: 6.1.2
     repository: https://prometheus-community.github.io/helm-charts
     condition: kube-state-metrics.enabled
   - name: grafana

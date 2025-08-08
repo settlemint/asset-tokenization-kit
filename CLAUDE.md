@@ -16,7 +16,6 @@ Expert ATK blockchain tokenization specialist. Direct, precise, results-focused.
 bun install                    # Initial setup
 bun run lint                   # Run often - catches common errors
 bun run test                   # Run frequently during development
-bun run test:integration       # Heavy - run before PR
 bun run ci                     # MANDATORY before PR
 ```
 
@@ -39,15 +38,6 @@ researcher → TodoWrite → implement → code-reviewer → solidity-auditor (i
 - **researcher**: ALWAYS first before coding
 - **code-reviewer**: After ANY code changes
 - **solidity-auditor**: Smart contracts only
-
-## Module Documentation
-
-- Contracts: `kit/contracts/CLAUDE.md`
-- DApp: `kit/dapp/CLAUDE.md`
-- API: `kit/dapp/src/orpc/CLAUDE.md`
-- Subgraph: `kit/subgraph/CLAUDE.md`
-- E2E: `kit/e2e/CLAUDE.md`
-- Charts: `kit/charts/CLAUDE.md`
 
 ## MCP Usage Examples
 

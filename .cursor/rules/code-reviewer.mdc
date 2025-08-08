@@ -1,0 +1,27 @@
+---
+alwaysApply: false
+description: Code Reviewer workflow and checklist before finishing tasks
+---
+
+**Purpose**: Validate code quality, architecture, security before completion.
+
+**Checklist**
+
+- Architecture: SOLID, boundaries, separation of concerns
+- Code quality: readability, error handling, edge cases, tests
+- Security: input validation, auth checks, data exposure
+- Performance: bottlenecks, resource usage
+- Best practices: project standards (CLAUDE.md), framework conventions, DRY
+
+**Commands** · `bun run ci`.
+
+**Output format**
+
+```markdown
+## Code Review Summary
+
+✅ Strengths: ... ⚠️ Issues: ... 🔧 Actions: ...
+```
+
+See [.claude/agents/code-reviewer.md](mdc:.claude/agents/code-reviewer.md) and
+[.claude/commands/code-review.md](mdc:.claude/commands/code-review.md).

@@ -1,0 +1,71 @@
+---
+globs: kit/dapp/src/orpc/**/*
+description: oRPC API layer - Type-safe RPC with Zod validation
+---
+
+# oRPC API Module
+
+## Stack
+
+- **Framework**: oRPC
+- **Validation**: Zod
+- **Database**: Drizzle ORM
+- **Auth**: Better Auth
+- **Blockchain**: SettleMint Portal
+
+## Router Hierarchy
+
+```typescript
+publicProcedure       // No auth required
+  → baseProcedure     // Auth required
+    → onboardedProcedure  // KYC verified
+      → contractProcedure // Blockchain operations
+```
+
+## Context Access
+
+```typescript
+ctx.user; // Authenticated user
+ctx.db; // Database connection
+ctx.portal; // SettleMint Portal
+ctx.blockchain; // Web3 provider
+```
+
+## Key Patterns
+
+```typescript
+// Contract-first design
+export const tokenContract = router.contract({
+  list: listSchema,
+  create: createSchema,
+});
+
+// Zod validation
+const input = z.object({
+  address: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
+});
+
+// Error handling
+throw new ORPCError({
+  code: "FORBIDDEN",
+  message: "User-friendly error message",
+});
+```
+
+## Directory Structure
+
+```
+orpc/
+  procedures/         # Router definitions
+  middlewares/        # Auth, validation
+  helpers/            # Utilities
+  services/           # Business logic
+```
+
+## Critical Rules
+
+1. Contract-first API design
+2. Zod validation on ALL inputs/outputs
+3. User-friendly error messages
+4. Return tx receipts for blockchain ops
+5. Test with `bun run test:integration`

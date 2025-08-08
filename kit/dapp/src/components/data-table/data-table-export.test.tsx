@@ -5,7 +5,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { toast } from "sonner";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createMockTable, renderWithProviders } from "../../../test/test-utils";
+import { createMockTable, renderWithProviders } from "@test/helpers/test-utils";
 import { DataTableExport } from "./data-table-export";
 
 // Mock react-i18next
@@ -298,7 +298,7 @@ describe("DataTableExport", () => {
       const text = await blobCall.text();
 
       // BOM character should be at the start
-      expect(text.codePointAt(0)).toBe(0xFE_FF);
+      expect(text.codePointAt(0)).toBe(0xfe_ff);
     });
   });
 

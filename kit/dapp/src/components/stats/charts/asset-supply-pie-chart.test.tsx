@@ -1,0 +1,109 @@
+/**
+ * @vitest-environment happy-dom
+ */
+import { screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  createMockSuspenseQueryError,
+  createMockSuspenseQueryResult,
+} from "@test/mocks/suspense-query";
+import { renderWithProviders } from "@test/helpers/test-utils";
+import { AssetSupplyPieChart } from "./asset-supply-pie-chart";
+
+// Mock useSuspenseQuery while keeping other exports
+vi.mock("@tanstack/react-query", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@tanstack/react-query")>();
+  return {
+    ...actual,
+    useSuspenseQuery: vi.fn(),
+  };
+});
+
+// Mock the orpc client
+vi.mock("@/orpc/orpc-client", () => ({
+  orpc: {
+    system: {
+      statsAssets: {
+        queryOptions: vi.fn(),
+      },
+    },
+  },
+}));
+
+describe("AssetSupplyPieChart", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should render chart with asset data", async () => {
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockReturnValue(
+      createMockSuspenseQueryResult({
+        chartData: [
+          { assetType: "bond", totalSupply: 150 },
+          { assetType: "equity", totalSupply: 75 },
+          { assetType: "fund", totalSupply: 50 },
+          { assetType: "stablecoin", totalSupply: 25 },
+          { assetType: "deposit", totalSupply: 100 },
+        ],
+        activeChartConfig: {
+          bond: { label: "Bonds", color: "var(--chart-1)" },
+          equity: { label: "Equity", color: "var(--chart-3)" },
+          fund: { label: "Funds", color: "var(--chart-4)" },
+          stablecoin: { label: "Stablecoins", color: "var(--chart-5)" },
+          deposit: { label: "Deposits", color: "var(--chart-6)" },
+        },
+      })
+    );
+
+    renderWithProviders(<AssetSupplyPieChart />);
+
+    // Wait for the chart to render
+    expect(
+      await screen.findByText("charts.assetSupply.title")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("charts.assetSupply.description")
+    ).toBeInTheDocument();
+  });
+
+  it("should show empty state when no assets exist", async () => {
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockReturnValue(
+      createMockSuspenseQueryResult({
+        chartData: [],
+        activeChartConfig: {},
+      })
+    );
+
+    renderWithProviders(<AssetSupplyPieChart />);
+
+    // The PieChart component shows empty state when all values are 0
+    // This should render the ChartEmptyState component with the empty message
+    expect(
+      await screen.findByText("charts.assetSupply.title")
+    ).toBeInTheDocument();
+
+    // Verify the empty state content is shown
+    expect(screen.getByText("charts.common.noData")).toBeInTheDocument();
+  });
+
+  it("should handle ORPC error gracefully", async () => {
+    const { useSuspenseQuery } = await import("@tanstack/react-query");
+    vi.mocked(useSuspenseQuery).mockImplementation(
+      createMockSuspenseQueryError(
+        new Error("ORPC Error: Failed to fetch stats")
+      )
+    );
+
+    // Mock console.error to avoid noise in test output
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    // Expect the component to throw an error, which will be caught by error boundary
+    expect(() => {
+      renderWithProviders(<AssetSupplyPieChart />);
+    }).toThrow("ORPC Error: Failed to fetch stats");
+
+    consoleSpy.mockRestore();
+  });
+});

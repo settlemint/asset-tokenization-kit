@@ -10,7 +10,7 @@ import {
   generateMockData,
   renderWithProviders,
   type TestDataItem,
-} from "../../../../../test/test-utils";
+} from "@test/helpers/test-utils";
 import type { ColumnDataType } from "../types/column-types";
 import {
   PropertyFilterOptionValueDisplay,

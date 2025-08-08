@@ -11,20 +11,40 @@ export class CreateAssetForm extends BasePage {
   }
 
   async fillBasicFields(options: {
-    name: string;
-    symbol: string;
+    name?: string;
+    symbol?: string;
+    decimals?: string;
     isin?: string;
-    internalId?: string;
+    country?: string;
   }) {
-    await this.page.getByLabel("Name").fill(options.name);
-
-    await this.page.getByLabel("Symbol").fill(options.symbol);
+    if (options.name !== undefined) {
+      await this.page.getByLabel("Name").fill(options.name);
+    }
+    if (options.symbol !== undefined) {
+      await this.page.getByLabel("Symbol").fill(options.symbol);
+    }
+    if (options.decimals !== undefined) {
+      await this.page.getByLabel("Decimals").fill(options.decimals);
+    }
     if (options.isin !== undefined) {
       await this.page.getByLabel("ISIN").fill(options.isin);
     }
-    if (options.internalId !== undefined) {
-      await this.page.getByLabel("Internal ID").fill(options.internalId);
+    if (options.country !== undefined) {
+      await this.page.getByLabel("Country").click();
+      await this.page.getByRole("option", { name: options.country }).click();
     }
+  }
+
+  async configureComplianceModules() {
+    await expect(
+      this.page.getByRole("heading", { name: "Compliance Modules" })
+    ).toBeVisible();
+
+    await this.page
+      .locator('[data-slot="selectable-card"]')
+      .filter({ hasText: "Country Allowlist" })
+      .click();
+    await this.clickNextButton();
   }
 
   async fillBondDetails(options: {
@@ -47,6 +67,21 @@ export class CreateAssetForm extends BasePage {
         .getByRole("option", { name: options.underlyingAsset })
         .click();
     }
+  }
+
+  async fillStablecoinFields(options: {
+    name?: string;
+    symbol?: string;
+    decimals?: string;
+    isin?: string;
+    country?: string;
+    pincode: string;
+  }) {
+    await this.fillBasicFields(options);
+    await this.clickNextButton();
+    await this.configureComplianceModules();
+    await this.reviewAndDeploy();
+    await this.confirmPinCode(options.pincode);
   }
 
   getMaturityDate(options: { isPast?: boolean; daysOffset?: number } = {}) {
@@ -83,17 +118,21 @@ export class CreateAssetForm extends BasePage {
   }
 
   async selectAssetType(assetType: string) {
-    await this.page
-      .locator(
-        'div[data-slot="sidebar-content"] > button:has-text("Asset Designer")'
-      )
-      .first()
-      .click();
-    await this.page
-      .locator(
-        `[data-slot="card"] [data-slot="card-title"]:has-text("${assetType}")`
-      )
-      .click();
+    await this.page.getByRole("button", { name: "Asset designer" }).click();
+
+    if (assetType.toLowerCase() === "stablecoin") {
+      await this.page.getByText("Cash EquivalentHighly liquid").click();
+
+      await this.page.getByText("StablecoinDigital currencies").click();
+
+      await this.page.getByRole("button", { name: "Next" }).click();
+    } else {
+      throw new Error(
+        `Asset type "${assetType}" navigation not implemented yet`
+      );
+    }
+
+    await this.page.waitForURL("**/asset-designer?type=stablecoin");
   }
 
   async fillCryptocurrencyDetails(options: {
@@ -239,5 +278,106 @@ export class CreateAssetForm extends BasePage {
       },
       { selector, value: invalidValue }
     );
+  }
+
+  async isNextButtonEnabled(): Promise<boolean> {
+    const nextButton = this.page.getByRole("button", { name: "Next" });
+    return await nextButton.isEnabled();
+  }
+
+  async expectNextButtonDisabled() {
+    const nextButton = this.page.getByRole("button", { name: "Next" });
+    await expect(nextButton).toBeDisabled();
+  }
+
+  async expectNextButtonDisabledWithValidation(validationMessage?: string) {
+    if (validationMessage) {
+      await expect(this.page.getByText(validationMessage)).toBeVisible();
+    }
+    const nextButton = this.page.getByRole("button", { name: "Next" });
+    await expect(nextButton).toBeDisabled();
+  }
+
+  async expectNextButtonEnabled() {
+    const nextButton = this.page.getByRole("button", { name: "Next" });
+    await expect(nextButton).toBeEnabled();
+  }
+
+  async clickNextButton() {
+    const nextButton = this.page.getByRole("button", { name: "Next" });
+    await nextButton.click();
+  }
+
+  async expectComplianceStep() {
+    await expect(
+      this.page.getByRole("heading", { name: "Compliance Modules" })
+    ).toBeVisible();
+  }
+
+  async reviewAndDeploy() {
+    await expect(
+      this.page.locator("h2").filter({ hasText: "Review & Deploy" })
+    ).toBeVisible();
+
+    await expect(
+      this.page.getByRole("paragraph").filter({
+        hasText:
+          "Confirm and deploy your compliant digital asset to the blockchain",
+      })
+    ).toBeVisible();
+
+    await this.page.getByRole("button", { name: "Submit" }).click();
+  }
+
+  async confirmPinCode(pinCode: string) {
+    await expect(
+      this.page.getByRole("heading", { name: "Confirm asset creation" })
+    ).toBeVisible();
+
+    await expect(this.page.getByText("PIN Code")).toBeVisible();
+
+    await this.page.locator('[data-input-otp="true"]').fill(pinCode);
+
+    await expect(
+      this.page.getByRole("button", { name: "Confirm" })
+    ).toBeEnabled();
+
+    await this.page.getByRole("button", { name: "Confirm" }).click();
+  }
+
+  async verifyAssetCreated(options: {
+    name: string;
+    symbol: string;
+    decimals: string;
+  }) {
+    await this.page.waitForURL(/.*\/token\/0x[a-fA-F0-9]+/, {
+      timeout: 120000,
+    });
+
+    await expect(this.page.locator('[data-slot="data-table"]')).toBeVisible({
+      timeout: 120000,
+    });
+
+    let assetRow = this.page.getByRole("row").filter({
+      has: this.page.getByRole("cell", { name: options.name }),
+    });
+
+    await expect(assetRow).toBeVisible({
+      timeout: 30000,
+    });
+
+    await expect(
+      assetRow.getByRole("cell", { name: options.symbol })
+    ).toBeVisible({
+      timeout: 30000,
+    });
+
+    await expect(
+      assetRow.getByRole("cell", { name: options.decimals })
+    ).toBeVisible();
+
+    await expect(
+      assetRow.locator('[data-slot="badge"]').filter({ hasText: "Paused" })
+    ).toBeVisible();
   }
 }

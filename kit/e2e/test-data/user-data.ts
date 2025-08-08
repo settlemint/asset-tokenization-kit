@@ -6,7 +6,36 @@ const date = new Date()
 const randomValue = (randomInt(10_000) + 10_000).toString().slice(1);
 const pincodeName = "Test Pincode";
 const pincode = "123456";
-const password = "TestPassword123!";
+
+const generateSecurePassword = (): string => {
+  const lowercase = "abcdefghijklmnopqrstuvwxyz";
+  const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const numbers = "0123456789";
+  const special = "!@#$%^&*";
+
+  const required = [
+    lowercase[Math.floor(Math.random() * lowercase.length)],
+    uppercase[Math.floor(Math.random() * uppercase.length)],
+    numbers[Math.floor(Math.random() * numbers.length)],
+    special[Math.floor(Math.random() * special.length)],
+  ];
+
+  const allChars = lowercase + uppercase + numbers + special;
+  const remaining = Array.from(
+    { length: 8 },
+    () => allChars[Math.floor(Math.random() * allChars.length)]
+  );
+
+  const passwordArray = [...required, ...remaining];
+  for (let i = passwordArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [passwordArray[i], passwordArray[j]] = [passwordArray[j], passwordArray[i]];
+  }
+
+  return passwordArray.join("");
+};
+
+const password = generateSecurePassword();
 interface SignUpData {
   name: string;
   email: string;
@@ -87,8 +116,8 @@ export const signInTestData = {
 
 export const onboardingTestData = {
   email: `admin-onboarding-${Date.now()}-${Math.random().toString(36).substring(7)}@settlemint.com`,
-  password: "TestPassword123!",
-  pinCode: "987654",
+  password: generateSecurePassword(),
+  pinCode: Math.floor(100000 + Math.random() * 900000).toString(),
   wrongPinCode: "654321",
 
   kycData: {

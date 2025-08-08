@@ -31,6 +31,12 @@ const uiConfig: PlaywrightTestConfig = {
       dependencies: ["setup"],
     },
     {
+      name: "stablecoin-tests",
+      testMatch: "**/create-stablecoin-validation.spec.ts",
+      fullyParallel: true,
+      dependencies: ["setup"],
+    },
+    {
       name: "cleanup",
       testMatch: "**/global-cleanup.spec.ts",
       fullyParallel: false,

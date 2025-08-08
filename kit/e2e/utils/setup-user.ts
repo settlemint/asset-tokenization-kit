@@ -5,9 +5,8 @@ import { fileURLToPath } from "node:url";
 export interface SetupUser {
   email: string;
   password: string;
-  pinCode: string;
-  fullName: string;
-  createdAt: string;
+  pincode: string;
+  name: string;
 }
 
 export function getSetupUserPath(): string {
@@ -23,7 +22,6 @@ export function getSetupUser(): SetupUser {
   }
 
   const setupDataPath = getSetupUserPath();
-
   if (!fs.existsSync(setupDataPath)) {
     throw new Error(
       "Setup user data not found. Make sure the onboarding setup test has run successfully."
@@ -32,7 +30,18 @@ export function getSetupUser(): SetupUser {
 
   const data = fs.readFileSync(setupDataPath, "utf8");
   const user = JSON.parse(data) as SetupUser;
-
   cachedSetupUser = user;
   return user;
+}
+
+export function saveSetupUser(user: SetupUser): void {
+  const setupDataPath = getSetupUserPath();
+  const setupDir = path.dirname(setupDataPath);
+
+  if (!fs.existsSync(setupDir)) {
+    fs.mkdirSync(setupDir, { recursive: true });
+  }
+
+  fs.writeFileSync(setupDataPath, JSON.stringify(user, null, 2));
+  cachedSetupUser = user;
 }

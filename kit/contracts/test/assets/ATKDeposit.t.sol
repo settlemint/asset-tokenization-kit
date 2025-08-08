@@ -89,7 +89,6 @@ contract ATKDepositTest is AbstractATKAssetTest {
         return result;
     }
 
-
     function _mintInitialSupply(address recipient) internal {
         vm.prank(owner);
         deposit.mint(recipient, INITIAL_SUPPLY);
@@ -185,7 +184,6 @@ contract ATKDepositTest is AbstractATKAssetTest {
 
     // ERC20 custodian tests
     function test_OnlyUserManagementCanFreeze() public {
-
         vm.prank(owner);
         deposit.mint(user1, 100);
 
