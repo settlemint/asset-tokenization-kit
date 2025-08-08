@@ -34,7 +34,7 @@ describe("Fixed yield", () => {
                 totalClaimed
                 totalUnclaimedYield
               }
-              underlyingAsset {
+              denominationAsset {
                 name
               }
             }
@@ -120,7 +120,7 @@ describe("Fixed yield", () => {
                 totalUnclaimedYield: "0",
               },
             ],
-            underlyingAsset: {
+            denominationAsset: {
               name: "Euro Deposits",
             },
           },

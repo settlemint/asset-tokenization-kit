@@ -46,8 +46,8 @@ describe("TokenBalances", () => {
     // - Investor A New
     // - Investor B
     // - Frozen investor
-    // - Bond contract (underlying deposit asset)
-    // - Fixed yield schedule contract (underlying deposit asset)
+    // - Bond contract (denomination deposit asset)
+    // - Fixed yield schedule contract (denomination deposit asset)
     expect(Object.keys(balancesByAccount).length).toBe(6);
   });
 

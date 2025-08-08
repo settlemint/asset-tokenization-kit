@@ -38,7 +38,7 @@ export function fetchFixedYieldSchedule(
       BigInt.zero(),
       DEFAULT_TOKEN_DECIMALS
     );
-    fixedYieldSchedule.underlyingAsset = Address.zero();
+    fixedYieldSchedule.denominationAsset = Address.zero();
     fixedYieldSchedule.deployedInTransaction = Bytes.empty();
     fixedYieldSchedule.save();
     FixedYieldScheduleTemplate.create(address);

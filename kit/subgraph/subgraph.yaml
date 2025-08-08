@@ -400,8 +400,8 @@ templates:
       language: wasm/assemblyscript
       entities:
         - FixedYieldScheduleSet
-        - UnderlyingAssetTopUp
-        - UnderlyingAssetWithdrawn
+        - DenominationAssetTopUp
+        - DenominationAssetWithdrawn
         - YieldClaimed
       abis:
         - name: FixedYieldSchedule
@@ -409,10 +409,10 @@ templates:
       eventHandlers:
         - event: FixedYieldScheduleSet(uint256,uint256,uint256,uint256,uint256[],address,uint256)
           handler: handleFixedYieldScheduleSet
-        - event: UnderlyingAssetTopUp(indexed address,indexed uint256)
-          handler: handleUnderlyingAssetTopUp
-        - event: UnderlyingAssetWithdrawn(indexed address,indexed uint256)
-          handler: handleUnderlyingAssetWithdrawn
+        - event: DenominationAssetTopUp(indexed address,indexed uint256)
+          handler: handleDenominationAssetTopUp
+        - event: DenominationAssetWithdrawn(indexed address,indexed uint256)
+          handler: handleDenominationAssetWithdrawn
         - event: YieldClaimed(indexed
             address,uint256,uint256,uint256,uint256[],uint256[],uint256,uint256)
           handler: handleYieldClaimed

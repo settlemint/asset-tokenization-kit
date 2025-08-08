@@ -92,12 +92,12 @@ contract ATKFixedYieldScheduleUpgradeable is
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
-    function topUpUnderlyingAsset(uint256 amount) external override nonReentrant whenNotPaused {
-        _topUpUnderlyingAsset(amount);
+    function topUpDenominationAsset(uint256 amount) external override nonReentrant whenNotPaused {
+        _topUpDenominationAsset(amount);
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
-    function withdrawUnderlyingAsset(
+    function withdrawDenominationAsset(
         address to,
         uint256 amount
     )
@@ -107,18 +107,18 @@ contract ATKFixedYieldScheduleUpgradeable is
         onlyRole(SUPPLY_MANAGEMENT_ROLE)
         whenNotPaused
     {
-        _withdrawUnderlyingAsset(to, amount);
+        _withdrawDenominationAsset(to, amount);
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
-    function withdrawAllUnderlyingAsset(address to)
+    function withdrawAllDenominationAsset(address to)
         external
         override
         nonReentrant
         onlyRole(SUPPLY_MANAGEMENT_ROLE)
         whenNotPaused
     {
-        _withdrawAllUnderlyingAsset(to);
+        _withdrawAllDenominationAsset(to);
     }
 
     /// @notice Pauses all contract operations
