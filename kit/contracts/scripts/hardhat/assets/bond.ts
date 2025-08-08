@@ -25,8 +25,8 @@ import { redeem } from "./actions/redeemable/redeem";
 import { setupAsset } from "./actions/setup-asset";
 import { claimYield } from "./actions/yield/claim-yield";
 import { setYieldSchedule } from "./actions/yield/set-yield-schedule";
-import { topupDenominationAsset } from "./actions/yield/topup-underlying-asset";
-import { withdrawnDenominationAsset } from "./actions/yield/withdrawn-underlying-asset";
+import { topupDenominationAsset } from "./actions/yield/topup-denomination-asset";
+import { withdrawnDenominationAsset } from "./actions/yield/withdrawn-denomination-asset";
 import { getDefaultComplianceModules } from "./utils/default-compliance-modules";
 
 export const createBond = async (depositToken: Asset<any>) => {
