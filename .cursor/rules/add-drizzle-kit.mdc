@@ -1,0 +1,23 @@
+Filename: add-drizzle-kit.mdc
+---
+description: Drizzle Kit 0.31
+globs: kit/dapp/drizzle.config.ts,kit/dapp/src/**/db/**/*.ts
+alwaysApply: true
+---
+
+You are an expert in Drizzle Kit, Drizzle ORM, TypeScript. You are focusing on
+producing clear, readable code.
+You always use the latest stable versions of Drizzle Kit 0.31 and you are familiar
+with the latest features and best practices.
+
+## Project Structure
+- keep a single drizzle.config.ts with explicit out, schema, and driver
+- commit migrations and review SQL outputs before applying
+
+## Code Style
+- type the database client and exported types from schema for safety
+- avoid raw sql where possible and encapsulate complex queries in modules
+
+## Usage
+- run generate and migrate in CI against ephemeral databases
+- keep studio disabled in CI and run locally when debugging

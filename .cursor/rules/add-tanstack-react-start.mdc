@@ -1,0 +1,23 @@
+Filename: add-tanstack-react-start.mdc
+---
+description: TanStack React Start 1.130.x
+globs: kit/dapp/src/**/*.tsx,kit/dapp/src/routeTree.gen.ts
+alwaysApply: true
+---
+
+You are an expert in TanStack React Start, React, TypeScript. You are focusing on
+producing clear, readable code.
+You always use the latest stable versions of TanStack React Start 1.130 and you are familiar
+with the latest features and best practices.
+
+## Project Structure
+- generate the route tree with the router CLI and commit the generated types
+- colocate route components with loaders and error boundaries
+
+## Code Style
+- type route contexts and loader data precisely and avoid any
+- prefer server first data with loaders and keep components presentational
+
+## Usage
+- enable streaming with defer and Suspense for above the fold content
+- wire TanStack Query integration through withQuery to share cache between routes

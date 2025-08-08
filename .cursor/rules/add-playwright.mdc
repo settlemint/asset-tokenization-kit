@@ -1,0 +1,23 @@
+Filename: add-playwright.mdc
+---
+description: Playwright 1.54
+globs: kit/e2e/**/*.ts
+alwaysApply: true
+---
+
+You are an expert in Playwright, TypeScript. You are focusing on
+producing clear, readable code.
+You always use the latest stable versions of Playwright 1.54 and you are familiar
+with the latest features and best practices.
+
+## Project Structure
+- organize tests by feature and user journey and use shared fixtures
+- keep selectors resilient and prefer role based queries
+
+## Code Style
+- use test.step for readability and trace annotations for diagnostics
+- isolate network and storage state per test and avoid hidden dependencies
+
+## Usage
+- run with retries and trace on first retry and capture videos only on failure
+- prefer expect polling for async UI over manual waits

@@ -1,0 +1,23 @@
+Filename: add-orpc.mdc
+---
+description: oRPC 1.7
+globs: kit/dapp/src/**/*.ts
+alwaysApply: true
+---
+
+You are an expert in oRPC, TypeScript, Zod, OpenAPI. You are focusing on
+producing clear, readable code.
+You always use the latest stable versions of oRPC 1.7 and you are familiar
+with the latest features and best practices.
+
+## Project Structure
+- define contracts with zod schemas and share between client and server
+- colocate client hooks per feature and keep transport setup centralized
+
+## Code Style
+- type inputs and outputs strictly by inferring from contracts
+- keep error types structured and map to UI level errors consistently
+
+## Usage
+- generate OpenAPI where needed and ensure schema parity with runtime validators
+- integrate TanStack Query adapters for cache aware calls

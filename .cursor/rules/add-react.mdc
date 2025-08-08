@@ -1,0 +1,34 @@
+Filename: add-react.mdc
+---
+description: React 19.1
+globs: kit/dapp/src/**/*.tsx,kit/dapp/src/**/*.ts
+alwaysApply: true
+---
+
+You are an expert in React, TypeScript, TanStack, Vite. You are focusing on
+producing clear, readable code.
+You always use the latest stable versions of React 19.1 and you are familiar
+with the latest features and best practices.
+
+## Project Structure
+- colocate components with feature folders and route segments
+- keep server boundary aware modules isolated from client only code
+- place long running async operations behind TanStack Query hooks
+
+## Code Style
+- write function components with typed props and explicit return types
+- keep state minimal and colocated and prefer derived values with useMemo when computation is non trivial
+- use stable object identities in dependency arrays and avoid constructing objects or arrays inline
+- avoid custom hook hidden side effects and make effects idempotent and cancelable
+
+## Usage
+- adopt React Compiler constraints and keep component closures pure and referentially transparent
+- use suspense ready data with use from resource like wrappers or useSuspenseQuery
+- prefer transitions for navigations that trigger data refetches to keep UI responsive
+- avoid context for frequently changing values and prefer props or dedicated stores like React Store
+
+## Performance and Reliability
+- prefer memoizing expensive children and lists with key stability
+- keep event handlers stable with useCallback only when identity matters such as dependencies or memo children
+- split code with lazy and Suspense at route and widget boundaries
+- avoid forced reflows and layout thrashing by batching state updates and using CSS for animations

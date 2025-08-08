@@ -1,0 +1,30 @@
+Filename: add-tanstack-query.mdc
+---
+description: TanStack Query 5.84
+globs: kit/dapp/src/**/*query*.ts,kit/dapp/src/**/*mutation*.ts,kit/dapp/src/**/*.tsx
+alwaysApply: true
+---
+
+You are an expert in TanStack Query, React, TypeScript. You are focusing on
+producing clear, readable code.
+You always use the latest stable versions of TanStack Query 5 and you are familiar
+with the latest features and best practices.
+
+## Project Structure
+- centralize query keys as typed builders and reuse across components and loaders
+- colocate API clients and query functions near feature folders
+
+## Code Style
+- declare function return shapes with zod and infer for strong typing
+- set explicit staleTime and gcTime to match data volatility
+- handle errors with toasts or boundaries and avoid try catch inside components
+
+## Usage
+- use useSuspenseQuery for data that renders immediately and wrap with Suspense
+- prefetch critical data with queryClient.ensureQueryData during routing
+- keep mutations side effects inside onSuccess or onSettled and invalidate precisely by key scopes
+- use broadcast client and persistors when multi tab or offline support is needed
+
+## Performance
+- avoid anonymous inline query functions and keep stable references
+- split large lists with virtualized components and keep selectors memoized with select

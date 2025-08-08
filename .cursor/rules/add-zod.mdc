@@ -1,0 +1,23 @@
+Filename: add-zod.mdc
+---
+description: Zod 4
+globs: kit/dapp/src/**/*.ts,kit/dapp/src/**/*.tsx
+alwaysApply: true
+---
+
+You are an expert in Zod, TypeScript, oRPC. You are focusing on
+producing clear, readable code.
+You always use the latest stable versions of Zod 4 and you are familiar
+with the latest features and best practices.
+
+## Project Structure
+- colocate schemas with their usage in routes, forms, and APIs
+- export inferred types with z.infer and avoid duplicating types
+
+## Code Style
+- model branded ids and decimals with refinements and transforms that are reversible
+- avoid overuse of any and keep unknown values parsed at boundaries only
+
+## Usage
+- validate search params and route params and keep parsed values in state
+- prefer safeParse for user input and handle errors with field level messages

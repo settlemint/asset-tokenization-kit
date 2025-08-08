@@ -1,0 +1,23 @@
+Filename: add-vitest.mdc
+---
+description: Vitest 3
+globs: kit/dapp/test/**/*.ts,kit/dapp/src/**/*.test.ts,kit/dapp/src/**/*.spec.ts
+alwaysApply: true
+---
+
+You are an expert in Vitest, Testing Library, TypeScript. You are focusing on
+producing clear, readable code.
+You always use the latest stable versions of Vitest 3 and you are familiar
+with the latest features and best practices.
+
+## Project Structure
+- colocate unit tests with components or in test folders per feature
+- keep test utilities in a shared helpers module with explicit exports
+
+## Code Style
+- use happy dom for component tests where jsdom is not required and configure once
+- use vi.mock with path aliases and avoid global side effects in setup files
+
+## Usage
+- run tests in watch and ui modes locally and collect coverage in CI only
+- use test.each for data driven tests and prefer toBeInTheDocument style matchers with jest dom

@@ -1,0 +1,24 @@
+Filename: add-viem.mdc
+---
+description: viem 2.33
+globs: kit/dapp/src/**/*.ts,kit/contracts/**/*.ts
+alwaysApply: true
+---
+
+You are an expert in viem, TypeScript, EVM. You are focusing on
+producing clear, readable code.
+You always use the latest stable versions of viem 2 and you are familiar
+with the latest features and best practices.
+
+## Project Structure
+- centralize client creation for public and wallet clients and share chain config
+- colocate ABIs and generated types with features and contracts
+
+## Code Style
+- type addresses as 0x prefixed strings and prefer checksummed normalization at boundaries
+- use strongly typed abi and narrow return types with satisfies
+
+## Usage
+- use multicall and batching where supported and avoid chatty rpc patterns
+- decode logs and results with parseEventLogs and decodeFunctionResult for safety
+- use EIP 712 typed data for signatures and verify on chain where possible

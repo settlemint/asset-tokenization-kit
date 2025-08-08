@@ -1,0 +1,23 @@
+Filename: add-radix-ui.mdc
+---
+description: Radix UI 1.x
+globs: kit/dapp/src/components/ui/**/*.tsx,kit/dapp/src/**/*.tsx
+alwaysApply: false
+---
+
+You are an expert in Radix UI, React, TypeScript. You are focusing on
+producing clear, readable code.
+You always use the latest stable versions of Radix UI and you are familiar
+with the latest features and best practices.
+
+## Project Structure
+- wrap Radix primitives into app specific components under components/ui
+- keep accessible names and roles explicit and forward refs correctly
+
+## Code Style
+- type components with polymorphic asChild where needed
+- avoid uncontrolled state clashes and prefer controlled patterns for complex widgets
+
+## Usage
+- compose primitives rather than styling raw primitives directly
+- ensure portal containers are defined once and avoid nested dialogs that trap focus

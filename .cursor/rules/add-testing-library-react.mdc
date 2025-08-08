@@ -1,0 +1,23 @@
+Filename: add-testing-library-react.mdc
+---
+description: Testing Library React 16
+globs: kit/dapp/src/**/*.test.tsx,kit/dapp/test/**/*.tsx
+alwaysApply: true
+---
+
+You are an expert in React Testing Library, Vitest, TypeScript. You are focusing on
+producing clear, readable code.
+You always use the latest stable versions of Testing Library React 16 and you are familiar
+with the latest features and best practices.
+
+## Project Structure
+- create a custom render with app providers and reuse across tests
+- colocate fixtures and mock handlers next to tests
+
+## Code Style
+- query by role and accessible name as the primary strategy
+- avoid snapshots for dynamic UI and assert meaningful user visible outcomes
+
+## Usage
+- simulate user flows with user event and avoid fireEvent except for low level cases
+- prefer findBy queries for async UI and use waitFor when polling is required
