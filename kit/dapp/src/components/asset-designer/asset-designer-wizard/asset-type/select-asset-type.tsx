@@ -64,7 +64,7 @@ export const SelectAssetType = withForm({
         description={t("asset-types:assetTypeDifferences")}
         fullWidth={true}
         actions={
-          <div className="flex gap-2">
+          <>
             <Button variant="outline" onClick={onBack}>
               {t("asset-designer:form.buttons.back")}
             </Button>
@@ -74,7 +74,7 @@ export const SelectAssetType = withForm({
               checkRequiredFn={isRequiredField}
               label={t("asset-designer:form.buttons.next")}
             />
-          </div>
+          </>
         }
       >
         <div className="mt-6 mb-10">

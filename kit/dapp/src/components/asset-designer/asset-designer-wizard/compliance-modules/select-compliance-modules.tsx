@@ -2,6 +2,7 @@ import { assetDesignerFormOptions } from "@/components/asset-designer/asset-desi
 import { ComplianceModules } from "@/components/compliance/compliance-modules";
 import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 
+import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
 import { ComplianceModulePairInput } from "@/lib/zod/validators/compliance";
@@ -15,9 +16,10 @@ export const SelectComplianceModules = withForm({
   ...assetDesignerFormOptions,
   props: {
     onStepSubmit: noop,
+    onBack: noop,
     complianceModules: [] as ComplianceModulesList,
   },
-  render: function Render({ form, onStepSubmit, complianceModules }) {
+  render: function Render({ form, onStepSubmit, onBack, complianceModules }) {
     const { t } = useTranslation("asset-designer");
 
     const initialModulePairs = useStore(
@@ -47,11 +49,16 @@ export const SelectComplianceModules = withForm({
         title={t("compliance.title")}
         description={t("compliance.description")}
         actions={
-          <form.StepSubmitButton
-            label={t("form.buttons.next")}
-            onStepSubmit={onStepSubmit}
-            validate={empty}
-          />
+          <>
+            <Button variant="outline" onClick={onBack}>
+              {t("form.buttons.back")}
+            </Button>
+            <form.StepSubmitButton
+              label={t("form.buttons.next")}
+              onStepSubmit={onStepSubmit}
+              validate={empty}
+            />
+          </>
         }
       >
         <ComplianceModules

@@ -3,12 +3,7 @@ import {
   assetDesignerFormOptions,
   isRequiredField,
 } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
-import {
-  FormStepContent,
-  FormStepSubmit,
-} from "@/components/form/multi-step/form-step";
 import { withForm } from "@/hooks/use-app-form";
-import { noop } from "@/lib/utils/noop";
 import type { KeysOfUnion } from "@/lib/utils/union";
 
 import { useTranslation } from "react-i18next";
@@ -76,32 +71,6 @@ export const CommonFields = withForm({
             />
           )}
         />
-      </>
-    );
-  },
-});
-
-export const CommonBasics = withForm({
-  ...assetDesignerFormOptions,
-  props: {
-    onStepSubmit: noop,
-  },
-  render: function Render({ form, onStepSubmit }) {
-    const { t } = useTranslation(["asset-designer"]);
-    return (
-      <>
-        <FormStepContent>
-          <CommonFields form={form} />
-        </FormStepContent>
-
-        <FormStepSubmit>
-          <form.StepSubmitButton
-            label={t("form.buttons.next")}
-            onStepSubmit={onStepSubmit}
-            validate={commonFields}
-            checkRequiredFn={isRequiredField}
-          />
-        </FormStepSubmit>
       </>
     );
   },

@@ -121,12 +121,19 @@ export const AssetDesignerWizard = () => {
         onBack={decrementStep}
       />
     ),
-    assetBasics: <AssetBasics form={form} onStepSubmit={incrementStep} />,
+    assetBasics: (
+      <AssetBasics
+        form={form}
+        onStepSubmit={incrementStep}
+        onBack={decrementStep}
+      />
+    ),
     complianceModules: (
       <SelectComplianceModules
         form={form}
         onStepSubmit={incrementStep}
         complianceModules={complianceModules ?? []}
+        onBack={decrementStep}
       />
     ),
     summary: (
@@ -135,6 +142,7 @@ export const AssetDesignerWizard = () => {
         onSubmit={async () => {
           await form.handleSubmit();
         }}
+        onBack={decrementStep}
       />
     ),
   };
