@@ -2,7 +2,30 @@
   "extends": ["//"],
   "tasks": {
     "codegen:settlemint": {
-      "cache": false
+      "cache": true,
+      "inputs": ["tsconfig.json", ".dev-reset"],
+      "outputs": [
+        "src/lib/settlemint/**",
+        "hasura-schema.graphql",
+        "hasura-env.d.ts",
+        "portal-schema.graphql",
+        "portal-env.d.ts",
+        "blockscout-schema.graphql",
+        "blockscout-env.d.ts",
+        "the-graph-schema-kit.graphql",
+        "the-graph-env-kit.d.ts"
+      ],
+      "passThroughEnv": [
+        "SETTLEMINT_HASURA_ENDPOINT",
+        "SETTLEMINT_HASURA_ADMIN_SECRET",
+        "SETTLEMINT_ACCESS_TOKEN",
+        "SETTLEMINT_INSTANCE",
+        "SETTLEMINT_LOG_LEVEL",
+        "SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT",
+        "VITE_APP_URL",
+        "VITE_EXPLORER_URL",
+        "VITE_SETTLEMINT_LOG_LEVEL"
+      ]
     },
     "codegen": {
       "dependsOn": ["codegen:settlemint", "contracts#compile"],
@@ -25,7 +48,7 @@
     },
     "artifacts": {},
     "test": {
-      "dependsOn": ["codegen", "build"],
+      "dependsOn": ["codegen"],
       "outputs": []
     },
     "test:integration": {

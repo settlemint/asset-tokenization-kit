@@ -6,7 +6,7 @@
   "scripts": {
     "compile:typescript": "tsgo --noEmit",
     "dependencies": "bun run tools/dependencies.ts",
-    "compile:forge": "settlemint scs foundry build --sizes",
+    "compile:forge": "settlemint scs foundry build",
     "compile:hardhat": "settlemint scs hardhat build",
     "codegen:types": "bun run tools/codegen-types.ts",
     "artifacts:genesis": "bun run tools/artifacts-genesis.ts",

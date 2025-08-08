@@ -2,7 +2,7 @@
  * @vitest-environment happy-dom
  */
 import type { Table } from "@tanstack/react-table";
-import { screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
@@ -27,6 +27,48 @@ vi.mock("react-i18next", () => ({
     },
   }),
 }));
+
+// Mock shadcn/Radix Select to a simple native select for fast tests
+vi.mock("@/components/ui/select", async () => {
+  const React = await import("react");
+  const PAGE_SIZES = [10, 20, 30, 50, 100];
+
+  const Select = ({
+    value,
+    onValueChange,
+  }: {
+    value?: string;
+    onValueChange?: (value: string) => void;
+  }) =>
+    React.createElement(
+      "select",
+      {
+        role: "combobox",
+        "data-testid": "rows-per-page-select",
+        value,
+        onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
+          onValueChange?.(e.target.value),
+      },
+      PAGE_SIZES.map((v) =>
+        React.createElement("option", { key: v, value: String(v) }, String(v))
+      )
+    );
+
+  const SelectContent = ({ children }: { children?: React.ReactNode }) =>
+    React.createElement(React.Fragment, null, children);
+  const SelectTrigger = ({ children }: { children?: React.ReactNode }) =>
+    React.createElement(React.Fragment, null, children);
+  const SelectValue = ({ placeholder }: { placeholder?: string }) =>
+    React.createElement(
+      "span",
+      { "data-testid": "select-value" },
+      placeholder ?? ""
+    );
+  const SelectItem = ({ children }: { children?: React.ReactNode }) =>
+    React.createElement(React.Fragment, null, children);
+
+  return { Select, SelectContent, SelectItem, SelectTrigger, SelectValue };
+});
 
 // Polyfill for hasPointerCapture (missing in happy-dom)
 if (!Element.prototype.hasPointerCapture) {
@@ -88,51 +130,8 @@ describe("DataTablePagination", () => {
       renderWithProviders(<DataTablePagination table={mockTable} />);
 
       const select = screen.getByRole("combobox");
-
-      // Try clicking multiple times to ensure dropdown opens
-      await user.click(select);
-      await user.keyboard("{ArrowDown}"); // Try arrow key to open
-
-      // Try a more direct approach - just test the callback function
-      // Since the Radix Select is complex to test in jsdom environment
-
-      // Simulate the onValueChange callback directly
-      const component = screen
-        .getByText("rowsPerPage")
-        .closest(".flex.items-center.justify-between");
-      const selectComponent = component?.querySelector('[role="combobox"]');
-
-      // Test that the component would call setPageSize with "20"
-      if (
-        selectComponent &&
-        (selectComponent as HTMLElement).dataset.state !== "open"
-      ) {
-        // If dropdown won't open in test environment, simulate the change directly
-        const handlePageSizeChange = mockTable.setPageSize;
-        handlePageSizeChange(20);
-        expect(mockSetPageSize).toHaveBeenCalledWith(20);
-      } else {
-        // Try to find and click the option if dropdown is open
-        await waitFor(
-          () => {
-            const option20 = document.querySelector(
-              '[data-value="20"]'
-            ) as HTMLElement;
-            expect(option20).toBeInTheDocument();
-            return option20;
-          },
-          { timeout: 1000 }
-        )
-          .then(async (option20) => {
-            await user.click(option20);
-            expect(mockSetPageSize).toHaveBeenCalledWith(20);
-          })
-          .catch(() => {
-            // Fallback: simulate the change directly
-            mockSetPageSize(20);
-            expect(mockSetPageSize).toHaveBeenCalledWith(20);
-          });
-      }
+      await user.selectOptions(select, "20");
+      expect(mockSetPageSize).toHaveBeenCalledWith(20);
     });
   });
 
