@@ -73,6 +73,7 @@
     "info": "We're creating your ONCHAINID using the identity factory.",
     "info-description": "This creates your identity smart contract on the blockchain—a secure container for your verified credentials.\n\nNo personal data is stored yet. That comes next. For now, we're establishing your unique identity address that only you control.\n\nThis typically takes 10-30 seconds.",
     "success-message": "Your on-chain identity has been created. You can now register it and add your verified information or do it later from your dashboard.",
+    "success-title": "Identity Created Successfully",
     "title": "Your On-Chain Identity",
     "deployment-warning": "This process may take up to 2–3 minutes",
     "transaction-confirmation-info": "You’ll be asked to confirm each transaction using your PIN or OTP.",
