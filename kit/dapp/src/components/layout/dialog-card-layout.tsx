@@ -20,7 +20,7 @@ export function DialogCardLayout({
   return (
     <div
       className={cn(
-        "ModalCardLayout flex flex-col h-screen relative z-40",
+        "ModalCardLayout flex flex-col h-screen relative",
         className
       )}
     >

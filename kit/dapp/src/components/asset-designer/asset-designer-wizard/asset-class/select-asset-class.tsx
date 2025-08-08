@@ -3,13 +3,8 @@ import {
   assetDesignerFormOptions,
   isRequiredField,
 } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
+import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import { Badge } from "@/components/ui/badge";
-import {
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { withForm } from "@/hooks/use-app-form";
 import { useAssetClass } from "@/hooks/use-asset-class";
 import { noop } from "@/lib/utils/noop";
@@ -66,32 +61,28 @@ export const SelectAssetClass = withForm({
 
     return (
       <>
-        <DialogHeader className="text-center mt-10">
-          <DialogTitle className="text-2xl text-center">
-            {t("asset-class:whichAssetClass")}
-          </DialogTitle>
-          <DialogDescription className="text-center">
-            {t("asset-class:assetClassDifferences")}
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="mt-6 mb-10">
-          <form.AppField
-            name="assetClass"
-            children={(field) => (
-              <field.RadioField options={options} variant="card" />
-            )}
-          />
-        </div>
-
-        <DialogFooter className="!flex !flex-row !justify-between">
-          <form.StepSubmitButton
-            onStepSubmit={onStepSubmit}
-            validate={validate}
-            checkRequiredFn={isRequiredField}
-            label={t("asset-designer:form.buttons.next")}
-          />
-        </DialogFooter>
+        <OnboardingStepLayout
+          title={t("asset-class:whichAssetClass")}
+          description={t("asset-class:assetClassDifferences")}
+          fullWidth={true}
+          actions={
+            <form.StepSubmitButton
+              onStepSubmit={onStepSubmit}
+              validate={validate}
+              checkRequiredFn={isRequiredField}
+              label={t("asset-designer:form.buttons.next")}
+            />
+          }
+        >
+          <div className="mt-6 mb-10">
+            <form.AppField
+              name="assetClass"
+              children={(field) => (
+                <field.RadioField options={options} variant="card" />
+              )}
+            />
+          </div>
+        </OnboardingStepLayout>
       </>
     );
   },
