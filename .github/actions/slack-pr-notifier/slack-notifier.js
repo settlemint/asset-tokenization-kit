@@ -8,6 +8,22 @@
  * - Comprehensive debugging
  */
 
+// Minimal logging control to reduce verbosity (default: errors only)
+(function configureLogging() {
+  try {
+    const level = (process.env.LOG_LEVEL || "error").toLowerCase();
+    const levels = { error: 0, warn: 1, info: 2, debug: 3 };
+    const current = levels[level] ?? 0;
+    const noop = () => {};
+    if (current < 3) console.debug = noop;
+    if (current < 2) console.info = noop;
+    if (current < 2) console.log = noop; // treat log ~ info
+    if (current < 1) console.warn = noop;
+  } catch (_) {
+    // ignore
+  }
+})();
+
 /**
  * Calculate the delta between two sets
  */
@@ -33,7 +49,9 @@ module.exports = async ({ github, context, core }) => {
     PR_AUTHOR_TYPE,
     PR_AUTHOR_AVATAR,
     IS_ABANDONED,
-    WAIT_TIME = "10000", // Default to 10 seconds for label propagation
+    WAIT_TIME = "0", // Avoid static waits; rely on API state instead
+    REACTION_DELAY_MS = "0",
+    VERIFICATION_DELAY_MS = "0",
   } = process.env;
 
   console.log("Starting Slack PR notifier for PR #" + PR_NUMBER);
@@ -49,10 +67,12 @@ module.exports = async ({ github, context, core }) => {
     SLACK_BOT_TOKEN: SLACK_BOT_TOKEN ? "Set" : "Not set",
   });
 
-  // Wait for label propagation if specified
+  // Avoid unconditional waits; only backoff when API indicates instability
   const waitTime = parseInt(WAIT_TIME, 10);
   if (waitTime > 0) {
-    console.log(`Waiting ${waitTime}ms for label propagation...`);
+    console.log(
+      `Backoff override set: waiting ${waitTime}ms before proceeding...`
+    );
     await new Promise((resolve) => setTimeout(resolve, waitTime));
   }
 
@@ -709,8 +729,11 @@ async function manageReactionsEfficiently(
   slackApi,
   SLACK_CHANNEL_ID
 ) {
-  // Wait a bit for message to be fully processed
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  // Optional small backoff; default to 0 to avoid static waits
+  const reactionInitDelay = parseInt(process.env.REACTION_DELAY_MS || "0", 10);
+  if (reactionInitDelay > 0) {
+    await new Promise((resolve) => setTimeout(resolve, reactionInitDelay));
+  }
 
   // Define reaction mappings from the ORIGINAL working version
   const statusReactions = {
@@ -791,7 +814,10 @@ async function manageReactionsEfficiently(
           name: reaction,
         });
         changesMade++;
-        await new Promise((resolve) => setTimeout(resolve, 100)); // Small delay between operations
+        const delay = parseInt(REACTION_DELAY_MS, 10) || 0;
+        if (delay > 0) {
+          await new Promise((resolve) => setTimeout(resolve, delay));
+        }
       } catch (error) {
         if (error.message.includes("no_reaction")) {
           console.log(
@@ -817,7 +843,10 @@ async function manageReactionsEfficiently(
           name: reaction,
         });
         changesMade++;
-        await new Promise((resolve) => setTimeout(resolve, 100)); // Small delay between operations
+        const delay = parseInt(REACTION_DELAY_MS, 10) || 0;
+        if (delay > 0) {
+          await new Promise((resolve) => setTimeout(resolve, delay));
+        }
       } catch (error) {
         if (error.message.includes("already_reacted")) {
           console.log(`Reaction ${reaction} already exists (race condition)`);
@@ -936,8 +965,11 @@ async function verifySanity(
 ) {
   console.log("\n=== SANITY CHECK ===");
 
-  // Wait a bit for Slack to process our changes
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  // Optional verify backoff; default to 0 to avoid static waits
+  const verifyDelay = parseInt(process.env.VERIFICATION_DELAY_MS || "0", 10);
+  if (verifyDelay > 0) {
+    await new Promise((resolve) => setTimeout(resolve, verifyDelay));
+  }
 
   try {
     // Re-fetch the message
@@ -997,7 +1029,10 @@ async function verifySanity(
             timestamp: slackTs,
             name: reaction,
           });
-          await new Promise((resolve) => setTimeout(resolve, 200));
+          const delay = parseInt(process.env.REACTION_DELAY_MS || "0", 10);
+          if (delay > 0) {
+            await new Promise((resolve) => setTimeout(resolve, delay));
+          }
         } catch (e) {
           console.error(
             `Failed to remove ${reaction} during reset:`,
@@ -1014,7 +1049,10 @@ async function verifySanity(
             timestamp: slackTs,
             name: reaction,
           });
-          await new Promise((resolve) => setTimeout(resolve, 200));
+          const delay = parseInt(process.env.REACTION_DELAY_MS || "0", 10);
+          if (delay > 0) {
+            await new Promise((resolve) => setTimeout(resolve, delay));
+          }
         } catch (e) {
           console.error(`Failed to add ${reaction} during reset:`, e.message);
         }

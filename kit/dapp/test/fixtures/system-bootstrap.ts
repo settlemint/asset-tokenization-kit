@@ -132,30 +132,24 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
   const issuer = await getUserData(DEFAULT_ISSUER);
   const issuerOrpcClient = getOrpcClient(await signInWithUser(DEFAULT_ISSUER));
   const issuerMe = await issuerOrpcClient.user.me({});
-  if (issuerMe.userSystemPermissions.roles.tokenManager) {
-    console.log("Issuer already has token manager role");
-  } else {
-    console.log("Granting token manager role to issuer");
+
+  const rolesToGrant = [
+    ...(!issuerMe.userSystemPermissions.roles.tokenManager
+      ? ["tokenManager" as const]
+      : []),
+    ...(!issuerMe.userSystemPermissions.roles.complianceManager
+      ? ["complianceManager" as const]
+      : []),
+  ];
+
+  if (rolesToGrant.length > 0) {
     await orpClient.system.grantRole({
       verification: {
         verificationCode: DEFAULT_PINCODE,
         verificationType: "pincode",
       },
-      accounts: [issuer.wallet],
-      role: "tokenManager",
-    });
-  }
-  if (issuerMe.userSystemPermissions.roles.complianceManager) {
-    console.log("Issuer already has compliance manager role");
-  } else {
-    console.log("Granting compliance manager role to issuer");
-    await orpClient.system.grantRole({
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
-      },
-      accounts: [issuer.wallet],
-      role: "complianceManager",
+      address: issuer.wallet,
+      role: rolesToGrant,
     });
   }
 }

@@ -1,18 +1,24 @@
-name: 'Build Status Labeler'
-description: 'Update build status labels on PR'
+name: "Build Status Labeler"
+description: "Update build status labels on PR"
 inputs:
   pr_number:
-    description: 'Pull request number'
+    description: "Pull request number"
     required: true
   workflow_status:
-    description: 'Status of the workflow (pending, running, success, failure)'
+    description: "Status of the workflow (pending, running, success, failure)"
     required: true
+  log_level:
+    description: "Log verbosity (error, warn, info, debug)"
+    required: false
+    default: "error"
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Check and create labels if needed
       uses: actions/github-script@v7
+      env:
+        LOG_LEVEL: ${{ inputs.log_level }}
       with:
         script: |
           const { ensureLabelsExist } = require('${{ github.action_path }}/build-status-labeler.js');
@@ -20,6 +26,8 @@ runs:
 
     - name: Update build status label efficiently
       uses: actions/github-script@v7
+      env:
+        LOG_LEVEL: ${{ inputs.log_level }}
       with:
         script: |
           const { updateBuildStatusLabel } = require('${{ github.action_path }}/build-status-labeler.js');

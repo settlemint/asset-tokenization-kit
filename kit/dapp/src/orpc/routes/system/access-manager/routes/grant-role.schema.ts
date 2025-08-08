@@ -4,25 +4,30 @@ import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verifi
 import { z } from "zod";
 
 /**
- * Input schema for granting a role to multiple accounts
+ * Input schema for granting roles to accounts
+ * Supports:
+ * - Single address, single role
+ * - Multiple addresses, single role
+ * - Single address, multiple roles
  */
 export const GrantRoleInputSchema = z.object({
   verification: UserVerificationSchema,
   /**
-   * The accounts to grant the roles to
+   * The account(s) to grant the role(s) to
    */
-  accounts: z.array(ethereumAddress),
+  address: z.union([ethereumAddress, z.array(ethereumAddress)]),
   /**
-   * The role to grant to the accounts
+   * The role(s) to grant
    */
-  role: accessControlRole,
+  role: z.union([accessControlRole, z.array(accessControlRole)]),
 });
 
 /**
- * Response schema for granting a role to multiple accounts
+ * Response schema for granting roles
  */
 export const GrantRoleOutputSchema = z.object({
-  accounts: z.array(ethereumAddress),
+  addresses: z.array(ethereumAddress),
+  roles: z.array(accessControlRole),
 });
 
 /**

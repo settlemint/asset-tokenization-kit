@@ -13,6 +13,10 @@ inputs:
     description: "Exit code when secrets are found"
     required: false
     default: "1"
+  log_level:
+    description: "Log verbosity (error, warn, info, debug)"
+    required: false
+    default: "error"
 
 runs:
   using: "composite"
@@ -24,13 +28,13 @@ runs:
           ~/.cache/trivy
           /tmp/trivy-cache
 
-    - name: Debug - List files to scan
+    - name: Debug - List files to scan (quiet)
+      if: ${{ inputs.log_level != 'error' }}
       shell: bash
       run: |
         echo "Current directory: $(pwd)"
-        echo "Files in workspace:"
-        find . -type f \( -name "*.js" -o -name "*.ts" -o -name "*.py" -o -name "*.sh" -o -name "*.yml" -o -name "*.yaml" -o -name "*.json" -o -name "*.env*" \) -not -path "*/node_modules/*" -not -path "*/.git/*" 2>/dev/null | head -20 || true
-        echo "Total files (excluding node_modules and .git): $(find . -type f -not -path "*/node_modules/*" -not -path "*/.git/*" 2>/dev/null | wc -l || echo "0")"
+        echo "Files in workspace: (trimmed)"
+        find . -type f -maxdepth 2 -not -path "*/node_modules/*" -not -path "*/.git/*" 2>/dev/null | head -5 || true
 
     - name: Setup Trivy
       uses: aquasecurity/setup-trivy@v0.2.3
@@ -38,7 +42,7 @@ runs:
     - name: Secret Scanning (Trivy)
       shell: bash
       run: |
-        echo "Starting Trivy secret scan..."
+        [ "${{ inputs.log_level }}" != "error" ] && echo "Starting Trivy secret scan..." || true
 
         # Check if config file exists
         if [ -f "trivy-secret.yaml" ]; then
@@ -54,7 +58,7 @@ runs:
           config_arg="--config trivy-secret.yaml"
         fi
 
-        echo "Running trivy with config: ${config_arg}"
+        [ "${{ inputs.log_level }}" != "error" ] && echo "Running trivy with config: ${config_arg}" || true
 
         trivy fs . \
           --scanners secret \
@@ -69,4 +73,4 @@ runs:
           echo "Trivy found secrets or encountered an error (exit code: ${exit_code})"
           exit ${exit_code}
         fi
-        echo "No secrets found."
+        [ "${{ inputs.log_level }}" != "error" ] && echo "No secrets found." || true

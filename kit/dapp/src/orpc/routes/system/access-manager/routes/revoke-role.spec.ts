@@ -40,7 +40,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
           verificationCode: DEFAULT_PINCODE,
           verificationType: "pincode",
         },
-        accounts: [
+        address: [
           testAddresses.valid1,
           testAddresses.valid2,
           testAddresses.valid3,
@@ -57,12 +57,13 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
           verificationCode: DEFAULT_PINCODE,
           verificationType: "pincode",
         },
-        accounts: [testAddresses.valid1],
+        address: testAddresses.valid1,
         role: "tokenManager",
       });
 
       expect(result).toEqual({
-        accounts: [testAddresses.valid1],
+        addresses: [testAddresses.valid1],
+        roles: ["tokenManager"],
       });
 
       const systemRoles = await adminClient.system.rolesList({
@@ -75,13 +76,13 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
       expect(updatedSystemRoles?.roles).not.toContain("tokenManager");
     });
 
-    it("should revoke a role from multiple accounts", async () => {
+    it("should revoke a single role from multiple accounts", async () => {
       const result = await adminClient.system.revokeRole({
         verification: {
           verificationCode: DEFAULT_PINCODE,
           verificationType: "pincode",
         },
-        accounts: [
+        address: [
           testAddresses.valid1,
           testAddresses.valid2,
           testAddresses.valid3,
@@ -90,11 +91,12 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
       });
 
       expect(result).toEqual({
-        accounts: [
+        addresses: [
           testAddresses.valid1,
           testAddresses.valid2,
           testAddresses.valid3,
         ],
+        roles: ["complianceManager"],
       });
 
       const systemRoles = await adminClient.system.rolesList({
@@ -107,18 +109,54 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
       expect(updatedSystemRoles?.roles).not.toContain("complianceManager");
     });
 
-    it("should handle empty accounts array", async () => {
+    it("should revoke multiple roles from a single account", async () => {
+      // Grant the roles first since previous tests may have revoked them
+      await adminClient.system.grantRole({
+        verification: {
+          verificationCode: DEFAULT_PINCODE,
+          verificationType: "pincode",
+        },
+        address: testAddresses.valid1,
+        role: ["systemManager", "tokenManager"],
+      });
+
       const result = await adminClient.system.revokeRole({
         verification: {
           verificationCode: DEFAULT_PINCODE,
           verificationType: "pincode",
         },
-        accounts: [],
+        address: testAddresses.valid1,
+        role: ["systemManager", "tokenManager"],
+      });
+
+      expect(result).toEqual({
+        addresses: [testAddresses.valid1],
+        roles: ["systemManager", "tokenManager"],
+      });
+
+      const systemRoles = await adminClient.system.rolesList({
+        excludeContracts: true,
+      });
+      const updatedSystemRoles = systemRoles.find(
+        (role) => role.account === testAddresses.valid1
+      );
+      expect(updatedSystemRoles?.roles ?? []).not.toContain("systemManager");
+      expect(updatedSystemRoles?.roles ?? []).not.toContain("tokenManager");
+    });
+
+    it("should handle empty arrays", async () => {
+      const result = await adminClient.system.revokeRole({
+        verification: {
+          verificationCode: DEFAULT_PINCODE,
+          verificationType: "pincode",
+        },
+        address: [],
         role: "tokenManager",
       });
 
       expect(result).toEqual({
-        accounts: [],
+        addresses: [],
+        roles: [],
       });
     });
   });
@@ -130,12 +168,13 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
           verificationCode: DEFAULT_PINCODE,
           verificationType: "pincode",
         },
-        accounts: [testAddresses.valid1],
+        address: testAddresses.valid1,
         role: "tokenManager",
       });
 
       expect(result).toEqual({
-        accounts: [testAddresses.valid1],
+        addresses: [testAddresses.valid1],
+        roles: ["tokenManager"],
       });
     });
 
@@ -146,7 +185,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
             verificationCode: DEFAULT_PINCODE,
             verificationType: "pincode",
           },
-          accounts: [testAddresses.valid1],
+          address: testAddresses.valid1,
           role: "tokenManager",
         })
       ).rejects.toThrow(
@@ -163,7 +202,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
             verificationCode: DEFAULT_PINCODE,
             verificationType: "pincode",
           },
-          accounts: [testAddresses.valid1],
+          address: testAddresses.valid1,
           role: "invalidRole" as never,
         })
       ).rejects.toThrow("INPUT_VALIDATION_FAILED");
@@ -176,7 +215,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
             verificationCode: DEFAULT_PINCODE,
             verificationType: "pincode",
           },
-          accounts: [testAddresses.invalid],
+          address: testAddresses.invalid,
           role: "tokenManager",
         })
       ).rejects.toThrow("INPUT_VALIDATION_FAILED");
@@ -189,7 +228,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
             verificationCode: DEFAULT_PINCODE,
             verificationType: "pincode",
           },
-          accounts: [
+          address: [
             testAddresses.valid1,
             testAddresses.invalid,
             testAddresses.valid2,
@@ -206,7 +245,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
             verificationCode: "000000",
             verificationType: "pincode",
           },
-          accounts: [testAddresses.valid1],
+          address: testAddresses.valid1,
           role: "tokenManager",
         })
       ).rejects.toThrow("Invalid authentication challenge");
@@ -220,17 +259,31 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
           verificationCode: DEFAULT_PINCODE,
           verificationType: "pincode",
         },
-        accounts: [
+        address: [
           testAddresses.valid1,
           testAddresses.valid1,
           testAddresses.valid2,
         ],
         role: "tokenManager",
       });
-      expect(result.accounts).toEqual([
+      expect(result.addresses).toEqual([
         testAddresses.valid1,
         testAddresses.valid2,
       ]);
+      expect(result.roles).toEqual(["tokenManager"]);
+    });
+
+    it("should handle duplicate roles in the array", async () => {
+      const result = await adminClient.system.revokeRole({
+        verification: {
+          verificationCode: DEFAULT_PINCODE,
+          verificationType: "pincode",
+        },
+        address: testAddresses.valid1,
+        role: ["tokenManager", "tokenManager", "complianceManager"],
+      });
+      expect(result.addresses).toEqual([testAddresses.valid1]);
+      expect(result.roles).toEqual(["tokenManager", "complianceManager"]);
     });
   });
 });

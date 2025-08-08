@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup, configure } from "@testing-library/react";
 import { afterEach, vi } from "vitest";
+import "../mocks/recharts";
 
 // Make vi globally available for module-level mocking
 (globalThis as any).vi = vi;

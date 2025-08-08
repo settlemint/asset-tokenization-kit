@@ -21,7 +21,7 @@ runs:
     - name: Set up turbo caching
       uses: namespace-actions/setup-turbocache@v0
 
-    - name: Setup bun caches
+    - name: Setup caches
       uses: namespacelabs/nscloud-cache-action@v1
       with:
         path: |
@@ -32,6 +32,7 @@ runs:
           ~/.cache/bun
           ~/.cache/foundry
           ~/.cache/helm
+           ./**/.generated
 
     - name: Login to npm
       shell: bash
