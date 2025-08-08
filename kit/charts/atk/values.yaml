@@ -552,7 +552,7 @@ txsigner:
   enabled: true
   image:
     repository: ghcr.io/settlemint/btp-signer
-    tag: "7.13.4"
+    tag: "7.13.5"
     pullPolicy: IfNotPresent
   # Init container for testing
   test:
