@@ -36,3 +36,26 @@
 ## Security & Configuration Tips
 - Manage secrets via `.env.local` (never commit secrets). Use provided `.env` templates.
 - Run all commands from repo root; do not modify generated files under `.generated/`.
+
+## Documentation Lookup via Context7 MCP
+- Always consult Context7 MCP first for the latest stable documentation of any library, framework, or tool used in this repo.
+- Resolve the canonical library ID once, then fetch its docs for precise API signatures and options.
+- Prefer TypeScript examples when both TS and JS variants exist; mirror exact option names from docs.
+- If the repo’s dependency version lags behind latest stable, note breaking changes but follow the repo version unless upgrading is explicitly in scope.
+- Re-check docs after dependency updates and before major refactors.
+
+Example workflow using Context7 MCP:
+
+```ts
+// Resolve the canonical library id
+const { context7CompatibleLibraryID } = await mcp__context7__resolve_library_id({
+  libraryName: "react",
+});
+
+// Fetch latest docs for that id
+const docs = await mcp__context7__get_library_docs({
+  context7CompatibleLibraryID, // e.g. "/facebook/react"
+});
+
+// Use `docs` to cite exact API signatures and options in code/reviews
+```

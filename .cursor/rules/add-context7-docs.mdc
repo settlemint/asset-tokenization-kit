@@ -1,0 +1,37 @@
+Filename: add-context7-docs.mdc
+---
+description: Context7 MCP documentation lookup
+globs: **/*
+alwaysApply: true
+---
+
+You are an expert in Context7 MCP, TypeScript, libraries. You are focusing on
+producing clear, readable code.
+You always use the latest stable versions of libraries and you are familiar
+with the latest features and best practices.
+
+## Project Structure
+- before implementing features identify the framework or library and its version from package manifests
+- record the resolved Context7 library id alongside the feature or in a note to ensure consistent lookups
+
+## Code Style
+- when citing external APIs prefer the exact signatures and option names from the latest docs retrieved via Context7
+- prefer TypeScript examples when both TypeScript and JavaScript variants exist in docs
+
+## Usage
+- always consult Context7 first when you need documentation or best practices for any framework or library in this repository
+- resolve the library id once then fetch its latest docs
+- example
+
+```javascript
+// resolve the canonical library id
+mcp__context7__resolve_library_id({ libraryName: "react" });
+
+// fetch latest docs for the id returned by resolve
+mcp__context7__get_library_docs({ context7CompatibleLibraryID: "/facebook/react" });
+```
+
+## Important operational rules
+- prefer the latest stable version of the library documentation over archived or legacy pages
+- when versions in the repo lag behind latest stable note breaking changes but follow the repo version unless upgrading is in scope
+- re check docs after dependency updates and before major refactors
