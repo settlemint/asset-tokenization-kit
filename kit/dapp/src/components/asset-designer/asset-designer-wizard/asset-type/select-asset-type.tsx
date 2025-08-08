@@ -4,7 +4,7 @@ import {
   type AssetDesignerFormInputData,
 } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
 import { AssetExtensionsList } from "@/components/asset-extensions/asset-extensions-list";
-import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
 import { useAssetClass } from "@/hooks/use-asset-class";
@@ -55,7 +55,7 @@ export const SelectAssetType = withForm({
     );
 
     return (
-      <OnboardingStepLayout
+      <FormStepLayout
         title={t("asset-types:whichAssetTypeForClass", {
           assetClass: t(
             `asset-class:categories.${assetClass}.name`
@@ -85,7 +85,7 @@ export const SelectAssetType = withForm({
             )}
           />
         </div>
-      </OnboardingStepLayout>
+      </FormStepLayout>
     );
   },
 });

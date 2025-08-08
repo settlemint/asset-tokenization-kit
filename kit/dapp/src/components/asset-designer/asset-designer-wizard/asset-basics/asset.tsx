@@ -14,7 +14,7 @@ import {
   assetDesignerFormOptions,
   isRequiredField,
 } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
-import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
@@ -42,7 +42,7 @@ export const AssetBasics = withForm({
     }, [assetType]);
 
     return (
-      <OnboardingStepLayout
+      <FormStepLayout
         title={t("wizard.steps.assetBasics.title")}
         description={t("wizard.steps.assetBasics.description")}
         actions={
@@ -62,7 +62,7 @@ export const AssetBasics = withForm({
         <CommonFields form={form} />
         {assetType === "bond" && <BondFields form={form} />}
         {assetType === "fund" && <FundFields form={form} />}
-      </OnboardingStepLayout>
+      </FormStepLayout>
     );
   },
 });

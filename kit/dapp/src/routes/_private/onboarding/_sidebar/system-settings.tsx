@@ -1,4 +1,4 @@
-import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import {
   createOnboardingBeforeLoad,
   createOnboardingSearchSchema,
@@ -116,7 +116,7 @@ function RouteComponent() {
   };
 
   return (
-    <OnboardingStepLayout
+    <FormStepLayout
       title={t("system-settings.title")}
       description={t("system-settings.subtitle")}
       actions={
@@ -166,6 +166,6 @@ function RouteComponent() {
           </form.AppField>
         </div>
       </div>
-    </OnboardingStepLayout>
+    </FormStepLayout>
   );
 }

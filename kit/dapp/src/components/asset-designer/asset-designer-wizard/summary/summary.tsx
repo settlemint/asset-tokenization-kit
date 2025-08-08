@@ -1,5 +1,5 @@
 import { assetDesignerFormOptions } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
-import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
@@ -15,7 +15,7 @@ export const Summary = withForm({
     const { t } = useTranslation("asset-designer");
 
     return (
-      <OnboardingStepLayout
+      <FormStepLayout
         title={t("wizard.steps.summary.title")}
         description={t("wizard.steps.summary.description")}
         actions={
@@ -45,7 +45,7 @@ export const Summary = withForm({
         </div>
 
         <form.Errors />
-      </OnboardingStepLayout>
+      </FormStepLayout>
     );
   },
 });

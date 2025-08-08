@@ -1,6 +1,6 @@
 import { assetDesignerFormOptions } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
 import { ComplianceModules } from "@/components/compliance/compliance-modules";
-import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
@@ -45,7 +45,7 @@ export const SelectComplianceModules = withForm({
     };
 
     return (
-      <OnboardingStepLayout
+      <FormStepLayout
         title={t("compliance.title")}
         description={t("compliance.description")}
         actions={
@@ -67,7 +67,7 @@ export const SelectComplianceModules = withForm({
           onEnable={addModulePair}
           onDisable={removeModulePair}
         />
-      </OnboardingStepLayout>
+      </FormStepLayout>
     );
   },
 });

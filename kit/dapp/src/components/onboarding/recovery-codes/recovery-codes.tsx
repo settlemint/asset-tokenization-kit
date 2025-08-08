@@ -1,4 +1,4 @@
-import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
@@ -57,7 +57,7 @@ function RecoveryCodesError({ error }: { error: { message?: string } }) {
   const { t } = useTranslation(["onboarding"]);
 
   return (
-    <OnboardingStepLayout
+    <FormStepLayout
       title={t("wallet-security.recovery-codes.title")}
       description={t("wallet-security.recovery-codes.description")}
       fullWidth={true}
@@ -81,7 +81,7 @@ function RecoveryCodesError({ error }: { error: { message?: string } }) {
           )}
         </div>
       </div>
-    </OnboardingStepLayout>
+    </FormStepLayout>
   );
 }
 
@@ -137,7 +137,7 @@ function RecoveryCodesContent({
   }, [recoveryCodes.length, t]);
 
   return (
-    <OnboardingStepLayout
+    <FormStepLayout
       title={t("wallet-security.recovery-codes.title")}
       description={t("wallet-security.recovery-codes.description")}
       fullWidth={true}
@@ -208,6 +208,6 @@ function RecoveryCodesContent({
           />
         </div>
       )}
-    </OnboardingStepLayout>
+    </FormStepLayout>
   );
 }

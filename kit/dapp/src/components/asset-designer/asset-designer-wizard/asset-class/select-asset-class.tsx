@@ -3,7 +3,7 @@ import {
   assetDesignerFormOptions,
   isRequiredField,
 } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
-import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { Badge } from "@/components/ui/badge";
 import { withForm } from "@/hooks/use-app-form";
 import { useAssetClass } from "@/hooks/use-asset-class";
@@ -61,7 +61,7 @@ export const SelectAssetClass = withForm({
 
     return (
       <>
-        <OnboardingStepLayout
+        <FormStepLayout
           title={t("asset-class:whichAssetClass")}
           description={t("asset-class:assetClassDifferences")}
           fullWidth={true}
@@ -82,7 +82,7 @@ export const SelectAssetClass = withForm({
               )}
             />
           </div>
-        </OnboardingStepLayout>
+        </FormStepLayout>
       </>
     );
   },
