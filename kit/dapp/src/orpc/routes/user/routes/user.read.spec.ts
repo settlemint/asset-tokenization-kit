@@ -1,12 +1,12 @@
-import { beforeAll, describe, expect, it } from "vitest";
-import { randomUUID } from "node:crypto";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
-  setupUser,
-  signInWithUser,
   DEFAULT_ADMIN,
   getUserData,
+  setupUser,
+  signInWithUser,
 } from "@test/fixtures/user";
+import { randomUUID } from "node:crypto";
+import { beforeAll, describe, expect, it } from "vitest";
 
 describe("User read", () => {
   const TEST_USER = {
