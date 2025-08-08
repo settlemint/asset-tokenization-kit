@@ -1,4 +1,4 @@
-import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { VerificationButton } from "@/components/verification-dialog/verification-button";
@@ -46,7 +46,7 @@ export function IdentityCreate() {
   );
 
   return (
-    <OnboardingStepLayout
+    <FormStepLayout
       title={t("identity-setup.title")}
       description={t("identity-setup.description")}
       actions={
@@ -68,6 +68,6 @@ export function IdentityCreate() {
         title={t("identity-setup.info")}
         description={t("identity-setup.info-description")}
       />
-    </OnboardingStepLayout>
+    </FormStepLayout>
   );
 }

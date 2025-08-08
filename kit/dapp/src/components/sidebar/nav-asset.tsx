@@ -1,4 +1,4 @@
-import { AssetClassModal as AssetClassModalComponent } from "@/components/asset-designer/asset-class-modal/asset-class-modal";
+import { AssetDesignerDialog } from "@/components/asset-designer/asset-designer-wizard/asset-designer-dialog";
 import {
   Collapsible,
   CollapsibleContent,
@@ -55,7 +55,7 @@ export function NavAsset() {
 
   return (
     <>
-      <AssetClassModalComponent open={modalOpen} onOpenChange={setModalOpen} />
+      <AssetDesignerDialog open={modalOpen} onOpenChange={setModalOpen} />
 
       <SidebarGroup>
         <SidebarGroupLabel>{t("assetManagement")}</SidebarGroupLabel>

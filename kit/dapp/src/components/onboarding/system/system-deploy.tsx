@@ -1,5 +1,5 @@
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { BulletPoint } from "@/components/onboarding/bullet-point";
-import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { VerificationButton } from "@/components/verification-dialog/verification-button";
@@ -45,7 +45,7 @@ export function SystemDeploy() {
   );
 
   return (
-    <OnboardingStepLayout
+    <FormStepLayout
       title={t("system.initialize-title")}
       description={t("system.initialize-subtitle")}
       fullWidth={true}
@@ -131,6 +131,6 @@ export function SystemDeploy() {
           </div>
         </div>
       </>
-    </OnboardingStepLayout>
+    </FormStepLayout>
   );
 }

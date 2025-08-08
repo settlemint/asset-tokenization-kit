@@ -19,7 +19,6 @@ import { Route as PrivateOnboardedRouteImport } from './routes/_private/_onboard
 import { Route as PrivateOnboardingIndexRouteImport } from './routes/_private/onboarding/index'
 import { Route as PrivateOnboardingSidebarRouteImport } from './routes/_private/onboarding/_sidebar'
 import { Route as PrivateOnboardedSidebarRouteImport } from './routes/_private/_onboarded/_sidebar'
-import { Route as PrivateOnboardedAssetDesignerIndexRouteImport } from './routes/_private/_onboarded/asset-designer/index'
 import { Route as PrivateOnboardedSidebarIndexRouteImport } from './routes/_private/_onboarded/_sidebar/index'
 import { Route as PrivateOnboardingSidebarWalletSecurityRouteImport } from './routes/_private/onboarding/_sidebar/wallet-security'
 import { Route as PrivateOnboardingSidebarWalletRecoveryCodesRouteImport } from './routes/_private/onboarding/_sidebar/wallet-recovery-codes'
@@ -82,12 +81,6 @@ const PrivateOnboardedSidebarRoute = PrivateOnboardedSidebarRouteImport.update({
   id: '/_sidebar',
   getParentRoute: () => PrivateOnboardedRoute,
 } as any)
-const PrivateOnboardedAssetDesignerIndexRoute =
-  PrivateOnboardedAssetDesignerIndexRouteImport.update({
-    id: '/asset-designer/',
-    path: '/asset-designer/',
-    getParentRoute: () => PrivateOnboardedRoute,
-  } as any)
 const PrivateOnboardedSidebarIndexRoute =
   PrivateOnboardedSidebarIndexRouteImport.update({
     id: '/',
@@ -243,7 +236,6 @@ export interface FileRoutesByFullPath {
   '/onboarding/wallet-recovery-codes': typeof PrivateOnboardingSidebarWalletRecoveryCodesRoute
   '/onboarding/wallet-security': typeof PrivateOnboardingSidebarWalletSecurityRoute
   '/': typeof PrivateOnboardedSidebarIndexRoute
-  '/asset-designer': typeof PrivateOnboardedAssetDesignerIndexRoute
   '/addon/$addonAddress': typeof PrivateOnboardedSidebarAddonAddonAddressRoute
   '/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
   '/addon': typeof PrivateOnboardedSidebarAddonIndexRoute
@@ -268,7 +260,6 @@ export interface FileRoutesByTo {
   '/onboarding/wallet-recovery-codes': typeof PrivateOnboardingSidebarWalletRecoveryCodesRoute
   '/onboarding/wallet-security': typeof PrivateOnboardingSidebarWalletSecurityRoute
   '/': typeof PrivateOnboardedSidebarIndexRoute
-  '/asset-designer': typeof PrivateOnboardedAssetDesignerIndexRoute
   '/addon/$addonAddress': typeof PrivateOnboardedSidebarAddonAddonAddressRoute
   '/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
   '/addon': typeof PrivateOnboardedSidebarAddonIndexRoute
@@ -298,7 +289,6 @@ export interface FileRoutesById {
   '/_private/onboarding/_sidebar/wallet-recovery-codes': typeof PrivateOnboardingSidebarWalletRecoveryCodesRoute
   '/_private/onboarding/_sidebar/wallet-security': typeof PrivateOnboardingSidebarWalletSecurityRoute
   '/_private/_onboarded/_sidebar/': typeof PrivateOnboardedSidebarIndexRoute
-  '/_private/_onboarded/asset-designer/': typeof PrivateOnboardedAssetDesignerIndexRoute
   '/_private/_onboarded/_sidebar/addon/$addonAddress': typeof PrivateOnboardedSidebarAddonAddonAddressRoute
   '/_private/_onboarded/_sidebar/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
   '/_private/_onboarded/_sidebar/addon/': typeof PrivateOnboardedSidebarAddonIndexRoute
@@ -326,7 +316,6 @@ export interface FileRouteTypes {
     | '/onboarding/wallet-recovery-codes'
     | '/onboarding/wallet-security'
     | '/'
-    | '/asset-designer'
     | '/addon/$addonAddress'
     | '/token/stats'
     | '/addon'
@@ -351,7 +340,6 @@ export interface FileRouteTypes {
     | '/onboarding/wallet-recovery-codes'
     | '/onboarding/wallet-security'
     | '/'
-    | '/asset-designer'
     | '/addon/$addonAddress'
     | '/token/stats'
     | '/addon'
@@ -380,7 +368,6 @@ export interface FileRouteTypes {
     | '/_private/onboarding/_sidebar/wallet-recovery-codes'
     | '/_private/onboarding/_sidebar/wallet-security'
     | '/_private/_onboarded/_sidebar/'
-    | '/_private/_onboarded/asset-designer/'
     | '/_private/_onboarded/_sidebar/addon/$addonAddress'
     | '/_private/_onboarded/_sidebar/token/stats'
     | '/_private/_onboarded/_sidebar/addon/'
@@ -481,13 +468,6 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof PrivateOnboardedSidebarRouteImport
-      parentRoute: typeof PrivateOnboardedRoute
-    }
-    '/_private/_onboarded/asset-designer/': {
-      id: '/_private/_onboarded/asset-designer/'
-      path: '/asset-designer'
-      fullPath: '/asset-designer'
-      preLoaderRoute: typeof PrivateOnboardedAssetDesignerIndexRouteImport
       parentRoute: typeof PrivateOnboardedRoute
     }
     '/_private/_onboarded/_sidebar/': {
@@ -706,13 +686,10 @@ const PrivateOnboardedSidebarRouteWithChildren =
 
 interface PrivateOnboardedRouteChildren {
   PrivateOnboardedSidebarRoute: typeof PrivateOnboardedSidebarRouteWithChildren
-  PrivateOnboardedAssetDesignerIndexRoute: typeof PrivateOnboardedAssetDesignerIndexRoute
 }
 
 const PrivateOnboardedRouteChildren: PrivateOnboardedRouteChildren = {
   PrivateOnboardedSidebarRoute: PrivateOnboardedSidebarRouteWithChildren,
-  PrivateOnboardedAssetDesignerIndexRoute:
-    PrivateOnboardedAssetDesignerIndexRoute,
 }
 
 const PrivateOnboardedRouteWithChildren =

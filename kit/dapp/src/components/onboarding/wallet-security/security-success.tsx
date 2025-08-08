@@ -1,4 +1,4 @@
-import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,7 @@ export function SecuritySuccess() {
   }
 
   return (
-    <OnboardingStepLayout
+    <FormStepLayout
       title={t("wallet-security.method-selector.success")}
       description={t("wallet-security.method-selector.success-description")}
       fullWidth={true}
@@ -57,6 +57,6 @@ export function SecuritySuccess() {
           method: securityMethod,
         })}
       </div>
-    </OnboardingStepLayout>
+    </FormStepLayout>
   );
 }

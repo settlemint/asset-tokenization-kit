@@ -1,4 +1,4 @@
-import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { getAddonIcon } from "@/components/onboarding/system-addons/addon-icons";
 import { AddonTypeCard } from "@/components/onboarding/system-addons/addon-type-card";
 import { getAddonTypeFromTypeId } from "@/components/onboarding/system-addons/addon-types-mapping";
@@ -137,7 +137,7 @@ export function SystemAddonsSelection() {
 
   return (
     <form.AppForm>
-      <OnboardingStepLayout
+      <FormStepLayout
         title={t("system-addons.addon-selection.title")}
         description={t("system-addons.addon-selection.description")}
         actions={
@@ -296,7 +296,7 @@ export function SystemAddonsSelection() {
             </div>
           </div>
         </div>
-      </OnboardingStepLayout>
+      </FormStepLayout>
     </form.AppForm>
   );
 }

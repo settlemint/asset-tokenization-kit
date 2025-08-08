@@ -6,7 +6,7 @@ import {
   FormStepTitle,
 } from "@/components/form/multi-step/form-step";
 
-export function OnboardingStepLayout({
+export function FormStepLayout({
   title,
   description,
   actions,

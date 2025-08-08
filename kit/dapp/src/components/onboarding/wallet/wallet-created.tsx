@@ -1,4 +1,4 @@
-import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ export function WalletCreated() {
   }
 
   return (
-    <OnboardingStepLayout
+    <FormStepLayout
       title={t("onboarding:wallet.created-title")}
       description={t("onboarding:wallet.success-message")}
       fullWidth={true}
@@ -53,6 +53,6 @@ export function WalletCreated() {
           <p>{t("onboarding:wallet.security-next-steps")}</p>
         </div>
       </div>
-    </OnboardingStepLayout>
+    </FormStepLayout>
   );
 }

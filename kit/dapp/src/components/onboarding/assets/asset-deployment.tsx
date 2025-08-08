@@ -1,5 +1,5 @@
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { AssetDeploymentSuccess } from "@/components/onboarding/assets/asset-deployment-success";
-import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
@@ -45,7 +45,7 @@ export function AssetDeployment() {
   }, [completeStepAndNavigate, queryClient]);
 
   return (
-    <OnboardingStepLayout
+    <FormStepLayout
       title={t("assets.asset-types-deployed")}
       description={t("assets.your-asset-factories-ready")}
       actions={
@@ -74,6 +74,6 @@ export function AssetDeployment() {
           />
         </div>
       </div>
-    </OnboardingStepLayout>
+    </FormStepLayout>
   );
 }

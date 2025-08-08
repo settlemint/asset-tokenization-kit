@@ -1,6 +1,6 @@
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { getAssetIcon } from "@/components/onboarding/assets/asset-icons";
 import { AssetTypeCard } from "@/components/onboarding/assets/asset-type-card";
-import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { InfoAlert } from "@/components/ui/info-alert";
@@ -108,7 +108,7 @@ export function AssetTypeSelection() {
 
   return (
     <form.AppForm>
-      <OnboardingStepLayout
+      <FormStepLayout
         title={t("assets.select-asset-types")}
         description={t("assets.choose-asset-types")}
         actions={
@@ -219,7 +219,7 @@ export function AssetTypeSelection() {
             </div>
           </div>
         </div>
-      </OnboardingStepLayout>
+      </FormStepLayout>
     </form.AppForm>
   );
 }
