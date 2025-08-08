@@ -135,7 +135,7 @@ describe("User read", () => {
         client.user.read({
           userId: testUserData.id,
         })
-      ).rejects.toThrow();
+      ).rejects.toThrow(/FORBIDDEN/);
     });
 
     it("regular user without 'user:list' permission cannot read other users by wallet", async () => {
