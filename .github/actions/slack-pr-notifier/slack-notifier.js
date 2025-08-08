@@ -8,6 +8,22 @@
  * - Comprehensive debugging
  */
 
+// Minimal logging control to reduce verbosity (default: errors only)
+(function configureLogging() {
+  try {
+    const level = (process.env.LOG_LEVEL || "error").toLowerCase();
+    const levels = { error: 0, warn: 1, info: 2, debug: 3 };
+    const current = levels[level] ?? 0;
+    const noop = () => {};
+    if (current < 3) console.debug = noop;
+    if (current < 2) console.info = noop;
+    if (current < 2) console.log = noop; // treat log ~ info
+    if (current < 1) console.warn = noop;
+  } catch (_) {
+    // ignore
+  }
+})();
+
 /**
  * Calculate the delta between two sets
  */

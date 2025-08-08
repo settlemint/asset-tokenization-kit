@@ -1,22 +1,28 @@
-name: 'PR Labeler'
-description: 'Label PR based on conventional commit format'
+name: "PR Labeler"
+description: "Label PR based on conventional commit format"
 inputs:
   pr_number:
-    description: 'Pull request number'
+    description: "Pull request number"
     required: true
   pr_title:
-    description: 'Pull request title'
+    description: "Pull request title"
     required: true
   pr_body:
-    description: 'Pull request body'
+    description: "Pull request body"
     required: false
-    default: ''
+    default: ""
+  log_level:
+    description: "Log verbosity (error, warn, info, debug)"
+    required: false
+    default: "error"
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Ensure all labels exist
       uses: actions/github-script@v7
+      env:
+        LOG_LEVEL: ${{ inputs.log_level }}
       with:
         script: |
           const { ensureLabelsExist } = require('${{ github.action_path }}/pr-labeler.js');
@@ -24,6 +30,8 @@ runs:
 
     - name: Analyze PR and apply labels
       uses: actions/github-script@v7
+      env:
+        LOG_LEVEL: ${{ inputs.log_level }}
       with:
         script: |
           const { analyzePRAndApplyLabels } = require('${{ github.action_path }}/pr-labeler.js');
