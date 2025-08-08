@@ -12,6 +12,10 @@ type Account @entity(immutable: false) {
   identity: Identity
   country: Int
   balances: [TokenBalance!]! @derivedFrom(field: "account")
+  # Lost account
+  isLost: Boolean!
+  # Account that was craeted to recover the lost account
+  recoveredAccount: Account
   # Stats
   stats: AccountStatsState @derivedFrom(field: "account")
 }
@@ -200,6 +204,8 @@ type VaultSigner @entity(immutable: false) {
 type Compliance @entity(immutable: false) {
   id: Bytes!
   account: Account!
+  # Bypass List, account addresses that are exempt from compliance checks
+  bypassList: [Account!]!
   complianceModuleConfigs: [GlobalComplianceModuleConfig!]! @derivedFrom(field: "compliance")
 }
 
@@ -211,6 +217,8 @@ type IdentityRegistryStorage @entity(immutable: false) {
   id: Bytes!
   account: Account!
   deployedInTransaction: Bytes!
+  registries: [IdentityRegistry!]! @derivedFrom(field: "identityRegistryStorage")
+  identities: [Identity!]! @derivedFrom(field: "registryStorage")
 }
 
 type IdentityFactory @entity(immutable: false) {
@@ -222,18 +230,54 @@ type IdentityFactory @entity(immutable: false) {
 type IdentityRegistry @entity(immutable: false) {
   id: Bytes!
   account: Account!
-  identities: [Identity!]! @derivedFrom(field: "registry")
   trustedIssuersRegistry: TrustedIssuersRegistry
   topicSchemeRegistry: TopicSchemeRegistry
   identityRegistryStorage: IdentityRegistryStorage
   deployedInTransaction: Bytes!
 }
 
-type TrustedIssuersRegistry @entity(immutable: false) {
+type Identity @entity(immutable: false) {
   id: Bytes!
-  account: Account!
+  registryStorage: IdentityRegistryStorage
+  claims: [IdentityClaim!]! @derivedFrom(field: "identity")
+  keys: [IdentityKey!]! @derivedFrom(field: "identity")
+  account: Account
+  isContract: Boolean
   deployedInTransaction: Bytes!
 }
+
+type IdentityKey @entity(immutable: false) {
+  id: Bytes!
+  identity: Identity!
+  key: Bytes!
+  purpose: String!
+  type: String!
+  deployedInTransaction: Bytes!
+}
+
+type IdentityClaim @entity(immutable: false) {
+  id: Bytes!
+  identity: Identity!
+  name: String!
+  issuer: Identity!
+  uri: String
+  signature: String!
+  revoked: Boolean!
+  values: [IdentityClaimValue!]! @derivedFrom(field: "claim")
+  deployedInTransaction: Bytes!
+}
+
+type IdentityClaimValue @entity(immutable: false) {
+  id: Bytes!
+  claim: IdentityClaim!
+  key: String!
+  value: String!
+}
+
+# ==================================================
+# TOPIC SCHEME MANAGEMENT
+# ==================================================
+
 
 type TopicSchemeRegistry @entity(immutable: false) {
   id: Bytes!
@@ -252,31 +296,22 @@ type TopicScheme @entity(immutable: false) {
   deployedInTransaction: Bytes!
 }
 
-type Identity @entity(immutable: false) {
+# ==================================================
+# TRUSTED ISSUERS MANAGEMENT
+# ==================================================
+
+type TrustedIssuersRegistry @entity(immutable: false) {
   id: Bytes!
-  registry: IdentityRegistry
-  claims: [IdentityClaim!]! @derivedFrom(field: "identity")
-  account: Account
-  isContract: Boolean
+  account: Account!
   deployedInTransaction: Bytes!
+  trustedIssuers: [TrustedIssuer!]! @derivedFrom(field: "registry")
 }
 
-type IdentityClaim @entity(immutable: false) {
+type TrustedIssuer @entity(immutable: false) {
   id: Bytes!
-  identity: Identity!
-  name: String!
-  issuer: Identity!
-  uri: String
-  revoked: Boolean!
-  values: [IdentityClaimValue!]! @derivedFrom(field: "claim")
   deployedInTransaction: Bytes!
-}
-
-type IdentityClaimValue @entity(immutable: false) {
-  id: Bytes!
-  claim: IdentityClaim!
-  key: String!
-  value: String!
+  registry: TrustedIssuersRegistry!
+  claimTopics: [TopicScheme!]!
 }
 
 # ==================================================

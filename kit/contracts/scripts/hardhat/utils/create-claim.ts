@@ -1,5 +1,5 @@
+import type { LocalAccount } from "viem";
 import { encodeAbiParameters, keccak256, parseAbiParameters } from "viem";
-import type { Address, LocalAccount } from "viem";
 
 export async function createClaim(
   signer: LocalAccount,

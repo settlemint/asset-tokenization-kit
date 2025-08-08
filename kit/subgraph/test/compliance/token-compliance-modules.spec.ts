@@ -1,34 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
 
-interface TokenComplianceModule {
-  parameters: {
-    addresses?: string[];
-    countries?: number[];
-    encodedParams: string;
-    expression?: Array<{
-      nodeType: string;
-      index: number;
-      topicScheme?: {
-        name: string;
-        topicId: string;
-      } | null;
-    }>;
-  };
-  complianceModule: {
-    name: string;
-  };
-}
-
-interface Token {
-  name: string;
-  complianceModuleConfigs: TokenComplianceModule[];
-}
-
-interface TokensResponse {
-  tokens: Token[];
-}
-
 describe("Token Compliance Modules", () => {
   it("should receive the compliance modules for the assets", async () => {
     const query = theGraphGraphql(
@@ -56,7 +28,7 @@ describe("Token Compliance Modules", () => {
         }
       }`
     );
-    const response = await theGraphClient.request<TokensResponse>(query, {});
+    const response = await theGraphClient.request(query, {});
 
     for (const token of response.tokens) {
       if (token.name === "Paused Stablecoin") {

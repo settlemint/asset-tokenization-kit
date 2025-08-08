@@ -100,6 +100,16 @@ export class Actor {
   }
 
   /**
+   * Get the address of the signer
+   */
+  get signerAddress(): Address {
+    if (!this.signer) {
+      throw new Error("Signer not initialized");
+    }
+    return this.signer.address;
+  }
+
+  /**
    * Ensures the signer is initialized, calling `initialize()` if necessary.
    * @throws Error if the signer is not initialized after attempting to initialize.
    */

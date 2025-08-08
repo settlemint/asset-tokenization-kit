@@ -1,16 +1,24 @@
-import { Address, BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigDecimal,
+  BigInt,
+  Bytes,
+  crypto,
+  store,
+} from "@graphprotocol/graph-ts";
 import { Token } from "../../generated/schema";
 import {
   Approved,
   ClaimAdded,
   ClaimChanged,
   ClaimRemoved,
+  ClaimRevoked,
   Executed,
   ExecutionFailed,
   ExecutionRequested,
   KeyAdded,
   KeyRemoved,
-} from "../../generated/templates/Identity/Identity";
+} from "../../generated/templates/Identity/ClaimIssuer";
 import { fetchEvent } from "../event/fetch/event";
 import { updateAccountStatsForPriceChange } from "../stats/account-stats";
 import { updateSystemStatsForPriceChange } from "../stats/system-stats";
@@ -23,7 +31,12 @@ import { fetchTokenByIdentity } from "../token/fetch/token";
 import { getTokenBasePrice, updateBasePrice } from "../token/utils/token-utils";
 import { fetchIdentity } from "./fetch/identity";
 import { fetchIdentityClaim } from "./fetch/identity-claim";
+import { fetchIdentityKey } from "./fetch/identity-key";
 import { decodeClaimValues } from "./utils/decode-claim";
+import {
+  getIdentityKeyPurpose,
+  getIdentityKeyType,
+} from "./utils/identity-key-utils";
 import { isBasePriceClaim } from "./utils/is-claim";
 
 /**
@@ -68,6 +81,7 @@ export function handleClaimAdded(event: ClaimAdded): void {
   }
   identityClaim.issuer = fetchIdentity(event.params.issuer).id;
   identityClaim.uri = event.params.uri;
+  identityClaim.signature = event.params.signature.toHexString();
   identityClaim.save();
 
   // Decode claim data and create IdentityClaimValue entities
@@ -109,6 +123,7 @@ export function handleClaimChanged(event: ClaimChanged): void {
   const identityClaim = fetchIdentityClaim(identity, event.params.claimId);
   identityClaim.issuer = fetchIdentity(event.params.issuer).id;
   identityClaim.uri = event.params.uri;
+  identityClaim.signature = event.params.signature.toHexString();
   identityClaim.save();
 
   // Get old price before updating claim
@@ -208,8 +223,72 @@ export function handleExecutionRequested(event: ExecutionRequested): void {
 
 export function handleKeyAdded(event: KeyAdded): void {
   fetchEvent(event, "KeyAdded");
+  const identity = fetchIdentity(event.address);
+  const identityKey = fetchIdentityKey(identity, event.params.key);
+  identityKey.identity = identity.id;
+  identityKey.type = getIdentityKeyType(event.params.keyType);
+  identityKey.purpose = getIdentityKeyPurpose(event.params.purpose);
+  identityKey.save();
 }
 
 export function handleKeyRemoved(event: KeyRemoved): void {
   fetchEvent(event, "KeyRemoved");
+  const identity = fetchIdentity(event.address);
+  const identityKey = fetchIdentityKey(identity, event.params.key);
+  store.remove("IdentityKey", identityKey.id.toHexString());
+}
+
+export function handleClaimRevoked(event: ClaimRevoked): void {
+  fetchEvent(event, "ClaimRevoked");
+  const identity = fetchIdentity(event.address);
+  const identityClaims = identity.claims.load();
+  for (let i = 0; i < identityClaims.length; i++) {
+    const identityClaim = identityClaims[i];
+    const signatureHash = crypto
+      .keccak256(Bytes.fromHexString(identityClaim.signature))
+      .toHexString();
+    if (signatureHash == event.params.signature.toHexString()) {
+      identityClaim.revoked = true;
+      identityClaim.save();
+
+      if (isCollateralClaim(identityClaim)) {
+        updateCollateral(identityClaim);
+      }
+      if (isBasePriceClaim(identityClaim)) {
+        const token = fetchTokenByIdentity(identity);
+        // Get old price before updating claim (should be 0 for new claims)
+        const oldPrice = token
+          ? getTokenBasePrice(token.basePriceClaim)
+          : BigDecimal.zero();
+
+        updateBasePrice(identityClaim);
+
+        // Update system stats for price change (price goes to 0 when claim removed)
+        if (token && oldPrice.notEqual(BigDecimal.zero())) {
+          const totalSystemValueInBaseCurrency =
+            updateSystemStatsForPriceChange(
+              token,
+              oldPrice,
+              BigDecimal.zero() // Price becomes 0 when claim is removed
+            );
+
+          // Update token type stats for price change
+          updateTokenTypeStatsForPriceChange(
+            totalSystemValueInBaseCurrency,
+            token,
+            oldPrice,
+            BigDecimal.zero() // Price becomes 0 when claim is removed
+          );
+
+          // Update account stats for all token holders
+          updateAccountStatsForAllTokenHolders(
+            token,
+            oldPrice,
+            BigDecimal.zero() // Price becomes 0 when claim is removed
+          );
+        }
+      }
+      break;
+    }
+  }
 }

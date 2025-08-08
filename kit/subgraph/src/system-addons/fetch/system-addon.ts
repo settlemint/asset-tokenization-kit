@@ -13,7 +13,6 @@ export function fetchSystemAddon(address: Address): SystemAddon {
     systemAddon.deployedInTransaction = Bytes.empty();
     systemAddon.systemAddonRegistry = Address.zero();
     systemAddon.save();
-    // FixedYieldScheduleFactoryTemplate.create(address);
   }
 
   return systemAddon;
