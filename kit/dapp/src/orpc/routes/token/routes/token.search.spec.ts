@@ -1,0 +1,173 @@
+import { getOrpcClient } from "@test/fixtures/orpc-client";
+import { createToken } from "@test/fixtures/token";
+import {
+  DEFAULT_ADMIN,
+  DEFAULT_PINCODE,
+  signInWithUser,
+} from "@test/fixtures/user";
+import { beforeAll, describe, expect, it } from "vitest";
+
+describe("Token search", () => {
+  let usdToken: Awaited<ReturnType<typeof createToken>>;
+  let euroToken: Awaited<ReturnType<typeof createToken>>;
+  let ethToken: Awaited<ReturnType<typeof createToken>>;
+
+  beforeAll(async () => {
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+
+    // Create tokens with different names and symbols for search testing
+    usdToken = await createToken(client, {
+      name: "USD Stablecoin",
+      symbol: "USDC",
+      decimals: 18,
+      type: "stablecoin",
+      countryCode: "056",
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+    });
+
+    euroToken = await createToken(client, {
+      name: "Euro Token",
+      symbol: "EURT",
+      decimals: 18,
+      type: "stablecoin",
+      countryCode: "056",
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+    });
+
+    ethToken = await createToken(client, {
+      name: "Ethereum Deposit",
+      symbol: "ETH",
+      decimals: 18,
+      type: "deposit",
+      countryCode: "056",
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+    });
+  });
+
+  it("can search tokens by name", async () => {
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+
+    const results = await client.token.search({
+      query: "USD",
+      limit: 10,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    expect(results.find((t) => t.id === usdToken.id)).toBeDefined();
+
+    // Should not find tokens without USD in name
+    expect(results.find((t) => t.id === euroToken.id)).toBeUndefined();
+  });
+
+  it("can search tokens by symbol", async () => {
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+
+    const results = await client.token.search({
+      query: "EUR",
+      limit: 10,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    expect(results.find((t) => t.id === euroToken.id)).toBeDefined();
+
+    // Should not find tokens without EUR in symbol
+    expect(results.find((t) => t.id === usdToken.id)).toBeUndefined();
+  });
+
+  it("can search tokens by address", async () => {
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+
+    // Search by the exact token address
+    const results = await client.token.search({
+      query: ethToken.id,
+      limit: 10,
+    });
+
+    expect(results.length).toBe(1);
+    expect(results[0]?.id).toBe(ethToken.id);
+    expect(results[0]?.name).toBe("Ethereum Deposit");
+    expect(results[0]?.symbol).toBe("ETH");
+  });
+
+  it("performs case-insensitive search", async () => {
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+
+    // Search with lowercase
+    const lowercaseResults = await client.token.search({
+      query: "eth",
+      limit: 10,
+    });
+
+    // Search with uppercase
+    const uppercaseResults = await client.token.search({
+      query: "ETH",
+      limit: 10,
+    });
+
+    // Both should find the ETH token
+    expect(lowercaseResults.find((t) => t.id === ethToken.id)).toBeDefined();
+    expect(uppercaseResults.find((t) => t.id === ethToken.id)).toBeDefined();
+  });
+
+  it("respects the limit parameter", async () => {
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+
+    // Create a generic search that might match multiple tokens
+    const results = await client.token.search({
+      query: "e", // This should match Euro, Ethereum, and potentially others
+      limit: 2,
+    });
+
+    expect(results.length).toBeLessThanOrEqual(2);
+  });
+
+  it("returns empty array for non-matching search", async () => {
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+
+    const results = await client.token.search({
+      query: "NONEXISTENTTOKEN123",
+      limit: 10,
+    });
+
+    expect(results).toEqual([]);
+  });
+
+  it("can perform partial matches", async () => {
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+
+    // Search for partial name match
+    const nameResults = await client.token.search({
+      query: "Stable", // Should match "USD Stablecoin"
+      limit: 10,
+    });
+
+    expect(nameResults.length).toBeGreaterThanOrEqual(1);
+    expect(nameResults.find((t) => t.id === usdToken.id)).toBeDefined();
+
+    // Search for partial symbol match
+    const symbolResults = await client.token.search({
+      query: "USD", // Should match "USDC" symbol
+      limit: 10,
+    });
+
+    expect(symbolResults.length).toBeGreaterThanOrEqual(1);
+    expect(symbolResults.find((t) => t.id === usdToken.id)).toBeDefined();
+  });
+});
