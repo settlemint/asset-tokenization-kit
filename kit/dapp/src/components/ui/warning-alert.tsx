@@ -11,7 +11,7 @@ export const WarningAlert = memo(
     return (
       <div className="rounded-lg bg-sm-state-warning-background/50 border border-sm-state-warning-background p-4">
         <div className="flex items-start gap-3">
-          <TriangleAlert className="h-5 w-5 text-sm-state-warning mt-0.5 flex-shrink-0" />
+          <TriangleAlert className="h-5 w-5 text-sm-state-warning flex-shrink-0" />
           <div className="flex-1">
             {title ? (
               <h3 className="text-sm font-medium text-sm-state-warning mb-1 whitespace-pre-wrap">
