@@ -183,7 +183,7 @@ describe("User search", () => {
           query: "TestFirst",
           limit: 10,
         })
-      ).rejects.toThrow("FORBIDDEN");
+      ).rejects.toThrow("Forbidden");
     });
 
     it("user with proper permissions can search users", async () => {
