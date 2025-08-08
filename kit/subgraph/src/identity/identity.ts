@@ -229,6 +229,44 @@ export function handleClaimRevoked(event: ClaimRevoked): void {
     if (identityClaim.signature == event.params.signature.toHexString()) {
       identityClaim.revoked = true;
       identityClaim.save();
+
+      if (isCollateralClaim(identityClaim)) {
+        updateCollateral(identityClaim);
+      }
+      if (isBasePriceClaim(identityClaim)) {
+        const token = fetchTokenByIdentity(identity);
+        // Get old price before updating claim (should be 0 for new claims)
+        const oldPrice = token
+          ? getTokenBasePrice(token.basePriceClaim)
+          : BigDecimal.zero();
+
+        updateBasePrice(identityClaim);
+
+        // Update system stats for price change (price goes to 0 when claim removed)
+        if (token && oldPrice.notEqual(BigDecimal.zero())) {
+          const totalSystemValueInBaseCurrency =
+            updateSystemStatsForPriceChange(
+              token,
+              oldPrice,
+              BigDecimal.zero() // Price becomes 0 when claim is removed
+            );
+
+          // Update token type stats for price change
+          updateTokenTypeStatsForPriceChange(
+            totalSystemValueInBaseCurrency,
+            token,
+            oldPrice,
+            BigDecimal.zero() // Price becomes 0 when claim is removed
+          );
+
+          // Update account stats for all token holders
+          updateAccountStatsForAllTokenHolders(
+            token,
+            oldPrice,
+            BigDecimal.zero() // Price becomes 0 when claim is removed
+          );
+        }
+      }
       break;
     }
   }
