@@ -11,39 +11,6 @@ export class AdminPage extends BasePage {
     await this.page.goto("/assets");
   }
 
-  private async startAssetCreation(
-    assetType: string,
-    name: string,
-    symbol: string,
-    isin: string,
-    internalId: string
-  ) {
-    await this.page
-      .getByRole("button", { name: "Asset designer" })
-      .first()
-      .click();
-    await this.page
-      .locator(
-        `[data-slot="card"] [data-slot="card-title"]:has-text("${assetType}")`
-      )
-      .click();
-    await this.page.getByLabel("Name").fill(name);
-    await this.page.getByLabel("Symbol").fill(symbol);
-    await this.page.getByLabel("ISIN").fill(isin);
-    await this.page.getByLabel("Internal ID").fill(internalId);
-  }
-
-  public async completeAssetCreation(buttonName: string, pincode: string) {
-    const button = this.page.getByRole("button", { name: buttonName });
-
-    await button.waitFor({ state: "attached" });
-    await button.focus();
-    await button.scrollIntoViewIfNeeded();
-    await button.click();
-
-    await this.confirmPincode(pincode);
-  }
-
   async createBond(options: {
     assetType: string;
     name: string;
@@ -56,13 +23,6 @@ export class AdminPage extends BasePage {
     underlyingAsset: string;
     pincode: string;
   }) {
-    await this.startAssetCreation(
-      options.assetType,
-      options.name,
-      options.symbol,
-      options.isin,
-      options.internalId
-    );
     const nextButton = this.page.getByRole("button", {
       name: "Next",
       exact: true,
@@ -93,7 +53,6 @@ export class AdminPage extends BasePage {
     await nextButton.click();
     await nextButton.click();
     const buttonName = `Issue ${options.assetType.toLowerCase()}`;
-    await this.completeAssetCreation(buttonName, options.pincode);
   }
 
   async createCryptocurrency(options: {
@@ -107,13 +66,6 @@ export class AdminPage extends BasePage {
     price: string;
     pincode: string;
   }) {
-    await this.startAssetCreation(
-      options.assetType,
-      options.name,
-      options.symbol,
-      options.isin,
-      options.internalId
-    );
     const nextButton = this.page.locator(
       'button[data-slot="button"]:has-text("Next")'
     );
@@ -127,7 +79,6 @@ export class AdminPage extends BasePage {
     await nextButton.click();
     await nextButton.click();
     const buttonName = `Issue ${options.assetType.toLowerCase()}`;
-    await this.completeAssetCreation(buttonName, options.pincode);
   }
 
   async createEquity(options: {
@@ -142,13 +93,6 @@ export class AdminPage extends BasePage {
     equityCategory: string;
     pincode: string;
   }) {
-    await this.startAssetCreation(
-      options.assetType,
-      options.name,
-      options.symbol,
-      options.isin,
-      options.internalId
-    );
     const nextButton = this.page.locator(
       'button[data-slot="button"]:has-text("Next")'
     );
@@ -173,7 +117,6 @@ export class AdminPage extends BasePage {
     await nextButton.click();
     await nextButton.click();
     const buttonName = `Issue ${options.assetType.toLowerCase()}`;
-    await this.completeAssetCreation(buttonName, options.pincode);
   }
 
   async createFund(options: {
@@ -189,13 +132,6 @@ export class AdminPage extends BasePage {
     fundClass: string;
     pincode: string;
   }) {
-    await this.startAssetCreation(
-      options.assetType,
-      options.name,
-      options.symbol,
-      options.isin,
-      options.internalId
-    );
     const nextButton = this.page.locator(
       'button[data-slot="button"]:has-text("Next")'
     );
@@ -219,43 +155,6 @@ export class AdminPage extends BasePage {
     await nextButton.click();
     await nextButton.click();
     const buttonName = `Issue ${options.assetType.toLowerCase()}`;
-    await this.completeAssetCreation(buttonName, options.pincode);
-  }
-
-  async createStablecoin(options: {
-    assetType: string;
-    name: string;
-    symbol: string;
-    isin: string;
-    internalId: string;
-    decimals: string;
-    price: string;
-    validityPeriod: string;
-    pincode: string;
-  }) {
-    await this.startAssetCreation(
-      options.assetType,
-      options.name,
-      options.symbol,
-      options.isin,
-      options.internalId
-    );
-    const nextButton = this.page.locator(
-      'button[data-slot="button"]:has-text("Next")'
-    );
-    await nextButton.focus();
-    await nextButton.click();
-    await this.page.getByLabel("Decimals").fill(options.decimals);
-    await this.page.getByLabel("Price").fill(options.price);
-    await this.page.locator("#price\\.currency").click();
-    await this.page.getByRole("option", { name: "EUR" }).click();
-    await this.page
-      .getByLabel("Collateral Proof Validity")
-      .fill(options.validityPeriod);
-    await nextButton.click();
-    await nextButton.click();
-    const buttonName = `Issue ${options.assetType.toLowerCase()}`;
-    await this.completeAssetCreation(buttonName, options.pincode);
   }
 
   async createDeposit(options: {
@@ -269,13 +168,6 @@ export class AdminPage extends BasePage {
     validityPeriod: string;
     pincode: string;
   }) {
-    await this.startAssetCreation(
-      options.assetType,
-      options.name,
-      options.symbol,
-      options.isin,
-      options.internalId
-    );
     const nextButton = this.page.locator(
       'button[data-slot="button"]:has-text("Next")'
     );
@@ -291,7 +183,6 @@ export class AdminPage extends BasePage {
     await nextButton.click();
     await nextButton.click();
     const buttonName = `Issue ${options.assetType.toLowerCase()}`;
-    await this.completeAssetCreation(buttonName, options.pincode);
   }
 
   private async getColumnIndices() {
@@ -723,7 +614,6 @@ export class AdminPage extends BasePage {
       .first()
       .click();
     await nextButton.click();
-    await this.completeAssetCreation("Mint", options.pincode);
   }
 
   async topUpAsset(options: {
@@ -747,7 +637,6 @@ export class AdminPage extends BasePage {
     );
     await nextButton.focus();
     await nextButton.click();
-    await this.completeAssetCreation("Top up", options.pincode);
   }
 
   async redeemBurnAsset(options: { amount: string; pincode: string }) {
@@ -761,7 +650,6 @@ export class AdminPage extends BasePage {
     );
     await nextButton.focus();
     await nextButton.click();
-    await this.completeAssetCreation("Burn", options.pincode);
   }
 
   async verifyTotalSupply(expectedAmount: string) {
@@ -842,7 +730,6 @@ export class AdminPage extends BasePage {
     );
     await nextButton.focus();
     await nextButton.click();
-    await this.completeAssetCreation("Allow", options.pincode);
   }
 
   async verifySuccessMessage(partialMessage: string) {

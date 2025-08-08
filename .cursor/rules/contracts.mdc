@@ -1,0 +1,71 @@
+---
+globs: kit/contracts/**/*
+description: Solidity ERC-3643 contracts - Security-first tokenization
+---
+
+# Solidity Contracts Module
+
+## Stack
+
+- **Standard**: ERC-3643 Security Token
+- **Tools**: Foundry | Hardhat | Solhint
+- **Compiler**: Solidity 0.8.30 | EVM Cancun
+
+## Core Commands
+
+```bash
+# Build & Test
+settlemint scs foundry build --sizes
+settlemint scs foundry test
+
+# Lint & Format
+solhint 'contracts/**/*.sol'
+settlemint scs foundry format
+
+# Code Generation
+bun run codegen:types          # TypeScript types
+bun run artifacts:genesis      # Genesis block
+bun run artifacts:abi          # ABI files
+```
+
+## Testing Conventions
+
+```solidity
+test_Function_Success()         // Happy path
+test_RevertWhen_Condition()     // Error cases
+testFuzz_Function()             // Fuzz testing
+invariant_Property()            // Invariants
+```
+
+## Security Requirements
+
+- **Pattern**: Checks-Effects-Interactions (CEI)
+- **Guards**: Reentrancy protection
+- **Access**: Role-based control
+- **Validation**: External call verification
+- **MEV**: Front-running protection
+- **Upgrades**: UUPS proxy safety
+
+## Naming Conventions
+
+```solidity
+contract MyContract             // PascalCase
+interface IMyInterface          // I prefix
+abstract contract AbstractBase  // Abstract prefix
+contract MyContract_Test        // Test suffix
+```
+
+## Deployment
+
+- **Network**: Anvil (localhost:8545)
+- **Tracking**: Hardhat Ignition
+- **Gas**: 20% buffer, 10M limit
+- **Verification**: Automatic on deploy
+
+## Critical Rules
+
+1. ALWAYS use solidity-auditor agent
+2. Follow CEI pattern strictly
+3. Test coverage > 90%
+4. Gas optimization mandatory
+5. Document NatSpec for all public functions

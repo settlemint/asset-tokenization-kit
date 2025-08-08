@@ -1,34 +1,40 @@
-name: 'PR Status Labeler'
-description: 'Update PR status labels based on approval and QA status'
+name: "PR Status Labeler"
+description: "Update PR status labels based on approval and QA status"
 inputs:
   pr_number:
-    description: 'Pull request number'
+    description: "Pull request number"
     required: true
   is_draft:
-    description: 'Whether the PR is a draft'
+    description: "Whether the PR is a draft"
     required: true
   has_approval:
-    description: 'Whether the PR has been approved'
+    description: "Whether the PR has been approved"
     required: false
-    default: 'false'
+    default: "false"
   qa_status:
-    description: 'The QA status (pending, running, success, failed)'
+    description: "The QA status (pending, running, success, failed)"
     required: false
-    default: ''
+    default: ""
   is_merged:
-    description: 'Whether the PR has been merged'
+    description: "Whether the PR has been merged"
     required: false
-    default: 'false'
+    default: "false"
   is_abandoned:
-    description: 'Whether the PR has been abandoned (closed without merging)'
+    description: "Whether the PR has been abandoned (closed without merging)"
     required: false
-    default: 'false'
+    default: "false"
+  log_level:
+    description: "Log verbosity (error, warn, info, debug)"
+    required: false
+    default: "error"
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Check and create labels if needed
       uses: actions/github-script@v7
+      env:
+        LOG_LEVEL: ${{ inputs.log_level }}
       with:
         script: |
           const { ensureStatusLabelsExist } = require('${{ github.action_path }}/pr-status-labeler.js');
@@ -36,6 +42,8 @@ runs:
 
     - name: Update PR status label efficiently
       uses: actions/github-script@v7
+      env:
+        LOG_LEVEL: ${{ inputs.log_level }}
       with:
         script: |
           const { updatePRStatusLabel } = require('${{ github.action_path }}/pr-status-labeler.js');

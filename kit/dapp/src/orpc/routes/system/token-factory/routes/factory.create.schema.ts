@@ -112,14 +112,16 @@ export const FactoryCreateSchema = MutationInputSchema.extend({
    * Can be a single factory object or an array of factories
    */
   factories: z
-    .union([SingleFactorySchema, z.array(SingleFactorySchema).min(1).max(10)])
+    .array(SingleFactorySchema)
+    .min(1)
+    .max(10)
     .describe("Factory or factories to create"),
 });
 
 // Type exports using Zod's type inference
 // These provide compile-time TypeScript types derived from runtime schemas
 // ensuring perfect alignment between validation and type checking
-export type FactoryCreateInput = z.infer<typeof FactoryCreateSchema>;
+export type FactoryCreateInput = z.input<typeof FactoryCreateSchema>;
 export type SingleFactory = z.infer<typeof SingleFactorySchema>;
 
 /**

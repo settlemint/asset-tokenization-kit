@@ -24,7 +24,6 @@ test.describe.serial("Bond Creation Validation", () => {
     const adminPage = await adminContext.newPage();
     adminPages = Pages(adminPage);
     createAssetForm = new CreateAssetForm(adminPage);
-    await adminPages.signInPage.signInAsAdmin(adminUser);
     await adminPages.adminPage.goto();
   });
 
@@ -121,7 +120,6 @@ test.describe.serial("Bond Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         name: bondData.name,
         symbol: bondData.symbol,
-        internalId: bondData.internalId,
         isin: bondData.isin,
       });
       await createAssetForm.clickOnNextButton();
@@ -291,7 +289,14 @@ test.describe.serial("Bond Creation Validation", () => {
   test.describe
     .serial("Dependent assets, first create stablecoin and then create dependent bond", () => {
     test("Create Stablecoin asset", async () => {
-      await adminPages.adminPage.createStablecoin(stablecoinData);
+      await createAssetForm.fillStablecoinFields({
+        name: stablecoinData.name,
+        symbol: stablecoinData.symbol,
+        decimals: stablecoinData.decimals,
+        isin: stablecoinData.isin,
+        country: stablecoinData.country,
+        pincode: stablecoinData.pincode,
+      });
       testData.stablecoinName = stablecoinData.name;
       await adminPages.adminPage.verifySuccessMessage(
         successMessageData.successMessageStablecoin
@@ -299,7 +304,6 @@ test.describe.serial("Bond Creation Validation", () => {
       await adminPages.adminPage.checkIfAssetExists({
         sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
         name: stablecoinData.name,
-        totalSupply: stablecoinData.initialSupply,
       });
     });
 

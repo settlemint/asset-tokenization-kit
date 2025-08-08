@@ -1,0 +1,52 @@
+---
+globs: kit/e2e/**/*
+description: Playwright E2E testing - Page Object Model pattern
+---
+
+# E2E Testing Module
+
+## Stack
+
+- **Framework**: Playwright 1.54.2
+- **Language**: TypeScript
+- **Pattern**: Page Object Model (POM)
+
+## Commands
+
+```bash
+NODE_NO_WARNINGS=1 playwright test
+playwright test --ui           # Interactive UI
+playwright test --debug        # Debug mode
+```
+
+## Locator Strategy
+
+```typescript
+// ✅ PREFERRED
+page.getByRole("button", { name: "Submit" });
+page.getByLabel("Email");
+page.getByTestId("user-profile");
+
+// ❌ AVOID
+page.locator(".btn-submit"); // CSS selectors
+page.locator("//button"); // XPath
+```
+
+## Waiting Patterns
+
+```typescript
+// ✅ CORRECT
+await expect(locator).toBeVisible();
+await page.waitForLoadState("networkidle");
+
+// ❌ WRONG
+await page.waitForTimeout(1000); // Arbitrary timeouts
+```
+
+## Critical Rules
+
+1. ALWAYS use Page Object Model
+2. Semantic locators only
+3. NO hardcoded waits
+4. Test isolation mandatory
+5. Cleanup in afterEach

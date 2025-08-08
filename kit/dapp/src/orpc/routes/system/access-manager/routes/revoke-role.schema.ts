@@ -4,25 +4,30 @@ import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verifi
 import { z } from "zod";
 
 /**
- * Input schema for revoking a role from multiple accounts
+ * Input schema for revoking roles from accounts
+ * Supports:
+ * - Single address, single role
+ * - Multiple addresses, single role
+ * - Single address, multiple roles
  */
 export const RevokeRoleInputSchema = z.object({
   verification: UserVerificationSchema,
   /**
-   * The accounts to revoke the roles from
+   * The account(s) to revoke the role(s) from
    */
-  accounts: z.array(ethereumAddress),
+  address: z.union([ethereumAddress, z.array(ethereumAddress)]),
   /**
-   * The role to revoke from the accounts
+   * The role(s) to revoke
    */
-  role: accessControlRole,
+  role: z.union([accessControlRole, z.array(accessControlRole)]),
 });
 
 /**
- * Response schema for revoking a role from multiple accounts
+ * Response schema for revoking roles
  */
 export const RevokeRoleOutputSchema = z.object({
-  accounts: z.array(ethereumAddress),
+  addresses: z.array(ethereumAddress),
+  roles: z.array(accessControlRole),
 });
 
 /**

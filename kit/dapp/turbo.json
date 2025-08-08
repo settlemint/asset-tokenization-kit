@@ -4,16 +4,28 @@
     "codegen:settlemint": {
       "cache": false
     },
+    "codegen": {
+      "dependsOn": ["codegen:settlemint", "contracts#compile"],
+      "outputs": ["src/lib/interface-ids.ts"],
+      "inputs": ["tools/generate-interface-ids.ts"]
+    },
     "build": {
-      "dependsOn": ["codegen:settlemint"],
-      "outputs": [".output/**"]
+      "dependsOn": ["codegen"],
+      "outputs": [".output/**", "dist/**"],
+      "inputs": [
+        "src/**/*.{js,jsx,ts,tsx,css}",
+        "public/**",
+        "tsconfig.json",
+        "vite.config.*",
+        "package.json"
+      ]
     },
     "publish": {
       "dependsOn": ["build"]
     },
     "artifacts": {},
     "test": {
-      "dependsOn": ["codegen"],
+      "dependsOn": ["codegen", "build"],
       "outputs": []
     },
     "test:integration": {

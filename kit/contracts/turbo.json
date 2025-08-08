@@ -10,11 +10,23 @@
     },
     "compile:forge": {
       "outputs": [".generated/out/**", ".generated/cache_forge/**"],
-      "inputs": ["**/*.sol"]
+      "inputs": [
+        "contracts/**/*.sol",
+        "test/**/*.sol",
+        "dependencies/**/*.sol",
+        "foundry.toml",
+        "remappings.txt",
+        "soldeer.lock"
+      ]
     },
     "compile:hardhat": {
       "outputs": [".generated/artifacts/**", ".generated/cache/**"],
-      "inputs": ["**/*.sol"]
+      "inputs": [
+        "contracts/**/*.sol",
+        "dependencies/**/*.sol",
+        "hardhat.config.ts",
+        "soldeer.lock"
+      ]
     },
     "compile:typescript": {
       "outputs": [".tsbuildinfo"],
@@ -26,7 +38,11 @@
     "codegen:types": {
       "dependsOn": ["compile:hardhat"],
       "outputs": ["scripts/hardhat/abi/**"],
-      "inputs": ["contracts/**", "tools/codegen-types.ts"]
+      "inputs": [
+        "contracts/**",
+        ".generated/artifacts/**",
+        "tools/codegen-types.ts"
+      ]
     },
     "artifacts": {
       "dependsOn": ["artifacts:genesis", "artifacts:abi"]
@@ -36,12 +52,16 @@
         ".generated/genesis.json",
         ".generated/genesis-allocations.json"
       ],
-      "inputs": ["contracts/**", "tools/artifacts-genesis.ts"]
+      "inputs": [
+        "contracts/**",
+        ".generated/out/**",
+        "tools/artifacts-genesis.ts"
+      ]
     },
     "artifacts:abi": {
       "dependsOn": ["compile"],
       "outputs": [".generated/portal/**"],
-      "inputs": ["contracts/**", "tools/artifacts-abi.ts"]
+      "inputs": ["contracts/**", ".generated/out/**", "tools/artifacts-abi.ts"]
     },
     "format": {
       "dependsOn": ["format:forge", "format:prettier"]
