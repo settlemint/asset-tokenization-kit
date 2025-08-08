@@ -1,10 +1,10 @@
 {
   "assets": {
     "asset-factories-deployed-successfully": "Asset factories deployed successfully",
-    "asset-factories-description": "Asset factories are smart contracts that enable you to create and manage different types of tokenized assets. Each factory handles a specific asset class with tailored features and compliance requirements.",
+    "asset-factories-description": "You'll be asked to confirm each transaction using your PIN or OTP.",
     "asset-types-deployed": "Asset types deployed",
     "available-asset-types": "Available asset types",
-    "choose-asset-types": "Choose the types of assets you want to tokenize on your platform",
+    "choose-asset-types": "Define which types of tokenized assets your platform will support.",
     "confirm-deployment-description": "Please verify your identity to deploy the asset factories.",
     "confirm-deployment-title": "Confirm asset deployment",
     "deploy": "Deploy asset factories",
@@ -14,7 +14,7 @@
     "deployed-label": "(Deployed)",
     "deploying": "Deploying...",
     "deploying-toast": "Deploying asset factories...",
-    "deployment-warning": "This action will deploy smart contract factories to the blockchain. Once deployed, they cannot be removed but can remain unused.",
+    "deployment-warning": "This process may take up to 2–3 minutes depending on your selections.",
     "description": "Choose which digital asset types to enable on your platform",
     "descriptions": {
       "bond": "Tokenized debt securities with fixed income features",
@@ -23,12 +23,14 @@
       "fund": "Investment fund tokens for pooled investments",
       "stablecoin": "Price-stable digital currencies"
     },
+    "factory-explanation-1": "Each asset type you support on your platform like Bonds, Equities, or Stablecoins is managed by a dedicated Asset Factory.",
+    "factory-explanation-2": "Asset factories are smart contracts that define how a specific asset class behaves on-chain, including its features, rules, and compliance logic.",
+    "factory-explanation-3": "By selecting the asset types you want to support, you'll deploy the necessary smart contracts that power them. You can always add more factories later in your platform settings.",
     "failed-toast": "Failed to deploy asset factories: ",
     "info": "Select the types of digital assets your platform will support. You can add more asset types later.",
     "no-system": "System not found. Please deploy the system first.",
     "select-all-asset-types": "Select all the asset types you plan to tokenize",
-    "select-asset-types": "Select asset types",
-    "title": "Select asset types",
+    "title": "Configure Supported Asset Types",
     "validation-error": "Select at least one asset type",
     "what-are-asset-factories": "What are asset factories?",
     "your-asset-factories-ready": "Your asset factories are ready for tokenization"
@@ -158,9 +160,7 @@
     "admin-capability-admins": "Invite additional admins",
     "admin-capability-compliance": "Manage compliance and identity modules",
     "contracts-live-message": "The smart contracts powering your platform are now live on the blockchain.",
-    "deployed-contracts": "Deployed Contracts",
-    "system-contract": "System Contract",
-    "configure-assets": "Configure assets"
+    "configure-system": "Configure system"
   },
   "system-addons": {
     "addon-deployment": {
@@ -222,7 +222,7 @@
         }
       }
     },
-    "subtitle": "Set your platform's default preferences",
+    "subtitle": "Define how your platform behaves by default",
     "title": "Configure platform settings",
     "toast": {
       "error": "Failed to save platform settings: {{message}}",

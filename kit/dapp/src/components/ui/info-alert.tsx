@@ -1,7 +1,7 @@
 import { memo } from "react";
 
 interface InfoAlertProps {
-  title: string;
+  title?: string;
   description: string;
 }
 
@@ -9,7 +9,7 @@ export const InfoAlert = memo(({ title, description }: InfoAlertProps) => {
   return (
     <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4">
       <div className="flex gap-3">
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 pt-0.5">
           <svg
             className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5"
             fill="none"
