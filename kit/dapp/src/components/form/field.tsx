@@ -48,7 +48,7 @@ export function FieldErrors({ isTouched, errors }: AnyFieldMeta) {
 }
 
 export function FieldLayout({ children }: { children: ReactNode }) {
-  return <div className="space-y-2">{children}</div>;
+  return <div className="space-y-2 p-1">{children}</div>;
 }
 
 export function FieldPostfix({ postfix }: { postfix?: string }) {
