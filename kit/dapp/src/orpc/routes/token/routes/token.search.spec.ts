@@ -11,10 +11,11 @@ describe("Token search", () => {
   let usdToken: Awaited<ReturnType<typeof createToken>>;
   let euroToken: Awaited<ReturnType<typeof createToken>>;
   let ethToken: Awaited<ReturnType<typeof createToken>>;
+  let client: OrpcClient;
 
   beforeAll(async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
-    const client = getOrpcClient(headers);
+    client = getOrpcClient(headers);
 
     // Create tokens with different names and symbols for search testing
     usdToken = await createToken(client, {
