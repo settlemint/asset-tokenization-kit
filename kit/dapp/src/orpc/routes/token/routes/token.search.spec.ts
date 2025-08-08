@@ -108,8 +108,9 @@ describe("Token search", () => {
     });
 
     // Both should find the ETH token
-    expect(lowercaseResults.find((t) => t.id === ethToken.id)).toBeDefined();
-    expect(uppercaseResults.find((t) => t.id === ethToken.id)).toBeDefined();
+    expect(lowercaseResults).toHaveLength(1);
+    expect(lowercaseResults[0]?.id).toBe(ethToken.id);
+    expect(uppercaseResults).toEqual(lowercaseResults);
   });
 
   it("respects the limit parameter", async () => {
@@ -119,7 +120,7 @@ describe("Token search", () => {
       limit: 2,
     });
 
-    expect(results.length).toBeLessThanOrEqual(2);
+    expect(results.length).toBe(2);
   });
 
   it("returns empty array for non-matching search", async () => {
