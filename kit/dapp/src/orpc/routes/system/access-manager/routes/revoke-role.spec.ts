@@ -140,7 +140,6 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
       const updatedSystemRoles = systemRoles.find(
         (role) => role.account === testAddresses.valid1
       );
-      expect(updatedSystemRoles).toBeDefined();
       expect(updatedSystemRoles?.roles).not.toContain("systemManager");
       expect(updatedSystemRoles?.roles).not.toContain("tokenManager");
     });
