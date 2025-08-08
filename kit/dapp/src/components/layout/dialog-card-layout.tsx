@@ -12,7 +12,7 @@ interface ModalCardLayoutProps {
  * Can be used both in route components and inside Dialog modals.
  * Provides the card-like appearance with proper centering and constraints.
  */
-export function ModalCardLayout({
+export function DialogCardLayout({
   children,
   className,
   header,
