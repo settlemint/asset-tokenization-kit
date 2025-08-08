@@ -1,12 +1,5 @@
 import { assetDesignerFormOptions } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
-import {
-  FormStep,
-  FormStepContent,
-  FormStepDescription,
-  FormStepHeader,
-  FormStepSubmit,
-  FormStepTitle,
-} from "@/components/form/multi-step/form-step";
+import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
 import { useTranslation } from "react-i18next";
@@ -20,24 +13,10 @@ export const Summary = withForm({
     const { t } = useTranslation("asset-designer");
 
     return (
-      <FormStep>
-        <FormStepHeader>
-          <FormStepTitle>{t("wizard.steps.summary.title")}</FormStepTitle>
-          <FormStepDescription>
-            {t("wizard.steps.summary.description")}
-          </FormStepDescription>
-        </FormStepHeader>
-        <FormStepContent>
-          <div>
-            {JSON.stringify(form.state.values, (_, value) =>
-              typeof value === "bigint" ? value.toString() : value
-            )}
-          </div>
-
-          <form.Errors />
-        </FormStepContent>
-
-        <FormStepSubmit>
+      <OnboardingStepLayout
+        title={t("wizard.steps.summary.title")}
+        description={t("wizard.steps.summary.description")}
+        actions={
           <form.VerificationButton
             onSubmit={onSubmit}
             verification={{
@@ -50,8 +29,16 @@ export const Summary = withForm({
           >
             {t("form.actions.create")}
           </form.VerificationButton>
-        </FormStepSubmit>
-      </FormStep>
+        }
+      >
+        <div>
+          {JSON.stringify(form.state.values, (_, value) =>
+            typeof value === "bigint" ? value.toString() : value
+          )}
+        </div>
+
+        <form.Errors />
+      </OnboardingStepLayout>
     );
   },
 });

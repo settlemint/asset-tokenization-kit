@@ -2,12 +2,7 @@ import { BondBasics } from "@/components/asset-designer/asset-designer-wizard/as
 import { CommonBasics } from "@/components/asset-designer/asset-designer-wizard/asset-basics/common";
 import { FundBasics } from "@/components/asset-designer/asset-designer-wizard/asset-basics/fund";
 import { assetDesignerFormOptions } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
-import {
-  FormStep,
-  FormStepDescription,
-  FormStepHeader,
-  FormStepTitle,
-} from "@/components/form/multi-step/form-step";
+import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
 import { useStore } from "@tanstack/react-form";
@@ -48,14 +43,11 @@ const AssetBasicsStep = ({ children }: { children: React.ReactNode }) => {
   const { t } = useTranslation(["asset-designer"]);
 
   return (
-    <FormStep>
-      <FormStepHeader>
-        <FormStepTitle>{t("wizard.steps.assetBasics.title")}</FormStepTitle>
-        <FormStepDescription>
-          {t("wizard.steps.assetBasics.description")}
-        </FormStepDescription>
-      </FormStepHeader>
+    <OnboardingStepLayout
+      title={t("wizard.steps.assetBasics.title")}
+      description={t("wizard.steps.assetBasics.description")}
+    >
       {children}
-    </FormStep>
+    </OnboardingStepLayout>
   );
 };

@@ -1,13 +1,6 @@
 import { assetDesignerFormOptions } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
 import { ComplianceModules } from "@/components/compliance/compliance-modules";
-import {
-  FormStep,
-  FormStepContent,
-  FormStepDescription,
-  FormStepHeader,
-  FormStepSubmit,
-  FormStepTitle,
-} from "@/components/form/multi-step/form-step";
+import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
@@ -50,29 +43,24 @@ export const SelectComplianceModules = withForm({
     };
 
     return (
-      <FormStep>
-        <FormStepHeader>
-          <FormStepTitle>{t("compliance.title")}</FormStepTitle>
-          <FormStepDescription>
-            {t("compliance.description")}
-          </FormStepDescription>
-        </FormStepHeader>
-        <FormStepContent>
-          <ComplianceModules
-            allModules={complianceModules}
-            enabledModules={initialModulePairs}
-            onEnable={addModulePair}
-            onDisable={removeModulePair}
-          />
-        </FormStepContent>
-        <FormStepSubmit>
+      <OnboardingStepLayout
+        title={t("compliance.title")}
+        description={t("compliance.description")}
+        actions={
           <form.StepSubmitButton
             label={t("form.buttons.next")}
             onStepSubmit={onStepSubmit}
             validate={empty}
           />
-        </FormStepSubmit>
-      </FormStep>
+        }
+      >
+        <ComplianceModules
+          allModules={complianceModules}
+          enabledModules={initialModulePairs}
+          onEnable={addModulePair}
+          onDisable={removeModulePair}
+        />
+      </OnboardingStepLayout>
     );
   },
 });
