@@ -1,12 +1,17 @@
 import { AssetDesignerStepSchema } from "@/components/asset-designer/asset-designer-wizard/asset-designer-steps";
 import { isRequiredFieldForZodIntersection } from "@/lib/utils/schema-field";
 import type { KeysOfUnion } from "@/lib/utils/union";
+import { assetClass } from "@/lib/zod/validators/asset-types";
 import { TokenCreateSchema } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 import { formOptions } from "@tanstack/react-form";
-import type { z } from "zod";
+import { z } from "zod";
 
 export const AssetDesignerFormSchema = TokenCreateSchema.and(
   AssetDesignerStepSchema
+).and(
+  z.object({
+    assetClass: assetClass(),
+  })
 );
 
 export type AssetDesignerFormInputData = z.input<
@@ -15,7 +20,7 @@ export type AssetDesignerFormInputData = z.input<
 
 export const assetDesignerFormOptions = formOptions({
   defaultValues: {
-    step: "assetBasics",
+    step: "assetClass",
     verification: {
       verificationCode: "",
       verificationType: "two-factor",

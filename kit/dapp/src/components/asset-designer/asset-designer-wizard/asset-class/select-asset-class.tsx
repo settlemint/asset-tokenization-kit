@@ -1,22 +1,29 @@
+import {
+  AssetDesignerFormInputData,
+  assetDesignerFormOptions,
+  isRequiredField,
+} from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
 import { Badge } from "@/components/ui/badge";
 import {
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { withForm } from "@/hooks/use-app-form";
 import { useAssetClass } from "@/hooks/use-asset-class";
 import { noop } from "@/lib/utils/noop";
+import type { KeysOfUnion } from "@/lib/utils/union";
 import { getAssetTypeFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { assetClassSelectionFormOptions } from "./asset-class-form";
+
+const validate: KeysOfUnion<AssetDesignerFormInputData>[] = ["assetClass"];
 
 export const SelectAssetClass = withForm({
-  ...assetClassSelectionFormOptions,
+  ...assetDesignerFormOptions,
   props: {
     onStepSubmit: noop,
-    onCancel: noop,
   },
   render: function Render({ form, onStepSubmit }) {
     const { t } = useTranslation([
@@ -72,16 +79,19 @@ export const SelectAssetClass = withForm({
           <form.AppField
             name="assetClass"
             children={(field) => (
-              <field.RadioField
-                options={options}
-                variant="card"
-                onSelect={() => {
-                  onStepSubmit();
-                }}
-              />
+              <field.RadioField options={options} variant="card" />
             )}
           />
         </div>
+
+        <DialogFooter className="!flex !flex-row !justify-between">
+          <form.StepSubmitButton
+            onStepSubmit={onStepSubmit}
+            validate={validate}
+            checkRequiredFn={isRequiredField}
+            label={t("asset-designer:form.buttons.next")}
+          />
+        </DialogFooter>
       </>
     );
   },

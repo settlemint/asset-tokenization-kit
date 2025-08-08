@@ -1,4 +1,5 @@
 import { AssetBasics } from "@/components/asset-designer/asset-designer-wizard/asset-basics/asset";
+import { SelectAssetClass } from "@/components/asset-designer/asset-designer-wizard/asset-class/select-asset-class";
 import {
   assetDesignerFormOptions,
   AssetDesignerFormSchema,
@@ -7,10 +8,15 @@ import {
   useAssetDesignerSteps,
   type AssetDesignerStepsType,
 } from "@/components/asset-designer/asset-designer-wizard/asset-designer-steps";
+import { SelectAssetType } from "@/components/asset-designer/asset-designer-wizard/asset-type/select-asset-type";
 import { SelectComplianceModules } from "@/components/asset-designer/asset-designer-wizard/compliance-modules/select-compliance-modules";
 import { Summary } from "@/components/asset-designer/asset-designer-wizard/summary/summary";
 import { StepLayout } from "@/components/stepper/step-layout";
-import { getNextStep, getStepById } from "@/components/stepper/utils";
+import {
+  getNextStep,
+  getPreviousStep,
+  getStepById,
+} from "@/components/stepper/utils";
 import { useAppForm } from "@/hooks/use-app-form";
 import {
   getFactoryTypeIdFromAssetType,
@@ -18,20 +24,20 @@ import {
 } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
 import { FactoryList } from "@/orpc/routes/system/token-factory/routes/factory.list.schema";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate, useRouteContext } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
 import type { JSX } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-interface AssetDesignerFormProps {
-  type: AssetType;
-}
 
-export const AssetDesignerWizard = ({ type }: AssetDesignerFormProps) => {
-  const { factories, complianceModules } = useRouteContext({
-    from: "/_private/_onboarded/asset-designer/",
-  });
+export const AssetDesignerWizard = () => {
+  const { data: factories } = useQuery(
+    orpc.system.tokenFactoryList.queryOptions({ input: {} })
+  );
+  const { data: complianceModules } = useQuery(
+    orpc.system.complianceModuleList.queryOptions({ input: {} })
+  );
   const { t } = useTranslation(["asset-designer"]);
   const steps = useAssetDesignerSteps();
   const navigate = useNavigate();
@@ -40,7 +46,7 @@ export const AssetDesignerWizard = ({ type }: AssetDesignerFormProps) => {
     orpc.token.create.mutationOptions({
       onSuccess: async (_result, variables) => {
         const tokenFactory = getFactoryAddressFromTypeId(
-          factories,
+          factories ?? [],
           variables.type
         );
 
@@ -69,7 +75,7 @@ export const AssetDesignerWizard = ({ type }: AssetDesignerFormProps) => {
     onSubmit: async (values) => {
       const parsedValues = AssetDesignerFormSchema.parse(values.value);
       const factoryAddress = getFactoryAddressFromTypeId(
-        factories,
+        factories ?? [],
         parsedValues.type
       );
 
@@ -101,14 +107,26 @@ export const AssetDesignerWizard = ({ type }: AssetDesignerFormProps) => {
     const nextStep = getNextStep(steps, currentStep);
     form.setFieldValue("step", nextStep.id);
   };
+  const decrementStep = () => {
+    const previousStep = getPreviousStep(steps, currentStep);
+    form.setFieldValue("step", previousStep.id);
+  };
 
   const stepComponent: Record<AssetDesignerStepsType, JSX.Element> = {
+    assetClass: <SelectAssetClass form={form} onStepSubmit={incrementStep} />,
+    assetType: (
+      <SelectAssetType
+        form={form}
+        onStepSubmit={incrementStep}
+        onBack={decrementStep}
+      />
+    ),
     assetBasics: <AssetBasics form={form} onStepSubmit={incrementStep} />,
     complianceModules: (
       <SelectComplianceModules
         form={form}
         onStepSubmit={incrementStep}
-        complianceModules={complianceModules}
+        complianceModules={complianceModules ?? []}
       />
     ),
     summary: (
@@ -121,19 +139,12 @@ export const AssetDesignerWizard = ({ type }: AssetDesignerFormProps) => {
     ),
   };
 
+  if (!factories || !complianceModules) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <form.AppForm>
-      <form.Field name="type" defaultValue={type}>
-        {(field) => (
-          <input
-            type="hidden"
-            name={field.name}
-            value={field.state.value}
-            readOnly
-          />
-        )}
-      </form.Field>
-
       <StepLayout
         title={t("wizard.title")}
         description={t("wizard.description")}

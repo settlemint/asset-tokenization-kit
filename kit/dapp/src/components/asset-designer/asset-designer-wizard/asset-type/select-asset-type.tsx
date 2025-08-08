@@ -1,3 +1,8 @@
+import {
+  assetDesignerFormOptions,
+  isRequiredField,
+  type AssetDesignerFormInputData,
+} from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
 import { AssetExtensionsList } from "@/components/asset-extensions/asset-extensions-list";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,22 +19,16 @@ import { getAssetTypeFromFactoryTypeId } from "@/lib/zod/validators/asset-types"
 import { useStore } from "@tanstack/react-form";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  assetClassSelectionFormOptions,
-  isRequiredField,
-  type AssetClassSelectionInputData,
-} from "./asset-class-form";
 
-const validate: KeysOfUnion<AssetClassSelectionInputData>[] = ["assetType"];
+const validate: KeysOfUnion<AssetDesignerFormInputData>[] = ["type"];
 
 export const SelectAssetType = withForm({
-  ...assetClassSelectionFormOptions,
+  ...assetDesignerFormOptions,
   props: {
     onStepSubmit: noop,
     onBack: noop,
-    onCancel: noop,
   },
-  render: function Render({ form, onStepSubmit, onBack, onCancel }) {
+  render: function Render({ form, onStepSubmit, onBack }) {
     const { t } = useTranslation([
       "asset-designer",
       "asset-types",
@@ -76,7 +75,7 @@ export const SelectAssetType = withForm({
         </DialogHeader>
 
         <form.AppField
-          name="assetType"
+          name="type"
           children={(field) => (
             <field.RadioField
               options={options}
@@ -87,9 +86,6 @@ export const SelectAssetType = withForm({
         />
 
         <DialogFooter className="!flex !flex-row !justify-between">
-          <Button variant="ghost" onClick={onCancel}>
-            {t("asset-designer:form.buttons.cancel")}
-          </Button>
           <div className="flex gap-2">
             <Button variant="outline" onClick={onBack}>
               {t("asset-designer:form.buttons.back")}
