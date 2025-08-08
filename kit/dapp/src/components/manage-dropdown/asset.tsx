@@ -49,7 +49,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         },
         {
           id: "grant-role",
-          label: "Grant role",
+          label: t("tokens:actions.grantRole.label"),
           icon: Shield,
           openAction: "grantRole",
           disabled: false,
