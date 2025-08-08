@@ -27,53 +27,13 @@ bun run ci                     # MANDATORY before PR
 # Examples: feat(dapp): add auth | fix(contracts): overflow
 ```
 
-## Agent Workflow (MANDATORY)
-
-```
-researcher → TodoWrite → implement → code-reviewer → solidity-auditor (if contracts)
-```
-
-**Never skip agents**:
-
-- **researcher**: ALWAYS first before coding
-- **code-reviewer**: After ANY code changes
-- **solidity-auditor**: Smart contracts only
-
-## MCP Usage Examples
-
-<example>
-# Library docs
-mcp__context7__resolve_library_id({ libraryName: "react" })
-mcp__context7__get_library_docs({ context7CompatibleLibraryID: "/facebook/react" })
-</example>
-
-<example>
-# Smart contracts
-mcp__OpenZeppelinSolidityContracts__solidity_erc20({
-  name: "Token",
-  symbol: "TKN",
-  upgradeable: "uups"
-})
-</example>
-
-<example>
-# Error tracking
-mcp__sentry__search_issues({ organizationSlug: "org", naturalLanguageQuery: "errors today" })
-mcp__linear__create_issue({ title: "Bug", teamSlug: "team" })
-</example>
-
 ## Critical Rules
 
 1. NEVER commit to main
 2. Edit > Create files
-3. Use TodoWrite for complex tasks
-4. Run ALL commands from root (turborepo)
-5. `bun run test` not `bun test`
-6. Never discard out-of-band changes
-
-## Ports
-
-Anvil:8545 | TxSigner:8547 | Portal:7701 | Hasura:8080 | Graph:8000 | MinIO:9000
+3. Run ALL commands from root (turborepo)
+4. `bun run test` not `bun test`
+5. Never discard out-of-band changes
 
 ## Core Directives
 

@@ -3,7 +3,6 @@ pragma solidity ^0.8.28;
 
 import { AbstractATKAssetTest } from "./AbstractATKAssetTest.sol";
 
-import { ClaimUtils } from "../utils/ClaimUtils.sol";
 import { IATKDeposit } from "../../contracts/assets/deposit/IATKDeposit.sol";
 import { IATKDepositFactory } from "../../contracts/assets/deposit/IATKDepositFactory.sol";
 import { ATKDepositFactoryImplementation } from "../../contracts/assets/deposit/ATKDepositFactoryImplementation.sol";

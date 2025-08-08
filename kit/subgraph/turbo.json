@@ -4,7 +4,7 @@
     "codegen": {
       "dependsOn": ["^compile", "contracts#compile"],
       "outputs": ["generated/**"],
-      "inputs": ["subgraph.yaml", "schema.graphql"]
+      "inputs": ["subgraph.yaml", "schema.graphql", "src/**/*.ts"]
     },
     "codegen:interfaceid": {
       "dependsOn": ["contracts#compile"],
@@ -18,7 +18,7 @@
         ".generated/subgraph-env",
         ".generated/subgraph-hash.txt"
       ],
-      "inputs": ["subgraph.yaml", "schema.graphql"]
+      "inputs": ["subgraph.yaml", "schema.graphql", "src/**/*.ts"]
     },
     "publish": {
       "cache": false,
@@ -31,7 +31,10 @@
     "test:integration": {
       "dependsOn": ["publish", "test"]
     },
-    "translate": {},
+    "translate": {
+      "inputs": ["src/**/*.ts"],
+      "outputs": []
+    },
     "artifacts": {
       "dependsOn": ["compile", "translate"]
     }
