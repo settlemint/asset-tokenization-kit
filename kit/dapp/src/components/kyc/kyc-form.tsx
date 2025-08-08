@@ -70,6 +70,7 @@ export function KycForm({ onComplete }: KycFormProps) {
   const form = useAppForm({
     defaultValues: {
       ...kyc,
+      userId: session?.user.id ?? "",
     } as KycFormValues,
     validators: {
       onChange: KycUpsertInputSchema,
