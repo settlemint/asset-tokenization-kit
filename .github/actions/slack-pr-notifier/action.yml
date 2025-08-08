@@ -37,7 +37,16 @@ inputs:
   wait_time:
     description: "Time to wait for label propagation in milliseconds"
     required: false
-    default: "10000"
+    default: "500"
+  reaction_delay_ms:
+    description:
+      "Optional delay between Slack reaction operations in milliseconds"
+    required: false
+    default: "50"
+  verification_delay_ms:
+    description: "Optional delay before verifying Slack state in milliseconds"
+    required: false
+    default: "300"
 
 runs:
   using: "composite"
@@ -55,6 +64,8 @@ runs:
         PR_AUTHOR_AVATAR: ${{ inputs.pr_author_avatar }}
         IS_ABANDONED: ${{ inputs.is_abandoned }}
         WAIT_TIME: ${{ inputs.wait_time }}
+        REACTION_DELAY_MS: ${{ inputs.reaction_delay_ms }}
+        VERIFICATION_DELAY_MS: ${{ inputs.verification_delay_ms }}
       with:
         script: |
           const script = require('${{ github.action_path }}/slack-notifier.js');

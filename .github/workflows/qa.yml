@@ -405,7 +405,9 @@ jobs:
           pr_author_avatar: ${{ github.event.pull_request.user.avatar_url }}
           slack_bot_token: ${{ env.SLACK_BOT_TOKEN }}
           slack_channel_id: ${{ env.SLACK_CHANNEL_ID }}
-          wait_time: "15000"
+          wait_time: "500"
+          reaction_delay_ms: "50"
+          verification_delay_ms: "300"
 
   # Handle abandoned (closed but not merged) PR notifications
   abandoned:
@@ -458,4 +460,6 @@ jobs:
           slack_bot_token: ${{ env.SLACK_BOT_TOKEN }}
           slack_channel_id: ${{ env.SLACK_CHANNEL_ID }}
           is_abandoned: true
-          wait_time: "15000"
+          wait_time: "500"
+          reaction_delay_ms: "50"
+          verification_delay_ms: "300"
