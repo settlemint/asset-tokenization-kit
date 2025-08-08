@@ -56,7 +56,10 @@
   "identity": {
     "description": "Required for identity registration and KYC verification",
     "intro": "Complete your identity verification to unlock full platform access. This ensures compliance with financial regulations (KYC/AML).\n\nYou can skip this for now, but you'll need to provide at least your country of residence to register your identity.\n\nYour data is encrypted and used only for regulatory compliance.",
-    "title": "Add personal information"
+    "intro-paragraph-1": "To complete your identity and use the platform, we need some basic information. This helps us meet regulatory requirements (KYC/AML) and allows your identity to be registered on the blockchain.",
+    "intro-paragraph-2": "We use this information to verify your identity and meet compliance requirements. You’ll be able to update or complete this later from your dashboard. Fields marked with * are required. Country is required for identity registration.",
+    "intro-paragraph-3": "Your data is securely stored and used only for compliance purposes. You'll be able to update or complete it later from the dashboard.",
+    "title": "Complete Your Personal Information"
   },
   "identity-setup": {
     "address-title": "This is your ONCHAINID address",
