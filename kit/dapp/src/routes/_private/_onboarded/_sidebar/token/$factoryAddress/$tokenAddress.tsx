@@ -19,6 +19,7 @@ import {
   ethereumAddress,
   type EthereumAddress,
 } from "@/lib/zod/validators/ethereum-address";
+import { orpc } from "@/orpc/orpc-client";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useMemo } from "react";
@@ -107,11 +108,20 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const { asset, factory } = Route.useLoaderData();
+  const { asset: loaderAsset, factory } = Route.useLoaderData();
   const { factoryAddress, tokenAddress } = Route.useParams();
 
   // Get asset type from factory
   const assetType = getAssetTypeFromFactoryTypeId(factory.typeId);
+
+  // Subscribe to live asset so UI reacts to invalidations from actions
+  const { data: queriedAsset } = useQuery(
+    orpc.token.read.queryOptions({
+      input: { tokenAddress },
+    })
+  );
+
+  const asset = queriedAsset ?? loaderAsset;
 
   return (
     <div className="space-y-6 p-6">

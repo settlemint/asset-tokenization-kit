@@ -1,3 +1,4 @@
+import { BulletPoint } from "@/components/onboarding/bullet-point";
 import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
@@ -92,20 +93,38 @@ export function SystemDeploy() {
                 <p className="font-medium mb-3">
                   {t("system.bootstrap-contracts-header")}
                 </p>
-                <ul className="space-y-3 text-sm list-disc ml-6">
-                  <li>
-                    <strong>{t("system.identity-registry-name")}</strong> –{" "}
-                    {t("system.identity-registry-description")}
-                  </li>
-                  <li>
-                    <strong>{t("system.compliance-engine-name")}</strong> –{" "}
-                    {t("system.compliance-engine-description")}
-                  </li>
-                  <li>
-                    <strong>{t("system.trusted-issuers-name")}</strong> –{" "}
-                    {t("system.trusted-issuers-description")}
-                  </li>
-                </ul>
+                <div className="space-y-4">
+                  <BulletPoint>
+                    <div>
+                      <h5 className="font-medium text-foreground mb-1">
+                        {t("system.identity-registry-name")}
+                      </h5>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {t("system.identity-registry-description")}
+                      </p>
+                    </div>
+                  </BulletPoint>
+                  <BulletPoint>
+                    <div>
+                      <h5 className="font-medium text-foreground mb-1">
+                        {t("system.compliance-engine-name")}
+                      </h5>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {t("system.compliance-engine-description")}
+                      </p>
+                    </div>
+                  </BulletPoint>
+                  <BulletPoint>
+                    <div>
+                      <h5 className="font-medium text-foreground mb-1">
+                        {t("system.trusted-issuers-name")}
+                      </h5>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {t("system.trusted-issuers-description")}
+                      </p>
+                    </div>
+                  </BulletPoint>
+                </div>
               </div>
               <p>{t("system.infrastructure-conclusion")}</p>
             </div>
