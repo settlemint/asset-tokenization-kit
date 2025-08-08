@@ -154,6 +154,7 @@ export const AssetDesignerWizard = () => {
           form.setFieldValue("step", step.id);
         }}
         navigationMode="next-and-completed"
+        className="rounded-xl"
       >
         {({ currentStep }) => {
           return stepComponent[currentStep.id];

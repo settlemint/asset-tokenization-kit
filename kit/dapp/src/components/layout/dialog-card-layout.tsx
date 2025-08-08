@@ -20,13 +20,13 @@ export function DialogCardLayout({
   return (
     <div
       className={cn(
-        "ModalCardLayout flex flex-col h-screen relative",
+        "DialogCardLayout flex flex-col h-screen relative",
         className
       )}
     >
       {header}
 
-      <div className="ModalCardLayout__card flex flex-col justify-center items-center flex-1 overflow-hidden">
+      <div className="DialogCardLayout__card flex flex-col justify-center items-center flex-1 overflow-hidden">
         <div className="h-[85vh] w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-24 max-w-[1600px] mt-2 mb-10">
           {children}
         </div>

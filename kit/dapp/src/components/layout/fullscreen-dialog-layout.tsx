@@ -24,7 +24,7 @@ export function FullScreenDialogLayout({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="!max-w-none !w-auto !h-auto !p-0 !border-0 !bg-transparent"
+        className="!max-w-none !w-screen !h-screen !p-0 !bg-transparent"
         showCloseButton={false}
       >
         <DialogCardLayout className={className} header={header}>
