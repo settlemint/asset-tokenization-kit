@@ -3,9 +3,6 @@
     "context7": {
       "url": "https://mcp.context7.com/sse"
     },
-    "deepwiki": {
-      "url": "https://mcp.deepwiki.com/sse"
-    },
     "Linear": {
       "url": "https://mcp.linear.app/sse"
     },
@@ -23,6 +20,10 @@
     "gemini-cli": {
       "command": "npx",
       "args": ["-y", "gemini-mcp-tool"]
+    },
+    "octocode": {
+      "command": "npx",
+      "args": ["octocode-mcp@latest"]
     }
   }
 }
