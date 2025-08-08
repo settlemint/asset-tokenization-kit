@@ -60,8 +60,8 @@
   },
   "identity-setup": {
     "address-title": "This is your ONCHAINID address",
-    "confirm-description": "Please verify your identity to create your on-chain identity.",
-    "confirm-title": "Confirm identity creation",
+    "confirm-description": "You’re about to deploy your ONCHAINID using your wallet. To authorize this critical action, we need you to confirm your identity.",
+    "confirm-title": "Enter your PIN code to continue deployment",
     "deployed-toast": "ONCHAINID created successfully!",
     "deploying-toast": "Creating ONCHAINID...",
     "description": "Connect your verified identity to your wallet",
