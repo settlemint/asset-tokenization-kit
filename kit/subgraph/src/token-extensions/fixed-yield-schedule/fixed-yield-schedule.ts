@@ -48,7 +48,7 @@ export function handleFixedYieldScheduleSet(
     event.params.yieldForNextPeriod,
     tokenDecimals
   );
-  fixedYieldSchedule.DenominationAsset = event.params.DenominationAsset;
+  fixedYieldSchedule.denominationAsset = event.params.denominationAsset;
   for (let i = 1; i <= event.params.periodEndTimestamps.length; i++) {
     const period = fetchFixedYieldSchedulePeriod(getPeriodId(event.address, i));
     if (period.deployedInTransaction.equals(Bytes.empty())) {

@@ -86,12 +86,12 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     /// fund yield payments.
     /// @param from The address that sent the `_denominationAsset` tokens (the funder).
     /// @param amount The quantity of `_denominationAsset` tokens deposited.
-    event denominationAssetTopUp(address indexed from, uint256 indexed amount);
+    event DenominationAssetTopUp(address indexed from, uint256 indexed amount);
 
     /// @notice Emitted when an administrator successfully withdraws `_denominationAsset` from the contract.
     /// @param to The address that received the withdrawn `_denominationAsset` tokens.
     /// @param amount The quantity of `_denominationAsset` tokens withdrawn.
-    event denominationAssetWithdrawn(address indexed to, uint256 indexed amount);
+    event DenominationAssetWithdrawn(address indexed to, uint256 indexed amount);
 
     /// @notice Emitted when a token holder successfully claims their accrued yield.
     /// @param holder The address of the token holder who claimed the yield.
