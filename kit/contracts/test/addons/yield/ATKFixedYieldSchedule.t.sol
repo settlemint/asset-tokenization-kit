@@ -59,7 +59,7 @@ contract MockATKToken is MockedERC20Token {
 contract ATKFixedYieldScheduleTest is Test {
     ATKFixedYieldScheduleUpgradeable public yieldSchedule;
     MockATKToken public atkToken;
-    MockedERC20Token public underlyingToken;
+    MockedERC20Token public denominationToken;
 
     address public owner = address(0x1);
     address public user1 = address(0x2);
@@ -79,11 +79,11 @@ contract ATKFixedYieldScheduleTest is Test {
         startDate = block.timestamp + START_DATE_OFFSET;
         endDate = block.timestamp + END_DATE_OFFSET;
 
-        // Deploy underlying token
-        underlyingToken = new MockedERC20Token("Underlying", "UND", 18);
+        // Deploy denomination token
+        denominationToken = new MockedERC20Token("Denomination", "DNMTN", 18);
 
         // Deploy mock SMART token
-        atkToken = new MockATKToken("ATK Token", "ATK", 18, address(underlyingToken));
+        atkToken = new MockATKToken("ATK Token", "ATK", 18, address(denominationToken));
 
         // Deploy yield schedule directly (bypassing factory for simplicity)
         yieldSchedule = new ATKFixedYieldScheduleUpgradeable(forwarder);
@@ -95,9 +95,9 @@ contract ATKFixedYieldScheduleTest is Test {
         yieldSchedule.initialize(address(atkToken), startDate, endDate, RATE, INTERVAL, initialAdmins);
 
         // Setup tokens
-        underlyingToken.mint(address(this), INITIAL_SUPPLY);
-        underlyingToken.mint(user1, INITIAL_SUPPLY);
-        underlyingToken.mint(user2, INITIAL_SUPPLY);
+        denominationToken.mint(address(this), INITIAL_SUPPLY);
+        denominationToken.mint(user1, INITIAL_SUPPLY);
+        denominationToken.mint(user2, INITIAL_SUPPLY);
 
         atkToken.mint(user1, 1000e18);
         atkToken.mint(user2, 500e18);
@@ -116,7 +116,7 @@ contract ATKFixedYieldScheduleTest is Test {
 
     function test_InitialState() public view {
         assertEq(address(yieldSchedule.token()), address(atkToken));
-        assertEq(address(yieldSchedule.underlyingAsset()), address(underlyingToken));
+        assertEq(address(yieldSchedule.denominationAsset()), address(denominationToken));
         assertEq(yieldSchedule.startDate(), startDate);
         assertEq(yieldSchedule.endDate(), endDate);
         assertEq(yieldSchedule.rate(), RATE);
@@ -246,17 +246,17 @@ contract ATKFixedYieldScheduleTest is Test {
     function test_YieldCalculations_MultipleClaimsAcrossPeriods() public {
         // Fund the contract
         uint256 fundAmount = 100_000e18;
-        bool success = underlyingToken.transfer(address(yieldSchedule), fundAmount);
+        bool success = denominationToken.transfer(address(yieldSchedule), fundAmount);
         assertTrue(success, "Transfer failed");
 
-        uint256 initialBalance = underlyingToken.balanceOf(user1);
+        uint256 initialBalance = denominationToken.balanceOf(user1);
 
         // Move to after first period and claim
         vm.warp(startDate + INTERVAL + 1);
         vm.prank(user1);
         yieldSchedule.claimYield();
 
-        uint256 balanceAfterFirstClaim = underlyingToken.balanceOf(user1);
+        uint256 balanceAfterFirstClaim = denominationToken.balanceOf(user1);
         uint256 firstClaimAmount = balanceAfterFirstClaim - initialBalance;
         uint256 expectedFirstClaim = (1000e18 * 1000 * 500) / 10_000; // 50e18
         assertEq(firstClaimAmount, expectedFirstClaim);
@@ -266,7 +266,7 @@ contract ATKFixedYieldScheduleTest is Test {
         vm.prank(user1);
         yieldSchedule.claimYield();
 
-        uint256 balanceAfterSecondClaim = underlyingToken.balanceOf(user1);
+        uint256 balanceAfterSecondClaim = denominationToken.balanceOf(user1);
         uint256 secondClaimAmount = balanceAfterSecondClaim - balanceAfterFirstClaim;
         assertEq(secondClaimAmount, expectedFirstClaim); // Same amount for second period
 
@@ -359,29 +359,29 @@ contract ATKFixedYieldScheduleTest is Test {
         assertTrue(yieldUser1 > 0);
     }
 
-    function test_TopUpUnderlyingAsset() public {
+    function test_TopUpDenominationAsset() public {
         uint256 topUpAmount = 1000e18;
 
         vm.startPrank(user1);
-        underlyingToken.approve(address(yieldSchedule), topUpAmount);
+        denominationToken.approve(address(yieldSchedule), topUpAmount);
 
         vm.expectEmit(true, false, false, true);
-        emit ISMARTFixedYieldSchedule.UnderlyingAssetTopUp(user1, topUpAmount);
+        emit ISMARTFixedYieldSchedule.DenominationAssetTopUp(user1, topUpAmount);
 
-        yieldSchedule.topUpUnderlyingAsset(topUpAmount);
+        yieldSchedule.topUpDenominationAsset(topUpAmount);
         vm.stopPrank();
 
-        assertEq(underlyingToken.balanceOf(address(yieldSchedule)), topUpAmount);
+        assertEq(denominationToken.balanceOf(address(yieldSchedule)), topUpAmount);
     }
 
     function test_ClaimYield() public {
         // Setup: Fund the contract and move to after first period
         uint256 fundAmount = 100_000e18;
-        bool success = underlyingToken.transfer(address(yieldSchedule), fundAmount);
+        bool success = denominationToken.transfer(address(yieldSchedule), fundAmount);
         assertTrue(success, "Transfer failed");
         vm.warp(startDate + INTERVAL + 1);
 
-        uint256 initialBalance = underlyingToken.balanceOf(user1);
+        uint256 initialBalance = denominationToken.balanceOf(user1);
 
         // Calculate yield for completed periods only (what claimYield actually pays)
         uint256 lastCompleted = yieldSchedule.lastCompletedPeriod();
@@ -398,7 +398,7 @@ contract ATKFixedYieldScheduleTest is Test {
         vm.prank(user1);
         yieldSchedule.claimYield();
 
-        uint256 actualBalance = underlyingToken.balanceOf(user1);
+        uint256 actualBalance = denominationToken.balanceOf(user1);
         uint256 expectedBalance = initialBalance + expectedClaimAmount;
 
         assertEq(actualBalance, expectedBalance);
@@ -412,36 +412,36 @@ contract ATKFixedYieldScheduleTest is Test {
         yieldSchedule.claimYield();
     }
 
-    function test_WithdrawUnderlyingAsset() public {
+    function test_WithdrawDenominationAsset() public {
         uint256 withdrawAmount = 1000e18;
-        bool success = underlyingToken.transfer(address(yieldSchedule), withdrawAmount);
+        bool success = denominationToken.transfer(address(yieldSchedule), withdrawAmount);
         assertTrue(success, "Transfer failed");
 
         vm.prank(owner);
         vm.expectEmit(true, false, false, true);
-        emit ISMARTFixedYieldSchedule.UnderlyingAssetWithdrawn(user1, withdrawAmount);
+        emit ISMARTFixedYieldSchedule.DenominationAssetWithdrawn(user1, withdrawAmount);
 
-        yieldSchedule.withdrawUnderlyingAsset(user1, withdrawAmount);
+        yieldSchedule.withdrawDenominationAsset(user1, withdrawAmount);
 
-        assertEq(underlyingToken.balanceOf(user1), INITIAL_SUPPLY + withdrawAmount);
+        assertEq(denominationToken.balanceOf(user1), INITIAL_SUPPLY + withdrawAmount);
     }
 
-    function test_WithdrawUnderlyingAsset_OnlyAdmin() public {
+    function test_WithdrawDenominationAsset_OnlyAdmin() public {
         vm.prank(user1);
         vm.expectRevert();
-        yieldSchedule.withdrawUnderlyingAsset(user1, 1000e18);
+        yieldSchedule.withdrawDenominationAsset(user1, 1000e18);
     }
 
-    function test_WithdrawAllUnderlyingAsset() public {
+    function test_WithdrawAllDenominationAsset() public {
         uint256 depositAmount = 1000e18;
-        bool success = underlyingToken.transfer(address(yieldSchedule), depositAmount);
+        bool success = denominationToken.transfer(address(yieldSchedule), depositAmount);
         assertTrue(success, "Transfer failed");
 
         vm.prank(owner);
-        yieldSchedule.withdrawAllUnderlyingAsset(user1);
+        yieldSchedule.withdrawAllDenominationAsset(user1);
 
-        assertEq(underlyingToken.balanceOf(address(yieldSchedule)), 0);
-        assertEq(underlyingToken.balanceOf(user1), INITIAL_SUPPLY + depositAmount);
+        assertEq(denominationToken.balanceOf(address(yieldSchedule)), 0);
+        assertEq(denominationToken.balanceOf(user1), INITIAL_SUPPLY + depositAmount);
     }
 
     function test_PauseUnpause() public {
@@ -451,15 +451,15 @@ contract ATKFixedYieldScheduleTest is Test {
         // Should revert when paused
         vm.prank(user1);
         vm.expectRevert();
-        yieldSchedule.topUpUnderlyingAsset(1000e18);
+        yieldSchedule.topUpDenominationAsset(1000e18);
 
         vm.prank(owner);
         yieldSchedule.unpause();
 
         // Should work after unpause
         vm.startPrank(user1);
-        underlyingToken.approve(address(yieldSchedule), 1000e18);
-        yieldSchedule.topUpUnderlyingAsset(1000e18);
+        denominationToken.approve(address(yieldSchedule), 1000e18);
+        yieldSchedule.topUpDenominationAsset(1000e18);
         vm.stopPrank();
     }
 
@@ -523,20 +523,20 @@ contract ATKFixedYieldScheduleTest is Test {
     function test_WithdrawInvalidAmount() public {
         vm.prank(owner);
         vm.expectRevert(ISMARTFixedYieldSchedule.InvalidAmount.selector);
-        yieldSchedule.withdrawUnderlyingAsset(user1, 0);
+        yieldSchedule.withdrawDenominationAsset(user1, 0);
     }
 
     function test_WithdrawToZeroAddress() public {
         vm.prank(owner);
-        vm.expectRevert(ISMARTFixedYieldSchedule.InvalidUnderlyingAsset.selector);
-        yieldSchedule.withdrawUnderlyingAsset(address(0), 1000e18);
+        vm.expectRevert(ISMARTFixedYieldSchedule.InvalidDenominationAsset.selector);
+        yieldSchedule.withdrawDenominationAsset(address(0), 1000e18);
     }
 
-    function test_InsufficientUnderlyingBalance() public {
+    function test_InsufficientDenominationBalance() public {
         vm.prank(owner);
         vm.expectRevert(
-            abi.encodeWithSelector(ISMARTFixedYieldSchedule.InsufficientUnderlyingBalance.selector, 0, 1000e18)
+            abi.encodeWithSelector(ISMARTFixedYieldSchedule.InsufficientDenominationAssetBalance.selector, 0, 1000e18)
         );
-        yieldSchedule.withdrawUnderlyingAsset(user1, 1000e18);
+        yieldSchedule.withdrawDenominationAsset(user1, 1000e18);
     }
 }

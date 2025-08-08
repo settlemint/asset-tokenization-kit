@@ -1,9 +1,9 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { TokenFixedYieldSchedulePeriod } from "../../../generated/schema";
 import {
+  DenominationAssetTopUp,
+  DenominationAssetWithdrawn,
   FixedYieldScheduleSet,
-  UnderlyingAssetTopUp,
-  UnderlyingAssetWithdrawn,
   YieldClaimed,
 } from "../../../generated/templates/FixedYieldSchedule/FixedYieldSchedule";
 import { fetchEvent } from "../../event/fetch/event";
@@ -48,7 +48,7 @@ export function handleFixedYieldScheduleSet(
     event.params.yieldForNextPeriod,
     tokenDecimals
   );
-  fixedYieldSchedule.underlyingAsset = event.params.underlyingAsset;
+  fixedYieldSchedule.DenominationAsset = event.params.DenominationAsset;
   for (let i = 1; i <= event.params.periodEndTimestamps.length; i++) {
     const period = fetchFixedYieldSchedulePeriod(getPeriodId(event.address, i));
     if (period.deployedInTransaction.equals(Bytes.empty())) {
@@ -76,14 +76,16 @@ export function handleFixedYieldScheduleSet(
   fixedYieldSchedule.save();
 }
 
-export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
-  fetchEvent(event, "UnderlyingAssetTopUp");
+export function handleDenominationAssetTopUp(
+  event: DenominationAssetTopUp
+): void {
+  fetchEvent(event, "DenominationAssetTopUp");
 }
 
-export function handleUnderlyingAssetWithdrawn(
-  event: UnderlyingAssetWithdrawn
+export function handleDenominationAssetWithdrawn(
+  event: DenominationAssetWithdrawn
 ): void {
-  fetchEvent(event, "UnderlyingAssetWithdrawn");
+  fetchEvent(event, "DenominationAssetWithdrawn");
 }
 
 export function handleYieldClaimed(event: YieldClaimed): void {

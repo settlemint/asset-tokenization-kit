@@ -36,7 +36,7 @@ describe("TokenBondStats", () => {
     bondToken = bondResponse.tokens[0];
   });
 
-  it("should track bond statistics with underlying asset balance", async () => {
+  it("should track bond statistics with denomination asset balance", async () => {
     const query = theGraphGraphql(
       `query($tokenId: String!) {
         tokenBondStatsState(id: $tokenId) {

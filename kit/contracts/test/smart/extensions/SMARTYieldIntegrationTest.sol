@@ -29,7 +29,7 @@ abstract contract SMARTYieldIntegrationTest is SMARTYieldBaseTest {
         assertEq(schedule.startDate(), futureStartDate, "Schedule start date should match");
         assertEq(address(schedule.token()), address(token), "Schedule token should reference our token");
         assertEq(
-            address(schedule.underlyingAsset()), yieldPaymentToken, "Schedule underlying asset should match yield token"
+            address(schedule.denominationAsset()), yieldPaymentToken, "Schedule denomination asset should match yield token"
         );
         assertEq(schedule.rate(), YIELD_RATE, "Schedule rate should match configured rate");
         assertEq(schedule.interval(), PERIOD_INTERVAL, "Schedule interval should match configured interval");
@@ -260,7 +260,7 @@ abstract contract SMARTYieldIntegrationTest is SMARTYieldBaseTest {
 
         // Withdraw
         vm.prank(tokenIssuer);
-        ISMARTFixedYieldSchedule(scheduleAddress).withdrawUnderlyingAsset(tokenIssuer, withdrawAmount);
+        ISMARTFixedYieldSchedule(scheduleAddress).withdrawDenominationAsset(tokenIssuer, withdrawAmount);
 
         uint256 finalTokenIssuerBalance = IERC20(yieldPaymentToken).balanceOf(tokenIssuer);
 

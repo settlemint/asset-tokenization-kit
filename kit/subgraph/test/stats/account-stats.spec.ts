@@ -121,8 +121,8 @@ describe("AccountStats", () => {
     // - Owner
     // - Investor A New
     // - Investor B
-    // - Bond contract (underlying deposit asset)
-    // - Fixed yield schedule contract (underlying deposit asset)
+    // - Bond contract (denomination deposit asset)
+    // - Fixed yield schedule contract (denomination deposit asset)
     expect(accountsResponse.accounts.length).toBe(5);
 
     const account = accountsResponse.accounts[0];

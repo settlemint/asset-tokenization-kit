@@ -28,6 +28,6 @@ export const errorMessageData = {
     "Please enter a number no greater than 9007199254740991",
   errorMessageMaturityDate:
     "Maturity date must be at least 1 hour in the future",
-  errorMessageUnderlyingAsset: "Please provide all required information",
+  errorMessageDenominationAsset: "Please provide all required information",
   errorMessageManagementFee: "Please enter a value between 0 and 10000",
 };

@@ -679,7 +679,7 @@ type TokenFixedYieldSchedule @entity(immutable: false) {
   totalUnclaimedYieldExact: BigInt!
   totalYield: BigDecimal!
   totalYieldExact: BigInt!
-  underlyingAsset: Token!
+  denominationAsset: Token!
   currentPeriod: TokenFixedYieldSchedulePeriod
   nextPeriod: TokenFixedYieldSchedulePeriod
   periods: [TokenFixedYieldSchedulePeriod!]! @derivedFrom(field: "schedule")
@@ -946,13 +946,13 @@ type TokenBondStatsState @entity(immutable: false) {
   id: Bytes!
   # Reference to the associated bond
   bond: TokenBond!
-  # Available balance of the underlying asset (human-readable)
+  # Available balance of the denomination asset (human-readable)
   denominationAssetBalanceAvailable: BigDecimal!
-  # Available balance of the underlying asset (exact, raw units)
+  # Available balance of the denomination asset (exact, raw units)
   denominationAssetBalanceAvailableExact: BigInt!
-  # Required balance of the underlying asset to fully collateralize the bond (human-readable)
+  # Required balance of the denomination asset to fully collateralize the bond (human-readable)
   denominationAssetBalanceRequired: BigDecimal!
-  # Required balance of the underlying asset (exact, raw units)
+  # Required balance of the denomination asset (exact, raw units)
   denominationAssetBalanceRequiredExact: BigInt!
   # Percentage of required collateral that is currently covered (available / required * 100)
   coveredPercentage: BigDecimal!
@@ -963,13 +963,13 @@ type TokenBondStatsData @entity(timeseries: true) {
   timestamp: Timestamp!
   # Reference to the associated bond
   bond: TokenBond!
-  # Available balance of the underlying asset (human-readable)
+  # Available balance of the denomination asset (human-readable)
   denominationAssetBalanceAvailable: BigDecimal!
-  # Available balance of the underlying asset (exact, raw units)
+  # Available balance of the denomination asset (exact, raw units)
   denominationAssetBalanceAvailableExact: BigInt!
-  # Required balance of the underlying asset to fully collateralize the bond (human-readable)
+  # Required balance of the denomination asset to fully collateralize the bond (human-readable)
   denominationAssetBalanceRequired: BigDecimal!
-  # Required balance of the underlying asset (exact, raw units)
+  # Required balance of the denomination asset (exact, raw units)
   denominationAssetBalanceRequiredExact: BigInt!
   # Percentage of required collateral that is currently covered (available / required * 100)
   coveredPercentage: BigDecimal!
