@@ -33,20 +33,20 @@ describe("user.kyc.list unit", () => {
 
   it("paginates and orders correctly with search", async () => {
     const handler = getHandler();
+    const mockSelect = vi.fn();
     const context = {
       auth: { user: { id: "admin" }, session: {} },
-      db: {
-        select: vi.fn().mockReturnValue({
-          from: () => ({ where: () => [{ count: 2 }] }),
-        }) as unknown as (arg?: unknown) => unknown,
-      },
+      db: { select: mockSelect },
     } as unknown as {
       auth: unknown;
       db: { select: (arg?: unknown) => unknown };
     };
 
-    // Mock for items chain
-    context.db.select = vi.fn().mockImplementation(() => ({
+    // Mock the count query and the items query separately
+    const mockCountQuery = {
+      from: () => ({ where: () => [{ count: 2 }] }),
+    };
+    const mockItemsQuery = {
       from: () => ({
         where: () => ({
           orderBy: () => ({
@@ -54,11 +54,11 @@ describe("user.kyc.list unit", () => {
           }),
         }),
       }),
-    }));
-    // Also ensure count path resolves to array destructuring
-    (context.db.select as ReturnType<typeof vi.fn>).mockReturnValueOnce({
-      from: () => ({ where: () => [{ count: 2 }] }),
-    });
+    };
+
+    mockSelect
+      .mockReturnValueOnce(mockCountQuery) // First call is for the count
+      .mockReturnValueOnce(mockItemsQuery); // Second call is for the items
 
     const result = (await handler({
       input: {
@@ -74,5 +74,6 @@ describe("user.kyc.list unit", () => {
 
     expect(result.total).toBe(2);
     expect(result.items).toHaveLength(2);
+    expect(mockSelect).toHaveBeenCalledTimes(2);
   });
 });

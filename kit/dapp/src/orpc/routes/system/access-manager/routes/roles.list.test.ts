@@ -124,7 +124,9 @@ describe("system.access-manager.roles.list unit", () => {
     );
     expect(
       filtered.find(
-        (r) => r.account === getEthereumAddress("0xccccc00000000000000000000000000000000000")
+        (r) =>
+          r.account ===
+          getEthereumAddress("0xccccc00000000000000000000000000000000000")
       )
     ).toBeUndefined();
   });
