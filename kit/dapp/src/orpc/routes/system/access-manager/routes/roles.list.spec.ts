@@ -24,7 +24,7 @@ describe("Access Manager - Roles List ORPC routes (integration)", () => {
           verificationCode: DEFAULT_PINCODE,
           verificationType: "pincode",
         },
-        address: me.id as `0x${string}`,
+        address: me.id,
         role: "systemManager",
       });
     }
