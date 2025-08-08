@@ -34,6 +34,7 @@ describe("User search", () => {
     // Setup test users
     await setupUser(TEST_USER);
     await setupUser(OTHER_USER);
+    await setupUser(UNAUTHORIZED_USER);
 
     testUserData = await getUserData(TEST_USER);
     otherUserData = await getUserData(OTHER_USER);
