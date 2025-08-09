@@ -12,7 +12,7 @@ import { createActionFormStore } from "../core/action-form-sheet.store";
 import { toast } from "sonner";
 import { orpc } from "@/orpc/orpc-client";
 import type { Dnum } from "dnum";
-import { add, format, from, lessThanOrEqual, subtract } from "dnum";
+import { format, from, lessThanOrEqual, subtract } from "dnum";
 import { Web3Address } from "@/components/web3/web3-address";
 import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 
@@ -92,18 +92,20 @@ export function BurnSheet({
               | undefined;
             const limit = entries[i]?.max;
             const validAmount = (amt ?? 0n) > 0n;
-            const withinMax = !limit
-              ? true
-              : lessThanOrEqual(from(amt ?? 0n, tokenDecimals), limit);
+            const withinMax = limit
+              ? lessThanOrEqual(from(amt ?? 0n, tokenDecimals), limit)
+              : true;
             return Boolean(addr) && validAmount && withinMax;
           });
         const canContinue = () => hasValidRows && presetHasBalance;
 
         const totalBurn = from(
           entries
-            .map((_, i) =>
-              (form.getFieldValue(`burn_amount_${i}`) as bigint | undefined) ??
-              0n
+            .map(
+              (_, i) =>
+                (form.getFieldValue(`burn_amount_${i}`) as
+                  | bigint
+                  | undefined) ?? 0n
             )
             .reduce((acc, a) => acc + a, 0n),
           tokenDecimals
@@ -114,14 +116,18 @@ export function BurnSheet({
           <Card>
             <CardHeader>
               <CardTitle className="text-base">
-                {t("tokens:actions.burn.reviewTitle", { defaultValue: "Review burn" })}
+                {t("tokens:actions.burn.reviewTitle", {
+                  defaultValue: "Review burn",
+                })}
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent>
               <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/50">
                 <div className="flex-1 text-center">
                   <div className="text-xs text-muted-foreground mb-2">
-                    {t("tokens:details.currentSupply", { defaultValue: "Current supply" })}
+                    {t("tokens:details.currentSupply", {
+                      defaultValue: "Current supply",
+                    })}
                   </div>
                   <div className="text-sm font-medium">
                     {format(asset.totalSupply)} {asset.symbol}
@@ -130,7 +136,9 @@ export function BurnSheet({
                 <span className="text-muted-foreground">→</span>
                 <div className="flex-1 text-center">
                   <div className="text-xs text-muted-foreground mb-2">
-                    {t("tokens:details.newSupply", { defaultValue: "New supply" })}
+                    {t("tokens:details.newSupply", {
+                      defaultValue: "New supply",
+                    })}
                   </div>
                   <div className="text-sm font-medium">
                     {format(newTotalSupply)} {asset.symbol}
@@ -140,22 +148,28 @@ export function BurnSheet({
 
               <div className="space-y-2">
                 <div className="text-xs text-muted-foreground">
-                  {t("tokens:actions.burn.addresses", { defaultValue: "Addresses" })}
+                  {t("tokens:actions.burn.addresses", {
+                    defaultValue: "Addresses",
+                  })}
                 </div>
                 <div className="rounded-md border divide-y">
                   {entries.map((_, i) => {
-                    const addr = (form.getFieldValue(
+                    const addr = form.getFieldValue(
                       `burn_address_${i}`
-                    ) as EthereumAddress | null) as EthereumAddress | null;
-                    const amt = (form.getFieldValue(
-                      `burn_amount_${i}`
-                    ) as bigint | undefined) ?? 0n;
+                    ) as EthereumAddress | null;
+                    const amt =
+                      (form.getFieldValue(`burn_amount_${i}`) as
+                        | bigint
+                        | undefined) ?? 0n;
                     return (
-                      <div key={i} className="flex items-center justify-between px-3 py-2 text-sm">
+                      <div
+                        key={i}
+                        className="flex items-center justify-between px-3 py-2 text-sm"
+                      >
                         <span className="truncate mr-2">
                           {addr ? (
                             <Web3Address
-                              address={getEthereumAddress(addr as `0x${string}`)}
+                              address={getEthereumAddress(addr)}
                               copyToClipboard
                               size="small"
                               showFullAddress={false}
@@ -164,7 +178,9 @@ export function BurnSheet({
                             t("common:unknown", { defaultValue: "Unknown" })
                           )}
                         </span>
-                        <span className="font-medium">{amt.toString()} {asset.symbol}</span>
+                        <span className="font-medium">
+                          {amt.toString()} {asset.symbol}
+                        </span>
                       </div>
                     );
                   })}
@@ -176,166 +192,175 @@ export function BurnSheet({
 
         return (
           <ActionFormSheet
-          open={open}
-          onOpenChange={handleClose}
-          asset={asset}
-          title={t("tokens:actions.burn.title", {
-            defaultValue: "Burn tokens",
-          })}
-          description={t("tokens:actions.burn.description", {
-            defaultValue: "Permanently remove tokens from circulation",
-          })}
-          submitLabel={t("tokens:actions.burn.submit", {
-            defaultValue: "Confirm burn",
-          })}
-          canContinue={() => canContinue()}
-          confirm={confirmView}
-          showAssetDetailsOnConfirm={false}
-          isSubmitting={isPending}
-          onSubmit={async (verification) => {
-            const addresses = entries.map(
-              (_, i) =>
-                form.getFieldValue(`burn_address_${i}`) as EthereumAddress
-            );
-            const amounts = entries.map(
-              (_, i) =>
-                (form.getFieldValue(`burn_amount_${i}`) as
-                  | bigint
-                  | undefined) ?? 0n
-            );
+            open={open}
+            onOpenChange={handleClose}
+            asset={asset}
+            title={t("tokens:actions.burn.title", {
+              defaultValue: "Burn tokens",
+            })}
+            description={t("tokens:actions.burn.description", {
+              defaultValue: "Permanently remove tokens from circulation",
+            })}
+            submitLabel={t("tokens:actions.burn.submit", {
+              defaultValue: "Confirm burn",
+            })}
+            canContinue={() => canContinue()}
+            confirm={confirmView}
+            showAssetDetailsOnConfirm={false}
+            isSubmitting={isPending}
+            onSubmit={(verification) => {
+              const addresses = entries.map(
+                (_, i) =>
+                  form.getFieldValue(`burn_address_${i}`) as EthereumAddress
+              );
+              const amounts = entries.map(
+                (_, i) =>
+                  (form.getFieldValue(`burn_amount_${i}`) as
+                    | bigint
+                    | undefined) ?? 0n
+              );
 
-            const promise = burn({
-              contract: asset.id,
-              addresses,
-              amounts,
-              verification,
-            });
+              const promise = burn({
+                contract: asset.id,
+                addresses,
+                amounts,
+                verification,
+              });
 
-            toast.promise(promise, {
-              loading: t("common:saving", {
-                defaultValue: "Saving changes...",
-              }),
-              success: t("common:saved", { defaultValue: "Changes saved" }),
-              error: t("common:error", {
-                defaultValue: "Failed to save changes",
-              }),
-            });
+              toast.promise(promise, {
+                loading: t("common:saving", {
+                  defaultValue: "Saving changes...",
+                }),
+                success: t("common:saved", { defaultValue: "Changes saved" }),
+                error: t("common:error", {
+                  defaultValue: "Failed to save changes",
+                }),
+              });
 
-            handleClose();
-          }}
-        >
-          <div className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">
-                  {t("tokens:actions.burn.form.addresses", {
-                    defaultValue: "Addresses",
-                  })}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+              handleClose();
+            }}
+          >
+            <div className="space-y-3">
+              <div className="space-y-2">
                 {entries.map((entry, idx) => (
-                  <div
-                    key={idx}
-                    className="flex flex-col gap-3 rounded-lg border p-3"
-                  >
-                    <AddressSelectOrInputToggle>
-                      {({ mode }) => (
-                        <>
-                          {mode === "select" && (
-                            <form.AppField name={`burn_address_${idx}`}>
-                              {(field) => (
-                                <field.AddressSelectField
-                                  scope="user"
-                                  label={t(
-                                    "tokens:actions.burn.form.addressLabel",
-                                    { defaultValue: "Address" }
-                                  )}
-                                  required
-                                />
-                              )}
-                            </form.AppField>
-                          )}
-                          {mode === "manual" && (
-                            <form.AppField name={`burn_address_${idx}`}>
-                              {(field) => (
-                                <field.AddressInputField
-                                  label={t(
-                                    "tokens:actions.burn.form.addressLabel",
-                                    { defaultValue: "Address" }
-                                  )}
-                                  required
-                                />
-                              )}
-                            </form.AppField>
-                          )}
-                        </>
-                      )}
-                    </AddressSelectOrInputToggle>
-
-                    <form.AppField name={`burn_amount_${idx}`}>
-                      {(field) => (
-                        <field.BigIntField
-                          label={t("tokens:actions.burn.form.amountLabel", {
-                            defaultValue: "Amount",
-                          })}
-                          endAddon={asset.symbol}
-                          required
-                          description={
-                            entry.max
-                              ? t("tokens:actions.burn.form.max", {
-                                  defaultValue: `Max: ${entry.max[0].toString()}`,
-                                })
-                              : undefined
-                          }
-                        />
-                      )}
-                    </form.AppField>
-
-                    {entries.length > 1 && (
-                      <div className="flex justify-end">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setEntries((prev) =>
-                              prev.filter((_, i) => i !== idx)
-                            );
-                          }}
-                        >
-                          {t("common:remove", { defaultValue: "Remove" })}
-                        </Button>
+                  <Card key={idx}>
+                    <CardContent>
+                      <div className="relative space-y-2">
+                        <div>
+                          <AddressSelectOrInputToggle>
+                            {({ mode }) => (
+                              <>
+                                {mode === "select" && (
+                                  <form.AppField name={`burn_address_${idx}`}>
+                                    {(field) => (
+                                      <field.AddressSelectField
+                                        scope="user"
+                                        label={t(
+                                          "tokens:actions.burn.form.addressLabel",
+                                          { defaultValue: "Address" }
+                                        )}
+                                        required
+                                      />
+                                    )}
+                                  </form.AppField>
+                                )}
+                                {mode === "manual" && (
+                                  <form.AppField name={`burn_address_${idx}`}>
+                                    {(field) => (
+                                      <field.AddressInputField
+                                        label={t(
+                                          "tokens:actions.burn.form.addressLabel",
+                                          { defaultValue: "Address" }
+                                        )}
+                                        required
+                                      />
+                                    )}
+                                  </form.AppField>
+                                )}
+                              </>
+                            )}
+                          </AddressSelectOrInputToggle>
+                        </div>
+                        <div>
+                          <form.AppField name={`burn_amount_${idx}`}>
+                            {(field) => (
+                              <field.BigIntField
+                                label={t("tokens:actions.burn.form.amountLabel", {
+                                  defaultValue: "Amount",
+                                })}
+                                endAddon={asset.symbol}
+                                required
+                                description={
+                                  entry.max
+                                    ? t("tokens:actions.burn.form.max", {
+                                        defaultValue: `Max: ${entry.max[0].toString()}`,
+                                      })
+                                    : undefined
+                                }
+                              />
+                            )}
+                          </form.AppField>
+                        </div>
+                        {entries.length > 1 && (
+                          <div className="flex justify-end pt-1">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 px-1 text-xs text-muted-foreground"
+                              onClick={() => {
+                                setEntries((prev) => prev.filter((_, i) => i !== idx));
+                              }}
+                            >
+                              {t("common:remove", { defaultValue: "Remove" })}
+                            </Button>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
+                    </CardContent>
+                  </Card>
                 ))}
+              </div>
 
-                <div className="flex items-center justify-between">
+              <div className="flex items-center justify-end">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setEntries((prev) => [
+                      ...prev,
+                      { address: "" as EthereumAddress, amount: undefined },
+                    ]);
+                  }}
+                  className="text-xs text-muted"
+                >
+                  {t("tokens:actions.burn.form.addAddress", {
+                    defaultValue: "Add address",
+                  })}
+                </Button>
+              </div>
+
+              <Card>
+                <CardContent>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      {t("tokens:actions.burn.form.total", { defaultValue: "Total" })}
+                    </span>
+                    <span className="font-medium">
+                      {format(totalBurn)} {asset.symbol}
+                    </span>
+                  </div>
                   <div className="text-xs text-muted-foreground">
                     {t("tokens:actions.burn.form.hint", {
                       defaultValue: "Only available balance can be burned",
                     })}
                   </div>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => {
-                      setEntries((prev) => [
-                        ...prev,
-                        { address: "" as EthereumAddress, amount: undefined },
-                      ]);
-                    }}
-                  >
-                    {t("tokens:actions.burn.form.addAddress", {
-                      defaultValue: "Add address",
-                    })}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                </CardContent>
+              </Card>
+
+              
+            </div>
           </ActionFormSheet>
         );
       }}

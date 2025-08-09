@@ -59,7 +59,8 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
     }
 
     // Mint only visible if user can mint and token is not paused
-    const canMint = (asset.userPermissions?.actions?.mint ?? false) && !isPaused;
+    const canMint =
+      (asset.userPermissions?.actions?.mint ?? false) && !isPaused;
     if (canMint) {
       arr.push({
         id: "mint",

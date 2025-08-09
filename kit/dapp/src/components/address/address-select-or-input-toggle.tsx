@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Pencil, Search } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -18,7 +17,7 @@ export function AddressSelectOrInputToggle({
       {children({ mode })}
       <Button
         type="button"
-        variant="link"
+        variant="ghost"
         size="sm"
         onClick={() => {
           if (mode === "select") {
@@ -27,10 +26,8 @@ export function AddressSelectOrInputToggle({
             setMode("select");
           }
         }}
-        className="text-xs"
+        className="text-xs text-muted"
       >
-        {mode === "manual" && <Search className="h-3 w-3" />}
-        {mode === "select" && <Pencil className="h-3 w-3" />}
         {mode === "select"
           ? t("address.enterManually")
           : t("address.searchInstead")}
