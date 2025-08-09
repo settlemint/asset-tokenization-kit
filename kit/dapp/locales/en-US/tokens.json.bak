@@ -30,7 +30,7 @@
       "title": "Approve Token Spending"
     },
     "burn": {
-      "description": "Permanently remove tokens from circulation",
+      "description": "Permanently remove tokens from circulation. This action cannot be undone.",
       "label": "Burn Tokens",
       "messages": {
         "error": "An error occurred while burning tokens",
@@ -39,20 +39,9 @@
         "submitting": "Submitting burn transaction...",
         "success": "Tokens burned successfully"
       },
-      "reviewTitle": "Review burn",
-      "addresses": "Addresses",
-      "submit": "Confirm burn",
+      "submit": "Burn Tokens",
       "submitting": "Burning...",
-      "title": "Burn tokens",
-      "form": {
-        "addresses": "Addresses",
-        "addressLabel": "Address",
-        "amountLabel": "Amount",
-        "addAddress": "Add address",
-        "max": "Max: {{max}}",
-        "hint": "Only available balance can be burned",
-        "total": "Total"
-      }
+      "title": "Burn Tokens"
     },
     "copyAddress": "Copy Address",
     "create": {
@@ -129,7 +118,7 @@
       }
     },
     "mint": {
-      "description": "Create new tokens and assign to addresses",
+      "description": "Create new tokens and assign them to specified addresses. This action requires verification.",
       "label": "Mint Tokens",
       "messages": {
         "error": "An error occurred while minting tokens",
@@ -142,22 +131,9 @@
         "success": "Tokens minted successfully",
         "successBatch": "Tokens minted successfully to all recipients"
       },
-      "reviewTitle": "Review mint",
-      "recipients": "Recipients",
-      "submit": "Confirm mint",
+      "submit": "Mint Tokens",
       "submitting": "Minting...",
-      "title": "Mint tokens",
-      "form": {
-        "recipients": "Recipients",
-        "addressLabel": "Recipient",
-        "amountLabel": "Amount",
-        "addRecipient": "Add recipient",
-        "limit": "Limit applies: collateral/cap",
-        "noLimit": "No protocol limit",
-        "overLimit": "Total amount exceeds allowed limit",
-        "limitLabel": "Protocol limit (applies to entire transaction)",
-        "total": "Total"
-      }
+      "title": "Mint New Tokens"
     },
     "pause": {
       "description": "Pausing this token will prevent all transfers until it is unpaused. This action requires verification.",
@@ -363,9 +339,7 @@
     "tokenInformation": "Details",
     "stateChange": "State Change",
     "currentState": "Current State",
-    "targetState": "Target State",
-    "currentSupply": "Current supply",
-    "newSupply": "New supply"
+    "targetState": "Target State"
   },
   "emptyState": {
     "description": "This factory has not created any tokens yet. Create your first token to get started.",

@@ -134,18 +134,14 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
           <Card>
             <CardHeader>
               <CardTitle className="text-base">
-                {t("tokens:actions.mint.reviewTitle", {
-                  defaultValue: "Review mint",
-                })}
+                {t("tokens:actions.mint.reviewTitle")}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/50">
                 <div className="flex-1 text-center">
                   <div className="text-xs text-muted-foreground mb-2">
-                    {t("tokens:details.currentSupply", {
-                      defaultValue: "Current supply",
-                    })}
+                    {t("tokens:details.currentSupply")}
                   </div>
                   <div className="text-sm font-medium">
                     {format(asset.totalSupply)} {asset.symbol}
@@ -154,9 +150,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                 <span className="text-muted-foreground">→</span>
                 <div className="flex-1 text-center">
                   <div className="text-xs text-muted-foreground mb-2">
-                    {t("tokens:details.newSupply", {
-                      defaultValue: "New supply",
-                    })}
+                    {t("tokens:details.newSupply")}
                   </div>
                   <div className="text-sm font-medium">
                     {format(newTotalSupply)} {asset.symbol}
@@ -166,9 +160,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
 
               <div className="space-y-2">
                 <div className="text-xs text-muted-foreground">
-                  {t("tokens:actions.mint.recipients", {
-                    defaultValue: "Recipients",
-                  })}
+                  {t("tokens:actions.mint.recipients")}
                 </div>
                 <div className="rounded-md border divide-y">
                   {recipients.map((addr, i) => (
@@ -185,7 +177,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                             showFullAddress={false}
                           />
                         ) : (
-                          t("common:unknown", { defaultValue: "Unknown" })
+                          t("common:unknown")
                         )}
                       </span>
                       <span className="font-medium">
@@ -204,15 +196,9 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
             open={open}
             onOpenChange={handleClose}
             asset={asset}
-            title={t("tokens:actions.mint.title", {
-              defaultValue: "Mint tokens",
-            })}
-            description={t("tokens:actions.mint.description", {
-              defaultValue: "Create new tokens and assign to addresses",
-            })}
-            submitLabel={t("tokens:actions.mint.submit", {
-              defaultValue: "Confirm mint",
-            })}
+            title={t("tokens:actions.mint.title")}
+            description={t("tokens:actions.mint.description")}
+            submitLabel={t("tokens:actions.mint.submit")}
             canContinue={() => canContinue()}
             confirm={confirmView}
             showAssetDetailsOnConfirm={false}
@@ -236,13 +222,9 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
               });
 
               toast.promise(promise, {
-                loading: t("common:saving", {
-                  defaultValue: "Saving changes...",
-                }),
-                success: t("common:saved", { defaultValue: "Changes saved" }),
-                error: t("common:error", {
-                  defaultValue: "Failed to save changes",
-                }),
+                loading: t("common:saving"),
+                success: t("common:saved"),
+                error: t("common:error"),
               });
 
               handleClose();
@@ -264,8 +246,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                                       <field.AddressSelectField
                                         scope="user"
                                         label={t(
-                                          "tokens:actions.mint.form.addressLabel",
-                                          { defaultValue: "Recipient" }
+                                          "tokens:actions.mint.form.addressLabel"
                                         )}
                                         required
                                       />
@@ -277,8 +258,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                                     {(field) => (
                                       <field.AddressInputField
                                         label={t(
-                                          "tokens:actions.mint.form.addressLabel",
-                                          { defaultValue: "Recipient" }
+                                          "tokens:actions.mint.form.addressLabel"
                                         )}
                                         required
                                       />
@@ -294,8 +274,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                             {(field) => (
                               <field.BigIntField
                                 label={t(
-                                  "tokens:actions.mint.form.amountLabel",
-                                  { defaultValue: "Amount" }
+                                  "tokens:actions.mint.form.amountLabel"
                                 )}
                                 endAddon={asset.symbol}
                                 required
@@ -316,7 +295,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                                 );
                               }}
                             >
-                              {t("common:remove", { defaultValue: "Remove" })}
+                              {t("common:remove")}
                             </Button>
                           </div>
                         )}
@@ -339,9 +318,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                   }}
                   className="text-xs text-muted"
                 >
-                  {t("tokens:actions.mint.form.addRecipient", {
-                    defaultValue: "Add recipient",
-                  })}
+                  {t("tokens:actions.mint.form.addRecipient")}
                 </Button>
               </div>
 
@@ -349,34 +326,23 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                 <CardContent>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">
-                      {t("tokens:actions.mint.form.total", {
-                        defaultValue: "Total",
-                      })}
+                      {t("tokens:actions.mint.form.total")}
                     </span>
                     <span className="font-medium">
                       {format(totalRequested)} {asset.symbol}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>
-                      {t("tokens:actions.mint.form.limitLabel", {
-                        defaultValue:
-                          "Protocol limit (applies to entire transaction)",
-                      })}
-                    </span>
+                    <span>{t("tokens:actions.mint.form.limitLabel")}</span>
                     <span>
                       {overallLimit
                         ? `${format(overallLimit)} ${asset.symbol}`
-                        : t("tokens:actions.mint.form.noLimit", {
-                            defaultValue: "No protocol limit",
-                          })}
+                        : t("tokens:actions.mint.form.noLimit")}
                     </span>
                   </div>
                   {!withinLimit && (
                     <div className="text-xs text-destructive">
-                      {t("tokens:actions.mint.form.overLimit", {
-                        defaultValue: "Total amount exceeds allowed limit",
-                      })}
+                      {t("tokens:actions.mint.form.overLimit")}
                     </div>
                   )}
                 </CardContent>

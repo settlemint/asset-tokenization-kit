@@ -116,18 +116,14 @@ export function BurnSheet({
           <Card>
             <CardHeader>
               <CardTitle className="text-base">
-                {t("tokens:actions.burn.reviewTitle", {
-                  defaultValue: "Review burn",
-                })}
+                {t("tokens:actions.burn.reviewTitle")}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/50">
                 <div className="flex-1 text-center">
                   <div className="text-xs text-muted-foreground mb-2">
-                    {t("tokens:details.currentSupply", {
-                      defaultValue: "Current supply",
-                    })}
+                    {t("tokens:details.currentSupply")}
                   </div>
                   <div className="text-sm font-medium">
                     {format(asset.totalSupply)} {asset.symbol}
@@ -136,9 +132,7 @@ export function BurnSheet({
                 <span className="text-muted-foreground">→</span>
                 <div className="flex-1 text-center">
                   <div className="text-xs text-muted-foreground mb-2">
-                    {t("tokens:details.newSupply", {
-                      defaultValue: "New supply",
-                    })}
+                    {t("tokens:details.newSupply")}
                   </div>
                   <div className="text-sm font-medium">
                     {format(newTotalSupply)} {asset.symbol}
@@ -148,9 +142,7 @@ export function BurnSheet({
 
               <div className="space-y-2">
                 <div className="text-xs text-muted-foreground">
-                  {t("tokens:actions.burn.addresses", {
-                    defaultValue: "Addresses",
-                  })}
+                  {t("tokens:actions.burn.addresses")}
                 </div>
                 <div className="rounded-md border divide-y">
                   {entries.map((_, i) => {
@@ -175,7 +167,7 @@ export function BurnSheet({
                               showFullAddress={false}
                             />
                           ) : (
-                            t("common:unknown", { defaultValue: "Unknown" })
+                            t("common:unknown")
                           )}
                         </span>
                         <span className="font-medium">
@@ -195,15 +187,9 @@ export function BurnSheet({
             open={open}
             onOpenChange={handleClose}
             asset={asset}
-            title={t("tokens:actions.burn.title", {
-              defaultValue: "Burn tokens",
-            })}
-            description={t("tokens:actions.burn.description", {
-              defaultValue: "Permanently remove tokens from circulation",
-            })}
-            submitLabel={t("tokens:actions.burn.submit", {
-              defaultValue: "Confirm burn",
-            })}
+            title={t("tokens:actions.burn.title")}
+            description={t("tokens:actions.burn.description")}
+            submitLabel={t("tokens:actions.burn.submit")}
             canContinue={() => canContinue()}
             confirm={confirmView}
             showAssetDetailsOnConfirm={false}
@@ -228,13 +214,9 @@ export function BurnSheet({
               });
 
               toast.promise(promise, {
-                loading: t("common:saving", {
-                  defaultValue: "Saving changes...",
-                }),
-                success: t("common:saved", { defaultValue: "Changes saved" }),
-                error: t("common:error", {
-                  defaultValue: "Failed to save changes",
-                }),
+                loading: t("common:saving"),
+                success: t("common:saved"),
+                error: t("common:error"),
               });
 
               handleClose();
@@ -256,8 +238,7 @@ export function BurnSheet({
                                       <field.AddressSelectField
                                         scope="user"
                                         label={t(
-                                          "tokens:actions.burn.form.addressLabel",
-                                          { defaultValue: "Address" }
+                                          "tokens:actions.burn.form.addressLabel"
                                         )}
                                         required
                                       />
@@ -269,8 +250,7 @@ export function BurnSheet({
                                     {(field) => (
                                       <field.AddressInputField
                                         label={t(
-                                          "tokens:actions.burn.form.addressLabel",
-                                          { defaultValue: "Address" }
+                                          "tokens:actions.burn.form.addressLabel"
                                         )}
                                         required
                                       />
@@ -285,15 +265,15 @@ export function BurnSheet({
                           <form.AppField name={`burn_amount_${idx}`}>
                             {(field) => (
                               <field.BigIntField
-                                label={t("tokens:actions.burn.form.amountLabel", {
-                                  defaultValue: "Amount",
-                                })}
+                                label={t(
+                                  "tokens:actions.burn.form.amountLabel"
+                                )}
                                 endAddon={asset.symbol}
                                 required
                                 description={
                                   entry.max
                                     ? t("tokens:actions.burn.form.max", {
-                                        defaultValue: `Max: ${entry.max[0].toString()}`,
+                                        max: entry.max[0].toString(),
                                       })
                                     : undefined
                                 }
@@ -309,10 +289,12 @@ export function BurnSheet({
                               size="sm"
                               className="h-6 px-1 text-xs text-muted-foreground"
                               onClick={() => {
-                                setEntries((prev) => prev.filter((_, i) => i !== idx));
+                                setEntries((prev) =>
+                                  prev.filter((_, i) => i !== idx)
+                                );
                               }}
                             >
-                              {t("common:remove", { defaultValue: "Remove" })}
+                              {t("common:remove")}
                             </Button>
                           </div>
                         )}
@@ -335,9 +317,7 @@ export function BurnSheet({
                   }}
                   className="text-xs text-muted"
                 >
-                  {t("tokens:actions.burn.form.addAddress", {
-                    defaultValue: "Add address",
-                  })}
+                  {t("tokens:actions.burn.form.addAddress")}
                 </Button>
               </div>
 
@@ -345,21 +325,17 @@ export function BurnSheet({
                 <CardContent>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">
-                      {t("tokens:actions.burn.form.total", { defaultValue: "Total" })}
+                      {t("tokens:actions.burn.form.total")}
                     </span>
                     <span className="font-medium">
                       {format(totalBurn)} {asset.symbol}
                     </span>
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {t("tokens:actions.burn.form.hint", {
-                      defaultValue: "Only available balance can be burned",
-                    })}
+                    {t("tokens:actions.burn.form.hint")}
                   </div>
                 </CardContent>
               </Card>
-
-              
             </div>
           </ActionFormSheet>
         );
