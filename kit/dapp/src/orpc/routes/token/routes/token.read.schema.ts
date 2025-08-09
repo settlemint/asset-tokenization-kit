@@ -125,9 +125,12 @@ export const RawTokenSchema = z.object({
               create: z
                 .boolean()
                 .describe("Whether the user can execute the create action"),
-              grantRole: z
-                .boolean()
-                .describe("Whether the user can execute the grantRole action"),
+            grantRole: z
+              .boolean()
+              .describe("Whether the user can execute the grantRole action"),
+            revokeRole: z
+              .boolean()
+              .describe("Whether the user can execute the revokeRole action"),
               mint: z
                 .boolean()
                 .describe("Whether the user can execute the mint action"),
