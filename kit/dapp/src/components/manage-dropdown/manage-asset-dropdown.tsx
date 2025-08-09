@@ -1,5 +1,4 @@
-import { GrantRoleSheet } from "@/components/manage-dropdown/grant-role-sheet";
-import { PauseUnpauseConfirmationSheet } from "@/components/manage-dropdown/pause-unpause-confirmation-sheet";
+import { PauseUnpauseConfirmationSheet } from "./sheets/pause-unpause-confirmation-sheet";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { ChevronDown, Pause, Play, Shield } from "lucide-react";
+import { ChevronDown, Pause, Play } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -17,7 +16,7 @@ interface ManageAssetDropdownProps {
   asset: Token; // Keep Token type to maintain API compatibility
 }
 
-type Action = "pause" | "unpause" | "grantRole" | "viewEvents";
+type Action = "pause" | "unpause" | "viewEvents";
 
 function isCurrentAction({
   target,
@@ -45,13 +44,6 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
             : t("tokens:actions.pause.label"),
           icon: isPaused ? Play : Pause,
           openAction: isPaused ? "unpause" : "pause",
-          disabled: false,
-        },
-        {
-          id: "grant-role",
-          label: t("tokens:actions.grantRole.label"),
-          icon: Shield,
-          openAction: "grantRole",
           disabled: false,
         },
       ] as const,
@@ -105,11 +97,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         asset={asset}
       />
 
-      <GrantRoleSheet
-        open={isCurrentAction({ target: "grantRole", current: openAction })}
-        onOpenChange={onActionOpenChange}
-        asset={asset}
-      />
+      {/* Change roles is available from the token tab permissions UI */}
     </>
   );
 }

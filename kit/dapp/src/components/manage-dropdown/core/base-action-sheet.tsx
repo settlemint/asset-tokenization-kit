@@ -139,16 +139,20 @@ export function BaseActionSheet({
         </div>
 
         <SheetFooter className="px-6 py-4 border-t mt-auto">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleCancel}
-            disabled={isSubmitting}
-            className="press-effect"
-          >
-            {t("common:actions.cancel")}
-          </Button>
-          {submit}
+          <div className="flex w-full items-center justify-between gap-2">
+            <div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCancel}
+                disabled={isSubmitting}
+                className="press-effect"
+              >
+                {t("common:actions.cancel")}
+              </Button>
+            </div>
+            <div>{submit}</div>
+          </div>
         </SheetFooter>
       </SheetContent>
     </Sheet>

@@ -2,21 +2,24 @@ import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
-import { Button } from "@/components/ui/button";
-import { ChangeRolesSheet } from "@/components/manage-dropdown/change-roles-sheet";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { ChangeRolesSheet } from "@/components/manage-dropdown/sheets/change-roles-sheet";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Web3Address } from "@/components/web3/web3-address";
+import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { getAccessControlEntries } from "@/orpc/helpers/access-control-helpers";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+import { Shield } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
-import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { Shield } from "lucide-react";
 //
-import { ActionsCell, type ActionItem } from "@/components/data-table/cells/actions-cell";
+import {
+  ActionsCell,
+  type ActionItem,
+} from "@/components/data-table/cells/actions-cell";
 
 type PermissionRow = {
   id: string;
@@ -34,14 +37,16 @@ function toLabel(role: string) {
 export function TokenPermissionsTable({ token }: { token: Token }) {
   const { t } = useTranslation(["tokens", "common"]);
   const [openChangeRoles, setOpenChangeRoles] = useState(false);
-  const [presetAccount, setPresetAccount] = useState<EthereumAddress | undefined>(
-    undefined
-  );
+  const [presetAccount, setPresetAccount] = useState<
+    EthereumAddress | undefined
+  >(undefined);
   const canGrant = token.userPermissions?.actions.grantRole ?? false;
 
   const rows: PermissionRow[] = useMemo(() => {
     const map = new Map<string, Set<AccessControlRoles>>();
-    for (const [role, accounts] of getAccessControlEntries(token.accessControl)) {
+    for (const [role, accounts] of getAccessControlEntries(
+      token.accessControl
+    )) {
       for (const account of accounts) {
         const set = map.get(account.id) ?? new Set<AccessControlRoles>();
         set.add(role);
@@ -57,13 +62,13 @@ export function TokenPermissionsTable({ token }: { token: Token }) {
   const columns = useMemo(
     () =>
       withAutoFeatures([
-        (columnHelper.accessor("id", {
+        columnHelper.accessor("id", {
           header: t("tokens:permissions.columns.address", "Address"),
           cell: ({ getValue }) => (
             <Web3Address
               address={getEthereumAddress(getValue())}
               copyToClipboard
-              size="small"
+              size="tiny"
               showFullAddress={false}
             />
           ),
@@ -71,8 +76,8 @@ export function TokenPermissionsTable({ token }: { token: Token }) {
             displayName: t("tokens:permissions.columns.address", "Address"),
             type: "address",
           },
-        }) as unknown as ColumnDef<PermissionRow>),
-        (columnHelper.accessor("roles", {
+        }) as unknown as ColumnDef<PermissionRow>,
+        columnHelper.accessor("roles", {
           header: t("tokens:permissions.columns.roles", "Roles"),
           cell: ({ getValue }) => {
             const roles = getValue();
@@ -80,19 +85,22 @@ export function TokenPermissionsTable({ token }: { token: Token }) {
             return (
               <div className="flex flex-wrap gap-1">
                 {roles.map((r) => (
-                  <Badge key={r} variant="secondary">{toLabel(r)}</Badge>
+                  <Badge key={r} variant="secondary">
+                    {toLabel(r)}
+                  </Badge>
                 ))}
               </div>
             );
           },
           enableSorting: true,
           sortingFn: (rowA, rowB) =>
-            (rowB.original.roles?.length ?? 0) - (rowA.original.roles?.length ?? 0),
+            (rowB.original.roles?.length ?? 0) -
+            (rowA.original.roles?.length ?? 0),
           meta: {
             displayName: t("tokens:permissions.columns.roles", "Roles"),
             type: "text",
           },
-        }) as unknown as ColumnDef<PermissionRow>),
+        }) as unknown as ColumnDef<PermissionRow>,
         {
           id: "actions",
           header: "",
@@ -133,7 +141,9 @@ export function TokenPermissionsTable({ token }: { token: Token }) {
               }}
               disabled={!canGrant}
             >
-              {t("tokens:permissions.changeRoles.cta", { defaultValue: "Change roles" })}
+              {t("tokens:permissions.changeRoles.cta", {
+                defaultValue: "Change roles",
+              })}
             </Button>
           ),
           placeholder: t(
@@ -180,7 +190,9 @@ function RowActions({
 
   const actions: ActionItem[] = [
     {
-      label: t("tokens:permissions.changeRoles.cta", { defaultValue: "Change roles" }),
+      label: t("tokens:permissions.changeRoles.cta", {
+        defaultValue: "Change roles",
+      }),
       onClick: () => {
         onOpenChangeRoles(row.id as unknown as EthereumAddress);
       },
