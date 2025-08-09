@@ -1,6 +1,7 @@
 [profile.ci]
   fuzz = { runs = 10_000 }
   verbosity = 4
+  threads = 0
 
 [fmt]
   bracket_spacing = true
@@ -47,6 +48,7 @@
   force = false
   dynamic_test_linking = true
   lint_on_build = false
+  threads = 0
 
 [soldeer]
   remappings_version = false
