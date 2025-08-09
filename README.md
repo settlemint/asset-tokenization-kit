@@ -12,6 +12,7 @@
 <br/>
 <p align="center">
 <a href="https://github.com/settlemint/asset-tokenization-kit/actions?query=branch%3Amain"><img src="https://github.com/settlemint/asset-tokenization-kit/actions/workflows/main.yml/badge.svg?event=push&branch=main" alt="CI status" /></a>
+<a href="https://coveralls.io/github/settlemint/asset-tokenization-kit?branch=main" rel="nofollow"><img src="https://coveralls.io/repos/github/settlemint/asset-tokenization-kit/badge.svg?branch=main" alt="Coverage Status" /></a>
 <a href="https://fsl.software" rel="nofollow"><img src="https://img.shields.io/npm/l/@settlemint/asset-tokenization-kit" alt="License"></a>
 <a href="https://www.npmjs.com/package/@settlemint/asset-tokenization-kit" rel="nofollow"><img src="https://img.shields.io/npm/dw/@settlemint/asset-tokenization-kit" alt="npm"></a>
 <a href="https://github.com/settlemint/asset-tokenization-kit" rel="nofollow"><img src="https://img.shields.io/github/stars/settlemint/asset-tokenization-kit" alt="stars"></a>
