@@ -109,7 +109,10 @@ export const grantRole = tokenRouter.token.grantRole
     }
 
     // Branch based on input shape
-    const hasKeys = (obj: unknown, keys: Array<string>): obj is Record<string, unknown> =>
+    const hasKeys = (
+      obj: unknown,
+      keys: Array<string>
+    ): obj is Record<string, unknown> =>
       typeof obj === "object" && obj !== null && keys.every((k) => k in obj);
 
     const isManyAccounts = (
@@ -174,7 +177,9 @@ export const grantRole = tokenRouter.token.grantRole
       if (roleInfos.length === 1) {
         const single = roleInfos[0];
         if (!single) {
-          throw errors.INTERNAL_SERVER_ERROR({ message: "Invalid role configuration" });
+          throw errors.INTERNAL_SERVER_ERROR({
+            message: "Invalid role configuration",
+          });
         }
         await portalClient.mutate(TOKEN_GRANT_ROLE_MUTATION, {
           address: tokenAccessManagerAddress,

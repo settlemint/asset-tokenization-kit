@@ -90,7 +90,9 @@ export const revokeRole = tokenRouter.token.revokeRole
     }
 
     // Normalize inputs
-    const addresses = (Array.isArray(address) ? address : [address]).filter(Boolean) as string[];
+    const addresses = (Array.isArray(address) ? address : [address]).filter(
+      Boolean
+    ) as string[];
     const roles = (Array.isArray(role) ? role : [role]).filter(Boolean);
 
     const uniqueAddresses = [...new Set(addresses)];
@@ -114,7 +116,9 @@ export const revokeRole = tokenRouter.token.revokeRole
       .filter((r): r is NonNullable<typeof r> => r !== null);
 
     if (invalidRoles.length > 0) {
-      throw errors.NOT_FOUND({ message: `Roles not found: ${invalidRoles.join(", ")}` });
+      throw errors.NOT_FOUND({
+        message: `Roles not found: ${invalidRoles.join(", ")}`,
+      });
     }
 
     const challengeResponse = await handleChallenge(sender, {
@@ -128,7 +132,9 @@ export const revokeRole = tokenRouter.token.revokeRole
       const account = uniqueAddresses[0];
       const info = roleInfos[0];
       if (!account || !info) {
-        throw errors.INTERNAL_SERVER_ERROR({ message: "Invalid address or role" });
+        throw errors.INTERNAL_SERVER_ERROR({
+          message: "Invalid address or role",
+        });
       }
       await portalClient.mutate(REVOKE_ROLE_MUTATION, {
         address: accessManagerAddress,

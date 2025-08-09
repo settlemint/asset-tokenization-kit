@@ -298,7 +298,8 @@ describe("DataTableExport", () => {
       const text = await blobCall.text();
 
       // BOM character should be at the start
-      expect(text.codePointAt(0)).toBe(0xFE_FF);
+      const BOM_CHARACTER = 0xfe_ff; // Byte Order Mark for UTF-16
+      expect(text.codePointAt(0)).toBe(BOM_CHARACTER);
     });
   });
 

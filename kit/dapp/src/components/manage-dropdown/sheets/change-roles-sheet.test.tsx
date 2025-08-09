@@ -139,8 +139,8 @@ const mockToken = {
   name: "Mock",
   symbol: "MOCK",
   decimals: 18,
-  totalSupply: [0n, 18],
-  type: "bond",
+  totalSupply: [0n, 18] as [bigint, number],
+  type: "bond" as const,
   createdAt: 0,
   extensions: [],
   implementsERC3643: true,
@@ -154,7 +154,7 @@ const mockToken = {
   collateral: null,
   accessControl: undefined,
   userPermissions: undefined,
-} as unknown as Parameters<typeof ChangeRolesSheet>[0]["asset"];
+} satisfies Parameters<typeof ChangeRolesSheet>[0]["asset"];
 
 describe("ChangeRolesSheet", () => {
   const user = userEvent.setup();

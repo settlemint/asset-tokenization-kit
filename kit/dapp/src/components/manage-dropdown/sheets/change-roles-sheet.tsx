@@ -342,7 +342,7 @@ export function ChangeRolesSheet({
                     verification,
                     address,
                     roles: rolesToGrant,
-                  } as unknown as Parameters<typeof grantRole>[0]);
+                  });
                 }
                 await queryClient.invalidateQueries({
                   queryKey: orpc.token.read.queryOptions({

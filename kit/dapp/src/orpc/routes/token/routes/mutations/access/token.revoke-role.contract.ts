@@ -17,4 +17,3 @@ export const tokenRevokeRoleContract = baseContract
   })
   .input(TokenRevokeRoleInputSchema)
   .output(TokenRevokeRoleOutputSchema);
-

@@ -54,7 +54,7 @@ const handler = new OpenAPIHandler(router, {
 
       // Skip common/expected client-side errors
       if (
-        status && status < 500 /* 4xx */ ||
+        (status && status < 500) /* 4xx */ ||
         code === "NOT_FOUND" ||
         code === "UNAUTHORIZED"
       ) {

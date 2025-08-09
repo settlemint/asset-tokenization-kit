@@ -33,7 +33,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   const [openAction, setOpenAction] = useState<Action | null>(null);
 
   const isPaused = asset.pausable?.paused ?? false;
-  const hasPausableCapability = asset.pausable !== null;
+  const hasPausableCapability = asset.pausable != null;
 
   const actions = useMemo(() => {
     if (!hasPausableCapability) {

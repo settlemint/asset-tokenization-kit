@@ -18,13 +18,14 @@ const GrantToManyAccountsSchema = MutationInputSchemaWithContract.extend({
   role: assetAccessControlRole,
 });
 
-const GrantMultipleRolesToOneAccountSchema = MutationInputSchemaWithContract.extend({
-  verification: UserVerificationSchema,
-  /** The account to grant roles to */
-  address: ethereumAddress,
-  /** The roles to grant to the account */
-  roles: z.array(assetAccessControlRole).min(1),
-});
+const GrantMultipleRolesToOneAccountSchema =
+  MutationInputSchemaWithContract.extend({
+    verification: UserVerificationSchema,
+    /** The account to grant roles to */
+    address: ethereumAddress,
+    /** The roles to grant to the account */
+    roles: z.array(assetAccessControlRole).min(1),
+  });
 
 export const TokenGrantRoleInputSchema = z.union([
   GrantToManyAccountsSchema,
