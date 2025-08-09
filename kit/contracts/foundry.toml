@@ -27,7 +27,6 @@
   out = '.generated/out'
   libs = ["dependencies"]
   test = 'test'
-  skip = ["contracts/temp_*.sol", "**/temp_*.sol"]
   cache_path  = '.generated/cache_forge'
   solc = "0.8.30"
   optimizer = true

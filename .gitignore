@@ -49,7 +49,7 @@ kit/charts/atk/charts/portal/abis/**
 .claude/settings.local.json
 kit/subgraph/subgraph.yaml.backup
 kit/subgraph/src/erc165/utils/interfaceids.ts
-kit/contracts/contracts/temp_interface_calc.sol
+kit/contracts/script/TempInterfaceCalc.s.sol
 kit/charts/atk/charts/besu-network/charts/besu-genesis/files/genesis-output.json
 
 # Worktrees
