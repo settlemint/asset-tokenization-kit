@@ -82,8 +82,29 @@ describe("TokenHoldersTable", () => {
     });
   });
 
-  const createMockToken = (overrides?: Partial<Token>): Token =>
-    ({
+  const createMockToken = (overrides?: Partial<Token>): Token => {
+    const defaultActions = {
+      burn: true,
+      create: false,
+      grantRole: false,
+      revokeRole: false,
+      mint: false,
+      pause: false,
+      addComplianceModule: false,
+      approve: false,
+      forcedRecover: false,
+      freezeAddress: false,
+      recoverERC20: false,
+      recoverTokens: false,
+      redeem: false,
+      removeComplianceModule: false,
+      setCap: false,
+      setYieldSchedule: false,
+      transfer: false,
+      unpause: false,
+    };
+
+    const baseToken = {
       id: "0xtoken" as `0x${string}`,
       name: "Test Token",
       symbol: "TEST",
@@ -93,17 +114,35 @@ describe("TokenHoldersTable", () => {
         paused: false,
       },
       userPermissions: {
-        actions: {
-          burn: true,
-        },
+        actions: defaultActions,
       },
+    };
+
+    // Deep merge overrides
+    if (overrides?.userPermissions?.actions) {
+      return {
+        ...baseToken,
+        ...overrides,
+        userPermissions: {
+          ...baseToken.userPermissions,
+          ...overrides.userPermissions,
+          actions: {
+            ...defaultActions,
+            ...overrides.userPermissions.actions,
+          },
+        },
+      } as Token;
+    }
+
+    return {
+      ...baseToken,
       ...overrides,
-    }) as Token;
+    } as Token;
+  };
 
   it("should show burn action when user has permission and token is not paused", () => {
     const token = createMockToken({
       pausable: { paused: false },
-      userPermissions: { actions: { burn: true } },
     });
 
     render(
@@ -119,8 +158,12 @@ describe("TokenHoldersTable", () => {
   it("should hide burn action when user has no permission", () => {
     const token = createMockToken({
       pausable: { paused: false },
-      userPermissions: { actions: { burn: false } },
     });
+
+    // Override the burn permission to false
+    if (token.userPermissions) {
+      token.userPermissions.actions.burn = false;
+    }
 
     render(
       <QueryClientProvider client={queryClient}>
@@ -137,7 +180,6 @@ describe("TokenHoldersTable", () => {
   it("should hide burn action when token is paused", () => {
     const token = createMockToken({
       pausable: { paused: true },
-      userPermissions: { actions: { burn: true } },
     });
 
     render(
@@ -155,7 +197,6 @@ describe("TokenHoldersTable", () => {
   it("should hide burn action when token is not pausable", () => {
     const token = createMockToken({
       pausable: undefined,
-      userPermissions: { actions: { burn: true } },
     });
 
     render(
@@ -178,14 +219,18 @@ describe("TokenHoldersTable", () => {
     ];
 
     testCases.forEach(({ paused, canBurn, shouldShow }) => {
+      const token = createMockToken({
+        pausable: { paused },
+      });
+
+      // Override the burn permission
+      if (token.userPermissions) {
+        token.userPermissions.actions.burn = canBurn;
+      }
+
       const { unmount } = render(
         <QueryClientProvider client={queryClient}>
-          <TokenHoldersTable
-            token={createMockToken({
-              pausable: { paused },
-              userPermissions: { actions: { burn: canBurn } },
-            })}
-          />
+          <TokenHoldersTable token={token} />
         </QueryClientProvider>
       );
 
