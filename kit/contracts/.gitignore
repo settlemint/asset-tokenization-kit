@@ -26,5 +26,9 @@ ignition/deployments/atk-local
 
 genesis-output.json
 
+# Temporary files
+contracts/temp_*.sol
+**/temp_*.sol
+
 # Soldeer
 /dependencies
