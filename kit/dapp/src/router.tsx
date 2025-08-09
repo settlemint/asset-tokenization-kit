@@ -23,6 +23,7 @@ import { broadcastQueryClient } from "@tanstack/query-broadcast-client-experimen
 import { QueryClient } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
+import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 import { routerWithQueryClient } from "@tanstack/react-router-with-query";
 import { parse, stringify } from "superjson";
 import { routeTree } from "./routeTree.gen";
@@ -99,7 +100,7 @@ export function createRouter() {
     });
   }
 
-  return routerWithQueryClient(
+  const router = routerWithQueryClient(
     createTanStackRouter({
       /**
        * Generated route tree containing all application routes.
@@ -142,6 +143,13 @@ export function createRouter() {
     }),
     queryClient
   );
+
+  setupRouterSsrQueryIntegration({
+    router,
+    queryClient,
+  });
+
+  return router;
 }
 
 /**

@@ -587,9 +587,11 @@ async function validateOutputFile(
 
   const content = await file.text();
 
-  // Check if file contains expected content
-  if (!content.includes("InterfaceIds")) {
-    throw new Error("Output file does not contain expected InterfaceIds class");
+  // Check if file contains expected content (either InterfaceIds class or INTERFACE_IDS const)
+  if (!content.includes("InterfaceIds") && !content.includes("INTERFACE_IDS")) {
+    throw new Error(
+      "Output file does not contain expected InterfaceIds class or INTERFACE_IDS const"
+    );
   }
 
   // Check if file contains interface definitions

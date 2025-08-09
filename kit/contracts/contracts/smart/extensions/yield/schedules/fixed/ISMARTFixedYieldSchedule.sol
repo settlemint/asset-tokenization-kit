@@ -40,11 +40,13 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     /// @dev Reverted by `calculateAccruedYield` if the schedule has not yet started (i.e., `block.timestamp <
     /// _startDate`).
     error ScheduleNotActive();
-    /// @dev Reverted by `topUpDenominationAsset` or `withdrawDenominationAsset` if the denomination asset transfer fails or
+    /// @dev Reverted by `topUpDenominationAsset` or `withdrawDenominationAsset` if the denomination asset transfer
+    /// fails or
     /// if there's not enough balance.
     /// @param currentBalance The current balance of the denomination asset in the contract.
     /// @param requiredBalance The required balance of the denomination asset for the operation.
-    error InsufficientDenominationAssetBalance(uint256 currentBalance, uint256 requiredBalance); // Could also be used if a
+    error InsufficientDenominationAssetBalance(uint256 currentBalance, uint256 requiredBalance); // Could also be used
+        // if a
         // transferFrom fails.
     /// @dev Reverted if the `_denominationAsset` (derived from `_token.yieldToken()`) is the zero address, or if `to`
     /// address in withdrawal is zero.
@@ -199,9 +201,11 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
 
     /// @notice Allows anyone to deposit (top-up) the denomination asset into the schedule contract to fund yield
     /// payments.
-    /// @dev This function is used to ensure the contract has sufficient reserves of the `denominationAsset()` to pay out
+    /// @dev This function is used to ensure the contract has sufficient reserves of the `denominationAsset()` to pay
+    /// out
     /// accrued yield.
-    /// It typically involves the caller first approving the schedule contract to spend their `denominationAsset` tokens,
+    /// It typically involves the caller first approving the schedule contract to spend their `denominationAsset`
+    /// tokens,
     /// then this function calls `transferFrom`.
     /// @param amount The quantity of the `denominationAsset` to deposit into the schedule contract.
     function topUpDenominationAsset(uint256 amount) external;
@@ -214,7 +218,8 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     /// @param amount The quantity of `denominationAsset` tokens to withdraw.
     function withdrawDenominationAsset(address to, uint256 amount) external;
 
-    /// @notice Allows an authorized administrator to withdraw all available `denominationAsset` tokens from the schedule
+    /// @notice Allows an authorized administrator to withdraw all available `denominationAsset` tokens from the
+    /// schedule
     /// contract.
     /// @dev Similar to `withdrawDenominationAsset`, but withdraws the entire balance of `denominationAsset` held by the
     /// contract.

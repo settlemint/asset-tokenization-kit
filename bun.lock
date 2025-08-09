@@ -156,6 +156,7 @@
         "@eslint/js": "9.33.0",
         "@tanstack/eslint-plugin-query": "5.83.1",
         "@tanstack/eslint-plugin-router": "1.130.12",
+        "@tanstack/react-router-ssr-query": "1.131.2",
         "@testing-library/jest-dom": "6.6.4",
         "@testing-library/react": "16.3.0",
         "@testing-library/user-event": "14.6.1",
@@ -1325,6 +1326,8 @@
 
     "@tanstack/react-router-devtools": ["@tanstack/react-router-devtools@1.130.17", "", { "dependencies": { "@tanstack/router-devtools-core": "1.130.17" }, "peerDependencies": { "@tanstack/react-router": "^1.130.17", "react": ">=18.0.0 || >=19.0.0", "react-dom": ">=18.0.0 || >=19.0.0" } }, "sha512-Yvt8g+YAJui4+whC4BXVy5S6hr9Mk4zCe77afsderr5cIw9F/ZQUzvm7LlW7yZHdq9bIdo3IySo6n4Xwx81sRQ=="],
 
+    "@tanstack/react-router-ssr-query": ["@tanstack/react-router-ssr-query@1.131.2", "", { "dependencies": { "@tanstack/router-ssr-query-core": "1.131.2" }, "peerDependencies": { "@tanstack/query-core": ">=5.66.0", "@tanstack/react-query": ">=5.66.2", "@tanstack/react-router": ">=1.127.0", "react": ">=18.0.0 || >=19.0.0", "react-dom": ">=18.0.0 || >=19.0.0" } }, "sha512-rZZk8GgAgspxPU+rn13ragpnVSDrbVptw39DCng0TmW0PKZzCac7xai83Zmn9W1wTIH5pQBFavJZrDvbBGq86g=="],
+
     "@tanstack/react-router-with-query": ["@tanstack/react-router-with-query@1.130.17", "", { "peerDependencies": { "@tanstack/react-query": ">=5.49.2", "@tanstack/react-router": ">=1.43.2", "@tanstack/router-core": ">=1.114.7", "react": ">=18.0.0 || >=19.0.0", "react-dom": ">=18.0.0 || >=19.0.0" } }, "sha512-TNaSocW20KuPwUojEm130DLWTr9M5hsSzxiu4QqS2jNCnrGLuDrwMHyP+6fq13lG3YuU4u9O1qajxfJIGomZCg=="],
 
     "@tanstack/react-start": ["@tanstack/react-start@1.130.17", "", { "dependencies": { "@tanstack/react-start-client": "1.130.17", "@tanstack/react-start-plugin": "1.130.17", "@tanstack/react-start-server": "1.130.17", "@tanstack/start-server-functions-client": "1.130.17", "@tanstack/start-server-functions-server": "1.130.12" }, "peerDependencies": { "@vitejs/plugin-react": ">=4.3.4", "react": ">=18.0.0 || >=19.0.0", "react-dom": ">=18.0.0 || >=19.0.0", "vite": ">=6.0.0" } }, "sha512-CqlBAPmvhsB+8xrf9rBn4Q24o/fiHQlG6vPxN5b64NXoJ8crF6nPLHj0aZF2Hta0pM8MuRi/7FRP0DMshEGYtA=="],
@@ -1350,6 +1353,8 @@
     "@tanstack/router-generator": ["@tanstack/router-generator@1.130.17", "", { "dependencies": { "@tanstack/router-core": "1.130.17", "@tanstack/router-utils": "1.130.12", "@tanstack/virtual-file-routes": "1.129.7", "prettier": "^3.5.0", "recast": "^0.23.11", "source-map": "^0.7.4", "tsx": "^4.19.2", "zod": "^3.24.2" } }, "sha512-DWqRKwspYeuJny4Zgp7lJvyUme172gMYZt9lTT8LyCfRXcI1ZZMlr78mWhPogAv4PjRZaUMc46B2zDdqy4M3xg=="],
 
     "@tanstack/router-plugin": ["@tanstack/router-plugin@1.130.17", "", { "dependencies": { "@babel/core": "^7.27.7", "@babel/plugin-syntax-jsx": "^7.27.1", "@babel/plugin-syntax-typescript": "^7.27.1", "@babel/template": "^7.27.2", "@babel/traverse": "^7.27.7", "@babel/types": "^7.27.7", "@tanstack/router-core": "1.130.17", "@tanstack/router-generator": "1.130.17", "@tanstack/router-utils": "1.130.12", "@tanstack/virtual-file-routes": "1.129.7", "babel-dead-code-elimination": "^1.0.10", "chokidar": "^3.6.0", "unplugin": "^2.1.2", "zod": "^3.24.2" }, "peerDependencies": { "@rsbuild/core": ">=1.0.2", "@tanstack/react-router": "^1.130.17", "vite": ">=5.0.0 || >=6.0.0", "vite-plugin-solid": "^2.11.2", "webpack": ">=5.92.0" }, "optionalPeers": ["@rsbuild/core", "@tanstack/react-router", "vite", "vite-plugin-solid", "webpack"] }, "sha512-MYcYWdJqATk4R9IvYMJoHxNKQKSIa8HpeZ0Dq6+DGGt62V2IVbcMtL0jXI6CrnZoZrDGjTBH0A3Bmf2+3R8d8A=="],
+
+    "@tanstack/router-ssr-query-core": ["@tanstack/router-ssr-query-core@1.131.2", "", { "peerDependencies": { "@tanstack/query-core": ">=5.66.0", "@tanstack/router-core": ">=1.127.0" } }, "sha512-SNa8YuhnoNw98keAtUZQX5+d0jgrxxyeXv0GI2yfEKpb9JYob6OQf4UvfhNk51RrYoEm/lOOfIY7AgGohBppHA=="],
 
     "@tanstack/router-utils": ["@tanstack/router-utils@1.130.12", "", { "dependencies": { "@babel/core": "^7.27.4", "@babel/generator": "^7.27.5", "@babel/parser": "^7.27.5", "@babel/preset-typescript": "^7.27.1", "ansis": "^4.1.0", "diff": "^8.0.2" } }, "sha512-vyk7qduNrVrJWgUXHqRyZrFLOL9YJ/4ycN5PbJ2cLRBln01NkG/abKTHi32V31yMehxkxAO0EoicicvalnV0FA=="],
 
