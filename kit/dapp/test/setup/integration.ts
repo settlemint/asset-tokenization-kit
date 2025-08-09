@@ -39,9 +39,22 @@ async function waitForDapp() {
   console.log("Waiting for containerized dapp to be ready...");
   const maxAttempts = 60; // 60 seconds timeout
   const delayMs = 1000;
-  const containerName = process.env.CONTAINER_PREFIX
-    ? `${process.env.CONTAINER_PREFIX}-dapp`
-    : "atk-dapp";
+
+  // Try to detect the actual container name
+  let containerName = "atk-test-dapp"; // Default for test environment
+  try {
+    const containerList = execSync(
+      "docker ps --format '{{.Names}}' | grep -E '(atk|dapp)' | grep dapp | head -1",
+      { encoding: "utf-8" }
+    ).trim();
+    if (containerList) {
+      containerName = containerList;
+      console.log(`Found dapp container: ${containerName}`);
+    }
+  } catch {
+    // Use default if detection fails
+    console.log(`Using default container name: ${containerName}`);
+  }
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {

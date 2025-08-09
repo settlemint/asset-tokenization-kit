@@ -30,6 +30,7 @@
     "test:unit:coverage": "vitest run --project unit --coverage",
     "pretest:integration": "cd ../.. && bun run test:reset",
     "test:integration": "DOTENV_CONFIG_PATH=.env.test vitest run --project integration",
+    "pretest:ci": "cd ../.. && bun run test:reset",
     "test:ci": "DOTENV_CONFIG_PATH=.env.test vitest run --coverage",
     "test:integration:local": "TEST_DAPP_PORT=3000 vitest run --project integration",
     "test": "bun run test:unit",
