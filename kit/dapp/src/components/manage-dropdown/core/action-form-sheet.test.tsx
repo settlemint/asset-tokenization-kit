@@ -84,13 +84,13 @@ vi.mock("@/hooks/use-app-form", () => ({
 }));
 
 const mockToken = {
-  id: "0x0000000000000000000000000000000000000000",
+  id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
   name: "Mock",
   symbol: "MOCK",
   decimals: 18,
-  totalSupply: [0n, 18],
-  type: "bond",
-  createdAt: 0,
+  totalSupply: [0n, 18] as [bigint, number],
+  type: "bond" as const,
+  createdAt: new Date(0),
   extensions: [],
   implementsERC3643: true,
   implementsSMART: true,
@@ -103,7 +103,7 @@ const mockToken = {
   collateral: null,
   accessControl: undefined,
   userPermissions: undefined,
-} as unknown as Parameters<typeof ActionFormSheet>[0]["asset"];
+} satisfies Parameters<typeof ActionFormSheet>[0]["asset"];
 
 describe("ActionFormSheet", () => {
   const user = userEvent.setup();

@@ -135,13 +135,13 @@ vi.mock("@/orpc/routes/token/token.permissions", () => ({
 }));
 
 const mockToken = {
-  id: "0x0000000000000000000000000000000000000000",
+  id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
   name: "Mock",
   symbol: "MOCK",
   decimals: 18,
   totalSupply: [0n, 18] as [bigint, number],
   type: "bond" as const,
-  createdAt: 0,
+  createdAt: new Date(0),
   extensions: [],
   implementsERC3643: true,
   implementsSMART: true,

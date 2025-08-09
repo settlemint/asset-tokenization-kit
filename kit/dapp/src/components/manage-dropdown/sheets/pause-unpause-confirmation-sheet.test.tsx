@@ -102,13 +102,13 @@ vi.mock("../core/action-form-sheet", () => ({
 
 const createMockToken = (overrides?: Partial<Token>): Token =>
   ({
-    id: "0x1234567890123456789012345678901234567890",
+    id: "0x1234567890123456789012345678901234567890" as `0x${string}`,
     name: "Test Token",
     symbol: "TEST",
     decimals: 18,
-    totalSupply: [1_000_000n, 18],
-    type: "bond",
-    createdAt: 1_234_567_890,
+    totalSupply: [1_000_000n, 18] as [bigint, number],
+    type: "bond" as const,
+    createdAt: new Date(1_234_567_890),
     extensions: [],
     implementsERC3643: true,
     implementsSMART: true,
