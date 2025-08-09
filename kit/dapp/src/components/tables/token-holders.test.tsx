@@ -36,17 +36,25 @@ describe("TokenHoldersTable", () => {
 
   it("should handle undefined pausable state", () => {
     // When pausable is undefined, treat as not paused (false)
-    const isPaused = undefined ?? false;
+    // Simulating: const isPaused = token.pausable?.paused ?? false;
+    type PausableType = { paused: boolean } | undefined;
+    const pausable = undefined as PausableType;
+    const isPaused = pausable?.paused ?? false;
     const userCanBurn = true;
     const canBurn = userCanBurn && !isPaused;
     expect(canBurn).toBe(true);
+    expect(isPaused).toBe(false);
   });
 
   it("should handle missing user permissions", () => {
     // When userPermissions is missing, treat as no permission (false)
-    const userCanBurn = undefined ?? false;
+    // Simulating: const canBurn = (token.userPermissions?.actions?.burn ?? false)
+    type UserPermissionsType = { actions: { burn: boolean } } | undefined;
+    const userPermissions = undefined as UserPermissionsType;
+    const userCanBurn = userPermissions?.actions?.burn ?? false;
     const isPaused = false;
     const canBurn = userCanBurn && !isPaused;
     expect(canBurn).toBe(false);
+    expect(userCanBurn).toBe(false);
   });
 });
