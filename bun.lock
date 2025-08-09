@@ -98,7 +98,7 @@
         "@tailwindcss/postcss": "4.1.11",
         "@tanstack/query-async-storage-persister": "5.83.1",
         "@tanstack/query-broadcast-client-experimental": "5.83.1",
-        "@tanstack/react-devtools": "0.1.1",
+        "@tanstack/react-devtools": "0.2.0",
         "@tanstack/react-form": "1.19.0",
         "@tanstack/react-query": "5.84.2",
         "@tanstack/react-query-devtools": "5.84.2",
@@ -1291,7 +1291,9 @@
 
     "@tailwindcss/postcss": ["@tailwindcss/postcss@4.1.11", "", { "dependencies": { "@alloc/quick-lru": "^5.2.0", "@tailwindcss/node": "4.1.11", "@tailwindcss/oxide": "4.1.11", "postcss": "^8.4.41", "tailwindcss": "4.1.11" } }, "sha512-q/EAIIpF6WpLhKEuQSEVMZNMIY8KhWoAemZ9eylNAih9jxMGAYPPWBn3I9QL/2jZ+e7OEz/tZkX5HwbBR4HohA=="],
 
-    "@tanstack/devtools": ["@tanstack/devtools@0.1.1", "", { "dependencies": { "@solid-primitives/keyboard": "^1.2.8", "clsx": "^2.1.1", "goober": "^2.1.16", "solid-js": "^1.9.7" } }, "sha512-zIFP+HnZ6pmMhGkEnGIY+7/9xq6gHJ6uu7wxR4ih3nRKZbCiTTXzVQFglOFGeyAtUJumpxdgBbl7CRR9bWCMxA=="],
+    "@tanstack/devtools": ["@tanstack/devtools@0.2.0", "", { "dependencies": { "@solid-primitives/keyboard": "^1.2.8", "@tanstack/devtools-event-bus": "0.2.0", "clsx": "^2.1.1", "goober": "^2.1.16", "solid-js": "^1.9.7" } }, "sha512-lr47o33vfwNx7G4nhQDbWBRim5pFOlyhqJj547cxus/v5kwvhAnPQxceF9DJwp3mQsKfNPbD2/f/mKC9rGWiUg=="],
+
+    "@tanstack/devtools-event-bus": ["@tanstack/devtools-event-bus@0.2.0", "", { "dependencies": { "ws": "^8.18.3" } }, "sha512-rPlcBTXOMpPlmUrGGoxXLIrjpm5kTag21Z6n8Xzr3jUWIFCsap77ethebZllsVyPQ438X7tfvE4aS0Jq5sbcNA=="],
 
     "@tanstack/directive-functions-plugin": ["@tanstack/directive-functions-plugin@1.131.2", "", { "dependencies": { "@babel/code-frame": "7.27.1", "@babel/core": "^7.27.7", "@babel/traverse": "^7.27.7", "@babel/types": "^7.27.7", "@tanstack/router-utils": "1.131.2", "babel-dead-code-elimination": "^1.0.10", "tiny-invariant": "^1.3.3" }, "peerDependencies": { "vite": ">=6.0.0" } }, "sha512-5Pz6aVPS0BW+0bLvMzWsoajfjI6ZeWqkbVBaQfIbSTm4DOBO05JuQ/pb7W7m3GbCb5TK1a/SKDhuTX6Ag5I7UQ=="],
 
@@ -1313,7 +1315,7 @@
 
     "@tanstack/query-persist-client-core": ["@tanstack/query-persist-client-core@5.83.1", "", { "dependencies": { "@tanstack/query-core": "5.83.1" } }, "sha512-GPWt1tj8kmo3LA1WPpSmJA3JGCdQfaggb1LheFEfr3RuwbTchWd09xD/fZ40m9ai0pJupvyguLiWF8On8sQWPw=="],
 
-    "@tanstack/react-devtools": ["@tanstack/react-devtools@0.1.1", "", { "dependencies": { "@tanstack/devtools": "0.1.1" }, "peerDependencies": { "@types/react": ">=16.8", "@types/react-dom": ">=16.8", "react": ">=16.8", "react-dom": ">=16.8" } }, "sha512-fxOfGz/2ECl1/MKcWynn3J7mtT0osvRcWlI1RrhHaQ3kuRcK6HbkkNTXsqMbNNMgCQQFH7N1RI4Tgs6vgJxsPA=="],
+    "@tanstack/react-devtools": ["@tanstack/react-devtools@0.2.0", "", { "dependencies": { "@tanstack/devtools": "0.2.0" }, "peerDependencies": { "@types/react": ">=16.8", "@types/react-dom": ">=16.8", "react": ">=16.8", "react-dom": ">=16.8" } }, "sha512-GiYakekoNx06nJhDOZuS5WXWRp3Lax5se2HiM2KQbhWaXvnHf79RnBZT9OUA2+myIP6QbD2n8/gp+qmKZnLrlQ=="],
 
     "@tanstack/react-form": ["@tanstack/react-form@1.19.0", "", { "dependencies": { "@tanstack/form-core": "1.19.0", "@tanstack/react-store": "^0.7.3", "decode-formdata": "^0.9.0", "devalue": "^5.1.1" }, "peerDependencies": { "@tanstack/react-start": "^1.130.10", "react": "^17.0.0 || ^18.0.0 || ^19.0.0" }, "optionalPeers": ["@tanstack/react-start"] }, "sha512-3w9gz5C5Egepx//KYvwh/Qndid2aF+x6E9H5hBSWj+xGKrZSIJz8d5RKMlqxxNJZpYRnplLVTV9bLtUFqI8wtA=="],
 
@@ -4140,6 +4142,8 @@
     "@tailwindcss/oxide-wasm32-wasi/@tybys/wasm-util": ["@tybys/wasm-util@0.9.0", "", { "dependencies": { "tslib": "^2.4.0" }, "bundled": true }, "sha512-6+7nlbMVX/PVDCwaIQ8nTOPveOcFLSt8GcXdx8hD0bt39uWxYT88uXzqTd4fTvqta7oeUJqudepapKNt2DYJFw=="],
 
     "@tailwindcss/oxide-wasm32-wasi/tslib": ["tslib@2.8.1", "", { "bundled": true }, "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w=="],
+
+    "@tanstack/devtools-event-bus/ws": ["ws@8.18.3", "", { "peerDependencies": { "bufferutil": "^4.0.1", "utf-8-validate": ">=5.0.2" }, "optionalPeers": ["bufferutil", "utf-8-validate"] }, "sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg=="],
 
     "@tanstack/react-start-plugin/zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
 
