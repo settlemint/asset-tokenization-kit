@@ -20,7 +20,7 @@
     "publish:docker": "bash tools/publish-docker.sh",
     "abi-output": "bash tools/abi-output.sh",
     "test": "settlemint scs foundry test",
-    "test:ci": "mkdir -p coverage && settlemint scs foundry coverage --ir-minimum --exclude-tests --no-match-path '**/temp_*.sol' --report lcov --report-file coverage/lcov.info",
+    "test:ci": "mkdir -p coverage && rm -f contracts/temp_*.sol && settlemint scs foundry coverage --ir-minimum --exclude-tests --report lcov --report-file coverage/lcov.info",
     "deploy:remote": "settlemint scs hardhat deploy remote --deployment-id asset-tokenization"
   },
   "dependencies": {
