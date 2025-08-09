@@ -1,4 +1,5 @@
 import { PauseUnpauseConfirmationSheet } from "./sheets/pause-unpause-confirmation-sheet";
+import { MintSheet } from "./sheets/mint-sheet";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,7 +17,7 @@ interface ManageAssetDropdownProps {
   asset: Token; // Keep Token type to maintain API compatibility
 }
 
-type Action = "pause" | "unpause" | "viewEvents";
+type Action = "pause" | "unpause" | "mint" | "viewEvents";
 
 function isCurrentAction({
   target,
@@ -37,12 +38,16 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   const hasPausableCapability = asset.pausable != null;
 
   const actions = useMemo(() => {
-    if (!hasPausableCapability) {
-      return [];
-    }
+    const arr: Array<{
+      id: string;
+      label: string;
+      icon: React.ComponentType<{ className?: string }>;
+      openAction: Action;
+      disabled: boolean;
+    }> = [];
 
-    return [
-      {
+    if (hasPausableCapability) {
+      arr.push({
         id: isPaused ? "unpause" : "pause",
         label: isPaused
           ? t("tokens:actions.unpause.label")
@@ -50,9 +55,29 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         icon: isPaused ? Play : Pause,
         openAction: isPaused ? "unpause" : "pause",
         disabled: false,
-      },
-    ] as const;
-  }, [isPaused, t, hasPausableCapability]);
+      });
+    }
+
+    // Mint only visible if user can mint and token is not paused
+    const canMint = (asset.userPermissions?.actions?.mint ?? false) && !isPaused;
+    if (canMint) {
+      arr.push({
+        id: "mint",
+        label: t("tokens:actions.mint.label", { defaultValue: "Mint" }),
+        // Reuse Play icon for now to avoid adding extra imports
+        icon: Play,
+        openAction: "mint",
+        disabled: false,
+      });
+    }
+
+    return arr;
+  }, [
+    isPaused,
+    t,
+    hasPausableCapability,
+    asset.userPermissions?.actions?.mint,
+  ]);
 
   const onActionOpenChange = (open: boolean) => {
     setOpenAction(open ? openAction : null);
@@ -98,6 +123,15 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
             target: isPaused ? "unpause" : "pause",
             current: openAction,
           })}
+          onOpenChange={onActionOpenChange}
+          asset={asset}
+        />
+      )}
+
+      {/* Mint */}
+      {(asset.userPermissions?.actions?.mint ?? false) && !isPaused && (
+        <MintSheet
+          open={isCurrentAction({ target: "mint", current: openAction })}
           onOpenChange={onActionOpenChange}
           asset={asset}
         />
