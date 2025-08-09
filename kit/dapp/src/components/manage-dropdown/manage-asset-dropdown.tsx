@@ -33,6 +33,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   const [openAction, setOpenAction] = useState<Action | null>(null);
 
   const isPaused = asset.pausable?.paused ?? false;
+  // Check if asset has pausable capability (handles both null and undefined)
   const hasPausableCapability = asset.pausable != null;
 
   const actions = useMemo(() => {

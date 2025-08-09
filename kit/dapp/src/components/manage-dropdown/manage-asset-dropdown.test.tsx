@@ -207,13 +207,52 @@ describe("ManageAssetDropdown", () => {
   });
 
   describe("Asset State Handling", () => {
-    it("correctly handles asset without pausable capability", () => {
+    it("correctly handles asset without pausable capability (undefined)", async () => {
       const asset = createMockToken({ pausable: undefined });
-
-      // Should render without throwing error, but might not show dropdown actions
       render(<ManageAssetDropdown asset={asset} />);
+
       const button = screen.getByRole("button", { name: /tokens:manage/i });
       expect(button).toBeInTheDocument();
+
+      // Open dropdown
+      await user.click(button);
+
+      // Should NOT show pause/unpause actions
+      expect(
+        screen.queryByText(/tokens:actions.pause.label/i)
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/tokens:actions.unpause.label/i)
+      ).not.toBeInTheDocument();
+
+      // Should still show other actions like viewEvents
+      expect(
+        screen.getByText(/tokens:actions.viewEvents/i)
+      ).toBeInTheDocument();
+    });
+
+    it("correctly handles asset without pausable capability (null)", async () => {
+      const asset = createMockToken({ pausable: null });
+      render(<ManageAssetDropdown asset={asset} />);
+
+      const button = screen.getByRole("button", { name: /tokens:manage/i });
+      expect(button).toBeInTheDocument();
+
+      // Open dropdown
+      await user.click(button);
+
+      // Should NOT show pause/unpause actions
+      expect(
+        screen.queryByText(/tokens:actions.pause.label/i)
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/tokens:actions.unpause.label/i)
+      ).not.toBeInTheDocument();
+
+      // Should still show other actions like viewEvents
+      expect(
+        screen.getByText(/tokens:actions.viewEvents/i)
+      ).toBeInTheDocument();
     });
 
     it("updates actions when asset state changes", () => {
