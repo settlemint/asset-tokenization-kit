@@ -193,18 +193,18 @@ jobs:
           vite-config-path: './vitest.config.ts'
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Coverage Report - Contracts
-        if: |
-          github.event_name == 'pull_request' &&
-          github.event.pull_request.draft == false &&
-          steps.qa-tests.outcome == 'success'
-        uses: davelosert/vitest-coverage-report-action@v2
-        with:
-          name: '📜 Contracts'
-          working-directory: './kit/contracts'
-          json-summary-path: './coverage/coverage-summary.json'
-          json-final-path: './coverage/coverage-final.json'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Coverage Report - Contracts
+      #   if: |
+      #     github.event_name == 'pull_request' &&
+      #     github.event.pull_request.draft == false &&
+      #     steps.qa-tests.outcome == 'success'
+      #   uses: davelosert/vitest-coverage-report-action@v2
+      #   with:
+      #     name: '📜 Contracts'
+      #     working-directory: './kit/contracts'
+      #     json-summary-path: './coverage/coverage-summary.json'
+      #     json-final-path: './coverage/coverage-final.json'
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Store predeployed output
         if: |

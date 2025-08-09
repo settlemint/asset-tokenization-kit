@@ -32,7 +32,8 @@
       "dependsOn": ["publish", "test"]
     },
     "test:ci": {
-      "dependsOn": ["publish", "test"]
+      "dependsOn": ["publish", "test"],
+      "outputs": ["coverage/**", "coverage.json", ".nyc_output/**"]
     },
     "translate": {
       "inputs": ["src/**/*.ts"],

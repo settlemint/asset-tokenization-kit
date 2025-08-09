@@ -20,7 +20,7 @@
     "publish:docker": "bash tools/publish-docker.sh",
     "abi-output": "bash tools/abi-output.sh",
     "test": "settlemint scs foundry test",
-    "test:ci": "settlemint scs foundry coverage --ir-minimum --report summary --report-file coverage/coverage-summary.json",
+    "test:ci": "settlemint scs foundry coverage --ir-minimum --exclude-tests --report summary --report-file coverage/coverage-summary.json",
     "deploy:remote": "settlemint scs hardhat deploy remote --deployment-id asset-tokenization"
   },
   "dependencies": {
