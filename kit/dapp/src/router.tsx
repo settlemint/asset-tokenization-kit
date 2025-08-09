@@ -24,7 +24,6 @@ import { QueryClient } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
-import { routerWithQueryClient } from "@tanstack/react-router-with-query";
 import { parse, stringify } from "superjson";
 import { routeTree } from "./routeTree.gen";
 
@@ -100,49 +99,46 @@ export function createRouter() {
     });
   }
 
-  const router = routerWithQueryClient(
-    createTanStackRouter({
-      /**
-       * Generated route tree containing all application routes.
-       * This is auto-generated from the routes directory structure.
-       */
-      routeTree,
+  const router = createTanStackRouter({
+    /**
+     * Generated route tree containing all application routes.
+     * This is auto-generated from the routes directory structure.
+     */
+    routeTree,
 
-      /**
-       * Global context available to all routes.
-       * Includes the query client for data fetching operations.
-       */
-      context: { queryClient, orpc },
+    /**
+     * Global context available to all routes.
+     * Includes the query client for data fetching operations.
+     */
+    context: { queryClient, orpc },
 
-      /**
-       * Default preloading strategy.
-       * "intent" preloads routes when users hover or focus on links,
-       * improving perceived performance.
-       */
-      defaultPreload: "intent",
-      defaultPreloadStaleTime: 0,
+    /**
+     * Default preloading strategy.
+     * "intent" preloads routes when users hover or focus on links,
+     * improving perceived performance.
+     */
+    defaultPreload: "intent",
+    defaultPreloadStaleTime: 0,
 
-      /**
-       * Enable structural sharing for URL state.
-       * This preserves referential stability when only parts of the state change,
-       * reducing unnecessary re-renders.
-       */
-      defaultStructuralSharing: true,
+    /**
+     * Enable structural sharing for URL state.
+     * This preserves referential stability when only parts of the state change,
+     * reducing unnecessary re-renders.
+     */
+    defaultStructuralSharing: true,
 
-      /**
-       * Default error boundary component.
-       * Handles uncaught errors in route components.
-       */
-      defaultErrorComponent: DefaultCatchBoundary,
+    /**
+     * Default error boundary component.
+     * Handles uncaught errors in route components.
+     */
+    defaultErrorComponent: DefaultCatchBoundary,
 
-      /**
-       * Default not found component.
-       * Displayed when no matching route is found.
-       */
-      defaultNotFoundComponent: () => <NotFound />,
-    }),
-    queryClient
-  );
+    /**
+     * Default not found component.
+     * Displayed when no matching route is found.
+     */
+    defaultNotFoundComponent: () => <NotFound />,
+  });
 
   setupRouterSsrQueryIntegration({
     router,
