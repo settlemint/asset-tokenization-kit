@@ -27,6 +27,45 @@ interface BaseActionSheetProps {
   isSubmitting?: boolean;
 }
 
+interface ActionSheetFooterProps {
+  onCancel: () => void;
+  isSubmitting?: boolean;
+  cancelLabel?: string;
+  children: ReactNode; // The submit button/content
+}
+
+/**
+ * Reusable footer component for action sheets
+ * Provides consistent layout with cancel and submit actions
+ */
+export function ActionSheetFooter({
+  onCancel,
+  isSubmitting = false,
+  cancelLabel,
+  children,
+}: ActionSheetFooterProps) {
+  const { t } = useTranslation(["common"]);
+
+  return (
+    <SheetFooter className="px-6 py-4 border-t mt-auto">
+      <div className="flex w-full items-center justify-between gap-2">
+        <div>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={isSubmitting}
+            className="press-effect"
+          >
+            {cancelLabel ?? t("common:actions.cancel")}
+          </Button>
+        </div>
+        <div>{children}</div>
+      </div>
+    </SheetFooter>
+  );
+}
+
 /**
  * Base component for manage action sheets (mint, transfer, burn, etc.)
  * Provides consistent layout and structure for all token management actions
@@ -138,18 +177,9 @@ export function BaseActionSheet({
           </div>
         </div>
 
-        <SheetFooter className="px-6 py-4 border-t mt-auto">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleCancel}
-            disabled={isSubmitting}
-            className="press-effect"
-          >
-            {t("common:actions.cancel")}
-          </Button>
+        <ActionSheetFooter onCancel={handleCancel} isSubmitting={isSubmitting}>
           {submit}
-        </SheetFooter>
+        </ActionSheetFooter>
       </SheetContent>
     </Sheet>
   );

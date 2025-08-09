@@ -1,5 +1,6 @@
 // Mutation contracts
 import { tokenGrantRoleContract } from "@/orpc/routes/token/routes/mutations/access/token.grant-role.contract";
+import { tokenRevokeRoleContract } from "@/orpc/routes/token/routes/mutations/access/token.revoke-role.contract";
 import { tokenApproveContract } from "@/orpc/routes/token/routes/mutations/approve/token.approve.contract";
 import { tokenBurnContract } from "@/orpc/routes/token/routes/mutations/burn/token.burn.contract";
 import { tokenSetCapContract } from "@/orpc/routes/token/routes/mutations/cap/token.set-cap.contract";
@@ -37,6 +38,7 @@ export const tokenContract = {
   // Mutations
   create: tokenCreateContract,
   grantRole: tokenGrantRoleContract,
+  revokeRole: tokenRevokeRoleContract,
   pause: tokenPauseContract,
   unpause: tokenUnpauseContract,
   mint: tokenMintContract,
@@ -75,6 +77,7 @@ export type TokenContractMutations =
   | "burn"
   | "create"
   | "grantRole"
+  | "revokeRole"
   | "mint"
   | "pause"
   | "addComplianceModule"

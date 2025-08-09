@@ -5,21 +5,32 @@ import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verifi
 import { z } from "zod";
 
 /**
- * Input schema for granting a role to multiple accounts on a token
+ * Input schema for granting roles on a token
+ * Supports:
+ * - Multiple accounts, single role
+ * - Single account, multiple roles
  */
-export const TokenGrantRoleInputSchema = MutationInputSchemaWithContract.extend(
-  {
+const GrantToManyAccountsSchema = MutationInputSchemaWithContract.extend({
+  verification: UserVerificationSchema,
+  /** The accounts to grant the role to */
+  accounts: z.array(ethereumAddress).min(1),
+  /** The role to grant to the accounts */
+  role: assetAccessControlRole,
+});
+
+const GrantMultipleRolesToOneAccountSchema =
+  MutationInputSchemaWithContract.extend({
     verification: UserVerificationSchema,
-    /**
-     * The accounts to grant the roles to
-     */
-    accounts: z.array(ethereumAddress),
-    /**
-     * The role to grant to the accounts (limited to asset access control roles)
-     */
-    role: assetAccessControlRole,
-  }
-);
+    /** The account to grant roles to */
+    address: ethereumAddress,
+    /** The roles to grant to the account */
+    roles: z.array(assetAccessControlRole).min(1),
+  });
+
+export const TokenGrantRoleInputSchema = z.union([
+  GrantToManyAccountsSchema,
+  GrantMultipleRolesToOneAccountSchema,
+]);
 
 /**
  * Response schema for granting a role to multiple accounts on a token
