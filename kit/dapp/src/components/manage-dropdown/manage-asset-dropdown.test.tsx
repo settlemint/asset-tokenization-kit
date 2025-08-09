@@ -232,7 +232,7 @@ describe("ManageAssetDropdown", () => {
     });
 
     it("correctly handles asset without pausable capability (null)", async () => {
-      const asset = createMockToken({ pausable: null as any });
+      const asset = createMockToken({ pausable: null as unknown as undefined });
       render(<ManageAssetDropdown asset={asset} />);
 
       const button = screen.getByRole("button", { name: /tokens:manage/i });
