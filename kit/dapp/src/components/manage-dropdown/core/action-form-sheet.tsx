@@ -61,8 +61,7 @@ export function ActionFormSheet({
       createActionFormStore({
         hasValuesStep,
       }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [store]
+    [store, hasValuesStep]
   );
   const { step } = useStore(internalStore);
   const hasSteps = useStore(internalStore).hasValuesStep;
