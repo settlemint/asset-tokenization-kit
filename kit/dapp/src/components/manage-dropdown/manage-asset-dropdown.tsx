@@ -32,23 +32,26 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   const { t } = useTranslation(["tokens", "common"]);
   const [openAction, setOpenAction] = useState<Action | null>(null);
 
-  const isPaused = asset.pausable.paused;
+  const isPaused = asset.pausable?.paused ?? false;
+  const hasPausableCapability = asset.pausable !== null;
 
-  const actions = useMemo(
-    () =>
-      [
-        {
-          id: isPaused ? "unpause" : "pause",
-          label: isPaused
-            ? t("tokens:actions.unpause.label")
-            : t("tokens:actions.pause.label"),
-          icon: isPaused ? Play : Pause,
-          openAction: isPaused ? "unpause" : "pause",
-          disabled: false,
-        },
-      ] as const,
-    [isPaused, t]
-  );
+  const actions = useMemo(() => {
+    if (!hasPausableCapability) {
+      return [];
+    }
+
+    return [
+      {
+        id: isPaused ? "unpause" : "pause",
+        label: isPaused
+          ? t("tokens:actions.unpause.label")
+          : t("tokens:actions.pause.label"),
+        icon: isPaused ? Play : Pause,
+        openAction: isPaused ? "unpause" : "pause",
+        disabled: false,
+      },
+    ] as const;
+  }, [isPaused, t, hasPausableCapability]);
 
   const onActionOpenChange = (open: boolean) => {
     setOpenAction(open ? openAction : null);
@@ -88,14 +91,16 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <PauseUnpauseConfirmationSheet
-        open={isCurrentAction({
-          target: isPaused ? "unpause" : "pause",
-          current: openAction,
-        })}
-        onOpenChange={onActionOpenChange}
-        asset={asset}
-      />
+      {hasPausableCapability && (
+        <PauseUnpauseConfirmationSheet
+          open={isCurrentAction({
+            target: isPaused ? "unpause" : "pause",
+            current: openAction,
+          })}
+          onOpenChange={onActionOpenChange}
+          asset={asset}
+        />
+      )}
 
       {/* Change roles is available from the token tab permissions UI */}
     </>
