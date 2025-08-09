@@ -328,7 +328,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | txsigner.enabled | bool | `true` |  |
 | txsigner.image.pullPolicy | string | `"IfNotPresent"` |  |
 | txsigner.image.repository | string | `"ghcr.io/settlemint/btp-signer"` |  |
-| txsigner.image.tag | string | `"7.13.4"` |  |
+| txsigner.image.tag | string | `"7.13.5"` |  |
 | txsigner.postgresql | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
 | txsigner.replicaCount | int | `1` |  |
 | txsigner.resources | object | `{}` |  |

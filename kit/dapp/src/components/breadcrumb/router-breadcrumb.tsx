@@ -6,7 +6,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouter } from "@tanstack/react-router";
 import { Home } from "lucide-react";
 import { Fragment, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -188,9 +188,8 @@ export function RouterBreadcrumb({
 }: {
   customSegments?: BreadcrumbSegment[];
 }) {
-  const matches = useRouterState({
-    select: (state) => state.matches,
-  });
+  const router = useRouter();
+  const matches = router.state.matches;
 
   // Generate breadcrumb segments from router state
   const generateSegmentsWithMetadata = (): BreadcrumbSegmentWithMetadata[] => {
