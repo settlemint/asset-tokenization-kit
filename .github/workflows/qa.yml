@@ -221,33 +221,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel-finished: true
 
-      - name: Coverage Report - DApp
-        if: |
-          github.event_name == 'pull_request' &&
-          github.event.pull_request.draft == false &&
-          steps.qa-tests.outcome == 'success'
-        uses: davelosert/vitest-coverage-report-action@v2
-        with:
-          name: '📱 DApp'
-          working-directory: './kit/dapp'
-          json-summary-path: './coverage/coverage-summary.json'
-          json-final-path: './coverage/coverage-final.json'
-          vite-config-path: './vitest.config.ts'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      # - name: Coverage Report - Contracts
-      #   if: |
-      #     github.event_name == 'pull_request' &&
-      #     github.event.pull_request.draft == false &&
-      #     steps.qa-tests.outcome == 'success'
-      #   uses: davelosert/vitest-coverage-report-action@v2
-      #   with:
-      #     name: '📜 Contracts'
-      #     working-directory: './kit/contracts'
-      #     json-summary-path: './coverage/coverage-summary.json'
-      #     json-final-path: './coverage/coverage-final.json'
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Store predeployed output
         if: |
           github.event_name == 'push' ||

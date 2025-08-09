@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import { ActionFormSheet } from "../core/action-form-sheet";
 import { createActionFormStore } from "../core/action-form-sheet.store";
 
-type Entry = { address: EthereumAddress | "" };
+type Entry = { id: string };
 
 interface MintSheetProps {
   open: boolean;
@@ -46,9 +46,13 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
     })
   );
 
-  const [entries, setEntries] = useState<Entry[]>([
-    { address: "" as EthereumAddress },
-  ]);
+  const newEntry = (): Entry => ({
+    id: typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? (crypto.randomUUID() as string)
+      : Math.random().toString(36).slice(2),
+  });
+
+  const [entries, setEntries] = useState<Entry[]>([newEntry()]);
   const sheetStoreRef = useRef(createActionFormStore({ hasValuesStep: true }));
 
   const form = useAppForm({ onSubmit: () => {} });
@@ -56,7 +60,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
   // Reset state when sheet opens
   useEffect(() => {
     if (open) {
-      setEntries([{ address: "" as EthereumAddress }]);
+      setEntries([newEntry()]);
       form.reset();
       sheetStoreRef.current.setState((s) => ({ ...s, step: "values" }));
     }
@@ -94,7 +98,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
 
   const handleClose = () => {
     form.reset();
-    setEntries([{ address: "" as EthereumAddress }]);
+    setEntries([newEntry()]);
     sheetStoreRef.current.setState((s) => ({ ...s, step: "values" }));
     onOpenChange(false);
   };
@@ -103,8 +107,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
     <form.Subscribe selector={(s) => s}>
       {() => {
         const amounts = entries.map(
-          (_, i) =>
-            (form.getFieldValue(`amount_${i}`) as bigint | undefined) ?? 0n
+          (e) => (form.getFieldValue(`amount_${e.id}`) as bigint | undefined) ?? 0n
         );
         const totalRequested = from(
           amounts.reduce((acc, a) => acc + a, 0n),
@@ -112,11 +115,13 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
         );
         const hasValidRows =
           entries.length > 0 &&
-          entries.every((_, i) => {
-            const addr = form.getFieldValue(`recipient_${i}`) as
+          entries.every((e) => {
+            const addr = form.getFieldValue(`recipient_${e.id}`) as
               | EthereumAddress
               | "";
-            const amt = form.getFieldValue(`amount_${i}`) as bigint | undefined;
+            const amt = form.getFieldValue(`amount_${e.id}`) as
+              | bigint
+              | undefined;
             return Boolean(addr) && (amt ?? 0n) > 0n;
           });
         const withinLimit = overallLimit
@@ -126,12 +131,12 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
 
         // Build confirmation view
         const recipients = entries.map(
-          (_, i) =>
-            (form.getFieldValue(`recipient_${i}`) as EthereumAddress | "") || ""
+          (e) =>
+            (form.getFieldValue(`recipient_${e.id}`) as EthereumAddress | "") ||
+            ""
         );
         const confirmAmounts = entries.map(
-          (_, i) =>
-            (form.getFieldValue(`amount_${i}`) as bigint | undefined) ?? 0n
+          (e) => (form.getFieldValue(`amount_${e.id}`) as bigint | undefined) ?? 0n
         );
         const totalMint = from(
           confirmAmounts.reduce((acc, a) => acc + a, 0n),
@@ -174,7 +179,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                 <div className="rounded-md border divide-y">
                   {recipients.map((addr, i) => (
                     <div
-                      key={i}
+                      key={entries[i]?.id ?? i}
                       className="flex items-center justify-between px-3 py-2 text-sm"
                     >
                       <span className="truncate mr-2">
@@ -214,13 +219,10 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
             isSubmitting={isPending}
             onSubmit={(verification) => {
               const recipients = entries.map(
-                (_, i) =>
-                  form.getFieldValue(`recipient_${i}`) as EthereumAddress
+                (e) => form.getFieldValue(`recipient_${e.id}`) as EthereumAddress
               );
               const amounts = entries.map(
-                (_, i) =>
-                  (form.getFieldValue(`amount_${i}`) as bigint | undefined) ??
-                  0n
+                (e) => (form.getFieldValue(`amount_${e.id}`) as bigint | undefined) ?? 0n
               );
 
               const promise = mint({
@@ -241,8 +243,8 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
           >
             <div className="space-y-3">
               <div className="space-y-2">
-                {entries.map((_, idx) => (
-                  <Card key={idx}>
+                {entries.map((entry, idx) => (
+                  <Card key={entry.id}>
                     <CardContent>
                       <div className="relative space-y-2">
                         <div>
@@ -250,7 +252,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                             {({ mode }) => (
                               <>
                                 {mode === "select" && (
-                                  <form.AppField name={`recipient_${idx}`}>
+                                  <form.AppField name={`recipient_${entry.id}`}>
                                     {(field) => (
                                       <field.AddressSelectField
                                         scope="user"
@@ -263,7 +265,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                                   </form.AppField>
                                 )}
                                 {mode === "manual" && (
-                                  <form.AppField name={`recipient_${idx}`}>
+                                  <form.AppField name={`recipient_${entry.id}`}>
                                     {(field) => (
                                       <field.AddressInputField
                                         label={t(
@@ -279,7 +281,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                           </AddressSelectOrInputToggle>
                         </div>
                         <div>
-                          <form.AppField name={`amount_${idx}`}>
+                          <form.AppField name={`amount_${entry.id}`}>
                             {(field) => (
                               <field.BigIntField
                                 label={t(
@@ -299,9 +301,16 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                               size="sm"
                               className="h-6 px-1 text-xs text-muted-foreground"
                               onClick={() => {
-                                setEntries((prev) =>
-                                  prev.filter((_, i) => i !== idx)
+                                // Clear field values for the removed row to avoid stale data
+                                form.setFieldValue(
+                                  `recipient_${entry.id}`,
+                                  undefined as unknown as EthereumAddress
                                 );
+                                form.setFieldValue(
+                                  `amount_${entry.id}`,
+                                  undefined as unknown as bigint
+                                );
+                                setEntries((prev) => prev.filter((e) => e.id !== entry.id));
                               }}
                             >
                               {t("common:remove")}
@@ -320,10 +329,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                   variant="ghost"
                   size="sm"
                   onClick={() => {
-                    setEntries((prev) => [
-                      ...prev,
-                      { address: "" as EthereumAddress },
-                    ]);
+                    setEntries((prev) => [...prev, newEntry()]);
                   }}
                   className="text-xs text-muted"
                 >

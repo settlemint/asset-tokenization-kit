@@ -16,7 +16,7 @@ import { format, from, lessThanOrEqual, subtract } from "dnum";
 import { Web3Address } from "@/components/web3/web3-address";
 import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 
-type Entry = { address: EthereumAddress | ""; amount?: bigint; max?: Dnum };
+type Entry = { id: string; max?: Dnum };
 
 interface BurnSheetProps {
   open: boolean;
@@ -46,13 +46,15 @@ export function BurnSheet({
     })
   );
 
-  const [entries, setEntries] = useState<Entry[]>([
-    {
-      address: "" as EthereumAddress,
-      amount: undefined,
-      max: undefined,
-    },
-  ]);
+  const newEntry = (max?: Dnum): Entry => ({
+    id:
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? (crypto.randomUUID() as string)
+        : Math.random().toString(36).slice(2),
+    max,
+  });
+
+  const [entries, setEntries] = useState<Entry[]>([newEntry()]);
   const sheetStoreRef = useRef(createActionFormStore({ hasValuesStep: true }));
 
   const form = useAppForm({ onSubmit: () => {} });
@@ -60,14 +62,7 @@ export function BurnSheet({
   // Sync entries state with preset and open props to prevent stale data
   useEffect(() => {
     if (open) {
-      setEntries([
-        {
-          address:
-            (preset?.address as EthereumAddress) ?? ("" as EthereumAddress),
-          amount: undefined,
-          max: preset?.available,
-        },
-      ]);
+      setEntries([newEntry(preset?.available)]);
       form.reset();
       sheetStoreRef.current.setState((s) => ({ ...s, step: "values" }));
     }
@@ -82,14 +77,7 @@ export function BurnSheet({
 
   const handleClose = () => {
     form.reset();
-    setEntries([
-      {
-        address:
-          (preset?.address as EthereumAddress) ?? ("" as EthereumAddress),
-        amount: undefined,
-        max: preset?.available,
-      },
-    ]);
+    setEntries([newEntry(preset?.available)]);
     sheetStoreRef.current.setState((s) => ({ ...s, step: "values" }));
     onOpenChange(false);
   };
@@ -99,14 +87,14 @@ export function BurnSheet({
       {() => {
         const hasValidRows =
           entries.length > 0 &&
-          entries.every((_, i) => {
-            const addr = form.getFieldValue(`burn_address_${i}`) as
+          entries.every((e) => {
+            const addr = form.getFieldValue(`burn_address_${e.id}`) as
               | EthereumAddress
               | "";
-            const amt = form.getFieldValue(`burn_amount_${i}`) as
+            const amt = form.getFieldValue(`burn_amount_${e.id}`) as
               | bigint
               | undefined;
-            const limit = entries[i]?.max;
+            const limit = e.max;
             const validAmount = (amt ?? 0n) > 0n;
             const withinMax = limit
               ? lessThanOrEqual(from(amt ?? 0n, tokenDecimals), limit)
@@ -118,8 +106,8 @@ export function BurnSheet({
         const totalBurn = from(
           entries
             .map(
-              (_, i) =>
-                (form.getFieldValue(`burn_amount_${i}`) as
+              (e) =>
+                (form.getFieldValue(`burn_amount_${e.id}`) as
                   | bigint
                   | undefined) ?? 0n
             )
@@ -161,17 +149,17 @@ export function BurnSheet({
                   {t("tokens:actions.burn.addresses")}
                 </div>
                 <div className="rounded-md border divide-y">
-                  {entries.map((_, i) => {
+                  {entries.map((e) => {
                     const addr = form.getFieldValue(
-                      `burn_address_${i}`
+                      `burn_address_${e.id}`
                     ) as EthereumAddress | null;
                     const amt =
-                      (form.getFieldValue(`burn_amount_${i}`) as
+                      (form.getFieldValue(`burn_amount_${e.id}`) as
                         | bigint
                         | undefined) ?? 0n;
                     return (
                       <div
-                        key={i}
+                        key={e.id}
                         className="flex items-center justify-between px-3 py-2 text-sm"
                       >
                         <span className="truncate mr-2">
@@ -212,14 +200,10 @@ export function BurnSheet({
             isSubmitting={isPending}
             onSubmit={(verification) => {
               const addresses = entries.map(
-                (_, i) =>
-                  form.getFieldValue(`burn_address_${i}`) as EthereumAddress
+                (e) => form.getFieldValue(`burn_address_${e.id}`) as EthereumAddress
               );
               const amounts = entries.map(
-                (_, i) =>
-                  (form.getFieldValue(`burn_amount_${i}`) as
-                    | bigint
-                    | undefined) ?? 0n
+                (e) => (form.getFieldValue(`burn_amount_${e.id}`) as bigint | undefined) ?? 0n
               );
 
               const promise = burn({
@@ -241,7 +225,7 @@ export function BurnSheet({
             <div className="space-y-3">
               <div className="space-y-2">
                 {entries.map((entry, idx) => (
-                  <Card key={idx}>
+                  <Card key={entry.id}>
                     <CardContent>
                       <div className="relative space-y-2">
                         <div>
@@ -249,7 +233,7 @@ export function BurnSheet({
                             {({ mode }) => (
                               <>
                                 {mode === "select" && (
-                                  <form.AppField name={`burn_address_${idx}`}>
+                                  <form.AppField name={`burn_address_${entry.id}`}>
                                     {(field) => (
                                       <field.AddressSelectField
                                         scope="user"
@@ -262,7 +246,7 @@ export function BurnSheet({
                                   </form.AppField>
                                 )}
                                 {mode === "manual" && (
-                                  <form.AppField name={`burn_address_${idx}`}>
+                                  <form.AppField name={`burn_address_${entry.id}`}>
                                     {(field) => (
                                       <field.AddressInputField
                                         label={t(
@@ -278,7 +262,7 @@ export function BurnSheet({
                           </AddressSelectOrInputToggle>
                         </div>
                         <div>
-                          <form.AppField name={`burn_amount_${idx}`}>
+                          <form.AppField name={`burn_amount_${entry.id}`}>
                             {(field) => (
                               <field.BigIntField
                                 label={t(
@@ -305,9 +289,16 @@ export function BurnSheet({
                               size="sm"
                               className="h-6 px-1 text-xs text-muted-foreground"
                               onClick={() => {
-                                setEntries((prev) =>
-                                  prev.filter((_, i) => i !== idx)
+                                // Clear form values related to the removed row
+                                form.setFieldValue(
+                                  `burn_address_${entry.id}`,
+                                  undefined as unknown as EthereumAddress
                                 );
+                                form.setFieldValue(
+                                  `burn_amount_${entry.id}`,
+                                  undefined as unknown as bigint
+                                );
+                                setEntries((prev) => prev.filter((e) => e.id !== entry.id));
                               }}
                             >
                               {t("common:remove")}
@@ -326,10 +317,7 @@ export function BurnSheet({
                   variant="ghost"
                   size="sm"
                   onClick={() => {
-                    setEntries((prev) => [
-                      ...prev,
-                      { address: "" as EthereumAddress, amount: undefined },
-                    ]);
+                    setEntries((prev) => [...prev, newEntry()]);
                   }}
                   className="text-xs text-muted"
                 >
