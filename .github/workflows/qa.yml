@@ -179,6 +179,20 @@ jobs:
             bun run ci:gha:main --concurrency=100%
           fi
 
+      - name: Upload coverage to Coveralls (DApp)
+        if: |
+          (github.event_name == 'push' ||
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)) &&
+          steps.qa-tests.outcome == 'success'
+        uses: coverallsapp/github-action@v2
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./kit/dapp/coverage/lcov.info
+          base-path: ./kit/dapp
+          flag-name: dapp
+
       - name: Coverage Report - DApp
         if: |
           github.event_name == 'pull_request' &&

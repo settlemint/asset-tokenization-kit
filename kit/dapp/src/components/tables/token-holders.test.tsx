@@ -18,9 +18,9 @@ vi.mock("@tanstack/react-router", () => ({
 vi.mock("@/orpc/orpc-client", () => ({
   orpc: {
     token: {
-      balances: {
+      holders: {
         queryOptions: vi.fn().mockReturnValue({
-          queryKey: ["token", "balances"],
+          queryKey: ["token", "holders"],
           queryFn: vi.fn(),
         }),
       },
