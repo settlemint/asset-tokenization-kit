@@ -48,16 +48,16 @@ export function BurnSheet({
 
   const [entries, setEntries] = useState<Entry[]>([
     {
-      address: (preset?.address as EthereumAddress) ?? ("" as EthereumAddress),
+      address: "" as EthereumAddress,
       amount: undefined,
-      max: preset?.available,
+      max: undefined,
     },
   ]);
   const sheetStoreRef = useRef(createActionFormStore({ hasValuesStep: true }));
 
   const form = useAppForm({ onSubmit: () => {} });
 
-  // Reset state when sheet opens or preset changes
+  // Sync entries state with preset and open props to prevent stale data
   useEffect(() => {
     if (open) {
       setEntries([
