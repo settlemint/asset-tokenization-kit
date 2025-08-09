@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppForm } from "@/hooks/use-app-form";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { createActionFormStore } from "../core/action-form-sheet.store";
@@ -56,6 +56,22 @@ export function BurnSheet({
   const sheetStoreRef = useRef(createActionFormStore({ hasValuesStep: true }));
 
   const form = useAppForm({ onSubmit: () => {} });
+
+  // Reset state when sheet opens or preset changes
+  useEffect(() => {
+    if (open) {
+      setEntries([
+        {
+          address:
+            (preset?.address as EthereumAddress) ?? ("" as EthereumAddress),
+          amount: undefined,
+          max: preset?.available,
+        },
+      ]);
+      form.reset();
+      sheetStoreRef.current.setState((s) => ({ ...s, step: "values" }));
+    }
+  }, [open, preset, form]);
 
   const tokenDecimals = asset.decimals;
 
@@ -190,7 +206,7 @@ export function BurnSheet({
             title={t("tokens:actions.burn.title")}
             description={t("tokens:actions.burn.description")}
             submitLabel={t("tokens:actions.burn.submit")}
-            canContinue={() => canContinue()}
+            canContinue={canContinue}
             confirm={confirmView}
             showAssetDetailsOnConfirm={false}
             isSubmitting={isPending}

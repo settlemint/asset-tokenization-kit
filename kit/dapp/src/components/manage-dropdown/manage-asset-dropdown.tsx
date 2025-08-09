@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { ChevronDown, Pause, Play } from "lucide-react";
+import { ChevronDown, Pause, Play, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -65,8 +65,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
       arr.push({
         id: "mint",
         label: t("tokens:actions.mint.label"),
-        // Reuse Play icon for now to avoid adding extra imports
-        icon: Play,
+        icon: Plus,
         openAction: "mint",
         disabled: false,
       });

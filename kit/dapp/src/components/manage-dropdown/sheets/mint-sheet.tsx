@@ -16,7 +16,7 @@ import {
   lessThanOrEqual,
   subtract,
 } from "dnum";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { ActionFormSheet } from "../core/action-form-sheet";
@@ -52,6 +52,15 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
   const sheetStoreRef = useRef(createActionFormStore({ hasValuesStep: true }));
 
   const form = useAppForm({ onSubmit: () => {} });
+
+  // Reset state when sheet opens
+  useEffect(() => {
+    if (open) {
+      setEntries([{ address: "" as EthereumAddress }]);
+      form.reset();
+      sheetStoreRef.current.setState((s) => ({ ...s, step: "values" }));
+    }
+  }, [open, form]);
 
   const tokenDecimals = asset.decimals;
   const capRemaining = useMemo(() => {
@@ -199,7 +208,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
             title={t("tokens:actions.mint.title")}
             description={t("tokens:actions.mint.description")}
             submitLabel={t("tokens:actions.mint.submit")}
-            canContinue={() => canContinue()}
+            canContinue={canContinue}
             confirm={confirmView}
             showAssetDetailsOnConfirm={false}
             isSubmitting={isPending}
