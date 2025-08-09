@@ -38,7 +38,7 @@ interface ActionSheetFooterProps {
  * Reusable footer component for action sheets
  * Provides consistent layout with cancel and submit actions
  */
-function ActionSheetFooter({
+export function ActionSheetFooter({
   onCancel,
   isSubmitting = false,
   cancelLabel,

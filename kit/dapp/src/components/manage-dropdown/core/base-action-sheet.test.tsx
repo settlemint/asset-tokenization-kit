@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { BaseActionSheet } from "./base-action-sheet";
+import { BaseActionSheet, ActionSheetFooter } from "./base-action-sheet";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 
 // Mock dependencies
@@ -40,6 +40,95 @@ const createMockToken = (overrides?: Partial<Token>): Token =>
     userPermissions: undefined,
     ...overrides,
   }) as Token;
+
+describe("ActionSheetFooter", () => {
+  const user = userEvent.setup();
+  const mockOnCancel = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("renders cancel button and children", () => {
+    render(
+      <ActionSheetFooter onCancel={mockOnCancel}>
+        <button>Submit</button>
+      </ActionSheetFooter>
+    );
+
+    expect(screen.getByText("common:actions.cancel")).toBeInTheDocument();
+    expect(screen.getByText("Submit")).toBeInTheDocument();
+  });
+
+  it("calls onCancel when cancel button is clicked", async () => {
+    render(
+      <ActionSheetFooter onCancel={mockOnCancel}>
+        <button>Submit</button>
+      </ActionSheetFooter>
+    );
+
+    const cancelButton = screen.getByText("common:actions.cancel");
+    await user.click(cancelButton);
+
+    expect(mockOnCancel).toHaveBeenCalledTimes(1);
+  });
+
+  it("disables cancel button when isSubmitting is true", () => {
+    render(
+      <ActionSheetFooter onCancel={mockOnCancel} isSubmitting={true}>
+        <button>Submit</button>
+      </ActionSheetFooter>
+    );
+
+    const cancelButton = screen.getByText("common:actions.cancel");
+    expect(cancelButton).toBeDisabled();
+  });
+
+  it("enables cancel button when isSubmitting is false", () => {
+    render(
+      <ActionSheetFooter onCancel={mockOnCancel} isSubmitting={false}>
+        <button>Submit</button>
+      </ActionSheetFooter>
+    );
+
+    const cancelButton = screen.getByText("common:actions.cancel");
+    expect(cancelButton).not.toBeDisabled();
+  });
+
+  it("uses custom cancel label when provided", () => {
+    render(
+      <ActionSheetFooter onCancel={mockOnCancel} cancelLabel="Custom Cancel">
+        <button>Submit</button>
+      </ActionSheetFooter>
+    );
+
+    expect(screen.getByText("Custom Cancel")).toBeInTheDocument();
+    expect(screen.queryByText("common:actions.cancel")).not.toBeInTheDocument();
+  });
+
+  it("has correct layout structure", () => {
+    const { container } = render(
+      <ActionSheetFooter onCancel={mockOnCancel}>
+        <button data-testid="submit-btn">Submit</button>
+      </ActionSheetFooter>
+    );
+
+    // Check for the overall structure
+    const cancelButton = screen.getByText("common:actions.cancel");
+    const submitButton = screen.getByTestId("submit-btn");
+
+    // Both buttons should be present
+    expect(cancelButton).toBeInTheDocument();
+    expect(submitButton).toBeInTheDocument();
+
+    // Check that cancel button has correct classes
+    expect(cancelButton).toHaveClass("press-effect");
+
+    // Check parent structure exists
+    const footer = container.firstElementChild;
+    expect(footer).toHaveClass("px-6", "py-4", "border-t", "mt-auto");
+  });
+});
 
 describe("BaseActionSheet", () => {
   const user = userEvent.setup();
