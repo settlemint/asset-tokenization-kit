@@ -74,6 +74,9 @@
     },
     "test": {
       "dependsOn": ["compile:forge"]
+    },
+    "test:ci": {
+      "dependsOn": ["compile:forge"]
     }
   }
 }

@@ -85,7 +85,6 @@ export function PauseUnpauseConfirmationSheet({
         }),
         {
           success: t("actions.pause.messages.success", {
-            defaultValue: `Asset '${asset.name} (${asset.symbol})' paused successfully`,
             name: asset.name,
             symbol: asset.symbol,
           }),
@@ -101,7 +100,6 @@ export function PauseUnpauseConfirmationSheet({
         }),
         {
           success: t("actions.unpause.messages.success", {
-            defaultValue: `Asset '${asset.name} (${asset.symbol})' unpaused successfully`,
             name: asset.name,
             symbol: asset.symbol,
           }),

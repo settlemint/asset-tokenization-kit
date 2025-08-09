@@ -1,12 +1,12 @@
 {
   "assets": {
     "asset-factories-deployed-successfully": "Asset-Fabriken erfolgreich bereitgestellt",
-    "asset-factories-description": "Asset-Fabriken sind Smart Contracts, die es Ihnen ermöglichen, verschiedene Arten von tokenisierten Vermögenswerten zu erstellen und zu verwalten. Jede Fabrik verwaltet eine spezifische Vermögensklasse mit maßgeschneiderten Funktionen und Compliance-Anforderungen.",
+    "asset-factories-description": "Sie werden gebeten, jede Transaktion mit Ihrer PIN oder OTP zu bestätigen.",
     "asset-types-deployed": "Bereitgestellte Vermögensarten",
     "available-asset-types": "Verfügbare Vermögensarten",
-    "choose-asset-types": "Wählen Sie die Arten von Vermögenswerten aus, die Sie auf Ihrer Plattform tokenisieren möchten",
-    "confirm-deployment-description": "Bitte verifizieren Sie Ihre Identität, um die Asset-Fabriken bereitzustellen.",
-    "confirm-deployment-title": "Bestätigen Sie die Bereitstellung des Vermögenswerts",
+    "choose-asset-types": "Definieren Sie, welche Arten von tokenisierten Vermögenswerten Ihre Plattform unterstützen wird.",
+    "confirm-deployment-description": "Sie sind dabei, die ausgewählten Vermögenswertfabriken mit Ihrem Wallet bereitzustellen. Um diese kritische Aktion zu autorisieren, müssen wir Ihre Identität bestätigen.",
+    "confirm-deployment-title": "Geben Sie Ihren PIN-Code ein, um die Bereitstellung fortzusetzen.",
     "deploy-assets": "Vermögenswerte bereitstellen",
     "deployed": "Asset-Fabriken erfolgreich bereitgestellt",
     "deployed-factories": "Bereitgestellte Fabriken",
@@ -24,14 +24,17 @@
     "no-system": "System nicht gefunden. Bitte stellen Sie zuerst das System bereit.",
     "select-all-asset-types": "Wählen Sie alle Vermögensarten aus, die Sie tokenisieren möchten",
     "select-asset-types": "Wählen Sie Vermögensarten aus",
-    "title": "Wählen Sie Vermögensarten aus",
+    "title": "Unterstützte Vermögensarten konfigurieren",
     "validation-error": "Wählen Sie mindestens eine Vermögensart aus",
     "what-are-asset-factories": "Was sind Asset-Fabriken?",
     "your-asset-factories-ready": "Ihre Asset-Fabriken sind bereit zur Tokenisierung",
     "deploy": "Vermögensfabriken bereitstellen",
     "deploying": "Wird bereitgestellt...",
-    "deployment-warning": "Diese Aktion wird Smart Contract-Fabriken auf die Blockchain bereitstellen. Einmal bereitgestellt, können sie nicht entfernt, aber ungenutzt bleiben.",
-    "failed-toast": "Bereitstellung der Vermögensfabriken fehlgeschlagen: "
+    "deployment-warning": "Dieser Prozess kann je nach Ihren Auswahlmöglichkeiten bis zu 2–3 Minuten dauern.",
+    "failed-toast": "Bereitstellung der Vermögensfabriken fehlgeschlagen: ",
+    "factory-explanation-1": "Jede Vermögensart, die Sie auf Ihrer Plattform unterstützen, wie Anleihen, Aktien oder Stablecoins, wird von einer speziellen Vermögenswertfabrik verwaltet.",
+    "factory-explanation-2": "Vermögenswertfabriken sind Smart Contracts, die definieren, wie sich eine bestimmte Vermögensklasse on-chain verhält, einschließlich ihrer Eigenschaften, Regeln und Compliance-Logik.",
+    "factory-explanation-3": "Indem Sie die Vermögensarten auswählen, die Sie unterstützen möchten, stellen Sie die notwendigen Smart Contracts bereit, die sie antreiben. Sie können später in den Plattform-Einstellungen jederzeit weitere Fabriken hinzufügen."
   },
   "groups": {
     "addons": {
@@ -39,15 +42,15 @@
       "title": "Zusatzmodule"
     },
     "identity": {
-      "description": "Erstellen Sie Ihre verifizierte Blockchain-Identität",
+      "description": "Richten Sie Ihre on-chain Identität ein",
       "title": "Identität"
     },
     "system": {
-      "description": "Initialisieren Sie Ihre Tokenisierungsinfrastruktur",
-      "title": "Smart Contracts bereitstellen"
+      "description": "Bereitstellen und Konfigurieren Ihres Systems",
+      "title": "System"
     },
     "wallet": {
-      "description": "Erstellen Sie Ihre digitale Brieftasche und fügen Sie Sicherheit hinzu",
+      "description": "Richten Sie Ihr Wallet und Sicherheitsmaßnahmen ein",
       "title": "Brieftasche"
     }
   },
@@ -63,21 +66,27 @@
   },
   "identity-setup": {
     "address-title": "Dies ist Ihre ONCHAINID-Adresse",
-    "confirm-description": "Bitte verifizieren Sie Ihre Identität, um Ihre On-Chain-Identität zu erstellen.",
-    "confirm-title": "Bestätigen Sie die Erstellung der Identität",
+    "confirm-description": "Sie sind dabei, Ihre ONCHAINID mit Ihrem Wallet bereitzustellen. Um diese kritische Aktion zu autorisieren, müssen wir Ihre Identität bestätigen.",
+    "confirm-title": "Geben Sie Ihren PIN-Code ein, um die Bereitstellung fortzusetzen.",
     "deployed-toast": "ONCHAINID erfolgreich erstellt!",
     "deploying-toast": "ONCHAINID wird erstellt...",
-    "description": "Bereitstellung Ihres Identitätsvertrags auf der Blockchain",
+    "description": "Verbinden Sie Ihre verifizierte Identität mit Ihrem Wallet.",
     "failed-toast": "ONCHAINID konnte nicht erstellt werden: ",
     "form": {
-      "submit": "ONCHAINID erstellen",
+      "submit": "Erstellen Sie Meine ONCHAINID",
       "submitting": "ONCHAINID wird erstellt..."
     },
     "info": "Wir erstellen Ihr ONCHAINID mit der Identitätsfabrik.",
     "info-description": "Dies erstellt Ihren Identitäts-Smart-Contract auf der Blockchain - einen sicheren Container für Ihre verifizierten Anmeldeinformationen.\n\nEs werden noch keine persönlichen Daten gespeichert. Das kommt als Nächstes. Für den Moment richten wir Ihre einzigartige Identitätsadresse ein, die nur Sie kontrollieren.\n\nDies dauert in der Regel 10-30 Sekunden.",
-    "success-message": "Ihre Blockchain-Identität ist bereit. Als Nächstes können Sie Ihre verifizierten Informationen hinzufügen, um die KYC-Compliance abzuschließen.",
-    "success-title": "ONCHAINID erfolgreich erstellt",
-    "title": "Erstellen Ihres ONCHAINID"
+    "success-message": "Ihre on-chain Identität wurde erstellt. Sie können sie jetzt registrieren und Ihre verifizierten Informationen hinzufügen oder dies später von Ihrem Dashboard aus tun.",
+    "success-title": "Identität erfolgreich erstellt",
+    "title": "Ihre On-Chain Identität",
+    "deployment-warning": "Dieser Prozess kann bis zu 2–3 Minuten dauern.",
+    "transaction-confirmation-info": "Sie werden gebeten, jede Transaktion mit Ihrer PIN oder OTP zu bestätigen.",
+    "body-1": "Ihr Wallet beweist, dass Sie den Zugriff auf Ihre Vermögenswerte kontrollieren, aber es beweist nicht, wer Sie sind.",
+    "body-2": "ONCHAINID ist Ihre on-chain Identität, die sicher mit Ihrem Wallet verknüpft ist. Es enthält verifizierte Informationen wie Ihren Namen, Ihr Land oder Ihren KYC-Status, die von vertrauenswürdigen Quellen hinzugefügt werden. Diese Verifizierungen werden als „Ansprüche“ bezeichnet und helfen der Plattform, die Compliance-Anforderungen zu erfüllen und die Benutzer zu schützen.",
+    "body-3": "Denken Sie daran, dass es Ihr digitales Passwort für die Blockchain ist: einzigartig, verifizierbar und vollständig unter Ihrer Kontrolle.",
+    "body-4": "Die Erstellung Ihrer ONCHAINID ist schnell und erfolgt direkt on-chain. Sie können Ihre Identität jederzeit von Ihrem Dashboard aus aktualisieren oder vervollständigen."
   },
   "sidebar": {
     "description": "Befolgen Sie diese einfachen Schritte, um die Macht der Tokenisierung freizuschalten - von der Brieftellerstellung bis zur Bereitstellung der Plattform.",
@@ -122,9 +131,9 @@
     }
   },
   "system": {
-    "admin-role-explanation": "Dadurch werden Sie zum ersten Administrator des Systems und erhalten die volle Kontrolle über dessen grundlegende Komponenten. Später können Sie zusätzliche Administratoren einladen, um bei der Verwaltung zu helfen.",
+    "admin-role-explanation": "Indem Sie dies tun, werden Sie der erste Administrator des Systems und erhalten die volle Kontrolle über seine grundlegenden Komponenten. Später können Sie zusätzliche Administratoren einladen, um bei der Verwaltung der Abläufe zu helfen.",
     "bootstrap-contracts-header": "Das Bootstrapping des Systems umfasst die Bereitstellung dieser kritischen Smart Contracts:",
-    "bootstrap-explanation": "Als erster Benutzer sind Sie dafür verantwortlich, das System zu bootstrappen – eine einmalige Einrichtung, die die Kern-Smart-Contracts bereitstellt, die die Plattform antreiben.",
+    "bootstrap-explanation": "Als erster Benutzer sind Sie verantwortlich für das Bootstrapping des Systems — eine einmalige Einrichtung, die die Kern-Smart Contracts bereitstellt, die die Plattform antreiben.",
     "compliance-engine": "• Compliance-Engine für regulatorische Anforderungen",
     "compliance-engine-description": "setzt Regeln wie KYC, Gerichtsbarkeit und Übertragungsbeschränkungen durch",
     "compliance-engine-label": "Compliance-Engine",
@@ -138,32 +147,42 @@
     "deploying": "Wird bereitgestellt...",
     "deploying-toast": "System wird bereitgestellt...",
     "deployment-details-description": "Sehen Sie sich die Einzelheiten der Systembereitstellung an",
-    "deployment-details-title": "Bereitstellungsdetails",
-    "deployment-warning": "Diese Aktion wird Blockchain-Smart-Contracts bereitstellen und kann nicht rückgängig gemacht werden. Nach der Bereitstellung wird das System dauerhaft aktiv auf der Blockchain sein.",
+    "deployment-details-title": "System erfolgreich bereitgestellt",
+    "deployment-warning": "Hinweis: Dieser Schritt kann 2–3 Minuten dauern, während das System Smart Contracts on-chain bereitstellt. Bitte halten Sie diesen Tab offen und aktualisieren Sie nicht.",
     "failed-toast": "System konnte nicht bereitgestellt werden: ",
     "identity-registry": "• Identitätsregister zur Benutzerverifizierung",
-    "identity-registry-description": "verwaltet Benutzeridentitäten auf der Blockchain",
+    "identity-registry-description": "verwaltet Benutzeridentitäten on-chain",
     "identity-registry-label": "Identitätsregister",
     "identity-registry-name": "Identitätsregister",
-    "infrastructure-conclusion": "Diese Smart Contracts bilden die sichere Infrastruktur hinter Benutzeridentität, Compliance und Asset-Ausgabe. Nach der Bereitstellung ist Ihre Plattform bereit, reale Tokenisierung zu unterstützen.",
+    "infrastructure-conclusion": "Diese Smart Contracts bilden die sichere Infrastruktur hinter Benutzeridentität, Compliance und Vermögensausgabe. Nach der Bereitstellung wird Ihre Plattform bereit sein, die Tokenisierung der realen Welt zu unterstützen.",
     "initialize-subtitle": "Sie sind dabei, das Fundament der Plattform einzurichten",
     "initialize-title": "System initialisieren",
     "system-contract": "Systemvertrag",
     "token-factory": "• Token-Fabrikregister zur Erstellung von Vermögenswerten",
     "token-factory-label": "Token-Fabrikregister",
     "trusted-issuers": "• Vertrauenswürdige Aussteller-Register für autorisierte Parteien",
-    "trusted-issuers-description": "definiert, welche Entitäten verifizierte Zertifikate ausstellen können",
+    "trusted-issuers-description": "definiert, welche Stellen verifizierte Berechtigungen ausstellen können",
     "trusted-issuers-label": "Register vertrauenswürdiger Aussteller",
-    "trusted-issuers-name": "Register vertrauenswürdiger Aussteller",
+    "trusted-issuers-name": "Vertrauenswürdige Aussteller-Register",
     "view-deployment-details": "Bereitstellungsdetails anzeigen",
-    "what-gets-deployed": "Was bereitgestellt wird:"
+    "what-gets-deployed": "Was bereitgestellt wird:",
+    "admin-role-granted": "Sie sind jetzt der erste Administrator der Plattform.",
+    "admin-capabilities-intro": "Von hier aus können Sie:",
+    "admin-capability-assets": "Unterstützte Vermögenswerte konfigurieren",
+    "admin-capability-admins": "Zusätzliche Administratoren einladen",
+    "admin-capability-compliance": "Compliance- und Identitätsmodule verwalten",
+    "contracts-live-message": "Die Smart Contracts, die Ihre Plattform antreiben, sind jetzt live auf der Blockchain.",
+    "configure-system": "System konfigurieren"
   },
   "system-addons": {
     "addon-deployment": {
       "addons-deployed-successfully": "Add-ons erfolgreich bereitgestellt",
       "deployed-addons": "Bereitgestellte Add-ons",
       "description": "Ihre Add-ons sind einsatzbereit",
-      "title": "Add-ons bereitgestellt"
+      "title": "Add-Ons erfolgreich bereitgestellt",
+      "intro-1": "Alle ausgewählten Plattform-Add-Ons wurden erfolgreich bereitgestellt.",
+      "intro-2": "Diese Funktionen sind jetzt verfügbar zur Nutzung und Konfiguration. Als Plattformadministrator kontrollieren Sie deren Parameter und Zugriffe.",
+      "continue-to-identity-setup": "Fahren Sie mit der Identitätseinrichtung fort"
     },
     "addon-selection": {
       "addon-types": {
@@ -184,20 +203,24 @@
       "available-addons": "Verfügbare Add-ons",
       "confirm-deployment-description": "Bitte verifizieren Sie Ihre Identität, um die Add-ons bereitzustellen.",
       "confirm-deployment-title": "Bestätigen Sie die Bereitstellung des Add-ons",
-      "deploy-addons": "Add-ons bereitstellen",
+      "deploy-addons": "Ausgewählte Add-Ons bereitstellen",
       "deployed-toast": "Add-ons erfolgreich bereitgestellt!",
       "deploying-toast": "Add-ons werden bereitgestellt...",
-      "description": "Aktivieren Sie zusätzliche Funktionen und Integrationen für Ihre Plattform",
+      "description": "Erweitern Sie Ihre Plattform mit optionalen Funktionen.",
       "failed-toast": "Bereitstellung der Add-ons fehlgeschlagen: ",
       "no-system": "System nicht gefunden. Bitte stellen Sie zuerst das System bereit.",
       "select-all-addons": "Wählen Sie alle Add-ons aus, die Sie aktivieren möchten",
-      "title": "Add-ons aktivieren",
+      "title": "Plattform-Add-Ons konfigurieren",
       "validation": {
         "invalid": "Wählen Sie mindestens ein Add-on aus"
       },
       "what-are-addons": "Was sind Add-ons?",
       "deploying": "Wird bereitgestellt...",
-      "required-for-bonds": "Erforderlich für Anleihen"
+      "required-for-bonds": "Erforderlich für Anleihen",
+      "deployment-warning": "Dieser Prozess kann je nach Ihren Auswahlmöglichkeiten bis zu 2–3 Minuten dauern.",
+      "intro-1": "Plattform-Add-Ons ermöglichen es Ihnen, die Funktionen Ihrer Tokenisierungsplattform zu erweitern. Diese Funktionen — wie Airdrops, Erträge oder XVP — werden als Smart Contracts bereitgestellt, genau wie das Kernsystem.",
+      "intro-2": "Sie können die, die Sie jetzt benötigen, aktivieren und später in den Einstellungen einfach ändern oder erweitern.",
+      "transaction-confirmation-info": "Sie werden gebeten, jede Transaktion mit Ihrer PIN oder OTP zu bestätigen."
     }
   },
   "system-settings": {
@@ -218,7 +241,7 @@
         }
       }
     },
-    "subtitle": "Legen Sie die Standardpräferenzen Ihrer Plattform fest",
+    "subtitle": "Definieren Sie, wie sich Ihre Plattform standardmäßig verhält",
     "title": "Plattform-Einstellungen konfigurieren",
     "toast": {
       "error": "Speichern der Plattform-Einstellungen fehlgeschlagen: {{message}}",
@@ -341,7 +364,7 @@
     "recovery-codes": {
       "confirm": "Wallet-Einrichtung abschließen",
       "confirm-error": "Fehler beim Bestätigen der geheimen Codes",
-      "confirm-stored": "Confirm you stored your recovery keys in a safe place.",
+      "confirm-stored": "Bestätigen Sie, dass Sie Ihre Wiederherstellungsschlüssel an einem sicheren Ort aufbewahrt haben.",
       "copied-to-clipboard": "Geheime Codes in die Zwischenablage kopiert!",
       "copy-all": "Alles kopieren",
       "description": "Speichern Sie diese Codes an einem sicheren Ort",
@@ -353,7 +376,8 @@
       "generating": "Generiere Ihre geheimen Codes...",
       "title": "Ihre geheimen Codes",
       "warning": "Wichtig: Bewahren Sie diese Codes sicher auf! Sie sind Ihr einziger Weg, um den Zugriff wiederzuerlangen, wenn Sie andere Sicherheitsmethoden verlieren.",
-      "your-recovery-codes": "Ihre geheimen Codes ({{count}})"
+      "your-recovery-codes": "Ihre geheimen Codes ({{count}})",
+      "action-required": "Kopieren oder laden Sie zuerst Ihre Codes herunter, bevor Sie bestätigen."
     }
   },
   "welcome": {

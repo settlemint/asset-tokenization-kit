@@ -31,6 +31,9 @@
     "test:integration": {
       "dependsOn": ["publish", "test"]
     },
+    "test:ci": {
+      "dependsOn": ["publish", "test"]
+    },
     "translate": {
       "inputs": ["src/**/*.ts"],
       "outputs": []

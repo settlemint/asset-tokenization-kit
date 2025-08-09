@@ -64,7 +64,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
     if (canMint) {
       arr.push({
         id: "mint",
-        label: t("tokens:actions.mint.label", { defaultValue: "Mint" }),
+        label: t("tokens:actions.mint.label"),
         // Reuse Play icon for now to avoid adding extra imports
         icon: Play,
         openAction: "mint",

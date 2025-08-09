@@ -20,21 +20,20 @@
   },
   "tasks": {
     "ci": {
-      "dependsOn": ["ci:base", "format"]
+      "dependsOn": ["ci:base", "format", "test"]
     },
     "ci:base": {
       "dependsOn": [
         "compile",
         "codegen",
         "lint",
-        "test",
         "typecheck",
         "build",
         "artifacts"
       ]
     },
     "ci:gha": {
-      "dependsOn": ["ci:base", "test:integration"]
+      "dependsOn": ["ci:base", "test:ci"]
     },
     "ci:gha:main": {
       "dependsOn": ["publish", "publish:docker", "ci:gha"]
@@ -95,6 +94,37 @@
     },
     "typecheck": {
       "dependsOn": ["codegen"]
+    },
+    "test:ci": {
+      "dependsOn": ["build", "^test:ci"],
+      "outputs": [
+        "coverage/**",
+        "coverage.json",
+        "lcov.info",
+        ".nyc_output/**"
+      ],
+      "inputs": [
+        "src/**/*.{ts,tsx,js,jsx,mjs,cjs}",
+        "contracts/**/*.sol",
+        "test/**/*.{ts,tsx,js,jsx,mjs,cjs}",
+        "tests/**/*.{ts,tsx,js,jsx,mjs,cjs}",
+        "spec/**/*.{ts,tsx,js,jsx,mjs,cjs}",
+        "**/*.test.{ts,tsx,js,jsx,mjs,cjs}",
+        "**/*.spec.{ts,tsx,js,jsx,mjs,cjs}",
+        "vitest.config.*",
+        "jest.config.*",
+        "foundry.toml",
+        "hardhat.config.*",
+        ".env.test",
+        "!coverage/**",
+        "!.nyc_output/**",
+        "!**/node_modules/**",
+        "!**/dist/**",
+        "!**/build/**",
+        "!**/.turbo/**"
+      ],
+      "env": ["NODE_ENV", "CI", "DOTENV_CONFIG_PATH", "TEST_*"],
+      "passThroughEnv": ["FORCE_COLOR", "NO_COLOR"]
     }
   }
 }

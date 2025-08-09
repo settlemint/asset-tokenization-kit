@@ -125,7 +125,7 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
       ...(canBurn && row.original.available[0] > 0n
         ? [
             {
-              label: t("tokens:holders.actions.burn", { defaultValue: "Burn" }),
+              label: t("tokens:holders.actions.burn"),
               icon: <Flame className="h-4 w-4" />,
               onClick: () => {
                 setBurnTarget({
