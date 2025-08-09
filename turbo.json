@@ -100,7 +100,8 @@
       "outputs": [
         "coverage/**",
         "coverage.json",
-        "lcov.info",
+        "coverage/coverage-summary.json",
+        "coverage/coverage-final.json",
         ".nyc_output/**"
       ],
       "inputs": [
