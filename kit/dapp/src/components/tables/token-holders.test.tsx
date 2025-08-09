@@ -84,11 +84,11 @@ describe("TokenHoldersTable", () => {
 
   const createMockToken = (overrides?: Partial<Token>): Token =>
     ({
-      id: "0xtoken" as any,
+      id: "0xtoken" as `0x${string}`,
       name: "Test Token",
       symbol: "TEST",
       decimals: 18,
-      totalSupply: [1000000n, 18],
+      totalSupply: [1_000_000n, 18],
       pausable: {
         paused: false,
       },
