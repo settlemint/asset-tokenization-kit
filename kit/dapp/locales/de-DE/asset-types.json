@@ -1,7 +1,7 @@
 {
-  "whichAssetType": "Welchen Asset-Typ möchten Sie gestalten?",
+  "whichAssetType": "Welchen Vermögenswerttyp möchten Sie gestalten?",
   "whichAssetTypeForClass": "Welchen {{assetClass}}-Vermögenswert möchten Sie gestalten?",
-  "assetTypeDifferences": "Jeder Asset-Typ hat unterschiedliche Zahlungsstrukturen, Liquiditätsbedingungen und Anlegerrechte.",
+  "assetTypeDifferences": "Jeder Vermögenswerttyp hat unterschiedliche Zahlungsstrukturen, Liquiditätsbedingungen und Anlegerrechte.",
   "bond": {
     "description": "Schuldverschreibungen, die über einen bestimmten Zeitraum feste Zinsen zahlen",
     "name": "Anleihe-Token"

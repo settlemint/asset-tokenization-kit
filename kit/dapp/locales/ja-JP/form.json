@@ -3,14 +3,27 @@
   "noCountryFound": "国が見つかりません。",
   "valid-email": "有効なメールアドレスを入力してください",
   "address": {
-    "selectPlaceholder": "アドレス選択",
-    "searchPlaceholder": "アドレス検索",
+    "selectPlaceholder": "住所を選択",
+    "searchPlaceholder": "住所を検索",
     "loading": "読み込み中",
-    "noResults": "アドレスなし",
+    "noResults": "一致する住所が見つかりませんでした",
     "recent": "最近",
     "searchResults": "結果",
     "recentAddresses": "最近",
-    "searchInstead": "検索に切替",
-    "enterManually": "手動入力"
+    "searchInstead": "代わりに検索",
+    "enterManually": "手動で入力",
+    "noAddressesCreated": "まだ住所が作成されていません",
+    "allAddresses": "すべて",
+    "addAddress": "住所を追加"
+  },
+  "buttons": {
+    "back": "戻る",
+    "cancel": "キャンセル",
+    "disable": "無効にする",
+    "enable": "有効にする",
+    "next": "次へ",
+    "submit": "送信",
+    "leave": "離れる",
+    "save": "保存"
   }
 }

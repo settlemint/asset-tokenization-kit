@@ -30,9 +30,12 @@ import {
   UserCircle,
   Wallet,
 } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import { Flame } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { BurnSheet } from "@/components/manage-dropdown/sheets/burn-sheet";
+import type { Dnum } from "dnum";
 
 const columnHelper = createColumnHelper<TokenBalance>();
 
@@ -87,6 +90,13 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
   // Extract holders data with proper null checking
   const holders = holdersResponse.token?.balances ?? [];
 
+  const isPaused = token.pausable?.paused ?? false;
+  const canBurn = (token.userPermissions?.actions?.burn ?? false) && !isPaused;
+  const [burnTarget, setBurnTarget] = useState<{
+    address: `0x${string}`;
+    available?: Dnum;
+  } | null>(null);
+
   /**
    * Creates action items for each row in the table
    *
@@ -112,6 +122,20 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
           toast.success(t("tokens:holders.actions.addressCopied"));
         },
       },
+      ...(canBurn && row.original.available[0] > 0n
+        ? [
+            {
+              label: t("tokens:holders.actions.burn"),
+              icon: <Flame className="h-4 w-4" />,
+              onClick: () => {
+                setBurnTarget({
+                  address: row.original.id,
+                  available: row.original.available,
+                });
+              },
+            } satisfies ActionItem,
+          ]
+        : []),
       {
         label: t("tokens:holders.actions.viewOnEtherscan"),
         icon: <ExternalLink className="h-4 w-4" />,
@@ -119,7 +143,7 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
         separator: "before",
       },
     ],
-    [t]
+    [t, canBurn]
   );
 
   /**
@@ -299,6 +323,20 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
 
   return (
     <ComponentErrorBoundary componentName="Token Holders Table">
+      {canBurn && (
+        <BurnSheet
+          open={!!burnTarget}
+          onOpenChange={(open) => {
+            if (!open) setBurnTarget(null);
+          }}
+          asset={token}
+          preset={
+            burnTarget
+              ? { address: burnTarget.address, available: burnTarget.available }
+              : undefined
+          }
+        />
+      )}
       <DataTable
         name="token-holders"
         data={holders}

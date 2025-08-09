@@ -243,13 +243,9 @@ export function ChangeRolesSheet({
               onOpenChange(next);
             }}
             asset={asset}
-            title={t("tokens:permissions.changeRoles.title", {
-              defaultValue: "Change roles",
-            })}
-            description={t("tokens:permissions.changeRoles.description", {
-              defaultValue: "Assign or remove roles for this address",
-            })}
-            submitLabel={t("common:save", { defaultValue: "Save" })}
+            title={t("tokens:permissions.changeRoles.title")}
+            description={t("tokens:permissions.changeRoles.description")}
+            submitLabel={t("common:save")}
             hasValuesStep={true}
             canContinue={() => Boolean(selectedAddress && hasChanges)}
             store={sheetStoreRef.current}
@@ -257,23 +253,19 @@ export function ChangeRolesSheet({
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
-                    {t("tokens:permissions.changeRoles.title", {
-                      defaultValue: "Change roles",
-                    })}
+                    {t("tokens:permissions.changeRoles.title")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
                     <div className="text-sm text-muted-foreground">
-                      {t("tokens:actions.grantRole.form.accountLabel", {
-                        defaultValue: "Account",
-                      })}
+                      {t("tokens:actions.grantRole.form.accountLabel")}
                     </div>
                     <div className="text-sm font-medium">{selectedAddress}</div>
                     <div className="mt-4 grid gap-4 md:grid-cols-2">
                       <div>
                         <div className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
-                          {t("common:add", { defaultValue: "Grant" })}
+                          {t("common:add")}
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {derivedSelected
@@ -285,14 +277,14 @@ export function ChangeRolesSheet({
                             (r) => !currentForSelected.includes(r)
                           ).length === 0 && (
                             <span className="text-xs text-muted-foreground">
-                              {t("common:none", { defaultValue: "None" })}
+                              {t("common:none")}
                             </span>
                           )}
                         </div>
                       </div>
                       <div>
                         <div className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
-                          {t("common:remove", { defaultValue: "Revoke" })}
+                          {t("common:remove")}
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {currentForSelected
@@ -304,7 +296,7 @@ export function ChangeRolesSheet({
                             (r) => !derivedSelected.includes(r)
                           ).length === 0 && (
                             <span className="text-xs text-muted-foreground">
-                              {t("common:none", { defaultValue: "None" })}
+                              {t("common:none")}
                             </span>
                           )}
                         </div>
@@ -352,13 +344,9 @@ export function ChangeRolesSheet({
               })();
 
               toast.promise(promise, {
-                loading: t("common:saving", {
-                  defaultValue: "Saving changes...",
-                }),
-                success: t("common:saved", { defaultValue: "Changes saved" }),
-                error: t("common:error", {
-                  defaultValue: "Failed to save changes",
-                }),
+                loading: t("common:saving"),
+                success: t("common:saved"),
+                error: t("common:error"),
               });
 
               await promise;
@@ -371,9 +359,7 @@ export function ChangeRolesSheet({
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
-                    {t("tokens:actions.grantRole.form.accountLabel", {
-                      defaultValue: "Account",
-                    })}
+                    {t("tokens:actions.grantRole.form.accountLabel")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -418,9 +404,7 @@ export function ChangeRolesSheet({
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-base">
-                      {t("tokens:permissions.columns.roles", {
-                        defaultValue: "Roles",
-                      })}
+                      {t("tokens:permissions.columns.roles")}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -437,10 +421,7 @@ export function ChangeRolesSheet({
                         <div key={group} className="mb-4 last:mb-0">
                           <div className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
                             {t(
-                              `tokens:permissions.groups.${group.toLowerCase()}`,
-                              {
-                                defaultValue: group,
-                              }
+                              `tokens:permissions.groups.${group.toLowerCase() as Lowercase<typeof group>}` as const
                             )}
                           </div>
                           <div className="grid grid-cols-2 gap-2">

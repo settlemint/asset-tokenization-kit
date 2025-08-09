@@ -41,15 +41,15 @@
       "title": "Add-ons"
     },
     "identity": {
-      "description": "Create your verified blockchain identity",
+      "description": "Establish your on-chain identity",
       "title": "Identity"
     },
     "system": {
-      "description": "Initialize your tokenization infrastructure",
-      "title": "Deploy smart contracts"
+      "description": "Deploy and configure your system",
+      "title": "System"
     },
     "wallet": {
-      "description": "Create your digital wallet and add security",
+      "description": "Set up your wallet and security measures",
       "title": "Wallet"
     }
   },

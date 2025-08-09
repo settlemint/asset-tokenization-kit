@@ -7,7 +7,7 @@
       "alreadyExists": "Addon {{name}} existiert bereits",
       "defaultError": "Ein Fehler ist bei der Registrierung des Addons aufgetreten",
       "failed": "Registrierung von {{name}} fehlgeschlagen",
-      "invalidConfiguration": "Ungültige Konfiguration",
+      "invalidConfiguration": "Kein Addon-Register für das System {{systemAddress}} gefunden",
       "invalidImplementation": "Ungültige Implementierung bereitgestellt",
       "partialSuccess": "{{successful}} von {{total}} Addons erfolgreich registriert",
       "preparing": "Vorbereitung zur Registrierung von Addons",
@@ -42,6 +42,16 @@
       "failed": "Registrierung der Identität fehlgeschlagen",
       "preparing": "Vorbereitung zur Registrierung der Identität",
       "success": "Identität erfolgreich registriert"
+    }
+  },
+  "complianceModule": {
+    "messages": {
+      "preparing": "Bereite die Registrierung des Compliance-Moduls vor",
+      "success": "Compliance-Modul erfolgreich registriert",
+      "failed": "Registrierung des Compliance-Moduls fehlgeschlagen",
+      "progress": "Registriere {{current}} von {{total}} Compliance-Modulen",
+      "registering": "Registriere {{name}}",
+      "registered": "{{name}} erfolgreich registriert"
     }
   }
 }

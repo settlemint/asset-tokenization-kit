@@ -1,33 +1,33 @@
 {
   "expressionBuilder": {
-    "title": "منشئ التعابير",
+    "title": "منشئ التعبيرات",
     "topics": {
-      "kyc": "التحقق من الهوية",
-      "aml": "امتثال مكافحة غسل الأموال",
-      "collateral": "متطلبات الضمانات",
-      "isin": "تصنيف ISIN",
+      "kyc": "اعرف عميلك",
+      "aml": "مكافحة غسل الأموال",
+      "collateral": "ضمانات",
+      "isin": "رقم التعريف الدولي للأوراق المالية",
       "assetClassification": "تصنيف الأصول",
-      "basePrice": "معلومات السعر الأساسي"
+      "basePrice": "سعر الأساس"
     },
     "topicInput": {
-      "selectPlaceholder": "اختر موضوعاً...",
+      "selectPlaceholder": "اختر موضوعًا",
       "notLabel": "ليس",
-      "addButton": "+ إضافة",
-      "orStartGroup": "أو ابدأ مجموعة:",
+      "addButton": "أضف",
+      "orStartGroup": "أو ابدأ مجموعة",
       "startGroupButton": "ابدأ مجموعة"
     },
     "operatorInput": {
-      "chooseOperatorLabel": "إضافة عامل:",
+      "chooseOperatorLabel": "اختر مشغل",
       "andButton": "و",
       "orButton": "أو",
-      "endGroupButton": "إنهاء المجموعة",
+      "endGroupButton": "انتهت المجموعة",
       "openGroupsText": "{{count}} مجموعة مفتوحة{{plural}} للإغلاق"
     },
     "display": {
       "clearAllButton": "مسح الكل",
       "validExpression": "التعبير مكتمل وصحيح",
-      "closeGroupsPrompt": "أغلق {{count}} مجموعة{{plural}} للإكمال",
-      "addTopicPrompt": "أضف موضوعاً أو ابدأ مجموعة",
+      "closeGroupsPrompt": "أغلق {{count}} مجموعة{{plural}} لإكمال",
+      "addTopicPrompt": "أضف موضوعًا أو ابدأ مجموعة",
       "unknownNode": "غير معروف"
     }
   },
@@ -44,7 +44,14 @@
       "resident": "مقيم وحيد - أعيش وأعتبر مقيمًا قانونيًا/ضريبيًا فقط في الدولة المذكورة أعلاه",
       "unknown": "أفضل عدم القول"
     },
-    "submit": "احفظ واستمر"
+    "submit": "احفظ واستمر",
+    "identity": {
+      "confirm-description": "يرجى التحقق من هويتك لإنشاء هويتك على السلسلة.",
+      "confirm-title": "تأكيد إنشاء الهوية",
+      "deployed-toast": "تم تسجيل الهوية بنجاح!",
+      "deploying-toast": "جارٍ تسجيل الهوية...",
+      "failed-toast": "فشل تسجيل الهوية: "
+    }
   },
   "verificationDialog": {
     "authenticatorCode": "رمز المصادقة",

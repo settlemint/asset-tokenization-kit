@@ -7,7 +7,7 @@
       "alreadyExists": "アドオン {{name}} はすでに存在します",
       "defaultError": "アドオンの登録中にエラーが発生しました",
       "failed": "アドオン {{name}} の登録に失敗しました",
-      "invalidConfiguration": "無効な構成",
+      "invalidConfiguration": "システム {{systemAddress}} のアドオンレジストリが見つかりません",
       "invalidImplementation": "提供された実装が無効です",
       "partialSuccess": "{{successful}} の {{total}} アドオンが正常に登録されました",
       "preparing": "アドオンの登録を準備しています",
@@ -42,6 +42,16 @@
       "failed": "アイデンティティの登録に失敗しました",
       "preparing": "アイデンティティの登録を準備しています",
       "success": "アイデンティティが正常に登録されました"
+    }
+  },
+  "complianceModule": {
+    "messages": {
+      "preparing": "コンプライアンスモジュールの登録を準備中",
+      "success": "コンプライアンスモジュールが正常に登録されました",
+      "failed": "コンプライアンスモジュールの登録に失敗しました",
+      "progress": "{{total}} 個のコンプライアンスモジュールのうち {{current}} を登録中",
+      "registering": "{{name}} を登録中",
+      "registered": "{{name}} が正常に登録されました"
     }
   }
 }

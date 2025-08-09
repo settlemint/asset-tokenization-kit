@@ -2,47 +2,47 @@
   "capabilities": {
     "ACCESS_MANAGED": {
       "label": "アクセス制御",
-      "description": "アセットへのアクセスと管理を制御する"
+      "description": "誰があなたの資産にアクセスし、管理できるかを制御します"
     },
     "BOND": {
-      "label": "固定利回り",
-      "description": "満期日と固定利回りを持つ債券を作成する"
+      "label": "固定リターン",
+      "description": "満期日と固定リターンを持つ債券を作成します"
     },
     "BURNABLE": {
-      "label": "トークン破棄",
-      "description": "アセット保有者がアセットを永続的に破棄できるようにする"
+      "label": "トークンの破棄",
+      "description": "資産保有者が資産を永久に破棄できるようにします"
     },
     "CAPPED": {
-      "label": "供給上限",
-      "description": "アセット供給量の上限を設定する"
+      "label": "供給制限",
+      "description": "資産供給の最大限度を設定します"
     },
     "COLLATERAL": {
-      "label": "融資担保",
-      "description": "ローンや融資の担保としてアセットを使用する"
+      "label": "ローン担保",
+      "description": "資産をローンや資金調達の担保として使用します"
     },
     "CUSTODIAN": {
       "label": "安全な保管",
-      "description": "機関投資家レベルのカストディ機能を有効にする"
+      "description": "機関レベルの保管機能を有効にします"
     },
     "FUND": {
       "label": "ファンド管理",
-      "description": "手数料構造が組み込まれた投資ファンドを管理する"
+      "description": "組み込みの手数料構造を持つ投資ファンドを管理します"
     },
     "HISTORICAL_BALANCES": {
-      "label": "完全履歴",
-      "description": "完全な取引履歴と残高を追跡する"
+      "label": "完全な履歴",
+      "description": "完全な取引履歴と残高を追跡します"
     },
     "PAUSABLE": {
       "label": "緊急停止",
-      "description": "緊急時にアセット転送を一時的に停止する"
+      "description": "緊急時のために資産の移転を一時的に停止します"
     },
     "REDEEMABLE": {
       "label": "現金化",
-      "description": "アセットを基礎価値と交換できるようにする"
+      "description": "資産を基礎的な価値に交換できるようにします"
     },
     "YIELD": {
-      "label": "収益獲得",
-      "description": "自動的な収益と利息支払いを生成する"
+      "label": "リターンを得る",
+      "description": "自動的なリターンと利息の支払いを生成します"
     }
   }
 }

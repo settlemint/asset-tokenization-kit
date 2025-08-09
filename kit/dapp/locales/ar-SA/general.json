@@ -3,5 +3,6 @@
   "appName": "مجموعة توكين الأصول",
   "continue": "استمر",
   "deploying": "يتم النشر...",
-  "generating": "يتم التوليد..."
+  "generating": "يتم التوليد...",
+  "cancel": "إلغاء"
 }

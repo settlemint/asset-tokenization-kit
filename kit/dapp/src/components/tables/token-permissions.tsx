@@ -63,7 +63,7 @@ export function TokenPermissionsTable({ token }: { token: Token }) {
     () =>
       withAutoFeatures([
         columnHelper.accessor("id", {
-          header: t("tokens:permissions.columns.address", "Address"),
+          header: t("tokens:permissions.columns.address"),
           cell: ({ getValue }) => (
             <Web3Address
               address={getEthereumAddress(getValue())}
@@ -73,12 +73,12 @@ export function TokenPermissionsTable({ token }: { token: Token }) {
             />
           ),
           meta: {
-            displayName: t("tokens:permissions.columns.address", "Address"),
+            displayName: t("tokens:permissions.columns.address"),
             type: "address",
           },
         }) as unknown as ColumnDef<PermissionRow>,
         columnHelper.accessor("roles", {
-          header: t("tokens:permissions.columns.roles", "Roles"),
+          header: t("tokens:permissions.columns.roles"),
           cell: ({ getValue }) => {
             const roles = getValue();
             if (!roles?.length) return <span>-</span>;
@@ -97,7 +97,7 @@ export function TokenPermissionsTable({ token }: { token: Token }) {
             (rowB.original.roles?.length ?? 0) -
             (rowA.original.roles?.length ?? 0),
           meta: {
-            displayName: t("tokens:permissions.columns.roles", "Roles"),
+            displayName: t("tokens:permissions.columns.roles"),
             type: "text",
           },
         }) as unknown as ColumnDef<PermissionRow>,
@@ -141,15 +141,10 @@ export function TokenPermissionsTable({ token }: { token: Token }) {
               }}
               disabled={!canGrant}
             >
-              {t("tokens:permissions.changeRoles.cta", {
-                defaultValue: "Change roles",
-              })}
+              {t("tokens:permissions.changeRoles.cta")}
             </Button>
           ),
-          placeholder: t(
-            "tokens:permissions.searchPlaceholder",
-            "Search addresses..."
-          ),
+          placeholder: t("tokens:permissions.searchPlaceholder"),
         }}
         initialSorting={[
           {
@@ -159,11 +154,8 @@ export function TokenPermissionsTable({ token }: { token: Token }) {
         ]}
         customEmptyState={{
           icon: Shield,
-          title: t("tokens:permissions.empty.title", "No role assignments"),
-          description: t(
-            "tokens:permissions.empty.description",
-            "No roles are assigned to any account yet."
-          ),
+          title: t("tokens:permissions.empty.title"),
+          description: t("tokens:permissions.empty.description"),
         }}
       />
       <ChangeRolesSheet
@@ -192,9 +184,7 @@ function RowActions({
 
   const actions: ActionItem[] = [
     {
-      label: t("tokens:permissions.changeRoles.cta", {
-        defaultValue: "Change roles",
-      }),
+      label: t("tokens:permissions.changeRoles.cta"),
       onClick: () => {
         onOpenChangeRoles(row.id as unknown as EthereumAddress);
       },

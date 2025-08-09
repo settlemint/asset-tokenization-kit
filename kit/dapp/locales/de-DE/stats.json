@@ -9,20 +9,20 @@
       "title": "Vermögensangebot"
     },
     "totalCollateral": {
-      "label": "Gesamtsicherheit"
+      "label": "Gesamtes Sicherheiten"
     },
     "totalSupply": {
-      "description": "Historische Änderungen des Gesamtangebots über die Zeit",
+      "description": "Gesamtes Vermögensangebot der letzten {{days}} Tage",
       "label": "Gesamtangebot",
-      "title": "Token-Angebotsverlauf",
+      "title": "Historie des Tokenangebots",
       "noData": "Keine Daten verfügbar",
       "noDataDescription": "Keine Gesamtangebotsdaten für die letzten {{days}} Tage gefunden"
     },
     "supplyChanges": {
-      "description": "Gemintete und verbrannte Token in den letzten {{days}} Tagen",
-      "title": "Angebotsänderungen",
-      "minted": "Gemintet",
-      "burned": "Verbrannt",
+      "description": "Prägung und Vernichtung von Vermögenswerten der letzten {{days}} Tage",
+      "title": "Änderungen im Angebot",
+      "minted": "Prägend",
+      "burned": "Vernichtet",
       "noData": "Keine Angebotsänderungsdaten verfügbar",
       "noDataDescription": "Keine Mint- oder Burn-Aktivitäten in den letzten {{days}} Tagen gefunden"
     },
@@ -33,6 +33,49 @@
     "userGrowth": {
       "description": "Anzahl der Nutzer über die Zeit",
       "title": "Nutzerwachstum"
+    },
+    "common": {
+      "noData": "Keine Daten verfügbar",
+      "noDataDescription": "Derzeit sind keine Daten für dieses Diagramm verfügbar"
+    },
+    "totalVolume": {
+      "description": "Gesamttransaktionsvolumen der letzten {{days}} Tage",
+      "label": "Gesamtvolumen",
+      "title": "Transaktionsvolumen"
+    },
+    "walletDistribution": {
+      "title": "Verteilung der Wallets",
+      "description": "Anzahl der Inhaber im Vergleich zu den gehaltenen Beträgen",
+      "holders": "Anzahl der Wallets"
+    },
+    "bondStatus": {
+      "title": "Anleihestatus",
+      "notBond": "Dieser Vermögenswert ist keine Anleihe",
+      "notAvailable": "Anleihestatus nicht verfügbar",
+      "completed": "Abgeschlossen",
+      "remaining": "Verbleibend",
+      "issuing": {
+        "title": "Anleiheemission",
+        "description": "{{percentage}}% der Anleihen wurden ausgegeben",
+        "label": "Ausgabe"
+      },
+      "active": {
+        "title": "Einlösungsdeckung",
+        "description": "{{percentage}}% der Nennwertvermögenswerte verfügbar",
+        "label": "Aktiv"
+      },
+      "matured": {
+        "title": "Anleiheeinlösung",
+        "description": "{{percentage}}% der Anleihen wurden eingelöst",
+        "label": "Fällig"
+      }
+    },
+    "collateralRatio": {
+      "title": "Sicherheitenquote",
+      "description": "Aufschlüsselung der verfügbaren vs. verwendeten Sicherheiten",
+      "available": "Verfügbare Sicherheiten",
+      "used": "Verwendete Sicherheiten",
+      "ratio": "Besicherung: {{ratio}}%"
     }
   },
   "title": "Statistiken",

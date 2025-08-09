@@ -94,10 +94,13 @@ files:
     form.buttons.enable: 2faec1f9f8cc7f8f40d521c4dd574f49
     form.buttons.next: 10ac3d04253ef7e1ddc73e6091c0cd55
     form.buttons.submit: a4d3b161ce1309df1c4e25df28694b7b
+    form.buttons.leave: a52945dbe283de2f7e9d63ca3417f36a
     form.description: 45b77bb27d1f4dfb053de36c055ba690
     form.fields.cap.description: 48f3ced3bf1a510efd74495645c4f31d
     form.fields.cap.label: 9758515cdd02293ca879ed3d41c5bd9d
     form.fields.cap.placeholder: 6e170bf922bbcb02703f76c8587c329d
+    form.fields.countryCode.description: 64da0dbbd3f3244af6ca1fd8b4aca713
+    form.fields.countryCode.label: 59716c97497eb9694541f7c3d37b1a4d
     form.fields.decimals.description: 26b568e74b462dd3feaeb7fd58bde065
     form.fields.decimals.label: 2b417805040de3a3df31c8fd3626b57c
     form.fields.decimals.placeholder: 6f4922f45568161a8cdf4ad2299f6d23
@@ -121,10 +124,14 @@ files:
     form.fields.symbol.placeholder: 3563236abe29efdc64c17d7f18bf857d
     form.fields.type.description: 197377054f197d44b019f5cf98f0a13b
     form.fields.type.label: f55434db35c06a280833ea220013eea2
-    form.fields.underlyingAsset.description: d5201cf1ab110ad2bbb61aab6ef1d596
-    form.fields.underlyingAsset.label: cd7c26cb3b6dbc3bcd5a6e221f8bde87
-    form.fields.underlyingAsset.placeholder: 98a5cb4726a1a8f623d874cfb9a6b81f
+    form.fields.denominationAsset.description: f42f847875de19933668a939062bb1e2
+    form.fields.denominationAsset.label: f241e0b68061f7a41aaba162bb6ff819
+    form.fields.denominationAsset.placeholder: 98a5cb4726a1a8f623d874cfb9a6b81f
     form.title: 70a31d9e1351628df5af89b4dba9f2cf
+    leave-confirmation.title: 39e26e2f2566a5be6a9934c89819b69f
+    leave-confirmation.description: 297ee141eaf83cb52297da1996912f27
+    leave-confirmation.stay: 89302eb620f755ea605acbdcd41d2547
+    leave-confirmation.leave: a52945dbe283de2f7e9d63ca3417f36a
     messages.comingSoon: 2d8be267001121bc417b5d36c95d60f0
     messages.created: 46f59c96e46fb121d044be90f6c423c8
     messages.creating: 6e8efb5e1ed7e3eb57129c6e5a624dfc
@@ -160,15 +167,9 @@ files:
   locales/en-US/asset-types.json:
     bond.description: 514616ff7d2e10da7a5eec410554eabc
     bond.name: 6fe2e856cee5c252f8cb44033a1f81b8
-    categories.cashEquivalent.description: 15c0f8c245e17b3af106f81eb7c9d0c2
-    categories.cashEquivalent.icon: 156e132b014314b1eae89410e54bcc8c
-    categories.cashEquivalent.name: dd2d9c98631561dee2914f79e72eb9e2
-    categories.fixedIncome.description: dc9b175e5a2a023ad80e141efab33163
-    categories.fixedIncome.icon: 7d6b8b0bf19d27e8cedd44c039195b0e
-    categories.fixedIncome.name: d46778ed2efa2209057c8fca369b03cf
-    categories.flexibleIncome.description: 080906f45ab650a8ce9a42e864579b81
-    categories.flexibleIncome.icon: ecfc2dffe568c10a67dbc6d3724cfde2
-    categories.flexibleIncome.name: d173494a9fa0ff88ff9fd0825ec3f8ce
+    whichAssetType: f8d06ed0e024134c83dcf5ad84680f65
+    whichAssetTypeForClass: 1bb644eeb126ecdd0000eeac9525cccb
+    assetTypeDifferences: 2786f065d9ef8d6024315c343db3408c
     deposit.description: 9d656d92d10775a399fb8baba4e948c4
     deposit.name: 1d1c50f35e25f69f1c93af61bf219968
     equity.description: a86b8fc831685a1387ccf11cfed436dc
@@ -768,6 +769,7 @@ files:
     transactions.tracking.waitingForIndexing: ca7fc64a863f5e3acf65cb47101c7484
     transactions.tracking.waitingForMining: 836fac42d51f640bb9596eeec6193b2c
   locales/en-US/common.json:
+    actions.add: ec211f7c20af43e742bf2570c3cb84f9
     actions.cancel: ea4788705e6873b424c65e91c2846b19
     actions.skip: 72ef2b9b6965d078e3c7f95487a82d1c
     appDescription: b54fe0114e381c5d1d50a3035367ce51
@@ -784,26 +786,62 @@ files:
     transactionHash.copyToClipboard: 07d18cf0faa495f96f68311009edcedd
     verification.pincode.description: 88fe2f22ddebcbf34b8318190846d852
     verification.pincode.label: dfcbc97f1d21b9867e68fa7179492c4c
+    errors.somethingWentWrong: 78aa7ee2348048268ef8ba5b22e8d951
+    saving: db24e91a3941d59f78d3ca45c3d311e5
+    saved: 897b2be6147e80d7c2ca8e3a479a9e0e
+    error: ca2f80b72beeb6968b12f5611afdfa25
+    remove: 1063e38cb53d94d386f21227fcd84717
+    unknown: 88183b946cc5f0e8c96b2e66e1c74a7e
+    save: c9cc8cce247e49bae79f15173ce97354
+    add: e6bec5bc048c16f28ba341f878ce654e
+    none: 6adf97f83acf6453d4a6a4b1070f3754
   locales/en-US/compliance-modules.json:
-    modules.addressBlockList.description: 442ee19d55fdce051b95fcedeb36788b
-    modules.addressBlockList.shortDescription: e948f80f9e05cd963cf83cbe7d399ba3
-    modules.addressBlockList.title: e04a1f16b82d05ba758141be413fdab4
-    modules.countryAllowList.description: 6da1e6f87fe441581c3903ba5c8b33cc
-    modules.countryAllowList.shortDescription: 9760e64adfb31b3954371ffea3386d81
-    modules.countryAllowList.title: 3735bc37360665d18c8ae3b8f3a26923
-    modules.countryBlockList.description: 16ebcd7c0a1b034de8aaa8143fb55e95
-    modules.countryBlockList.shortDescription: c3e99c698d4504e3a98142e47601ca3d
-    modules.countryBlockList.title: 7535e8a22af00ea16c0415fe4b06080b
-    modules.identityAllowList.description: eaefa7d91e797f10a1df44707e23223b
-    modules.identityAllowList.shortDescription: 5a77f79ec1e1b6dfd4e84c5c51cd4580
-    modules.identityAllowList.title: d47ac23bbed7906d6dcd2e874723a8a6
-    modules.identityBlockList.description: ad2c105097adae1ce07ea0111d13bf15
-    modules.identityBlockList.shortDescription: 1297032359b9e5092a43d4a7a3a4a2a7
-    modules.identityBlockList.title: 34c34826cd40400b50b27a78b9d2b872
-    modules.smartIdentityVerification.description: d593a9711ba3e6d7f99550dd40478fd4
-    modules.smartIdentityVerification.shortDescription: 1f7ed92a00221a24732342959173e086
+    modules.addressBlockList.description: 55ca98877d397a2c0e23b7beab84c083
+    modules.addressBlockList.shortDescription: 7327d1395282ea9aadc788e8e2e53c4f
+    modules.addressBlockList.title: 4271bee3ee5966219f83b0814efa6dd4
+    modules.countryAllowList.description: 93d289680ef63cce231bf23226edf7d5
+    modules.countryAllowList.shortDescription: bc977be0f2b8cf3eddbcd5f1d1372e4f
+    modules.countryAllowList.title: 8b1e608a68d8e2f17374f2849d859a2c
+    modules.countryBlockList.description: 16226ad73aea876438c9d13334ae7f68
+    modules.countryBlockList.shortDescription: da7fdee26bc3a78acb29496d850f4cce
+    modules.countryBlockList.title: 9a312e4bed74c6cdb15575e54e8f3dda
+    modules.identityAllowList.description: c15007dc9fd1d92822997e0d48309e00
+    modules.identityAllowList.shortDescription: 4b630d5e6d658151e31e91af06e42c49
+    modules.identityAllowList.title: 54000d249316b254c5b13822cda1e474
+    modules.identityBlockList.description: 664e4898812758c810c723b9abd18f5a
+    modules.identityBlockList.shortDescription: 7fbec47b96090d2eaeb2241848e18d45
+    modules.identityBlockList.title: a14d6cda6b2beae2108c7589063a220e
+    modules.smartIdentityVerification.description: 4dcc7f541acb5d29a6fe1fa7e9109669
+    modules.smartIdentityVerification.shortDescription: d1bbb9ce8c65098342353c9f9ae5f575
     modules.smartIdentityVerification.title: 4f192db14a28f8920232bd27e2191d0f
+    title: 9c0408c775a2b61052a2e700a89f396f
+    sections.enabled.title: 00d23a76e43b46dae9ec7aa9dcbebb32
+    sections.enabled.description: 8dd151732649a2fc15f2e0c39b4be9dc
+    sections.available.title: 78945de8de090e90045d299651a68a9b
+    sections.available.description: f5cbcf571ca70dea311086bf408d4a31
   locales/en-US/components.json:
+    expressionBuilder.title: 79fb4fd9e11a545fb32df7a262b391ae
+    expressionBuilder.topics.kyc: d8ce714c8a76133a8d5746e3bfdd7ef7
+    expressionBuilder.topics.aml: c043056a0a32cb5e104aeb2cf4ff7ba8
+    expressionBuilder.topics.collateral: 20288cb4d28958851ff9f7678b6dab3c
+    expressionBuilder.topics.isin: d03440b351474d0b1a3f851c3453e8de
+    expressionBuilder.topics.assetClassification: d1e3606be4a2435f6a1b1e7439db774a
+    expressionBuilder.topics.basePrice: 362a58d571d51c1270df0f1b7d02577c
+    expressionBuilder.topicInput.selectPlaceholder: 38f801149939aa357d31fadcc14d5325
+    expressionBuilder.topicInput.notLabel: 10df3d67626099df882920ba6552f16d
+    expressionBuilder.topicInput.addButton: ec211f7c20af43e742bf2570c3cb84f9
+    expressionBuilder.topicInput.orStartGroup: 2422d03a77426fe91699d9a4e71cce9f
+    expressionBuilder.topicInput.startGroupButton: 6375a6e230513624abd7579536f4966b
+    expressionBuilder.operatorInput.chooseOperatorLabel: add97d68f4074815a85591756612dbab
+    expressionBuilder.operatorInput.andButton: 558ffc8f5770d8e4f95f51d822685532
+    expressionBuilder.operatorInput.orButton: 1d00e7dce692e8dc3f6877f035e3a616
+    expressionBuilder.operatorInput.endGroupButton: a29a9f8375c94a6f5bc7fdd1abdc3f0e
+    expressionBuilder.operatorInput.openGroupsText: 2558f0fb0e35e6b2a833f0db14b2f31f
+    expressionBuilder.display.clearAllButton: 81aa2078d1eceede831b2976dbf32e62
+    expressionBuilder.display.validExpression: 5fa5c2b64d14ba3c89a7fa165af087ff
+    expressionBuilder.display.closeGroupsPrompt: aa8c75026a777e67039aaceeab89b179
+    expressionBuilder.display.addTopicPrompt: 07382647774753d286401b33ba449643
+    expressionBuilder.display.unknownNode: 696b031073e74bf2cb98e5ef201d4aa3
     kycForm.country: b41ebc0108650458f4af080975be2e88
     kycForm.dob: 4965e9e891c3381d1ec7379f036131de
     kycForm.firstName: 20db0bfeecd8fe60533206a2b5e9891a
@@ -815,6 +853,11 @@ files:
     kycForm.residencyStatusOptions.resident: d7e0498dccc032ea379a47acd536f8f7
     kycForm.residencyStatusOptions.unknown: c93099c4755526bf9af45cdb550e35fc
     kycForm.submit: 26030c760e6e50206710389d768204a9
+    kycForm.identity.confirm-description: 263a5472542ca101badfc26b662e38e0
+    kycForm.identity.confirm-title: 45378c7cac9509acdbd995bf2892f948
+    kycForm.identity.deployed-toast: d4293ea5418c063d7b5680dd99d010de
+    kycForm.identity.deploying-toast: 8f9930d7bb1d3470d2413dee28c3c323
+    kycForm.identity.failed-toast: 4725cbe8395692cce53731738472648f
     verificationDialog.authenticatorCode: 9cf3d5ddd9cfcc977216a17468e2ed8e
     verificationDialog.cancel: ea4788705e6873b424c65e91c2846b19
     verificationDialog.codeLengthError: 586f47444e7706c9390aa8f970e159bb
@@ -1148,6 +1191,25 @@ files:
     letters-only: e2ebdfb15f7b091457e65aa5c142b225
     noCountryFound: 23f3b0c6fedff155004bf27bed25b422
     valid-email: 6fc78ea6908a7cbd0b36f7bc468b4275
+    address.selectPlaceholder: b6b30a66b257ef0a24eb0cb2bf98b1e6
+    address.searchPlaceholder: 460f543ac859350cbe349b374d2d1a36
+    address.loading: 16bfbf9c462762cf1cba4134ec53c504
+    address.noResults: 26aac8af535a617f53fd0dcd710ff3f8
+    address.noAddressesCreated: de74dfbfad00726b3003d3a9d637c97d
+    address.recent: dae52b80711ee1029c7006f95018d300
+    address.searchResults: fd69c5cf902969e6fb71d043085ddee6
+    address.allAddresses: b1c94ca2fbc3e78fc30069c8d0f01680
+    address.searchInstead: 4103b524aca1594469153ce8e7205829
+    address.enterManually: 90a5f22cdff46c106eb927b92562347f
+    address.addAddress: 6bc011e375bcee14786bb43acdf00a8a
+    buttons.back: 0557fa923dcee4d0f86b1409f5c2167f
+    buttons.cancel: ea4788705e6873b424c65e91c2846b19
+    buttons.disable: bcfaccebf745acfd5e75351095a5394a
+    buttons.enable: 2faec1f9f8cc7f8f40d521c4dd574f49
+    buttons.next: 10ac3d04253ef7e1ddc73e6091c0cd55
+    buttons.submit: a4d3b161ce1309df1c4e25df28694b7b
+    buttons.leave: a52945dbe283de2f7e9d63ca3417f36a
+    buttons.save: c9cc8cce247e49bae79f15173ce97354
   locales/en-US/formats.json:
     date.short: addc6b0b2c59594f745655d957182baa
     date.medium: 78b397314cc34f99ec3740c2a9f74793
@@ -1259,6 +1321,7 @@ files:
     continue: a0bfb8e59e6c13fc8d990781f77694fe
     deploying: a51242b36009886a35d79b2c94644fb3
     generating: 530a6ed46ff9e1aa707e0af48a465be7
+    cancel: ea4788705e6873b424c65e91c2846b19
   locales/en-US/issuer-dashboard.json:
     actions-heading: 06df33001c1d7187fdd81ea1f5b277aa
     asset-management: 177512b9add0b40c38dad61838bf7d79
@@ -1314,12 +1377,12 @@ files:
     addonCategories.income: 1f08d08fd864b99cbeebd88b9a0784a7
   locales/en-US/onboarding.json:
     assets.asset-factories-deployed-successfully: 422ae968b691ccdab681891825961151
-    assets.asset-factories-description: 7db30c4a80e9cf613bf9ba5b2dc42b71
+    assets.asset-factories-description: 77a838e8281e055c7e8b819e4902b05a
     assets.asset-types-deployed: 57c4ac2994eae2a378b34a3cc0e78b73
     assets.available-asset-types: 0360e8a9fd70eae004dc8a01bc18d4d9
-    assets.choose-asset-types: 1e7045eebb490d8c807bb0dd2c498d35
-    assets.confirm-deployment-description: ac614f0f218524079b512ae68d2f7d12
-    assets.confirm-deployment-title: fe59f75ee12048f2de4567e8358f335b
+    assets.choose-asset-types: 527ec5ccd2a5e362471b9ec7b111625f
+    assets.confirm-deployment-description: 9dd8d6b2be4f7731027fd4dc57d6ad9d
+    assets.confirm-deployment-title: c357a36ad9a7113301090bf5cac11f81
     assets.deploy: ee13675e8f2cc23d69ad38390beefe21
     assets.deploy-assets: ec2030e4765ba01fdbfaa18e689da2e8
     assets.deployed: 422ae968b691ccdab681891825961151
@@ -1327,52 +1390,55 @@ files:
     assets.deployed-label: c618135ffa9bb30bbbf8ad72085cafbd
     assets.deploying: a51242b36009886a35d79b2c94644fb3
     assets.deploying-toast: de88bfdc00ad47c72c2de7461d99c084
-    assets.deployment-warning: 6a7b986dadf85ed14c08b4414be61495
+    assets.deployment-warning: 1314d158ad39f37a12cbcaa3e335fc8b
     assets.description: d87ac1a58f23916d54656000fd902c86
     assets.descriptions.bond: 9eeac4a36524e0bfaa6a585152803c46
     assets.descriptions.deposit: 7743e579d85431998cd86c740561b9cb
     assets.descriptions.equity: 3b7cb1c2e7008febc1715b8b974b21df
     assets.descriptions.fund: b2e5dc94cd2df8e917b8e3e3abd1b649
     assets.descriptions.stablecoin: 4f0bb2c6818d91ae052ad9f34586e503
+    assets.factory-explanation-1: 2eb064cbb98c278bccf86902c871bf57
+    assets.factory-explanation-2: c928e785daa3a25e0d4944ed89ed3507
+    assets.factory-explanation-3: b5e0ce09f0b6f15ed2e3dca826efe401
     assets.failed-toast: 0217b7b3e8ceaafbb815a9fc5ed0fe43
     assets.info: 811367d0bff99f3a52e870d5a791b8cf
     assets.no-system: 27f9d7982b4c6e3045e9641216cd728f
     assets.select-all-asset-types: de6322ab756831f089554b0b326ed075
-    assets.select-asset-types: bf89db73bf34f532f78f2a35d73d7d49
-    assets.title: bf89db73bf34f532f78f2a35d73d7d49
+    assets.title: f25ee353ea8001ee0f1c87e4051bea51
     assets.validation-error: 3b7ff9e392c0ec57c68e220bfeb173af
     assets.what-are-asset-factories: b33676c3702e6873ecef44c4dbb758a1
     assets.your-asset-factories-ready: 088a91b0b6e79b943da4c49f1f272991
     groups.addons.description: d113c2a797ba42218e4be7c20d495958
     groups.addons.title: 2ed9fe3318cba954f72a23d9cfa0cf21
-    groups.identity.description: 5bc55fcc123239ee3dbefb41e23bec06
+    groups.identity.description: 4eb7c1d1556c939dac9f6e5993a2ad7f
     groups.identity.title: c9c5c65fb4af9cf90eb99b3b84424189
-    groups.system.description: ecc5e5ee280ceaef7368f0cc1d41635e
-    groups.system.title: 7958a8ab34b308df3f2d377a0bf60980
-    groups.wallet.description: f6967e3ae4a21a7e7c84dcc3dc042562
+    groups.system.description: 0bb71d2252e4f80dca9716714a8cbd7e
+    groups.system.title: a45da96d0bf6575970f2d27af22be28a
+    groups.wallet.description: 320f1a3c25fae3ae4469321bca29d57e
     groups.wallet.title: 156e132b014314b1eae89410e54bcc8c
-    identity.confirm-description: 263a5472542ca101badfc26b662e38e0
-    identity.confirm-title: 45378c7cac9509acdbd995bf2892f948
-    identity.deployed-toast: d4293ea5418c063d7b5680dd99d010de
-    identity.deploying-toast: 8f9930d7bb1d3470d2413dee28c3c323
     identity.description: 1842ab7a31d2cc6e3612c28da8957e1d
-    identity.failed-toast: 4725cbe8395692cce53731738472648f
     identity.intro: 4674dcd26ac1797d3f819f853797f3eb
     identity.title: edf4c4589b02d0aaa9814dab5ab81893
     identity-setup.address-title: 861a917c79fac1b7f6842220ac3971b2
-    identity-setup.confirm-description: 263a5472542ca101badfc26b662e38e0
-    identity-setup.confirm-title: 45378c7cac9509acdbd995bf2892f948
+    identity-setup.confirm-description: 231c826e4919cdc08bdbcb67a09a6886
+    identity-setup.confirm-title: c357a36ad9a7113301090bf5cac11f81
     identity-setup.deployed-toast: 30fb59fef3cdbe8cf662a47a68fb672e
     identity-setup.deploying-toast: acbda1dbd54649fb09ab7eae2977f536
-    identity-setup.description: a270f13f86073ad5b1c319fd2b00cfbf
+    identity-setup.description: 23ad306d64797f927604a3df198fbde0
     identity-setup.failed-toast: 08dc94580b881a999b4dc609d65753d3
-    identity-setup.form.submit: bedf90508a7b9edfa8a846af84f9341b
+    identity-setup.form.submit: 6f740cd763a6373a0afef9f9b3c58f33
     identity-setup.form.submitting: acbda1dbd54649fb09ab7eae2977f536
     identity-setup.info: 63ad81fd115b5804057475a8ad9d4e8b
     identity-setup.info-description: b845b1c891b1d6396dcc71003c89fd6c
-    identity-setup.success-message: 4f21121435727caec477456bf25a2dd5
-    identity-setup.success-title: afacc71b089e3dabc8de259b9453f63d
-    identity-setup.title: 22178f36a754d4cefc8e789b95860afd
+    identity-setup.success-message: a4d63fb70cd06d7854199ae89d7d95ac
+    identity-setup.success-title: 68a0b7d77696b64ffc7a3d8e1befac34
+    identity-setup.title: 9f41df461026aa500a7564e7e9e89328
+    identity-setup.deployment-warning: 8c5676c6f87c57ac521f55301e65918c
+    identity-setup.transaction-confirmation-info: fa2a33559e0f1dced848558211fa7abb
+    identity-setup.body-1: 7fd4de980ef9932867e662107511244a
+    identity-setup.body-2: ce79c8b78e6d1441b631758a8b593b74
+    identity-setup.body-3: 4d8448d791e2915bc83611d415e6684d
+    identity-setup.body-4: 49aa590b525c64c9f3af6fe7529ed1a0
     sidebar.description: 62ced1d73050700c57198e309f4b4a18
     sidebar.title: d5e8adad22e05954b9c0c909cd565768
     steps.identity.description: adb1cfce8b39ac01eed71c034b586874
@@ -1393,8 +1459,13 @@ files:
     steps.wallet-recovery-codes.title: 250a32ca82ba4a48d95083577c826f15
     steps.wallet-security.description: f83d5a5dd8d63580163ac91d925550ef
     steps.wallet-security.title: 28a07c9e272fac78d832d08ed50bd369
+    system.admin-role-explanation: 70551ac9c8085c96ca05525292a7400b
+    system.bootstrap-contracts-header: e149d5c94cb55619c77b339589d5e93d
+    system.bootstrap-explanation: eda71d232c9d1b74cab653cbc3ae38ac
     system.compliance-engine: 199ab2342ead118a2955eb46506516d8
+    system.compliance-engine-description: 0286f6b60d2c839d9f03986df1cb4a2c
     system.compliance-engine-label: b7258ec942eb87333cb33476349f0102
+    system.compliance-engine-name: ae1e9deb895013c2c162a2186ea025b0
     system.confirm-deployment-description: 9bfa596c93d1091181aa90c09ed55612
     system.confirm-deployment-title: 62d8282c209cb2cbd974a639acccbc5a
     system.core-system-contract: 3fa422da5b1ad9c8eb742e70db3921df
@@ -1404,24 +1475,39 @@ files:
     system.deploying: a51242b36009886a35d79b2c94644fb3
     system.deploying-toast: 3a31a073574888690dabb427354e72d3
     system.deployment-details-description: ff3aa5cbba8a6c84d46064fce05408bf
-    system.deployment-details-title: ac4cc23ff41c1cade709408d699aa76e
-    system.deployment-warning: 061248a2c55253920f7fd0ea46201f58
+    system.deployment-details-title: d78de1c72dbd57cd4e96a13d7fd4ebe7
+    system.deployment-warning: ac73bff28e36d9c8d8f3bb25923b3402
     system.failed-toast: 08fa99234c6cd4bc8ac9158d230e1797
     system.identity-registry: 3e58fce1797906836880908438d88909
+    system.identity-registry-description: cfb5cec1f64d2bbf07c40161e0c5a8f2
     system.identity-registry-label: fae52950c9c1d550305312cdf80fd3b3
+    system.identity-registry-name: 6de731e0a52039960519b49a29c2835b
+    system.infrastructure-conclusion: 72fefa91511c45bb2b2b7cd733165d8c
     system.initialize-subtitle: 58f672dfc44ab88c20e4b5c7b1ee5c21
     system.initialize-title: 9b9bcc4e8b71377dcb08961f189a824f
     system.system-contract: 880e61fe2353bcad18adf8b7382e29ff
     system.token-factory: ea5c74789b0edc944b027b8588a1716d
     system.token-factory-label: a79e535157538912c26e1282492ef368
     system.trusted-issuers: d3d5c2981662eb08f313bc8cfc4f694d
+    system.trusted-issuers-description: 285faedf0bd7a7eb90b67fdae2e56cc5
     system.trusted-issuers-label: e43f7d581fc4f590b259736ddf1ba36b
+    system.trusted-issuers-name: 6f630019346834118154ffd6ac0ba782
     system.view-deployment-details: c5dc4244172ec39400f60ad4ab6d3957
     system.what-gets-deployed: 7f58f896ff31f056181b562cbae9f343
+    system.admin-role-granted: 4ec6dff08f51f1b84fe568181b17f04b
+    system.admin-capabilities-intro: 2619d95aebbb0c0493e4e6b463523739
+    system.admin-capability-assets: 40cace7bcf74ebde6af3ad6fe577cf0d
+    system.admin-capability-admins: 6173d2f92661c297a4397aae967617ec
+    system.admin-capability-compliance: 435f1b3e172b6e5d852fceeeef11c988
+    system.contracts-live-message: 167758bb8252abce7af6bc125009d32f
+    system.configure-system: 934dc3b17eb475f72b8b24c25e1ee810
     system-addons.addon-deployment.addons-deployed-successfully: b253c70ca6491a45e29d3ab12e44a8a1
     system-addons.addon-deployment.deployed-addons: cd6791d8989f4cd14e52023e4cb2eacc
     system-addons.addon-deployment.description: df37bee0ef4194b3e7b211ae64df8ce3
-    system-addons.addon-deployment.title: 942961847f1d4d6ebf77db89a22bcceb
+    system-addons.addon-deployment.title: 124c2c51381760f6d35fb884db0f7744
+    system-addons.addon-deployment.intro-1: c8e66413db5e5ba2ba93fcde82d501dc
+    system-addons.addon-deployment.intro-2: 698d9060d9739110bf51746cafba5ebe
+    system-addons.addon-deployment.continue-to-identity-setup: 1c44abe5a259c027cec5aea535c6b571
     system-addons.addon-selection.addon-types.airdrops.description: e27154b2c8dba24b8e8134bd4485b1c6
     system-addons.addon-selection.addon-types.airdrops.title: 64fadec1e51cb23ad1fc43e5d19efb35
     system-addons.addon-selection.addon-types.xvp.description: cb385441a189307da968dfcb0213ed32
@@ -1430,18 +1516,22 @@ files:
     system-addons.addon-selection.addon-types.yield.title: 97345487190c327e1e3ac998e4bf4d08
     system-addons.addon-selection.addons-description: b843414e4b36c257efb838c9b0aa0745
     system-addons.addon-selection.available-addons: 1547171a0dbc591e04c7313bab12ac68
+    system-addons.addon-selection.deployment-warning: 1314d158ad39f37a12cbcaa3e335fc8b
     system-addons.addon-selection.confirm-deployment-description: a3292aa1232019944a7dd9648bac1d30
     system-addons.addon-selection.confirm-deployment-title: 49e31f63486340a7d07d44e8c1181df2
-    system-addons.addon-selection.deploy-addons: 9c449bca75ffa187a62af927d2b428d6
+    system-addons.addon-selection.deploy-addons: 24238bb66b8d046864fe02f5814d99a9
     system-addons.addon-selection.deployed-toast: b9dc265aadf545dc1ddb114044d50da9
     system-addons.addon-selection.deploying: a51242b36009886a35d79b2c94644fb3
     system-addons.addon-selection.deploying-toast: 5b9cb82cb6c6307fdfb2029c8e14bccf
-    system-addons.addon-selection.description: 8c96bb7e95f854df64c3f5086f5deec0
+    system-addons.addon-selection.description: fcfcba61461077c4d8ea8f3e67cfe3e0
     system-addons.addon-selection.failed-toast: ffc5a5dbf981e3d4bc7e8c3a2df57bbe
     system-addons.addon-selection.no-system: 27f9d7982b4c6e3045e9641216cd728f
     system-addons.addon-selection.required-for-bonds: 4251971f1ba0d3f2c40e2c2903f60385
+    system-addons.addon-selection.intro-1: 91a12164273f01b55bd7584d367d9399
+    system-addons.addon-selection.intro-2: d58576e99f21b70ad7f9335dbf5f1c5e
+    system-addons.addon-selection.transaction-confirmation-info: fa2a33559e0f1dced848558211fa7abb
     system-addons.addon-selection.select-all-addons: ac6b5a672f9b6f0042afd506ef44b763
-    system-addons.addon-selection.title: 30cfe17b95d1491aad5ffef6a7e5ca60
+    system-addons.addon-selection.title: 2e98ef6cefb041ff77975b96d7946b10
     system-addons.addon-selection.validation.invalid: 09d73221785caf0675fbd9b0e2e491d5
     system-addons.addon-selection.what-are-addons: ab7bc3522afbb2e73fd1f1af24d591ce
     system-settings.buttons.saveAndContinue: 04ae41003190bd07e63340c3c7d4bc6c
@@ -1451,7 +1541,7 @@ files:
     system-settings.form.baseCurrency.description: 7cc16eeb83aa032117e465ea7554919a
     system-settings.form.baseCurrency.label: 58d5c14f81669ba2d7b24bd6664f7f87
     system-settings.form.baseCurrency.validation.invalid: 240c0cb02cd345399f52c66f310f66ce
-    system-settings.subtitle: 4a87cc90a6e01e816af93c1b8084d112
+    system-settings.subtitle: fcba384734e15c954df730923a909e86
     system-settings.title: 604f1eff48363abf9a2de025dbe316e2
     system-settings.toast.error: 0f6da6a6e485ad75f3ba049e7d464ac2
     system-settings.toast.exchangeRateSyncWarning: b77a132f23a9d21f4075e36917e8e282
@@ -1551,8 +1641,10 @@ files:
     wallet-security.pincode.submitting: 7f1650ee875e9a88e5b2c0899dbca37d
     wallet-security.pincode.success: 3250ebdc2eafcb2978ef2f2647c22ee7
     wallet-security.pincode.title: 427cfb01c28ad6f50496b891a50fc646
+    wallet-security.recovery-codes.action-required: 2da205d223571c4ec3344eb58be6ba80
     wallet-security.recovery-codes.confirm: a8c682adee4abb5a35793e0506f312ce
     wallet-security.recovery-codes.confirm-error: dd9dd8140ad3f42854a48c40e4692e8e
+    wallet-security.recovery-codes.confirm-stored: 0e8d682f870dea134dc3844ec01b2ed8
     wallet-security.recovery-codes.copied-to-clipboard: 3d6d7339a9aef7f7cea697358298b290
     wallet-security.recovery-codes.copy-all: 4102a560377828212cd45be38b47413d
     wallet-security.recovery-codes.description: 0a1fbedec94fce0b1bc86ce3ec0468e1
@@ -1620,14 +1712,49 @@ files:
     actions.delete.success: e4519eac64d809aeb2ab1eb28a4d11f2
     actions.upsert.success: 42daae8b6e024d29d02a90b83ae69bc4
   locales/en-US/stats.json:
+    charts.common.noData: efba20a02ee4c1c0f9ca2ce2b5f92b0d
+    charts.common.noDataDescription: 5441f6bdd917e3a34a9bfc5b9582701e
     charts.assetActivity.description: 0a2928764dd1e858b2facde52d7585c7
     charts.assetActivity.title: 0af652d4c797a0c6b75cff690129f572
     charts.assetSupply.description: 800d6e129159b6f724380855fffb9f41
     charts.assetSupply.title: fce5ea1f98b0ccadb1cdb32e22f04d68
+    charts.totalCollateral.label: 412a97b3900a6749e168a9d078c33969
+    charts.totalSupply.description: beb086aaf4327664cd35addf4ff679d6
+    charts.totalSupply.label: 1ecae95c3c8f236721cce5b740b2deaa
+    charts.totalSupply.title: 0c563db526939b9bab95f29df4f2b58e
+    charts.totalVolume.description: e3f77e46feef2d73a5631e7e0efa221f
+    charts.totalVolume.label: ea4cacf786de47ee79720980514c48d5
+    charts.totalVolume.title: 8eba56175eab955eab07af7766f7bdfd
+    charts.supplyChanges.description: 9c001a250c090aef1fde86be39791637
+    charts.supplyChanges.title: 4c51118029494e03ce25e4a441f189e0
+    charts.supplyChanges.minted: 4e99228c50def413ce851cc228ec0af3
+    charts.supplyChanges.burned: 26087341433e59614e8a48d71b91f72e
     charts.transactionHistory.description: b30b6cd7e0f08bd41c258ca64aa6b141
     charts.transactionHistory.title: ed431c9f4d10a2ead0eb3643f5e33f33
     charts.userGrowth.description: 31484fc970aa03ebc9729bde83aa16d5
     charts.userGrowth.title: 9fca26e3bdc0305981c519e5aa67881d
+    charts.walletDistribution.title: 3b4a6eb75af26d63996b584c1650499a
+    charts.walletDistribution.description: ebc7b0c11d01b59739f27b425e91a5a1
+    charts.walletDistribution.holders: 44cebf39391cd419ec1aa92c7acbcec8
+    charts.bondStatus.title: 6ea2b8858f6f04dd5d058972ad251b23
+    charts.bondStatus.notBond: e81c6ec0f5416b940f47db65a3a30581
+    charts.bondStatus.notAvailable: 3bfdf1ba798ed64757c49b79dec71be0
+    charts.bondStatus.completed: 07ca5050e697392c9ed47e6453f1453f
+    charts.bondStatus.remaining: 5a1119ecb764165f27cb37b6f50134f2
+    charts.bondStatus.issuing.title: ababcc6ec275ea28568e4ee18dabd162
+    charts.bondStatus.issuing.description: af83a7e57c377fb6e883a9d0d5adc201
+    charts.bondStatus.issuing.label: 763c702c0db6a92ea502e19b52cc1df8
+    charts.bondStatus.active.title: 33de2c424eaabc1102d11f5c7f43926a
+    charts.bondStatus.active.description: 37a3469fa61667545a6fcd61a1c024b5
+    charts.bondStatus.active.label: 4d3d769b812b6faa6b76e1a8abaece2d
+    charts.bondStatus.matured.title: 7af8416c564eec77e8a50ada040d8a83
+    charts.bondStatus.matured.description: 1f29204a84d6cf393d9f9ea433b39a62
+    charts.bondStatus.matured.label: cddd8b8c35283f03dc0ed6702029247d
+    charts.collateralRatio.title: 3fb76d38107e31e0700385c968535684
+    charts.collateralRatio.description: cb7e13210694485595510413c2fe1394
+    charts.collateralRatio.available: 62058c251671619446b5eb82262e553d
+    charts.collateralRatio.used: 4dac7fc3660771788c64971501376118
+    charts.collateralRatio.ratio: 9b5838dd2ee02c169b5c8aee55bb8b29
     title: c33e404a441c6ba9648f88af3c68a1ca
     widgets.assets.empty: 4b16a3ddccdc79f25e05b929ed437c25
     widgets.assets.title: b17f2caa9a62a80c0e6951143c1f9686
@@ -1641,14 +1768,12 @@ files:
     widgets.value.description: 0f07cf6e243339822e9740c86b6ce4a0
     widgets.value.title: 62668f75fc6977f3d09df632d1585d07
   locales/en-US/system.json:
-    addons.messages.accessDenied: 2ea4dc508a89208235caf6067eff845f
     addons.messages.allFailed: a5b2258c172d365a252134459507ae91
     addons.messages.allSuccess: 764e31a1183f0aeee6ef3af769732276
     addons.messages.alreadyExists: 40a23c21bc00751fa83d6490fdafd3e5
     addons.messages.defaultError: 2a6c27d41e8889c70ff013ab1f115588
     addons.messages.failed: 6754f19735f88e5da315cb772e2a8e7f
-    addons.messages.invalidConfiguration: 85265e940fbb820dd2475946e7bc48d9
-    addons.messages.invalidImplementation: 337077ee180f33bc090ab1e97fb9b93a
+    addons.messages.invalidConfiguration: 74e0ccb6fb00c52fc1d968ea1ee38be2
     addons.messages.partialSuccess: 796e480417451db44dbe8de5b7c61356
     addons.messages.preparing: 119919a643bc3fb78734793c09dbd3ba
     addons.messages.progress: 68969e22db13a5803b4f05e155586db2
@@ -1670,6 +1795,12 @@ files:
     identityRegister.messages.failed: de9c34d32ea9c4d454b7f3be2cfdb82f
     identityRegister.messages.preparing: 3a032eb25ba20244483ff7fe9abe0144
     identityRegister.messages.success: 975de478fc3819b6f441cc83367c28cd
+    complianceModule.messages.preparing: e99439ed98fef8531fb6ce8a90df5484
+    complianceModule.messages.success: ca1df92106f823e2730b71219ef1ebf0
+    complianceModule.messages.failed: cdc01d54c62946688a32029bcd013434
+    complianceModule.messages.progress: 7691836ae1875b7e117656de5bcee540
+    complianceModule.messages.registering: 2ef2bc26528473b9c5de8b5d4600c022
+    complianceModule.messages.registered: 5f7c02b1d1f320d909240a9924a04497
   locales/en-US/theme.json:
     dark: 3924c958175e666737225e86a68ac4b4
     light: 6c3e844b0ee2993a4802fa3870103d2b
@@ -1865,16 +1996,25 @@ files:
     actions.approve.submit: 6f7351657f795bc1357a53142b1184cc
     actions.approve.submitting: 99213e6970fd78b50d3ef1f67dd2fc9e
     actions.approve.title: c4c3fcc8fe773fe6f6143276415a8521
-    actions.burn.description: da2fd610fab2dcff96f5d08cb8c0fde1
+    actions.burn.description: 62dfdf101e97353ecb34be8ccd825356
     actions.burn.label: 030c56fa5d9ffea1f616f851bfe296e7
     actions.burn.messages.error: 3d619a3f3656522c35a1437d771c3b2e
     actions.burn.messages.failed: 7e3fac4565233d36bb63118d7fa3ce00
     actions.burn.messages.preparing: 77253132d732fb881e32c8368b872f4c
     actions.burn.messages.submitting: 0b2fdf9ae4de00498cfd80c4fb51022f
     actions.burn.messages.success: 21ba4c4fd09427dbcd86ea90d07e19d6
-    actions.burn.submit: 030c56fa5d9ffea1f616f851bfe296e7
+    actions.burn.reviewTitle: aa6b80b31c6e3a6556ee1a5b3ee55815
+    actions.burn.addresses: 284b47b0bb63ae2df3b29f0e691d6fcf
+    actions.burn.submit: 89bdf0d8359f3032e2d2100c3127ae82
     actions.burn.submitting: 9694d43afe9267f2b1f43ef1d8876796
-    actions.burn.title: 030c56fa5d9ffea1f616f851bfe296e7
+    actions.burn.title: ca6e49421c22d552029bd3c06b9e2971
+    actions.burn.form.addresses: 284b47b0bb63ae2df3b29f0e691d6fcf
+    actions.burn.form.addressLabel: dd7bf230fde8d4836917806aff6a6b27
+    actions.burn.form.amountLabel: b2f40690858b404ed10e62bdf422c704
+    actions.burn.form.addAddress: 6bc011e375bcee14786bb43acdf00a8a
+    actions.burn.form.max: 9bf0f91a361da2203c76955b3afa0509
+    actions.burn.form.hint: 31c2603413eeef3d0f17f81f0a1902fe
+    actions.burn.form.total: 96b0141273eabab320119c467cdcaf17
     actions.copyAddress: 6b35e4c0b1b3d4d2aef429a90f84e1ab
     actions.create.creating: d4af7f27b9cb7b40815407cf3e90bc07
     actions.create.error.default: 401435f37f23cafc80797af8a20c6a66
@@ -1910,7 +2050,22 @@ files:
     actions.freeze.submit: 65467087a19145f43129bba42781aea0
     actions.freeze.submitting: a8acb461dd81eecc646314d5502d9c3d
     actions.freeze.title: 618354dc5a85343c586c88f2a40bc45c
-    actions.mint.description: 6c54e22807af2343f16303885da0c644
+    actions.grantRole.description: 50d6539ec5876b37e6a3bfe94bcef749
+    actions.grantRole.label: bac0578e46858f11520c7e9bee9a99b8
+    actions.grantRole.messages.error: 98423ff7b56336121f6d34230abc4c7c
+    actions.grantRole.messages.failed: 9a184dbbf3d10d207f102c69b3314771
+    actions.grantRole.messages.preparing: d219a3f70f15c6043326c356cfa4ce00
+    actions.grantRole.messages.submitting: 9306eab4610490994fc8cf6ebafa8592
+    actions.grantRole.messages.success: 49f104c38d019ab45a0558cedb20315d
+    actions.grantRole.submit: bac0578e46858f11520c7e9bee9a99b8
+    actions.grantRole.submitting: 0f6db1bc770649cc673753bf14f35527
+    actions.grantRole.title: bac0578e46858f11520c7e9bee9a99b8
+    actions.grantRole.form.selectRoleTitle: 50d1d3ffaee98d10d3c757450850b73d
+    actions.grantRole.form.targetAccountsTitle: 9e2b5b80d2063ce8310a3d93bdf84a19
+    actions.grantRole.form.accountLabel: 08bd40c7543007ad06e4fce31618f6ec
+    actions.grantRole.form.addAccount: ea60dd0dd5e4278aa90a3f4905f77a19
+    actions.grantRole.form.roleOptionDescription: 723f777f2c465d568022b6f9967f12ae
+    actions.mint.description: 785dee03ce08e9c8f3fd1ed398175c0a
     actions.mint.label: f8730cec73aec466d31a1619c9977929
     actions.mint.messages.error: 97b4e054da717ae832210cc755631bb5
     actions.mint.messages.failed: 38636dea3311e210dd7e021d07bd4627
@@ -1921,16 +2076,27 @@ files:
     actions.mint.messages.submittingBatch: 70d6d3725f76e38fbf5499b09e099d52
     actions.mint.messages.success: 60b1a86c0e08fb80de5356a6783d2e84
     actions.mint.messages.successBatch: 2ba94a74a8c6b5488fb61ede1e2bb993
-    actions.mint.submit: f8730cec73aec466d31a1619c9977929
+    actions.mint.reviewTitle: f7d02926c5a570275035b5b89eabd8b2
+    actions.mint.recipients: 5959cf158e76f7c6f27bff2917ee05b1
+    actions.mint.submit: a61960a29143488383450a45081bf27a
     actions.mint.submitting: 8ed7c27854bfd1e3d8dcb53aa93a6163
-    actions.mint.title: 25116d094172ca1b7678e0de977bb11b
+    actions.mint.title: cf6e76b4a8e60b29855e3b883e00b000
+    actions.mint.form.recipients: 5959cf158e76f7c6f27bff2917ee05b1
+    actions.mint.form.addressLabel: 5d6103b662f41b07e10687f03aca8fdc
+    actions.mint.form.amountLabel: b2f40690858b404ed10e62bdf422c704
+    actions.mint.form.addRecipient: 612ae7bff8c65e8ad3144f246af88e1b
+    actions.mint.form.limit: fbbc02fad0bec1b18b327d19ba64e3de
+    actions.mint.form.noLimit: 7eb12ea27a4b8b7bdb6a105ce3aece71
+    actions.mint.form.overLimit: 5057bd620fdc71d9b1a1bdac6162a3fa
+    actions.mint.form.limitLabel: cb38ce3d4586cb4251493c8501ecc075
+    actions.mint.form.total: 96b0141273eabab320119c467cdcaf17
     actions.pause.description: cb4ac4a81e5c68a8fd9865925b8701e0
     actions.pause.label: 891ca908610c298ecb75fff617aab0b3
     actions.pause.messages.error: 5c527ccf14b9d801e45f37da9df422d6
     actions.pause.messages.failed: 19ee6dcb9ef8d735e762f2cb35b56fd0
     actions.pause.messages.preparing: 21ed0072254e33b9d3001e42975db46a
     actions.pause.messages.submitting: 2a2be388607869b07c26cb3c9ec9275d
-    actions.pause.messages.success: f698948e8256087534eedba873a29240
+    actions.pause.messages.success: ff37884115dcf4a49ae506342996dbf5
     actions.pause.submit: 891ca908610c298ecb75fff617aab0b3
     actions.pause.submitting: b417c2663a27196a7939c1e45073f077
     actions.pause.title: f356cde63fae196a41e746b199b17ffd
@@ -2040,7 +2206,7 @@ files:
     actions.unpause.messages.failed: 128f98ab5e9c288f0a3727cdc3a0e1c8
     actions.unpause.messages.preparing: a02dfb9328712fb3910b4439b455cd81
     actions.unpause.messages.submitting: 280a0ec56016f6570d45edf534be4961
-    actions.unpause.messages.success: 914adb5389a88a54ee17301289f74fc0
+    actions.unpause.messages.success: cab4a84dbf0ba745e3238f3857c80b6b
     actions.unpause.submit: f071194584c36a1819c9a520e4f4831e
     actions.unpause.submitting: 1ace292b4389f29753524697190e26b1
     actions.unpause.title: 0b5f03760ef27506258462acfcdff73b
@@ -2073,6 +2239,8 @@ files:
     details.stateChange: 8a83ae1ac627c3920d2591ef77e8859e
     details.currentState: c8c59626a85748cf1d7f517c25e57f01
     details.targetState: b1e911b9930ab173591b9414bf7564c4
+    details.currentSupply: 636c085fbe902d5c0e8e5f2b236e7726
+    details.newSupply: 9db5d79d1f281a665d51f30eefcf9960
     emptyState.description: 43198125adbbc9360df3baa3c27b64a1
     emptyState.title: 9e3d4f57df7b2dd1a9ce1845a928c2ae
     events.actions.copyTransactionHash: b19e2d2127e7b4b400ee4636eb7e9bb8
@@ -2199,6 +2367,7 @@ files:
     holders.actions.copyAddress: 6b35e4c0b1b3d4d2aef429a90f84e1ab
     holders.actions.viewOnEtherscan: b4a95a0b3c4b23578d23edf3d20265ad
     holders.actions.viewProfile: ccd943f86a83b9411cf31a2d05054356
+    holders.actions.burn: 11635778f116ce6922f6068638a39028
     holders.bulkActions.freezeMessage: 30ee85f07f4bee55e51e989571d60cea
     holders.bulkActions.unfreezeMessage: 33ad28d69cf976f33423a8c9dadace3f
     holders.columns.actions: 06df33001c1d7187fdd81ea1f5b277aa
@@ -2222,8 +2391,21 @@ files:
     tabs.mica: 2b312e225e2e94095ce3fab70e335906
     tabs.permissions: d08ccf52b4cdd08e41cfb99ec42e0b29
     tabs.tokenInformation: 5ae714b3f4c4b0a69cb389d676938b72
-    tabs.underlyingAssets: d29ee78d99666a829835753176e75513
+    tabs.underlyingAssets: 0e65230119dd5dc96e762d9e741db15a
     tabs.yield: 97345487190c327e1e3ac998e4bf4d08
+    permissions.title: d08ccf52b4cdd08e41cfb99ec42e0b29
+    permissions.columns.address: dd7bf230fde8d4836917806aff6a6b27
+    permissions.columns.roles: a5cd3ed116608dac017f14c046ea56bf
+    permissions.empty.title: 42e44b890c76b970b6e5119890716fb5
+    permissions.empty.description: 2fcfacad214a8b3b46a7d67001afeb06
+    permissions.changeRoles.title: 4ad8e3cc1f1ab16ee3768ae4a0240f5f
+    permissions.changeRoles.description: e25df0704f4e38f77ca1842d41a6a193
+    permissions.changeRoles.cta: 4ad8e3cc1f1ab16ee3768ae4a0240f5f
+    permissions.searchPlaceholder: 20336b29285dd0789071f983e79c2586
+    permissions.groups.administration: 7258e7251413465e0a3eb58094430bde
+    permissions.groups.operations: 456d0deba6a86c9585590550c797502d
+    permissions.groups.compliance: 9c0408c775a2b61052a2e700a89f396f
+    permissions.groups.other: 6311ae17c1ee52b36e68aaf4ad066387
     api.errors.InvalidSender: f178319f319632fd5c0aaf7d84ae82df
     api.errors.InvalidReceiver: db4605ac5df85bdb3119cff2b1b05976
     api.errors.InsufficientBalance: 2a4bdaf5fb21eedb59b3f916102cfc09
@@ -2340,6 +2522,7 @@ files:
     api.mutations.yield.messages.receiptFailed: 375943250b49109ae9c88410c2aae4a8
     api.mutations.yield.messages.scheduleAddressNotFound: 0928994348c6a256fb2433dc28bf752b
     api.mutations.yield.messages.setScheduleFailed: d9b9c4eca99b8ec70e25f9a183b53a5e
+    api.stats.supplyChanges.messages.failed: c7ac4d044bcb04e07ff86dcfdb46eb3d
     validation.mint.recipientRequired: ba9dd7a3f489bf5cc25119433c6dd125
     validation.mint.amountRequired: 164d31b8f30bc1b2dc056003c0dcbc9c
     validation.burn.addressRequired: ffdaefe9d6b9fc6cbaf8495183d4cd5f
@@ -2508,3 +2691,59 @@ files:
     transactions.to: e12167aa0a7698e6ebc92b4ce3909b53
     transactions.value: 689202409e48743b914713f96d93947c
     transactions.viewAll: 3c924fba89a0fb08ac0144765055e479
+  locales/en-US/asset-class.json:
+    whichAssetClass: ab377ef3070fa638b89af7122985d53f
+    assetClassDifferences: a63e5f17a48c9e605d1add9e1c1361b2
+    includes: b3733659cbf8c4c1da209dcf37cf2eb9
+    categories.cashEquivalent.description: 15c0f8c245e17b3af106f81eb7c9d0c2
+    categories.cashEquivalent.icon: 156e132b014314b1eae89410e54bcc8c
+    categories.cashEquivalent.name: dd2d9c98631561dee2914f79e72eb9e2
+    categories.fixedIncome.description: dc9b175e5a2a023ad80e141efab33163
+    categories.fixedIncome.icon: 7d6b8b0bf19d27e8cedd44c039195b0e
+    categories.fixedIncome.name: d46778ed2efa2209057c8fca369b03cf
+    categories.flexibleIncome.description: 080906f45ab650a8ce9a42e864579b81
+    categories.flexibleIncome.icon: ecfc2dffe568c10a67dbc6d3724cfde2
+    categories.flexibleIncome.name: d173494a9fa0ff88ff9fd0825ec3f8ce
+    types.bond.name: 7a3b691731db2969498907b960183633
+    types.bond.namePlural: b98e3a37b62f7207c8a0a27e0c0d8777
+    types.bond.description: b8d1d1d9fa95378a98b387e2c093ae3f
+    types.bond.category: 90a77dd18983c195ba3fa16657e95a3e
+    types.deposit.name: 92f80bd57592af65188ca27786514cca
+    types.deposit.namePlural: b14b4095cfda93c81686ac81dea4dbed
+    types.deposit.description: 169e5945927cd332c4560b93d229c15c
+    types.deposit.category: 9217dd0722a6b078d92f4fe59143bd8f
+    types.equity.name: d9df825203724a2f3412de3fc7a7a2be
+    types.equity.namePlural: f38992a52cef8611666b2db431b493a6
+    types.equity.description: ce144cd506d0c808498fd871ff8b740b
+    types.equity.category: 30b3f289b1c226fd2f69f75aed388514
+    types.fund.name: c1098dd48f0fb20eeea79235055d02ca
+    types.fund.namePlural: d42b2bb7ac17fc34a099909c0a2f1de9
+    types.fund.description: 05e253f218ab5a52cb10776780484860
+    types.fund.category: 30b3f289b1c226fd2f69f75aed388514
+    types.stablecoin.name: 0501a2e331bfc725e5ea1728a8de9098
+    types.stablecoin.namePlural: 2f7d136a5b9efb222650243b1d38b6ff
+    types.stablecoin.description: 9cafba2c34dadb0de73906be03862f9c
+    types.stablecoin.category: 9217dd0722a6b078d92f4fe59143bd8f
+  locales/en-US/asset-extensions.json:
+    capabilities.ACCESS_MANAGED.label: 65bd83537129be15c8027ec94bec5bd3
+    capabilities.ACCESS_MANAGED.description: 346da95823f953cbb528ae9945dff4e1
+    capabilities.BOND.label: bf1c469f1661d9d87dd3504d5b096dcd
+    capabilities.BOND.description: 9128216072a673d2aef410f894d54ff3
+    capabilities.BURNABLE.label: 1a50d6b621b4152b3860887d1e639686
+    capabilities.BURNABLE.description: 787754de51bd8e5df7c234f471e8bca1
+    capabilities.CAPPED.label: 3732e4c1e50d5e2bec6e95d036a87fef
+    capabilities.CAPPED.description: 977d0f4bfb4c2aa3088310c6320a768d
+    capabilities.COLLATERAL.label: 53f6d1835b7220b3748141dc2954158e
+    capabilities.COLLATERAL.description: 5c30851fcdbf6f264bc2255e83d0afbf
+    capabilities.CUSTODIAN.label: 997ae5289b2f72f940f1dc29a659cc4d
+    capabilities.CUSTODIAN.description: 92c922340a50a078e87880add858b714
+    capabilities.FUND.label: 586a548726049d86b5184e6ab96f3505
+    capabilities.FUND.description: aaf38dd7cd637d05608c65022f08a84e
+    capabilities.HISTORICAL_BALANCES.label: b6a11669e0c55e00174fc85311294255
+    capabilities.HISTORICAL_BALANCES.description: a8078c05ed8278dcccaf1a1e5c76347c
+    capabilities.PAUSABLE.label: c7df7f53e3d452b37c036a76d04fce88
+    capabilities.PAUSABLE.description: 8e6c33ef3fedbd7c41ee268d61c17d93
+    capabilities.REDEEMABLE.label: e3a89fd6900d19f08d92c0d7b84f9685
+    capabilities.REDEEMABLE.description: 21aa7ce8102b99e4983a16c10c11d889
+    capabilities.YIELD.label: 6e839af0dc6a1b0b0346841e374d5d47
+    capabilities.YIELD.description: dca8079bc7af957491b5885fb8bfbdc3

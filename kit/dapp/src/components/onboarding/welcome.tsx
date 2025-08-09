@@ -1,4 +1,7 @@
-import { OnboardingStepGroup } from "@/components/onboarding/state-machine";
+import {
+  OnboardingStep,
+  OnboardingStepGroup,
+} from "@/components/onboarding/state-machine";
 import {
   Accordion,
   AccordionContent,
@@ -24,7 +27,7 @@ import { useTranslation } from "react-i18next";
 
 interface WelcomeProps {
   steps: {
-    step: string;
+    step: OnboardingStep;
     groupId: OnboardingStepGroup;
     current: boolean;
     completed: boolean;
@@ -82,13 +85,11 @@ export function Welcome({ steps }: WelcomeProps) {
   const getGroupTitle = (groupId: OnboardingStepGroup) => {
     switch (groupId) {
       case OnboardingStepGroup.wallet:
-        return t("onboarding:groups.wallet.title", { defaultValue: "Wallet" });
+        return t("onboarding:groups.wallet.title");
       case OnboardingStepGroup.system:
-        return t("onboarding:groups.system.title", { defaultValue: "System" });
+        return t("onboarding:groups.system.title");
       case OnboardingStepGroup.identity:
-        return t("onboarding:groups.identity.title", {
-          defaultValue: "Identity",
-        });
+        return t("onboarding:groups.identity.title");
       default:
         return groupId;
     }
@@ -97,17 +98,11 @@ export function Welcome({ steps }: WelcomeProps) {
   const getGroupDescription = (groupId: OnboardingStepGroup) => {
     switch (groupId) {
       case OnboardingStepGroup.wallet:
-        return t("onboarding:groups.wallet.description", {
-          defaultValue: "Set up your wallet and security measures",
-        });
+        return t("onboarding:groups.wallet.description");
       case OnboardingStepGroup.system:
-        return t("onboarding:groups.system.description", {
-          defaultValue: "Deploy and configure your system",
-        });
+        return t("onboarding:groups.system.description");
       case OnboardingStepGroup.identity:
-        return t("onboarding:groups.identity.description", {
-          defaultValue: "Establish your on-chain identity",
-        });
+        return t("onboarding:groups.identity.description");
       default:
         return "";
     }
@@ -232,16 +227,13 @@ export function Welcome({ steps }: WelcomeProps) {
                                 </TimelineIndicator>
                                 <div className="flex-1">
                                   <TimelineTitle className="text-primary-foreground">
-                                    {t(`onboarding:steps.${step.step}.title`, {
-                                      defaultValue: step.step,
-                                    })}
+                                    {t(
+                                      `onboarding:steps.${step.step}.title` as const
+                                    )}
                                   </TimelineTitle>
                                   <TimelineContent className="text-primary-foreground/80">
                                     {t(
-                                      `onboarding:steps.${step.step}.description`,
-                                      {
-                                        defaultValue: step.step,
-                                      }
+                                      `onboarding:steps.${step.step}.description` as const
                                     )}
                                   </TimelineContent>
                                 </div>

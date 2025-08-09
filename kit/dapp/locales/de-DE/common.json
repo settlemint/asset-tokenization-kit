@@ -1,7 +1,8 @@
 {
   "actions": {
     "cancel": "Abbrechen",
-    "skip": "Überspringen"
+    "skip": "Überspringen",
+    "add": "Hinzufügen"
   },
   "appDescription": "In Minuten bereitstellen, einfach anpassen",
   "appName": "Asset-Tokenisierungs-Kit",
@@ -24,5 +25,16 @@
       "description": "Geben Sie Ihren 6-stelligen Bestätigungscode ein",
       "label": "Bestätigungscode"
     }
-  }
+  },
+  "errors": {
+    "somethingWentWrong": "Hier ist etwas schiefgelaufen"
+  },
+  "saving": "Änderungen werden gespeichert...",
+  "saved": "Änderungen gespeichert",
+  "error": "Speichern der Änderungen fehlgeschlagen",
+  "remove": "Entfernen",
+  "unknown": "Unbekannt",
+  "save": "Speichern",
+  "add": "Gewähren",
+  "none": "Keine"
 }

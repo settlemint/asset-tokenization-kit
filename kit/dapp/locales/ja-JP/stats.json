@@ -12,15 +12,15 @@
       "label": "総担保"
     },
     "totalSupply": {
-      "description": "時間経過に伴う総供給量の履歴変更",
-      "label": "総供給量",
+      "description": "過去{{days}}日間の総資産供給",
+      "label": "総供給",
       "title": "トークン供給履歴"
     },
     "supplyChanges": {
-      "description": "過去{{days}}日間のミント・バーンされたトークン",
-      "title": "供給量変更",
-      "minted": "ミント済み",
-      "burned": "バーン済み"
+      "description": "過去{{days}}日間に発行および焼却された資産",
+      "title": "供給の変化",
+      "minted": "発行済み",
+      "burned": "焼却済み"
     },
     "transactionHistory": {
       "description": "時間経過に伴う取引量",
@@ -29,6 +29,49 @@
     "userGrowth": {
       "description": "時間経過に伴うユーザー数",
       "title": "ユーザー成長"
+    },
+    "common": {
+      "noData": "データは利用できません",
+      "noDataDescription": "このチャートに表示するデータは現在ありません"
+    },
+    "totalVolume": {
+      "description": "過去{{days}}日間の総取引量",
+      "label": "総量",
+      "title": "取引量"
+    },
+    "walletDistribution": {
+      "title": "ウォレットの分布",
+      "description": "保有者の数と保有量の比較",
+      "holders": "ウォレットの数"
+    },
+    "bondStatus": {
+      "title": "債券の状態",
+      "notBond": "この資産は債券ではありません",
+      "notAvailable": "債券の状態は利用できません",
+      "completed": "完了",
+      "remaining": "残り",
+      "issuing": {
+        "title": "債券発行",
+        "description": "{{percentage}}%の債券が発行されました",
+        "label": "発行中"
+      },
+      "active": {
+        "title": "償還カバレッジ",
+        "description": "{{percentage}}%の額面資産が利用可能",
+        "label": "アクティブ"
+      },
+      "matured": {
+        "title": "債券償還",
+        "description": "{{percentage}}%の債券が償還されました",
+        "label": "満期"
+      }
+    },
+    "collateralRatio": {
+      "title": "担保比率",
+      "description": "利用可能な担保と使用中の担保の内訳",
+      "available": "利用可能な担保",
+      "used": "使用中の担保",
+      "ratio": "担保比率: {{ratio}}%"
     }
   },
   "title": "統計",

@@ -9,18 +9,18 @@
       "title": "عرض الأصول"
     },
     "totalCollateral": {
-      "label": "إجمالي الضمان"
+      "label": "إجمالي الضمانات"
     },
     "totalSupply": {
-      "description": "التغييرات التاريخية في إجمالي العرض على مر الزمن",
+      "description": "إجمالي عرض الأصول خلال آخر {{days}} يومًا",
       "label": "إجمالي العرض",
       "title": "تاريخ عرض الرموز"
     },
     "supplyChanges": {
-      "description": "الرموز المسكوكة والمحروقة خلال الـ {{days}} يومًا الماضية",
+      "description": "الأصول التي تم سكها وحرقها خلال آخر {{days}} يومًا",
       "title": "تغييرات العرض",
-      "minted": "مسكوك",
-      "burned": "محروق"
+      "minted": "تم السك",
+      "burned": "تم الحرق"
     },
     "transactionHistory": {
       "description": "حجم المعاملات على مر الزمن",
@@ -29,6 +29,49 @@
     "userGrowth": {
       "description": "عدد المستخدمين على مر الزمن",
       "title": "نمو المستخدمين"
+    },
+    "common": {
+      "noData": "لا توجد بيانات متاحة",
+      "noDataDescription": "لا توجد بيانات حالياً لعرضها في هذا الرسم البياني"
+    },
+    "totalVolume": {
+      "description": "إجمالي حجم المعاملات خلال آخر {{days}} يومًا",
+      "label": "إجمالي الحجم",
+      "title": "حجم المعاملات"
+    },
+    "walletDistribution": {
+      "title": "توزيع المحفظة",
+      "description": "عدد الحائزين مقابل الكميات التي يمتلكونها",
+      "holders": "عدد المحافظ"
+    },
+    "bondStatus": {
+      "title": "حالة السندات",
+      "notBond": "هذه الأصول ليست سندًا",
+      "notAvailable": "حالة السندات غير متاحة",
+      "completed": "مكتمل",
+      "remaining": "متبقي",
+      "issuing": {
+        "title": "إصدار السندات",
+        "description": "{{percentage}}% من السندات قد تم إصدارها",
+        "label": "جارٍ الإصدار"
+      },
+      "active": {
+        "title": "تغطية الاسترداد",
+        "description": "{{percentage}}% من الأصول ذات الفئة المتاحة",
+        "label": "نشط"
+      },
+      "matured": {
+        "title": "استرداد السندات",
+        "description": "{{percentage}}% من السندات قد تم استردادها",
+        "label": "استحق"
+      }
+    },
+    "collateralRatio": {
+      "title": "نسبة الضمانات",
+      "description": "تفصيل الضمانات المتاحة مقابل المستخدمة",
+      "available": "الضمانات المتاحة",
+      "used": "الضمانات المستخدمة",
+      "ratio": "الضمان: {{ratio}}%"
     }
   },
   "title": "الإحصائيات",

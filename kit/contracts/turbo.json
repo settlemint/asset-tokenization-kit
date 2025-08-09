@@ -12,6 +12,7 @@
       "outputs": [".generated/out/**", ".generated/cache_forge/**"],
       "inputs": [
         "contracts/**/*.sol",
+        "script/**/*.sol",
         "test/**/*.sol",
         "dependencies/**/*.sol",
         "foundry.toml",
@@ -73,6 +74,9 @@
       "dependsOn": ["package", "codegen"]
     },
     "test": {
+      "dependsOn": ["compile:forge"]
+    },
+    "test:ci": {
       "dependsOn": ["compile:forge"]
     }
   }

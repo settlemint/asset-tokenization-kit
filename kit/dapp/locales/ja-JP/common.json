@@ -1,7 +1,8 @@
 {
   "actions": {
     "cancel": "キャンセル",
-    "skip": "スキップ"
+    "skip": "スキップ",
+    "add": "追加"
   },
   "appDescription": "数分でデプロイし、簡単にカスタマイズ",
   "appName": "資産トークン化キット",
@@ -24,5 +25,16 @@
       "description": "6桁の確認コードを入力してください",
       "label": "確認コード"
     }
-  }
+  },
+  "errors": {
+    "somethingWentWrong": "ここで何かがうまくいきませんでした"
+  },
+  "saving": "変更を保存しています...",
+  "saved": "変更が保存されました",
+  "error": "変更の保存に失敗しました",
+  "remove": "削除",
+  "unknown": "不明",
+  "save": "保存",
+  "add": "付与",
+  "none": "なし"
 }

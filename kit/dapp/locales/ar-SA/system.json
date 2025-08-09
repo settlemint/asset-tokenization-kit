@@ -7,7 +7,7 @@
       "alreadyExists": "الإضافة {{name}} موجودة بالفعل",
       "defaultError": "حدث خطأ أثناء تسجيل الإضافة",
       "failed": "فشل في تسجيل {{name}}",
-      "invalidConfiguration": "تكوين غير صالح",
+      "invalidConfiguration": "لم يتم العثور على سجل إضافات للنظام {{systemAddress}}",
       "invalidImplementation": "تنفيذ غير صالح مقدم",
       "partialSuccess": "{{successful}} من {{total}} الإضافات تم تسجيلها بنجاح",
       "preparing": "يتم التحضير لتسجيل الإضافات",
@@ -42,6 +42,16 @@
       "failed": "فشل في تسجيل الهوية",
       "preparing": "يتم التحضير لتسجيل الهوية",
       "success": "تم تسجيل الهوية بنجاح"
+    }
+  },
+  "complianceModule": {
+    "messages": {
+      "preparing": "جاري التحضير لتسجيل وحدة الامتثال",
+      "success": "تم تسجيل وحدة الامتثال بنجاح",
+      "failed": "فشل تسجيل وحدة الامتثال",
+      "progress": "جاري تسجيل {{current}} من {{total}} وحدات الامتثال",
+      "registering": "جاري تسجيل {{name}}",
+      "registered": "تم تسجيل {{name}} بنجاح"
     }
   }
 }

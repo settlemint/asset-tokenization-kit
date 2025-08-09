@@ -3,5 +3,6 @@
   "appName": "Asset Tokenization Kit",
   "continue": "Continue",
   "deploying": "Deploying...",
-  "generating": "Generating..."
+  "generating": "Generating...",
+  "cancel": "Cancel"
 }

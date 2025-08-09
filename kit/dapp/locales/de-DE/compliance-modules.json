@@ -1,35 +1,46 @@
 {
   "modules": {
     "addressBlockList": {
-      "description": "Blockieren Sie bestimmte Wallet-Adressen, um auf Ihr Vermögen zuzugreifen. Nützlich, um bekannte schlechte Akteure oder sanktionierte Adressen von der Teilnahme abzuhalten.",
-      "shortDescription": "Blockieren Sie bestimmte Wallet-Adressen von der Teilnahme",
-      "title": "Adressblockliste",
+      "description": "Blockieren Sie bestimmte Wallet-Adressen, um auf Ihr Vermögen zuzugreifen. Verhindert, dass sanktionierte oder problematische Adressen teilnehmen.",
+      "shortDescription": "Blockieren Sie bestimmte Wallet-Adressen",
+      "title": "Adressen blockieren",
       "addButtonLabel": "Adresse hinzufügen"
     },
     "countryAllowList": {
-      "description": "Erlauben Sie nur Investoren aus bestimmten Ländern, auf Ihr Vermögen zuzugreifen. Ideal für länderspezifische Compliance-Anforderungen und regulatorische Einschränkungen.",
-      "shortDescription": "Erlauben Sie nur bestimmten Ländern die Teilnahme",
-      "title": "Länderzulassungsliste"
+      "description": "Erlauben Sie nur Investoren aus bestimmten Ländern. Hilft, regionale Compliance-Anforderungen zu erfüllen.",
+      "shortDescription": "Nur bestimmte Länder erlauben",
+      "title": "Länder-Whitelist"
     },
     "countryBlockList": {
-      "description": "Blockieren Sie Investoren aus bestimmten Ländern oder Jurisdiktionen. Essentiell für die Einhaltung von Sanktionen und um eingeschränkte Märkte zu vermeiden.",
-      "shortDescription": "Blockieren Sie bestimmte Länder von der Teilnahme",
-      "title": "Länderblockliste"
+      "description": "Blockieren Sie Investoren aus bestimmten Ländern oder Regionen. Hilft, Sanktionen und regulatorische Einschränkungen einzuhalten.",
+      "shortDescription": "Bestimmte Länder blockieren",
+      "title": "Länder-Blacklist"
     },
     "identityAllowList": {
-      "description": "Erlauben Sie nur verifizierte Identitäten aus Ihrer genehmigten Liste, auf das Vermögen zuzugreifen. Perfekt für exklusive Angebote und private Platzierungen.",
-      "shortDescription": "Erlauben Sie nur vorab genehmigte verifizierte Identitäten",
-      "title": "Identitätszulassungsliste"
+      "description": "Erlauben Sie nur verifizierte Identitäten aus Ihrer genehmigten Liste. Funktioniert gut für exklusive Angebote und private Verkäufe.",
+      "shortDescription": "Nur genehmigte Identitäten erlauben",
+      "title": "Identitäts-Whitelist"
     },
     "identityBlockList": {
-      "description": "Blockieren Sie bestimmte verifizierte Identitäten vom Zugriff auf Ihr Vermögen. Nützlich, um problematische Investoren zu entfernen und gleichzeitig die Compliance aufrechtzuerhalten.",
-      "shortDescription": "Blockieren Sie bestimmte verifizierte Identitäten vom Zugriff",
-      "title": "Identitätsblockliste"
+      "description": "Blockieren Sie bestimmte verifizierte Identitäten, um auf Ihr Vermögen zuzugreifen. Entfernen Sie problematische Investoren und bleiben Sie compliant.",
+      "shortDescription": "Bestimmte Identitäten blockieren",
+      "title": "Identitäts-Blacklist"
     },
     "smartIdentityVerification": {
-      "description": "Erfordern Sie die Identitätsverifizierung gemäß dem SMART-Protokoll für alle Investoren. Bietet umfassende KYC/AML-Compliance durch dezentrale Identitätsverifizierung.",
-      "shortDescription": "Erfordern Sie die Identitätsverifizierung gemäß dem SMART-Protokoll",
+      "description": "Erfordern Sie eine Identitätsverifizierung für alle Investoren. Bietet KYC- und AML-Compliance durch das SMART-Protokoll.",
+      "shortDescription": "Identitätsverifizierung erforderlich",
       "title": "SMART-Identitätsverifizierung"
+    }
+  },
+  "title": "Compliance",
+  "sections": {
+    "enabled": {
+      "title": "Aktiviert",
+      "description": "Derzeit aktivierte Module"
+    },
+    "available": {
+      "title": "Verfügbar",
+      "description": "Module, die Sie aktivieren können"
     }
   }
 }

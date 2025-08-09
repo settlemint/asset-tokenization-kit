@@ -1,34 +1,34 @@
 {
   "expressionBuilder": {
-    "title": "式ビルダー",
+    "title": "エクスプレッションビルダー",
     "topics": {
-      "kyc": "本人確認",
-      "aml": "AMLコンプライアンス",
-      "collateral": "担保要件",
-      "isin": "ISIN分類",
+      "kyc": "KYC",
+      "aml": "AML",
+      "collateral": "担保",
+      "isin": "ISIN",
       "assetClassification": "資産分類",
-      "basePrice": "基準価格情報"
+      "basePrice": "基準価格"
     },
     "topicInput": {
-      "selectPlaceholder": "トピックを選択...",
-      "notLabel": "否定",
-      "addButton": "+ 追加",
-      "orStartGroup": "またはグループを開始:",
-      "startGroupButton": "グループ開始"
+      "selectPlaceholder": "トピックを選択",
+      "notLabel": "NOT",
+      "addButton": "追加",
+      "orStartGroup": "グループを開始",
+      "startGroupButton": "グループを開始"
     },
     "operatorInput": {
-      "chooseOperatorLabel": "演算子を追加:",
+      "chooseOperatorLabel": "オペレーターを選択",
       "andButton": "AND",
       "orButton": "OR",
-      "endGroupButton": "グループ終了",
-      "openGroupsText": "{{count}}個の開いているグループ{{plural}}を閉じてください"
+      "endGroupButton": "グループを終了",
+      "openGroupsText": "{{count}} のオープングループ{{plural}}を閉じる"
     },
     "display": {
       "clearAllButton": "すべてクリア",
-      "validExpression": "式は完全で有効です",
-      "closeGroupsPrompt": "{{count}}個のグループ{{plural}}を閉じて完了",
-      "addTopicPrompt": "トピックを追加するかグループを開始してください",
-      "unknownNode": "不明"
+      "validExpression": "エクスプレッションは完了し、有効です",
+      "closeGroupsPrompt": "{{count}} のグループ{{plural}}を閉じて完了します",
+      "addTopicPrompt": "トピックを追加するか、グループを開始してください",
+      "unknownNode": "UNKNOWN"
     }
   },
   "kycForm": {
@@ -44,7 +44,14 @@
       "resident": "単独居住者 - 私は上記の国にのみ住んでおり、法的/税務上の居住者です",
       "unknown": "言いたくない"
     },
-    "submit": "保存して続行"
+    "submit": "保存して続行",
+    "identity": {
+      "confirm-description": "オンチェーンIDを作成するために、あなたの身元を確認してください。",
+      "confirm-title": "ID作成を確認",
+      "deployed-toast": "IDが正常に登録されました！",
+      "deploying-toast": "IDを登録中...",
+      "failed-toast": "IDの登録に失敗しました: "
+    }
   },
   "verificationDialog": {
     "authenticatorCode": "認証コード",

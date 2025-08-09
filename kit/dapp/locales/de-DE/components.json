@@ -2,32 +2,32 @@
   "expressionBuilder": {
     "title": "Ausdrucks-Builder",
     "topics": {
-      "kyc": "KYC Verifizierung",
-      "aml": "AML Compliance",
-      "collateral": "Sicherheitenanforderungen",
-      "isin": "ISIN Klassifizierung",
-      "assetClassification": "Asset-Klassifizierung",
-      "basePrice": "Grundpreisinformationen"
+      "kyc": "KYC",
+      "aml": "AML",
+      "collateral": "Sicherheit",
+      "isin": "ISIN",
+      "assetClassification": "Vermögensklassifizierung",
+      "basePrice": "Basispreis"
     },
     "topicInput": {
-      "selectPlaceholder": "Thema auswählen...",
+      "selectPlaceholder": "Wählen Sie ein Thema",
       "notLabel": "NICHT",
-      "addButton": "+ Hinzufügen",
-      "orStartGroup": "Oder Gruppe starten:",
+      "addButton": "Hinzufügen",
+      "orStartGroup": "Oder starten Sie eine Gruppe",
       "startGroupButton": "Gruppe starten"
     },
     "operatorInput": {
-      "chooseOperatorLabel": "Operator hinzufügen:",
+      "chooseOperatorLabel": "Wählen Sie einen Operator",
       "andButton": "UND",
       "orButton": "ODER",
       "endGroupButton": "Gruppe beenden",
-      "openGroupsText": "{{count}} offene Gruppe{{plural}} zu schließen"
+      "openGroupsText": "{{count}} offene Gruppe{{plural}} schließen"
     },
     "display": {
-      "clearAllButton": "Alle löschen",
-      "validExpression": "Ausdruck ist vollständig und gültig",
-      "closeGroupsPrompt": "{{count}} Gruppe{{plural}} schließen, um abzuschließen",
-      "addTopicPrompt": "Thema hinzufügen oder Gruppe starten",
+      "clearAllButton": "Alles löschen",
+      "validExpression": "Der Ausdruck ist vollständig und gültig",
+      "closeGroupsPrompt": "Schließen Sie {{count}} Gruppe{{plural}} ab, um abzuschließen",
+      "addTopicPrompt": "Fügen Sie ein Thema hinzu oder starten Sie eine Gruppe",
       "unknownNode": "UNBEKANNT"
     }
   },
@@ -44,7 +44,14 @@
       "resident": "Alleinansässiger - Ich lebe im oben genannten Land und bin dort rechtlich/steuerlich ansässig",
       "unknown": "Bevorzuge es, nichts zu sagen"
     },
-    "submit": "Speichern und fortfahren"
+    "submit": "Speichern und fortfahren",
+    "identity": {
+      "confirm-description": "Bitte verifizieren Sie Ihre Identität, um Ihre On-Chain-Identität zu erstellen.",
+      "confirm-title": "Bestätigen Sie die Erstellung der Identität",
+      "deployed-toast": "Identität erfolgreich registriert!",
+      "deploying-toast": "Identität wird registriert...",
+      "failed-toast": "Registrierung der Identität fehlgeschlagen: "
+    }
   },
   "verificationDialog": {
     "authenticatorCode": "Authenticator-Code",
