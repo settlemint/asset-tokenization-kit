@@ -186,7 +186,9 @@ function RowActions({
   onOpenChangeRoles: (account: EthereumAddress) => void;
 }) {
   const { t } = useTranslation(["tokens", "common"]);
-  const canRevoke = token.userPermissions?.actions.grantRole ?? false; // admin
+  const canGrantRole = token.userPermissions?.actions.grantRole ?? false;
+  const canRevokeRole = token.userPermissions?.actions.revokeRole ?? false;
+  const canChangeRoles = canGrantRole || canRevokeRole; // Can do either action
 
   const actions: ActionItem[] = [
     {
@@ -196,7 +198,7 @@ function RowActions({
       onClick: () => {
         onOpenChangeRoles(row.id as unknown as EthereumAddress);
       },
-      disabled: !canRevoke,
+      disabled: !canChangeRoles,
     },
   ];
 
