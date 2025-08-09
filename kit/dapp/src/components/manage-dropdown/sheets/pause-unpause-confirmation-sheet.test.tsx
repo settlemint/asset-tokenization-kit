@@ -9,7 +9,7 @@ import { orpc } from "@/orpc/orpc-client";
 // Mock dependencies
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string, options?: any) => {
+    t: (key: string, options?: { defaultValue?: string }) => {
       if (options?.defaultValue) return options.defaultValue;
       return key;
     },
@@ -18,7 +18,7 @@ vi.mock("react-i18next", () => ({
 
 vi.mock("sonner", () => ({
   toast: {
-    promise: vi.fn((promise, options) => promise),
+    promise: vi.fn((promise) => promise),
   },
 }));
 
@@ -47,7 +47,6 @@ vi.mock("../core/action-form-sheet", () => ({
   ActionFormSheet: ({
     open,
     onOpenChange,
-    asset,
     title,
     description,
     submitLabel,
@@ -56,7 +55,21 @@ vi.mock("../core/action-form-sheet", () => ({
     hasValuesStep,
     isSubmitting,
     showAssetDetailsOnConfirm,
-  }: any) => (
+  }: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    title: string;
+    description: string;
+    submitLabel: string;
+    onSubmit: (data: {
+      verificationCode: string;
+      verificationType: string;
+    }) => void;
+    confirm?: React.ReactNode;
+    hasValuesStep?: boolean;
+    isSubmitting?: boolean;
+    showAssetDetailsOnConfirm?: boolean;
+  }) => (
     <div data-testid="action-form-sheet" data-open={open}>
       <div data-testid="sheet-title">{title}</div>
       <div data-testid="sheet-description">{description}</div>
@@ -69,13 +82,18 @@ vi.mock("../core/action-form-sheet", () => ({
       </div>
       <button
         data-testid="submit-button"
-        onClick={() =>
-          onSubmit({ verificationCode: "123456", verificationType: "pincode" })
-        }
+        onClick={() => {
+          onSubmit({ verificationCode: "123456", verificationType: "pincode" });
+        }}
       >
         Submit
       </button>
-      <button data-testid="close-button" onClick={() => onOpenChange(false)}>
+      <button
+        data-testid="close-button"
+        onClick={() => {
+          onOpenChange(false);
+        }}
+      >
         Close
       </button>
     </div>
@@ -88,9 +106,9 @@ const createMockToken = (overrides?: Partial<Token>): Token =>
     name: "Test Token",
     symbol: "TEST",
     decimals: 18,
-    totalSupply: [1000000n, 18],
+    totalSupply: [1_000_000n, 18],
     type: "bond",
-    createdAt: 1234567890,
+    createdAt: 1_234_567_890,
     extensions: [],
     implementsERC3643: true,
     implementsSMART: true,
@@ -280,7 +298,7 @@ describe("PauseUnpauseConfirmationSheet", () => {
 
       vi.mocked(orpc.token.pause.mutationOptions).mockReturnValue({
         mutationFn: mockPauseMutation,
-      } as any);
+      } as ReturnType<typeof orpc.token.pause.mutationOptions>);
 
       renderWithProviders(
         <PauseUnpauseConfirmationSheet
@@ -305,7 +323,7 @@ describe("PauseUnpauseConfirmationSheet", () => {
 
       vi.mocked(orpc.token.unpause.mutationOptions).mockReturnValue({
         mutationFn: mockUnpauseMutation,
-      } as any);
+      } as ReturnType<typeof orpc.token.unpause.mutationOptions>);
 
       renderWithProviders(
         <PauseUnpauseConfirmationSheet
@@ -334,7 +352,7 @@ describe("PauseUnpauseConfirmationSheet", () => {
 
       vi.mocked(orpc.token.pause.mutationOptions).mockReturnValue({
         mutationFn: mockPauseMutation,
-      } as any);
+      } as ReturnType<typeof orpc.token.pause.mutationOptions>);
 
       renderWithProviders(
         <PauseUnpauseConfirmationSheet
@@ -374,7 +392,7 @@ describe("PauseUnpauseConfirmationSheet", () => {
 
       vi.mocked(orpc.token.pause.mutationOptions).mockReturnValue({
         mutationFn: mockPauseMutation,
-      } as any);
+      } as ReturnType<typeof orpc.token.pause.mutationOptions>);
 
       renderWithProviders(
         <PauseUnpauseConfirmationSheet
@@ -411,7 +429,7 @@ describe("PauseUnpauseConfirmationSheet", () => {
 
       vi.mocked(orpc.token.unpause.mutationOptions).mockReturnValue({
         mutationFn: mockUnpauseMutation,
-      } as any);
+      } as ReturnType<typeof orpc.token.unpause.mutationOptions>);
 
       renderWithProviders(
         <PauseUnpauseConfirmationSheet

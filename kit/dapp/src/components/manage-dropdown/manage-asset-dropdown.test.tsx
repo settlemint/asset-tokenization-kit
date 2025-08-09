@@ -26,7 +26,15 @@ vi.mock("./sheets/pause-unpause-confirmation-sheet", () => ({
       data-open={open}
       data-asset-id={asset.id}
     >
-      {open && <button onClick={() => onOpenChange(false)}>Close Sheet</button>}
+      {open && (
+        <button
+          onClick={() => {
+            onOpenChange(false);
+          }}
+        >
+          Close Sheet
+        </button>
+      )}
     </div>
   ),
 }));
@@ -37,9 +45,9 @@ const createMockToken = (overrides?: Partial<Token>): Token =>
     name: "Test Token",
     symbol: "TEST",
     decimals: 18,
-    totalSupply: [1000000n, 18],
+    totalSupply: [1_000_000n, 18],
     type: "bond",
-    createdAt: 1234567890,
+    createdAt: 1_234_567_890,
     extensions: [],
     implementsERC3643: true,
     implementsSMART: true,
@@ -200,7 +208,7 @@ describe("ManageAssetDropdown", () => {
 
   describe("Asset State Handling", () => {
     it("correctly handles asset without pausable capability", () => {
-      const asset = createMockToken({ pausable: null } as any);
+      const asset = createMockToken({ pausable: undefined });
 
       // Should render without throwing error, but might not show dropdown actions
       render(<ManageAssetDropdown asset={asset} />);

@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ChangeRolesSheet } from "./change-roles-sheet";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import React from "react";
 
 // Import the mocked modules
 import { useAppForm } from "@/hooks/use-app-form";
@@ -12,7 +12,7 @@ import { orpc } from "@/orpc/orpc-client";
 // Mock dependencies
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string, options?: any) => {
+    t: (key: string, options?: { defaultValue?: string }) => {
       if (options?.defaultValue) return options.defaultValue;
       return key;
     },
@@ -42,7 +42,17 @@ vi.mock("@/orpc/orpc-client", () => ({
 }));
 
 vi.mock("../core/action-form-sheet", () => ({
-  ActionFormSheet: ({ children, title, onSubmit, canContinue }: any) => (
+  ActionFormSheet: ({
+    children,
+    title,
+    onSubmit,
+    canContinue,
+  }: {
+    children?: React.ReactNode;
+    title: string;
+    onSubmit: (data: { verificationCode: string }) => void;
+    canContinue?: () => boolean;
+  }) => (
     <div data-testid="action-form-sheet">
       <div data-testid="sheet-title">{title}</div>
       <div>{children}</div>
@@ -54,7 +64,9 @@ vi.mock("../core/action-form-sheet", () => ({
       </button>
       <button
         data-testid="submit-button"
-        onClick={() => onSubmit({ verificationCode: "123456" })}
+        onClick={() => {
+          onSubmit({ verificationCode: "123456" });
+        }}
       >
         Submit
       </button>
@@ -72,8 +84,21 @@ vi.mock("../core/action-form-sheet.store", () => ({
 
 vi.mock("@/hooks/use-app-form", () => ({
   useAppForm: vi.fn(() => ({
-    Subscribe: ({ children }: any) => children({ address: "" }),
-    AppField: ({ name, children }: any) => (
+    Subscribe: ({
+      children,
+    }: {
+      children: (state: { address: string }) => React.ReactNode;
+    }) => children({ address: "" }),
+    AppField: ({
+      name,
+      children,
+    }: {
+      name: string;
+      children: (components: {
+        AddressSelectField: () => React.ReactElement;
+        AddressInputField: () => React.ReactElement;
+      }) => React.ReactNode;
+    }) => (
       <div data-testid={`field-${name}`}>
         {children({
           AddressSelectField: () => <input data-testid="address-select" />,
@@ -86,8 +111,11 @@ vi.mock("@/hooks/use-app-form", () => ({
 }));
 
 vi.mock("@/components/address/address-select-or-input-toggle", () => ({
-  AddressSelectOrInputToggle: ({ children }: any) =>
-    children({ mode: "select" }),
+  AddressSelectOrInputToggle: ({
+    children,
+  }: {
+    children: (state: { mode: string }) => React.ReactNode;
+  }) => children({ mode: "select" }),
 }));
 
 vi.mock("@/orpc/helpers/access-control-helpers", () => ({
@@ -156,7 +184,7 @@ describe("ChangeRolesSheet", () => {
         <ChangeRolesSheet
           open
           onOpenChange={mockOnOpenChange}
-          asset={mockToken as Token}
+          asset={mockToken}
         />
       );
 
@@ -172,7 +200,7 @@ describe("ChangeRolesSheet", () => {
         <ChangeRolesSheet
           open
           onOpenChange={mockOnOpenChange}
-          asset={mockToken as Token}
+          asset={mockToken}
         />
       );
 
@@ -184,9 +212,22 @@ describe("ChangeRolesSheet", () => {
     it("shows roles when preset address is provided", () => {
       // Mock useAppForm to return preset address
       vi.mocked(useAppForm).mockReturnValue({
-        Subscribe: ({ children }: any) =>
+        Subscribe: ({
+          children,
+        }: {
+          children: (state: { address: string }) => React.ReactNode;
+        }) =>
           children({ address: "0x1111111111111111111111111111111111111111" }),
-        AppField: ({ name, children }: any) => (
+        AppField: ({
+          name,
+          children,
+        }: {
+          name: string;
+          children: (components: {
+            AddressSelectField: () => React.JSX.Element;
+            AddressInputField: () => React.JSX.Element;
+          }) => React.ReactNode;
+        }) => (
           <div data-testid={`field-${name}`}>
             {children({
               AddressSelectField: () => <input data-testid="address-select" />,
@@ -195,13 +236,13 @@ describe("ChangeRolesSheet", () => {
           </div>
         ),
         reset: vi.fn(),
-      } as any);
+      } as unknown as ReturnType<typeof useAppForm>);
 
       renderWithProviders(
         <ChangeRolesSheet
           open
           onOpenChange={mockOnOpenChange}
-          asset={mockToken as Token}
+          asset={mockToken}
           presetAccount={
             "0x1111111111111111111111111111111111111111" as `0x${string}`
           }
@@ -217,7 +258,7 @@ describe("ChangeRolesSheet", () => {
         <ChangeRolesSheet
           open
           onOpenChange={mockOnOpenChange}
-          asset={mockToken as Token}
+          asset={mockToken}
           presetAccount={
             "0x1111111111111111111111111111111111111111" as `0x${string}`
           }
@@ -232,9 +273,22 @@ describe("ChangeRolesSheet", () => {
   describe("Role Management", () => {
     it("renders role buttons for assignable roles", () => {
       vi.mocked(useAppForm).mockReturnValue({
-        Subscribe: ({ children }: any) =>
+        Subscribe: ({
+          children,
+        }: {
+          children: (state: { address: string }) => React.ReactNode;
+        }) =>
           children({ address: "0x2222222222222222222222222222222222222222" }),
-        AppField: ({ name, children }: any) => (
+        AppField: ({
+          name,
+          children,
+        }: {
+          name: string;
+          children: (components: {
+            AddressSelectField: () => React.ReactElement;
+            AddressInputField: () => React.ReactElement;
+          }) => React.ReactNode;
+        }) => (
           <div data-testid={`field-${name}`}>
             {children({
               AddressSelectField: () => <input data-testid="address-select" />,
@@ -243,13 +297,13 @@ describe("ChangeRolesSheet", () => {
           </div>
         ),
         reset: vi.fn(),
-      } as any);
+      } as unknown as ReturnType<typeof useAppForm>);
 
       renderWithProviders(
         <ChangeRolesSheet
           open
           onOpenChange={mockOnOpenChange}
-          asset={mockToken as Token}
+          asset={mockToken}
           presetAccount={
             "0x2222222222222222222222222222222222222222" as `0x${string}`
           }
@@ -268,17 +322,17 @@ describe("ChangeRolesSheet", () => {
 
       vi.mocked(orpc.token.grantRole.mutationOptions).mockReturnValue({
         mutationFn: mockGrantRole,
-      } as any);
+      } as ReturnType<typeof orpc.token.grantRole.mutationOptions>);
 
       vi.mocked(orpc.token.revokeRole.mutationOptions).mockReturnValue({
         mutationFn: mockRevokeRole,
-      } as any);
+      } as ReturnType<typeof orpc.token.revokeRole.mutationOptions>);
 
       renderWithProviders(
         <ChangeRolesSheet
           open
           onOpenChange={mockOnOpenChange}
-          asset={mockToken as Token}
+          asset={mockToken}
           presetAccount={
             "0x1111111111111111111111111111111111111111" as `0x${string}`
           }

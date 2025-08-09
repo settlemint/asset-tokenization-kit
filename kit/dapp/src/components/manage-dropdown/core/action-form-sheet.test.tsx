@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ActionFormSheet } from "./action-form-sheet";
-import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+// Removed unused import of Token
 import { Store } from "@tanstack/store";
 import type { ActionFormState } from "./action-form-sheet.store";
 
@@ -16,15 +16,19 @@ vi.mock("react-i18next", () => ({
 vi.mock("./base-action-sheet", () => ({
   BaseActionSheet: ({
     open,
-    onOpenChange,
-    asset,
     title,
     description,
-    showAssetDetails,
     onCancel,
     submit,
     children,
-  }: any) => (
+  }: {
+    open: boolean;
+    title: string;
+    description: string;
+    onCancel: () => void;
+    submit: React.ReactNode;
+    children?: React.ReactNode;
+  }) => (
     <div data-testid="base-action-sheet" data-open={open}>
       <div data-testid="sheet-title">{title}</div>
       <div data-testid="sheet-description">{description}</div>
@@ -39,8 +43,20 @@ vi.mock("./base-action-sheet", () => ({
 
 vi.mock("@/hooks/use-app-form", () => ({
   useAppForm: () => ({
-    AppForm: ({ children }: any) => <form>{children}</form>,
-    VerificationButton: ({ children, onSubmit, disabled }: any) => (
+    AppForm: ({ children }: { children: React.ReactNode }) => (
+      <form>{children}</form>
+    ),
+    VerificationButton: ({
+      children,
+      onSubmit,
+      disabled,
+    }: {
+      children: React.ReactNode;
+      onSubmit: () => void;
+      disabled?:
+        | boolean
+        | ((state: { isDirty: boolean; errors: unknown[] }) => boolean);
+    }) => (
       <button
         data-testid="verification-button"
         onClick={onSubmit}
@@ -53,7 +69,14 @@ vi.mock("@/hooks/use-app-form", () => ({
         {children}
       </button>
     ),
-    Subscribe: ({ children }: any) => children({ isDirty: false, errors: [] }),
+    Subscribe: ({
+      children,
+    }: {
+      children: (state: {
+        isDirty: boolean;
+        errors: unknown[];
+      }) => React.ReactNode;
+    }) => children({ isDirty: false, errors: [] }),
     getFieldValue: () => ({ verificationCode: "123456" }),
     setFieldValue: vi.fn(),
     reset: vi.fn(),
@@ -96,7 +119,7 @@ describe("ActionFormSheet", () => {
         <ActionFormSheet
           open
           onOpenChange={mockOnOpenChange}
-          asset={mockToken as Token}
+          asset={mockToken}
           title="Test Title"
           description="Test Description"
           submitLabel="Save"
@@ -118,7 +141,7 @@ describe("ActionFormSheet", () => {
         <ActionFormSheet
           open
           onOpenChange={mockOnOpenChange}
-          asset={mockToken as Token}
+          asset={mockToken}
           title="Title"
           description="Description"
           submitLabel="Save"
@@ -137,7 +160,7 @@ describe("ActionFormSheet", () => {
         <ActionFormSheet
           open
           onOpenChange={mockOnOpenChange}
-          asset={mockToken as Token}
+          asset={mockToken}
           title="Title"
           description="Description"
           submitLabel="Save"
@@ -157,7 +180,7 @@ describe("ActionFormSheet", () => {
         <ActionFormSheet
           open
           onOpenChange={mockOnOpenChange}
-          asset={mockToken as Token}
+          asset={mockToken}
           title="Title"
           description="Description"
           submitLabel="Save"
@@ -177,7 +200,7 @@ describe("ActionFormSheet", () => {
         <ActionFormSheet
           open
           onOpenChange={mockOnOpenChange}
-          asset={mockToken as Token}
+          asset={mockToken}
           title="Title"
           description="Description"
           submitLabel="Save"
@@ -197,7 +220,7 @@ describe("ActionFormSheet", () => {
         <ActionFormSheet
           open
           onOpenChange={mockOnOpenChange}
-          asset={mockToken as Token}
+          asset={mockToken}
           title="Title"
           description="Description"
           submitLabel="Save"
@@ -218,7 +241,7 @@ describe("ActionFormSheet", () => {
         <ActionFormSheet
           open
           onOpenChange={mockOnOpenChange}
-          asset={mockToken as Token}
+          asset={mockToken}
           title="Title"
           description="Description"
           submitLabel="Save"
@@ -241,7 +264,7 @@ describe("ActionFormSheet", () => {
         <ActionFormSheet
           open
           onOpenChange={mockOnOpenChange}
-          asset={mockToken as Token}
+          asset={mockToken}
           title="Title"
           description="Description"
           submitLabel="Submit"
@@ -263,7 +286,7 @@ describe("ActionFormSheet", () => {
         <ActionFormSheet
           open
           onOpenChange={mockOnOpenChange}
-          asset={mockToken as Token}
+          asset={mockToken}
           title="Title"
           description="Description"
           submitLabel="Submit"
@@ -282,7 +305,7 @@ describe("ActionFormSheet", () => {
         <ActionFormSheet
           open
           onOpenChange={mockOnOpenChange}
-          asset={mockToken as Token}
+          asset={mockToken}
           title="Title"
           description="Description"
           submitLabel="Submit"
@@ -308,7 +331,7 @@ describe("ActionFormSheet", () => {
         <ActionFormSheet
           open
           onOpenChange={mockOnOpenChange}
-          asset={mockToken as Token}
+          asset={mockToken}
           title="Title"
           description="Description"
           submitLabel="Submit"
@@ -329,7 +352,7 @@ describe("ActionFormSheet", () => {
         <ActionFormSheet
           open
           onOpenChange={mockOnOpenChange}
-          asset={mockToken as Token}
+          asset={mockToken}
           title="Title"
           description="Description"
           submitLabel="Submit"

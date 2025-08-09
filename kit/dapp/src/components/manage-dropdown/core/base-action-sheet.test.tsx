@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BaseActionSheet } from "./base-action-sheet";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
@@ -23,9 +23,9 @@ const createMockToken = (overrides?: Partial<Token>): Token =>
     name: "Test Token",
     symbol: "TEST",
     decimals: 18,
-    totalSupply: [1000000n, 18],
+    totalSupply: [1_000_000n, 18],
     type: "bond",
-    createdAt: 1234567890,
+    createdAt: 1_234_567_890,
     extensions: [],
     implementsERC3643: true,
     implementsSMART: true,
@@ -130,7 +130,7 @@ describe("BaseActionSheet", () => {
 
     it("does not render when open is false", () => {
       const asset = createMockToken();
-      const { container } = render(
+      render(
         <BaseActionSheet
           open={false}
           onOpenChange={mockOnOpenChange}
@@ -169,8 +169,11 @@ describe("BaseActionSheet", () => {
       );
 
       // Check for asset details card
-      expect(screen.getByText("tokens:details.title")).toBeInTheDocument();
-      expect(screen.getByText("My Token (MTK)")).toBeInTheDocument();
+      expect(
+        screen.getByText("tokens:details.tokenInformation")
+      ).toBeInTheDocument();
+      expect(screen.getByText("My Token")).toBeInTheDocument();
+      expect(screen.getByText("MTK")).toBeInTheDocument();
       expect(screen.getByTestId("web3-address")).toHaveTextContent(
         "0xabcdef1234567890123456789012345678901234"
       );
@@ -192,11 +195,11 @@ describe("BaseActionSheet", () => {
       );
 
       expect(
-        screen.queryByText("tokens:details.title")
+        screen.queryByText("tokens:details.tokenInformation")
       ).not.toBeInTheDocument();
     });
 
-    it("does not show asset details by default", () => {
+    it("shows asset details by default", () => {
       const asset = createMockToken();
       render(
         <BaseActionSheet
@@ -210,9 +213,12 @@ describe("BaseActionSheet", () => {
         />
       );
 
+      // showAssetDetails defaults to true
       expect(
-        screen.queryByText("tokens:details.title")
-      ).not.toBeInTheDocument();
+        screen.getByText("tokens:details.tokenInformation")
+      ).toBeInTheDocument();
+      expect(screen.getByText("Test Token")).toBeInTheDocument();
+      expect(screen.getByText("TEST")).toBeInTheDocument();
     });
   });
 
@@ -311,8 +317,8 @@ describe("BaseActionSheet", () => {
           open={true}
           onOpenChange={mockOnOpenChange}
           asset={asset}
-          title="Test"
-          description="Test"
+          title="Test Title"
+          description="Test Description"
           submit={<button>Submit</button>}
           onCancel={mockOnCancel}
           children={undefined}
@@ -320,7 +326,8 @@ describe("BaseActionSheet", () => {
       );
 
       // Should render without errors
-      expect(screen.getByText("Test")).toBeInTheDocument();
+      expect(screen.getByText("Test Title")).toBeInTheDocument();
+      expect(screen.getByText("Test Description")).toBeInTheDocument();
     });
 
     it("handles complex submit elements", () => {
@@ -366,7 +373,8 @@ describe("BaseActionSheet", () => {
         />
       );
 
-      expect(screen.getByText("Token 1 (TEST)")).toBeInTheDocument();
+      expect(screen.getByText("Token 1")).toBeInTheDocument();
+      expect(screen.getByText("TEST")).toBeInTheDocument();
 
       rerender(
         <BaseActionSheet
@@ -381,7 +389,8 @@ describe("BaseActionSheet", () => {
         />
       );
 
-      expect(screen.getByText("Token 2 (TEST)")).toBeInTheDocument();
+      expect(screen.getByText("Token 2")).toBeInTheDocument();
+      expect(screen.getByText("TEST")).toBeInTheDocument();
     });
   });
 });
