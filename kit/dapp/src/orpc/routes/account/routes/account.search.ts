@@ -46,7 +46,7 @@ export const search = authRouter.account.search
 
     return [
       {
-        id: result.account.id as unknown as `0x${string}`,
+        id: result.account.id,
         isContract: result.account.isContract,
         contractName: result.account.contractName ?? undefined,
       },
