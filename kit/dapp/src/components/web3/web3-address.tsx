@@ -56,6 +56,18 @@ function Web3AddressComponent({
   );
   const token = tokenSearch?.[0];
 
+  // Query for account data by address (for contract name fallback)
+  const { data: accountSearch } = useQuery(
+    orpc.account.search.queryOptions({
+      input: { query: address, limit: 1 },
+      staleTime: 1000 * 60 * 30, // Cache account data for 30 minutes
+      retry: false, // Don't retry if address is not indexed
+      throwOnError: false, // Don't throw if account is not found
+      enabled: !skipDataQueries, // Disable during onboarding
+    })
+  );
+  const account = accountSearch?.[0];
+
   // Memoize truncated address display
   const truncatedAddressDisplay = useMemo(() => {
     return `${address.slice(0, 6)}…${address.slice(-4)}`;
@@ -113,11 +125,29 @@ function Web3AddressComponent({
       );
     }
 
+    if (showPrettyName && account?.contractName) {
+      return (
+        <div className="flex items-center gap-2">
+          <span className="font-medium">{account.contractName}</span>
+          {showBadge && (
+            <Badge
+              className="min-w-0 max-w-24"
+              variant="outline"
+              title={address}
+            >
+              {renderAddress("text-xs")}
+            </Badge>
+          )}
+        </div>
+      );
+    }
+
     return renderAddress();
   }, [
     avatarOnly,
     token,
     user,
+    account,
     showBadge,
     address,
     showSymbol,
@@ -136,7 +166,7 @@ function Web3AddressComponent({
           address={address}
           size={size}
           email={user?.email}
-          name={user?.name ?? token?.name}
+          name={user?.name ?? token?.name ?? account?.contractName}
           className="mr-2"
         />
         {displayContent}
@@ -150,7 +180,7 @@ function Web3AddressComponent({
         address={address}
         size={size}
         email={user?.email}
-        name={user?.name ?? token?.name}
+        name={user?.name ?? token?.name ?? account?.contractName}
         className="mr-2"
       />
       {displayContent}

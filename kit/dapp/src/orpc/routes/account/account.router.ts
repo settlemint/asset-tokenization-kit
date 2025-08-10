@@ -1,4 +1,5 @@
 import { me } from "@/orpc/routes/account/routes/account.me";
+import { search } from "@/orpc/routes/account/routes/account.search";
 import { read } from "./routes/account.read";
 
 /**
@@ -22,6 +23,7 @@ import { read } from "./routes/account.read";
 const routes = {
   read,
   me,
+  search,
 };
 
 export default routes;

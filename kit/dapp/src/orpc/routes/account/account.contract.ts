@@ -11,8 +11,9 @@
  * @see {@link ./account.router} - Implementation router
  */
 
-import { baseContract } from "../../procedures/base.contract";
-import { AccountReadSchema, AccountSchema } from "./routes/account.read.schema";
+import { accountSearchContract } from "@/orpc/routes/account/routes/account.search.contract";
+import { accountMeContract } from "@/orpc/routes/account/routes/account.me.contract";
+import { accountReadContract } from "@/orpc/routes/account/routes/account.read.contract";
 
 /**
  * Read account information including identity claims.
@@ -47,26 +48,7 @@ import { AccountReadSchema, AccountSchema } from "./routes/account.read.schema";
  * }
  * ```
  */
-const read = baseContract
-  .route({
-    method: "GET",
-    path: "/account/read",
-    description: "Read account information including identity claims",
-    successDescription: "Account information retrieved successfully",
-    tags: ["account"],
-  })
-  .input(AccountReadSchema)
-  .output(AccountSchema);
-
-const me = baseContract
-  .route({
-    method: "GET",
-    path: "/account/me",
-    description: "Read account information for the authenticated user",
-    successDescription: "Account information retrieved successfully",
-    tags: ["account"],
-  })
-  .output(AccountSchema.nullable());
+// Moved read and me route contracts to dedicated files for consistency
 
 /**
  * Account API contract collection.
@@ -83,6 +65,7 @@ const me = baseContract
  * - verify: Verify identity claims
  */
 export const accountContract = {
-  read,
-  me,
+  read: accountReadContract,
+  me: accountMeContract,
+  search: accountSearchContract,
 };

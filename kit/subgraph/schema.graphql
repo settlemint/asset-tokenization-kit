@@ -1,1030 +1,1425 @@
-# --------------------------------------------------
-# SMART Indexer Schema
-# --------------------------------------------------
-
-# ==================================================
-# CORE ENTITIES
-# ==================================================
+# SMART Indexer Schema for Asset Tokenization Kit
+# This schema defines all entities tracked by the subgraph
+# for the ERC-3643 compliant tokenization system
 
 type Account @entity(immutable: false) {
+  # Unique identifier - the Ethereum address of the account
   id: Bytes!
+  # Whether this address is a smart contract (true) or EOA (false)
   isContract: Boolean!
+  # Optional human-readable name when this address is a known contract
+  contractName: String
+  # Reference to the identity contract associated with this account (for compliance)
   identity: Identity
+  # ISO country code where the account holder is registered (for compliance)
   country: Int
+  # List of all token balances held by this account
   balances: [TokenBalance!]! @derivedFrom(field: "account")
-  # Lost account
+  # Whether this account has been marked as lost (for recovery purposes)
   isLost: Boolean!
-  # Account that was craeted to recover the lost account
+  # Reference to the new account created to recover this lost account
   recoveredAccount: Account
-  # Stats
+  # Statistical data for this account (aggregated metrics)
   stats: AccountStatsState @derivedFrom(field: "account")
 }
 
 type Event @entity(immutable: true) {
+  # Unique identifier - combination of transaction hash and log index
   id: Bytes!
+  # Name of the emitted event (e.g., "Transfer", "Approval")
   eventName: String!
+  # Index of this event within the transaction
   txIndex: BigInt!
+  # Block number where this event was emitted
   blockNumber: BigInt!
+  # Unix timestamp of the block containing this event
   blockTimestamp: BigInt!
+  # Hash of the transaction that emitted this event
   transactionHash: Bytes!
+  # Contract address that emitted this event
   emitter: Account!
+  # Account that initiated the transaction
   sender: Account!
+  # List of all accounts involved in this event
   involved: [Account!]!
+  # Key-value pairs of event parameters
   values: [EventValue!]! @derivedFrom(field: "entry")
 }
 
 type EventValue @entity(immutable: true) {
+  # Unique identifier for this event value
   id: Bytes!
+  # Parameter name from the event
   name: String!
+  # String representation of the parameter value
   value: String!
+  # Reference to the parent event
   entry: Event!
 }
 
-# ==================================================
-# ACCESS CONTROL & SYSTEM
-# ==================================================
+# Access Control and System Configuration Entities
 
 type SystemAccessManager @entity(immutable: false) {
+  # Unique identifier - contract address of the access manager
   id: Bytes!
+  # Reference to the system this access manager belongs to
   system: System!
+  # Transaction hash where this access manager was deployed
   deployedInTransaction: Bytes!
+  # Reference to the access control configuration
   accessControl: AccessControl!
 }
 
 type AccessControl @entity(immutable: false) {
+  # Unique identifier for the access control configuration
   id: Bytes!
 
-  # Core Admin Role
+  # Core Admin Role - highest level administrative access
   admin: [Account!]!
 
   # People Roles (ATKPeopleRoles)
+  # Manages overall system configuration and parameters
   systemManager: [Account!]!
+  # Manages identity registration and KYC processes
   identityManager: [Account!]!
+  # Manages token creation and configuration
   tokenManager: [Account!]!
+  # Manages compliance rules and modules
   complianceManager: [Account!]!
+  # Manages system addons and extensions
   addonManager: [Account!]!
+  # Manages claim verification policies
   claimPolicyManager: [Account!]!
+  # Read-only access for auditing purposes
   auditor: [Account!]!
 
-  # System Roles (ATKSystemRoles)
+  # System Roles (ATKSystemRoles) - Smart contract module permissions
+  # Core system module contracts
   systemModule: [Account!]!
+  # Identity registry module contracts
   identityRegistryModule: [Account!]!
+  # Token factory registry module contracts
   tokenFactoryRegistryModule: [Account!]!
+  # Individual token factory contracts
   tokenFactoryModule: [Account!]!
+  # Addon registry module contracts
   addonRegistryModule: [Account!]!
+  # Individual addon module contracts
   addonModule: [Account!]!
 
-  # Asset Roles (ATKAssetRoles)
+  # Asset Roles (ATKAssetRoles) - Token-specific permissions
+  # Governance operations (voting, proposals)
   governance: [Account!]!
+  # Token supply management (minting caps, issuance)
   supplyManagement: [Account!]!
+  # Asset custody and safekeeping
   custodian: [Account!]!
+  # Emergency actions (pause, freeze)
   emergency: [Account!]!
 
-  # SMART Token Extension Roles
+  # SMART Token Extension Roles - ERC-3643 specific permissions
+  # Can burn tokens to reduce supply
   burner: [Account!]!
+  # Manages token supply caps and limits
   capManagement: [Account!]!
+  # Administers compliance rules and requirements
   complianceAdmin: [Account!]!
+  # Can force transfers between accounts (regulatory)
   forcedTransfer: [Account!]!
+  # Can freeze/unfreeze token balances
   freezer: [Account!]!
+  # Can mint new tokens to increase supply
   minter: [Account!]!
+  # Can pause/unpause all token operations
   pauser: [Account!]!
+  # Can recover lost tokens or accounts
   recovery: [Account!]!
+  # General token administration
   tokenAdmin: [Account!]!
+  # Manages identity verification requirements
   verificationAdmin: [Account!]!
 
-  # Addon-Specific Roles
+  # Addon-Specific Roles - Extension module permissions
+  # Manages fund operations (distributions, allocations)
   fundsManager: [Account!]!
+  # Administers token sales and offerings
   saleAdmin: [Account!]!
+  # Authorized signers for multi-sig operations
   signer: [Account!]!
+  # Manages global allow/block lists
   globalListManager: [Account!]!
 }
 
 type System @entity(immutable: false) {
+  # Unique identifier - system contract address
   id: Bytes!
+  # Transaction hash where the system was deployed
   deployedInTransaction: Bytes!
+  # Account representation of the system contract
   account: Account
+  # Global compliance configuration
   compliance: Compliance
+  # Storage for identity data
   identityRegistryStorage: IdentityRegistryStorage
+  # Factory for creating identity contracts
   identityFactory: IdentityFactory
+  # Registry for managing identities
   identityRegistry: IdentityRegistry
+  # Registry of trusted claim issuers
   trustedIssuersRegistry: TrustedIssuersRegistry
+  # Registry for claim topic schemes
   topicSchemeRegistry: TopicSchemeRegistry
+  # Registry of token factory contracts
   tokenFactoryRegistry: TokenFactoryRegistry
+  # Registry of compliance modules
   complianceModuleRegistry: ComplianceModuleRegistry
+  # Registry of system addons
   systemAddonRegistry: SystemAddonRegistry
+  # Access control manager for the system
   systemAccessManager: SystemAccessManager
-  # Stats
+  # Statistical data for the entire system
   systemStats: SystemStatsState @derivedFrom(field: "system")
+  # Statistics broken down by token type
   tokenTypeStats: [TokenTypeStatsState!] @derivedFrom(field: "system")
 }
 
 type VaultFactory @entity(immutable: false) {
+  # Unique identifier - factory contract address
   id: Bytes!
+  # Transaction hash where this factory was deployed
   deployedInTransaction: Bytes!
+  # System addon this factory belongs to
   systemAddon: SystemAddon!
+  # Account representation of the factory contract
   account: Account!
+  # List of all vaults created by this factory
   vaults: [Vault!]! @derivedFrom(field: "factory")
 }
 
 type Vault @entity(immutable: false) {
+  # Unique identifier - vault contract address
   id: Bytes!
+  # Unix timestamp when the vault was created
   createdAt: BigInt!
+  # Account that created this vault
   createdBy: Account!
+  # Factory that deployed this vault
   factory: VaultFactory!
+  # Account representation of the vault contract
   account: Account!
-  # Access control for the vault
+  # Access control configuration for the vault
   accessControl: AccessControl!
+  # Number of required signatures for transactions
   required: BigInt!
+  # List of authorized signers
   signers: [Account!]!
+  # List of all transactions in this vault
   transactions: [VaultTransaction!]! @derivedFrom(field: "vault")
+  # Current ETH balance (human-readable)
   balance: BigDecimal!
+  # Current ETH balance (exact, in wei)
   balanceExact: BigInt!
+  # Transaction hash where this vault was deployed
   deployedInTransaction: Bytes!
+  # Whether weighted signatures are enabled
   weightedSignaturesEnabled: Boolean!
+  # Signer weights for weighted multi-sig
   signerWeights: [VaultSigner!]! @derivedFrom(field: "vault")
+  # On-chain identity associated with the vault
   onchainId: Account
 }
 
 type VaultTransaction @entity(immutable: false) {
+  # Unique identifier for the vault transaction
   id: Bytes!
+  # Vault this transaction belongs to
   vault: Vault!
+  # Index of this transaction within the vault
   txIndex: BigInt!
+  # Destination address for the transaction
   to: Account!
+  # ETH value to transfer (human-readable)
   value: BigDecimal!
+  # ETH value to transfer (exact, in wei)
   valueExact: BigInt!
+  # Calldata for contract interactions
   data: Bytes!
+  # Human-readable comment describing the transaction
   comment: String!
+  # Whether this transaction has been executed
   executed: Boolean!
+  # Number of confirmations required to execute
   confirmationsRequired: BigInt!
+  # Current number of confirmations received
   confirmationsCount: BigInt!
+  # List of confirmation records
   confirmations: [VaultTransactionConfirmation!]!
     @derivedFrom(field: "transaction")
+  # Account that submitted this transaction
   submittedBy: Account!
+  # Unix timestamp when submitted
   submittedAt: BigInt!
+  # Unix timestamp when executed (if executed)
   executedAt: BigInt
+  # Account that executed the transaction (if executed)
   executedBy: Account
   # Type-specific fields
+  # Details if this is an ERC20 transfer
   erc20Transfer: VaultERC20Transfer
+  # Details if this is a contract call
   contractCall: VaultContractCall
+  # Transaction hash where this was created
   deployedInTransaction: Bytes!
 }
 
 type VaultTransactionConfirmation @entity(immutable: false) {
+  # Unique identifier for this confirmation
   id: Bytes!
+  # Transaction being confirmed
   transaction: VaultTransaction!
+  # Signer who confirmed/revoked
   signer: Account!
+  # Whether currently confirmed
   confirmed: Boolean!
+  # Unix timestamp when confirmed
   confirmedAt: BigInt
+  # Unix timestamp when revoked (if applicable)
   revokedAt: BigInt
+  # Transaction hash where this action occurred
   deployedInTransaction: Bytes!
 }
 
 type VaultERC20Transfer @entity(immutable: false) {
+  # Unique identifier
   id: Bytes!
+  # ERC20 token contract address
   token: Account!
+  # Amount to transfer (human-readable)
   amount: BigDecimal!
+  # Amount to transfer (exact, raw units)
   amountExact: BigInt!
 }
 
 type VaultContractCall @entity(immutable: false) {
+  # Unique identifier
   id: Bytes!
+  # Target contract address
   target: Account!
+  # Encoded function call data
   calldata: Bytes!
+  # Return data from the call (if executed)
   returnData: Bytes
 }
 
 type VaultSigner @entity(immutable: false) {
-  id: Bytes! # vault-signer composite key
+  # Composite key: vault address + signer address
+  id: Bytes!
+  # Vault this signer belongs to
   vault: Vault!
+  # Signer account
   signer: Account!
+  # Voting weight for weighted multi-sig
   weight: BigInt!
+  # Transaction hash where this was configured
   deployedInTransaction: Bytes!
 }
 
 type Compliance @entity(immutable: false) {
+  # Unique identifier - compliance contract address
   id: Bytes!
+  # Account representation of the compliance contract
   account: Account!
-  # Bypass List, account addresses that are exempt from compliance checks
+  # List of accounts exempt from compliance checks
   bypassList: [Account!]!
+  # Global compliance module configurations
   complianceModuleConfigs: [GlobalComplianceModuleConfig!]! @derivedFrom(field: "compliance")
 }
 
-# ==================================================
-# IDENTITY MANAGEMENT
-# ==================================================
+# Identity Management Entities
 
 type IdentityRegistryStorage @entity(immutable: false) {
+  # Unique identifier - storage contract address
   id: Bytes!
+  # Account representation of the storage contract
   account: Account!
+  # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
+  # List of identity registries using this storage
   registries: [IdentityRegistry!]! @derivedFrom(field: "identityRegistryStorage")
+  # List of identities stored in this registry
   identities: [Identity!]! @derivedFrom(field: "registryStorage")
 }
 
 type IdentityFactory @entity(immutable: false) {
+  # Unique identifier - factory contract address
   id: Bytes!
+  # Account representation of the factory contract
   account: Account!
+  # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
 }
 
 type IdentityRegistry @entity(immutable: false) {
+  # Unique identifier - registry contract address
   id: Bytes!
+  # Account representation of the registry contract
   account: Account!
+  # Registry of trusted claim issuers
   trustedIssuersRegistry: TrustedIssuersRegistry
+  # Registry of claim topic schemes
   topicSchemeRegistry: TopicSchemeRegistry
+  # Storage backend for identity data
   identityRegistryStorage: IdentityRegistryStorage
+  # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
 }
 
 type Identity @entity(immutable: false) {
+  # Unique identifier - identity contract address
   id: Bytes!
+  # Storage registry containing this identity
   registryStorage: IdentityRegistryStorage
+  # List of claims associated with this identity
   claims: [IdentityClaim!]! @derivedFrom(field: "identity")
+  # List of cryptographic keys for this identity
   keys: [IdentityKey!]! @derivedFrom(field: "identity")
+  # Account associated with this identity
   account: Account
+  # Whether this identity is a smart contract
   isContract: Boolean
+  # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
 }
 
 type IdentityKey @entity(immutable: false) {
+  # Unique identifier for this key
   id: Bytes!
+  # Identity this key belongs to
   identity: Identity!
+  # The cryptographic key value
   key: Bytes!
+  # Purpose of the key (e.g., "MANAGEMENT", "CLAIM")
   purpose: String!
+  # Type of key (e.g., "ECDSA", "RSA")
   type: String!
+  # Transaction hash where this was added
   deployedInTransaction: Bytes!
 }
 
 type IdentityClaim @entity(immutable: false) {
+  # Unique identifier for this claim
   id: Bytes!
+  # Identity this claim is about
   identity: Identity!
+  # Name/type of the claim (e.g., "KYC", "AML")
   name: String!
+  # Identity that issued this claim
   issuer: Identity!
+  # Optional URI for additional claim data
   uri: String
+  # Cryptographic signature of the claim
   signature: String!
+  # Whether this claim has been revoked
   revoked: Boolean!
+  # Key-value data within the claim
   values: [IdentityClaimValue!]! @derivedFrom(field: "claim")
+  # Transaction hash where this was added
   deployedInTransaction: Bytes!
 }
 
 type IdentityClaimValue @entity(immutable: false) {
+  # Unique identifier for this value
   id: Bytes!
+  # Claim this value belongs to
   claim: IdentityClaim!
+  # Key/field name within the claim
   key: String!
+  # String representation of the value
   value: String!
 }
 
-# ==================================================
-# TOPIC SCHEME MANAGEMENT
-# ==================================================
-
-
 type TopicSchemeRegistry @entity(immutable: false) {
+  # Unique identifier - registry contract address
   id: Bytes!
+  # Account representation of the registry contract
   account: Account!
+  # List of topic schemes in this registry
   schemes: [TopicScheme!]! @derivedFrom(field: "registry")
+  # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
 }
 
 type TopicScheme @entity(immutable: false) {
+  # Unique identifier for this scheme
   id: Bytes!
+  # Registry this scheme belongs to
   registry: TopicSchemeRegistry!
+  # Human-readable name of the topic
   name: String!
+  # Numeric ID of the topic
   topicId: BigInt!
+  # Function signature for verification
   signature: String!
+  # Whether this scheme is currently active
   enabled: Boolean!
+  # Transaction hash where this was added
   deployedInTransaction: Bytes!
 }
 
-# ==================================================
-# TRUSTED ISSUERS MANAGEMENT
-# ==================================================
-
 type TrustedIssuersRegistry @entity(immutable: false) {
+  # Unique identifier - registry contract address
   id: Bytes!
+  # Account representation of the registry contract
   account: Account!
+  # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
+  # List of trusted issuers in this registry
   trustedIssuers: [TrustedIssuer!]! @derivedFrom(field: "registry")
 }
 
 type TrustedIssuer @entity(immutable: false) {
+  # Unique identifier - issuer address
   id: Bytes!
+  # Transaction hash where this was added
   deployedInTransaction: Bytes!
+  # Registry this issuer belongs to
   registry: TrustedIssuersRegistry!
+  # Topics this issuer can verify
   claimTopics: [TopicScheme!]!
 }
 
-# ==================================================
-# Compliance
-# ==================================================
-
 type ComplianceModuleRegistry @entity(immutable: false) {
+  # Unique identifier - registry contract address
   id: Bytes!
+  # Account representation of the registry contract
   account: Account!
+  # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
+  # List of compliance modules in this registry
   complianceModules: [ComplianceModule!]!
     @derivedFrom(field: "complianceModuleRegistry")
 }
 
 type ComplianceModule @entity(immutable: false) {
+  # Unique identifier - module contract address
   id: Bytes!
+  # Human-readable name of the module
   name: String!
+  # Type identifier for the module
   typeId: String!
+  # Account representation of the module contract
   account: Account!
+  # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
+  # Registry this module belongs to
   complianceModuleRegistry: ComplianceModuleRegistry
+  # Token-specific configurations
   tokenConfigs: [TokenComplianceModuleConfig!]! @derivedFrom(field: "complianceModule")
+  # Global configurations
   globalConfigs: [GlobalComplianceModuleConfig!]! @derivedFrom(field: "complianceModule")
 }
 
 type GlobalComplianceModuleConfig @entity(immutable: false) {
+  # Unique identifier for this configuration
   id: Bytes!
+  # Compliance contract this config applies to
   compliance: Compliance!
+  # Module being configured
   complianceModule: ComplianceModule!
+  # Configuration parameters
   parameters: ComplianceModuleParameters!
 }
 
 type ComplianceModuleParameters @entity(immutable: false) {
+  # Unique identifier for these parameters
   id: Bytes!
+  # Encoded parameter data
   encodedParams: Bytes!
+  # List of addresses in the parameters
   addresses: [Bytes!]
+  # List of country codes in the parameters
   countries: [Int!]
+  # Expression tree for complex rules
   expression: [ExpressionNode!] @derivedFrom(field: "parameters")
 }
 
 type ExpressionNode @entity(immutable: true) {
+  # Unique identifier for this node
   id: Bytes!
+  # Parameters this node belongs to
   parameters: ComplianceModuleParameters!
+  # Type of logical operation
   nodeType: ExpressionNodeType!
+  # Position in the expression tree
   index: Int!
+  # Topic scheme reference (for TOPIC nodes)
   topicScheme: TopicScheme
 }
 
 enum ExpressionNodeType {
+  # Reference to a claim topic
   TOPIC
+  # Logical AND operation
   AND
+  # Logical OR operation
   OR
+  # Logical NOT operation
   NOT
 }
 
-# ==================================================
-# TOKEN MANAGEMENT
-# ==================================================
-
 enum TokenExtension {
+  # Access control management
   ACCESS_MANAGED
+  # Bond-specific functionality
   BOND
+  # Token burning capability
   BURNABLE
+  # Supply cap enforcement
   CAPPED
+  # Collateral management
   COLLATERAL
+  # Custodian controls
   CUSTODIAN
+  # Fund management features
   FUND
+  # Historical balance tracking
   HISTORICAL_BALANCES
+  # Pausable operations
   PAUSABLE
+  # Redemption functionality
   REDEEMABLE
+  # Yield generation features
   YIELD
 }
 
 type TokenFactoryRegistry @entity(immutable: false) {
+  # Unique identifier - registry contract address
   id: Bytes!
+  # System this registry belongs to
   system: System!
+  # Account representation of the registry contract
   account: Account!
+  # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
+  # List of token factories in this registry
   tokenFactories: [TokenFactory!]! @derivedFrom(field: "tokenFactoryRegistry")
 }
 
 type TokenFactory @entity(immutable: false) {
+  # Unique identifier - factory contract address
   id: Bytes!
+  # Human-readable name of the factory
   name: String!
+  # Type identifier for the factory
   typeId: String!
+  # Registry this factory belongs to
   tokenFactoryRegistry: TokenFactoryRegistry
+  # Account representation of the factory contract
   account: Account!
+  # List of tokens created by this factory
   tokens: [Token!]! @derivedFrom(field: "tokenFactory")
-  # Indicates whether this factory has created any tokens
-  # This field is used for efficient filtering without expensive joins
-  # Set to false when factory is created, true when first token is deployed
+  # Whether this factory has deployed any tokens (for efficient filtering)
   hasTokens: Boolean!
-  # Implemented interfaces
+  # Whether tokens implement ERC-3643 standard
   tokenImplementsERC3643: Boolean!
+  # Whether tokens implement SMART standard
   tokenImplementsSMART: Boolean!
-  # Extensions of tokens created by this factory
+  # Extensions available in tokens from this factory
   tokenExtensions: [TokenExtension!]!
 }
 
 type Token @entity(immutable: false) {
+  # Unique identifier - token contract address
   id: Bytes!
+  # Unix timestamp when token was created
   createdAt: BigInt!
+  # Account that created this token
   createdBy: Account!
+  # Transaction hash where token was deployed
   deployedInTransaction: Bytes!
+  # Account representation of the token contract
   account: Account!
-  # Access control for the token
+  # Access control configuration for the token
   accessControl: AccessControl
+  # List of all balance records for this token
   balances: [TokenBalance!]! @derivedFrom(field: "token")
+  # Token type (e.g., "BOND", "FUND", "EQUITY")
   type: String!
+  # Factory that created this token
   tokenFactory: TokenFactory
+  # Full name of the token
   name: String!
+  # Trading symbol
   symbol: String!
+  # Number of decimal places
   decimals: Int!
+  # Total supply (human-readable)
   totalSupply: BigDecimal!
+  # Total supply (exact, raw units)
   totalSupplyExact: BigInt!
-  # Implemented interfaces
+  # Whether implements ERC-3643 standard
   implementsERC3643: Boolean!
+  # Whether implements SMART standard
   implementsSMART: Boolean!
-  # Extensions
+  # List of enabled extensions
   extensions: [TokenExtension!]!
+  # Pausable extension data
   pausable: TokenPausable
+  # Collateral extension data
   collateral: TokenCollateral
+  # Supply cap extension data
   capped: TokenCapped
+  # Yield generation extension data (named yield_ to avoid reserved word)
   yield_: TokenYield
+  # Redemption extension data
   redeemable: TokenRedeemable
-  # Type specific
+  # Bond-specific data
   bond: TokenBond
+  # Fund-specific data
   fund: TokenFund
-  # Claims
+  # Base price claim for valuation
   basePriceClaim: IdentityClaim
-  # Compliance
+  # Compliance module configurations
   complianceModuleConfigs: [TokenComplianceModuleConfig!]! @derivedFrom(field: "token")
-  # Stats
+  # Statistical data
   stats: TokenStatsState @derivedFrom(field: "token")
+  # Distribution statistics
   distributionStats: TokenDistributionStatsState @derivedFrom(field: "token")
 }
 
 type TokenBalance @entity(immutable: false) {
+  # Composite key: token address + account address
   id: Bytes!
+  # Unix timestamp of last update
   lastUpdatedAt: BigInt!
+  # Token this balance is for
   token: Token!
+  # Account holding this balance
   account: Account!
+  # Total balance (human-readable)
   value: BigDecimal!
+  # Total balance (exact, raw units)
   valueExact: BigInt!
+  # Whether this balance is frozen
   isFrozen: Boolean!
+  # Frozen amount (human-readable)
   frozen: BigDecimal!
+  # Frozen amount (exact, raw units)
   frozenExact: BigInt!
+  # Available amount (total - frozen, human-readable)
   available: BigDecimal!
+  # Available amount (exact, raw units)
   availableExact: BigInt!
 }
 
 type TokenComplianceModuleConfig @entity(immutable: false) {
+  # Unique identifier for this configuration
   id: Bytes!
+  # Token this config applies to
   token: Token!
+  # Compliance module being configured
   complianceModule: ComplianceModule!
+  # Configuration parameters
   parameters: ComplianceModuleParameters!
 }
 
 
-# ==================================================
-# TOKEN EXTENSIONS
-# ==================================================
-
 type TokenPausable @entity(immutable: false) {
+  # Unique identifier - token address
   id: Bytes!
+  # Whether token operations are paused
   paused: Boolean!
 }
 
 type TokenCollateral @entity(immutable: false) {
+  # Unique identifier - token address
   id: Bytes!
+  # Claim containing collateral information
   identityClaim: IdentityClaim
+  # Unix timestamp when collateral expires
   expiryTimestamp: BigInt
+  # Collateral amount (human-readable)
   collateral: BigDecimal
+  # Collateral amount (exact, raw units)
   collateralExact: BigInt
 }
 
 type TokenCapped @entity(immutable: false) {
+  # Unique identifier - token address
   id: Bytes!
+  # Maximum supply cap (human-readable)
   cap: BigDecimal!
+  # Maximum supply cap (exact, raw units)
   capExact: BigInt!
 }
 
 type TokenYield @entity(immutable: false) {
+  # Unique identifier - token address
   id: Bytes!
+  # Fixed yield schedule configuration
   schedule: TokenFixedYieldSchedule!
 }
 
 type TokenRedeemable @entity(immutable: false) {
+  # Unique identifier - token address
   id: Bytes!
+  # Total amount redeemed (human-readable)
   redeemedAmount: BigDecimal!
+  # Total amount redeemed (exact, raw units)
   redeemedAmountExact: BigInt!
 }
 
-# ==================================================
-# TOKEN TYPES
-# ==================================================
-
 type TokenBond @entity(immutable: false) {
+  # Unique identifier - token address
   id: Bytes!
+  # Face value of the bond (human-readable)
   faceValue: BigDecimal!
+  # Face value of the bond (exact, raw units)
   faceValueExact: BigInt!
+  # Unix timestamp of maturity date
   maturityDate: BigInt!
+  # Whether the bond has reached maturity
   isMatured: Boolean!
+  # Token used for denomination/payment
   denominationAsset: Token!
-  # Stats
+  # Bond-specific statistics
   stats: TokenBondStatsState @derivedFrom(field: "bond")
 }
 
 type TokenFund @entity(immutable: false) {
+  # Unique identifier - token address
   id: Bytes!
+  # Management fee in basis points (100 bps = 1%)
   managementFeeBps: Int!
 }
 
-# ==================================================
-# System Addons
-# ==================================================
-
 type SystemAddonRegistry @entity(immutable: false) {
+  # Unique identifier - registry contract address
   id: Bytes!
+  # Account representation of the registry contract
   account: Account!
+  # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
+  # List of system addons in this registry
   systemAddons: [SystemAddon!]! @derivedFrom(field: "systemAddonRegistry")
 }
 
 type SystemAddon @entity(immutable: false) {
+  # Unique identifier - addon contract address
   id: Bytes!
+  # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
+  # Registry this addon belongs to
   systemAddonRegistry: SystemAddonRegistry!
+  # Human-readable name of the addon
   name: String!
+  # Type identifier for the addon
   typeId: String!
+  # Account representation of the addon contract
   account: Account!
 }
 
-# ==================================================
-# XVP SETTLEMENT
-# ==================================================
-
 type XvPSettlement @entity(immutable: false) {
+  # Unique identifier for the settlement
   id: Bytes!
+  # Human-readable name of the settlement
   name: String!
+  # Unix timestamp of the cutoff date
   cutoffDate: BigInt!
+  # Whether to execute automatically at cutoff
   autoExecute: Boolean!
+  # Whether this settlement has been executed
   executed: Boolean!
+  # Whether this settlement was cancelled
   cancelled: Boolean!
+  # Unix timestamp when created
   createdAt: BigInt!
+  # List of payment flows in this settlement
   flows: [XvPSettlementFlow!]! @derivedFrom(field: "xvpSettlement")
+  # List of approvals for this settlement
   approvals: [XvPSettlementApproval!]! @derivedFrom(field: "xvpSettlement")
+  # Transaction hash where this was created
   deployedInTransaction: Bytes!
 }
 
 type XvPSettlementFlow @entity(immutable: false) {
+  # Unique identifier for this flow
   id: Bytes!
+  # Settlement this flow belongs to
   xvpSettlement: XvPSettlement!
+  # Token to be transferred
   asset: Token!
+  # Source account
   from: Account!
+  # Destination account
   to: Account!
+  # Transfer amount (human-readable)
   amount: BigDecimal!
+  # Transfer amount (exact, raw units)
   amountExact: BigInt!
 }
 
 type XvPSettlementApproval @entity(immutable: false) {
+  # Unique identifier for this approval
   id: Bytes!
+  # Settlement being approved
   xvpSettlement: XvPSettlement!
+  # Account providing approval
   account: Account!
+  # Whether approved or rejected
   approved: Boolean!
+  # Unix timestamp of the approval
   timestamp: BigInt
 }
 
-# ==================================================
-# ACTIONS
-# ==================================================
-
 enum ActionStatus {
+  # Waiting to become active
   PENDING
+  # Currently executable
   ACTIVE
+  # Successfully executed
   EXECUTED
+  # Past expiration date
   EXPIRED
 }
 
 type Action @entity(immutable: false) {
+  # Unique identifier for the action
   id: Bytes!
+  # Human-readable name of the action
   name: String!
+  # Target contract address
   target: Bytes!
+  # Unix timestamp when created
   createdAt: BigInt!
+  # Unix timestamp when becomes active
   activeAt: BigInt!
+  # Unix timestamp when expires (optional)
   expiresAt: BigInt
+  # Required role to execute this action
   requiredRole: String
+  # Current status of the action
   status: ActionStatus!
-  executed: Boolean!  # DEPRECATED: Use status field instead. Keep for backward compatibility until frontend is migrated.
+  # DEPRECATED: Use status field instead
+  executed: Boolean!
+  # Unix timestamp when executed (if executed)
   executedAt: BigInt
+  # Account that executed the action (if executed)
   executedBy: Bytes
+  # Optional identifier for the action
   identifier: String
-  executor: ActionExecutor!  # Must be ActionExecutor! for @derivedFrom to work
+  # Executor configuration for this action
+  executor: ActionExecutor!
 }
 
 type ActionExecutor @entity(immutable: false) {
+  # Unique identifier for the executor
   id: Bytes!
+  # List of addresses allowed to execute
   executors: [Bytes!]!
+  # List of actions using this executor
   actions: [Action!]! @derivedFrom(field: "executor")
 }
 
-# ==================================================
-# AIRDROP
-# ==================================================
-
 type AirdropFactory @entity(immutable: false) {
+  # Unique identifier - factory contract address
   id: Bytes!
+  # System addon this factory belongs to
   systemAddon: SystemAddon!
+  # List of airdrops created by this factory
   airdrops: [Airdrop!]! @derivedFrom(field: "factory")
+  # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
 }
 
 type Airdrop @entity(immutable: false) {
+  # Unique identifier - airdrop contract address
   id: Bytes!
+  # Factory that created this airdrop
   factory: AirdropFactory!
+  # Human-readable name of the airdrop
   name: String!
+  # Token being distributed
   token: Token!
+  # Merkle tree root for claim verification
   merkleRoot: Bytes!
+  # Type identifier for the airdrop
   typeId: String!
+  # Total amount transferred (human-readable)
   amountTransferred: BigDecimal!
+  # Total amount transferred (exact, raw units)
   amountTransferredExact: BigInt!
+  # List of recipients
   recipients: [AirdropRecipient!]! @derivedFrom(field: "airdrop")
+  # List of individual allocations
   allocations: [AirdropAllocation!]! @derivedFrom(field: "airdrop")
-  # Type specific
+  # Type-specific data for vesting airdrops
   vestingAirdrop: VestingAirdrop
+  # Type-specific data for push airdrops
   pushAirdrop: PushAirdrop
+  # Type-specific data for time-bound airdrops
   timeBoundAirdrop: TimeBoundAirdrop
+  # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
 }
 
 type AirdropRecipient @entity(immutable: false) {
+  # Composite key: airdrop + account
   id: Bytes!
+  # Airdrop this recipient is part of
   airdrop: Airdrop!
+  # Recipient account
   account: Account!
+  # List of allocations for this recipient
   allocations: [AirdropAllocation!]! @derivedFrom(field: "recipient")
+  # Total amount transferred to this recipient (human-readable)
   amountTransferred: BigDecimal!
+  # Total amount transferred (exact, raw units)
   amountTransferredExact: BigInt!
 }
 
 type AirdropAllocation @entity(immutable: false) {
+  # Unique identifier for this allocation
   id: Bytes!
+  # Airdrop this allocation belongs to
   airdrop: Airdrop!
+  # Recipient of this allocation
   recipient: AirdropRecipient!
+  # Index in the merkle tree
   index: BigInt!
+  # Amount allocated (human-readable)
   amountTransferred: BigDecimal!
+  # Amount allocated (exact, raw units)
   amountTransferredExact: BigInt!
+  # Whether this allocation has been claimed
   initialized: Boolean!
 }
 
-# ==================================================
-# AIRDROP TYPES
-# ==================================================
-
 type PushAirdrop @entity(immutable: false) {
+  # Unique identifier - airdrop address
   id: Bytes!
+  # Maximum distribution cap (human-readable)
   distributionCap: BigDecimal
+  # Maximum distribution cap (exact, raw units)
   distributionCapExact: BigInt
 }
 
 type VestingAirdrop @entity(immutable: false) {
+  # Unique identifier - airdrop address
   id: Bytes!
+  # Unix timestamp deadline for initialization
   initializationDeadline: BigInt!
+  # Identifier of the vesting strategy
   strategyId: Bytes!
-  # Strategy specific
+  # Linear vesting strategy details (if applicable)
   linearVestingStrategy: LinearVestingStrategy
 }
 
 type TimeBoundAirdrop @entity(immutable: false) {
+  # Unique identifier - airdrop address
   id: Bytes!
+  # Unix timestamp when airdrop starts
   startTime: BigInt!
+  # Unix timestamp when airdrop ends
   endTime: BigInt!
 }
 
-# ==================================================
-# VESTING STRATEGIES
-# ==================================================
 type LinearVestingStrategy @entity(immutable: false) {
+  # Unique identifier for the strategy
   id: Bytes!
+  # Total vesting duration in seconds
   vestingDuration: BigInt!
+  # Cliff period duration in seconds
   cliffDuration: BigInt!
 }
 
-# ==================================================
-# YIELD SCHEDULES
-# ==================================================
-
 type TokenFixedYieldSchedule @entity(immutable: false) {
+  # Unique identifier - schedule contract address
   id: Bytes!
+  # Unix timestamp when created
   createdAt: BigInt!
+  # Account that created this schedule
   createdBy: Account!
+  # Account representation of the schedule contract
   account: Account!
+  # Token this yield schedule applies to
   token: Token!
+  # Unix timestamp when yield starts
   startDate: BigInt!
+  # Unix timestamp when yield ends
   endDate: BigInt!
+  # Yield rate in basis points
   rate: BigInt!
+  # Payment interval in seconds
   interval: BigInt!
+  # Total yield claimed (human-readable)
   totalClaimed: BigDecimal!
+  # Total yield claimed (exact, raw units)
   totalClaimedExact: BigInt!
+  # Total unclaimed yield (human-readable)
   totalUnclaimedYield: BigDecimal!
+  # Total unclaimed yield (exact, raw units)
   totalUnclaimedYieldExact: BigInt!
+  # Total yield generated (human-readable)
   totalYield: BigDecimal!
+  # Total yield generated (exact, raw units)
   totalYieldExact: BigInt!
+  # Token used for yield payments
   denominationAsset: Token!
+  # Current active period
   currentPeriod: TokenFixedYieldSchedulePeriod
+  # Next scheduled period
   nextPeriod: TokenFixedYieldSchedulePeriod
+  # List of all periods
   periods: [TokenFixedYieldSchedulePeriod!]! @derivedFrom(field: "schedule")
+  # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
 }
 
 type TokenFixedYieldSchedulePeriod @entity(immutable: false) {
+  # Unique identifier for this period
   id: Bytes!
+  # Schedule this period belongs to
   schedule: TokenFixedYieldSchedule!
+  # Unix timestamp when period starts
   startDate: BigInt!
+  # Unix timestamp when period ends
   endDate: BigInt!
+  # Yield claimed in this period (human-readable)
   totalClaimed: BigDecimal!
+  # Yield claimed in this period (exact, raw units)
   totalClaimedExact: BigInt!
+  # Unclaimed yield in this period (human-readable)
   totalUnclaimedYield: BigDecimal!
+  # Unclaimed yield in this period (exact, raw units)
   totalUnclaimedYieldExact: BigInt!
+  # Total yield for this period (human-readable)
   totalYield: BigDecimal!
+  # Total yield for this period (exact, raw units)
   totalYieldExact: BigInt!
+  # Transaction hash where this was created
   deployedInTransaction: Bytes!
 }
 
-# ==================================================
-# SYSTEM STATISTICS
-# ==================================================
-
-# Persistent entity to store current system state for efficient calculations
 type SystemStatsState @entity(immutable: false) {
-  id: Bytes! # System address
+  # System contract address
+  id: Bytes!
+  # Reference to the system
   system: System!
-
-  # Value of all tokens in the system in base FIAT currency
+  # Total value of all tokens in base FIAT currency
   totalValueInBaseCurrency: BigDecimal!
 }
 
 type SystemStatsData @entity(timeseries: true) {
+  # Unique identifier for timeseries entry
   id: Int8!
+  # Timestamp of this data point
   timestamp: Timestamp!
-
+  # Reference to the system
   system: System!
-
-  # Value of all tokens in the system in base FIAT currency
+  # Total value of all tokens in base FIAT currency
   totalValueInBaseCurrency: BigDecimal!
 }
 
 type SystemStats
   @aggregation(intervals: ["hour", "day"], source: "SystemStatsData") {
+  # Unique identifier for aggregated entry
   id: Int8!
+  # Timestamp of aggregation period
   timestamp: Timestamp!
-
+  # Reference to the system
   system: System!
-
-  # Value of all tokens in the system in base FIAT currency
+  # Last value of all tokens in base FIAT currency for the period
   totalValueInBaseCurrency: BigDecimal!
     @aggregate(fn: "last", arg: "totalValueInBaseCurrency")
 }
 
-# ==================================================
-# ACCOUNT STATISTICS
-# ==================================================
-
-# Persistent entity to store current account state for efficient calculations
 type AccountStatsState @entity(immutable: false) {
-  id: Bytes! # Account address
+  # Account address
+  id: Bytes!
+  # Reference to the account
   account: Account!
-
-  # Value of all tokens for the account in base FIAT currency
+  # Total value of all tokens held by account in base FIAT currency
   totalValueInBaseCurrency: BigDecimal!
-
-  # Balance metrics
+  # Number of different token balances
   balancesCount: Int!
 }
 
 type AccountStatsData @entity(timeseries: true) {
+  # Unique identifier for timeseries entry
   id: Int8!
+  # Timestamp of this data point
   timestamp: Timestamp!
-
+  # Reference to the account
   account: Account!
-
-  # Value of all tokens for the account in base FIAT currency
+  # Total value of all tokens held in base FIAT currency
   totalValueInBaseCurrency: BigDecimal!
-
-  # Balance metrics
+  # Number of different token balances
   balancesCount: Int!
 }
 
 type AccountStats
   @aggregation(intervals: ["hour", "day"], source: "AccountStatsData") {
+  # Unique identifier for aggregated entry
   id: Int8!
+  # Timestamp of aggregation period
   timestamp: Timestamp!
-
+  # Reference to the account
   account: Account!
-
-  # Value metrics (in base FIAT currency)
+  # Last value of all tokens in base FIAT currency for the period
   totalValueInBaseCurrency: BigDecimal!
     @aggregate(fn: "last", arg: "totalValueInBaseCurrency")
-
-  # Balance metrics
+  # Last count of different token balances for the period
   balancesCount: Int! @aggregate(fn: "last", arg: "balancesCount")
 }
 
-# ==================================================
-# EVENT STATISTICS
-# ==================================================
-
 type EventStatsData @entity(timeseries: true) {
+  # Unique identifier for timeseries entry
   id: Int8!
+  # Timestamp of this data point
   timestamp: Timestamp!
-
+  # Account that emitted the event
   account: Account!
+  # Name of the event
   eventName: String!
 }
 
 type EventStats
   @aggregation(intervals: ["hour", "day"], source: "EventStatsData") {
+  # Unique identifier for aggregated entry
   id: Int8!
+  # Timestamp of aggregation period
   timestamp: Timestamp!
-
+  # Account that emitted events
   account: Account!
+  # Name of the event type
   eventName: String!
-
+  # Cumulative count of events
   eventsCount: Int! @aggregate(fn: "count", cumulative: true)
 }
 
-# ==================================================
-# TOKEN STATISTICS
-# ==================================================
-
-# Persistent entity to store current token type state for efficient calculations
 type TokenTypeStatsState @entity(immutable: false) {
+  # Unique identifier
   id: Bytes!
-   # System
+  # System this statistic belongs to
   system: System!
-  # Token type
+  # Token type (e.g., "BOND", "FUND")
   type: String!
-  # Count of tokens of this type
+  # Number of tokens of this type
   count: Int!
   # Total value of all tokens of this type in base currency
   totalValueInBaseCurrency: BigDecimal!
-  # Percentage of total supply (eg bonds take 8% of the total supply accross all types)
+  # Percentage of total supply across all token types
   percentageOfTotalSupply: BigDecimal!
 }
 
-# Total count of tokens by type
 type TokenTypeStatsData @entity(timeseries: true) {
+  # Unique identifier for timeseries entry
   id: Int8!
+  # Timestamp of this data point
   timestamp: Timestamp!
-
-  # System
+  # System this statistic belongs to
   system: System!
-  # Token type
+  # Token type (e.g., "BOND", "FUND")
   type: String!
-
-  # Count of tokens of this type
+  # Number of tokens of this type
   count: Int!
-  # Percentage of total supply (eg bonds take 8% of the total supply accross all types)
+  # Percentage of total supply across all token types
   percentageOfTotalSupply: BigDecimal!
 }
 
 type TokenTypeStats
   @aggregation(intervals: ["hour", "day"], source: "TokenTypeStatsData") {
+  # Unique identifier for aggregated entry
   id: Int8!
+  # Timestamp of aggregation period
   timestamp: Timestamp!
-
+  # System this statistic belongs to
   system: System!
+  # Token type (e.g., "BOND", "FUND")
   type: String!
-
+  # Last count of tokens of this type for the period
   count: Int! @aggregate(fn: "last", arg: "count")
-  # Percentage of total supply (eg bonds take 8% of the total supply accross all types)
+  # Last percentage of total supply for the period
   percentageOfTotalSupply: BigDecimal!
     @aggregate(fn: "last", arg: "percentageOfTotalSupply")
 }
 
-# Persistent entity to store current token state for efficient calculations
 type TokenStatsState @entity(immutable: false) {
-  id: Bytes! # Token address
+  # Token contract address
+  id: Bytes!
+  # Reference to the token
   token: Token!
-
-  # Balance metrics
+  # Number of accounts holding this token
   balancesCount: Int!
 }
 
 type TokenStatsData @entity(timeseries: true) {
+  # Unique identifier for timeseries entry
   id: Int8!
+  # Timestamp of this data point
   timestamp: Timestamp!
-
+  # Reference to the token
   token: Token!
+  # Token type (e.g., "BOND", "FUND")
   type: String!
-
-  # Balance metrics
+  # Number of accounts holding this token
   balancesCount: Int!
-
-  # Supply metrics
+  # Current total supply (human-readable)
   totalSupply: BigDecimal!
+  # Current total supply (exact, raw units)
   totalSupplyExact: BigInt!
+  # Amount minted in this period (human-readable)
   minted: BigDecimal!
+  # Amount minted in this period (exact, raw units)
   mintedExact: BigInt!
+  # Amount burned in this period (human-readable)
   burned: BigDecimal!
+  # Amount burned in this period (exact, raw units)
   burnedExact: BigInt!
+  # Amount transferred in this period (human-readable)
   transferred: BigDecimal!
+  # Amount transferred in this period (exact, raw units)
   transferredExact: BigInt!
 }
 
 type TokenStats
   @aggregation(intervals: ["hour", "day"], source: "TokenStatsData") {
+  # Unique identifier for aggregated entry
   id: Int8!
+  # Timestamp of aggregation period
   timestamp: Timestamp!
-
+  # Reference to the token
   token: Token!
+  # Token type (e.g., "BOND", "FUND")
   type: String!
-
-  # Balance metrics
+  # Last count of holders for the period
   balancesCount: Int! @aggregate(fn: "last", arg: "balancesCount")
-
-  # Supply metrics
+  # Last total supply for the period (human-readable)
   totalSupply: BigDecimal! @aggregate(fn: "last", arg: "totalSupply")
+  # Last total supply for the period (exact, raw units)
   totalSupplyExact: BigInt! @aggregate(fn: "last", arg: "totalSupplyExact")
+  # Sum of minted amounts for the period (human-readable)
   totalMinted: BigDecimal! @aggregate(fn: "sum", arg: "minted")
+  # Sum of minted amounts for the period (exact, raw units)
   totalMintedExact: BigInt! @aggregate(fn: "sum", arg: "mintedExact")
+  # Sum of burned amounts for the period (human-readable)
   totalBurned: BigDecimal! @aggregate(fn: "sum", arg: "burned")
+  # Sum of burned amounts for the period (exact, raw units)
   totalBurnedExact: BigInt! @aggregate(fn: "sum", arg: "burnedExact")
+  # Sum of transferred amounts for the period (human-readable)
   totalTransferred: BigDecimal! @aggregate(fn: "sum", arg: "transferred")
+  # Sum of transferred amounts for the period (exact, raw units)
   totalTransferredExact: BigInt! @aggregate(fn: "sum", arg: "transferredExact")
 }
 
-# Collateral statistics for tokens
 type TokenCollateralStatsData @entity(timeseries: true) {
+  # Unique identifier for timeseries entry
   id: Int8!
+  # Timestamp of this data point
   timestamp: Timestamp!
-
+  # Reference to the token
   token: Token!
-
+  # Unix timestamp when collateral expires
   expiryTimestamp: BigInt!
+  # Total collateral amount (human-readable)
   collateral: BigDecimal!
+  # Total collateral amount (exact, raw units)
   collateralExact: BigInt!
+  # Available collateral (human-readable)
   collateralAvailable: BigDecimal!
+  # Available collateral (exact, raw units)
   collateralAvailableExact: BigInt!
+  # Used collateral (human-readable)
   collateralUsed: BigDecimal!
+  # Used collateral (exact, raw units)
   collateralUsedExact: BigInt!
 }
 
 type TokenCollateralStats
   @aggregation(intervals: ["hour", "day"], source: "TokenCollateralStatsData") {
+  # Unique identifier for aggregated entry
   id: Int8!
+  # Timestamp of aggregation period
   timestamp: Timestamp!
-
+  # Reference to the token
   token: Token!
-
+  # Last expiry timestamp for the period
   expiryTimestamp: BigInt! @aggregate(fn: "last", arg: "expiryTimestamp")
+  # Last total collateral for the period (human-readable)
   collateral: BigDecimal! @aggregate(fn: "last", arg: "collateral")
+  # Last total collateral for the period (exact, raw units)
   collateralExact: BigInt! @aggregate(fn: "last", arg: "collateralExact")
+  # Last available collateral for the period (human-readable)
   collateralAvailable: BigDecimal!
     @aggregate(fn: "last", arg: "collateralAvailable")
+  # Last available collateral for the period (exact, raw units)
   collateralAvailableExact: BigInt!
     @aggregate(fn: "last", arg: "collateralAvailableExact")
+  # Last used collateral for the period (human-readable)
   collateralUsed: BigDecimal! @aggregate(fn: "last", arg: "collateralUsed")
+  # Last used collateral for the period (exact, raw units)
   collateralUsedExact: BigInt!
     @aggregate(fn: "last", arg: "collateralUsedExact")
 }
 
-# Bond statistics for tokens
-
-# Persistent entity to store current token bond state for direct access
 type TokenBondStatsState @entity(immutable: false) {
-  # Unique identifier for the bond stats state (typically the token address)
+  # Token address
   id: Bytes!
-  # Reference to the associated bond
+  # Reference to the bond
   bond: TokenBond!
-  # Available balance of the denomination asset (human-readable)
+  # Available balance of denomination asset (human-readable)
   denominationAssetBalanceAvailable: BigDecimal!
-  # Available balance of the denomination asset (exact, raw units)
+  # Available balance of denomination asset (exact, raw units)
   denominationAssetBalanceAvailableExact: BigInt!
-  # Required balance of the denomination asset to fully collateralize the bond (human-readable)
+  # Required balance to fully collateralize bond (human-readable)
   denominationAssetBalanceRequired: BigDecimal!
-  # Required balance of the denomination asset (exact, raw units)
+  # Required balance to fully collateralize bond (exact, raw units)
   denominationAssetBalanceRequiredExact: BigInt!
-  # Percentage of required collateral that is currently covered (available / required * 100)
+  # Percentage of required collateral covered (available/required * 100)
   coveredPercentage: BigDecimal!
 }
 
 type TokenBondStatsData @entity(timeseries: true) {
+  # Unique identifier for timeseries entry
   id: Int8!
+  # Timestamp of this data point
   timestamp: Timestamp!
-  # Reference to the associated bond
+  # Reference to the bond
   bond: TokenBond!
-  # Available balance of the denomination asset (human-readable)
+  # Available balance of denomination asset (human-readable)
   denominationAssetBalanceAvailable: BigDecimal!
-  # Available balance of the denomination asset (exact, raw units)
+  # Available balance of denomination asset (exact, raw units)
   denominationAssetBalanceAvailableExact: BigInt!
-  # Required balance of the denomination asset to fully collateralize the bond (human-readable)
+  # Required balance to fully collateralize bond (human-readable)
   denominationAssetBalanceRequired: BigDecimal!
-  # Required balance of the denomination asset (exact, raw units)
+  # Required balance to fully collateralize bond (exact, raw units)
   denominationAssetBalanceRequiredExact: BigInt!
-  # Percentage of required collateral that is currently covered (available / required * 100)
+  # Percentage of required collateral covered (available/required * 100)
   coveredPercentage: BigDecimal!
 }
 
 type TokenBondStats
   @aggregation(intervals: ["hour", "day"], source: "TokenBondStatsData") {
+  # Unique identifier for aggregated entry
   id: Int8!
+  # Timestamp of aggregation period
   timestamp: Timestamp!
-
+  # Reference to the bond
   bond: TokenBond!
-
+  # Last available balance for the period (human-readable)
   denominationAssetBalanceAvailable: BigDecimal!
     @aggregate(fn: "last", arg: "denominationAssetBalanceAvailable")
+  # Last available balance for the period (exact, raw units)
   denominationAssetBalanceAvailableExact: BigInt!
     @aggregate(fn: "last", arg: "denominationAssetBalanceAvailableExact")
+  # Last required balance for the period (human-readable)
   denominationAssetBalanceRequired: BigDecimal!
     @aggregate(fn: "last", arg: "denominationAssetBalanceRequired")
+  # Last required balance for the period (exact, raw units)
   denominationAssetBalanceRequiredExact: BigInt!
     @aggregate(fn: "last", arg: "denominationAssetBalanceRequiredExact")
+  # Last coverage percentage for the period
   coveredPercentage: BigDecimal!
     @aggregate(
       fn: "last"
@@ -1032,88 +1427,100 @@ type TokenBondStats
     )
 }
 
-# Persistent entity to store current token distribution state for efficient calculations
 type TokenDistributionStatsState @entity(immutable: false) {
-  id: Bytes! # Token address
+  # Token contract address
+  id: Bytes!
+  # Reference to the token
   token: Token!
-
-  # Top holders tracking (we store the top 6 to be able to add and remove holders incrementally)
+  # Top 6 holders (for incremental updates)
   topHolders: [TokenTopHolder!]! @derivedFrom(field: "state")
-
-  # Percentage owned by top 5 holders compared to the total supply
+  # Percentage of supply owned by top 5 holders
   percentageOwnedByTop5Holders: BigDecimal!
-
-  # Distribution segments (relative to the balance with the highest value)
-  # Segment 1: 0-2%
+  # Segment 1 (0-2% of max balance): number of holders
   balancesCountSegment1: Int!
+  # Segment 1: total value (human-readable)
   totalValueSegment1: BigDecimal!
+  # Segment 1: total value (exact, raw units)
   totalValueSegment1Exact: BigInt!
-
-  # Segment 2: 2-10%
+  # Segment 2 (2-10% of max balance): number of holders
   balancesCountSegment2: Int!
+  # Segment 2: total value (human-readable)
   totalValueSegment2: BigDecimal!
+  # Segment 2: total value (exact, raw units)
   totalValueSegment2Exact: BigInt!
-
-  # Segment 3: 10-20%
+  # Segment 3 (10-20% of max balance): number of holders
   balancesCountSegment3: Int!
+  # Segment 3: total value (human-readable)
   totalValueSegment3: BigDecimal!
+  # Segment 3: total value (exact, raw units)
   totalValueSegment3Exact: BigInt!
-
-  # Segment 4: 20-40%
+  # Segment 4 (20-40% of max balance): number of holders
   balancesCountSegment4: Int!
+  # Segment 4: total value (human-readable)
   totalValueSegment4: BigDecimal!
+  # Segment 4: total value (exact, raw units)
   totalValueSegment4Exact: BigInt!
-
-  # Segment 5: 40-100%
+  # Segment 5 (40-100% of max balance): number of holders
   balancesCountSegment5: Int!
+  # Segment 5: total value (human-readable)
   totalValueSegment5: BigDecimal!
+  # Segment 5: total value (exact, raw units)
   totalValueSegment5Exact: BigInt!
 }
 
-# Entity to efficiently track top token holders
 type TokenTopHolder @entity(immutable: false) {
-  id: Bytes! # token-account composite key
+  # Composite key: token address + account address
+  id: Bytes!
+  # Reference to the distribution state
   state: TokenDistributionStatsState!
+  # Holder account
   account: Account!
+  # Balance amount (human-readable)
   balance: BigDecimal!
+  # Balance amount (exact, raw units)
   balanceExact: BigInt!
-  rank: Int! # 1-5 for top 5 holders
+  # Rank position (1-6, top 5 displayed)
+  rank: Int!
 }
 
-# Token distribution statistics by concentration segments
 type TokenDistributionStatsData @entity(timeseries: true) {
+  # Unique identifier for timeseries entry
   id: Int8!
+  # Timestamp of this data point
   timestamp: Timestamp!
-
+  # Reference to the token
   token: Token!
-
-  # Percentage owned by top 5 holders compared to the total supply
+  # Percentage of supply owned by top 5 holders
   percentageOwnedByTop5Holders: BigDecimal!
-
-  # Distribution segments (relative to the balance with the highest value)
-  # 0-2%
+  # Segment 1 (0-2%): number of holders
   balancesCountSegment1: Int!
+  # Segment 1: total value (human-readable)
   totalValueSegment1: BigDecimal!
+  # Segment 1: total value (exact, raw units)
   totalValueSegment1Exact: BigInt!
-
-  # 2-10%
+  # Segment 2 (2-10%): number of holders
   balancesCountSegment2: Int!
+  # Segment 2: total value (human-readable)
   totalValueSegment2: BigDecimal!
+  # Segment 2: total value (exact, raw units)
   totalValueSegment2Exact: BigInt!
-
-  # 10-20%
+  # Segment 3 (10-20%): number of holders
   balancesCountSegment3: Int!
+  # Segment 3: total value (human-readable)
   totalValueSegment3: BigDecimal!
+  # Segment 3: total value (exact, raw units)
   totalValueSegment3Exact: BigInt!
-
-  # 20-40%
+  # Segment 4 (20-40%): number of holders
   balancesCountSegment4: Int!
+  # Segment 4: total value (human-readable)
   totalValueSegment4: BigDecimal!
+  # Segment 4: total value (exact, raw units)
   totalValueSegment4Exact: BigInt!
-
-  # 40-100%
+  # Segment 5 (40-100%): number of holders
   balancesCountSegment5: Int!
+  # Segment 5: total value (human-readable)
   totalValueSegment5: BigDecimal!
+  # Segment 5: total value (exact, raw units)
   totalValueSegment5Exact: BigInt!
 }
 
@@ -1122,53 +1529,58 @@ type TokenDistributionStats
     intervals: ["hour", "day"]
     source: "TokenDistributionStatsData"
   ) {
+  # Unique identifier for aggregated entry
   id: Int8!
+  # Timestamp of aggregation period
   timestamp: Timestamp!
-
+  # Reference to the token
   token: Token!
-
-  # Percentage owned by top 5 holders compared to the total supply
+  # Last percentage owned by top 5 holders for the period
   percentageOwnedByTop5Holders: BigDecimal!
     @aggregate(fn: "last", arg: "percentageOwnedByTop5Holders")
-
-  # Distribution segments (relative to the balance with the highest value)
-  # 0-2%
+  # Segment 1 (0-2%): last holder count for the period
   balancesCountSegment1: Int!
     @aggregate(fn: "last", arg: "balancesCountSegment1")
+  # Segment 1: last total value for the period (human-readable)
   totalValueSegment1: BigDecimal!
     @aggregate(fn: "last", arg: "totalValueSegment1")
+  # Segment 1: last total value for the period (exact, raw units)
   totalValueSegment1Exact: BigInt!
     @aggregate(fn: "last", arg: "totalValueSegment1Exact")
-
-  # 2-10%
+  # Segment 2 (2-10%): last holder count for the period
   balancesCountSegment2: Int!
     @aggregate(fn: "last", arg: "balancesCountSegment2")
+  # Segment 2: last total value for the period (human-readable)
   totalValueSegment2: BigDecimal!
     @aggregate(fn: "last", arg: "totalValueSegment2")
+  # Segment 2: last total value for the period (exact, raw units)
   totalValueSegment2Exact: BigInt!
     @aggregate(fn: "last", arg: "totalValueSegment2Exact")
-
-  # 10-20%
+  # Segment 3 (10-20%): last holder count for the period
   balancesCountSegment3: Int!
     @aggregate(fn: "last", arg: "balancesCountSegment3")
+  # Segment 3: last total value for the period (human-readable)
   totalValueSegment3: BigDecimal!
     @aggregate(fn: "last", arg: "totalValueSegment3")
+  # Segment 3: last total value for the period (exact, raw units)
   totalValueSegment3Exact: BigInt!
     @aggregate(fn: "last", arg: "totalValueSegment3Exact")
-
-  # 20-40%
+  # Segment 4 (20-40%): last holder count for the period
   balancesCountSegment4: Int!
     @aggregate(fn: "last", arg: "balancesCountSegment4")
+  # Segment 4: last total value for the period (human-readable)
   totalValueSegment4: BigDecimal!
     @aggregate(fn: "last", arg: "totalValueSegment4")
+  # Segment 4: last total value for the period (exact, raw units)
   totalValueSegment4Exact: BigInt!
     @aggregate(fn: "last", arg: "totalValueSegment4Exact")
-
-  # 40-100%
+  # Segment 5 (40-100%): last holder count for the period
   balancesCountSegment5: Int!
     @aggregate(fn: "last", arg: "balancesCountSegment5")
+  # Segment 5: last total value for the period (human-readable)
   totalValueSegment5: BigDecimal!
     @aggregate(fn: "last", arg: "totalValueSegment5")
+  # Segment 5: last total value for the period (exact, raw units)
   totalValueSegment5Exact: BigInt!
     @aggregate(fn: "last", arg: "totalValueSegment5Exact")
 }

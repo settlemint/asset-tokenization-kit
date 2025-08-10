@@ -41,9 +41,12 @@ export const ActionSchema = z.object({
   id: z.string().describe("Unique identifier for the action"),
   name: z.string().describe("Human-readable name of the action"),
   target: ethereumAddress.describe("Target address for the action"),
-  activeAt: z.bigint().describe("Timestamp when the action becomes active"),
+  // TheGraph returns BigInt scalars as strings; coerce to bigint
+  activeAt: z.coerce
+    .bigint()
+    .describe("Timestamp when the action becomes active"),
   status: ActionStatusSchema.describe("Current status of the action"),
-  executedAt: z
+  executedAt: z.coerce
     .bigint()
     .nullable()
     .describe("Timestamp when the action was executed"),
@@ -71,8 +74,20 @@ export const ActionsListDataSchema = z.array(ActionSchema);
  * response structure. This ensures type safety and runtime validation
  * of the data returned from the subgraph.
  */
-export const ActionsResponseSchema = z.object({
-  actions: ActionsListDataSchema,
+// GraphQL returns BigInt scalars as strings; use a dedicated schema for raw responses
+export const ActionGraphSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  target: ethereumAddress,
+  activeAt: z.string(),
+  status: ActionStatusSchema,
+  executedAt: z.string().nullable(),
+  executedBy: ethereumAddress.nullable(),
+  executor: ActionExecutorSchema,
+});
+
+export const ActionsGraphResponseSchema = z.object({
+  actions: z.array(ActionGraphSchema),
 });
 
 /**
@@ -123,6 +138,6 @@ export const ActionsListResponseSchema = ActionsListDataSchema;
 export type Action = z.infer<typeof ActionSchema>;
 export type ActionExecutor = z.infer<typeof ActionExecutorSchema>;
 export type ActionsListData = z.infer<typeof ActionsListDataSchema>;
-export type ActionsResponse = z.infer<typeof ActionsResponseSchema>;
+export type ActionsGraphResponse = z.infer<typeof ActionsGraphResponseSchema>;
 export type ActionsListInput = z.infer<typeof ActionsListSchema>;
 export type ActionsListResponse = z.infer<typeof ActionsListResponseSchema>;

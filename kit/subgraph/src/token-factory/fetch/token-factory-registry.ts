@@ -2,6 +2,7 @@ import { Address, Bytes } from "@graphprotocol/graph-ts";
 import { TokenFactoryRegistry } from "../../../generated/schema";
 import { TokenFactoryRegistry as TokenFactoryRegistryTemplate } from "../../../generated/templates";
 import { fetchAccount } from "../../account/fetch/account";
+import { setAccountContractName } from "../../account/utils/account-contract-name";
 
 export function fetchTokenFactoryRegistry(
   address: Address
@@ -15,6 +16,7 @@ export function fetchTokenFactoryRegistry(
     tokenFactoryRegistry.deployedInTransaction = Bytes.empty();
     tokenFactoryRegistry.save();
     TokenFactoryRegistryTemplate.create(address);
+    setAccountContractName(address, "Token Factory Registry");
   }
 
   return tokenFactoryRegistry;

@@ -2,6 +2,7 @@ import { Address } from "@graphprotocol/graph-ts";
 import { TokenFactory } from "../../../generated/schema";
 import { TokenFactory as TokenFactoryTemplate } from "../../../generated/templates";
 import { fetchAccount } from "../../account/fetch/account";
+import { setAccountContractName } from "../../account/utils/account-contract-name";
 
 /**
  * Fetches or creates a TokenFactory entity in the subgraph.
@@ -34,6 +35,7 @@ export function fetchTokenFactory(address: Address): TokenFactory {
     tokenFactory.tokenImplementsSMART = false;
     tokenFactory.save();
     TokenFactoryTemplate.create(address);
+    setAccountContractName(address, "Token Factory");
   }
 
   return tokenFactory;

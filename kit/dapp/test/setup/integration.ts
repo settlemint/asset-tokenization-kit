@@ -18,13 +18,22 @@ export async function setup() {
   try {
     // Wait for containerized dapp to be ready
     await waitForDapp();
-    await setupUser(DEFAULT_ADMIN);
-    await setupUser(DEFAULT_INVESTOR);
-    await setupUser(DEFAULT_ISSUER);
+
+    // Parallelize user setup
+    await Promise.all([
+      setupUser(DEFAULT_ADMIN),
+      setupUser(DEFAULT_INVESTOR),
+      setupUser(DEFAULT_ISSUER),
+    ]);
+
     const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));
     const system = await bootstrapSystem(orpClient);
-    await bootstrapTokenFactories(orpClient, system);
-    await setupDefaultIssuerRoles(orpClient);
+
+    // Parallelize post-boot operations
+    await Promise.all([
+      bootstrapTokenFactories(orpClient, system),
+      setupDefaultIssuerRoles(orpClient),
+    ]);
   } catch (error: unknown) {
     console.error("Failed to setup test environment", error);
     process.exit(1);

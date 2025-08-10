@@ -2,6 +2,7 @@ import { Address, Bytes } from "@graphprotocol/graph-ts";
 import { IdentityRegistry } from "../../../generated/schema";
 import { IdentityRegistry as IdentityRegistryTemplate } from "../../../generated/templates";
 import { fetchAccount } from "../../account/fetch/account";
+import { setAccountContractName } from "../../account/utils/account-contract-name";
 
 export function fetchIdentityRegistry(address: Address): IdentityRegistry {
   let identityRegistry = IdentityRegistry.load(address);
@@ -13,6 +14,7 @@ export function fetchIdentityRegistry(address: Address): IdentityRegistry {
     identityRegistry.identityRegistryStorage = null;
     identityRegistry.save();
     IdentityRegistryTemplate.create(address);
+    setAccountContractName(address, "Identity Registry");
   }
 
   return identityRegistry;

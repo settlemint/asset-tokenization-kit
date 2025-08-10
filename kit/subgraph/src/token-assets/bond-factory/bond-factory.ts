@@ -19,6 +19,12 @@ export function handleBondCreated(event: BondCreated): void {
   token.decimals = event.params.decimals;
   token.save();
 
+  const account = fetchAccount(event.params.tokenAddress);
+  if (account.isContract) {
+    account.contractName = token.name;
+    account.save();
+  }
+
   const bond = fetchBond(event.params.tokenAddress);
   setBigNumber(
     bond,

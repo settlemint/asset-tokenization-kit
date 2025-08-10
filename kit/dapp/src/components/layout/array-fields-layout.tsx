@@ -27,7 +27,10 @@ export function ArrayFieldsLayout<T>({
   return (
     <div className={cn("space-y-3", className)}>
       {values.map((value, index) => (
-        <div key={rowKey ? rowKey(value, index) : index} className="flex items-start gap-2">
+        <div
+          key={rowKey ? rowKey(value, index) : index}
+          className="flex items-start gap-2"
+        >
           <div className="flex-1">{component(value, index)}</div>
           <Button
             variant="ghost"
