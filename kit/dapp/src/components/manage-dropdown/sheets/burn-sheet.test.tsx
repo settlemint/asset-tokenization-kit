@@ -25,6 +25,26 @@ vi.mock("@/orpc/orpc-client", () => ({
     token: {
       burn: { mutationOptions: vi.fn(() => ({})) },
       read: { queryOptions: vi.fn(() => ({ queryKey: ["token", "read"] })) },
+      holders: {
+        queryOptions: vi.fn(() => ({
+          queryKey: ["token", "holders"],
+          queryFn: vi.fn(() =>
+            Promise.resolve({
+              token: {
+                balances: [
+                  {
+                    id: "0x1111111111111111111111111111111111111111",
+                    available: [100n, 18],
+                    frozen: [0n, 18],
+                    isFrozen: false,
+                    value: [100n, 18],
+                  },
+                ],
+              },
+            })
+          ),
+        })),
+      },
     },
   },
 }));
@@ -100,6 +120,7 @@ vi.mock("@/hooks/use-app-form", () => ({
     ),
     reset: vi.fn(),
     getFieldValue: vi.fn(() => undefined),
+    setFieldValue: vi.fn(),
   })),
 }));
 
@@ -172,6 +193,7 @@ describe("BurnSheet", () => {
       ),
       reset: vi.fn(),
       getFieldValue: vi.fn(() => undefined),
+      setFieldValue: vi.fn(),
     } as unknown as ReturnType<typeof useAppForm>);
     queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
@@ -223,6 +245,7 @@ describe("BurnSheet", () => {
           ? "0x1111111111111111111111111111111111111111"
           : 10n
       ),
+      setFieldValue: vi.fn(),
     } as unknown as ReturnType<typeof useAppForm>);
 
     renderWithProviders(
@@ -280,6 +303,7 @@ describe("BurnSheet", () => {
           ? "0x1111111111111111111111111111111111111111"
           : 10n
       ),
+      setFieldValue: vi.fn(),
     } as unknown as ReturnType<typeof useAppForm>);
 
     renderWithProviders(
@@ -342,6 +366,7 @@ describe("BurnSheet", () => {
           ? "0x1111111111111111111111111111111111111111"
           : 10n
       ),
+      setFieldValue: vi.fn(),
     } as unknown as ReturnType<typeof useAppForm>);
 
     renderWithProviders(

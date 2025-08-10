@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppForm } from "@/hooks/use-app-form";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
@@ -16,7 +16,7 @@ import { format, from, lessThanOrEqual, subtract } from "dnum";
 import { Web3Address } from "@/components/web3/web3-address";
 import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 
-type Entry = { id: string; max?: Dnum };
+type Entry = { id: string; max?: Dnum; address?: EthereumAddress };
 
 interface BurnSheetProps {
   open: boolean;
@@ -46,15 +46,26 @@ export function BurnSheet({
     })
   );
 
-  const newEntry = (max?: Dnum): Entry => ({
+  // Fetch holders data to get balances for addresses
+  const { data: holdersData } = useQuery(
+    orpc.token.holders.queryOptions({
+      input: { tokenAddress: asset.id },
+      enabled: open,
+    })
+  );
+
+  const newEntry = (max?: Dnum, address?: EthereumAddress): Entry => ({
     id:
       typeof crypto !== "undefined" && "randomUUID" in crypto
         ? (crypto.randomUUID() as string)
         : Math.random().toString(36).slice(2),
     max,
+    address,
   });
 
-  const [entries, setEntries] = useState<Entry[]>([newEntry()]);
+  const [entries, setEntries] = useState<Entry[]>([
+    newEntry(preset?.available, preset?.address),
+  ]);
   const sheetStoreRef = useRef(createActionFormStore({ hasValuesStep: true }));
 
   const form = useAppForm({ onSubmit: () => {} });
@@ -62,8 +73,13 @@ export function BurnSheet({
   // Sync entries state with preset and open props to prevent stale data
   useEffect(() => {
     if (open) {
-      setEntries([newEntry(preset?.available)]);
+      const initialEntry = newEntry(preset?.available, preset?.address);
+      setEntries([initialEntry]);
       form.reset();
+      // Prefill the address field if preset has an address
+      if (preset?.address) {
+        form.setFieldValue(`burn_address_${initialEntry.id}`, preset.address);
+      }
       sheetStoreRef.current.setState((s) => ({ ...s, step: "values" }));
     }
   }, [open, preset, form]);
@@ -77,7 +93,7 @@ export function BurnSheet({
 
   const handleClose = () => {
     form.reset();
-    setEntries([newEntry(preset?.available)]);
+    setEntries([newEntry(preset?.available, preset?.address)]);
     sheetStoreRef.current.setState((s) => ({ ...s, step: "values" }));
     onOpenChange(false);
   };
@@ -240,6 +256,36 @@ export function BurnSheet({
                                 {mode === "select" && (
                                   <form.AppField
                                     name={`burn_address_${entry.id}`}
+                                    onChange={(value) => {
+                                      // Update the entry's max based on the selected address
+                                      const holderBalance =
+                                        holdersData?.token?.balances?.find(
+                                          (b) =>
+                                            b.id.toLowerCase() ===
+                                            value?.toLowerCase()
+                                        );
+                                      if (holderBalance) {
+                                        setEntries((prev) =>
+                                          prev.map((e) =>
+                                            e.id === entry.id
+                                              ? {
+                                                  ...e,
+                                                  max: holderBalance.available,
+                                                }
+                                              : e
+                                          )
+                                        );
+                                      } else {
+                                        // Clear max if address not found in holders
+                                        setEntries((prev) =>
+                                          prev.map((e) =>
+                                            e.id === entry.id
+                                              ? { ...e, max: undefined }
+                                              : e
+                                          )
+                                        );
+                                      }
+                                    }}
                                   >
                                     {(field) => (
                                       <field.AddressSelectField
@@ -255,6 +301,36 @@ export function BurnSheet({
                                 {mode === "manual" && (
                                   <form.AppField
                                     name={`burn_address_${entry.id}`}
+                                    onChange={(value) => {
+                                      // Update the entry's max based on the entered address
+                                      const holderBalance =
+                                        holdersData?.token?.balances?.find(
+                                          (b) =>
+                                            b.id.toLowerCase() ===
+                                            value?.toLowerCase()
+                                        );
+                                      if (holderBalance) {
+                                        setEntries((prev) =>
+                                          prev.map((e) =>
+                                            e.id === entry.id
+                                              ? {
+                                                  ...e,
+                                                  max: holderBalance.available,
+                                                }
+                                              : e
+                                          )
+                                        );
+                                      } else {
+                                        // Clear max if address not found in holders
+                                        setEntries((prev) =>
+                                          prev.map((e) =>
+                                            e.id === entry.id
+                                              ? { ...e, max: undefined }
+                                              : e
+                                          )
+                                        );
+                                      }
+                                    }}
                                   >
                                     {(field) => (
                                       <field.AddressInputField
