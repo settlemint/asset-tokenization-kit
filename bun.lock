@@ -1221,7 +1221,7 @@
 
     "@settlemint/sdk-ipfs": ["@settlemint/sdk-ipfs@2.5.7", "", { "dependencies": { "@settlemint/sdk-utils": "2.5.7", "kubo-rpc-client": "^5", "zod": "^4" } }, "sha512-VjbbM7pEsMVjWhxXIAOOwjTrnpSd8CKqA32984X8f+dvd9poBhYRmglOVzPmwJ6sedfkj6prd+AfstQrlvr8Qw=="],
 
-    "@settlemint/sdk-js": ["@settlemint/sdk-js@2.5.6", "", { "dependencies": { "@settlemint/sdk-utils": "2.5.6", "gql.tada": "^1", "graphql": "^16", "graphql-request": "^7", "zod": "^4" } }, "sha512-EvdtbyjiGARCA+HQ48V2itBeHvK6t+3Gy7uM/NgQeM/ZXjmHWEDGLssXe71aUtbGZ2VPbDjXC23TxW5tDIZF7A=="],
+    "@settlemint/sdk-js": ["@settlemint/sdk-js@2.5.7", "", { "dependencies": { "@settlemint/sdk-utils": "2.5.7", "gql.tada": "^1", "graphql": "^16", "graphql-request": "^7", "zod": "^4" } }, "sha512-NngExo/qax2HY5mcwrqPQ7VlmXUv67ci5/C+PDQGqHG+LfK4reY8F/B64Ly1cNRtsZd9SrX+qP6DdodF386aGw=="],
 
     "@settlemint/sdk-minio": ["@settlemint/sdk-minio@2.5.7", "", { "dependencies": { "@settlemint/sdk-utils": "2.5.7", "minio": "^8", "zod": "^4" } }, "sha512-KwCctZfYiRm/41fCL/kpAmRZjwuyg4uOpoEgBCupb8BUZHXecyoupGIQD/mV27mDnmhcwDUeMAnO064oZocylg=="],
 
@@ -4381,7 +4381,7 @@
 
     "jsdom/whatwg-mimetype": ["whatwg-mimetype@4.0.0", "", {}, "sha512-QaKxh0eNIi2mE9p2vEdzfagOKHCcj1pJ56EEHGQOVxp8r9/iszLUUV7v89x9O1p/T+NlTM5W7jW6+cz4Fq1YVg=="],
 
-    "jsdom/ws": ["ws@8.18.2", "", { "peerDependencies": { "bufferutil": "^4.0.1", "utf-8-validate": ">=5.0.2" }, "optionalPeers": ["bufferutil", "utf-8-validate"] }, "sha512-DMricUmwGZUVr++AEAe2uiVM7UoO9MAVZMDu05UQOaUII0lp+zOzLLU4Xqh/JvTqklB1T4uELaaPBKyjE1r4fQ=="],
+    "jsdom/ws": ["ws@8.18.3", "", { "peerDependencies": { "bufferutil": "^4.0.1", "utf-8-validate": ">=5.0.2" }, "optionalPeers": ["bufferutil", "utf-8-validate"] }, "sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg=="],
 
     "knip/zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
 
