@@ -141,7 +141,7 @@
     "@tanstack/react-store": "0.7.3",
     "@tanstack/react-table": "8.21.3",
     "@tanstack/router-cli": "1.131.3",
-    "@tanstack/router-devtools": "1.131.2",
+    "@tanstack/router-devtools": "1.131.3",
     "@tanstack/table-core": "8.21.3",
     "@tanstack/zod-adapter": "1.131.3",
     "@types/crypto-js": "4.2.2",
