@@ -47,9 +47,10 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
   );
 
   const newEntry = (): Entry => ({
-    id: typeof crypto !== "undefined" && "randomUUID" in crypto
-      ? (crypto.randomUUID() as string)
-      : Math.random().toString(36).slice(2),
+    id:
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? (crypto.randomUUID() as string)
+        : Math.random().toString(36).slice(2),
   });
 
   const [entries, setEntries] = useState<Entry[]>([newEntry()]);
@@ -107,7 +108,8 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
     <form.Subscribe selector={(s) => s}>
       {() => {
         const amounts = entries.map(
-          (e) => (form.getFieldValue(`amount_${e.id}`) as bigint | undefined) ?? 0n
+          (e) =>
+            (form.getFieldValue(`amount_${e.id}`) as bigint | undefined) ?? 0n
         );
         const totalRequested = from(
           amounts.reduce((acc, a) => acc + a, 0n),
@@ -136,7 +138,8 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
             ""
         );
         const confirmAmounts = entries.map(
-          (e) => (form.getFieldValue(`amount_${e.id}`) as bigint | undefined) ?? 0n
+          (e) =>
+            (form.getFieldValue(`amount_${e.id}`) as bigint | undefined) ?? 0n
         );
         const totalMint = from(
           confirmAmounts.reduce((acc, a) => acc + a, 0n),
@@ -217,12 +220,17 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
             confirm={confirmView}
             showAssetDetailsOnConfirm={false}
             isSubmitting={isPending}
+            store={sheetStoreRef.current}
             onSubmit={(verification) => {
               const recipients = entries.map(
-                (e) => form.getFieldValue(`recipient_${e.id}`) as EthereumAddress
+                (e) =>
+                  form.getFieldValue(`recipient_${e.id}`) as EthereumAddress
               );
               const amounts = entries.map(
-                (e) => (form.getFieldValue(`amount_${e.id}`) as bigint | undefined) ?? 0n
+                (e) =>
+                  (form.getFieldValue(`amount_${e.id}`) as
+                    | bigint
+                    | undefined) ?? 0n
               );
 
               const promise = mint({
@@ -243,7 +251,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
           >
             <div className="space-y-3">
               <div className="space-y-2">
-                {entries.map((entry, idx) => (
+                {entries.map((entry) => (
                   <Card key={entry.id}>
                     <CardContent>
                       <div className="relative space-y-2">
@@ -310,7 +318,9 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                                   `amount_${entry.id}`,
                                   undefined as unknown as bigint
                                 );
-                                setEntries((prev) => prev.filter((e) => e.id !== entry.id));
+                                setEntries((prev) =>
+                                  prev.filter((e) => e.id !== entry.id)
+                                );
                               }}
                             >
                               {t("common:remove")}

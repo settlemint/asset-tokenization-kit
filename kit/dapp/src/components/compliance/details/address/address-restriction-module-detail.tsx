@@ -18,7 +18,7 @@ import type { ComplianceModuleDetailProps } from "@/components/compliance/detail
 import { ArrayFieldsLayout } from "@/components/layout/array-fields-layout";
 import { Button } from "@/components/ui/button";
 import { encodeAddressParams } from "@/lib/compliance/encoding/encode-address-params";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { isAddress } from "viem";
 
@@ -49,32 +49,38 @@ export function AddressRestrictionModuleDetail({
         : "identityBlockList";
 
   // Initialize addresses from initialValues
-  const [selectedAddresses, setSelectedAddresses] = useState<string[]>(
-    initialValues?.values ?? []
+  type Entry = { id: string; value: string };
+  const makeId = () =>
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? (crypto.randomUUID() as string)
+      : Math.random().toString(36).slice(2);
+
+  const [selectedAddresses, setSelectedAddresses] = useState<Entry[]>(
+    (initialValues?.values ?? []).map((v) => ({ id: makeId(), value: v }))
   );
 
   // Helper function to update a specific address by index
   const updateAddress = (index: number, newAddress: string) => {
     setSelectedAddresses((prev) =>
-      prev.map((addr, i) => (i === index ? newAddress : addr))
+      prev.map((entry, i) => (i === index ? { ...entry, value: newAddress } : entry))
     );
   };
 
   // Add new empty address
   const handleAddAddress = () => {
-    setSelectedAddresses((prev) => [...prev, ""]);
+    setSelectedAddresses((prev) => [...prev, { id: makeId(), value: "" }]);
   };
 
   // Remove address by index
-  const handleRemoveAddress = (_: string, index: number) => {
+  const handleRemoveAddress = (_: Entry, index: number) => {
     setSelectedAddresses((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleEnable = () => {
     // Filter out empty addresses and only include valid Ethereum addresses
     const validAddresses = selectedAddresses
-      .filter((addr) => isAddress(addr))
-      .map((addr) => addr);
+      .map((e) => e.value)
+      .filter((addr) => isAddress(addr));
 
     const encodedParams = encodeAddressParams(validAddresses);
 
@@ -96,9 +102,10 @@ export function AddressRestrictionModuleDetail({
   };
 
   // Check if addresses have changed from initial values
-  const isInputChanged = (() => {
+  const isInputChanged = useMemo(() => {
     const initial = (initialValues?.values ?? []).map((a) => a.toLowerCase());
     const current = selectedAddresses
+      .map((e) => e.value)
       .filter((addr) => isAddress(addr))
       .map((a) => a.toLowerCase());
 
@@ -110,11 +117,9 @@ export function AddressRestrictionModuleDetail({
       initialUnique.length !== currentUnique.length ||
       JSON.stringify(initialUnique) !== JSON.stringify(currentUnique)
     );
-  })();
+  }, [initialValues?.values, selectedAddresses]);
 
-  const hasInvalidAddresses = selectedAddresses.some(
-    (addr) => !isAddress(addr)
-  );
+  const hasInvalidAddresses = selectedAddresses.some((e) => !isAddress(e.value));
 
   return (
     <ComplianceDetailCard>
@@ -148,19 +153,16 @@ export function AddressRestrictionModuleDetail({
             <ComplianceDetailForm>
               <ArrayFieldsLayout
                 values={selectedAddresses}
+                rowKey={(e) => e.id}
                 onAdd={handleAddAddress}
                 onRemove={handleRemoveAddress}
-                component={(address, index) => (
+                component={(entry, index) => (
                   <AddressSelectOrInputToggle>
                     {({ mode }) => (
                       <>
                         {mode === "select" && (
                           <AddressSelect
-                            value={
-                              address && isAddress(address)
-                                ? address
-                                : undefined
-                            }
+                            value={entry.value && isAddress(entry.value) ? entry.value : undefined}
                             onChange={(newAddress) => {
                               updateAddress(index, newAddress);
                             }}
@@ -170,7 +172,7 @@ export function AddressRestrictionModuleDetail({
                         )}
                         {mode === "manual" && (
                           <AddressInput
-                            value={address}
+                            value={entry.value}
                             onChange={(newAddress) => {
                               updateAddress(index, newAddress);
                             }}

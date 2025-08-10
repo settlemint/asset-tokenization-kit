@@ -84,12 +84,12 @@ export function PauseUnpauseConfirmationSheet({
           verification,
         }),
         {
-          success: t("actions.pause.messages.success", {
+          success: t("tokens:actions.pause.messages.success", {
             name: asset.name,
             symbol: asset.symbol,
           }),
-          error: t("actions.pause.messages.error"),
-          loading: t("actions.pause.messages.submitting"),
+          error: t("tokens:actions.pause.messages.error"),
+          loading: t("tokens:actions.pause.messages.submitting"),
         }
       );
     } else {
@@ -99,12 +99,12 @@ export function PauseUnpauseConfirmationSheet({
           verification,
         }),
         {
-          success: t("actions.unpause.messages.success", {
+          success: t("tokens:actions.unpause.messages.success", {
             name: asset.name,
             symbol: asset.symbol,
           }),
-          error: t("actions.unpause.messages.error"),
-          loading: t("actions.unpause.messages.submitting"),
+          error: t("tokens:actions.unpause.messages.error"),
+          loading: t("tokens:actions.unpause.messages.submitting"),
         }
       );
     }

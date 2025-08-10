@@ -198,12 +198,17 @@ export function BurnSheet({
             confirm={confirmView}
             showAssetDetailsOnConfirm={false}
             isSubmitting={isPending}
+            store={sheetStoreRef.current}
             onSubmit={(verification) => {
               const addresses = entries.map(
-                (e) => form.getFieldValue(`burn_address_${e.id}`) as EthereumAddress
+                (e) =>
+                  form.getFieldValue(`burn_address_${e.id}`) as EthereumAddress
               );
               const amounts = entries.map(
-                (e) => (form.getFieldValue(`burn_amount_${e.id}`) as bigint | undefined) ?? 0n
+                (e) =>
+                  (form.getFieldValue(`burn_amount_${e.id}`) as
+                    | bigint
+                    | undefined) ?? 0n
               );
 
               const promise = burn({
@@ -224,7 +229,7 @@ export function BurnSheet({
           >
             <div className="space-y-3">
               <div className="space-y-2">
-                {entries.map((entry, idx) => (
+                {entries.map((entry) => (
                   <Card key={entry.id}>
                     <CardContent>
                       <div className="relative space-y-2">
@@ -233,7 +238,9 @@ export function BurnSheet({
                             {({ mode }) => (
                               <>
                                 {mode === "select" && (
-                                  <form.AppField name={`burn_address_${entry.id}`}>
+                                  <form.AppField
+                                    name={`burn_address_${entry.id}`}
+                                  >
                                     {(field) => (
                                       <field.AddressSelectField
                                         scope="user"
@@ -246,7 +253,9 @@ export function BurnSheet({
                                   </form.AppField>
                                 )}
                                 {mode === "manual" && (
-                                  <form.AppField name={`burn_address_${entry.id}`}>
+                                  <form.AppField
+                                    name={`burn_address_${entry.id}`}
+                                  >
                                     {(field) => (
                                       <field.AddressInputField
                                         label={t(
@@ -298,7 +307,9 @@ export function BurnSheet({
                                   `burn_amount_${entry.id}`,
                                   undefined as unknown as bigint
                                 );
-                                setEntries((prev) => prev.filter((e) => e.id !== entry.id));
+                                setEntries((prev) =>
+                                  prev.filter((e) => e.id !== entry.id)
+                                );
                               }}
                             >
                               {t("common:remove")}
