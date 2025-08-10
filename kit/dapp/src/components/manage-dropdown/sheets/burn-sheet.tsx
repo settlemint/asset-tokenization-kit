@@ -86,6 +86,31 @@ export function BurnSheet({
 
   const tokenDecimals = asset.decimals;
 
+  // Watch for address changes and update max values
+  useEffect(() => {
+    entries.forEach((entry) => {
+      const address = form.getFieldValue(`burn_address_${entry.id}`) as
+        | EthereumAddress
+        | undefined;
+      if (address) {
+        const holderBalance = holdersData?.token?.balances?.find(
+          (b) => b.id.toLowerCase() === address.toLowerCase()
+        );
+        if (holderBalance && entry.max !== holderBalance.available) {
+          setEntries((prev) =>
+            prev.map((e) =>
+              e.id === entry.id ? { ...e, max: holderBalance.available } : e
+            )
+          );
+        } else if (!holderBalance && entry.max !== undefined) {
+          setEntries((prev) =>
+            prev.map((e) => (e.id === entry.id ? { ...e, max: undefined } : e))
+          );
+        }
+      }
+    });
+  });
+
   const presetHasBalance = useMemo(() => {
     if (!preset?.available) return true; // if unknown, don't block
     return preset.available[0] > 0n;
@@ -256,36 +281,6 @@ export function BurnSheet({
                                 {mode === "select" && (
                                   <form.AppField
                                     name={`burn_address_${entry.id}`}
-                                    onChange={(value) => {
-                                      // Update the entry's max based on the selected address
-                                      const holderBalance =
-                                        holdersData?.token?.balances?.find(
-                                          (b) =>
-                                            b.id.toLowerCase() ===
-                                            value?.toLowerCase()
-                                        );
-                                      if (holderBalance) {
-                                        setEntries((prev) =>
-                                          prev.map((e) =>
-                                            e.id === entry.id
-                                              ? {
-                                                  ...e,
-                                                  max: holderBalance.available,
-                                                }
-                                              : e
-                                          )
-                                        );
-                                      } else {
-                                        // Clear max if address not found in holders
-                                        setEntries((prev) =>
-                                          prev.map((e) =>
-                                            e.id === entry.id
-                                              ? { ...e, max: undefined }
-                                              : e
-                                          )
-                                        );
-                                      }
-                                    }}
                                   >
                                     {(field) => (
                                       <field.AddressSelectField
@@ -301,36 +296,6 @@ export function BurnSheet({
                                 {mode === "manual" && (
                                   <form.AppField
                                     name={`burn_address_${entry.id}`}
-                                    onChange={(value) => {
-                                      // Update the entry's max based on the entered address
-                                      const holderBalance =
-                                        holdersData?.token?.balances?.find(
-                                          (b) =>
-                                            b.id.toLowerCase() ===
-                                            value?.toLowerCase()
-                                        );
-                                      if (holderBalance) {
-                                        setEntries((prev) =>
-                                          prev.map((e) =>
-                                            e.id === entry.id
-                                              ? {
-                                                  ...e,
-                                                  max: holderBalance.available,
-                                                }
-                                              : e
-                                          )
-                                        );
-                                      } else {
-                                        // Clear max if address not found in holders
-                                        setEntries((prev) =>
-                                          prev.map((e) =>
-                                            e.id === entry.id
-                                              ? { ...e, max: undefined }
-                                              : e
-                                          )
-                                        );
-                                      }
-                                    }}
                                   >
                                     {(field) => (
                                       <field.AddressInputField
