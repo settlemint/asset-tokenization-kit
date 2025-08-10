@@ -86,30 +86,8 @@ export function BurnSheet({
 
   const tokenDecimals = asset.decimals;
 
-  // Watch for address changes and update max values
-  useEffect(() => {
-    entries.forEach((entry) => {
-      const address = form.getFieldValue(`burn_address_${entry.id}`) as
-        | EthereumAddress
-        | undefined;
-      if (address) {
-        const holderBalance = holdersData?.token?.balances?.find(
-          (b) => b.id.toLowerCase() === address.toLowerCase()
-        );
-        if (holderBalance && entry.max !== holderBalance.available) {
-          setEntries((prev) =>
-            prev.map((e) =>
-              e.id === entry.id ? { ...e, max: holderBalance.available } : e
-            )
-          );
-        } else if (!holderBalance && entry.max !== undefined) {
-          setEntries((prev) =>
-            prev.map((e) => (e.id === entry.id ? { ...e, max: undefined } : e))
-          );
-        }
-      }
-    });
-  });
+  // Remove the automatic max update - we'll calculate it dynamically
+  // This prevents confusion with duplicate addresses
 
   // This is no longer needed - we'll check actual entries instead
   // const presetHasBalance = useMemo(() => {
@@ -129,6 +107,8 @@ export function BurnSheet({
       {() => {
         // Aggregate amounts by address to properly validate duplicate addresses
         const addressAmounts = new Map<string, bigint>();
+        const addressEntryCount = new Map<string, number>();
+
         entries.forEach((e) => {
           const addr = form.getFieldValue(`burn_address_${e.id}`) as
             | EthereumAddress
@@ -141,6 +121,10 @@ export function BurnSheet({
             addressAmounts.set(
               lowerAddr,
               (addressAmounts.get(lowerAddr) ?? 0n) + amt
+            );
+            addressEntryCount.set(
+              lowerAddr,
+              (addressEntryCount.get(lowerAddr) ?? 0) + 1
             );
           }
         });
@@ -304,6 +288,38 @@ export function BurnSheet({
                   <Card key={entry.id}>
                     <CardContent>
                       <div className="relative space-y-2">
+                        {(() => {
+                          // Check if this entry exceeds available balance
+                          const addr = form.getFieldValue(
+                            `burn_address_${entry.id}`
+                          ) as EthereumAddress | "";
+                          const amt =
+                            (form.getFieldValue(`burn_amount_${entry.id}`) as
+                              | bigint
+                              | undefined) ?? 0n;
+
+                          if (!addr || amt === 0n) return null;
+
+                          const lowerAddr = addr.toLowerCase();
+                          const totalForAddress =
+                            addressAmounts.get(lowerAddr) ?? 0n;
+                          const holderBalance =
+                            holdersData?.token?.balances?.find(
+                              (b) => b.id.toLowerCase() === lowerAddr
+                            );
+
+                          if (
+                            holderBalance &&
+                            totalForAddress > holderBalance.available[0]
+                          ) {
+                            return (
+                              <div className="text-destructive text-xs mb-2 p-2 bg-destructive/10 rounded">
+                                {`Total burn amount (${totalForAddress.toString()}) exceeds available balance (${holderBalance.available[0].toString()})`}
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
                         <div>
                           <AddressSelectOrInputToggle>
                             {({ mode }) => (
@@ -350,13 +366,54 @@ export function BurnSheet({
                                 )}
                                 endAddon={asset.symbol}
                                 required
-                                description={
-                                  entry.max
-                                    ? t("tokens:actions.burn.form.max", {
-                                        max: entry.max[0].toString(),
-                                      })
-                                    : undefined
-                                }
+                                description={(() => {
+                                  const addr = form.getFieldValue(
+                                    `burn_address_${entry.id}`
+                                  ) as EthereumAddress | "";
+                                  if (!addr) return undefined;
+
+                                  const lowerAddr = addr.toLowerCase();
+                                  const holderBalance =
+                                    holdersData?.token?.balances?.find(
+                                      (b) => b.id.toLowerCase() === lowerAddr
+                                    );
+
+                                  if (!holderBalance) return undefined;
+
+                                  // Calculate how much is already allocated to this address in other entries
+                                  let allocatedAmount = 0n;
+                                  entries.forEach((otherEntry) => {
+                                    if (otherEntry.id === entry.id) return;
+                                    const otherAddr = form.getFieldValue(
+                                      `burn_address_${otherEntry.id}`
+                                    ) as EthereumAddress | "";
+                                    const otherAmt =
+                                      (form.getFieldValue(
+                                        `burn_amount_${otherEntry.id}`
+                                      ) as bigint | undefined) ?? 0n;
+                                    if (
+                                      otherAddr?.toLowerCase() === lowerAddr
+                                    ) {
+                                      allocatedAmount += otherAmt;
+                                    }
+                                  });
+
+                                  const availableForThisEntry =
+                                    holderBalance.available[0] -
+                                    allocatedAmount;
+                                  const isDuplicate =
+                                    (addressEntryCount.get(lowerAddr) ?? 0) > 1;
+
+                                  if (availableForThisEntry <= 0n) {
+                                    return "No balance left for this address";
+                                  }
+
+                                  return isDuplicate
+                                    ? `Available: ${availableForThisEntry.toString()} (Total balance: ${holderBalance.available[0].toString()})`
+                                    : t("tokens:actions.burn.form.max", {
+                                        max: availableForThisEntry.toString(),
+                                      });
+                                })()}
                               />
                             )}
                           </form.AppField>
