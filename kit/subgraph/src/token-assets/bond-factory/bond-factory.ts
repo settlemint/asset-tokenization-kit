@@ -2,7 +2,6 @@ import { BondCreated } from "../../../generated/templates/BondFactory/BondFactor
 import { fetchAccount } from "../../account/fetch/account";
 import { fetchEvent } from "../../event/fetch/event";
 import { fetchToken } from "../../token/fetch/token";
-import { fetchAccount } from "../../account/fetch/account";
 import {
   ActionName,
   createAction,
