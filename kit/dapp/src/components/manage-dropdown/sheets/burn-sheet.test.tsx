@@ -3,7 +3,11 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BurnSheet } from "./burn-sheet";
 import { useAppForm } from "@/hooks/use-app-form";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from "@tanstack/react-query";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 
 // i18n mock
@@ -19,6 +23,15 @@ vi.mock("sonner", () => ({
   toast: { promise: vi.fn((p) => p) },
 }));
 
+// Mock useQuery to provide controlled data
+vi.mock("@tanstack/react-query", async () => {
+  const actual = await vi.importActual("@tanstack/react-query");
+  return {
+    ...actual,
+    useQuery: vi.fn(),
+  };
+});
+
 // orpc mock
 vi.mock("@/orpc/orpc-client", () => ({
   orpc: {
@@ -28,21 +41,6 @@ vi.mock("@/orpc/orpc-client", () => ({
       holders: {
         queryOptions: vi.fn(() => ({
           queryKey: ["token", "holders"],
-          queryFn: vi.fn(() =>
-            Promise.resolve({
-              token: {
-                balances: [
-                  {
-                    id: "0x1111111111111111111111111111111111111111",
-                    available: [100n, 18],
-                    frozen: [0n, 18],
-                    isFrozen: false,
-                    value: [100n, 18],
-                  },
-                ],
-              },
-            })
-          ),
         })),
       },
     },
@@ -158,6 +156,24 @@ describe("BurnSheet", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // Default mock for useQuery - returns holder with balance
+    vi.mocked(useQuery).mockReturnValue({
+      data: {
+        token: {
+          balances: [
+            {
+              id: "0x1111111111111111111111111111111111111111",
+              available: [100n, 18],
+              frozen: [0n, 18],
+              isFrozen: false,
+              value: [100n, 18],
+            },
+          ],
+        },
+      },
+      isLoading: false,
+      error: null,
+    } as ReturnType<typeof useQuery>);
     vi.mocked(useAppForm).mockReturnValue({
       Subscribe: ({ children }: { children: () => React.ReactNode }) => (
         <>{children()}</>
@@ -205,7 +221,26 @@ describe("BurnSheet", () => {
       <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
     );
 
-  it("disables Continue when preset has zero balance", () => {
+  it("disables Continue when amount exceeds available balance", () => {
+    // Mock holder with less balance than being burned
+    vi.mocked(useQuery).mockReturnValue({
+      data: {
+        token: {
+          balances: [
+            {
+              id: "0x1111111111111111111111111111111111111111",
+              available: [5n, 18], // Less than the 10n being burned
+              frozen: [0n, 18],
+              isFrozen: false,
+              value: [5n, 18],
+            },
+          ],
+        },
+      },
+      isLoading: false,
+      error: null,
+    } as ReturnType<typeof useQuery>);
+
     vi.mocked(useAppForm).mockReturnValue({
       Subscribe: ({ children }: { children: () => React.ReactNode }) => (
         <>{children()}</>

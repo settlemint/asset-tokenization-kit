@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppForm } from "@/hooks/use-app-form";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { createActionFormStore } from "../core/action-form-sheet.store";
@@ -111,10 +111,11 @@ export function BurnSheet({
     });
   });
 
-  const presetHasBalance = useMemo(() => {
-    if (!preset?.available) return true; // if unknown, don't block
-    return preset.available[0] > 0n;
-  }, [preset]);
+  // This is no longer needed - we'll check actual entries instead
+  // const presetHasBalance = useMemo(() => {
+  //   if (!preset?.available) return true; // if unknown, don't block
+  //   return preset.available[0] > 0n;
+  // }, [preset]);
 
   const handleClose = () => {
     form.reset();
@@ -126,7 +127,26 @@ export function BurnSheet({
   return (
     <form.Subscribe selector={(s) => s}>
       {() => {
-        const hasValidRows =
+        // Aggregate amounts by address to properly validate duplicate addresses
+        const addressAmounts = new Map<string, bigint>();
+        entries.forEach((e) => {
+          const addr = form.getFieldValue(`burn_address_${e.id}`) as
+            | EthereumAddress
+            | "";
+          const amt =
+            (form.getFieldValue(`burn_amount_${e.id}`) as bigint | undefined) ??
+            0n;
+          if (addr && amt > 0n) {
+            const lowerAddr = addr.toLowerCase();
+            addressAmounts.set(
+              lowerAddr,
+              (addressAmounts.get(lowerAddr) ?? 0n) + amt
+            );
+          }
+        });
+
+        // Validate that all entries have addresses and amounts
+        const hasValidEntries =
           entries.length > 0 &&
           entries.every((e) => {
             const addr = form.getFieldValue(`burn_address_${e.id}`) as
@@ -135,14 +155,24 @@ export function BurnSheet({
             const amt = form.getFieldValue(`burn_amount_${e.id}`) as
               | bigint
               | undefined;
-            const limit = e.max;
-            const validAmount = (amt ?? 0n) > 0n;
-            const withinMax = limit
-              ? lessThanOrEqual(from(amt ?? 0n, tokenDecimals), limit)
-              : true;
-            return Boolean(addr) && validAmount && withinMax;
+            return Boolean(addr) && (amt ?? 0n) > 0n;
           });
-        const canContinue = () => hasValidRows && presetHasBalance;
+
+        // Validate that aggregated amounts don't exceed available balances
+        const withinBalanceLimits = [...addressAmounts.entries()].every(
+          ([addr, totalAmt]) => {
+            const holderBalance = holdersData?.token?.balances?.find(
+              (b) => b.id.toLowerCase() === addr
+            );
+            if (!holderBalance) return true; // If we don't have balance data, allow it
+            return lessThanOrEqual(
+              from(totalAmt, tokenDecimals),
+              holderBalance.available
+            );
+          }
+        );
+
+        const canContinue = () => hasValidEntries && withinBalanceLimits;
 
         const totalBurn = from(
           entries
