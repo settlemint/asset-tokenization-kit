@@ -23,7 +23,7 @@
       "enable": "有効にする",
       "next": "次へ",
       "submit": "送信",
-      "leave": "終了"
+      "leave": "離れる"
     },
     "description": "{{type}}の基本情報を以下に提供して構成します。",
     "fields": {
@@ -33,7 +33,7 @@
         "placeholder": "例：1000000"
       },
       "countryCode": {
-        "description": "アセットが登録される場所を選択してください",
+        "description": "資産が登録される場所を選択してください",
         "label": "国"
       },
       "decimals": {
@@ -76,18 +76,18 @@
         "label": "資産タイプ"
       },
       "denominationAsset": {
-        "description": "額面資産のEthereumアドレス",
-        "label": "額面資産",
+        "description": " denomination 資産の Ethereum アドレス",
+        "label": " denomination 資産",
         "placeholder": "例：0x..."
       }
     },
     "title": "{{type}}を作成"
   },
   "leave-confirmation": {
-    "title": "アセットデザイナーを終了しますか？",
-    "description": "今終了すると進行状況が失われます。入力した情報は保存されません。",
-    "stay": "残る",
-    "leave": "終了"
+    "title": "資産デザイナーを離れますか？",
+    "description": "今離れると進行状況が失われます。入力した情報は保存されません。",
+    "stay": "留まる",
+    "leave": "離れる"
   },
   "messages": {
     "comingSoon": "近日公開！",

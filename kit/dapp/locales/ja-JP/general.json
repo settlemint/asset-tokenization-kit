@@ -3,5 +3,6 @@
   "appName": "アセットトークン化キット",
   "continue": "続ける",
   "deploying": "展開中...",
-  "generating": "生成中..."
+  "generating": "生成中...",
+  "cancel": "キャンセル"
 }

@@ -54,6 +54,9 @@
     "test:integration": {
       "dependsOn": ["codegen", "build", "artifacts"]
     },
+    "test:ci": {
+      "dependsOn": ["codegen", "build", "artifacts"]
+    },
     "lint": {
       "dependsOn": ["codegen"],
       "inputs": [

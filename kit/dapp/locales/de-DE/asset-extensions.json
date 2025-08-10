@@ -1,24 +1,24 @@
 {
   "capabilities": {
     "ACCESS_MANAGED": {
-      "label": "Zugriffskontrolle",
-      "description": "Kontrollieren Sie, wer auf Ihre Assets zugreifen und sie verwalten kann"
+      "label": "Zugangskontrolle",
+      "description": "Steuern Sie, wer auf Ihre Vermögenswerte zugreifen und diese verwalten kann"
     },
     "BOND": {
       "label": "Feste Renditen",
-      "description": "Erstellen Sie Anleihen mit Fälligkeitsdaten und festen Renditen"
+      "description": "Erstellen Sie Anleihen mit Fälligkeitsterminen und festen Renditen"
     },
     "BURNABLE": {
-      "label": "Token vernichten",
-      "description": "Ermöglichen Sie Asset-Inhabern, Assets dauerhaft zu vernichten"
+      "label": "Token zerstören",
+      "description": "Ermöglichen Sie Vermögensinhabern, Vermögenswerte dauerhaft zu zerstören"
     },
     "CAPPED": {
-      "label": "Angebotslimit",
-      "description": "Setzen Sie eine maximale Begrenzung für das Asset-Angebot"
+      "label": "Versorgungsgrenze",
+      "description": "Setzen Sie eine maximale Grenze für das Angebot an Vermögenswerten"
     },
     "COLLATERAL": {
-      "label": "Kreditsicherheit",
-      "description": "Verwenden Sie Assets als Sicherheit für Kredite und Finanzierungen"
+      "label": "Darlehenssicherheit",
+      "description": "Verwenden Sie Vermögenswerte als Sicherheiten für Kredite und Finanzierungen"
     },
     "CUSTODIAN": {
       "label": "Sichere Verwahrung",
@@ -33,16 +33,16 @@
       "description": "Verfolgen Sie die vollständige Transaktionshistorie und Salden"
     },
     "PAUSABLE": {
-      "label": "Notfallstopp",
-      "description": "Pausieren Sie Asset-Transfers vorübergehend bei Notfällen"
+      "label": "Notstopp",
+      "description": "Unterbrechen Sie vorübergehend Vermögensübertragungen für Notfälle"
     },
     "REDEEMABLE": {
-      "label": "Auszahlung",
-      "description": "Ermöglichen Sie den Austausch von Assets gegen zugrundeliegenden Wert"
+      "label": "Bargeld abheben",
+      "description": "Ermöglichen Sie den Austausch von Vermögenswerten gegen den zugrunde liegenden Wert"
     },
     "YIELD": {
-      "label": "Rendite erzielen",
-      "description": "Generieren Sie automatische Erträge und Zinszahlungen"
+      "label": "Renditen erzielen",
+      "description": "Generieren Sie automatische Renditen und Zinszahlungen"
     }
   }
 }

@@ -1,7 +1,7 @@
 {
-  "whichAssetType": "どの資産タイプを設計しますか？",
-  "whichAssetTypeForClass": "どの{{assetClass}}資産を設計しますか？",
-  "assetTypeDifferences": "各資産タイプには異なる支払い構造、流動性条件、投資家の権利があります。",
+  "whichAssetType": "どの資産タイプを設計したいですか？",
+  "whichAssetTypeForClass": "どの{{assetClass}}資産を設計したいですか？",
+  "assetTypeDifferences": "各資産タイプには異なる支払い構造、流動性条件、および投資家の権利があります。",
   "bond": {
     "description": "特定の期間にわたって固定金利を支払う債務証券",
     "name": "債券トークン"

@@ -9,9 +9,59 @@ import { orpc } from "@/orpc/orpc-client";
 // Mock dependencies
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string, options?: { defaultValue?: string }) => {
+    t: (
+      key: string,
+      options?: { defaultValue?: string; name?: string; symbol?: string }
+    ) => {
       if (options?.defaultValue) return options.defaultValue;
-      return key;
+
+      // Handle interpolation for pause/unpause success messages (with or without namespace)
+      if (
+        (key === "tokens:actions.pause.messages.success" ||
+          key === "actions.pause.messages.success") &&
+        options?.name &&
+        options?.symbol
+      ) {
+        return `Asset '${options.name} (${options.symbol})' paused successfully`;
+      }
+      if (
+        (key === "tokens:actions.unpause.messages.success" ||
+          key === "actions.unpause.messages.success") &&
+        options?.name &&
+        options?.symbol
+      ) {
+        return `Asset '${options.name} (${options.symbol})' unpaused successfully`;
+      }
+
+      // Return proper translations for known keys (both with and without namespace)
+      const translations: Record<string, string> = {
+        // With namespace
+        "tokens:actions.pause.title": "Pause Token Transfers",
+        "tokens:actions.pause.description":
+          "Pausing this token will prevent all transfers until it is unpaused. This action requires verification.",
+        "tokens:actions.pause.submit": "Pause Token",
+        "tokens:actions.pause.messages.loading": "Pausing token...",
+        "tokens:actions.pause.messages.error": "Failed to pause token",
+        "tokens:actions.pause.messages.submitting": "Pausing token...",
+        "tokens:actions.unpause.title": "Unpause Token Transfers",
+        "tokens:actions.unpause.description":
+          "Unpausing this token will allow transfers to resume. This action requires verification.",
+        "tokens:actions.unpause.submit": "Unpause Token",
+        "tokens:actions.unpause.messages.loading": "Unpausing token...",
+        "tokens:actions.unpause.messages.error": "Failed to unpause token",
+        "tokens:actions.unpause.messages.submitting": "Unpausing token...",
+        "tokens:details.stateChange": "State Change",
+        "tokens:details.currentState": "Current State",
+        "tokens:details.targetState": "Target State",
+        "tokens:status.paused": "Paused",
+        "tokens:status.active": "Active",
+        // Without namespace (for toast messages)
+        "actions.pause.messages.error": "Failed to pause token",
+        "actions.pause.messages.submitting": "Pausing token...",
+        "actions.unpause.messages.error": "Failed to unpause token",
+        "actions.unpause.messages.submitting": "Unpausing token...",
+      };
+      return translations[key] || key;
     },
   }),
 }));
@@ -160,13 +210,13 @@ describe("PauseUnpauseConfirmationSheet", () => {
       );
 
       expect(screen.getByTestId("sheet-title")).toHaveTextContent(
-        "tokens:actions.pause.title"
+        "Pause Token Transfers"
       );
       expect(screen.getByTestId("sheet-description")).toHaveTextContent(
-        "tokens:actions.pause.description"
+        "Pausing this token will prevent all transfers until it is unpaused. This action requires verification."
       );
       expect(screen.getByTestId("sheet-submit-label")).toHaveTextContent(
-        "tokens:actions.pause.submit"
+        "Pause Token"
       );
       expect(screen.getByTestId("sheet-has-values-step")).toHaveTextContent(
         "false"
@@ -188,11 +238,11 @@ describe("PauseUnpauseConfirmationSheet", () => {
       );
 
       const confirmContent = screen.getByTestId("sheet-confirm");
-      expect(confirmContent).toHaveTextContent("tokens:details.stateChange");
-      expect(confirmContent).toHaveTextContent("tokens:details.currentState");
-      expect(confirmContent).toHaveTextContent("tokens:status.active");
-      expect(confirmContent).toHaveTextContent("tokens:details.targetState");
-      expect(confirmContent).toHaveTextContent("tokens:status.paused");
+      expect(confirmContent).toHaveTextContent("State Change");
+      expect(confirmContent).toHaveTextContent("Current State");
+      expect(confirmContent).toHaveTextContent("Active");
+      expect(confirmContent).toHaveTextContent("Target State");
+      expect(confirmContent).toHaveTextContent("Paused");
     });
   });
 
@@ -209,13 +259,13 @@ describe("PauseUnpauseConfirmationSheet", () => {
       );
 
       expect(screen.getByTestId("sheet-title")).toHaveTextContent(
-        "tokens:actions.unpause.title"
+        "Unpause Token Transfers"
       );
       expect(screen.getByTestId("sheet-description")).toHaveTextContent(
-        "tokens:actions.unpause.description"
+        "Unpausing this token will allow transfers to resume. This action requires verification."
       );
       expect(screen.getByTestId("sheet-submit-label")).toHaveTextContent(
-        "tokens:actions.unpause.submit"
+        "Unpause Token"
       );
     });
 
@@ -231,10 +281,10 @@ describe("PauseUnpauseConfirmationSheet", () => {
       );
 
       const confirmContent = screen.getByTestId("sheet-confirm");
-      expect(confirmContent).toHaveTextContent("tokens:details.currentState");
-      expect(confirmContent).toHaveTextContent("tokens:status.paused");
-      expect(confirmContent).toHaveTextContent("tokens:details.targetState");
-      expect(confirmContent).toHaveTextContent("tokens:status.active");
+      expect(confirmContent).toHaveTextContent("Current State");
+      expect(confirmContent).toHaveTextContent("Paused");
+      expect(confirmContent).toHaveTextContent("Target State");
+      expect(confirmContent).toHaveTextContent("Active");
     });
   });
 

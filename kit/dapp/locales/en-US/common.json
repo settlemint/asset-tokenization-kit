@@ -28,5 +28,13 @@
   },
   "errors": {
     "somethingWentWrong": "Something went wrong here"
-  }
+  },
+  "saving": "Saving changes...",
+  "saved": "Changes saved",
+  "error": "Failed to save changes",
+  "remove": "Remove",
+  "unknown": "Unknown",
+  "save": "Save",
+  "add": "Grant",
+  "none": "None"
 }

@@ -179,37 +179,47 @@ jobs:
             bun run ci:gha:main --concurrency=100%
           fi
 
-      - name: Check for dapp changes
-        id: check-dapp-changes
+      - name: Upload coverage to Coveralls (DApp)
         if: |
-          github.event_name == 'pull_request' &&
-          github.event.pull_request.draft == false &&
+          (github.event_name == 'push' ||
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)) &&
           steps.qa-tests.outcome == 'success'
+        uses: coverallsapp/github-action@v2
         env:
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
-        run: |
-          if git diff --name-only "origin/${BASE_REF}...HEAD" | grep -q "^kit/dapp/"; then
-            echo "has_dapp_changes=true" >> $GITHUB_OUTPUT
-            echo "✅ Dapp changes detected - coverage report will be generated"
-          else
-            echo "has_dapp_changes=false" >> $GITHUB_OUTPUT
-            echo "ℹ️ No dapp changes detected - skipping coverage report"
-          fi
-
-      - name: Coverage Report
-        if: |
-          github.event_name == 'pull_request' &&
-          github.event.pull_request.draft == false &&
-          steps.qa-tests.outcome == 'success' &&
-          steps.check-dapp-changes.outputs.has_dapp_changes == 'true'
-        uses: davelosert/vitest-coverage-report-action@v2
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
         with:
-          name: 'dapp'
-          working-directory: './kit/dapp'
-          json-summary-path: './coverage/coverage-summary.json'
-          json-final-path: './coverage/coverage-final.json'
-          vite-config-path: './vitest.config.ts'
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./kit/dapp/coverage/lcov.info
+          base-path: ./kit/dapp
+          flag-name: dapp
+          parallel: true
+
+      - name: Upload coverage to Coveralls (Contracts)
+        if: |
+          (github.event_name == 'push' ||
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)) &&
+          steps.qa-tests.outcome == 'success'
+        uses: coverallsapp/github-action@v2
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./kit/contracts/coverage/lcov.info
+          base-path: ./kit/contracts
+          flag-name: contracts
+          parallel: true
+
+      - name: Finalize Coveralls (parallel)
+        if: |
+          (github.event_name == 'push' ||
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)) &&
+          steps.qa-tests.outcome == 'success'
+        uses: coverallsapp/github-action@v2
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel-finished: true
 
       - name: Store predeployed output
         if: |

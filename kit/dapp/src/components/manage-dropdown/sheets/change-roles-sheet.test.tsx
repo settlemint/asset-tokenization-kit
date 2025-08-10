@@ -14,7 +14,19 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, options?: { defaultValue?: string }) => {
       if (options?.defaultValue) return options.defaultValue;
-      return key;
+      // Return proper translations for known keys
+      const translations: Record<string, string> = {
+        "tokens:permissions.columns.roles": "Roles",
+        "tokens:permissions.groups.administration": "Administration",
+        "tokens:permissions.groups.operations": "Operations",
+        "tokens:permissions.groups.compliance": "Compliance",
+        "tokens:permissions.groups.other": "Other",
+        "tokens:actions.grantRole.form.accountLabel": "Account",
+        "tokens:permissions.changeRoles.title": "Change roles",
+        "tokens:permissions.changeRoles.description":
+          "Assign or remove roles for this address",
+      };
+      return translations[key] || key;
     },
   }),
 }));

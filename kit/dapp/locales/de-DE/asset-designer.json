@@ -33,7 +33,7 @@
         "placeholder": "z.B. 1000000"
       },
       "countryCode": {
-        "description": "Wählen Sie aus, wo Ihr Asset registriert wird",
+        "description": "Wählen Sie, wo Ihr Vermögenswert registriert wird",
         "label": "Land"
       },
       "decimals": {
@@ -76,16 +76,16 @@
         "label": "Asset-Typ"
       },
       "denominationAsset": {
-        "description": "Die Ethereum-Adresse des Denominationsvermögenswerts",
-        "label": "Denominationsvermögenswert",
+        "description": "Die Ethereum-Adresse des Nennwertvermögens",
+        "label": "Nennwertvermögen",
         "placeholder": "z.B. 0x..."
       }
     },
     "title": "Erstellen {{type}}"
   },
   "leave-confirmation": {
-    "title": "Asset-Designer verlassen?",
-    "description": "Ihr Fortschritt geht verloren, wenn Sie jetzt verlassen. Alle eingegebenen Informationen werden nicht gespeichert.",
+    "title": "Vermögensdesigner verlassen?",
+    "description": "Ihr Fortschritt geht verloren, wenn Sie jetzt verlassen. Alle Informationen, die Sie eingegeben haben, werden nicht gespeichert.",
     "stay": "Bleiben",
     "leave": "Verlassen"
   },

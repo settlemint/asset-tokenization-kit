@@ -19,7 +19,7 @@ export default defineConfig({
     coverage: {
       all: true,
       provider: "v8",
-      reporter: ["text", "json", "json-summary"],
+      reporter: ["text", "json", "json-summary", "lcov"],
       reportOnFailure: true,
       reportsDirectory: "./coverage",
       enabled: process.env.CI ? true : false,
