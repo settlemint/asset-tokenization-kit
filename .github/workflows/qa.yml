@@ -183,7 +183,8 @@ jobs:
         if: |
           (github.event_name == 'push' ||
           (github.event_name == 'pull_request' && github.event.pull_request.draft == false)) &&
-          steps.qa-tests.outcome == 'success'
+          steps.qa-tests.outcome == 'success' &&
+          hashFiles('./kit/dapp/coverage/lcov.info') != ''
         uses: coverallsapp/github-action@v2
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
@@ -198,7 +199,8 @@ jobs:
         if: |
           (github.event_name == 'push' ||
           (github.event_name == 'pull_request' && github.event.pull_request.draft == false)) &&
-          steps.qa-tests.outcome == 'success'
+          steps.qa-tests.outcome == 'success' &&
+          hashFiles('./kit/contracts/coverage/lcov.info') != ''
         uses: coverallsapp/github-action@v2
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
@@ -213,7 +215,8 @@ jobs:
         if: |
           (github.event_name == 'push' ||
           (github.event_name == 'pull_request' && github.event.pull_request.draft == false)) &&
-          steps.qa-tests.outcome == 'success'
+          steps.qa-tests.outcome == 'success' &&
+          (hashFiles('./kit/dapp/coverage/lcov.info') != '' || hashFiles('./kit/contracts/coverage/lcov.info') != '')
         uses: coverallsapp/github-action@v2
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
