@@ -15,7 +15,7 @@ import {
   ActionStatusSchema,
   ActionsListSchema,
   ActionsListResponseSchema,
-  ActionsResponseSchema,
+  ActionsGraphResponseSchema,
   ActionsListDataSchema,
 } from "./routes/actions.list.schema";
 
@@ -170,12 +170,13 @@ describe("Actions Schemas", () => {
       expect(() => safeParse(ActionSchema, invalidExecutedBy)).toThrow();
     });
 
-    it("should validate bigint timestamps", () => {
+    it("should coerce string timestamps to bigint", () => {
       const stringTimestamps = {
         ...validAction,
         activeAt: "1700000100", // String instead of bigint
-      };
-      expect(() => safeParse(ActionSchema, stringTimestamps)).toThrow();
+      } as unknown;
+      const result = safeParse(ActionSchema, stringTimestamps);
+      expect(result.activeAt).toBe(BigInt("1700000100"));
     });
   });
 
@@ -264,11 +265,23 @@ describe("Actions Schemas", () => {
       expect(result).toHaveLength(0);
     });
 
-    it("should validate ActionsResponseSchema (GraphQL response)", () => {
+    it("should validate ActionsGraphResponseSchema (GraphQL response)", () => {
       const validGraphQLResponse = {
-        actions: [mockAction],
+        actions: [
+          {
+            ...mockAction,
+            activeAt: String(mockAction.activeAt),
+            executedAt:
+              mockAction.executedAt === null
+                ? null
+                : String(mockAction.executedAt),
+          } as unknown,
+        ],
       };
-      const result = safeParse(ActionsResponseSchema, validGraphQLResponse);
+      const result = safeParse(
+        ActionsGraphResponseSchema,
+        validGraphQLResponse
+      );
       expect(result.actions).toHaveLength(1);
       expect(result.actions[0]?.id).toBe("action-123");
     });

@@ -1,9 +1,10 @@
-import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
+import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import type { VariablesOf } from "@settlemint/sdk-thegraph";
+import { z } from "zod";
 import {
-  ActionsResponseSchema,
+  ActionsGraphResponseSchema,
+  ActionsListDataSchema,
   type ActionsListResponse,
 } from "./actions.list.schema";
 
@@ -74,9 +75,8 @@ const LIST_ACTIONS_QUERY = theGraphGraphql(`
  * @see {@link ActionsListSchema} for the input parameters
  * @see {@link ActionsListResponse} for the response structure
  */
-export const list = authRouter.actions.list
-  .use(theGraphMiddleware)
-  .handler(async ({ input, context }): Promise<ActionsListResponse> => {
+export const list = authRouter.actions.list.handler(
+  async ({ input, context }): Promise<ActionsListResponse> => {
     // Build where clause with user filtering and optional filters
     const where: VariablesOf<typeof LIST_ACTIONS_QUERY>["where"] = {
       // Filter actions to only those where the user is an authorized executor
@@ -97,11 +97,19 @@ export const list = authRouter.actions.list
     }
 
     // Execute query
-    const response = await context.theGraphClient.query(LIST_ACTIONS_QUERY, {
-      input: { where },
-      output: ActionsResponseSchema,
+    const response = await theGraphClient.request(LIST_ACTIONS_QUERY, {
+      where,
     });
 
-    // Return simple list response
-    return response.actions;
-  });
+    // Transform Graph scalars (strings) to domain types and validate
+    const transformed = (
+      response as unknown as z.infer<typeof ActionsGraphResponseSchema>
+    ).actions.map((a) => ({
+      ...a,
+      activeAt: BigInt(a.activeAt),
+      executedAt: a.executedAt === null ? null : BigInt(a.executedAt),
+    }));
+
+    return ActionsListDataSchema.parse(transformed);
+  }
+);

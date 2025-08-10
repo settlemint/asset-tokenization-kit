@@ -2,6 +2,7 @@ import { Address, Bytes } from "@graphprotocol/graph-ts";
 import { IdentityFactory } from "../../../generated/schema";
 import { IdentityFactory as IdentityFactoryTemplate } from "../../../generated/templates";
 import { fetchAccount } from "../../account/fetch/account";
+import { setAccountContractName } from "../../account/utils/account-contract-name";
 
 export function fetchIdentityFactory(address: Address): IdentityFactory {
   let identityFactory = IdentityFactory.load(address);
@@ -12,6 +13,7 @@ export function fetchIdentityFactory(address: Address): IdentityFactory {
     identityFactory.deployedInTransaction = Bytes.empty();
     identityFactory.save();
     IdentityFactoryTemplate.create(address);
+    setAccountContractName(address, "Identity Factory");
   }
 
   return identityFactory;

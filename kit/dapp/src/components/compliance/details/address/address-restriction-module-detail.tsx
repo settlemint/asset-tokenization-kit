@@ -62,7 +62,9 @@ export function AddressRestrictionModuleDetail({
   // Helper function to update a specific address by index
   const updateAddress = (index: number, newAddress: string) => {
     setSelectedAddresses((prev) =>
-      prev.map((entry, i) => (i === index ? { ...entry, value: newAddress } : entry))
+      prev.map((entry, i) =>
+        i === index ? { ...entry, value: newAddress } : entry
+      )
     );
   };
 
@@ -119,7 +121,9 @@ export function AddressRestrictionModuleDetail({
     );
   }, [initialValues?.values, selectedAddresses]);
 
-  const hasInvalidAddresses = selectedAddresses.some((e) => !isAddress(e.value));
+  const hasInvalidAddresses = selectedAddresses.some(
+    (e) => !isAddress(e.value)
+  );
 
   return (
     <ComplianceDetailCard>
@@ -162,7 +166,11 @@ export function AddressRestrictionModuleDetail({
                       <>
                         {mode === "select" && (
                           <AddressSelect
-                            value={entry.value && isAddress(entry.value) ? entry.value : undefined}
+                            value={
+                              entry.value && isAddress(entry.value)
+                                ? entry.value
+                                : undefined
+                            }
                             onChange={(newAddress) => {
                               updateAddress(index, newAddress);
                             }}

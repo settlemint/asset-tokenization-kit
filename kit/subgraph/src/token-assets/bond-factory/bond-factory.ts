@@ -2,6 +2,7 @@ import { BondCreated } from "../../../generated/templates/BondFactory/BondFactor
 import { fetchAccount } from "../../account/fetch/account";
 import { fetchEvent } from "../../event/fetch/event";
 import { fetchToken } from "../../token/fetch/token";
+import { fetchAccount } from "../../account/fetch/account";
 import {
   ActionName,
   createAction,
@@ -18,6 +19,12 @@ export function handleBondCreated(event: BondCreated): void {
   token.symbol = event.params.symbol;
   token.decimals = event.params.decimals;
   token.save();
+
+  const account = fetchAccount(event.params.tokenAddress);
+  if (account.isContract) {
+    account.contractName = token.name;
+    account.save();
+  }
 
   const bond = fetchBond(event.params.tokenAddress);
   setBigNumber(

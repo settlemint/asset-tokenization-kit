@@ -2,6 +2,7 @@ import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { TokenFixedYieldSchedule } from "../../../../generated/schema";
 import { FixedYieldSchedule as FixedYieldScheduleTemplate } from "../../../../generated/templates";
 import { fetchAccount } from "../../../account/fetch/account";
+import { setAccountContractName } from "../../../account/utils/account-contract-name";
 import { DEFAULT_TOKEN_DECIMALS } from "../../../config/token";
 import { setBigNumber } from "../../../utils/bignumber";
 
@@ -42,6 +43,7 @@ export function fetchFixedYieldSchedule(
     fixedYieldSchedule.deployedInTransaction = Bytes.empty();
     fixedYieldSchedule.save();
     FixedYieldScheduleTemplate.create(address);
+    setAccountContractName(address, "Fixed Yield Schedule");
   }
 
   return fixedYieldSchedule;

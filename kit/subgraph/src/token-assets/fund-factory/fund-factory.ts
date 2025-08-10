@@ -1,6 +1,7 @@
 import { FundCreated } from "../../../generated/templates/FundFactory/FundFactory";
 import { fetchEvent } from "../../event/fetch/event";
 import { fetchToken } from "../../token/fetch/token";
+import { fetchAccount } from "../../account/fetch/account";
 import { fetchFund } from "../fund/fetch/fund";
 
 export function handleFundCreated(event: FundCreated): void {
@@ -11,6 +12,12 @@ export function handleFundCreated(event: FundCreated): void {
   token.symbol = event.params.symbol;
   token.decimals = event.params.decimals;
   token.save();
+
+  const account = fetchAccount(event.params.tokenAddress);
+  if (account.isContract) {
+    account.contractName = token.name;
+    account.save();
+  }
 
   const fund = fetchFund(event.params.tokenAddress);
   fund.managementFeeBps = event.params.managementFeeBps;
