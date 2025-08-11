@@ -1,4 +1,7 @@
-import { ConfirmationDialog } from "@/components/confirmation-dialog";
+import {
+  ConfirmationDialog,
+  type ConfirmDialogButton,
+} from "@/components/confirmation-dialog";
 import { DialogCardLayout } from "@/components/layout/dialog-card-layout";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -11,14 +14,11 @@ interface DialogCloseOptions {
   closeIcon?: boolean;
   closeConfirmation?:
     | false
-    | undefined
     | {
         title: string;
         description: string;
-        buttonLabels: {
-          left: string;
-          right: string;
-        };
+        leftAction: ConfirmDialogButton;
+        rightAction: ConfirmDialogButton;
         ariaLabel: string;
       };
 }
@@ -77,17 +77,8 @@ export function FullScreenDialogLayout({
                       <XIcon />
                     </Button>
                   }
-                  leftAction={{
-                    label: closeConfirmation.buttonLabels.left,
-                    action: "close",
-                  }}
-                  rightAction={{
-                    label: closeConfirmation.buttonLabels.right,
-                    action: () => {
-                      onOpenChange(false);
-                    },
-                    after: "close",
-                  }}
+                  leftAction={closeConfirmation.leftAction}
+                  rightAction={closeConfirmation.rightAction}
                 />
               ) : (
                 <Button

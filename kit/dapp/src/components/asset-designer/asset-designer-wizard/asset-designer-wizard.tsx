@@ -13,6 +13,7 @@ import {
   type AssetDesignerStepsType,
 } from "@/components/asset-designer/asset-designer-wizard/use-asset-designer-steps";
 import { StepLayout } from "@/components/stepper/step-layout";
+import { StepLayoutSkeleton } from "@/components/stepper/step-layout-skeleton";
 import {
   flattenSteps,
   getNextStep,
@@ -162,7 +163,7 @@ export const AssetDesignerWizard = ({ onSubmit }: { onSubmit: () => void }) => {
   };
 
   if (!factories || !complianceModules) {
-    return <div>Loading...</div>;
+    return <StepLayoutSkeleton className="rounded-xl" groupCount={3} />;
   }
 
   return (
