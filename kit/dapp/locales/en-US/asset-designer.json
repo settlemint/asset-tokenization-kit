@@ -76,12 +76,16 @@
       },
       "type": {
         "description": "Choose the type of digital asset you want to create. Only asset types with deployed factories are available.",
-        "label": "Asset Type"
+        "label": "Asset type"
       },
       "denominationAsset": {
         "description": "The address of the denomination asset",
         "label": "Denomination asset",
         "placeholder": "e.g., 0x..."
+      },
+      "assetClass": {
+        "description": "The class of the {{type}}",
+        "label": "Asset class"
       }
     },
     "title": "Deploy {{type}}"
@@ -161,7 +165,19 @@
       },
       "summary": {
         "description": "Confirm and deploy your compliant digital asset to the blockchain",
-        "title": "Review & deploy"
+        "title": "Review & deploy",
+        "generalInfo": {
+          "title": "General info",
+          "description": "General information about your {{type}}"
+        },
+        "instrumentSpecificDetails": {
+          "title": "Instrument specific details",
+          "description": "{{type}} specific details"
+        },
+        "complianceModules": {
+          "title": "Compliance modules",
+          "description": "Compliance modules that have been enabled for your {{type}}"
+        }
       }
     },
     "title": "Design your asset"
