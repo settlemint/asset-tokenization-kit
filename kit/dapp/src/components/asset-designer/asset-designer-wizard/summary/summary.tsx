@@ -75,7 +75,7 @@ export const Summary = withForm({
           />
           <FormSummaryItem
             label={t("form.fields.decimals.label")}
-            value={values.decimals || "-"}
+            value={values.decimals ?? "-"}
           />
           {values.isin && (
             <FormSummaryItem
