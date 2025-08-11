@@ -14,8 +14,9 @@ import { z } from "zod";
  * Zod schema for validating and transforming arbitrary precision decimal numbers
  *
  * This schema provides comprehensive validation for big decimal numbers with the following features:
- * - Accepts either string input or existing Dnum values
+ * - Accepts string, number, or existing Dnum values
  * - String-based input preserves precision and avoids JavaScript number limitations
+ * - Number input is converted to Dnum for arbitrary precision calculations
  * - Dnum input is passed through without transformation for efficiency
  * - Validation against special values (NaN, Infinity, -Infinity)
  * - Support for scientific notation (e.g., "1.23e10")
@@ -30,17 +31,22 @@ import { z } from "zod";
  *
  * Supported formats:
  * - Existing Dnum values (arrays)
- * - Standard decimal: "123.456"
+ * - Standard decimal: "123.456" or 123.456
  * - Scientific notation: "1.23e10", "1.23E-5"
- * - Integer strings: "123"
- * - Negative numbers: "-123.456"
+ * - Integer strings/numbers: "123" or 123
+ * - Negative numbers: "-123.456" or -123.456
  * - Very large numbers: "999999999999999999999999999999.99"
- * - Very small numbers: "0.000000000000000001"
+ * - Very small numbers: "0.000000000000000001" or 0.000000000000000001
  * @example
  * ```typescript
  * // Valid decimal parsing from string
  * const decimal = bigDecimal().parse("123.456789012345678901234567890");
  * // Returns: Dnum representing the exact decimal value
+ * // Type: Dnum
+ *
+ * // Valid decimal parsing from number
+ * const numberDecimal = bigDecimal().parse(123.456);
+ * // Returns: Dnum representing the number value
  * // Type: Dnum
  *
  * // Pass through existing Dnum values
@@ -74,6 +80,7 @@ export const bigDecimal = () =>
   z
     .union([
       z.string(),
+      z.number(),
       z.custom<Dnum>((val) => isDnum(val), {
         message: "Expected a Dnum value",
       }),
@@ -85,9 +92,24 @@ export const bigDecimal = () =>
         return value;
       }
 
-      // Reject special values
-      const upper = value.toUpperCase();
-      if (upper === "NAN" || upper === "INFINITY" || upper === "-INFINITY") {
+      // Reject special values for string inputs
+      if (typeof value === "string") {
+        const upper = value.toUpperCase();
+        if (upper === "NAN" || upper === "INFINITY" || upper === "-INFINITY") {
+          ctx.addIssue({
+            code: "custom",
+            message:
+              "Invalid value. NaN, Infinity, and -Infinity are not allowed",
+          });
+          return z.NEVER;
+        }
+      }
+
+      // Reject special values for number inputs
+      if (
+        typeof value === "number" &&
+        (!Number.isFinite(value) || Number.isNaN(value))
+      ) {
         ctx.addIssue({
           code: "custom",
           message:

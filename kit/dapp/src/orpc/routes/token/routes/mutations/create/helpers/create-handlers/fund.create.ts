@@ -68,8 +68,6 @@ export const fundCreateHandler = async (
     return context.portalClient.mutate(CREATE_FUND_MUTATION, {
       ...input,
       ...context.mutationVariables,
-      // managementFeeBps is already a number from the schema
-      managementFeeBps: input.managementFeeBps,
       initialModulePairs: input.initialModulePairs.map((pair) => ({
         module: pair.module,
         params: pair.params,

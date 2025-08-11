@@ -49,19 +49,13 @@ describe("basisPoints", () => {
       );
     });
 
-    it("should accept string inputs and reject non-numeric types", () => {
-      // Should accept valid string inputs
-      expect(validator.parse("100")).toBe(100);
-      expect(validator.parse("0")).toBe(0);
-      expect(validator.parse("10000")).toBe(10_000);
-
-      // Should reject truly non-numeric types
+    it("should reject non-numeric types", () => {
+      expect(() => validator.parse("100")).toThrow();
       expect(() => validator.parse(null)).toThrow();
       expect(() => validator.parse(undefined)).toThrow();
       expect(() => validator.parse({})).toThrow();
       expect(() => validator.parse([])).toThrow();
       expect(() => validator.parse(true)).toThrow();
-      expect(() => validator.parse("abc")).toThrow();
     });
 
     it("should reject NaN and Infinity", () => {
@@ -79,17 +73,11 @@ describe("basisPoints", () => {
         expect(isBasisPoints(10_000)).toBe(true);
       });
 
-      it("should return true for valid string inputs and false for invalid values", () => {
-        // Should return true for valid string inputs now
-        expect(isBasisPoints("100")).toBe(true);
-        expect(isBasisPoints("0")).toBe(true);
-        expect(isBasisPoints("10000")).toBe(true);
-
-        // Should return false for invalid values
+      it("should return false for invalid values", () => {
         expect(isBasisPoints(-1)).toBe(false);
         expect(isBasisPoints(10_001)).toBe(false);
         expect(isBasisPoints(100.5)).toBe(false);
-        expect(isBasisPoints("abc")).toBe(false);
+        expect(isBasisPoints("100")).toBe(false);
         expect(isBasisPoints(null)).toBe(false);
       });
     });

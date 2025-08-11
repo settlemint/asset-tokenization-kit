@@ -11,58 +11,32 @@ import { z } from "zod";
 
 /**
  * Creates a Zod schema that validates basis points values.
- * Accepts both number and string inputs and validates as integers within the basis points range.
  *
  * Basis points must be:
  * - An integer (no decimal places)
  * - Between 0 and 10000 (0% to 100%)
  *
- * @returns A Zod schema that validates basis points and returns a number
+ * @returns A Zod schema that validates basis points
  * @example
  * ```typescript
- * // Basic validation - accepts both number and string
+ * // Basic validation
  * const schema = basisPoints();
- * schema.parse(0); // Valid (0%) - returns 0
- * schema.parse("100"); // Valid (1%) - string input, returns 100
- * schema.parse(1000); // Valid (10%) - number input, returns 1000
- * schema.parse("10000"); // Valid (100%) - string input, returns 10000
+ * schema.parse(0); // Valid (0%)
+ * schema.parse(100); // Valid (1%)
+ * schema.parse(1000); // Valid (10%)
+ * schema.parse(10000); // Valid (100%)
  *
  * // Invalid values
  * schema.parse(-1); // Invalid - negative
- * schema.parse("10001"); // Invalid - exceeds 100%
+ * schema.parse(10001); // Invalid - exceeds 100%
  * schema.parse(100.5); // Invalid - not an integer
  * ```
  */
 export const basisPoints = () => {
   return z
-    .union([
-      z.number().int("Basis points must be an integer"),
-      z.string().transform((val, ctx) => {
-        const num = Number(val);
-        if (Number.isNaN(num)) {
-          ctx.addIssue({
-            code: "custom",
-            message: "String must be convertible to a number",
-          });
-          return z.NEVER;
-        }
-        if (!Number.isInteger(num)) {
-          ctx.addIssue({
-            code: "custom",
-            message: "Basis points must be an integer",
-          });
-          return z.NEVER;
-        }
-        return num;
-      }),
-    ])
-    .pipe(
-      z
-        .number()
-        .int("Basis points must be an integer")
-        .min(0, "Basis points cannot be negative")
-        .max(10_000, "Basis points cannot exceed 10000 (100%)")
-    )
+    .int("Basis points must be an integer")
+    .min(0, "Basis points cannot be negative")
+    .max(10_000, "Basis points cannot exceed 10000 (100%)")
     .describe("Basis points value between 0 and 10000 (0% to 100%)");
 };
 
