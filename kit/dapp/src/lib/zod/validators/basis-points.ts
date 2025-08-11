@@ -10,33 +10,51 @@
 import { z } from "zod";
 
 /**
- * Creates a Zod schema that validates basis points values.
+ * Creates a Zod schema that validates basis points values using bigDecimal.
+ * Accepts both number and string inputs and validates as integers within the basis points range.
  *
  * Basis points must be:
  * - An integer (no decimal places)
  * - Between 0 and 10000 (0% to 100%)
  *
- * @returns A Zod schema that validates basis points
+ * @returns A Zod schema that validates basis points using Dnum for consistency
  * @example
  * ```typescript
- * // Basic validation
+ * // Basic validation - accepts both number and string
  * const schema = basisPoints();
  * schema.parse(0); // Valid (0%)
- * schema.parse(100); // Valid (1%)
- * schema.parse(1000); // Valid (10%)
- * schema.parse(10000); // Valid (100%)
+ * schema.parse("100"); // Valid (1%) - string input
+ * schema.parse(1000); // Valid (10%) - number input
+ * schema.parse("10000"); // Valid (100%) - string input
  *
  * // Invalid values
  * schema.parse(-1); // Invalid - negative
- * schema.parse(10001); // Invalid - exceeds 100%
+ * schema.parse("10001"); // Invalid - exceeds 100%
  * schema.parse(100.5); // Invalid - not an integer
  * ```
  */
 export const basisPoints = () => {
   return z
-    .int("Basis points must be an integer")
-    .min(0, "Basis points cannot be negative")
-    .max(10_000, "Basis points cannot exceed 10000 (100%)")
+    .union([
+      z.number().int("Basis points must be an integer"),
+      z.string().transform((val) => {
+        const num = Number(val);
+        if (isNaN(num)) {
+          throw new Error("String must be convertible to a number");
+        }
+        if (!Number.isInteger(num)) {
+          throw new Error("Basis points must be an integer");
+        }
+        return num;
+      }),
+    ])
+    .pipe(
+      z
+        .number()
+        .int("Basis points must be an integer")
+        .min(0, "Basis points cannot be negative")
+        .max(10_000, "Basis points cannot exceed 10000 (100%)")
+    )
     .describe("Basis points value between 0 and 10000 (0% to 100%)");
 };
 
