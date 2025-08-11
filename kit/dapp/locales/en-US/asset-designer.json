@@ -57,7 +57,8 @@
       "managementFeeBps": {
         "description": "Management fee in basis points (100 BPS = 1%)",
         "label": "Management fee (BPS)",
-        "placeholder": "e.g., 100"
+        "placeholder": "e.g., 100",
+        "inPercentage": "Percentage: "
       },
       "maturityDate": {
         "description": "The maturity date of the {{type}}",

@@ -56,7 +56,14 @@ export function safeToString(value: unknown): string {
  * Type definition for value formatting options
  */
 export interface FormatValueOptions {
-  type?: string;
+  type?:
+    | "address"
+    | "badge"
+    | "currency"
+    | "date"
+    | "status"
+    | "percentage"
+    | "number";
   displayName?: string;
   currency?: string;
   locale?: string;
