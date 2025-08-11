@@ -63,7 +63,7 @@ export function FullScreenDialogLayout({
           className={className}
           header={header}
           topRightOverlay={
-            closeIcon ? (
+            closeIcon || closeConfirmation ? (
               closeConfirmation ? (
                 <ConfirmationDialog
                   title={closeConfirmation.title}
