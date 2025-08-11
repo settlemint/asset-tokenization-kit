@@ -1,5 +1,3 @@
-"use client";
-
 import {
   ComplianceDetailActions,
   ComplianceDetailBreadcrumb,
