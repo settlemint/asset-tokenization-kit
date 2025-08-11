@@ -3,11 +3,13 @@ import {
   FormSummaryCard,
   FormSummaryItem,
 } from "@/components/form/multi-step/form-step";
+import { Web3Address } from "@/components/web3/web3-address";
 import { withForm } from "@/hooks/use-app-form";
 import { formatDate } from "@/lib/utils/date";
 import { useStore } from "@tanstack/react-store";
-import { Building2 } from "lucide-react";
+import { Settings } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { getAddress } from "viem";
 
 export const BondSummaryFields = withForm({
   defaultValues: {} as AssetDesignerFormInputData,
@@ -22,7 +24,7 @@ export const BondSummaryFields = withForm({
 
     return (
       <FormSummaryCard
-        icon={<Building2 className="w-5 h-5" />}
+        icon={<Settings className="w-5 h-5" />}
         title={t("wizard.steps.summary.instrumentSpecificDetails.title")}
         description={t(
           "wizard.steps.summary.instrumentSpecificDetails.description",
@@ -39,7 +41,12 @@ export const BondSummaryFields = withForm({
         />
         <FormSummaryItem
           label={t("form.fields.denominationAsset.label")}
-          value={values.denominationAsset}
+          value={
+            <Web3Address
+              address={getAddress(values.denominationAsset)}
+              size="tiny"
+            />
+          }
         />
         <FormSummaryItem
           label={t("form.fields.faceValue.label")}

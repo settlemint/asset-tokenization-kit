@@ -8,9 +8,11 @@ import {
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
+import { assetClassIcon } from "@/hooks/use-asset-class";
+import { useCountries } from "@/hooks/use-countries";
 import { noop } from "@/lib/utils/noop";
 import { ComplianceModulePairInput } from "@/lib/zod/validators/compliance";
-import { DollarSign, Shield } from "lucide-react";
+import { Shield } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export const Summary = withForm({
@@ -25,8 +27,11 @@ export const Summary = withForm({
       "asset-types",
       "form",
       "asset-class",
+      "compliance-modules",
     ]);
     const values = form.state.values;
+    const Icon = assetClassIcon[values.assetClass];
+    const { getCountryByNumericCode } = useCountries();
 
     return (
       <FormStepLayout
@@ -54,7 +59,7 @@ export const Summary = withForm({
         fullWidth
       >
         <FormSummaryCard
-          icon={<DollarSign className="w-5 h-5" />}
+          icon={<Icon className="w-5 h-5" />}
           title={t("wizard.steps.summary.generalInfo.title")}
           description={t("wizard.steps.summary.generalInfo.description", {
             type: t(`asset-types:types.${values.type}.nameLowercaseSingular`),
@@ -81,15 +86,11 @@ export const Summary = withForm({
           )}
           <FormSummaryItem
             label={t("form.fields.countryCode.label")}
-            value={values.countryCode || "-"}
+            value={getCountryByNumericCode(values.countryCode) || "-"}
           />
           <FormSummaryItem
             label={t("form.fields.assetClass.label")}
             value={t(`asset-class:categories.${values.assetClass}.name`)}
-          />
-          <FormSummaryItem
-            label={t("form.fields.type.label")}
-            value={t(`asset-types:types.${values.type}.name`)}
           />
         </FormSummaryCard>
 
@@ -113,8 +114,8 @@ export const Summary = withForm({
               (pair: ComplianceModulePairInput, index: number) => (
                 <FormSummaryItem
                   key={index}
-                  label={`${pair.typeId} ${index + 1}`}
-                  value={JSON.stringify(pair.params)}
+                  label={t(`compliance-modules:complianceModuleName`)}
+                  value={t(`compliance-modules:modules.${pair.typeId}.title`)}
                 />
               )
             )}

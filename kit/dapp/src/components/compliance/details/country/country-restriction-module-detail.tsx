@@ -38,12 +38,6 @@ export function CountryRestrictionModuleDetail({
 
   const config = complianceModuleConfig[typeId];
 
-  // Determine translation keys based on module type
-  const moduleKey =
-    typeId === "CountryAllowListComplianceModule"
-      ? "countryAllowList"
-      : "countryBlockList";
-
   // Convert numeric country codes to alpha2 codes for CountryMultiselect
   const initialCountries =
     initialValues?.values.map((numericCode) => {
@@ -106,11 +100,11 @@ export function CountryRestrictionModuleDetail({
               />
             }
           >
-            {t(`modules.${moduleKey}.title`)}
+            {t(`modules.${typeId}.title`)}
           </ComplianceDetailTitle>
 
           <ComplianceDetailDescription>
-            {t(`modules.${moduleKey}.description`)}
+            {t(`modules.${typeId}.description`)}
           </ComplianceDetailDescription>
 
           {isEnabled && (

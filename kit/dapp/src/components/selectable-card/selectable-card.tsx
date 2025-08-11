@@ -15,10 +15,10 @@ const selectableCardVariants = cva(
     variants: {
       variant: {
         default:
-          "border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border-input bg-background hover:bg-accent/10 hover:text-accent-foreground",
         selected: "border-primary bg-primary/5 text-primary",
         ghost:
-          "border-transparent hover:bg-accent hover:text-accent-foreground",
+          "border-transparent hover:bg-accent/10 hover:text-accent-foreground",
         outline: "border-2 bg-transparent hover:bg-accent/10",
       },
       size: {

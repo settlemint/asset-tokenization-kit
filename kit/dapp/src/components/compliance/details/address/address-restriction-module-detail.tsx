@@ -40,14 +40,6 @@ export function AddressRestrictionModuleDetail({
 
   const config = complianceModuleConfig[typeId];
 
-  // Translation key for address block list
-  const moduleKey =
-    typeId === "AddressBlockListComplianceModule"
-      ? "addressBlockList"
-      : typeId === "IdentityAllowListComplianceModule"
-        ? "identityAllowList"
-        : "identityBlockList";
-
   // Initialize addresses from initialValues
   type Entry = { id: string; value: string };
   const makeId = () =>
@@ -146,11 +138,11 @@ export function AddressRestrictionModuleDetail({
               />
             }
           >
-            {t(`modules.${moduleKey}.title`)}
+            {t(`modules.${typeId}.title`)}
           </ComplianceDetailTitle>
 
           <ComplianceDetailDescription>
-            {t(`modules.${moduleKey}.description`)}
+            {t(`modules.${typeId}.description`)}
           </ComplianceDetailDescription>
 
           {isEnabled && (
