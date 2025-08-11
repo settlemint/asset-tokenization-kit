@@ -1,5 +1,3 @@
-import { from } from "dnum";
-import { describe, expect, test } from "vitest";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   DEFAULT_ADMIN,
@@ -7,6 +5,8 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
+import { from } from "dnum";
+import { describe, expect, test } from "vitest";
 
 describe("Token create", () => {
   test("can create a token", async () => {
@@ -36,9 +36,6 @@ describe("Token create", () => {
     expect(result.name).toBe(tokenData.name);
     expect(result.symbol).toBe(tokenData.symbol);
 
-    // Give the graph some time to index
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-
     const tokens = await client.token.list({});
     expect(tokens.length).toBeGreaterThan(0);
     expect(tokens.find((t) => t.name === tokenData.name)).toEqual({
@@ -50,6 +47,135 @@ describe("Token create", () => {
       },
       totalSupply: from("0"),
     });
+  }, 100_000);
+
+  test("can create a fund token", async () => {
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+
+    const fundData = {
+      type: "fund" as const,
+      name: `Test Fund ${Date.now()}`,
+      symbol: "TSTF",
+      decimals: 18,
+      managementFeeBps: 100, // 1% management fee
+      initialModulePairs: [],
+    };
+
+    const result = await client.token.create({
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+      ...fundData,
+      countryCode: "056",
+    });
+
+    expect(result).toBeDefined();
+    expect(result.id).toBeDefined();
+    expect(result.type).toBe(fundData.type);
+    expect(result.name).toBe(fundData.name);
+    expect(result.symbol).toBe(fundData.symbol);
+
+    const tokens = await client.token.list({});
+    expect(tokens.length).toBeGreaterThan(0);
+    expect(tokens.find((t) => t.name === fundData.name)).toEqual({
+      id: expect.any(String),
+      createdAt: expect.any(Date),
+      ...fundData,
+      pausable: {
+        paused: true,
+      },
+      totalSupply: from("0"),
+    });
+  }, 100_000);
+
+  test("can create a bond token", async () => {
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+
+    const bondData = {
+      type: "bond" as const,
+      name: `Test Bond ${Date.now()}`,
+      symbol: "TSTB",
+      decimals: 18,
+      cap: "1000000",
+      faceValue: "1000",
+      maturityDate: new Date("2025-12-31"),
+      denominationAsset: "0x1234567890123456789012345678901234567890",
+      initialModulePairs: [],
+    };
+
+    const result = await client.token.create({
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+      ...bondData,
+      countryCode: "056",
+    });
+
+    expect(result).toBeDefined();
+    expect(result.id).toBeDefined();
+    expect(result.type).toBe(bondData.type);
+    expect(result.name).toBe(bondData.name);
+    expect(result.symbol).toBe(bondData.symbol);
+  }, 100_000);
+
+  test("can create an equity token", async () => {
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+
+    const equityData = {
+      type: "equity" as const,
+      name: `Test Equity ${Date.now()}`,
+      symbol: "TSTE",
+      decimals: 0,
+      initialModulePairs: [],
+    };
+
+    const result = await client.token.create({
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+      ...equityData,
+      countryCode: "056",
+    });
+
+    expect(result).toBeDefined();
+    expect(result.id).toBeDefined();
+    expect(result.type).toBe(equityData.type);
+    expect(result.name).toBe(equityData.name);
+    expect(result.symbol).toBe(equityData.symbol);
+  }, 100_000);
+
+  test("can create a deposit token", async () => {
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+
+    const depositData = {
+      type: "deposit" as const,
+      name: `Test Deposit ${Date.now()}`,
+      symbol: "TSTD",
+      decimals: 2,
+      initialModulePairs: [],
+    };
+
+    const result = await client.token.create({
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+      ...depositData,
+      countryCode: "056",
+    });
+
+    expect(result).toBeDefined();
+    expect(result.id).toBeDefined();
+    expect(result.type).toBe(depositData.type);
+    expect(result.name).toBe(depositData.name);
+    expect(result.symbol).toBe(depositData.symbol);
   }, 100_000);
 
   test("regular users cant create tokens", async () => {
