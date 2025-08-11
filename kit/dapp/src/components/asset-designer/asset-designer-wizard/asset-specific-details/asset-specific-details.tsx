@@ -26,21 +26,23 @@ export const AssetSpecificDetails = withForm({
   },
   render: function Render({ form, onStepSubmit, onBack }) {
     const { t } = useTranslation(["asset-designer"]);
-    const assetType = useStore(form.store, (state) => state.values.type);
+    const type = useStore(form.store, (state) => state.values.type);
     const validateFields = useMemo(() => {
-      if (assetType === "bond") {
+      if (type === "bond") {
         return bondFields;
       }
-      if (assetType === "fund") {
+      if (type === "fund") {
         return fundFields;
       }
       return [];
-    }, [assetType]);
+    }, [type]);
 
     return (
       <FormStepLayout
-        title={t("wizard.steps.assetSpecificConfig.title")}
-        description={t("wizard.steps.assetSpecificConfig.description")}
+        title={t("wizard.steps.assetSpecificConfig.title", { type })}
+        description={t("wizard.steps.assetSpecificConfig.description", {
+          type,
+        })}
         actions={
           <>
             <Button variant="outline" onClick={onBack}>
@@ -55,8 +57,8 @@ export const AssetSpecificDetails = withForm({
           </>
         }
       >
-        {assetType === "bond" && <BondFields form={form} />}
-        {assetType === "fund" && <FundFields form={form} />}
+        {type === "bond" && <BondFields form={form} />}
+        {type === "fund" && <FundFields form={form} />}
       </FormStepLayout>
     );
   },
