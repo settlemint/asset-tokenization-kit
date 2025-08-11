@@ -30,7 +30,7 @@ besu-network:
       pullPolicy: IfNotPresent
     configServer:
       image:
-        repository: nginx
+        repository: docker.io/nginx
         tag: "1.29.0-alpine"
         pullPolicy: IfNotPresent
   besu-node:
@@ -52,12 +52,12 @@ besu-network:
     initContainers:
       testConnection:
         image:
-          repository: busybox
+          repository: docker.io/busybox
           tag: "1.37"
           pullPolicy: IfNotPresent
       checkConnection:
         image:
-          repository: curlimages/curl
+          repository: docker.io/curlimages/curl
           tag: "8.15.0"
           pullPolicy: IfNotPresent
   besu-validator-1:
@@ -118,8 +118,8 @@ erpc:
   # Test container
   test:
     image:
-      repository: busybox
-      tag: "1.37.0"
+      repository: docker.io/busybox
+      tag: "1.37"
       pullPolicy: IfNotPresent
   resources: {}
   ingress:
@@ -219,13 +219,17 @@ blockscout:
 graph-node:
   enabled: true
   image:
-    repository: graphprotocol/graph-node
+    repository: docker.io/graphprotocol/graph-node
     tag: "v0.39.1"
     pullPolicy: IfNotPresent
   initContainers:
     kubectlImage:
       repository: docker.io/kubesphere/kubectl
       tag: "v1.33.1"
+      pullPolicy: IfNotPresent
+    postgresImage:
+      repository: docker.io/postgres
+      tag: "17.50-alpine"
       pullPolicy: IfNotPresent
   podAnnotations:
     prometheus.io/scrape: "true"
@@ -302,7 +306,8 @@ hasura:
 portal:
   enabled: true
   image:
-    repository: ghcr.io/settlemint/btp-scs-portal
+    registry: ghcr.io
+    repository: settlemint/btp-scs-portal
     tag: "8.5.16"
     pullPolicy: IfNotPresent
   podLabels:
@@ -498,6 +503,11 @@ observability:
         # -- The Docker registry and image for the k8s sidecar
         repository: docker.io/kiwigrid/k8s-sidecar
         tag: 1.30.7
+    gateway:
+      image:
+        registry: docker.io
+        repository: nginxinc/nginx-unprivileged
+        tag: "1.29-alpine"
 
   # https://github.com/grafana/alloy/blob/main/operations/helm/charts/alloy/values.yaml
   alloy:
@@ -524,6 +534,12 @@ observability:
       repository: grafana/grafana
       # Overrides the Grafana image tag whose default is the chart appVersion
       tag: "12.1.0"
+    # Sidecar configuration for Grafana dashboards and datasources
+    sidecar:
+      image:
+        registry: docker.io
+        repository: kiwigrid/k8s-sidecar
+        tag: "1.30.3"
     ingress:
       hosts:
         - grafana.k8s.orb.local
@@ -551,14 +567,15 @@ observability:
 txsigner:
   enabled: true
   image:
-    repository: ghcr.io/settlemint/btp-signer
+    registry: ghcr.io
+    repository: settlemint/btp-signer
     tag: "7.13.5"
     pullPolicy: IfNotPresent
   # Init container for testing
   test:
     image:
-      repository: busybox
-      tag: "1.37.0"
+      repository: docker.io/busybox
+      tag: "1.37"
       pullPolicy: IfNotPresent
   # Configuration for the txsigner subchart
   config:
@@ -573,7 +590,7 @@ dapp:
   enabled: true
   image:
     repository: ghcr.io/settlemint/asset-tokenization-kit
-    tag: "2.0.0-main0d06815fc"
+    tag: "2.0.0-main71f0929ab"
     pullPolicy: IfNotPresent
   replicaCount: 1
   ingress:
@@ -630,7 +647,7 @@ dapp:
         repository: curlimages/curl
         tag: "8.15.0"
         pullPolicy: IfNotPresent
-      # Target GraphQL endpoint URL (where POST requests are sent)
+      # Target GraphQL endpoint URL (where POST requests arefe sent)
       url: "http://graph-node-combined:8000/subgraphs/name/kit"
       query: '{ __typename }'  # Basic query to check for GraphQL errors
       retryDelaySeconds: 20
