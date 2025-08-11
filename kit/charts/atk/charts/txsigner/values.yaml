@@ -21,7 +21,7 @@ image:
   # -- TxSigner image registry
   registry: ghcr.io
   # -- TxSigner image repository
-  repository: ghcr.io/settlemint/btp-signer
+  repository: settlemint/btp-signer
   # -- TxSigner image tag (immutable tags are recommended)
   tag: "7.13.5"
   # -- TxSigner image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag

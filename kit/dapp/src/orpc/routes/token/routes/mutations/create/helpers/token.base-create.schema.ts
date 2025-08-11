@@ -1,10 +1,10 @@
+import { optionalString } from "@/lib/zod/utils/optional-string";
 import { assetSymbol } from "@/lib/zod/validators/asset-symbol";
 import { assetType } from "@/lib/zod/validators/asset-types";
 import { complianceModulePairArray } from "@/lib/zod/validators/compliance";
 import { decimals } from "@/lib/zod/validators/decimals";
 import { isin } from "@/lib/zod/validators/isin";
 import { isoCountryCodeNumeric } from "@/lib/zod/validators/iso-country-code";
-import { optionalString } from "@/lib/zod/utils/optional-string";
 import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
 import { z } from "zod";
 

@@ -27,9 +27,7 @@ export const BondFields = withForm({
               label={t("form.fields.cap.label")}
               required={isRequiredField("cap")}
               description={t("form.fields.cap.description", {
-                type: t(
-                  `asset-types:types.${form.state.values.type}.nameLowercasePlural`
-                ),
+                type: t(`asset-types:types.bond.nameLowercasePlural`),
               })}
             />
           )}
@@ -41,9 +39,7 @@ export const BondFields = withForm({
               label={t("form.fields.faceValue.label")}
               required={isRequiredField("faceValue")}
               description={t("form.fields.faceValue.description", {
-                type: t(
-                  `asset-types:types.${form.state.values.type}.nameLowercaseSingular`
-                ),
+                type: t(`asset-types:types.bond.nameLowercaseSingular`),
               })}
             />
           )}
@@ -55,9 +51,7 @@ export const BondFields = withForm({
               label={t("form.fields.maturityDate.label")}
               required={isRequiredField("maturityDate")}
               description={t("form.fields.maturityDate.description", {
-                type: t(
-                  `asset-types:types.${form.state.values.type}.nameLowercaseSingular`
-                ),
+                type: t(`asset-types:types.bond.nameLowercaseSingular`),
               })}
             />
           )}
@@ -77,7 +71,7 @@ export const BondFields = withForm({
                         "form.fields.denominationAsset.description",
                         {
                           type: t(
-                            `asset-types:types.${form.state.values.type}.nameLowercaseSingular`
+                            `asset-types:types.bond.nameLowercaseSingular`
                           ),
                         }
                       )}
@@ -96,7 +90,7 @@ export const BondFields = withForm({
                         "form.fields.denominationAsset.description",
                         {
                           type: t(
-                            `asset-types:types.${form.state.values.type}.nameLowercaseSingular`
+                            `asset-types:types.bond.nameLowercaseSingular`
                           ),
                         }
                       )}
