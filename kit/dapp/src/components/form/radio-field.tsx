@@ -69,7 +69,7 @@ export function RadioField({
           />
           <FormLabel
             htmlFor={option.value}
-            className="flex cursor-pointer select-none rounded-lg border border-input bg-background hover:bg-accent/10 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 peer-data-[state=checked]:text-primary transition-all h-full"
+            className="flex cursor-pointer select-none rounded-lg border border-input bg-background hover:bg-accent/10 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 peer-data-[state=checked]:text-primary transition-all h-full"
           >
             <div className="flex flex-col h-full p-4">
               {/* Header with icon and title */}

@@ -40,7 +40,7 @@
         "label": "Country"
       },
       "decimals": {
-        "description": "Number of decimal places for the {{type}} (0-18, default is 18)",
+        "description": "Number of decimal places for the {{type}} (0-18, default is 18). This is used to determine the precision.",
         "label": "Decimals",
         "placeholder": "18"
       },
