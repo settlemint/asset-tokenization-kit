@@ -33,7 +33,7 @@ export const Summary = withForm({
                 },
               }}
             >
-              {t("form.actions.create")}
+              {t("form.actions.create", { type: form.state.values.type })}
             </form.VerificationButton>
           </>
         }

@@ -4,13 +4,13 @@ import {
   assetDesignerFormOptions,
   AssetDesignerFormSchema,
 } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
-import {
-  useAssetDesignerSteps,
-  type AssetDesignerStepsType,
-} from "@/components/asset-designer/asset-designer-wizard/asset-designer-steps";
 import { SelectAssetType } from "@/components/asset-designer/asset-designer-wizard/asset-type/select-asset-type";
 import { SelectComplianceModules } from "@/components/asset-designer/asset-designer-wizard/compliance-modules/select-compliance-modules";
 import { Summary } from "@/components/asset-designer/asset-designer-wizard/summary/summary";
+import {
+  useAssetDesignerSteps,
+  type AssetDesignerStepsType,
+} from "@/components/asset-designer/asset-designer-wizard/use-asset-designer-steps";
 import { StepLayout } from "@/components/stepper/step-layout";
 import {
   flattenSteps,

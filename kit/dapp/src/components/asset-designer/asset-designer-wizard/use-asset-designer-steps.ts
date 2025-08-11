@@ -18,16 +18,17 @@ export const AssetDesignerStepGroups = [
 ] as const;
 
 const AssetDesignerStepsSchema = z.enum(AssetDesignerSteps);
-export type AssetDesignerStepsType = z.infer<typeof AssetDesignerStepsSchema>;
-
-const _AssetDesignerStepGroupsSchema = z.enum(AssetDesignerStepGroups);
-export type AssetDesignerStepGroupsType = z.infer<
-  typeof _AssetDesignerStepGroupsSchema
->;
 
 export const AssetDesignerStepSchema = z.object({
   step: AssetDesignerStepsSchema,
 });
+
+const _AssetDesignerStepGroupsSchema = z.enum(AssetDesignerStepGroups);
+
+export type AssetDesignerStepsType = z.infer<typeof AssetDesignerStepsSchema>;
+export type AssetDesignerStepGroupsType = z.infer<
+  typeof _AssetDesignerStepGroupsSchema
+>;
 
 interface UseAssetDesignerStepsReturn {
   stepsOrGroups: StepOrGroup<
