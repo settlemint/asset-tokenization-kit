@@ -6,6 +6,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useFieldContext } from "@/hooks/use-form-contexts";
+import { cn } from "@/lib/utils";
 import {
   errorClassNames,
   FieldDescription,
@@ -52,7 +53,7 @@ export function SelectField({
       >
         <SelectTrigger
           id={field.name}
-          className={errorClassNames(field.state.meta)}
+          className={cn(errorClassNames(field.state.meta), "w-full")}
         >
           <SelectValue placeholder={placeholder ?? "Select an option"} />
         </SelectTrigger>

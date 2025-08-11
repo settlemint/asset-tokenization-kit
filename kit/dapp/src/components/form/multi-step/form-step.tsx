@@ -44,9 +44,9 @@ export function FormStepContent({
     <div className="flex-1 overflow-y-auto min-h-0">
       <div
         className={cn(
-          "space-y-6 pr-4 pb-24",
+          "space-y-6",
           fullWidth ? "w-full" : "",
-          asGrid ? "grid grid-cols-1 md:grid-cols-2 gap-6" : ""
+          asGrid ? "grid grid-cols-1 md:grid-cols-2 gap-x-6" : ""
         )}
       >
         {children}

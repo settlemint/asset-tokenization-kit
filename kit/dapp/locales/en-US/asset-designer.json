@@ -130,7 +130,7 @@
         "description": "Select the asset class and type you want to tokenize"
       },
       "configureAssetDetails": {
-        "title": "Configure asset details",
+        "title": "Configure details",
         "description": "Define basic properties and settings for your asset"
       },
       "compliance": {
