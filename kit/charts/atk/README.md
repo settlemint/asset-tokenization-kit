@@ -30,7 +30,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | besu-network.besu-genesis.configServer.image.pullPolicy | string | `"IfNotPresent"` |  |
-| besu-network.besu-genesis.configServer.image.repository | string | `"nginx"` |  |
+| besu-network.besu-genesis.configServer.image.repository | string | `"docker.io/nginx"` |  |
 | besu-network.besu-genesis.configServer.image.tag | string | `"1.29.0-alpine"` |  |
 | besu-network.besu-genesis.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-genesis.image.repository | string | `"ghcr.io/settlemint/quorum-genesis-tool"` |  |
@@ -39,10 +39,10 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | besu-network.besu-node.hooks.image.repository | string | `"ghcr.io/settlemint/quorum-genesis-tool"` |  |
 | besu-network.besu-node.hooks.image.tag | string | `"sha-49c40f5"` |  |
 | besu-network.besu-node.initContainers.checkConnection.image.pullPolicy | string | `"IfNotPresent"` |  |
-| besu-network.besu-node.initContainers.checkConnection.image.repository | string | `"curlimages/curl"` |  |
+| besu-network.besu-node.initContainers.checkConnection.image.repository | string | `"docker.io/curlimages/curl"` |  |
 | besu-network.besu-node.initContainers.checkConnection.image.tag | string | `"8.15.0"` |  |
 | besu-network.besu-node.initContainers.testConnection.image.pullPolicy | string | `"IfNotPresent"` |  |
-| besu-network.besu-node.initContainers.testConnection.image.repository | string | `"busybox"` |  |
+| besu-network.besu-node.initContainers.testConnection.image.repository | string | `"docker.io/busybox"` |  |
 | besu-network.besu-node.initContainers.testConnection.image.tag | string | `"1.37"` |  |
 | besu-network.besu-node.node.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-node.node.image.repository | string | `"docker.io/hyperledger/besu"` |  |
@@ -98,7 +98,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | dapp.enabled | bool | `true` |  |
 | dapp.image.pullPolicy | string | `"IfNotPresent"` |  |
 | dapp.image.repository | string | `"ghcr.io/settlemint/asset-tokenization-kit"` |  |
-| dapp.image.tag | string | `"2.0.0-main0d06815fc"` |  |
+| dapp.image.tag | string | `"2.0.0-main71f0929ab"` |  |
 | dapp.ingress.enabled | bool | `true` |  |
 | dapp.ingress.hosts[0].host | string | `"dapp.k8s.orb.local"` |  |
 | dapp.ingress.hosts[0].paths[0].path | string | `"/"` |  |
@@ -187,8 +187,8 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | erpc.podLabels."app.kubernetes.io/component" | string | `"erpc"` |  |
 | erpc.resources | object | `{}` |  |
 | erpc.test.image.pullPolicy | string | `"IfNotPresent"` |  |
-| erpc.test.image.repository | string | `"busybox"` |  |
-| erpc.test.image.tag | string | `"1.37.0"` |  |
+| erpc.test.image.repository | string | `"docker.io/busybox"` |  |
+| erpc.test.image.tag | string | `"1.37"` |  |
 | global.artifacts.image.pullPolicy | string | `"IfNotPresent"` |  |
 | global.artifacts.image.registry | string | `"ghcr.io"` |  |
 | global.artifacts.image.repository | string | `"settlemint/asset-tokenization-kit-artifacts"` |  |
@@ -197,11 +197,14 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | global.networkPolicy.enabled | bool | `false` |  |
 | graph-node.enabled | bool | `true` |  |
 | graph-node.image.pullPolicy | string | `"IfNotPresent"` |  |
-| graph-node.image.repository | string | `"graphprotocol/graph-node"` |  |
+| graph-node.image.repository | string | `"docker.io/graphprotocol/graph-node"` |  |
 | graph-node.image.tag | string | `"v0.39.1"` |  |
 | graph-node.initContainers.kubectlImage.pullPolicy | string | `"IfNotPresent"` |  |
 | graph-node.initContainers.kubectlImage.repository | string | `"docker.io/kubesphere/kubectl"` |  |
 | graph-node.initContainers.kubectlImage.tag | string | `"v1.33.1"` |  |
+| graph-node.initContainers.postgresImage.pullPolicy | string | `"IfNotPresent"` |  |
+| graph-node.initContainers.postgresImage.repository | string | `"docker.io/postgres"` |  |
+| graph-node.initContainers.postgresImage.tag | string | `"17.50-alpine"` |  |
 | graph-node.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
 | graph-node.podAnnotations."prometheus.io/port" | string | `"8040"` |  |
 | graph-node.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
@@ -235,10 +238,16 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.grafana.image.repository | string | `"grafana/grafana"` | Docker image repository |
 | observability.grafana.image.tag | string | `"12.1.0"` |  |
 | observability.grafana.ingress.hosts[0] | string | `"grafana.k8s.orb.local"` |  |
+| observability.grafana.sidecar.image.registry | string | `"docker.io"` |  |
+| observability.grafana.sidecar.image.repository | string | `"kiwigrid/k8s-sidecar"` |  |
+| observability.grafana.sidecar.image.tag | string | `"1.30.3"` |  |
 | observability.kube-state-metrics.image.registry | string | `"registry.k8s.io"` |  |
 | observability.kube-state-metrics.image.repository | string | `"kube-state-metrics/kube-state-metrics"` |  |
 | observability.kube-state-metrics.image.tag | string | `"v2.16.0"` |  |
 | observability.kube-state-metrics.resources | object | `{}` |  |
+| observability.loki.gateway.image.registry | string | `"docker.io"` |  |
+| observability.loki.gateway.image.repository | string | `"nginxinc/nginx-unprivileged"` |  |
+| observability.loki.gateway.image.tag | string | `"1.29-alpine"` |  |
 | observability.loki.loki.image.registry | string | `"docker.io"` | The Docker registry |
 | observability.loki.loki.image.repository | string | `"grafana/loki"` | Docker image repository |
 | observability.loki.loki.image.tag | string | `"3.5.3"` | Overrides the image tag whose default is the chart's appVersion |
@@ -272,8 +281,9 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.victoria-metrics-single.server.resources | object | `{}` |  |
 | portal.enabled | bool | `true` |  |
 | portal.image.pullPolicy | string | `"IfNotPresent"` |  |
-| portal.image.repository | string | `"ghcr.io/settlemint/btp-scs-portal"` |  |
-| portal.image.tag | string | `"8.5.15"` |  |
+| portal.image.registry | string | `"ghcr.io"` |  |
+| portal.image.repository | string | `"settlemint/btp-scs-portal"` |  |
+| portal.image.tag | string | `"8.5.16"` |  |
 | portal.initContainers[0].command[0] | string | `"/bin/sh"` |  |
 | portal.initContainers[0].command[1] | string | `"-c"` |  |
 | portal.initContainers[0].command[2] | string | `"set -e\necho \"Waiting for PostgreSQL to be ready...\"\n\n# Add random delay to prevent all nodes from connecting simultaneously\nRANDOM_DELAY=$((RANDOM % 30 + 5))\necho \"Adding random delay of ${RANDOM_DELAY} seconds to stagger connections...\"\nsleep $RANDOM_DELAY\n\n# Function to test PostgreSQL connection\ntest_postgres() {\n  pg_isready -h postgresql -p 5432 -U portal && \\\n  psql -h postgresql -p 5432 -U portal -d portal -c \"SELECT 1;\" > /dev/null 2>&1\n}\n\n# Wait with exponential backoff\nRETRY_COUNT=0\nMAX_RETRIES=30\nWAIT_TIME=2\n\nwhile [ $RETRY_COUNT -lt $MAX_RETRIES ]; do\n  if test_postgres; then\n    echo \"PostgreSQL is ready!\"\n    exit 0\n  fi\n\n  RETRY_COUNT=$((RETRY_COUNT + 1))\n  echo \"PostgreSQL not ready (attempt $RETRY_COUNT/$MAX_RETRIES). Waiting ${WAIT_TIME}s...\"\n  sleep $WAIT_TIME\n\n  # Exponential backoff with max of 30 seconds\n  WAIT_TIME=$((WAIT_TIME * 2))\n  if [ $WAIT_TIME -gt 30 ]; then\n    WAIT_TIME=30\n  fi\ndone\n\necho \"PostgreSQL failed to become ready after $MAX_RETRIES attempts\"\nexit 1\n"` |  |
@@ -327,11 +337,12 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | txsigner.config.mnemonic | string | `"gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"` |  |
 | txsigner.enabled | bool | `true` |  |
 | txsigner.image.pullPolicy | string | `"IfNotPresent"` |  |
-| txsigner.image.repository | string | `"ghcr.io/settlemint/btp-signer"` |  |
+| txsigner.image.registry | string | `"ghcr.io"` |  |
+| txsigner.image.repository | string | `"settlemint/btp-signer"` |  |
 | txsigner.image.tag | string | `"7.13.5"` |  |
 | txsigner.postgresql | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
 | txsigner.replicaCount | int | `1` |  |
 | txsigner.resources | object | `{}` |  |
 | txsigner.test.image.pullPolicy | string | `"IfNotPresent"` |  |
-| txsigner.test.image.repository | string | `"busybox"` |  |
-| txsigner.test.image.tag | string | `"1.37.0"` |  |
+| txsigner.test.image.repository | string | `"docker.io/busybox"` |  |
+| txsigner.test.image.tag | string | `"1.37"` |  |
