@@ -1,9 +1,9 @@
 "use client";
 
-import * as React from "react";
+import { cn } from "@/lib/utils";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
+import * as React from "react";
 
 /* -------------------------------------------------------------------------- */
 /*                           SelectableCard Container                         */
@@ -19,7 +19,7 @@ const selectableCardVariants = cva(
         selected: "border-primary bg-primary/5 text-primary",
         ghost:
           "border-transparent hover:bg-accent hover:text-accent-foreground",
-        outline: "border-2 bg-transparent hover:bg-accent/50",
+        outline: "border-2 bg-transparent hover:bg-accent/10",
       },
       size: {
         sm: "p-3",
@@ -182,14 +182,14 @@ function SelectableCardDescription({
 
 export {
   SelectableCard,
-  SelectableCardIcon,
   SelectableCardContent,
-  SelectableCardTitle,
   SelectableCardDescription,
+  SelectableCardIcon,
+  SelectableCardTitle,
   selectableCardVariants,
-  type SelectableCardProps,
-  type SelectableCardIconProps,
   type SelectableCardContentProps,
-  type SelectableCardTitleProps,
   type SelectableCardDescriptionProps,
+  type SelectableCardIconProps,
+  type SelectableCardProps,
+  type SelectableCardTitleProps,
 };
