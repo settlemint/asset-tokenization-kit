@@ -1,9 +1,10 @@
-import { AssetBasics } from "@/components/asset-designer/asset-designer-wizard/asset-basics/asset";
+import { AssetBasics } from "@/components/asset-designer/asset-designer-wizard/asset-basics/asset-basics";
 import { SelectAssetClass } from "@/components/asset-designer/asset-designer-wizard/asset-class/select-asset-class";
 import {
   assetDesignerFormOptions,
   AssetDesignerFormSchema,
 } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
+import { AssetSpecificDetails } from "@/components/asset-designer/asset-designer-wizard/asset-specific-details/asset-specific-details";
 import { SelectAssetType } from "@/components/asset-designer/asset-designer-wizard/asset-type/select-asset-type";
 import { SelectComplianceModules } from "@/components/asset-designer/asset-designer-wizard/compliance-modules/select-compliance-modules";
 import { Summary } from "@/components/asset-designer/asset-designer-wizard/summary/summary";
@@ -40,7 +41,7 @@ export const AssetDesignerWizard = () => {
     orpc.system.complianceModuleList.queryOptions({ input: {} })
   );
   const { t } = useTranslation(["asset-designer"]);
-  const { stepsOrGroups } = useAssetDesignerSteps();
+
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { mutateAsync: createToken } = useMutation(
@@ -101,6 +102,8 @@ export const AssetDesignerWizard = () => {
       form.reset();
     },
   });
+  const type = useStore(form.store, (state) => state.values.type);
+  const { stepsOrGroups } = useAssetDesignerSteps({ type });
 
   const stepId = useStore(form.store, (state) => state.values.step);
   const flatSteps = flattenSteps(stepsOrGroups);
@@ -125,6 +128,13 @@ export const AssetDesignerWizard = () => {
     ),
     assetBasics: (
       <AssetBasics
+        form={form}
+        onStepSubmit={incrementStep}
+        onBack={decrementStep}
+      />
+    ),
+    assetSpecificConfig: (
+      <AssetSpecificDetails
         form={form}
         onStepSubmit={incrementStep}
         onBack={decrementStep}

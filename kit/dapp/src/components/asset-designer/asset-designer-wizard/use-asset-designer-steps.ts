@@ -1,4 +1,5 @@
 import type { StepOrGroup } from "@/components/stepper/types";
+import type { AssetType } from "@/lib/zod/validators/asset-types";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
@@ -6,6 +7,7 @@ export const AssetDesignerSteps = [
   "assetClass",
   "assetType",
   "assetBasics",
+  "assetSpecificConfig",
   "complianceModules",
   "summary",
 ] as const;
@@ -53,7 +55,11 @@ interface UseAssetDesignerStepsReturn {
  * }
  * ```
  */
-export function useAssetDesignerSteps(): UseAssetDesignerStepsReturn {
+export function useAssetDesignerSteps({
+  type,
+}: {
+  type: AssetType;
+}): UseAssetDesignerStepsReturn {
   const { t } = useTranslation("asset-designer");
 
   const stepsOrGroups = [
@@ -87,6 +93,16 @@ export function useAssetDesignerSteps(): UseAssetDesignerStepsReturn {
           description: t("wizard.steps.assetBasics.description"),
           step: 3,
         },
+        ...(["bond", "fund"].includes(type)
+          ? [
+              {
+                id: "assetSpecificConfig",
+                label: t("wizard.steps.assetSpecificConfig.title"),
+                description: t("wizard.steps.assetSpecificConfig.description"),
+                step: 4,
+              } as const,
+            ]
+          : []),
       ],
     },
     {
@@ -98,7 +114,7 @@ export function useAssetDesignerSteps(): UseAssetDesignerStepsReturn {
           id: "complianceModules",
           label: t("wizard.steps.complianceModules.title"),
           description: t("wizard.steps.complianceModules.description"),
-          step: 4,
+          step: 5,
         },
       ],
     },
@@ -111,7 +127,7 @@ export function useAssetDesignerSteps(): UseAssetDesignerStepsReturn {
           id: "summary",
           label: t("wizard.steps.summary.title"),
           description: t("wizard.steps.summary.description"),
-          step: 5,
+          step: 6,
         },
       ],
     },

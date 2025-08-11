@@ -148,8 +148,12 @@
         "title": "Choose your asset type"
       },
       "assetBasics": {
-        "description": "Set the fundamental properties and details that define your asset",
-        "title": "Define your asset"
+        "description": "Specify the general information for this asset",
+        "title": "General info"
+      },
+      "assetSpecificConfig": {
+        "description": "Set the parameters specific to your asset",
+        "title": "Instrument specific details"
       },
       "complianceModules": {
         "description": "Set up compliance modules to ensure your asset meets legal requirements",

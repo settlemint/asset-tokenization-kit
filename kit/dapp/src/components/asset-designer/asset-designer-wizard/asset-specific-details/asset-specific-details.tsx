@@ -1,19 +1,15 @@
 import {
-  BondFields,
-  bondFields,
-} from "@/components/asset-designer/asset-designer-wizard/asset-basics/bond";
-import {
-  CommonFields,
-  commonFields,
-} from "@/components/asset-designer/asset-designer-wizard/asset-basics/common";
-import {
-  FundFields,
-  fundFields,
-} from "@/components/asset-designer/asset-designer-wizard/asset-basics/fund";
-import {
   assetDesignerFormOptions,
   isRequiredField,
 } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
+import {
+  BondFields,
+  bondFields,
+} from "@/components/asset-designer/asset-designer-wizard/asset-specific-details/bond";
+import {
+  FundFields,
+  fundFields,
+} from "@/components/asset-designer/asset-designer-wizard/asset-specific-details/fund";
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
@@ -22,7 +18,7 @@ import { useStore } from "@tanstack/react-form";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-export const AssetBasics = withForm({
+export const AssetSpecificDetails = withForm({
   ...assetDesignerFormOptions,
   props: {
     onStepSubmit: noop,
@@ -33,18 +29,18 @@ export const AssetBasics = withForm({
     const assetType = useStore(form.store, (state) => state.values.type);
     const validateFields = useMemo(() => {
       if (assetType === "bond") {
-        return [...commonFields, ...bondFields];
+        return bondFields;
       }
       if (assetType === "fund") {
-        return [...commonFields, ...fundFields];
+        return fundFields;
       }
-      return commonFields;
+      return [];
     }, [assetType]);
 
     return (
       <FormStepLayout
-        title={t("wizard.steps.assetBasics.title")}
-        description={t("wizard.steps.assetBasics.description")}
+        title={t("wizard.steps.assetSpecificConfig.title")}
+        description={t("wizard.steps.assetSpecificConfig.description")}
         actions={
           <>
             <Button variant="outline" onClick={onBack}>
@@ -59,7 +55,6 @@ export const AssetBasics = withForm({
           </>
         }
       >
-        <CommonFields form={form} />
         {assetType === "bond" && <BondFields form={form} />}
         {assetType === "fund" && <FundFields form={form} />}
       </FormStepLayout>
