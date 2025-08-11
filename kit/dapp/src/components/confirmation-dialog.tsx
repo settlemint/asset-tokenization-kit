@@ -7,34 +7,34 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useState } from "react";
+import React, { useState } from "react";
 
 type ConfirmDialogAction = "close" | (() => void) | null;
 
 interface ConfirmationDialogProps {
   title: string;
   description: string;
-  triggerLabel: string;
+  trigger?: React.ReactNode;
   leftAction: {
     label: string;
     action: ConfirmDialogAction;
+    after?: "close" | null;
   };
-  afterLeftAction?: "close" | null;
+
   rightAction: {
     label: string;
     action: ConfirmDialogAction;
+    after?: "close" | null;
   };
-  afterRightAction?: "close" | null;
 }
 
 export function ConfirmationDialog({
   title,
   description,
-  triggerLabel,
+  trigger,
   leftAction,
-  afterLeftAction,
+
   rightAction,
-  afterRightAction,
 }: ConfirmationDialogProps) {
   const [open, setOpen] = useState(false);
 
@@ -55,14 +55,13 @@ export function ConfirmationDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button
-        variant="outline"
+      <div
         onClick={() => {
           setOpen(true);
         }}
       >
-        {triggerLabel}
-      </Button>
+        {trigger}
+      </div>
 
       <DialogContent>
         <DialogHeader>
@@ -74,7 +73,7 @@ export function ConfirmationDialog({
           <Button
             variant="outline"
             onClick={() => {
-              handleAction(leftAction.action, afterLeftAction);
+              handleAction(leftAction.action, leftAction.after);
             }}
           >
             {leftAction.label}
@@ -82,7 +81,7 @@ export function ConfirmationDialog({
           <Button
             variant="default"
             onClick={() => {
-              handleAction(rightAction.action, afterRightAction);
+              handleAction(rightAction.action, rightAction.after);
             }}
           >
             {rightAction.label}
