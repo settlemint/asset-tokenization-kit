@@ -10,22 +10,22 @@
 import { z } from "zod";
 
 /**
- * Creates a Zod schema that validates basis points values using bigDecimal.
+ * Creates a Zod schema that validates basis points values.
  * Accepts both number and string inputs and validates as integers within the basis points range.
  *
  * Basis points must be:
  * - An integer (no decimal places)
  * - Between 0 and 10000 (0% to 100%)
  *
- * @returns A Zod schema that validates basis points using Dnum for consistency
+ * @returns A Zod schema that validates basis points and returns a number
  * @example
  * ```typescript
  * // Basic validation - accepts both number and string
  * const schema = basisPoints();
- * schema.parse(0); // Valid (0%)
- * schema.parse("100"); // Valid (1%) - string input
- * schema.parse(1000); // Valid (10%) - number input
- * schema.parse("10000"); // Valid (100%) - string input
+ * schema.parse(0); // Valid (0%) - returns 0
+ * schema.parse("100"); // Valid (1%) - string input, returns 100
+ * schema.parse(1000); // Valid (10%) - number input, returns 1000
+ * schema.parse("10000"); // Valid (100%) - string input, returns 10000
  *
  * // Invalid values
  * schema.parse(-1); // Invalid - negative
@@ -37,13 +37,21 @@ export const basisPoints = () => {
   return z
     .union([
       z.number().int("Basis points must be an integer"),
-      z.string().transform((val) => {
+      z.string().transform((val, ctx) => {
         const num = Number(val);
-        if (isNaN(num)) {
-          throw new Error("String must be convertible to a number");
+        if (Number.isNaN(num)) {
+          ctx.addIssue({
+            code: "custom",
+            message: "String must be convertible to a number",
+          });
+          return z.NEVER;
         }
         if (!Number.isInteger(num)) {
-          throw new Error("Basis points must be an integer");
+          ctx.addIssue({
+            code: "custom",
+            message: "Basis points must be an integer",
+          });
+          return z.NEVER;
         }
         return num;
       }),
