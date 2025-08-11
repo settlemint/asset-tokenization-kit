@@ -15,6 +15,7 @@ import {
   getEncodedTypeId,
 } from "../type-identifier/type-identifier";
 import { fetchTokenFactory } from "./fetch/token-factory";
+import { fetchAccount } from "../account/fetch/account";
 import { fetchTokenFactoryRegistry } from "./fetch/token-factory-registry";
 
 export function handleTokenFactoryImplementationUpdated(
@@ -53,4 +54,11 @@ export function handleTokenFactoryRegistered(
     event.address
   ).id;
   tokenFactory.save();
+
+  // Persist a human-readable name on the underlying account
+  const account = fetchAccount(event.params.proxyAddress);
+  if (account.isContract) {
+    account.contractName = tokenFactory.name;
+    account.save();
+  }
 }

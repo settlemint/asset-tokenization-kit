@@ -94,12 +94,13 @@ function createValidatedTheGraphClient(
     ): Promise<TValidated> {
       const { input, output: schema } = options;
 
+      let rawResult: unknown;
       try {
-        const result = await theGraphClient.request(
+        rawResult = await theGraphClient.request(
           document as RequestDocument,
           input as Variables
         );
-        return schema.parse(result);
+        return schema.parse(rawResult);
       } catch (error) {
         throw errors.THE_GRAPH_ERROR({
           message:

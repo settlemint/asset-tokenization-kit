@@ -35,7 +35,7 @@ export const update = authRouter.exchangeRates.update
     })
   )
   .use(databaseMiddleware)
-  .handler(async ({ input, context }) => {
+  .handler(async ({ input, context, errors }) => {
     const {
       baseCurrency,
       quoteCurrency,
@@ -51,7 +51,9 @@ export const update = authRouter.exchangeRates.update
       .limit(1);
 
     if (!baseCurrencyExists) {
-      throw new Error(`Base currency ${baseCurrency} not found`);
+      throw errors.NOT_FOUND({
+        message: `Base currency ${baseCurrency} not found`,
+      });
     }
 
     const [quoteCurrencyExists] = await context.db
@@ -61,7 +63,9 @@ export const update = authRouter.exchangeRates.update
       .limit(1);
 
     if (!quoteCurrencyExists) {
-      throw new Error(`Quote currency ${quoteCurrency} not found`);
+      throw errors.NOT_FOUND({
+        message: `Quote currency ${quoteCurrency} not found`,
+      });
     }
 
     // Convert rate to string for storage

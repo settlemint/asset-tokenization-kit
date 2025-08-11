@@ -4,6 +4,7 @@ import {
   ComplianceAdded,
   ComplianceModuleAdded,
   ComplianceModuleRemoved,
+  ERC20TokenRecovered,
   IdentityRegistryAdded,
   MintCompleted,
   ModuleParametersUpdated,
@@ -191,4 +192,8 @@ export function handleUpdatedTokenInformation(
   const token = fetchToken(event.address);
   token.decimals = event.params._newDecimals;
   token.save();
+}
+
+export function handleERC20TokenRecovered(event: ERC20TokenRecovered): void {
+  fetchEvent(event, "ERC20TokenRecovered");
 }

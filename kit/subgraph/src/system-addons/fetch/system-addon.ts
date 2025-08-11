@@ -1,6 +1,7 @@
 import { Address, Bytes } from "@graphprotocol/graph-ts";
 import { SystemAddon } from "../../../generated/schema";
 import { fetchAccount } from "../../account/fetch/account";
+import { setAccountContractName } from "../../account/utils/account-contract-name";
 
 export function fetchSystemAddon(address: Address): SystemAddon {
   let systemAddon = SystemAddon.load(address);
@@ -13,7 +14,7 @@ export function fetchSystemAddon(address: Address): SystemAddon {
     systemAddon.deployedInTransaction = Bytes.empty();
     systemAddon.systemAddonRegistry = Address.zero();
     systemAddon.save();
-    // FixedYieldScheduleFactoryTemplate.create(address);
+    setAccountContractName(address, "System Addon");
   }
 
   return systemAddon;

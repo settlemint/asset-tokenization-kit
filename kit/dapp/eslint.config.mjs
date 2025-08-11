@@ -261,6 +261,7 @@ export default defineConfig([
       "unicorn/no-array-for-each": "off", // forEach is fine for side effects
       "unicorn/switch-case-braces": ["error", "avoid"], // Cleaner switch statements
       "unicorn/no-useless-undefined": "off",
+      "unicorn/number-literal-case": "off",
     },
   },
 

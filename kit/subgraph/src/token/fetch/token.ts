@@ -32,6 +32,13 @@ export function fetchToken(address: Address): Token {
     token.implementsSMART = false;
 
     token.save();
+
+    // Update the associated account with a human-readable contract name
+    const account = fetchAccount(address);
+    if (account.isContract) {
+      account.contractName = token.name;
+      account.save();
+    }
     TokenTemplate.create(address);
 
     // Initialize distribution stats for new token

@@ -6,7 +6,7 @@
   "scripts": {
     "compile:typescript": "tsgo --noEmit",
     "dependencies": "bun run tools/dependencies.ts",
-    "compile:forge": "settlemint scs foundry build --sizes",
+    "compile:forge": "settlemint scs foundry build",
     "compile:hardhat": "settlemint scs hardhat build",
     "codegen:types": "bun run tools/codegen-types.ts",
     "artifacts:genesis": "bun run tools/artifacts-genesis.ts",
@@ -20,6 +20,7 @@
     "publish:docker": "bash tools/publish-docker.sh",
     "abi-output": "bash tools/abi-output.sh",
     "test": "settlemint scs foundry test",
+    "test:ci": "mkdir -p coverage && settlemint scs foundry coverage --ir-minimum --skip \"s.sol\" --exclude-tests --report lcov --report-file coverage/lcov.info",
     "deploy:remote": "settlemint scs hardhat deploy remote --deployment-id asset-tokenization"
   },
   "dependencies": {

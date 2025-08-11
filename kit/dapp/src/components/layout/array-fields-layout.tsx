@@ -9,6 +9,7 @@ export interface ArrayFieldsLayoutProps<T> {
   onAdd: () => void;
   onRemove: (value: T, index: number) => void;
   component: (value: T, index: number) => ReactNode;
+  rowKey?: (value: T, index: number) => React.Key;
   addButtonLabel?: string;
   className?: string;
 }
@@ -19,13 +20,17 @@ export function ArrayFieldsLayout<T>({
   onRemove,
   component,
   addButtonLabel,
+  rowKey,
   className,
 }: ArrayFieldsLayoutProps<T>) {
   const { t } = useTranslation("common");
   return (
     <div className={cn("space-y-3", className)}>
       {values.map((value, index) => (
-        <div key={index} className="flex items-start gap-2">
+        <div
+          key={rowKey ? rowKey(value, index) : index}
+          className="flex items-start gap-2"
+        >
           <div className="flex-1">{component(value, index)}</div>
           <Button
             variant="ghost"

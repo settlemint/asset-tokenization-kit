@@ -1,6 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
+import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { publicRouter } from "@/orpc/procedures/public.router";
 import {
   AccountReadSchema,

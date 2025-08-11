@@ -77,9 +77,9 @@
   },
   "devDependencies": {
     "@prettier/plugin-oxc": "0.0.4",
-    "@settlemint/sdk-cli": "2.5.5",
-    "@settlemint/sdk-utils": "2.5.5",
-    "@typescript/native-preview": "7.0.0-dev.20250807.1",
+    "@settlemint/sdk-cli": "2.5.7",
+    "@settlemint/sdk-utils": "2.5.7",
+    "@typescript/native-preview": "7.0.0-dev.20250810.1",
     "prettier": "3.6.2",
     "turbo": "2.5.5",
     "typescript": "5.9.2",

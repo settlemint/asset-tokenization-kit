@@ -1,6 +1,7 @@
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { InfoAlert } from "@/components/ui/info-alert";
+import { WarningAlert } from "@/components/ui/warning-alert";
 import { VerificationButton } from "@/components/verification-dialog/verification-button";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
@@ -49,6 +50,7 @@ export function IdentityCreate() {
     <FormStepLayout
       title={t("identity-setup.title")}
       description={t("identity-setup.description")}
+      fullWidth={true}
       actions={
         <VerificationButton
           verification={{
@@ -64,10 +66,28 @@ export function IdentityCreate() {
         </VerificationButton>
       }
     >
-      <InfoAlert
-        title={t("identity-setup.info")}
-        description={t("identity-setup.info-description")}
-      />
+      <div className="space-y-6">
+        <WarningAlert description={t("identity-setup.deployment-warning")} />
+
+        <div className="space-y-4">
+          <p className="text-sm text-gray-700 dark:text-gray-300">
+            {t("identity-setup.body-1")}
+          </p>
+          <p className="text-sm text-gray-700 dark:text-gray-300">
+            {t("identity-setup.body-2")}
+          </p>
+          <p className="text-sm text-gray-700 dark:text-gray-300">
+            {t("identity-setup.body-3")}
+          </p>
+          <p className="text-sm text-gray-700 dark:text-gray-300">
+            {t("identity-setup.body-4")}
+          </p>
+        </div>
+
+        <InfoAlert
+          description={t("identity-setup.transaction-confirmation-info")}
+        />
+      </div>
     </FormStepLayout>
   );
 }

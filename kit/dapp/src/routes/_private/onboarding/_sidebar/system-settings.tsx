@@ -118,6 +118,7 @@ function RouteComponent() {
   return (
     <FormStepLayout
       title={t("system-settings.title")}
+      fullWidth={true}
       description={t("system-settings.subtitle")}
       actions={
         <Button
@@ -135,7 +136,7 @@ function RouteComponent() {
       }
     >
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-2xl space-y-6">
+        <div className="space-y-6">
           <div className="space-y-4 mb-6">
             <p className="text-sm">{t("system-settings.description.intro")}</p>
             <p className="text-sm">{t("system-settings.description.update")}</p>

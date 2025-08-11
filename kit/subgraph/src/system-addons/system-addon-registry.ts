@@ -14,6 +14,7 @@ import {
 import { fetchEvent } from "../event/fetch/event";
 import { getDecodedTypeId } from "../type-identifier/type-identifier";
 import { fetchSystemAddon } from "./fetch/system-addon";
+import { fetchAccount } from "../account/fetch/account";
 import { fetchSystemAddonRegistry } from "./fetch/system-addon-registry";
 
 export function handleAddonImplementationUpdated(
@@ -77,4 +78,11 @@ export function handleSystemAddonRegistered(
 
   systemAddon.systemAddonRegistry = fetchSystemAddonRegistry(event.address).id;
   systemAddon.save();
+
+  // Persist a human-readable name on the underlying account
+  const account = fetchAccount(event.params.proxyAddress);
+  if (account.isContract) {
+    account.contractName = systemAddon.name;
+    account.save();
+  }
 }

@@ -1,6 +1,5 @@
-import { BaseActionSheet } from "@/components/manage-dropdown/base-action-sheet";
+import { ActionFormSheet } from "../core/action-form-sheet";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { VerificationButton } from "@/components/verification-dialog/verification-button";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
@@ -85,13 +84,12 @@ export function PauseUnpauseConfirmationSheet({
           verification,
         }),
         {
-          success: t("actions.pause.messages.success", {
-            defaultValue: `Asset '${asset.name} (${asset.symbol})' paused successfully`,
+          success: t("tokens:actions.pause.messages.success", {
             name: asset.name,
             symbol: asset.symbol,
           }),
-          error: t("actions.pause.messages.error"),
-          loading: t("actions.pause.messages.submitting"),
+          error: t("tokens:actions.pause.messages.error"),
+          loading: t("tokens:actions.pause.messages.submitting"),
         }
       );
     } else {
@@ -101,13 +99,12 @@ export function PauseUnpauseConfirmationSheet({
           verification,
         }),
         {
-          success: t("actions.unpause.messages.success", {
-            defaultValue: `Asset '${asset.name} (${asset.symbol})' unpaused successfully`,
+          success: t("tokens:actions.unpause.messages.success", {
             name: asset.name,
             symbol: asset.symbol,
           }),
-          error: t("actions.unpause.messages.error"),
-          loading: t("actions.unpause.messages.submitting"),
+          error: t("tokens:actions.unpause.messages.error"),
+          loading: t("tokens:actions.unpause.messages.submitting"),
         }
       );
     }
@@ -118,74 +115,67 @@ export function PauseUnpauseConfirmationSheet({
     onOpenChange(false);
   }, [onOpenChange]);
 
-  const handleCancel = useCallback(() => {
-    handleClose();
-  }, [handleClose]);
+  // kept for API parity; ActionFormSheet handles cancel via onOpenChange
+  // no-op
 
   return (
-    <BaseActionSheet
+    <ActionFormSheet
       open={open}
       onOpenChange={onOpenChange}
       asset={asset}
       title={title}
       description={description}
-      onCancel={handleCancel}
-      submit={
-        <VerificationButton
-          verification={{
-            title,
-            description,
-          }}
-          disabled={isPausing || isUnpausing}
-          onSubmit={handleSubmit}
-        >
-          {submit}
-        </VerificationButton>
+      submitLabel={submit}
+      hasValuesStep={false}
+      isSubmitting={isPausing || isUnpausing}
+      showAssetDetailsOnConfirm={false}
+      confirm={
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">
+              {t("tokens:details.stateChange")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/50">
+              <div className="flex-1 text-center">
+                <div className="text-xs text-muted-foreground mb-2">
+                  {t("tokens:details.currentState")}
+                </div>
+                <div
+                  className={`text-sm font-medium ${
+                    isPaused ? "text-destructive" : "text-success"
+                  }`}
+                >
+                  {isPaused
+                    ? t("tokens:status.paused")
+                    : t("tokens:status.active")}
+                </div>
+              </div>
+
+              <ArrowRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+
+              <div className="flex-1 text-center">
+                <div className="text-xs text-muted-foreground mb-2">
+                  {t("tokens:details.targetState")}
+                </div>
+                <div
+                  className={`text-sm font-medium ${
+                    action === "pause" ? "text-destructive" : "text-success"
+                  }`}
+                >
+                  {action === "pause"
+                    ? t("tokens:status.paused")
+                    : t("tokens:status.active")}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       }
-    >
-      {/* State Change Visualization Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">
-            {t("tokens:details.stateChange")}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/50">
-            <div className="flex-1 text-center">
-              <div className="text-xs text-muted-foreground mb-2">
-                {t("tokens:details.currentState")}
-              </div>
-              <div
-                className={`text-sm font-medium ${
-                  isPaused ? "text-destructive" : "text-success"
-                }`}
-              >
-                {isPaused
-                  ? t("tokens:status.paused")
-                  : t("tokens:status.active")}
-              </div>
-            </div>
-
-            <ArrowRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-
-            <div className="flex-1 text-center">
-              <div className="text-xs text-muted-foreground mb-2">
-                {t("tokens:details.targetState")}
-              </div>
-              <div
-                className={`text-sm font-medium ${
-                  action === "pause" ? "text-destructive" : "text-success"
-                }`}
-              >
-                {action === "pause"
-                  ? t("tokens:status.paused")
-                  : t("tokens:status.active")}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </BaseActionSheet>
+      onSubmit={(v) => {
+        handleSubmit(v as UserVerification);
+      }}
+    />
   );
 }

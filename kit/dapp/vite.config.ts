@@ -6,6 +6,7 @@ import tsConfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   build: {
+    target: "es2022",
     sourcemap: true,
     rollupOptions: {
       onwarn(warning, warn) {
@@ -27,6 +28,9 @@ export default defineConfig({
   },
   logLevel: process.env.CLAUDECODE ? "warn" : "info",
   optimizeDeps: {
+    esbuildOptions: {
+      target: "es2022",
+    },
     include: [
       // Only include dependencies that cause full-page reloads or are CommonJS
       "date-fns", // CommonJS library

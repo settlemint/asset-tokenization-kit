@@ -1,12 +1,12 @@
 {
   "assets": {
     "asset-factories-deployed-successfully": "アセットファクトリーが正常にデプロイされました",
-    "asset-factories-description": "アセットファクトリーは、さまざまな種類のトークン化された資産を作成および管理するためのスマートコントラクトです。各ファクトリーは、特定の資産クラスを扱い、特有の機能とコンプライアンス要件を持っています。",
+    "asset-factories-description": "各取引をPINまたはOTPを使用して確認するよう求められます。",
     "asset-types-deployed": "デプロイされたアセットタイプ",
     "available-asset-types": "利用可能なアセットタイプ",
-    "choose-asset-types": "プラットフォームでトークン化したいアセットの種類を選択してください",
-    "confirm-deployment-description": "アセットファクトリーをデプロイするには、本人確認を行ってください。",
-    "confirm-deployment-title": "アセットデプロイの確認",
+    "choose-asset-types": "プラットフォームがサポートするトークン化された資産の種類を定義します。",
+    "confirm-deployment-description": "選択した資産ファクトリーをウォレットを使用してデプロイしようとしています。この重要なアクションを承認するために、あなたの身元を確認していただく必要があります。",
+    "confirm-deployment-title": "デプロイを続行するには、PINコードを入力してください。",
     "deploy-assets": "アセットをデプロイ",
     "deployed": "アセットファクトリーが正常にデプロイされました",
     "deployed-factories": "デプロイされたファクトリー",
@@ -24,14 +24,17 @@
     "no-system": "システムが見つかりません。まずシステムをデプロイしてください。",
     "select-all-asset-types": "トークン化する予定のすべてのアセットタイプを選択してください",
     "select-asset-types": "アセットタイプを選択",
-    "title": "アセットタイプを選択",
+    "title": "サポートされる資産タイプを設定する",
     "validation-error": "少なくとも1つのアセットタイプを選択してください",
     "what-are-asset-factories": "アセットファクトリーとは何ですか？",
     "your-asset-factories-ready": "あなたのアセットファクトリーはトークン化の準備が整いました",
     "deploy": "資産ファクトリーをデプロイする",
     "deploying": "デプロイ中...",
-    "deployment-warning": "このアクションはスマートコントラクトファクトリーをブロックチェーンにデプロイします。一度デプロイされると、削除することはできませんが、未使用のまま残すことができます。",
-    "failed-toast": "資産ファクトリーのデプロイに失敗しました: "
+    "deployment-warning": "このプロセスは、選択内容に応じて最大2〜3分かかる場合があります。",
+    "failed-toast": "資産ファクトリーのデプロイに失敗しました: ",
+    "factory-explanation-1": "プラットフォームでサポートする各資産タイプ（債券、株式、ステーブルコインなど）は、専用の資産ファクトリーによって管理されています。",
+    "factory-explanation-2": "資産ファクトリーは、特定の資産クラスがオンチェーンでどのように機能するかを定義するスマートコントラクトで、機能、ルール、コンプライアンスロジックを含みます。",
+    "factory-explanation-3": "サポートしたい資産タイプを選択することで、それらを支えるために必要なスマートコントラクトをデプロイします。プラットフォームの設定で後からさらにファクトリーを追加することもできます。"
   },
   "groups": {
     "addons": {
@@ -39,15 +42,15 @@
       "title": "アドオン"
     },
     "identity": {
-      "description": "あなたの検証済みブロックチェーンIDを作成する",
+      "description": "オンチェーンの身元を確立する",
       "title": "ID"
     },
     "system": {
-      "description": "トークン化インフラを初期化する",
-      "title": "スマートコントラクトをデプロイする"
+      "description": "システムをデプロイして設定する",
+      "title": "システム"
     },
     "wallet": {
-      "description": "デジタルウォレットを作成し、セキュリティを追加する",
+      "description": "ウォレットとセキュリティ対策を設定する",
       "title": "ウォレット"
     }
   },
@@ -63,21 +66,27 @@
   },
   "identity-setup": {
     "address-title": "これがあなたのONCHAINIDアドレスです",
-    "confirm-description": "オンチェーンIDを作成するには、本人確認を行ってください。",
-    "confirm-title": "本人確認の確認",
+    "confirm-description": "ウォレットを使用してONCHAINIDをデプロイしようとしています。この重要なアクションを承認するために、あなたの身元を確認していただく必要があります。",
+    "confirm-title": "デプロイを続行するには、PINコードを入力してください。",
     "deployed-toast": "ONCHAINIDが正常に作成されました！",
     "deploying-toast": "ONCHAINIDを作成中...",
-    "description": "あなたのIDコントラクトをブロックチェーンにデプロイしています",
+    "description": "確認済みの身元をウォレットに接続する",
     "failed-toast": "ONCHAINIDの作成に失敗しました: ",
     "form": {
-      "submit": "ONCHAINIDを作成する",
+      "submit": "私のONCHAINIDを作成する",
       "submitting": "ONCHAINIDを作成中..."
     },
     "info": "アイデンティティファクトリーを使用してONCHAINIDを作成しています。",
     "info-description": "これにより、ブロックチェーン上にあなたのアイデンティティスマートコントラクトが作成されます。これは、あなたの検証済み資格情報のための安全なコンテナです。\n\nまだ個人データは保存されていません。それは次のステップです。今は、あなたが制御するユニークなアイデンティティアドレスを確立しています。\n\n通常、これには10〜30秒かかります。",
-    "success-message": "あなたのブロックチェーンIDが準備完了です。次に、KYCコンプライアンスを完了するために、検証済みの情報を追加できます。",
-    "success-title": "ONCHAINIDが正常に作成されました",
-    "title": "あなたのONCHAINIDを作成中"
+    "success-message": "オンチェーンの身元が作成されました。今すぐ登録して確認済みの情報を追加するか、ダッシュボードから後で行うことができます。",
+    "success-title": "身元が正常に作成されました",
+    "title": "あなたのオンチェーンの身元",
+    "deployment-warning": "このプロセスは最大2〜3分かかる場合があります。",
+    "transaction-confirmation-info": "各取引をPINまたはOTPを使用して確認するよう求められます。",
+    "body-1": "ウォレットはあなたが資産へのアクセスを制御していることを証明しますが、あなたが誰であるかを証明するものではありません。",
+    "body-2": "ONCHAINIDはあなたのオンチェーンの身元であり、ウォレットに安全にリンクされています。信頼できるソースによって追加された名前、国、KYCステータスなどの確認済み情報を保持します。これらの確認は「クレーム」と呼ばれ、プラットフォームがコンプライアンス要件を満たし、ユーザーを保護するのに役立ちます。",
+    "body-3": "ブロックチェーンのデジタルパスポートのように考えてください：ユニークで、検証可能で、完全にあなたの管理下にあります。",
+    "body-4": "ONCHAINIDの作成は迅速で、直接オンチェーンで行われます。ダッシュボードからいつでも身元を更新または完成させることができます。"
   },
   "sidebar": {
     "description": "ウォレット作成からプラットフォームデプロイまで、トークン化の力を解放するための簡単な手順に従ってください。",
@@ -122,11 +131,11 @@
     }
   },
   "system": {
-    "admin-role-explanation": "これにより、あなたはシステムの初期管理者となり、その基本コンポーネントを完全に制御できるようになります。後で、運用管理を支援する追加の管理者を招待することができます。",
-    "bootstrap-contracts-header": "システムのブートストラップには、これらの重要なスマートコントラクトのデプロイが含まれます：",
-    "bootstrap-explanation": "最初のユーザーとして、あなたはシステムのブートストラップ（プラットフォームを動作させるコアスマートコントラクトをデプロイする一回限りの設定）を担当します。",
+    "admin-role-explanation": "これを行うことで、システムの初期管理者となり、その基盤コンポーネントに対する完全な制御を得ることができます。後で、追加の管理者を招待して運営を管理することができます。",
+    "bootstrap-contracts-header": "システムのブートストラップには、これらの重要なスマートコントラクトをデプロイすることが含まれます：",
+    "bootstrap-explanation": "最初のユーザーとして、システムのブートストラップに責任があります — プラットフォームを支えるコアスマートコントラクトをデプロイする一度限りの設定です。",
     "compliance-engine": "• 規制要件のためのコンプライアンスエンジン",
-    "compliance-engine-description": "KYC、管轄権、転送制限などのルールを実施します",
+    "compliance-engine-description": "KYC、管轄、移転制限などのルールを強制します",
     "compliance-engine-label": "コンプライアンスエンジン",
     "compliance-engine-name": "コンプライアンスエンジン",
     "confirm-deployment-description": "ブロックチェーンシステムをデプロイするには、本人確認を行ってください。",
@@ -138,32 +147,42 @@
     "deploying": "デプロイ中...",
     "deploying-toast": "システムをデプロイ中...",
     "deployment-details-description": "システムデプロイの詳細を表示する",
-    "deployment-details-title": "デプロイメントの詳細",
-    "deployment-warning": "このアクションはブロックチェーンスマートコントラクトをデプロイし、元に戻すことはできません。デプロイされると、システムはブロックチェーン上で永久にアクティブになります。",
+    "deployment-details-title": "システムが正常にデプロイされました",
+    "deployment-warning": "注意：このステップは、システムがオンチェーンでスマートコントラクトをデプロイするため、2〜3分かかる場合があります。このタブを開いたままにし、リフレッシュしないでください。",
     "failed-toast": "システムのデプロイに失敗しました: ",
     "identity-registry": "• ユーザー確認のためのアイデンティティレジストリ",
-    "identity-registry-description": "ブロックチェーン上でユーザーアイデンティティを管理します",
+    "identity-registry-description": "オンチェーンでユーザーの身元を管理します",
     "identity-registry-label": "アイデンティティレジストリ",
-    "identity-registry-name": "アイデンティティレジストリ",
-    "infrastructure-conclusion": "これらのスマートコントラクトは、ユーザーアイデンティティ、コンプライアンス、アセット発行の背後にある安全なインフラストラクチャを形成します。デプロイされると、あなたのプラットフォームは現実世界のトークン化をサポートする準備が整います。",
+    "identity-registry-name": "身元レジストリ",
+    "infrastructure-conclusion": "これらのスマートコントラクトは、ユーザーの身元、コンプライアンス、資産発行の背後にある安全なインフラストラクチャを形成します。デプロイされると、あなたのプラットフォームは現実世界のトークン化をサポートする準備が整います。",
     "initialize-subtitle": "プラットフォームの基盤を設定しようとしています",
     "initialize-title": "システムを初期化する",
     "system-contract": "システムコントラクト",
     "token-factory": "• アセット作成のためのトークンファクトリーレジストリ",
     "token-factory-label": "トークンファクトリーレジストリ",
     "trusted-issuers": "• 認可された当事者のための信頼できる発行者レジストリ",
-    "trusted-issuers-description": "検証済み証明書を発行できるエンティティを定義します",
+    "trusted-issuers-description": "確認済みの資格情報を発行できるエンティティを定義します",
     "trusted-issuers-label": "信頼できる発行者レジストリ",
     "trusted-issuers-name": "信頼できる発行者レジストリ",
     "view-deployment-details": "デプロイメントの詳細を表示する",
-    "what-gets-deployed": "デプロイされるもの:"
+    "what-gets-deployed": "デプロイされるもの:",
+    "admin-role-granted": "あなたは今、プラットフォームの初期管理者です。",
+    "admin-capabilities-intro": "ここから、次のことができます：",
+    "admin-capability-assets": "サポートされる資産を設定する",
+    "admin-capability-admins": "追加の管理者を招待する",
+    "admin-capability-compliance": "コンプライアンスおよび身元モジュールを管理する",
+    "contracts-live-message": "プラットフォームを支えるスマートコントラクトが現在ブロックチェーン上で稼働しています。",
+    "configure-system": "システムを設定する"
   },
   "system-addons": {
     "addon-deployment": {
       "addons-deployed-successfully": "アドオンが正常にデプロイされました",
       "deployed-addons": "デプロイされたアドオン",
       "description": "あなたのアドオンは使用可能です",
-      "title": "アドオンがデプロイされました"
+      "title": "アドオンが正常にデプロイされました",
+      "intro-1": "選択したすべてのプラットフォームアドオンが正常にデプロイされました。",
+      "intro-2": "これらの機能は現在使用および設定可能です。プラットフォームの管理者として、あなたはそのパラメータとアクセスを制御します。",
+      "continue-to-identity-setup": "身元設定を続行する"
     },
     "addon-selection": {
       "addon-types": {
@@ -184,20 +203,24 @@
       "available-addons": "利用可能なアドオン",
       "confirm-deployment-description": "アドオンをデプロイするために、あなたの身分を確認してください。",
       "confirm-deployment-title": "アドオンデプロイの確認",
-      "deploy-addons": "アドオンをデプロイ",
+      "deploy-addons": "選択したアドオンをデプロイする",
       "deployed-toast": "アドオンが正常にデプロイされました！",
       "deploying-toast": "アドオンをデプロイ中...",
-      "description": "プラットフォームの追加機能や統合を有効にします",
+      "description": "オプション機能でプラットフォームを強化します。",
       "failed-toast": "アドオンのデプロイに失敗しました: ",
       "no-system": "システムが見つかりません。最初にシステムをデプロイしてください。",
       "select-all-addons": "有効にする予定のすべてのアドオンを選択してください",
-      "title": "アドオンを有効にする",
+      "title": "プラットフォームアドオンを設定する",
       "validation": {
         "invalid": "少なくとも1つのアドオンを選択してください"
       },
       "what-are-addons": "アドオンとは何ですか？",
       "deploying": "デプロイ中...",
-      "required-for-bonds": "債券に必要"
+      "required-for-bonds": "債券に必要",
+      "deployment-warning": "このプロセスは、選択内容に応じて最大2〜3分かかる場合があります。",
+      "intro-1": "プラットフォームアドオンは、トークン化プラットフォームの機能を拡張することを可能にします。これらの機能（エアドロップ、利回り、XVPなど）は、コアシステムと同様にスマートコントラクトとしてデプロイされます。",
+      "intro-2": "今必要なものを有効にし、後で設定で簡単に変更または拡張できます。",
+      "transaction-confirmation-info": "各取引をPINまたはOTPを使用して確認するよう求められます。"
     }
   },
   "system-settings": {
@@ -218,7 +241,7 @@
         }
       }
     },
-    "subtitle": "プラットフォームのデフォルト設定を設定します",
+    "subtitle": "プラットフォームのデフォルトの動作を定義する",
     "title": "プラットフォーム設定を構成する",
     "toast": {
       "error": "プラットフォーム設定の保存に失敗しました: {{message}}",
@@ -341,7 +364,7 @@
     "recovery-codes": {
       "confirm": "ウォレットの設定を完了する",
       "confirm-error": "秘密コードの確認に失敗しました",
-      "confirm-stored": "Confirm you stored your recovery keys in a safe place.",
+      "confirm-stored": "リカバリーキーを安全な場所に保管したことを確認してください。",
       "copied-to-clipboard": "秘密コードがクリップボードにコピーされました！",
       "copy-all": "すべてコピー",
       "description": "これらのコードを安全な場所に保存してください",
@@ -353,7 +376,8 @@
       "generating": "秘密コードを生成しています...",
       "title": "あなたの秘密コード",
       "warning": "重要: これらのコードを安全に保管してください！他のセキュリティ手段を失った場合にアクセスを回復する唯一の方法です。",
-      "your-recovery-codes": "あなたの秘密コード ({{count}})"
+      "your-recovery-codes": "あなたの秘密コード ({{count}})",
+      "action-required": "確認する前に、まずコードをコピーまたはダウンロードしてください。"
     }
   },
   "welcome": {

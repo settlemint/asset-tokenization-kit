@@ -32,7 +32,7 @@ runs:
           ~/.cache/bun
           ~/.cache/foundry
           ~/.cache/helm
-           ./**/.generated
+          ./kit/contracts/.generated
 
     - name: Login to npm
       shell: bash

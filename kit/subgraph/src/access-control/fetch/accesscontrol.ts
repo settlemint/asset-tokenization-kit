@@ -2,6 +2,7 @@ import { Address, Value } from "@graphprotocol/graph-ts";
 import { AccessControl } from "../../../generated/schema";
 import { AccessControl as AccessControlTemplate } from "../../../generated/templates";
 import { Roles } from "../utils/role";
+import { setAccountContractName } from "../../account/utils/account-contract-name";
 
 export function fetchAccessControl(address: Address): AccessControl {
   let accessControlEntity = AccessControl.load(address);
@@ -13,6 +14,7 @@ export function fetchAccessControl(address: Address): AccessControl {
     }
     accessControlEntity.save();
     AccessControlTemplate.create(address);
+    setAccountContractName(address, "Access Control");
   }
 
   return accessControlEntity;

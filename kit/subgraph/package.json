@@ -9,14 +9,16 @@
     "compile": "bash tools/compile.sh",
     "publish": "bun run tools/graph-deploy.ts --local",
     "publish:remote": "bun run tools/graph-deploy.ts --remote",
-    "test:integration": "bun test --preload ./test/scripts/setup.ts"
+    "test:codegen:gql-tada": "bash tools/codegen-gql-tada.sh",
+    "test:integration": "bun run test:codegen:gql-tada && bun test --preload ./test/scripts/setup.ts",
+    "test:ci": "bun run test:integration"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.97.1",
     "@graphprotocol/graph-ts": "0.38.1"
   },
   "devDependencies": {
-    "@settlemint/sdk-thegraph": "2.5.5",
+    "@settlemint/sdk-thegraph": "2.5.7",
     "matchstick-as": "0.6.0",
     "yaml": "2.8.1",
     "contracts": "workspace:*"

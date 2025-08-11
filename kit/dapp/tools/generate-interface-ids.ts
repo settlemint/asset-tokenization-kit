@@ -35,7 +35,7 @@ const logger = createLogger({
 });
 
 const DEFAULT_OUTPUT_FILE = "src/lib/interface-ids.ts";
-const DEFAULT_TEMP_CONTRACT = "temp_interface_calc.sol";
+const DEFAULT_TEMP_CONTRACT = "TempInterfaceCalcDapp.s.sol";
 
 // These will be initialized in main()
 let CONTRACTS_ROOT: string;
@@ -47,7 +47,7 @@ let DAPP_ROOT: string;
 
 async function cleanupTempFiles(tempContract: string): Promise<void> {
   const tempFiles = [
-    join(CONTRACTS_ROOT, "contracts", tempContract),
+    join(CONTRACTS_ROOT, "script", tempContract),
     join(CONTRACTS_ROOT, "contracts", "temp_single_calc.sol"),
     join(CONTRACTS_ROOT, "contracts", "temp_script_output.txt"),
   ];
@@ -171,9 +171,9 @@ async function createCalculatorContract(
   interfaces: InterfaceMetadata[],
   tempContract: string
 ): Promise<string> {
-  logger.info("Creating dynamic interface ID calculator...");
+  logger.info("Creating dynamic interface ID calculator script...");
 
-  const tempContractPath = join(CONTRACTS_ROOT, "contracts", tempContract);
+  const tempContractPath = join(CONTRACTS_ROOT, "script", tempContract);
 
   let contractContent = `// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.28;
@@ -184,9 +184,10 @@ import "forge-std/console.sol";
 // Import all discovered interfaces
 `;
 
-  // Add all interface imports
+  // Add all interface imports (adjust path for script folder)
   for (const iface of interfaces) {
-    contractContent += `import { ${iface.name} } from "${iface.importPath}";\n`;
+    const adjustedPath = iface.importPath.replace(/^\.\//, "../contracts/");
+    contractContent += `import { ${iface.name} } from "${adjustedPath}";\n`;
   }
 
   contractContent += `

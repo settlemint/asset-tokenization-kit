@@ -3,6 +3,7 @@ import { ComplianceModuleRegistered as ComplianceModuleRegisteredEvent } from ".
 import { fetchEvent } from "../event/fetch/event";
 import { getDecodedTypeId } from "../type-identifier/type-identifier";
 import { fetchComplianceModule } from "./fetch/compliance-module";
+import { fetchAccount } from "../account/fetch/account";
 import { fetchComplianceModuleRegistry } from "./fetch/compliance-module-registry";
 
 export function handleComplianceModuleRegistered(
@@ -22,4 +23,11 @@ export function handleComplianceModuleRegistered(
   ).id;
 
   complianceModule.save();
+
+  // Persist a human-readable name on the underlying account
+  const account = fetchAccount(event.params.moduleAddress);
+  if (account.isContract) {
+    account.contractName = complianceModule.name;
+    account.save();
+  }
 }

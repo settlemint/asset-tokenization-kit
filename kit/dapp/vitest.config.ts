@@ -16,13 +16,10 @@ export default defineConfig({
         : ["default"],
     onConsoleLog: process.env.CLAUDECODE ? () => false : undefined,
     silent: process.env.CLAUDECODE ? "passed-only" : undefined,
-    typecheck: {
-      enabled: true,
-    },
     coverage: {
       all: true,
       provider: "v8",
-      reporter: ["text", "json", "json-summary"],
+      reporter: ["text", "json", "json-summary", "lcov"],
       reportOnFailure: true,
       reportsDirectory: "./coverage",
       enabled: process.env.CI ? true : false,
@@ -76,31 +73,90 @@ export default defineConfig({
           isolate: true,
         },
         resolve: {
-          alias: {
-            "@/locales": path.resolve(__dirname, "./locales"),
-            "@": path.resolve(__dirname, "./src"),
-            "@test": path.resolve(__dirname, "./test"),
-            "@settlemint/sdk-utils/logging": path.resolve(
-              __dirname,
-              "./test/mocks/logger.ts"
-            ),
-            "@/lib/settlemint/portal": path.resolve(
-              __dirname,
-              "./test/mocks/portal-mocks.ts"
-            ),
-            "@/lib/settlemint/the-graph": path.resolve(
-              __dirname,
-              "./test/mocks/the-graph-mocks.ts"
-            ),
-            "@settlemint/sdk-portal": path.resolve(
-              __dirname,
-              "./test/mocks/sdk-portal-mocks.ts"
-            ),
-            "better-auth": path.resolve(
-              __dirname,
-              "./test/mocks/better-auth-mocks.ts"
-            ),
-          },
+          alias: [
+            {
+              find: "@/lib/auth",
+              replacement: path.resolve(
+                __dirname,
+                "./test/mocks/auth-lib-mock.ts"
+              ),
+            },
+            {
+              find: "@/locales",
+              replacement: path.resolve(__dirname, "./locales"),
+            },
+            { find: "@", replacement: path.resolve(__dirname, "./src") },
+            { find: "@test", replacement: path.resolve(__dirname, "./test") },
+            {
+              find: "@settlemint/sdk-utils/logging",
+              replacement: path.resolve(__dirname, "./test/mocks/logger.ts"),
+            },
+            {
+              find: "@/lib/auth/auth.client",
+              replacement: path.resolve(
+                __dirname,
+                "./test/mocks/auth-client-mock.ts"
+              ),
+            },
+            {
+              find: "@/lib/settlemint/portal",
+              replacement: path.resolve(
+                __dirname,
+                "./test/mocks/portal-mocks.ts"
+              ),
+            },
+            {
+              find: "@/lib/settlemint/the-graph",
+              replacement: path.resolve(
+                __dirname,
+                "./test/mocks/the-graph-mocks.ts"
+              ),
+            },
+            {
+              find: "@settlemint/sdk-portal",
+              replacement: path.resolve(
+                __dirname,
+                "./test/mocks/sdk-portal-mocks.ts"
+              ),
+            },
+            // Submodule mocks to prevent deep import resolution from breaking unit tests
+            {
+              find: "better-auth/client/plugins",
+              replacement: path.resolve(
+                __dirname,
+                "./test/mocks/better-auth-client-mocks.ts"
+              ),
+            },
+            {
+              find: "better-auth/react",
+              replacement: path.resolve(
+                __dirname,
+                "./test/mocks/better-auth-client-mocks.ts"
+              ),
+            },
+            {
+              find: "better-auth/plugins/access",
+              replacement: path.resolve(
+                __dirname,
+                "./test/mocks/better-auth-client-mocks.ts"
+              ),
+            },
+            {
+              find: "better-auth/plugins/admin/access",
+              replacement: path.resolve(
+                __dirname,
+                "./test/mocks/better-auth-client-mocks.ts"
+              ),
+            },
+            // Root better-auth logger only (exact match)
+            {
+              find: /^better-auth$/,
+              replacement: path.resolve(
+                __dirname,
+                "./test/mocks/better-auth-mocks.ts"
+              ),
+            },
+          ],
         },
       },
       {
@@ -120,11 +176,14 @@ export default defineConfig({
           exclude: ["node_modules", "dist", "src/**/*.test.ts"],
         },
         resolve: {
-          alias: {
-            "@/locales": path.resolve(__dirname, "./locales"),
-            "@test": path.resolve(__dirname, "./test"),
-            "@": path.resolve(__dirname, "./src"),
-          },
+          alias: [
+            {
+              find: "@/locales",
+              replacement: path.resolve(__dirname, "./locales"),
+            },
+            { find: "@test", replacement: path.resolve(__dirname, "./test") },
+            { find: "@", replacement: path.resolve(__dirname, "./src") },
+          ],
         },
       },
     ],

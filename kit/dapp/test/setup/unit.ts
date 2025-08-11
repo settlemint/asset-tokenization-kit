@@ -1,19 +1,20 @@
-import "@testing-library/jest-dom/vitest";
-import { cleanup, configure } from "@testing-library/react";
 import { afterEach, vi } from "vitest";
 import "../mocks/recharts";
 
 // Make vi globally available for module-level mocking
 (globalThis as any).vi = vi;
 
-// Configure React Testing Library to work properly with act
-configure({
-  // This ensures act() warnings are properly handled
-  asyncUtilTimeout: 2000,
-  // Note: reactStrictMode causes double-mounting in tests which can break
-  // tests that count function calls. Keeping it false for test stability.
-  reactStrictMode: false,
-});
+// Conditionally load DOM testing utilities only when a DOM is available
+const hasDOM = typeof document !== "undefined";
+let rtl: typeof import("@testing-library/react") | null = null;
+if (hasDOM) {
+  await import("@testing-library/jest-dom/vitest");
+  rtl = await import("@testing-library/react");
+  rtl.configure({
+    asyncUtilTimeout: 2000,
+    reactStrictMode: false,
+  });
+}
 
 // Make React's act available globally for happy-dom compatibility
 // This prevents "not wrapped in act" warnings
@@ -25,12 +26,18 @@ configure({
 process.env.SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS =
   '["http://localhost:8000/subgraphs/name/kit"]';
 process.env.SETTLEMINT_ACCESS_TOKEN = "sm_aat_test_token";
+process.env.SETTLEMINT_HASURA_ENDPOINT = "http://localhost:8080";
+process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test_secret";
+process.env.SETTLEMINT_POSTGRES_URL =
+  "postgres://user:pass@localhost:5432/testdb";
 
 // jest-dom matchers already extended via import
 
-// Cleanup after each test case
+// Cleanup after each test case (only in DOM env)
 afterEach(() => {
-  cleanup();
+  if (rtl) {
+    rtl.cleanup();
+  }
 });
 
 // Mock window.matchMedia
@@ -62,4 +69,41 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn(),
+}));
+
+// Mock Better Auth root export to provide a spy-able logger used by helpers
+vi.mock("better-auth", () => {
+  const logger = {
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+  };
+  return { logger };
+});
+
+// Mock the auth client module used by offchain permissions middleware
+vi.mock("@/lib/auth/auth.client", () => ({
+  authClient: {
+    admin: {
+      checkRolePermission: vi.fn(() => true),
+    },
+    useSignIn: () => ({ email: vi.fn() }),
+    useSignOut: () => ({ signOut: vi.fn() }),
+    getSession: vi.fn(async () => ({ data: { user: { id: "test" } } })),
+  },
+}));
+
+// Mock the server-side auth config to avoid DB imports
+vi.mock("@/lib/auth", () => ({
+  auth: {
+    api: {
+      getSession: vi.fn(async () => null),
+    },
+  },
+}));
+
+// Prevent importing settings.read which pulls DB middleware (and DB) into graph
+vi.mock("@/orpc/routes/settings/routes/settings.read", () => ({
+  read: {},
 }));

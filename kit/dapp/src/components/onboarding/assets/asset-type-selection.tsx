@@ -4,6 +4,7 @@ import { AssetTypeCard } from "@/components/onboarding/assets/asset-type-card";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { InfoAlert } from "@/components/ui/info-alert";
+import { WarningAlert } from "@/components/ui/warning-alert";
 import { useAppForm } from "@/hooks/use-app-form";
 import {
   type AssetFactoryTypeId,
@@ -18,7 +19,6 @@ import {
 } from "@/orpc/routes/system/token-factory/routes/factory.create.schema";
 import { useStore } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { TriangleAlert } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -109,8 +109,9 @@ export function AssetTypeSelection() {
   return (
     <form.AppForm>
       <FormStepLayout
-        title={t("assets.select-asset-types")}
+        title={t("assets.title")}
         description={t("assets.choose-asset-types")}
+        fullWidth={true}
         actions={
           <div className="flex justify-end w-full">
             <form.VerificationButton
@@ -131,22 +132,22 @@ export function AssetTypeSelection() {
           </div>
         }
       >
-        <div className="max-w-2xl space-y-6">
-          <div className="rounded-lg bg-sm-state-warning-background/50 border border-sm-state-warning-background p-4">
-            <div className="flex items-start gap-3">
-              <TriangleAlert className="h-5 w-5 text-sm-state-warning mt-0.5 flex-shrink-0" />
-              <div className="flex-1">
-                <p className="text-sm text-sm-state-warning">
-                  {t("assets.deployment-warning")}
-                </p>
-              </div>
-            </div>
+        <div className="space-y-6">
+          <WarningAlert description={t("assets.deployment-warning")} />
+
+          <div className="space-y-4">
+            <p className="text-sm text-gray-700 dark:text-gray-300">
+              {t("assets.factory-explanation-1")}
+            </p>
+            <p className="text-sm text-gray-700 dark:text-gray-300">
+              {t("assets.factory-explanation-2")}
+            </p>
+            <p className="text-sm text-gray-700 dark:text-gray-300">
+              {t("assets.factory-explanation-3")}
+            </p>
           </div>
 
-          <InfoAlert
-            title={t("assets.what-are-asset-factories")}
-            description={t("assets.asset-factories-description")}
-          />
+          <InfoAlert description={t("assets.asset-factories-description")} />
 
           <div className="flex flex-col h-full">
             <div className="flex-1">

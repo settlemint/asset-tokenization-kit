@@ -3,6 +3,7 @@ import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { WarningAlert } from "@/components/ui/warning-alert";
 import { authClient } from "@/lib/auth/auth.client";
 import { Route } from "@/routes/_private/onboarding/_sidebar/wallet-recovery-codes";
 import { createLogger } from "@settlemint/sdk-utils/logging";
@@ -11,7 +12,6 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { RecoveryCodesActions } from "./recovery-codes-actions";
 import { RecoveryCodesDisplay } from "./recovery-codes-display";
-import { RecoveryCodesWarning } from "./recovery-codes-warning";
 import { useRecoveryCodes } from "./use-recovery-codes";
 
 const logger = createLogger();
@@ -161,7 +161,11 @@ function RecoveryCodesContent({
             recoveryCodes={recoveryCodes}
           />
 
-          {recoveryCodes.length > 0 && <RecoveryCodesWarning />}
+          {recoveryCodes.length > 0 && (
+            <WarningAlert
+              description={t("wallet-security.recovery-codes.warning")}
+            />
+          )}
         </div>
       </div>
 

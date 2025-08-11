@@ -25,7 +25,7 @@
  *   cap: "1000000",
  *   faceValue: "1000",
  *   maturityDate: "2025-12-31",
- *   underlyingAsset: "0x...",
+ *   denominationAsset: "0x...",
  *   initialModulePairs: []
  * };
  * ```

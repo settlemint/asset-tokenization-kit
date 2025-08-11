@@ -45,10 +45,23 @@ const logger = createLogger();
  * - Smart coercion for flexible parameter handling
  */
 const handler = new OpenAPIHandler(router, {
-  // Uncomment for debugging unexplained 500 errors
+  // Log only unexpected server errors (skip 4xx like NOT_FOUND/UNAUTHORIZED)
   interceptors: [
     onError((error) => {
-      logger.error((error as Error).message, error);
+      const e = error as { code?: string; status?: number; message?: string };
+      const status = typeof e?.status === "number" ? e.status : undefined;
+      const code = typeof e?.code === "string" ? e.code : undefined;
+
+      // Skip common/expected client-side errors
+      if (
+        (status && status < 500) /* 4xx */ ||
+        code === "NOT_FOUND" ||
+        code === "UNAUTHORIZED"
+      ) {
+        return;
+      }
+
+      logger.error(e?.message ?? "OpenAPI handler error", error);
     }),
   ],
   customJsonSerializers: [bigDecimalSerializer],

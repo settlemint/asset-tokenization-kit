@@ -42,7 +42,7 @@ const logger = createLogger({
 });
 const DEFAULT_OUTPUT_DIR = "src/erc165/utils";
 const DEFAULT_OUTPUT_FILE = "interfaceids.ts";
-const DEFAULT_TEMP_CONTRACT = "temp_interface_calc.sol";
+const DEFAULT_TEMP_CONTRACT = "TempInterfaceCalc.s.sol";
 
 // These will be initialized in main()
 let CONTRACTS_ROOT: string;
@@ -151,7 +151,7 @@ function parseArguments(): ScriptOptions {
 
 async function cleanupTempFiles(tempContract: string): Promise<void> {
   const tempFiles = [
-    join(CONTRACTS_ROOT, "contracts", tempContract),
+    join(CONTRACTS_ROOT, "script", tempContract),
     join(CONTRACTS_ROOT, "contracts", "temp_single_calc.sol"),
     join(CONTRACTS_ROOT, "contracts", "temp_script_output.txt"),
   ];
@@ -383,9 +383,9 @@ async function createCalculatorContract(
   interfaces: InterfaceMetadata[],
   tempContract: string
 ): Promise<string> {
-  logger.info("Creating dynamic interface ID calculator...");
+  logger.info("Creating dynamic interface ID calculator script...");
 
-  const tempContractPath = join(CONTRACTS_ROOT, "contracts", tempContract);
+  const tempContractPath = join(CONTRACTS_ROOT, "script", tempContract);
 
   let contractContent = `// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.28;
@@ -396,9 +396,10 @@ import "forge-std/console.sol";
 // Import all discovered interfaces
 `;
 
-  // Add all interface imports
+  // Add all interface imports (adjust path for script folder)
   for (const iface of interfaces) {
-    contractContent += `import { ${iface.name} } from "${iface.importPath}";\n`;
+    const adjustedPath = iface.importPath.replace(/^\.\//, "../contracts/");
+    contractContent += `import { ${iface.name} } from "${adjustedPath}";\n`;
   }
 
   contractContent += `
@@ -587,9 +588,11 @@ async function validateOutputFile(
 
   const content = await file.text();
 
-  // Check if file contains expected content
-  if (!content.includes("InterfaceIds")) {
-    throw new Error("Output file does not contain expected InterfaceIds class");
+  // Check if file contains expected content (either InterfaceIds class or INTERFACE_IDS const)
+  if (!content.includes("InterfaceIds") && !content.includes("INTERFACE_IDS")) {
+    throw new Error(
+      "Output file does not contain expected InterfaceIds class or INTERFACE_IDS const"
+    );
   }
 
   // Check if file contains interface definitions
