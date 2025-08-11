@@ -37,14 +37,15 @@ export const Summary = withForm({
             </form.VerificationButton>
           </>
         }
+        fullWidth
       >
-        <div>
+        <>
           {JSON.stringify(form.state.values, (_, value) =>
             typeof value === "bigint" ? value.toString() : value
           )}
-        </div>
 
-        <form.Errors />
+          <form.Errors />
+        </>
       </FormStepLayout>
     );
   },

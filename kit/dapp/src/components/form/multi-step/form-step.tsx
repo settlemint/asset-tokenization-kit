@@ -20,16 +20,19 @@ export function FormStepDescription({ children }: PropsWithChildren) {
 export function FormStepContent({
   children,
   fullWidth = false,
+  asGrid = false,
 }: {
   children: React.ReactNode;
   fullWidth?: boolean;
+  asGrid?: boolean;
 }) {
   return (
     <div className="flex-1 overflow-y-auto min-h-0">
       <div
         className={cn(
           "space-y-6 pr-4 pb-24",
-          fullWidth ? "w-full" : "max-w-3xl"
+          fullWidth ? "w-full" : "",
+          asGrid ? "grid grid-cols-1 md:grid-cols-2 gap-6" : ""
         )}
       >
         {children}

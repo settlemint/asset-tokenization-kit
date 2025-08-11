@@ -44,6 +44,7 @@ export const AssetBasics = withForm({
             />
           </>
         }
+        asGrid
       >
         <form.AppField
           name="name"
