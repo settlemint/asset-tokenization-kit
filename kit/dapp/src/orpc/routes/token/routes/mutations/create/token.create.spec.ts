@@ -94,6 +94,28 @@ describe("Token create", () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
 
+    // First create a stablecoin to use as denomination asset
+    const stablecoinData = {
+      type: "stablecoin" as const,
+      name: `Test Denomination Stablecoin ${Date.now()}`,
+      symbol: "TSDC",
+      decimals: 18,
+      initialModulePairs: [],
+    };
+
+    const stablecoinResult = await client.token.create({
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+      ...stablecoinData,
+      countryCode: "056",
+    });
+
+    expect(stablecoinResult).toBeDefined();
+    expect(stablecoinResult.id).toBeDefined();
+
+    // Now create the bond using the stablecoin address
     const bondData = {
       type: "bond" as const,
       name: `Test Bond ${Date.now()}`,
@@ -102,7 +124,7 @@ describe("Token create", () => {
       cap: "1000000",
       faceValue: "1000",
       maturityDate: new Date("2025-12-31"),
-      denominationAsset: "0x1234567890123456789012345678901234567890",
+      denominationAsset: stablecoinResult.id,
       initialModulePairs: [],
     };
 
