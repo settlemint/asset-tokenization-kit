@@ -30,7 +30,11 @@ export function AssetDesignerDialog({
         },
       }}
     >
-      <AssetDesignerWizard />
+      <AssetDesignerWizard
+        onSubmit={() => {
+          onOpenChange(false);
+        }}
+      />
     </FullScreenDialogLayout>
   );
 }

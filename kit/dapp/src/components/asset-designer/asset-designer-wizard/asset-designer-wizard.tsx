@@ -29,11 +29,12 @@ import { FactoryList } from "@/orpc/routes/system/token-factory/routes/factory.l
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
+import capitalize from "lodash/capitalize";
 import type { JSX } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-export const AssetDesignerWizard = () => {
+export const AssetDesignerWizard = ({ onSubmit }: { onSubmit: () => void }) => {
   const { data: factories } = useQuery(
     orpc.system.tokenFactoryList.queryOptions({ input: {} })
   );
@@ -85,8 +86,8 @@ export const AssetDesignerWizard = () => {
         loading: t("messages.creating", { type: parsedValues.type }),
         success: (data) =>
           t("messages.created", {
-            type: parsedValues.type,
-            defaultValue: `${parsedValues.type} token '${data.name} (${data.symbol})' created successfully`,
+            type: capitalize(parsedValues.type),
+            defaultValue: `${capitalize(parsedValues.type)} '${data.name} (${data.symbol})' created successfully`,
             name: data.name,
             symbol: data.symbol,
           }),
@@ -99,6 +100,7 @@ export const AssetDesignerWizard = () => {
         params: { factoryAddress },
       });
 
+      onSubmit();
       form.reset();
     },
   });
