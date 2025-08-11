@@ -25,11 +25,7 @@ export const AssetBasics = withForm({
     onBack: noop,
   },
   render: function Render({ form, onStepSubmit, onBack }) {
-<<<<<<< HEAD
     const { t } = useTranslation(["asset-designer", "asset-types"]);
-=======
-    const { t } = useTranslation(["asset-designer"]);
->>>>>>> origin/main
 
     return (
       <FormStepLayout
