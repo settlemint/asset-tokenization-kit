@@ -31,26 +31,26 @@
     "description": "Configure your {{type}} by providing the basic information below.",
     "fields": {
       "cap": {
-        "description": "The maximum number of tokens that can be issued",
-        "label": "Token Cap",
+        "description": "The maximum number of {{type}} that can be issued",
+        "label": "Maximum limit",
         "placeholder": "e.g., 1000000"
       },
       "countryCode": {
-        "description": "Choose where your asset will be registered",
+        "description": "Choose where your {{type}} will be registered",
         "label": "Country"
       },
       "decimals": {
-        "description": "Number of decimal places for the token (0-18, default is 18)",
+        "description": "Number of decimal places for the {{type}} (0-18, default is 18)",
         "label": "Decimals",
         "placeholder": "18"
       },
       "faceValue": {
-        "description": "The face value of each bond token",
+        "description": "The face value of each {{type}}",
         "label": "Face Value",
         "placeholder": "e.g., 1000"
       },
       "isin": {
-        "description": "The ISIN of the token. This is an optional unique identifier for the token in the financial system.",
+        "description": "The ISIN of the {{type}}. This is an optional unique identifier for the {{type}} in the financial system.",
         "label": "ISIN (Optional)",
         "placeholder": "e.g., US0378331005"
       },
@@ -60,31 +60,31 @@
         "placeholder": "e.g., 100"
       },
       "maturityDate": {
-        "description": "The maturity date of the bond",
+        "description": "The maturity date of the {{type}}",
         "label": "Maturity Date",
         "placeholder": "Select date"
       },
       "name": {
-        "description": "The name of the token. This is used to identify the token in the UI and cannot be changed after creation.",
+        "description": "The name of the {{type}}. This is used to identify the {{type}} in the UI and cannot be changed after creation.",
         "label": "Name",
         "placeholder": "e.g., Government {{type}} Series A"
       },
       "symbol": {
-        "description": "A short symbol for the token (usually 3-5 characters)",
+        "description": "A short symbol for the {{type}} (usually 3-5 characters). It can be upto 10 characters long.",
         "label": "Symbol",
         "placeholder": "e.g., GBSA"
       },
       "type": {
-        "description": "Select the type of asset you want to create. Only asset types with deployed factories are available.",
+        "description": "Choose the type of digital asset you want to create. Only asset types with deployed factories are available.",
         "label": "Asset Type"
       },
       "denominationAsset": {
-        "description": "The Ethereum address of the denomination asset",
+        "description": "The address of the denomination asset.",
         "label": "Denomination Asset",
         "placeholder": "e.g., 0x..."
       }
     },
-    "title": "Create {{type}}"
+    "title": "Deploy {{type}}"
   },
   "leave-confirmation": {
     "title": "Leave asset designer?",

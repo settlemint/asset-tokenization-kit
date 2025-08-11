@@ -25,7 +25,7 @@ export const AssetBasics = withForm({
     onBack: noop,
   },
   render: function Render({ form, onStepSubmit, onBack }) {
-    const { t } = useTranslation(["asset-designer"]);
+    const { t } = useTranslation(["asset-designer", "asset-types"]);
 
     return (
       <FormStepLayout
@@ -51,6 +51,11 @@ export const AssetBasics = withForm({
             <field.TextField
               label={t("form.fields.name.label")}
               required={isRequiredField("name")}
+              description={t("form.fields.name.description", {
+                type: t(
+                  `asset-types:types.${form.state.values.type}.nameLowercaseSingular`
+                ),
+              })}
             />
           )}
         />
@@ -60,6 +65,11 @@ export const AssetBasics = withForm({
             <field.TextField
               label={t("form.fields.symbol.label")}
               required={isRequiredField("symbol")}
+              description={t("form.fields.symbol.description", {
+                type: t(
+                  `asset-types:types.${form.state.values.type}.nameLowercaseSingular`
+                ),
+              })}
             />
           )}
         />
@@ -69,6 +79,11 @@ export const AssetBasics = withForm({
             <field.NumberField
               label={t("form.fields.decimals.label")}
               required={isRequiredField("decimals")}
+              description={t("form.fields.decimals.description", {
+                type: t(
+                  `asset-types:types.${form.state.values.type}.nameLowercaseSingular`
+                ),
+              })}
             />
           )}
         />
@@ -78,6 +93,11 @@ export const AssetBasics = withForm({
             <field.TextField
               label={t("form.fields.isin.label")}
               required={isRequiredField("isin")}
+              description={t("form.fields.isin.description", {
+                type: t(
+                  `asset-types:types.${form.state.values.type}.nameLowercaseSingular`
+                ),
+              })}
             />
           )}
         />
@@ -86,9 +106,13 @@ export const AssetBasics = withForm({
           children={(field) => (
             <field.CountrySelectField
               label={t("form.fields.countryCode.label")}
-              description={t("form.fields.countryCode.description")}
               required={isRequiredField("countryCode")}
               valueType="numeric"
+              description={t("form.fields.countryCode.description", {
+                type: t(
+                  `asset-types:types.${form.state.values.type}.nameLowercaseSingular`
+                ),
+              })}
             />
           )}
         />

@@ -81,7 +81,8 @@
         "yield": "Yield to Maturity"
       },
       "name": "Bond",
-      "namePlural": "Bonds"
+      "namePlural": "Bonds",
+      "nameLowercaseSingular": "bond"
     },
     "deposit": {
       "actions": {
@@ -99,7 +100,8 @@
         "term": "Deposit Term"
       },
       "name": "Deposit",
-      "namePlural": "Deposits"
+      "namePlural": "Deposits",
+      "nameLowercaseSingular": "deposit"
     },
     "equity": {
       "actions": {
@@ -117,7 +119,8 @@
         "votingRights": "Voting Rights"
       },
       "name": "Equity",
-      "namePlural": "Equities"
+      "namePlural": "Equities",
+      "nameLowercaseSingular": "equity"
     },
     "fund": {
       "actions": {
@@ -135,7 +138,8 @@
         "strategy": "Investment Strategy"
       },
       "name": "Fund",
-      "namePlural": "Funds"
+      "namePlural": "Funds",
+      "nameLowercaseSingular": "fund"
     },
     "stablecoin": {
       "actions": {
@@ -153,7 +157,8 @@
         "reserves": "Reserve Holdings"
       },
       "name": "Stablecoin",
-      "namePlural": "Stablecoins"
+      "namePlural": "Stablecoins",
+      "nameLowercaseSingular": "stablecoin"
     }
   }
 }
