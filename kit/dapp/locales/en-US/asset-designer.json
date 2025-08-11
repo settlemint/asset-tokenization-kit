@@ -46,7 +46,7 @@
       },
       "faceValue": {
         "description": "The face value of each {{type}}",
-        "label": "Face Value",
+        "label": "Face value",
         "placeholder": "e.g., 1000"
       },
       "isin": {
@@ -56,12 +56,12 @@
       },
       "managementFeeBps": {
         "description": "Management fee in basis points (100 BPS = 1%)",
-        "label": "Management Fee (BPS)",
+        "label": "Management fee (BPS)",
         "placeholder": "e.g., 100"
       },
       "maturityDate": {
         "description": "The maturity date of the {{type}}",
-        "label": "Maturity Date",
+        "label": "Maturity date",
         "placeholder": "Select date"
       },
       "name": {
@@ -79,8 +79,8 @@
         "label": "Asset Type"
       },
       "denominationAsset": {
-        "description": "The address of the denomination asset.",
-        "label": "Denomination Asset",
+        "description": "The address of the denomination asset",
+        "label": "Denomination asset",
         "placeholder": "e.g., 0x..."
       }
     },

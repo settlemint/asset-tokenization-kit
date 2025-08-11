@@ -82,7 +82,8 @@
       },
       "name": "Bond",
       "namePlural": "Bonds",
-      "nameLowercaseSingular": "bond"
+      "nameLowercaseSingular": "bond",
+      "nameLowercasePlural": "bonds"
     },
     "deposit": {
       "actions": {
@@ -101,7 +102,8 @@
       },
       "name": "Deposit",
       "namePlural": "Deposits",
-      "nameLowercaseSingular": "deposit"
+      "nameLowercaseSingular": "deposit",
+      "nameLowercasePlural": "deposits"
     },
     "equity": {
       "actions": {
@@ -120,7 +122,8 @@
       },
       "name": "Equity",
       "namePlural": "Equities",
-      "nameLowercaseSingular": "equity"
+      "nameLowercaseSingular": "equity",
+      "nameLowercasePlural": "equities"
     },
     "fund": {
       "actions": {
@@ -139,7 +142,8 @@
       },
       "name": "Fund",
       "namePlural": "Funds",
-      "nameLowercaseSingular": "fund"
+      "nameLowercaseSingular": "fund",
+      "nameLowercasePlural": "funds"
     },
     "stablecoin": {
       "actions": {
@@ -158,7 +162,8 @@
       },
       "name": "Stablecoin",
       "namePlural": "Stablecoins",
-      "nameLowercaseSingular": "stablecoin"
+      "nameLowercaseSingular": "stablecoin",
+      "nameLowercasePlural": "stablecoins"
     }
   }
 }
