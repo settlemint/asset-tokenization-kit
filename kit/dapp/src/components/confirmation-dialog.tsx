@@ -9,25 +9,25 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 
-type ConfirmModalAction = "close" | (() => void) | null;
+type ConfirmDialogAction = "close" | (() => void) | null;
 
-interface ConfirmationModalProps {
+interface ConfirmationDialogProps {
   title: string;
   description: string;
   triggerLabel: string;
   leftAction: {
     label: string;
-    action: ConfirmModalAction;
+    action: ConfirmDialogAction;
   };
   afterLeftAction?: "close" | null;
   rightAction: {
     label: string;
-    action: ConfirmModalAction;
+    action: ConfirmDialogAction;
   };
   afterRightAction?: "close" | null;
 }
 
-export function ConfirmationModal({
+export function ConfirmationDialog({
   title,
   description,
   triggerLabel,
@@ -35,11 +35,11 @@ export function ConfirmationModal({
   afterLeftAction,
   rightAction,
   afterRightAction,
-}: ConfirmationModalProps) {
+}: ConfirmationDialogProps) {
   const [open, setOpen] = useState(false);
 
   const handleAction = (
-    action: ConfirmModalAction,
+    action: ConfirmDialogAction,
     afterAction?: "close" | null
   ) => {
     if (action === "close") {
