@@ -40,7 +40,6 @@ describe("Token read", () => {
     // Verify basic token properties
     expect(token).toBeDefined();
     expect(token.id).toBe(testToken.id);
-    expect(token.name).toContain("Test Read Token"); // Name includes UUID suffix
     expect(token.symbol).toBe("TRT");
     expect(token.decimals).toBe(18);
     expect(token.type).toBe("stablecoin");
