@@ -68,6 +68,7 @@ describe("Token create", () => {
         verificationType: "pincode",
       },
       ...fundData,
+      managementFeeBps: "100" as any, // Runtime expects string but types expect number
       countryCode: "056",
     });
 
