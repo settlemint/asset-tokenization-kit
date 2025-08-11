@@ -12,7 +12,7 @@ export const FundFields = withForm({
   defaultValues: {} as AssetDesignerFormInputData,
   props: {},
   render: function Render({ form }) {
-    const { t } = useTranslation(["asset-designer"]);
+    const { t } = useTranslation(["asset-designer", "asset-types"]);
     return (
       <>
         <form.AppField
@@ -22,6 +22,9 @@ export const FundFields = withForm({
               label={t("form.fields.managementFeeBps.label")}
               endAddon="bps"
               required={isRequiredField("managementFeeBps")}
+              description={t("form.fields.managementFeeBps.description", {
+                type: t(`asset-types:types.fund.nameLowercaseSingular`),
+              })}
             />
           )}
         />
