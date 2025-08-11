@@ -120,32 +120,50 @@
   },
   "wizard": {
     "description": "We'll guide you through each step to create your tokenized asset with built-in regulatory compliance and investor protection.",
+    "groups": {
+      "chooseAssetType": {
+        "title": "Choose asset type",
+        "description": "Select the asset class and type you want to tokenize"
+      },
+      "configureAssetDetails": {
+        "title": "Configure asset details",
+        "description": "Define basic properties and settings for your asset"
+      },
+      "compliance": {
+        "title": "Compliance",
+        "description": "Set up regulatory modules to meet legal requirements"
+      },
+      "summary": {
+        "title": "Summary",
+        "description": "Review your asset configuration before deployment"
+      }
+    },
     "steps": {
-      "asset-type": {
-        "description": "Choose the type of token you want to create",
-        "title": "Select Token Type"
+      "assetClass": {
+        "description": "Select the asset class you want to create",
+        "title": "Select asset class"
+      },
+      "assetType": {
+        "description": "Select the type of real-world asset you want to tokenize on the blockchain",
+        "title": "Choose your asset type"
       },
       "assetBasics": {
-        "description": "Set the fundamental properties and details that define your asset",
-        "title": "Define your Asset"
+        "description": "Specify the general information for this asset",
+        "title": "General info"
+      },
+      "assetSpecificConfig": {
+        "description": "Set the parameters specific to your {{type}}",
+        "title": "Instrument specific details"
       },
       "complianceModules": {
         "description": "Set up compliance modules to ensure your asset meets legal requirements",
-        "title": "Configure Compliance"
-      },
-      "selectAssetType": {
-        "description": "Select the type of real-world asset you want to tokenize on the blockchain",
-        "title": "Choose your Asset Type"
+        "title": "Configure compliance"
       },
       "summary": {
         "description": "Confirm and deploy your compliant digital asset to the blockchain",
-        "title": "Review & Deploy"
-      },
-      "token-details": {
-        "description": "Configure the basic properties of your token",
-        "title": "Token Details"
+        "title": "Review & deploy"
       }
     },
-    "title": "Design your Asset"
+    "title": "Design your asset"
   }
 }

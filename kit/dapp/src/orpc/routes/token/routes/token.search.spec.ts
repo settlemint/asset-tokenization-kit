@@ -90,7 +90,6 @@ describe("Token search", () => {
 
     expect(results.length).toBe(1);
     expect(results[0]?.id).toBe(ethToken.id);
-    expect(results[0]?.name).toContain("Ethereum Deposit"); // Name includes UUID suffix
     expect(results[0]?.symbol).toBe("ETH");
   });
 

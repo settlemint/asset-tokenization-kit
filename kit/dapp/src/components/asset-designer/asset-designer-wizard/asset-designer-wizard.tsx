@@ -1,16 +1,24 @@
-import { AssetBasics } from "@/components/asset-designer/asset-designer-wizard/asset-basics/asset";
-import { SelectComplianceModules } from "@/components/asset-designer/asset-designer-wizard/compliance-modules/select-compliance-modules";
+import { AssetBasics } from "@/components/asset-designer/asset-designer-wizard/asset-basics/asset-basics";
+import { SelectAssetClass } from "@/components/asset-designer/asset-designer-wizard/asset-class/select-asset-class";
 import {
   assetDesignerFormOptions,
   AssetDesignerFormSchema,
-} from "@/components/asset-designer/asset-designer-wizard/shared-form";
+} from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
+import { AssetSpecificDetails } from "@/components/asset-designer/asset-designer-wizard/asset-specific-details/asset-specific-details";
+import { SelectAssetType } from "@/components/asset-designer/asset-designer-wizard/asset-type/select-asset-type";
+import { SelectComplianceModules } from "@/components/asset-designer/asset-designer-wizard/compliance-modules/select-compliance-modules";
+import { Summary } from "@/components/asset-designer/asset-designer-wizard/summary/summary";
 import {
   useAssetDesignerSteps,
   type AssetDesignerStepsType,
-} from "@/components/asset-designer/asset-designer-wizard/steps";
-import { Summary } from "@/components/asset-designer/asset-designer-wizard/summary/summary";
+} from "@/components/asset-designer/asset-designer-wizard/use-asset-designer-steps";
 import { StepLayout } from "@/components/stepper/step-layout";
-import { getNextStep, getStepById } from "@/components/stepper/utils";
+import {
+  flattenSteps,
+  getNextStep,
+  getPreviousStep,
+  getStepById,
+} from "@/components/stepper/utils";
 import { useAppForm } from "@/hooks/use-app-form";
 import {
   getFactoryTypeIdFromAssetType,
@@ -18,29 +26,30 @@ import {
 } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
 import { FactoryList } from "@/orpc/routes/system/token-factory/routes/factory.list.schema";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate, useRouteContext } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
+import capitalize from "lodash/capitalize";
 import type { JSX } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-interface AssetDesignerFormProps {
-  type: AssetType;
-}
 
-export const AssetDesignerWizard = ({ type }: AssetDesignerFormProps) => {
-  const { factories, complianceModules } = useRouteContext({
-    from: "/_private/_onboarded/asset-designer/",
-  });
+export const AssetDesignerWizard = ({ onSubmit }: { onSubmit: () => void }) => {
+  const { data: factories } = useQuery(
+    orpc.system.tokenFactoryList.queryOptions({ input: {} })
+  );
+  const { data: complianceModules } = useQuery(
+    orpc.system.complianceModuleList.queryOptions({ input: {} })
+  );
   const { t } = useTranslation(["asset-designer"]);
-  const steps = useAssetDesignerSteps();
+
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { mutateAsync: createToken } = useMutation(
     orpc.token.create.mutationOptions({
       onSuccess: async (_result, variables) => {
         const tokenFactory = getFactoryAddressFromTypeId(
-          factories,
+          factories ?? [],
           variables.type
         );
 
@@ -69,7 +78,7 @@ export const AssetDesignerWizard = ({ type }: AssetDesignerFormProps) => {
     onSubmit: async (values) => {
       const parsedValues = AssetDesignerFormSchema.parse(values.value);
       const factoryAddress = getFactoryAddressFromTypeId(
-        factories,
+        factories ?? [],
         parsedValues.type
       );
 
@@ -77,8 +86,8 @@ export const AssetDesignerWizard = ({ type }: AssetDesignerFormProps) => {
         loading: t("messages.creating", { type: parsedValues.type }),
         success: (data) =>
           t("messages.created", {
-            type: parsedValues.type,
-            defaultValue: `${parsedValues.type} token '${data.name} (${data.symbol})' created successfully`,
+            type: capitalize(parsedValues.type),
+            defaultValue: `${capitalize(parsedValues.type)} '${data.name} (${data.symbol})' created successfully`,
             name: data.name,
             symbol: data.symbol,
           }),
@@ -91,24 +100,54 @@ export const AssetDesignerWizard = ({ type }: AssetDesignerFormProps) => {
         params: { factoryAddress },
       });
 
+      onSubmit();
       form.reset();
     },
   });
+  const type = useStore(form.store, (state) => state.values.type);
+  const { stepsOrGroups } = useAssetDesignerSteps({ type });
 
   const stepId = useStore(form.store, (state) => state.values.step);
-  const currentStep = getStepById(steps, stepId);
+  const flatSteps = flattenSteps(stepsOrGroups);
+  const currentStep = getStepById(flatSteps, stepId);
   const incrementStep = () => {
-    const nextStep = getNextStep(steps, currentStep);
+    const nextStep = getNextStep(flatSteps, currentStep);
     form.setFieldValue("step", nextStep.id);
+  };
+  const decrementStep = () => {
+    const previousStep = getPreviousStep(flatSteps, currentStep);
+    form.setFieldValue("step", previousStep.id);
   };
 
   const stepComponent: Record<AssetDesignerStepsType, JSX.Element> = {
-    assetBasics: <AssetBasics form={form} onStepSubmit={incrementStep} />,
+    assetClass: <SelectAssetClass form={form} onStepSubmit={incrementStep} />,
+    assetType: (
+      <SelectAssetType
+        form={form}
+        onStepSubmit={incrementStep}
+        onBack={decrementStep}
+      />
+    ),
+    assetBasics: (
+      <AssetBasics
+        form={form}
+        onStepSubmit={incrementStep}
+        onBack={decrementStep}
+      />
+    ),
+    assetSpecificConfig: (
+      <AssetSpecificDetails
+        form={form}
+        onStepSubmit={incrementStep}
+        onBack={decrementStep}
+      />
+    ),
     complianceModules: (
       <SelectComplianceModules
         form={form}
         onStepSubmit={incrementStep}
-        complianceModules={complianceModules}
+        complianceModules={complianceModules ?? []}
+        onBack={decrementStep}
       />
     ),
     summary: (
@@ -117,32 +156,27 @@ export const AssetDesignerWizard = ({ type }: AssetDesignerFormProps) => {
         onSubmit={async () => {
           await form.handleSubmit();
         }}
+        onBack={decrementStep}
       />
     ),
   };
 
+  if (!factories || !complianceModules) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <form.AppForm>
-      <form.Field name="type" defaultValue={type}>
-        {(field) => (
-          <input
-            type="hidden"
-            name={field.name}
-            value={field.state.value}
-            readOnly
-          />
-        )}
-      </form.Field>
-
       <StepLayout
         title={t("wizard.title")}
         description={t("wizard.description")}
-        stepsOrGroups={steps}
+        stepsOrGroups={stepsOrGroups}
         currentStep={currentStep}
         onStepSelect={(step) => {
           form.setFieldValue("step", step.id);
         }}
         navigationMode="next-and-completed"
+        className="rounded-xl"
       >
         {({ currentStep }) => {
           return stepComponent[currentStep.id];

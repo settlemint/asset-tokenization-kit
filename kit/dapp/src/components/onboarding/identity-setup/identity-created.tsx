@@ -1,4 +1,4 @@
-import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ export function IdentityCreated() {
   const { completeStepAndNavigate } = useOnboardingNavigation();
 
   return (
-    <OnboardingStepLayout
+    <FormStepLayout
       title={t("onboarding:identity-setup.success-title")}
       description={t("onboarding:identity-setup.success-message")}
       fullWidth={true}
@@ -45,6 +45,6 @@ export function IdentityCreated() {
           </div>
         </div>
       </div>
-    </OnboardingStepLayout>
+    </FormStepLayout>
   );
 }

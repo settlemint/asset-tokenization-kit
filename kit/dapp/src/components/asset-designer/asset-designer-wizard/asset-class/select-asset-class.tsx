@@ -1,22 +1,24 @@
-import { Badge } from "@/components/ui/badge";
 import {
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  AssetDesignerFormInputData,
+  assetDesignerFormOptions,
+  isRequiredField,
+} from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
+import { Badge } from "@/components/ui/badge";
 import { withForm } from "@/hooks/use-app-form";
 import { useAssetClass } from "@/hooks/use-asset-class";
 import { noop } from "@/lib/utils/noop";
+import type { KeysOfUnion } from "@/lib/utils/union";
 import { getAssetTypeFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { assetClassSelectionFormOptions } from "./shared-form";
+
+const validate: KeysOfUnion<AssetDesignerFormInputData>[] = ["assetClass"];
 
 export const SelectAssetClass = withForm({
-  ...assetClassSelectionFormOptions,
+  ...assetDesignerFormOptions,
   props: {
     onStepSubmit: noop,
-    onCancel: noop,
   },
   render: function Render({ form, onStepSubmit }) {
     const { t } = useTranslation([
@@ -59,29 +61,28 @@ export const SelectAssetClass = withForm({
 
     return (
       <>
-        <DialogHeader className="text-center mt-10">
-          <DialogTitle className="text-2xl text-center">
-            {t("asset-class:whichAssetClass")}
-          </DialogTitle>
-          <DialogDescription className="text-center">
-            {t("asset-class:assetClassDifferences")}
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="mt-6 mb-10">
-          <form.AppField
-            name="assetClass"
-            children={(field) => (
-              <field.RadioField
-                options={options}
-                variant="card"
-                onSelect={() => {
-                  onStepSubmit();
-                }}
-              />
-            )}
-          />
-        </div>
+        <FormStepLayout
+          title={t("asset-class:whichAssetClass")}
+          description={t("asset-class:assetClassDifferences")}
+          fullWidth={true}
+          actions={
+            <form.StepSubmitButton
+              onStepSubmit={onStepSubmit}
+              validate={validate}
+              checkRequiredFn={isRequiredField}
+              label={t("asset-designer:form.buttons.next")}
+            />
+          }
+        >
+          <div className="mt-6 mb-10">
+            <form.AppField
+              name="assetClass"
+              children={(field) => (
+                <field.RadioField options={options} variant="card" />
+              )}
+            />
+          </div>
+        </FormStepLayout>
       </>
     );
   },
