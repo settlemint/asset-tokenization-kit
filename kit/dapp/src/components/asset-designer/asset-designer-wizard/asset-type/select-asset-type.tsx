@@ -1,11 +1,11 @@
-import { AssetExtensionsList } from "@/components/asset-extensions/asset-extensions-list";
-import { Button } from "@/components/ui/button";
 import {
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  assetDesignerFormOptions,
+  isRequiredField,
+  type AssetDesignerFormInputData,
+} from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
+import { AssetExtensionsList } from "@/components/asset-extensions/asset-extensions-list";
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
+import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
 import { useAssetClass } from "@/hooks/use-asset-class";
 import { noop } from "@/lib/utils/noop";
@@ -14,22 +14,16 @@ import { getAssetTypeFromFactoryTypeId } from "@/lib/zod/validators/asset-types"
 import { useStore } from "@tanstack/react-form";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  assetClassSelectionFormOptions,
-  isRequiredField,
-  type AssetClassSelectionInputData,
-} from "./shared-form";
 
-const validate: KeysOfUnion<AssetClassSelectionInputData>[] = ["assetType"];
+const validate: KeysOfUnion<AssetDesignerFormInputData>[] = ["type"];
 
 export const SelectAssetType = withForm({
-  ...assetClassSelectionFormOptions,
+  ...assetDesignerFormOptions,
   props: {
     onStepSubmit: noop,
     onBack: noop,
-    onCancel: noop,
   },
-  render: function Render({ form, onStepSubmit, onBack, onCancel }) {
+  render: function Render({ form, onStepSubmit, onBack }) {
     const { t } = useTranslation([
       "asset-designer",
       "asset-types",
@@ -61,36 +55,16 @@ export const SelectAssetType = withForm({
     );
 
     return (
-      <>
-        <DialogHeader className="text-center mt-10">
-          <DialogTitle className="text-2xl text-center">
-            {t("asset-types:whichAssetTypeForClass", {
-              assetClass: t(
-                `asset-class:categories.${assetClass}.name`
-              ).toLowerCase(),
-            })}
-          </DialogTitle>
-          <DialogDescription className="text-center">
-            {t("asset-types:assetTypeDifferences")}
-          </DialogDescription>
-        </DialogHeader>
-
-        <form.AppField
-          name="assetType"
-          children={(field) => (
-            <field.RadioField
-              options={options}
-              variant="card"
-              className="mt-6 mb-10"
-            />
-          )}
-        />
-
-        <DialogFooter className="!flex !flex-row !justify-between">
-          <Button variant="ghost" onClick={onCancel}>
-            {t("asset-designer:form.buttons.cancel")}
-          </Button>
-          <div className="flex gap-2">
+      <FormStepLayout
+        title={t("asset-types:whichAssetTypeForClass", {
+          assetClass: t(
+            `asset-class:categories.${assetClass}.name`
+          ).toLowerCase(),
+        })}
+        description={t("asset-types:assetTypeDifferences")}
+        fullWidth={true}
+        actions={
+          <>
             <Button variant="outline" onClick={onBack}>
               {t("asset-designer:form.buttons.back")}
             </Button>
@@ -100,9 +74,18 @@ export const SelectAssetType = withForm({
               checkRequiredFn={isRequiredField}
               label={t("asset-designer:form.buttons.next")}
             />
-          </div>
-        </DialogFooter>
-      </>
+          </>
+        }
+      >
+        <div className="mt-6 mb-10">
+          <form.AppField
+            name="type"
+            children={(field) => (
+              <field.RadioField options={options} variant="card" />
+            )}
+          />
+        </div>
+      </FormStepLayout>
     );
   },
 });

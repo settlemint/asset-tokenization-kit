@@ -1,14 +1,8 @@
-import { assetDesignerFormOptions } from "@/components/asset-designer/asset-designer-wizard/shared-form";
+import { assetDesignerFormOptions } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
 import { ComplianceModules } from "@/components/compliance/compliance-modules";
-import {
-  FormStep,
-  FormStepContent,
-  FormStepDescription,
-  FormStepHeader,
-  FormStepSubmit,
-  FormStepTitle,
-} from "@/components/form/multi-step/form-step";
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 
+import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
 import { ComplianceModulePairInput } from "@/lib/zod/validators/compliance";
@@ -22,9 +16,10 @@ export const SelectComplianceModules = withForm({
   ...assetDesignerFormOptions,
   props: {
     onStepSubmit: noop,
+    onBack: noop,
     complianceModules: [] as ComplianceModulesList,
   },
-  render: function Render({ form, onStepSubmit, complianceModules }) {
+  render: function Render({ form, onStepSubmit, onBack, complianceModules }) {
     const { t } = useTranslation("asset-designer");
 
     const initialModulePairs = useStore(
@@ -50,29 +45,29 @@ export const SelectComplianceModules = withForm({
     };
 
     return (
-      <FormStep>
-        <FormStepHeader>
-          <FormStepTitle>{t("compliance.title")}</FormStepTitle>
-          <FormStepDescription>
-            {t("compliance.description")}
-          </FormStepDescription>
-        </FormStepHeader>
-        <FormStepContent>
-          <ComplianceModules
-            allModules={complianceModules}
-            enabledModules={initialModulePairs}
-            onEnable={addModulePair}
-            onDisable={removeModulePair}
-          />
-        </FormStepContent>
-        <FormStepSubmit>
-          <form.StepSubmitButton
-            label={t("form.buttons.next")}
-            onStepSubmit={onStepSubmit}
-            validate={empty}
-          />
-        </FormStepSubmit>
-      </FormStep>
+      <FormStepLayout
+        title={t("compliance.title")}
+        description={t("compliance.description")}
+        actions={
+          <>
+            <Button variant="outline" onClick={onBack}>
+              {t("form.buttons.back")}
+            </Button>
+            <form.StepSubmitButton
+              label={t("form.buttons.next")}
+              onStepSubmit={onStepSubmit}
+              validate={empty}
+            />
+          </>
+        }
+      >
+        <ComplianceModules
+          allModules={complianceModules}
+          enabledModules={initialModulePairs}
+          onEnable={addModulePair}
+          onDisable={removeModulePair}
+        />
+      </FormStepLayout>
     );
   },
 });

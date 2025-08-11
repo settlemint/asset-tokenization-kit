@@ -1,5 +1,5 @@
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { KycForm } from "@/components/kyc/kyc-form";
-import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import {
   createOnboardingBeforeLoad,
   createOnboardingSearchSchema,
@@ -20,7 +20,7 @@ function RouteComponent() {
   const { completeStepAndNavigate } = useOnboardingNavigation();
 
   return (
-    <OnboardingStepLayout
+    <FormStepLayout
       title={t("identity.title")}
       fullWidth={true}
       description={t("identity.description")}
@@ -35,6 +35,6 @@ function RouteComponent() {
           await completeStepAndNavigate(OnboardingStep.identity);
         }}
       />
-    </OnboardingStepLayout>
+    </FormStepLayout>
   );
 }

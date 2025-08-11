@@ -1,5 +1,5 @@
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { BulletPoint } from "@/components/onboarding/bullet-point";
-import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { orpc } from "@/orpc/orpc-client";
@@ -23,7 +23,7 @@ export function CreateWallet() {
     );
 
   return (
-    <OnboardingStepLayout
+    <FormStepLayout
       title={t("steps.wallet.title")}
       description={t("wallet.subtitle")}
       fullWidth={true}
@@ -112,6 +112,6 @@ export function CreateWallet() {
           </div>
         </div>
       </div>
-    </OnboardingStepLayout>
+    </FormStepLayout>
   );
 }

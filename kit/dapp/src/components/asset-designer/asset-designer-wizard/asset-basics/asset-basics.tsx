@@ -1,19 +1,16 @@
-import type { AssetDesignerFormInputData } from "@/components/asset-designer/asset-designer-wizard/shared-form";
 import {
   assetDesignerFormOptions,
   isRequiredField,
-} from "@/components/asset-designer/asset-designer-wizard/shared-form";
-import {
-  FormStepContent,
-  FormStepSubmit,
-} from "@/components/form/multi-step/form-step";
+  type AssetDesignerFormInputData,
+} from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
+import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
 import type { KeysOfUnion } from "@/lib/utils/union";
-
 import { useTranslation } from "react-i18next";
 
-export const commonFields: KeysOfUnion<AssetDesignerFormInputData>[] = [
+const commonFields: KeysOfUnion<AssetDesignerFormInputData>[] = [
   "name",
   "symbol",
   "decimals",
@@ -21,14 +18,33 @@ export const commonFields: KeysOfUnion<AssetDesignerFormInputData>[] = [
   "countryCode",
 ];
 
-export const CommonFields = withForm({
+export const AssetBasics = withForm({
   ...assetDesignerFormOptions,
-  props: {},
-  render: function Render({ form }) {
+  props: {
+    onStepSubmit: noop,
+    onBack: noop,
+  },
+  render: function Render({ form, onStepSubmit, onBack }) {
     const { t } = useTranslation(["asset-designer"]);
 
     return (
-      <>
+      <FormStepLayout
+        title={t("wizard.steps.assetBasics.title")}
+        description={t("wizard.steps.assetBasics.description")}
+        actions={
+          <>
+            <Button variant="outline" onClick={onBack}>
+              {t("form.buttons.back")}
+            </Button>
+            <form.StepSubmitButton
+              label={t("form.buttons.next")}
+              onStepSubmit={onStepSubmit}
+              validate={commonFields}
+              checkRequiredFn={isRequiredField}
+            />
+          </>
+        }
+      >
         <form.AppField
           name="name"
           children={(field) => (
@@ -76,33 +92,7 @@ export const CommonFields = withForm({
             />
           )}
         />
-      </>
-    );
-  },
-});
-
-export const CommonBasics = withForm({
-  ...assetDesignerFormOptions,
-  props: {
-    onStepSubmit: noop,
-  },
-  render: function Render({ form, onStepSubmit }) {
-    const { t } = useTranslation(["asset-designer"]);
-    return (
-      <>
-        <FormStepContent>
-          <CommonFields form={form} />
-        </FormStepContent>
-
-        <FormStepSubmit>
-          <form.StepSubmitButton
-            label={t("form.buttons.next")}
-            onStepSubmit={onStepSubmit}
-            validate={commonFields}
-            checkRequiredFn={isRequiredField}
-          />
-        </FormStepSubmit>
-      </>
+      </FormStepLayout>
     );
   },
 });

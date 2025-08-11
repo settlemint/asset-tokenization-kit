@@ -1,4 +1,4 @@
-import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { getAddonIcon } from "@/components/onboarding/system-addons/addon-icons";
 import { getAddonTypeFromTypeId } from "@/components/onboarding/system-addons/addon-types-mapping";
@@ -50,7 +50,7 @@ export function SystemAddonsDeployment() {
   }, [completeStepAndNavigate, queryClient]);
 
   return (
-    <OnboardingStepLayout
+    <FormStepLayout
       title={t("system-addons.addon-deployment.title")}
       description={t("system-addons.addon-deployment.description")}
       fullWidth={true}
@@ -111,6 +111,6 @@ export function SystemAddonsDeployment() {
           </div>
         </div>
       </div>
-    </OnboardingStepLayout>
+    </FormStepLayout>
   );
 }

@@ -1,4 +1,4 @@
-import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
+import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { OtpSetupModal } from "@/components/onboarding/wallet-security/otp-setup-modal";
 import { PinSetupModal } from "@/components/onboarding/wallet-security/pin-setup-modal";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +14,7 @@ export function SecurityMethodSelector() {
   const [showOtpModal, setShowOtpModal] = useState(false);
 
   return (
-    <OnboardingStepLayout
+    <FormStepLayout
       title={t("wallet-security.method-selector.title")}
       description={t("wallet-security.method-selector.description")}
       fullWidth
@@ -178,6 +178,6 @@ export function SecurityMethodSelector() {
 
       <PinSetupModal open={showPinModal} onOpenChange={setShowPinModal} />
       <OtpSetupModal open={showOtpModal} onOpenChange={setShowOtpModal} />
-    </OnboardingStepLayout>
+    </FormStepLayout>
   );
 }
