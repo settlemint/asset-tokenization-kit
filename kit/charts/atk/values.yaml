@@ -647,7 +647,7 @@ dapp:
         repository: curlimages/curl
         tag: "8.15.0"
         pullPolicy: IfNotPresent
-      # Target GraphQL endpoint URL (where POST requests arefe sent)
+      # Target GraphQL endpoint URL (where POST requests are sent)
       url: "http://graph-node-combined:8000/subgraphs/name/kit"
       query: '{ __typename }'  # Basic query to check for GraphQL errors
       retryDelaySeconds: 20
