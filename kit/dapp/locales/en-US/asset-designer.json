@@ -153,7 +153,7 @@
       },
       "assetSpecificConfig": {
         "description": "Set the parameters specific to your {{type}}",
-        "title": "{{type}} specific details"
+        "title": "Instrument specific details"
       },
       "complianceModules": {
         "description": "Set up compliance modules to ensure your asset meets legal requirements",

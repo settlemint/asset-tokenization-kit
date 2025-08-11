@@ -39,7 +39,7 @@ export const AssetSpecificDetails = withForm({
 
     return (
       <FormStepLayout
-        title={t("wizard.steps.assetSpecificConfig.title", { type })}
+        title={t("wizard.steps.assetSpecificConfig.title")}
         description={t("wizard.steps.assetSpecificConfig.description", {
           type,
         })}

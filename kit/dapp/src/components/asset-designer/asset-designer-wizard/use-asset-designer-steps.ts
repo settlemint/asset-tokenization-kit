@@ -97,7 +97,7 @@ export function useAssetDesignerSteps({
           ? [
               {
                 id: "assetSpecificConfig",
-                label: t("wizard.steps.assetSpecificConfig.title", { type }),
+                label: t("wizard.steps.assetSpecificConfig.title"),
                 description: t("wizard.steps.assetSpecificConfig.description", {
                   type,
                 }),
