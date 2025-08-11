@@ -229,7 +229,7 @@ graph-node:
       pullPolicy: IfNotPresent
     postgresImage:
       repository: docker.io/postgres
-      tag: "17.50-alpine"
+      tag: "17.5-alpine"
       pullPolicy: IfNotPresent
   podAnnotations:
     prometheus.io/scrape: "true"
