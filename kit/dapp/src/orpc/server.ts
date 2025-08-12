@@ -5,7 +5,7 @@ import { createLogger } from "@settlemint/sdk-utils/logging";
 import { toNodeHandler } from "better-auth/node";
 import { createServer } from "node:http";
 
-const logger = createLogger();
+const logger = createLogger({ level: "info" });
 
 const handler = new RPCHandler(router, {
   plugins: [],
@@ -34,6 +34,8 @@ export function startServer(port: number) {
           stop: () => {
             logger.info(`Stopping dApp api`);
             server.close();
+            server.closeAllConnections();
+            server.unref();
           },
         });
       })
