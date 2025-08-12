@@ -64,7 +64,7 @@ export function BlocklistSheet({
   return (
     <form.Subscribe selector={(s) => ({ address: s.values.address })}>
       {({ address }) => {
-        const selectedAddress = (address || presetAddress || "") as string;
+        const selectedAddress = address || presetAddress || "";
         const isValidAddress = isAddress(selectedAddress);
 
         return (
@@ -81,7 +81,7 @@ export function BlocklistSheet({
             })}
             submitLabel={t("common:save")}
             hasValuesStep={true}
-            canContinue={() => Boolean(isValidAddress)}
+            canContinue={() => isValidAddress}
             store={sheetStoreRef.current}
             confirm={
               <Card>
@@ -123,7 +123,7 @@ export function BlocklistSheet({
               </Card>
             }
             disabled={() => !isValidAddress}
-            onSubmit={async (verification) => {
+            onSubmit={async (_verification) => {
               const addr = getEthereumAddress(selectedAddress);
               const promise = (async () => {
                 // Placeholder: integrate with real mutation when available.
@@ -159,7 +159,9 @@ export function BlocklistSheet({
                       type="button"
                       variant={mode === "add" ? "default" : "ghost"}
                       size="sm"
-                      onClick={() => setMode("add")}
+                      onClick={() => {
+                        setMode("add");
+                      }}
                     >
                       {t("tokens:blocklist.block", { defaultValue: "Block" })}
                     </Button>
@@ -167,7 +169,9 @@ export function BlocklistSheet({
                       type="button"
                       variant={mode === "remove" ? "default" : "ghost"}
                       size="sm"
-                      onClick={() => setMode("remove")}
+                      onClick={() => {
+                        setMode("remove");
+                      }}
                     >
                       {t("common:remove")}
                     </Button>
@@ -180,7 +184,13 @@ export function BlocklistSheet({
                           <form.AppField
                             name="address"
                             children={(field) => (
-                              <field.AddressSelectField scope="user" required />
+                              <field.AddressSelectField
+                                scope="user"
+                                required
+                                label={t("common:address", {
+                                  defaultValue: "Address",
+                                })}
+                              />
                             )}
                           />
                         )}
@@ -188,7 +198,12 @@ export function BlocklistSheet({
                           <form.AppField
                             name="address"
                             children={(field) => (
-                              <field.AddressInputField required />
+                              <field.AddressInputField
+                                required
+                                label={t("common:address", {
+                                  defaultValue: "Address",
+                                })}
+                              />
                             )}
                           />
                         )}
