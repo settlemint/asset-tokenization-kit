@@ -13,7 +13,7 @@ export const getOrpcClient = (
   headers: Headers
 ): RouterClient<typeof router> => {
   const link = new RPCLink({
-    url: `${getDappUrl()}/api/rpc`,
+    url: `${getDappUrl()}`,
     headers: () => ({
       cookie: headers.get("Cookie") as string,
     }),

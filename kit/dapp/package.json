@@ -32,7 +32,7 @@
     "test:integration": "DOTENV_CONFIG_PATH=.env.test vitest run --project integration",
     "pretest:ci": "cd ../.. && bun run test:reset",
     "test:ci": "DOTENV_CONFIG_PATH=.env.test vitest run --coverage",
-    "test:integration:local": "TEST_DAPP_PORT=3000 vitest run --project integration",
+    "test:integration:local": "TEST_DAPP_PORT=3000 vitest run --project integration --coverage",
     "test": "bun run test:unit",
     "route:gen": "tsr generate",
     "knip": "knip"
