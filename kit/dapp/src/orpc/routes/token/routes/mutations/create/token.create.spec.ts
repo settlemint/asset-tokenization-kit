@@ -142,6 +142,17 @@ describe("Token create", () => {
     expect(result.type).toBe(bondData.type);
     expect(result.name).toBe(bondData.name);
     expect(result.symbol).toBe(bondData.symbol);
+
+    // Verify the bond appears in the token list
+    const tokens = await client.token.list({});
+    const createdBond = tokens.find((t) => t.name === bondData.name);
+    expect(createdBond).toBeDefined();
+    expect(createdBond).toMatchObject({
+      id: expect.any(String),
+      type: bondData.type,
+      name: bondData.name,
+      symbol: bondData.symbol,
+    });
   }, 100_000);
 
   test("can create an equity token", async () => {
@@ -170,6 +181,17 @@ describe("Token create", () => {
     expect(result.type).toBe(equityData.type);
     expect(result.name).toBe(equityData.name);
     expect(result.symbol).toBe(equityData.symbol);
+
+    // Verify the equity appears in the token list
+    const tokens = await client.token.list({});
+    const createdEquity = tokens.find((t) => t.name === equityData.name);
+    expect(createdEquity).toBeDefined();
+    expect(createdEquity).toMatchObject({
+      id: expect.any(String),
+      type: equityData.type,
+      name: equityData.name,
+      symbol: equityData.symbol,
+    });
   }, 100_000);
 
   test("can create a deposit token", async () => {
@@ -198,6 +220,17 @@ describe("Token create", () => {
     expect(result.type).toBe(depositData.type);
     expect(result.name).toBe(depositData.name);
     expect(result.symbol).toBe(depositData.symbol);
+
+    // Verify the deposit appears in the token list
+    const tokens = await client.token.list({});
+    const createdDeposit = tokens.find((t) => t.name === depositData.name);
+    expect(createdDeposit).toBeDefined();
+    expect(createdDeposit).toMatchObject({
+      id: expect.any(String),
+      type: depositData.type,
+      name: depositData.name,
+      symbol: depositData.symbol,
+    });
   }, 100_000);
 
   test("regular users cant create tokens", async () => {
