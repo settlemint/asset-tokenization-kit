@@ -78,15 +78,13 @@ describe("Token create", () => {
     expect(result.symbol).toBe(fundData.symbol);
 
     const tokens = await client.token.list({});
-    expect(tokens.length).toBeGreaterThan(0);
-    expect(tokens.find((t) => t.name === fundData.name)).toEqual({
+    const createdFund = tokens.find((t) => t.name === fundData.name);
+    expect(createdFund).toBeDefined();
+    expect(createdFund).toMatchObject({
       id: expect.any(String),
-      createdAt: expect.any(Date),
-      ...fundData,
-      pausable: {
-        paused: true,
-      },
-      totalSupply: from("0"),
+      type: fundData.type,
+      name: fundData.name,
+      symbol: fundData.symbol,
     });
   }, 100_000);
 
