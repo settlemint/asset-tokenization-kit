@@ -108,7 +108,7 @@ export const bigDecimal = () =>
       // Reject special values for number inputs
       if (
         typeof value === "number" &&
-        (!Number.isFinite(value) || Number.isNaN(value))
+        !Number.isFinite(value)
       ) {
         ctx.addIssue({
           code: "custom",
