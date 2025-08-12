@@ -1,10 +1,14 @@
-import { getAssetClassFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
+import {
+  getAssetClassFromFactoryTypeId,
+  type AssetClass,
+} from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import {
   BanknoteArrowUpIcon,
   CreditCardIcon,
   PiggyBankIcon,
+  type LucideIcon,
 } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -46,21 +50,21 @@ export function useAssetClass() {
         id: "fixedIncome" as const,
         name: t("categories.fixedIncome.name"),
         description: t("categories.fixedIncome.description"),
-        icon: PiggyBankIcon,
+        icon: assetClassIcon.fixedIncome,
         factories: groupedFactories.fixedIncome,
       },
       {
         id: "flexibleIncome" as const,
         name: t("categories.flexibleIncome.name"),
         description: t("categories.flexibleIncome.description"),
-        icon: BanknoteArrowUpIcon,
+        icon: assetClassIcon.flexibleIncome,
         factories: groupedFactories.flexibleIncome,
       },
       {
         id: "cashEquivalent" as const,
         name: t("categories.cashEquivalent.name"),
         description: t("categories.cashEquivalent.description"),
-        icon: CreditCardIcon,
+        icon: assetClassIcon.cashEquivalent,
         factories: groupedFactories.cashEquivalent,
       },
     ],
@@ -69,3 +73,9 @@ export function useAssetClass() {
 
   return { groupedFactories, assetClasses };
 }
+
+export const assetClassIcon: Record<AssetClass, LucideIcon> = {
+  fixedIncome: PiggyBankIcon,
+  flexibleIncome: BanknoteArrowUpIcon,
+  cashEquivalent: CreditCardIcon,
+};

@@ -56,7 +56,18 @@ export function safeToString(value: unknown): string {
  * Type definition for value formatting options
  */
 export interface FormatValueOptions {
-  type?: string;
+  type?:
+    | "address"
+    | "badge"
+    | "currency"
+    | "date"
+    | "status"
+    | "percentage"
+    | "number"
+    | "text"
+    | "boolean"
+    | "multiOption"
+    | "option";
   displayName?: string;
   currency?: string;
   locale?: string;
@@ -356,6 +367,28 @@ export function formatValue(
 
       return <span className="block tabular-nums">{formatted}</span>;
     }
+
+    case "text":
+      return <span>{safeToString(value)}</span>;
+
+    case "boolean":
+      return <span>{value ? "Yes" : "No"}</span>;
+
+    case "option":
+    case "multiOption":
+      // For option/multiOption, format as badges or text
+      if (Array.isArray(value)) {
+        return (
+          <div className="flex gap-1 flex-wrap">
+            {value.map((item, index) => (
+              <Badge key={index} variant="secondary" className="text-xs">
+                {safeToString(item)}
+              </Badge>
+            ))}
+          </div>
+        );
+      }
+      return <Badge variant="secondary">{safeToString(value)}</Badge>;
 
     default:
       return <span>{safeToString(value)}</span>;

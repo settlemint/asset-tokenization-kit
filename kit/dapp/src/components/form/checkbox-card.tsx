@@ -57,7 +57,7 @@ export const CheckboxCard = memo(
             ? "opacity-50 cursor-not-allowed bg-muted/50"
             : isRequired
               ? "cursor-not-allowed"
-              : "hover:bg-accent/50 cursor-pointer"
+              : "hover:bg-accent/10 cursor-pointer"
         }`}
         onClick={handleItemClick}
       >

@@ -1,5 +1,3 @@
-"use client";
-
 import { PincodeInput } from "@/components/form/inputs/pincode-input";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
