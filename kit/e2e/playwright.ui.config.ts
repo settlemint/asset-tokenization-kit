@@ -37,6 +37,12 @@ const uiConfig: PlaywrightTestConfig = {
       dependencies: ["setup"],
     },
     {
+      name: "deposit-tests",
+      testMatch: "**/create-deposit-validation.spec.ts",
+      fullyParallel: true,
+      dependencies: ["setup"],
+    },
+    {
       name: "cleanup",
       testMatch: "**/global-cleanup.spec.ts",
       fullyParallel: false,

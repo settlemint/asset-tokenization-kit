@@ -190,7 +190,7 @@ test.describe.serial("Stablecoin Creation Validation", () => {
     };
     test("Create Stablecoin asset", async () => {
       const setupUser = getSetupUser();
-      await createAssetForm.fillStablecoinFields({
+      await createAssetForm.fillAssetFields({
         name: stablecoinData.name,
         symbol: stablecoinData.symbol,
         decimals: stablecoinData.decimals,

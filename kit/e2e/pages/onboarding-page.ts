@@ -207,13 +207,15 @@ export class OnboardingPage extends BasePage {
     await this.enterPinVerification(pin);
 
     await expect(
-      this.page.getByRole("heading", { name: "Deployment Details" })
+      this.page.getByRole("heading", { name: "System deployed successfully" })
     ).toBeAttached({ timeout: 120000 });
 
-    const continueButton = this.page.getByRole("button", { name: "Continue" });
-    await expect(continueButton).toBeVisible({ timeout: 120000 });
-    await expect(continueButton).toBeEnabled({ timeout: 120000 });
-    await continueButton.click();
+    const configureAssetsButton = this.page
+      .locator("footer.OnboardingStepLayout__footer")
+      .getByRole("button", { name: "Configure system", exact: true });
+    await expect(configureAssetsButton).toBeVisible({ timeout: 120000 });
+    await expect(configureAssetsButton).toBeEnabled({ timeout: 120000 });
+    await configureAssetsButton.click();
     await this.page.waitForLoadState("networkidle");
     await this.waitForReactStateSettle();
   }
@@ -221,11 +223,15 @@ export class OnboardingPage extends BasePage {
   async configureSystem(): Promise<void> {
     await this.waitForReactStateSettle();
     await expect(
-      this.page.getByText("Configure Platform Settings")
+      this.page.getByRole("heading", {
+        name: /Configure platform settings/i,
+      })
     ).toBeVisible({
       timeout: 120000,
     });
-    await this.page.getByRole("button", { name: "Save & Continue" }).click();
+    await this.page
+      .getByRole("button", { name: /Save\s*&\s*continue/i })
+      .click();
 
     await this.page.waitForLoadState("networkidle");
     await this.waitForReactStateSettle();
@@ -261,7 +267,10 @@ export class OnboardingPage extends BasePage {
   async selectAssetTypes(assetTypes: string[], pin: string): Promise<void> {
     await this.waitForReactStateSettle();
     await expect(
-      this.page.locator("h2", { hasText: /^Select asset types$/ })
+      this.page.getByRole("heading", {
+        name: /Configure Supported Asset Types/i,
+        level: 2,
+      })
     ).toBeVisible({ timeout: 120000 });
     await this.selectCheckboxByLabel(assetTypes, ".flex.flex-row.items-start");
     await this.page
@@ -273,11 +282,16 @@ export class OnboardingPage extends BasePage {
   async selectAddons(addons: string[], pin: string): Promise<void> {
     await this.page.waitForLoadState("networkidle");
     await this.waitForReactStateSettle();
-    await expect(this.page.getByText("Enable add-ons")).toBeVisible({
-      timeout: 120000,
-    });
+    await expect(
+      this.page.getByRole("heading", {
+        name: /Configure Platform Add-ons/i,
+        level: 2,
+      })
+    ).toBeVisible({ timeout: 120000 });
     await this.selectCheckboxByLabel(addons, ".flex.flex-row.items-start");
-    await this.page.getByRole("button", { name: "Deploy add-ons" }).click();
+    await this.page
+      .getByRole("button", { name: /Deploy Selected add-ons/i })
+      .click();
     await this.enterPinVerification(pin);
 
     const deployedHeading = this.page.getByRole("heading", {
@@ -296,30 +310,31 @@ export class OnboardingPage extends BasePage {
     await this.waitForReactStateSettle();
     await expect(
       this.page.getByRole("heading", {
-        name: "Creating your ONCHAINID",
-        exact: true,
+        name: /Your On-Chain Identity/i,
+        level: 2,
       })
     ).toBeVisible({
       timeout: 120000,
     });
-    await this.page.getByRole("button", { name: "Create ONCHAINID" }).click();
+    await this.page
+      .getByRole("button", { name: /Create My ONCHAINID/i })
+      .click();
 
     await this.enterPinVerification(pin);
 
     await expect(
-      this.page.getByRole("heading", {
-        name: "ONCHAINID created successfully",
-        exact: true,
-      })
+      this.page.getByRole("heading", { name: /Identity Created Successfully/i })
     ).toBeVisible({
       timeout: 120000,
     });
     await expect(
-      this.page.getByRole("button", { name: "Continue" })
-    ).toBeVisible({
-      timeout: 120000,
-    });
-    await this.page.getByRole("button", { name: "Continue" }).click();
+      this.page.getByRole("button", {
+        name: /(Add personal information|Continue)/i,
+      })
+    ).toBeVisible({ timeout: 120000 });
+    await this.page
+      .getByRole("button", { name: /(Add personal information|Continue)/i })
+      .click();
     await this.page.waitForLoadState("networkidle");
     await this.waitForReactStateSettle();
   }
@@ -327,10 +342,11 @@ export class OnboardingPage extends BasePage {
   async fillKycForm(kycData: KycData): Promise<void> {
     await this.waitForReactStateSettle();
     await expect(
-      this.page.locator("h2").filter({ hasText: "Add Personal Information" })
-    ).toBeVisible({
-      timeout: 120000,
-    });
+      this.page.getByRole("heading", {
+        name: /Complete Your Personal Information/i,
+        level: 2,
+      })
+    ).toBeVisible({ timeout: 120000 });
 
     await expect(
       this.page.getByRole("textbox", { name: "First name *" })
