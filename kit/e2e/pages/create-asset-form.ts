@@ -84,28 +84,6 @@ export class CreateAssetForm extends BasePage {
     await this.confirmPinCode(options.pincode);
   }
 
-  async fillStablecoinFields(options: {
-    name?: string;
-    symbol?: string;
-    decimals?: string;
-    isin?: string;
-    country?: string;
-    pincode: string;
-  }) {
-    return this.fillAssetFields(options);
-  }
-
-  async fillDepositFields(options: {
-    name?: string;
-    symbol?: string;
-    decimals?: string;
-    isin?: string;
-    country?: string;
-    pincode: string;
-  }) {
-    return this.fillAssetFields(options);
-  }
-
   getMaturityDate(options: { isPast?: boolean; daysOffset?: number } = {}) {
     const { isPast = false, daysOffset = 1 } = options;
     const date = new Date();
@@ -137,6 +115,22 @@ export class CreateAssetForm extends BasePage {
 
   async verifyInputAttribute(label: string, attribute: string, value: string) {
     await expect(this.page.getByLabel(label)).toHaveAttribute(attribute, value);
+  }
+
+  private async _selectRadioOptionAndContinue(name: RegExp) {
+    const radio = this.page.getByRole("radio", { name });
+    await expect(radio).toBeVisible();
+    const radioId = await radio.getAttribute("id");
+    if (!radioId) {
+      throw new Error(`Radio button with name ${name.toString()} has no id`);
+    }
+    const label = this.page.locator(`label[for="${radioId}"]`);
+    await expect(label).toBeVisible();
+    await label.click();
+
+    const nextButton = this.page.getByRole("button", { name: "Next" });
+    await expect(nextButton).toBeEnabled();
+    await nextButton.click();
   }
 
   async selectAssetType(assetType: string) {
@@ -182,30 +176,8 @@ export class CreateAssetForm extends BasePage {
 
     await this.page.getByRole("button", { name: "Asset designer" }).click();
 
-    const assetClassRadio = this.page.getByRole("radio", {
-      name: config[key].category,
-    });
-    await expect(assetClassRadio).toBeVisible();
-    const assetClassId = await assetClassRadio.getAttribute("id");
-    if (!assetClassId) throw new Error("Asset class radio id not found");
-    const assetClassLabel = this.page.locator(`label[for="${assetClassId}"]`);
-    await expect(assetClassLabel).toBeVisible();
-    await assetClassLabel.click();
-
-    await expect(this.page.getByRole("button", { name: "Next" })).toBeEnabled();
-    await this.page.getByRole("button", { name: "Next" }).click();
-
-    const assetTypeRadio = this.page.getByRole("radio", {
-      name: config[key].card,
-    });
-    await expect(assetTypeRadio).toBeVisible();
-    const assetTypeId = await assetTypeRadio.getAttribute("id");
-    if (!assetTypeId) throw new Error("Asset type radio id not found");
-    const assetTypeLabel = this.page.locator(`label[for="${assetTypeId}"]`);
-    await expect(assetTypeLabel).toBeVisible();
-    await assetTypeLabel.click();
-    await expect(this.page.getByRole("button", { name: "Next" })).toBeEnabled();
-    await this.page.getByRole("button", { name: "Next" }).click();
+    await this._selectRadioOptionAndContinue(config[key].category);
+    await this._selectRadioOptionAndContinue(config[key].card);
     await expect(
       this.page.getByRole("heading", { name: "General info", level: 2 })
     ).toBeVisible();

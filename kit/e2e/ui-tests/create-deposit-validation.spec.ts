@@ -183,14 +183,9 @@ test.describe.serial("Deposit Creation Validation", () => {
     });
   });
   test.describe.serial("Create Deposit asset", () => {
-    const testData = {
-      name: "",
-      symbol: "",
-      decimals: "",
-    };
     test("Create Deposit asset", async () => {
       const setupUser = getSetupUser();
-      await createAssetForm.fillDepositFields({
+      await createAssetForm.fillAssetFields({
         name: depositData.name,
         symbol: depositData.symbol,
         decimals: depositData.decimals,
@@ -198,13 +193,10 @@ test.describe.serial("Deposit Creation Validation", () => {
         country: depositData.country,
         pincode: setupUser.pincode,
       });
-      testData.name = depositData.name;
-      testData.symbol = depositData.symbol;
-      testData.decimals = depositData.decimals;
       await createAssetForm.verifyAssetCreated({
-        name: testData.name,
-        symbol: testData.symbol,
-        decimals: testData.decimals,
+        name: depositData.name,
+        symbol: depositData.symbol,
+        decimals: depositData.decimals,
       });
     });
   });
