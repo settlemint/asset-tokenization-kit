@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppForm } from "@/hooks/use-app-form";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { useQueryClient } from "@tanstack/react-query";
@@ -123,7 +124,7 @@ export function BlocklistSheet({
             }
             disabled={() => !isValidAddress}
             onSubmit={async (verification) => {
-              const addr = selectedAddress as EthereumAddress;
+              const addr = getEthereumAddress(selectedAddress);
               const promise = (async () => {
                 // Placeholder: integrate with real mutation when available.
                 // We still invalidate token.read so any server-sourced data refreshes.
