@@ -1,4 +1,3 @@
-import { beforeAll, describe, expect, it } from "vitest";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
@@ -6,6 +5,7 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
+import { beforeAll, describe, expect, it } from "vitest";
 
 describe("Token list", () => {
   let depositToken: Awaited<ReturnType<typeof createToken>>;
@@ -14,28 +14,35 @@ describe("Token list", () => {
   beforeAll(async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
-    depositToken = await createToken(client, {
-      name: "Deposit Token",
-      symbol: `DT`,
-      decimals: 18,
-      type: "deposit",
-      countryCode: "056",
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
-      },
-    });
-    stablecoinToken = await createToken(client, {
-      name: "Test Token",
-      symbol: "TT",
-      decimals: 18,
-      type: "stablecoin",
-      countryCode: "056",
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
-      },
-    });
+
+    // Create tokens in parallel for faster test setup
+    const [deposit, stablecoin] = await Promise.all([
+      createToken(client, {
+        name: "Deposit Token",
+        symbol: `DT`,
+        decimals: 18,
+        type: "deposit",
+        countryCode: "056",
+        verification: {
+          verificationCode: DEFAULT_PINCODE,
+          verificationType: "pincode",
+        },
+      }),
+      createToken(client, {
+        name: "Test Token",
+        symbol: "TT",
+        decimals: 18,
+        type: "stablecoin",
+        countryCode: "056",
+        verification: {
+          verificationCode: DEFAULT_PINCODE,
+          verificationType: "pincode",
+        },
+      }),
+    ]);
+
+    depositToken = deposit;
+    stablecoinToken = stablecoin;
   });
 
   it("can list tokens", async () => {
@@ -50,7 +57,9 @@ describe("Token list", () => {
   it("can list tokens by token factory", async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
-    const system = await client.system.read({ id: "default" });
+    const systemAddress = await client.settings.read({ key: "SYSTEM_ADDRESS" });
+    expect(systemAddress).toBeDefined();
+    const system = await client.system.read({ id: systemAddress! });
     const depositTokenFactory = system.tokenFactories.find(
       (tokenFactory) => tokenFactory.typeId === "ATKDepositFactory"
     );

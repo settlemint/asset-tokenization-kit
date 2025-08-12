@@ -84,7 +84,34 @@ export const env = createEnv({
 
     SETTLEMINT_INSTANCE: z.string().optional(),
 
-    SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT: z.url(),
+    SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT: z.url().optional(),
+
+    // Performance tuning knobs for tx tracking and indexing (server-only)
+    SETTLEMINT_PORTAL_TX_POLL_MAX_ATTEMPTS: z.coerce
+      .number()
+      .int()
+      .positive()
+      .default(300),
+    SETTLEMINT_PORTAL_TX_POLL_DELAY_MS: z.coerce
+      .number()
+      .int()
+      .min(0)
+      .default(process.env.NODE_ENV === "test" ? 100 : 1000),
+    SETTLEMINT_GRAPH_INDEX_POLL_MS: z.coerce
+      .number()
+      .int()
+      .min(50)
+      .default(100),
+    SETTLEMINT_GRAPH_INDEX_TIMEOUT_MS: z.coerce
+      .number()
+      .int()
+      .positive()
+      .default(60_000),
+    SETTLEMINT_PORTAL_TX_STREAM_TIMEOUT_MS: z.coerce
+      .number()
+      .int()
+      .positive()
+      .default(90_000),
   },
 
   /**

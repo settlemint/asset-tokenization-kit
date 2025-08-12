@@ -87,16 +87,21 @@ describe.concurrent("Token Stats: Volume", () => {
       const headers = await signInWithUser(DEFAULT_ADMIN);
       const client = getOrpcClient(headers);
 
-      // Test boundary values for days parameter
+      // Test boundary values for days parameter in parallel
       const validDays = [1, 30, TEST_CONSTANTS.MAX_DAYS];
 
-      for (const days of validDays) {
-        const result = await client.token.statsVolume({
-          tokenAddress: testToken.id,
-          days,
-        });
+      const results = await Promise.all(
+        validDays.map((days) =>
+          client.token.statsVolume({
+            tokenAddress: testToken.id,
+            days,
+          })
+        )
+      );
+
+      results.forEach((result) => {
         expect(result.volumeHistory).toEqual([]);
-      }
+      });
     });
   });
 

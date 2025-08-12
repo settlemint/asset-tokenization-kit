@@ -60,7 +60,6 @@ export async function handleChallenge(
   }
 ): Promise<ChallengeResponse> {
   const verificationId = getVerificationId(user, verification.type);
-
   if (!verificationId) {
     throw new ORPCError("VERIFICATION_ID_NOT_FOUND", {
       message: `Verification ID not found for ${verification.type} authentication`,

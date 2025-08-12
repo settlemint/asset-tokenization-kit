@@ -8,7 +8,7 @@ export default defineConfig({
   test: {
     globals: true,
     passWithNoTests: true,
-    pool: "forks",
+    pool: "threads",
     reporters: process.env.CLAUDECODE
       ? ["dot"]
       : process.env.CI
@@ -65,12 +65,7 @@ export default defineConfig({
             },
           },
           include: ["src/**/*.test.{ts,tsx}"],
-          poolOptions: {
-            forks: {
-              isolate: true,
-            },
-          },
-          isolate: true,
+          isolate: false,
         },
         resolve: {
           alias: [
@@ -164,9 +159,11 @@ export default defineConfig({
         test: {
           name: "integration",
           environment: "node",
-          globalSetup: ["./test/setup/integration.ts"],
+          globalSetup: ["./test/setup/integration.global.ts"],
+          setupFiles: ["./test/setup/integration.ts"],
           testTimeout: 60000, // 60 seconds for integration tests
           hookTimeout: 60000, // 60 seconds for hooks
+          pool: "forks",
           poolOptions: {
             forks: {
               singleFork: true, // Run all tests in a single process

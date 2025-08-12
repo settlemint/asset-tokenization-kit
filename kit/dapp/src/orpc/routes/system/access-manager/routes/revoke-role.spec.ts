@@ -22,32 +22,38 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
   };
 
   beforeAll(async () => {
-    const adminHeaders = await signInWithUser(DEFAULT_ADMIN);
-    adminClient = getOrpcClient(adminHeaders);
+    // Sign in both users in parallel
+    const [adminHeaders, investorHeaders] = await Promise.all([
+      signInWithUser(DEFAULT_ADMIN),
+      signInWithUser(DEFAULT_INVESTOR),
+    ]);
 
-    const investorHeaders = await signInWithUser(DEFAULT_INVESTOR);
+    adminClient = getOrpcClient(adminHeaders);
     investorClient = getOrpcClient(investorHeaders);
 
-    // Grant roles to the test addresses
+    // Grant roles to the test addresses in parallel
     const rolesToGrant: AccessControlRoles[] = [
       "systemManager",
       "complianceManager",
       "tokenManager",
     ];
-    for (const role of rolesToGrant) {
-      await adminClient.system.grantRole({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
-        },
-        address: [
-          testAddresses.valid1,
-          testAddresses.valid2,
-          testAddresses.valid3,
-        ],
-        role,
-      });
-    }
+
+    await Promise.all(
+      rolesToGrant.map((role) =>
+        adminClient.system.grantRole({
+          verification: {
+            verificationCode: DEFAULT_PINCODE,
+            verificationType: "pincode",
+          },
+          address: [
+            testAddresses.valid1,
+            testAddresses.valid2,
+            testAddresses.valid3,
+          ],
+          role,
+        })
+      )
+    );
   }, 60_000);
 
   describe("successful role revokes", () => {

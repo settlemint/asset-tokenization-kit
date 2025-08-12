@@ -1,3 +1,4 @@
+import { env } from "@/lib/env";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import {
@@ -105,15 +106,8 @@ function createValidatedPortalClient(
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : String(error);
-        logger.error(`GraphQL ${operation} failed`, {
-          operation,
-          ...variables,
-          error: errorMessage,
-        });
         throw errors.PORTAL_ERROR({
-          message:
-            mapPortalErrorMessage(errorMessage) ??
-            `GraphQL ${operation} failed`,
+          message: errorMessage,
           data: {
             document,
             variables,
@@ -125,11 +119,6 @@ function createValidatedPortalClient(
       // Find transaction hash in the result
       const found = findTransactionHash(result);
       if (!found) {
-        logger.error(`No transaction hash found in ${operation} response`, {
-          operation,
-          result,
-        });
-
         throw errors.PORTAL_ERROR({
           message: `No transaction hash found in ${operation} response`,
           data: {
@@ -144,13 +133,6 @@ function createValidatedPortalClient(
       try {
         transactionHash = ethereumHash.parse(found.value);
       } catch (zodError) {
-        logger.error(`Invalid transaction hash format`, {
-          operation,
-          value: found.value,
-          path: found.path,
-          error: zodError,
-        });
-
         throw errors.PORTAL_ERROR({
           message: `Invalid transaction hash format: ${zodError instanceof Error ? zodError.message : String(zodError)}`,
           data: {
@@ -170,11 +152,12 @@ function createValidatedPortalClient(
 
       // ===== TRANSACTION TRACKING CONFIGURATION =====
       // These constants control the timing and retry behavior of transaction monitoring
-      const MAX_ATTEMPTS = 30; // Maximum attempts to check transaction status
-      const DELAY_MS = 2000; // Delay between transaction status checks (2 seconds)
-      const POLLING_INTERVAL_MS = 500; // Interval for indexing status checks (500ms)
-      const INDEXING_TIMEOUT_MS = 60_000; // Maximum time to wait for indexing (1 minute)
-      const STREAM_TIMEOUT_MS = 90_000; // Total timeout for the entire tracking process (1.5 minutes)
+      // Read from central env config for consistency.
+      const MAX_ATTEMPTS = env.SETTLEMINT_PORTAL_TX_POLL_MAX_ATTEMPTS; // Maximum attempts to check transaction status
+      const DELAY_MS = env.SETTLEMINT_PORTAL_TX_POLL_DELAY_MS; // Delay between transaction status checks
+      const POLLING_INTERVAL_MS = env.SETTLEMINT_GRAPH_INDEX_POLL_MS; // Interval for indexing status checks
+      const INDEXING_TIMEOUT_MS = env.SETTLEMINT_GRAPH_INDEX_TIMEOUT_MS; // Maximum time to wait for indexing
+      const STREAM_TIMEOUT_MS = env.SETTLEMINT_PORTAL_TX_STREAM_TIMEOUT_MS; // Total timeout for the entire tracking process
 
       const GET_TRANSACTION_QUERY = portalGraphql(`
         query GetTransaction($transactionHash: String!) {
@@ -218,7 +201,6 @@ function createValidatedPortalClient(
 
       for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
         if (Date.now() - streamStartTime > STREAM_TIMEOUT_MS) {
-          logger.error(`Transaction tracking timeout for ${transactionHash}`);
           throw errors.PORTAL_ERROR({
             message: `Transaction tracking timeout after ${STREAM_TIMEOUT_MS}ms`,
             data: {
@@ -260,7 +242,6 @@ function createValidatedPortalClient(
         }
 
         if (receipt.status !== "Success") {
-          logger.error(`Transaction ${transactionHash} failed`);
           throw errors.PORTAL_ERROR({
             message: `Transaction reverted: ${receipt.revertReasonDecoded || receipt.revertReason || "Unknown reason"}`,
             data: {
@@ -275,7 +256,6 @@ function createValidatedPortalClient(
       }
 
       if (!receipt) {
-        logger.error(`Transaction ${transactionHash} dropped`);
         throw errors.PORTAL_ERROR({
           message: "Transaction dropped from mempool",
           data: {
@@ -304,7 +284,6 @@ function createValidatedPortalClient(
         attempt++
       ) {
         if (Date.now() - streamStartTime > STREAM_TIMEOUT_MS) {
-          logger.error(`TheGraph indexing timeout for ${transactionHash}`);
           throw errors.PORTAL_ERROR({
             message: `TheGraph indexing timeout after ${STREAM_TIMEOUT_MS}ms`,
             data: {
@@ -339,11 +318,6 @@ function createValidatedPortalClient(
           setTimeout(resolve, POLLING_INTERVAL_MS)
         );
       }
-
-      // Indexing timeout - but transaction was confirmed, so we still return success
-      logger.error(
-        `TheGraph indexing timeout for ${transactionHash}, but transaction was confirmed`
-      );
       return getTransactionHash(transactionHash);
     },
 
@@ -431,15 +405,8 @@ function createValidatedPortalClient(
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : String(error);
-        logger.error(`GraphQL ${operation} failed`, {
-          operation,
-          ...variables,
-          error: errorMessage,
-        });
         throw errors.PORTAL_ERROR({
-          message:
-            mapPortalErrorMessage(errorMessage) ??
-            `GraphQL ${operation} failed`,
+          message: extractRevertReason(errorMessage) ?? errorMessage,
           data: {
             document,
             variables,
@@ -451,12 +418,6 @@ function createValidatedPortalClient(
       // Validate with Zod schema
       const parseResult = schema.safeParse(result);
       if (!parseResult.success) {
-        logger.error(`Invalid response format from ${operation}`, {
-          operation,
-          result,
-          error: parseResult.error,
-        });
-
         // Check if this is a null response (common for queries that return no data)
         if (result === null || result === undefined) {
           throw errors.NOT_FOUND();
@@ -614,18 +575,6 @@ export const portalMiddleware = baseRouter.middleware((options) => {
 export type ValidatedPortalClient = ReturnType<
   typeof createValidatedPortalClient
 >;
-
-/**
- * Maps a Portal error message to a more user-friendly message.
- * @param message - The error message to map.
- * @returns The mapped error message.
- */
-function mapPortalErrorMessage(message: string) {
-  if (message.includes("User rejected the request")) {
-    return "Invalid authentication challenge";
-  }
-  return extractRevertReason(message);
-}
 
 /**
  * Extracts the revert reason from a message.

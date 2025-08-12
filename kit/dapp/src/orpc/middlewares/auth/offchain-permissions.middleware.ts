@@ -30,7 +30,11 @@ export const offChainPermissionsMiddleware = <InputSchema extends z.ZodType>({
       role: context.auth.user.role,
     });
     if (!hasPermission) {
-      throw errors.FORBIDDEN();
+      throw errors.FORBIDDEN({
+        message: `User ${context.auth.user.wallet} does not have permission to access this resource (${Object.keys(
+          requiredPermissions
+        ).join(", ")})`,
+      });
     }
 
     return next();

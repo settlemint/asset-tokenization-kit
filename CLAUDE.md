@@ -41,3 +41,23 @@ bun run ci                     # MANDATORY before PR
 - ≤4 lines response unless detail requested
 - Action > explanation
 - NO unnecessary docs/README creation
+
+## Multi-Model Collaboration
+
+- **Gemini**: Via `mcp__gemini_cli__ask_gemini` for validation & approaches
+- **GPT-5**: Via `codex` CLI for root cause analysis & verification
+- **Claude**: Handles all implementation (you)
+
+### Verification Workflow
+
+```bash
+# Root cause analysis with GPT-5
+codex exec "Analyze: PROBLEM_DESCRIPTION. Context: FINDINGS" \
+  --sandbox read-only
+
+# Approach verification with Gemini
+mcp__gemini_cli__ask_gemini --changeMode "APPROACH"
+
+# Implementation by Claude
+# You handle all code changes
+```

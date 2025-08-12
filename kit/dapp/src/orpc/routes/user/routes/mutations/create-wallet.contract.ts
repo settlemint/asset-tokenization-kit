@@ -1,5 +1,5 @@
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { baseContract } from "@/orpc/procedures/base.contract";
-import { CreateWalletOutputSchema } from "@/orpc/routes/user/routes/mutations/create-wallet.schema";
 
 export const createWalletContract = baseContract
   .route({
@@ -9,4 +9,4 @@ export const createWalletContract = baseContract
     successDescription: "Wallet",
     tags: ["user"],
   })
-  .output(CreateWalletOutputSchema);
+  .output(ethereumAddress);

@@ -53,11 +53,16 @@ mcp__grep__searchGitHub({
   language: ["TypeScript"],
 });
 
-// 4. Validation
+// 4. Multi-Model Validation
+// 4a. Gemini for approach validation
 mcp__gemini_cli__ask_gemini({
   prompt: "Validate approach. Be sparse.",
   changeMode: true,
 });
+
+// 4b. GPT-5 for deep analysis
+codex exec "Analyze implementation plan: IMPLEMENTATION_PLAN. Verify patterns, check security, suggest optimizations" \
+  --sandbox read-only
 ```
 
 ## Output Format

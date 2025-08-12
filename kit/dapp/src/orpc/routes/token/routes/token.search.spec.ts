@@ -17,45 +17,49 @@ describe("Token search", () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     client = getOrpcClient(headers);
 
-    // Create tokens with different names and symbols for search testing
-    usdToken = await createToken(client, {
-      name: "USD Stablecoin",
-      symbol: "USDC",
-      decimals: 18,
-      type: "stablecoin",
-      countryCode: "056",
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
-      },
-    });
+    // Create tokens with different names and symbols for search testing (in parallel)
+    const [usd, eur, eth] = await Promise.all([
+      createToken(client, {
+        name: "USD Stablecoin",
+        symbol: "USDC",
+        decimals: 18,
+        type: "stablecoin",
+        countryCode: "056",
+        verification: {
+          verificationCode: DEFAULT_PINCODE,
+          verificationType: "pincode",
+        },
+      }),
+      createToken(client, {
+        name: "Euro Token",
+        symbol: "EURT",
+        decimals: 18,
+        type: "stablecoin",
+        countryCode: "056",
+        verification: {
+          verificationCode: DEFAULT_PINCODE,
+          verificationType: "pincode",
+        },
+      }),
+      createToken(client, {
+        name: "Ethereum Deposit",
+        symbol: "ETH",
+        decimals: 18,
+        type: "deposit",
+        countryCode: "056",
+        verification: {
+          verificationCode: DEFAULT_PINCODE,
+          verificationType: "pincode",
+        },
+      }),
+    ]);
 
-    euroToken = await createToken(client, {
-      name: "Euro Token",
-      symbol: "EURT",
-      decimals: 18,
-      type: "stablecoin",
-      countryCode: "056",
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
-      },
-    });
-
-    ethToken = await createToken(client, {
-      name: "Ethereum Deposit",
-      symbol: "ETH",
-      decimals: 18,
-      type: "deposit",
-      countryCode: "056",
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
-      },
-    });
+    usdToken = usd;
+    euroToken = eur;
+    ethToken = eth;
   });
 
-  it("can search tokens by name", async () => {
+  it.concurrent("can search tokens by name", async () => {
     const results = await client.token.search({
       query: "USD",
       limit: 10,
@@ -68,7 +72,7 @@ describe("Token search", () => {
     expect(results.find((t) => t.id === euroToken.id)).toBeUndefined();
   });
 
-  it("can search tokens by symbol", async () => {
+  it.concurrent("can search tokens by symbol", async () => {
     const results = await client.token.search({
       query: "EUR",
       limit: 10,
@@ -81,7 +85,7 @@ describe("Token search", () => {
     expect(results.find((t) => t.id === usdToken.id)).toBeUndefined();
   });
 
-  it("can search tokens by address", async () => {
+  it.concurrent("can search tokens by address", async () => {
     // Search by the exact token address
     const results = await client.token.search({
       query: ethToken.id,
@@ -93,7 +97,7 @@ describe("Token search", () => {
     expect(results[0]?.symbol).toBe("ETH");
   });
 
-  it("performs case-insensitive search", async () => {
+  it.concurrent("performs case-insensitive search", async () => {
     // Search with lowercase
     const lowercaseResults = await client.token.search({
       query: "eth",
@@ -111,7 +115,7 @@ describe("Token search", () => {
     expect(uppercaseResults.find((t) => t.id === ethToken.id)).toBeDefined();
   });
 
-  it("respects the limit parameter", async () => {
+  it.concurrent("respects the limit parameter", async () => {
     // Create a generic search that might match multiple tokens
     const results = await client.token.search({
       query: "e", // This should match Euro, Ethereum
@@ -121,7 +125,7 @@ describe("Token search", () => {
     expect(results.length).toBe(2);
   });
 
-  it("returns empty array for non-matching search", async () => {
+  it.concurrent("returns empty array for non-matching search", async () => {
     const results = await client.token.search({
       query: "NONEXISTENTTOKEN123",
       limit: 10,
@@ -130,7 +134,7 @@ describe("Token search", () => {
     expect(results).toEqual([]);
   });
 
-  it("can perform partial matches", async () => {
+  it.concurrent("can perform partial matches", async () => {
     // Search for partial name match
     const nameResults = await client.token.search({
       query: "Stable", // Should match "USD Stablecoin"

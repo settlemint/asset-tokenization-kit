@@ -25,38 +25,45 @@ describe("KYC read", () => {
   let otherUserData: Awaited<ReturnType<typeof getUserData>>;
 
   beforeAll(async () => {
-    // Setup test users
-    await setupUser(TEST_USER);
-    await setupUser(OTHER_USER);
+    // Setup test users in parallel
+    await Promise.all([setupUser(TEST_USER), setupUser(OTHER_USER)]);
 
-    testUserData = await getUserData(TEST_USER);
-    otherUserData = await getUserData(OTHER_USER);
+    // Get user data in parallel
+    [testUserData, otherUserData] = await Promise.all([
+      getUserData(TEST_USER),
+      getUserData(OTHER_USER),
+    ]);
 
-    // Create KYC profile for test user
-    const headers = await signInWithUser(TEST_USER);
+    // Sign in both users in parallel
+    const [headers, otherHeaders] = await Promise.all([
+      signInWithUser(TEST_USER),
+      signInWithUser(OTHER_USER),
+    ]);
+
     const client = getOrpcClient(headers);
-    await client.user.kyc.upsert({
-      userId: testUserData.id,
-      firstName: "Alice",
-      lastName: "Johnson",
-      dob: new Date("1992-03-20"),
-      country: "CA",
-      residencyStatus: "resident",
-      nationalId: "AB123456",
-    });
-
-    // Create KYC profile for other user
-    const otherHeaders = await signInWithUser(OTHER_USER);
     const otherClient = getOrpcClient(otherHeaders);
-    await otherClient.user.kyc.upsert({
-      userId: otherUserData.id,
-      firstName: "Bob",
-      lastName: "Wilson",
-      dob: new Date("1988-07-10"),
-      country: "US",
-      residencyStatus: "resident",
-      nationalId: "DL987654",
-    });
+
+    // Create KYC profiles in parallel
+    await Promise.all([
+      client.user.kyc.upsert({
+        userId: testUserData.id,
+        firstName: "Alice",
+        lastName: "Johnson",
+        dob: new Date("1992-03-20"),
+        country: "CA",
+        residencyStatus: "resident",
+        nationalId: "AB123456",
+      }),
+      otherClient.user.kyc.upsert({
+        userId: otherUserData.id,
+        firstName: "Bob",
+        lastName: "Wilson",
+        dob: new Date("1988-07-10"),
+        country: "US",
+        residencyStatus: "resident",
+        nationalId: "DL987654",
+      }),
+    ]);
   });
 
   it("can read own KYC profile", async () => {
