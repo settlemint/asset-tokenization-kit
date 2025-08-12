@@ -16,7 +16,6 @@ import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { ShieldBan } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { isAddress } from "viem";
 
 type BlocklistRow = {
   id: string;
@@ -29,8 +28,6 @@ export function TokenBlocklistTable({ token }: { token: Token }) {
 
   // Placeholder until token.read includes blocklisted addresses from subgraph
   const [rows, setRows] = useState<BlocklistRow[]>([]);
-  const [inputMode, setInputMode] = useState<"select" | "manual">("select");
-  const [pendingAddress, setPendingAddress] = useState<string>("");
   const [openSheet, setOpenSheet] = useState(false);
   const [sheetPreset, setSheetPreset] = useState<EthereumAddress | undefined>(
     undefined
@@ -73,16 +70,6 @@ export function TokenBlocklistTable({ token }: { token: Token }) {
       ]),
     [t]
   );
-
-  const addAddress = (addr: string | undefined) => {
-    if (!addr || !isAddress(addr)) return;
-    setRows((prev) =>
-      prev.some((r) => r.id.toLowerCase() === addr.toLowerCase())
-        ? prev
-        : [...prev, { id: addr }]
-    );
-    setPendingAddress("");
-  };
 
   return (
     <ComponentErrorBoundary>
@@ -147,13 +134,7 @@ export function TokenBlocklistTable({ token }: { token: Token }) {
   );
 }
 
-function RowActions({
-  row,
-  onRemove,
-}: {
-  row: BlocklistRow;
-  onRemove: () => void;
-}) {
+function RowActions({ onRemove }: { row: BlocklistRow; onRemove: () => void }) {
   const { t } = useTranslation(["tokens", "common"]);
 
   const actions: ActionItem[] = [

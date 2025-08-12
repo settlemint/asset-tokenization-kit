@@ -101,7 +101,9 @@ export function BlocklistSheet({
                       <div>
                         <div className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
                           {mode === "add"
-                            ? t("common:add")
+                            ? t("tokens:blocklist.block", {
+                                defaultValue: "Block",
+                              })
                             : t("common:remove")}
                         </div>
                         <div className="flex flex-wrap gap-2">
@@ -158,7 +160,7 @@ export function BlocklistSheet({
                       size="sm"
                       onClick={() => setMode("add")}
                     >
-                      {t("common:add")}
+                      {t("tokens:blocklist.block", { defaultValue: "Block" })}
                     </Button>
                     <Button
                       type="button"
