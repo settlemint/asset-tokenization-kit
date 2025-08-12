@@ -69,7 +69,7 @@ export class CreateAssetForm extends BasePage {
     }
   }
 
-  async fillStablecoinFields(options: {
+  async fillAssetFields(options: {
     name?: string;
     symbol?: string;
     decimals?: string;
@@ -82,6 +82,28 @@ export class CreateAssetForm extends BasePage {
     await this.configureComplianceModules();
     await this.reviewAndDeploy();
     await this.confirmPinCode(options.pincode);
+  }
+
+  async fillStablecoinFields(options: {
+    name?: string;
+    symbol?: string;
+    decimals?: string;
+    isin?: string;
+    country?: string;
+    pincode: string;
+  }) {
+    return this.fillAssetFields(options);
+  }
+
+  async fillDepositFields(options: {
+    name?: string;
+    symbol?: string;
+    decimals?: string;
+    isin?: string;
+    country?: string;
+    pincode: string;
+  }) {
+    return this.fillAssetFields(options);
   }
 
   getMaturityDate(options: { isPast?: boolean; daysOffset?: number } = {}) {
@@ -118,21 +140,75 @@ export class CreateAssetForm extends BasePage {
   }
 
   async selectAssetType(assetType: string) {
-    await this.page.getByRole("button", { name: "Asset designer" }).click();
+    type AssetTypeKey = "stablecoin" | "deposit" | "bond" | "equity" | "fund";
 
-    if (assetType.toLowerCase() === "stablecoin") {
-      await this.page.getByText("Cash EquivalentHighly liquid").click();
+    const config: Record<
+      AssetTypeKey,
+      { category: RegExp; card: RegExp; urlType: string }
+    > = {
+      stablecoin: {
+        category: /Cash\s*Equivalent/i,
+        card: /^Stablecoin\b/i,
+        urlType: "stablecoin",
+      },
+      deposit: {
+        category: /Cash\s*Equivalent/i,
+        card: /^Deposit\b/i,
+        urlType: "deposit",
+      },
+      bond: {
+        category: /Fixed\s*Income/i,
+        card: /^Bond\b/i,
+        urlType: "bond",
+      },
+      equity: {
+        category: /Flexible\s*Income/i,
+        card: /^Equity\b/i,
+        urlType: "equity",
+      },
+      fund: {
+        category: /Flexible\s*Income/i,
+        card: /^Fund\b/i,
+        urlType: "fund",
+      },
+    };
 
-      await this.page.getByText("StablecoinDigital currencies").click();
-
-      await this.page.getByRole("button", { name: "Next" }).click();
-    } else {
+    const key = assetType.toLowerCase() as AssetTypeKey;
+    if (!config[key]) {
       throw new Error(
         `Asset type "${assetType}" navigation not implemented yet`
       );
     }
 
-    await this.page.waitForURL("**/asset-designer?type=stablecoin");
+    await this.page.getByRole("button", { name: "Asset designer" }).click();
+
+    const assetClassRadio = this.page.getByRole("radio", {
+      name: config[key].category,
+    });
+    await expect(assetClassRadio).toBeVisible();
+    const assetClassId = await assetClassRadio.getAttribute("id");
+    if (!assetClassId) throw new Error("Asset class radio id not found");
+    const assetClassLabel = this.page.locator(`label[for="${assetClassId}"]`);
+    await expect(assetClassLabel).toBeVisible();
+    await assetClassLabel.click();
+
+    await expect(this.page.getByRole("button", { name: "Next" })).toBeEnabled();
+    await this.page.getByRole("button", { name: "Next" }).click();
+
+    const assetTypeRadio = this.page.getByRole("radio", {
+      name: config[key].card,
+    });
+    await expect(assetTypeRadio).toBeVisible();
+    const assetTypeId = await assetTypeRadio.getAttribute("id");
+    if (!assetTypeId) throw new Error("Asset type radio id not found");
+    const assetTypeLabel = this.page.locator(`label[for="${assetTypeId}"]`);
+    await expect(assetTypeLabel).toBeVisible();
+    await assetTypeLabel.click();
+    await expect(this.page.getByRole("button", { name: "Next" })).toBeEnabled();
+    await this.page.getByRole("button", { name: "Next" }).click();
+    await expect(
+      this.page.getByRole("heading", { name: "General info", level: 2 })
+    ).toBeVisible();
   }
 
   async fillCryptocurrencyDetails(options: {
@@ -314,19 +390,21 @@ export class CreateAssetForm extends BasePage {
     ).toBeVisible();
   }
 
-  async reviewAndDeploy() {
+  async reviewAndDeploy(
+    assetType?: "stablecoin" | "deposit" | "bond" | "equity" | "fund"
+  ) {
     await expect(
-      this.page.locator("h2").filter({ hasText: "Review & Deploy" })
+      this.page.getByRole("heading", { name: /Review\s*&\s*deploy/i, level: 2 })
     ).toBeVisible();
 
-    await expect(
-      this.page.getByRole("paragraph").filter({
-        hasText:
-          "Confirm and deploy your compliant digital asset to the blockchain",
-      })
-    ).toBeVisible();
+    const button = assetType
+      ? this.page.getByRole("button", {
+          name: new RegExp(`^Create\\s+${assetType}$`, "i"),
+        })
+      : this.page.getByRole("button", { name: /^Create\b/i });
 
-    await this.page.getByRole("button", { name: "Submit" }).click();
+    await expect(button).toBeEnabled();
+    await button.click();
   }
 
   async confirmPinCode(pinCode: string) {
@@ -373,7 +451,7 @@ export class CreateAssetForm extends BasePage {
     });
 
     await expect(
-      assetRow.getByRole("cell", { name: options.decimals })
+      assetRow.getByRole("cell", { name: options.decimals, exact: true })
     ).toBeVisible();
 
     await expect(
