@@ -120,15 +120,11 @@ export function TokenBlocklistTable({ token }: { token: Token }) {
           ),
           placeholder: t("tokens:blocklist.searchPlaceholder"),
         }}
-        customEmptyState={
-          rows.length > 0
-            ? {
-                icon: ShieldBan,
-                title: t("tokens:blocklist.empty.title"),
-                description: t("tokens:blocklist.empty.description"),
-              }
-            : undefined
-        }
+        customEmptyState={{
+          icon: ShieldBan,
+          title: t("tokens:blocklist.empty.title"),
+          description: t("tokens:blocklist.empty.description"),
+        }}
       />
     </ComponentErrorBoundary>
   );
