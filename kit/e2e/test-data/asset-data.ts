@@ -443,15 +443,11 @@ export const depositData = {
   assetType: "Deposit",
   name: generateDepositName(),
   symbol: generateSymbol(generateDepositName()),
-  isin: `US${getRandomInt(1000000000, 9999999999)}`,
-  internalId: getUniqueId().substring(0, 12),
-  decimals: "16",
-  price: "3",
-  validityPeriod: "600",
-  validityPeriodTimeUnit: "months",
+  isin: generateValidISIN("AW"),
+  decimals: "14",
+  country: "Aruba",
   pincode: pincode,
   sidebarAssetTypes: "Deposits",
-  initialSupply: "0",
 };
 
 export const depositUpdateCollateralData = {

@@ -289,7 +289,7 @@ test.describe.serial("Bond Creation Validation", () => {
   test.describe
     .serial("Dependent assets, first create stablecoin and then create dependent bond", () => {
     test("Create Stablecoin asset", async () => {
-      await createAssetForm.fillStablecoinFields({
+      await createAssetForm.fillAssetFields({
         name: stablecoinData.name,
         symbol: stablecoinData.symbol,
         decimals: stablecoinData.decimals,
