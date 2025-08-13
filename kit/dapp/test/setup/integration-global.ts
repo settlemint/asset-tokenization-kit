@@ -1,6 +1,5 @@
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { getDappPort } from "@test/fixtures/dapp";
-import { config } from "dotenv";
+import { waitForApi } from "../fixtures/dapp";
 import { getOrpcClient } from "../fixtures/orpc-client";
 import {
   bootstrapSystem,
@@ -17,12 +16,13 @@ import {
 
 const logger = createLogger({ level: "info" });
 
-config({ path: [".env", ".env.local"] });
+let stopApi: () => void;
 
 export async function setup() {
   try {
     // Wait for containerized dapp to be ready
-    await waitForApi();
+    const { stop } = await waitForApi();
+    stopApi = stop;
 
     // Parallelize user setup
     await Promise.all([
@@ -47,19 +47,6 @@ export async function setup() {
   }
 }
 
-let stopApi: () => void;
-
 export const teardown = () => {
   stopApi?.();
 };
-
-async function waitForApi() {
-  try {
-    const { startServer } = await import("@/orpc/server");
-    const { stop } = await startServer(getDappPort());
-    stopApi = stop;
-  } catch (error) {
-    logger.error("Failed to start dApp api", error);
-    process.exit(1);
-  }
-}

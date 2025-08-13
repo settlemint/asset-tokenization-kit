@@ -1,38 +1,25 @@
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { getDappPort } from "@test/fixtures/dapp";
-import { config } from "dotenv";
+import { waitForApi } from "@test/fixtures/dapp";
 import { afterAll, beforeAll } from "vitest";
 
 const logger = createLogger({ level: "info" });
 
-config({ path: [".env", ".env.local"] });
+let stopApi: () => void;
 
 export async function setup() {
   try {
-    // Wait for containerized dapp to be ready
-    await waitForApi();
+    // Wait for dapp api to be ready
+    const { stop } = await waitForApi();
+    stopApi = stop;
   } catch (error: unknown) {
     logger.error("Failed to setup test environment", error);
     process.exit(1);
   }
 }
 
-let stopApi: () => void;
-
 export const teardown = () => {
   stopApi?.();
 };
-
-async function waitForApi() {
-  try {
-    const { startServer } = await import("@/orpc/server");
-    const { stop } = await startServer(getDappPort());
-    stopApi = stop;
-  } catch (error) {
-    logger.error("Failed to start dApp api", error);
-    process.exit(1);
-  }
-}
 
 beforeAll(setup);
 afterAll(teardown);
