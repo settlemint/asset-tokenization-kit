@@ -95,7 +95,11 @@ export function NavSettings() {
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
-        <Collapsible asChild defaultOpen={false} className="group/collapsible">
+        <Collapsible
+          asChild
+          defaultOpen={hasActiveChild}
+          className="group/collapsible"
+        >
           <SidebarMenuItem>
             <CollapsibleTrigger asChild>
               <SidebarMenuButton
