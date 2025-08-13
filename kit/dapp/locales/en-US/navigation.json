@@ -15,5 +15,15 @@
     "exchange": "Exchange",
     "custody": "Custody",
     "income": "Income"
+  },
+  "administration": "Administration",
+  "platformSettings": "Platform Settings",
+  "userManagement": "User Management",
+  "settings": {
+    "assetTypes": "Asset Types",
+    "compliance": "Compliance",
+    "addons": "Addons",
+    "claimTopicsIssuers": "Claim Topics & Issuers",
+    "permissions": "Permissions"
   }
 }
