@@ -204,7 +204,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | graph-node.initContainers.kubectlImage.tag | string | `"v1.33.1"` |  |
 | graph-node.initContainers.postgresImage.pullPolicy | string | `"IfNotPresent"` |  |
 | graph-node.initContainers.postgresImage.repository | string | `"docker.io/postgres"` |  |
-| graph-node.initContainers.postgresImage.tag | string | `"17.50-alpine"` |  |
+| graph-node.initContainers.postgresImage.tag | string | `"17.5-alpine"` |  |
 | graph-node.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
 | graph-node.podAnnotations."prometheus.io/port" | string | `"8040"` |  |
 | graph-node.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |

@@ -1,14 +1,12 @@
 import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
+import { basisPoints } from "@/lib/zod/validators/basis-points";
 import { TokenBaseSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
 import { z } from "zod";
 
 export const FundSchema = z.object({
-  managementFeeBps: z
-    .number()
-    .int()
-    .min(0)
-    .max(10_000)
-    .describe("Management fee in basis points (0-10000)"),
+  managementFeeBps: basisPoints().describe(
+    "Management fee in basis points (0-10000)"
+  ),
 });
 
 /**

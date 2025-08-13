@@ -1,37 +1,38 @@
 {
   "modules": {
-    "addressBlockList": {
+    "AddressBlockListComplianceModule": {
       "description": "Block specific wallet addresses from accessing your asset. Prevents sanctioned or problematic addresses from participating.",
       "shortDescription": "Block specific wallet addresses",
       "title": "Block addresses"
     },
-    "countryAllowList": {
+    "CountryAllowListComplianceModule": {
       "description": "Allow investors only from specific countries. Helps meet regional compliance requirements.",
       "shortDescription": "Allow specific countries only",
-      "title": "Country Allowlist"
+      "title": "Country allowlist"
     },
-    "countryBlockList": {
+    "CountryBlockListComplianceModule": {
       "description": "Block investors from specific countries or regions. Helps comply with sanctions and regulatory restrictions.",
       "shortDescription": "Block specific countries",
-      "title": "Country Blocklist"
+      "title": "Country blocklist"
     },
-    "identityAllowList": {
+    "IdentityAllowListComplianceModule": {
       "description": "Allow only verified identities from your approved list. Works well for exclusive offerings and private sales.",
       "shortDescription": "Allow approved identities only",
-      "title": "Identity Allowlist"
+      "title": "Identity allowlist"
     },
-    "identityBlockList": {
+    "IdentityBlockListComplianceModule": {
       "description": "Block specific verified identities from accessing your asset. Remove problematic investors while staying compliant.",
       "shortDescription": "Block specific identities",
-      "title": "Identity Blocklist"
+      "title": "Identity blocklist"
     },
-    "smartIdentityVerification": {
+    "SMARTIdentityVerificationComplianceModule": {
       "description": "Require identity verification for all investors. Provides KYC and AML compliance through the SMART protocol.",
       "shortDescription": "Require identity verification",
-      "title": "SMART Identity Verification"
+      "title": "SMART identity verification"
     }
   },
   "title": "Compliance",
+  "complianceModuleName": "Module name",
   "sections": {
     "enabled": {
       "title": "Enabled",

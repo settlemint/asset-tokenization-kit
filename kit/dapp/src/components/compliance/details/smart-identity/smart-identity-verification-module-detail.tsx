@@ -1,5 +1,3 @@
-"use client";
-
 import {
   ComplianceDetailActions,
   ComplianceDetailBreadcrumb,
@@ -35,8 +33,6 @@ export function IdentityRestrictionModuleDetail({
   onClose,
 }: ComplianceModuleDetailProps<"SMARTIdentityVerificationComplianceModule">) {
   const { t } = useTranslation(["compliance-modules", "form"]);
-
-  const moduleKey = "smartIdentityVerification";
 
   const [expressionWithGroups, setExpressionWithGroups] =
     useState<ExpressionWithGroups>(initialValues?.values ?? []);
@@ -83,11 +79,11 @@ export function IdentityRestrictionModuleDetail({
               />
             }
           >
-            {t(`modules.${moduleKey}.title`)}
+            {t(`modules.${typeId}.title`)}
           </ComplianceDetailTitle>
 
           <ComplianceDetailDescription>
-            {t(`modules.${moduleKey}.description`)}
+            {t(`modules.${typeId}.description`)}
           </ComplianceDetailDescription>
 
           <ComplianceDetailForm>

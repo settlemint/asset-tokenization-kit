@@ -185,7 +185,7 @@ blockscout:
     blockscout:
       image:
         repository: ghcr.io/blockscout/blockscout
-        tag: "9.0.0"
+        tag: "9.0.1"
         pullPolicy: IfNotPresent
       # Add an extra init container to wait for PostgreSQL
       init:
@@ -375,7 +375,7 @@ support:
       resources: {}
       image:
         repository: registry.k8s.io/ingress-nginx/controller
-        tag: "v1.13.0"
+        tag: "v1.13.1"
         digest: ""
 
   # https://github.com/stakater/Reloader/tree/master/deployments/kubernetes/chart/reloader
@@ -539,7 +539,7 @@ observability:
       image:
         registry: docker.io
         repository: kiwigrid/k8s-sidecar
-        tag: "1.30.3"
+        tag: "1.30.7"
     ingress:
       hosts:
         - grafana.k8s.orb.local
@@ -569,7 +569,7 @@ txsigner:
   image:
     registry: ghcr.io
     repository: settlemint/btp-signer
-    tag: "7.13.5"
+    tag: "7.14.0"
     pullPolicy: IfNotPresent
   # Init container for testing
   test:

@@ -42,12 +42,14 @@ export const SelectAssetType = withForm({
             return {
               value: assetType,
               label: t(`asset-types:types.${assetType}.name`),
-              description: t(`asset-types:types.${assetType}.description`),
-              footer: (
-                <AssetExtensionsList
-                  extensions={factory.tokenExtensions}
-                  className="mt-2"
-                />
+              description: (
+                <>
+                  {t(`asset-types:types.${assetType}.description`)}
+                  <AssetExtensionsList
+                    extensions={factory.tokenExtensions}
+                    className="mt-4"
+                  />
+                </>
               ),
             };
           }) ?? [],

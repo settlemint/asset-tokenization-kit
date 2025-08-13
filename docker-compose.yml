@@ -52,7 +52,7 @@ services:
       retries: 5
       start_period: 1s
   txsigner:
-    image: ghcr.io/settlemint/btp-signer:7.13.5
+    image: ghcr.io/settlemint/btp-signer:7.14.0
     container_name: ${CONTAINER_PREFIX:-atk}-txsigner
     restart: unless-stopped
     depends_on:
@@ -288,7 +288,7 @@ services:
       - ./tools/docker/minio/init.sh:/init.sh
     restart: "no"
   blockscout-backend:
-    image: ghcr.io/blockscout/blockscout:9.0.0
+    image: ghcr.io/blockscout/blockscout:9.0.1
     container_name: ${CONTAINER_PREFIX:-atk}-blockscout-backend
     restart: unless-stopped
     depends_on:
