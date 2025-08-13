@@ -28,11 +28,8 @@
     "test:unit:watch": "vitest  --project unit",
     "test:unit:ui": "vitest --project unit --ui",
     "test:unit:coverage": "vitest run --project unit --coverage",
-    "pretest:integration": "cd ../.. && bun run test:reset",
-    "test:integration": "DOTENV_CONFIG_PATH=.env.test vitest run --project integration",
-    "pretest:ci": "cd ../.. && bun run test:reset",
-    "test:ci": "DOTENV_CONFIG_PATH=.env.test vitest run --coverage",
-    "test:integration:local": "TEST_DAPP_PORT=3000 vitest run --project integration",
+    "test:integration": "vitest run --project integration --coverage",
+    "test:ci": "vitest run --coverage",
     "test": "bun run test:unit",
     "route:gen": "tsr generate",
     "knip": "knip"
