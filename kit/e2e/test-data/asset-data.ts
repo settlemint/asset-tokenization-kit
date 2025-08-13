@@ -367,21 +367,6 @@ export const cryptocurrencyBurnData = {
   pincode: pincode,
 };
 
-export const equityData = {
-  assetType: "Equity",
-  name: generateEquityName(),
-  symbol: generateSymbol(generateEquityName()),
-  isin: `US${getRandomInt(1000000000, 9999999999)}`,
-  internalId: getUniqueId().substring(0, 12),
-  decimals: "13",
-  price: "35",
-  equityClass: "Common Equity",
-  equityCategory: "Communication Services",
-  pincode: pincode,
-  sidebarAssetTypes: "Equities",
-  initialSupply: "0",
-};
-
 export const equityMintData = {
   amount: "1500",
   pincode: pincode,
@@ -395,22 +380,6 @@ export const equityTransferData = {
 export const equityBurnData = {
   amount: "600",
   pincode: pincode,
-};
-
-export const fundData = {
-  assetType: "Fund",
-  name: generateFundName(),
-  symbol: generateSymbol(generateFundName()),
-  isin: `US${getRandomInt(1000000000, 9999999999)}`,
-  internalId: getUniqueId().substring(0, 12),
-  decimals: "5",
-  price: "135",
-  managementFee: "2",
-  fundCategory: "Commodity Trading",
-  fundClass: "Diversified",
-  pincode: pincode,
-  sidebarAssetTypes: "Funds",
-  initialSupply: "0",
 };
 
 export const fundMintData = {
@@ -437,6 +406,29 @@ export const stablecoinData = {
   country: "United States of America",
   pincode: pincode,
   sidebarAssetTypes: "Stablecoins",
+};
+
+export const fundData = {
+  assetType: "Fund",
+  name: generateFundName(),
+  symbol: generateSymbol(generateFundName()),
+  isin: generateValidISIN("EG"),
+  decimals: "3",
+  country: "Egypt",
+  managementFee: "2",
+  pincode: pincode,
+  sidebarAssetTypes: "Funds",
+};
+
+export const equityData = {
+  assetType: "Equity",
+  name: generateEquityName(),
+  symbol: generateSymbol(generateEquityName()),
+  isin: generateValidISIN("RS"),
+  decimals: "12",
+  country: "Serbia",
+  pincode: pincode,
+  sidebarAssetTypes: "Equities",
 };
 
 export const depositData = {

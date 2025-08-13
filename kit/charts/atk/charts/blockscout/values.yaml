@@ -23,7 +23,7 @@ blockscout-stack:
       prometheus.io/path: "/metrics"
     image:
       repository: ghcr.io/blockscout/blockscout
-      tag: "9.0.1"
+      tag: "8.1.2"
     ingress:
       enabled: true
       className: "atk-nginx"
@@ -34,7 +34,6 @@ blockscout-stack:
       SUBNETWORK: "ATK"
       ETHEREUM_JSONRPC_VARIANT: besu
       ETHEREUM_JSONRPC_HTTP_INSECURE: 'true'
-      ETHEREUM_JSONRPC_HTTP_GZIP_ENABLED: 'true'
       SHOW_TXS_CHART: 'true'
       TXS_STATS_ENABLED: 'true'
       OTHER_EXPLORERS: '{}'
@@ -44,24 +43,16 @@ blockscout-stack:
       FETCH_REWARDS_WAY: 'trace_block'
       DISABLE_EXCHANGE_RATES: 'true'
       ECTO_USE_SSL: 'false'
-      POOL_SIZE: '5'
-      POOL_SIZE_API: '5'
-      POOL_TIMEOUT: '30000'
-      POOL_MAX_OVERFLOW: '40'
+      POOL_SIZE: '10'
+      POOL_SIZE_API: '10'
       ECTO_ADAPTER_TIMEOUT: '60000'
       DATABASE_TIMEOUT: '60000'
-      QUEUE_TARGET: '5000'
-      QUEUE_INTERVAL: '1000'
       MIX_ENV: 'prod'
       API_GRAPHQL_MAX_COMPLEXITY: '1000'
-      INDEXER_DISABLE_INTERNAL_TRANSACTIONS_FETCHER: 'false'
       IPFS_GATEWAY_URL: 'https://ipfs.io/ipfs'
       IPFS_PUBLIC_GATEWAY_URL: 'https://ipfs.io/ipfs'
-      INDEXER_TOKEN_INSTANCE_RETRY_MAX_REFETCH_INTERVAL: '1h'
-      INDEXER_TOKEN_INSTANCE_USE_BASE_URI_RETRY: 'true'
       API_URL: https://explorer.k8s.orb.local
       WEBAPP_URL: https://explorer.k8s.orb.local
-      BLOCKSCOUT_PROTOCOL: 'https'
     envFromSecret:
       DATABASE_URL: postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable
       ETHEREUM_JSONRPC_HTTP_URL: http://erpc:4000/settlemint/evm/1337
