@@ -80,7 +80,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | blockscout.blockscout-stack.blockscout.env.WEBAPP_URL | string | `"https://explorer.k8s.orb.local"` |  |
 | blockscout.blockscout-stack.blockscout.image.pullPolicy | string | `"IfNotPresent"` |  |
 | blockscout.blockscout-stack.blockscout.image.repository | string | `"ghcr.io/blockscout/blockscout"` |  |
-| blockscout.blockscout-stack.blockscout.image.tag | string | `"9.0.0"` |  |
+| blockscout.blockscout-stack.blockscout.image.tag | string | `"8.1.2"` |  |
 | blockscout.blockscout-stack.blockscout.ingress.hostname | string | `"explorer.k8s.orb.local"` |  |
 | blockscout.blockscout-stack.blockscout.init.args[0] | string | `"-c"` |  |
 | blockscout.blockscout-stack.blockscout.init.args[1] | string | `"echo \"Waiting for postgresql:5432...\"\nwhile ! nc -z postgresql 5432; do\n  sleep 2;\ndone;\necho \"PostgreSQL is ready!\"\n# Original command:\nbin/blockscout eval \"Elixir.Explorer.ReleaseTasks.create_and_migrate()\"\n"` |  |
@@ -204,7 +204,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | graph-node.initContainers.kubectlImage.tag | string | `"v1.33.1"` |  |
 | graph-node.initContainers.postgresImage.pullPolicy | string | `"IfNotPresent"` |  |
 | graph-node.initContainers.postgresImage.repository | string | `"docker.io/postgres"` |  |
-| graph-node.initContainers.postgresImage.tag | string | `"17.50-alpine"` |  |
+| graph-node.initContainers.postgresImage.tag | string | `"17.5-alpine"` |  |
 | graph-node.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
 | graph-node.podAnnotations."prometheus.io/port" | string | `"8040"` |  |
 | graph-node.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
