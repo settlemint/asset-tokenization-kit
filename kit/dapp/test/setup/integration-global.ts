@@ -4,6 +4,8 @@ import { getOrpcClient } from "../fixtures/orpc-client";
 import {
   bootstrapSystem,
   bootstrapTokenFactories,
+  createAndRegisterUserIdentities,
+  setDefaultSystemSettings,
   setupDefaultIssuerRoles,
 } from "../fixtures/system-bootstrap";
 import {
@@ -24,12 +26,10 @@ export async function setup() {
     const { stop } = await startApiServer();
     stopApi = stop;
 
-    // Parallelize user setup
-    await Promise.all([
-      setupUser(DEFAULT_ADMIN),
-      setupUser(DEFAULT_INVESTOR),
-      setupUser(DEFAULT_ISSUER),
-    ]);
+    // Default admin goes first as it requires the initial admin role
+    await setupUser(DEFAULT_ADMIN);
+    // Parallelize other user setup
+    await Promise.all([setupUser(DEFAULT_INVESTOR), setupUser(DEFAULT_ISSUER)]);
 
     const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));
     const system = await bootstrapSystem(orpClient);
@@ -38,6 +38,8 @@ export async function setup() {
     await Promise.all([
       bootstrapTokenFactories(orpClient, system),
       setupDefaultIssuerRoles(orpClient),
+      setDefaultSystemSettings(orpClient),
+      createAndRegisterUserIdentities(orpClient),
     ]);
 
     stopApi();

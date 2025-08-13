@@ -42,7 +42,7 @@ export const identityRegister = portalRouter.system.identityRegister
     })
   )
   .handler(async ({ input, context, errors }) => {
-    const { verification, country } = input;
+    const { verification, country, wallet } = input;
     const { auth, system } = context;
     const sender = auth.user;
 
@@ -54,17 +54,19 @@ export const identityRegister = portalRouter.system.identityRegister
       });
     }
 
+    const walletAddress = wallet ?? auth.user.wallet;
+
     const account = await call(
       readAccount,
       {
-        wallet: auth.user.wallet,
+        wallet: walletAddress,
       },
       { context }
     );
 
     if (!account.identity) {
       throw errors.NOT_FOUND({
-        message: "No identity found for the current user",
+        message: `No identity found for the account "${walletAddress}"`,
       });
     }
 

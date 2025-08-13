@@ -1,6 +1,8 @@
 import { retryWhenFailed } from "@settlemint/sdk-utils";
+import { DEFAULT_INVESTOR } from "@test/fixtures/user";
 import { getOrpcClient, OrpcClient } from "./orpc-client";
 import {
+  DEFAULT_ADMIN,
   DEFAULT_ISSUER,
   DEFAULT_PINCODE,
   getUserData,
@@ -140,6 +142,9 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
     ...(!issuerMe.userSystemPermissions.roles.complianceManager
       ? ["complianceManager" as const]
       : []),
+    ...(!issuerMe.userSystemPermissions.roles.identityManager
+      ? ["identityManager" as const]
+      : []),
   ];
 
   if (rolesToGrant.length > 0) {
@@ -151,5 +156,53 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
       address: issuer.wallet,
       role: rolesToGrant,
     });
+  }
+}
+
+export async function setDefaultSystemSettings(orpClient: OrpcClient) {
+  const settings = await orpClient.settings.list({});
+  if (settings.find((s) => s.key === "BASE_CURRENCY")) {
+    console.log("Base currency already set");
+    return;
+  }
+  await orpClient.settings.upsert({
+    key: "BASE_CURRENCY",
+    value: "USD",
+  });
+}
+
+export async function createAndRegisterUserIdentities(orpcClient: OrpcClient) {
+  const users = [DEFAULT_ISSUER, DEFAULT_INVESTOR, DEFAULT_ADMIN];
+
+  for (const user of users) {
+    const userOrpClient = getOrpcClient(await signInWithUser(user));
+    const me = await userOrpClient.user.me({});
+    if (me.wallet && !me.onboardingState.identitySetup) {
+      await orpcClient.system.identityCreate({
+        verification: {
+          verificationCode: DEFAULT_PINCODE,
+          verificationType: "pincode",
+        },
+      });
+      await orpcClient.system.identityRegister({
+        verification: {
+          verificationCode: DEFAULT_PINCODE,
+          verificationType: "pincode",
+        },
+        wallet: me.wallet,
+        country: "BE",
+      });
+    }
+    if (!me.onboardingState.identity) {
+      await orpcClient.user.kyc.upsert({
+        firstName: user.name,
+        lastName: "(Integration tests)",
+        dob: new Date("1990-01-01"),
+        country: "BE",
+        residencyStatus: "resident",
+        nationalId: "1234567890",
+        userId: me.id,
+      });
+    }
   }
 }
