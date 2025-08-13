@@ -26,6 +26,13 @@ export function startServer(port: number) {
     if (req.url?.toLowerCase().startsWith("/api/auth")) {
       return authHandler(req, res);
     }
+
+    // Strip /api/rpc from the url
+    const url = req.url?.startsWith("/api/rpc")
+      ? req.url.replace("/api/rpc", "")
+      : req.url;
+    req.url = url;
+
     const result = await handler.handle(req, res, {
       context: { headers: req.headers as Record<string, string | undefined> },
     });
