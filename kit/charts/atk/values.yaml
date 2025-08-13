@@ -533,7 +533,7 @@ observability:
       # -- Docker image repository
       repository: grafana/grafana
       # Overrides the Grafana image tag whose default is the chart appVersion
-      tag: "12.1.0"
+      tag: "12.1.1"
     # Sidecar configuration for Grafana dashboards and datasources
     sidecar:
       image:
