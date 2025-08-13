@@ -89,11 +89,11 @@ export async function bootstrapTokenFactories(
   const factories: Parameters<
     typeof orpClient.system.tokenFactoryCreate
   >[0]["factories"] = [
-    { type: "bond", name: "Bond Factory" },
-    { type: "deposit", name: "Deposit Factory" },
-    { type: "equity", name: "Equrity Factory" },
-    { type: "fund", name: "Fund Factory" },
-    { type: "stablecoin", name: "Stablecoin Factory" },
+    { type: "bond", name: "Bonds" },
+    { type: "deposit", name: "Deposits" },
+    { type: "equity", name: "Equities" },
+    { type: "fund", name: "Funds" },
+    { type: "stablecoin", name: "Stablecoins" },
   ];
 
   const nonExistingFactories = factories.filter(
@@ -129,6 +129,35 @@ export async function bootstrapTokenFactories(
     );
   }
   console.log("Token factories created");
+}
+
+export async function bootstrapAddons(orpClient: OrpcClient) {
+  const addons = await orpClient.system.addonList({});
+  if (addons.length > 0) {
+    console.log("Addons already exist");
+    return;
+  }
+
+  await orpClient.system.addonCreate({
+    verification: {
+      verificationCode: DEFAULT_PINCODE,
+      verificationType: "pincode",
+    },
+    addons: [
+      {
+        type: "airdrops",
+        name: "Airdrops",
+      },
+      {
+        type: "yield",
+        name: "Yield",
+      },
+      {
+        type: "xvp",
+        name: "XVP",
+      },
+    ],
+  });
 }
 
 export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
@@ -175,6 +204,7 @@ export async function setDefaultSystemSettings(orpClient: OrpcClient) {
 export async function createAndRegisterUserIdentities(orpcClient: OrpcClient) {
   const users = [DEFAULT_ISSUER, DEFAULT_INVESTOR, DEFAULT_ADMIN];
 
+  // TODO: parallelize these operations when pincode concurrency issues are fixed
   for (const user of users) {
     const userOrpClient = getOrpcClient(await signInWithUser(user));
     const me = await userOrpClient.user.me({});

@@ -2,6 +2,7 @@ import { createLogger } from "@settlemint/sdk-utils/logging";
 import { startApiServer } from "../fixtures/dapp";
 import { getOrpcClient } from "../fixtures/orpc-client";
 import {
+  bootstrapAddons,
   bootstrapSystem,
   bootstrapTokenFactories,
   createAndRegisterUserIdentities,
@@ -34,13 +35,12 @@ export async function setup() {
     const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));
     const system = await bootstrapSystem(orpClient);
 
-    // Parallelize post-boot operations
-    await Promise.all([
-      bootstrapTokenFactories(orpClient, system),
-      setupDefaultIssuerRoles(orpClient),
-      setDefaultSystemSettings(orpClient),
-      createAndRegisterUserIdentities(orpClient),
-    ]);
+    // TODO: parallelize these operations when pincode concurrency issues are fixed
+    await bootstrapTokenFactories(orpClient, system);
+    await bootstrapAddons(orpClient);
+    await setupDefaultIssuerRoles(orpClient);
+    await setDefaultSystemSettings(orpClient);
+    await createAndRegisterUserIdentities(orpClient);
 
     stopApi();
   } catch (error: unknown) {

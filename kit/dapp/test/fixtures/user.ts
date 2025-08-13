@@ -13,19 +13,19 @@ const DEFAULT_PASSWORD = "settlemint";
 export const DEFAULT_PINCODE = "123456";
 
 export const DEFAULT_ADMIN: User = {
-  email: "admin@test.com",
+  email: "admin@settlemint.com",
   name: "admin",
   password: DEFAULT_PASSWORD,
 };
 
 export const DEFAULT_INVESTOR: User = {
-  email: "investor@test.com",
+  email: "investor@settlemint.com",
   name: "investor",
   password: DEFAULT_PASSWORD,
 };
 
 export const DEFAULT_ISSUER: User = {
-  email: "issuer@test.com",
+  email: "issuer@settlemint.com",
   name: "issuer",
   password: DEFAULT_PASSWORD,
 };
