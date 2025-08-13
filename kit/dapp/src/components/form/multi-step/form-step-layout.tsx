@@ -12,12 +12,14 @@ export function FormStepLayout({
   actions,
   children,
   fullWidth = false,
+  asGrid = false,
 }: {
   title: React.ReactNode;
   description: React.ReactNode;
   actions?: React.ReactNode;
   children: React.ReactNode;
   fullWidth?: boolean;
+  asGrid?: boolean;
 }) {
   return (
     <>
@@ -25,7 +27,9 @@ export function FormStepLayout({
         <FormStepTitle>{title}</FormStepTitle>
         <FormStepSubtitle>{description}</FormStepSubtitle>
       </FormStepHeader>
-      <FormStepContent fullWidth={fullWidth}>{children}</FormStepContent>
+      <FormStepContent fullWidth={fullWidth} asGrid={asGrid}>
+        {children}
+      </FormStepContent>
       {actions && <FormStepSubmit>{actions}</FormStepSubmit>}
     </>
   );

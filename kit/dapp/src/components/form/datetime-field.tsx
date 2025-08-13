@@ -116,6 +116,7 @@ export function DateTimeField({
               className={cn(
                 errorClassNames(field.state.meta),
                 "justify-between font-normal",
+                hideTime ? "w-full" : "w-[calc(100%-120px)]",
                 !selectedDate && "text-muted-foreground"
               )}
             >

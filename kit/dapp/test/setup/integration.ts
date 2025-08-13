@@ -1,109 +1,25 @@
-import { execSync } from "node:child_process";
-import { getDappUrl } from "../fixtures/dapp";
-import { getOrpcClient } from "../fixtures/orpc-client";
-import {
-  bootstrapSystem,
-  bootstrapTokenFactories,
-  setupDefaultIssuerRoles,
-} from "../fixtures/system-bootstrap";
-import {
-  DEFAULT_ADMIN,
-  DEFAULT_INVESTOR,
-  DEFAULT_ISSUER,
-  setupUser,
-  signInWithUser,
-} from "../fixtures/user";
+import { createLogger } from "@settlemint/sdk-utils/logging";
+import { afterAll, beforeAll } from "vitest";
+import { startApiServer } from "../fixtures/dapp";
+
+const logger = createLogger({ level: "info" });
+
+let stopApi: () => void;
 
 export async function setup() {
   try {
-    // Wait for containerized dapp to be ready
-    await waitForDapp();
-
-    // Parallelize user setup
-    await Promise.all([
-      setupUser(DEFAULT_ADMIN),
-      setupUser(DEFAULT_INVESTOR),
-      setupUser(DEFAULT_ISSUER),
-    ]);
-
-    const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));
-    const system = await bootstrapSystem(orpClient);
-
-    // Parallelize post-boot operations
-    await Promise.all([
-      bootstrapTokenFactories(orpClient, system),
-      setupDefaultIssuerRoles(orpClient),
-    ]);
+    // Start dapp api server
+    const { stop } = await startApiServer();
+    stopApi = stop;
   } catch (error: unknown) {
-    console.error("Failed to setup test environment", error);
+    logger.error("Failed to setup test environment", error);
     process.exit(1);
   }
 }
 
 export const teardown = () => {
-  // Nothing to teardown as containers are managed by docker-compose
+  stopApi?.();
 };
 
-async function waitForDapp() {
-  console.log("Waiting for containerized dapp to be ready...");
-  const maxAttempts = 60; // 60 seconds timeout
-  const delayMs = 1000;
-
-  // Try to detect the actual container name
-  let containerName = "atk-test-dapp"; // Default for test environment
-  try {
-    const containerList = execSync(
-      "docker ps --format '{{.Names}}' | grep -E '(atk|dapp)' | grep dapp | head -1",
-      { encoding: "utf-8" }
-    ).trim();
-    if (containerList) {
-      containerName = containerList;
-      console.log(`Found dapp container: ${containerName}`);
-    }
-  } catch {
-    // Use default if detection fails
-    console.log(`Using default container name: ${containerName}`);
-  }
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      const response = await fetch(getDappUrl());
-      if (response.ok) {
-        console.log("Containerized dapp is ready!");
-        return;
-      }
-    } catch {
-      // Ignore connection errors
-    }
-
-    if (attempt < maxAttempts) {
-      await new Promise((resolve) => setTimeout(resolve, delayMs));
-    }
-  }
-
-  // Dump container logs before failing
-  console.error("\n=== Container failed to become ready. Dumping logs ===");
-  try {
-    const logs = execSync(`docker logs ${containerName} --tail 100`, {
-      encoding: "utf-8",
-    });
-    console.error("Container logs (last 100 lines):");
-    console.error(logs);
-  } catch (logError) {
-    console.error(`Failed to retrieve container logs: ${logError}`);
-  }
-
-  // Also check container status
-  try {
-    const status = execSync(
-      `docker inspect ${containerName} --format='{{json .State}}'`,
-      { encoding: "utf-8" }
-    );
-    console.error("\nContainer status:");
-    console.error(JSON.parse(status));
-  } catch (statusError) {
-    console.error(`Failed to inspect container: ${statusError}`);
-  }
-
-  throw new Error("Containerized dapp did not become ready in time");
-}
+beforeAll(setup);
+afterAll(teardown);

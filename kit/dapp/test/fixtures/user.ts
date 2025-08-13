@@ -1,5 +1,5 @@
 import { zeroAddress } from "viem";
-import { authClient } from "./auth-client";
+import { getAuthClient } from "./auth-client";
 import { getOrpcClient } from "./orpc-client";
 
 export interface User {
@@ -31,6 +31,7 @@ export const DEFAULT_ISSUER: User = {
 };
 
 export async function signInWithUser(user: User) {
+  const authClient = getAuthClient();
   const newHeaders = new Headers();
   const { error: signInError } = await authClient.signIn.email(
     {
@@ -75,6 +76,7 @@ export async function signInWithUser(user: User) {
 
 export async function setupUser(user: User) {
   try {
+    const authClient = getAuthClient();
     // Step 1: Sign up
     const { error: signUpError } = await authClient.signUp.email(user);
 
@@ -241,6 +243,7 @@ export async function setupUser(user: User) {
 }
 
 export async function getUserData(user: User) {
+  const authClient = getAuthClient();
   const headers = await signInWithUser(user);
   const session = await authClient.getSession(
     {},

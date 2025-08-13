@@ -1,3 +1,4 @@
+import { FormStepContent } from "@/components/form/multi-step/form-step";
 import { useAppForm } from "@/hooks/use-app-form";
 import { authClient } from "@/lib/auth/auth.client";
 import { orpc } from "@/orpc/orpc-client";
@@ -128,53 +129,58 @@ export function KycForm({ onComplete }: KycFormProps) {
   return (
     <div className="space-y-6">
       <form.AppForm>
-        <form.AppField
-          name="firstName"
-          children={(field) => (
-            <field.TextField label={t("kycForm.firstName")} required={true} />
-          )}
-        />
-        <form.AppField
-          name="lastName"
-          children={(field) => (
-            <field.TextField label={t("kycForm.lastName")} required={true} />
-          )}
-        />
-        <form.AppField
-          name="dob"
-          children={(field) => (
-            <field.DateTimeField
-              label={t("kycForm.dob")}
-              required={true}
-              hideTime={true}
-            />
-          )}
-        />
-        <form.AppField
-          name="country"
-          children={(field) => (
-            <field.CountrySelectField
-              label={t("kycForm.country")}
-              required={true}
-            />
-          )}
-        />
-        <form.AppField
-          name="residencyStatus"
-          children={(field) => (
-            <field.SelectField
-              label={t("kycForm.residencyStatus")}
-              required={true}
-              options={residencyStatusOptions}
-            />
-          )}
-        />
-        <form.AppField
-          name="nationalId"
-          children={(field) => (
-            <field.TextField label={t("kycForm.nationalId")} required={true} />
-          )}
-        />
+        <FormStepContent asGrid fullWidth>
+          <form.AppField
+            name="firstName"
+            children={(field) => (
+              <field.TextField label={t("kycForm.firstName")} required={true} />
+            )}
+          />
+          <form.AppField
+            name="lastName"
+            children={(field) => (
+              <field.TextField label={t("kycForm.lastName")} required={true} />
+            )}
+          />
+          <form.AppField
+            name="dob"
+            children={(field) => (
+              <field.DateTimeField
+                label={t("kycForm.dob")}
+                required={true}
+                hideTime={true}
+              />
+            )}
+          />
+          <form.AppField
+            name="country"
+            children={(field) => (
+              <field.CountrySelectField
+                label={t("kycForm.country")}
+                required={true}
+              />
+            )}
+          />
+          <form.AppField
+            name="residencyStatus"
+            children={(field) => (
+              <field.SelectField
+                label={t("kycForm.residencyStatus")}
+                required={true}
+                options={residencyStatusOptions}
+              />
+            )}
+          />
+          <form.AppField
+            name="nationalId"
+            children={(field) => (
+              <field.TextField
+                label={t("kycForm.nationalId")}
+                required={true}
+              />
+            )}
+          />
+        </FormStepContent>
         <form.VerificationButton
           verification={{
             title: t("kycForm.identity.confirm-title"),

@@ -56,6 +56,7 @@ export const AssetSpecificDetails = withForm({
             />
           </>
         }
+        asGrid
       >
         {type === "bond" && <BondFields form={form} />}
         {type === "fund" && <FundFields form={form} />}

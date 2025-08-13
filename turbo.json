@@ -116,7 +116,6 @@
         "jest.config.*",
         "foundry.toml",
         "hardhat.config.*",
-        ".env.test",
         "!coverage/**",
         "!.nyc_output/**",
         "!**/node_modules/**",
