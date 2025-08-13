@@ -14,6 +14,7 @@ const IDENTITY_REGISTER_MUTATION = portalGraphql(`
     $address: String!
     $from: String!
     $country: Int!
+    $wallet: String!
     $identity: String!
   ) {
     create: IATKIdentityRegistryRegisterIdentity(
@@ -24,7 +25,7 @@ const IDENTITY_REGISTER_MUTATION = portalGraphql(`
       input: {
         _country: $country
         _identity: $identity
-        _userAddress: $from
+        _userAddress: $wallet
       }
     ) {
       transactionHash
@@ -80,6 +81,7 @@ export const identityRegister = portalRouter.system.identityRegister
       from: sender.wallet,
       country: Number(countries.alpha2ToNumeric(country) ?? "0"),
       identity: account.identity,
+      wallet: walletAddress,
       ...challengeResponse,
     });
 
