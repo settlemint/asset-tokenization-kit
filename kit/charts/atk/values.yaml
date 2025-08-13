@@ -502,7 +502,7 @@ observability:
       image:
         # -- The Docker registry and image for the k8s sidecar
         repository: docker.io/kiwigrid/k8s-sidecar
-        tag: 1.30.7
+        tag: 1.30.8
     gateway:
       image:
         registry: docker.io
@@ -539,7 +539,7 @@ observability:
       image:
         registry: docker.io
         repository: kiwigrid/k8s-sidecar
-        tag: "1.30.7"
+        tag: "1.30.8"
     ingress:
       hosts:
         - grafana.k8s.orb.local
