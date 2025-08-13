@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import { beforeAll, describe, expect, test } from "vitest";
 
 describe("Pincode verification", () => {
-  const authClient = getAuthClient();
+  let authClient: ReturnType<typeof getAuthClient>;
 
   const TEST_USER = {
     email: `${randomUUID()}@test.com`,
@@ -13,6 +13,7 @@ describe("Pincode verification", () => {
   };
 
   beforeAll(async () => {
+    authClient = getAuthClient();
     await setupUser(TEST_USER);
   });
 
