@@ -144,17 +144,6 @@ function getImplementationAddress(addonConfig: SystemAddonConfig): string {
  * Creates system addons.
  *
  * This handler registers system addons, supporting both single and batch operations.
- * @auth Required - User must be authenticated
- * @middleware portalMiddleware - Provides Portal GraphQL client
- * @middleware theGraphMiddleware - Provides TheGraph client
- * @middleware systemMiddleware - Provides system context and addon registry
- * @param input.contract - The system addon registry contract address
- * @param input.addons - Single addon or array of addons to register
- * @param input.messages - Optional custom messages for localization
- * @param input.verification - The verification code and type for the transaction
- * @returns {Promise<SystemAddonCreateOutput>} Registration summary with results for each addon
- * @throws {ORPCError} UNAUTHORIZED - If user is not authenticated
- * @throws {ORPCError} INTERNAL_SERVER_ERROR - If system not bootstrapped or transaction fails
  */
 export const addonCreate = portalRouter.system.addonCreate
   .use(
@@ -204,7 +193,7 @@ export const addonCreate = portalRouter.system.addonCreate
     );
 
     // Process addons sequentially - parallel challenge generation not working
-    const results = [];
+    const addonErrors: string[] = [];
 
     for (const addonConfig of addonsToRegister) {
       const { name } = addonConfig;
@@ -231,17 +220,24 @@ export const addonCreate = portalRouter.system.addonCreate
         };
 
         // Use the Portal client's mutate method that returns the transaction hash
-        const txHash = await context.portalClient.mutate(
+        await context.portalClient.mutate(
           REGISTER_SYSTEM_ADDON_MUTATION,
           variables
         );
 
-        results.push({ status: "success" as const, addon: name, txHash });
         logger.info(`Addon ${name} registered successfully`);
       } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
         logger.error(`Failed to create addon ${name}:`, error);
-        results.push({ status: "failed" as const, addon: name, error });
+        addonErrors.push(`Failed to create addon ${name}: ${errorMessage}`);
       }
+    }
+
+    if (addonErrors.length > 0) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: addonErrors.join("\n"),
+      });
     }
 
     return await call(

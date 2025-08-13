@@ -1,3 +1,4 @@
+import { ORPCError } from "@orpc/server";
 import { retryWhenFailed } from "@settlemint/sdk-utils";
 import { DEFAULT_INVESTOR } from "@test/fixtures/user";
 import { getOrpcClient, OrpcClient } from "./orpc-client";
@@ -183,15 +184,27 @@ export async function createAndRegisterUserIdentities(orpcClient: OrpcClient) {
           verificationCode: DEFAULT_PINCODE,
           verificationType: "pincode",
         },
-      });
-      await orpcClient.system.identityRegister({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
-        },
         wallet: me.wallet,
-        country: "BE",
       });
+      try {
+        await orpcClient.system.identityRegister({
+          verification: {
+            verificationCode: DEFAULT_PINCODE,
+            verificationType: "pincode",
+          },
+          wallet: me.wallet,
+          country: "BE",
+        });
+      } catch (err) {
+        if (
+          !(
+            err instanceof ORPCError &&
+            err.message.includes("IdentityAlreadyRegistered")
+          )
+        ) {
+          throw err;
+        }
+      }
     }
     if (!me.onboardingState.identity) {
       await orpcClient.user.kyc.upsert({
