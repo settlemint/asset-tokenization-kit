@@ -164,7 +164,8 @@ export default defineConfig({
         test: {
           name: "integration",
           environment: "node",
-          globalSetup: ["./test/setup/integration.ts"],
+          globalSetup: ["./test/setup/integration-global.ts"],
+          setupFiles: ["./test/setup/integration.ts"],
           testTimeout: 60000, // 60 seconds for integration tests
           hookTimeout: 60000, // 60 seconds for hooks
           poolOptions: {

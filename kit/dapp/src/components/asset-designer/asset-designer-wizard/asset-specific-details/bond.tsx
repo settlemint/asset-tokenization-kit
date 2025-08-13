@@ -16,7 +16,7 @@ export const BondFields = withForm({
   defaultValues: {} as AssetDesignerFormInputData,
   props: {},
   render: function Render({ form }) {
-    const { t } = useTranslation(["asset-designer"]);
+    const { t } = useTranslation(["asset-designer", "asset-types"]);
 
     return (
       <>
@@ -26,6 +26,9 @@ export const BondFields = withForm({
             <field.BigIntField
               label={t("form.fields.cap.label")}
               required={isRequiredField("cap")}
+              description={t("form.fields.cap.description", {
+                type: t(`asset-types:types.bond.nameLowercasePlural`),
+              })}
             />
           )}
         />
@@ -35,6 +38,9 @@ export const BondFields = withForm({
             <field.BigIntField
               label={t("form.fields.faceValue.label")}
               required={isRequiredField("faceValue")}
+              description={t("form.fields.faceValue.description", {
+                type: t(`asset-types:types.bond.nameLowercaseSingular`),
+              })}
             />
           )}
         />
@@ -44,6 +50,9 @@ export const BondFields = withForm({
             <field.DateTimeField
               label={t("form.fields.maturityDate.label")}
               required={isRequiredField("maturityDate")}
+              description={t("form.fields.maturityDate.description", {
+                type: t(`asset-types:types.bond.nameLowercaseSingular`),
+              })}
             />
           )}
         />
@@ -58,6 +67,14 @@ export const BondFields = withForm({
                       scope="asset"
                       label={t("form.fields.denominationAsset.label")}
                       required={isRequiredField("denominationAsset")}
+                      description={t(
+                        "form.fields.denominationAsset.description",
+                        {
+                          type: t(
+                            `asset-types:types.bond.nameLowercaseSingular`
+                          ),
+                        }
+                      )}
                     />
                   )}
                 />
@@ -69,6 +86,14 @@ export const BondFields = withForm({
                     <field.AddressInputField
                       label={t("form.fields.denominationAsset.label")}
                       required={isRequiredField("denominationAsset")}
+                      description={t(
+                        "form.fields.denominationAsset.description",
+                        {
+                          type: t(
+                            `asset-types:types.bond.nameLowercaseSingular`
+                          ),
+                        }
+                      )}
                     />
                   )}
                 />

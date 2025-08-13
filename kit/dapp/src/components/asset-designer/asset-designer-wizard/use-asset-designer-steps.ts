@@ -1,4 +1,4 @@
-import type { StepOrGroup } from "@/components/stepper/types";
+import type { StepGroup } from "@/components/stepper/types";
 import type { AssetType } from "@/lib/zod/validators/asset-types";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
@@ -33,7 +33,7 @@ export type AssetDesignerStepGroupsType = z.infer<
 >;
 
 interface UseAssetDesignerStepsReturn {
-  stepsOrGroups: StepOrGroup<
+  stepsOrGroups: StepGroup<
     AssetDesignerStepsType,
     AssetDesignerStepGroupsType
   >[];
@@ -133,7 +133,7 @@ export function useAssetDesignerSteps({
         },
       ],
     },
-  ] as const satisfies StepOrGroup<
+  ] as const satisfies StepGroup<
     AssetDesignerStepsType,
     AssetDesignerStepGroupsType
   >[];

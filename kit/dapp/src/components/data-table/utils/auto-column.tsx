@@ -1,4 +1,4 @@
-import { formatValue } from "@/lib/utils/format-value";
+import { formatValue, type FormatValueOptions } from "@/lib/utils/format-value";
 import type { CellContext, ColumnDef } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
 import { useTranslation } from "react-i18next";
@@ -28,7 +28,7 @@ function FormattedCell<TData, TValue>({
   return (
     <>
       {formatValue(value, {
-        type: meta?.type,
+        type: meta?.type as FormatValueOptions["type"],
         displayName: meta?.displayName,
         currency: meta?.currency,
         locale,
