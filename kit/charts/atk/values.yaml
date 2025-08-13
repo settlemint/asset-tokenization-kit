@@ -31,7 +31,7 @@ besu-network:
     configServer:
       image:
         repository: docker.io/nginx
-        tag: "1.29.0-alpine"
+        tag: "1.29.1-alpine"
         pullPolicy: IfNotPresent
   besu-node:
     node:
