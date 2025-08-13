@@ -75,10 +75,27 @@ export class CreateAssetForm extends BasePage {
     decimals?: string;
     isin?: string;
     country?: string;
+    assetType?: string;
+    managementFee?: string;
+    managementFeeBps?: string;
     pincode: string;
   }) {
     await this.fillBasicFields(options);
     await this.clickNextButton();
+    const feeField = this.page.getByLabel("Management fee", { exact: false });
+    const feeFieldCount = await feeField.count();
+    if (feeFieldCount > 0 && (await feeField.first().isVisible())) {
+      const managementFeeBps =
+        options.managementFeeBps ??
+        (options.managementFee !== undefined
+          ? Math.round(parseFloat(options.managementFee) * 100).toString()
+          : undefined);
+      await this.fillFundConfigurationFields({
+        managementFeeBps,
+        managementFee: options.managementFee,
+      });
+      await this.clickNextButton();
+    }
     await this.configureComplianceModules();
     await this.reviewAndDeploy();
     await this.confirmPinCode(options.pincode);
@@ -235,32 +252,21 @@ export class CreateAssetForm extends BasePage {
 
   async fillFundConfigurationFields(
     options: {
-      decimals?: string;
-      price?: string;
       managementFeeBps?: string;
-      fundCategory?: string;
-      fundClass?: string;
+      managementFee?: string;
     } = {}
   ) {
     const actions: Record<string, (value: string) => Promise<void>> = {
-      decimals: async (value) => {
-        await this.page.getByLabel("Decimals", { exact: false }).fill(value);
-      },
-      price: async (value) => {
-        await this.page.getByLabel("Price", { exact: false }).fill(value);
-      },
       managementFeeBps: async (value) => {
         await this.page
           .getByLabel("Management fee", { exact: false })
           .fill(value);
       },
-      fundCategory: async (value) => {
-        await this.page.getByLabel("Fund category", { exact: false }).click();
-        await this.page.getByRole("option", { name: value }).click();
-      },
-      fundClass: async (value) => {
-        await this.page.getByLabel("Fund class", { exact: false }).click();
-        await this.page.getByRole("option", { name: value }).click();
+      managementFee: async (value) => {
+        const bps = Math.round(parseFloat(value) * 100).toString();
+        await this.page
+          .getByLabel("Management fee", { exact: false })
+          .fill(bps);
       },
     };
     for (const key in options) {
@@ -400,32 +406,34 @@ export class CreateAssetForm extends BasePage {
     symbol: string;
     decimals: string;
   }) {
-    await this.page.waitForURL(/.*\/token\/0x[a-fA-F0-9]+/, {
-      timeout: 120000,
-    });
+    const { name, symbol, decimals } = options;
+    const dataTable = this.page.locator('[data-slot="data-table"]');
+    const findRow = () =>
+      this.page
+        .getByRole("row")
+        .filter({ has: this.page.getByRole("cell", { name }) });
 
-    await expect(this.page.locator('[data-slot="data-table"]')).toBeVisible({
-      timeout: 120000,
-    });
+    await expect(dataTable).toBeVisible({ timeout: 120000 });
 
-    let assetRow = this.page.getByRole("row").filter({
-      has: this.page.getByRole("cell", { name: options.name }),
-    });
+    await expect
+      .poll(
+        async () => {
+          await this.page.reload();
+          await this.page.waitForLoadState("networkidle");
+          await expect(dataTable).toBeVisible();
+          return await findRow().count();
+        },
+        { timeout: 120000, intervals: [1000, 2000, 5000] }
+      )
+      .toBeGreaterThan(0);
 
-    await expect(assetRow).toBeVisible({
+    const assetRow = findRow().first();
+    await expect(assetRow.getByRole("cell", { name: symbol })).toBeVisible({
       timeout: 30000,
     });
-
     await expect(
-      assetRow.getByRole("cell", { name: options.symbol })
-    ).toBeVisible({
-      timeout: 30000,
-    });
-
-    await expect(
-      assetRow.getByRole("cell", { name: options.decimals, exact: true })
+      assetRow.getByRole("cell", { name: decimals, exact: true })
     ).toBeVisible();
-
     await expect(
       assetRow.locator('[data-slot="badge"]').filter({ hasText: "Paused" })
     ).toBeVisible();
