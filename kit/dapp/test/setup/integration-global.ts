@@ -1,5 +1,5 @@
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { waitForApi } from "../fixtures/dapp";
+import { startApiServer } from "../fixtures/dapp";
 import { getOrpcClient } from "../fixtures/orpc-client";
 import {
   bootstrapSystem,
@@ -20,8 +20,8 @@ let stopApi: () => void;
 
 export async function setup() {
   try {
-    // Wait for containerized dapp to be ready
-    const { stop } = await waitForApi();
+    // Start dapp api server
+    const { stop } = await startApiServer();
     stopApi = stop;
 
     // Parallelize user setup

@@ -1,9 +1,11 @@
-import { beforeAll, describe, expect, test } from "vitest";
-import { randomUUID } from "node:crypto";
-import { authClient } from "@test/fixtures/auth-client";
+import { getAuthClient } from "@test/fixtures/auth-client";
 import { setupUser, signInWithUser } from "@test/fixtures/user";
+import { randomUUID } from "node:crypto";
+import { beforeAll, describe, expect, test } from "vitest";
 
 describe("Two factor verification", () => {
+  const authClient = getAuthClient();
+
   const TEST_USER = {
     email: `${randomUUID()}@test.com`,
     name: "test",

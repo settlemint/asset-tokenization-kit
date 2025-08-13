@@ -1,6 +1,6 @@
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { waitForApi } from "@test/fixtures/dapp";
 import { afterAll, beforeAll } from "vitest";
+import { startApiServer } from "../fixtures/dapp";
 
 const logger = createLogger({ level: "info" });
 
@@ -8,8 +8,8 @@ let stopApi: () => void;
 
 export async function setup() {
   try {
-    // Wait for dapp api to be ready
-    const { stop } = await waitForApi();
+    // Start dapp api server
+    const { stop } = await startApiServer();
     stopApi = stop;
   } catch (error: unknown) {
     logger.error("Failed to setup test environment", error);
