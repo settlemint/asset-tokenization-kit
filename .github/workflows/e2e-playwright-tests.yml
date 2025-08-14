@@ -29,12 +29,12 @@ jobs:
         uses: namespacelabs/nscloud-checkout-action@v7
 
       - name: Setup 1Password
-        uses: 1password/load-secrets-action/configure@v2
+        uses: 1password/load-secrets-action/configure@v3
         with:
           service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
 
       - name: Load all secrets
-        uses: 1password/load-secrets-action@v2
+        uses: 1password/load-secrets-action@v3
         env:
           SLACK_WEBHOOK_URL: op://platform/slack-webhooks/e2e-report
           PAT_TOKEN: op://platform/github-commit-pat/credential
