@@ -31,7 +31,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 |-----|------|---------|-------------|
 | besu-network.besu-genesis.configServer.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-genesis.configServer.image.repository | string | `"docker.io/nginx"` |  |
-| besu-network.besu-genesis.configServer.image.tag | string | `"1.29.0-alpine"` |  |
+| besu-network.besu-genesis.configServer.image.tag | string | `"1.29.1-alpine"` |  |
 | besu-network.besu-genesis.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-genesis.image.repository | string | `"ghcr.io/settlemint/quorum-genesis-tool"` |  |
 | besu-network.besu-genesis.image.tag | string | `"sha-49c40f5"` |  |
@@ -236,11 +236,11 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.grafana.adminUser | string | `"settlemint"` |  |
 | observability.grafana.image.registry | string | `"docker.io"` | The Docker registry |
 | observability.grafana.image.repository | string | `"grafana/grafana"` | Docker image repository |
-| observability.grafana.image.tag | string | `"12.1.0"` |  |
+| observability.grafana.image.tag | string | `"12.1.1"` |  |
 | observability.grafana.ingress.hosts[0] | string | `"grafana.k8s.orb.local"` |  |
 | observability.grafana.sidecar.image.registry | string | `"docker.io"` |  |
 | observability.grafana.sidecar.image.repository | string | `"kiwigrid/k8s-sidecar"` |  |
-| observability.grafana.sidecar.image.tag | string | `"1.30.3"` |  |
+| observability.grafana.sidecar.image.tag | string | `"1.30.8"` |  |
 | observability.kube-state-metrics.image.registry | string | `"registry.k8s.io"` |  |
 | observability.kube-state-metrics.image.repository | string | `"kube-state-metrics/kube-state-metrics"` |  |
 | observability.kube-state-metrics.image.tag | string | `"v2.16.0"` |  |
@@ -257,7 +257,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.loki.memcachedExporter.image.repository | string | `"docker.io/prom/memcached-exporter"` |  |
 | observability.loki.memcachedExporter.image.tag | string | `"v0.15.3"` |  |
 | observability.loki.sidecar.image.repository | string | `"docker.io/kiwigrid/k8s-sidecar"` | The Docker registry and image for the k8s sidecar |
-| observability.loki.sidecar.image.tag | string | `"1.30.7"` |  |
+| observability.loki.sidecar.image.tag | string | `"1.30.8"` |  |
 | observability.loki.singleBinary.extraEnv | object | `{}` |  |
 | observability.loki.singleBinary.persistence.size | string | `"10Gi"` |  |
 | observability.loki.singleBinary.resources | object | `{}` |  |
@@ -298,7 +298,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | support.enabled | bool | `true` |  |
 | support.ingress-nginx.controller.image.digest | string | `""` |  |
 | support.ingress-nginx.controller.image.repository | string | `"registry.k8s.io/ingress-nginx/controller"` |  |
-| support.ingress-nginx.controller.image.tag | string | `"v1.13.0"` |  |
+| support.ingress-nginx.controller.image.tag | string | `"v1.13.1"` |  |
 | support.ingress-nginx.controller.resources | object | `{}` |  |
 | support.ingress-nginx.replicaCount | int | `1` |  |
 | support.minio.enabled | bool | `true` |  |
@@ -339,7 +339,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | txsigner.image.pullPolicy | string | `"IfNotPresent"` |  |
 | txsigner.image.registry | string | `"ghcr.io"` |  |
 | txsigner.image.repository | string | `"settlemint/btp-signer"` |  |
-| txsigner.image.tag | string | `"7.13.5"` |  |
+| txsigner.image.tag | string | `"7.14.1"` |  |
 | txsigner.postgresql | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
 | txsigner.replicaCount | int | `1` |  |
 | txsigner.resources | object | `{}` |  |
