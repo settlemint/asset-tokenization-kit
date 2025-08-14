@@ -30,6 +30,12 @@ interface ISMARTCompliance is IERC165 {
     /// does not correctly implement the `ISMARTComplianceModule` interface, or if the interface check fails.
     error ZeroAddressNotAllowed();
 
+    /// @notice Error thrown when a hook is invoked by a caller different from the `_token` parameter.
+    /// @dev Used by `transferred`, `created`, and `destroyed` to enforce token-only invocation of hooks.
+    /// @param sender The actual `msg.sender` that attempted to call the hook function.
+    /// @param expectedToken The `_token` address that is expected to be the caller.
+    error UnauthorizedCaller(address sender, address expectedToken);
+
     /// @notice Checks if a potential token operation (transfer, mint, or burn) is compliant with all configured rules.
     /// @dev This function MUST be a `view` function (it should not modify state).
     ///      It is called by the `ISMART` token contract *before* executing an operation.

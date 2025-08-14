@@ -1163,4 +1163,29 @@ contract ATKComplianceImplementationTest is Test {
         vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), params);
     }
+
+    // --- Negative tests for hook caller enforcement ---
+    function test_RevertWhen_TransferredCalledByNonToken() public {
+        vm.prank(unauthorizedUser);
+        vm.expectRevert(
+            abi.encodeWithSelector(ISMARTCompliance.UnauthorizedCaller.selector, unauthorizedUser, address(token))
+        );
+        ISMARTCompliance(address(compliance)).transferred(address(token), alice, bob, 100);
+    }
+
+    function test_RevertWhen_CreatedCalledByNonToken() public {
+        vm.prank(unauthorizedUser);
+        vm.expectRevert(
+            abi.encodeWithSelector(ISMARTCompliance.UnauthorizedCaller.selector, unauthorizedUser, address(token))
+        );
+        ISMARTCompliance(address(compliance)).created(address(token), alice, 1000);
+    }
+
+    function test_RevertWhen_DestroyedCalledByNonToken() public {
+        vm.prank(unauthorizedUser);
+        vm.expectRevert(
+            abi.encodeWithSelector(ISMARTCompliance.UnauthorizedCaller.selector, unauthorizedUser, address(token))
+        );
+        ISMARTCompliance(address(compliance)).destroyed(address(token), alice, 500);
+    }
 }
