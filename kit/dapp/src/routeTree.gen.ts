@@ -45,6 +45,7 @@ import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRou
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/permissions'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/events'
+import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
@@ -258,6 +259,15 @@ const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute =
         PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute,
     } as any,
   )
+const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute =
+  PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRouteImport.update(
+    {
+      id: '/blocklist',
+      path: '/blocklist',
+      getParentRoute: () =>
+        PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute,
+    } as any,
+  )
 const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
   id: '/api/$',
   path: '/api/$',
@@ -301,6 +311,7 @@ export interface FileRoutesByFullPath {
   '/admin/platform-settings/permissions': typeof PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute
   '/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren
   '/token/$factoryAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
+  '/token/$factoryAddress/$tokenAddress/blocklist': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute
   '/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
   '/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
   '/token/$factoryAddress/$tokenAddress/permissions': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute
@@ -331,6 +342,7 @@ export interface FileRoutesByTo {
   '/admin/platform-settings/compliance': typeof PrivateOnboardedSidebarAdminPlatformSettingsComplianceRoute
   '/admin/platform-settings/permissions': typeof PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute
   '/token/$factoryAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
+  '/token/$factoryAddress/$tokenAddress/blocklist': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute
   '/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
   '/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
   '/token/$factoryAddress/$tokenAddress/permissions': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute
@@ -368,6 +380,7 @@ export interface FileRoutesById {
   '/_private/_onboarded/_sidebar/admin/platform-settings/permissions': typeof PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren
   '/_private/_onboarded/_sidebar/token/$factoryAddress/': typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
+  '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/permissions': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute
@@ -402,6 +415,7 @@ export interface FileRouteTypes {
     | '/admin/platform-settings/permissions'
     | '/token/$factoryAddress/$tokenAddress'
     | '/token/$factoryAddress'
+    | '/token/$factoryAddress/$tokenAddress/blocklist'
     | '/token/$factoryAddress/$tokenAddress/events'
     | '/token/$factoryAddress/$tokenAddress/holders'
     | '/token/$factoryAddress/$tokenAddress/permissions'
@@ -432,6 +446,7 @@ export interface FileRouteTypes {
     | '/admin/platform-settings/compliance'
     | '/admin/platform-settings/permissions'
     | '/token/$factoryAddress'
+    | '/token/$factoryAddress/$tokenAddress/blocklist'
     | '/token/$factoryAddress/$tokenAddress/events'
     | '/token/$factoryAddress/$tokenAddress/holders'
     | '/token/$factoryAddress/$tokenAddress/permissions'
@@ -468,6 +483,7 @@ export interface FileRouteTypes {
     | '/_private/_onboarded/_sidebar/admin/platform-settings/permissions'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/'
+    | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/events'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/permissions'
@@ -748,6 +764,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRouteImport
       parentRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute
     }
+    '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist': {
+      id: '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist'
+      path: '/blocklist'
+      fullPath: '/token/$factoryAddress/$tokenAddress/blocklist'
+      preLoaderRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute
+    }
   }
 }
 declare module '@tanstack/react-start/server' {
@@ -777,6 +800,7 @@ declare module '@tanstack/react-start/server' {
 }
 
 interface PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteChildren {
+  PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute
@@ -785,6 +809,8 @@ interface PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteChildren {
 
 const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteChildren: PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteChildren =
   {
+    PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute:
+      PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute,
     PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute:
       PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute,
     PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute:

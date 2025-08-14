@@ -1,8 +1,8 @@
-import { FormLabel } from "@/components/form/tanstack-form";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useFieldContext } from "@/hooks/use-form-contexts";
 import { cn } from "@/lib/utils";
+import { useStore } from "@tanstack/react-form";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import {
@@ -51,9 +51,11 @@ export function RadioField({
     );
   };
 
+  const currentValue = useStore(field.store, (s) => s.value);
+
   const renderCardRadio = () => (
     <RadioGroup
-      value={field.state.value}
+      value={currentValue}
       onValueChange={(value) => {
         field.handleChange(value);
         onSelect?.(value);
@@ -64,12 +66,16 @@ export function RadioField({
         <div key={option.value} className="relative h-full">
           <RadioGroupItem
             value={option.value}
-            id={option.value}
-            className="peer sr-only"
+            id={`${field.name}-${option.value}`}
+            className="sr-only"
           />
-          <FormLabel
-            htmlFor={option.value}
-            className="flex cursor-pointer select-none rounded-lg border border-input bg-background hover:bg-accent/10 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 peer-data-[state=checked]:text-primary transition-all h-full"
+          <Label
+            htmlFor={`${field.name}-${option.value}`}
+            className={cn(
+              "flex cursor-pointer select-none rounded-lg border border-input bg-background hover:bg-accent/50 hover:text-accent-foreground transition-all h-full",
+              currentValue === option.value &&
+                "border-primary bg-primary/5 text-primary"
+            )}
           >
             <div className="flex flex-col h-full p-4">
               {/* Header with icon and title */}
@@ -90,7 +96,7 @@ export function RadioField({
               {/* Footer - always at bottom */}
               {option.footer && <div className="mt-auto">{option.footer}</div>}
             </div>
-          </FormLabel>
+          </Label>
         </div>
       ))}
     </RadioGroup>

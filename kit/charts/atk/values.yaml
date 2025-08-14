@@ -185,7 +185,7 @@ blockscout:
     blockscout:
       image:
         repository: ghcr.io/blockscout/blockscout
-        tag: "8.1.2"
+        tag: "9.0.2"
         pullPolicy: IfNotPresent
       # Add an extra init container to wait for PostgreSQL
       init:
@@ -308,7 +308,7 @@ portal:
   image:
     registry: ghcr.io
     repository: settlemint/btp-scs-portal
-    tag: "8.5.16"
+    tag: "8.5.18"
     pullPolicy: IfNotPresent
   podLabels:
     app.kubernetes.io/component: portal
@@ -569,7 +569,7 @@ txsigner:
   image:
     registry: ghcr.io
     repository: settlemint/btp-signer
-    tag: "7.14.1"
+    tag: "7.14.3"
     pullPolicy: IfNotPresent
   # Init container for testing
   test:
