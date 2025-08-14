@@ -17,7 +17,7 @@
  * @see {@link https://better-auth.com/docs/ui/auth-card} - AuthCard documentation
  */
 
-import { AuthCard } from "@daveyplate/better-auth-ui";
+import { AuthView } from "@daveyplate/better-auth-ui";
 import { createFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
 
@@ -42,7 +42,7 @@ function RouteComponent() {
   return (
     <main className="my-auto flex flex-col items-center w-full max-w-md px-4">
       <Suspense>
-        <AuthCard pathname={pathname} className="w-full" />
+        <AuthView pathname={pathname} className="w-full" />
       </Suspense>
     </main>
   );
