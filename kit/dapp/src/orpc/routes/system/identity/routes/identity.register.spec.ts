@@ -1,0 +1,68 @@
+import { getOrpcClient } from "@test/fixtures/orpc-client";
+import {
+  createTestUser,
+  DEFAULT_ADMIN,
+  DEFAULT_INVESTOR,
+  DEFAULT_PINCODE,
+  signInWithUser,
+} from "@test/fixtures/user";
+import { describe, expect, test } from "vitest";
+
+describe("Identity create", () => {
+  test("an investor cannot register an identity", async () => {
+    const wallet = await createUserWithIdentity();
+
+    const headers = await signInWithUser(DEFAULT_INVESTOR);
+    const client = getOrpcClient(headers);
+
+    await expect(
+      client.system.identityRegister({
+        verification: {
+          verificationCode: DEFAULT_PINCODE,
+          verificationType: "pincode",
+        },
+        country: "BE",
+        wallet,
+      })
+    ).rejects.toThrow(
+      "User does not have the required role to execute this action."
+    );
+  });
+
+  test("admin can register an identity for another user", async () => {
+    const wallet = await createUserWithIdentity();
+
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+
+    const result = await client.system.identityRegister({
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+      country: "BE",
+      wallet,
+    });
+    expect(result.id).toBeDefined();
+    expect(result.identity).toBeDefined();
+    expect(result.country).toBe("BE");
+  });
+});
+
+async function createUserWithIdentity() {
+  const {
+    session: { wallet },
+  } = await createTestUser();
+
+  const headers = await signInWithUser(DEFAULT_ADMIN);
+  const client = getOrpcClient(headers);
+
+  await client.system.identityCreate({
+    verification: {
+      verificationCode: DEFAULT_PINCODE,
+      verificationType: "pincode",
+    },
+    wallet,
+  });
+  return wallet;
+}

@@ -1,39 +1,28 @@
-import { beforeAll, describe, expect, it } from "vitest";
-import { randomUUID } from "node:crypto";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
-  setupUser,
-  signInWithUser,
+  createTestUser,
   DEFAULT_ADMIN,
   getUserData,
+  signInWithUser,
 } from "@test/fixtures/user";
+import { beforeAll, describe, expect, it } from "vitest";
 
 describe("KYC list", () => {
-  const TEST_USER_1 = {
-    email: `${randomUUID()}@test.com`,
-    name: "KYC Test User 1",
-    password: "settlemint",
-  };
-
-  const TEST_USER_2 = {
-    email: `${randomUUID()}@test.com`,
-    name: "KYC Test User 2",
-    password: "settlemint",
-  };
-
+  let testUser1: Awaited<ReturnType<typeof createTestUser>>["user"];
+  let testUser2: Awaited<ReturnType<typeof createTestUser>>["user"];
   let user1Data: Awaited<ReturnType<typeof getUserData>>;
   let user2Data: Awaited<ReturnType<typeof getUserData>>;
 
   beforeAll(async () => {
     // Setup test users
-    await setupUser(TEST_USER_1);
-    await setupUser(TEST_USER_2);
+    testUser1 = (await createTestUser()).user;
+    testUser2 = (await createTestUser()).user;
 
-    user1Data = await getUserData(TEST_USER_1);
-    user2Data = await getUserData(TEST_USER_2);
+    user1Data = await getUserData(testUser1);
+    user2Data = await getUserData(testUser2);
 
     // Create KYC profiles for test users
-    const headers1 = await signInWithUser(TEST_USER_1);
+    const headers1 = await signInWithUser(testUser1);
     const client1 = getOrpcClient(headers1);
     await client1.user.kyc.upsert({
       userId: user1Data.id,
@@ -45,7 +34,7 @@ describe("KYC list", () => {
       nationalId: "123456789",
     });
 
-    const headers2 = await signInWithUser(TEST_USER_2);
+    const headers2 = await signInWithUser(testUser2);
     const client2 = getOrpcClient(headers2);
     await client2.user.kyc.upsert({
       userId: user2Data.id,
@@ -163,7 +152,7 @@ describe("KYC list", () => {
   });
 
   it("regular user cannot list all KYC profiles without permission", async () => {
-    const headers = await signInWithUser(TEST_USER_1);
+    const headers = await signInWithUser(testUser1);
     const client = getOrpcClient(headers);
 
     await expect(

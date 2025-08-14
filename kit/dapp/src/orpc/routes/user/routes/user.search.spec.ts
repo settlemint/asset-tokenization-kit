@@ -1,46 +1,32 @@
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
+  createTestUser,
   DEFAULT_ADMIN,
   getUserData,
-  setupUser,
   signInWithUser,
 } from "@test/fixtures/user";
 import { randomUUID } from "node:crypto";
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe("User search", () => {
-  const TEST_USER = {
-    email: `${randomUUID()}@test.com`,
-    name: "User Search Test User",
-    password: "settlemint",
-  };
-
-  const OTHER_USER = {
-    email: `${randomUUID()}@test.com`,
-    name: "Other Search User",
-    password: "settlemint",
-  };
-
-  const UNAUTHORIZED_USER = {
-    email: `${randomUUID()}@test.com`,
-    name: "Unauthorized User",
-    password: "settlemint",
-  };
+  let testUser: Awaited<ReturnType<typeof createTestUser>>["user"];
+  let otherUser: Awaited<ReturnType<typeof createTestUser>>["user"];
+  let unauthorizedUser: Awaited<ReturnType<typeof createTestUser>>["user"];
 
   let testUserData: Awaited<ReturnType<typeof getUserData>>;
   let otherUserData: Awaited<ReturnType<typeof getUserData>>;
 
   beforeAll(async () => {
     // Setup test users
-    await setupUser(TEST_USER);
-    await setupUser(OTHER_USER);
-    await setupUser(UNAUTHORIZED_USER);
+    testUser = (await createTestUser()).user;
+    otherUser = (await createTestUser()).user;
+    unauthorizedUser = (await createTestUser()).user;
 
-    testUserData = await getUserData(TEST_USER);
-    otherUserData = await getUserData(OTHER_USER);
+    testUserData = await getUserData(testUser);
+    otherUserData = await getUserData(otherUser);
 
     // Create KYC profiles for better test coverage
-    const testUserHeaders = await signInWithUser(TEST_USER);
+    const testUserHeaders = await signInWithUser(testUser);
     const testUserClient = getOrpcClient(testUserHeaders);
     await testUserClient.user.kyc.upsert({
       userId: testUserData.id,
@@ -52,7 +38,7 @@ describe("User search", () => {
       nationalId: "TEST123456",
     });
 
-    const otherUserHeaders = await signInWithUser(OTHER_USER);
+    const otherUserHeaders = await signInWithUser(otherUser);
     const otherUserClient = getOrpcClient(otherUserHeaders);
     await otherUserClient.user.kyc.upsert({
       userId: otherUserData.id,
@@ -176,7 +162,7 @@ describe("User search", () => {
 
   describe("Permission checks", () => {
     it("regular user without 'user:list' permission cannot search users", async () => {
-      const headers = await signInWithUser(UNAUTHORIZED_USER);
+      const headers = await signInWithUser(unauthorizedUser);
       const client = getOrpcClient(headers);
 
       await expect(
@@ -234,13 +220,7 @@ describe("User search", () => {
 
     it("searches in user.name field when KYC data is not available", async () => {
       // Create a new user without KYC profile
-      const userWithoutKyc = {
-        email: `${randomUUID()}@test.com`,
-        name: "SearchableNoKyc User",
-        password: "settlemint",
-      };
-
-      await setupUser(userWithoutKyc);
+      const { user: userWithoutKyc } = await createTestUser();
       const userWithoutKycData = await getUserData(userWithoutKyc);
 
       const headers = await signInWithUser(DEFAULT_ADMIN);

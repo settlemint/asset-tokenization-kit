@@ -89,7 +89,7 @@ export const identityRegister = portalRouter.system.identityRegister
     return await call(
       readAccount,
       {
-        wallet: sender.wallet,
+        wallet: walletAddress,
       },
       { context }
     );

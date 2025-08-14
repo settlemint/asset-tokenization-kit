@@ -1,39 +1,27 @@
-import { beforeAll, describe, expect, it } from "vitest";
-import { randomUUID } from "node:crypto";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
-  setupUser,
-  signInWithUser,
+  createTestUser,
   DEFAULT_ADMIN,
   getUserData,
+  signInWithUser,
 } from "@test/fixtures/user";
+import { randomUUID } from "node:crypto";
+import { beforeAll, describe, expect, it } from "vitest";
 
 describe("KYC read", () => {
-  const TEST_USER = {
-    email: `${randomUUID()}@test.com`,
-    name: "KYC Read Test User",
-    password: "settlemint",
-  };
-
-  const OTHER_USER = {
-    email: `${randomUUID()}@test.com`,
-    name: "Other User",
-    password: "settlemint",
-  };
-
+  let testUser: Awaited<ReturnType<typeof createTestUser>>["user"];
+  let otherUser: Awaited<ReturnType<typeof createTestUser>>["user"];
   let testUserData: Awaited<ReturnType<typeof getUserData>>;
   let otherUserData: Awaited<ReturnType<typeof getUserData>>;
 
   beforeAll(async () => {
-    // Setup test users
-    await setupUser(TEST_USER);
-    await setupUser(OTHER_USER);
-
-    testUserData = await getUserData(TEST_USER);
-    otherUserData = await getUserData(OTHER_USER);
+    testUser = (await createTestUser()).user;
+    otherUser = (await createTestUser()).user;
+    testUserData = await getUserData(testUser);
+    otherUserData = await getUserData(otherUser);
 
     // Create KYC profile for test user
-    const headers = await signInWithUser(TEST_USER);
+    const headers = await signInWithUser(testUser);
     const client = getOrpcClient(headers);
     await client.user.kyc.upsert({
       userId: testUserData.id,
@@ -46,7 +34,7 @@ describe("KYC read", () => {
     });
 
     // Create KYC profile for other user
-    const otherHeaders = await signInWithUser(OTHER_USER);
+    const otherHeaders = await signInWithUser(otherUser);
     const otherClient = getOrpcClient(otherHeaders);
     await otherClient.user.kyc.upsert({
       userId: otherUserData.id,
@@ -60,7 +48,7 @@ describe("KYC read", () => {
   });
 
   it("can read own KYC profile", async () => {
-    const headers = await signInWithUser(TEST_USER);
+    const headers = await signInWithUser(testUser);
     const client = getOrpcClient(headers);
 
     const profile = await client.user.kyc.read({
@@ -92,7 +80,7 @@ describe("KYC read", () => {
   });
 
   it("regular user cannot read another user's KYC profile", async () => {
-    const headers = await signInWithUser(TEST_USER);
+    const headers = await signInWithUser(testUser);
     const client = getOrpcClient(headers);
 
     await expect(
@@ -117,7 +105,7 @@ describe("KYC read", () => {
 
   it("user can read their own profile even without list permission", async () => {
     // This tests the alwaysAllowIf condition in the middleware
-    const headers = await signInWithUser(OTHER_USER);
+    const headers = await signInWithUser(otherUser);
     const client = getOrpcClient(headers);
 
     const profile = await client.user.kyc.read({

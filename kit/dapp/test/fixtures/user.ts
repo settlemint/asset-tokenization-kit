@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { zeroAddress } from "viem";
 import { getAuthClient } from "./auth-client";
 import { getOrpcClient } from "./orpc-client";
@@ -232,6 +233,8 @@ export async function setupUser(user: User) {
       );
       throw new Error("User is not onboarded");
     }
+
+    return session.data?.user;
   } catch (err) {
     console.error(`[setupUser] Failed to create user ${user.email}:`, {
       message: err instanceof Error ? err.message : "Unknown error",
@@ -258,4 +261,14 @@ export async function getUserData(user: User) {
     throw new Error(`User ${user.email} not found`);
   }
   return userInfo;
+}
+
+export async function createTestUser() {
+  const user = {
+    email: `${randomUUID()}@test.com`,
+    name: "test",
+    password: DEFAULT_PASSWORD,
+  };
+  const session = await setupUser(user);
+  return { session, user };
 }

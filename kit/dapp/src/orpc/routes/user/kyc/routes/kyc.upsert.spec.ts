@@ -1,40 +1,26 @@
-import { beforeAll, describe, expect, it } from "vitest";
-import { randomUUID } from "node:crypto";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
-  setupUser,
-  signInWithUser,
+  createTestUser,
   DEFAULT_ADMIN,
   getUserData,
+  signInWithUser,
 } from "@test/fixtures/user";
+import { beforeAll, describe, expect, it } from "vitest";
 
 describe("KYC upsert", () => {
-  const TEST_USER = {
-    email: `${randomUUID()}@test.com`,
-    name: "KYC Upsert Test User",
-    password: "settlemint",
-  };
-
-  const OTHER_USER = {
-    email: `${randomUUID()}@test.com`,
-    name: "Other User for Upsert",
-    password: "settlemint",
-  };
-
+  let testUser: Awaited<ReturnType<typeof createTestUser>>["user"];
   let testUserData: Awaited<ReturnType<typeof getUserData>>;
   let otherUserData: Awaited<ReturnType<typeof getUserData>>;
 
   beforeAll(async () => {
-    // Setup test users
-    await setupUser(TEST_USER);
-    await setupUser(OTHER_USER);
-
-    testUserData = await getUserData(TEST_USER);
-    otherUserData = await getUserData(OTHER_USER);
+    testUser = (await createTestUser()).user;
+    const otherUser = (await createTestUser()).user;
+    testUserData = await getUserData(testUser);
+    otherUserData = await getUserData(otherUser);
   });
 
   it("can create a new KYC profile", async () => {
-    const headers = await signInWithUser(TEST_USER);
+    const headers = await signInWithUser(testUser);
     const client = getOrpcClient(headers);
 
     const profile = await client.user.kyc.upsert({
@@ -60,7 +46,7 @@ describe("KYC upsert", () => {
   });
 
   it("can update an existing KYC profile", async () => {
-    const headers = await signInWithUser(TEST_USER);
+    const headers = await signInWithUser(testUser);
     const client = getOrpcClient(headers);
 
     // First create a profile
@@ -115,7 +101,7 @@ describe("KYC upsert", () => {
   });
 
   it("regular user cannot upsert another user's KYC profile", async () => {
-    const headers = await signInWithUser(TEST_USER);
+    const headers = await signInWithUser(testUser);
     const client = getOrpcClient(headers);
 
     await expect(
@@ -132,12 +118,7 @@ describe("KYC upsert", () => {
   });
 
   it("can upsert with minimal required fields", async () => {
-    const newUser = {
-      email: `${randomUUID()}@test.com`,
-      name: "Minimal KYC User",
-      password: "settlemint",
-    };
-    await setupUser(newUser);
+    const { user: newUser } = await createTestUser();
     const userData = await getUserData(newUser);
 
     const headers = await signInWithUser(newUser);
@@ -161,7 +142,7 @@ describe("KYC upsert", () => {
   });
 
   it("upsert is idempotent - multiple calls with same data work", async () => {
-    const headers = await signInWithUser(TEST_USER);
+    const headers = await signInWithUser(testUser);
     const client = getOrpcClient(headers);
 
     const profileData = {
