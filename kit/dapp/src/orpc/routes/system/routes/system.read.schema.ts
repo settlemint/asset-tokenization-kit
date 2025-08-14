@@ -27,7 +27,10 @@ export const SystemReadSchema = z.object({
   /**
    * The system contract address to query
    */
-  id: ethereumAddress.describe("The system contract address"),
+  id: z.union([
+    z.literal("default").describe("The system used by the dApp"),
+    ethereumAddress.describe("The system contract address"),
+  ]),
 });
 
 /**

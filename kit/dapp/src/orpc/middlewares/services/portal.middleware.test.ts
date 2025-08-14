@@ -42,6 +42,7 @@ import { z } from "zod";
 import { portalClient } from "@/lib/settlemint/portal";
 
 // Import the middleware
+import { env } from "@/lib/env";
 import {
   portalMiddleware,
   type ValidatedPortalClient,
@@ -648,9 +649,8 @@ describe("portal.middleware", () => {
 
         (portalClient.request as Mock).mockResolvedValueOnce(mockResponse);
 
-        // Mock all 300 attempts returning null receipt (valid response structure)
-        // Using MAX_ATTEMPTS from env which defaults to 300
-        for (let i = 0; i < 300; i++) {
+        // Mock all attempts returning null receipt (valid response structure)
+        for (let i = 0; i < env.SETTLEMINT_PORTAL_TX_POLL_MAX_ATTEMPTS; i++) {
           (portalClient.request as Mock).mockResolvedValueOnce({
             getTransaction: {
               receipt: null,
@@ -694,10 +694,7 @@ describe("portal.middleware", () => {
         // Restore original unhandled rejection listeners
         process.removeListener("unhandledRejection", unhandledRejectionHandler);
         originalOnUnhandledRejection.forEach((listener) => {
-          process.on(
-            "unhandledRejection",
-            listener
-          );
+          process.on("unhandledRejection", listener);
         });
       });
 

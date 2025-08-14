@@ -16,7 +16,9 @@ import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { getSystemContext } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
 import type { SystemReadOutput } from "@/orpc/routes/system/routes/system.read.schema";
+import { call } from "@orpc/server";
 
 /**
  * Reads system contract details including token factories.
@@ -43,9 +45,20 @@ import type { SystemReadOutput } from "@/orpc/routes/system/routes/system.read.s
  */
 export const read = onboardedRouter.system.read
   .use(theGraphMiddleware)
-  .handler(async ({ input, errors }) => {
+  .handler(async ({ input, context, errors }) => {
     // Query system details from TheGraph with automatic ID transformation
-    const systemAddress = input.id;
+    const systemAddress =
+      input.id === "default"
+        ? await call(
+            settingsRead,
+            {
+              key: "SYSTEM_ADDRESS",
+            },
+            {
+              context,
+            }
+          )
+        : input.id;
     if (!systemAddress) {
       throw errors.NOT_FOUND({
         message: `System not found: ${input.id}`,
