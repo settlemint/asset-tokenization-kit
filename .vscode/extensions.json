@@ -12,6 +12,7 @@
     "juanblanco.solidity",
     "usernamehw.errorlens",
     "dbaeumer.vscode-eslint",
-    "github.vscode-pull-request-github"
+    "github.vscode-pull-request-github",
+    "typescriptteam.native-preview"
   ]
 }
