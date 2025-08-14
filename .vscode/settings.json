@@ -27,14 +27,6 @@
   "biome.enabled": false,
   "biome.requireConfiguration": true,
   "coderabbit.autoReviewMode": "disabled",
-  "cursor.composer.cmdPFilePicker2": true,
-  "cursor.composer.shouldAllowCustomModes": true,
-  "cursor.composer.shouldChimeAfterChatFinishes": true,
-  "cursor.composer.shouldShowMarkdownHoverParticipantActions2": true,
-  "cursor.cpp.disabledLanguages": ["plaintext"],
-  "cursor.cpp.enablePartialAccepts": true,
-  "cursor.diffs.useCharacterLevelDiffs": true,
-  "cursor.terminal.usePreviewBox": true,
   "dotenv.enableAutocloaking": false,
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit",
@@ -158,5 +150,6 @@
   "workbench.editor.revealIfOpen": true,
   "workbench.fontAliasing": "auto",
   "workbench.tips.enabled": false,
-  "workbench.tree.enableStickyScroll": true
+  "workbench.tree.enableStickyScroll": true,
+  "typescript.experimental.useTsgo": true
 }
