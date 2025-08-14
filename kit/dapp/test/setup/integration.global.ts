@@ -24,12 +24,10 @@ export async function setup() {
     const { stop } = await startApiServer();
     stopApi = stop;
 
-    // Parallelize user setup
-    await Promise.all([
-      setupUser(DEFAULT_ADMIN),
-      setupUser(DEFAULT_INVESTOR),
-      setupUser(DEFAULT_ISSUER),
-    ]);
+    // Admin has to be created first, this because it should be the initial admin
+    await setupUser(DEFAULT_ADMIN);
+    // Create other users in parallel
+    await Promise.all([setupUser(DEFAULT_INVESTOR), setupUser(DEFAULT_ISSUER)]);
 
     const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));
     const system = await bootstrapSystem(orpClient);
