@@ -48,11 +48,6 @@
       "matchPackageNames": ["/^@better-auth//", "better-auth"]
     },
     {
-      "groupName": "Next Safe Action",
-      "groupSlug": "next-safe-action",
-      "matchPackageNames": ["next-safe-action", "/^@next-safe-action//"]
-    },
-    {
       "description": "Automerge GitHub Actions updates",
       "matchManagers": ["github-actions"],
       "automerge": true,
