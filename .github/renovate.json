@@ -48,6 +48,11 @@
       "matchPackageNames": ["/^@better-auth//", "better-auth"]
     },
     {
+      "groupName": "Nomic Foundation",
+      "groupSlug": "nomicfoundation",
+      "matchPackageNames": ["/^@nomicfoundation//", "hardhat"]
+    },
+    {
       "description": "Automerge GitHub Actions updates",
       "matchManagers": ["github-actions"],
       "automerge": true,
