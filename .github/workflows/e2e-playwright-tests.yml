@@ -83,7 +83,7 @@ jobs:
           echo "Starting dev server..."
           nohup bun run dev > server.log 2>&1 &
           echo "SERVER_PID=$!" >> $GITHUB_ENV
-          echo "Waiting for Next.js to initialize routes (readiness probe)..."
+          echo "Waiting for Start to initialize routes (readiness probe)..."
           echo "Performing initial server check..."
           curl -v http://localhost:${PORT}/ || echo "Initial check failed, will retry"
           timeout_seconds=120
