@@ -223,7 +223,7 @@ describe("Access Manager - Grant Role ORPC routes", () => {
           address: testAddresses.valid1,
           role: "tokenManager",
         })
-      ).rejects.toThrow("User rejected the request");
+      ).rejects.toThrow('"grantRole" failed: Invalid challenge response');
     });
   });
 

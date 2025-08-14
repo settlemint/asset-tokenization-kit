@@ -147,7 +147,7 @@ describe("Token search", () => {
     // Search for partial symbol match
     const symbolResults = await client.token.search({
       query: usdToken.symbol.slice(1, 4), // Should match "USDC" symbol
-      limit: 100,
+      limit: 50,
     });
 
     expect(symbolResults.length).toBeGreaterThanOrEqual(1);
