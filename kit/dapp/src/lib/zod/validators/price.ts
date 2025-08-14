@@ -58,7 +58,7 @@ export const price = () =>
 
       // Parse string to number
       const parsed = Number.parseFloat(value);
-      if (Number.isNaN(parsed) || !Number.isFinite(parsed)) {
+      if (!Number.isFinite(parsed)) {
         ctx.addIssue({
           code: "custom",
           message:

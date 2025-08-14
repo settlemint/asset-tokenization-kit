@@ -9,23 +9,20 @@ import {
 } from "@/components/ui/dialog";
 import React, { useState } from "react";
 
-type ConfirmDialogAction = "close" | (() => void) | null;
+export type ConfirmDialogAction = "close" | (() => void) | null;
+
+export type ConfirmDialogButton = {
+  label: string;
+  action: ConfirmDialogAction;
+  after?: "close" | null;
+};
 
 interface ConfirmationDialogProps {
   title: string;
   description: string;
   trigger?: React.ReactNode;
-  leftAction: {
-    label: string;
-    action: ConfirmDialogAction;
-    after?: "close" | null;
-  };
-
-  rightAction: {
-    label: string;
-    action: ConfirmDialogAction;
-    after?: "close" | null;
-  };
+  leftAction: ConfirmDialogButton;
+  rightAction: ConfirmDialogButton;
 }
 
 export function ConfirmationDialog({

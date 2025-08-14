@@ -69,16 +69,33 @@ export class CreateAssetForm extends BasePage {
     }
   }
 
-  async fillStablecoinFields(options: {
+  async fillAssetFields(options: {
     name?: string;
     symbol?: string;
     decimals?: string;
     isin?: string;
     country?: string;
+    assetType?: string;
+    managementFee?: string;
+    managementFeeBps?: string;
     pincode: string;
   }) {
     await this.fillBasicFields(options);
     await this.clickNextButton();
+    const feeField = this.page.getByLabel("Management fee", { exact: false });
+    const feeFieldCount = await feeField.count();
+    if (feeFieldCount > 0 && (await feeField.first().isVisible())) {
+      const managementFeeBps =
+        options.managementFeeBps ??
+        (options.managementFee !== undefined
+          ? Math.round(parseFloat(options.managementFee) * 100).toString()
+          : undefined);
+      await this.fillFundConfigurationFields({
+        managementFeeBps,
+        managementFee: options.managementFee,
+      });
+      await this.clickNextButton();
+    }
     await this.configureComplianceModules();
     await this.reviewAndDeploy();
     await this.confirmPinCode(options.pincode);
@@ -117,22 +134,70 @@ export class CreateAssetForm extends BasePage {
     await expect(this.page.getByLabel(label)).toHaveAttribute(attribute, value);
   }
 
+  private async _selectRadioOptionAndContinue(name: RegExp) {
+    const radio = this.page.getByRole("radio", { name });
+    await expect(radio).toBeVisible();
+    const radioId = await radio.getAttribute("id");
+    if (!radioId) {
+      throw new Error(`Radio button with name ${name.toString()} has no id`);
+    }
+    const label = this.page.locator(`label[for="${radioId}"]`);
+    await expect(label).toBeVisible();
+    await label.click();
+
+    const nextButton = this.page.getByRole("button", { name: "Next" });
+    await expect(nextButton).toBeEnabled();
+    await nextButton.click();
+  }
+
   async selectAssetType(assetType: string) {
-    await this.page.getByRole("button", { name: "Asset designer" }).click();
+    type AssetTypeKey = "stablecoin" | "deposit" | "bond" | "equity" | "fund";
 
-    if (assetType.toLowerCase() === "stablecoin") {
-      await this.page.getByText("Cash EquivalentHighly liquid").click();
+    const config: Record<
+      AssetTypeKey,
+      { category: RegExp; card: RegExp; urlType: string }
+    > = {
+      stablecoin: {
+        category: /Cash\s*Equivalent/i,
+        card: /^Stablecoin\b/i,
+        urlType: "stablecoin",
+      },
+      deposit: {
+        category: /Cash\s*Equivalent/i,
+        card: /^Deposit\b/i,
+        urlType: "deposit",
+      },
+      bond: {
+        category: /Fixed\s*Income/i,
+        card: /^Bond\b/i,
+        urlType: "bond",
+      },
+      equity: {
+        category: /Flexible\s*Income/i,
+        card: /^Equity\b/i,
+        urlType: "equity",
+      },
+      fund: {
+        category: /Flexible\s*Income/i,
+        card: /^Fund\b/i,
+        urlType: "fund",
+      },
+    };
 
-      await this.page.getByText("StablecoinDigital currencies").click();
-
-      await this.page.getByRole("button", { name: "Next" }).click();
-    } else {
+    const key = assetType.toLowerCase() as AssetTypeKey;
+    if (!config[key]) {
       throw new Error(
         `Asset type "${assetType}" navigation not implemented yet`
       );
     }
 
-    await this.page.waitForURL("**/asset-designer?type=stablecoin");
+    await this.page.getByRole("button", { name: "Asset designer" }).click();
+
+    await this._selectRadioOptionAndContinue(config[key].category);
+    await this._selectRadioOptionAndContinue(config[key].card);
+    await expect(
+      this.page.getByRole("heading", { name: "General info", level: 2 })
+    ).toBeVisible();
   }
 
   async fillCryptocurrencyDetails(options: {
@@ -187,32 +252,21 @@ export class CreateAssetForm extends BasePage {
 
   async fillFundConfigurationFields(
     options: {
-      decimals?: string;
-      price?: string;
       managementFeeBps?: string;
-      fundCategory?: string;
-      fundClass?: string;
+      managementFee?: string;
     } = {}
   ) {
     const actions: Record<string, (value: string) => Promise<void>> = {
-      decimals: async (value) => {
-        await this.page.getByLabel("Decimals", { exact: false }).fill(value);
-      },
-      price: async (value) => {
-        await this.page.getByLabel("Price", { exact: false }).fill(value);
-      },
       managementFeeBps: async (value) => {
         await this.page
           .getByLabel("Management fee", { exact: false })
           .fill(value);
       },
-      fundCategory: async (value) => {
-        await this.page.getByLabel("Fund category", { exact: false }).click();
-        await this.page.getByRole("option", { name: value }).click();
-      },
-      fundClass: async (value) => {
-        await this.page.getByLabel("Fund class", { exact: false }).click();
-        await this.page.getByRole("option", { name: value }).click();
+      managementFee: async (value) => {
+        const bps = Math.round(parseFloat(value) * 100).toString();
+        await this.page
+          .getByLabel("Management fee", { exact: false })
+          .fill(bps);
       },
     };
     for (const key in options) {
@@ -314,19 +368,21 @@ export class CreateAssetForm extends BasePage {
     ).toBeVisible();
   }
 
-  async reviewAndDeploy() {
+  async reviewAndDeploy(
+    assetType?: "stablecoin" | "deposit" | "bond" | "equity" | "fund"
+  ) {
     await expect(
-      this.page.locator("h2").filter({ hasText: "Review & Deploy" })
+      this.page.getByRole("heading", { name: /Review\s*&\s*deploy/i, level: 2 })
     ).toBeVisible();
 
-    await expect(
-      this.page.getByRole("paragraph").filter({
-        hasText:
-          "Confirm and deploy your compliant digital asset to the blockchain",
-      })
-    ).toBeVisible();
+    const button = assetType
+      ? this.page.getByRole("button", {
+          name: new RegExp(`^Create\\s+${assetType}$`, "i"),
+        })
+      : this.page.getByRole("button", { name: /^Create\b/i });
 
-    await this.page.getByRole("button", { name: "Submit" }).click();
+    await expect(button).toBeEnabled();
+    await button.click();
   }
 
   async confirmPinCode(pinCode: string) {
@@ -350,32 +406,34 @@ export class CreateAssetForm extends BasePage {
     symbol: string;
     decimals: string;
   }) {
-    await this.page.waitForURL(/.*\/token\/0x[a-fA-F0-9]+/, {
-      timeout: 120000,
-    });
+    const { name, symbol, decimals } = options;
+    const dataTable = this.page.locator('[data-slot="data-table"]');
+    const findRow = () =>
+      this.page
+        .getByRole("row")
+        .filter({ has: this.page.getByRole("cell", { name }) });
 
-    await expect(this.page.locator('[data-slot="data-table"]')).toBeVisible({
-      timeout: 120000,
-    });
+    await expect(dataTable).toBeVisible({ timeout: 120000 });
 
-    let assetRow = this.page.getByRole("row").filter({
-      has: this.page.getByRole("cell", { name: options.name }),
-    });
+    await expect
+      .poll(
+        async () => {
+          await this.page.reload();
+          await this.page.waitForLoadState("networkidle");
+          await expect(dataTable).toBeVisible();
+          return await findRow().count();
+        },
+        { timeout: 120000, intervals: [1000, 2000, 5000] }
+      )
+      .toBeGreaterThan(0);
 
-    await expect(assetRow).toBeVisible({
+    const assetRow = findRow().first();
+    await expect(assetRow.getByRole("cell", { name: symbol })).toBeVisible({
       timeout: 30000,
     });
-
     await expect(
-      assetRow.getByRole("cell", { name: options.symbol })
-    ).toBeVisible({
-      timeout: 30000,
-    });
-
-    await expect(
-      assetRow.getByRole("cell", { name: options.decimals })
+      assetRow.getByRole("cell", { name: decimals, exact: true })
     ).toBeVisible();
-
     await expect(
       assetRow.locator('[data-slot="badge"]').filter({ hasText: "Paused" })
     ).toBeVisible();

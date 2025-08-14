@@ -1,7 +1,7 @@
 dependencies:
 - name: ingress-nginx
   repository: https://kubernetes.github.io/ingress-nginx
-  version: 4.13.0
+  version: 4.13.1
 - name: postgresql
   repository: file://./charts/postgresql
   version: 0.1.0
@@ -14,5 +14,5 @@ dependencies:
 - name: minio
   repository: file://./charts/minio
   version: 0.1.0
-digest: sha256:6a8db560ecf571317eab9a33119840a9ab8260570212172a0a41be4e6057fbcd
-generated: "2025-08-05T16:33:30.20237+03:00"
+digest: sha256:c48dbf007373341175edad5fabcd33170c0098eb0dd4cc1a62416acf05cbba29
+generated: "2025-08-12T22:13:37.189359704Z"

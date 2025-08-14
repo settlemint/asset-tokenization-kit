@@ -115,11 +115,26 @@ describe("bigDecimal", () => {
       );
     });
 
-    it("should reject non-string types", () => {
-      expect(() => validator.parse(123)).toThrow();
+    it("should accept numbers", () => {
+      const result = validator.parse(123);
+      expect(Array.isArray(result)).toBe(true);
+      expect(format(result)).toBe("123");
+
+      const decimal = validator.parse(123.456);
+      expect(Array.isArray(decimal)).toBe(true);
+      expect(format(decimal)).toBe("123.456");
+    });
+
+    it("should reject non-string/number types", () => {
       expect(() => validator.parse(null)).toThrow();
       expect(() => validator.parse(undefined)).toThrow();
       expect(() => validator.parse({})).toThrow();
+    });
+
+    it("should reject number special values", () => {
+      expect(() => validator.parse(Number.NaN)).toThrow();
+      expect(() => validator.parse(Number.POSITIVE_INFINITY)).toThrow();
+      expect(() => validator.parse(Number.NEGATIVE_INFINITY)).toThrow();
     });
   });
 
@@ -262,6 +277,13 @@ describe("bigDecimal", () => {
       expect(isBigDecimal("1.23e10")).toBe(true);
     });
 
+    it("should return true for valid numbers", () => {
+      expect(isBigDecimal(123)).toBe(true);
+      expect(isBigDecimal(123.456)).toBe(true);
+      expect(isBigDecimal(-456.789)).toBe(true);
+      expect(isBigDecimal(0)).toBe(true);
+    });
+
     it("should return true for valid Dnum values", () => {
       const dnum = from("123.456");
       expect(isBigDecimal(dnum)).toBe(true);
@@ -272,7 +294,6 @@ describe("bigDecimal", () => {
       expect(isBigDecimal("")).toBe(false);
       expect(isBigDecimal(null)).toBe(false);
       expect(isBigDecimal(undefined)).toBe(false);
-      expect(isBigDecimal(123)).toBe(false);
       expect(isBigDecimal({})).toBe(false);
       expect(isBigDecimal([])).toBe(false);
       expect(isBigDecimal(true)).toBe(false);
@@ -282,6 +303,9 @@ describe("bigDecimal", () => {
       expect(isBigDecimal("NaN")).toBe(false);
       expect(isBigDecimal("Infinity")).toBe(false);
       expect(isBigDecimal("-Infinity")).toBe(false);
+      expect(isBigDecimal(Number.NaN)).toBe(false);
+      expect(isBigDecimal(Number.POSITIVE_INFINITY)).toBe(false);
+      expect(isBigDecimal(Number.NEGATIVE_INFINITY)).toBe(false);
     });
   });
 
@@ -298,13 +322,22 @@ describe("bigDecimal", () => {
       expect(result).toBe(dnum);
     });
 
+    it("should return parsed decimal for valid numbers", () => {
+      const result = getBigDecimal(123);
+      expect(isDnum(result)).toBe(true);
+      expect(format(result)).toBe("123");
+
+      const decimal = getBigDecimal(456.789);
+      expect(isDnum(decimal)).toBe(true);
+      expect(format(decimal)).toBe("456.789");
+    });
+
     it("should throw for invalid values", () => {
       expect(() => getBigDecimal("invalid")).toThrow(
         "Invalid decimal format. Please provide a valid numeric string"
       );
       expect(() => getBigDecimal(null)).toThrow();
       expect(() => getBigDecimal(undefined)).toThrow();
-      expect(() => getBigDecimal(123)).toThrow();
     });
 
     it("should throw for special values", () => {
@@ -314,6 +347,9 @@ describe("bigDecimal", () => {
       expect(() => getBigDecimal("Infinity")).toThrow(
         "Invalid value. NaN, Infinity, and -Infinity are not allowed"
       );
+      expect(() => getBigDecimal(Number.NaN)).toThrow();
+      expect(() => getBigDecimal(Number.POSITIVE_INFINITY)).toThrow();
+      expect(() => getBigDecimal(Number.NEGATIVE_INFINITY)).toThrow();
     });
   });
 

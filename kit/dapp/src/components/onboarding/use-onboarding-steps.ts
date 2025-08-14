@@ -2,11 +2,11 @@ import {
   OnboardingStep,
   OnboardingStepGroup,
 } from "@/components/onboarding/state-machine";
-import type { StepOrGroup } from "@/components/stepper/types";
+import type { StepGroup } from "@/components/stepper/types";
 import { useTranslation } from "react-i18next";
 
 interface UseOnboardingStepsReturn {
-  stepsOrGroups: StepOrGroup<OnboardingStep, OnboardingStepGroup>[];
+  stepsOrGroups: StepGroup<OnboardingStep, OnboardingStepGroup>[];
 }
 
 export function useOnboardingSteps(): UseOnboardingStepsReturn {
@@ -88,7 +88,7 @@ export function useOnboardingSteps(): UseOnboardingStepsReturn {
         },
       ],
     },
-  ] as const satisfies StepOrGroup<OnboardingStep, OnboardingStepGroup>[];
+  ] as const satisfies StepGroup<OnboardingStep, OnboardingStepGroup>[];
 
   return {
     stepsOrGroups,
