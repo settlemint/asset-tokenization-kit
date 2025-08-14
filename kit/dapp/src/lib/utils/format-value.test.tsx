@@ -1,8 +1,8 @@
-import { describe, expect, test, vi } from "vitest";
 import { render } from "@testing-library/react";
-import React from "react";
-import { formatValue, safeToString } from "./format-value";
 import { from } from "dnum";
+import React from "react";
+import { describe, expect, test, vi } from "vitest";
+import { formatValue, safeToString } from "./format-value";
 
 // Mock the components used by formatValue (hoisted)
 vi.mock("@/components/ui/badge", () => {
@@ -352,6 +352,7 @@ describe("formatValue", () => {
   });
 
   test("returns string representation for unknown type", () => {
+    // @ts-expect-error - test for unknown type
     const result = formatValue("test value", { type: "unknown-type" });
     const { container } = render(<>{result}</>);
     expect(container.textContent).toBe("test value");

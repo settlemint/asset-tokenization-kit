@@ -22,9 +22,15 @@ export function AssetDesignerDialog({
         closeConfirmation: {
           title: t("asset-designer:leave-confirmation.title"),
           description: t("asset-designer:leave-confirmation.description"),
-          buttonLabels: {
-            left: t("asset-designer:leave-confirmation.stay"),
-            right: t("asset-designer:leave-confirmation.leave"),
+          leftAction: {
+            label: t("asset-designer:leave-confirmation.leave"),
+            action: () => {
+              onOpenChange(false);
+            },
+          },
+          rightAction: {
+            label: t("asset-designer:leave-confirmation.stay"),
+            action: "close",
           },
           ariaLabel: t("asset-designer:leave-confirmation.leave"),
         },

@@ -18,23 +18,24 @@ import {
 import { createAuthClient } from "better-auth/react";
 import { getDappUrl } from "./dapp";
 
-export const authClient = createAuthClient({
-  baseURL: `${getDappUrl()}/api/auth`,
-  plugins: [
-    customSessionClient<typeof auth>(),
-    inferAdditionalFields<typeof auth>(),
-    adminClient({
-      ac: accessControl,
-      roles: {
-        admin: adminRole,
-        investor: investorRole,
-        issuer: issuerRole,
-      },
-    }),
-    apiKeyClient(),
-    passkeyClient(),
-    pincodeClient(),
-    twoFactorClient(),
-    secretCodesClient(),
-  ],
-});
+export const getAuthClient = () =>
+  createAuthClient({
+    baseURL: `${getDappUrl()}/api/auth`,
+    plugins: [
+      customSessionClient<typeof auth>(),
+      inferAdditionalFields<typeof auth>(),
+      adminClient({
+        ac: accessControl,
+        roles: {
+          admin: adminRole,
+          investor: investorRole,
+          issuer: issuerRole,
+        },
+      }),
+      apiKeyClient(),
+      passkeyClient(),
+      pincodeClient(),
+      twoFactorClient(),
+      secretCodesClient(),
+    ],
+  });

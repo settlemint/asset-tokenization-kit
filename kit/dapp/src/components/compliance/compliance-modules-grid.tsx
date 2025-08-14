@@ -53,9 +53,11 @@ export function ComplianceModulesGrid({
               <IconComponent className="w-4 h-4" />
             </SelectableCardIcon>
             <SelectableCardContent>
-              <SelectableCardTitle>{t(config.titleKey)}</SelectableCardTitle>
+              <SelectableCardTitle>
+                {t(`modules.${typeId}.title`)}
+              </SelectableCardTitle>
               <SelectableCardDescription>
-                {t(config.descriptionKey)}
+                {t(`modules.${typeId}.description`)}
               </SelectableCardDescription>
             </SelectableCardContent>
           </SelectableCard>

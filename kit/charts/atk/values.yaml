@@ -31,7 +31,7 @@ besu-network:
     configServer:
       image:
         repository: docker.io/nginx
-        tag: "1.29.0-alpine"
+        tag: "1.29.1-alpine"
         pullPolicy: IfNotPresent
   besu-node:
     node:
@@ -185,7 +185,7 @@ blockscout:
     blockscout:
       image:
         repository: ghcr.io/blockscout/blockscout
-        tag: "9.0.0"
+        tag: "8.1.2"
         pullPolicy: IfNotPresent
       # Add an extra init container to wait for PostgreSQL
       init:
@@ -375,7 +375,7 @@ support:
       resources: {}
       image:
         repository: registry.k8s.io/ingress-nginx/controller
-        tag: "v1.13.0"
+        tag: "v1.13.1"
         digest: ""
 
   # https://github.com/stakater/Reloader/tree/master/deployments/kubernetes/chart/reloader
@@ -502,7 +502,7 @@ observability:
       image:
         # -- The Docker registry and image for the k8s sidecar
         repository: docker.io/kiwigrid/k8s-sidecar
-        tag: 1.30.7
+        tag: 1.30.8
     gateway:
       image:
         registry: docker.io
@@ -533,13 +533,13 @@ observability:
       # -- Docker image repository
       repository: grafana/grafana
       # Overrides the Grafana image tag whose default is the chart appVersion
-      tag: "12.1.0"
+      tag: "12.1.1"
     # Sidecar configuration for Grafana dashboards and datasources
     sidecar:
       image:
         registry: docker.io
         repository: kiwigrid/k8s-sidecar
-        tag: "1.30.3"
+        tag: "1.30.8"
     ingress:
       hosts:
         - grafana.k8s.orb.local
@@ -569,7 +569,7 @@ txsigner:
   image:
     registry: ghcr.io
     repository: settlemint/btp-signer
-    tag: "7.13.5"
+    tag: "7.14.1"
     pullPolicy: IfNotPresent
   # Init container for testing
   test:
