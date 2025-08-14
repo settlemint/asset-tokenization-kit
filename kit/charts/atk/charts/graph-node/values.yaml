@@ -21,7 +21,7 @@ initContainer:
   # -- Image for init container kubectl
   image:
     repository: docker.io/kubesphere/kubectl
-    tag: v1.33.1
+    tag: v1.33.4
     pullPolicy: IfNotPresent
 
 # -- Pull secrets required to fetch the Image
