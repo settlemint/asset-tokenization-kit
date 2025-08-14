@@ -599,9 +599,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         credentials={{
           confirmPassword: true,
         }}
-        settings={{
-          fields: [],
-        }}
         signUp={{
           fields: [],
         }}
