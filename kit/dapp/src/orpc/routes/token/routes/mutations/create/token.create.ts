@@ -87,29 +87,12 @@ export const create = portalRouter.token.create
       }
     );
 
-    if (result.tokens.length === 0) {
-      throw errors.NOT_FOUND({
-        message: context.t(
-          "tokens:api.mutations.create.messages.missingAfterCreation"
-        ),
-        cause: new Error(
-          context.t(
-            "tokens:api.mutations.create.messages.notFoundForTransaction",
-            { transactionHash }
-          )
-        ),
-      });
-    }
-
     const token = result.tokens[0];
-
-    if (!token) {
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: context.t("tokens:api.mutations.create.messages.failed"),
+    if (result.tokens.length === 0 || !token) {
+      throw errors.NOT_FOUND({
+        message: "Token not found",
         cause: new Error(
-          context.t("tokens:api.mutations.create.messages.nullObject", {
-            transactionHash,
-          })
+          `No indexed token found for transaction ${transactionHash}`
         ),
       });
     }

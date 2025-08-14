@@ -98,9 +98,7 @@ export const mint = tokenRouter.token.mint
 
       if (!to || !amount) {
         throw errors.INPUT_VALIDATION_FAILED({
-          message: context.t(
-            "tokens:api.mutations.mint.messages.missingRecipientOrAmount"
-          ),
+          message: "Missing recipient or amount",
           data: { errors: ["Invalid input data"] },
         });
       }
