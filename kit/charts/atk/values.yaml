@@ -225,7 +225,7 @@ graph-node:
   initContainers:
     kubectlImage:
       repository: docker.io/kubesphere/kubectl
-      tag: "v1.33.1"
+      tag: "v1.33.4"
       pullPolicy: IfNotPresent
     postgresImage:
       repository: docker.io/postgres
