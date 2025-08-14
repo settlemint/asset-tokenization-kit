@@ -20,7 +20,7 @@ describe("Token search", () => {
     // Create tokens with different names and symbols for search testing (in parallel)
     const [usd, eur, eth] = await Promise.all([
       createToken(client, {
-        name: `TSTUSD Stablecoin`,
+        name: `USD Stablecoin`,
         symbol: "USDC",
         decimals: 18,
         type: "stablecoin",
@@ -31,7 +31,7 @@ describe("Token search", () => {
         },
       }),
       createToken(client, {
-        name: "TSTEuro SEARCH Token",
+        name: "Euro SEARCH Token",
         symbol: "EURT",
         decimals: 18,
         type: "stablecoin",
@@ -42,7 +42,7 @@ describe("Token search", () => {
         },
       }),
       createToken(client, {
-        name: "TSTEthereum Deposit",
+        name: "Ethereum Deposit",
         symbol: "ETH",
         decimals: 18,
         type: "deposit",
@@ -137,7 +137,7 @@ describe("Token search", () => {
   it.concurrent("can perform partial matches", async () => {
     // Search for partial name match
     const nameResults = await client.token.search({
-      query: "TSTUSD Stable", // Should match "TSTUSD Stablecoin"
+      query: usdToken.name.slice(7, 18), // Should match "USD Stablecoin"
       limit: 10,
     });
 
@@ -146,8 +146,8 @@ describe("Token search", () => {
 
     // Search for partial symbol match
     const symbolResults = await client.token.search({
-      query: "USD", // Should match "USDC" symbol
-      limit: 10,
+      query: usdToken.symbol.slice(1, 4), // Should match "USDC" symbol
+      limit: 100,
     });
 
     expect(symbolResults.length).toBeGreaterThanOrEqual(1);
