@@ -66,14 +66,6 @@ const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
  * Creates token factory contracts.
  *
  * This handler creates token factories, supporting both single and batch operations.
- * @auth Required - User must be authenticated
- * @middleware portalMiddleware - Provides Portal GraphQL client
- * @middleware theGraphMiddleware - Provides TheGraph client
- * @param input.factories - Single factory or array of factories to create
- * @param input.messages - Optional custom messages for localization
- * @returns {Promise<FactoryCreateOutput>} Creation summary with results for each factory
- * @throws {ORPCError} UNAUTHORIZED - If user is not authenticated
- * @throws {ORPCError} INTERNAL_SERVER_ERROR - If system not bootstrapped or transaction fails
  */
 export const factoryCreate = portalRouter.system.tokenFactoryCreate
   .use(
@@ -123,7 +115,7 @@ export const factoryCreate = portalRouter.system.tokenFactoryCreate
     );
 
     // Process factories sequentially - parallel challenge generation not working
-    const results = [];
+    const factoryCreateErrors: string[] = [];
 
     for (const factory of factoriesToDeploy) {
       const { type, name } = factory;
@@ -153,17 +145,26 @@ export const factoryCreate = portalRouter.system.tokenFactoryCreate
         };
 
         // Use the Portal client's mutate method that returns the transaction hash
-        const txHash = await context.portalClient.mutate(
+        await context.portalClient.mutate(
           CREATE_TOKEN_FACTORY_MUTATION,
           variables
         );
 
-        results.push({ status: "success" as const, factory: name, txHash });
         logger.info(`Factory ${name} deployed successfully`);
       } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
         logger.error(`Failed to create factory ${name}:`, error);
-        results.push({ status: "failed" as const, factory: name, error });
+        factoryCreateErrors.push(
+          `Failed to create factory ${name}: ${errorMessage}`
+        );
       }
+    }
+
+    if (factoryCreateErrors.length > 0) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: factoryCreateErrors.join("\n"),
+      });
     }
 
     const updatedSystemDetails = await call(

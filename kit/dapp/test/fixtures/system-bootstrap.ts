@@ -1,6 +1,9 @@
+import { ORPCError } from "@orpc/server";
 import { retryWhenFailed } from "@settlemint/sdk-utils";
+import { DEFAULT_INVESTOR } from "@test/fixtures/user";
 import { getOrpcClient, OrpcClient } from "./orpc-client";
 import {
+  DEFAULT_ADMIN,
   DEFAULT_ISSUER,
   DEFAULT_PINCODE,
   getUserData,
@@ -86,11 +89,11 @@ export async function bootstrapTokenFactories(
   const factories: Parameters<
     typeof orpClient.system.tokenFactoryCreate
   >[0]["factories"] = [
-    { type: "bond", name: "Bond Factory" },
-    { type: "deposit", name: "Deposit Factory" },
-    { type: "equity", name: "Equrity Factory" },
-    { type: "fund", name: "Fund Factory" },
-    { type: "stablecoin", name: "Stablecoin Factory" },
+    { type: "bond", name: "Bonds" },
+    { type: "deposit", name: "Deposits" },
+    { type: "equity", name: "Equities" },
+    { type: "fund", name: "Funds" },
+    { type: "stablecoin", name: "Stablecoins" },
   ];
 
   const nonExistingFactories = factories.filter(
@@ -128,6 +131,35 @@ export async function bootstrapTokenFactories(
   console.log("Token factories created");
 }
 
+export async function bootstrapAddons(orpClient: OrpcClient) {
+  const addons = await orpClient.system.addonList({});
+  if (addons.length > 0) {
+    console.log("Addons already exist");
+    return;
+  }
+
+  await orpClient.system.addonCreate({
+    verification: {
+      verificationCode: DEFAULT_PINCODE,
+      verificationType: "pincode",
+    },
+    addons: [
+      {
+        type: "airdrops",
+        name: "Airdrops",
+      },
+      {
+        type: "yield",
+        name: "Yield",
+      },
+      {
+        type: "xvp",
+        name: "XVP",
+      },
+    ],
+  });
+}
+
 export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
   const issuer = await getUserData(DEFAULT_ISSUER);
   const issuerOrpcClient = getOrpcClient(await signInWithUser(DEFAULT_ISSUER));
@@ -140,6 +172,9 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
     ...(!issuerMe.userSystemPermissions.roles.complianceManager
       ? ["complianceManager" as const]
       : []),
+    ...(!issuerMe.userSystemPermissions.roles.identityManager
+      ? ["identityManager" as const]
+      : []),
   ];
 
   if (rolesToGrant.length > 0) {
@@ -151,5 +186,66 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
       address: issuer.wallet,
       role: rolesToGrant,
     });
+  }
+}
+
+export async function setDefaultSystemSettings(orpClient: OrpcClient) {
+  const settings = await orpClient.settings.list({});
+  if (settings.find((s) => s.key === "BASE_CURRENCY")) {
+    console.log("Base currency already set");
+    return;
+  }
+  await orpClient.settings.upsert({
+    key: "BASE_CURRENCY",
+    value: "USD",
+  });
+}
+
+export async function createAndRegisterUserIdentities(orpcClient: OrpcClient) {
+  const users = [DEFAULT_ISSUER, DEFAULT_INVESTOR, DEFAULT_ADMIN];
+
+  // TODO: parallelize these operations when pincode concurrency issues are fixed
+  for (const user of users) {
+    const userOrpClient = getOrpcClient(await signInWithUser(user));
+    const me = await userOrpClient.user.me({});
+    if (me.wallet && !me.onboardingState.identitySetup) {
+      await orpcClient.system.identityCreate({
+        verification: {
+          verificationCode: DEFAULT_PINCODE,
+          verificationType: "pincode",
+        },
+        wallet: me.wallet,
+      });
+      try {
+        await orpcClient.system.identityRegister({
+          verification: {
+            verificationCode: DEFAULT_PINCODE,
+            verificationType: "pincode",
+          },
+          wallet: me.wallet,
+          country: "BE",
+        });
+      } catch (err) {
+        if (
+          !(
+            err instanceof ORPCError &&
+            err.message.includes("IdentityAlreadyRegistered")
+          )
+        ) {
+          throw err;
+        }
+      }
+    }
+    if (!me.onboardingState.identity) {
+      await orpcClient.user.kyc.upsert({
+        firstName: user.name,
+        lastName: "(Integration tests)",
+        dob: new Date("1990-01-01"),
+        country: "BE",
+        residencyStatus: "resident",
+        nationalId: "1234567890",
+        userId: me.id,
+      });
+    }
   }
 }

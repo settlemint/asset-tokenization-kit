@@ -2,8 +2,11 @@ import { createLogger } from "@settlemint/sdk-utils/logging";
 import { startApiServer } from "../fixtures/dapp";
 import { getOrpcClient } from "../fixtures/orpc-client";
 import {
+  bootstrapAddons,
   bootstrapSystem,
   bootstrapTokenFactories,
+  createAndRegisterUserIdentities,
+  setDefaultSystemSettings,
   setupDefaultIssuerRoles,
 } from "../fixtures/system-bootstrap";
 import {
@@ -24,21 +27,20 @@ export async function setup() {
     const { stop } = await startApiServer();
     stopApi = stop;
 
-    // Parallelize user setup
-    await Promise.all([
-      setupUser(DEFAULT_ADMIN),
-      setupUser(DEFAULT_INVESTOR),
-      setupUser(DEFAULT_ISSUER),
-    ]);
+    // Default admin goes first as it requires the initial admin role
+    await setupUser(DEFAULT_ADMIN);
+    // Parallelize other user setup
+    await Promise.all([setupUser(DEFAULT_INVESTOR), setupUser(DEFAULT_ISSUER)]);
 
     const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));
     const system = await bootstrapSystem(orpClient);
 
-    // Parallelize post-boot operations
-    await Promise.all([
-      bootstrapTokenFactories(orpClient, system),
-      setupDefaultIssuerRoles(orpClient),
-    ]);
+    // TODO: parallelize these operations when pincode concurrency issues are fixed
+    await bootstrapTokenFactories(orpClient, system);
+    await bootstrapAddons(orpClient);
+    await setupDefaultIssuerRoles(orpClient);
+    await setDefaultSystemSettings(orpClient);
+    await createAndRegisterUserIdentities(orpClient);
 
     stopApi();
   } catch (error: unknown) {

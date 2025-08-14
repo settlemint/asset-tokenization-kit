@@ -32,9 +32,15 @@ import { Route as PrivateOnboardingSidebarIdentityRouteImport } from './routes/_
 import { Route as PrivateOnboardedSidebarAddonDesignerRouteImport } from './routes/_private/_onboarded/_sidebar/addon-designer'
 import { Route as PrivateOnboardedSidebarAddonIndexRouteImport } from './routes/_private/_onboarded/_sidebar/addon/index'
 import { Route as PrivateOnboardedSidebarTokenStatsRouteImport } from './routes/_private/_onboarded/_sidebar/token/stats'
+import { Route as PrivateOnboardedSidebarAdminUserManagementRouteImport } from './routes/_private/_onboarded/_sidebar/admin/user-management'
 import { Route as PrivateOnboardedSidebarAddonAddonAddressRouteImport } from './routes/_private/_onboarded/_sidebar/addon/$addonAddress'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressIndexRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/index'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress'
+import { Route as PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRouteImport } from './routes/_private/_onboarded/_sidebar/admin/platform-settings/permissions'
+import { Route as PrivateOnboardedSidebarAdminPlatformSettingsComplianceRouteImport } from './routes/_private/_onboarded/_sidebar/admin/platform-settings/compliance'
+import { Route as PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRouteImport } from './routes/_private/_onboarded/_sidebar/admin/platform-settings/claim-topics-issuers'
+import { Route as PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRouteImport } from './routes/_private/_onboarded/_sidebar/admin/platform-settings/asset-types'
+import { Route as PrivateOnboardedSidebarAdminPlatformSettingsAddonsRouteImport } from './routes/_private/_onboarded/_sidebar/admin/platform-settings/addons'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/index'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/permissions'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders'
@@ -161,6 +167,12 @@ const PrivateOnboardedSidebarTokenStatsRoute =
     path: '/token/stats',
     getParentRoute: () => PrivateOnboardedSidebarRoute,
   } as any)
+const PrivateOnboardedSidebarAdminUserManagementRoute =
+  PrivateOnboardedSidebarAdminUserManagementRouteImport.update({
+    id: '/admin/user-management',
+    path: '/admin/user-management',
+    getParentRoute: () => PrivateOnboardedSidebarRoute,
+  } as any)
 const PrivateOnboardedSidebarAddonAddonAddressRoute =
   PrivateOnboardedSidebarAddonAddonAddressRouteImport.update({
     id: '/addon/$addonAddress',
@@ -177,6 +189,38 @@ const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute =
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteImport.update({
     id: '/token/$factoryAddress/$tokenAddress',
     path: '/token/$factoryAddress/$tokenAddress',
+    getParentRoute: () => PrivateOnboardedSidebarRoute,
+  } as any)
+const PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute =
+  PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRouteImport.update({
+    id: '/admin/platform-settings/permissions',
+    path: '/admin/platform-settings/permissions',
+    getParentRoute: () => PrivateOnboardedSidebarRoute,
+  } as any)
+const PrivateOnboardedSidebarAdminPlatformSettingsComplianceRoute =
+  PrivateOnboardedSidebarAdminPlatformSettingsComplianceRouteImport.update({
+    id: '/admin/platform-settings/compliance',
+    path: '/admin/platform-settings/compliance',
+    getParentRoute: () => PrivateOnboardedSidebarRoute,
+  } as any)
+const PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRoute =
+  PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRouteImport.update(
+    {
+      id: '/admin/platform-settings/claim-topics-issuers',
+      path: '/admin/platform-settings/claim-topics-issuers',
+      getParentRoute: () => PrivateOnboardedSidebarRoute,
+    } as any,
+  )
+const PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRoute =
+  PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRouteImport.update({
+    id: '/admin/platform-settings/asset-types',
+    path: '/admin/platform-settings/asset-types',
+    getParentRoute: () => PrivateOnboardedSidebarRoute,
+  } as any)
+const PrivateOnboardedSidebarAdminPlatformSettingsAddonsRoute =
+  PrivateOnboardedSidebarAdminPlatformSettingsAddonsRouteImport.update({
+    id: '/admin/platform-settings/addons',
+    path: '/admin/platform-settings/addons',
     getParentRoute: () => PrivateOnboardedSidebarRoute,
   } as any)
 const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute =
@@ -257,8 +301,14 @@ export interface FileRoutesByFullPath {
   '/onboarding/wallet-security': typeof PrivateOnboardingSidebarWalletSecurityRoute
   '/': typeof PrivateOnboardedSidebarIndexRoute
   '/addon/$addonAddress': typeof PrivateOnboardedSidebarAddonAddonAddressRoute
+  '/admin/user-management': typeof PrivateOnboardedSidebarAdminUserManagementRoute
   '/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
   '/addon': typeof PrivateOnboardedSidebarAddonIndexRoute
+  '/admin/platform-settings/addons': typeof PrivateOnboardedSidebarAdminPlatformSettingsAddonsRoute
+  '/admin/platform-settings/asset-types': typeof PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRoute
+  '/admin/platform-settings/claim-topics-issuers': typeof PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRoute
+  '/admin/platform-settings/compliance': typeof PrivateOnboardedSidebarAdminPlatformSettingsComplianceRoute
+  '/admin/platform-settings/permissions': typeof PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute
   '/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren
   '/token/$factoryAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
   '/token/$factoryAddress/$tokenAddress/blocklist': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute
@@ -283,8 +333,14 @@ export interface FileRoutesByTo {
   '/onboarding/wallet-security': typeof PrivateOnboardingSidebarWalletSecurityRoute
   '/': typeof PrivateOnboardedSidebarIndexRoute
   '/addon/$addonAddress': typeof PrivateOnboardedSidebarAddonAddonAddressRoute
+  '/admin/user-management': typeof PrivateOnboardedSidebarAdminUserManagementRoute
   '/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
   '/addon': typeof PrivateOnboardedSidebarAddonIndexRoute
+  '/admin/platform-settings/addons': typeof PrivateOnboardedSidebarAdminPlatformSettingsAddonsRoute
+  '/admin/platform-settings/asset-types': typeof PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRoute
+  '/admin/platform-settings/claim-topics-issuers': typeof PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRoute
+  '/admin/platform-settings/compliance': typeof PrivateOnboardedSidebarAdminPlatformSettingsComplianceRoute
+  '/admin/platform-settings/permissions': typeof PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute
   '/token/$factoryAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
   '/token/$factoryAddress/$tokenAddress/blocklist': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute
   '/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
@@ -314,8 +370,14 @@ export interface FileRoutesById {
   '/_private/onboarding/_sidebar/wallet-security': typeof PrivateOnboardingSidebarWalletSecurityRoute
   '/_private/_onboarded/_sidebar/': typeof PrivateOnboardedSidebarIndexRoute
   '/_private/_onboarded/_sidebar/addon/$addonAddress': typeof PrivateOnboardedSidebarAddonAddonAddressRoute
+  '/_private/_onboarded/_sidebar/admin/user-management': typeof PrivateOnboardedSidebarAdminUserManagementRoute
   '/_private/_onboarded/_sidebar/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
   '/_private/_onboarded/_sidebar/addon/': typeof PrivateOnboardedSidebarAddonIndexRoute
+  '/_private/_onboarded/_sidebar/admin/platform-settings/addons': typeof PrivateOnboardedSidebarAdminPlatformSettingsAddonsRoute
+  '/_private/_onboarded/_sidebar/admin/platform-settings/asset-types': typeof PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRoute
+  '/_private/_onboarded/_sidebar/admin/platform-settings/claim-topics-issuers': typeof PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRoute
+  '/_private/_onboarded/_sidebar/admin/platform-settings/compliance': typeof PrivateOnboardedSidebarAdminPlatformSettingsComplianceRoute
+  '/_private/_onboarded/_sidebar/admin/platform-settings/permissions': typeof PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren
   '/_private/_onboarded/_sidebar/token/$factoryAddress/': typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute
@@ -343,8 +405,14 @@ export interface FileRouteTypes {
     | '/onboarding/wallet-security'
     | '/'
     | '/addon/$addonAddress'
+    | '/admin/user-management'
     | '/token/stats'
     | '/addon'
+    | '/admin/platform-settings/addons'
+    | '/admin/platform-settings/asset-types'
+    | '/admin/platform-settings/claim-topics-issuers'
+    | '/admin/platform-settings/compliance'
+    | '/admin/platform-settings/permissions'
     | '/token/$factoryAddress/$tokenAddress'
     | '/token/$factoryAddress'
     | '/token/$factoryAddress/$tokenAddress/blocklist'
@@ -369,8 +437,14 @@ export interface FileRouteTypes {
     | '/onboarding/wallet-security'
     | '/'
     | '/addon/$addonAddress'
+    | '/admin/user-management'
     | '/token/stats'
     | '/addon'
+    | '/admin/platform-settings/addons'
+    | '/admin/platform-settings/asset-types'
+    | '/admin/platform-settings/claim-topics-issuers'
+    | '/admin/platform-settings/compliance'
+    | '/admin/platform-settings/permissions'
     | '/token/$factoryAddress'
     | '/token/$factoryAddress/$tokenAddress/blocklist'
     | '/token/$factoryAddress/$tokenAddress/events'
@@ -399,8 +473,14 @@ export interface FileRouteTypes {
     | '/_private/onboarding/_sidebar/wallet-security'
     | '/_private/_onboarded/_sidebar/'
     | '/_private/_onboarded/_sidebar/addon/$addonAddress'
+    | '/_private/_onboarded/_sidebar/admin/user-management'
     | '/_private/_onboarded/_sidebar/token/stats'
     | '/_private/_onboarded/_sidebar/addon/'
+    | '/_private/_onboarded/_sidebar/admin/platform-settings/addons'
+    | '/_private/_onboarded/_sidebar/admin/platform-settings/asset-types'
+    | '/_private/_onboarded/_sidebar/admin/platform-settings/claim-topics-issuers'
+    | '/_private/_onboarded/_sidebar/admin/platform-settings/compliance'
+    | '/_private/_onboarded/_sidebar/admin/platform-settings/permissions'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist'
@@ -593,6 +673,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardedSidebarTokenStatsRouteImport
       parentRoute: typeof PrivateOnboardedSidebarRoute
     }
+    '/_private/_onboarded/_sidebar/admin/user-management': {
+      id: '/_private/_onboarded/_sidebar/admin/user-management'
+      path: '/admin/user-management'
+      fullPath: '/admin/user-management'
+      preLoaderRoute: typeof PrivateOnboardedSidebarAdminUserManagementRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarRoute
+    }
     '/_private/_onboarded/_sidebar/addon/$addonAddress': {
       id: '/_private/_onboarded/_sidebar/addon/$addonAddress'
       path: '/addon/$addonAddress'
@@ -612,6 +699,41 @@ declare module '@tanstack/react-router' {
       path: '/token/$factoryAddress/$tokenAddress'
       fullPath: '/token/$factoryAddress/$tokenAddress'
       preLoaderRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarRoute
+    }
+    '/_private/_onboarded/_sidebar/admin/platform-settings/permissions': {
+      id: '/_private/_onboarded/_sidebar/admin/platform-settings/permissions'
+      path: '/admin/platform-settings/permissions'
+      fullPath: '/admin/platform-settings/permissions'
+      preLoaderRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarRoute
+    }
+    '/_private/_onboarded/_sidebar/admin/platform-settings/compliance': {
+      id: '/_private/_onboarded/_sidebar/admin/platform-settings/compliance'
+      path: '/admin/platform-settings/compliance'
+      fullPath: '/admin/platform-settings/compliance'
+      preLoaderRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsComplianceRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarRoute
+    }
+    '/_private/_onboarded/_sidebar/admin/platform-settings/claim-topics-issuers': {
+      id: '/_private/_onboarded/_sidebar/admin/platform-settings/claim-topics-issuers'
+      path: '/admin/platform-settings/claim-topics-issuers'
+      fullPath: '/admin/platform-settings/claim-topics-issuers'
+      preLoaderRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarRoute
+    }
+    '/_private/_onboarded/_sidebar/admin/platform-settings/asset-types': {
+      id: '/_private/_onboarded/_sidebar/admin/platform-settings/asset-types'
+      path: '/admin/platform-settings/asset-types'
+      fullPath: '/admin/platform-settings/asset-types'
+      preLoaderRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarRoute
+    }
+    '/_private/_onboarded/_sidebar/admin/platform-settings/addons': {
+      id: '/_private/_onboarded/_sidebar/admin/platform-settings/addons'
+      path: '/admin/platform-settings/addons'
+      fullPath: '/admin/platform-settings/addons'
+      preLoaderRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsAddonsRouteImport
       parentRoute: typeof PrivateOnboardedSidebarRoute
     }
     '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/': {
@@ -708,8 +830,14 @@ interface PrivateOnboardedSidebarRouteChildren {
   PrivateOnboardedSidebarAddonDesignerRoute: typeof PrivateOnboardedSidebarAddonDesignerRoute
   PrivateOnboardedSidebarIndexRoute: typeof PrivateOnboardedSidebarIndexRoute
   PrivateOnboardedSidebarAddonAddonAddressRoute: typeof PrivateOnboardedSidebarAddonAddonAddressRoute
+  PrivateOnboardedSidebarAdminUserManagementRoute: typeof PrivateOnboardedSidebarAdminUserManagementRoute
   PrivateOnboardedSidebarTokenStatsRoute: typeof PrivateOnboardedSidebarTokenStatsRoute
   PrivateOnboardedSidebarAddonIndexRoute: typeof PrivateOnboardedSidebarAddonIndexRoute
+  PrivateOnboardedSidebarAdminPlatformSettingsAddonsRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsAddonsRoute
+  PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRoute
+  PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRoute
+  PrivateOnboardedSidebarAdminPlatformSettingsComplianceRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsComplianceRoute
+  PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren
   PrivateOnboardedSidebarTokenFactoryAddressIndexRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
 }
@@ -721,10 +849,22 @@ const PrivateOnboardedSidebarRouteChildren: PrivateOnboardedSidebarRouteChildren
     PrivateOnboardedSidebarIndexRoute: PrivateOnboardedSidebarIndexRoute,
     PrivateOnboardedSidebarAddonAddonAddressRoute:
       PrivateOnboardedSidebarAddonAddonAddressRoute,
+    PrivateOnboardedSidebarAdminUserManagementRoute:
+      PrivateOnboardedSidebarAdminUserManagementRoute,
     PrivateOnboardedSidebarTokenStatsRoute:
       PrivateOnboardedSidebarTokenStatsRoute,
     PrivateOnboardedSidebarAddonIndexRoute:
       PrivateOnboardedSidebarAddonIndexRoute,
+    PrivateOnboardedSidebarAdminPlatformSettingsAddonsRoute:
+      PrivateOnboardedSidebarAdminPlatformSettingsAddonsRoute,
+    PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRoute:
+      PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRoute,
+    PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRoute:
+      PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRoute,
+    PrivateOnboardedSidebarAdminPlatformSettingsComplianceRoute:
+      PrivateOnboardedSidebarAdminPlatformSettingsComplianceRoute,
+    PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute:
+      PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute,
     PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute:
       PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren,
     PrivateOnboardedSidebarTokenFactoryAddressIndexRoute:

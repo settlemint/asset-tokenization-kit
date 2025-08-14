@@ -1,7 +1,9 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
+import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
+import type { IdentityCreateSchema } from "@/orpc/routes/system/identity/routes/identity.create.schema";
 import { call, ORPCError } from "@orpc/server";
 
 const IDENTITY_CREATE_MUTATION = portalGraphql(`
@@ -10,6 +12,7 @@ const IDENTITY_CREATE_MUTATION = portalGraphql(`
     $challengeResponse: String
     $address: String!
     $from: String!
+    $wallet: String!
   ) {
     create: IATKIdentityFactoryCreateIdentity(
       address: $address
@@ -18,7 +21,7 @@ const IDENTITY_CREATE_MUTATION = portalGraphql(`
       challengeResponse: $challengeResponse
       input: {
         _managementKeys: []
-        _wallet: $from
+        _wallet: $wallet
       }
     ) {
       transactionHash
@@ -26,9 +29,23 @@ const IDENTITY_CREATE_MUTATION = portalGraphql(`
   }
 `);
 
-export const identityCreate = portalRouter.system.identityCreate.handler(
-  async ({ input, context, errors }) => {
-    const { verification } = input;
+export const identityCreate = portalRouter.system.identityCreate
+  .use(
+    offChainPermissionsMiddleware<typeof IdentityCreateSchema>({
+      requiredPermissions: {
+        account: ["create-identity"],
+      },
+      alwaysAllowIf: ({ auth }, { wallet }) => {
+        return (
+          wallet === undefined ||
+          wallet === null ||
+          wallet === auth?.user.wallet
+        );
+      },
+    })
+  )
+  .handler(async ({ input, context, errors }) => {
+    const { verification, wallet } = input;
     const { auth, system } = context;
     const sender = auth.user;
 
@@ -40,10 +57,12 @@ export const identityCreate = portalRouter.system.identityCreate.handler(
       });
     }
 
+    const walletAddress = wallet ?? auth.user.wallet;
+
     const account = await call(
       readAccount,
       {
-        wallet: sender.wallet,
+        wallet: walletAddress,
       },
       { context }
     ).catch((error: unknown) => {
@@ -67,6 +86,7 @@ export const identityCreate = portalRouter.system.identityCreate.handler(
     await context.portalClient.mutate(IDENTITY_CREATE_MUTATION, {
       address: system.identityFactory,
       from: sender.wallet,
+      wallet: walletAddress,
       ...challengeResponse,
     });
 
@@ -74,9 +94,8 @@ export const identityCreate = portalRouter.system.identityCreate.handler(
     return await call(
       readAccount,
       {
-        wallet: sender.wallet,
+        wallet: walletAddress,
       },
       { context }
     );
-  }
-);
+  });
