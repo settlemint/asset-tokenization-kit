@@ -8,8 +8,8 @@ import {
 } from "@test/fixtures/user";
 import { describe, expect, test } from "vitest";
 
-describe("Identity create", () => {
-  test("an investor cannot register an identity", async () => {
+describe("Identity register", () => {
+  test("investor cannot register an identity", async () => {
     const wallet = await createUserWithIdentity();
 
     const headers = await signInWithUser(DEFAULT_INVESTOR);
