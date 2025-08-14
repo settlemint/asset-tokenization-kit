@@ -8,19 +8,19 @@ import {
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe("KYC upsert", () => {
-  let testUser: Awaited<ReturnType<typeof createTestUser>>["user"];
+  let testUser: Awaited<ReturnType<typeof createTestUser>>;
   let testUserData: Awaited<ReturnType<typeof getUserData>>;
   let otherUserData: Awaited<ReturnType<typeof getUserData>>;
 
   beforeAll(async () => {
-    testUser = (await createTestUser()).user;
-    const otherUser = (await createTestUser()).user;
-    testUserData = await getUserData(testUser);
-    otherUserData = await getUserData(otherUser);
+    testUser = await createTestUser();
+    const otherUser = await createTestUser();
+    testUserData = await getUserData(testUser.user);
+    otherUserData = await getUserData(otherUser.user);
   });
 
   it("can create a new KYC profile", async () => {
-    const headers = await signInWithUser(testUser);
+    const headers = await signInWithUser(testUser.user);
     const client = getOrpcClient(headers);
 
     const profile = await client.user.kyc.upsert({
@@ -46,7 +46,7 @@ describe("KYC upsert", () => {
   });
 
   it("can update an existing KYC profile", async () => {
-    const headers = await signInWithUser(testUser);
+    const headers = await signInWithUser(testUser.user);
     const client = getOrpcClient(headers);
 
     // First create a profile
@@ -101,7 +101,7 @@ describe("KYC upsert", () => {
   });
 
   it("regular user cannot upsert another user's KYC profile", async () => {
-    const headers = await signInWithUser(testUser);
+    const headers = await signInWithUser(testUser.user);
     const client = getOrpcClient(headers);
 
     await expect(
@@ -142,7 +142,7 @@ describe("KYC upsert", () => {
   });
 
   it("upsert is idempotent - multiple calls with same data work", async () => {
-    const headers = await signInWithUser(testUser);
+    const headers = await signInWithUser(testUser.user);
     const client = getOrpcClient(headers);
 
     const profileData = {

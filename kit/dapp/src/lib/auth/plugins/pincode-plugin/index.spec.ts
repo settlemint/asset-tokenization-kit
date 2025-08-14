@@ -8,7 +8,8 @@ describe("Pincode verification", () => {
 
   beforeAll(async () => {
     authClient = getAuthClient();
-    testUser = (await createTestUser()).user;
+    const { user } = await createTestUser();
+    testUser = user;
   });
 
   test("can disable a pincode verification", async () => {

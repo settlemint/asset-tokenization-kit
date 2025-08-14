@@ -9,24 +9,24 @@ import { randomUUID } from "node:crypto";
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe("User search", () => {
-  let testUser: Awaited<ReturnType<typeof createTestUser>>["user"];
-  let otherUser: Awaited<ReturnType<typeof createTestUser>>["user"];
-  let unauthorizedUser: Awaited<ReturnType<typeof createTestUser>>["user"];
+  let testUser: Awaited<ReturnType<typeof createTestUser>>;
+  let otherUser: Awaited<ReturnType<typeof createTestUser>>;
+  let unauthorizedUser: Awaited<ReturnType<typeof createTestUser>>;
 
   let testUserData: Awaited<ReturnType<typeof getUserData>>;
   let otherUserData: Awaited<ReturnType<typeof getUserData>>;
 
   beforeAll(async () => {
     // Setup test users
-    testUser = (await createTestUser()).user;
-    otherUser = (await createTestUser()).user;
-    unauthorizedUser = (await createTestUser()).user;
+    testUser = await createTestUser();
+    otherUser = await createTestUser();
+    unauthorizedUser = await createTestUser();
 
-    testUserData = await getUserData(testUser);
-    otherUserData = await getUserData(otherUser);
+    testUserData = await getUserData(testUser.user);
+    otherUserData = await getUserData(otherUser.user);
 
     // Create KYC profiles for better test coverage
-    const testUserHeaders = await signInWithUser(testUser);
+    const testUserHeaders = await signInWithUser(testUser.user);
     const testUserClient = getOrpcClient(testUserHeaders);
     await testUserClient.user.kyc.upsert({
       userId: testUserData.id,
@@ -38,7 +38,7 @@ describe("User search", () => {
       nationalId: "TEST123456",
     });
 
-    const otherUserHeaders = await signInWithUser(otherUser);
+    const otherUserHeaders = await signInWithUser(otherUser.user);
     const otherUserClient = getOrpcClient(otherUserHeaders);
     await otherUserClient.user.kyc.upsert({
       userId: otherUserData.id,
@@ -162,7 +162,7 @@ describe("User search", () => {
 
   describe("Permission checks", () => {
     it("regular user without 'user:list' permission cannot search users", async () => {
-      const headers = await signInWithUser(unauthorizedUser);
+      const headers = await signInWithUser(unauthorizedUser.user);
       const client = getOrpcClient(headers);
 
       await expect(

@@ -8,7 +8,8 @@ describe("Secret codes verification", () => {
 
   beforeAll(async () => {
     authClient = getAuthClient();
-    testUser = (await createTestUser()).user;
+    const { user } = await createTestUser();
+    testUser = user;
   });
 
   test("can generate secret codes", async () => {

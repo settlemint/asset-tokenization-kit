@@ -8,21 +8,21 @@ import {
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe("KYC list", () => {
-  let testUser1: Awaited<ReturnType<typeof createTestUser>>["user"];
-  let testUser2: Awaited<ReturnType<typeof createTestUser>>["user"];
+  let testUser1: Awaited<ReturnType<typeof createTestUser>>;
+  let testUser2: Awaited<ReturnType<typeof createTestUser>>;
   let user1Data: Awaited<ReturnType<typeof getUserData>>;
   let user2Data: Awaited<ReturnType<typeof getUserData>>;
 
   beforeAll(async () => {
     // Setup test users
-    testUser1 = (await createTestUser()).user;
-    testUser2 = (await createTestUser()).user;
+    testUser1 = await createTestUser();
+    testUser2 = await createTestUser();
 
-    user1Data = await getUserData(testUser1);
-    user2Data = await getUserData(testUser2);
+    user1Data = await getUserData(testUser1.user);
+    user2Data = await getUserData(testUser2.user);
 
     // Create KYC profiles for test users
-    const headers1 = await signInWithUser(testUser1);
+    const headers1 = await signInWithUser(testUser1.user);
     const client1 = getOrpcClient(headers1);
     await client1.user.kyc.upsert({
       userId: user1Data.id,
@@ -34,7 +34,7 @@ describe("KYC list", () => {
       nationalId: "123456789",
     });
 
-    const headers2 = await signInWithUser(testUser2);
+    const headers2 = await signInWithUser(testUser2.user);
     const client2 = getOrpcClient(headers2);
     await client2.user.kyc.upsert({
       userId: user2Data.id,
@@ -152,7 +152,7 @@ describe("KYC list", () => {
   });
 
   it("regular user cannot list all KYC profiles without permission", async () => {
-    const headers = await signInWithUser(testUser1);
+    const headers = await signInWithUser(testUser1.user);
     const client = getOrpcClient(headers);
 
     await expect(

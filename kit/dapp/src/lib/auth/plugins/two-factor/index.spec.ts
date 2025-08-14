@@ -8,7 +8,8 @@ describe("Two factor verification", () => {
 
   beforeAll(async () => {
     authClient = getAuthClient();
-    testUser = (await createTestUser()).user;
+    const { user } = await createTestUser();
+    testUser = user;
   });
 
   test("can enable two factor verification", async () => {

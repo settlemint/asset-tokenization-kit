@@ -9,9 +9,9 @@ import { randomUUID } from "node:crypto";
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe("User read", () => {
-  let testUser: Awaited<ReturnType<typeof createTestUser>>["user"];
-  let otherUser: Awaited<ReturnType<typeof createTestUser>>["user"];
-  let unauthorizedUser: Awaited<ReturnType<typeof createTestUser>>["user"];
+  let testUser: Awaited<ReturnType<typeof createTestUser>>;
+  let otherUser: Awaited<ReturnType<typeof createTestUser>>;
+  let unauthorizedUser: Awaited<ReturnType<typeof createTestUser>>;
 
   let testUserData: Awaited<ReturnType<typeof getUserData>>;
   let otherUserData: Awaited<ReturnType<typeof getUserData>>;
@@ -19,16 +19,16 @@ describe("User read", () => {
 
   beforeAll(async () => {
     // Setup test users
-    testUser = (await createTestUser()).user;
-    otherUser = (await createTestUser()).user;
-    unauthorizedUser = (await createTestUser()).user;
+    testUser = await createTestUser();
+    otherUser = await createTestUser();
+    unauthorizedUser = await createTestUser();
 
-    testUserData = await getUserData(testUser);
-    otherUserData = await getUserData(otherUser);
-    unauthorizedUserData = await getUserData(unauthorizedUser);
+    testUserData = await getUserData(testUser.user);
+    otherUserData = await getUserData(otherUser.user);
+    unauthorizedUserData = await getUserData(unauthorizedUser.user);
 
     // Create KYC profiles for better test coverage
-    const testUserHeaders = await signInWithUser(testUser);
+    const testUserHeaders = await signInWithUser(testUser.user);
     const testUserClient = getOrpcClient(testUserHeaders);
     await testUserClient.user.kyc.upsert({
       userId: testUserData.id,
@@ -40,7 +40,7 @@ describe("User read", () => {
       nationalId: "TEST123456",
     });
 
-    const otherUserHeaders = await signInWithUser(otherUser);
+    const otherUserHeaders = await signInWithUser(otherUser.user);
     const otherUserClient = getOrpcClient(otherUserHeaders);
     await otherUserClient.user.kyc.upsert({
       userId: otherUserData.id,
@@ -64,7 +64,7 @@ describe("User read", () => {
 
       expect(user).toBeDefined();
       expect(user.id).toBe(testUserData.id);
-      expect(user.email).toBe(testUser.email);
+      expect(user.email).toBe(testUser.user.email);
       expect(user.wallet).toBe(testUserData.wallet);
       expect(user.firstName).toBe("TestFirst");
       expect(user.lastName).toBe("TestLast");
@@ -82,7 +82,7 @@ describe("User read", () => {
 
       expect(user).toBeDefined();
       expect(user.id).toBe(testUserData.id);
-      expect(user.email).toBe(testUser.email);
+      expect(user.email).toBe(testUser.user.email);
       expect(user.wallet).toBe(testUserData.wallet);
       expect(user.firstName).toBe("TestFirst");
       expect(user.lastName).toBe("TestLast");
@@ -114,7 +114,7 @@ describe("User read", () => {
 
   describe("Permission checks", () => {
     it("regular user without 'user:list' permission cannot read other users by ID", async () => {
-      const headers = await signInWithUser(unauthorizedUser);
+      const headers = await signInWithUser(unauthorizedUser.user);
       const client = getOrpcClient(headers);
 
       await expect(
@@ -125,7 +125,7 @@ describe("User read", () => {
     });
 
     it("regular user without 'user:list' permission cannot read other users by wallet", async () => {
-      const headers = await signInWithUser(unauthorizedUser);
+      const headers = await signInWithUser(unauthorizedUser.user);
       const client = getOrpcClient(headers);
 
       await expect(
@@ -137,7 +137,7 @@ describe("User read", () => {
 
     it("regular user without permission cannot even read their own user data", async () => {
       // This tests that there's no alwaysAllowIf condition for own user
-      const headers = await signInWithUser(unauthorizedUser);
+      const headers = await signInWithUser(unauthorizedUser.user);
       const client = getOrpcClient(headers);
 
       await expect(
