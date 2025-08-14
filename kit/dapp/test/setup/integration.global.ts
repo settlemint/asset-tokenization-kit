@@ -87,7 +87,7 @@ export const teardown = () => {
 async function waitForDapp() {
   console.log("Waiting for containerized dapp to be ready...");
   const maxAttempts = 600; // 60 seconds timeout
-  const delayMs = 100;
+  const delayMs = 5000;
 
   // Try to detect the actual container name
   let containerName = "atk-test-dapp"; // Default for test environment
