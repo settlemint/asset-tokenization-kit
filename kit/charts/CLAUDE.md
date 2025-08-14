@@ -1,89 +1,68 @@
-# Charts Module
+# CLAUDE.md - Charts Package
 
-## Stack
-Helm v3 | K8s | Umbrella pattern | Bitnami dependencies
+## Purpose
 
-## Key Commands
-```bash
-bun run helm:secrets     # 1Password injection (REQUIRED)
-bun run helm            # Deploy to OrbStack
-bun run reset           # Reset cluster (DON'T use helm uninstall)
-helm lint atk           # Validate syntax
+Helm charts for deploying the Asset Tokenization Kit to Kubernetes. Provides production-ready configurations for the dApp, transaction signer, and supporting infrastructure. Handles secrets, scaling, ingress, and environment-specific configurations.
+
+## Layout
+
+```
+charts/
+├── atk/                # Main umbrella chart
+│   ├── charts/        # Subcharts (dapp, txsigner)
+│   ├── templates/     # Kubernetes manifests
+│   └── values.yaml    # Default configuration
+└── tools/             # Deployment utilities
 ```
 
-## CRITICAL: Deployment Validation After Changes
+## Dependencies (names only)
 
-**MANDATORY**: After ANY Helm chart changes, you MUST:
-1. Run `bun run reset` to clean the cluster
-2. Deploy with `bun run helm`
-3. Verify ALL pods are running: `kubectl get pods -n atk`
-4. Check for any Init/Pending/CrashLoopBackOff states
-5. If any pods fail, investigate with `kubectl describe pod <pod-name> -n atk`
+- **Local packages**: None (deploys other packages)
+- **Key libraries**: Helm, Kubernetes
 
-**NEVER** consider a Helm chart change complete without successful deployment verification!
+## Best Practices (Local)
 
-## Architecture
+<!-- BEGIN AUTO -->
+- **Helm Templates**: Use named templates for reusable components; implement proper label selectors; version your charts semantically; test with helm lint and dry-run
+- **Security**: Never hardcode secrets in values; use external secret management; implement RBAC policies; configure network policies
+- **Scalability**: Configure HPA for auto-scaling; set resource requests/limits appropriately; implement pod disruption budgets; use anti-affinity rules
+- **Observability**: Include prometheus annotations; implement health checks; configure structured logging; add tracing headers
+<!-- END AUTO -->
 
-### Umbrella Pattern
+## Style & Testing Cues
 
+### TypeScript-only
+- TypeScript tools in `tools/` directory for packaging
+- Validated with JSON schemas
 
-<example>
-atk/ (main chart)
-├── Chart.yaml          # Dependencies
-├── values.yaml         # Centralized config
-└── templates/
-    ├── _common-helpers.tpl     # Shared templates
-    └── image-pull.secrets.yaml
-</example>
+### ESLint/Prettier deltas from root
+- YAML formatting for Helm templates
+- Schema validation for values files
 
-## Dependency Graph
-```
-PostgreSQL ← Hasura ← DApp
-    ↑          ↑        ↑
-Blockscout  Graph-Node  Portal
-              ↑
-         TxSigner
-```
+### Test locations
+- Helm lint validation
+- Dry-run deployment tests
+- Values schema validation
 
-## Critical Patterns
+## Agent Hints (Local)
 
-<example>
-# Init Container (wait for service)
-while ! nc -z service port; do sleep 2; done
+### Interface boundaries
+- **Values contract**: Changes to values.yaml structure are breaking
+- **Template functions**: Shared helpers must maintain signatures
+- **Label consistency**: Selectors must match across resources
 
-# GraphQL readiness check
-query { __schema { queryType { name } } }
-</example>
+### Safe extension points
+- Add new values in `values.yaml` with defaults
+- New templates in `templates/` directory
+- Environment-specific values files
 
-<example>
-# Values hierarchy
-global:              # Cross-chart config
-  networkPolicy:
-    enabled: true
-    
-dapp:               # Sub-chart overrides
-  enabled: true
-  image:
-    tag: latest
-</example>
+### What not to touch
+- Label selectors once deployed - breaks updates
+- Service names - hardcoded in other configs
+- Persistent volume claims - data loss risk
 
-<example>
-# Image pull secrets (1Password)
-imagePullCredentials:
-  registries:
-    docker:
-      username: "op://platform/dockerhub/username"
-      password: "op://platform/dockerhub/credential"
-</example>
-
-## Common Issues
-- Values format: Use `{}` for empty objects
-- Secret format: Use `- name: secret`
-- Init order: Services must wait for dependencies
-- Bitnami conflicts: Check helper name collisions
-
-## Best Practices
-- No hardcoded passwords
-- Resource limits always
-- Health checks required
-- Network policies in prod
+### CI considerations
+- Charts must pass helm lint
+- Template rendering must succeed
+- Schema validation for values
+- Version bumps for chart changes

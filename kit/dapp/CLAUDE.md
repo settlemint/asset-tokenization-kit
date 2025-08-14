@@ -1,94 +1,106 @@
-# DApp Module
+# CLAUDE.md - dApp Package
 
-## Stack
+## Purpose
 
-React 19 | TanStack (Start/Query/Form/Router) | oRPC | Drizzle | Better Auth |
-Tailwind v4 | Vite
+Next.js 15 application providing the web interface for the Asset Tokenization
+Kit. Features authentication, asset management, compliance workflows, and admin
+dashboards. Built with App Router, Server Components, and real-time data from
+blockchain and GraphQL sources.
 
-## Key Commands
+## Layout
 
-```bash
-bun run dev               # Port 3000
-bun run codegen           # After API changes
-bun run test              # Vitest (NOT bun:test)
-bun run test:integration  # Full stack tests
-bun run db:migrate        # After schema changes
+```
+dapp/
+├── src/
+│   ├── app/            # Next.js App Router pages and layouts
+│   ├── components/     # React components (UI, forms, charts)
+│   ├── orpc/          # ORPC API procedures and routers
+│   ├── lib/           # Utilities, database, auth, i18n
+│   ├── hooks/         # Custom React hooks
+│   └── providers/     # Context providers
+├── drizzle/           # Database migrations
+├── locales/           # i18n translations (en-US, de-DE, ja-JP, ar-SA)
+├── public/            # Static assets
+└── test/              # Test fixtures and helpers
 ```
 
-## Architecture
+## Dependencies (names only)
 
-<example>
-# Directory Structure
-src/
-├── components/ui/    # shadcn (NEVER modify)
-├── routes/          # File-based routing
-├── orpc/            # API layer
-├── lib/auth/        # Better Auth
-└── hooks/           # Custom hooks
-</example>
+- **Local packages**: contracts (workspace dependency)
+- **Key libraries**: Next.js, React, TanStack Router, TanStack Query, TanStack
+  Form, Radix UI, Tailwind CSS, Drizzle ORM, Better Auth, ORPC, Viem, Zod,
+  i18next, Recharts, Motion, Lucide Icons
 
-<example>
-# Route Patterns
-__root.tsx   # Providers
-_private.tsx # Auth guard
-$param.tsx   # Dynamic routes
-</example>
+## Best Practices (Local)
 
-## Critical Patterns
+<!-- BEGIN AUTO -->
 
-<example>
-# Data Fetching (TanStack Query)
-useQuery(orpc.token.list.queryOptions())
-useMutation(orpc.token.create.mutationOptions())
-# Never copy to local state
-</example>
+- **Next.js App Router**: Colocate data fetching with components; use parallel
+  routes for modals; implement intercepting routes for smooth navigation;
+  leverage route groups for organization without affecting URLs
+- **React Server Components**: Fetch data at component level without props
+  drilling; use Suspense boundaries for streaming; minimize 'use client'
+  directives; pass serializable props to Client Components
+- **TanStack Query**: Configure query keys consistently; implement
+  stale-while-revalidate patterns; use mutation callbacks for optimistic UI;
+  leverage query invalidation for cache updates
+- **Tailwind CSS**: Use semantic color tokens from design system; leverage
+  component variants with CVA; avoid arbitrary values; compose utilities for
+  complex styles
+- **Drizzle ORM**: Define relations in schema for type-safe joins; use prepared
+  statements for performance; implement soft deletes where appropriate; version
+  migrations sequentially
+- **Better Auth**: Implement session validation in middleware; use PKCE flow for
+OAuth; store sensitive data in httpOnly cookies; implement rate limiting on auth
+endpoints
+<!-- END AUTO -->
 
-<example>
-# Form Handling (TanStack Form + Zod)
-useForm({
-  validatorAdapter: zodValidator(),
-  validators: { onChange: schema }
-})
-</example>
+## Style & Testing Cues
 
-<example>
-# Component Pattern (shadcn style - NO forwardRef)
-function Component({ className, variant, asChild = false, ...props }) {
-  const Comp = asChild ? Slot : "div"
-  return <Comp className={cn(variants({ variant }), className)} {...props} />
-}
-</example>
+### TypeScript-only
 
-## Testing
+- Strict mode with all safety flags enabled
+- Path aliases: `@/*` for src, `@test/*` for test helpers
+- Zod schemas with inferred types for runtime validation
+- ORPC procedures with end-to-end type safety
 
-<example>
-# Default: happy-dom (components)
-import { render, screen } from "@testing-library/react"
-test("renders", () => { render(<Component />) })
+### ESLint/Prettier deltas from root
 
-# Node environment (API/server code)
+- React-specific rules and hooks linting
+- Boundaries plugin enforcing package isolation
+- Max warnings = 0 for all linting
 
-/\*\*
+### Test locations
 
-- @vitest-environment node _/ test("api", () => { /_ server code \*/ })
-  </example>
+- Unit tests: Colocated with source files (`*.test.ts(x)`)
+- Integration tests: `test/` directory
+- Fixtures: `test/fixtures/` for mock data
 
-## Performance Rules
+## Agent Hints (Local)
 
-- React Compiler handles optimization (no manual memo)
-- Route-based code splitting
-- Suspense boundaries
-- Server Components first
+### Interface boundaries
 
-## Common Issues
+- **Server/Client split**: Mark interactive components with 'use client'
+- **Data fetching**: Server Components for initial data, ORPC/TanStack for
+  mutations
+- **Authentication**: Better Auth handles sessions, check auth in middleware
 
-- Using bun:test → use `bun run test`
-- Modifying ui/\* → these are shadcn, don't touch
-- Copying server state → use React Query
-- Missing @vitest-environment node → for server code
+### Safe extension points
 
-## Refactoring
+- New pages: Add to `src/app/` following file-based routing
+- UI components: Extend `src/components/ui/` using Radix primitives
+- API procedures: Add to `src/orpc/procedures/` with Zod validation
+- Database tables: Define in `src/lib/db/schemas/`, run migrations
 
-- Apply changes directly (no compatibility layers)
-- Complete transformations (not partial)
-- Clean, modern code only
+### What not to touch
+
+- Generated files: `routeTree.gen.ts`, GraphQL types, interface IDs
+- Migration files in `drizzle/` once applied
+- Authentication core in `src/lib/auth/` without security review
+
+### CI considerations
+
+- Build must complete without TypeScript errors
+- All GraphQL schemas must be valid and typed
+- Database migrations must be reversible
+- i18n keys must exist for all supported locales
