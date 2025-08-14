@@ -163,12 +163,8 @@ export default defineConfig({
           setupFiles: ["./test/setup/integration.ts"],
           testTimeout: 60000, // 60 seconds for integration tests
           hookTimeout: 60000, // 60 seconds for hooks
-          pool: "forks",
-          poolOptions: {
-            forks: {
-              singleFork: true, // Run all tests in a single process
-            },
-          },
+          pool: "threads",
+          isolate: false,
           include: ["src/**/*.spec.ts"],
           exclude: ["node_modules", "dist", "src/**/*.test.ts"],
         },

@@ -254,7 +254,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
           address: testAddresses.valid1,
           role: "tokenManager",
         })
-      ).rejects.toThrow("Invalid authentication challenge");
+      ).rejects.toThrow("User rejected the request");
     });
   });
 

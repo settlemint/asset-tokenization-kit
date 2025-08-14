@@ -9,6 +9,8 @@ let stopApi: () => void;
 export async function setup() {
   try {
     console.log("Setting up test environment...");
+    // Disable migrations for tests (only global one should run it)
+    process.env.DISABLE_MIGRATIONS_ON_STARTUP = "true";
     // Start dapp api server
     const { stop } = await startApiServer();
     stopApi = stop;

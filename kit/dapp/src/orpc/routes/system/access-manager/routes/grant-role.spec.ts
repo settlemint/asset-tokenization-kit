@@ -1,6 +1,4 @@
 // @vitest-environment node
-import { getAddress } from "viem";
-import { beforeAll, describe, expect, it } from "vitest";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   DEFAULT_ADMIN,
@@ -8,6 +6,8 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
+import { getAddress } from "viem";
+import { beforeAll, describe, expect, it } from "vitest";
 
 describe("Access Manager - Grant Role ORPC routes", () => {
   let adminClient: ReturnType<typeof getOrpcClient>;
@@ -223,7 +223,7 @@ describe("Access Manager - Grant Role ORPC routes", () => {
           address: testAddresses.valid1,
           role: "tokenManager",
         })
-      ).rejects.toThrow("Invalid challenge response");
+      ).rejects.toThrow("User rejected the request");
     });
   });
 

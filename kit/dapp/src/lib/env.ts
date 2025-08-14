@@ -112,6 +112,11 @@ export const env = createEnv({
       .int()
       .positive()
       .default(90_000),
+
+    /**
+     * Don't run database migrations on startup
+     */
+    DISABLE_MIGRATIONS_ON_STARTUP: z.coerce.boolean().default(false),
   },
 
   /**
