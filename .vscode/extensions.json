@@ -8,8 +8,11 @@
     "shardulm94.trailing-spaces",
     "nize.oklch-preview",
     "esbenp.prettier-vscode",
-    "dbaeumer.vscode-eslint",
     "lokalise.i18n-ally",
-    "juanblanco.solidity"
+    "juanblanco.solidity",
+    "usernamehw.errorlens",
+    "dbaeumer.vscode-eslint",
+    "github.vscode-pull-request-github",
+    "typescriptteam.native-preview"
   ]
 }

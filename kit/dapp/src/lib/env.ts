@@ -5,7 +5,7 @@ import { z } from "zod";
  * Environment configuration using t3-env for type-safe environment variables.
  *
  * This module provides runtime validation and type safety for environment variables
- * using the @t3-oss/env-nextjs library. It ensures that all required environment
+ * using the @t3-oss/env-core library. It ensures that all required environment
  * variables are present and correctly typed at build time, preventing runtime errors.
  *
  * Key features:
