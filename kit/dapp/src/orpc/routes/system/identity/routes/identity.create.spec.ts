@@ -10,7 +10,10 @@ import { describe, expect, test } from "vitest";
 
 describe("Identity create", () => {
   test("a user can create its own identity", async () => {
-    const { user } = await createTestUser();
+    const {
+      user,
+      session: { wallet },
+    } = await createTestUser();
 
     const headers = await signInWithUser(user);
     const client = getOrpcClient(headers);
@@ -21,7 +24,7 @@ describe("Identity create", () => {
         verificationType: "pincode",
       },
     });
-    expect(result.id).toBeDefined();
+    expect(result.id).toBe(wallet);
     expect(result.identity).toBeDefined();
   });
 
@@ -59,7 +62,7 @@ describe("Identity create", () => {
       },
       wallet,
     });
-    expect(result.id).toBeDefined();
+    expect(result.id).toBe(wallet);
     expect(result.identity).toBeDefined();
   });
 });

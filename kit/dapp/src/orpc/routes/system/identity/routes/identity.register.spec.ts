@@ -43,10 +43,10 @@ describe("Identity register", () => {
       country: "BE",
       wallet,
     });
-    expect(result.id).toBeDefined();
+    expect(result.id).toBe(wallet);
     expect(result.identity).toBeDefined();
     expect(result.country).toBe("BE");
-  });
+  }, 6000);
 });
 
 async function createUserWithIdentity() {
