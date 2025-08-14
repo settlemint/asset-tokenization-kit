@@ -54,7 +54,7 @@ e2e → dapp (testing UI/API)
 
 ### Package Manager
 
-- **Bun** (v1.2.19) as primary package manager
+- **Bun** as primary package manager (see `package.json` for version)
 - Workspace protocol: `workspace:*` for internal dependencies
 - Turbo task filtering: Use package name directly (e.g.,
   `turbo run build --filter=dapp`)
