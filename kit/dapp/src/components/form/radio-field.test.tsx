@@ -1,8 +1,16 @@
 import { withForm } from "@/hooks/use-app-form";
+import { formOptions } from "@tanstack/react-form";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { FC } from "react";
+import { describe, expect, it } from "vitest";
 
 const TestForm = withForm({
+  ...formOptions({
+    defaultValues: {
+      choice: "",
+    },
+  }),
   props: {},
   render: ({ form }) => (
     <form.AppForm>
@@ -20,7 +28,7 @@ const TestForm = withForm({
       />
     </form.AppForm>
   ),
-});
+}) as unknown as FC;
 
 describe("RadioField (card variant)", () => {
   it("updates checked state when clicking different cards", async () => {
