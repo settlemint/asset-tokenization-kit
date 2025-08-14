@@ -7,7 +7,7 @@ import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -39,6 +39,17 @@ export function BlocklistSheet({
 }: BlocklistSheetProps) {
   const { t } = useTranslation(["tokens", "common"]);
   const queryClient = useQueryClient();
+  const { mutateAsync: freezeAddress } = useMutation(
+    orpc.token.freezeAddress.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({
+          queryKey: orpc.token.read.queryOptions({
+            input: { tokenAddress: asset.id },
+          }).queryKey,
+        });
+      },
+    })
+  );
   const [mode, setMode] = useState<BlocklistActionMode>(defaultMode);
 
   const form = useAppForm({
@@ -123,11 +134,15 @@ export function BlocklistSheet({
               </Card>
             }
             disabled={() => !isValidAddress}
-            onSubmit={async (_verification) => {
+            onSubmit={async (verification) => {
               const addr = getEthereumAddress(selectedAddress);
               const promise = (async () => {
-                // Placeholder: integrate with real mutation when available.
-                // We still invalidate token.read so any server-sourced data refreshes.
+                await freezeAddress({
+                  contract: asset.id,
+                  verification,
+                  userAddress: addr,
+                  freeze: mode === "add" ? true : false,
+                });
                 await queryClient.invalidateQueries({
                   queryKey: orpc.token.read.queryOptions({
                     input: { tokenAddress: asset.id },

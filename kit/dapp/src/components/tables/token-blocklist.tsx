@@ -34,6 +34,10 @@ export function TokenBlocklistTable({ token }: { token: Token }) {
   );
   const [sheetMode, setSheetMode] = useState<"add" | "remove">("add");
 
+  const canManageBlocklist = Boolean(
+    token.userPermissions?.actions.freezeAddress
+  );
+
   const columns = useMemo(
     () =>
       withAutoFeatures([
@@ -58,6 +62,7 @@ export function TokenBlocklistTable({ token }: { token: Token }) {
           cell: ({ row }) => (
             <RowActions
               row={row.original}
+              canManage={canManageBlocklist}
               onRemove={() => {
                 setSheetMode("remove");
                 setSheetPreset(getEthereumAddress(row.original.id));
@@ -68,7 +73,7 @@ export function TokenBlocklistTable({ token }: { token: Token }) {
           meta: { type: "text", enableCsvExport: false },
         } as ColumnDef<BlocklistRow>,
       ]),
-    [t]
+    [t, canManageBlocklist]
   );
 
   return (
@@ -99,6 +104,12 @@ export function TokenBlocklistTable({ token }: { token: Token }) {
         name="token-blocklist"
         data={rows}
         columns={columns}
+        initialSorting={[
+          {
+            id: "id",
+            desc: false,
+          },
+        ]}
         advancedToolbar={{
           enableGlobalSearch: true,
           enableFilters: true,
@@ -113,6 +124,7 @@ export function TokenBlocklistTable({ token }: { token: Token }) {
                   setSheetPreset(undefined);
                   setOpenSheet(true);
                 }}
+                disabled={!canManageBlocklist}
               >
                 {t("tokens:blocklist.addAddress")}
               </Button>
@@ -130,13 +142,21 @@ export function TokenBlocklistTable({ token }: { token: Token }) {
   );
 }
 
-function RowActions({ onRemove }: { row: BlocklistRow; onRemove: () => void }) {
+function RowActions({
+  canManage,
+  onRemove,
+}: {
+  row: BlocklistRow;
+  canManage: boolean;
+  onRemove: () => void;
+}) {
   const { t } = useTranslation(["tokens", "common"]);
 
   const actions: ActionItem[] = [
     {
       label: t("tokens:blocklist.removeAddress"),
       onClick: onRemove,
+      disabled: !canManage,
     },
   ];
 
