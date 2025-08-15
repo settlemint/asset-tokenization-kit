@@ -29,9 +29,6 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
         verificationType: "pincode",
       },
     });
-
-    // Wait for TheGraph to index the token creation
-    await new Promise((resolve) => setTimeout(resolve, 3000));
   });
 
   describe("Business logic", () => {
