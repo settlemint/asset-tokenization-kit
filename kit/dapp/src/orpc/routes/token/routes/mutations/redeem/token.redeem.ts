@@ -3,9 +3,9 @@ import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { read } from "../../token.read";
 import { call } from "@orpc/server";
 import { from } from "dnum";
+import { read } from "../../token.read";
 import type { TokenRedeemOutput } from "./token.redeem.schema";
 
 const TOKEN_REDEEM_MUTATION = portalGraphql(`
@@ -62,9 +62,7 @@ export const redeem = tokenRouter.token.redeem
     // Validate input parameters
     if (!redeemAll && !amount) {
       throw errors.INPUT_VALIDATION_FAILED({
-        message: context.t(
-          "tokens:api.mutations.redeem.messages.amountOrRedeemAllRequired"
-        ),
+        message: "Missing amount or redeemAll",
         data: { errors: ["Invalid redeem parameters"] },
       });
     }

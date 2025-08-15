@@ -1,7 +1,6 @@
 /**
  * @vitest-environment node
  */
-import { TEST_CONSTANTS } from "@test/helpers/test-helpers";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
@@ -9,6 +8,7 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
+import { TEST_CONSTANTS } from "@test/helpers/test-helpers";
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe.concurrent("Token Stats: Supply Changes", () => {
@@ -29,9 +29,6 @@ describe.concurrent("Token Stats: Supply Changes", () => {
         verificationType: "pincode",
       },
     });
-
-    // Wait for TheGraph to index the token creation
-    await new Promise((resolve) => setTimeout(resolve, 3000));
   });
 
   describe("Business logic", () => {
@@ -96,16 +93,21 @@ describe.concurrent("Token Stats: Supply Changes", () => {
       const headers = await signInWithUser(DEFAULT_ADMIN);
       const client = getOrpcClient(headers);
 
-      // Test boundary values for days parameter
+      // Test boundary values for days parameter in parallel
       const validDays = [1, 30, TEST_CONSTANTS.MAX_DAYS];
 
-      for (const days of validDays) {
-        const result = await client.token.statsSupplyChanges({
-          tokenAddress: testToken.id,
-          days,
-        });
+      const results = await Promise.all(
+        validDays.map((days) =>
+          client.token.statsSupplyChanges({
+            tokenAddress: testToken.id,
+            days,
+          })
+        )
+      );
+
+      results.forEach((result) => {
         expect(result.supplyChangesHistory).toEqual([]);
-      }
+      });
     });
   });
 

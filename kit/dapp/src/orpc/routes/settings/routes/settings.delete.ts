@@ -43,6 +43,5 @@ export const del = authRouter.settings.delete
 
     return {
       success: true,
-      message: context.t("settings:actions.delete.success", { key }),
     };
   });

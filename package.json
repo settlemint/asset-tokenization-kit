@@ -65,7 +65,7 @@
     "postdev:reset": "bun run dev:up",
     "artifacts": "turbo run artifacts ",
     "extract-env": "bun run tools/extract-env.ts",
-    "db:studio": "turbo run db:studio "
+    "db:studio": "turbo run db:studio"
   },
   "dependencies": {
     "@aws-sdk/client-ecr": "3.864.0",

@@ -198,9 +198,7 @@ export const transfer = tokenRouter.token.transfer
         // Forced batch transfer is supported
         if (!from || from.length === 0) {
           throw errors.INPUT_VALIDATION_FAILED({
-            message: context.t(
-              "tokens:api.mutations.transfer.messages.fromRequired"
-            ),
+            message: "Missing required from addresses",
             data: { errors: ["Missing required from addresses"] },
           });
         }
@@ -227,9 +225,7 @@ export const transfer = tokenRouter.token.transfer
       } else {
         // transferType === "transferFrom" - not supported in batch, must be done individually
         throw errors.INPUT_VALIDATION_FAILED({
-          message: context.t(
-            "tokens:api.mutations.transfer.messages.batchTransferFromNotSupported"
-          ),
+          message: "Batch transferFrom not supported",
           data: { errors: ["Batch transferFrom not supported"] },
         });
       }
@@ -240,9 +236,7 @@ export const transfer = tokenRouter.token.transfer
       const [owner] = from ?? [];
       if (!to || !amount) {
         throw errors.INPUT_VALIDATION_FAILED({
-          message: context.t(
-            "tokens:api.mutations.transfer.messages.missingRecipientOrAmount"
-          ),
+          message: "Missing recipient or amount",
           data: { errors: ["Invalid input data"] },
         });
       }
@@ -257,9 +251,7 @@ export const transfer = tokenRouter.token.transfer
       } else if (transferType === "transferFrom") {
         if (!owner) {
           throw errors.INPUT_VALIDATION_FAILED({
-            message: context.t(
-              "tokens:api.mutations.transfer.messages.missingOwnerForTransferFrom"
-            ),
+            message: "Missing owner for transferFrom",
             data: { errors: ["Invalid input data"] },
           });
         }
@@ -275,9 +267,7 @@ export const transfer = tokenRouter.token.transfer
         // transferType === "forced"
         if (!owner) {
           throw errors.INPUT_VALIDATION_FAILED({
-            message: context.t(
-              "tokens:api.mutations.transfer.messages.missingOwnerForForced"
-            ),
+            message: "Missing owner for forced transfer",
             data: { errors: ["Invalid input data"] },
           });
         }

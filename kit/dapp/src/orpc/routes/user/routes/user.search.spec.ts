@@ -31,38 +31,49 @@ describe("User search", () => {
   let otherUserData: Awaited<ReturnType<typeof getUserData>>;
 
   beforeAll(async () => {
-    // Setup test users
-    await setupUser(TEST_USER);
-    await setupUser(OTHER_USER);
-    await setupUser(UNAUTHORIZED_USER);
+    // Setup test users in parallel
+    await Promise.all([
+      setupUser(TEST_USER),
+      setupUser(OTHER_USER),
+      setupUser(UNAUTHORIZED_USER),
+    ]);
 
-    testUserData = await getUserData(TEST_USER);
-    otherUserData = await getUserData(OTHER_USER);
+    // Get user data in parallel
+    [testUserData, otherUserData] = await Promise.all([
+      getUserData(TEST_USER),
+      getUserData(OTHER_USER),
+    ]);
 
-    // Create KYC profiles for better test coverage
-    const testUserHeaders = await signInWithUser(TEST_USER);
+    // Sign in and create KYC profiles in parallel
+    const [testUserHeaders, otherUserHeaders] = await Promise.all([
+      signInWithUser(TEST_USER),
+      signInWithUser(OTHER_USER),
+    ]);
+
     const testUserClient = getOrpcClient(testUserHeaders);
-    await testUserClient.user.kyc.upsert({
-      userId: testUserData.id,
-      firstName: "TestFirst",
-      lastName: "TestLast",
-      dob: new Date("1990-01-01"),
-      country: "US",
-      residencyStatus: "resident",
-      nationalId: "TEST123456",
-    });
-
-    const otherUserHeaders = await signInWithUser(OTHER_USER);
     const otherUserClient = getOrpcClient(otherUserHeaders);
-    await otherUserClient.user.kyc.upsert({
-      userId: otherUserData.id,
-      firstName: "OtherFirst",
-      lastName: "OtherLast",
-      dob: new Date("1985-05-15"),
-      country: "GB",
-      residencyStatus: "resident",
-      nationalId: "OTHER987654",
-    });
+
+    // Create KYC profiles in parallel
+    await Promise.all([
+      testUserClient.user.kyc.upsert({
+        userId: testUserData.id,
+        firstName: "TestFirst",
+        lastName: "TestLast",
+        dob: new Date("1990-01-01"),
+        country: "US",
+        residencyStatus: "resident",
+        nationalId: "TEST123456",
+      }),
+      otherUserClient.user.kyc.upsert({
+        userId: otherUserData.id,
+        firstName: "OtherFirst",
+        lastName: "OtherLast",
+        dob: new Date("1985-05-15"),
+        country: "GB",
+        residencyStatus: "resident",
+        nationalId: "OTHER987654",
+      }),
+    ]);
   });
 
   describe("Admin access", () => {
@@ -184,7 +195,7 @@ describe("User search", () => {
           query: "TestFirst",
           limit: 10,
         })
-      ).rejects.toThrow("Forbidden");
+      ).rejects.toThrow("does not have permission to access this resource");
     });
 
     it("user with proper permissions can search users", async () => {

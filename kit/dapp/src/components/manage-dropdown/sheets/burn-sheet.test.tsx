@@ -110,9 +110,12 @@ vi.mock("@/hooks/use-app-form", () => ({
           AddressInputField: (props) => (
             <input data-testid="address-input" {...props} />
           ),
-          BigIntField: (props) => (
-            <input data-testid="bigint-input" {...props} />
-          ),
+          BigIntField: ({
+            endAddon: _endAddon,
+            ...props
+          }: React.InputHTMLAttributes<HTMLInputElement> & {
+            endAddon?: React.ReactNode;
+          }) => <input data-testid="bigint-input" {...props} />,
         })}
       </div>
     ),
@@ -201,9 +204,12 @@ describe("BurnSheet", () => {
             AddressInputField: (props) => (
               <input data-testid="address-input" {...props} />
             ),
-            BigIntField: (props) => (
-              <input data-testid="bigint-input" {...props} />
-            ),
+            BigIntField: ({
+              endAddon: _endAddon,
+              ...props
+            }: React.InputHTMLAttributes<HTMLInputElement> & {
+              endAddon?: React.ReactNode;
+            }) => <input data-testid="bigint-input" {...props} />,
           })}
         </div>
       ),
@@ -268,9 +274,12 @@ describe("BurnSheet", () => {
             AddressInputField: (props) => (
               <input data-testid="address-input" {...props} />
             ),
-            BigIntField: (props) => (
-              <input data-testid="bigint-input" {...props} />
-            ),
+            BigIntField: ({
+              endAddon: _endAddon,
+              ...props
+            }: React.InputHTMLAttributes<HTMLInputElement> & {
+              endAddon?: React.ReactNode;
+            }) => <input data-testid="bigint-input" {...props} />,
           })}
         </div>
       ),
@@ -326,9 +335,12 @@ describe("BurnSheet", () => {
             AddressInputField: (props) => (
               <input data-testid="address-input" {...props} />
             ),
-            BigIntField: (props) => (
-              <input data-testid="bigint-input" {...props} />
-            ),
+            BigIntField: ({
+              endAddon: _endAddon,
+              ...props
+            }: React.InputHTMLAttributes<HTMLInputElement> & {
+              endAddon?: React.ReactNode;
+            }) => <input data-testid="bigint-input" {...props} />,
           })}
         </div>
       ),
@@ -389,9 +401,12 @@ describe("BurnSheet", () => {
             AddressInputField: (props) => (
               <input data-testid="address-input" {...props} />
             ),
-            BigIntField: (props) => (
-              <input data-testid="bigint-input" {...props} />
-            ),
+            BigIntField: ({
+              endAddon: _endAddon,
+              ...props
+            }: React.InputHTMLAttributes<HTMLInputElement> & {
+              endAddon?: React.ReactNode;
+            }) => <input data-testid="bigint-input" {...props} />,
           })}
         </div>
       ),

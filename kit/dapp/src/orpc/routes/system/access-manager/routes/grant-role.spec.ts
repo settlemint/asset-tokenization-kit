@@ -1,6 +1,4 @@
 // @vitest-environment node
-import { getAddress } from "viem";
-import { beforeAll, describe, expect, it } from "vitest";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   DEFAULT_ADMIN,
@@ -8,6 +6,8 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
+import { getAddress } from "viem";
+import { beforeAll, describe, expect, it } from "vitest";
 
 describe("Access Manager - Grant Role ORPC routes", () => {
   let adminClient: ReturnType<typeof getOrpcClient>;
@@ -21,10 +21,13 @@ describe("Access Manager - Grant Role ORPC routes", () => {
   };
 
   beforeAll(async () => {
-    const adminHeaders = await signInWithUser(DEFAULT_ADMIN);
-    adminClient = getOrpcClient(adminHeaders);
+    // Sign in both users in parallel
+    const [adminHeaders, investorHeaders] = await Promise.all([
+      signInWithUser(DEFAULT_ADMIN),
+      signInWithUser(DEFAULT_INVESTOR),
+    ]);
 
-    const investorHeaders = await signInWithUser(DEFAULT_INVESTOR);
+    adminClient = getOrpcClient(adminHeaders);
     investorClient = getOrpcClient(investorHeaders);
   });
 
@@ -220,7 +223,7 @@ describe("Access Manager - Grant Role ORPC routes", () => {
           address: testAddresses.valid1,
           role: "tokenManager",
         })
-      ).rejects.toThrow("Invalid authentication challenge");
+      ).rejects.toThrow('"grantRole" failed: Invalid challenge response');
     });
   });
 

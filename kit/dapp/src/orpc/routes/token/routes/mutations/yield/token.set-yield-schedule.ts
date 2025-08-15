@@ -5,9 +5,9 @@ import { getTransactionReceipt } from "@/orpc/helpers/transaction-receipt";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { read } from "../../token.read";
 import { call } from "@orpc/server";
 import { logger } from "better-auth";
+import { read } from "../../token.read";
 
 const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
   mutation TokenSetYieldSchedule(
@@ -104,21 +104,14 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
       // Check if transaction was successful
       if (receipt.status !== "Success") {
         throw errors.INTERNAL_SERVER_ERROR({
-          message: context.t(
-            "tokens:api.mutations.yield.messages.transactionFailed"
-          ),
-          cause: new Error(
-            context.t(
-              "tokens:api.mutations.yield.messages.transactionFailedWithStatus",
-              { status: receipt.status }
-            )
-          ),
+          message: "Creating schedule failed",
+          cause: new Error(`Transaction failed with status ${receipt.status}`),
         });
       }
     } catch (error_) {
       const error = error_ as Error;
       throw errors.INTERNAL_SERVER_ERROR({
-        message: context.t("tokens:api.mutations.yield.messages.receiptFailed"),
+        message: "Creating schedule failed",
         cause: error.message,
       });
     }
@@ -142,13 +135,9 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
     }
     if (!scheduleAddress) {
       throw errors.INTERNAL_SERVER_ERROR({
-        message: context.t(
-          "tokens:api.mutations.yield.messages.createScheduleFailed"
-        ),
+        message: "Creating schedule failed",
         cause: new Error(
-          context.t(
-            "tokens:api.mutations.yield.messages.scheduleAddressNotFound"
-          )
+          "Failed to retrieve schedule address from transaction logs"
         ),
       });
     }

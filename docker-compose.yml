@@ -61,6 +61,7 @@ services:
       postgres:
         condition: service_healthy
     environment:
+      LOG_LEVEL: error
       MODE: "standalone"
       RPC_ENDPOINT: "http://anvil:8545"
       DB_CONNECTION_STRING: "postgresql://txsigner:txsigner@postgres:5432/txsigner?sslmode=disable"

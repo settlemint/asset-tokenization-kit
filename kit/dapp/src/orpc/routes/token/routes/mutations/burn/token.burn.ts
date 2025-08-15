@@ -84,7 +84,7 @@ export const burn = tokenRouter.token.burn
           addresses,
           amounts,
         },
-        context.t("tokens:api.mutations.burn.validation.batchDescription")
+        "batch burn"
       );
 
       await context.portalClient.mutate(TOKEN_BATCH_BURN_MUTATION, {
@@ -99,9 +99,7 @@ export const burn = tokenRouter.token.burn
       const [amount] = amounts;
       if (!userAddress || !amount) {
         throw errors.INPUT_VALIDATION_FAILED({
-          message: context.t(
-            "tokens:api.mutations.burn.messages.missingAddressOrAmount"
-          ),
+          message: "Missing address or amount",
           data: { errors: ["Invalid input data"] },
         });
       }

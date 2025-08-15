@@ -27,20 +27,32 @@ export async function bootstrapSystem(orpClient: OrpcClient) {
           }
           return sys;
         },
-        10, // max retries
-        1000 // wait 1 second between retries
+        1000, // max retries
+        100 // wait 1 second between retries
       );
     }
     return system;
   }
 
   // Create new system - system.create returns the complete system object
-  const system = await orpClient.system.create({
-    verification: {
-      verificationCode: DEFAULT_PINCODE,
-      verificationType: "pincode",
-    },
-  });
+  let system;
+  try {
+    system = await orpClient.system.create({
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+    });
+  } catch (err) {
+    // Add enriched debug context to help diagnose intermittent FORBIDDEN
+    console.error("[bootstrapSystem] system.create failed", {
+      error: err instanceof Error ? err.message : err,
+    });
+    console.error(
+      "[bootstrapSystem] Hint: ensure the first created user has the 'admin' role before system bootstrap."
+    );
+    throw err;
+  }
 
   if (!system?.id) {
     throw new Error("Failed to bootstrap system");

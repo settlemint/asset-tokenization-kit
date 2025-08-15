@@ -197,7 +197,7 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
     return await call(
       read,
       {
-        id: "default",
+        id: system.address,
       },
       { context }
     );
