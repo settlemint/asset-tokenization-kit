@@ -1,6 +1,6 @@
 # atk
 
-![Version: v2.0.0](https://img.shields.io/badge/Version-v2.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.0.0](https://img.shields.io/badge/AppVersion-v2.0.0-informational?style=flat-square)
+![Version: 2.0.0](https://img.shields.io/badge/Version-2.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
 
 A Helm chart for the SettleMint Asset Tokenization Kit
 
@@ -198,27 +198,27 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | graph-node.enabled | bool | `true` |  |
 | graph-node.image.pullPolicy | string | `"IfNotPresent"` |  |
 | graph-node.image.repository | string | `"docker.io/graphprotocol/graph-node"` |  |
-| graph-node.image.tag | string | `"v0.39.1"` |  |
+| graph-node.image.tag | string | `"v0.40.0"` |  |
 | graph-node.initContainers.kubectlImage.pullPolicy | string | `"IfNotPresent"` |  |
 | graph-node.initContainers.kubectlImage.repository | string | `"docker.io/kubesphere/kubectl"` |  |
-| graph-node.initContainers.kubectlImage.tag | string | `"v1.33.1"` |  |
+| graph-node.initContainers.kubectlImage.tag | string | `"v1.33.4"` |  |
 | graph-node.initContainers.postgresImage.pullPolicy | string | `"IfNotPresent"` |  |
 | graph-node.initContainers.postgresImage.repository | string | `"docker.io/postgres"` |  |
-| graph-node.initContainers.postgresImage.tag | string | `"17.5-alpine"` |  |
+| graph-node.initContainers.postgresImage.tag | string | `"17.6-alpine"` |  |
 | graph-node.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
 | graph-node.podAnnotations."prometheus.io/port" | string | `"8040"` |  |
 | graph-node.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
 | hasura.enabled | bool | `true` |  |
 | hasura.graphql-engine.image.pullPolicy | string | `"IfNotPresent"` |  |
 | hasura.graphql-engine.image.repository | string | `"docker.io/hasura/graphql-engine"` |  |
-| hasura.graphql-engine.image.tag | string | `"v2.48.3"` |  |
+| hasura.graphql-engine.image.tag | string | `"v2.48.4"` |  |
 | hasura.graphql-engine.ingress.hostName | string | `"hasura.k8s.orb.local"` |  |
 | hasura.graphql-engine.initContainers[0].command[0] | string | `"/bin/sh"` |  |
 | hasura.graphql-engine.initContainers[0].command[1] | string | `"-c"` |  |
 | hasura.graphql-engine.initContainers[0].command[2] | string | `"set -e\necho \"Waiting for PostgreSQL to be ready...\"\n\n# Add random delay to prevent all nodes from connecting simultaneously\nRANDOM_DELAY=$((RANDOM % 30 + 5))\necho \"Adding random delay of ${RANDOM_DELAY} seconds to stagger connections...\"\nsleep $RANDOM_DELAY\n\n# Function to test PostgreSQL connection\ntest_postgres() {\n  pg_isready -h postgresql -p 5432 -U hasura && \\\n  psql -h postgresql -p 5432 -U hasura -d hasura -c \"SELECT 1;\" > /dev/null 2>&1\n}\n\n# Wait with exponential backoff\nRETRY_COUNT=0\nMAX_RETRIES=30\nWAIT_TIME=2\n\nwhile [ $RETRY_COUNT -lt $MAX_RETRIES ]; do\n  if test_postgres; then\n    echo \"PostgreSQL is ready!\"\n    exit 0\n  fi\n\n  RETRY_COUNT=$((RETRY_COUNT + 1))\n  echo \"PostgreSQL not ready (attempt $RETRY_COUNT/$MAX_RETRIES). Waiting ${WAIT_TIME}s...\"\n  sleep $WAIT_TIME\n\n  # Exponential backoff with max of 30 seconds\n  WAIT_TIME=$((WAIT_TIME * 2))\n  if [ $WAIT_TIME -gt 30 ]; then\n    WAIT_TIME=30\n  fi\ndone\n\necho \"PostgreSQL failed to become ready after $MAX_RETRIES attempts\"\nexit 1\n"` |  |
 | hasura.graphql-engine.initContainers[0].env[0].name | string | `"PGPASSWORD"` |  |
 | hasura.graphql-engine.initContainers[0].env[0].value | string | `"atk"` |  |
-| hasura.graphql-engine.initContainers[0].image | string | `"docker.io/postgres:17.5-alpine"` |  |
+| hasura.graphql-engine.initContainers[0].image | string | `"docker.io/postgres:17.6-alpine"` |  |
 | hasura.graphql-engine.initContainers[0].name | string | `"wait-for-postgresql-ready"` |  |
 | hasura.graphql-engine.labels."app.kubernetes.io/component" | string | `"hasura"` |  |
 | hasura.graphql-engine.labels."app.kubernetes.io/instance" | string | `"atk"` |  |
@@ -240,7 +240,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.grafana.ingress.hosts[0] | string | `"grafana.k8s.orb.local"` |  |
 | observability.grafana.sidecar.image.registry | string | `"docker.io"` |  |
 | observability.grafana.sidecar.image.repository | string | `"kiwigrid/k8s-sidecar"` |  |
-| observability.grafana.sidecar.image.tag | string | `"1.30.8"` |  |
+| observability.grafana.sidecar.image.tag | string | `"1.30.9"` |  |
 | observability.kube-state-metrics.image.registry | string | `"registry.k8s.io"` |  |
 | observability.kube-state-metrics.image.repository | string | `"kube-state-metrics/kube-state-metrics"` |  |
 | observability.kube-state-metrics.image.tag | string | `"v2.16.0"` |  |
@@ -257,7 +257,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.loki.memcachedExporter.image.repository | string | `"docker.io/prom/memcached-exporter"` |  |
 | observability.loki.memcachedExporter.image.tag | string | `"v0.15.3"` |  |
 | observability.loki.sidecar.image.repository | string | `"docker.io/kiwigrid/k8s-sidecar"` | The Docker registry and image for the k8s sidecar |
-| observability.loki.sidecar.image.tag | string | `"1.30.8"` |  |
+| observability.loki.sidecar.image.tag | string | `"1.30.9"` |  |
 | observability.loki.singleBinary.extraEnv | object | `{}` |  |
 | observability.loki.singleBinary.persistence.size | string | `"10Gi"` |  |
 | observability.loki.singleBinary.resources | object | `{}` |  |
@@ -283,13 +283,13 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | portal.image.pullPolicy | string | `"IfNotPresent"` |  |
 | portal.image.registry | string | `"ghcr.io"` |  |
 | portal.image.repository | string | `"settlemint/btp-scs-portal"` |  |
-| portal.image.tag | string | `"8.5.16"` |  |
+| portal.image.tag | string | `"8.5.19"` |  |
 | portal.initContainers[0].command[0] | string | `"/bin/sh"` |  |
 | portal.initContainers[0].command[1] | string | `"-c"` |  |
 | portal.initContainers[0].command[2] | string | `"set -e\necho \"Waiting for PostgreSQL to be ready...\"\n\n# Add random delay to prevent all nodes from connecting simultaneously\nRANDOM_DELAY=$((RANDOM % 30 + 5))\necho \"Adding random delay of ${RANDOM_DELAY} seconds to stagger connections...\"\nsleep $RANDOM_DELAY\n\n# Function to test PostgreSQL connection\ntest_postgres() {\n  pg_isready -h postgresql -p 5432 -U portal && \\\n  psql -h postgresql -p 5432 -U portal -d portal -c \"SELECT 1;\" > /dev/null 2>&1\n}\n\n# Wait with exponential backoff\nRETRY_COUNT=0\nMAX_RETRIES=30\nWAIT_TIME=2\n\nwhile [ $RETRY_COUNT -lt $MAX_RETRIES ]; do\n  if test_postgres; then\n    echo \"PostgreSQL is ready!\"\n    exit 0\n  fi\n\n  RETRY_COUNT=$((RETRY_COUNT + 1))\n  echo \"PostgreSQL not ready (attempt $RETRY_COUNT/$MAX_RETRIES). Waiting ${WAIT_TIME}s...\"\n  sleep $WAIT_TIME\n\n  # Exponential backoff with max of 30 seconds\n  WAIT_TIME=$((WAIT_TIME * 2))\n  if [ $WAIT_TIME -gt 30 ]; then\n    WAIT_TIME=30\n  fi\ndone\n\necho \"PostgreSQL failed to become ready after $MAX_RETRIES attempts\"\nexit 1\n"` |  |
 | portal.initContainers[0].env[0].name | string | `"PGPASSWORD"` |  |
 | portal.initContainers[0].env[0].value | string | `"atk"` |  |
-| portal.initContainers[0].image | string | `"docker.io/postgres:17.5-alpine"` |  |
+| portal.initContainers[0].image | string | `"docker.io/postgres:17.6-alpine"` |  |
 | portal.initContainers[0].name | string | `"wait-for-postgresql-ready"` |  |
 | portal.podAnnotations."prometheus.io/path" | string | `"/portal-metrics"` |  |
 | portal.podAnnotations."prometheus.io/port" | string | `"3000"` |  |
@@ -314,7 +314,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | support.minio.mcImage.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` |  |
 | support.postgresql.image.registry | string | `"docker.io"` |  |
 | support.postgresql.image.repository | string | `"postgres"` |  |
-| support.postgresql.image.tag | string | `"17.5-alpine"` |  |
+| support.postgresql.image.tag | string | `"17.6-alpine"` |  |
 | support.redis.auth.enabled | bool | `true` |  |
 | support.redis.auth.password | string | `"atk"` |  |
 | support.redis.commonLabels."app.kubernetes.io/managed-by" | string | `"helm"` |  |
@@ -339,7 +339,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | txsigner.image.pullPolicy | string | `"IfNotPresent"` |  |
 | txsigner.image.registry | string | `"ghcr.io"` |  |
 | txsigner.image.repository | string | `"settlemint/btp-signer"` |  |
-| txsigner.image.tag | string | `"7.14.3"` |  |
+| txsigner.image.tag | string | `"7.14.4"` |  |
 | txsigner.postgresql | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
 | txsigner.replicaCount | int | `1` |  |
 | txsigner.resources | object | `{}` |  |
