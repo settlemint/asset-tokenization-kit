@@ -22,7 +22,7 @@ import { seo } from "@/config/metadata";
 import type { orpc } from "@/orpc/orpc-client";
 import { Providers } from "@/providers";
 import appCss from "@/styles/app.css?url";
-import { TanstackDevtools } from "@tanstack/react-devtools";
+import { TanStackDevtools } from "@tanstack/react-devtools";
 import { type QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import {
@@ -171,7 +171,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <Providers>
           {children}
           <Toaster richColors />
-          <TanstackDevtools
+          <TanStackDevtools
             plugins={[
               {
                 name: "Tanstack Query",
