@@ -53,6 +53,8 @@ blockscout-stack:
       IPFS_PUBLIC_GATEWAY_URL: 'https://ipfs.io/ipfs'
       API_URL: https://explorer.k8s.orb.local
       WEBAPP_URL: https://explorer.k8s.orb.local
+      FIRST_BLOCK: '1'
+      LAST_BLOCK: '5000000'
     envFromSecret:
       DATABASE_URL: postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable
       ETHEREUM_JSONRPC_HTTP_URL: http://erpc:4000/settlemint/evm/1337
