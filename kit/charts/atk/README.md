@@ -240,7 +240,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.grafana.ingress.hosts[0] | string | `"grafana.k8s.orb.local"` |  |
 | observability.grafana.sidecar.image.registry | string | `"docker.io"` |  |
 | observability.grafana.sidecar.image.repository | string | `"kiwigrid/k8s-sidecar"` |  |
-| observability.grafana.sidecar.image.tag | string | `"1.30.8"` |  |
+| observability.grafana.sidecar.image.tag | string | `"1.30.9"` |  |
 | observability.kube-state-metrics.image.registry | string | `"registry.k8s.io"` |  |
 | observability.kube-state-metrics.image.repository | string | `"kube-state-metrics/kube-state-metrics"` |  |
 | observability.kube-state-metrics.image.tag | string | `"v2.16.0"` |  |
@@ -257,7 +257,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.loki.memcachedExporter.image.repository | string | `"docker.io/prom/memcached-exporter"` |  |
 | observability.loki.memcachedExporter.image.tag | string | `"v0.15.3"` |  |
 | observability.loki.sidecar.image.repository | string | `"docker.io/kiwigrid/k8s-sidecar"` | The Docker registry and image for the k8s sidecar |
-| observability.loki.sidecar.image.tag | string | `"1.30.8"` |  |
+| observability.loki.sidecar.image.tag | string | `"1.30.9"` |  |
 | observability.loki.singleBinary.extraEnv | object | `{}` |  |
 | observability.loki.singleBinary.persistence.size | string | `"10Gi"` |  |
 | observability.loki.singleBinary.resources | object | `{}` |  |

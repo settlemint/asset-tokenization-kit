@@ -68,7 +68,6 @@ services:
       PRIVATE_KEY_MNEMONIC:
         "test test test test test test test test test test test junk"
       PRIVATE_KEY_DERIVATION_PATH: "m/44'/60'/0'/0/0"
-      PINCODE_VERIFICATION_MAX_CHALLENGES: 10000
     ports:
       - "${TXSIGNER_PORT:-8547}:3000"
     healthcheck:

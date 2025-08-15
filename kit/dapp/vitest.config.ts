@@ -164,7 +164,7 @@ export default defineConfig({
           testTimeout: 60000, // 60 seconds for integration tests
           hookTimeout: 60000, // 60 seconds for hooks
           pool: "threads",
-          isolate: false,
+          isolate: true,
           include: ["src/**/*.spec.ts"],
           exclude: ["node_modules", "dist", "src/**/*.test.ts"],
         },
