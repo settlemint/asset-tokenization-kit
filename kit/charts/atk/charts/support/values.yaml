@@ -7,7 +7,7 @@ postgresql:
   image:
     registry: docker.io
     repository: postgres
-    tag: "17.5-alpine"
+    tag: "17.6-alpine"
     pullPolicy: IfNotPresent
 
   # Image pull secrets
