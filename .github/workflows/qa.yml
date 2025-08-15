@@ -57,6 +57,8 @@ jobs:
       - name: Load all secrets
         id: secrets
         uses: 1password/load-secrets-action@v3
+        with:
+          set-env: true
         env:
           SLACK_BOT_TOKEN: op://platform/slack-bot/SLACK_BOT_TOKEN
           SLACK_CHANNEL_ID: op://platform/slack-bot/SLACK_CHANNEL_ID
@@ -329,6 +331,8 @@ jobs:
 
       - name: Load Slack secrets
         uses: 1password/load-secrets-action@v3
+        with:
+          set-env: true
         env:
           SLACK_BOT_TOKEN: op://platform/slack-bot/SLACK_BOT_TOKEN
           SLACK_CHANNEL_ID: op://platform/slack-bot/SLACK_CHANNEL_ID
@@ -383,6 +387,8 @@ jobs:
 
       - name: Load Slack secrets
         uses: 1password/load-secrets-action@v3
+        with:
+          set-env: true
         env:
           SLACK_BOT_TOKEN: op://platform/slack-bot/SLACK_BOT_TOKEN
           SLACK_CHANNEL_ID: op://platform/slack-bot/SLACK_CHANNEL_ID
