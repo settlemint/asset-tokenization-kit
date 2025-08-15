@@ -308,7 +308,7 @@ portal:
   image:
     registry: ghcr.io
     repository: settlemint/btp-scs-portal
-    tag: "8.5.18"
+    tag: "8.5.19"
     pullPolicy: IfNotPresent
   podLabels:
     app.kubernetes.io/component: portal
