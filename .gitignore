@@ -78,3 +78,4 @@ kit/dapp/.dev-reset
 .claude/commands/*.personal.md
 *.ts.tmp
 PROJECT_INDEX.json
+PROJECT_INDEX.dsl
