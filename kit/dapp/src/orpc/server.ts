@@ -5,11 +5,8 @@ import { timestampSerializer } from "@/lib/zod/validators/timestamp";
 import { router } from "@/orpc/routes/router";
 import { RPCHandler } from "@orpc/server/node";
 import { BatchHandlerPlugin } from "@orpc/server/plugins";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 import { toNodeHandler } from "better-auth/node";
 import { createServer } from "node:http";
-
-const logger = createLogger({ level: "info" });
 
 const handler = new RPCHandler(router, {
   plugins: [new BatchHandlerPlugin()],
