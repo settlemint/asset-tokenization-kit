@@ -10,8 +10,6 @@ intercept requests, add context, handle errors, and enforce security policies.
 graph LR
     subgraph "Request Flow"
         Request[Incoming Request]
-        Error[Error Middleware]
-        I18n[i18n Middleware]
         Session[Session Middleware]
         Auth[Auth Middleware]
         Service[Service Middlewares]
@@ -19,15 +17,11 @@ graph LR
         Response[Response]
     end
 
-    Request --> Error
-    Error --> I18n
-    I18n --> Session
+    Request --> Session
     Session --> Auth
     Auth --> Service
     Service --> Handler
     Handler --> Response
-
-    Error -.->|Catches Errors| Response
 ```
 
 ## Middleware Categories
@@ -43,20 +37,7 @@ Handles user authentication, session management, and permission checking.
 - **`token-permission.middleware.ts`**: Checks token-specific permissions
 - **`token-factory-permission.middleware.ts`**: Validates factory permissions
 
-### 2. Internationalization (`i18n/`)
-
-Provides translation support for server-side messages.
-
-- **`i18n.middleware.ts`**: Basic i18n setup with language detection
-- **`i18n-with-namespaces.middleware.ts`**: Advanced i18n with namespace support
-
-### 3. Monitoring (`monitoring/`)
-
-Handles error tracking and observability.
-
-- **`error.middleware.ts`**: Standardizes error responses and logging
-
-### 4. Services (`services/`)
+### 2. Services (`services/`)
 
 Injects external service clients into the context.
 
@@ -83,11 +64,8 @@ routers:
 // Base router - no middleware
 export const baseRouter = implement(contract).$context<Context>();
 
-// Public router - error handling + i18n + optional session
-export const publicRouter = baseRouter
-  .use(errorMiddleware)
-  .use(i18nMiddleware)
-  .use(sessionMiddleware);
+// Public router - optional session
+export const publicRouter = baseRouter.use(sessionMiddleware);
 
 // Authenticated router - adds required authentication
 export const authRouter = publicRouter.use(authMiddleware);
@@ -225,14 +203,11 @@ export const mintTokens = authRouter
 
 The order of middleware execution is crucial:
 
-1. **Error Handling** - Must be first to catch all errors
-2. **Monitoring** - Early to track all requests
-3. **i18n** - Before any user-facing logic
-4. **Session** - Loads authentication state
-5. **Auth** - Validates authentication
-6. **Permissions** - Checks authorization
-7. **Services** - Injects required clients
-8. **Business Logic** - Custom validation/transformation
+1. **Session** - Loads authentication state
+2. **Auth** - Validates authentication
+3. **Permissions** - Checks authorization
+4. **Services** - Injects required clients
+5. **Business Logic** - Custom validation/transformation
 
 ## Performance Considerations
 

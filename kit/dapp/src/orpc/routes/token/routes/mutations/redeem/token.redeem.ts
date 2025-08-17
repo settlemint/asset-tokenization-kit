@@ -61,9 +61,7 @@ export const redeem = tokenRouter.token.redeem
     // Validate input parameters
     if (!redeemAll && !amount) {
       throw errors.INPUT_VALIDATION_FAILED({
-        message: context.t(
-          "tokens:api.mutations.redeem.messages.amountOrRedeemAllRequired"
-        ),
+        message: "Amount or redeem all required",
         data: { errors: ["Invalid redeem parameters"] },
       });
     }
