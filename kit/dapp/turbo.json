@@ -52,10 +52,10 @@
       "outputs": []
     },
     "test:integration": {
-      "dependsOn": ["codegen", "build", "artifacts"]
+      "dependsOn": ["codegen", "artifacts", "^test:integration"]
     },
     "test:ci": {
-      "dependsOn": ["codegen", "build", "artifacts"]
+      "dependsOn": ["codegen", "artifacts"]
     },
     "lint": {
       "dependsOn": ["codegen"],

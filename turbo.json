@@ -85,9 +85,7 @@
     "docs": {},
     "test": {},
     "artifacts": {},
-    "test:integration": {
-      "dependsOn": ["build"]
-    },
+    "test:integration": {},
     "db:studio": {
       "cache": false,
       "persistent": true
