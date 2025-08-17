@@ -28,13 +28,10 @@ A Helm chart for the blockscout components
 | blockscout-stack.blockscout.env.ECTO_ADAPTER_TIMEOUT | string | `"60000"` |  |
 | blockscout-stack.blockscout.env.ECTO_USE_SSL | string | `"false"` |  |
 | blockscout-stack.blockscout.env.EMISSION_FORMAT | string | `"DEFAULT"` |  |
-| blockscout-stack.blockscout.env.ETHEREUM_JSONRPC_HTTP_INSECURE | string | `"true"` |  |
 | blockscout-stack.blockscout.env.ETHEREUM_JSONRPC_VARIANT | string | `"besu"` |  |
 | blockscout-stack.blockscout.env.FETCH_REWARDS_WAY | string | `"trace_block"` |  |
-| blockscout-stack.blockscout.env.FIRST_BLOCK | string | `"1"` |  |
 | blockscout-stack.blockscout.env.IPFS_GATEWAY_URL | string | `"https://ipfs.io/ipfs"` |  |
 | blockscout-stack.blockscout.env.IPFS_PUBLIC_GATEWAY_URL | string | `"https://ipfs.io/ipfs"` |  |
-| blockscout-stack.blockscout.env.LAST_BLOCK | string | `"5000000"` |  |
 | blockscout-stack.blockscout.env.MIX_ENV | string | `"prod"` |  |
 | blockscout-stack.blockscout.env.NETWORK | string | `"mainnet"` |  |
 | blockscout-stack.blockscout.env.OTHER_EXPLORERS | string | `"{}"` |  |

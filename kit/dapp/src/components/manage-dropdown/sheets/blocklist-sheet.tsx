@@ -42,11 +42,18 @@ export function BlocklistSheet({
   const { mutateAsync: freezeAddress } = useMutation(
     orpc.token.freezeAddress.mutationOptions({
       onSuccess: async () => {
-        await queryClient.invalidateQueries({
-          queryKey: orpc.token.read.queryOptions({
-            input: { tokenAddress: asset.id },
-          }).queryKey,
-        });
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: orpc.token.read.queryOptions({
+              input: { tokenAddress: asset.id },
+            }).queryKey,
+          }),
+          queryClient.invalidateQueries({
+            queryKey: orpc.token.holders.queryOptions({
+              input: { tokenAddress: asset.id },
+            }).queryKey,
+          }),
+        ]);
       },
     })
   );
@@ -143,11 +150,18 @@ export function BlocklistSheet({
                   userAddress: addr,
                   freeze: mode === "add" ? true : false,
                 });
-                await queryClient.invalidateQueries({
-                  queryKey: orpc.token.read.queryOptions({
-                    input: { tokenAddress: asset.id },
-                  }).queryKey,
-                });
+                await Promise.all([
+                  queryClient.invalidateQueries({
+                    queryKey: orpc.token.read.queryOptions({
+                      input: { tokenAddress: asset.id },
+                    }).queryKey,
+                  }),
+                  queryClient.invalidateQueries({
+                    queryKey: orpc.token.holders.queryOptions({
+                      input: { tokenAddress: asset.id },
+                    }).queryKey,
+                  }),
+                ]);
                 onCompleted({ address: addr, mode });
               })();
 
