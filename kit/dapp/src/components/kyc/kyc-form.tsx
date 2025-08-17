@@ -10,25 +10,60 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
+/**
+ * Extended KYC form values that include optional wallet verification for admin operations.
+ *
+ * @remarks
+ * SECURITY: walletVerification is only required when user has admin role and needs to register
+ * a new identity on-chain. Regular KYC updates don't require blockchain verification.
+ */
 export type KycFormValues = KycUpsertInput & {
   walletVerification?: UserVerification;
 };
 
+/**
+ * Props for the KYC (Know Your Customer) form component.
+ */
 interface KycFormProps {
+  /** Callback executed after successful KYC completion and any necessary identity registration */
   onComplete: () => void | Promise<void>;
 }
 
+/**
+ * KYC (Know Your Customer) form component that handles identity verification and compliance.
+ *
+ * @remarks
+ * COMPLIANCE: Collects mandatory identity information required for financial regulations
+ * and anti-money laundering (AML) compliance in asset tokenization platforms.
+ *
+ * ROLE-BASED BEHAVIOR:
+ * - Admin users: Triggers on-chain identity registration via smart contract
+ * - Regular users: Updates KYC data in application database only
+ *
+ * SECURITY: Uses wallet verification for admin operations to prevent unauthorized
+ * identity registrations on the blockchain, which could have regulatory implications.
+ *
+ * PERFORMANCE: Optimistically invalidates related queries on success to maintain
+ * consistent UI state across user profile, sidebar, and dropdown components.
+ *
+ * @param onComplete - Callback executed after successful KYC submission and identity registration
+ */
 export function KycForm({ onComplete }: KycFormProps) {
   const { t } = useTranslation(["components"]);
   const { data: session } = authClient.useSession();
   const queryClient = useQueryClient();
+
+  // RBAC: Only admin users can register new identities on-chain
+  // Regular users update KYC data without blockchain interaction
   const shouldRegisterIdentity = session?.user.role === "admin";
 
+  // BLOCKCHAIN: Mutation for registering new identity smart contract
   const { mutateAsync: registerIdentity, isPending: isRegisteringIdentity } =
     useMutation(
       orpc.system.identityRegister.mutationOptions({
         onSuccess: async () => {
-          // Refetch all relevant data
+          // PERFORMANCE: Invalidate both account and user queries to refresh UI
+          // Account query updates blockchain-related data, user query updates profile
           await Promise.all([
             queryClient.invalidateQueries({
               queryKey: orpc.account.me.queryOptions().queryKey,
@@ -43,10 +78,12 @@ export function KycForm({ onComplete }: KycFormProps) {
       })
     );
 
+  // DATABASE: Mutation for updating KYC data in application database
   const { mutateAsync: updateKyc, isPending: isUpdatingKyc } = useMutation(
     orpc.user.kyc.upsert.mutationOptions({
       onSuccess: async () => {
-        // Invalidate user data to update sidebar and dropdown
+        // PERFORMANCE: Update UI components that depend on user KYC status
+        // Sidebar and dropdown show different options based on KYC completion
         await queryClient.invalidateQueries({
           queryKey: orpc.user.me.queryOptions().queryKey,
           refetchType: "all",
@@ -56,13 +93,15 @@ export function KycForm({ onComplete }: KycFormProps) {
     })
   );
 
+  // INITIALIZATION: Load existing KYC data for form pre-population
   const { data: kyc } = useQuery(
     orpc.user.kyc.read.queryOptions({
       input: {
         userId: session?.user.id ?? "",
       },
       enabled: !!session?.user.id,
-      // If it fails, the account is not yet created, so we don't want to retry
+      // EDGE CASE: New users won't have KYC data yet, so don't retry on 404
+      // This prevents unnecessary error logging and API calls
       retry: false,
       throwOnError: false,
     })
@@ -70,31 +109,40 @@ export function KycForm({ onComplete }: KycFormProps) {
 
   const form = useAppForm({
     defaultValues: {
+      // INITIALIZATION: Pre-populate form with existing KYC data if available
       ...kyc,
       userId: session?.user.id ?? "",
     } as KycFormValues,
     validators: {
+      // VALIDATION: Real-time validation on form changes using Zod schema
       onChange: KycUpsertInputSchema,
     },
     onSubmit: ({ value }) => {
       const promise = async () => {
+        // CONDITIONAL: Only register identity on-chain for admin users
         if (shouldRegisterIdentity) {
+          // SECURITY: Ensure wallet verification is present before blockchain operation
           if (!value.walletVerification) {
             throw new Error("Verification is required");
           }
 
+          // BLOCKCHAIN: Register new identity smart contract with country and verification
           await registerIdentity({
             country: value.country,
             walletVerification: value.walletVerification,
           });
         }
 
+        // DATABASE: Always update KYC data in application database
+        // This happens after identity registration to ensure proper sequencing
         await updateKyc({
           ...value,
           userId: session?.user.id ?? "",
         });
       };
 
+      // UX: Provide user feedback during the async operation
+      // Different messages for identity deployment vs regular KYC update
       toast.promise(promise(), {
         loading: t("kycForm.identity.deploying-toast"),
         success: t("kycForm.identity.deployed-toast"),
@@ -104,6 +152,8 @@ export function KycForm({ onComplete }: KycFormProps) {
     },
   });
 
+  // COMPLIANCE: Pre-defined residency status options for regulatory compliance
+  // These align with common financial regulatory requirements for tax purposes
   const residencyStatusOptions = useMemo(
     () => [
       {
@@ -191,9 +241,12 @@ export function KycForm({ onComplete }: KycFormProps) {
           }}
           disabled={({ isDirty, errors }) => {
             return (
+              // LOADING: Prevent double-submission during async operations
               isRegisteringIdentity ||
               isUpdatingKyc ||
+              // UX: Only enable when user has made changes to the form
               !isDirty ||
+              // VALIDATION: Block submission if any validation errors exist
               Object.keys(errors).length > 0
             );
           }}
