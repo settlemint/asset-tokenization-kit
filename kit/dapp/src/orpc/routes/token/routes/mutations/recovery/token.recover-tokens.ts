@@ -41,9 +41,9 @@ export const recoverTokens = tokenRouter.token.recoverTokens
     await context.portalClient.mutate(
       TOKEN_RECOVER_TOKENS_MUTATION,
       {
-      address: contract,
-      from: sender.wallet,
-      lostWallet,
+        address: contract,
+        from: sender.wallet,
+        lostWallet,
       },
       {
         sender,

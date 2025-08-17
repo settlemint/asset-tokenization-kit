@@ -411,7 +411,9 @@ describe("portal.middleware", () => {
           message: "No transaction hash found in NoTxHash response",
           data: {
             document: NO_TX_MUTATION,
-            variables: {},
+            variables: {
+              from: "0x1234567890123456789012345678901234567890",
+            },
           },
         });
       });
@@ -855,7 +857,9 @@ describe("portal.middleware", () => {
           message: "GraphQL ErrorMutation failed",
           data: expect.objectContaining({
             document: ERROR_MUTATION,
-            variables: {},
+            variables: {
+              from: "0x1234567890123456789012345678901234567890",
+            },
           }),
           cause: clientError,
         });

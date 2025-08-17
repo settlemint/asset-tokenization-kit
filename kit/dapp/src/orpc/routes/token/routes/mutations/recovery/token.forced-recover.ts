@@ -44,10 +44,10 @@ export const forcedRecover = tokenRouter.token.forcedRecover
     await context.portalClient.mutate(
       TOKEN_FORCED_RECOVER_MUTATION,
       {
-      address: contract,
-      from: sender.wallet,
-      lostWallet,
-      newWallet,
+        address: contract,
+        from: sender.wallet,
+        lostWallet,
+        newWallet,
       },
       {
         sender,

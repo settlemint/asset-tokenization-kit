@@ -43,9 +43,9 @@ export const setCap = tokenRouter.token.setCap
     await context.portalClient.mutate(
       TOKEN_SET_CAP_MUTATION,
       {
-      address: contract,
-      from: sender.wallet,
-      newCap: newCap.toString(),
+        address: contract,
+        from: sender.wallet,
+        newCap: newCap.toString(),
       },
       {
         sender,

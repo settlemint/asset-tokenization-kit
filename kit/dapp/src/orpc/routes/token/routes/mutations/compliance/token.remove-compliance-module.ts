@@ -41,9 +41,9 @@ export const removeComplianceModule = portalRouter.token.removeComplianceModule
     await context.portalClient.mutate(
       TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION,
       {
-      address: contract,
-      from: sender.wallet,
-      moduleAddress,
+        address: contract,
+        from: sender.wallet,
+        moduleAddress,
       },
       {
         sender,

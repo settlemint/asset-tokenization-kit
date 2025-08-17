@@ -70,10 +70,10 @@ export const identityRegister = portalRouter.system.identityRegister
     await context.portalClient.mutate(
       IDENTITY_REGISTER_MUTATION,
       {
-      address: system.identityRegistry,
-      from: sender.wallet,
-      country: Number(countries.alpha2ToNumeric(country) ?? "0"),
-      identity: account.identity,
+        address: system.identityRegistry,
+        from: sender.wallet,
+        country: Number(countries.alpha2ToNumeric(country) ?? "0"),
+        identity: account.identity,
       },
       {
         sender,

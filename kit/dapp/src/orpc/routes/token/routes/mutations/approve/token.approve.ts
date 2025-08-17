@@ -44,10 +44,10 @@ export const approve = tokenRouter.token.approve
     await context.portalClient.mutate(
       TOKEN_APPROVE_MUTATION,
       {
-      address: contract,
-      from: sender.wallet,
-      spender,
-      amount: amount.toString(),
+        address: contract,
+        from: sender.wallet,
+        spender,
+        amount: amount.toString(),
       },
       {
         sender,

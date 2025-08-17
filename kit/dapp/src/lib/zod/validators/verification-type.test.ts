@@ -18,9 +18,9 @@ describe("verificationType", () => {
     );
 
     it("should accept all defined verification types", () => {
-      expect(validator.parse("two-factor")).toBe("two-factor");
-      expect(validator.parse("pincode")).toBe("pincode");
-      expect(validator.parse("secret-code")).toBe("secret-code");
+      expect(validator.parse("OTP")).toBe("OTP");
+      expect(validator.parse("PINCODE")).toBe("PINCODE");
+      expect(validator.parse("SECRET_CODES")).toBe("SECRET_CODES");
     });
   });
 
@@ -56,23 +56,23 @@ describe("verificationType", () => {
 
   describe("verification type contexts", () => {
     it("should support different verification methods", () => {
-      // Email verification for account confirmation
-      expect(validator.parse("two-factor")).toBe("two-factor");
+      // OTP verification for account confirmation
+      expect(validator.parse("OTP")).toBe("OTP");
 
-      // Phone verification for 2FA or SMS codes
-      expect(validator.parse("pincode")).toBe("pincode");
+      // Pincode verification for numeric codes
+      expect(validator.parse("PINCODE")).toBe("PINCODE");
 
-      // Identity verification for KYC/AML
-      expect(validator.parse("secret-code")).toBe("secret-code");
+      // Secret codes verification for recovery
+      expect(validator.parse("SECRET_CODES")).toBe("SECRET_CODES");
     });
   });
 
   describe("safeParse", () => {
     it("should return success for valid verification type", () => {
-      const result = validator.safeParse("two-factor");
+      const result = validator.safeParse("OTP");
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data).toBe("two-factor");
+        expect(result.data).toBe("OTP");
       }
     });
 
@@ -84,16 +84,16 @@ describe("verificationType", () => {
 
   describe("type checking", () => {
     it("should return proper type", () => {
-      const result = validator.parse("two-factor");
+      const result = validator.parse("OTP");
       // Test that the type is correctly inferred
-      expect(result).toBe("two-factor");
+      expect(result).toBe("OTP");
     });
 
     it("should handle safeParse", () => {
-      const result = validator.safeParse("pincode");
+      const result = validator.safeParse("PINCODE");
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data).toBe("pincode");
+        expect(result.data).toBe("PINCODE");
       }
     });
   });
@@ -101,9 +101,9 @@ describe("verificationType", () => {
 
 describe("isVerificationType", () => {
   it("should return true for valid verification types", () => {
-    expect(isVerificationType("two-factor")).toBe(true);
-    expect(isVerificationType("pincode")).toBe(true);
-    expect(isVerificationType("secret-code")).toBe(true);
+    expect(isVerificationType("OTP")).toBe(true);
+    expect(isVerificationType("PINCODE")).toBe(true);
+    expect(isVerificationType("SECRET_CODES")).toBe(true);
   });
 
   it("should return false for invalid verification types", () => {
@@ -120,24 +120,24 @@ describe("isVerificationType", () => {
     expect(isVerificationType({})).toBe(false);
     expect(isVerificationType([])).toBe(false);
     expect(isVerificationType("Two-Factor")).toBe(false);
-    expect(isVerificationType("PINCODE")).toBe(false);
+    expect(isVerificationType("pincode")).toBe(false);
   });
 
   it("should work as a type guard", () => {
-    const value: unknown = "two-factor";
+    const value: unknown = "OTP";
     if (isVerificationType(value)) {
       // TypeScript should recognize value as VerificationType here
       const validType: "OTP" | "PINCODE" | "SECRET_CODES" = value;
-      expect(validType).toBe("two-factor");
+      expect(validType).toBe("OTP");
     }
   });
 });
 
 describe("getVerificationType", () => {
   it("should return valid verification types", () => {
-    expect(getVerificationType("two-factor")).toBe("two-factor");
-    expect(getVerificationType("pincode")).toBe("pincode");
-    expect(getVerificationType("secret-code")).toBe("secret-code");
+    expect(getVerificationType("OTP")).toBe("OTP");
+    expect(getVerificationType("PINCODE")).toBe("PINCODE");
+    expect(getVerificationType("SECRET_CODES")).toBe("SECRET_CODES");
   });
 
   it("should throw for invalid verification types", () => {
@@ -156,9 +156,9 @@ describe("getVerificationType", () => {
   });
 
   it("should throw for case variations", () => {
-    expect(() => getVerificationType("Two-Factor")).toThrow();
-    expect(() => getVerificationType("PINCODE")).toThrow();
-    expect(() => getVerificationType("Secret-Code")).toThrow();
+    expect(() => getVerificationType("otp")).toThrow();
+    expect(() => getVerificationType("pincode")).toThrow();
+    expect(() => getVerificationType("secret_codes")).toThrow();
   });
 
   it("should be useful in functions requiring VerificationType", () => {

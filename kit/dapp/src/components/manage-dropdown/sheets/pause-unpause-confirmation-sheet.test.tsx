@@ -133,7 +133,10 @@ vi.mock("../core/action-form-sheet", () => ({
       <button
         data-testid="submit-button"
         onClick={() => {
-          onSubmit({ secretVerificationCode: "123456", verificationType: "PINCODE" });
+          onSubmit({
+            secretVerificationCode: "123456",
+            verificationType: "PINCODE",
+          });
         }}
       >
         Submit

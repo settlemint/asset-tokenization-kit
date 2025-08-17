@@ -38,8 +38,8 @@ export const pause = tokenRouter.token.pause
     await context.portalClient.mutate(
       TOKEN_PAUSE_MUTATION,
       {
-      address: contract,
-      from: sender.wallet,
+        address: contract,
+        from: sender.wallet,
       },
       {
         sender,

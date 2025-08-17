@@ -44,10 +44,10 @@ export const freezeAddress = tokenRouter.token.freezeAddress
     await context.portalClient.mutate(
       TOKEN_FREEZE_ADDRESS_MUTATION,
       {
-      address: contract,
-      from: sender.wallet,
-      userAddress,
-      freeze,
+        address: contract,
+        from: sender.wallet,
+        userAddress,
+        freeze,
       },
       {
         sender,

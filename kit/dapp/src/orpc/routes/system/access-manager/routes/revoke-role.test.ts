@@ -70,7 +70,12 @@ describe("system.access-manager.revoke-role unit", () => {
       from: context.auth.user.wallet,
       account: "0x1234567890123456789012345678901234567890",
       role: expect.stringMatching(/^0x[0-9a-f]{64}$/),
-      challengeResponse: "signed",
+    });
+    // Check the third argument (walletVerification)
+    expect(call[2]).toMatchObject({
+      sender: context.auth.user,
+      code: "123456",
+      type: "PINCODE",
     });
   });
 

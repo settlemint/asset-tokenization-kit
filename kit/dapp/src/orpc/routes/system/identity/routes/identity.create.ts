@@ -61,8 +61,8 @@ export const identityCreate = portalRouter.system.identityCreate.handler(
     await context.portalClient.mutate(
       IDENTITY_CREATE_MUTATION,
       {
-      address: system.identityFactory,
-      from: sender.wallet,
+        address: system.identityFactory,
+        from: sender.wallet,
       },
       {
         sender,
