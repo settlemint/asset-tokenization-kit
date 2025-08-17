@@ -8,6 +8,7 @@ import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 const GRANT_ROLE_MUTATION = portalGraphql(`
   mutation GrantRoleMutation(
     $verificationId: String
+    $challengeResponse: String
     $address: String!
     $account: String!
     $role: String!
@@ -15,6 +16,7 @@ const GRANT_ROLE_MUTATION = portalGraphql(`
   ) {
     IATKSystemAccessManagerGrantRole(
       verificationId: $verificationId
+      challengeResponse: $challengeResponse
       address: $address
       from: $from
       input: { role: $role, account: $account }
@@ -28,6 +30,7 @@ const GRANT_ROLE_MUTATION = portalGraphql(`
 const BATCH_GRANT_ROLE_MUTATION = portalGraphql(`
   mutation BatchGrantRoleMutation(
     $verificationId: String
+    $challengeResponse: String
     $address: String!
     $role: String!
     $accounts: [String!]!
@@ -35,6 +38,7 @@ const BATCH_GRANT_ROLE_MUTATION = portalGraphql(`
   ) {
     IATKSystemAccessManagerBatchGrantRole(
       verificationId: $verificationId
+      challengeResponse: $challengeResponse
       address: $address
       from: $from
       input: { role: $role, accounts: $accounts }
@@ -48,6 +52,7 @@ const BATCH_GRANT_ROLE_MUTATION = portalGraphql(`
 const GRANT_MULTIPLE_ROLES_MUTATION = portalGraphql(`
   mutation GrantMultipleRolesMutation(
     $verificationId: String
+    $challengeResponse: String
     $address: String!
     $account: String!
     $roles: [String!]!
@@ -55,6 +60,7 @@ const GRANT_MULTIPLE_ROLES_MUTATION = portalGraphql(`
   ) {
     IATKSystemAccessManagerGrantMultipleRoles(
       verificationId: $verificationId
+      challengeResponse: $challengeResponse
       address: $address
       from: $from
       input: { account: $account, roles: $roles }

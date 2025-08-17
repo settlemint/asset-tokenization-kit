@@ -8,6 +8,7 @@ import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 const REVOKE_ROLE_MUTATION = portalGraphql(`
   mutation RevokeRoleMutation(
     $verificationId: String
+    $challengeResponse: String
     $address: String!
     $account: String!
     $role: String!
@@ -15,6 +16,7 @@ const REVOKE_ROLE_MUTATION = portalGraphql(`
   ) {
     IATKSystemAccessManagerRevokeRole(
       verificationId: $verificationId
+      challengeResponse: $challengeResponse
       address: $address
       from: $from
       input: { role: $role, account: $account }
@@ -28,6 +30,7 @@ const REVOKE_ROLE_MUTATION = portalGraphql(`
 const BATCH_REVOKE_ROLE_MUTATION = portalGraphql(`
   mutation BatchRevokeRoleMutation(
     $verificationId: String
+    $challengeResponse: String
     $address: String!
     $role: String!
     $accounts: [String!]!
@@ -35,6 +38,7 @@ const BATCH_REVOKE_ROLE_MUTATION = portalGraphql(`
   ) {
     IATKSystemAccessManagerBatchRevokeRole(
       verificationId: $verificationId
+      challengeResponse: $challengeResponse
       address: $address
       from: $from
       input: { role: $role, accounts: $accounts }
@@ -48,6 +52,7 @@ const BATCH_REVOKE_ROLE_MUTATION = portalGraphql(`
 const REVOKE_MULTIPLE_ROLES_MUTATION = portalGraphql(`
   mutation RevokeMultipleRolesMutation(
     $verificationId: String
+    $challengeResponse: String
     $address: String!
     $account: String!
     $roles: [String!]!
@@ -55,6 +60,7 @@ const REVOKE_MULTIPLE_ROLES_MUTATION = portalGraphql(`
   ) {
     IATKSystemAccessManagerRevokeMultipleRoles(
       verificationId: $verificationId
+      challengeResponse: $challengeResponse
       address: $address
       from: $from
       input: { account: $account, roles: $roles }
