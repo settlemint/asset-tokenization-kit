@@ -20,7 +20,6 @@ import { portalRouter } from "@/orpc/procedures/portal.router";
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call } from "@orpc/server";
-import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { getDefaultImplementations } from "./factory.create.schema";
 
@@ -38,7 +37,7 @@ const logger = createLogger();
 const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
   mutation CreateTokenFactory(
     $verificationId: String
-    $challengeResponse: String!
+    $challengeResponse: String
     $address: String!
     $from: String!
     $factoryImplementation: String!
@@ -84,7 +83,7 @@ export const factoryCreate = portalRouter.system.tokenFactoryCreate
     })
   )
   .handler(async ({ input, context, errors }) => {
-    const { factories } = input;
+    const { factories, walletVerification } = input;
     const sender = context.auth.user;
     const { system } = context;
 
@@ -136,22 +135,25 @@ export const factoryCreate = portalRouter.system.tokenFactoryCreate
 
       try {
         // Generate a fresh challenge response for each factory
-        
 
         // Execute the factory creation transaction
-        const variables: VariablesOf<typeof CREATE_TOKEN_FACTORY_MUTATION> = {
+        const variables = {
           address: tokenFactoryRegistry,
           from: sender.wallet,
           factoryImplementation: factoryImplementation,
           tokenImplementation: tokenImplementation,
           name: name,
-          
         };
 
         // Use the Portal client's mutate method that returns the transaction hash
         const txHash = await context.portalClient.mutate(
           CREATE_TOKEN_FACTORY_MUTATION,
-          variables
+          variables,
+          {
+            sender: sender,
+            code: walletVerification.secretVerificationCode,
+            type: walletVerification.verificationType,
+          }
         );
 
         results.push({ status: "success" as const, factory: name, txHash });

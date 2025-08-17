@@ -79,13 +79,20 @@ export const mint = tokenRouter.token.mint
         "batch mint"
       );
 
-      await context.portalClient.mutate(TOKEN_BATCH_MINT_MUTATION, {
-        address: contract,
-        from: sender.wallet,
-        toList: recipients,
-        amounts: amounts.map((a) => a.toString()),
-        ...challengeResponse,
-      });
+      await context.portalClient.mutate(
+        TOKEN_BATCH_MINT_MUTATION,
+        {
+          address: contract,
+          from: sender.wallet,
+          toList: recipients,
+          amounts: amounts.map((a) => a.toString()),
+        },
+        {
+          sender: sender,
+          code: walletVerification.secretVerificationCode,
+          type: walletVerification.verificationType,
+        }
+      );
     } else {
       const [to] = recipients;
       const [amount] = amounts;
@@ -99,13 +106,20 @@ export const mint = tokenRouter.token.mint
         });
       }
 
-      await context.portalClient.mutate(TOKEN_SINGLE_MINT_MUTATION, {
-        address: contract,
-        from: sender.wallet,
-        to,
-        amount: amount.toString(),
-        ...challengeResponse,
-      });
+      await context.portalClient.mutate(
+        TOKEN_SINGLE_MINT_MUTATION,
+        {
+          address: contract,
+          from: sender.wallet,
+          to,
+          amount: amount.toString(),
+        },
+        {
+          sender: sender,
+          code: walletVerification.secretVerificationCode,
+          type: walletVerification.verificationType,
+        }
+      );
     }
 
     // Return the updated token data using the read handler

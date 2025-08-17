@@ -40,13 +40,20 @@ export const addComplianceModule = portalRouter.token.addComplianceModule
     const { auth } = context;
 
     const sender = auth.user;
-    await context.portalClient.mutate(TOKEN_ADD_COMPLIANCE_MODULE_MUTATION, {
-      address: contract,
-      from: sender.wallet,
-      moduleAddress,
-      params: JSON.stringify({}), // TODO: provide params as input to the request
-      ...challengeResponse,
-    });
+    await context.portalClient.mutate(
+      TOKEN_ADD_COMPLIANCE_MODULE_MUTATION,
+      {
+        address: contract,
+        from: sender.wallet,
+        moduleAddress,
+        params: JSON.stringify({}), // TODO: provide params as input to the request
+      },
+      {
+        sender: sender,
+        code: walletVerification.secretVerificationCode,
+        type: walletVerification.verificationType,
+      }
+    );
 
     // Return updated token data
     return await call(read, { tokenAddress: contract }, { context });

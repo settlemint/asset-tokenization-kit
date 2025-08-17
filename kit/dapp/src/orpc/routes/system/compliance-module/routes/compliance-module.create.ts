@@ -29,7 +29,6 @@ import {
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call } from "@orpc/server";
-import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 
 const logger = createLogger();
@@ -40,7 +39,7 @@ const REGISTER_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
     $from: String!
     $implementation: String!
     $verificationId: String
-    $challengeResponse: String!
+    $challengeResponse: String
   ) {
     IATKComplianceModuleRegistryRegisterComplianceModule(
       address: $address
@@ -103,7 +102,7 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
     })
   )
   .handler(async ({ input, context, errors }) => {
-    const { complianceModules } = input;
+    const { complianceModules, walletVerification } = input;
     const sender = context.auth.user;
     const { system } = context;
 
@@ -155,22 +154,23 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
         });
 
         // Every transaction needs a challenge response (can only be used once)
-        
 
         // Execute the compliance module registration transaction
-        const variables: VariablesOf<
-          typeof REGISTER_COMPLIANCE_MODULE_MUTATION
-        > = {
+        const variables = {
           address: contract,
           from: sender.wallet,
           implementation: implementationAddress,
-          
         };
 
         // Execute the mutation
         const transactionHash = await context.portalClient.mutate(
           REGISTER_COMPLIANCE_MODULE_MUTATION,
-          variables
+          variables,
+          {
+            sender: sender,
+            code: walletVerification.secretVerificationCode,
+            type: walletVerification.verificationType,
+          }
         );
 
         const implementationName = COMPLIANCE_TYPE_TO_IMPLEMENTATION_NAME[type];

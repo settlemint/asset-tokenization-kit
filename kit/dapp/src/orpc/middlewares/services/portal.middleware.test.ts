@@ -309,7 +309,6 @@ describe("portal.middleware", () => {
         (portalClient.request as Mock).mockResolvedValueOnce(mockResponse);
 
         const result = await client.mutate(CREATE_TOKEN_MUTATION, {
-          name: "Test Token",
           from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
         });
 
@@ -317,7 +316,7 @@ describe("portal.middleware", () => {
         expect(portalClient.request).toHaveBeenCalledOnce();
         expect(portalClient.request).toHaveBeenCalledWith(
           CREATE_TOKEN_MUTATION,
-          { name: "Test Token" }
+          { from: "0x1234567890123456789012345678901234567890" }
         );
       });
 
@@ -356,7 +355,6 @@ describe("portal.middleware", () => {
         (portalClient.request as Mock).mockResolvedValueOnce(mockResponse);
 
         const result = await client.mutate(NESTED_MUTATION, {
-          input: { field: "value" },
           from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
         });
 
@@ -1548,7 +1546,7 @@ describe("portal.middleware", () => {
         (portalClient.request as Mock).mockResolvedValueOnce(response);
       });
 
-      const promises = mockResponses.map((_, index) =>
+      const promises = mockResponses.map(() =>
         client.mutate(CONCURRENT_MUTATION, {
           from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
         })

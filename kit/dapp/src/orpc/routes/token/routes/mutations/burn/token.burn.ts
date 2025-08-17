@@ -1,3 +1,28 @@
+/**
+ * Token Burn Mutation with Wallet Verification
+ *
+ * @remarks
+ * This mutation demonstrates the new wallet verification pattern where verification
+ * parameters are optional at the GraphQL level but enriched by the Portal middleware.
+ * The mutation supports both single and batch burn operations with automatic verification
+ * handling based on user settings.
+ *
+ * VERIFICATION FLOW:
+ * 1. Mutation receives walletVerification object from input schema
+ * 2. Portal middleware enriches GraphQL variables with verificationId and challengeResponse
+ * 3. Portal validates the verification before executing the burn operation
+ *
+ * SECURITY RATIONALE:
+ * - Burn operations are destructive and require strong authentication
+ * - Verification type (OTP/PINCODE/SECRET_CODES) is determined by user configuration
+ * - Challenge response is generated securely based on verification type
+ *
+ * PERFORMANCE CONSIDERATIONS:
+ * - Batch operations reduce transaction overhead for multiple burns
+ * - Verification adds latency but is essential for security
+ * - Array validation prevents malformed batch requests
+ */
+
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { validateBatchArrays } from "@/orpc/helpers/array-validation";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
@@ -66,11 +91,12 @@ export const burn = tokenRouter.token.burn
     const { contract, walletVerification, addresses, amounts } = input;
     const { auth } = context;
 
-    // Determine if this is a batch operation
+    // OPERATION STRATEGY: Determine batch vs single operation to optimize gas costs
     const isBatch = addresses.length > 1;
 
     const sender = auth.user;
-    // Execute the burn operation
+    // VERIFICATION PATTERN: walletVerification contains user verification settings
+    // Portal middleware will enrich GraphQL variables with verificationId and challengeResponse
     if (isBatch) {
       // Validate batch arrays
       validateBatchArrays(
@@ -81,13 +107,25 @@ export const burn = tokenRouter.token.burn
         context.t("tokens:api.mutations.burn.validation.batchDescription")
       );
 
-      await context.portalClient.mutate(TOKEN_BATCH_BURN_MUTATION, {
-        address: contract,
-        from: sender.wallet,
-        userAddresses: addresses,
-        amounts: amounts.map((a) => a.toString()),
-        ...challengeResponse,
-      });
+      // BATCH BURN: Multiple addresses in single transaction to reduce gas costs
+      await context.portalClient.mutate(
+        TOKEN_BATCH_BURN_MUTATION,
+        {
+          address: contract,
+          from: sender.wallet,
+          userAddresses: addresses,
+          amounts: amounts.map((a) => a.toString()),
+        },
+        {
+          // VERIFICATION DELEGATION: Portal middleware handles verification enrichment
+          // - Gets verificationId from sender based on verificationType
+          // - Generates challengeResponse using appropriate algorithm
+          // - Adds both to GraphQL variables before mutation execution
+          sender: sender,
+          code: walletVerification.secretVerificationCode,
+          type: walletVerification.verificationType,
+        }
+      );
     } else {
       const [userAddress] = addresses;
       const [amount] = amounts;
@@ -99,13 +137,22 @@ export const burn = tokenRouter.token.burn
           data: { errors: ["Invalid input data"] },
         });
       }
-      await context.portalClient.mutate(TOKEN_SINGLE_BURN_MUTATION, {
-        address: contract,
-        from: sender.wallet,
-        userAddress,
-        amount: amount.toString(),
-        ...challengeResponse,
-      });
+      // SINGLE BURN: Standard ERC3643 burn operation with verification
+      await context.portalClient.mutate(
+        TOKEN_SINGLE_BURN_MUTATION,
+        {
+          address: contract,
+          from: sender.wallet,
+          userAddress,
+          amount: amount.toString(),
+        },
+        {
+          // SAME VERIFICATION PATTERN: Middleware enrichment works for all mutation types
+          sender: sender,
+          code: walletVerification.secretVerificationCode,
+          type: walletVerification.verificationType,
+        }
+      );
     }
 
     // Return the updated token data using the read handler

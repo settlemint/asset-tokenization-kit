@@ -38,18 +38,26 @@ export const recoverERC20 = tokenRouter.token.recoverERC20
     })
   )
   .handler(async ({ input, context }) => {
-    const { contract, walletVerification, tokenAddress, recipient, amount } = input;
+    const { contract, walletVerification, tokenAddress, recipient, amount } =
+      input;
     const { auth } = context;
 
     const sender = auth.user;
-    await context.portalClient.mutate(TOKEN_RECOVER_ERC20_MUTATION, {
-      address: contract,
-      from: sender.wallet,
-      tokenAddress,
-      recipient,
-      amount: amount.toString(),
-      ...challengeResponse,
-    });
+    await context.portalClient.mutate(
+      TOKEN_RECOVER_ERC20_MUTATION,
+      {
+        address: contract,
+        from: sender.wallet,
+        tokenAddress,
+        recipient,
+        amount: amount.toString(),
+      },
+      {
+        sender: sender,
+        code: walletVerification.secretVerificationCode,
+        type: walletVerification.verificationType,
+      }
+    );
 
     // Return updated token data
     return await call(read, { tokenAddress: contract }, { context });

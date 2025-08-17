@@ -1,7 +1,6 @@
 import { assetAccessControlRole } from "@/lib/zod/validators/access-control-roles";
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
-import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { z } from "zod";
 
 /**

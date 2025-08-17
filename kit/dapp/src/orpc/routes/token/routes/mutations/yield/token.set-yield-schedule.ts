@@ -71,7 +71,7 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
   .handler(async ({ input, context, errors }) => {
     const {
       contract,
-      verification,
+      walletVerification,
       yieldRate,
       paymentInterval,
       startTime,
@@ -90,7 +90,11 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
         rate: yieldRate.toString(),
         startTime: startTime.toString(),
         token: contract,
-        ...challengeResponse,
+      },
+      {
+        sender: sender,
+        code: walletVerification.secretVerificationCode,
+        type: walletVerification.verificationType,
       }
     );
     let receipt: Awaited<ReturnType<typeof getTransactionReceipt>>;
@@ -151,12 +155,12 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
     await context.portalClient.mutate(
       TOKEN_SET_YIELD_SCHEDULE_MUTATION,
       {
-      address: contract,
-      from: sender.wallet,
-      schedule: getEthereumAddress(scheduleAddress),
+        address: contract,
+        from: sender.wallet,
+        schedule: getEthereumAddress(scheduleAddress),
       },
       {
-        sender,
+        sender: sender,
         code: walletVerification.secretVerificationCode,
         type: walletVerification.verificationType,
       }

@@ -9,7 +9,7 @@ import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 const REVOKE_ROLE_MUTATION = portalGraphql(`
   mutation TokenRevokeRoleMutation(
     $verificationId: String
-    $challengeResponse: String!
+    $challengeResponse: String
     $address: String!
     $account: String!
     $role: String!
@@ -31,7 +31,7 @@ const REVOKE_ROLE_MUTATION = portalGraphql(`
 const BATCH_REVOKE_ROLE_MUTATION = portalGraphql(`
   mutation TokenBatchRevokeRoleMutation(
     $verificationId: String
-    $challengeResponse: String!
+    $challengeResponse: String
     $address: String!
     $role: String!
     $accounts: [String!]!
@@ -53,7 +53,7 @@ const BATCH_REVOKE_ROLE_MUTATION = portalGraphql(`
 const REVOKE_MULTIPLE_ROLES_MUTATION = portalGraphql(`
   mutation TokenRevokeMultipleRolesMutation(
     $verificationId: String
-    $challengeResponse: String!
+    $challengeResponse: String
     $address: String!
     $account: String!
     $roles: [String!]!
@@ -130,37 +130,58 @@ export const revokeRole = tokenRouter.token.revokeRole
           message: "Invalid address or role",
         });
       }
-      await portalClient.mutate(REVOKE_ROLE_MUTATION, {
-        address: accessManagerAddress,
-        from: sender.wallet,
-        account,
-        role: info.bytes,
-        ...challengeResponse,
-      });
+      await portalClient.mutate(
+        REVOKE_ROLE_MUTATION,
+        {
+          address: accessManagerAddress,
+          from: sender.wallet,
+          account,
+          role: info.bytes,
+        },
+        {
+          sender: sender,
+          code: walletVerification.secretVerificationCode,
+          type: walletVerification.verificationType,
+        }
+      );
     } else if (uniqueAddresses.length > 1 && uniqueRoles.length === 1) {
       const info = roleInfos[0];
       if (!info) {
         throw errors.INTERNAL_SERVER_ERROR({ message: "Invalid role" });
       }
-      await portalClient.mutate(BATCH_REVOKE_ROLE_MUTATION, {
-        address: accessManagerAddress,
-        from: sender.wallet,
-        accounts: uniqueAddresses,
-        role: info.bytes,
-        ...challengeResponse,
-      });
+      await portalClient.mutate(
+        BATCH_REVOKE_ROLE_MUTATION,
+        {
+          address: accessManagerAddress,
+          from: sender.wallet,
+          accounts: uniqueAddresses,
+          role: info.bytes,
+        },
+        {
+          sender: sender,
+          code: walletVerification.secretVerificationCode,
+          type: walletVerification.verificationType,
+        }
+      );
     } else if (uniqueAddresses.length === 1 && uniqueRoles.length > 1) {
       const account = uniqueAddresses[0];
       if (!account) {
         throw errors.INTERNAL_SERVER_ERROR({ message: "Invalid address" });
       }
-      await portalClient.mutate(REVOKE_MULTIPLE_ROLES_MUTATION, {
-        address: accessManagerAddress,
-        from: sender.wallet,
-        account,
-        roles: roleInfos.map((r) => r.bytes),
-        ...challengeResponse,
-      });
+      await portalClient.mutate(
+        REVOKE_MULTIPLE_ROLES_MUTATION,
+        {
+          address: accessManagerAddress,
+          from: sender.wallet,
+          account,
+          roles: roleInfos.map((r) => r.bytes),
+        },
+        {
+          sender: sender,
+          code: walletVerification.secretVerificationCode,
+          type: walletVerification.verificationType,
+        }
+      );
     } else {
       throw errors.INPUT_VALIDATION_FAILED({
         message:

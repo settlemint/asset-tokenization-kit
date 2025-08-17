@@ -45,7 +45,7 @@ const logger = createLogger();
 const CREATE_SYSTEM_MUTATION = portalGraphql(`
   mutation CreateSystemMutation(
     $verificationId: String
-    $challengeResponse: String!
+    $challengeResponse: String
     $address: String!
     $from: String!
   ) {
@@ -69,7 +69,7 @@ const CREATE_SYSTEM_MUTATION = portalGraphql(`
 const BOOTSTRAP_SYSTEM_MUTATION = portalGraphql(`
   mutation BootstrapSystemMutation(
     $verificationId: String
-    $challengeResponse: String!
+    $challengeResponse: String
     $address: String!
     $from: String!
   ) {
@@ -157,23 +157,21 @@ export const create = onboardedRouter.system.create
       });
     }
 
-    // Handle challenge for system creation transaction
-    const createChallengeResponse = await handleChallenge(sender, {
-      code: walletVerification.secretVerificationCode,
-      type: walletVerification.verificationType,
-    });
-
     // Execute the system creation transaction
-    const createSystemVariables: VariablesOf<typeof CREATE_SYSTEM_MUTATION> = {
+    const createSystemVariables = {
       address: contract,
       from: sender.wallet,
-      ...createChallengeResponse,
     };
 
     // Use the Portal client's mutate method
     const transactionHash = await context.portalClient.mutate(
       CREATE_SYSTEM_MUTATION,
-      createSystemVariables
+      createSystemVariables,
+      {
+        sender: sender,
+        code: walletVerification.secretVerificationCode,
+        type: walletVerification.verificationType,
+      }
     );
 
     // Query for the deployed system contract
@@ -220,24 +218,21 @@ export const create = onboardedRouter.system.create
       });
     }
 
-    // Handle challenge for bootstrap transaction (fresh challenge required)
-    const bootstrapChallengeResponse = await handleChallenge(sender, {
-      code: walletVerification.secretVerificationCode,
-      type: walletVerification.verificationType,
-    });
-
     // Execute the bootstrap transaction
-    const bootstrapVariables: VariablesOf<typeof BOOTSTRAP_SYSTEM_MUTATION> = {
+    const bootstrapVariables = {
       address: system.id,
       from: sender.wallet,
-      ...bootstrapChallengeResponse,
     };
 
     // Execute bootstrap transaction
-
     await context.portalClient.mutate(
       BOOTSTRAP_SYSTEM_MUTATION,
-      bootstrapVariables
+      bootstrapVariables,
+      {
+        sender: sender,
+        code: walletVerification.secretVerificationCode,
+        type: walletVerification.verificationType,
+      }
     );
 
     // Save the system address to settings using orpc BEFORE yielding final events
@@ -264,7 +259,7 @@ export const create = onboardedRouter.system.create
       {
         address: sender.wallet,
         role: operationalRoles,
-        verification,
+        walletVerification,
       },
       { context }
     );
@@ -284,7 +279,7 @@ export const create = onboardedRouter.system.create
           complianceModuleCreate,
           {
             complianceModules: "all",
-            verification,
+            walletVerification,
           },
           { context }
         );

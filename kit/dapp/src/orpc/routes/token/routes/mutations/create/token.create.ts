@@ -44,19 +44,19 @@ export const create = portalRouter.token.create
     }
 
     const handler = tokenCreateHandlerMap[input.type];
-    const challengeResponse = await handleChallenge(context.auth.user, {
-      code: input.walletVerification.secretVerificationCode,
-      type: input.walletVerification.verificationType,
-    });
 
     // The handler will return the transaction hash
     const transactionHash = await handler(input, {
       mutationVariables: {
         address: tokenFactory.id,
         from: context.auth.user.wallet,
-        ...challengeResponse,
       },
       portalClient: context.portalClient,
+      walletVerification: {
+        sender: context.auth.user,
+        code: input.walletVerification.secretVerificationCode,
+        type: input.walletVerification.verificationType,
+      },
     });
 
     // Query for the deployed token contract

@@ -182,13 +182,20 @@ export const transfer = tokenRouter.token.transfer
           "batch transfer"
         );
 
-        await context.portalClient.mutate(TOKEN_BATCH_TRANSFER_MUTATION, {
-          address: contract,
-          from: sender.wallet,
-          recipients,
-          amounts: amounts.map((a) => a.toString()),
-          ...challengeResponse,
-        });
+        await context.portalClient.mutate(
+          TOKEN_BATCH_TRANSFER_MUTATION,
+          {
+            address: contract,
+            from: sender.wallet,
+            recipients,
+            amounts: amounts.map((a) => a.toString()),
+          },
+          {
+            sender: sender,
+            code: verification.secretVerificationCode,
+            type: verification.verificationType,
+          }
+        );
       } else if (transferType === "forced") {
         // Forced batch transfer is supported
         if (!from || from.length === 0) {
@@ -216,7 +223,11 @@ export const transfer = tokenRouter.token.transfer
             fromList: from,
             toList: recipients,
             amounts: amounts.map((a) => a.toString()),
-            ...challengeResponse,
+          },
+          {
+            sender: sender,
+            code: verification.secretVerificationCode,
+            type: verification.verificationType,
           }
         );
       } else {
@@ -242,13 +253,20 @@ export const transfer = tokenRouter.token.transfer
         });
       }
       if (transferType === "standard") {
-        await context.portalClient.mutate(TOKEN_TRANSFER_MUTATION, {
-          address: contract,
-          from: sender.wallet,
-          to,
-          amount: amount.toString(),
-          ...challengeResponse,
-        });
+        await context.portalClient.mutate(
+          TOKEN_TRANSFER_MUTATION,
+          {
+            address: contract,
+            from: sender.wallet,
+            to,
+            amount: amount.toString(),
+          },
+          {
+            sender: sender,
+            code: verification.secretVerificationCode,
+            type: verification.verificationType,
+          }
+        );
       } else if (transferType === "transferFrom") {
         if (!owner) {
           throw errors.INPUT_VALIDATION_FAILED({
@@ -258,14 +276,21 @@ export const transfer = tokenRouter.token.transfer
             data: { errors: ["Invalid input data"] },
           });
         }
-        await context.portalClient.mutate(TOKEN_TRANSFER_FROM_MUTATION, {
-          address: contract,
-          from: sender.wallet,
-          owner,
-          to,
-          amount: amount.toString(),
-          ...challengeResponse,
-        });
+        await context.portalClient.mutate(
+          TOKEN_TRANSFER_FROM_MUTATION,
+          {
+            address: contract,
+            from: sender.wallet,
+            owner,
+            to,
+            amount: amount.toString(),
+          },
+          {
+            sender: sender,
+            code: verification.secretVerificationCode,
+            type: verification.verificationType,
+          }
+        );
       } else {
         // transferType === "forced"
         if (!owner) {
@@ -276,14 +301,21 @@ export const transfer = tokenRouter.token.transfer
             data: { errors: ["Invalid input data"] },
           });
         }
-        await context.portalClient.mutate(TOKEN_FORCED_TRANSFER_MUTATION, {
-          address: contract,
-          from: sender.wallet,
-          owner,
-          to,
-          amount: amount.toString(),
-          ...challengeResponse,
-        });
+        await context.portalClient.mutate(
+          TOKEN_FORCED_TRANSFER_MUTATION,
+          {
+            address: contract,
+            from: sender.wallet,
+            owner,
+            to,
+            amount: amount.toString(),
+          },
+          {
+            sender: sender,
+            code: verification.secretVerificationCode,
+            type: verification.verificationType,
+          }
+        );
       }
     }
 
