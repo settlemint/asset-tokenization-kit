@@ -67,6 +67,14 @@ module.exports = async ({ github, context, core }) => {
     SLACK_BOT_TOKEN: SLACK_BOT_TOKEN ? "Set" : "Not set",
   });
 
+  // If Slack credentials are missing, skip notification but don't fail the run
+  if (!SLACK_BOT_TOKEN || !SLACK_CHANNEL_ID) {
+    console.warn(
+      "Missing Slack credentials; skipping PR notification and continuing."
+    );
+    return;
+  }
+
   // Avoid unconditional waits; only backoff when API indicates instability
   const waitTime = parseInt(WAIT_TIME, 10);
   if (waitTime > 0) {
@@ -701,6 +709,12 @@ module.exports = async ({ github, context, core }) => {
       );
     }
   } catch (error) {
+    if (String(error.message).includes("not_authed")) {
+      console.warn(
+        "Slack authentication failed; skipping notification without failing run."
+      );
+      return;
+    }
     console.error("❌ CRITICAL ERROR in Slack notifier:", error.message);
     console.error("Stack trace:", error.stack);
     console.error("\n=== EXECUTION CONTEXT ===");
