@@ -42,7 +42,7 @@ jobs:
         id: secrets
         uses: 1password/load-secrets-action@v3
         with
-          set-env: true
+          export-env: true
         env:
           SLACK_BOT_TOKEN: op://platform/slack-bot/SLACK_BOT_TOKEN
           SLACK_CHANNEL_ID: op://platform/slack-bot/SLACK_CHANNEL_ID
