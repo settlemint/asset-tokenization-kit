@@ -9,7 +9,7 @@ import { baseRouter } from "../../procedures/base.router";
 const isTestEnvironment = process.env.CI || process.env.CLAUDECODE;
 const logger = createLogger({
   level: isTestEnvironment
-    ? ("silent" as LogLevel)
+    ? "none"
     : (process.env.SETTLEMINT_LOG_LEVEL as LogLevel),
 });
 
