@@ -31,9 +31,9 @@ describe("Access Manager - Grant Role ORPC routes", () => {
   describe("successful role grants", () => {
     it("should grant a single role to a single account", async () => {
       const result = await adminClient.system.grantRole({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
         },
         address: testAddresses.valid1,
         role: "tokenManager",
@@ -56,9 +56,9 @@ describe("Access Manager - Grant Role ORPC routes", () => {
 
     it("should grant a single role to multiple accounts", async () => {
       const result = await adminClient.system.grantRole({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
         },
         address: [
           testAddresses.valid1,
@@ -92,9 +92,9 @@ describe("Access Manager - Grant Role ORPC routes", () => {
 
     it("should grant multiple roles to a single account", async () => {
       const result = await adminClient.system.grantRole({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
         },
         address: testAddresses.valid1,
         role: ["tokenManager", "complianceManager"],
@@ -118,9 +118,9 @@ describe("Access Manager - Grant Role ORPC routes", () => {
 
     it("should handle empty arrays", async () => {
       const result = await adminClient.system.grantRole({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
         },
         address: [],
         role: "tokenManager",
@@ -136,9 +136,9 @@ describe("Access Manager - Grant Role ORPC routes", () => {
   describe("permission validation", () => {
     it("should allow admin users to grant roles", async () => {
       const result = await adminClient.system.grantRole({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
         },
         address: testAddresses.valid1,
         role: "tokenManager",
@@ -153,9 +153,9 @@ describe("Access Manager - Grant Role ORPC routes", () => {
     it("should reject non-admin users from granting roles", async () => {
       await expect(
         investorClient.system.grantRole({
-          verification: {
-            verificationCode: DEFAULT_PINCODE,
-            verificationType: "pincode",
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
           },
           address: testAddresses.valid1,
           role: "tokenManager",
@@ -170,9 +170,9 @@ describe("Access Manager - Grant Role ORPC routes", () => {
     it("should reject invalid role names", async () => {
       await expect(
         adminClient.system.grantRole({
-          verification: {
-            verificationCode: DEFAULT_PINCODE,
-            verificationType: "pincode",
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
           },
           address: testAddresses.valid1,
           role: "invalidRole" as never,
@@ -183,9 +183,9 @@ describe("Access Manager - Grant Role ORPC routes", () => {
     it("should reject invalid wallet addresses", async () => {
       await expect(
         adminClient.system.grantRole({
-          verification: {
-            verificationCode: DEFAULT_PINCODE,
-            verificationType: "pincode",
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
           },
           address: testAddresses.invalid,
           role: "tokenManager",
@@ -196,9 +196,9 @@ describe("Access Manager - Grant Role ORPC routes", () => {
     it("should reject mixed valid and invalid addresses", async () => {
       await expect(
         adminClient.system.grantRole({
-          verification: {
-            verificationCode: DEFAULT_PINCODE,
-            verificationType: "pincode",
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
           },
           address: [
             testAddresses.valid1,
@@ -213,23 +213,23 @@ describe("Access Manager - Grant Role ORPC routes", () => {
     it("should reject incorrect pincode verification", async () => {
       await expect(
         adminClient.system.grantRole({
-          verification: {
-            verificationCode: "000000",
-            verificationType: "pincode",
+          walletVerification: {
+            secretVerificationCode: "000000",
+            verificationType: "PINCODE",
           },
           address: testAddresses.valid1,
           role: "tokenManager",
         })
-      ).rejects.toThrow("Invalid authentication challenge");
+      ).rejects.toThrow(/GraphQL.*failed|Invalid authentication challenge/);
     });
   });
 
   describe("edge cases", () => {
     it("should handle duplicate accounts in the array", async () => {
       const result = await adminClient.system.grantRole({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
         },
         address: [
           testAddresses.valid1,
@@ -247,9 +247,9 @@ describe("Access Manager - Grant Role ORPC routes", () => {
 
     it("should handle duplicate roles in the array", async () => {
       const result = await adminClient.system.grantRole({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
         },
         address: testAddresses.valid1,
         role: ["tokenManager", "tokenManager", "complianceManager"],

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { getPincode, isPincode, pincode } from "./pincode";
 
-describe("pincode", () => {
+describe("PINCODE", () => {
   const validator = pincode();
 
   describe("valid pincodes", () => {

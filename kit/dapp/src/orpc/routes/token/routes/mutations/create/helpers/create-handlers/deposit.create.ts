@@ -33,7 +33,7 @@ const CREATE_DEPOSIT_MUTATION = portalGraphql(`
     $decimals: Int!
     $initialModulePairs: [ATKDepositFactoryImplementationATKDepositFactoryImplementationCreateDepositInitialModulePairsInput!]!
     $verificationId: String
-    $challengeResponse: String!
+    $challengeResponse: String
     $countryCode: Int!
   ) {
     CreateDeposit: ATKDepositFactoryImplementationCreateDeposit(
@@ -63,13 +63,20 @@ export const depositCreateHandler = async (
   }
 
   return createToken(input, context, () => {
-    return context.portalClient.mutate(CREATE_DEPOSIT_MUTATION, {
-      ...input,
-      ...context.mutationVariables,
-      initialModulePairs: input.initialModulePairs.map((pair) => ({
-        module: pair.module,
-        params: pair.params,
-      })),
-    });
+    return context.portalClient.mutate(
+      CREATE_DEPOSIT_MUTATION,
+      {
+        ...context.mutationVariables,
+        symbol: input.symbol,
+        name: input.name,
+        decimals: input.decimals,
+        countryCode: input.countryCode,
+        initialModulePairs: input.initialModulePairs.map((pair) => ({
+          module: pair.module,
+          params: pair.params,
+        })),
+      },
+      context.walletVerification
+    );
   });
 };

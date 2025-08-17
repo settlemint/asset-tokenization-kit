@@ -22,21 +22,59 @@ import { toast } from "sonner";
 import { ActionFormSheet } from "../core/action-form-sheet";
 import { createActionFormStore } from "../core/action-form-sheet.store";
 
+/**
+ * Represents a single recipient entry in the mint form.
+ * Each entry has a unique ID for React key management and form field naming.
+ */
 type Entry = { id: string };
 
+/**
+ * Props for the MintSheet component.
+ */
 interface MintSheetProps {
+  /** Controls sheet visibility */
   open: boolean;
+  /** Callback when sheet open state changes */
   onOpenChange: (open: boolean) => void;
+  /** Token to mint new supply for */
   asset: Token;
 }
 
+/**
+ * Token minting interface with advanced validation and multi-recipient support.
+ *
+ * @remarks
+ * BUSINESS LOGIC: Implements complex token minting rules that respect both supply caps
+ * and collateral limits. These constraints are critical for regulatory compliance and
+ * financial security in asset tokenization platforms.
+ *
+ * VALIDATION HIERARCHY:
+ * 1. Supply Cap: Maximum total supply limit (if token is capped)
+ * 2. Collateral Limit: Available collateral backing the mint (if collateralized)
+ * 3. Multi-recipient validation: Each entry must have valid address and amount
+ *
+ * PERFORMANCE: Uses dnum library for high-precision decimal arithmetic to avoid
+ * floating-point errors in financial calculations. All amounts are handled as BigInt
+ * with proper decimal scaling.
+ *
+ * UX FEATURES:
+ * - Dynamic recipient management (add/remove entries)
+ * - Real-time limit validation with visual feedback
+ * - Total calculation with remaining limit display
+ * - Confirmation step with before/after supply comparison
+ *
+ * SECURITY: Requires wallet verification for final execution, preventing unauthorized
+ * token creation which could impact tokenomics and regulatory compliance.
+ */
 export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
   const { t } = useTranslation(["tokens", "common"]);
   const qc = useQueryClient();
 
+  // BLOCKCHAIN: Mutation for minting tokens with automatic cache invalidation
   const { mutateAsync: mint, isPending } = useMutation(
     orpc.token.mint.mutationOptions({
       onSuccess: async () => {
+        // PERFORMANCE: Refresh token data to show updated supply and balances
         await qc.invalidateQueries({
           queryKey: orpc.token.read.queryOptions({
             input: { tokenAddress: asset.id },
@@ -46,57 +84,75 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
     })
   );
 
+  // UTILITY: Generate unique IDs for recipient entries using secure methods when available
   const newEntry = (): Entry => ({
     id:
+      // SECURITY: Prefer crypto.randomUUID() for better entropy when available
       typeof crypto !== "undefined" && "randomUUID" in crypto
         ? (crypto.randomUUID() as string)
         : Math.random().toString(36).slice(2),
   });
 
+  // STATE: Manage dynamic list of mint recipients
   const [entries, setEntries] = useState<Entry[]>([newEntry()]);
+  // STORE: Persistent store for stepper state (shared across re-renders)
   const sheetStoreRef = useRef(createActionFormStore({ hasValuesStep: true }));
 
+  // FORM: Initialize form without validation schema (validation is computed dynamically)
   const form = useAppForm({ onSubmit: () => {} });
 
-  // Reset state when sheet opens
+  // LIFECYCLE: Reset form and state when sheet opens to ensure clean slate
   useEffect(() => {
     if (open) {
       setEntries([newEntry()]);
       form.reset();
+      // RESET: Return to values step in case user reopens after previous session
       sheetStoreRef.current.setState((s) => ({ ...s, step: "values" }));
     }
   }, [open, form]);
 
   const tokenDecimals = asset.decimals;
+
+  // BUSINESS LOGIC: Calculate remaining supply capacity if token has a cap
   const capRemaining = useMemo(() => {
     const cap = asset.capped?.cap || from(0, tokenDecimals);
     const remaining = subtract(cap, asset.totalSupply);
     return remaining;
   }, [asset.capped, asset.totalSupply, tokenDecimals]);
 
+  // COLLATERAL: Determine available collateral backing for new mints
   const collateralAvailable = useMemo(() => {
-    // When collateral feature exists, its available amount is the limit
+    // FINANCIAL: When collateral feature exists, its available amount limits minting
+    // This ensures tokens are always backed by sufficient collateral
     return asset.collateral?.collateral ?? from(0, tokenDecimals);
   }, [asset.collateral, tokenDecimals]);
 
+  // CONSTRAINT RESOLUTION: Calculate the most restrictive limit between cap and collateral
   const overallLimit = useMemo(() => {
-    // If both present, take the most restrictive (min). If none, it's unlimited (represented by 0 meaning no limit)
+    // LOGIC: Take the minimum of all applicable limits to ensure compliance
     const withCap = capRemaining;
     const withCol = collateralAvailable;
-    // If both zero, treat as unlimited
+
+    // EDGE CASE: If both limits are zero or undefined, token has unlimited minting
     if (
       !greaterThan(withCap, from(0, tokenDecimals)) &&
       !greaterThan(withCol, from(0, tokenDecimals))
     ) {
       return undefined; // no limit
     }
+
+    // SINGLE CONSTRAINT: Return the active limit if only one applies
     if (!greaterThan(withCap, from(0, tokenDecimals))) return withCol;
     if (!greaterThan(withCol, from(0, tokenDecimals))) return withCap;
+
+    // DUAL CONSTRAINT: Return the more restrictive limit
     return lessThanOrEqual(withCap, withCol) ? withCap : withCol;
   }, [capRemaining, collateralAvailable, tokenDecimals]);
 
-  // Validation derived from live form values is computed inside the form subscription below
+  // WHY: Validation is computed inside form subscription to react to live form values
+  // This ensures real-time feedback as user inputs amounts and addresses
 
+  // CLEANUP: Reset all form state when sheet closes
   const handleClose = () => {
     form.reset();
     setEntries([newEntry()]);
@@ -107,14 +163,19 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
   return (
     <form.Subscribe selector={(s) => s}>
       {() => {
+        // AGGREGATION: Extract all amounts from dynamic form fields
         const amounts = entries.map(
           (e) =>
             (form.getFieldValue(`amount_${e.id}`) as bigint | undefined) ?? 0n
         );
+
+        // CALCULATION: Sum total mint amount using high-precision arithmetic
         const totalRequested = from(
           amounts.reduce((acc, a) => acc + a, 0n),
           tokenDecimals
         );
+
+        // VALIDATION: Ensure each row has valid address and positive amount
         const hasValidRows =
           entries.length > 0 &&
           entries.every((e) => {
@@ -126,12 +187,16 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
               | undefined;
             return Boolean(addr) && (amt ?? 0n) > 0n;
           });
+
+        // CONSTRAINT: Check if total request respects overall minting limits
         const withinLimit = overallLimit
           ? lessThanOrEqual(totalRequested, overallLimit)
           : true;
+
+        // GUARD: Combine all validation rules to determine if user can proceed
         const canContinue = () => hasValidRows && withinLimit;
 
-        // Build confirmation view
+        // CONFIRMATION: Prepare data for the confirmation step display
         const recipients = entries.map(
           (e) =>
             (form.getFieldValue(`recipient_${e.id}`) as EthereumAddress | "") ||
@@ -145,6 +210,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
           confirmAmounts.reduce((acc, a) => acc + a, 0n),
           tokenDecimals
         );
+        // PROJECTION: Show user the new total supply after minting
         const newTotalSupply = add(asset.totalSupply, totalMint);
 
         const confirmView = (
@@ -237,7 +303,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                 contract: asset.id,
                 recipients,
                 amounts,
-                verification,
+                walletVerification: verification,
               });
 
               toast.promise(promise, {

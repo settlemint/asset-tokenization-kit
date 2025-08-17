@@ -2,51 +2,48 @@ import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { apiBigInt } from "@/lib/zod/validators/bigint";
 import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
 import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
-import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
+import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
 import { z } from "zod";
 
 /**
  * Schema for unified token transfer operation (supports standard, transferFrom, and forced transfer)
  */
-export const TokenTransferSchema = z
-  .object({
-    contract: ethereumAddress.describe("Token contract address"),
-    recipients: z
-      .union([
-        // Single recipient - transform to array
-        ethereumAddress.transform((addr) => [addr]),
-        // Array of recipients
-        z.array(ethereumAddress).min(1).max(100),
-      ])
-      .describe("Recipient address(es) for tokens"),
-    amounts: z
-      .union([
-        // Single amount - transform to array
-        apiBigInt.transform((amt) => [amt]),
-        // Array of amounts
-        z.array(apiBigInt).min(1).max(100),
-      ])
-      .describe("Amount(s) of tokens to transfer"),
-    from: z
-      .union([
-        // Single from address - transform to array
-        ethereumAddress.transform((addr) => [addr]),
-        // Array of from addresses
-        z.array(ethereumAddress).min(1).max(100),
-      ])
-      .optional()
-      .describe(
-        "Address(es) to transfer from (for transferFrom and forced transfer)"
-      ),
-    transferType: z
-      .enum(["standard", "transferFrom", "forced"])
-      .optional()
-      .default("standard")
-      .describe(
-        "Type of transfer: standard (sender to recipient), transferFrom (using allowance), or forced (custodian)"
-      ),
-    verification: UserVerificationSchema.describe("Verification credentials"),
-  })
+export const TokenTransferSchema = MutationInputSchemaWithContract.extend({
+  recipients: z
+    .union([
+      // Single recipient - transform to array
+      ethereumAddress.transform((addr) => [addr]),
+      // Array of recipients
+      z.array(ethereumAddress).min(1).max(100),
+    ])
+    .describe("Recipient address(es) for tokens"),
+  amounts: z
+    .union([
+      // Single amount - transform to array
+      apiBigInt.transform((amt) => [amt]),
+      // Array of amounts
+      z.array(apiBigInt).min(1).max(100),
+    ])
+    .describe("Amount(s) of tokens to transfer"),
+  from: z
+    .union([
+      // Single from address - transform to array
+      ethereumAddress.transform((addr) => [addr]),
+      // Array of from addresses
+      z.array(ethereumAddress).min(1).max(100),
+    ])
+    .optional()
+    .describe(
+      "Address(es) to transfer from (for transferFrom and forced transfer)"
+    ),
+  transferType: z
+    .enum(["standard", "transferFrom", "forced"])
+    .optional()
+    .default("standard")
+    .describe(
+      "Type of transfer: standard (sender to recipient), transferFrom (using allowance), or forced (custodian)"
+    ),
+})
   .refine(
     (data) => {
       // Ensure arrays have the same length after transformation

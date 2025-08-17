@@ -1,11 +1,17 @@
 import type { ORPCErrorCode } from "@orpc/client";
 import { ORPCError, ValidationError } from "@orpc/server";
-import { createLogger } from "@settlemint/sdk-utils/logging";
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { APIError } from "better-auth/api";
 import { z } from "zod";
 import { baseRouter } from "../../procedures/base.router";
 
-const logger = createLogger();
+// Disable logger output in CI or CLAUDECODE environments to reduce noise
+const isTestEnvironment = process.env.CI || process.env.CLAUDECODE;
+const logger = createLogger({
+  level: isTestEnvironment
+    ? "none"
+    : (process.env.SETTLEMINT_LOG_LEVEL as LogLevel),
+});
 
 /**
  * Formatted validation error structure

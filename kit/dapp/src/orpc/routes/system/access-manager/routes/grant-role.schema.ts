@@ -11,7 +11,7 @@ import { z } from "zod";
  * - Single address, multiple roles
  */
 export const GrantRoleInputSchema = z.object({
-  verification: UserVerificationSchema,
+  walletVerification: UserVerificationSchema,
   /**
    * The account(s) to grant the role(s) to
    */

@@ -5,7 +5,7 @@ import { z } from "zod";
  * Input schema for identity creation
  */
 export const IdentityCreateSchema = z.object({
-  verification: UserVerificationSchema,
+  walletVerification: UserVerificationSchema,
 });
 
 /**

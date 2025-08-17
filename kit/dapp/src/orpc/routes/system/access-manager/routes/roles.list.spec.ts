@@ -20,9 +20,9 @@ describe("Access Manager - Roles List ORPC routes (integration)", () => {
     const me = await adminClient.account.me({});
     if (me) {
       await adminClient.system.grantRole({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
         },
         address: me.id,
         role: "systemManager",

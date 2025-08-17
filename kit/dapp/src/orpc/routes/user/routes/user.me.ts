@@ -130,9 +130,9 @@ export const me = authRouter.user.me
       lastName: kyc?.lastName,
       verificationTypes: [
         ...(authUser.pincodeEnabled ? [VerificationTypeEnum.pincode] : []),
-        ...(authUser.twoFactorEnabled ? [VerificationTypeEnum.twoFactor] : []),
+        ...(authUser.twoFactorEnabled ? [VerificationTypeEnum.otp] : []),
         ...(authUser.secretCodeVerificationId
-          ? [VerificationTypeEnum.secretCode]
+          ? [VerificationTypeEnum.secretCodes]
           : []),
       ] as VerificationType[],
       userSystemPermissions: {

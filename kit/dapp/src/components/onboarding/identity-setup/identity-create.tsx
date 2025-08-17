@@ -33,7 +33,7 @@ export function IdentityCreate() {
     (verification: UserVerification) => {
       toast.promise(
         createIdentity({
-          verification,
+          walletVerification: verification,
         }),
         {
           loading: t("identity-setup.deploying-toast"),
@@ -53,7 +53,7 @@ export function IdentityCreate() {
       fullWidth={true}
       actions={
         <VerificationButton
-          verification={{
+          walletVerification={{
             title: t("identity-setup.confirm-title"),
             description: t("identity-setup.confirm-description"),
           }}

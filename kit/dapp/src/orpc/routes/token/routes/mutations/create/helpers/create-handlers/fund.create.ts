@@ -33,7 +33,7 @@ const CREATE_FUND_MUTATION = portalGraphql(`
     $decimals: Int!
     $initialModulePairs: [ATKFundFactoryImplementationATKFundFactoryImplementationCreateFundInitialModulePairsInput!]!
     $verificationId: String
-    $challengeResponse: String!
+    $challengeResponse: String
     $managementFeeBps: Int!
     $countryCode: Int!
   ) {
@@ -65,13 +65,21 @@ export const fundCreateHandler = async (
   }
 
   return createToken(input, context, () => {
-    return context.portalClient.mutate(CREATE_FUND_MUTATION, {
-      ...input,
-      ...context.mutationVariables,
-      initialModulePairs: input.initialModulePairs.map((pair) => ({
-        module: pair.module,
-        params: pair.params,
-      })),
-    });
+    return context.portalClient.mutate(
+      CREATE_FUND_MUTATION,
+      {
+        ...context.mutationVariables,
+        symbol: input.symbol,
+        name: input.name,
+        decimals: input.decimals,
+        countryCode: input.countryCode,
+        managementFeeBps: input.managementFeeBps,
+        initialModulePairs: input.initialModulePairs.map((pair) => ({
+          module: pair.module,
+          params: pair.params,
+        })),
+      },
+      context.walletVerification
+    );
   });
 };

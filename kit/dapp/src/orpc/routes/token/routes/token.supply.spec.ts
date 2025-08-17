@@ -22,9 +22,9 @@ describe("Token supply", () => {
       decimals: 18,
       type: "deposit",
       countryCode: "056",
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
     });
     const admin = await getUserData(DEFAULT_ADMIN);
@@ -33,9 +33,9 @@ describe("Token supply", () => {
       contract: depositToken.id,
       amounts: ["500", "100"],
       recipients: [admin.wallet, investor.wallet],
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
     });
     const updatedHolders = await client.token.holders({
@@ -55,18 +55,18 @@ describe("Token supply", () => {
       decimals: 18,
       type: "deposit",
       countryCode: "056", // Belgium numeric code for testing
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
     });
     await client.token.transfer({
       contract: depositToken.id,
       amounts: ["5"],
       recipients: [issuer.wallet],
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
     });
   });
@@ -81,18 +81,18 @@ describe("Token supply", () => {
       decimals: 18,
       type: "deposit",
       countryCode: "056", // Belgium numeric code for testing
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
     });
     await client.token.burn({
       contract: depositToken.id,
       addresses: [admin.wallet],
       amounts: ["1"],
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
     });
   });
@@ -107,18 +107,18 @@ describe("Token supply", () => {
       decimals: 18,
       type: "deposit",
       countryCode: "056",
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
     });
     await client.token.approve({
       contract: depositToken.id,
       spender: admin.id,
       amount: "10",
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
     });
   });

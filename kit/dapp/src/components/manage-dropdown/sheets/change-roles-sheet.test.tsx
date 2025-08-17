@@ -62,7 +62,7 @@ vi.mock("../core/action-form-sheet", () => ({
   }: {
     children?: React.ReactNode;
     title: string;
-    onSubmit: (data: { verificationCode: string }) => void;
+    onSubmit: (data: { secretVerificationCode: string }) => void;
     canContinue?: () => boolean;
   }) => (
     <div data-testid="action-form-sheet">
@@ -77,7 +77,7 @@ vi.mock("../core/action-form-sheet", () => ({
       <button
         data-testid="submit-button"
         onClick={() => {
-          onSubmit({ verificationCode: "123456" });
+          onSubmit({ secretVerificationCode: "123456" });
         }}
       >
         Submit

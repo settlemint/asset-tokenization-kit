@@ -119,11 +119,11 @@ export function AssetTypeSelection() {
                 void form.handleSubmit();
               }}
               disabled={isFactoriesCreating || factories.length === 0}
-              verification={{
+              walletVerification={{
                 title: t("assets.confirm-deployment-title"),
                 description: t("assets.confirm-deployment-description"),
                 setField: (verification) => {
-                  form.setFieldValue("verification", verification);
+                  form.setFieldValue("walletVerification", verification);
                 },
               }}
             >

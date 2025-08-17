@@ -44,11 +44,11 @@ import { z } from "zod";
  * Uses discriminated union pattern for type-safe validation
  */
 export const PredictAddressInputSchema = z.discriminatedUnion("type", [
-  DepositTokenSchema.omit({ verification: true }),
-  BondTokenSchema.omit({ verification: true }),
-  EquityTokenSchema.omit({ verification: true }),
-  FundTokenSchema.omit({ verification: true }),
-  StablecoinTokenSchema.omit({ verification: true }),
+  DepositTokenSchema.omit({ walletVerification: true }),
+  BondTokenSchema.omit({ walletVerification: true }),
+  EquityTokenSchema.omit({ walletVerification: true }),
+  FundTokenSchema.omit({ walletVerification: true }),
+  StablecoinTokenSchema.omit({ walletVerification: true }),
 ]);
 
 /**

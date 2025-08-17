@@ -1,19 +1,28 @@
 /**
- * Deposit Token Creation Handler
+ * Bond Token Creation Handler with Wallet Verification
  *
- * This handler creates deposit tokens through the ATKDepositFactoryImplementation
- * using an async generator pattern for real-time transaction tracking.
- * It supports creating deposit tokens with configurable properties like name,
- * symbol, and decimal precision.
+ * @remarks
+ * This handler demonstrates the wallet verification pattern in token creation operations.
+ * Bond tokens have complex financial parameters (face value, maturity, denomination) that
+ * require enhanced security verification before blockchain deployment.
  *
- * The handler performs the following operations:
- * 1. Validates user authentication and authorization
- * 2. Executes transaction via Portal GraphQL with real-time tracking
- * 3. Yields progress events during deposit creation
- * 4. Returns the transaction hash of the successful deposit creation
- * @generator
- * @see {@link ./deposit.create.schema} - Input validation schema
- * @see {@link @/lib/settlemint/portal} - Portal GraphQL client with transaction tracking
+ * VERIFICATION INTEGRATION:
+ * - Token creation requires wallet verification due to financial implications
+ * - Uses createToken base handler which delegates verification to Portal middleware
+ * - Verification type and code are passed through walletVerification context
+ *
+ * FINANCIAL SECURITY:
+ * - Bond tokens represent real-world debt instruments with legal implications
+ * - Face value and maturity date determine financial obligations
+ * - Enhanced verification prevents unauthorized token creation with incorrect parameters
+ *
+ * PERFORMANCE CONSIDERATIONS:
+ * - Bond creation is computationally expensive due to compliance module initialization
+ * - Verification adds minimal overhead compared to contract deployment
+ * - Factory pattern enables consistent verification across all token types
+ *
+ * @see {@link createToken} Base token creation with verification delegation
+ * @see {@link ATKBondFactoryImplementation} Smart contract factory for bond tokens
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
@@ -35,7 +44,7 @@ const CREATE_BOND_MUTATION = portalGraphql(`
     $maturityDate: String!
     $denominationAsset: String!
     $verificationId: String
-    $challengeResponse: String!
+    $challengeResponse: String
     $countryCode: Int!
   ) {
     CreateBond: ATKBondFactoryImplementationCreateBond(
@@ -70,16 +79,31 @@ export const bondCreateHandler = async (
     throw new Error("Invalid token type");
   }
 
+  // DELEGATION PATTERN: createToken base handler manages verification flow
+  // WHY: Consistent verification handling across all token types while allowing
+  // type-specific parameter validation and mutation execution
   return createToken(input, context, () => {
-    return context.portalClient.mutate(CREATE_BOND_MUTATION, {
-      ...input,
-      ...context.mutationVariables,
-      cap: input.cap.toString(),
-      faceValue: input.faceValue.toString(),
-      initialModulePairs: input.initialModulePairs.map((pair) => ({
-        module: pair.module,
-        params: pair.params,
-      })),
-    });
+    return context.portalClient.mutate(
+      CREATE_BOND_MUTATION,
+      {
+        // PARAMETER MAPPING: Base variables (address, from) from context
+        ...context.mutationVariables,
+        // BOND-SPECIFIC: Financial parameters requiring verification
+        symbol: input.symbol,
+        name: input.name,
+        decimals: input.decimals,
+        countryCode: input.countryCode,
+        cap: input.cap.toString(),
+        faceValue: input.faceValue.toString(),
+        maturityDate: input.maturityDate,
+        denominationAsset: input.denominationAsset,
+        initialModulePairs: input.initialModulePairs.map((pair) => ({
+          module: pair.module,
+          params: pair.params,
+        })),
+      },
+      // VERIFICATION DELEGATION: Portal middleware enriches with verificationId/challengeResponse
+      context.walletVerification
+    );
   });
 };
