@@ -58,7 +58,7 @@ export function BlocklistSheet({
       walletVerification: undefined as
         | {
             secretVerificationCode: string;
-            verificationType?: "pincode" | "secret-code" | "two-factor";
+            verificationType?: "PINCODE" | "SECRET_CODES" | "OTP";
           }
         | undefined,
     },

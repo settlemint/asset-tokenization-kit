@@ -148,7 +148,7 @@ export const transfer = tokenRouter.token.transfer
       amounts,
       from,
       transferType = "standard",
-      verification: walletVerification,
+      walletVerification,
     } = input;
     const { auth } = context;
 
