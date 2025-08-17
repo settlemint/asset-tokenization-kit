@@ -35,7 +35,7 @@ jobs:
 
       - name: Load all secrets
         uses: 1password/load-secrets-action@v3
-        with
+        with:
           export-env: true
         env:
           SLACK_WEBHOOK_URL: op://platform/slack-webhooks/e2e-report
