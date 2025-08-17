@@ -84,20 +84,17 @@ export function createDaysParameterTests(
 ) {
   return {
     invalidDays: async () => {
-      // Too small
-      await expect(
-        (apiCall as any)({ tokenAddress, days: 0 })
-      ).rejects.toThrow();
+      // Run all validation tests in parallel for better performance
+      await Promise.all([
+        // Too small
+        expect((apiCall as any)({ tokenAddress, days: 0 })).rejects.toThrow(),
 
-      // Too large
-      await expect(
-        (apiCall as any)({ tokenAddress, days: 400 })
-      ).rejects.toThrow();
+        // Too large
+        expect((apiCall as any)({ tokenAddress, days: 400 })).rejects.toThrow(),
 
-      // Negative
-      await expect(
-        (apiCall as any)({ tokenAddress, days: -1 })
-      ).rejects.toThrow();
+        // Negative
+        expect((apiCall as any)({ tokenAddress, days: -1 })).rejects.toThrow(),
+      ]);
     },
     validDays: async () => {
       await expect(

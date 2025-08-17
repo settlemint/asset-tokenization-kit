@@ -18,41 +18,42 @@ describe("Token search", () => {
     client = getOrpcClient(headers);
 
     // Create tokens with different names and symbols for search testing
-    usdToken = await createToken(client, {
-      name: "USD Stablecoin",
-      symbol: "USDC",
-      decimals: 18,
-      type: "stablecoin",
-      countryCode: "056",
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
-      },
-    });
-
-    euroToken = await createToken(client, {
-      name: "Euro Token",
-      symbol: "EURT",
-      decimals: 18,
-      type: "stablecoin",
-      countryCode: "056",
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
-      },
-    });
-
-    ethToken = await createToken(client, {
-      name: "Ethereum Deposit",
-      symbol: "ETH",
-      decimals: 18,
-      type: "deposit",
-      countryCode: "056",
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
-      },
-    });
+    // Use Promise.all to create all tokens in parallel for better performance
+    [usdToken, euroToken, ethToken] = await Promise.all([
+      createToken(client, {
+        name: "USD Stablecoin",
+        symbol: "USDC",
+        decimals: 18,
+        type: "stablecoin",
+        countryCode: "056",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+      }),
+      createToken(client, {
+        name: "Euro Token",
+        symbol: "EURT",
+        decimals: 18,
+        type: "stablecoin",
+        countryCode: "056",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+      }),
+      createToken(client, {
+        name: "Ethereum Deposit",
+        symbol: "ETH",
+        decimals: 18,
+        type: "deposit",
+        countryCode: "056",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+      }),
+    ]);
   });
 
   it("can search tokens by name", async () => {
@@ -94,17 +95,17 @@ describe("Token search", () => {
   });
 
   it("performs case-insensitive search", async () => {
-    // Search with lowercase
-    const lowercaseResults = await client.token.search({
-      query: "eth",
-      limit: 10,
-    });
-
-    // Search with uppercase
-    const uppercaseResults = await client.token.search({
-      query: "ETH",
-      limit: 10,
-    });
+    // Search with lowercase and uppercase in parallel for better performance
+    const [lowercaseResults, uppercaseResults] = await Promise.all([
+      client.token.search({
+        query: "eth",
+        limit: 10,
+      }),
+      client.token.search({
+        query: "ETH",
+        limit: 10,
+      }),
+    ]);
 
     // Both should find the ETH token
     expect(lowercaseResults.find((t) => t.id === ethToken.id)).toBeDefined();
