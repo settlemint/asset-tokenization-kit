@@ -65,9 +65,9 @@ export function ChangeRolesSheet({
   const form = useAppForm({
     defaultValues: {
       address: (presetAccount as string | undefined) ?? "",
-      verification: undefined as
+      walletVerification: undefined as
         | {
-            verificationCode: string;
+            secretVerificationCode: string;
             verificationType?: "pincode" | "secret-code" | "two-factor";
           }
         | undefined,
@@ -323,7 +323,7 @@ export function ChangeRolesSheet({
                 if (rolesToRevoke.length > 0) {
                   await revokeRole({
                     contract: asset.id,
-                    verification,
+                    walletVerification: verification,
                     address,
                     role: rolesToRevoke,
                   });
@@ -331,7 +331,7 @@ export function ChangeRolesSheet({
                 if (rolesToGrant.length > 0) {
                   await grantRole({
                     contract: asset.id,
-                    verification,
+                    walletVerification: verification,
                     address,
                     roles: rolesToGrant,
                   });

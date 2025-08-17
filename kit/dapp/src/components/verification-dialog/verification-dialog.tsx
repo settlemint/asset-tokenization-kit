@@ -42,8 +42,8 @@ export function VerificationDialog({
 }: VerificationDialogProps) {
   const { t } = useTranslation("components");
   const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
-  const hasPincode = user.verificationTypes.includes("pincode");
-  const hasTwoFactor = user.verificationTypes.includes("two-factor");
+  const hasPincode = user.verificationTypes.includes("PINCODE");
+  const hasTwoFactor = user.verificationTypes.includes("OTP");
 
   const [useOtp, setUseOtp] = useState(hasTwoFactor);
 
@@ -75,8 +75,8 @@ export function VerificationDialog({
     },
     onSubmit: ({ value }) => {
       onSubmit({
-        verificationCode: value.code,
-        verificationType: useOtp ? "two-factor" : "pincode",
+        secretVerificationCode: value.code,
+        verificationType: useOtp ? "OTP" : "PINCODE",
       });
       handleClose();
     },

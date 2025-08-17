@@ -1,6 +1,5 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { validateBatchArrays } from "@/orpc/helpers/array-validation";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
@@ -64,18 +63,13 @@ export const burn = tokenRouter.token.burn
   )
 
   .handler(async ({ input, context, errors }) => {
-    const { contract, verification, addresses, amounts } = input;
+    const { contract, walletVerification, addresses, amounts } = input;
     const { auth } = context;
 
     // Determine if this is a batch operation
     const isBatch = addresses.length > 1;
 
     const sender = auth.user;
-    const challengeResponse = await handleChallenge(sender, {
-      code: verification.verificationCode,
-      type: verification.verificationType,
-    });
-
     // Execute the burn operation
     if (isBatch) {
       // Validate batch arrays

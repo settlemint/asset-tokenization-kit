@@ -15,7 +15,6 @@
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import { read } from "@/orpc/routes/system/routes/system.read";
@@ -85,7 +84,7 @@ export const factoryCreate = portalRouter.system.tokenFactoryCreate
     })
   )
   .handler(async ({ input, context, errors }) => {
-    const { factories, verification } = input;
+    const { factories } = input;
     const sender = context.auth.user;
     const { system } = context;
 
@@ -137,10 +136,7 @@ export const factoryCreate = portalRouter.system.tokenFactoryCreate
 
       try {
         // Generate a fresh challenge response for each factory
-        const challengeResponse = await handleChallenge(sender, {
-          code: verification.verificationCode,
-          type: verification.verificationType,
-        });
+        
 
         // Execute the factory creation transaction
         const variables: VariablesOf<typeof CREATE_TOKEN_FACTORY_MUTATION> = {
@@ -149,7 +145,7 @@ export const factoryCreate = portalRouter.system.tokenFactoryCreate
           factoryImplementation: factoryImplementation,
           tokenImplementation: tokenImplementation,
           name: name,
-          ...challengeResponse,
+          
         };
 
         // Use the Portal client's mutate method that returns the transaction hash

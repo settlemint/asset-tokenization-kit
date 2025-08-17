@@ -55,9 +55,9 @@ export function BlocklistSheet({
   const form = useAppForm({
     defaultValues: {
       address: (presetAddress as string | undefined) ?? "",
-      verification: undefined as
+      walletVerification: undefined as
         | {
-            verificationCode: string;
+            secretVerificationCode: string;
             verificationType?: "pincode" | "secret-code" | "two-factor";
           }
         | undefined,
@@ -139,7 +139,7 @@ export function BlocklistSheet({
               const promise = (async () => {
                 await freezeAddress({
                   contract: asset.id,
-                  verification,
+                  walletVerification: verification,
                   userAddress: addr,
                   freeze: mode === "add" ? true : false,
                 });

@@ -7,7 +7,7 @@ import { z } from "zod";
  */
 export const IdentityRegisterSchema = z.object({
   country: isoCountryCode,
-  verification: UserVerificationSchema,
+  walletVerification: UserVerificationSchema,
 });
 
 /**

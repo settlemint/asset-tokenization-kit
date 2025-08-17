@@ -1,6 +1,5 @@
 import { getRoleByFieldName } from "@/lib/constants/roles";
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
@@ -82,7 +81,7 @@ export const grantRole = tokenRouter.token.grantRole
   )
   .handler(async ({ input, context, errors }) => {
     const typedInput = input;
-    const { verification } = typedInput;
+    const { walletVerification } = typedInput;
     const { auth, token, portalClient } = context;
     const sender = auth.user;
 
@@ -94,10 +93,6 @@ export const grantRole = tokenRouter.token.grantRole
       });
     }
 
-    const challengeResponse = await handleChallenge(sender, {
-      code: verification.verificationCode,
-      type: verification.verificationType,
-    });
     // The token access manager address is stored as the accessControl entity ID
     const tokenAccessManagerAddress = token.accessControl?.id;
     if (!tokenAccessManagerAddress) {

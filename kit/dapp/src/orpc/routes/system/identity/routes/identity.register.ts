@@ -1,5 +1,4 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
@@ -42,7 +41,7 @@ export const identityRegister = portalRouter.system.identityRegister
     })
   )
   .handler(async ({ input, context, errors }) => {
-    const { verification, country } = input;
+    const { walletVerification, country } = input;
     const { auth, system } = context;
     const sender = auth.user;
 
@@ -68,18 +67,20 @@ export const identityRegister = portalRouter.system.identityRegister
       });
     }
 
-    const challengeResponse = await handleChallenge(sender, {
-      code: verification.verificationCode,
-      type: verification.verificationType,
-    });
-
-    await context.portalClient.mutate(IDENTITY_REGISTER_MUTATION, {
+    await context.portalClient.mutate(
+      IDENTITY_REGISTER_MUTATION,
+      {
       address: system.identityRegistry,
       from: sender.wallet,
       country: Number(countries.alpha2ToNumeric(country) ?? "0"),
       identity: account.identity,
-      ...challengeResponse,
-    });
+      },
+      {
+        sender,
+        code: walletVerification.secretVerificationCode,
+        type: walletVerification.verificationType,
+      }
+    );
 
     // Return the updated account data
     return await call(

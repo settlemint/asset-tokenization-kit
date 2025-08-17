@@ -28,7 +28,7 @@
     "test:unit:watch": "vitest  --project unit",
     "test:unit:ui": "vitest --project unit --ui",
     "test:unit:coverage": "vitest run --project unit --coverage",
-    "test:integration": "vitest run --project integration --coverage || exit 0",
+    "test:integration": "vitest run --project integration --coverage",
     "test:ci": "vitest run --coverage",
     "test": "bun run test:unit",
     "route:gen": "tsr generate",

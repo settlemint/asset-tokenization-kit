@@ -16,7 +16,6 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import type { Context } from "@/orpc/context/context";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import { read } from "@/orpc/routes/system/routes/system.read";
@@ -166,7 +165,7 @@ export const addonCreate = portalRouter.system.addonCreate
     })
   )
   .handler(async ({ input, context, errors }) => {
-    const { addons, verification } = input;
+    const { addons } = input;
     const sender = context.auth.user;
     const { system } = context;
 
@@ -215,10 +214,7 @@ export const addonCreate = portalRouter.system.addonCreate
         const initializationData = generateInitializationData(context);
 
         // Generate a fresh challenge response for each addon
-        const challengeResponse = await handleChallenge(sender, {
-          code: verification.verificationCode,
-          type: verification.verificationType,
-        });
+        
 
         // Execute the addon registration transaction
         const variables: VariablesOf<typeof REGISTER_SYSTEM_ADDON_MUTATION> = {
@@ -227,7 +223,7 @@ export const addonCreate = portalRouter.system.addonCreate
           name: name,
           implementation: implementationAddress,
           initializationData: initializationData,
-          ...challengeResponse,
+          
         };
 
         // Use the Portal client's mutate method that returns the transaction hash

@@ -7,14 +7,14 @@ export function VerificationButton({
   children,
   onSubmit,
   disabled,
-  verification,
+  walletVerification,
 }: {
   children: React.ReactNode;
   onSubmit: () => void;
   disabled?:
     | boolean
     | ((args: { isDirty: boolean; errors: AnyFieldMeta["errors"] }) => boolean);
-  verification: {
+  walletVerification: {
     title: string;
     description: string;
     setField: (verfication: UserVerification) => void;
@@ -34,9 +34,9 @@ export function VerificationButton({
       {({ isSubmitting, isValid, isDirty, errors }) => {
         return (
           <VerificationButtonComponent
-            verification={verification}
+            walletVerification={walletVerification}
             onSubmit={async (userVerification) => {
-              verification.setField(userVerification);
+              walletVerification.setField(userVerification);
 
               await form.validateAllFields("change");
 

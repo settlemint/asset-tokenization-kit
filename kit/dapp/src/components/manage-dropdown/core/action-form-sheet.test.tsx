@@ -77,7 +77,7 @@ vi.mock("@/hooks/use-app-form", () => ({
         errors: unknown[];
       }) => React.ReactNode;
     }) => children({ isDirty: false, errors: [] }),
-    getFieldValue: () => ({ verificationCode: "123456" }),
+    getFieldValue: () => ({ secretVerificationCode: "123456" }),
     setFieldValue: vi.fn(),
     reset: vi.fn(),
   }),
@@ -277,7 +277,7 @@ describe("ActionFormSheet", () => {
       await user.click(submitBtn);
 
       expect(mockOnSubmit).toHaveBeenCalledWith({
-        verificationCode: "123456",
+        secretVerificationCode: "123456",
       });
     });
 

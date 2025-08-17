@@ -237,7 +237,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                 contract: asset.id,
                 recipients,
                 amounts,
-                verification,
+                walletVerification: verification,
               });
 
               toast.promise(promise, {

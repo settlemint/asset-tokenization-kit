@@ -21,9 +21,9 @@ describe("Account search (integration)", () => {
       decimals: 18,
       type: "stablecoin",
       countryCode: "056",
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
     });
   });

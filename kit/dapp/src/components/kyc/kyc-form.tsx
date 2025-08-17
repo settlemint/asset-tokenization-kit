@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export type KycFormValues = KycUpsertInput & {
-  verification?: UserVerification;
+  walletVerification?: UserVerification;
 };
 
 interface KycFormProps {
@@ -79,13 +79,13 @@ export function KycForm({ onComplete }: KycFormProps) {
     onSubmit: ({ value }) => {
       const promise = async () => {
         if (shouldRegisterIdentity) {
-          if (!value.verification) {
+          if (!value.walletVerification) {
             throw new Error("Verification is required");
           }
 
           await registerIdentity({
             country: value.country,
-            verification: value.verification,
+            walletVerification: value.walletVerification,
           });
         }
 
@@ -182,11 +182,11 @@ export function KycForm({ onComplete }: KycFormProps) {
           />
         </FormStepContent>
         <form.VerificationButton
-          verification={{
+          walletVerification={{
             title: t("kycForm.identity.confirm-title"),
             description: t("kycForm.identity.confirm-description"),
             setField: (verification) => {
-              form.setFieldValue("verification", verification);
+              form.setFieldValue("walletVerification", verification);
             },
           }}
           disabled={({ isDirty, errors }) => {

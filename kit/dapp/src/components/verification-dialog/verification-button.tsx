@@ -7,12 +7,12 @@ import { useTranslation } from "react-i18next";
 export function VerificationButton({
   children,
   disabled,
-  verification,
+  walletVerification,
   onSubmit,
 }: {
   children: React.ReactNode;
   disabled?: boolean;
-  verification: {
+  walletVerification: {
     title: string;
     description: string;
   };
@@ -58,8 +58,8 @@ export function VerificationButton({
         open={showVerificationModal}
         onOpenChange={setShowVerificationModal}
         onSubmit={handleSubmit}
-        title={verification.title}
-        description={verification.description}
+        title={walletVerification.title}
+        description={walletVerification.description}
         errorMessage={verificationError}
       />
     </>

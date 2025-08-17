@@ -28,9 +28,9 @@ describe.concurrent("Token Stats: Bond Status", () => {
       type: "stablecoin",
       countryCode: "056",
       initialModulePairs: [],
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
     });
 
@@ -46,9 +46,9 @@ describe.concurrent("Token Stats: Bond Status", () => {
       maturityDate: (Date.now() + 365 * 24 * 60 * 60 * 1000).toString(),
       denominationAsset: stablecoinToken.id,
       initialModulePairs: [],
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
     });
 

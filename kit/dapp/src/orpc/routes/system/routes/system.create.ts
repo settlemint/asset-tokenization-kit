@@ -18,7 +18,6 @@
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
@@ -136,7 +135,7 @@ export const create = onboardedRouter.system.create
   .use(theGraphMiddleware)
   .use(portalMiddleware)
   .handler(async ({ input, context, errors }) => {
-    const { contract, verification } = input;
+    const { contract, walletVerification } = input;
     const sender = context.auth.user;
     // const { t } = context; // Removed - using hardcoded messages
 
@@ -160,8 +159,8 @@ export const create = onboardedRouter.system.create
 
     // Handle challenge for system creation transaction
     const createChallengeResponse = await handleChallenge(sender, {
-      code: verification.verificationCode,
-      type: verification.verificationType,
+      code: walletVerification.secretVerificationCode,
+      type: walletVerification.verificationType,
     });
 
     // Execute the system creation transaction
@@ -223,8 +222,8 @@ export const create = onboardedRouter.system.create
 
     // Handle challenge for bootstrap transaction (fresh challenge required)
     const bootstrapChallengeResponse = await handleChallenge(sender, {
-      code: verification.verificationCode,
-      type: verification.verificationType,
+      code: walletVerification.secretVerificationCode,
+      type: walletVerification.verificationType,
     });
 
     // Execute the bootstrap transaction

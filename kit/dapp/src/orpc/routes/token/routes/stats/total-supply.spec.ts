@@ -23,9 +23,9 @@ describe.concurrent("Token Stats: Total Supply", () => {
       decimals: 18,
       type: "deposit",
       countryCode: "056",
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
     });
 

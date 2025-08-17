@@ -31,7 +31,7 @@ export function SystemDeploy() {
     (verification: UserVerification) => {
       toast.promise(
         createSystem({
-          verification,
+          walletVerification: verification,
         }),
         {
           loading: t("system.deploying-toast"),
@@ -60,7 +60,7 @@ export function SystemDeploy() {
             {t("common:actions.skip")}
           </Button>
           <VerificationButton
-            verification={{
+            walletVerification={{
               title: t("system.confirm-deployment-title"),
               description: t("system.confirm-deployment-description"),
             }}

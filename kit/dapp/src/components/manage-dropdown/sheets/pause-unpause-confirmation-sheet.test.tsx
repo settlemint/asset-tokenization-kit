@@ -112,7 +112,7 @@ vi.mock("../core/action-form-sheet", () => ({
     description: string;
     submitLabel: string;
     onSubmit: (data: {
-      verificationCode: string;
+      secretVerificationCode: string;
       verificationType: string;
     }) => void;
     confirm?: React.ReactNode;
@@ -133,7 +133,7 @@ vi.mock("../core/action-form-sheet", () => ({
       <button
         data-testid="submit-button"
         onClick={() => {
-          onSubmit({ verificationCode: "123456", verificationType: "pincode" });
+          onSubmit({ secretVerificationCode: "123456", verificationType: "PINCODE" });
         }}
       >
         Submit

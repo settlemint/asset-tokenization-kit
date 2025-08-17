@@ -1,5 +1,4 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
@@ -35,21 +34,23 @@ export const recoverTokens = tokenRouter.token.recoverTokens
     })
   )
   .handler(async ({ input, context }) => {
-    const { contract, verification, lostWallet } = input;
+    const { contract, walletVerification, lostWallet } = input;
     const { auth } = context;
 
     const sender = auth.user;
-    const challengeResponse = await handleChallenge(sender, {
-      code: verification.verificationCode,
-      type: verification.verificationType,
-    });
-
-    await context.portalClient.mutate(TOKEN_RECOVER_TOKENS_MUTATION, {
+    await context.portalClient.mutate(
+      TOKEN_RECOVER_TOKENS_MUTATION,
+      {
       address: contract,
       from: sender.wallet,
       lostWallet,
-      ...challengeResponse,
-    });
+      },
+      {
+        sender,
+        code: walletVerification.secretVerificationCode,
+        type: walletVerification.verificationType,
+      }
+    );
 
     // Return updated token data
     return await call(read, { tokenAddress: contract }, { context });

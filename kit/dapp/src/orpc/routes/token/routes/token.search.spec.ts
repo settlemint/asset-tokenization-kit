@@ -24,9 +24,9 @@ describe("Token search", () => {
       decimals: 18,
       type: "stablecoin",
       countryCode: "056",
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
     });
 
@@ -36,9 +36,9 @@ describe("Token search", () => {
       decimals: 18,
       type: "stablecoin",
       countryCode: "056",
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
     });
 
@@ -48,9 +48,9 @@ describe("Token search", () => {
       decimals: 18,
       type: "deposit",
       countryCode: "056",
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
     });
   });

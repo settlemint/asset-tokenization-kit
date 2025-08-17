@@ -1,7 +1,6 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { AssetExtensionEnum } from "@/lib/zod/validators/asset-extensions";
 import { validateBatchArrays } from "@/orpc/helpers/array-validation";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { read } from "@/orpc/routes/token/routes/token.read";
@@ -171,10 +170,6 @@ export const transfer = tokenRouter.token.transfer
     }
 
     const sender = auth.user;
-    const challengeResponse = await handleChallenge(sender, {
-      code: verification.verificationCode,
-      type: verification.verificationType,
-    });
     // Choose the appropriate mutation based on transfer type and batch operation
     if (isBatch) {
       if (transferType === "standard") {

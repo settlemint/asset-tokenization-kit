@@ -1,5 +1,4 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
@@ -38,22 +37,24 @@ export const approve = tokenRouter.token.approve
   )
 
   .handler(async ({ input, context }) => {
-    const { contract, verification, spender, amount } = input;
+    const { contract, walletVerification, spender, amount } = input;
     const { auth } = context;
 
     const sender = auth.user;
-    const challengeResponse = await handleChallenge(sender, {
-      code: verification.verificationCode,
-      type: verification.verificationType,
-    });
-
-    await context.portalClient.mutate(TOKEN_APPROVE_MUTATION, {
+    await context.portalClient.mutate(
+      TOKEN_APPROVE_MUTATION,
+      {
       address: contract,
       from: sender.wallet,
       spender,
       amount: amount.toString(),
-      ...challengeResponse,
-    });
+      },
+      {
+        sender,
+        code: walletVerification.secretVerificationCode,
+        type: walletVerification.verificationType,
+      }
+    );
 
     // Return the updated token data using the read handler
     return await call(

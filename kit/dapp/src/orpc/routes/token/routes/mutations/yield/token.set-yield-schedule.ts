@@ -1,6 +1,5 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { getTransactionReceipt } from "@/orpc/helpers/transaction-receipt";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
@@ -81,10 +80,6 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
     const { auth } = context;
 
     const sender = auth.user;
-    const challengeResponse = await handleChallenge(sender, {
-      code: verification.verificationCode,
-      type: verification.verificationType,
-    });
     const transactionHash = await context.portalClient.mutate(
       TOKEN_CREATE_YIELD_SCHEDULE_MUTATION,
       {
@@ -153,12 +148,19 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
       });
     }
     // Now set the yield schedule with the created schedule address
-    await context.portalClient.mutate(TOKEN_SET_YIELD_SCHEDULE_MUTATION, {
+    await context.portalClient.mutate(
+      TOKEN_SET_YIELD_SCHEDULE_MUTATION,
+      {
       address: contract,
       from: sender.wallet,
       schedule: getEthereumAddress(scheduleAddress),
-      ...challengeResponse,
-    });
+      },
+      {
+        sender,
+        code: walletVerification.secretVerificationCode,
+        type: walletVerification.verificationType,
+      }
+    );
 
     // Return updated token data
     return await call(read, { tokenAddress: contract }, { context });

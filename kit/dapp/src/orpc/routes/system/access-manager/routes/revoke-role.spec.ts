@@ -36,9 +36,9 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
     ];
     for (const role of rolesToGrant) {
       await adminClient.system.grantRole({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
         },
         address: [
           testAddresses.valid1,
@@ -53,9 +53,9 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
   describe("successful role revokes", () => {
     it("should revoke a single role from a single account", async () => {
       const result = await adminClient.system.revokeRole({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
         },
         address: testAddresses.valid1,
         role: "tokenManager",
@@ -78,9 +78,9 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
 
     it("should revoke a single role from multiple accounts", async () => {
       const result = await adminClient.system.revokeRole({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
         },
         address: [
           testAddresses.valid1,
@@ -112,18 +112,18 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
     it("should revoke multiple roles from a single account", async () => {
       // Grant the roles first since previous tests may have revoked them
       await adminClient.system.grantRole({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
         },
         address: testAddresses.valid1,
         role: ["systemManager", "tokenManager"],
       });
 
       const result = await adminClient.system.revokeRole({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
         },
         address: testAddresses.valid1,
         role: ["systemManager", "tokenManager"],
@@ -146,9 +146,9 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
 
     it("should handle empty arrays", async () => {
       const result = await adminClient.system.revokeRole({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
         },
         address: [],
         role: "tokenManager",
@@ -164,9 +164,9 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
   describe("permission validation", () => {
     it("should allow admin users to revoke roles", async () => {
       const result = await adminClient.system.revokeRole({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
         },
         address: testAddresses.valid1,
         role: "tokenManager",
@@ -181,9 +181,9 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
     it("should reject non-admin users from revoking roles", async () => {
       await expect(
         investorClient.system.revokeRole({
-          verification: {
-            verificationCode: DEFAULT_PINCODE,
-            verificationType: "pincode",
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
           },
           address: testAddresses.valid1,
           role: "tokenManager",
@@ -198,9 +198,9 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
     it("should reject invalid role names", async () => {
       await expect(
         adminClient.system.revokeRole({
-          verification: {
-            verificationCode: DEFAULT_PINCODE,
-            verificationType: "pincode",
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
           },
           address: testAddresses.valid1,
           role: "invalidRole" as never,
@@ -211,9 +211,9 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
     it("should reject invalid wallet addresses", async () => {
       await expect(
         adminClient.system.revokeRole({
-          verification: {
-            verificationCode: DEFAULT_PINCODE,
-            verificationType: "pincode",
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
           },
           address: testAddresses.invalid,
           role: "tokenManager",
@@ -224,9 +224,9 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
     it("should reject mixed valid and invalid addresses", async () => {
       await expect(
         adminClient.system.revokeRole({
-          verification: {
-            verificationCode: DEFAULT_PINCODE,
-            verificationType: "pincode",
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
           },
           address: [
             testAddresses.valid1,
@@ -241,9 +241,9 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
     it("should reject incorrect pincode verification", async () => {
       await expect(
         adminClient.system.revokeRole({
-          verification: {
-            verificationCode: "000000",
-            verificationType: "pincode",
+          walletVerification: {
+            secretVerificationCode: "000000",
+            verificationType: "PINCODE",
           },
           address: testAddresses.valid1,
           role: "tokenManager",
@@ -255,9 +255,9 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
   describe("edge cases", () => {
     it("should handle duplicate accounts in the array", async () => {
       const result = await adminClient.system.revokeRole({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
         },
         address: [
           testAddresses.valid1,
@@ -275,9 +275,9 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
 
     it("should handle duplicate roles in the array", async () => {
       const result = await adminClient.system.revokeRole({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
         },
         address: testAddresses.valid1,
         role: ["tokenManager", "tokenManager", "complianceManager"],

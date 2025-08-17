@@ -1,5 +1,4 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import { getTokenFactory } from "@/orpc/routes/system/token-factory/helpers/factory-context";
@@ -46,8 +45,8 @@ export const create = portalRouter.token.create
 
     const handler = tokenCreateHandlerMap[input.type];
     const challengeResponse = await handleChallenge(context.auth.user, {
-      code: input.verification.verificationCode,
-      type: input.verification.verificationType,
+      code: input.walletVerification.secretVerificationCode,
+      type: input.walletVerification.verificationType,
     });
 
     // The handler will return the transaction hash

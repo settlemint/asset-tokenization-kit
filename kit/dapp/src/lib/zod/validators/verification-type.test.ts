@@ -127,7 +127,7 @@ describe("isVerificationType", () => {
     const value: unknown = "two-factor";
     if (isVerificationType(value)) {
       // TypeScript should recognize value as VerificationType here
-      const validType: "two-factor" | "pincode" | "secret-code" = value;
+      const validType: "OTP" | "PINCODE" | "SECRET_CODES" = value;
       expect(validType).toBe("two-factor");
     }
   });
@@ -165,17 +165,15 @@ describe("getVerificationType", () => {
     const setupVerification = (method: unknown) => {
       const validatedMethod = getVerificationType(method);
       const messages = {
-        "two-factor": "Two-factor authentication enabled",
-        pincode: "PIN code verification enabled",
-        "secret-code": "Secret code verification enabled",
+        OTP: "Two-factor authentication enabled",
+        PINCODE: "PIN code verification enabled",
+        SECRET_CODES: "Secret code verification enabled",
       };
       return messages[validatedMethod];
     };
 
-    expect(setupVerification("two-factor")).toBe(
-      "Two-factor authentication enabled"
-    );
-    expect(setupVerification("pincode")).toBe("PIN code verification enabled");
+    expect(setupVerification("OTP")).toBe("Two-factor authentication enabled");
+    expect(setupVerification("PINCODE")).toBe("PIN code verification enabled");
     expect(() => setupVerification("invalid")).toThrow();
   });
 });

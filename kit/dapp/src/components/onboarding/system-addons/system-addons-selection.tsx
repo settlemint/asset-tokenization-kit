@@ -167,7 +167,7 @@ export function SystemAddonsSelection() {
                 void form.handleSubmit();
               }}
               disabled={isAddonsCreating || addons.length === 0}
-              verification={{
+              walletVerification={{
                 title: t(
                   "system-addons.addon-selection.confirm-deployment-title"
                 ),
@@ -175,7 +175,7 @@ export function SystemAddonsSelection() {
                   "system-addons.addon-selection.confirm-deployment-description"
                 ),
                 setField: (verification) => {
-                  form.setFieldValue("verification", verification);
+                  form.setFieldValue("walletVerification", verification);
                 },
               }}
             >

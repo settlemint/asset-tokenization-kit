@@ -270,7 +270,7 @@ export function BurnSheet({
                 contract: asset.id,
                 addresses,
                 amounts,
-                verification,
+                walletVerification: verification,
               });
 
               toast.promise(promise, {

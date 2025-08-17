@@ -115,7 +115,9 @@ export async function verifyTwoFactorOTP(
     }
   );
   return {
-    verified: result.verifyWalletVerificationChallenge?.verified ?? false,
+    verified:
+      (result.verifyWalletVerificationChallenge as { verified?: boolean })
+        ?.verified ?? false,
   };
 }
 

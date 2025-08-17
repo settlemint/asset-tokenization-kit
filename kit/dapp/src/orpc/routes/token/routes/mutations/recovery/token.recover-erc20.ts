@@ -1,5 +1,4 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { read } from "@/orpc/routes/token/routes/token.read";
@@ -39,15 +38,10 @@ export const recoverERC20 = tokenRouter.token.recoverERC20
     })
   )
   .handler(async ({ input, context }) => {
-    const { contract, verification, tokenAddress, recipient, amount } = input;
+    const { contract, walletVerification, tokenAddress, recipient, amount } = input;
     const { auth } = context;
 
     const sender = auth.user;
-    const challengeResponse = await handleChallenge(sender, {
-      code: verification.verificationCode,
-      type: verification.verificationType,
-    });
-
     await context.portalClient.mutate(TOKEN_RECOVER_ERC20_MUTATION, {
       address: contract,
       from: sender.wallet,

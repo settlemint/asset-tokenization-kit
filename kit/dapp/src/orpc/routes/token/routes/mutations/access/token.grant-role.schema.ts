@@ -11,7 +11,6 @@ import { z } from "zod";
  * - Single account, multiple roles
  */
 const GrantToManyAccountsSchema = MutationInputSchemaWithContract.extend({
-  verification: UserVerificationSchema,
   /** The accounts to grant the role to */
   accounts: z.array(ethereumAddress).min(1),
   /** The role to grant to the accounts */
@@ -20,7 +19,6 @@ const GrantToManyAccountsSchema = MutationInputSchemaWithContract.extend({
 
 const GrantMultipleRolesToOneAccountSchema =
   MutationInputSchemaWithContract.extend({
-    verification: UserVerificationSchema,
     /** The account to grant roles to */
     address: ethereumAddress,
     /** The roles to grant to the account */

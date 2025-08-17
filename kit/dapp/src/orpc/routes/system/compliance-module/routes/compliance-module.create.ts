@@ -19,7 +19,6 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { complianceTypeIds } from "@/lib/zod/validators/compliance";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import {
@@ -104,7 +103,7 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
     })
   )
   .handler(async ({ input, context, errors }) => {
-    const { complianceModules, verification } = input;
+    const { complianceModules } = input;
     const sender = context.auth.user;
     const { system } = context;
 
@@ -156,10 +155,7 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
         });
 
         // Every transaction needs a challenge response (can only be used once)
-        const challengeResponse = await handleChallenge(sender, {
-          code: verification.verificationCode,
-          type: verification.verificationType,
-        });
+        
 
         // Execute the compliance module registration transaction
         const variables: VariablesOf<
@@ -168,7 +164,7 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
           address: contract,
           from: sender.wallet,
           implementation: implementationAddress,
-          ...challengeResponse,
+          
         };
 
         // Execute the mutation

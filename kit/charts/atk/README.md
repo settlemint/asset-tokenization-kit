@@ -173,7 +173,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | erpc.image.pullPolicy | string | `"IfNotPresent"` |  |
 | erpc.image.registry | string | `"ghcr.io"` |  |
 | erpc.image.repository | string | `"erpc/erpc"` |  |
-| erpc.image.tag | string | `"0.0.53"` |  |
+| erpc.image.tag | string | `"0.0.54"` |  |
 | erpc.ingress.className | string | `"atk-nginx"` |  |
 | erpc.ingress.enabled | bool | `true` |  |
 | erpc.ingress.hosts[0].host | string | `"rpc.k8s.orb.local"` |  |
@@ -339,7 +339,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | txsigner.image.pullPolicy | string | `"IfNotPresent"` |  |
 | txsigner.image.registry | string | `"ghcr.io"` |  |
 | txsigner.image.repository | string | `"settlemint/btp-signer"` |  |
-| txsigner.image.tag | string | `"7.14.4"` |  |
+| txsigner.image.tag | string | `"7.14.5"` |  |
 | txsigner.postgresql | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
 | txsigner.replicaCount | int | `1` |  |
 | txsigner.resources | object | `{}` |  |

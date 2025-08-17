@@ -30,8 +30,8 @@ interface ActionFormSheetProps {
     errors: AnyFieldMeta["errors"];
   }) => boolean;
   onSubmit: (verification: {
-    verificationCode: string;
-    verificationType?: "pincode" | "secret-code" | "two-factor";
+    secretVerificationCode: string;
+    verificationType?: "OTP" | "PINCODE" | "SECRET_CODES";
   }) => void;
   store?: Store<ActionFormState>;
   // Whether to show the asset details card on the confirm step
@@ -110,7 +110,7 @@ export function ActionFormSheet({
         submit={
           step === "confirm" ? (
             <form.VerificationButton
-              verification={{
+              walletVerification={{
                 title,
                 description,
                 setField: (verification) => {
@@ -125,11 +125,8 @@ export function ActionFormSheet({
               onSubmit={() => {
                 const v = form.getFieldValue("verification") as
                   | {
-                      verificationCode: string;
-                      verificationType?:
-                        | "pincode"
-                        | "secret-code"
-                        | "two-factor";
+                      secretVerificationCode: string;
+                      verificationType?: "OTP" | "PINCODE" | "SECRET_CODES";
                     }
                   | undefined;
                 if (v) onSubmit(v);

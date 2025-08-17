@@ -1,18 +1,77 @@
+import type { SessionUser } from "@/lib/auth";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import {
   ethereumHash,
   getEthereumHash as getTransactionHash,
   type EthereumHash as TransactionHash,
 } from "@/lib/zod/validators/ethereum-hash";
+import { getVerificationId } from "@/orpc/helpers/get-verification-id";
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import type { TadaDocumentNode } from "gql.tada";
 import type { Variables } from "graphql-request";
+import { createHash } from "node:crypto";
 import { z } from "zod";
 import { baseRouter } from "../../procedures/base.router";
 
 const logger = createLogger();
+
+const CreateVerificationChallengeMutation = portalGraphql(`
+  mutation CreateVerificationChallenge($userWalletAddress: String!, $verificationType: WalletVerificationType!) {
+    createVerificationChallenge(
+      userWalletAddress: $userWalletAddress
+      verificationType: $verificationType
+    ) {
+      id
+      name
+      verificationType
+      challenge {
+        salt
+        secret
+      }
+    }
+  }`);
+
+const GET_TRANSACTION_QUERY = portalGraphql(`
+  query GetTransaction($transactionHash: String!) {
+    getTransaction(transactionHash: $transactionHash) {
+      receipt {
+        status
+        revertReasonDecoded
+        revertReason
+        blockNumber
+      }
+    }
+  }
+`);
+
+const GET_INDEXING_STATUS_QUERY = theGraphGraphql(`
+  query GetIndexingStatus {
+    _meta {
+      block {
+        number
+      }
+    }
+  }
+`);
+
+/**
+ * Generates a challenge response for pincode verification
+ */
+function generatePincodeResponse(
+  pincode: string,
+  salt: string,
+  secret: string
+): string {
+  const hashedPincode = createHash("sha256")
+    .update(`${salt}${pincode}`)
+    .digest("hex");
+  return createHash("sha256")
+    .update(`${hashedPincode}_${secret}`)
+    .digest("hex");
+}
 
 /**
  * Creates a validated Portal client with built-in error handling and validation.
@@ -53,36 +112,42 @@ function createValidatedPortalClient(
      * through its lifecycle until it's confirmed on-chain and indexed by TheGraph.
      *
      * @param {TadaDocumentNode} document - The GraphQL mutation document
-     * @param {TVariables} variables - Variables for the GraphQL mutation
-     * @param {string} userMessage - User-friendly error message to show if operation fails
-     * @param {object} [trackingMessages] - Optional custom messages for each tracking phase
+     * @param {TVariables} variables - Variables for the GraphQL mutation (must include 'from' field for wallet verification)
+     * @param {object} [walletVerification] - Optional wallet verification parameters including sender
      * @returns {Promise<string>} The transaction hash once confirmed
      * @throws {PORTAL_ERROR} When Portal GraphQL operation fails
      * @throws {PORTAL_ERROR} When transaction fails, times out, or has invalid format
      * @example
      * ```typescript
-     * // Basic usage
+     * // Basic usage without verification
      * const txHash = await client.mutate(
      *   CREATE_TOKEN_MUTATION,
-     *   { name: "MyToken" },
-     *   "Failed to create token"
+     *   { from: "0x...", name: "MyToken" }
      * );
      *
-     * // With custom messages
+     * // With wallet verification
      * const txHash = await client.mutate(
      *   TRANSFER_MUTATION,
-     *   { to: recipient, amount },
-     *   "Transfer failed",
+     *   { from: "0x...", to: recipient, amount },
      *   {
-     *     waitingForMining: "Processing your transfer...",
-     *     transactionIndexed: "Transfer completed successfully!"
+     *     sender: auth.user,
+     *     code: "123456",
+     *     type: "PINCODE"
      *   }
      * );
      * ```
      */
-    async mutate<TResult, TVariables extends Variables>(
+    async mutate<
+      TResult,
+      TVariables extends Variables & { from: EthereumAddress },
+    >(
       document: TadaDocumentNode<TResult, TVariables>,
-      variables: TVariables
+      variables: TVariables,
+      walletVerification?: {
+        sender: SessionUser;
+        code: string;
+        type: "OTP" | "PINCODE" | "SECRET_CODES";
+      }
     ): Promise<TransactionHash> {
       // Extract operation name from document metadata
       const operation =
@@ -91,6 +156,88 @@ function createValidatedPortalClient(
             __meta?: { operationName?: string };
           }
         ).__meta?.operationName ?? "GraphQL Mutation";
+
+      // Handle wallet verification if provided
+      let enrichedVariables = variables as TVariables & {
+        verificationId?: string;
+        challengeResponse?: string;
+      };
+
+      if (walletVerification) {
+        const { sender, code, type } = walletVerification;
+
+        // Get the appropriate verification ID from the sender
+        const verificationId = getVerificationId(sender, type);
+
+        if (!verificationId) {
+          throw errors.PORTAL_ERROR({
+            message: `Verification ID not found for ${type}`,
+            data: {
+              document,
+              variables,
+              responseValidation: `No verification ID configured for ${type}`,
+            },
+          });
+        }
+
+        let challengeResponse: string;
+
+        if (type === "OTP") {
+          // For OTP, the challenge response is just the code itself
+          challengeResponse = code;
+        } else if (type === "SECRET_CODES") {
+          // For secret codes, format with dash separator
+          challengeResponse = code.replace(/(.{5})(?=.)/, "$1-");
+        } else {
+          // For PINCODE, need to create a challenge and generate response
+          // TypeScript ensures 'from' field exists in variables
+          const userWalletAddress = variables.from;
+
+          const challengeResult = await portalClient.request(
+            CreateVerificationChallengeMutation,
+            {
+              userWalletAddress,
+              verificationType: type,
+            }
+          );
+
+          if (!challengeResult.createVerificationChallenge) {
+            throw errors.PORTAL_ERROR({
+              message: "Failed to create verification challenge",
+              data: {
+                document,
+                variables,
+                responseValidation: `${type} verification failed`,
+              },
+            });
+          }
+
+          const challenge =
+            challengeResult.createVerificationChallenge.challenge;
+          if (!challenge || !challenge.salt || !challenge.secret) {
+            throw errors.PORTAL_ERROR({
+              message: "Failed to create verification challenge",
+              data: {
+                document,
+                variables,
+                responseValidation: `${type} verification failed`,
+              },
+            });
+          }
+          challengeResponse = generatePincodeResponse(
+            code,
+            challenge.salt,
+            challenge.secret
+          );
+        }
+
+        // Add verification parameters to variables
+        enrichedVariables = {
+          ...variables,
+          verificationId,
+          challengeResponse,
+        } as TVariables & { verificationId: string; challengeResponse: string };
+      }
 
       let result: TResult;
       try {
@@ -101,7 +248,7 @@ function createValidatedPortalClient(
             doc: TadaDocumentNode<D, V>,
             vars: V
           ) => Promise<D>
-        )(document, variables);
+        )(document, enrichedVariables);
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : String(error);
@@ -175,29 +322,6 @@ function createValidatedPortalClient(
       const POLLING_INTERVAL_MS = 500; // Interval for indexing status checks (500ms)
       const INDEXING_TIMEOUT_MS = 60_000; // Maximum time to wait for indexing (1 minute)
       const STREAM_TIMEOUT_MS = 90_000; // Total timeout for the entire tracking process (1.5 minutes)
-
-      const GET_TRANSACTION_QUERY = portalGraphql(`
-        query GetTransaction($transactionHash: String!) {
-          getTransaction(transactionHash: $transactionHash) {
-            receipt {
-              status
-              revertReasonDecoded
-              revertReason
-              blockNumber
-            }
-          }
-        }
-      `);
-
-      const GET_INDEXING_STATUS_QUERY = theGraphGraphql(`
-        query GetIndexingStatus {
-          _meta {
-            block {
-              number
-            }
-          }
-        }
-      `);
 
       const streamStartTime = Date.now();
 
