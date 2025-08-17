@@ -64,7 +64,7 @@ describe("Token supply", () => {
       contract: depositToken.id,
       amounts: ["5"],
       recipients: [issuer.wallet],
-      verification: {
+      walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
       },
