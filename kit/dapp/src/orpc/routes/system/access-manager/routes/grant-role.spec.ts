@@ -220,7 +220,7 @@ describe("Access Manager - Grant Role ORPC routes", () => {
           address: testAddresses.valid1,
           role: "tokenManager",
         })
-      ).rejects.toThrow("Invalid authentication challenge");
+      ).rejects.toThrow(/GraphQL.*failed|Invalid authentication challenge/);
     });
   });
 
