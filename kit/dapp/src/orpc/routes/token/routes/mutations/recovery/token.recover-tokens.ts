@@ -7,7 +7,7 @@ import { call } from "@orpc/server";
 
 const TOKEN_RECOVER_TOKENS_MUTATION = portalGraphql(`
   mutation TokenRecoverTokens(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
@@ -16,7 +16,7 @@ const TOKEN_RECOVER_TOKENS_MUTATION = portalGraphql(`
     recoverTokens: ISMARTRecoverTokens(
       address: $address
       from: $from
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       input: {
         _lostWallet: $lostWallet

@@ -9,7 +9,7 @@ import type { TokenRedeemOutput } from "./token.redeem.schema";
 
 const TOKEN_REDEEM_MUTATION = portalGraphql(`
   mutation TokenRedeem(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
@@ -18,7 +18,7 @@ const TOKEN_REDEEM_MUTATION = portalGraphql(`
     redeem: ISMARTRedeemableRedeem(
       address: $address
       from: $from
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       input: {
         amount: $amount
@@ -31,7 +31,7 @@ const TOKEN_REDEEM_MUTATION = portalGraphql(`
 
 const TOKEN_REDEEM_ALL_MUTATION = portalGraphql(`
   mutation TokenRedeemAll(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
@@ -39,7 +39,7 @@ const TOKEN_REDEEM_ALL_MUTATION = portalGraphql(`
     redeemAll: ISMARTRedeemableRedeemAll(
       address: $address
       from: $from
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
     ) {
       transactionHash

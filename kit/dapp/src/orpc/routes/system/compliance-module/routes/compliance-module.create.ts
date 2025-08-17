@@ -38,7 +38,7 @@ const REGISTER_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
     $address: String!
     $from: String!
     $implementation: String!
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
   ) {
     IATKComplianceModuleRegistryRegisterComplianceModule(
@@ -47,7 +47,7 @@ const REGISTER_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
       input: {
         moduleAddress: $implementation
       }
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
     ) {
       transactionHash

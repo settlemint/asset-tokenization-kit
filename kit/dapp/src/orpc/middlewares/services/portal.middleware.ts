@@ -8,7 +8,7 @@
  * enriching them based on user verification settings.
  *
  * ARCHITECTURAL PATTERN:
- * - GraphQL mutations declare verificationId and challengeResponse as optional
+ * - GraphQL mutations declare challengeId and challengeResponse as optional
  * - Middleware enriches these parameters based on walletVerification context
  * - Different verification types (OTP, PINCODE, SECRET_CODES) have different protocols
  * - Centralized verification logic prevents code duplication across mutations
@@ -180,7 +180,7 @@ function createValidatedPortalClient(
      */
     async mutate<TResult, TVariables extends Variables & { from: string }>(
       document: TadaDocumentNode<TResult, TVariables>,
-      variables: Omit<TVariables, "verificationId" | "challengeResponse"> & {
+      variables: Omit<TVariables, "challengeId" | "challengeResponse"> & {
         from: EthereumAddress;
       },
       walletVerification?: {
@@ -198,7 +198,7 @@ function createValidatedPortalClient(
         ).__meta?.operationName ?? "GraphQL Mutation";
 
       // WALLET VERIFICATION ENRICHMENT
-      // WHY: GraphQL mutations accept verificationId and challengeResponse as optional parameters,
+      // WHY: GraphQL mutations accept challengeId and challengeResponse as optional parameters,
       // but we enrich them here based on the user's verification type to ensure secure operations.
       // This pattern keeps verification logic centralized while making GraphQL schema flexible.
       let enrichedVariables = variables as unknown as TVariables;
@@ -221,6 +221,32 @@ function createValidatedPortalClient(
           });
         }
 
+        // VERIFICATION CHALLENGE: All verification types require creating a challenge first
+        // The challenge provides a unique ID and cryptographic parameters for secure verification
+        const userWalletAddress = variables.from;
+
+        const challengeResult = await portalClient.request(
+          CreateVerificationChallengeMutation,
+          {
+            userWalletAddress,
+            verificationType: type,
+          }
+        );
+
+        if (!challengeResult.createVerificationChallenge) {
+          throw errors.PORTAL_ERROR({
+            message: "Failed to create verification challenge",
+            data: {
+              document,
+              variables,
+              responseValidation: `${type} verification failed`,
+            },
+          });
+        }
+
+        const challenge = challengeResult.createVerificationChallenge;
+        const challengeId = challenge.id;
+
         let challengeResponse: string;
 
         if (type === "OTP") {
@@ -235,30 +261,11 @@ function createValidatedPortalClient(
           // VERIFICATION TYPE: PINCODE (numerical PIN with cryptographic challenge)
           // WHY: PINCODE requires a dynamic challenge-response protocol to prevent replay attacks.
           // Portal generates a unique salt and secret for each verification attempt.
-          const userWalletAddress = variables.from;
-
-          const challengeResult = await portalClient.request(
-            CreateVerificationChallengeMutation,
-            {
-              userWalletAddress,
-              verificationType: type,
-            }
-          );
-
-          if (!challengeResult.createVerificationChallenge) {
-            throw errors.PORTAL_ERROR({
-              message: "Failed to create verification challenge",
-              data: {
-                document,
-                variables,
-                responseValidation: `${type} verification failed`,
-              },
-            });
-          }
-
-          const challenge =
-            challengeResult.createVerificationChallenge.challenge;
-          if (!challenge || !challenge.salt || !challenge.secret) {
+          if (
+            !challenge.challenge ||
+            !challenge.challenge.salt ||
+            !challenge.challenge.secret
+          ) {
             throw errors.PORTAL_ERROR({
               message: "Failed to create verification challenge",
               data: {
@@ -270,20 +277,20 @@ function createValidatedPortalClient(
           }
           challengeResponse = generatePincodeResponse(
             code,
-            challenge.salt,
-            challenge.secret
+            challenge.challenge.salt,
+            challenge.challenge.secret
           );
         }
 
         // PARAMETER ENRICHMENT: Add verification data to mutation variables
-        // WHY: GraphQL schema defines verificationId and challengeResponse as optional,
+        // WHY: GraphQL schema defines challengeId and challengeResponse as optional,
         // but we conditionally enrich them based on user verification settings.
         // This keeps the schema flexible while ensuring secure operations.
         enrichedVariables = {
           ...variables,
-          verificationId,
+          challengeId, // Portal expects the challenge ID from createVerificationChallenge
           challengeResponse,
-        } as TVariables & { verificationId: string; challengeResponse: string };
+        } as TVariables & { challengeId: string; challengeResponse: string };
       }
 
       let result: TResult;
@@ -812,7 +819,7 @@ function extractRevertReason(message: string) {
 // security, flexibility, and developer experience:
 //
 // 1. SCHEMA FLEXIBILITY:
-//    - GraphQL mutations declare verificationId and challengeResponse as optional
+//    - GraphQL mutations declare challengeId and challengeResponse as optional
 //    - This keeps the schema clean and doesn't force verification on all operations
 //    - Mutations can be called without verification for testing/development
 //

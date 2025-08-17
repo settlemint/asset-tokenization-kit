@@ -51,10 +51,8 @@ export function startServer(port: number) {
             ? serverAddress.port
             : port;
         const url = `http://localhost:${assignedPort}`;
-        logger.info(`dApp api listening on ${url}`);
         resolve({
           stop: () => {
-            logger.info(`Stopping dApp api on url ${url}`);
             server.close();
             server.closeAllConnections();
             server.unref();

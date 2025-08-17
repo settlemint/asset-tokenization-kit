@@ -10,7 +10,7 @@ import { logger } from "better-auth";
 
 const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
   mutation TokenSetYieldSchedule(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
@@ -19,7 +19,7 @@ const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
     setYieldSchedule: ISMARTYieldSetYieldSchedule(
       address: $address
       from: $from
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       input: {
         schedule: $schedule
@@ -32,7 +32,7 @@ const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
 
 const TOKEN_CREATE_YIELD_SCHEDULE_MUTATION = portalGraphql(`
   mutation TokenCreateYieldSchedule(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
@@ -45,7 +45,7 @@ const TOKEN_CREATE_YIELD_SCHEDULE_MUTATION = portalGraphql(`
     createSchedule: IATKFixedYieldScheduleFactoryCreate(
       address: $address
       from: $from
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       input: {
         country: 1
