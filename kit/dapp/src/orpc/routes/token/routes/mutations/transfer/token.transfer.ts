@@ -148,7 +148,7 @@ export const transfer = tokenRouter.token.transfer
       amounts,
       from,
       transferType = "standard",
-      verification,
+      verification: walletVerification,
     } = input;
     const { auth } = context;
 
@@ -192,8 +192,8 @@ export const transfer = tokenRouter.token.transfer
           },
           {
             sender: sender,
-            code: verification.secretVerificationCode,
-            type: verification.verificationType,
+            code: walletVerification.secretVerificationCode,
+            type: walletVerification.verificationType,
           }
         );
       } else if (transferType === "forced") {
@@ -226,8 +226,8 @@ export const transfer = tokenRouter.token.transfer
           },
           {
             sender: sender,
-            code: verification.secretVerificationCode,
-            type: verification.verificationType,
+            code: walletVerification.secretVerificationCode,
+            type: walletVerification.verificationType,
           }
         );
       } else {
@@ -263,8 +263,8 @@ export const transfer = tokenRouter.token.transfer
           },
           {
             sender: sender,
-            code: verification.secretVerificationCode,
-            type: verification.verificationType,
+            code: walletVerification.secretVerificationCode,
+            type: walletVerification.verificationType,
           }
         );
       } else if (transferType === "transferFrom") {
@@ -287,8 +287,8 @@ export const transfer = tokenRouter.token.transfer
           },
           {
             sender: sender,
-            code: verification.secretVerificationCode,
-            type: verification.verificationType,
+            code: walletVerification.secretVerificationCode,
+            type: walletVerification.verificationType,
           }
         );
       } else {
@@ -312,8 +312,8 @@ export const transfer = tokenRouter.token.transfer
           },
           {
             sender: sender,
-            code: verification.secretVerificationCode,
-            type: verification.verificationType,
+            code: walletVerification.secretVerificationCode,
+            type: walletVerification.verificationType,
           }
         );
       }

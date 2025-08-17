@@ -94,7 +94,7 @@
       "dependsOn": ["codegen"]
     },
     "test:ci": {
-      "dependsOn": ["build", "^test:ci"],
+      "dependsOn": ["^test:ci"],
       "outputs": [
         "coverage/**",
         "coverage.json",

@@ -55,7 +55,7 @@
       "dependsOn": ["codegen", "artifacts", "^test:integration"]
     },
     "test:ci": {
-      "dependsOn": ["codegen", "artifacts"]
+      "dependsOn": ["codegen", "artifacts", "^test:ci"]
     },
     "lint": {
       "dependsOn": ["codegen"],
