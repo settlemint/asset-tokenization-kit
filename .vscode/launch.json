@@ -55,14 +55,16 @@
       "url": "http://localhost:3000"
     },
     {
-      "type": "bun",
-      "internalConsoleOptions": "neverOpen",
+      "type": "node",
       "request": "launch",
-      "name": "Execute open Test file",
-      "program": "${file}",
-      "cwd": "${workspaceFolder}",
-      "stopOnEntry": false,
-      "watchMode": false
+      "name": "Debug Current Test File",
+      "autoAttachChildProcesses": true,
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+      "program": "${workspaceRoot}/node_modules/vitest/vitest.mjs",
+      "args": ["run", "${fileBasename}", "--config", "vitest.config.ts"],
+      "smartStep": true,
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/kit/dapp"
     }
   ]
 }
