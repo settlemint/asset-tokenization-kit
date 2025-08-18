@@ -8,7 +8,7 @@ export default defineConfig({
   test: {
     globals: true,
     passWithNoTests: true,
-    pool: "threads",
+    pool: "forks",
     reporters: process.env.CLAUDECODE
       ? ["dot"]
       : process.env.CI
@@ -16,7 +16,6 @@ export default defineConfig({
         : ["default"],
     onConsoleLog: process.env.CLAUDECODE ? () => false : undefined,
     silent: process.env.CLAUDECODE ? "passed-only" : undefined,
-    isolate: false,
     coverage: {
       all: true,
       provider: "v8",
