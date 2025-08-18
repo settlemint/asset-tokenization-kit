@@ -43,7 +43,7 @@ const CREATE_BOND_MUTATION = portalGraphql(`
     $faceValue: String!
     $maturityDate: String!
     $denominationAsset: String!
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $countryCode: Int!
   ) {
@@ -63,7 +63,7 @@ const CREATE_BOND_MUTATION = portalGraphql(`
         }
         countryCode_: $countryCode
       }
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
     ) {
       transactionHash
@@ -102,7 +102,7 @@ export const bondCreateHandler = async (
           params: pair.params,
         })),
       },
-      // VERIFICATION DELEGATION: Portal middleware enriches with verificationId/challengeResponse
+      // VERIFICATION DELEGATION: Portal middleware enriches with challengeId/challengeResponse
       context.walletVerification
     );
   });

@@ -9,7 +9,7 @@
  *
  * VERIFICATION FLOW:
  * 1. Mutation receives walletVerification object from input schema
- * 2. Portal middleware enriches GraphQL variables with verificationId and challengeResponse
+ * 2. Portal middleware enriches GraphQL variables with challengeId and challengeResponse
  * 3. Portal validates the verification before executing the burn operation
  *
  * SECURITY RATIONALE:
@@ -33,7 +33,7 @@ import { read } from "../../token.read";
 
 const TOKEN_SINGLE_BURN_MUTATION = portalGraphql(`
   mutation TokenBurn(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
@@ -43,7 +43,7 @@ const TOKEN_SINGLE_BURN_MUTATION = portalGraphql(`
     burn: IERC3643Burn(
       address: $address
       from: $from
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       input: {
         _userAddress: $userAddress
@@ -57,7 +57,7 @@ const TOKEN_SINGLE_BURN_MUTATION = portalGraphql(`
 
 const TOKEN_BATCH_BURN_MUTATION = portalGraphql(`
   mutation TokenBatchBurn(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
@@ -67,7 +67,7 @@ const TOKEN_BATCH_BURN_MUTATION = portalGraphql(`
     batchBurn: ISMARTBurnableBatchBurn(
       address: $address
       from: $from
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       input: {
         userAddresses: $userAddresses
@@ -96,7 +96,7 @@ export const burn = tokenRouter.token.burn
 
     const sender = auth.user;
     // VERIFICATION PATTERN: walletVerification contains user verification settings
-    // Portal middleware will enrich GraphQL variables with verificationId and challengeResponse
+    // Portal middleware will enrich GraphQL variables with challengeId and challengeResponse
     if (isBatch) {
       // Validate batch arrays
       validateBatchArrays(
@@ -104,7 +104,7 @@ export const burn = tokenRouter.token.burn
           addresses,
           amounts,
         },
-        context.t("tokens:api.mutations.burn.validation.batchDescription")
+        "batch burn"
       );
 
       // BATCH BURN: Multiple addresses in single transaction to reduce gas costs
@@ -118,7 +118,7 @@ export const burn = tokenRouter.token.burn
         },
         {
           // VERIFICATION DELEGATION: Portal middleware handles verification enrichment
-          // - Gets verificationId from sender based on verificationType
+          // - Gets challengeId from sender based on verificationType
           // - Generates challengeResponse using appropriate algorithm
           // - Adds both to GraphQL variables before mutation execution
           sender: sender,
@@ -131,9 +131,7 @@ export const burn = tokenRouter.token.burn
       const [amount] = amounts;
       if (!userAddress || !amount) {
         throw errors.INPUT_VALIDATION_FAILED({
-          message: context.t(
-            "tokens:api.mutations.burn.messages.missingAddressOrAmount"
-          ),
+          message: "Missing address or amount",
           data: { errors: ["Invalid input data"] },
         });
       }

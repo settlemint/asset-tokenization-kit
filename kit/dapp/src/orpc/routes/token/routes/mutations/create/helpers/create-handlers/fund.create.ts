@@ -32,7 +32,7 @@ const CREATE_FUND_MUTATION = portalGraphql(`
     $name: String!
     $decimals: Int!
     $initialModulePairs: [ATKFundFactoryImplementationATKFundFactoryImplementationCreateFundInitialModulePairsInput!]!
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $managementFeeBps: Int!
     $countryCode: Int!
@@ -48,7 +48,7 @@ const CREATE_FUND_MUTATION = portalGraphql(`
         managementFeeBps_: $managementFeeBps
         countryCode_: $countryCode
       }
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
     ) {
       transactionHash

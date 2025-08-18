@@ -39,18 +39,18 @@ const logger = createLogger();
  * @param address - The factory contract address to call
  * @param from - The wallet address initiating the transaction
  * @param challengeResponse - The MFA challenge response for transaction authorization
- * @param verificationId - Optional verification ID for the challenge
+ * @param challengeId - Optional verification ID for the challenge
  * @returns transactionHash - The blockchain transaction hash for tracking
  */
 const CREATE_SYSTEM_MUTATION = portalGraphql(`
   mutation CreateSystemMutation(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
   ) {
     ATKSystemFactoryCreateSystem(
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       address: $address
       from: $from
@@ -68,13 +68,13 @@ const CREATE_SYSTEM_MUTATION = portalGraphql(`
  */
 const BOOTSTRAP_SYSTEM_MUTATION = portalGraphql(`
   mutation BootstrapSystemMutation(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
   ) {
     IATKSystemBootstrap(
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       address: $address
       from: $from

@@ -52,7 +52,7 @@ services:
       retries: 5
       start_period: 1s
   txsigner:
-    image: ghcr.io/settlemint/btp-signer:7.15.1
+    image: ghcr.io/settlemint/btp-signer:7.15.2
     container_name: ${CONTAINER_PREFIX:-atk}-txsigner
     restart: unless-stopped
     depends_on:
@@ -90,10 +90,23 @@ services:
       [
         "postgres",
         "-cshared_preload_libraries=pg_stat_statements",
-        "-cmax_connections=200",
+        "-cmax_connections=500",
+        "-cshared_buffers=256MB",
+        "-ceffective_cache_size=1GB",
+        "-cmaintenance_work_mem=64MB",
+        "-ccheckpoint_completion_target=0.9",
+        "-cwal_buffers=16MB",
+        "-cdefault_statistics_target=100",
+        "-crandom_page_cost=1.1",
+        "-ceffective_io_concurrency=200",
+        "-cwork_mem=4MB",
+        "-cmin_wal_size=1GB",
+        "-cmax_wal_size=4GB",
         "-clog_statement=all",
         "-clog_duration=on",
         "-clog_min_duration_statement=100",
+        "-cstatement_timeout=60000",
+        "-cidle_in_transaction_session_timeout=60000",
       ]
     volumes:
       - ./tools/docker/postgres/init.sql:/docker-entrypoint-initdb.d/1_init.sql:ro
@@ -119,7 +132,7 @@ services:
       retries: 5
       start_period: 5s
   portal:
-    image: ghcr.io/settlemint/btp-scs-portal:8.6.2
+    image: ghcr.io/settlemint/btp-scs-portal:8.6.3
     container_name: ${CONTAINER_PREFIX:-atk}-portal
     restart: unless-stopped
     depends_on:
@@ -308,8 +321,8 @@ services:
       COIN_NAME: ATK
       COIN: ATK
       DISABLE_MARKET: true
-      POOL_SIZE: 80
-      POOL_SIZE_API: 10
+      POOL_SIZE: 200
+      POOL_SIZE_API: 50
       ECTO_USE_SSL: false
       HEART_BEAT_TIMEOUT: 30
       ADMIN_PANEL_ENABLED: false
