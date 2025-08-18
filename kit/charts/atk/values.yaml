@@ -411,7 +411,7 @@ support:
       # -- Redis image repository
       repository: redis
       # -- Redis image tag
-      tag: "8.2.0-alpine"
+      tag: "8.2.1-alpine"
     fullnameOverride: redis
     commonLabels:
       kots.io/app-slug: settlemint-atk
