@@ -339,7 +339,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
     }
 
     /// @notice Finalizes the token creation process after deployment and initialization.
-    /// @dev Sets up contract identity, on-chain ID, and necessary roles.
+    /// @dev Sets up contract identity, on-chain ID, and necessary roles. Also issues TOPIC_ISSUER claim.
     /// @param contractAddress The address of the deployed contract (proxy).
     /// @param description Human-readable description of the contract.
     /// @param country The numeric country code (ISO 3166-1 alpha-2 standard) representing the contract's jurisdiction.
@@ -360,6 +360,16 @@ abstract contract AbstractATKTokenFactoryImplementation is
         ISMARTIdentityRegistry(IATKSystem(_systemAddress).identityRegistry()).registerIdentity(
             contractAddress, IIdentity(contractIdentity), country
         );
+
+        // Issue TOPIC_ISSUER claim to link the asset to its issuer
+        IATKSystem system = IATKSystem(_systemAddress);
+        address issuerIdentity = system.issuerIdentity();
+        
+        if (issuerIdentity != address(0)) {
+            // Call the system function to issue the issuer claim
+            // This is necessary because only the system contract can manage claims on the issuer identity
+            system.issueIssuerClaim(contractIdentity);
+        }
 
         // Emit registration event for indexing
         emit ContractIdentityRegistered(_msgSender(), contractAddress, description);

@@ -33,6 +33,10 @@ library ATKPeopleRoles {
     /// @dev Manage trusted issuers and claim topics
     bytes32 public constant CLAIM_POLICY_MANAGER_ROLE = keccak256("CLAIM_POLICY_MANAGER_ROLE");
 
+    /// @notice Role identifier for addresses that can manage issuer identity claims
+    /// @dev Can manage claims for the issuer identity, including issuer-level KYC, AML, licenses, etc.
+    bytes32 public constant ISSUER_CLAIM_MANAGER_ROLE = keccak256("ISSUER_CLAIM_MANAGER_ROLE");
+
     /// @notice Role identifier for addresses that can audit the system
     /// @dev View-only role for permissions, identities, audit logs, system state
     bytes32 public constant AUDITOR_ROLE = keccak256("AUDITOR_ROLE");

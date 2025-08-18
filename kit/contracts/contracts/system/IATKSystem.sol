@@ -235,4 +235,13 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @notice Returns the address of the token access manager implementation.
     /// @return The address of the token access manager implementation contract.
     function tokenAccessManagerImplementation() external view returns (address);
+
+    /// @notice Returns the address of the issuer identity contract.
+    /// @return The address of the issuer identity contract.
+    function issuerIdentity() external view returns (address);
+
+    /// @notice Issues a TOPIC_ISSUER claim to a target identity
+    /// @dev Only callable by accounts with TOKEN_FACTORY_MODULE_ROLE
+    /// @param targetIdentity The identity contract to receive the issuer claim
+    function issueIssuerClaim(address targetIdentity) external;
 }
