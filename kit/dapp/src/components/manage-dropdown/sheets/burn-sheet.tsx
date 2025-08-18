@@ -146,7 +146,7 @@ export function BurnSheet({
         const withinBalanceLimits = [...addressAmounts.entries()].every(
           ([addr, totalAmt]) => {
             const holderBalance = holdersData?.token?.balances?.find(
-              (b) => b.account.id.toLowerCase() === addr
+              (b) => b.account?.id.toLowerCase() === addr
             );
             if (!holderBalance) return true; // If we don't have balance data, allow it
             return lessThanOrEqual(
@@ -305,7 +305,7 @@ export function BurnSheet({
                             addressAmounts.get(lowerAddr) ?? 0n;
                           const holderBalance =
                             holdersData?.token?.balances?.find(
-                              (b) => b.account.id.toLowerCase() === lowerAddr
+                              (b) => b.account?.id.toLowerCase() === lowerAddr
                             );
 
                           if (
@@ -376,7 +376,8 @@ export function BurnSheet({
                                   const holderBalance =
                                     holdersData?.token?.balances?.find(
                                       (b) =>
-                                        b.account.id.toLowerCase() === lowerAddr
+                                        b.account?.id.toLowerCase() ===
+                                        lowerAddr
                                     );
 
                                   if (!holderBalance) return undefined;
