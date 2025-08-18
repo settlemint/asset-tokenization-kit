@@ -53,7 +53,7 @@ const READ_TOKEN_QUERY = theGraphGraphql(
       accessControl {
         ...AccessControlFragment
       }
-      yield_ {
+      yield: yield_ {
         ...TokenYieldFragment
       }
     }
@@ -112,7 +112,6 @@ export const tokenMiddleware = baseRouter.middleware(
     const userRoles = mapUserRoles(auth.user.wallet, token.accessControl);
     const tokenContext = TokenSchema.parse({
       ...token,
-      yield: token.yield_,
       userPermissions: {
         roles: userRoles,
         // TODO: implement logic which checks if the user is allowed to interact with the token
