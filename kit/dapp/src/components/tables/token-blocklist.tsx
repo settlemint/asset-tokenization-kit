@@ -44,12 +44,6 @@ export function TokenBlocklistTable({ token }: { token: Token }) {
     token.userPermissions?.actions.freezeAddress
   );
 
-  console.log("Blocklist permissions:", {
-    userPermissions: token.userPermissions,
-    freezeAddress: token.userPermissions?.actions?.freezeAddress,
-    canManageBlocklist,
-  });
-
   // Extract frozen addresses from holders data
   const rows: BlocklistRow[] = useMemo(() => {
     if (!holdersData?.token?.balances) return [];
