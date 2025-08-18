@@ -1,4 +1,4 @@
-import { verificationType } from "@/lib/zod/validators/verification-type";
+import { verificationType } from "@atk/zod/validators/verification-type";
 import { z } from "zod";
 
 /**

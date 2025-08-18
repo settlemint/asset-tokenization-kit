@@ -1,9 +1,9 @@
-import {
+import type {
   ComplianceModulePairInput,
   ComplianceParams,
-  type ComplianceTypeId,
-} from "@/lib/zod/validators/compliance";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+  ComplianceTypeId,
+} from "@atk/zod/validators/compliance";
+import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
 
 /**
  * Props interface for compliance module detail components

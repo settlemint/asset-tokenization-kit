@@ -1,8 +1,8 @@
-import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
-import { apiBigInt } from "@/lib/zod/validators/bigint";
-import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { timestamp } from "@/lib/zod/validators/timestamp";
 import { TokenBaseSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
+import { AssetTypeEnum } from "@atk/zod/validators/asset-types";
+import { apiBigInt } from "@atk/zod/validators/bigint";
+import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
+import { timestamp } from "@atk/zod/validators/timestamp";
 import { z } from "zod";
 
 export const BondSchema = z.object({

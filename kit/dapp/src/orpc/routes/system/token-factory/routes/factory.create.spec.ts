@@ -1,11 +1,11 @@
-import { describe, expect, test } from "vitest";
-import { isAssetExtensionArray } from "@/lib/zod/validators/asset-extensions";
+import { isAssetExtensionArray } from "@atk/zod/validators/asset-extensions";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   DEFAULT_ADMIN,
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
+import { describe, expect, test } from "vitest";
 
 describe("Token factory create", () => {
   test("can create a token factory", async () => {

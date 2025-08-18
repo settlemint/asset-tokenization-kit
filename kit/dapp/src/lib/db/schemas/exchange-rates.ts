@@ -15,7 +15,7 @@
  * @module ExchangeRatesSchema
  */
 
-import { fiatCurrency } from "@/lib/zod/validators/fiat-currency";
+import { fiatCurrency } from "@atk/zod/validators/fiat-currency";
 import {
   index,
   numeric,

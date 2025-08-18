@@ -1,12 +1,11 @@
 import { assetDesignerFormOptions } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
 import { ComplianceModules } from "@/components/compliance/compliance-modules";
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
-
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
-import { ComplianceModulePairInput } from "@/lib/zod/validators/compliance";
-import { ComplianceModulesList } from "@/orpc/routes/system/compliance-module/routes/compliance-module.list.schema";
+import type { ComplianceModulesList } from "@/orpc/routes/system/compliance-module/routes/compliance-module.list.schema";
+import type { ComplianceModulePairInput } from "@atk/zod/validators/compliance";
 import { useStore } from "@tanstack/react-store";
 import { useTranslation } from "react-i18next";
 

@@ -11,9 +11,9 @@ import {
   createNotExpressionNode,
   createTopicExpressionNode,
   type ExpressionNode,
-} from "@/lib/zod/validators/expression-node";
-import type { ATKTopic } from "@/lib/zod/validators/topics";
-import { atkTopics } from "@/lib/zod/validators/topics";
+} from "@atk/zod/validators/expression-node";
+import type { ATKTopic } from "@atk/zod/validators/topics";
+import { atkTopics } from "@atk/zod/validators/topics";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 

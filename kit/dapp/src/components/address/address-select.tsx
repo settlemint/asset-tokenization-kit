@@ -14,13 +14,13 @@ import {
 } from "@/components/ui/popover";
 import { Web3Address } from "@/components/web3/web3-address";
 import {
-  useSearchAddresses,
   type AddressSearchScope,
+  useSearchAddresses,
 } from "@/hooks/use-search-addresses";
 import { useDebouncedCallback } from "@/lib/hooks/use-debounced-callback";
 import { useRecentCache } from "@/lib/hooks/use-recent-cache";
 import { cn } from "@/lib/utils";
-import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
 import {
   Check,
   ChevronsUpDown,

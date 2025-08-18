@@ -6,10 +6,10 @@
  * Minimal tests to verify schema extension works correctly.
  * @module TokenActionsTests
  */
-import { safeParse } from "@/lib/zod";
-import { describe, expect, it } from "vitest";
+
 import { ActionsListSchema } from "@/orpc/routes/actions/routes/actions.list.schema";
-import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
+import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
 // Logger is mocked via vitest.config.ts alias
@@ -30,7 +30,7 @@ describe("Token Actions Schema Extension", () => {
       status: "PENDING" as const,
       name: "settlement",
     };
-    const result = safeParse(TokenActionsInputSchema, validInput);
+    const result = TokenActionsInputSchema.parse(validInput);
     expect(result.tokenAddress).toBe(
       "0x1234567890123456789012345678901234567890"
     );
@@ -42,7 +42,7 @@ describe("Token Actions Schema Extension", () => {
     const minimalInput = {
       tokenAddress: "0x1234567890123456789012345678901234567890",
     };
-    const result = safeParse(TokenActionsInputSchema, minimalInput);
+    const result = TokenActionsInputSchema.parse(minimalInput);
     expect(result.tokenAddress).toBe(
       "0x1234567890123456789012345678901234567890"
     );
@@ -54,15 +54,13 @@ describe("Token Actions Schema Extension", () => {
     const missingTokenAddress = {
       status: "ACTIVE" as const,
     };
-    expect(() =>
-      safeParse(TokenActionsInputSchema, missingTokenAddress)
-    ).toThrow();
+    expect(() => TokenActionsInputSchema.parse(missingTokenAddress)).toThrow();
   });
 
   it("should validate tokenAddress as ethereum address", () => {
     const invalidAddress = {
       tokenAddress: "invalid-address",
     };
-    expect(() => safeParse(TokenActionsInputSchema, invalidAddress)).toThrow();
+    expect(() => TokenActionsInputSchema.parse(invalidAddress)).toThrow();
   });
 });

@@ -1,7 +1,7 @@
-import {
+import type {
+  Expression,
   ExpressionNode,
-  type Expression,
-} from "@/lib/zod/validators/expression-node";
+} from "@atk/zod/validators/expression-node";
 import { encodeAbiParameters, parseAbiParameters } from "viem";
 
 /**

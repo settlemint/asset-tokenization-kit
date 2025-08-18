@@ -1,6 +1,6 @@
-import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
-import { basisPoints } from "@/lib/zod/validators/basis-points";
 import { TokenBaseSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
+import { AssetTypeEnum } from "@atk/zod/validators/asset-types";
+import { basisPoints } from "@atk/zod/validators/basis-points";
 import { z } from "zod";
 
 export const FundSchema = z.object({
