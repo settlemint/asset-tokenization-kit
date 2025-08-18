@@ -79,6 +79,7 @@
     "@settlemint/sdk-utils": "2.5.7",
     "@types/lodash": "4.17.20",
     "@typescript/native-preview": "7.0.0-dev.20250816.1",
+    "graphql": "16.11.0",
     "prettier": "3.6.2",
     "turbo": "2.5.6",
     "typescript": "5.9.2",
