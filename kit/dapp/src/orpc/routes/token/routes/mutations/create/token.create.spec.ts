@@ -21,9 +21,9 @@ describe("Token create", () => {
     } as const;
 
     const result = await client.token.create({
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
       ...tokenData,
       countryCode: "056",
@@ -63,9 +63,9 @@ describe("Token create", () => {
     };
 
     const result = await client.token.create({
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
       ...fundData,
       countryCode: "056",
@@ -102,9 +102,9 @@ describe("Token create", () => {
     };
 
     const stablecoinResult = await client.token.create({
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
       ...stablecoinData,
       countryCode: "056",
@@ -127,9 +127,9 @@ describe("Token create", () => {
     };
 
     const result = await client.token.create({
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
       ...bondData,
       countryCode: "056",
@@ -166,9 +166,9 @@ describe("Token create", () => {
     };
 
     const result = await client.token.create({
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
       ...equityData,
       countryCode: "056",
@@ -205,9 +205,9 @@ describe("Token create", () => {
     };
 
     const result = await client.token.create({
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
       ...depositData,
       countryCode: "056",
@@ -237,9 +237,9 @@ describe("Token create", () => {
 
     await expect(
       client.token.create({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
         },
         type: "stablecoin",
         name: `Test Stablecoin Investor ${Date.now()}`,

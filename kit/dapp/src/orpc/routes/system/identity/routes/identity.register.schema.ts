@@ -13,7 +13,7 @@ export const IdentityRegisterSchema = z.object({
     )
     .optional(),
   country: isoCountryCode,
-  verification: UserVerificationSchema,
+  walletVerification: UserVerificationSchema,
 });
 
 /**

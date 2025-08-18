@@ -11,7 +11,7 @@ export const IdentityCreateSchema = z.object({
       "The wallet address of the user to create the identity for (defaults to the wallet of the authenticated user)"
     )
     .optional(),
-  verification: UserVerificationSchema,
+  walletVerification: UserVerificationSchema,
 });
 
 /**

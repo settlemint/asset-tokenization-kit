@@ -23,7 +23,7 @@ image:
   # -- TxSigner image repository
   repository: settlemint/btp-signer
   # -- TxSigner image tag (immutable tags are recommended)
-  tag: "7.14.3"
+  tag: "7.15.1"
   # -- TxSigner image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
   digest: ""
   # -- TxSigner image pull policy
@@ -490,7 +490,7 @@ postgresql: "postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"
 # -- Init containers configuration
 initContainers:
   - name: wait-for-postgresql-ready
-    image: docker.io/postgres:17.5-alpine
+    image: docker.io/postgres:17.6-alpine
     command:
       - /bin/sh
       - -c

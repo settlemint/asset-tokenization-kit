@@ -16,13 +16,11 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import type { Context } from "@/orpc/context/context";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call } from "@orpc/server";
-import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { encodeFunctionData, getAddress } from "viem";
 import {
@@ -51,7 +49,7 @@ const REGISTER_SYSTEM_ADDON_MUTATION = portalGraphql(`
     $implementation: String!
     $initializationData: String!
     $verificationId: String
-    $challengeResponse: String!
+    $challengeResponse: String
   ) {
     ATKSystemAddonRegistryImplementationRegisterSystemAddon(
       address: $address
@@ -155,7 +153,7 @@ export const addonCreate = portalRouter.system.addonCreate
     })
   )
   .handler(async ({ input, context, errors }) => {
-    const { addons, verification } = input;
+    const { addons, walletVerification } = input;
     const sender = context.auth.user;
     const { system } = context;
 
@@ -204,25 +202,25 @@ export const addonCreate = portalRouter.system.addonCreate
         const initializationData = generateInitializationData(context);
 
         // Generate a fresh challenge response for each addon
-        const challengeResponse = await handleChallenge(sender, {
-          code: verification.verificationCode,
-          type: verification.verificationType,
-        });
 
         // Execute the addon registration transaction
-        const variables: VariablesOf<typeof REGISTER_SYSTEM_ADDON_MUTATION> = {
+        const variables = {
           address: systemAddonRegistry,
           from: sender.wallet,
           name: name,
           implementation: implementationAddress,
           initializationData: initializationData,
-          ...challengeResponse,
         };
 
         // Use the Portal client's mutate method that returns the transaction hash
         await context.portalClient.mutate(
           REGISTER_SYSTEM_ADDON_MUTATION,
-          variables
+          variables,
+          {
+            sender: sender,
+            code: walletVerification.secretVerificationCode,
+            type: walletVerification.verificationType,
+          }
         );
 
         logger.info(`Addon ${name} registered successfully`);

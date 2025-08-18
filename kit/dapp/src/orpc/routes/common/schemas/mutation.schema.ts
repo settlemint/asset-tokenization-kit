@@ -18,7 +18,7 @@
  * });
  *
  * // Usage in a handler
- * const { contract, verification, ...specificData } = input;
+ * const { contract, walletVerification, ...specificData } = input;
  * ```
  * @see {@link @/lib/zod/validators/ethereum-address} - Ethereum address validation
  * @see {@link @/lib/zod/validators/verification-code} - Verification code validation
@@ -38,11 +38,11 @@ export const MutationInputSchema = z.object({
    * users can execute state-changing operations on the blockchain.
    *
    * Supported verification types:
-   * - pincode: Default option, uses a PIN code for verification
-   * - secret-code: Uses a secret code for enhanced security
-   * - two-factor: Uses time-based one-time passwords (TOTP)
+   * - PINCODE: Default option, uses a PIN code for verification
+   * - SECRET_CODES: Uses a secret code for enhanced security
+   * - OTP: Uses time-based one-time passwords (TOTP)
    */
-  verification: UserVerificationSchema,
+  walletVerification: UserVerificationSchema,
 });
 
 export const MutationInputSchemaWithContract = MutationInputSchema.extend({

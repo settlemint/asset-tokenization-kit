@@ -76,12 +76,12 @@ export function PauseUnpauseConfirmationSheet({
     })
   );
 
-  const handleSubmit = (verification: UserVerification) => {
+  const handleSubmit = (walletVerification: UserVerification) => {
     if (action === "pause") {
       toast.promise(
         pauseAsset({
           contract: asset.id,
-          verification,
+          walletVerification,
         }),
         {
           success: t("tokens:actions.pause.messages.success", {
@@ -96,7 +96,7 @@ export function PauseUnpauseConfirmationSheet({
       toast.promise(
         unpauseAsset({
           contract: asset.id,
-          verification,
+          walletVerification,
         }),
         {
           success: t("tokens:actions.unpause.messages.success", {

@@ -11,7 +11,7 @@ import { z } from "zod";
  * - Single address, multiple roles
  */
 export const RevokeRoleInputSchema = z.object({
-  verification: UserVerificationSchema,
+  walletVerification: UserVerificationSchema,
   /**
    * The account(s) to revoke the role(s) from
    */

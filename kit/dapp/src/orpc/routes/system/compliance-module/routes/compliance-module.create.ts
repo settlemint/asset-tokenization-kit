@@ -19,7 +19,6 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { complianceTypeIds } from "@/lib/zod/validators/compliance";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import {
@@ -29,7 +28,6 @@ import {
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call } from "@orpc/server";
-import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 
 const logger = createLogger();
@@ -40,7 +38,7 @@ const REGISTER_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
     $from: String!
     $implementation: String!
     $verificationId: String
-    $challengeResponse: String!
+    $challengeResponse: String
   ) {
     IATKComplianceModuleRegistryRegisterComplianceModule(
       address: $address
@@ -103,7 +101,7 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
     })
   )
   .handler(async ({ input, context, errors }) => {
-    const { complianceModules, verification } = input;
+    const { complianceModules, walletVerification } = input;
     const sender = context.auth.user;
     const { system } = context;
 
@@ -150,25 +148,23 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
         });
 
         // Every transaction needs a challenge response (can only be used once)
-        const challengeResponse = await handleChallenge(sender, {
-          code: verification.verificationCode,
-          type: verification.verificationType,
-        });
 
         // Execute the compliance module registration transaction
-        const variables: VariablesOf<
-          typeof REGISTER_COMPLIANCE_MODULE_MUTATION
-        > = {
+        const variables = {
           address: contract,
           from: sender.wallet,
           implementation: implementationAddress,
-          ...challengeResponse,
         };
 
         // Execute the mutation
         await context.portalClient.mutate(
           REGISTER_COMPLIANCE_MODULE_MUTATION,
-          variables
+          variables,
+          {
+            sender: sender,
+            code: walletVerification.secretVerificationCode,
+            type: walletVerification.verificationType,
+          }
         );
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);

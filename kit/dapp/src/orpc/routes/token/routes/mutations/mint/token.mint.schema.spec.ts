@@ -7,7 +7,7 @@ describe("TokenMintInputSchema", () => {
       contract: "0x1111111111111111111111111111111111111111",
       recipients: "0x2222222222222222222222222222222222222222",
       amounts: "10",
-      verification: { verificationCode: "123456" },
+      walletVerification: { secretVerificationCode: "123456" },
     });
     expect(parsed.recipients).toEqual([
       "0x2222222222222222222222222222222222222222",
@@ -24,7 +24,7 @@ describe("TokenMintInputSchema", () => {
           "0x3333333333333333333333333333333333333333",
         ],
         amounts: ["10"],
-        verification: { verificationCode: "123456" },
+        walletVerification: { secretVerificationCode: "123456" },
       })
     ).toThrow();
   });

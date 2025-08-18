@@ -33,7 +33,6 @@ blockscout-stack:
       NETWORK: "mainnet"
       SUBNETWORK: "ATK"
       ETHEREUM_JSONRPC_VARIANT: besu
-      ETHEREUM_JSONRPC_HTTP_INSECURE: 'true'
       SHOW_TXS_CHART: 'true'
       TXS_STATS_ENABLED: 'true'
       OTHER_EXPLORERS: '{}'

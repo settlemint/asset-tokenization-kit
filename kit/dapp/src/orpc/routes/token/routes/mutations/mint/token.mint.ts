@@ -1,6 +1,5 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { validateBatchArrays } from "@/orpc/helpers/array-validation";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { read } from "@/orpc/routes/token/routes/token.read";
@@ -62,18 +61,13 @@ export const mint = tokenRouter.token.mint
     })
   )
   .handler(async ({ input, context, errors }) => {
-    const { contract, verification, recipients, amounts } = input;
+    const { contract, walletVerification, recipients, amounts } = input;
     const { auth } = context;
 
     // Determine if this is a batch operation
     const isBatch = recipients.length > 1;
 
     const sender = auth.user;
-    const challengeResponse = await handleChallenge(sender, {
-      code: verification.verificationCode,
-      type: verification.verificationType,
-    });
-
     // Execute the mint operation
     if (isBatch) {
       // Validate batch arrays
@@ -85,13 +79,20 @@ export const mint = tokenRouter.token.mint
         "batch mint"
       );
 
-      await context.portalClient.mutate(TOKEN_BATCH_MINT_MUTATION, {
-        address: contract,
-        from: sender.wallet,
-        toList: recipients,
-        amounts: amounts.map((a) => a.toString()),
-        ...challengeResponse,
-      });
+      await context.portalClient.mutate(
+        TOKEN_BATCH_MINT_MUTATION,
+        {
+          address: contract,
+          from: sender.wallet,
+          toList: recipients,
+          amounts: amounts.map((a) => a.toString()),
+        },
+        {
+          sender: sender,
+          code: walletVerification.secretVerificationCode,
+          type: walletVerification.verificationType,
+        }
+      );
     } else {
       const [to] = recipients;
       const [amount] = amounts;
@@ -105,13 +106,20 @@ export const mint = tokenRouter.token.mint
         });
       }
 
-      await context.portalClient.mutate(TOKEN_SINGLE_MINT_MUTATION, {
-        address: contract,
-        from: sender.wallet,
-        to,
-        amount: amount.toString(),
-        ...challengeResponse,
-      });
+      await context.portalClient.mutate(
+        TOKEN_SINGLE_MINT_MUTATION,
+        {
+          address: contract,
+          from: sender.wallet,
+          to,
+          amount: amount.toString(),
+        },
+        {
+          sender: sender,
+          code: walletVerification.secretVerificationCode,
+          type: walletVerification.verificationType,
+        }
+      );
     }
 
     // Return the updated token data using the read handler

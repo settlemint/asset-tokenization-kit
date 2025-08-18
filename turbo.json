@@ -85,9 +85,7 @@
     "docs": {},
     "test": {},
     "artifacts": {},
-    "test:integration": {
-      "dependsOn": ["build"]
-    },
+    "test:integration": {},
     "db:studio": {
       "cache": false,
       "persistent": true
@@ -96,7 +94,7 @@
       "dependsOn": ["codegen"]
     },
     "test:ci": {
-      "dependsOn": ["build", "^test:ci"],
+      "dependsOn": ["^test:ci"],
       "outputs": [
         "coverage/**",
         "coverage.json",

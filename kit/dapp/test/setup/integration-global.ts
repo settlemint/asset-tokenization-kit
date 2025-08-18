@@ -27,9 +27,9 @@ export async function setup() {
     const { stop } = await startApiServer();
     stopApi = stop;
 
-    // Default admin goes first as it requires the initial admin role
     await setupUser(DEFAULT_ADMIN);
-    // Parallelize other user setup
+
+    // Parallelize user setup
     await Promise.all([setupUser(DEFAULT_INVESTOR), setupUser(DEFAULT_ISSUER)]);
 
     const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));

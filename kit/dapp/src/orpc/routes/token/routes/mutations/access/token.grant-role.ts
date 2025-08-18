@@ -1,6 +1,31 @@
+/**
+ * Token Role Grant Mutation with Polymorphic Input Handling
+ *
+ * @remarks
+ * This mutation showcases the wallet verification pattern applied to access control operations.
+ * It demonstrates polymorphic input handling where the same mutation can grant roles to:
+ * - Multiple accounts with single role (batch grant)
+ * - Single account with multiple roles (role grant)
+ * - Single account with single role (optimized path)
+ *
+ * SECURITY ARCHITECTURE:
+ * - Role management requires elevated permissions via tokenPermissionMiddleware
+ * - Wallet verification ensures only authorized users can modify access control
+ * - Role bytes are resolved from human-readable names for smart contract compatibility
+ *
+ * INPUT POLYMORPHISM:
+ * - TypeScript discriminated unions enable type-safe input validation
+ * - Runtime type guards determine the appropriate GraphQL mutation to execute
+ * - Automatic deduplication prevents redundant role assignments
+ *
+ * VERIFICATION INTEGRATION:
+ * - Uses same verification pattern as other mutations
+ * - secretVerificationCode contains the user's authentication factor
+ * - verificationType determines the challenge-response protocol
+ */
+
 import { getRoleByFieldName } from "@/lib/constants/roles";
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
@@ -11,7 +36,7 @@ import type { TokenGrantRoleInput } from "@/orpc/routes/token/routes/mutations/a
 const TOKEN_GRANT_ROLE_MUTATION = portalGraphql(`
   mutation TokenGrantRoleMutation(
     $verificationId: String
-    $challengeResponse: String!
+    $challengeResponse: String
     $address: String!
     $account: String!
     $role: String!
@@ -33,7 +58,7 @@ const TOKEN_GRANT_ROLE_MUTATION = portalGraphql(`
 const TOKEN_BATCH_GRANT_ROLE_MUTATION = portalGraphql(`
   mutation TokenBatchGrantRoleMutation(
     $verificationId: String
-    $challengeResponse: String!
+    $challengeResponse: String
     $address: String!
     $role: String!
     $accounts: [String!]!
@@ -55,7 +80,7 @@ const TOKEN_BATCH_GRANT_ROLE_MUTATION = portalGraphql(`
 const TOKEN_GRANT_MULTIPLE_ROLES_MUTATION = portalGraphql(`
   mutation TokenGrantMultipleRolesMutation(
     $verificationId: String
-    $challengeResponse: String!
+    $challengeResponse: String
     $address: String!
     $account: String!
     $roles: [String!]!
@@ -82,7 +107,7 @@ export const grantRole = tokenRouter.token.grantRole
   )
   .handler(async ({ input, context, errors }) => {
     const typedInput = input;
-    const { verification } = typedInput;
+    const { walletVerification } = typedInput;
     const { auth, token, portalClient } = context;
     const sender = auth.user;
 
@@ -94,10 +119,6 @@ export const grantRole = tokenRouter.token.grantRole
       });
     }
 
-    const challengeResponse = await handleChallenge(sender, {
-      code: verification.verificationCode,
-      type: verification.verificationType,
-    });
     // The token access manager address is stored as the accessControl entity ID
     const tokenAccessManagerAddress = token.accessControl?.id;
     if (!tokenAccessManagerAddress) {
@@ -108,7 +129,8 @@ export const grantRole = tokenRouter.token.grantRole
       });
     }
 
-    // Branch based on input shape
+    // INPUT POLYMORPHISM: Runtime type guards to determine mutation strategy
+    // WHY: Single API endpoint handles multiple role grant patterns for better UX
     const hasKeys = (
       obj: unknown,
       keys: Array<string>
@@ -138,27 +160,44 @@ export const grantRole = tokenRouter.token.grantRole
       if (!roleInfo) {
         throw errors.NOT_FOUND({ message: `Role '${role}' not found` });
       }
+      // OPTIMIZATION: Remove duplicates to prevent redundant blockchain operations
       const accountsWithoutDuplicates = [...new Set(accounts)];
       if (accountsWithoutDuplicates.length === 1) {
+        // FALLBACK: Single account uses regular grant instead of batch for gas efficiency
         const account = accountsWithoutDuplicates[0];
         if (!account) {
           throw errors.INTERNAL_SERVER_ERROR({ message: "Invalid account" });
         }
-        await portalClient.mutate(TOKEN_GRANT_ROLE_MUTATION, {
-          address: tokenAccessManagerAddress,
-          from: sender.wallet,
-          account,
-          role: roleInfo.bytes,
-          ...challengeResponse,
-        });
+        await portalClient.mutate(
+          TOKEN_GRANT_ROLE_MUTATION,
+          {
+            address: tokenAccessManagerAddress,
+            from: sender.wallet,
+            account,
+            role: roleInfo.bytes,
+          },
+          {
+            // VERIFICATION: Same pattern across all grant operations
+            sender: sender,
+            code: walletVerification.secretVerificationCode,
+            type: walletVerification.verificationType,
+          }
+        );
       } else {
-        await portalClient.mutate(TOKEN_BATCH_GRANT_ROLE_MUTATION, {
-          address: tokenAccessManagerAddress,
-          from: sender.wallet,
-          accounts: accountsWithoutDuplicates,
-          role: roleInfo.bytes,
-          ...challengeResponse,
-        });
+        await portalClient.mutate(
+          TOKEN_BATCH_GRANT_ROLE_MUTATION,
+          {
+            address: tokenAccessManagerAddress,
+            from: sender.wallet,
+            accounts: accountsWithoutDuplicates,
+            role: roleInfo.bytes,
+          },
+          {
+            sender: sender,
+            code: walletVerification.secretVerificationCode,
+            type: walletVerification.verificationType,
+          }
+        );
       }
       return { accounts: accountsWithoutDuplicates };
     }
@@ -181,26 +220,40 @@ export const grantRole = tokenRouter.token.grantRole
             message: "Invalid role configuration",
           });
         }
-        await portalClient.mutate(TOKEN_GRANT_ROLE_MUTATION, {
-          address: tokenAccessManagerAddress,
-          from: sender.wallet,
-          account: address,
-          role: single.bytes,
-          ...challengeResponse,
-        });
+        await portalClient.mutate(
+          TOKEN_GRANT_ROLE_MUTATION,
+          {
+            address: tokenAccessManagerAddress,
+            from: sender.wallet,
+            account: address,
+            role: single.bytes,
+          },
+          {
+            sender: sender,
+            code: walletVerification.secretVerificationCode,
+            type: walletVerification.verificationType,
+          }
+        );
       } else {
         const rolesBytes = roleInfos.reduce<string[]>((acc, ri) => {
           // ri may be undefined in type inference; guard explicitly
           if (ri) acc.push(ri.bytes);
           return acc;
         }, []);
-        await portalClient.mutate(TOKEN_GRANT_MULTIPLE_ROLES_MUTATION, {
-          address: tokenAccessManagerAddress,
-          from: sender.wallet,
-          account: address,
-          roles: rolesBytes,
-          ...challengeResponse,
-        });
+        await portalClient.mutate(
+          TOKEN_GRANT_MULTIPLE_ROLES_MUTATION,
+          {
+            address: tokenAccessManagerAddress,
+            from: sender.wallet,
+            account: address,
+            roles: rolesBytes,
+          },
+          {
+            sender: sender,
+            code: walletVerification.secretVerificationCode,
+            type: walletVerification.verificationType,
+          }
+        );
       }
       return { accounts: [address] };
     }

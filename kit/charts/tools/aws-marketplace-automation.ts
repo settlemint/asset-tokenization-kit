@@ -3,7 +3,7 @@
 /**
  * AWS Marketplace Automation Script for SettleMint Asset Tokenization Kit
  * Creates new version in existing AWS Marketplace product
- * 
+ *
  * Environment Variables Required:
  * - AWS_ACCESS_KEY_ID: AWS Access Key
  * - AWS_SECRET_ACCESS_KEY: AWS Secret Key
@@ -33,7 +33,12 @@ const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
 const AWS_MARKETPLACE_PRODUCT_ID = process.env.AWS_MARKETPLACE_PRODUCT_ID;
 const AWS_TARGET_ECR_ACCOUNT = process.env.AWS_TARGET_ECR_ACCOUNT;
 
-if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY || !AWS_MARKETPLACE_PRODUCT_ID || !AWS_TARGET_ECR_ACCOUNT) {
+if (
+  !AWS_ACCESS_KEY_ID ||
+  !AWS_SECRET_ACCESS_KEY ||
+  !AWS_MARKETPLACE_PRODUCT_ID ||
+  !AWS_TARGET_ECR_ACCOUNT
+) {
   console.error("❌ Missing required environment variables:");
   console.error("   All of the following are required:");
   console.error("   - AWS_ACCESS_KEY_ID");
@@ -184,12 +189,7 @@ class AWSMarketplaceAutomation {
    * Get list of original images from values.yaml for Docker operations
    */
   getOriginalImages() {
-    const valuesPath = path.join(
-      __dirname,
-      "..",
-      "atk",
-      "values.yaml"
-    );
+    const valuesPath = path.join(__dirname, "..", "atk", "values.yaml");
     const valuesContent = fs.readFileSync(valuesPath, "utf8");
     const values = yaml.load(valuesContent);
 
@@ -358,9 +358,11 @@ class AWSMarketplaceAutomation {
             console.log(`✓ ECR repository already exists: ${repoName}`);
           }
 
-          // Pull, tag, and push image
-          console.log(`📥 Pulling ${originalImage}`);
-          execSync(`docker pull ${originalImage}`, { stdio: "inherit" });
+          // Pull, tag, and push image (force AMD64 platform)
+          console.log(`📥 Pulling ${originalImage} (AMD64)`);
+          execSync(`docker pull --platform linux/amd64 ${originalImage}`, {
+            stdio: "inherit",
+          });
 
           console.log(`🏷️  Tagging as ${ecrImage}`);
           execSync(`docker tag ${originalImage} ${ecrImage}`, {
@@ -399,12 +401,7 @@ class AWSMarketplaceAutomation {
    * Read Helm chart metadata
    */
   getHelmChartInfo() {
-    const chartPath = path.join(
-      __dirname,
-      "..",
-      "atk",
-      "Chart.yaml"
-    );
+    const chartPath = path.join(__dirname, "..", "atk", "Chart.yaml");
     const chartContent = fs.readFileSync(chartPath, "utf8");
     return yaml.load(chartContent);
   }
@@ -413,12 +410,7 @@ class AWSMarketplaceAutomation {
    * Extract all container images from values.yaml
    */
   extractContainerImages() {
-    const valuesPath = path.join(
-      __dirname,
-      "..",
-      "atk",
-      "values.yaml"
-    );
+    const valuesPath = path.join(__dirname, "..", "atk", "values.yaml");
     const valuesContent = fs.readFileSync(valuesPath, "utf8");
     const values = yaml.load(valuesContent);
 
@@ -831,7 +823,13 @@ Documentation: https://docs.settlemint.com`;
     const chartInfo = this.getHelmChartInfo();
 
     // Create output directory
-    const outputDir = path.join(__dirname, "..", "..", "..", "marketplace-submission");
+    const outputDir = path.join(
+      __dirname,
+      "..",
+      "..",
+      "..",
+      "marketplace-submission"
+    );
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
     }

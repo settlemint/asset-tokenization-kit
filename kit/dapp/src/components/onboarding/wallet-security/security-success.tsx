@@ -13,7 +13,7 @@ export function SecuritySuccess() {
   const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
 
   // Determine which security method was set up using the enum
-  const hasOtp = user.verificationTypes.includes(VerificationType.twoFactor);
+  const hasOtp = user.verificationTypes.includes(VerificationType.otp);
   const hasPincode = user.verificationTypes.includes(VerificationType.pincode);
 
   // Handle unexpected states - default to pincode if neither is set

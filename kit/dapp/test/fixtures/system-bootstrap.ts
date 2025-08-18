@@ -39,9 +39,9 @@ export async function bootstrapSystem(orpClient: OrpcClient) {
 
   // Create new system - system.create returns the complete system object
   const system = await orpClient.system.create({
-    verification: {
-      verificationCode: DEFAULT_PINCODE,
-      verificationType: "pincode",
+    walletVerification: {
+      secretVerificationCode: DEFAULT_PINCODE,
+      verificationType: "PINCODE",
     },
   });
 
@@ -108,9 +108,9 @@ export async function bootstrapTokenFactories(
   const initialFactoryCount = tokenFactories.length;
 
   const result = await orpClient.system.tokenFactoryCreate({
-    verification: {
-      verificationCode: DEFAULT_PINCODE,
-      verificationType: "pincode",
+    walletVerification: {
+      secretVerificationCode: DEFAULT_PINCODE,
+      verificationType: "PINCODE",
     },
     factories: nonExistingFactories,
   });
@@ -179,9 +179,9 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
 
   if (rolesToGrant.length > 0) {
     await orpClient.system.grantRole({
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
       address: issuer.wallet,
       role: rolesToGrant,
