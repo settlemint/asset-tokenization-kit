@@ -7,7 +7,7 @@ import { zeroAddress } from "viem";
 
 export const createWallet = authRouter.user.createWallet
   .use(databaseMiddleware)
-  .handler(async function ({ context: { auth, db, t }, errors }) {
+  .handler(async function ({ context: { auth, db }, errors }) {
     if (auth.user.wallet !== zeroAddress) {
       throw errors.CONFLICT({
         message: "Wallet already created",
@@ -25,6 +25,5 @@ export const createWallet = authRouter.user.createWallet
 
     return {
       wallet,
-      message: t("user:actions.createWallet.success"),
     };
   });

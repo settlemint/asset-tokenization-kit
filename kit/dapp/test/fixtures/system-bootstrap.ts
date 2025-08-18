@@ -1,11 +1,6 @@
 import { retryWhenFailed } from "@settlemint/sdk-utils";
 import { getOrpcClient, OrpcClient } from "./orpc-client";
-import {
-  DEFAULT_ISSUER,
-  DEFAULT_PINCODE,
-  getUserData,
-  signInWithUser,
-} from "./user";
+import { DEFAULT_ISSUER, DEFAULT_PINCODE, signInWithUser } from "./user";
 
 export async function bootstrapSystem(orpClient: OrpcClient) {
   const systems = await orpClient.system.list({});
@@ -129,7 +124,6 @@ export async function bootstrapTokenFactories(
 }
 
 export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
-  const issuer = await getUserData(DEFAULT_ISSUER);
   const issuerOrpcClient = getOrpcClient(await signInWithUser(DEFAULT_ISSUER));
   const issuerMe = await issuerOrpcClient.user.me({});
 
@@ -148,7 +142,7 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
       },
-      address: issuer.wallet,
+      address: issuerMe.wallet ?? "",
       role: rolesToGrant,
     });
   }

@@ -26,36 +26,41 @@ describe("KYC list", () => {
 
   beforeAll(async () => {
     // Setup test users
-    await setupUser(TEST_USER_1);
-    await setupUser(TEST_USER_2);
+    await Promise.all([setupUser(TEST_USER_1), setupUser(TEST_USER_2)]);
 
-    user1Data = await getUserData(TEST_USER_1);
-    user2Data = await getUserData(TEST_USER_2);
+    [user1Data, user2Data] = await Promise.all([
+      getUserData(TEST_USER_1),
+      getUserData(TEST_USER_2),
+    ]);
 
     // Create KYC profiles for test users
-    const headers1 = await signInWithUser(TEST_USER_1);
+    const [headers1, headers2] = await Promise.all([
+      signInWithUser(TEST_USER_1),
+      signInWithUser(TEST_USER_2),
+    ]);
     const client1 = getOrpcClient(headers1);
-    await client1.user.kyc.upsert({
-      userId: user1Data.id,
-      firstName: "John",
-      lastName: "Doe",
-      dob: new Date("1990-01-01"),
-      country: "US",
-      residencyStatus: "resident",
-      nationalId: "123456789",
-    });
-
-    const headers2 = await signInWithUser(TEST_USER_2);
     const client2 = getOrpcClient(headers2);
-    await client2.user.kyc.upsert({
-      userId: user2Data.id,
-      firstName: "Jane",
-      lastName: "Smith",
-      dob: new Date("1985-05-15"),
-      country: "GB",
-      residencyStatus: "resident",
-      nationalId: "987654321",
-    });
+
+    await Promise.all([
+      client1.user.kyc.upsert({
+        userId: user1Data.id,
+        firstName: "John",
+        lastName: "Doe",
+        dob: new Date("1990-01-01"),
+        country: "US",
+        residencyStatus: "resident",
+        nationalId: "123456789",
+      }),
+      client2.user.kyc.upsert({
+        userId: user2Data.id,
+        firstName: "Jane",
+        lastName: "Smith",
+        dob: new Date("1985-05-15"),
+        country: "GB",
+        residencyStatus: "resident",
+        nationalId: "987654321",
+      }),
+    ]);
   });
 
   it("can list all KYC profiles as admin", async () => {

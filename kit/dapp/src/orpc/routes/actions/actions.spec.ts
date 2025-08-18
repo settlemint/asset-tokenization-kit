@@ -25,12 +25,11 @@ let client: OrpcClient;
 let investorClient: OrpcClient;
 
 beforeAll(async () => {
-  // Setup admin client
-  const adminHeaders = await signInWithUser(DEFAULT_ADMIN);
+  const [adminHeaders, investorHeaders] = await Promise.all([
+    signInWithUser(DEFAULT_ADMIN),
+    signInWithUser(DEFAULT_INVESTOR),
+  ]);
   client = getOrpcClient(adminHeaders);
-
-  // Setup investor client
-  const investorHeaders = await signInWithUser(DEFAULT_INVESTOR);
   investorClient = getOrpcClient(investorHeaders);
 });
 

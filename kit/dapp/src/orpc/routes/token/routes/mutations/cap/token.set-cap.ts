@@ -7,7 +7,7 @@ import { read } from "../../token.read";
 
 const TOKEN_SET_CAP_MUTATION = portalGraphql(`
   mutation TokenSetCap(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
@@ -16,7 +16,7 @@ const TOKEN_SET_CAP_MUTATION = portalGraphql(`
     setCap: ISMARTCappedSetCap(
       address: $address
       from: $from
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       input: {
         newCap: $newCap
