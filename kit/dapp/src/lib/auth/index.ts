@@ -15,6 +15,23 @@
  * @see {@link ./auth.client} - Client-side authentication configuration
  * @see {@link ../db/schemas/auth} - Database schema for authentication
  */
+
+import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
+import type { UserRole } from "@atk/zod/validators/user-roles";
+import { serverOnly } from "@tanstack/react-start";
+import {
+  type BetterAuthOptions,
+  betterAuth,
+  type InferUser,
+  type User,
+} from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { APIError } from "better-auth/api";
+import { admin, apiKey, customSession } from "better-auth/plugins";
+import { passkey } from "better-auth/plugins/passkey";
+import { reactStartCookies } from "better-auth/react-start";
+import { eq } from "drizzle-orm/sql";
+import { zeroAddress } from "viem";
 import { metadata } from "@/config/metadata";
 import {
   accessControl,
@@ -26,22 +43,6 @@ import { pincode } from "@/lib/auth/plugins/pincode-plugin";
 import { secretCodes } from "@/lib/auth/plugins/secret-codes-plugin";
 import { twoFactor } from "@/lib/auth/plugins/two-factor";
 import { kycProfiles } from "@/lib/db/schema";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import type { UserRole } from "@/lib/zod/validators/user-roles";
-import { serverOnly } from "@tanstack/react-start";
-import {
-  betterAuth,
-  type BetterAuthOptions,
-  type InferUser,
-  type User,
-} from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { APIError } from "better-auth/api";
-import { admin, apiKey, customSession } from "better-auth/plugins";
-import { passkey } from "better-auth/plugins/passkey";
-import { reactStartCookies } from "better-auth/react-start";
-import { eq } from "drizzle-orm/sql";
-import { zeroAddress } from "viem";
 import { db } from "../db";
 import * as authSchema from "../db/schemas/auth";
 import { env } from "../env";

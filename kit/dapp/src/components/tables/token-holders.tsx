@@ -1,6 +1,6 @@
 import {
-  ActionsCell,
   type ActionItem,
+  ActionsCell,
 } from "@/components/data-table/cells/actions-cell";
 import { createSelectionColumn } from "@/components/data-table/columns/selection-column";
 import { DataTable } from "@/components/data-table/data-table";
@@ -8,15 +8,17 @@ import { useBulkActions } from "@/components/data-table/data-table-bulk-actions"
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { BurnSheet } from "@/components/manage-dropdown/sheets/burn-sheet";
 import { Badge } from "@/components/ui/badge";
 import { Web3Address } from "@/components/web3/web3-address";
-import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenBalance } from "@/orpc/routes/token/routes/token.holders.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import type { Dnum } from "dnum";
 import { format } from "dnum";
 import {
   AlertCircle,
@@ -25,17 +27,15 @@ import {
   Coins,
   Copy,
   ExternalLink,
+  Flame,
   Lock,
   User,
   UserCircle,
   Wallet,
 } from "lucide-react";
-import { Flame } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { BurnSheet } from "@/components/manage-dropdown/sheets/burn-sheet";
-import type { Dnum } from "dnum";
 
 const columnHelper = createColumnHelper<TokenBalance>();
 

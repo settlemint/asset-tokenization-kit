@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
 import { from } from "dnum";
-import React from "react";
+import type React from "react";
 import { describe, expect, test, vi } from "vitest";
 import { formatValue } from "./index";
 import { safeToString } from "./safe-to-string";
@@ -40,7 +40,7 @@ vi.mock("@/components/web3/web3-address", () => {
   };
 });
 
-vi.mock("@/lib/zod/validators/ethereum-address", () => ({
+vi.mock("@atk/zod/validators/ethereum-address", () => ({
   getEthereumAddress: (value: unknown) => {
     const addr = String(value);
     if (addr.startsWith("0x") && addr.length === 42) {

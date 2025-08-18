@@ -1,3 +1,12 @@
+import {
+  type FiatCurrency,
+  fiatCurrencyMetadata,
+} from "@atk/zod/validators/fiat-currency";
+import { createLogger } from "@settlemint/sdk-utils/logging";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import {
   createOnboardingBeforeLoad,
@@ -7,16 +16,7 @@ import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/use-app-form";
-import {
-  fiatCurrencyMetadata,
-  type FiatCurrency,
-} from "@/lib/zod/validators/fiat-currency";
 import { orpc } from "@/orpc/orpc-client";
-import { createLogger } from "@settlemint/sdk-utils/logging";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 
 const logger = createLogger();
 

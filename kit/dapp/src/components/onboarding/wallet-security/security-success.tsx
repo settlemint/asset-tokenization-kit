@@ -2,8 +2,8 @@ import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
-import { VerificationType } from "@/lib/zod/validators/verification-type";
 import { orpc } from "@/orpc/orpc-client";
+import { VerificationType } from "@atk/zod/validators/verification-type";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 

@@ -1,6 +1,6 @@
 import {
-  ActionsCell,
   type ActionItem,
+  ActionsCell,
 } from "@/components/data-table/cells/actions-cell";
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
@@ -9,12 +9,12 @@ import { ComponentErrorBoundary } from "@/components/error/component-error-bound
 import { BlocklistSheet } from "@/components/manage-dropdown/sheets/blocklist-sheet";
 import { Button } from "@/components/ui/button";
 import { Web3Address } from "@/components/web3/web3-address";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { orpc } from "@/orpc/orpc-client";
+import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
+import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
 import { useQuery } from "@tanstack/react-query";
-import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
