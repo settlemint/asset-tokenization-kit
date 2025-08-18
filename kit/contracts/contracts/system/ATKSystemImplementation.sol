@@ -519,9 +519,6 @@ contract ATKSystemImplementation is
         address localIssuerIdentity = IATKIdentityFactory(localIdentityFactoryProxy).createContractIdentity(address(this));
         _issuerIdentity = localIssuerIdentity;
 
-        // Grant ISSUER_CLAIM_MANAGER_ROLE to the system manager (initial admin) for managing issuer claims
-        IATKSystemAccessManager(_accessManager).grantRole(ATKPeopleRoles.ISSUER_CLAIM_MANAGER_ROLE, _msgSender());
-
         // Register the issuer identity as a trusted issuer for TOPIC_ISSUER claims
         uint256[] memory issuerClaimTopics = new uint256[](1);
         issuerClaimTopics[0] = IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).getTopicId(ATKTopics.TOPIC_ISSUER);
@@ -843,7 +840,7 @@ contract ATKSystemImplementation is
     /// @notice Checks if the caller can add claims to the issuer identity
     /// @dev Only accounts with ISSUER_CLAIM_MANAGER_ROLE can add claims
     function canAddClaim(address actor) external view override returns (bool) {
-        return _accessManager != address(0) && 
+        return _accessManager != address(0) &&
                IATKSystemAccessManager(_accessManager).hasRole(ATKPeopleRoles.ISSUER_CLAIM_MANAGER_ROLE, actor);
     }
 
@@ -851,7 +848,7 @@ contract ATKSystemImplementation is
     /// @notice Checks if the caller can remove claims from the issuer identity
     /// @dev Only accounts with ISSUER_CLAIM_MANAGER_ROLE can remove claims
     function canRemoveClaim(address actor) external view override returns (bool) {
-        return _accessManager != address(0) && 
+        return _accessManager != address(0) &&
                IATKSystemAccessManager(_accessManager).hasRole(ATKPeopleRoles.ISSUER_CLAIM_MANAGER_ROLE, actor);
     }
 
@@ -867,14 +864,14 @@ contract ATKSystemImplementation is
         // Get the topic ID for ISSUER claims
         IATKTopicSchemeRegistry topicRegistry = IATKTopicSchemeRegistry(_topicSchemeRegistryProxy);
         uint256 topicId = topicRegistry.getTopicId(ATKTopics.TOPIC_ISSUER);
-        
+
         // Encode the claim data according to the topic signature: "address issuerAddress"
         bytes memory claimData = abi.encode(_issuerIdentity);
-        
+
         // Issue the claim from the issuer identity to the target identity
         IATKContractIdentity issuerIdentityContract = IATKContractIdentity(_issuerIdentity);
         IIdentity targetIdentityContract = IIdentity(targetIdentity);
-        
+
         issuerIdentityContract.issueClaimTo(
             targetIdentityContract,
             topicId,

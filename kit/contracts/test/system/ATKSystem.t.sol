@@ -23,13 +23,22 @@ import { IATKTypedImplementationRegistry } from "../../contracts/system/IATKType
 import { IATKCompliance } from "../../contracts/system/compliance/IATKCompliance.sol";
 import { IATKSystemAccessManaged } from "../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
 import { ATKRoles } from "../../contracts/system/ATKRoles.sol";
+import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
+import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
+import { IContractWithIdentity } from "../../contracts/system/identity-factory/IContractWithIdentity.sol";
+import { IATKContractIdentity } from "../../contracts/system/identity-factory/identities/IATKContractIdentity.sol";
+import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
+import { IERC735 } from "@onchainid/contracts/interface/IERC735.sol";
+import { MockedIdentity } from "../utils/mocks/MockedIdentity.sol";
 
 // Import system errors
 import {
     SystemAlreadyBootstrapped,
     ComplianceImplementationNotSet,
     IdentityRegistryImplementationNotSet,
-    InvalidImplementationInterface
+    InvalidImplementationInterface,
+    IssuerIdentityNotInitialized,
+    InvalidTargetIdentity
 } from "../../contracts/system/ATKSystemErrors.sol";
 
 // Import actual implementations
@@ -688,5 +697,142 @@ contract ATKSystemTest is Test {
             IATKTypedImplementationRegistry(address(atkSystem)).implementation(COMPLIANCE_MODULE_REGISTRY) != address(0)
         );
         assertTrue(IATKTypedImplementationRegistry(address(atkSystem)).implementation(ADDON_REGISTRY) != address(0));
+    }
+
+    // --- Issuer Identity Tests ---
+
+    function test_IssuerIdentity_CreatedDuringBootstrap() public view {
+        // Test that issuer identity is created and accessible after bootstrap
+        address issuerIdentity = ATKSystemImplementation(address(atkSystem)).issuerIdentity();
+        assertTrue(issuerIdentity != address(0), "Issuer identity should be created during bootstrap");
+    }
+
+    function test_IssuerIdentity_ImplementsIContractWithIdentity() public view {
+        // Test that the system implements IContractWithIdentity for issuer identity management
+        assertTrue(
+            IERC165(address(atkSystem)).supportsInterface(type(IContractWithIdentity).interfaceId),
+            "System should implement IContractWithIdentity interface"
+        );
+
+        // Test onchainID returns the issuer identity
+        address onchainID = IContractWithIdentity(address(atkSystem)).onchainID();
+        address issuerIdentity = ATKSystemImplementation(address(atkSystem)).issuerIdentity();
+        assertEq(onchainID, issuerIdentity, "onchainID should return the issuer identity address");
+    }
+
+    function test_IssuerIdentity_ClaimPermissions() public view {
+        // Test that only accounts with ISSUER_CLAIM_MANAGER_ROLE can manage claims
+
+        // Admin should be able to manage claims (granted ISSUER_CLAIM_MANAGER_ROLE during bootstrap)
+        assertTrue(
+            IContractWithIdentity(address(atkSystem)).canAddClaim(admin),
+            "Admin should be able to add claims to issuer identity"
+        );
+        assertTrue(
+            IContractWithIdentity(address(atkSystem)).canRemoveClaim(admin),
+            "Admin should be able to remove claims from issuer identity"
+        );
+
+        // User should not be able to manage claims
+        assertFalse(
+            IContractWithIdentity(address(atkSystem)).canAddClaim(user),
+            "Regular user should not be able to add claims to issuer identity"
+        );
+        assertFalse(
+            IContractWithIdentity(address(atkSystem)).canRemoveClaim(user),
+            "Regular user should not be able to remove claims from issuer identity"
+        );
+    }
+
+    function test_IssueIssuerClaim_Success() public {
+        // Test successful issuer claim issuance by token factory using a mocked identity
+
+        // Create a mocked identity that records claims
+        MockedIdentity subject = new MockedIdentity();
+
+        // Create a test token factory address to use
+        address testTokenFactory = makeAddr("testTokenFactory");
+
+        // Debug: Check if admin has DEFAULT_ADMIN_ROLE
+        bool hasDefaultAdmin = systemUtils.systemAccessManager().hasRole(ATKRoles.DEFAULT_ADMIN_ROLE, admin);
+        assertTrue(hasDefaultAdmin, "Admin should have DEFAULT_ADMIN_ROLE");
+
+        // Grant TOKEN_FACTORY_MODULE_ROLE to test factory using admin privileges
+        // First admin needs TOKEN_FACTORY_REGISTRY_MODULE_ROLE to grant TOKEN_FACTORY_MODULE_ROLE
+        vm.startPrank(admin);
+        systemUtils.systemAccessManager().grantRole(ATKSystemRoles.TOKEN_FACTORY_REGISTRY_MODULE_ROLE, admin);
+        systemUtils.systemAccessManager().grantRole(ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, testTokenFactory);
+        vm.stopPrank();
+
+        // Verify the role was granted
+        bool hasRole = systemUtils.systemAccessManager().hasRole(ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, testTokenFactory);
+        assertTrue(hasRole, "Token factory should have been granted the role");
+
+        // Issue claim as token factory
+        vm.prank(testTokenFactory);
+        ATKSystemImplementation(address(atkSystem)).issueIssuerClaim(address(subject));
+
+        // Verify the claim was recorded on the mocked identity for the ISSUER topic
+        uint256 topicId = ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ISSUER);
+        assertEq(subject.claimCountByTopic(topicId), 1, "Issuer claim should be added to the subject identity");
+    }
+
+    function test_IssueIssuerClaim_UnauthorizedReverts() public {
+        // Test that unauthorized accounts cannot issue issuer claims
+        address mockIdentity = address(new MockedIdentity());
+
+        // User without TOKEN_FACTORY_MODULE_ROLE should not be able to issue claims
+        vm.prank(user);
+        vm.expectRevert(); // Should revert due to access control
+        ATKSystemImplementation(address(atkSystem)).issueIssuerClaim(mockIdentity);
+    }
+
+    function test_IssueIssuerClaim_InvalidTargetIdentityReverts() public {
+        // Test that issuing claim to zero address reverts
+
+        // Create a test token factory address to use
+        address testTokenFactory = makeAddr("testTokenFactory");
+
+        // Grant TOKEN_FACTORY_MODULE_ROLE to test factory using admin privileges
+        // First admin needs TOKEN_FACTORY_REGISTRY_MODULE_ROLE to grant TOKEN_FACTORY_MODULE_ROLE
+        vm.startPrank(admin);
+        systemUtils.systemAccessManager().grantRole(ATKSystemRoles.TOKEN_FACTORY_REGISTRY_MODULE_ROLE, admin);
+        systemUtils.systemAccessManager().grantRole(ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, testTokenFactory);
+        vm.stopPrank();
+
+        // Try to issue claim to zero address
+        vm.prank(testTokenFactory);
+        vm.expectRevert(InvalidTargetIdentity.selector);
+        ATKSystemImplementation(address(atkSystem)).issueIssuerClaim(address(0));
+    }
+
+    function test_IssuerIdentity_TopicRegistered() public view {
+        // Test that TOPIC_ISSUER is properly registered
+        uint256 topicId = ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ISSUER);
+        assertTrue(topicId != 0, "TOPIC_ISSUER should be registered with non-zero ID");
+    }
+
+    function test_IssuerIdentity_TrustedIssuer() public view {
+        // Test that issuer identity is registered as trusted issuer for TOPIC_ISSUER
+        address issuerIdentity = ATKSystemImplementation(address(atkSystem)).issuerIdentity();
+        uint256 topicId = ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ISSUER);
+
+        // Check if issuer identity is trusted for the TOPIC_ISSUER
+        bool isTrusted = IERC3643TrustedIssuersRegistry(atkSystem.trustedIssuersRegistry())
+            .isTrustedIssuer(issuerIdentity);
+        assertTrue(isTrusted, "Issuer identity should be registered as trusted issuer");
+
+        // Check if it's trusted specifically for TOPIC_ISSUER topic
+        bool isTrustedForTopic = IERC3643TrustedIssuersRegistry(atkSystem.trustedIssuersRegistry())
+            .hasClaimTopic(issuerIdentity, topicId);
+        assertTrue(isTrustedForTopic, "Issuer identity should be trusted for TOPIC_ISSUER topic");
+    }
+
+    function test_IssuerClaimManagerRole_GrantedToAdmin() public view {
+        // Test that admin receives ISSUER_CLAIM_MANAGER_ROLE during bootstrap
+        assertTrue(
+            systemUtils.systemAccessManager().hasRole(ATKPeopleRoles.ISSUER_CLAIM_MANAGER_ROLE, admin),
+            "Admin should have ISSUER_CLAIM_MANAGER_ROLE after bootstrap"
+        );
     }
 }
