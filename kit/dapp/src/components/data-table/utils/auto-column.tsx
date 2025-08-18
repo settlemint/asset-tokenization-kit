@@ -1,4 +1,5 @@
-import { formatValue, type FormatValueOptions } from "@/lib/utils/format-value";
+import { formatValue } from "@/lib/utils/format-value";
+import type { FormatValueOptions } from "@/lib/utils/format-value/types";
 import type { CellContext, ColumnDef } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
 import { withAutoFilterFn } from "../filters/functions/auto-filter";
@@ -27,7 +28,7 @@ function FormattedCell<TData, TValue>({
       {formatValue(value, {
         type: meta?.type as FormatValueOptions["type"],
         displayName: meta?.displayName,
-        currency: meta?.currency,
+        currency: meta?.currency as FormatValueOptions["currency"],
         emptyValue: meta?.emptyValue,
         showPrettyName: meta?.showPrettyName,
       })}

@@ -6,6 +6,7 @@ import {
 import { Web3Address } from "@/components/web3/web3-address";
 import { withForm } from "@/hooks/use-app-form";
 import { formatDate } from "@/lib/utils/date";
+import { formatValue } from "@/lib/utils/format-value";
 import { useStore } from "@tanstack/react-store";
 import { Settings } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -33,7 +34,10 @@ export const BondSummaryFields = withForm({
       >
         <FormSummaryItem
           label={t("form.fields.cap.label")}
-          value={values.cap as string}
+          value={formatValue(values.cap as string, {
+            type: "currency",
+            currency: { assetSymbol: values.symbol },
+          })}
         />
         <FormSummaryItem
           label={t("form.fields.maturityDate.label")}

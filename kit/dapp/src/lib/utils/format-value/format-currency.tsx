@@ -10,6 +10,18 @@ export function FormatCurrency({ value, options }: FormatValueProps) {
   // Use safe number conversion to handle large values without precision loss
   const currencyValue = safeToNumber(value);
 
+  if (typeof currency === "object" && "assetSymbol" in currency) {
+    const formatted = new Intl.NumberFormat(locale, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(currencyValue);
+    return (
+      <span className="text-right block tabular-nums">
+        {formatted} {currency.assetSymbol}
+      </span>
+    );
+  }
+
   // Try to format with Intl.NumberFormat
   try {
     return (
@@ -22,7 +34,7 @@ export function FormatCurrency({ value, options }: FormatValueProps) {
       </span>
     );
   } catch {
-    // If currency is not recognized (e.g., token symbols), format as "value symbol"
+    // If currency is not recognized, format as "value currency"
     const formatted = new Intl.NumberFormat(locale, {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,

@@ -162,6 +162,7 @@ function RouteComponent() {
                 label={t("system-settings.form.baseCurrency.label")}
                 description={t("system-settings.form.baseCurrency.description")}
                 options={BASE_CURRENCY_OPTIONS}
+                className="w-1/2"
               />
             )}
           </form.AppField>
