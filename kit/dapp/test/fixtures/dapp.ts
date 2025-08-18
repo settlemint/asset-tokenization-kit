@@ -1,6 +1,5 @@
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { config } from "dotenv";
-import { startServer } from "@/orpc/server";
 
 const logger = createLogger({ level: "info" });
 
@@ -14,6 +13,7 @@ export function getDappUrl() {
 
 export async function startApiServer() {
   try {
+    const { startServer } = await import("@/orpc/server");
     const { stop, url } = await startServer(0);
     dappUrl = url;
     return { stop, url };
