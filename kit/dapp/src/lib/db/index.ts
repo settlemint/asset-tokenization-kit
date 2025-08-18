@@ -14,6 +14,7 @@
  * @see {@link ../settlemint/postgres} - PostgreSQL connection pool configuration
  */
 
+import { env } from "@/lib/env";
 import { hasuraMetadataClient } from "@/lib/settlemint/hasura";
 import { postgresPool } from "@/lib/settlemint/postgres";
 import { trackAllTables } from "@settlemint/sdk-hasura";
@@ -35,6 +36,9 @@ let migrationStatus: "migrating" | "migrated" | "none" = "none";
  *
  */
 export const migrateDatabase = async () => {
+  if (env.DISABLE_MIGRATIONS_ON_STARTUP) {
+    return;
+  }
   if (migrationStatus !== "none") {
     return;
   }

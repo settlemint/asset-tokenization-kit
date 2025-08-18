@@ -11,7 +11,6 @@
  * @see {@link ./routes/router} - Main router with all endpoints
  */
 
-import i18n from "@/lib/i18n";
 import { bigDecimalSerializer } from "@/lib/zod/validators/bigdecimal";
 import { bigIntSerializer } from "@/lib/zod/validators/bigint";
 import { timestampSerializer } from "@/lib/zod/validators/timestamp";
@@ -68,10 +67,6 @@ const getORPCClient = createIsomorphicFn()
   .client((): RouterClient<typeof router> => {
     const link = new RPCLink({
       url: `${globalThis.location.origin}/api/rpc`,
-      // Pass the current language as a header for i18n middleware
-      headers: () => ({
-        "Accept-Language": i18n.language || "en",
-      }),
       async fetch(url, options) {
         return await globalThis.fetch(url, {
           ...options,

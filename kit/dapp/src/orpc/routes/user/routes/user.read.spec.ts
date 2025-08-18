@@ -33,38 +33,46 @@ describe("User read", () => {
 
   beforeAll(async () => {
     // Setup test users
-    await setupUser(TEST_USER);
-    await setupUser(OTHER_USER);
-    await setupUser(UNAUTHORIZED_USER);
+    await Promise.all([
+      setupUser(TEST_USER),
+      setupUser(OTHER_USER),
+      setupUser(UNAUTHORIZED_USER),
+    ]);
 
-    testUserData = await getUserData(TEST_USER);
-    otherUserData = await getUserData(OTHER_USER);
-    unauthorizedUserData = await getUserData(UNAUTHORIZED_USER);
+    [testUserData, otherUserData, unauthorizedUserData] = await Promise.all([
+      getUserData(TEST_USER),
+      getUserData(OTHER_USER),
+      getUserData(UNAUTHORIZED_USER),
+    ]);
 
     // Create KYC profiles for better test coverage
-    const testUserHeaders = await signInWithUser(TEST_USER);
+    const [testUserHeaders, otherUserHeaders] = await Promise.all([
+      signInWithUser(TEST_USER),
+      signInWithUser(OTHER_USER),
+    ]);
     const testUserClient = getOrpcClient(testUserHeaders);
-    await testUserClient.user.kyc.upsert({
-      userId: testUserData.id,
-      firstName: "TestFirst",
-      lastName: "TestLast",
-      dob: new Date("1990-01-01"),
-      country: "US",
-      residencyStatus: "resident",
-      nationalId: "TEST123456",
-    });
-
-    const otherUserHeaders = await signInWithUser(OTHER_USER);
     const otherUserClient = getOrpcClient(otherUserHeaders);
-    await otherUserClient.user.kyc.upsert({
-      userId: otherUserData.id,
-      firstName: "OtherFirst",
-      lastName: "OtherLast",
-      dob: new Date("1985-05-15"),
-      country: "GB",
-      residencyStatus: "resident",
-      nationalId: "OTHER987654",
-    });
+
+    await Promise.all([
+      testUserClient.user.kyc.upsert({
+        userId: testUserData.id,
+        firstName: "TestFirst",
+        lastName: "TestLast",
+        dob: new Date("1990-01-01"),
+        country: "US",
+        residencyStatus: "resident",
+        nationalId: "TEST123456",
+      }),
+      otherUserClient.user.kyc.upsert({
+        userId: otherUserData.id,
+        firstName: "OtherFirst",
+        lastName: "OtherLast",
+        dob: new Date("1985-05-15"),
+        country: "GB",
+        residencyStatus: "resident",
+        nationalId: "OTHER987654",
+      }),
+    ]);
   });
 
   describe("Admin access", () => {

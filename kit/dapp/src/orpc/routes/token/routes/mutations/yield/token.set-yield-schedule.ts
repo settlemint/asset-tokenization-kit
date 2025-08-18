@@ -10,7 +10,7 @@ import { logger } from "better-auth";
 
 const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
   mutation TokenSetYieldSchedule(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
@@ -19,7 +19,7 @@ const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
     setYieldSchedule: ISMARTYieldSetYieldSchedule(
       address: $address
       from: $from
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       input: {
         schedule: $schedule
@@ -32,7 +32,7 @@ const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
 
 const TOKEN_CREATE_YIELD_SCHEDULE_MUTATION = portalGraphql(`
   mutation TokenCreateYieldSchedule(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
@@ -45,7 +45,7 @@ const TOKEN_CREATE_YIELD_SCHEDULE_MUTATION = portalGraphql(`
     createSchedule: IATKFixedYieldScheduleFactoryCreate(
       address: $address
       from: $from
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       input: {
         country: 1
@@ -103,21 +103,14 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
       // Check if transaction was successful
       if (receipt.status !== "Success") {
         throw errors.INTERNAL_SERVER_ERROR({
-          message: context.t(
-            "tokens:api.mutations.yield.messages.transactionFailed"
-          ),
-          cause: new Error(
-            context.t(
-              "tokens:api.mutations.yield.messages.transactionFailedWithStatus",
-              { status: receipt.status }
-            )
-          ),
+          message: "Transaction failed",
+          cause: new Error(`Transaction failed with status: ${receipt.status}`),
         });
       }
     } catch (error_) {
       const error = error_ as Error;
       throw errors.INTERNAL_SERVER_ERROR({
-        message: context.t("tokens:api.mutations.yield.messages.receiptFailed"),
+        message: "Failed to get transaction receipt",
         cause: error.message,
       });
     }
@@ -141,14 +134,8 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
     }
     if (!scheduleAddress) {
       throw errors.INTERNAL_SERVER_ERROR({
-        message: context.t(
-          "tokens:api.mutations.yield.messages.createScheduleFailed"
-        ),
-        cause: new Error(
-          context.t(
-            "tokens:api.mutations.yield.messages.scheduleAddressNotFound"
-          )
-        ),
+        message: "Failed to create yield schedule",
+        cause: new Error("Schedule address not found in transaction logs"),
       });
     }
     // Now set the yield schedule with the created schedule address

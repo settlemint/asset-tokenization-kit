@@ -36,7 +36,7 @@ const logger = createLogger();
  */
 const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
   mutation CreateTokenFactory(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
@@ -45,7 +45,7 @@ const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
     $name: String!
   ) {
     IATKTokenFactoryRegistryRegisterTokenFactory(
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       address: $address
       from: $from

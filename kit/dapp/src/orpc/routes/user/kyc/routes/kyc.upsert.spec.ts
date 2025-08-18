@@ -26,11 +26,12 @@ describe("KYC upsert", () => {
 
   beforeAll(async () => {
     // Setup test users
-    await setupUser(TEST_USER);
-    await setupUser(OTHER_USER);
+    await Promise.all([setupUser(TEST_USER), setupUser(OTHER_USER)]);
 
-    testUserData = await getUserData(TEST_USER);
-    otherUserData = await getUserData(OTHER_USER);
+    [testUserData, otherUserData] = await Promise.all([
+      getUserData(TEST_USER),
+      getUserData(OTHER_USER),
+    ]);
   });
 
   it("can create a new KYC profile", async () => {
