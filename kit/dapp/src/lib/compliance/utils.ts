@@ -1,7 +1,7 @@
-import {
+import type {
   ComplianceModulePairInputArray,
   ComplianceTypeId,
-} from "@/lib/zod/validators/compliance";
+} from "@atk/zod/validators/compliance";
 
 /**
  * Helper function to check if a compliance module type is enabled

@@ -1,10 +1,7 @@
-import {
-  addonFactoryTypeId,
-  addonType,
-} from "@/lib/zod/validators/addon-types";
-import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
+import { addonFactoryTypeId, addonType } from "@atk/zod/validators/addon-types";
+import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
+import { ethereumHash } from "@atk/zod/validators/ethereum-hash";
 import { z } from "zod";
 
 /**

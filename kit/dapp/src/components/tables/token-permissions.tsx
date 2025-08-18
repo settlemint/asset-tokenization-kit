@@ -1,5 +1,16 @@
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
+import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
+import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
+import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import { Shield } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+//
+import {
+  type ActionItem,
+  ActionsCell,
+} from "@/components/data-table/cells/actions-cell";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { ChangeRolesSheet } from "@/components/manage-dropdown/sheets/change-roles-sheet";
@@ -7,19 +18,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Web3Address } from "@/components/web3/web3-address";
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { getAccessControlEntries } from "@/orpc/helpers/access-control-helpers";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
-import { Shield } from "lucide-react";
-import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-//
-import {
-  ActionsCell,
-  type ActionItem,
-} from "@/components/data-table/cells/actions-cell";
 
 type PermissionRow = {
   id: string;

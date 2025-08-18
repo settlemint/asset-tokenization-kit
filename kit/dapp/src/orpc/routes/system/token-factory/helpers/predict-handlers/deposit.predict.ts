@@ -1,10 +1,10 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
 import type {
   PredictAddressInput,
   PredictAddressOutput,
 } from "@/orpc/routes/system/token-factory/routes/factory.predict-address.schema";
 import { PredictAddressOutputSchema } from "@/orpc/routes/system/token-factory/routes/factory.predict-address.schema";
+import { AssetTypeEnum } from "@atk/zod/validators/asset-types";
 import z from "zod";
 import type { PredictHandlerContext } from "./handler-map";
 

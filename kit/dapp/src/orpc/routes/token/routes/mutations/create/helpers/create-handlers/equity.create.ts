@@ -36,12 +36,12 @@
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
 import {
   createToken,
   type TokenCreateContext,
 } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create";
 import type { TokenCreateInput } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
+import { AssetTypeEnum } from "@atk/zod/validators/asset-types";
 
 /**
  * GraphQL mutation for equity token deployment with compliance integration.

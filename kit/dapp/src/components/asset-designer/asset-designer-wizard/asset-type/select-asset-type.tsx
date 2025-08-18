@@ -1,7 +1,7 @@
 import {
+  type AssetDesignerFormInputData,
   assetDesignerFormOptions,
   isRequiredField,
-  type AssetDesignerFormInputData,
 } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
 import { AssetExtensionsList } from "@/components/asset-extensions/asset-extensions-list";
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
@@ -10,7 +10,7 @@ import { withForm } from "@/hooks/use-app-form";
 import { useAssetClass } from "@/hooks/use-asset-class";
 import { noop } from "@/lib/utils/noop";
 import type { KeysOfUnion } from "@/lib/utils/union";
-import { getAssetTypeFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
+import { getAssetTypeFromFactoryTypeId } from "@atk/zod/validators/asset-types";
 import { useStore } from "@tanstack/react-form";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";

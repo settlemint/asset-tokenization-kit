@@ -1,7 +1,7 @@
-import type { SettingKey } from "@/lib/zod/validators/settings-key";
+import type { SettingKey } from "@atk/zod/validators/settings-key";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "@/orpc/orpc-client";
 import type { SettingsUpsertInput } from "@/orpc/routes/settings/routes/settings.upsert.schema";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 /**
  * Custom hook for managing application settings.

@@ -1,5 +1,5 @@
 import { CheckboxCard } from "@/components/form/checkbox-card";
-import type { AssetType } from "@/lib/zod/validators/asset-types";
+import type { AssetType } from "@atk/zod/validators/asset-types";
 import type { LucideIcon } from "lucide-react";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";

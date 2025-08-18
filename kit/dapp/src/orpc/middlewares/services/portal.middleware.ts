@@ -30,14 +30,14 @@
 import type { SessionUser } from "@/lib/auth";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { getVerificationId } from "@/orpc/helpers/get-verification-id";
+import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
+import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
 import {
   ethereumHash,
   getEthereumHash as getTransactionHash,
   type EthereumHash as TransactionHash,
-} from "@/lib/zod/validators/ethereum-hash";
-import { getVerificationId } from "@/orpc/helpers/get-verification-id";
-import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
+} from "@atk/zod/validators/ethereum-hash";
 import type { TadaDocumentNode } from "gql.tada";
 import { getOperationAST } from "graphql";
 import type { Variables } from "graphql-request";

@@ -21,7 +21,7 @@ A Helm chart for the observability components
 | https://kubernetes-sigs.github.io/metrics-server/ | metrics-server | 3.13.0 |
 | https://prometheus-community.github.io/helm-charts | kube-state-metrics | 6.1.4 |
 | https://prometheus-community.github.io/helm-charts | prometheus-node-exporter | 4.47.3 |
-| https://victoriametrics.github.io/helm-charts/ | victoria-metrics-single | 0.24.2 |
+| https://victoriametrics.github.io/helm-charts/ | victoria-metrics-single | 0.24.3 |
 
 ## Values
 

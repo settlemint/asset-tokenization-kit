@@ -4,7 +4,7 @@
  * Validation schemas for manually updating exchange rates.
  * @module ExchangeRatesUpdateSchema
  */
-import { fiatCurrency } from "@/lib/zod/validators/fiat-currency";
+import { fiatCurrency } from "@atk/zod/validators/fiat-currency";
 import { z } from "zod";
 
 /**

@@ -1,4 +1,4 @@
-import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
+import { ethereumHash } from "@atk/zod/validators/ethereum-hash";
 import { z } from "zod";
 
 /**
