@@ -34,20 +34,24 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
       "complianceManager",
       "tokenManager",
     ];
+    const grants = [];
     for (const role of rolesToGrant) {
-      await adminClient.system.grantRole({
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
-        },
-        address: [
-          testAddresses.valid1,
-          testAddresses.valid2,
-          testAddresses.valid3,
-        ],
-        role,
-      });
+      grants.push(
+        adminClient.system.grantRole({
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
+          },
+          address: [
+            testAddresses.valid1,
+            testAddresses.valid2,
+            testAddresses.valid3,
+          ],
+          role,
+        })
+      );
     }
+    await Promise.all(grants);
   }, 60_000);
 
   describe("successful role revokes", () => {
