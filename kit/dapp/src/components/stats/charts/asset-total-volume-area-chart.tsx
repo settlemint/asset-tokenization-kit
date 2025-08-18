@@ -2,7 +2,7 @@ import { AreaChartComponent } from "@/components/charts/area-chart";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
-import { safeToNumber } from "@/lib/utils/format-value";
+import { safeToNumber } from "@/lib/utils/format-value/safe-to-number";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { format } from "date-fns/format";

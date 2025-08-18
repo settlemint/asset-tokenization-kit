@@ -1,7 +1,6 @@
 import { formatValue, type FormatValueOptions } from "@/lib/utils/format-value";
 import type { CellContext, ColumnDef } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
-import { useTranslation } from "react-i18next";
 import { withAutoFilterFn } from "../filters/functions/auto-filter";
 
 /**
@@ -14,10 +13,8 @@ function FormattedCell<TData, TValue>({
   context: CellContext<TData, TValue>;
   children?: React.ReactNode;
 }) {
-  const { i18n } = useTranslation();
   const meta = context.column.columnDef.meta;
   const value = context.getValue();
-  const locale = i18n.language;
 
   // If children are provided, use them (allows override)
   if (children) {
@@ -31,7 +28,6 @@ function FormattedCell<TData, TValue>({
         type: meta?.type as FormatValueOptions["type"],
         displayName: meta?.displayName,
         currency: meta?.currency,
-        locale,
         emptyValue: meta?.emptyValue,
         showPrettyName: meta?.showPrettyName,
       })}

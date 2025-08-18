@@ -36,5 +36,7 @@
   "unknown": "Unknown",
   "save": "Save",
   "add": "Grant",
-  "none": "None"
+  "none": "None",
+  "yes": "Yes",
+  "no": "No"
 }
