@@ -179,13 +179,21 @@ contracts, subgraphs, and ABIs.
 bun install
 
 # Login and connect to SettleMint
-bunx settlemint login
-bunx settlemint connect
+bunx settlemint login --instance https://console.settlemint.com
+bunx settlemint connect --instance https://console.settlemint.com
 
-# Generate types and start development server
+# Generate types
 cd kit/dapp
 bun codegen:settlemint
 bun addresses
+
+# Ensure database schema is up to date
+bun db:push
+bunx settlemint hasura track -a
+cd ../.. # Go back to the root directory
+bun codegen --force # `--force` flag ensures the types are regenerated
+
+# Start development server
 bun dev
 ```
 
@@ -211,8 +219,8 @@ follow these steps:
 bun install
 
 # Login and connect to SettleMint
-bun settlemint login
-bun settlemint connect
+bun settlemint login --instance https://console.settlemint.com
+bun settlemint connect --instance https://console.settlemint.com
 
 # Deploy contracts
 cd kit/contracts
@@ -229,7 +237,12 @@ bun codegen
 # Setup dapp
 cd kit/dapp
 bun addresses
+
+# Ensure database schema is up to date
 bun db:push
+bunx settlemint hasura track -a
+cd ../.. # Go back to the root directory
+bun codegen --force
 
 # Start development server
 bun dev
@@ -253,14 +266,13 @@ To modify database schema:
 
    ```bash
    # Run in the kit/dapp directory
-   cd kit/dapp
    bun db:push
    ```
 
 3. Ensure your updates are registered with Hasura by executing:
 
    ```bash
-   settlemint hasura track -a
+   bunx settlemint hasura track -a
    ```
 
 4. Regenerate GraphQL types by running the following command in the root

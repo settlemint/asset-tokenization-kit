@@ -59,13 +59,13 @@
     "@react-email/components": "0.0.38",
     "@scalar/api-reference-react": "0.6.29",
     "@scalar/types": "0.1.14",
-    "@settlemint/sdk-blockscout": "2.3.5",
-    "@settlemint/sdk-hasura": "2.3.5",
-    "@settlemint/sdk-ipfs": "2.3.5",
-    "@settlemint/sdk-minio": "2.3.5",
-    "@settlemint/sdk-next": "2.3.5",
-    "@settlemint/sdk-portal": "2.3.5",
-    "@settlemint/sdk-thegraph": "2.3.5",
+    "@settlemint/sdk-blockscout": "2.5.11",
+    "@settlemint/sdk-hasura": "2.5.11",
+    "@settlemint/sdk-ipfs": "2.5.11",
+    "@settlemint/sdk-minio": "2.5.11",
+    "@settlemint/sdk-next": "2.5.11",
+    "@settlemint/sdk-portal": "2.5.11",
+    "@settlemint/sdk-thegraph": "2.5.11",
     "@sinclair/typebox": "0.34.33",
     "@tanstack/react-table": "8.21.3",
     "@types/papaparse": "5.3.16",
@@ -137,6 +137,8 @@
   ],
   "overrides": {
     "react-is": "19.1.0",
-    "@sinclair/typebox": "0.34.33"
+    "@sinclair/typebox": "0.34.33",
+    "better-auth": "1.2.7",
+    "zod": "3.24.4"
   }
 }
