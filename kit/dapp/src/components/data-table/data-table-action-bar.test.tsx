@@ -355,7 +355,9 @@ describe("DataTableActionBar", () => {
       await user.click(actionItem);
 
       // Should show processing state
-      expect(screen.getByText("bulkActions.processing")).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText("bulkActions.processing")).toBeInTheDocument();
+      });
     });
   });
 
