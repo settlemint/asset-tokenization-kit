@@ -179,8 +179,8 @@ contracts, subgraphs, and ABIs.
 bun install
 
 # Login and connect to SettleMint
-bunx settlemint login
-bunx settlemint connect
+bunx settlemint login --instance https://console.settlemint.com
+bunx settlemint connect --instance https://console.settlemint.com
 
 # Generate types and start development server
 cd kit/dapp
@@ -211,8 +211,8 @@ follow these steps:
 bun install
 
 # Login and connect to SettleMint
-bun settlemint login
-bun settlemint connect
+bun settlemint login --instance https://console.settlemint.com
+bun settlemint connect --instance https://console.settlemint.com
 
 # Deploy contracts
 cd kit/contracts
