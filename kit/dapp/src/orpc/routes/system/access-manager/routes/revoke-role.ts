@@ -1,6 +1,5 @@
 import { getRoleByFieldName } from "@/lib/constants/roles";
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
@@ -9,7 +8,7 @@ import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 const REVOKE_ROLE_MUTATION = portalGraphql(`
   mutation RevokeRoleMutation(
     $verificationId: String
-    $challengeResponse: String!
+    $challengeResponse: String
     $address: String!
     $account: String!
     $role: String!
@@ -31,7 +30,7 @@ const REVOKE_ROLE_MUTATION = portalGraphql(`
 const BATCH_REVOKE_ROLE_MUTATION = portalGraphql(`
   mutation BatchRevokeRoleMutation(
     $verificationId: String
-    $challengeResponse: String!
+    $challengeResponse: String
     $address: String!
     $role: String!
     $accounts: [String!]!
@@ -53,7 +52,7 @@ const BATCH_REVOKE_ROLE_MUTATION = portalGraphql(`
 const REVOKE_MULTIPLE_ROLES_MUTATION = portalGraphql(`
   mutation RevokeMultipleRolesMutation(
     $verificationId: String
-    $challengeResponse: String!
+    $challengeResponse: String
     $address: String!
     $account: String!
     $roles: [String!]!
@@ -81,7 +80,7 @@ export const revokeRole = portalRouter.system.revokeRole
     })
   )
   .handler(async ({ input, context, errors }) => {
-    const { verification, address, role } = input;
+    const { walletVerification, address, role } = input;
     const { auth, system } = context;
     const sender = auth.user;
 
@@ -127,11 +126,6 @@ export const revokeRole = portalRouter.system.revokeRole
       });
     }
 
-    const challengeResponse = await handleChallenge(sender, {
-      code: verification.verificationCode,
-      type: verification.verificationType,
-    });
-
     // Execute the appropriate mutation based on the use case
     if (uniqueAddresses.length === 1 && uniqueRoles.length === 1) {
       // Single address, single role - use revokeRole
@@ -143,13 +137,20 @@ export const revokeRole = portalRouter.system.revokeRole
           message: "Unexpected error: Invalid address or role configuration",
         });
       }
-      await context.portalClient.mutate(REVOKE_ROLE_MUTATION, {
-        address: system.systemAccessManager.id,
-        from: sender.wallet,
-        account,
-        role: roleInfo.bytes,
-        ...challengeResponse,
-      });
+      await context.portalClient.mutate(
+        REVOKE_ROLE_MUTATION,
+        {
+          address: system.systemAccessManager.id,
+          from: sender.wallet,
+          account,
+          role: roleInfo.bytes,
+        },
+        {
+          sender,
+          code: walletVerification.secretVerificationCode,
+          type: walletVerification.verificationType,
+        }
+      );
     } else if (uniqueAddresses.length > 1 && uniqueRoles.length === 1) {
       // Multiple addresses, single role - use batchRevokeRole
       const roleInfo = roleInfos[0];
@@ -159,13 +160,20 @@ export const revokeRole = portalRouter.system.revokeRole
           message: "Unexpected error: Invalid role configuration",
         });
       }
-      await context.portalClient.mutate(BATCH_REVOKE_ROLE_MUTATION, {
-        address: system.systemAccessManager.id,
-        from: sender.wallet,
-        accounts: uniqueAddresses,
-        role: roleInfo.bytes,
-        ...challengeResponse,
-      });
+      await context.portalClient.mutate(
+        BATCH_REVOKE_ROLE_MUTATION,
+        {
+          address: system.systemAccessManager.id,
+          from: sender.wallet,
+          accounts: uniqueAddresses,
+          role: roleInfo.bytes,
+        },
+        {
+          sender,
+          code: walletVerification.secretVerificationCode,
+          type: walletVerification.verificationType,
+        }
+      );
     } else if (uniqueAddresses.length === 1 && uniqueRoles.length > 1) {
       // Single address, multiple roles - use revokeMultipleRoles
       const account = uniqueAddresses[0];
@@ -176,13 +184,20 @@ export const revokeRole = portalRouter.system.revokeRole
         });
       }
       const roleBytes = roleInfos.map((r) => r.bytes);
-      await context.portalClient.mutate(REVOKE_MULTIPLE_ROLES_MUTATION, {
-        address: system.systemAccessManager.id,
-        from: sender.wallet,
-        account,
-        roles: roleBytes,
-        ...challengeResponse,
-      });
+      await context.portalClient.mutate(
+        REVOKE_MULTIPLE_ROLES_MUTATION,
+        {
+          address: system.systemAccessManager.id,
+          from: sender.wallet,
+          account,
+          roles: roleBytes,
+        },
+        {
+          sender,
+          code: walletVerification.secretVerificationCode,
+          type: walletVerification.verificationType,
+        }
+      );
     } else {
       // Multiple addresses, multiple roles - not supported in a single transaction
       throw errors.INPUT_VALIDATION_FAILED({

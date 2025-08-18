@@ -10,11 +10,11 @@ export const UserVerificationSchema = z.object({
   /**
    * The verification code
    */
-  verificationCode: z.string(),
+  secretVerificationCode: z.string(),
   /**
    * The verification type
    */
-  verificationType: verificationType.default("pincode"),
+  verificationType: verificationType.default("PINCODE"),
 });
 
 /**

@@ -44,11 +44,11 @@ export const Summary = withForm({
             </Button>
             <form.VerificationButton
               onSubmit={onSubmit}
-              verification={{
+              walletVerification={{
                 title: t("verification.confirm-title"),
                 description: t("verification.confirm-description"),
                 setField: (verification) => {
-                  form.setFieldValue("verification", verification);
+                  form.setFieldValue("walletVerification", verification);
                 },
               }}
             >

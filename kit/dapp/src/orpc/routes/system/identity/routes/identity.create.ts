@@ -1,5 +1,4 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
 import { call, ORPCError } from "@orpc/server";
@@ -28,7 +27,7 @@ const IDENTITY_CREATE_MUTATION = portalGraphql(`
 
 export const identityCreate = portalRouter.system.identityCreate.handler(
   async ({ input, context, errors }) => {
-    const { verification } = input;
+    const { walletVerification } = input;
     const { auth, system } = context;
     const sender = auth.user;
 
@@ -59,16 +58,18 @@ export const identityCreate = portalRouter.system.identityCreate.handler(
       });
     }
 
-    const challengeResponse = await handleChallenge(sender, {
-      code: verification.verificationCode,
-      type: verification.verificationType,
-    });
-
-    await context.portalClient.mutate(IDENTITY_CREATE_MUTATION, {
-      address: system.identityFactory,
-      from: sender.wallet,
-      ...challengeResponse,
-    });
+    await context.portalClient.mutate(
+      IDENTITY_CREATE_MUTATION,
+      {
+        address: system.identityFactory,
+        from: sender.wallet,
+      },
+      {
+        sender,
+        code: walletVerification.secretVerificationCode,
+        type: walletVerification.verificationType,
+      }
+    );
 
     // Return the updated account data
     return await call(

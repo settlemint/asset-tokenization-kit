@@ -24,9 +24,9 @@ describe.concurrent("Token Stats: Supply Changes", () => {
       type: "stablecoin",
       countryCode: "056",
       initialModulePairs: [],
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
     });
   });

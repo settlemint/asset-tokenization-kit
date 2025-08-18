@@ -1,5 +1,4 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
@@ -56,7 +55,7 @@ export const redeem = tokenRouter.token.redeem
     })
   )
   .handler(async ({ input, context, errors }): Promise<TokenRedeemOutput> => {
-    const { contract, verification, amount, redeemAll } = input;
+    const { contract, walletVerification, amount, redeemAll } = input;
     const { auth } = context;
 
     // Validate input parameters
@@ -68,23 +67,33 @@ export const redeem = tokenRouter.token.redeem
     }
 
     const sender = auth.user;
-    const challengeResponse = await handleChallenge(sender, {
-      code: verification.verificationCode,
-      type: verification.verificationType,
-    });
     // Choose mutation based on whether we're redeeming all or a specific amount
     const result = await (redeemAll
-      ? context.portalClient.mutate(TOKEN_REDEEM_ALL_MUTATION, {
-          address: contract,
-          from: sender.wallet,
-          ...challengeResponse,
-        })
-      : context.portalClient.mutate(TOKEN_REDEEM_MUTATION, {
-          address: contract,
-          from: sender.wallet,
-          amount: amount?.toString() ?? "",
-          ...challengeResponse,
-        }));
+      ? context.portalClient.mutate(
+          TOKEN_REDEEM_ALL_MUTATION,
+          {
+            address: contract,
+            from: sender.wallet,
+          },
+          {
+            sender: sender,
+            code: walletVerification.secretVerificationCode,
+            type: walletVerification.verificationType,
+          }
+        )
+      : context.portalClient.mutate(
+          TOKEN_REDEEM_MUTATION,
+          {
+            address: contract,
+            from: sender.wallet,
+            amount: amount?.toString() ?? "",
+          },
+          {
+            sender: sender,
+            code: walletVerification.secretVerificationCode,
+            type: walletVerification.verificationType,
+          }
+        ));
 
     // Get updated token data
     const updatedToken = await call(

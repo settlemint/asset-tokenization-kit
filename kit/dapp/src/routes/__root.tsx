@@ -174,11 +174,11 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
           <TanStackDevtools
             plugins={[
               {
-                name: "Tanstack Query",
+                name: "Query",
                 render: <ReactQueryDevtoolsPanel />,
               },
               {
-                name: "Tanstack Router",
+                name: "Router",
                 render: <TanStackRouterDevtoolsPanel />,
               },
             ]}

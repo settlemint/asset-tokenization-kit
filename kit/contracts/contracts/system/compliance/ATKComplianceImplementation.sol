@@ -275,7 +275,12 @@ contract ATKComplianceImplementation is
     /// @param _from Address tokens were transferred from
     /// @param _to Address tokens were transferred to
     /// @param _amount Amount of tokens transferred
-    function transferred(address _token, address _from, address _to, uint256 _amount)
+    function transferred(
+        address _token,
+        address _from,
+        address _to,
+        uint256 _amount
+    )
         external
         virtual
         override
@@ -309,12 +314,7 @@ contract ATKComplianceImplementation is
     /// @param _token Address of the token contract
     /// @param _to Address tokens were created for
     /// @param _amount Amount of tokens created
-    function created(address _token, address _to, uint256 _amount)
-        external
-        virtual
-        override
-        onlyToken(_token)
-    {
+    function created(address _token, address _to, uint256 _amount) external virtual override onlyToken(_token) {
         // First, call token-specific compliance modules
         SMARTComplianceModuleParamPair[] memory tokenModulePairs = ISMART(_token).complianceModules();
         uint256 tokenModulePairsLength = tokenModulePairs.length;
@@ -341,12 +341,7 @@ contract ATKComplianceImplementation is
     /// @param _token Address of the token contract
     /// @param _from Address tokens were destroyed from
     /// @param _amount Amount of tokens destroyed
-    function destroyed(address _token, address _from, uint256 _amount)
-        external
-        virtual
-        override
-        onlyToken(_token)
-    {
+    function destroyed(address _token, address _from, uint256 _amount) external virtual override onlyToken(_token) {
         // First, call token-specific compliance modules
         SMARTComplianceModuleParamPair[] memory tokenModulePairs = ISMART(_token).complianceModules();
         uint256 tokenModulePairsLength = tokenModulePairs.length;

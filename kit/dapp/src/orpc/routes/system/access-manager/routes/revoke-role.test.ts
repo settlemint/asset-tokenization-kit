@@ -43,9 +43,9 @@ describe("system.access-manager.revoke-role unit", () => {
 
     const result = (await handler({
       input: {
-        verification: {
-          verificationCode: "123456",
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: "123456",
+          verificationType: "PINCODE",
         },
         address: "0x1234567890123456789012345678901234567890",
         role: "tokenManager",
@@ -70,7 +70,12 @@ describe("system.access-manager.revoke-role unit", () => {
       from: context.auth.user.wallet,
       account: "0x1234567890123456789012345678901234567890",
       role: expect.stringMatching(/^0x[0-9a-f]{64}$/),
-      challengeResponse: "signed",
+    });
+    // Check the third argument (walletVerification)
+    expect(call[2]).toMatchObject({
+      sender: context.auth.user,
+      code: "123456",
+      type: "PINCODE",
     });
   });
 
@@ -80,9 +85,9 @@ describe("system.access-manager.revoke-role unit", () => {
 
     const result = (await handler({
       input: {
-        verification: {
-          verificationCode: "123456",
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: "123456",
+          verificationType: "PINCODE",
         },
         address: [
           "0x1111111111111111111111111111111111111111",
@@ -119,9 +124,9 @@ describe("system.access-manager.revoke-role unit", () => {
 
     const result = (await handler({
       input: {
-        verification: {
-          verificationCode: "123456",
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: "123456",
+          verificationType: "PINCODE",
         },
         address: "0x3333333333333333333333333333333333333333",
         role: ["systemManager", "tokenManager", "tokenManager"],
@@ -154,9 +159,9 @@ describe("system.access-manager.revoke-role unit", () => {
     await expect(
       handler({
         input: {
-          verification: {
-            verificationCode: "123456",
-            verificationType: "pincode",
+          walletVerification: {
+            secretVerificationCode: "123456",
+            verificationType: "PINCODE",
           },
           address: [
             "0x1111111111111111111111111111111111111111",
@@ -177,9 +182,9 @@ describe("system.access-manager.revoke-role unit", () => {
     await expect(
       handler({
         input: {
-          verification: {
-            verificationCode: "123456",
-            verificationType: "pincode",
+          walletVerification: {
+            secretVerificationCode: "123456",
+            verificationType: "PINCODE",
           },
           address: "0x1234567890123456789012345678901234567890",
 
@@ -197,9 +202,9 @@ describe("system.access-manager.revoke-role unit", () => {
 
     const result = (await handler({
       input: {
-        verification: {
-          verificationCode: "123456",
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: "123456",
+          verificationType: "PINCODE",
         },
         address: [],
         role: "tokenManager",
@@ -219,9 +224,9 @@ describe("system.access-manager.revoke-role unit", () => {
     await expect(
       handler({
         input: {
-          verification: {
-            verificationCode: "123456",
-            verificationType: "pincode",
+          walletVerification: {
+            secretVerificationCode: "123456",
+            verificationType: "PINCODE",
           },
           address: "0x1234567890123456789012345678901234567890",
           role: "tokenManager",

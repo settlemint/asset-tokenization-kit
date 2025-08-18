@@ -35,24 +35,12 @@ export async function bootstrapSystem(orpClient: OrpcClient) {
   }
 
   // Create new system - system.create returns the complete system object
-  let system;
-  try {
-    system = await orpClient.system.create({
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
-      },
-    });
-  } catch (err) {
-    // Add enriched debug context to help diagnose intermittent FORBIDDEN
-    console.error("[bootstrapSystem] system.create failed", {
-      error: err instanceof Error ? err.message : err,
-    });
-    console.error(
-      "[bootstrapSystem] Hint: ensure the first created user has the 'admin' role before system bootstrap."
-    );
-    throw err;
-  }
+  const system = await orpClient.system.create({
+    walletVerification: {
+      secretVerificationCode: DEFAULT_PINCODE,
+      verificationType: "PINCODE",
+    },
+  });
 
   if (!system?.id) {
     throw new Error("Failed to bootstrap system");
@@ -117,9 +105,9 @@ export async function bootstrapTokenFactories(
   const initialFactoryCount = tokenFactories.length;
 
   const result = await orpClient.system.tokenFactoryCreate({
-    verification: {
-      verificationCode: DEFAULT_PINCODE,
-      verificationType: "pincode",
+    walletVerification: {
+      secretVerificationCode: DEFAULT_PINCODE,
+      verificationType: "PINCODE",
     },
     factories: nonExistingFactories,
   });
@@ -156,9 +144,9 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
 
   if (rolesToGrant.length > 0) {
     await orpClient.system.grantRole({
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
       address: issuer.wallet,
       role: rolesToGrant,

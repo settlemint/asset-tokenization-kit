@@ -40,6 +40,7 @@ import { z } from "zod";
 
 // Import from the mocked module - vitest config alias handles this
 import { portalClient } from "@/lib/settlemint/portal";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 
 // Import the middleware
 import { env } from "@/lib/env";
@@ -309,14 +310,14 @@ describe("portal.middleware", () => {
         (portalClient.request as Mock).mockResolvedValueOnce(mockResponse);
 
         const result = await client.mutate(CREATE_TOKEN_MUTATION, {
-          name: "Test Token",
+          from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
         });
 
         expect(result).toBe(mockTxHash);
         expect(portalClient.request).toHaveBeenCalledOnce();
         expect(portalClient.request).toHaveBeenCalledWith(
           CREATE_TOKEN_MUTATION,
-          { name: "Test Token" }
+          { from: "0x1234567890123456789012345678901234567890" }
         );
       });
 
@@ -355,7 +356,7 @@ describe("portal.middleware", () => {
         (portalClient.request as Mock).mockResolvedValueOnce(mockResponse);
 
         const result = await client.mutate(NESTED_MUTATION, {
-          input: { field: "value" },
+          from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
         });
 
         expect(result).toBe(mockTxHash);
@@ -375,7 +376,9 @@ describe("portal.middleware", () => {
 
         (portalClient.request as Mock).mockResolvedValueOnce(mockResponse);
 
-        const result = await client.mutate(TOP_LEVEL_MUTATION, {});
+        const result = await client.mutate(TOP_LEVEL_MUTATION, {
+          from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
+        });
 
         expect(result).toBe(mockTxHash);
       });
@@ -399,13 +402,19 @@ describe("portal.middleware", () => {
 
         (portalClient.request as Mock).mockResolvedValueOnce(mockResponse);
 
-        await expect(client.mutate(NO_TX_MUTATION, {})).rejects.toThrow();
+        await expect(
+          client.mutate(NO_TX_MUTATION, {
+            from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
+          })
+        ).rejects.toThrow();
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
           message: "No transaction hash found in NoTxHash response",
           data: {
             document: NO_TX_MUTATION,
-            variables: {},
+            variables: {
+              from: "0x1234567890123456789012345678901234567890",
+            },
           },
         });
       });
@@ -427,7 +436,11 @@ describe("portal.middleware", () => {
 
         (portalClient.request as Mock).mockResolvedValueOnce(mockResponse);
 
-        await expect(client.mutate(INVALID_TX_MUTATION, {})).rejects.toThrow();
+        await expect(
+          client.mutate(INVALID_TX_MUTATION, {
+            from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
+          })
+        ).rejects.toThrow();
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -461,7 +474,9 @@ describe("portal.middleware", () => {
 
         (portalClient.request as Mock).mockResolvedValueOnce(mockResponse);
 
-        const result = await client.mutate(SIMPLE_MUTATION, {});
+        const result = await client.mutate(SIMPLE_MUTATION, {
+          from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
+        });
 
         expect(result).toBe(mockTxHash);
         // Should only call Portal once, no transaction tracking
@@ -550,7 +565,9 @@ describe("portal.middleware", () => {
           });
 
         // Start the mutation
-        const resultPromise = client.mutate(TRACKED_MUTATION, {});
+        const resultPromise = client.mutate(TRACKED_MUTATION, {
+          from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
+        });
 
         // Fast-forward through all timers
         await vi.runAllTimersAsync();
@@ -608,7 +625,11 @@ describe("portal.middleware", () => {
           },
         });
 
-        await expect(client.mutate(REVERT_MUTATION, {})).rejects.toThrow();
+        await expect(
+          client.mutate(REVERT_MUTATION, {
+            from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
+          })
+        ).rejects.toThrow();
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
           message: "Transaction reverted: Insufficient balance",
@@ -658,15 +679,18 @@ describe("portal.middleware", () => {
           });
         }
 
-        // Add extra mock in case there's an unexpected additional call
-        (portalClient.request as Mock).mockResolvedValue({
-          getTransaction: {
-            receipt: null,
-          },
-        });
-
-        // Start the mutation promise
-        const resultPromise = client.mutate(DROPPED_MUTATION, {});
+        // Start the mutation and catch the error
+        const resultPromise = client
+          .mutate(DROPPED_MUTATION, {
+            from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
+          })
+          .catch((error: unknown) => {
+            // Catch the error to prevent unhandled rejection
+            expect((error as Error).message).toBe(
+              "Transaction dropped from mempool"
+            );
+            return error;
+          });
 
         // Advance all timers to trigger the timeout
         await vi.runAllTimersAsync();
@@ -731,7 +755,11 @@ describe("portal.middleware", () => {
           },
         });
 
-        await expect(client.mutate(TIMEOUT_MUTATION, {})).rejects.toThrow();
+        await expect(
+          client.mutate(TIMEOUT_MUTATION, {
+            from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
+          })
+        ).rejects.toThrow();
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
           message: "Transaction tracking timeout after 90000ms",
@@ -793,7 +821,9 @@ describe("portal.middleware", () => {
 
         // Should throw due to stream timeout
         await expect(
-          client.mutate(INDEXING_TIMEOUT_MUTATION, {})
+          client.mutate(INDEXING_TIMEOUT_MUTATION, {
+            from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
+          })
         ).rejects.toThrow();
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
@@ -833,13 +863,19 @@ describe("portal.middleware", () => {
           }
         `);
 
-        await expect(client.mutate(ERROR_MUTATION, {})).rejects.toThrow();
+        await expect(
+          client.mutate(ERROR_MUTATION, {
+            from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
+          })
+        ).rejects.toThrow();
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
           message: "GraphQL ErrorMutation failed",
           data: expect.objectContaining({
             document: ERROR_MUTATION,
-            variables: {},
+            variables: {
+              from: "0x1234567890123456789012345678901234567890",
+            },
           }),
           cause: clientError,
         });
@@ -858,7 +894,9 @@ describe("portal.middleware", () => {
         `);
 
         await expect(
-          client.mutate(NETWORK_ERROR_MUTATION, {})
+          client.mutate(NETWORK_ERROR_MUTATION, {
+            from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
+          })
         ).rejects.toThrow();
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
@@ -1306,7 +1344,9 @@ describe("portal.middleware", () => {
         (portalClient.request as Mock).mockReset();
         (portalClient.request as Mock).mockResolvedValueOnce(testCase.response);
 
-        const result = await client.mutate(testCase.mutation, {});
+        const result = await client.mutate(testCase.mutation, {
+          from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
+        });
         expect(result).toMatch(/^0x[0-9a-f]{64}$/);
       }
     });
@@ -1386,7 +1426,9 @@ describe("portal.middleware", () => {
         action: { transactionHash: mockTxHash },
       });
 
-      const result = await client.mutate(NO_VAR_MUTATION, {});
+      const result = await client.mutate(NO_VAR_MUTATION, {
+        from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
+      });
       expect(result).toBe(mockTxHash);
     });
 
@@ -1457,7 +1499,9 @@ describe("portal.middleware", () => {
         createToken: { transactionHash: mockTxHash },
       });
 
-      const result = await client.mutate(NAMED_MUTATION, {});
+      const result = await client.mutate(NAMED_MUTATION, {
+        from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
+      });
       expect(result).toBe(mockTxHash);
 
       // The error messages should use the operation name
@@ -1466,7 +1510,11 @@ describe("portal.middleware", () => {
         new Error("Test error")
       );
 
-      await expect(client.mutate(NAMED_MUTATION, {})).rejects.toThrow();
+      await expect(
+        client.mutate(NAMED_MUTATION, {
+          from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
+        })
+      ).rejects.toThrow();
 
       expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
         message: "GraphQL CreateTokenWithMetadata failed",
@@ -1493,7 +1541,9 @@ describe("portal.middleware", () => {
 
       (portalClient.request as Mock).mockResolvedValueOnce(mockResponse);
 
-      const result = await client.mutate(NUMBER_TX_MUTATION, {});
+      const result = await client.mutate(NUMBER_TX_MUTATION, {
+        from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
+      });
       expect(result).toBe(createTxHash(12));
     });
 
@@ -1516,8 +1566,10 @@ describe("portal.middleware", () => {
         (portalClient.request as Mock).mockResolvedValueOnce(response);
       });
 
-      const promises = mockResponses.map((_, index) =>
-        client.mutate(CONCURRENT_MUTATION, { id: index })
+      const promises = mockResponses.map(() =>
+        client.mutate(CONCURRENT_MUTATION, {
+          from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
+        })
       );
 
       const results = await Promise.all(promises);

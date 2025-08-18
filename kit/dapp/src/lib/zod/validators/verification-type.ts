@@ -16,26 +16,22 @@ import { z } from "zod";
  * - `phone`: Phone number verification via SMS or voice call
  * - `identity`: Identity document verification (passport, ID card, etc.)
  */
-export const verificationTypes = [
-  "two-factor",
-  "pincode",
-  "secret-code",
-] as const;
+export const verificationTypes = ["OTP", "PINCODE", "SECRET_CODES"] as const;
 
 /**
  * Enum-like object for verification types with camelCase keys.
  * Use this instead of hardcoded strings for type safety.
  * @example
  * ```typescript
- * if (user.verificationTypes.includes(VerificationType.twoFactor)) {
+ * if (user.verificationTypes.includes(VerificationType.otp)) {
  *   // User has 2FA enabled
  * }
  * ```
  */
 export const VerificationType = {
-  twoFactor: "two-factor",
-  pincode: "pincode",
-  secretCode: "secret-code",
+  otp: "OTP",
+  pincode: "PINCODE",
+  secretCodes: "SECRET_CODES",
 } as const satisfies Record<string, (typeof verificationTypes)[number]>;
 
 /**

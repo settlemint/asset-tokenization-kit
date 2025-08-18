@@ -50,13 +50,15 @@ jobs:
           fetch-depth: ${{ github.event_name == 'push' && 2 || 0 }}
 
       - name: Setup 1Password
-        uses: 1password/load-secrets-action/configure@v2
+        uses: 1password/load-secrets-action/configure@v3
         with:
           service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
 
       - name: Load all secrets
         id: secrets
-        uses: 1password/load-secrets-action@v2
+        uses: 1password/load-secrets-action@v3
+        with:
+          export-env: true
         env:
           SLACK_BOT_TOKEN: op://platform/slack-bot/SLACK_BOT_TOKEN
           SLACK_CHANNEL_ID: op://platform/slack-bot/SLACK_CHANNEL_ID
@@ -323,12 +325,14 @@ jobs:
           fetch-depth: ${{ github.event_name == 'push' && 2 || 0 }}
 
       - name: Setup 1Password
-        uses: 1password/load-secrets-action/configure@v2
+        uses: 1password/load-secrets-action/configure@v3
         with:
           service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
 
       - name: Load Slack secrets
-        uses: 1password/load-secrets-action@v2
+        uses: 1password/load-secrets-action@v3
+        with:
+          export-env: true
         env:
           SLACK_BOT_TOKEN: op://platform/slack-bot/SLACK_BOT_TOKEN
           SLACK_CHANNEL_ID: op://platform/slack-bot/SLACK_CHANNEL_ID
@@ -377,12 +381,14 @@ jobs:
           fetch-depth: ${{ github.event_name == 'push' && 2 || 0 }}
 
       - name: Setup 1Password
-        uses: 1password/load-secrets-action/configure@v2
+        uses: 1password/load-secrets-action/configure@v3
         with:
           service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
 
       - name: Load Slack secrets
-        uses: 1password/load-secrets-action@v2
+        uses: 1password/load-secrets-action@v3
+        with:
+          export-env: true
         env:
           SLACK_BOT_TOKEN: op://platform/slack-bot/SLACK_BOT_TOKEN
           SLACK_CHANNEL_ID: op://platform/slack-bot/SLACK_CHANNEL_ID

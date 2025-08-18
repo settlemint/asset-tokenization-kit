@@ -1,5 +1,4 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
@@ -37,22 +36,24 @@ export const addComplianceModule = portalRouter.token.addComplianceModule
     })
   )
   .handler(async ({ input, context }) => {
-    const { contract, verification, moduleAddress } = input;
+    const { contract, walletVerification, moduleAddress } = input;
     const { auth } = context;
 
     const sender = auth.user;
-    const challengeResponse = await handleChallenge(sender, {
-      code: verification.verificationCode,
-      type: verification.verificationType,
-    });
-
-    await context.portalClient.mutate(TOKEN_ADD_COMPLIANCE_MODULE_MUTATION, {
-      address: contract,
-      from: sender.wallet,
-      moduleAddress,
-      params: JSON.stringify({}), // TODO: provide params as input to the request
-      ...challengeResponse,
-    });
+    await context.portalClient.mutate(
+      TOKEN_ADD_COMPLIANCE_MODULE_MUTATION,
+      {
+        address: contract,
+        from: sender.wallet,
+        moduleAddress,
+        params: JSON.stringify({}), // TODO: provide params as input to the request
+      },
+      {
+        sender: sender,
+        code: walletVerification.secretVerificationCode,
+        type: walletVerification.verificationType,
+      }
+    );
 
     // Return updated token data
     return await call(read, { tokenAddress: contract }, { context });
