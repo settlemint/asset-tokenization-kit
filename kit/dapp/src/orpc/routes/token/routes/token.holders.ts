@@ -21,7 +21,9 @@ const TOKEN_HOLDERS_QUERY = theGraphGraphql(`
   query TokenHoldersQuery($id: ID!) {
     token(id: $id) {
       balances @fetchAll {
-        id
+        account {
+          id
+        }
         available
         frozen
         isFrozen

@@ -6,7 +6,9 @@ import { z } from "zod";
  * Schema for token balance information
  */
 export const TokenBalanceSchema = z.object({
-  id: ethereumAddress.describe("The address of the token holder"),
+  account: z.object({
+    id: ethereumAddress.describe("The address of the token holder"),
+  }),
   available: bigDecimal().describe("Available balance amount"),
   frozen: bigDecimal().describe("Frozen balance amount"),
   isFrozen: z.boolean().describe("Whether the balance is frozen"),

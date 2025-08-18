@@ -118,7 +118,7 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
         label: t("tokens:holders.actions.copyAddress"),
         icon: <Copy className="h-4 w-4" />,
         onClick: () => {
-          void navigator.clipboard.writeText(row.original.id);
+          void navigator.clipboard.writeText(row.original.account.id);
           toast.success(t("tokens:holders.actions.addressCopied"));
         },
       },
@@ -129,7 +129,7 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
               icon: <Flame className="h-4 w-4" />,
               onClick: () => {
                 setBurnTarget({
-                  address: row.original.id,
+                  address: row.original.account.id,
                   available: row.original.available,
                 });
               },
@@ -139,7 +139,7 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
       {
         label: t("tokens:holders.actions.viewOnEtherscan"),
         icon: <ExternalLink className="h-4 w-4" />,
-        href: `https://etherscan.io/address/${row.original.id}`,
+        href: `https://etherscan.io/address/${row.original.account.id}`,
         separator: "before",
       },
     ],
@@ -197,10 +197,10 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
     () =>
       withAutoFeatures([
         createSelectionColumn<TokenBalance>(),
-        columnHelper.accessor("id", {
+        columnHelper.accessor("account.id", {
           header: t("tokens:holders.columns.address"),
-          cell: ({ getValue }) => {
-            const address = getValue();
+          cell: ({ row }) => {
+            const address = row.original.account.id;
             return (
               <Web3Address
                 address={getEthereumAddress(address)}
