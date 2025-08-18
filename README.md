@@ -235,17 +235,16 @@ cd ../../
 # Codegen
 bun codegen
 
+# Setup dapp
+cd kit/dapp
+bun addresses
+
 # Ensure database schema is up to date
 cd kit/dapp
 bun db:push
 bunx settlemint hasura track -a
 cd ../.. # Go back to the root directory
 bun codegen --force
-
-# Setup dapp
-cd kit/dapp
-bun addresses
-bun db:push
 
 # Start development server
 bun dev
