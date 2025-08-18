@@ -31,6 +31,7 @@ export const TokenListSchema = z.array(
     extensions: true,
     implementsERC3643: true,
     implementsSMART: true,
+    yield: true,
   })
 );
 

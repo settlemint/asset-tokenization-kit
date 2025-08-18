@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { useAppForm } from "@/hooks/use-app-form";
+import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MintSheet } from "./mint-sheet";
-import { useAppForm } from "@/hooks/use-app-form";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 
 // i18n mock
 vi.mock("react-i18next", () => ({
@@ -121,6 +121,7 @@ const createMockToken = (overrides?: Partial<Token>): Token =>
     redeemable: null,
     bond: null,
     fund: null,
+    yield: null,
     collateral: null,
     accessControl: undefined,
     userPermissions: {

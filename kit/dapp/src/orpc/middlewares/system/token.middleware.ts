@@ -1,12 +1,13 @@
+import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { AccessControlFragment } from "@/lib/fragments/the-graph/access-control-fragment";
+import { TokenYieldFragment } from "@/lib/fragments/the-graph/token-yield-fragment";
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { isEthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { satisfiesRoleRequirement } from "@/lib/zod/validators/role-requirement";
 import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { satisfiesRoleRequirement } from "@/lib/zod/validators/role-requirement";
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 
 const logger = createLogger();
@@ -52,10 +53,13 @@ const READ_TOKEN_QUERY = theGraphGraphql(
       accessControl {
         ...AccessControlFragment
       }
+      yield {
+        ...TokenYieldFragment
+      }
     }
   }
   `,
-  [AccessControlFragment]
+  [AccessControlFragment, TokenYieldFragment]
 );
 
 /**

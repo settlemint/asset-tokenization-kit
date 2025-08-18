@@ -1,11 +1,12 @@
-import { accessControlRoles } from "@/lib/zod/validators/access-control-roles";
 import type { AccessControl } from "@/lib/fragments/the-graph/access-control-fragment";
+import { accessControlRoles } from "@/lib/zod/validators/access-control-roles";
 import { assetExtensionArray } from "@/lib/zod/validators/asset-extensions";
 import { assetType } from "@/lib/zod/validators/asset-types";
 import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
 import { decimals } from "@/lib/zod/validators/decimals";
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { timestamp } from "@/lib/zod/validators/timestamp";
+import { tokenYield } from "@/lib/zod/validators/token-yield";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { from } from "dnum";
 import { z } from "zod";
@@ -96,6 +97,9 @@ export const RawTokenSchema = z.object({
     })
     .nullable()
     .describe("The fund of the token"),
+  yield: tokenYield()
+    .nullable()
+    .describe("The yield configuration and schedule for the token"),
   accessControl: z
     .custom<AccessControl>()
     .describe("The access control of the token")

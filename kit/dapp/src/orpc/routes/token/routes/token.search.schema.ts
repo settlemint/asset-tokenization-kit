@@ -55,6 +55,7 @@ export const TokenSearchResultSchema = TokenSchema.omit({
   extensions: true,
   implementsERC3643: true,
   implementsSMART: true,
+  yield: true,
 });
 
 /**

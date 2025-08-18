@@ -100,6 +100,7 @@ const mockToken = {
   redeemable: null,
   bond: null,
   fund: null,
+  yield: null,
   collateral: null,
   accessControl: undefined,
   userPermissions: undefined,

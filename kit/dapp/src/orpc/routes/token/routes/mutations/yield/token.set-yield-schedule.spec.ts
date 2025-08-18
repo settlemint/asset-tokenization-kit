@@ -96,6 +96,35 @@ describe("Token set yield schedule", () => {
       name: bondData.name,
       symbol: bondData.symbol,
     });
+
+    // Read the specific token to verify yield data is included
+    const tokenDetails = await client.token.read({
+      tokenAddress: bondResult.id,
+    });
+    
+    expect(tokenDetails).toBeDefined();
+    expect(tokenDetails.yield).toBeDefined();
+    expect(tokenDetails.yield).not.toBeNull();
+    
+    if (tokenDetails.yield) {
+      expect(tokenDetails.yield.schedule).toBeDefined();
+      expect(tokenDetails.yield.schedule.rate).toBe("500"); // 5% in basis points
+      expect(tokenDetails.yield.schedule.interval).toBe("86400"); // Daily interval
+      expect(tokenDetails.yield.schedule.startDate.getTime()).toBe(startDate.getTime());
+      expect(tokenDetails.yield.schedule.endDate.getTime()).toBe(endDate.getTime());
+      expect(tokenDetails.yield.schedule.denominationAsset).toBeDefined();
+      expect(tokenDetails.yield.schedule.denominationAsset.id).toBe(stablecoinResult.id);
+      expect(tokenDetails.yield.schedule.denominationAsset.symbol).toBe("TSDC");
+      
+      // Verify yield amounts are initialized
+      expect(tokenDetails.yield.schedule.totalClaimed).toBeDefined();
+      expect(tokenDetails.yield.schedule.totalUnclaimedYield).toBeDefined();
+      expect(tokenDetails.yield.schedule.totalYield).toBeDefined();
+      
+      // Verify periods array exists
+      expect(tokenDetails.yield.schedule.periods).toBeDefined();
+      expect(Array.isArray(tokenDetails.yield.schedule.periods)).toBe(true);
+    }
   }, 100_000);
 
   test("regular users cant set yield schedule", async () => {

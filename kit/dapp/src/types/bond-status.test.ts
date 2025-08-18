@@ -287,6 +287,7 @@ describe("bond-status types", () => {
           maturityDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
         },
         fund: null,
+        yield: null,
       };
       const mockBondStatus: StatsBondStatusOutput = {
         denominationAssetBalanceAvailable: from(500),
@@ -383,6 +384,7 @@ describe("bond-status types", () => {
           maturityDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
         },
         fund: null,
+        yield: null,
       };
       const mockBondStatus: StatsBondStatusOutput = {
         denominationAssetBalanceAvailable: from(500),
@@ -478,6 +480,7 @@ describe("bond-status types", () => {
           maturityDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
         },
         fund: null,
+        yield: null,
       };
       const mockBondStatusForCalc: StatsBondStatusOutput = {
         denominationAssetBalanceAvailable: from(800),
@@ -575,6 +578,7 @@ describe("bond-status types", () => {
           maturityDate: new Date(Date.now() - 24 * 60 * 60 * 1000),
         },
         fund: null,
+        yield: null,
       };
       const mockBondStatus: StatsBondStatusOutput = {
         denominationAssetBalanceAvailable: from(1000),
