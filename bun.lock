@@ -226,7 +226,7 @@
     "packages/zod": {
       "name": "@atk/zod",
       "dependencies": {
-        "zod": "^4",
+        "zod": "4.0.17",
       },
       "devDependencies": {
         "@types/bun": "latest",
