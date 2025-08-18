@@ -162,7 +162,9 @@ describe("BurnSheet", () => {
         token: {
           balances: [
             {
-              id: "0x1111111111111111111111111111111111111111",
+              account: {
+                id: "0x1111111111111111111111111111111111111111",
+              },
               available: [100n, 18],
               frozen: [0n, 18],
               isFrozen: false,
@@ -228,7 +230,9 @@ describe("BurnSheet", () => {
         token: {
           balances: [
             {
-              id: "0x1111111111111111111111111111111111111111",
+              account: {
+                id: "0x1111111111111111111111111111111111111111",
+              },
               available: [5n, 18], // Less than the 10n being burned
               frozen: [0n, 18],
               isFrozen: false,
