@@ -42,8 +42,13 @@ describe("User read", () => {
     unauthorizedUserData = await getUserData(UNAUTHORIZED_USER);
 
     // Create KYC profiles for better test coverage
-    const testUserHeaders = await signInWithUser(TEST_USER);
+    const [testUserHeaders, otherUserHeaders] = await Promise.all([
+      signInWithUser(TEST_USER),
+      signInWithUser(OTHER_USER),
+    ]);
     const testUserClient = getOrpcClient(testUserHeaders);
+    const otherUserClient = getOrpcClient(otherUserHeaders);
+
     await testUserClient.user.kyc.upsert({
       userId: testUserData.id,
       firstName: "TestFirst",
@@ -53,9 +58,6 @@ describe("User read", () => {
       residencyStatus: "resident",
       nationalId: "TEST123456",
     });
-
-    const otherUserHeaders = await signInWithUser(OTHER_USER);
-    const otherUserClient = getOrpcClient(otherUserHeaders);
     await otherUserClient.user.kyc.upsert({
       userId: otherUserData.id,
       firstName: "OtherFirst",

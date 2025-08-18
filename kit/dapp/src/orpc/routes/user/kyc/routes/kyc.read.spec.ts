@@ -32,9 +32,14 @@ describe("KYC read", () => {
     testUserData = await getUserData(TEST_USER);
     otherUserData = await getUserData(OTHER_USER);
 
-    // Create KYC profile for test user
-    const headers = await signInWithUser(TEST_USER);
+    // Create KYC profiles for both users
+    const [headers, otherHeaders] = await Promise.all([
+      signInWithUser(TEST_USER),
+      signInWithUser(OTHER_USER),
+    ]);
     const client = getOrpcClient(headers);
+    const otherClient = getOrpcClient(otherHeaders);
+
     await client.user.kyc.upsert({
       userId: testUserData.id,
       firstName: "Alice",
@@ -44,10 +49,6 @@ describe("KYC read", () => {
       residencyStatus: "resident",
       nationalId: "AB123456",
     });
-
-    // Create KYC profile for other user
-    const otherHeaders = await signInWithUser(OTHER_USER);
-    const otherClient = getOrpcClient(otherHeaders);
     await otherClient.user.kyc.upsert({
       userId: otherUserData.id,
       firstName: "Bob",

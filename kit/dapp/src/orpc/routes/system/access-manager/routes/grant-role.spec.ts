@@ -21,10 +21,11 @@ describe("Access Manager - Grant Role ORPC routes", () => {
   };
 
   beforeAll(async () => {
-    const adminHeaders = await signInWithUser(DEFAULT_ADMIN);
+    const [adminHeaders, investorHeaders] = await Promise.all([
+      signInWithUser(DEFAULT_ADMIN),
+      signInWithUser(DEFAULT_INVESTOR),
+    ]);
     adminClient = getOrpcClient(adminHeaders);
-
-    const investorHeaders = await signInWithUser(DEFAULT_INVESTOR);
     investorClient = getOrpcClient(investorHeaders);
   });
 
