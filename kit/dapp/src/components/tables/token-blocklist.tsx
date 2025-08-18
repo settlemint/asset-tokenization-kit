@@ -15,7 +15,6 @@ import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { orpc } from "@/orpc/orpc-client";
 import { useQuery } from "@tanstack/react-query";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
-import { ShieldBan } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -56,7 +55,7 @@ export function TokenBlocklistTable({ token }: { token: Token }) {
     if (!holdersData?.token?.balances) return [];
     return holdersData.token.balances
       .filter((balance) => balance.isFrozen)
-      .map((balance) => ({ id: balance.id }));
+      .map((balance) => ({ id: balance.account.id }));
   }, [holdersData]);
 
   const columns = useMemo(
