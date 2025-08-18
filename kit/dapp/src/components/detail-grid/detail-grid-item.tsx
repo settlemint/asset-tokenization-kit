@@ -69,7 +69,7 @@ export function DetailGridItem({
       ? formatValue(value, {
           type,
           displayName: displayName ?? label,
-          currency,
+          currency: currency as FormatValueOptions["currency"],
           emptyValue,
           showPrettyName,
         })

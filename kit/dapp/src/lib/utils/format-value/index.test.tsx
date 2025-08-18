@@ -143,46 +143,6 @@ describe("formatValue", () => {
     });
   });
 
-  describe("badge type", () => {
-    test("renders badge with default variant", () => {
-      const result = formatValue("Active", { type: "badge" });
-      const { container } = render(<>{result}</>);
-      const badge = container.querySelector('[data-testid="badge"]');
-      expect(badge).toHaveTextContent("Active");
-      expect(badge).toHaveAttribute("data-variant", "default");
-    });
-
-    test("uses secondary variant for symbol columns", () => {
-      const result = formatValue("ETH", {
-        type: "badge",
-        displayName: "Token Symbol",
-      });
-      const { container } = render(<>{result}</>);
-      const badge = container.querySelector('[data-testid="badge"]');
-      expect(badge).toHaveAttribute("data-variant", "secondary");
-      expect(badge).toHaveClass("font-mono");
-    });
-
-    test("uses appropriate variant for status values", () => {
-      const testCases = [
-        { value: "active", variant: "default" },
-        { value: "inactive", variant: "secondary" },
-        { value: "error", variant: "destructive" },
-        { value: "pending", variant: "outline" },
-      ];
-
-      testCases.forEach(({ value, variant }) => {
-        const result = formatValue(value, {
-          type: "badge",
-          displayName: "status",
-        });
-        const { container } = render(<>{result}</>);
-        const badge = container.querySelector('[data-testid="badge"]');
-        expect(badge).toHaveAttribute("data-variant", variant);
-      });
-    });
-  });
-
   describe("currency type", () => {
     test("formats currency values correctly", () => {
       const result = formatValue(1234.56, {
@@ -205,7 +165,7 @@ describe("formatValue", () => {
     test("handles unknown currency symbols", () => {
       const result = formatValue(1234.56, {
         type: "currency",
-        currency: "ABC",
+        currency: "ABC" as never,
       });
       const { container } = render(<>{result}</>);
       // Check that it contains the formatted number and currency

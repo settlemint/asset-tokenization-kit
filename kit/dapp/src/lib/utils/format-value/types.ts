@@ -5,7 +5,6 @@ import { FiatCurrency } from "@/lib/zod/validators/fiat-currency";
 export interface FormatValueOptions {
   type?:
     | "address"
-    | "badge"
     | "currency"
     | "date"
     | "status"

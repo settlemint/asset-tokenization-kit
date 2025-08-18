@@ -1,5 +1,4 @@
 import { FormatAddress } from "./format-address";
-import { FormatBadge } from "./format-badge";
 import { FormatBoolean } from "./format-boolean";
 import { FormatCurrency } from "./format-currency";
 import { FormatDate } from "./format-date";
@@ -37,9 +36,6 @@ export function formatValue(
   switch (type) {
     case "address":
       return <FormatAddress value={value} options={options} />;
-
-    case "badge":
-      return <FormatBadge value={value} options={options} />;
 
     case "currency":
       return <FormatCurrency value={value} options={options} />;
