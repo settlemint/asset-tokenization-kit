@@ -45,7 +45,7 @@
         "placeholder": "18"
       },
       "faceValue": {
-        "description": "The face value of each {{type}}",
+        "description": "Nominal value of a single bond unit",
         "label": "Face value",
         "placeholder": "e.g., 1000"
       },
