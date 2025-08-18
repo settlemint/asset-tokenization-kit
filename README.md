@@ -188,7 +188,6 @@ bun codegen:settlemint
 bun addresses
 
 # Ensure database schema is up to date
-cd kit/dapp
 bun db:push
 bunx settlemint hasura track -a
 cd ../.. # Go back to the root directory
@@ -240,7 +239,6 @@ cd kit/dapp
 bun addresses
 
 # Ensure database schema is up to date
-cd kit/dapp
 bun db:push
 bunx settlemint hasura track -a
 cd ../.. # Go back to the root directory
@@ -268,7 +266,6 @@ To modify database schema:
 
    ```bash
    # Run in the kit/dapp directory
-   cd kit/dapp
    bun db:push
    ```
 
