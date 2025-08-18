@@ -316,7 +316,10 @@ describe("portal.middleware", () => {
         expect(portalClient.request).toHaveBeenCalledOnce();
         expect(portalClient.request).toHaveBeenCalledWith(
           CREATE_TOKEN_MUTATION,
-          { from: "0x1234567890123456789012345678901234567890" }
+          { from: "0x1234567890123456789012345678901234567890" },
+          expect.objectContaining({
+            "x-request-id": expect.stringMatching(/^atk-mut-/),
+          })
         );
       });
 
@@ -957,9 +960,13 @@ describe("portal.middleware", () => {
         expect(result.getToken.name).toBe("Test Token");
         expect(result.getToken.decimals).toBe(18);
         expect(portalClient.request).toHaveBeenCalledOnce();
-        expect(portalClient.request).toHaveBeenCalledWith(GET_TOKEN_QUERY, {
-          id: "0x123",
-        });
+        expect(portalClient.request).toHaveBeenCalledWith(
+          GET_TOKEN_QUERY,
+          { id: "0x123" },
+          expect.objectContaining({
+            "x-request-id": expect.stringMatching(/^atk-qry-/),
+          })
+        );
       });
 
       test("should handle complex nested query schemas", async () => {
@@ -1465,7 +1472,10 @@ describe("portal.middleware", () => {
       expect(result.getData.value).toBe("test");
       expect(portalClient.request).toHaveBeenCalledWith(
         COMPLEX_VAR_QUERY,
-        complexVariables
+        complexVariables,
+        expect.objectContaining({
+          "x-request-id": expect.stringMatching(/^atk-qry-/),
+        })
       );
     });
 

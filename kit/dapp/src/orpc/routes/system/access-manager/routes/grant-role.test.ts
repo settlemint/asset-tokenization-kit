@@ -13,7 +13,7 @@ import {
 vi.mock("@/lib/settlemint/portal");
 vi.mock("@/orpc/helpers/challenge-response", () => ({
   handleChallenge: vi.fn(() =>
-    Promise.resolve({ verificationId: "verif_1", challengeResponse: "signed" })
+    Promise.resolve({ challengeId: "verif_1", challengeResponse: "signed" })
   ),
 }));
 

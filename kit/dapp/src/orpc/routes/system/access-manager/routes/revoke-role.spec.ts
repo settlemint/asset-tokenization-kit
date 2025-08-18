@@ -22,10 +22,11 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
   };
 
   beforeAll(async () => {
-    const adminHeaders = await signInWithUser(DEFAULT_ADMIN);
+    const [adminHeaders, investorHeaders] = await Promise.all([
+      signInWithUser(DEFAULT_ADMIN),
+      signInWithUser(DEFAULT_INVESTOR),
+    ]);
     adminClient = getOrpcClient(adminHeaders);
-
-    const investorHeaders = await signInWithUser(DEFAULT_INVESTOR);
     investorClient = getOrpcClient(investorHeaders);
 
     // Grant roles to the test addresses
@@ -34,20 +35,22 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
       "complianceManager",
       "tokenManager",
     ];
-    for (const role of rolesToGrant) {
-      await adminClient.system.grantRole({
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
-        },
-        address: [
-          testAddresses.valid1,
-          testAddresses.valid2,
-          testAddresses.valid3,
-        ],
-        role,
-      });
-    }
+    await Promise.all(
+      rolesToGrant.map((role) =>
+        adminClient.system.grantRole({
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
+          },
+          address: [
+            testAddresses.valid1,
+            testAddresses.valid2,
+            testAddresses.valid3,
+          ],
+          role,
+        })
+      )
+    );
   }, 60_000);
 
   describe("successful role revokes", () => {
@@ -205,7 +208,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
           address: testAddresses.valid1,
           role: "invalidRole" as never,
         })
-      ).rejects.toThrow("INPUT_VALIDATION_FAILED");
+      ).rejects.toThrow("Input validation failed");
     });
 
     it("should reject invalid wallet addresses", async () => {
@@ -218,7 +221,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
           address: testAddresses.invalid,
           role: "tokenManager",
         })
-      ).rejects.toThrow("INPUT_VALIDATION_FAILED");
+      ).rejects.toThrow("Input validation failed");
     });
 
     it("should reject mixed valid and invalid addresses", async () => {
@@ -235,7 +238,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
           ],
           role: "tokenManager",
         })
-      ).rejects.toThrow("INPUT_VALIDATION_FAILED");
+      ).rejects.toThrow("Input validation failed");
     });
 
     it("should reject incorrect pincode verification", async () => {

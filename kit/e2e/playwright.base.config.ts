@@ -7,8 +7,12 @@ const __filename = fileURLToPath(import.meta.url);
 const e2eDir = path.dirname(__filename);
 const projectRoot = path.resolve(e2eDir, "../../");
 
-dotenv.config({ path: path.join(projectRoot, ".env") });
-dotenv.config({ path: path.join(projectRoot, ".env.local"), override: true });
+dotenv.config({ path: path.join(projectRoot, ".env"), quiet: true });
+dotenv.config({
+  path: path.join(projectRoot, ".env.local"),
+  override: true,
+  quiet: true,
+});
 
 const requiredEnvVars = ["SETTLEMINT_HASURA_DATABASE_URL"] as const;
 
