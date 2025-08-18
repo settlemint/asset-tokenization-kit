@@ -182,10 +182,19 @@ bun install
 bunx settlemint login --instance https://console.settlemint.com
 bunx settlemint connect --instance https://console.settlemint.com
 
-# Generate types and start development server
+# Generate types
 cd kit/dapp
 bun codegen:settlemint
 bun addresses
+
+# Ensure database schema is up to date
+cd kit/dapp
+bun db:push
+bunx settlemint hasura track -a
+cd ../.. # Go back to the root directory
+bun codegen --force # `--force` flag ensures the types are regenerated
+
+# Start development server
 bun dev
 ```
 
@@ -226,6 +235,13 @@ cd ../../
 # Codegen
 bun codegen
 
+# Ensure database schema is up to date
+cd kit/dapp
+bun db:push
+bunx settlemint hasura track -a
+cd ../.. # Go back to the root directory
+bun codegen --force
+
 # Setup dapp
 cd kit/dapp
 bun addresses
@@ -260,7 +276,7 @@ To modify database schema:
 3. Ensure your updates are registered with Hasura by executing:
 
    ```bash
-   settlemint hasura track -a
+   bunx settlemint hasura track -a
    ```
 
 4. Regenerate GraphQL types by running the following command in the root
