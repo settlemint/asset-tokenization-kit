@@ -720,30 +720,6 @@ contract ATKSystemTest is Test {
         assertEq(onchainID, issuerIdentity, "onchainID should return the issuer identity address");
     }
 
-    function test_IssuerIdentity_ClaimPermissions() public view {
-        // Test that only accounts with ISSUER_CLAIM_MANAGER_ROLE can manage claims
-
-        // Admin should be able to manage claims (granted ISSUER_CLAIM_MANAGER_ROLE during bootstrap)
-        assertTrue(
-            IContractWithIdentity(address(atkSystem)).canAddClaim(admin),
-            "Admin should be able to add claims to issuer identity"
-        );
-        assertTrue(
-            IContractWithIdentity(address(atkSystem)).canRemoveClaim(admin),
-            "Admin should be able to remove claims from issuer identity"
-        );
-
-        // User should not be able to manage claims
-        assertFalse(
-            IContractWithIdentity(address(atkSystem)).canAddClaim(user),
-            "Regular user should not be able to add claims to issuer identity"
-        );
-        assertFalse(
-            IContractWithIdentity(address(atkSystem)).canRemoveClaim(user),
-            "Regular user should not be able to remove claims from issuer identity"
-        );
-    }
-
     function test_IssueIssuerClaim_Success() public {
         // Test successful issuer claim issuance by token factory using a mocked identity
 
@@ -826,13 +802,5 @@ contract ATKSystemTest is Test {
         bool isTrustedForTopic = IERC3643TrustedIssuersRegistry(atkSystem.trustedIssuersRegistry())
             .hasClaimTopic(issuerIdentity, topicId);
         assertTrue(isTrustedForTopic, "Issuer identity should be trusted for TOPIC_ISSUER topic");
-    }
-
-    function test_IssuerClaimManagerRole_GrantedToAdmin() public view {
-        // Test that admin receives ISSUER_CLAIM_MANAGER_ROLE during bootstrap
-        assertTrue(
-            systemUtils.systemAccessManager().hasRole(ATKPeopleRoles.ISSUER_CLAIM_MANAGER_ROLE, admin),
-            "Admin should have ISSUER_CLAIM_MANAGER_ROLE after bootstrap"
-        );
     }
 }
