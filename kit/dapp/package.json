@@ -68,7 +68,7 @@
     "minimatch": "10.0.3",
     "subgraph": "workspace:*",
     "typescript": "5.9.2",
-    "typescript-eslint": "8.39.1",
+    "typescript-eslint": "8.40.0",
     "vite": "7.1.2",
     "vite-bundle-analyzer": "1.2.1",
     "vite-tsconfig-paths": "5.1.4",
