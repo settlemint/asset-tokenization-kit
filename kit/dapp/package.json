@@ -137,6 +137,8 @@
   ],
   "overrides": {
     "react-is": "19.1.0",
-    "@sinclair/typebox": "0.34.33"
+    "@sinclair/typebox": "0.34.33",
+    "better-auth": "1.2.7",
+    "zod": "3.24.1"
   }
 }
