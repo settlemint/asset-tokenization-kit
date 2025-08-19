@@ -26,8 +26,16 @@ library ATKTopics {
     /// @notice Topic identifier for contract identity claims
     string public constant TOPIC_CONTRACT_IDENTITY = "contractIdentity";
 
-    /// @notice Topic identifier for issuer identity claims
-    string public constant TOPIC_ISSUER = "issuer";
+    /// @notice Claim topic representing the legal issuer of the asset.
+    /// @dev We use the term `ASSET_ISSUER` here instead of `TOKEN_ISSUER` because
+    ///      in regulatory and legal contexts (bonds, funds, equities, etc.) the issuer
+    ///      is always defined at the *asset* level.
+    ///      In the system contracts we refer to the `TokenIssuer` identity contract,
+    ///      which is the technical on-chain entity authorized to issue this claim.
+    ///      This separation avoids confusion:
+    ///        - `TokenIssuer` = developer/system term for the identity contract.
+    ///        - `ASSET_ISSUER` = legal/compliance term recorded as a claim on the asset.
+    string public constant TOPIC_ASSET_ISSUER = "assetIssuer";
 
     /// @notice Get all topic names for registry registration
     /// @return _names Array of topic names for batchRegisterTopicSchemes
@@ -40,7 +48,7 @@ library ATKTopics {
         _names[4] = TOPIC_ASSET_CLASSIFICATION;
         _names[5] = TOPIC_BASE_PRICE;
         _names[6] = TOPIC_CONTRACT_IDENTITY;
-        _names[7] = TOPIC_ISSUER;
+        _names[7] = TOPIC_ASSET_ISSUER;
     }
 
     /// @notice Get all topic signatures for registry registration

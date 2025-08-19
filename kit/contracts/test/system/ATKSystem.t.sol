@@ -703,8 +703,8 @@ contract ATKSystemTest is Test {
 
     function test_IssuerIdentity_CreatedDuringBootstrap() public view {
         // Test that issuer identity is created and accessible after bootstrap
-        address issuerIdentity = ATKSystemImplementation(address(atkSystem)).issuerIdentity();
-        assertTrue(issuerIdentity != address(0), "Issuer identity should be created during bootstrap");
+        address organisationIdentity = ATKSystemImplementation(address(atkSystem)).organisationIdentity();
+        assertTrue(organisationIdentity != address(0), "Organisation identity should be created during bootstrap");
     }
 
     function test_IssuerIdentity_ImplementsIContractWithIdentity() public view {
@@ -716,8 +716,8 @@ contract ATKSystemTest is Test {
 
         // Test onchainID returns the issuer identity
         address onchainID = IContractWithIdentity(address(atkSystem)).onchainID();
-        address issuerIdentity = ATKSystemImplementation(address(atkSystem)).issuerIdentity();
-        assertEq(onchainID, issuerIdentity, "onchainID should return the issuer identity address");
+        address organisationIdentity = ATKSystemImplementation(address(atkSystem)).organisationIdentity();
+        assertEq(onchainID, organisationIdentity, "onchainID should return the organisation identity address");
     }
 
     function test_IssueIssuerClaim_Success() public {
@@ -745,12 +745,13 @@ contract ATKSystemTest is Test {
         assertTrue(hasRole, "Token factory should have been granted the role");
 
         // Issue claim as token factory
-        vm.prank(testTokenFactory);
-        ATKSystemImplementation(address(atkSystem)).issueIssuerClaim(address(subject));
+        vm.startPrank(testTokenFactory);
+        uint256 topicId = ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
+        ATKSystemImplementation(address(atkSystem)).issueClaimByOrganisation(address(subject), topicId, "");
+        vm.stopPrank();
 
-        // Verify the claim was recorded on the mocked identity for the ISSUER topic
-        uint256 topicId = ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ISSUER);
-        assertEq(subject.claimCountByTopic(topicId), 1, "Issuer claim should be added to the subject identity");
+        // Verify the claim was recorded on the mocked identity for the ASSET_ISSUER topic
+        assertEq(subject.claimCountByTopic(topicId), 1, "Organisation claim should be added to the subject identity");
     }
 
     function test_IssueIssuerClaim_UnauthorizedReverts() public {
@@ -760,7 +761,7 @@ contract ATKSystemTest is Test {
         // User without TOKEN_FACTORY_MODULE_ROLE should not be able to issue claims
         vm.prank(user);
         vm.expectRevert(); // Should revert due to access control
-        ATKSystemImplementation(address(atkSystem)).issueIssuerClaim(mockIdentity);
+        ATKSystemImplementation(address(atkSystem)).issueClaimByOrganisation(mockIdentity, 0, "");
     }
 
     function test_IssueIssuerClaim_InvalidTargetIdentityReverts() public {
@@ -779,28 +780,28 @@ contract ATKSystemTest is Test {
         // Try to issue claim to zero address
         vm.prank(testTokenFactory);
         vm.expectRevert(InvalidTargetIdentity.selector);
-        ATKSystemImplementation(address(atkSystem)).issueIssuerClaim(address(0));
+        ATKSystemImplementation(address(atkSystem)).issueClaimByOrganisation(address(0), 0, "");
     }
 
     function test_IssuerIdentity_TopicRegistered() public view {
         // Test that TOPIC_ISSUER is properly registered
-        uint256 topicId = ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ISSUER);
-        assertTrue(topicId != 0, "TOPIC_ISSUER should be registered with non-zero ID");
+        uint256 topicId = ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
+        assertTrue(topicId != 0, "TOPIC_ASSET_ISSUER should be registered with non-zero ID");
     }
 
     function test_IssuerIdentity_TrustedIssuer() public view {
         // Test that issuer identity is registered as trusted issuer for TOPIC_ISSUER
-        address issuerIdentity = ATKSystemImplementation(address(atkSystem)).issuerIdentity();
-        uint256 topicId = ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ISSUER);
+        address organisationIdentity = ATKSystemImplementation(address(atkSystem)).organisationIdentity();
+        uint256 topicId = ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
 
         // Check if issuer identity is trusted for the TOPIC_ISSUER
         bool isTrusted = IERC3643TrustedIssuersRegistry(atkSystem.trustedIssuersRegistry())
-            .isTrustedIssuer(issuerIdentity);
+            .isTrustedIssuer(organisationIdentity);
         assertTrue(isTrusted, "Issuer identity should be registered as trusted issuer");
 
         // Check if it's trusted specifically for TOPIC_ISSUER topic
         bool isTrustedForTopic = IERC3643TrustedIssuersRegistry(atkSystem.trustedIssuersRegistry())
-            .hasClaimTopic(issuerIdentity, topicId);
+            .hasClaimTopic(organisationIdentity, topicId);
         assertTrue(isTrustedForTopic, "Issuer identity should be trusted for TOPIC_ISSUER topic");
     }
 }

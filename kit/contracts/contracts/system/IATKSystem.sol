@@ -97,6 +97,7 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @param tokenFactoryRegistryProxy The address of the deployed ATKTokenFactoryRegistryProxy contract.
     /// @param systemAddonRegistryProxy The address of the deployed ATKSystemAddonRegistryProxy contract.
     /// @param complianceModuleRegistryProxy The address of the deployed ATKComplianceModuleRegistryProxy contract.
+    /// @param organisationIdentity The address of the identity contract representing the organisation.
     event Bootstrapped(
         address indexed sender,
         address indexed complianceProxy,
@@ -107,7 +108,8 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
         address identityFactoryProxy,
         address tokenFactoryRegistryProxy,
         address systemAddonRegistryProxy,
-        address complianceModuleRegistryProxy
+        address complianceModuleRegistryProxy,
+        address organisationIdentity
     );
 
     /// @notice Initializes the ATKSystem contract.
@@ -236,12 +238,14 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @return The address of the token access manager implementation contract.
     function tokenAccessManagerImplementation() external view returns (address);
 
-    /// @notice Returns the address of the issuer identity contract.
-    /// @return The address of the issuer identity contract.
-    function issuerIdentity() external view returns (address);
+    /// @notice Returns the address of the token issuer identity contract.
+    /// @return The address of the token issuer identity contract.
+    function organisationIdentity() external view returns (address);
 
-    /// @notice Issues a TOPIC_ISSUER claim to a target identity
+    /// @notice Issues a claim by the organisation identity to a target identity
     /// @dev Only callable by accounts with TOKEN_FACTORY_MODULE_ROLE or ISSUER_CLAIM_MANAGER_ROLE
-    /// @param targetIdentity The identity contract to receive the issuer claim
-    function issueIssuerClaim(address targetIdentity) external;
+    /// @param targetIdentity The identity contract to receive the claim
+    /// @param topicId The topic ID of the claim
+    /// @param claimData The claim data
+    function issueClaimByOrganisation(address targetIdentity, uint256 topicId, bytes memory claimData) external;
 }

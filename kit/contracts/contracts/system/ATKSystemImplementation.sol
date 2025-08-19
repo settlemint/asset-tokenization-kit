@@ -161,8 +161,8 @@ contract ATKSystemImplementation is
     /// @dev Stores the address of the token factory registry proxy contract.
     address private _tokenFactoryRegistryProxy;
 
-    /// @dev Stores the address of the issuer identity contract.
-    address private _issuerIdentity;
+    /// @dev Stores the address of the organisation identity contract.
+    address private _organisationIdentity;
 
     // --- Internal Helper for Interface Check ---
     /// @notice Internal helper function to check if a given contract address supports a specific interface
@@ -516,14 +516,14 @@ contract ATKSystemImplementation is
         IATKIdentityFactory(localIdentityFactoryProxy).setOnchainID(identityFactoryIdentity);
 
         // Create issuer identity for the system
-        address localIssuerIdentity = IATKIdentityFactory(localIdentityFactoryProxy).createContractIdentity(address(this));
-        _issuerIdentity = localIssuerIdentity;
+        address localOrganisationIdentity = IATKIdentityFactory(localIdentityFactoryProxy).createContractIdentity(address(this));
+        _organisationIdentity = localOrganisationIdentity;
 
         // Register the issuer identity as a trusted issuer for TOPIC_ISSUER claims
         uint256[] memory issuerClaimTopics = new uint256[](1);
-        issuerClaimTopics[0] = IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).getTopicId(ATKTopics.TOPIC_ISSUER);
+        issuerClaimTopics[0] = IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
         IATKTrustedIssuersRegistry(localTrustedIssuersRegistryProxy).addTrustedIssuer(
-            IClaimIssuer(localIssuerIdentity), issuerClaimTopics
+            IClaimIssuer(localOrganisationIdentity), issuerClaimTopics
         );
 
         // Mark the system as bootstrapped
@@ -540,7 +540,8 @@ contract ATKSystemImplementation is
             _identityFactoryProxy,
             _tokenFactoryRegistryProxy,
             _addonRegistryProxy,
-            _complianceModuleRegistryProxy
+            _complianceModuleRegistryProxy,
+            _organisationIdentity
         );
     }
 
@@ -822,10 +823,10 @@ contract ATKSystemImplementation is
         return _tokenFactoryRegistryProxy;
     }
 
-    /// @notice Gets the address of the issuer identity contract.
-    /// @return The address of the issuer identity contract.
-    function issuerIdentity() public view returns (address) {
-        return _issuerIdentity;
+    /// @notice Gets the address of the organisation identity contract.
+    /// @return The address of the organisation identity contract.
+    function organisationIdentity() public view returns (address) {
+        return _organisationIdentity;
     }
 
     // --- IContractWithIdentity Implementation ---
@@ -833,7 +834,7 @@ contract ATKSystemImplementation is
     /// @inheritdoc IContractWithIdentity
     /// @notice Returns the address of the issuer identity
     function onchainID() external view override returns (address) {
-        return _issuerIdentity;
+        return _organisationIdentity;
     }
 
     /// @inheritdoc IContractWithIdentity
@@ -841,7 +842,7 @@ contract ATKSystemImplementation is
     /// @dev Only accounts with ISSUER_CLAIM_MANAGER_ROLE can add claims
     function canAddClaim(address actor) external view override returns (bool) {
         return _accessManager != address(0) &&
-               IATKSystemAccessManager(_accessManager).hasRole(ATKPeopleRoles.ISSUER_CLAIM_MANAGER_ROLE, actor);
+               IATKSystemAccessManager(_accessManager).hasRole(ATKPeopleRoles.ORGANISATION_CLAIM_MANAGER_ROLE, actor);
     }
 
     /// @inheritdoc IContractWithIdentity
@@ -849,30 +850,25 @@ contract ATKSystemImplementation is
     /// @dev Only accounts with ISSUER_CLAIM_MANAGER_ROLE can remove claims
     function canRemoveClaim(address actor) external view override returns (bool) {
         return _accessManager != address(0) &&
-               IATKSystemAccessManager(_accessManager).hasRole(ATKPeopleRoles.ISSUER_CLAIM_MANAGER_ROLE, actor);
+               IATKSystemAccessManager(_accessManager).hasRole(ATKPeopleRoles.ORGANISATION_CLAIM_MANAGER_ROLE, actor);
     }
 
     // --- Issuer Claim Management Functions ---
 
-    /// @notice Issues a TOPIC_ISSUER claim to a target identity
+    /// @notice Issues a claim by the organisation identity to a target identity
     /// @dev Only callable by accounts with TOKEN_FACTORY_MODULE_ROLE or ISSUER_CLAIM_MANAGER_ROLE
-    /// @param targetIdentity The identity contract to receive the issuer claim
-    function issueIssuerClaim(address targetIdentity) external onlySystemRoles2(ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKPeopleRoles.ISSUER_CLAIM_MANAGER_ROLE) {
-        if (_issuerIdentity == address(0)) revert IssuerIdentityNotInitialized();
+    /// @param targetIdentity The identity contract to receive the claim
+    /// @param topicId The topic ID of the claim
+    /// @param claimData The claim data
+    function issueClaimByOrganisation(address targetIdentity, uint256 topicId, bytes memory claimData) external onlySystemRoles2(ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKPeopleRoles.ORGANISATION_CLAIM_MANAGER_ROLE) {
+        if (_organisationIdentity == address(0)) revert IssuerIdentityNotInitialized();
         if (targetIdentity == address(0)) revert InvalidTargetIdentity();
 
-        // Get the topic ID for ISSUER claims
-        IATKTopicSchemeRegistry topicRegistry = IATKTopicSchemeRegistry(_topicSchemeRegistryProxy);
-        uint256 topicId = topicRegistry.getTopicId(ATKTopics.TOPIC_ISSUER);
-
-        // Encode the claim data according to the topic signature: "address issuerAddress"
-        bytes memory claimData = abi.encode(_issuerIdentity);
-
         // Issue the claim from the issuer identity to the target identity
-        IATKContractIdentity issuerIdentityContract = IATKContractIdentity(_issuerIdentity);
+        IATKContractIdentity organisationIdentityContract = IATKContractIdentity(_organisationIdentity);
         IIdentity targetIdentityContract = IIdentity(targetIdentity);
 
-        issuerIdentityContract.issueClaimTo(
+        organisationIdentityContract.issueClaimTo(
             targetIdentityContract,
             topicId,
             claimData,

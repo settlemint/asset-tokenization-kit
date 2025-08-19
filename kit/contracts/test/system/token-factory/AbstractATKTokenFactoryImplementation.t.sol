@@ -118,11 +118,11 @@ contract AbstractATKTokenFactoryImplementationTest is Test {
 		);
 
 		// Verify that the contract identity received an issuer claim
-		address issuerIdentity = ATKSystemImplementation(address(atkSystem)).issuerIdentity();
-		uint256 topicId = ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ISSUER);
+		address organisationIdentity = ATKSystemImplementation(address(atkSystem)).organisationIdentity();
+		uint256 topicId = ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
 
 		// Check if the claim exists on the contract identity
-		bytes32 claimId = keccak256(abi.encode(issuerIdentity, topicId));
+		bytes32 claimId = keccak256(abi.encode(organisationIdentity, topicId));
 
 		// Get claim from the identity (this tests the end-to-end flow)
 		(uint256 topic, , address issuer, , bytes memory data, )
@@ -130,11 +130,11 @@ contract AbstractATKTokenFactoryImplementationTest is Test {
 
 		// Verify the claim details
 		assertEq(topic, topicId, "Claim should have correct topic ID");
-		assertEq(issuer, issuerIdentity, "Claim should be issued by issuer identity");
+		assertEq(issuer, organisationIdentity, "Claim should be issued by organisation identity");
 
 		// Decode and verify claim data (should be abi.encode(issuerIdentity))
 		address decodedIssuer = abi.decode(data, (address));
-		assertEq(decodedIssuer, issuerIdentity, "Claim data should contain issuer identity address");
+		assertEq(decodedIssuer, organisationIdentity, "Claim data should contain organisation identity address");
 	}
 
 	function test_DeployContractIdentity_NoIssuerIdentity_SkipsIssuerClaim() public {
@@ -189,16 +189,16 @@ contract AbstractATKTokenFactoryImplementationTest is Test {
 			840
 		);
 
-		// Get the issuer claim and verify its encoding
-		address issuerIdentity = ATKSystemImplementation(address(atkSystem)).issuerIdentity();
-		uint256 topicId = ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ISSUER);
+		// Get the organisation claim and verify its encoding
+		address organisationIdentity = ATKSystemImplementation(address(atkSystem)).organisationIdentity();
+		uint256 topicId = ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
 
-		bytes32 claimId = keccak256(abi.encode(issuerIdentity, topicId));
+		bytes32 claimId = keccak256(abi.encode(organisationIdentity, topicId));
 		(, , , , bytes memory data, ) = IERC735(contractIdentity).getClaim(claimId);
 
-		// According to TOPIC_ISSUER signature: "address issuerAddress"
+		// According to TOPIC_ASSET_ISSUER signature: "address organisationAddress"
 		address decodedIssuer = abi.decode(data, (address));
-		assertEq(decodedIssuer, issuerIdentity, "Claim should be encoded as per topic signature");
+		assertEq(decodedIssuer, organisationIdentity, "Claim should be encoded as per topic signature");
 	}
 
 	function testConstructorDisablesInitializers_Unit() public {
@@ -323,11 +323,11 @@ contract MockSystemWithoutIssuer {
 		identityRegistryAddress = identityRegistry_;
 	}
 
-	function issuerIdentity() external pure returns (address) {
+	function organisationIdentity() external pure returns (address) {
 		return address(0);
 	}
 
-	function issueIssuerClaim(address) external pure {
+	function issueClaimByOrganisation(address, uint256, bytes memory) external pure {
 		// Do nothing - simulates system without issuer identity
 	}
 

@@ -20,6 +20,8 @@ import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.sol";
 import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
 import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
+import { ATKTopics } from "../ATKTopics.sol";
+import { IATKTopicSchemeRegistry } from "../topic-scheme-registry/IATKTopicSchemeRegistry.sol";
 
 /// @title ATKTokenFactory - Contract for managing token registries with role-based access control
 /// @author SettleMint
@@ -352,23 +354,27 @@ abstract contract AbstractATKTokenFactoryImplementation is
         internal
         returns (address)
     {
+        IATKSystem system = IATKSystem(_systemAddress);
+
         // Create the contract identity using simple address-based salt
         address contractIdentity =
-            IATKIdentityFactory(IATKSystem(_systemAddress).identityFactory()).createContractIdentity(contractAddress);
+            IATKIdentityFactory(system.identityFactory()).createContractIdentity(contractAddress);
 
         // Register the contract identity with the identity registry (same as any other identity)
-        ISMARTIdentityRegistry(IATKSystem(_systemAddress).identityRegistry()).registerIdentity(
+        ISMARTIdentityRegistry(system.identityRegistry()).registerIdentity(
             contractAddress, IIdentity(contractIdentity), country
         );
 
-        // Issue TOPIC_ISSUER claim to link the asset to its issuer
-        IATKSystem system = IATKSystem(_systemAddress);
-        address issuerIdentity = system.issuerIdentity();
+        // Issue TOPIC_ASSET_ISSUER claim to link the asset to its issuer
+        address organisationIdentity = system.organisationIdentity();
 
-        if (issuerIdentity != address(0)) {
-            // Call the system function to issue the issuer claim
-            // This is necessary because only the system contract can manage claims on the issuer identity
-            system.issueIssuerClaim(contractIdentity);
+        if (organisationIdentity != address(0)) {
+            uint256 topicId = IATKTopicSchemeRegistry(system.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
+            bytes memory claimData = abi.encode(organisationIdentity);
+
+            // Call the system function to issue the organisation claim
+            // This is necessary because only the system contract can manage claims on the organisation identity
+            system.issueClaimByOrganisation(contractIdentity, topicId, claimData);
         }
 
         // Emit registration event for indexing

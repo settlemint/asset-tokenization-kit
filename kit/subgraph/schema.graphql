@@ -177,6 +177,8 @@ type System @entity(immutable: false) {
   systemAddonRegistry: SystemAddonRegistry
   # Access control manager for the system
   systemAccessManager: SystemAccessManager
+  # Organisation identity that will be the asset issuers of the tokens created by the system
+  organisationIdentity: Identity
   # Statistical data for the entire system
   systemStats: SystemStatsState @derivedFrom(field: "system")
   # Statistics broken down by token type
