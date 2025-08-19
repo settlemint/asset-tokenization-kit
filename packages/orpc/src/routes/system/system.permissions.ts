@@ -3,12 +3,7 @@ import type { systemContract } from "./system.contract";
 
 type SystemContractMutations = keyof Pick<
   typeof systemContract,
-  | "tokenFactoryCreate"
-  | "addonCreate"
-  | "grantRole"
-  | "revokeRole"
-  | "complianceModuleCreate"
-  | "identityRegister"
+  "tokenFactoryCreate" | "addonCreate" | "grantRole" | "revokeRole" | "complianceModuleCreate" | "identityRegister"
 >;
 
 /**
@@ -18,10 +13,7 @@ type SystemContractMutations = keyof Pick<
  * This is a mapping of the token factory contract methods to the roles that are required to call them.
  * Uses OR logic - user needs either tokenManager OR systemManager role.
  */
-export const SYSTEM_PERMISSIONS: Record<
-  SystemContractMutations,
-  RoleRequirement
-> = {
+export const SYSTEM_PERMISSIONS: Record<SystemContractMutations, RoleRequirement> = {
   tokenFactoryCreate: { any: ["systemManager"] },
   addonCreate: { any: ["addonManager", "systemManager"] },
   grantRole: { any: ["admin"] },

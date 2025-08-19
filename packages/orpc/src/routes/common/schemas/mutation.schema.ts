@@ -46,7 +46,5 @@ export const MutationInputSchema = z.object({
 });
 
 export const MutationInputSchemaWithContract = MutationInputSchema.extend({
-  contract: ethereumAddress.describe(
-    "The address of the contract to call this function on"
-  ),
+  contract: ethereumAddress.describe("The address of the contract to call this function on"),
 });

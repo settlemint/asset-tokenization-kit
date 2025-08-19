@@ -11,9 +11,9 @@
  * @see {@link ./account.router} - Implementation router
  */
 
-import { accountSearchContract } from "./routes/account.search.contract";
 import { accountMeContract } from "./routes/account.me.contract";
 import { accountReadContract } from "./routes/account.read.contract";
+import { accountSearchContract } from "./routes/account.search.contract";
 
 /**
  * Read account information including identity claims.

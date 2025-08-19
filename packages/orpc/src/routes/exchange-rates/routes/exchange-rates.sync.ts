@@ -14,37 +14,27 @@ import {
   fxRates,
   fxRatesLatest,
 } from "@atk/db/schemas/exchange-rates";
-import { offChainPermissionsMiddleware } from "../../../middlewares/auth/offchain-permissions.middleware";
-import { databaseMiddleware } from "../../../middlewares/services/db.middleware";
-import { authRouter } from "../../../procedures/auth.router";
-import {
-  fiatCurrencies,
-  fiatCurrencyMetadata,
-} from "@atk/zod/validators/fiat-currency";
+import { fiatCurrencies, fiatCurrencyMetadata } from "@atk/zod/validators/fiat-currency";
 import { sql } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { exchangeRateApiResponseSchema } from "../schemas";
+import { offChainPermissionsMiddleware } from "@/middlewares/auth/offchain-permissions.middleware";
+import { databaseMiddleware } from "@/middlewares/services/db.middleware";
+import { authRouter } from "@/procedures/auth.router";
+import { exchangeRateApiResponseSchema } from "@/routes/exchange-rates/schemas";
 
 /**
  * Fetches exchange rates from the ExchangeRate-API.
  */
-async function fetchExchangeRatesFromApi(
-  baseCurrency: string
-): Promise<Record<string, number>> {
-  const response = await fetch(
-    `https://open.er-api.com/v6/latest/${baseCurrency}`,
-    {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
-    }
-  );
+async function fetchExchangeRatesFromApi(baseCurrency: string): Promise<Record<string, number>> {
+  const response = await fetch(`https://open.er-api.com/v6/latest/${baseCurrency}`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+    },
+  });
 
   if (!response.ok) {
-    throw new Error(
-      `Failed to fetch exchange rates: ${String(response.status)} ${response.statusText}`
-    );
+    throw new Error(`Failed to fetch exchange rates: ${String(response.status)} ${response.statusText}`);
   }
 
   const data = (await response.json()) as unknown;
@@ -58,9 +48,7 @@ async function fetchExchangeRatesFromApi(
 /**
  * Calculates cross rates for all currency pairs.
  */
-async function calculateCrossRates(): Promise<
-  Map<string, { rate: number; effectiveAt: Date }>
-> {
+async function calculateCrossRates(): Promise<Map<string, { rate: number; effectiveAt: Date }>> {
   const ratesMap = new Map<string, { rate: number; effectiveAt: Date }>();
   const effectiveAt = new Date();
 
@@ -78,7 +66,7 @@ async function calculateCrossRates(): Promise<
       const baseRate = usdRates[baseCurrency];
       const quoteRate = usdRates[quoteCurrency];
 
-      if (!baseRate || !quoteRate) {
+      if (!(baseRate && quoteRate)) {
         continue;
       }
 
@@ -172,18 +160,13 @@ export async function syncExchangeRatesInternal(
         rate: rateString,
         effectiveAt: data.effectiveAt,
       };
-      const validatedFxRateLatestData =
-        fxRateLatestDataSchema.parse(fxRateLatestData);
+      const validatedFxRateLatestData = fxRateLatestDataSchema.parse(fxRateLatestData);
 
       await tx
         .insert(fxRatesLatest)
         .values(validatedFxRateLatestData)
         .onConflictDoUpdate({
-          target: [
-            fxRatesLatest.baseCode,
-            fxRatesLatest.quoteCode,
-            fxRatesLatest.provider,
-          ],
+          target: [fxRatesLatest.baseCode, fxRatesLatest.quoteCode, fxRatesLatest.provider],
           set: {
             rate: rateString,
             effectiveAt: data.effectiveAt,

@@ -1,8 +1,8 @@
 import { authClient } from "@atk/auth/browser";
 import type { Permissions } from "@atk/auth/utils/permissions";
 import type { z } from "zod";
-import type { Context } from "../../context/context";
-import { baseRouter } from "../../procedures/base.router";
+import type { Context } from "@/context/context";
+import { baseRouter } from "@/procedures/base.router";
 
 interface OffChainPermissionsMiddlewareOptions<InputSchema extends z.ZodType> {
   requiredPermissions: Partial<Permissions>;
@@ -13,7 +13,7 @@ export const offChainPermissionsMiddleware = <InputSchema extends z.ZodType>({
   requiredPermissions,
   alwaysAllowIf = () => false,
 }: OffChainPermissionsMiddlewareOptions<InputSchema>) =>
-  baseRouter.middleware(async ({ context, next, errors }, input) => {
+  baseRouter.middleware(({ context, next, errors }, input) => {
     if (!context.auth) {
       throw errors.UNAUTHORIZED();
     }

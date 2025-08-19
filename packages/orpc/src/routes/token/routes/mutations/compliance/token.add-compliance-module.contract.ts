@@ -1,6 +1,6 @@
-import { baseContract } from "../../../../../procedures/base.contract";
-import { TokenAddComplianceModuleInputSchema } from "./token.add-compliance-module.schema";
-import { TokenSchema } from "../../token.read.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { TokenAddComplianceModuleInputSchema } from "@/routes/token/routes/mutations/compliance/token.add-compliance-module.schema";
+import { TokenSchema } from "@/routes/token/routes/token.read.schema";
 
 export const tokenAddComplianceModuleContract = baseContract
   .route({

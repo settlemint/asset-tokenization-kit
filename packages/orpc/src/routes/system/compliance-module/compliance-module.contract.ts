@@ -1,7 +1,7 @@
-import { baseContract } from "../../procedures/base.contract";
-import { SystemComplianceModuleCreateSchema } from "../../system/compliance-module/routes/compliance-module.create.schema";
-import { ComplianceModulesListOutputSchema } from "../../system/compliance-module/routes/compliance-module.list.schema";
-import { SystemReadSchema } from "../../system/routes/system.read.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { SystemComplianceModuleCreateSchema } from "@/routes/system/compliance-module/routes/compliance-module.create.schema";
+import { ComplianceModulesListOutputSchema } from "@/routes/system/compliance-module/routes/compliance-module.list.schema";
+import { SystemReadSchema } from "@/routes/system/routes/system.read.schema";
 
 const TAGS = ["system", "compliance-module"];
 

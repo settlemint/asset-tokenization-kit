@@ -1,5 +1,5 @@
 import { hasuraClient } from "@atk/settlemint/hasura";
-import { baseRouter } from "../../procedures/base.router";
+import { baseRouter } from "@/procedures/base.router";
 
 /**
  * ORPC middleware that injects the Hasura GraphQL client into the procedure context.
@@ -20,7 +20,7 @@ import { baseRouter } from "../../procedures/base.router";
  *   });
  * ```
  */
-export const hasuraMiddleware = baseRouter.middleware(async ({ context, next }) => {
+export const hasuraMiddleware = baseRouter.middleware(({ context, next }) => {
   return next({
     context: {
       // Use existing Hasura client if available (e.g., for testing),

@@ -1,10 +1,7 @@
-import { baseContract } from "../../procedures/base.contract";
 import { z } from "zod";
+import { baseContract } from "@/procedures/base.contract";
 import { SettingsDeleteSchema } from "./routes/settings.delete.schema";
-import {
-  SettingsListOutputSchema,
-  SettingsListSchema,
-} from "./routes/settings.list.schema";
+import { SettingsListOutputSchema, SettingsListSchema } from "./routes/settings.list.schema";
 import { SettingsReadSchema } from "./routes/settings.read.schema";
 import { SettingsUpsertSchema } from "./routes/settings.upsert.schema";
 

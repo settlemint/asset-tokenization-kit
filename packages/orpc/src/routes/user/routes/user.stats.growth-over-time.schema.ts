@@ -20,9 +20,5 @@ export const UserStatsGrowthOverTimeOutputSchema = z.object({
   timeRangeDays: z.number().int().min(1).max(365),
 });
 
-export type UserStatsGrowthOverTimeInput = z.infer<
-  typeof UserStatsGrowthOverTimeInputSchema
->;
-export type UserStatsGrowthOverTimeOutput = z.infer<
-  typeof UserStatsGrowthOverTimeOutputSchema
->;
+export type UserStatsGrowthOverTimeInput = z.infer<typeof UserStatsGrowthOverTimeInputSchema>;
+export type UserStatsGrowthOverTimeOutput = z.infer<typeof UserStatsGrowthOverTimeOutputSchema>;

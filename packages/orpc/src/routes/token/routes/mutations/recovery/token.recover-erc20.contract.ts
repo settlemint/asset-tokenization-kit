@@ -1,6 +1,6 @@
-import { baseContract } from "../../../../../procedures/base.contract";
-import { TokenRecoverERC20InputSchema } from "./token.recover-erc20.schema";
-import { TokenSchema } from "../../token.read.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { TokenRecoverERC20InputSchema } from "@/routes/token/routes/mutations/recovery/token.recover-erc20.schema";
+import { TokenSchema } from "@/routes/token/routes/token.read.schema";
 
 export const tokenRecoverERC20Contract = baseContract
   .route({

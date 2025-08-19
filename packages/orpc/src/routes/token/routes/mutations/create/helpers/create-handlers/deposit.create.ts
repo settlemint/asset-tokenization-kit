@@ -17,12 +17,9 @@
  */
 
 import { portalGraphql } from "@atk/settlemint/portal";
-import {
-  createToken,
-  type TokenCreateContext,
-} from "../token.base-create";
-import type { TokenCreateInput } from "../../token.create.schema";
 import { AssetTypeEnum } from "@atk/zod/validators/asset-types";
+import { createToken, type TokenCreateContext } from "@/routes/token/routes/mutations/create/helpers/token.base-create";
+import type { TokenCreateInput } from "@/routes/token/routes/mutations/create/token.create.schema";
 
 const CREATE_DEPOSIT_MUTATION = portalGraphql(`
   mutation CreateDepositMutation(
@@ -54,10 +51,7 @@ const CREATE_DEPOSIT_MUTATION = portalGraphql(`
   }
 `);
 
-export const depositCreateHandler = async (
-  input: TokenCreateInput,
-  context: TokenCreateContext
-) => {
+export const depositCreateHandler = async (input: TokenCreateInput, context: TokenCreateContext) => {
   if (input.type !== AssetTypeEnum.deposit) {
     throw new Error("Invalid token type");
   }

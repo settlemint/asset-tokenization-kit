@@ -1,6 +1,6 @@
-import { MutationInputSchemaWithContract } from "../../../../common/schemas/mutation.schema";
 import { apiBigInt } from "@atk/zod/validators/bigint";
 import type { z } from "zod";
+import { MutationInputSchemaWithContract } from "@/routes/common/schemas/mutation.schema";
 
 export const TokenSetCapInputSchema = MutationInputSchemaWithContract.extend({
   newCap: apiBigInt.describe("The new cap amount for the token"),

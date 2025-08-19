@@ -1,6 +1,6 @@
 import { AccessControlFragment } from "@atk/auth/fragments/the-graph/access-control-fragment";
 import { theGraphClient, theGraphGraphql } from "@atk/settlemint/the-graph";
-import { baseRouter } from "../../procedures/base.router";
+import { baseRouter } from "@/procedures/base.router";
 
 const READ_ACCOUNT_QUERY = theGraphGraphql(
   `

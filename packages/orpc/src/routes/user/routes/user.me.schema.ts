@@ -11,33 +11,17 @@ import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
 import { userRoles } from "@atk/zod/validators/user-roles";
 import { verificationType } from "@atk/zod/validators/verification-type";
 import { z } from "zod";
-import type { SYSTEM_PERMISSIONS } from "../../system/system.permissions";
+import type { SYSTEM_PERMISSIONS } from "@/routes/system/system.permissions";
 
 const onboardingStateSchema = z.object({
   wallet: z.boolean().describe("Whether the user has a wallet"),
-  walletSecurity: z
-    .boolean()
-    .describe(
-      "Whether the user has enabled a verification method on the wallet (PIN or OTP)"
-    ),
-  walletRecoveryCodes: z
-    .boolean()
-    .describe(
-      "Whether the user has received the recovery codes for the wallet"
-    ),
+  walletSecurity: z.boolean().describe("Whether the user has enabled a verification method on the wallet (PIN or OTP)"),
+  walletRecoveryCodes: z.boolean().describe("Whether the user has received the recovery codes for the wallet"),
   system: z.boolean().describe("Whether the user has a system"),
-  systemSettings: z
-    .boolean()
-    .describe("Whether the user has configured the system settings"),
-  systemAssets: z
-    .boolean()
-    .describe("Whether the user has deployed asset factories"),
-  systemAddons: z
-    .boolean()
-    .describe("Whether the user has configured system addons"),
-  identitySetup: z
-    .boolean()
-    .describe("Whether the user has set up their ONCHAINID"),
+  systemSettings: z.boolean().describe("Whether the user has configured the system settings"),
+  systemAssets: z.boolean().describe("Whether the user has deployed asset factories"),
+  systemAddons: z.boolean().describe("Whether the user has configured system addons"),
+  identitySetup: z.boolean().describe("Whether the user has set up their ONCHAINID"),
   identity: z.boolean().describe("Whether the user has an identity"),
 });
 
@@ -48,24 +32,13 @@ const userPermissionsSchema = z.object({
   actions: z
     .object(
       (() => {
-        const actionsSchema: Record<
-          keyof typeof SYSTEM_PERMISSIONS,
-          z.ZodType<boolean>
-        > = {
-          tokenFactoryCreate: z
-            .boolean()
-            .describe("Whether the user can create token factories"),
-          addonCreate: z
-            .boolean()
-            .describe("Whether the user can create addons"),
+        const actionsSchema: Record<keyof typeof SYSTEM_PERMISSIONS, z.ZodType<boolean>> = {
+          tokenFactoryCreate: z.boolean().describe("Whether the user can create token factories"),
+          addonCreate: z.boolean().describe("Whether the user can create addons"),
           grantRole: z.boolean().describe("Whether the user can grant roles"),
           revokeRole: z.boolean().describe("Whether the user can revoke roles"),
-          complianceModuleCreate: z
-            .boolean()
-            .describe("Whether the user can create compliance modules"),
-          identityRegister: z
-            .boolean()
-            .describe("Whether the user can register identities"),
+          complianceModuleCreate: z.boolean().describe("Whether the user can create compliance modules"),
+          identityRegister: z.boolean().describe("Whether the user can register identities"),
         };
         return actionsSchema;
       })()

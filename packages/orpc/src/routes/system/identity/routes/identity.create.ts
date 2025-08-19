@@ -36,9 +36,9 @@
  */
 
 import { portalGraphql } from "@atk/settlemint/portal";
-import { portalRouter } from "../../procedures/portal.router";
-import { read as readAccount } from "../../account/routes/account.read";
 import { call, ORPCError } from "@orpc/server";
+import { portalRouter } from "@/procedures/portal.router";
+import { read as readAccount } from "@/routes/account/routes/account.read";
 
 /**
  * GraphQL mutation for deploying a new identity contract.
@@ -107,76 +107,74 @@ const IDENTITY_CREATE_MUTATION = portalGraphql(`
  * @throws INTERNAL_SERVER_ERROR When identity factory is not available
  * @throws CONFLICT When user already has an identity contract
  */
-export const identityCreate = portalRouter.system.identityCreate.handler(
-  async ({ input, context, errors }) => {
-    const { walletVerification } = input;
-    const { auth, system } = context;
-    const sender = auth.user;
+export const identityCreate = portalRouter.system.identityCreate.handler(async ({ input, context, errors }) => {
+  const { walletVerification } = input;
+  const { auth, system } = context;
+  const sender = auth.user;
 
-    // SYSTEM VALIDATION: Ensure identity factory is available for deployment
-    // WHY: Identity contracts must be deployed through the system's factory
-    // for consistency, security, and proper integration with access control
-    if (!system?.identityFactory) {
-      const cause = new Error("Identity factory not found");
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: cause.message,
-        cause,
-      });
-    }
-
-    // CONFLICT DETECTION: Check if user already has an identity contract
-    // WHY: Each user should have at most one identity contract per system
-    // Multiple identities would complicate compliance verification and access control
-    const account = await call(
-      readAccount,
-      {
-        wallet: sender.wallet,
-      },
-      { context }
-    ).catch((error: unknown) => {
-      // GRACEFUL DEGRADATION: If account lookup fails, proceed with creation
-      // WHY: Account might not exist yet (first-time user) or temporary indexing issues
-      // Smart contract will enforce uniqueness if this is indeed a duplicate
-      if (error instanceof ORPCError && error.status === 404) {
-        return null;
-      }
-      throw error;
+  // SYSTEM VALIDATION: Ensure identity factory is available for deployment
+  // WHY: Identity contracts must be deployed through the system's factory
+  // for consistency, security, and proper integration with access control
+  if (!system?.identityFactory) {
+    const cause = new Error("Identity factory not found");
+    throw errors.INTERNAL_SERVER_ERROR({
+      message: cause.message,
+      cause,
     });
-
-    // DUPLICATE PREVENTION: Reject creation if identity already exists
-    // WHY: Each wallet can only have one identity contract for security and clarity
-    // Multiple identities would create confusion in compliance and access control
-    if (account?.identity) {
-      throw errors.CONFLICT({
-        message: "Identity already exists",
-      });
-    }
-
-    // IDENTITY DEPLOYMENT: Create new identity contract with wallet verification
-    // WHY: Portal client handles transaction tracking and verification automatically
-    // Factory pattern ensures consistent identity implementation and integration
-    await context.portalClient.mutate(
-      IDENTITY_CREATE_MUTATION,
-      {
-        address: system.identityFactory,
-        from: sender.wallet,
-      },
-      {
-        sender,
-        code: walletVerification.secretVerificationCode,
-        type: walletVerification.verificationType,
-      }
-    );
-
-    // UPDATED DATA RETRIEVAL: Return fresh account data including new identity
-    // WHY: Client needs updated account information reflecting the new identity contract
-    // Portal middleware ensures transaction is confirmed and indexed before returning
-    return await call(
-      readAccount,
-      {
-        wallet: sender.wallet,
-      },
-      { context }
-    );
   }
-);
+
+  // CONFLICT DETECTION: Check if user already has an identity contract
+  // WHY: Each user should have at most one identity contract per system
+  // Multiple identities would complicate compliance verification and access control
+  const account = await call(
+    readAccount,
+    {
+      wallet: sender.wallet,
+    },
+    { context }
+  ).catch((error: unknown) => {
+    // GRACEFUL DEGRADATION: If account lookup fails, proceed with creation
+    // WHY: Account might not exist yet (first-time user) or temporary indexing issues
+    // Smart contract will enforce uniqueness if this is indeed a duplicate
+    if (error instanceof ORPCError && error.status === 404) {
+      return null;
+    }
+    throw error;
+  });
+
+  // DUPLICATE PREVENTION: Reject creation if identity already exists
+  // WHY: Each wallet can only have one identity contract for security and clarity
+  // Multiple identities would create confusion in compliance and access control
+  if (account?.identity) {
+    throw errors.CONFLICT({
+      message: "Identity already exists",
+    });
+  }
+
+  // IDENTITY DEPLOYMENT: Create new identity contract with wallet verification
+  // WHY: Portal client handles transaction tracking and verification automatically
+  // Factory pattern ensures consistent identity implementation and integration
+  await context.portalClient.mutate(
+    IDENTITY_CREATE_MUTATION,
+    {
+      address: system.identityFactory,
+      from: sender.wallet,
+    },
+    {
+      sender,
+      code: walletVerification.secretVerificationCode,
+      type: walletVerification.verificationType,
+    }
+  );
+
+  // UPDATED DATA RETRIEVAL: Return fresh account data including new identity
+  // WHY: Client needs updated account information reflecting the new identity contract
+  // Portal middleware ensures transaction is confirmed and indexed before returning
+  return await call(
+    readAccount,
+    {
+      wallet: sender.wallet,
+    },
+    { context }
+  );
+});

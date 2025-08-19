@@ -5,10 +5,10 @@
  * @module ExchangeRatesDelete
  */
 import { fxRatesLatest } from "@atk/db/schemas/exchange-rates";
-import { offChainPermissionsMiddleware } from "../../../middlewares/auth/offchain-permissions.middleware";
-import { databaseMiddleware } from "../../../middlewares/services/db.middleware";
-import { authRouter } from "../../../procedures/auth.router";
 import { and, eq } from "drizzle-orm";
+import { offChainPermissionsMiddleware } from "@/middlewares/auth/offchain-permissions.middleware";
+import { databaseMiddleware } from "@/middlewares/services/db.middleware";
+import { authRouter } from "@/procedures/auth.router";
 
 /**
  * Exchange rate delete route handler.

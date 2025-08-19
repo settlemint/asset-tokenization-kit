@@ -1,8 +1,8 @@
-import { ListSchema } from "../common/schemas/list.schema";
 import { addonFactoryTypeId, addonType } from "@atk/zod/validators/addon-types";
 import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
 import { ethereumHash } from "@atk/zod/validators/ethereum-hash";
 import { z } from "zod";
+import { ListSchema } from "@/routes/common/schemas/list.schema";
 
 /**
  * Schema for a system addon in the list
@@ -26,9 +26,7 @@ export const SystemAddonSchema = z.object({
   /**
    * The transaction hash where the addon was deployed
    */
-  deployedInTransaction: ethereumHash.describe(
-    "The transaction hash where the addon was deployed"
-  ),
+  deployedInTransaction: ethereumHash.describe("The transaction hash where the addon was deployed"),
 
   /**
    * The account that deployed the addon
@@ -60,9 +58,7 @@ export const SystemAddonListSchema = ListSchema.extend({
    *
    * When specified, only addons deployed by the given account are returned.
    */
-  account: ethereumAddress
-    .optional()
-    .describe("Filter addons by account address"),
+  account: ethereumAddress.optional().describe("Filter addons by account address"),
 });
 
 /**
@@ -75,9 +71,7 @@ const TheGraphSystemAddonSchema = z.object({
   id: ethereumAddress.describe("The addon contract address"),
   name: z.string().describe("The name of the system addon"),
   typeId: addonFactoryTypeId().describe("The type ID of the system addon"),
-  deployedInTransaction: ethereumHash.describe(
-    "The transaction hash where the addon was deployed"
-  ),
+  deployedInTransaction: ethereumHash.describe("The transaction hash where the addon was deployed"),
   account: z
     .object({
       id: ethereumAddress.describe("The account address"),

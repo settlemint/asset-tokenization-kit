@@ -1,5 +1,5 @@
-import { TokenSchema } from "./token.read.schema";
 import { z } from "zod";
+import { TokenSchema } from "./token.read.schema";
 
 /**
  * Schema for token search input parameters.
@@ -19,10 +19,7 @@ export const TokenSearchInputSchema = z.object({
    *
    * Must be at least 1 character long to perform a search.
    */
-  query: z
-    .string()
-    .min(1)
-    .describe("Search query for token name, symbol, or address"),
+  query: z.string().min(1).describe("Search query for token name, symbol, or address"),
 
   /**
    * Maximum number of results to return.
@@ -30,13 +27,7 @@ export const TokenSearchInputSchema = z.object({
    * Since search is typically used for autocomplete or quick lookups,
    * we limit results to a reasonable number. Defaults to 10.
    */
-  limit: z
-    .number()
-    .int()
-    .positive()
-    .max(50)
-    .default(10)
-    .describe("Maximum number of search results to return"),
+  limit: z.number().int().positive().max(50).default(10).describe("Maximum number of search results to return"),
 });
 
 /**

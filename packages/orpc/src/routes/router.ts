@@ -1,4 +1,4 @@
-import { baseRouter } from "../procedures/base.router";
+import { baseRouter } from "@/procedures/base.router";
 
 /**
  * Main ORPC router configuration.
@@ -23,9 +23,7 @@ export const router = baseRouter.router({
    * including verified identity attributes.
    * @see {@link ./account/account.router} - Account router implementation
    */
-  account: baseRouter.account.lazy(
-    async () => import("./account/account.router")
-  ),
+  account: baseRouter.account.lazy(async () => import("./account/account.router")),
 
   /**
    * Actions-related API procedures.
@@ -45,9 +43,7 @@ export const router = baseRouter.router({
    *
    * @see {@link ./actions/actions.router} - Actions router implementation
    */
-  actions: baseRouter.actions.lazy(
-    async () => import("./actions/actions.router")
-  ),
+  actions: baseRouter.actions.lazy(async () => import("./actions/actions.router")),
 
   /**
    * Exchange rates API procedures.
@@ -58,9 +54,7 @@ export const router = baseRouter.router({
    * for analytics and charting.
    * @see {@link ./exchange-rates/exchange-rates.router} - Exchange rates router implementation
    */
-  exchangeRates: baseRouter.exchangeRates.lazy(
-    async () => import("./exchange-rates/exchange-rates.router")
-  ),
+  exchangeRates: baseRouter.exchangeRates.lazy(async () => import("./exchange-rates/exchange-rates.router")),
 
   /**
    * Settings-related API procedures.
@@ -68,9 +62,7 @@ export const router = baseRouter.router({
    * Lazy-loaded module containing settings management operations.
    * @see {@link ./settings/settings.router} - Settings router implementation
    */
-  settings: baseRouter.settings.lazy(
-    async () => import("./settings/settings.router")
-  ),
+  settings: baseRouter.settings.lazy(async () => import("./settings/settings.router")),
 
   /**
    * Token-related API procedures.

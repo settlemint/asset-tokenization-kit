@@ -1,6 +1,6 @@
-import { baseContract } from "../../../../../procedures/base.contract";
+import { baseContract } from "@/procedures/base.contract";
+import { TokenSchema } from "@/routes/token/routes/token.read.schema";
 import { TokenSetYieldScheduleInputSchema } from "./token.set-yield-schedule.schema";
-import { TokenSchema } from "../../token.read.schema";
 
 export const tokenSetYieldScheduleContract = baseContract
   .route({

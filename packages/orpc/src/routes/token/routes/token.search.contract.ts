@@ -1,8 +1,5 @@
-import { baseContract } from "../../../procedures/base.contract";
-import {
-  TokenSearchInputSchema,
-  TokenSearchResultSchema,
-} from "./token.search.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { TokenSearchInputSchema, TokenSearchResultSchema } from "./token.search.schema";
 
 export const tokenSearchContract = baseContract
   .route({

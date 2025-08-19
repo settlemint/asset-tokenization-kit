@@ -1,4 +1,4 @@
-import { ListSchema } from "../common/schemas/list.schema";
+import { ListSchema } from "@/routes/common/schemas/list.schema";
 import { SettingSchema } from "./settings.read.schema";
 
 /**

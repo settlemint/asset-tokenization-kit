@@ -1,8 +1,8 @@
-import { baseContract } from "../../procedures/base.contract";
+import { baseContract } from "@/procedures/base.contract";
 import {
   StatsTransactionCountInputSchema,
   StatsTransactionCountOutputSchema,
-} from "../../system/stats/routes/transaction-count.schema";
+} from "@/routes/system/stats/routes/transaction-count.schema";
 
 export const statsTransactionCountContract = baseContract
   .route({

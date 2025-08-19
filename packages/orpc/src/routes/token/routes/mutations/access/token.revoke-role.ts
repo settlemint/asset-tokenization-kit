@@ -1,8 +1,9 @@
-import { getRoleByFieldName } from "@/lib/constants/roles";
+import { getRoleByFieldName } from "@atk/auth/constants/roles";
 import { portalGraphql } from "@atk/settlemint/portal";
-import { tokenPermissionMiddleware } from "../../../../../middlewares/auth/token-permission.middleware";
-import { tokenRouter } from "../../../../../procedures/token.router";
+import { tokenPermissionMiddleware } from "@/middlewares/auth/token-permission.middleware";
+import { tokenRouter } from "@/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "../../../token.permissions";
+
 // type import not needed here
 
 // Single address, single role
@@ -89,9 +90,7 @@ export const revokeRole = tokenRouter.token.revokeRole
     }
 
     // Normalize inputs
-    const addresses = (Array.isArray(address) ? address : [address]).filter(
-      Boolean
-    ) as string[];
+    const addresses = (Array.isArray(address) ? address : [address]).filter(Boolean) as string[];
     const roles = (Array.isArray(role) ? role : [role]).filter(Boolean);
 
     const uniqueAddresses = [...new Set(addresses)];
@@ -125,7 +124,7 @@ export const revokeRole = tokenRouter.token.revokeRole
     if (uniqueAddresses.length === 1 && uniqueRoles.length === 1) {
       const account = uniqueAddresses[0];
       const info = roleInfos[0];
-      if (!account || !info) {
+      if (!(account && info)) {
         throw errors.INTERNAL_SERVER_ERROR({
           message: "Invalid address or role",
         });
@@ -139,7 +138,7 @@ export const revokeRole = tokenRouter.token.revokeRole
           role: info.bytes,
         },
         {
-          sender: sender,
+          sender,
           code: walletVerification.secretVerificationCode,
           type: walletVerification.verificationType,
         }
@@ -158,7 +157,7 @@ export const revokeRole = tokenRouter.token.revokeRole
           role: info.bytes,
         },
         {
-          sender: sender,
+          sender,
           code: walletVerification.secretVerificationCode,
           type: walletVerification.verificationType,
         }
@@ -177,19 +176,16 @@ export const revokeRole = tokenRouter.token.revokeRole
           roles: roleInfos.map((r) => r.bytes),
         },
         {
-          sender: sender,
+          sender,
           code: walletVerification.secretVerificationCode,
           type: walletVerification.verificationType,
         }
       );
     } else {
       throw errors.INPUT_VALIDATION_FAILED({
-        message:
-          "Cannot revoke multiple roles from multiple addresses in a single transaction.",
+        message: "Cannot revoke multiple roles from multiple addresses in a single transaction.",
         data: {
-          errors: [
-            "Cannot revoke multiple roles from multiple addresses in a single transaction.",
-          ],
+          errors: ["Cannot revoke multiple roles from multiple addresses in a single transaction."],
         },
       });
     }

@@ -16,9 +16,5 @@ export const StatsTransactionCountOutputSchema = z.object({
   timeRangeDays: z.number().int().min(1).max(365),
 });
 
-export type StatsTransactionCountInput = z.infer<
-  typeof StatsTransactionCountInputSchema
->;
-export type StatsTransactionCountOutput = z.infer<
-  typeof StatsTransactionCountOutputSchema
->;
+export type StatsTransactionCountInput = z.infer<typeof StatsTransactionCountInputSchema>;
+export type StatsTransactionCountOutput = z.infer<typeof StatsTransactionCountOutputSchema>;

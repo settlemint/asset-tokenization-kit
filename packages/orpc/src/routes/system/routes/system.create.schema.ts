@@ -26,7 +26,7 @@
  */
 
 import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
-import { MutationInputSchema } from "../../common/schemas/mutation.schema";
+import { MutationInputSchema } from "@/routes/common/schemas/mutation.schema";
 
 export const SystemCreateSchema = MutationInputSchema.extend({
   /**

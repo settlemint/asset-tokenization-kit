@@ -1,4 +1,4 @@
-import { baseContract } from "../../../procedures/base.contract";
+import { baseContract } from "@/procedures/base.contract";
 import { TokenListInputSchema, TokenListSchema } from "./token.list.schema";
 
 export const tokenListContract = baseContract

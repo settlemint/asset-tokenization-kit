@@ -1,6 +1,6 @@
-import { UserVerificationSchema } from "../common/schemas/user-verification.schema";
 import { isoCountryCode } from "@atk/zod/validators/iso-country-code";
 import { z } from "zod";
+import { UserVerificationSchema } from "@/routes/common/schemas/user-verification.schema";
 
 /**
  * Input schema for identity registration

@@ -1,8 +1,8 @@
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { theGraphMiddleware } from "../../../middlewares/services/the-graph.middleware";
-import { authRouter } from "../../../procedures/auth.router";
-import { TokenSearchResponseSchema } from "./token.search.schema";
 import { isAddress } from "viem";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { authRouter } from "@/procedures/auth.router";
+import { TokenSearchResponseSchema } from "./token.search.schema";
 
 /**
  * GraphQL query for searching tokens by name, symbol, or address.
@@ -83,32 +83,30 @@ const SEARCH_TOKEN_QUERY = theGraphGraphql(`
  * @see {@link TokenSearchInputSchema} for the input parameters
  * @see {@link TokenSearchResponseSchema} for the response structure
  */
-export const search = authRouter.token.search
-  .use(theGraphMiddleware)
-  .handler(async ({ input, context }) => {
-    const { query, limit } = input;
+export const search = authRouter.token.search.use(theGraphMiddleware).handler(async ({ input, context }) => {
+  const { query, limit } = input;
 
-    // Prepare search variables
-    const variables: {
-      search: string;
-      searchAddress?: string;
-      limit: number;
-    } = {
-      search: query,
-      limit,
-    };
+  // Prepare search variables
+  const variables: {
+    search: string;
+    searchAddress?: string;
+    limit: number;
+  } = {
+    search: query,
+    limit,
+  };
 
-    // If the query looks like an Ethereum address, include it as searchAddress
-    // This allows exact matching for addresses while still doing fuzzy search on text
-    if (isAddress(query)) {
-      variables.searchAddress = query.toLowerCase();
-    }
+  // If the query looks like an Ethereum address, include it as searchAddress
+  // This allows exact matching for addresses while still doing fuzzy search on text
+  if (isAddress(query)) {
+    variables.searchAddress = query.toLowerCase();
+  }
 
-    // Execute the search query
-    const response = await context.theGraphClient.query(SEARCH_TOKEN_QUERY, {
-      input: variables,
-      output: TokenSearchResponseSchema,
-    });
-
-    return response.tokens;
+  // Execute the search query
+  const response = await context.theGraphClient.query(SEARCH_TOKEN_QUERY, {
+    input: variables,
+    output: TokenSearchResponseSchema,
   });
+
+  return response.tokens;
+});

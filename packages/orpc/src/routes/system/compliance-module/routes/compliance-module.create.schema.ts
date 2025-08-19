@@ -1,37 +1,23 @@
-import { MutationInputSchema } from "../common/schemas/mutation.schema";
-import {
-  type ComplianceTypeId,
-  complianceTypeId,
-} from "@atk/zod/validators/compliance";
+import { type ComplianceTypeId, complianceTypeId } from "@atk/zod/validators/compliance";
 import { z } from "zod";
+import { MutationInputSchema } from "@/routes/common/schemas/mutation.schema";
 
 /**
  * Default implementation addresses for each compliance module type
  */
-const DEFAULT_COMPLIANCE_MODULE_IMPLEMENTATIONS: Record<
-  ComplianceTypeId,
-  string
-> = {
-  SMARTIdentityVerificationComplianceModule:
-    "0x5e771e1417100000000000000000000000020100",
-  CountryAllowListComplianceModule:
-    "0x5e771e1417100000000000000000000000020101",
-  CountryBlockListComplianceModule:
-    "0x5e771e1417100000000000000000000000020102",
-  AddressBlockListComplianceModule:
-    "0x5e771e1417100000000000000000000000020103",
-  IdentityBlockListComplianceModule:
-    "0x5e771e1417100000000000000000000000020104",
-  IdentityAllowListComplianceModule:
-    "0x5e771e1417100000000000000000000000020105",
+const DEFAULT_COMPLIANCE_MODULE_IMPLEMENTATIONS: Record<ComplianceTypeId, string> = {
+  SMARTIdentityVerificationComplianceModule: "0x5e771e1417100000000000000000000000020100",
+  CountryAllowListComplianceModule: "0x5e771e1417100000000000000000000000020101",
+  CountryBlockListComplianceModule: "0x5e771e1417100000000000000000000000020102",
+  AddressBlockListComplianceModule: "0x5e771e1417100000000000000000000000020103",
+  IdentityBlockListComplianceModule: "0x5e771e1417100000000000000000000000020104",
+  IdentityAllowListComplianceModule: "0x5e771e1417100000000000000000000000020105",
 } as const;
 
 /**
  * Get default implementation addresses for a compliance module type
  */
-export function getDefaultComplianceModuleImplementations(
-  type: ComplianceTypeId
-) {
+export function getDefaultComplianceModuleImplementations(type: ComplianceTypeId) {
   return DEFAULT_COMPLIANCE_MODULE_IMPLEMENTATIONS[type];
 }
 
@@ -41,9 +27,7 @@ export function getDefaultComplianceModuleImplementations(
 const SystemComplianceModuleConfigSchema = z.object({
   type: complianceTypeId(),
   // Optional implementation addresses for custom deployments
-  implementations: z
-    .record(z.string(), z.string().regex(/^0x[a-fA-F0-9]{40}$/))
-    .optional(),
+  implementations: z.record(z.string(), z.string().regex(/^0x[a-fA-F0-9]{40}$/)).optional(),
 });
 
 /**
@@ -88,15 +72,7 @@ export const SystemComplianceModuleCreateOutputSchema = z.object({
 /**
  * Type definitions
  */
-export type SystemComplianceModuleCreateInput = z.infer<
-  typeof SystemComplianceModuleCreateSchema
->;
-export type SystemComplianceModuleCreateOutput = z.infer<
-  typeof SystemComplianceModuleCreateOutputSchema
->;
-export type SystemComplianceModuleConfig = z.infer<
-  typeof SystemComplianceModuleConfigSchema
->;
-export type ComplianceModuleResult = z.infer<
-  typeof ComplianceModuleResultSchema
->;
+export type SystemComplianceModuleCreateInput = z.infer<typeof SystemComplianceModuleCreateSchema>;
+export type SystemComplianceModuleCreateOutput = z.infer<typeof SystemComplianceModuleCreateOutputSchema>;
+export type SystemComplianceModuleConfig = z.infer<typeof SystemComplianceModuleConfigSchema>;
+export type ComplianceModuleResult = z.infer<typeof ComplianceModuleResultSchema>;

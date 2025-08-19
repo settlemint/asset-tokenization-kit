@@ -3,7 +3,6 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsgo --noEmit",
-    "posttypecheck": "bun gql-tada check",
     "lint": "biome check --write --unsafe",
     "test": "bun test",
     "test:coverage": "bun test --coverage",
@@ -20,6 +19,10 @@
     "./*": {
       "import": "./src/*.ts",
       "types": "./src/*.ts"
+    },
+    "./test/*": {
+      "import": "./test/*.ts",
+      "types": "./test/*.ts"
     }
   }
 }

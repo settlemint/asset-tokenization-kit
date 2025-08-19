@@ -36,10 +36,10 @@
  */
 
 import { portalGraphql } from "@atk/settlemint/portal";
-import { tokenPermissionMiddleware } from "../../../../../middlewares/auth/token-permission.middleware";
-import { tokenRouter } from "../../../../../procedures/token.router";
-import { TOKEN_PERMISSIONS } from "../../../token.permissions";
 import { call } from "@orpc/server";
+import { tokenPermissionMiddleware } from "@/middlewares/auth/token-permission.middleware";
+import { tokenRouter } from "@/procedures/token.router";
+import { TOKEN_PERMISSIONS } from "../../../token.permissions";
 import { read } from "../../token.read";
 
 /**

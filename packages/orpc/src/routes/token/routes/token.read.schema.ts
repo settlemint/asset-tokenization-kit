@@ -1,5 +1,4 @@
 import type { AccessControl } from "@atk/auth/fragments/the-graph/access-control-fragment";
-import type { TOKEN_PERMISSIONS } from "../token.permissions";
 import { accessControlRoles } from "@atk/zod/validators/access-control-roles";
 import { assetExtensionArray } from "@atk/zod/validators/asset-extensions";
 import { assetType } from "@atk/zod/validators/asset-types";
@@ -9,6 +8,7 @@ import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
 import { timestamp } from "@atk/zod/validators/timestamp";
 import { from } from "dnum";
 import { z } from "zod";
+import type { TOKEN_PERMISSIONS } from "@/routes/token/token.permissions";
 
 /**
  * Zod schema for token details with user permissions
@@ -44,9 +44,7 @@ export const RawTokenSchema = z.object({
   decimals: decimals(),
   totalSupply: z.string().describe("The total supply of the token as string"),
   extensions: assetExtensionArray().describe("The extensions of the token"),
-  implementsERC3643: z
-    .boolean()
-    .describe("Whether the token implements ERC3643"),
+  implementsERC3643: z.boolean().describe("Whether the token implements ERC3643"),
   implementsSMART: z.boolean().describe("Whether the token implements SMART"),
   pausable: z.object({
     paused: z.boolean().describe("Whether the token is paused"),
@@ -57,9 +55,7 @@ export const RawTokenSchema = z.object({
         .describe("The collateral of the token")
         .nullish()
         .transform((val) => val ?? from(0)),
-      expiryTimestamp: timestamp()
-        .nullable()
-        .describe("The expiry timestamp of the collateral"),
+      expiryTimestamp: timestamp().nullable().describe("The expiry timestamp of the collateral"),
     })
     .nullable()
     .describe("The collateral of the token"),
@@ -71,9 +67,7 @@ export const RawTokenSchema = z.object({
     .describe("The max supply of the token"),
   createdBy: z
     .object({
-      id: ethereumAddress.describe(
-        "The address of the user who created the token"
-      ),
+      id: ethereumAddress.describe("The address of the user who created the token"),
     })
     .describe("The user who created the token"),
   redeemable: z
@@ -96,99 +90,36 @@ export const RawTokenSchema = z.object({
     })
     .nullable()
     .describe("The fund of the token"),
-  accessControl: z
-    .custom<AccessControl>()
-    .describe("The access control of the token")
-    .optional(),
+  accessControl: z.custom<AccessControl>().describe("The access control of the token").optional(),
   userPermissions: z
     .object({
       roles: accessControlRoles.describe("The roles of the user for the token"),
-      isAllowed: z
-        .boolean()
-        .describe("Whether the user is allowed to interact with the token"),
-      notAllowedReason: z
-        .string()
-        .describe(
-          "The reason the user is not allowed to interact with the token"
-        )
-        .optional(),
+      isAllowed: z.boolean().describe("Whether the user is allowed to interact with the token"),
+      notAllowedReason: z.string().describe("The reason the user is not allowed to interact with the token").optional(),
       actions: z
         .object(
           (() => {
-            const actionsSchema: Record<
-              keyof typeof TOKEN_PERMISSIONS,
-              z.ZodType<boolean>
-            > = {
-              burn: z
-                .boolean()
-                .describe("Whether the user can execute the burn action"),
-              create: z
-                .boolean()
-                .describe("Whether the user can execute the create action"),
-              grantRole: z
-                .boolean()
-                .describe("Whether the user can execute the grantRole action"),
-              revokeRole: z
-                .boolean()
-                .describe("Whether the user can execute the revokeRole action"),
-              mint: z
-                .boolean()
-                .describe("Whether the user can execute the mint action"),
-              pause: z
-                .boolean()
-                .describe("Whether the user can execute the pause action"),
-              addComplianceModule: z
-                .boolean()
-                .describe(
-                  "Whether the user can execute the addComplianceModule action"
-                ),
-              approve: z
-                .boolean()
-                .describe("Whether the user can execute the approve action"),
-              forcedRecover: z
-                .boolean()
-                .describe(
-                  "Whether the user can execute the tokenForcedRecover action"
-                ),
-              freezeAddress: z
-                .boolean()
-                .describe(
-                  "Whether the user can execute the tokenFreezeAddress action"
-                ),
-              recoverERC20: z
-                .boolean()
-                .describe(
-                  "Whether the user can execute the tokenRecoverERC20 action"
-                ),
-              recoverTokens: z
-                .boolean()
-                .describe(
-                  "Whether the user can execute the tokenRecoverTokens action"
-                ),
-              redeem: z
-                .boolean()
-                .describe(
-                  "Whether the user can execute the tokenRedeem action"
-                ),
+            const actionsSchema: Record<keyof typeof TOKEN_PERMISSIONS, z.ZodType<boolean>> = {
+              burn: z.boolean().describe("Whether the user can execute the burn action"),
+              create: z.boolean().describe("Whether the user can execute the create action"),
+              grantRole: z.boolean().describe("Whether the user can execute the grantRole action"),
+              revokeRole: z.boolean().describe("Whether the user can execute the revokeRole action"),
+              mint: z.boolean().describe("Whether the user can execute the mint action"),
+              pause: z.boolean().describe("Whether the user can execute the pause action"),
+              addComplianceModule: z.boolean().describe("Whether the user can execute the addComplianceModule action"),
+              approve: z.boolean().describe("Whether the user can execute the approve action"),
+              forcedRecover: z.boolean().describe("Whether the user can execute the tokenForcedRecover action"),
+              freezeAddress: z.boolean().describe("Whether the user can execute the tokenFreezeAddress action"),
+              recoverERC20: z.boolean().describe("Whether the user can execute the tokenRecoverERC20 action"),
+              recoverTokens: z.boolean().describe("Whether the user can execute the tokenRecoverTokens action"),
+              redeem: z.boolean().describe("Whether the user can execute the tokenRedeem action"),
               removeComplianceModule: z
                 .boolean()
-                .describe(
-                  "Whether the user can execute the tokenRemoveComplianceModule action"
-                ),
-              setCap: z
-                .boolean()
-                .describe("Whether the user can execute the setCap action"),
-              setYieldSchedule: z
-                .boolean()
-                .describe(
-                  "Whether the user can execute the tokenSetYieldSchedule action"
-                ),
-              transfer: z
-                .boolean()
-                .describe("Whether the user can execute the transfer action"),
-              unpause: z
-                .boolean()
-                .describe("Whether the user can execute the unpause action"),
+                .describe("Whether the user can execute the tokenRemoveComplianceModule action"),
+              setCap: z.boolean().describe("Whether the user can execute the setCap action"),
+              setYieldSchedule: z.boolean().describe("Whether the user can execute the tokenSetYieldSchedule action"),
+              transfer: z.boolean().describe("Whether the user can execute the transfer action"),
+              unpause: z.boolean().describe("Whether the user can execute the unpause action"),
             };
             return actionsSchema;
           })()

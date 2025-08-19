@@ -1,14 +1,14 @@
-import { baseContract } from "../../procedures/base.contract";
-import { StatsAssetsOutputSchema } from "../../system/stats/routes/assets.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { StatsAssetsOutputSchema } from "@/routes/system/stats/routes/assets.schema";
 import {
   StatsTransactionCountInputSchema,
   StatsTransactionCountOutputSchema,
-} from "../../system/stats/routes/transaction-count.schema";
+} from "@/routes/system/stats/routes/transaction-count.schema";
 import {
   StatsTransactionHistoryInputSchema,
   StatsTransactionHistoryOutputSchema,
-} from "../../system/stats/routes/transaction-history.schema";
-import { StatsValueOutputSchema } from "../../system/stats/routes/value.schema";
+} from "@/routes/system/stats/routes/transaction-history.schema";
+import { StatsValueOutputSchema } from "@/routes/system/stats/routes/value.schema";
 
 const statsAssets = baseContract
   .route({
@@ -25,8 +25,7 @@ const statsTransactionCount = baseContract
     method: "GET",
     path: "/system/stats/transaction-count",
     description: "Retrieve system-wide transaction count statistics",
-    successDescription:
-      "System transaction count statistics retrieved successfully",
+    successDescription: "System transaction count statistics retrieved successfully",
     tags: ["stats", "system"],
   })
   .input(StatsTransactionCountInputSchema)

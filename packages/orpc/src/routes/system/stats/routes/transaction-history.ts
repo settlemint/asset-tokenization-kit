@@ -1,8 +1,8 @@
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { theGraphMiddleware } from "../../middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "../../middlewares/system/system.middleware";
-import { authRouter } from "../../procedures/auth.router";
 import { z } from "zod";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { systemMiddleware } from "@/middlewares/system/system.middleware";
+import { authRouter } from "@/procedures/auth.router";
 
 /**
  * GraphQL query to fetch transaction-related metrics
@@ -125,22 +125,17 @@ export const statsTransactionHistory = authRouter.system.statsTransactionHistory
     const sinceTimestamp = Math.floor(since.getTime() / 1000); // Convert to Unix timestamp
 
     // Fetch all transaction-related data in a single query
-    const response = await context.theGraphClient.query(
-      TRANSACTION_METRICS_QUERY,
-      {
-        input: {
-          since: sinceTimestamp.toString(),
-        },
-        output: TransactionMetricsResponseSchema,
-      }
-    );
+    const response = await context.theGraphClient.query(TRANSACTION_METRICS_QUERY, {
+      input: {
+        since: sinceTimestamp.toString(),
+      },
+      output: TransactionMetricsResponseSchema,
+    });
 
     // Calculate metrics
     const totalTransactions = sumEventCounts(response.totalTransactions);
     const recentTransactions = sumEventCounts(response.recentTransactions);
-    const transactionHistory = processTransactionHistoryData(
-      response.transactionHistory
-    );
+    const transactionHistory = processTransactionHistoryData(response.transactionHistory);
 
     return {
       totalTransactions,

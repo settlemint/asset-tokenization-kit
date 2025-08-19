@@ -17,9 +17,5 @@ export const GlobalComplianceModuleConfigSchema = z.object({
   parameters: ComplianceModuleParametersSchema,
 });
 
-export type ComplianceModuleParameters = z.infer<
-  typeof ComplianceModuleParametersSchema
->;
-export type GlobalComplianceModuleConfig = z.infer<
-  typeof GlobalComplianceModuleConfigSchema
->;
+export type ComplianceModuleParameters = z.infer<typeof ComplianceModuleParametersSchema>;
+export type GlobalComplianceModuleConfig = z.infer<typeof GlobalComplianceModuleConfigSchema>;

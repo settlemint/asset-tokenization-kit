@@ -1,18 +1,15 @@
-import { ListSchema } from "../common/schemas/list.schema";
+import { z } from "zod";
+import { baseContract } from "@/procedures/base.contract";
+import { ListSchema } from "@/routes/common/schemas/list.schema";
 import { accessManagerContract } from "./access-manager/access-manager.contract";
 import { addonContract } from "./addon/addon.contract";
 import { complianceModuleContract } from "./compliance-module/compliance-module.contract";
 import { identityContract } from "./identity/identity.contract";
 import { SystemCreateSchema } from "./routes/system.create.schema";
-import {
-  SystemReadOutputSchema,
-  SystemReadSchema,
-} from "./routes/system.read.schema";
+import { SystemSchema } from "./routes/system.list.schema";
+import { SystemReadOutputSchema, SystemReadSchema } from "./routes/system.read.schema";
 import { statsContract } from "./stats/stats.contract";
 import { factoryContract } from "./token-factory/factory.contract";
-import { z } from "zod";
-import { baseContract } from "../../procedures/base.contract";
-import { SystemSchema } from "./routes/system.list.schema";
 
 /**
  * Contract definition for the system list endpoint.
@@ -30,10 +27,8 @@ const list = baseContract
   .route({
     method: "GET",
     path: "/systems",
-    description:
-      "List all SMART systems deployed on the blockchain with their registry contracts and configuration",
-    successDescription:
-      "List of SMART systems with deployment details and registry addresses",
+    description: "List all SMART systems deployed on the blockchain with their registry contracts and configuration",
+    successDescription: "List of SMART systems with deployment details and registry addresses",
     tags: ["system"],
   })
   .input(ListSchema) // Standard list query parameters (pagination, filters, etc.)
@@ -57,8 +52,7 @@ const create = baseContract
     path: "/systems",
     description:
       "Deploy a new SMART system with identity registry, compliance engine, and token factory registry contracts",
-    successDescription:
-      "SMART system deployed successfully with all registry contracts and configuration",
+    successDescription: "SMART system deployed successfully with all registry contracts and configuration",
     tags: ["system"],
   })
   .input(SystemCreateSchema)
@@ -77,8 +71,7 @@ const read = baseContract
   .route({
     method: "GET",
     path: "/systems/:id",
-    description:
-      "Get details of a specific SMART system (use default for id to get the system used by the dApp)",
+    description: "Get details of a specific SMART system (use default for id to get the system used by the dApp)",
     successDescription: "SMART system details with token factories",
     tags: ["system"],
   })

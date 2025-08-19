@@ -1,4 +1,4 @@
-import { sessionMiddleware } from "../middlewares/auth/session.middleware";
+import { sessionMiddleware } from "@/middlewares/auth/session.middleware";
 import { baseRouter } from "./base.router";
 
 /**
@@ -20,7 +20,7 @@ import { baseRouter } from "./base.router";
  * - Public content retrieval
  * - Health checks and status endpoints
  * - Public API endpoints with optional user context
- * @see {@link ../../middlewares/auth/session.middleware} - Session loading middleware
+ * @see {@link @/@/middlewares/auth/session.middleware} - Session loading middleware
  * @see {@link ./base.router} - Base router implementation
  */
 export const publicRouter = baseRouter.use(sessionMiddleware);

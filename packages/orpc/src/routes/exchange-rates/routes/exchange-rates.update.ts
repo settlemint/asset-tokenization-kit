@@ -5,10 +5,10 @@
  * @module ExchangeRatesUpdate
  */
 import { currencies, fxRates, fxRatesLatest } from "@atk/db/schemas/exchange-rates";
-import { offChainPermissionsMiddleware } from "../../../middlewares/auth/offchain-permissions.middleware";
-import { databaseMiddleware } from "../../../middlewares/services/db.middleware";
-import { authRouter } from "../../../procedures/auth.router";
 import { eq, sql } from "drizzle-orm";
+import { offChainPermissionsMiddleware } from "@/middlewares/auth/offchain-permissions.middleware";
+import { databaseMiddleware } from "@/middlewares/services/db.middleware";
+import { authRouter } from "@/procedures/auth.router";
 
 /**
  * Exchange rate update route handler.
@@ -36,12 +36,7 @@ export const update = authRouter.exchangeRates.update
   )
   .use(databaseMiddleware)
   .handler(async ({ input, context, errors }) => {
-    const {
-      baseCurrency,
-      quoteCurrency,
-      rate,
-      effectiveAt = new Date(),
-    } = input;
+    const { baseCurrency, quoteCurrency, rate, effectiveAt = new Date() } = input;
 
     // Validate currencies exist
     const [baseCurrencyExists] = await context.db
@@ -93,11 +88,7 @@ export const update = authRouter.exchangeRates.update
           effectiveAt,
         })
         .onConflictDoUpdate({
-          target: [
-            fxRatesLatest.baseCode,
-            fxRatesLatest.quoteCode,
-            fxRatesLatest.provider,
-          ],
+          target: [fxRatesLatest.baseCode, fxRatesLatest.quoteCode, fxRatesLatest.provider],
           set: {
             rate: rateString,
             effectiveAt,

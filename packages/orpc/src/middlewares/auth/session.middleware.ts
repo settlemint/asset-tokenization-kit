@@ -1,5 +1,5 @@
 import { auth, type Session, type SessionUser } from "@atk/auth/server";
-import { baseRouter } from "../../procedures/base.router";
+import { baseRouter } from "@/procedures/base.router";
 
 /**
  * Session middleware for optional authentication context.

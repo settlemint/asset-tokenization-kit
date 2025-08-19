@@ -21,6 +21,4 @@ export const ExchangeRatesDeleteSchema = z.object({
 /**
  * Type for exchange rate delete input
  */
-export type ExchangeRatesDeleteInput = z.infer<
-  typeof ExchangeRatesDeleteSchema
->;
+export type ExchangeRatesDeleteInput = z.infer<typeof ExchangeRatesDeleteSchema>;

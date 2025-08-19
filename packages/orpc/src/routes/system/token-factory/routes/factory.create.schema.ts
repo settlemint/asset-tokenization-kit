@@ -29,18 +29,12 @@
 
 import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
 import { z } from "zod";
-import { MutationInputSchema } from "../../../common/schemas/mutation.schema";
+import { MutationInputSchema } from "@/routes/common/schemas/mutation.schema";
 
 /**
  * Token types supported for factory creation
  */
-export const TokenTypeEnum = z.enum([
-  "bond",
-  "equity",
-  "fund",
-  "stablecoin",
-  "deposit",
-]);
+export const TokenTypeEnum = z.enum(["bond", "equity", "fund", "stablecoin", "deposit"]);
 
 export type TokenType = z.infer<typeof TokenTypeEnum>;
 
@@ -89,17 +83,13 @@ const SingleFactorySchema = z.object({
    * Optional custom factory implementation address
    * If not provided, uses the default for the token type
    */
-  factoryImplementation: ethereumAddress
-    .optional()
-    .describe("Custom factory implementation address"),
+  factoryImplementation: ethereumAddress.optional().describe("Custom factory implementation address"),
 
   /**
    * Optional custom token implementation address
    * If not provided, uses the default for the token type
    */
-  tokenImplementation: ethereumAddress
-    .optional()
-    .describe("Custom token implementation address"),
+  tokenImplementation: ethereumAddress.optional().describe("Custom token implementation address"),
 });
 
 /**
@@ -111,11 +101,7 @@ export const FactoryCreateSchema = MutationInputSchema.extend({
    * Factory or factories to create
    * Can be a single factory object or an array of factories
    */
-  factories: z
-    .array(SingleFactorySchema)
-    .min(1)
-    .max(10)
-    .describe("Factory or factories to create"),
+  factories: z.array(SingleFactorySchema).min(1).max(10).describe("Factory or factories to create"),
 });
 
 // Type exports using Zod's type inference

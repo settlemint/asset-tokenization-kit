@@ -30,11 +30,11 @@
  * @see {@link getRoleByFieldName} Role validation and byte conversion utilities
  */
 
-import { getRoleByFieldName } from "@/lib/constants/roles";
+import { getRoleByFieldName } from "@atk/auth/constants/roles";
 import { portalGraphql } from "@atk/settlemint/portal";
-import { blockchainPermissionsMiddleware } from "../../middlewares/auth/blockchain-permissions.middleware";
-import { portalRouter } from "../../procedures/portal.router";
-import { SYSTEM_PERMISSIONS } from "../../system/system.permissions";
+import { blockchainPermissionsMiddleware } from "@/middlewares/auth/blockchain-permissions.middleware";
+import { portalRouter } from "@/procedures/portal.router";
+import { SYSTEM_PERMISSIONS } from "@/routes/system/system.permissions";
 
 /**
  * GraphQL mutation for revoking a single role from a single address.
@@ -227,7 +227,7 @@ export const revokeRole = portalRouter.system.revokeRole
       // DEFENSIVE PROGRAMMING: These checks should never fail due to length validation above
       // WHY: TypeScript can't prove array access is safe, but we validated lengths
       // Prevents runtime errors and provides clear error messages for debugging
-      if (!account || !roleInfo) {
+      if (!(account && roleInfo)) {
         throw errors.INTERNAL_SERVER_ERROR({
           message: "Unexpected error: Invalid address or role configuration",
         });

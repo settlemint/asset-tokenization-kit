@@ -1,7 +1,7 @@
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { theGraphMiddleware } from "../../../../middlewares/services/the-graph.middleware";
-import { tokenRouter } from "../../../../procedures/token.router";
 import { z } from "zod";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { tokenRouter } from "@/procedures/token.router";
 
 /**
  * GraphQL query to fetch token-specific total volume history
@@ -83,42 +83,35 @@ function processVolumeHistoryData(
  * console.log(metrics.volumeHistory);
  * ```
  */
-export const statsVolume = tokenRouter.token.statsVolume
-  .use(theGraphMiddleware)
-  .handler(async ({ context, input }) => {
-    // Token context is guaranteed by tokenRouter middleware
+export const statsVolume = tokenRouter.token.statsVolume.use(theGraphMiddleware).handler(async ({ context, input }) => {
+  // Token context is guaranteed by tokenRouter middleware
 
-    // Extract parameters with defaults applied by schema
-    // tokenAddress is now validated as proper Ethereum address by schema
-    const { tokenAddress, days } = input;
+  // Extract parameters with defaults applied by schema
+  // tokenAddress is now validated as proper Ethereum address by schema
+  const { tokenAddress, days } = input;
 
-    // Calculate the date range for queries
-    const since = new Date();
-    since.setDate(since.getDate() - days);
+  // Calculate the date range for queries
+  const since = new Date();
+  since.setDate(since.getDate() - days);
 
-    // Validate timestamp is not too far in the past (blockchain inception)
-    const minTimestamp = Math.floor(new Date("2015-07-30").getTime() / 1000); // Ethereum mainnet launch
-    const sinceTimestamp = Math.max(
-      minTimestamp,
-      Math.floor(since.getTime() / 1000)
-    );
+  // Validate timestamp is not too far in the past (blockchain inception)
+  const minTimestamp = Math.floor(new Date("2015-07-30").getTime() / 1000); // Ethereum mainnet launch
+  const sinceTimestamp = Math.max(minTimestamp, Math.floor(since.getTime() / 1000));
 
-    // Fetch token total volume history from TheGraph
-    // tokenAddress is already validated and checksummed by ethereumAddress schema
-    const response = await context.theGraphClient.query(TOKEN_VOLUME_QUERY, {
-      input: {
-        tokenId: tokenAddress.toLowerCase(),
-        since: sinceTimestamp.toString(),
-      },
-      output: StatsVolumeResponseSchema,
-    });
-
-    // Process the raw data into the expected output format
-    const volumeHistory = processVolumeHistoryData(
-      response.tokenStats_collection
-    );
-
-    return {
-      volumeHistory,
-    };
+  // Fetch token total volume history from TheGraph
+  // tokenAddress is already validated and checksummed by ethereumAddress schema
+  const response = await context.theGraphClient.query(TOKEN_VOLUME_QUERY, {
+    input: {
+      tokenId: tokenAddress.toLowerCase(),
+      since: sinceTimestamp.toString(),
+    },
+    output: StatsVolumeResponseSchema,
   });
+
+  // Process the raw data into the expected output format
+  const volumeHistory = processVolumeHistoryData(response.tokenStats_collection);
+
+  return {
+    volumeHistory,
+  };
+});

@@ -1,7 +1,7 @@
-import { ListSchema } from "../../common/schemas/list.schema";
-import { TokenSchema } from "./token.read.schema";
 import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
 import { z } from "zod";
+import { ListSchema } from "@/routes/common/schemas/list.schema";
+import { TokenSchema } from "./token.read.schema";
 
 /**
  * Schema for validating an array of tokens from GraphQL responses.
@@ -31,7 +31,7 @@ export const TokenListSchema = z.array(
     extensions: true,
     implementsERC3643: true,
     implementsSMART: true,
-  }),
+  })
 );
 
 /**
@@ -107,9 +107,7 @@ export const TokenListInputSchema = ListSchema.extend({
    *
    * Must be a valid Ethereum contract address.
    */
-  tokenFactory: ethereumAddress
-    .optional()
-    .describe("The token factory contract address to filter tokens by"),
+  tokenFactory: ethereumAddress.optional().describe("The token factory contract address to filter tokens by"),
 });
 
 // Type export for use in handlers and client code

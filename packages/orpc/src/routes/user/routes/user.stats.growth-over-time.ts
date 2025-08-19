@@ -1,8 +1,8 @@
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { theGraphMiddleware } from "../../../middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "../../../middlewares/system/system.middleware";
-import { authRouter } from "../../../procedures/auth.router";
 import { z } from "zod";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { systemMiddleware } from "@/middlewares/system/system.middleware";
+import { authRouter } from "@/procedures/auth.router";
 
 /**
  * GraphQL query to fetch user growth data for time-series charts
@@ -72,7 +72,9 @@ function processUserGrowthData(
 
   for (const day of sortedDays) {
     const dayUsers = dailyUserSets.get(day);
-    if (!dayUsers) continue;
+    if (!dayUsers) {
+      continue;
+    }
 
     // Add new users to the cumulative set
     dayUsers.forEach((userId) => {
@@ -126,15 +128,12 @@ export const statsGrowthOverTime = authRouter.user.statsGrowthOverTime
     const sinceTimestamp = Math.floor(since.getTime() / 1000); // Convert to Unix timestamp
 
     // Fetch user growth data
-    const response = await context.theGraphClient.query(
-      GROWTH_OVER_TIME_QUERY,
-      {
-        input: {
-          since: sinceTimestamp.toString(),
-        },
-        output: GrowthOverTimeResponseSchema,
-      }
-    );
+    const response = await context.theGraphClient.query(GROWTH_OVER_TIME_QUERY, {
+      input: {
+        since: sinceTimestamp.toString(),
+      },
+      output: GrowthOverTimeResponseSchema,
+    });
 
     // Process the user growth data
     const userGrowth = processUserGrowthData(response.userGrowth);

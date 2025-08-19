@@ -1,9 +1,9 @@
+import { theGraphGraphql } from "@atk/settlemint/the-graph";
 import { type AssetType, assetType } from "@atk/zod/validators/asset-types";
 import { z } from "zod";
-import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { theGraphMiddleware } from "../../middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "../../middlewares/system/system.middleware";
-import { authRouter } from "../../procedures/auth.router";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { systemMiddleware } from "@/middlewares/system/system.middleware";
+import { authRouter } from "@/procedures/auth.router";
 
 /**
  * GraphQL query to fetch asset count and breakdown metrics
@@ -70,13 +70,8 @@ export const statsAssets = authRouter.system.statsAssets
     });
 
     // Calculate metrics
-    const totalAssets = response.tokenTypeStatsStates.reduce(
-      (acc, curr) => acc + curr.count,
-      0
-    );
-    const assetBreakdown = response.tokenTypeStatsStates.reduce<
-      Record<AssetType, number>
-    >(
+    const totalAssets = response.tokenTypeStatsStates.reduce((acc, curr) => acc + curr.count, 0);
+    const assetBreakdown = response.tokenTypeStatsStates.reduce<Record<AssetType, number>>(
       (acc, curr) => {
         acc[curr.type] = (acc[curr.type] ?? 0) + curr.count;
         return acc;

@@ -18,18 +18,18 @@
  */
 
 import { portalGraphql } from "@atk/settlemint/portal";
-import { blockchainPermissionsMiddleware } from "../../middlewares/auth/blockchain-permissions.middleware";
-import { portalRouter } from "../../procedures/portal.router";
+import { complianceTypeIds } from "@atk/zod/validators/compliance";
+import { call } from "@orpc/server";
+import { createLogger } from "@settlemint/sdk-utils/logging";
+import { blockchainPermissionsMiddleware } from "@/middlewares/auth/blockchain-permissions.middleware";
+import { portalRouter } from "@/procedures/portal.router";
 import {
   getDefaultComplianceModuleImplementations,
   type SystemComplianceModuleConfig,
   type SystemComplianceModuleCreateOutput,
-} from "../../system/compliance-module/routes/compliance-module.create.schema";
-import { read } from "../../system/routes/system.read";
-import { SYSTEM_PERMISSIONS } from "../../system/system.permissions";
-import { complianceTypeIds } from "@atk/zod/validators/compliance";
-import { call } from "@orpc/server";
-import { createLogger } from "@settlemint/sdk-utils/logging";
+} from "@/routes/system/compliance-module/routes/compliance-module.create.schema";
+import { read } from "@/routes/system/routes/system.read";
+import { SYSTEM_PERMISSIONS } from "@/routes/system/system.permissions";
 
 const logger = createLogger();
 
@@ -67,11 +67,8 @@ const COMPLIANCE_TYPE_TO_IMPLEMENTATION_NAME = {
 /**
  * Gets the implementation address for a compliance module configuration
  */
-function getComplianceImplementationAddress(
-  moduleConfig: SystemComplianceModuleConfig
-): string {
-  const implementationName =
-    COMPLIANCE_TYPE_TO_IMPLEMENTATION_NAME[moduleConfig.type];
+function getComplianceImplementationAddress(moduleConfig: SystemComplianceModuleConfig): string {
+  const implementationName = COMPLIANCE_TYPE_TO_IMPLEMENTATION_NAME[moduleConfig.type];
 
   // Use custom implementation if provided, otherwise use default
   if (moduleConfig.implementations?.[implementationName]) {
@@ -79,13 +76,9 @@ function getComplianceImplementationAddress(
   }
 
   // Get the default implementation for the compliance module type
-  const defaultImplementation = getDefaultComplianceModuleImplementations(
-    moduleConfig.type
-  );
+  const defaultImplementation = getDefaultComplianceModuleImplementations(moduleConfig.type);
   if (!defaultImplementation) {
-    throw new Error(
-      `No implementation found for compliance module type: ${moduleConfig.type}`
-    );
+    throw new Error(`No implementation found for compliance module type: ${moduleConfig.type}`);
   }
 
   return defaultImplementation;
@@ -119,9 +112,7 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
 
     // Query existing system compliance modules to check for duplicates
     const existingComplianceModuleTypeIds =
-      system?.complianceModules.map(
-        (complianceModule) => complianceModule.typeId
-      ) ?? [];
+      system?.complianceModules.map((complianceModule) => complianceModule.typeId) ?? [];
 
     const results: SystemComplianceModuleCreateOutput["results"] = [];
 
@@ -142,11 +133,10 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
 
       try {
         // Get implementation address and initialization data
-        const implementationAddress =
-          getComplianceImplementationAddress(moduleConfig);
+        const implementationAddress = getComplianceImplementationAddress(moduleConfig);
 
         // Log the implementation details for auditing
-        logger.info(`Registering compliance module with details:`, {
+        logger.info("Registering compliance module with details:", {
           moduleType: type,
           contract,
           implementationAddress,
@@ -163,15 +153,11 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
         };
 
         // Execute the mutation
-        const transactionHash = await context.portalClient.mutate(
-          REGISTER_COMPLIANCE_MODULE_MUTATION,
-          variables,
-          {
-            sender: sender,
-            code: walletVerification.secretVerificationCode,
-            type: walletVerification.verificationType,
-          }
-        );
+        const transactionHash = await context.portalClient.mutate(REGISTER_COMPLIANCE_MODULE_MUTATION, variables, {
+          sender,
+          code: walletVerification.secretVerificationCode,
+          type: walletVerification.verificationType,
+        });
 
         const implementationName = COMPLIANCE_TYPE_TO_IMPLEMENTATION_NAME[type];
         results.push({
@@ -203,15 +189,10 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
  * Resolves compliance modules from input - either "all" or specific configurations
  */
 function getModuleList(
-  complianceModules:
-    | "all"
-    | SystemComplianceModuleConfig
-    | SystemComplianceModuleConfig[]
+  complianceModules: "all" | SystemComplianceModuleConfig | SystemComplianceModuleConfig[]
 ): SystemComplianceModuleConfig[] {
   if (complianceModules === "all") {
     return complianceTypeIds.map((type) => ({ type }));
   }
-  return Array.isArray(complianceModules)
-    ? complianceModules
-    : [complianceModules];
+  return Array.isArray(complianceModules) ? complianceModules : [complianceModules];
 }

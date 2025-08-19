@@ -2,11 +2,11 @@ import accessManagerRouter from "./access-manager/access-manager.router";
 import addonRouter from "./addon/addon.router";
 import complianceModuleRouter from "./compliance-module/compliance-module.router";
 import identityRouter from "./identity/identity.router";
-import statsRouter from "./stats/stats.router";
-import tokenFactoryRouter from "./token-factory/factory.router";
 import { create } from "./routes/system.create";
 import { list } from "./routes/system.list";
 import { read } from "./routes/system.read";
+import statsRouter from "./stats/stats.router";
+import tokenFactoryRouter from "./token-factory/factory.router";
 
 /**
  * System router module.

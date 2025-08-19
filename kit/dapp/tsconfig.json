@@ -1,14 +1,7 @@
 {
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-  ],
+  "include": ["**/*.ts", "**/*.tsx", "../../packages/orpc/test/dapp.ts"],
   "compilerOptions": {
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ES2022"
-    ],
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "target": "es2022",
     "module": "esnext",
     "jsx": "react-jsx",
@@ -33,21 +26,11 @@
     "forceConsistentCasingInFileNames": true,
     "allowArbitraryExtensions": true,
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@schemas/*": [
-        "./*.d.ts"
-      ],
-      "@/locales/*": [
-        "./locales/*"
-      ],
-      "@atk/*": [
-        "../../packages/*"
-      ],
-      "@test/*": [
-        "./test/*"
-      ]
+      "@/*": ["./src/*"],
+      "@schemas/*": ["./*.d.ts"],
+      "@/locales/*": ["./locales/*"],
+      "@atk/*": ["../../packages/*"],
+      "@test/*": ["./test/*"]
     },
     "noImplicitAny": true,
     "noImplicitThis": true,

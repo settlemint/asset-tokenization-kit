@@ -25,14 +25,14 @@ function isAccountArray(value: unknown): value is Array<{ id: string; isContract
  */
 export function getAccessControlEntries(
   accessControl: AccessControl | null | undefined
-): Array<[AccessControlRoles, Array<{ id: string; isContract: boolean }>]> {
+): [AccessControlRoles, Array<{ id: string; isContract: boolean }>][] {
   if (!accessControl) {
     return [];
   }
 
   const entries = Object.entries(accessControl);
 
-  const validEntries: Array<[AccessControlRoles, Array<{ id: string; isContract: boolean }>]> = [];
+  const validEntries: [AccessControlRoles, Array<{ id: string; isContract: boolean }>][] = [];
 
   for (const [role, value] of entries) {
     // Skip GraphQL internal fields and the 'id' field

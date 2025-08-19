@@ -3,10 +3,10 @@ import type { db } from "@atk/db";
 import type { hasuraClient } from "@atk/settlemint/hasura";
 import type { client as minioClient } from "@atk/settlemint/minio";
 import type { getHeaders } from "@tanstack/react-start/server";
-import type { ValidatedPortalClient } from "../middlewares/services/portal.middleware";
-import type { ValidatedTheGraphClient } from "../middlewares/services/the-graph.middleware";
-import type { SystemContext } from "../middlewares/system/system.middleware";
-import type { Token } from "../routes/token/routes/token.read.schema";
+import type { ValidatedPortalClient } from "@/middlewares/services/portal.middleware";
+import type { ValidatedTheGraphClient } from "@/middlewares/services/the-graph.middleware";
+import type { SystemContext } from "@/middlewares/system/system.middleware";
+import type { Token } from "@/routes/token/routes/token.read.schema";
 
 /**
  * ORPC procedure context type definition.

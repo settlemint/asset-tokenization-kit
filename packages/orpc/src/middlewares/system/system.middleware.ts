@@ -6,9 +6,9 @@ import type { ComplianceTypeId } from "@atk/zod/validators/compliance";
 import { type EthereumAddress, getEthereumAddress } from "@atk/zod/validators/ethereum-address";
 import { call } from "@orpc/server";
 import type { Hex } from "viem";
-import { getComponentId, parseSystemComponent } from "../../helpers/system-component-helpers";
-import { baseRouter } from "../../procedures/base.router";
-import { read } from "../../routes/settings/routes/settings.read";
+import { getComponentId, parseSystemComponent } from "@/helpers/system-component-helpers";
+import { baseRouter } from "@/procedures/base.router";
+import { read } from "@/routes/settings/routes/settings.read";
 
 const SYSTEM_QUERY = theGraphGraphql(
   `

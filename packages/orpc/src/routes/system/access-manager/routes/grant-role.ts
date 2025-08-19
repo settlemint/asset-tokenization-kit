@@ -30,11 +30,11 @@
  * @see {@link getRoleByFieldName} Role validation and byte conversion
  */
 
-import { getRoleByFieldName } from "@/lib/constants/roles";
+import { getRoleByFieldName } from "@atk/auth/constants/roles";
 import { portalGraphql } from "@atk/settlemint/portal";
-import { blockchainPermissionsMiddleware } from "../../../../middlewares/auth/blockchain-permissions.middleware";
-import { portalRouter } from "../../../../procedures/portal.router";
-import { SYSTEM_PERMISSIONS } from "../../system.permissions";
+import { blockchainPermissionsMiddleware } from "@/middlewares/auth/blockchain-permissions.middleware";
+import { portalRouter } from "@/procedures/portal.router";
+import { SYSTEM_PERMISSIONS } from "@/routes/system/system.permissions";
 
 /**
  * GraphQL mutation for granting a single role to a single address.
@@ -229,7 +229,7 @@ export const grantRole = portalRouter.system.grantRole
       // DEFENSIVE PROGRAMMING: These checks should never fail due to length validation above
       // WHY: TypeScript can't prove array access is safe, but we validated lengths
       // This prevents runtime errors in edge cases or future code modifications
-      if (!account || !roleInfo) {
+      if (!(account && roleInfo)) {
         throw errors.INTERNAL_SERVER_ERROR({
           message: "Unexpected error: Invalid address or role configuration",
         });

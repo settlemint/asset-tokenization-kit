@@ -1,6 +1,6 @@
-import { baseContract } from "../../../../../procedures/base.contract";
-import { TokenRecoverTokensInputSchema } from "./token.recover-tokens.schema";
-import { TokenSchema } from "../../token.read.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { TokenRecoverTokensInputSchema } from "@/routes/token/routes/mutations/recovery/token.recover-tokens.schema";
+import { TokenSchema } from "@/routes/token/routes/token.read.schema";
 
 export const tokenRecoverTokensContract = baseContract
   .route({

@@ -117,7 +117,7 @@ export const pincode = () => {
         async (ctx) => {
           const user = ctx.context.session.user as SessionUser;
           const { pincodeEnabled, pincodeVerificationId } = user;
-          if (!pincodeEnabled || !pincodeVerificationId) {
+          if (!(pincodeEnabled && pincodeVerificationId)) {
             throw new APIError("BAD_REQUEST", {
               message: "Pincode already removed",
             });

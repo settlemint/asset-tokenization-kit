@@ -1,12 +1,9 @@
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { theGraphMiddleware } from "../../../middlewares/services/the-graph.middleware";
-import { offChainPermissionsMiddleware } from "../../../middlewares/auth/offchain-permissions.middleware";
-import { publicRouter } from "../../../procedures/public.router";
-import {
-  AccountReadSchema,
-  AccountResponseSchema,
-} from "./account.read.schema";
 import countries from "i18n-iso-countries";
+import { offChainPermissionsMiddleware } from "@/middlewares/auth/offchain-permissions.middleware";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { publicRouter } from "@/procedures/public.router";
+import { type AccountReadSchema, AccountResponseSchema } from "./account.read.schema";
 
 const READ_ACCOUNT_QUERY = theGraphGraphql(`
   query ReadAccountQuery($walletAddress: ID!) {
@@ -34,8 +31,7 @@ export const read = publicRouter.account.read
   .use(
     offChainPermissionsMiddleware<typeof AccountReadSchema>({
       requiredPermissions: { account: ["read"] },
-      alwaysAllowIf: (context, input) =>
-        input.wallet === context.auth?.user.wallet,
+      alwaysAllowIf: (context, input) => input.wallet === context.auth?.user.wallet,
     })
   )
   .use(theGraphMiddleware)
@@ -63,9 +59,7 @@ export const read = publicRouter.account.read
     // TypeScript ensures the return type matches AccountReadOutput interface
     return {
       id: result.account.id,
-      country: result.account.country
-        ? countries.numericToAlpha2(result.account.country)
-        : undefined,
+      country: result.account.country ? countries.numericToAlpha2(result.account.country) : undefined,
       identity: result.account.identity?.id,
       claims: result.account.identity?.claims.map((claim) => claim.name) ?? [],
     };

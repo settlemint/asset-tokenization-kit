@@ -1,6 +1,6 @@
-import { MutationInputSchema } from "../common/schemas/mutation.schema";
 import { type AddonType, addonType } from "@atk/zod/validators/addon-types";
 import { z } from "zod";
+import { MutationInputSchema } from "@/routes/common/schemas/mutation.schema";
 
 /**
  * Type alias for clarity in system context
@@ -37,9 +37,7 @@ const SystemAddonConfigSchema = z.object({
   type: addonType(),
   name: z.string().min(1).max(50),
   // Optional implementation addresses for custom deployments
-  implementations: z
-    .record(z.string(), z.string().regex(/^0x[a-fA-F0-9]{40}$/))
-    .optional(),
+  implementations: z.record(z.string(), z.string().regex(/^0x[a-fA-F0-9]{40}$/)).optional(),
 });
 
 /**

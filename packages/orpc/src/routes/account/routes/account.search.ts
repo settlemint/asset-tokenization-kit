@@ -1,9 +1,9 @@
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { offChainPermissionsMiddleware } from "../../../middlewares/auth/offchain-permissions.middleware";
-import { theGraphMiddleware } from "../../../middlewares/services/the-graph.middleware";
-import { authRouter } from "../../../procedures/auth.router";
 import { isAddress } from "viem";
 import { z } from "zod";
+import { offChainPermissionsMiddleware } from "@/middlewares/auth/offchain-permissions.middleware";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { authRouter } from "@/procedures/auth.router";
 
 const SEARCH_ACCOUNT_QUERY = theGraphGraphql(`
   query SearchAccountQuery($address: ID!) {
@@ -42,7 +42,9 @@ export const search = authRouter.account.search
       }),
     });
 
-    if (!result.account) return [];
+    if (!result.account) {
+      return [];
+    }
 
     return [
       {

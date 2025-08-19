@@ -1,9 +1,9 @@
 import { theGraphClient, theGraphGraphql } from "@atk/settlemint/the-graph";
-import { authRouter } from "../../../procedures/auth.router";
 import type { VariablesOf } from "@settlemint/sdk-thegraph";
-import { z } from "zod";
+import type { z } from "zod";
+import { authRouter } from "@/procedures/auth.router";
 import {
-  ActionsGraphResponseSchema,
+  type ActionsGraphResponseSchema,
   ActionsListDataSchema,
   type ActionsListResponse,
 } from "./actions.list.schema";
@@ -75,41 +75,37 @@ const LIST_ACTIONS_QUERY = theGraphGraphql(`
  * @see {@link ActionsListSchema} for the input parameters
  * @see {@link ActionsListResponse} for the response structure
  */
-export const list = authRouter.actions.list.handler(
-  async ({ input, context }): Promise<ActionsListResponse> => {
-    // Build where clause with user filtering and optional filters
-    const where: VariablesOf<typeof LIST_ACTIONS_QUERY>["where"] = {
-      // Filter actions to only those where the user is an authorized executor
-      executor_: {
-        executors_contains: [context.auth.user.wallet.toLowerCase()],
-      },
-    };
+export const list = authRouter.actions.list.handler(async ({ input, context }): Promise<ActionsListResponse> => {
+  // Build where clause with user filtering and optional filters
+  const where: VariablesOf<typeof LIST_ACTIONS_QUERY>["where"] = {
+    // Filter actions to only those where the user is an authorized executor
+    executor_: {
+      executors_contains: [context.auth.user.wallet.toLowerCase()],
+    },
+  };
 
-    // Apply optional filters
-    if (input.status !== undefined) {
-      where.status = input.status;
-    }
-    if (input.target !== undefined) {
-      where.target = input.target.toLowerCase();
-    }
-    if (input.name !== undefined) {
-      where.name_contains_nocase = input.name;
-    }
-
-    // Execute query
-    const response = await theGraphClient.request(LIST_ACTIONS_QUERY, {
-      where,
-    });
-
-    // Transform Graph scalars (strings) to domain types and validate
-    const transformed = (
-      response as unknown as z.infer<typeof ActionsGraphResponseSchema>
-    ).actions.map((a) => ({
-      ...a,
-      activeAt: BigInt(a.activeAt),
-      executedAt: a.executedAt === null ? null : BigInt(a.executedAt),
-    }));
-
-    return ActionsListDataSchema.parse(transformed);
+  // Apply optional filters
+  if (input.status !== undefined) {
+    where.status = input.status;
   }
-);
+  if (input.target !== undefined) {
+    where.target = input.target.toLowerCase();
+  }
+  if (input.name !== undefined) {
+    where.name_contains_nocase = input.name;
+  }
+
+  // Execute query
+  const response = await theGraphClient.request(LIST_ACTIONS_QUERY, {
+    where,
+  });
+
+  // Transform Graph scalars (strings) to domain types and validate
+  const transformed = (response as unknown as z.infer<typeof ActionsGraphResponseSchema>).actions.map((a) => ({
+    ...a,
+    activeAt: BigInt(a.activeAt),
+    executedAt: a.executedAt === null ? null : BigInt(a.executedAt),
+  }));
+
+  return ActionsListDataSchema.parse(transformed);
+});

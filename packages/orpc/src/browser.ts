@@ -41,7 +41,7 @@ import { router } from "./routes/router";
 const getORPCClient = createIsomorphicFn()
   .server(() => {
     return createRouterClient(router, {
-      context: async () => {
+      context: () => {
         try {
           const headers = getHeaders();
           return {

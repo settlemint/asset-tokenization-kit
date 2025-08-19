@@ -11,38 +11,20 @@
  * @see {@link ./user.router} - Implementation router
  */
 
-import {
-  ActionsListResponseSchema,
-  ActionsListSchema,
-} from "../actions/routes/actions.list.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { ActionsListResponseSchema, ActionsListSchema } from "@/routes/actions/routes/actions.list.schema";
 import { kycContract } from "./kyc/kyc.contract";
 import { createWalletContract } from "./routes/mutations/create-wallet.contract";
-import {
-  UserListInputSchema,
-  UserListOutputSchema,
-} from "./routes/user.list.schema";
+import { UserListInputSchema, UserListOutputSchema } from "./routes/user.list.schema";
 import { UserMeSchema } from "./routes/user.me.schema";
-import {
-  UserReadInputSchema,
-  UserReadOutputSchema,
-} from "./routes/user.read.schema";
-import {
-  UserSearchInputSchema,
-  UserSearchOutputSchema,
-} from "./routes/user.search.schema";
+import { UserReadInputSchema, UserReadOutputSchema } from "./routes/user.read.schema";
+import { UserSearchInputSchema, UserSearchOutputSchema } from "./routes/user.search.schema";
 import {
   UserStatsGrowthOverTimeInputSchema,
   UserStatsGrowthOverTimeOutputSchema,
 } from "./routes/user.stats.growth-over-time.schema";
-import {
-  UserStatsInputSchema,
-  UserStatsOutputSchema,
-} from "./routes/user.stats.schema";
-import {
-  UserStatsUserCountInputSchema,
-  UserStatsUserCountOutputSchema,
-} from "./routes/user.stats.user-count.schema";
-import { baseContract } from "../../procedures/base.contract";
+import { UserStatsInputSchema, UserStatsOutputSchema } from "./routes/user.stats.schema";
+import { UserStatsUserCountInputSchema, UserStatsUserCountOutputSchema } from "./routes/user.stats.user-count.schema";
 
 /**
  * Get current authenticated user information.

@@ -1,11 +1,11 @@
-import { getUserRole } from "@atk/zod/validators/user-roles";
-import { type AnyColumn, asc, desc, eq } from "drizzle-orm";
 import { user } from "@atk/db/schemas/auth";
 import { kycProfiles } from "@atk/db/schemas/kyc";
-import { offChainPermissionsMiddleware } from "../../../middlewares/auth/offchain-permissions.middleware";
-import { databaseMiddleware } from "../../../middlewares/services/db.middleware";
-import { authRouter } from "../../../procedures/auth.router";
-import type { User } from "./user.me.schema";
+import { getUserRole } from "@atk/zod/validators/user-roles";
+import { type AnyColumn, asc, desc, eq } from "drizzle-orm";
+import { offChainPermissionsMiddleware } from "@/middlewares/auth/offchain-permissions.middleware";
+import { databaseMiddleware } from "@/middlewares/services/db.middleware";
+import { authRouter } from "@/procedures/auth.router";
+import type { User } from "@/routes/user/routes/user.me.schema";
 
 /**
  * User listing route handler.
@@ -49,9 +49,7 @@ import type { User } from "./user.me.schema";
  * - User roles are transformed from internal codes to display names
  */
 export const list = authRouter.user.list
-  .use(
-    offChainPermissionsMiddleware({ requiredPermissions: { user: ["list"] } })
-  )
+  .use(offChainPermissionsMiddleware({ requiredPermissions: { user: ["list"] } }))
   .use(databaseMiddleware)
   .handler(async ({ context, input }) => {
     const { limit, offset, orderDirection, orderBy } = input;
@@ -60,14 +58,12 @@ export const list = authRouter.user.list
     const order = orderDirection === "desc" ? desc : asc;
 
     // Safely access the order column, defaulting to createdAt if invalid
-    const orderColumn =
-      (user[orderBy as keyof typeof user] as AnyColumn | undefined) ??
-      user.createdAt;
+    const orderColumn = (user[orderBy as keyof typeof user] as AnyColumn | undefined) ?? user.createdAt;
 
     // Execute paginated query with sorting and KYC data
     const result = await context.db
       .select({
-        user: user,
+        user,
         kyc: {
           firstName: kycProfiles.firstName,
           lastName: kycProfiles.lastName,
@@ -86,10 +82,7 @@ export const list = authRouter.user.list
       }
       return {
         id: user.id,
-        name:
-          kyc?.firstName && kyc.lastName
-            ? `${kyc.firstName} ${kyc.lastName}`
-            : user.name,
+        name: kyc?.firstName && kyc.lastName ? `${kyc.firstName} ${kyc.lastName}` : user.name,
         email: user.email,
         role: getUserRole(user.role),
         wallet: user.wallet,

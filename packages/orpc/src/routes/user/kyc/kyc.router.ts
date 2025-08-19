@@ -1,7 +1,7 @@
+import { remove } from "./routes/kyc.delete";
 import { list } from "./routes/kyc.list";
 import { read } from "./routes/kyc.read";
 import { upsert } from "./routes/kyc.upsert";
-import { remove } from "./routes/kyc.delete";
 
 /**
  * KYC router module.

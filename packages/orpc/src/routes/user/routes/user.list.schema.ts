@@ -1,6 +1,6 @@
-import { ListSchema } from "../common/schemas/list.schema";
-import { UserSchema } from "../../user/routes/user.me.schema";
-import { z } from "zod";
+import type { z } from "zod";
+import { ListSchema } from "@/routes/common/schemas/list.schema";
+import { UserSchema } from "@/routes/user/routes/user.me.schema";
 
 /**
  * Schema for user listing parameters.

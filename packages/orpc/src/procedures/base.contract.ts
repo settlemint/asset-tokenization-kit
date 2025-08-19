@@ -30,8 +30,7 @@ export const CUSTOM_ERRORS = {
    */
   TOKEN_INTERFACE_NOT_SUPPORTED: {
     status: 422,
-    message:
-      "The token contract at the provided address does not implement the required interface.",
+    message: "The token contract at the provided address does not implement the required interface.",
     data: z.object({
       requiredInterfaces: z.array(z.string()),
     }),
@@ -126,11 +125,7 @@ export const CUSTOM_ERRORS = {
     status: 403,
     message: "User does not have the required role to execute this action.",
     data: z.object({
-      requiredRoles: z.union([
-        z.string(),
-        z.array(z.string()),
-        RoleRequirementSchema,
-      ]),
+      requiredRoles: z.union([z.string(), z.array(z.string()), RoleRequirementSchema]),
     }),
   },
 

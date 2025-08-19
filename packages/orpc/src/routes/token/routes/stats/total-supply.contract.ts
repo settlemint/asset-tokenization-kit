@@ -1,8 +1,5 @@
-import { baseContract } from "../../../../procedures/base.contract";
-import {
-  StatsTotalSupplyInputSchema,
-  StatsTotalSupplyOutputSchema,
-} from "./total-supply.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { StatsTotalSupplyInputSchema, StatsTotalSupplyOutputSchema } from "./total-supply.schema";
 
 export const statsTotalSupplyContract = baseContract
   .route({

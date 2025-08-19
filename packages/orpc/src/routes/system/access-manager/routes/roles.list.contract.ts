@@ -1,8 +1,5 @@
-import { baseContract } from "../../procedures/base.contract";
-import {
-  SystemRolesInputSchema,
-  SystemRolesOutputSchema,
-} from "./roles.list.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { SystemRolesInputSchema, SystemRolesOutputSchema } from "./roles.list.schema";
 
 const TAGS = ["system", "access-manager"];
 

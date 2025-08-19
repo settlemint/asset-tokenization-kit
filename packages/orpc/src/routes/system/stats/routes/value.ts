@@ -1,8 +1,8 @@
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { theGraphMiddleware } from "../../middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "../../middlewares/system/system.middleware";
-import { authRouter } from "../../procedures/auth.router";
 import { z } from "zod";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { systemMiddleware } from "@/middlewares/system/system.middleware";
+import { authRouter } from "@/procedures/auth.router";
 
 /**
  * GraphQL query to fetch system-wide total value metrics
@@ -63,8 +63,7 @@ export const statsValue = authRouter.system.statsValue
     });
 
     // Extract total value, defaulting to "0" if no system stats
-    const totalValue =
-      response.systemStatsState?.totalValueInBaseCurrency ?? "0";
+    const totalValue = response.systemStatsState?.totalValueInBaseCurrency ?? "0";
 
     return {
       totalValue,

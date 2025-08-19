@@ -39,13 +39,9 @@ export const StatsCollateralRatioOutputSchema = z.object({
 /**
  * Type definition for collateral ratio input
  */
-export type StatsCollateralRatioInput = z.infer<
-  typeof StatsCollateralRatioInputSchema
->;
+export type StatsCollateralRatioInput = z.infer<typeof StatsCollateralRatioInputSchema>;
 
 /**
  * Type definition for collateral ratio output
  */
-export type StatsCollateralRatioOutput = z.infer<
-  typeof StatsCollateralRatioOutputSchema
->;
+export type StatsCollateralRatioOutput = z.infer<typeof StatsCollateralRatioOutputSchema>;

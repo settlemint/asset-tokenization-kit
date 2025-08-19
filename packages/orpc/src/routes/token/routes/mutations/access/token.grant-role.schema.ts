@@ -1,7 +1,7 @@
-import { MutationInputSchemaWithContract } from "../../../../common/schemas/mutation.schema";
 import { assetAccessControlRole } from "@atk/zod/validators/access-control-roles";
 import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
 import { z } from "zod";
+import { MutationInputSchemaWithContract } from "@/routes/common/schemas/mutation.schema";
 
 /**
  * Input schema for granting roles on a token
@@ -16,18 +16,14 @@ const GrantToManyAccountsSchema = MutationInputSchemaWithContract.extend({
   role: assetAccessControlRole,
 });
 
-const GrantMultipleRolesToOneAccountSchema =
-  MutationInputSchemaWithContract.extend({
-    /** The account to grant roles to */
-    address: ethereumAddress,
-    /** The roles to grant to the account */
-    roles: z.array(assetAccessControlRole).min(1),
-  });
+const GrantMultipleRolesToOneAccountSchema = MutationInputSchemaWithContract.extend({
+  /** The account to grant roles to */
+  address: ethereumAddress,
+  /** The roles to grant to the account */
+  roles: z.array(assetAccessControlRole).min(1),
+});
 
-export const TokenGrantRoleInputSchema = z.union([
-  GrantToManyAccountsSchema,
-  GrantMultipleRolesToOneAccountSchema,
-]);
+export const TokenGrantRoleInputSchema = z.union([GrantToManyAccountsSchema, GrantMultipleRolesToOneAccountSchema]);
 
 /**
  * Response schema for granting a role to multiple accounts on a token

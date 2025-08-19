@@ -1,7 +1,7 @@
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { theGraphMiddleware } from "../../../../middlewares/services/the-graph.middleware";
-import { tokenRouter } from "../../../../procedures/token.router";
 import { z } from "zod";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { tokenRouter } from "@/procedures/token.router";
 
 /**
  * GraphQL query to fetch token distribution statistics from subgraph
@@ -72,15 +72,12 @@ export const statsWalletDistribution = tokenRouter.token.statsWalletDistribution
     // Token context is guaranteed by tokenRouter middleware
 
     // Fetch pre-calculated distribution stats from TheGraph
-    const response = await context.theGraphClient.query(
-      TOKEN_DISTRIBUTION_STATS_QUERY,
-      {
-        input: {
-          tokenId: input.tokenAddress.toLowerCase(),
-        },
-        output: TokenDistributionStatsResponseSchema,
-      }
-    );
+    const response = await context.theGraphClient.query(TOKEN_DISTRIBUTION_STATS_QUERY, {
+      input: {
+        tokenId: input.tokenAddress.toLowerCase(),
+      },
+      output: TokenDistributionStatsResponseSchema,
+    });
 
     const stats = response.tokenDistributionStatsState;
 

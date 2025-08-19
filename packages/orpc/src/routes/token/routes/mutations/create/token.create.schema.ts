@@ -32,13 +32,13 @@
  * ```
  */
 
-import { BondTokenSchema } from "./helpers/create-handlers/bond.create.schema";
-import { DepositTokenSchema } from "./helpers/create-handlers/deposit.create.schema";
-import { EquityTokenSchema } from "./helpers/create-handlers/equity.create.schema";
-import { FundTokenSchema } from "./helpers/create-handlers/fund.create.schema";
-import { StablecoinTokenSchema } from "./helpers/create-handlers/stablecoin.create.schema";
 import { assetTypeArray } from "@atk/zod/validators/asset-types";
 import { z } from "zod";
+import { BondTokenSchema } from "@/routes/token/routes/mutations/create/helpers/create-handlers/bond.create.schema";
+import { DepositTokenSchema } from "@/routes/token/routes/mutations/create/helpers/create-handlers/deposit.create.schema";
+import { EquityTokenSchema } from "@/routes/token/routes/mutations/create/helpers/create-handlers/equity.create.schema";
+import { FundTokenSchema } from "@/routes/token/routes/mutations/create/helpers/create-handlers/fund.create.schema";
+import { StablecoinTokenSchema } from "@/routes/token/routes/mutations/create/helpers/create-handlers/stablecoin.create.schema";
 
 /**
  * Main unified token creation schema using discriminated union

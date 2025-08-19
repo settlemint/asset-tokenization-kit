@@ -37,13 +37,9 @@ export const StatsTransactionHistoryOutputSchema = z.object({
 /**
  * Type definition for system transaction history input
  */
-export type StatsTransactionHistoryInput = z.infer<
-  typeof StatsTransactionHistoryInputSchema
->;
+export type StatsTransactionHistoryInput = z.infer<typeof StatsTransactionHistoryInputSchema>;
 
 /**
  * Type definition for system transaction history output
  */
-export type StatsTransactionHistoryOutput = z.infer<
-  typeof StatsTransactionHistoryOutputSchema
->;
+export type StatsTransactionHistoryOutput = z.infer<typeof StatsTransactionHistoryOutputSchema>;

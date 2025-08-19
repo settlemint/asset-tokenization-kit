@@ -1,14 +1,14 @@
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { blockchainPermissionsMiddleware } from "../../../../../middlewares/auth/blockchain-permissions.middleware";
-import { portalRouter } from "../../../../../procedures/portal.router";
-import { getTokenFactory } from "../../../../../routes/system/token-factory/helpers/factory-context";
-import { tokenCreateHandlerMap } from "./helpers/handler-map";
-import type { TokenCreateSchema } from "./token.create.schema";
-import { read } from "../../token.read";
-import { TOKEN_PERMISSIONS } from "../../../token.permissions";
 import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { z } from "zod";
+import { blockchainPermissionsMiddleware } from "@/middlewares/auth/blockchain-permissions.middleware";
+import { portalRouter } from "@/procedures/portal.router";
+import { getTokenFactory } from "@/routes/system/token-factory/helpers/factory-context";
+import { tokenCreateHandlerMap } from "@/routes/token/routes/mutations/create/helpers/handler-map";
+import type { TokenCreateSchema } from "@/routes/token/routes/mutations/create/token.create.schema";
+import { read } from "@/routes/token/routes/token.read";
+import { TOKEN_PERMISSIONS } from "@/routes/token/token.permissions";
 
 /**
  * GraphQL query to find tokens deployed in a specific transaction.
@@ -60,10 +60,9 @@ export const create = portalRouter.token.create
     });
 
     // Query for the deployed token contract
-    const queryVariables: VariablesOf<typeof FIND_TOKEN_FOR_TRANSACTION_QUERY> =
-      {
-        deployedInTransaction: transactionHash,
-      };
+    const queryVariables: VariablesOf<typeof FIND_TOKEN_FOR_TRANSACTION_QUERY> = {
+      deployedInTransaction: transactionHash,
+    };
 
     // Define the schema for the query result
     const TokenQueryResultSchema = z.object({
@@ -78,13 +77,10 @@ export const create = portalRouter.token.create
       ),
     });
 
-    const result = await context.theGraphClient.query(
-      FIND_TOKEN_FOR_TRANSACTION_QUERY,
-      {
-        input: queryVariables,
-        output: TokenQueryResultSchema,
-      }
-    );
+    const result = await context.theGraphClient.query(FIND_TOKEN_FOR_TRANSACTION_QUERY, {
+      input: queryVariables,
+      output: TokenQueryResultSchema,
+    });
 
     if (result.tokens.length === 0) {
       throw errors.NOT_FOUND({
@@ -98,9 +94,7 @@ export const create = portalRouter.token.create
     if (!token) {
       throw errors.INTERNAL_SERVER_ERROR({
         message: "Token creation failed",
-        cause: new Error(
-          `Token object is null for transaction ${transactionHash}`
-        ),
+        cause: new Error(`Token object is null for transaction ${transactionHash}`),
       });
     }
 

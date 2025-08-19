@@ -1,8 +1,8 @@
 import { settings } from "@atk/db/schemas/settings";
-import { offChainPermissionsMiddleware } from "../../../middlewares/auth/offchain-permissions.middleware";
-import { databaseMiddleware } from "../../../middlewares/services/db.middleware";
-import { authRouter } from "../../../procedures/auth.router";
 import { eq } from "drizzle-orm";
+import { offChainPermissionsMiddleware } from "@/middlewares/auth/offchain-permissions.middleware";
+import { databaseMiddleware } from "@/middlewares/services/db.middleware";
+import { authRouter } from "@/procedures/auth.router";
 
 /**
  * Setting delete route handler.

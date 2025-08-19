@@ -1,10 +1,7 @@
-import { baseContract } from "../../../procedures/base.contract";
-import {
-  ActionsListResponseSchema,
-  ActionsListSchema,
-} from "../../actions/routes/actions.list.schema";
 import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
 import { z } from "zod";
+import { baseContract } from "@/procedures/base.contract";
+import { ActionsListResponseSchema, ActionsListSchema } from "@/routes/actions/routes/actions.list.schema";
 
 /**
  * Input schema for token actions endpoint.
@@ -12,9 +9,7 @@ import { z } from "zod";
  */
 const TokenActionsInputSchema = z
   .object({
-    tokenAddress: ethereumAddress.describe(
-      "The token contract address to filter actions by",
-    ),
+    tokenAddress: ethereumAddress.describe("The token contract address to filter actions by"),
   })
   .extend(ActionsListSchema.shape);
 

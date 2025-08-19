@@ -4,10 +4,7 @@
  * Validation schemas for retrieving historical exchange rates.
  * @module ExchangeRatesHistorySchema
  */
-import {
-  type FiatCurrency,
-  fiatCurrency,
-} from "@atk/zod/validators/fiat-currency";
+import { type FiatCurrency, fiatCurrency } from "@atk/zod/validators/fiat-currency";
 import { z } from "zod";
 
 /**
@@ -30,9 +27,7 @@ export const ExchangeRatesHistorySchema = z.object({
 /**
  * Type for exchange rate history input
  */
-export type ExchangeRatesHistoryInput = z.infer<
-  typeof ExchangeRatesHistorySchema
->;
+export type ExchangeRatesHistoryInput = z.infer<typeof ExchangeRatesHistorySchema>;
 
 /**
  * Type for historical exchange rate item

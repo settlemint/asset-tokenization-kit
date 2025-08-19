@@ -15,12 +15,12 @@
  */
 
 import { portalGraphql } from "@atk/settlemint/portal";
-import { blockchainPermissionsMiddleware } from "../../../../middlewares/auth/blockchain-permissions.middleware";
-import { portalRouter } from "../../../../procedures/portal.router";
-import { read } from "../../routes/system.read";
-import { SYSTEM_PERMISSIONS } from "../../system.permissions";
 import { call } from "@orpc/server";
 import { createLogger } from "@settlemint/sdk-utils/logging";
+import { blockchainPermissionsMiddleware } from "@/middlewares/auth/blockchain-permissions.middleware";
+import { portalRouter } from "@/procedures/portal.router";
+import { read } from "@/routes/system/routes/system.read";
+import { SYSTEM_PERMISSIONS } from "@/routes/system/system.permissions";
 import { getDefaultImplementations } from "./factory.create.schema";
 
 const logger = createLogger();
@@ -106,9 +106,7 @@ export const factoryCreate = portalRouter.system.tokenFactoryCreate
     try {
       const systemData = context.system;
 
-      existingFactoryNames = new Set(
-        systemData.tokenFactories.map((factory) => factory.name.toLowerCase())
-      );
+      existingFactoryNames = new Set(systemData.tokenFactories.map((factory) => factory.name.toLowerCase()));
     } catch (error) {
       // If we can't fetch existing factories, proceed anyway
       // The contract will reject duplicates
@@ -116,9 +114,7 @@ export const factoryCreate = portalRouter.system.tokenFactoryCreate
     }
 
     // Filter out existing factories
-    const factoriesToDeploy = factoryList.filter(
-      (factory) => !existingFactoryNames.has(factory.name.toLowerCase())
-    );
+    const factoriesToDeploy = factoryList.filter((factory) => !existingFactoryNames.has(factory.name.toLowerCase()));
 
     // Process factories sequentially - parallel challenge generation not working
     const results = [];
@@ -128,10 +124,8 @@ export const factoryCreate = portalRouter.system.tokenFactoryCreate
       const defaults = getDefaultImplementations(type);
 
       // Use provided implementations or fall back to defaults for asset type
-      const factoryImplementation =
-        factory.factoryImplementation ?? defaults.factoryImplementation;
-      const tokenImplementation =
-        factory.tokenImplementation ?? defaults.tokenImplementation;
+      const factoryImplementation = factory.factoryImplementation ?? defaults.factoryImplementation;
+      const tokenImplementation = factory.tokenImplementation ?? defaults.tokenImplementation;
 
       try {
         // Generate a fresh challenge response for each factory
@@ -140,21 +134,17 @@ export const factoryCreate = portalRouter.system.tokenFactoryCreate
         const variables = {
           address: tokenFactoryRegistry,
           from: sender.wallet,
-          factoryImplementation: factoryImplementation,
-          tokenImplementation: tokenImplementation,
-          name: name,
+          factoryImplementation,
+          tokenImplementation,
+          name,
         };
 
         // Use the Portal client's mutate method that returns the transaction hash
-        const txHash = await context.portalClient.mutate(
-          CREATE_TOKEN_FACTORY_MUTATION,
-          variables,
-          {
-            sender: sender,
-            code: walletVerification.secretVerificationCode,
-            type: walletVerification.verificationType,
-          }
-        );
+        const txHash = await context.portalClient.mutate(CREATE_TOKEN_FACTORY_MUTATION, variables, {
+          sender,
+          code: walletVerification.secretVerificationCode,
+          type: walletVerification.verificationType,
+        });
 
         results.push({ status: "success" as const, factory: name, txHash });
         logger.info(`Factory ${name} deployed successfully`);

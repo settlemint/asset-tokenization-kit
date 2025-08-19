@@ -1,4 +1,4 @@
-import { baseContract } from "../../../procedures/base.contract";
+import { baseContract } from "@/procedures/base.contract";
 import { AccountSchema } from "./account.read.schema";
 
 export const accountMeContract = baseContract

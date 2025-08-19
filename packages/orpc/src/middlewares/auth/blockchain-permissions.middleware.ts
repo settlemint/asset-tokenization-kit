@@ -2,9 +2,9 @@ import type { AccessControl } from "@atk/auth/fragments/the-graph/access-control
 import type { RoleRequirement } from "@atk/zod/validators/role-requirement";
 import { satisfiesRoleRequirement } from "@atk/zod/validators/role-requirement";
 import type { z } from "zod";
-import type { Context } from "../../context/context";
-import { getUserRoles } from "../../helpers/access-control-helpers";
-import { baseRouter } from "../../procedures/base.router";
+import type { Context } from "@/context/context";
+import { getUserRoles } from "@/helpers/access-control-helpers";
+import { baseRouter } from "@/procedures/base.router";
 
 /**
  * Middleware to check if the user has the required permission to interact with blockchain.
@@ -19,7 +19,7 @@ export const blockchainPermissionsMiddleware = <InputSchema extends z.ZodType>({
   requiredRoles: RoleRequirement;
   getAccessControl: (data: { context: Context; input: z.infer<InputSchema> }) => AccessControl | undefined;
 }) =>
-  baseRouter.middleware(async ({ context, next, errors }, input) => {
+  baseRouter.middleware(({ context, next, errors }, input) => {
     const { auth, system } = context;
 
     if (!system) {

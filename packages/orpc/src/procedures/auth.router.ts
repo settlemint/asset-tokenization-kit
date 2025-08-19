@@ -1,4 +1,4 @@
-import { authMiddleware } from "../middlewares/auth/auth.middleware";
+import { authMiddleware } from "@/middlewares/auth/auth.middleware";
 import { publicRouter } from "./public.router";
 
 /**
@@ -26,6 +26,6 @@ import { publicRouter } from "./public.router";
  * - Protected operations (create, update, delete)
  * - User permission checks
  * @see {@link ./public.router} - Public router that this extends
- * @see {@link ../../middlewares/auth/auth.middleware} - Authentication middleware
+ * @see {@link @/middlewares/auth/auth.middleware} - Authentication middleware
  */
 export const authRouter = publicRouter.use(authMiddleware);

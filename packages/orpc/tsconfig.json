@@ -1,3 +1,11 @@
 {
-  "extends": "@tools/typescript-config/tsconfig.base.json"
+  "extends": "@tools/typescript-config/tsconfig.base.json",
+  "compilerOptions": {
+    "paths": {
+      "@atk/*": ["../*"],
+      "@schemas/*": ["../settlemint/*.d.ts"],
+      "@/*": ["./src/*"],
+      "@test/*": ["./test/*"]
+    }
+  }
 }

@@ -6,7 +6,7 @@
  */
 import { fiatCurrency } from "@atk/zod/validators/fiat-currency";
 import { z } from "zod";
-import { exchangeRateProvider } from "../schemas";
+import { exchangeRateProvider } from "@/routes/exchange-rates/schemas";
 
 /**
  * Schema for syncing exchange rates.

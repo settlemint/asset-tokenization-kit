@@ -1,11 +1,11 @@
 import { portalGraphql } from "@atk/settlemint/portal";
-import { validateBatchArrays } from "../../../../../helpers/array-validation";
-import { tokenPermissionMiddleware } from "../../../../../middlewares/auth/token-permission.middleware";
-import { tokenRouter } from "../../../../../procedures/token.router";
-import { read } from "../../token.read";
-import { TOKEN_PERMISSIONS } from "../../../token.permissions";
 import { AssetExtensionEnum } from "@atk/zod/validators/asset-extensions";
 import { call } from "@orpc/server";
+import { validateBatchArrays } from "@/helpers/array-validation";
+import { tokenPermissionMiddleware } from "@/middlewares/auth/token-permission.middleware";
+import { tokenRouter } from "@/procedures/token.router";
+import { read } from "@/routes/token/routes/token.read";
+import { TOKEN_PERMISSIONS } from "@/routes/token/token.permissions";
 
 const TOKEN_TRANSFER_MUTATION = portalGraphql(`
   mutation TokenTransfer(
@@ -142,14 +142,7 @@ export const transfer = tokenRouter.token.transfer
     })
   )
   .handler(async ({ input, context, errors }) => {
-    const {
-      contract,
-      recipients,
-      amounts,
-      from,
-      transferType = "standard",
-      walletVerification,
-    } = input;
+    const { contract, recipients, amounts, from, transferType = "standard", walletVerification } = input;
     const { auth } = context;
 
     // Determine if this is a batch operation
@@ -157,9 +150,7 @@ export const transfer = tokenRouter.token.transfer
 
     // For forced transfers, check custodian interface;
     if (transferType === "forced") {
-      const supportsCustodian = context.token.extensions.includes(
-        AssetExtensionEnum.CUSTODIAN
-      );
+      const supportsCustodian = context.token.extensions.includes(AssetExtensionEnum.CUSTODIAN);
       if (!supportsCustodian) {
         throw errors.TOKEN_INTERFACE_NOT_SUPPORTED({
           data: {
@@ -191,7 +182,7 @@ export const transfer = tokenRouter.token.transfer
             amounts: amounts.map((a) => a.toString()),
           },
           {
-            sender: sender,
+            sender,
             code: walletVerification.secretVerificationCode,
             type: walletVerification.verificationType,
           }
@@ -223,7 +214,7 @@ export const transfer = tokenRouter.token.transfer
             amounts: amounts.map((a) => a.toString()),
           },
           {
-            sender: sender,
+            sender,
             code: walletVerification.secretVerificationCode,
             type: walletVerification.verificationType,
           }
@@ -240,7 +231,7 @@ export const transfer = tokenRouter.token.transfer
       const [to] = recipients;
       const [amount] = amounts;
       const [owner] = from ?? [];
-      if (!to || !amount) {
+      if (!(to && amount)) {
         throw errors.INPUT_VALIDATION_FAILED({
           message: "Missing recipient or amount",
           data: { errors: ["Invalid input data"] },
@@ -256,7 +247,7 @@ export const transfer = tokenRouter.token.transfer
             amount: amount.toString(),
           },
           {
-            sender: sender,
+            sender,
             code: walletVerification.secretVerificationCode,
             type: walletVerification.verificationType,
           }
@@ -280,7 +271,7 @@ export const transfer = tokenRouter.token.transfer
             amount: amount.toString(),
           },
           {
-            sender: sender,
+            sender,
             code: walletVerification.secretVerificationCode,
             type: walletVerification.verificationType,
           }
@@ -304,7 +295,7 @@ export const transfer = tokenRouter.token.transfer
             amount: amount.toString(),
           },
           {
-            sender: sender,
+            sender,
             code: walletVerification.secretVerificationCode,
             type: walletVerification.verificationType,
           }

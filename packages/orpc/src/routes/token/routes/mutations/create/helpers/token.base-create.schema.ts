@@ -1,4 +1,3 @@
-import { MutationInputSchema } from "../../../../../common/schemas/mutation.schema";
 import { optionalString } from "@atk/zod/utils/optional-string";
 import { assetSymbol } from "@atk/zod/validators/asset-symbol";
 import { assetType } from "@atk/zod/validators/asset-types";
@@ -7,6 +6,7 @@ import { decimals } from "@atk/zod/validators/decimals";
 import { isin } from "@atk/zod/validators/isin";
 import { isoCountryCodeNumeric } from "@atk/zod/validators/iso-country-code";
 import { z } from "zod";
+import { MutationInputSchema } from "@/routes/common/schemas/mutation.schema";
 
 /**
  * Base fields common to all token types
@@ -16,11 +16,7 @@ export const TokenBaseSchema = MutationInputSchema.extend({
   symbol: assetSymbol().describe("The symbol of the token"),
   decimals: decimals(),
   isin: optionalString(isin()),
-  countryCode: isoCountryCodeNumeric.describe(
-    "ISO 3166-1 numeric country code for jurisdiction",
-  ),
-  initialModulePairs: complianceModulePairArray().describe(
-    "Initial compliance module pairs for the token",
-  ),
+  countryCode: isoCountryCodeNumeric.describe("ISO 3166-1 numeric country code for jurisdiction"),
+  initialModulePairs: complianceModulePairArray().describe("Initial compliance module pairs for the token"),
   type: assetType(),
 });

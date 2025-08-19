@@ -6,7 +6,7 @@ import {
   passkeyClient,
 } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
-import { getDappUrl } from "../../../../kit/dapp/test/fixtures/dapp";
+import { getDappUrl } from "../../../orpc/test/dapp";
 import { pincodeClient } from "../../src/plugins/pincode-plugin/client";
 import { secretCodesClient } from "../../src/plugins/secret-codes-plugin/client";
 import { twoFactorClient } from "../../src/plugins/two-factor/client";

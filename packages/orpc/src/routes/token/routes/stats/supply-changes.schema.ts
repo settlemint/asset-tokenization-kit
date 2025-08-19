@@ -35,13 +35,9 @@ export const StatsSupplyChangesOutputSchema = z.object({
 /**
  * Type definition for asset-specific supply changes input
  */
-export type StatsSupplyChangesInput = z.infer<
-  typeof StatsSupplyChangesInputSchema
->;
+export type StatsSupplyChangesInput = z.infer<typeof StatsSupplyChangesInputSchema>;
 
 /**
  * Type definition for asset-specific supply changes output
  */
-export type StatsSupplyChangesOutput = z.infer<
-  typeof StatsSupplyChangesOutputSchema
->;
+export type StatsSupplyChangesOutput = z.infer<typeof StatsSupplyChangesOutputSchema>;

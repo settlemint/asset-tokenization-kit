@@ -38,7 +38,7 @@ export async function validatePassword(
   const accounts = await ctx.context.internalAdapter.findAccounts(data.userId);
   const credentialAccount = accounts.find((account) => account.providerId === "credential");
   const currentPassword = credentialAccount?.password;
-  if (!credentialAccount || !currentPassword) {
+  if (!(credentialAccount && currentPassword)) {
     return false;
   }
   const compare = await ctx.context.password.verify({

@@ -1,6 +1,6 @@
 import { implement } from "@orpc/server";
-import type { Context } from "../context/context";
-import { contract } from "../routes/contract";
+import type { Context } from "@/context/context";
+import { contract } from "@/routes/contract";
 
 /**
  * Base ORPC router implementation.
@@ -18,7 +18,7 @@ import { contract } from "../routes/contract";
  *
  * Other routers should extend this base router by adding middleware layers
  * for authentication, error handling, logging, and other cross-cutting concerns.
- * @see {@link ../context} - Context type definition
- * @see {@link ../contract} - Main contract definition
+ * @see {@link @/context} - Context type definition
+ * @see {@link @/contract} - Main contract definition
  */
 export const baseRouter = implement(contract).$context<Context>();

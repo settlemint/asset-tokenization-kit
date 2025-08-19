@@ -14,11 +14,11 @@
 
 import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
 import { call } from "@orpc/server";
-import { theGraphMiddleware } from "../../middlewares/services/the-graph.middleware";
-import { getSystemContext } from "../../middlewares/system/system.middleware";
-import { onboardedRouter } from "../../procedures/onboarded.router";
-import { read as settingsRead } from "../../settings/routes/settings.read";
-import type { SystemReadOutput } from "../../system/routes/system.read.schema";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { getSystemContext } from "@/middlewares/system/system.middleware";
+import { onboardedRouter } from "@/procedures/onboarded.router";
+import { read as settingsRead } from "@/routes/settings/routes/settings.read";
+import type { SystemReadOutput } from "@/routes/system/routes/system.read.schema";
 
 /**
  * Reads system contract details including token factories.
@@ -43,48 +43,44 @@ import type { SystemReadOutput } from "../../system/routes/system.read.schema";
  * });
  * ```
  */
-export const read = onboardedRouter.system.read
-  .use(theGraphMiddleware)
-  .handler(async ({ input, context, errors }) => {
-    // Query system details from TheGraph with automatic ID transformation
-    const systemAddress =
-      input.id === "default"
-        ? await call(
-            settingsRead,
-            {
-              key: "SYSTEM_ADDRESS",
-            },
-            {
-              context,
-            }
-          )
-        : input.id;
-    if (!systemAddress) {
-      throw errors.NOT_FOUND({
-        message: `System not found: ${input.id}`,
-      });
-    }
-    const systemContext = await getSystemContext(
-      getEthereumAddress(systemAddress)
-    );
-    if (!systemContext) {
-      throw errors.NOT_FOUND({
-        message: `System not found: ${input.id}`,
-      });
-    }
-    const output: SystemReadOutput = {
-      id: systemContext.address,
-      deployedInTransaction: systemContext.deployedInTransaction,
-      identityRegistry: systemContext.identityRegistry ?? null,
-      identityFactory: systemContext.identityFactory ?? null,
-      trustedIssuersRegistry: systemContext.trustedIssuersRegistry ?? null,
-      complianceModuleRegistry: systemContext.complianceModuleRegistry ?? null,
-      tokenFactoryRegistry: systemContext.tokenFactoryRegistry ?? null,
-      systemAddonRegistry: systemContext.systemAddonRegistry ?? null,
-      tokenFactories: systemContext.tokenFactories,
-      systemAddons: systemContext.systemAddons,
-      complianceModules: systemContext.complianceModules,
-      systemAccessManager: systemContext.systemAccessManager?.id ?? null,
-    };
-    return output;
-  });
+export const read = onboardedRouter.system.read.use(theGraphMiddleware).handler(async ({ input, context, errors }) => {
+  // Query system details from TheGraph with automatic ID transformation
+  const systemAddress =
+    input.id === "default"
+      ? await call(
+          settingsRead,
+          {
+            key: "SYSTEM_ADDRESS",
+          },
+          {
+            context,
+          }
+        )
+      : input.id;
+  if (!systemAddress) {
+    throw errors.NOT_FOUND({
+      message: `System not found: ${input.id}`,
+    });
+  }
+  const systemContext = await getSystemContext(getEthereumAddress(systemAddress));
+  if (!systemContext) {
+    throw errors.NOT_FOUND({
+      message: `System not found: ${input.id}`,
+    });
+  }
+  const output: SystemReadOutput = {
+    id: systemContext.address,
+    deployedInTransaction: systemContext.deployedInTransaction,
+    identityRegistry: systemContext.identityRegistry ?? null,
+    identityFactory: systemContext.identityFactory ?? null,
+    trustedIssuersRegistry: systemContext.trustedIssuersRegistry ?? null,
+    complianceModuleRegistry: systemContext.complianceModuleRegistry ?? null,
+    tokenFactoryRegistry: systemContext.tokenFactoryRegistry ?? null,
+    systemAddonRegistry: systemContext.systemAddonRegistry ?? null,
+    tokenFactories: systemContext.tokenFactories,
+    systemAddons: systemContext.systemAddons,
+    complianceModules: systemContext.complianceModules,
+    systemAccessManager: systemContext.systemAccessManager?.id ?? null,
+  };
+  return output;
+});

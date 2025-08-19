@@ -1,7 +1,7 @@
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { theGraphMiddleware } from "../../middlewares/services/the-graph.middleware";
-import { authRouter } from "../../procedures/auth.router";
-import { SystemsResponseSchema } from "../../system/routes/system.list.schema";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { authRouter } from "@/procedures/auth.router";
+import { SystemsResponseSchema } from "@/routes/system/routes/system.list.schema";
 
 /**
  * GraphQL query for retrieving SMART systems from TheGraph.
@@ -52,16 +52,14 @@ const LIST_SYSTEM_QUERY = theGraphGraphql(`
  * });
  * ```
  */
-export const list = authRouter.system.list
-  .use(theGraphMiddleware)
-  .handler(async ({ input, context }) => {
-    // Execute TheGraph query with automatic variable transformation
-    // The middleware handles offset/limit to skip/first conversion
-    const result = await context.theGraphClient.query(LIST_SYSTEM_QUERY, {
-      input,
-      output: SystemsResponseSchema,
-    });
-
-    // Return the array of system contracts
-    return result.systems;
+export const list = authRouter.system.list.use(theGraphMiddleware).handler(async ({ input, context }) => {
+  // Execute TheGraph query with automatic variable transformation
+  // The middleware handles offset/limit to skip/first conversion
+  const result = await context.theGraphClient.query(LIST_SYSTEM_QUERY, {
+    input,
+    output: SystemsResponseSchema,
   });
+
+  // Return the array of system contracts
+  return result.systems;
+});

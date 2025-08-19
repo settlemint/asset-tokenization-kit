@@ -1,5 +1,12 @@
+import {
+  DEFAULT_ADMIN,
+  DEFAULT_INVESTOR,
+  DEFAULT_ISSUER,
+  setupUser,
+  signInWithUser,
+} from "@atk/auth/test/fixtures/user";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { startApiServer } from "../fixtures/dapp";
+import { startApiServer } from "../../../../packages/orpc/test/dapp";
 import { getOrpcClient } from "../fixtures/orpc-client";
 import {
   bootstrapAddons,
@@ -9,13 +16,6 @@ import {
   setDefaultSystemSettings,
   setupDefaultIssuerRoles,
 } from "../fixtures/system-bootstrap";
-import {
-  DEFAULT_ADMIN,
-  DEFAULT_INVESTOR,
-  DEFAULT_ISSUER,
-  setupUser,
-  signInWithUser,
-} from "@atk/auth/test/fixtures/user";
 
 const logger = createLogger({ level: "info" });
 

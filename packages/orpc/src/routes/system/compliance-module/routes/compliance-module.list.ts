@@ -1,10 +1,10 @@
 import { theGraphClient, theGraphGraphql } from "@atk/settlemint/the-graph";
-import { systemMiddleware } from "../../middlewares/system/system.middleware";
-import { portalRouter } from "../../procedures/portal.router";
+import { systemMiddleware } from "@/middlewares/system/system.middleware";
+import { portalRouter } from "@/procedures/portal.router";
 import {
-  ComplianceModulesListOutputSchema,
   type ComplianceModulesList,
-} from "./compliance-module.list.schema";
+  ComplianceModulesListOutputSchema,
+} from "@/routes/system/compliance-module/routes/compliance-module.list.schema";
 
 const COMPLIANCE_MODULES_QUERY = theGraphGraphql(
   `

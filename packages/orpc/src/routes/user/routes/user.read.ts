@@ -1,11 +1,11 @@
-import { getUserRole } from "@atk/zod/validators/user-roles";
-import { eq } from "drizzle-orm";
 import { user } from "@atk/db/schemas/auth";
 import { kycProfiles } from "@atk/db/schemas/kyc";
-import { offChainPermissionsMiddleware } from "../../../middlewares/auth/offchain-permissions.middleware";
-import { databaseMiddleware } from "../../../middlewares/services/db.middleware";
-import { authRouter } from "../../../procedures/auth.router";
-import type { User } from "./user.me.schema";
+import { getUserRole } from "@atk/zod/validators/user-roles";
+import { eq } from "drizzle-orm";
+import { offChainPermissionsMiddleware } from "@/middlewares/auth/offchain-permissions.middleware";
+import { databaseMiddleware } from "@/middlewares/services/db.middleware";
+import { authRouter } from "@/procedures/auth.router";
+import type { User } from "@/routes/user/routes/user.me.schema";
 
 /**
  * User read route handler.
@@ -47,22 +47,17 @@ import type { User } from "./user.me.schema";
  * - User roles are transformed from internal codes to display names
  */
 export const read = authRouter.user.read
-  .use(
-    offChainPermissionsMiddleware({ requiredPermissions: { user: ["list"] } })
-  )
+  .use(offChainPermissionsMiddleware({ requiredPermissions: { user: ["list"] } }))
   .use(databaseMiddleware)
   .handler(async ({ context, input, errors }) => {
     // Build the query condition based on input type
     // TypeScript now properly narrows the union type
-    const whereCondition =
-      "userId" in input
-        ? eq(user.id, input.userId)
-        : eq(user.wallet, input.wallet);
+    const whereCondition = "userId" in input ? eq(user.id, input.userId) : eq(user.wallet, input.wallet);
 
     // Execute query to find the user with KYC data
     const result = await context.db
       .select({
-        user: user,
+        user,
         kyc: {
           firstName: kycProfiles.firstName,
           lastName: kycProfiles.lastName,
@@ -76,9 +71,7 @@ export const read = authRouter.user.read
     if (result.length === 0) {
       throw errors.NOT_FOUND({
         message:
-          "userId" in input
-            ? `User with ID ${input.userId} not found`
-            : `User with wallet ${input.wallet} not found`,
+          "userId" in input ? `User with ID ${input.userId} not found` : `User with wallet ${input.wallet} not found`,
       });
     }
 
@@ -86,9 +79,7 @@ export const read = authRouter.user.read
     if (!userResult) {
       throw errors.NOT_FOUND({
         message:
-          "userId" in input
-            ? `User with ID ${input.userId} not found`
-            : `User with wallet ${input.wallet} not found`,
+          "userId" in input ? `User with ID ${input.userId} not found` : `User with wallet ${input.wallet} not found`,
       });
     }
 
@@ -104,10 +95,7 @@ export const read = authRouter.user.read
     // Transform result to include human-readable role
     return {
       id: userData.id,
-      name:
-        kyc?.firstName && kyc.lastName
-          ? `${kyc.firstName} ${kyc.lastName}`
-          : userData.name,
+      name: kyc?.firstName && kyc.lastName ? `${kyc.firstName} ${kyc.lastName}` : userData.name,
       email: userData.email,
       role: getUserRole(userData.role),
       wallet: userData.wallet,

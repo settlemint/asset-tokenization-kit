@@ -4,10 +4,10 @@ import { theGraphClient, theGraphGraphql } from "@atk/settlemint/the-graph";
 import { isEthereumAddress } from "@atk/zod/validators/ethereum-address";
 import { satisfiesRoleRequirement } from "@atk/zod/validators/role-requirement";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { mapUserRoles } from "../../helpers/role-validation";
-import { baseRouter } from "../../procedures/base.router";
-import { TokenSchema } from "../../routes/token/routes/token.read.schema";
-import { TOKEN_PERMISSIONS } from "../../routes/token/token.permissions";
+import { mapUserRoles } from "@/helpers/role-validation";
+import { baseRouter } from "@/procedures/base.router";
+import { TokenSchema } from "@/routes/token/routes/token.read.schema";
+import { TOKEN_PERMISSIONS } from "@/routes/token/token.permissions";
 
 const logger = createLogger();
 
@@ -137,7 +137,7 @@ export const tokenMiddleware = baseRouter.middleware(async ({ next, context, err
         };
 
         // Update based on user roles using the flexible role requirement system
-        Object.entries(TOKEN_PERMISSIONS).forEach(([action, roleRequirement]) => {
+        for (const [action, roleRequirement] of Object.entries(TOKEN_PERMISSIONS)) {
           const userRoleList = Object.entries(userRoles)
             .filter(([_, hasRole]) => hasRole)
             .map(([role]) => role) as AccessControlRoles[];
@@ -146,7 +146,7 @@ export const tokenMiddleware = baseRouter.middleware(async ({ next, context, err
             userRoleList,
             roleRequirement
           );
-        });
+        }
 
         return initialActions;
       })(),

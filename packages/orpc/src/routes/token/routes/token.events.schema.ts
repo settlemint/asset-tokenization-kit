@@ -23,19 +23,12 @@ export const EventSchema = z.object({
   blockTimestamp: timestamp().describe("Timestamp when the event occurred"),
   transactionHash: ethereumHash.describe("Transaction hash"),
   emitter: z.object({
-    id: ethereumAddress.describe(
-      "Address of the contract that emitted the event"
-    ),
+    id: ethereumAddress.describe("Address of the contract that emitted the event"),
   }),
   sender: z.object({
-    id: ethereumAddress.describe(
-      "Address of the account that triggered the event"
-    ),
+    id: ethereumAddress.describe("Address of the account that triggered the event"),
   }),
-  values: z
-    .array(EventValueSchema)
-    .describe("Event parameter values")
-    .optional(),
+  values: z.array(EventValueSchema).describe("Event parameter values").optional(),
 });
 
 /**

@@ -1,8 +1,8 @@
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { theGraphMiddleware } from "../../../middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "../../../middlewares/system/system.middleware";
-import { authRouter } from "../../../procedures/auth.router";
 import { z } from "zod";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { systemMiddleware } from "@/middlewares/system/system.middleware";
+import { authRouter } from "@/procedures/auth.router";
 
 /**
  * GraphQL query to fetch user-related metrics
@@ -106,7 +106,9 @@ function processUserGrowthData(
 
   for (const day of sortedDays) {
     const dayUsers = dailyUserSets.get(day);
-    if (!dayUsers) continue;
+    if (!dayUsers) {
+      continue;
+    }
 
     // Add new users to the cumulative set
     dayUsers.forEach((userId) => {
@@ -125,9 +127,7 @@ function processUserGrowthData(
 /**
  * Helper function to count unique recent users from account stats
  */
-function countUniqueRecentUsers(
-  recentUsers: { account: { id: string } }[]
-): number {
+function countUniqueRecentUsers(recentUsers: { account: { id: string } }[]): number {
   const uniqueUsers = new Set<string>();
 
   for (const user of recentUsers) {

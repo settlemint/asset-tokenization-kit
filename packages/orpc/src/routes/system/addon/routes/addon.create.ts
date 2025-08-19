@@ -36,18 +36,18 @@
  */
 
 import { portalGraphql } from "@atk/settlemint/portal";
-import type { Context } from "../../context/context";
-import { blockchainPermissionsMiddleware } from "../../middlewares/auth/blockchain-permissions.middleware";
-import { portalRouter } from "../../procedures/portal.router";
-import { read } from "../../system/routes/system.read";
-import { SYSTEM_PERMISSIONS } from "../../system/system.permissions";
 import { call } from "@orpc/server";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { encodeFunctionData, getAddress } from "viem";
+import type { Context } from "@/context/context";
+import { blockchainPermissionsMiddleware } from "@/middlewares/auth/blockchain-permissions.middleware";
+import { portalRouter } from "@/procedures/portal.router";
 import {
-  type SystemAddonConfig,
   getDefaultAddonImplementations,
-} from "./addon.create.schema";
+  type SystemAddonConfig,
+} from "@/routes/system/addon/routes/addon.create.schema";
+import { read } from "@/routes/system/routes/system.read";
+import { SYSTEM_PERMISSIONS } from "@/routes/system/system.permissions";
 
 const logger = createLogger();
 
@@ -148,9 +148,7 @@ const ADDON_TYPE_TO_IMPLEMENTATION_NAME = {
 
 function generateInitializationData(context: Context): string {
   // The addon factories expect accessManager as first param and systemAddress as second
-  const accessManagerAddress = getAddress(
-    context.system?.systemAccessManager?.id ?? ""
-  );
+  const accessManagerAddress = getAddress(context.system?.systemAccessManager?.id ?? "");
   const systemAddress = getAddress(context.system?.address ?? "");
 
   return encodeFunctionData({
@@ -202,8 +200,7 @@ function generateInitializationData(context: Context): string {
 
 function getImplementationAddress(addonConfig: SystemAddonConfig): string {
   const defaults = getDefaultAddonImplementations(addonConfig.type);
-  const implementationName =
-    ADDON_TYPE_TO_IMPLEMENTATION_NAME[addonConfig.type];
+  const implementationName = ADDON_TYPE_TO_IMPLEMENTATION_NAME[addonConfig.type];
 
   // Use custom implementation if provided, otherwise use default
   if (addonConfig.implementations?.[implementationName]) {
@@ -211,13 +208,9 @@ function getImplementationAddress(addonConfig: SystemAddonConfig): string {
   }
 
   // Get the implementation from defaults
-  const defaultImplementation = (defaults as Record<string, string>)[
-    implementationName
-  ];
+  const defaultImplementation = (defaults as Record<string, string>)[implementationName];
   if (!defaultImplementation) {
-    throw new Error(
-      `No implementation found for addon type: ${addonConfig.type}`
-    );
+    throw new Error(`No implementation found for addon type: ${addonConfig.type}`);
   }
 
   return defaultImplementation;
@@ -278,9 +271,7 @@ export const addonCreate = portalRouter.system.addonCreate
     try {
       const systemData = context.system;
 
-      existingAddonNames = new Set(
-        systemData.systemAddons.map((addon) => addon.name.toLowerCase())
-      );
+      existingAddonNames = new Set(systemData.systemAddons.map((addon) => addon.name.toLowerCase()));
     } catch (error) {
       // GRACEFUL DEGRADATION: If we can't fetch existing addons, proceed anyway
       // WHY: The smart contract will reject duplicates, but user gets less friendly error
@@ -291,9 +282,7 @@ export const addonCreate = portalRouter.system.addonCreate
     // DUPLICATE FILTERING: Remove addons that already exist in the system
     // WHY: Prevents wasted gas and provides immediate feedback for duplicate attempts
     // Case-insensitive comparison matches smart contract behavior
-    const addonsToRegister = addonList.filter(
-      (addon) => !existingAddonNames.has(addon.name.toLowerCase())
-    );
+    const addonsToRegister = addonList.filter((addon) => !existingAddonNames.has(addon.name.toLowerCase()));
 
     // SEQUENTIAL PROCESSING: Process addons one at a time to prevent verification conflicts
     // WHY: Each addon registration requires a unique challenge response from Portal
@@ -321,23 +310,19 @@ export const addonCreate = portalRouter.system.addonCreate
         const variables = {
           address: systemAddonRegistry,
           from: sender.wallet,
-          name: name,
+          name,
           implementation: implementationAddress,
-          initializationData: initializationData,
+          initializationData,
         };
 
         // BLOCKCHAIN EXECUTION: Submit addon registration with wallet verification
         // WHY: Portal client handles transaction tracking and verification automatically
         // Returns validated transaction hash once confirmed and indexed
-        const txHash = await context.portalClient.mutate(
-          REGISTER_SYSTEM_ADDON_MUTATION,
-          variables,
-          {
-            sender: sender,
-            code: walletVerification.secretVerificationCode,
-            type: walletVerification.verificationType,
-          }
-        );
+        const txHash = await context.portalClient.mutate(REGISTER_SYSTEM_ADDON_MUTATION, variables, {
+          sender,
+          code: walletVerification.secretVerificationCode,
+          type: walletVerification.verificationType,
+        });
 
         results.push({ status: "success" as const, addon: name, txHash });
         logger.info(`Addon ${name} registered successfully`);

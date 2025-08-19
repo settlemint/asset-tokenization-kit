@@ -18,19 +18,19 @@
 import type { AccessControlRoles } from "@atk/auth/fragments/the-graph/access-control-fragment";
 import { portalGraphql } from "@atk/settlemint/portal";
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { offChainPermissionsMiddleware } from "../../../middlewares/auth/offchain-permissions.middleware";
-import { portalMiddleware } from "../../../middlewares/services/portal.middleware";
-import { theGraphMiddleware } from "../../../middlewares/services/the-graph.middleware";
-import { onboardedRouter } from "../../../procedures/onboarded.router";
-import { read as settingsRead } from "../../settings/routes/settings.read";
-import { upsert } from "../../settings/routes/settings.upsert";
-import { grantRole } from "../access-manager/routes/grant-role";
-import { complianceModuleCreate } from "../compliance-module/routes/compliance-module.create";
-import { read } from "./system.read";
 import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { z } from "zod";
+import { offChainPermissionsMiddleware } from "@/middlewares/auth/offchain-permissions.middleware";
+import { portalMiddleware } from "@/middlewares/services/portal.middleware";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { onboardedRouter } from "@/procedures/onboarded.router";
+import { read as settingsRead } from "@/routes/settings/routes/settings.read";
+import { upsert } from "@/routes/settings/routes/settings.upsert";
+import { grantRole } from "@/routes/system/access-manager/routes/grant-role";
+import { complianceModuleCreate } from "@/routes/system/compliance-module/routes/compliance-module.create";
+import { read } from "@/routes/system/routes/system.read";
 
 const logger = createLogger();
 
@@ -151,9 +151,7 @@ export const create = onboardedRouter.system.create
     if (existingSystem) {
       throw errors.RESOURCE_ALREADY_EXISTS({
         message: "System already exists",
-        cause: new Error(
-          `System already deployed at address: ${existingSystem}`
-        ),
+        cause: new Error(`System already deployed at address: ${existingSystem}`),
       });
     }
 
@@ -164,20 +162,14 @@ export const create = onboardedRouter.system.create
     };
 
     // Use the Portal client's mutate method
-    const transactionHash = await context.portalClient.mutate(
-      CREATE_SYSTEM_MUTATION,
-      createSystemVariables,
-      {
-        sender: sender,
-        code: walletVerification.secretVerificationCode,
-        type: walletVerification.verificationType,
-      }
-    );
+    const transactionHash = await context.portalClient.mutate(CREATE_SYSTEM_MUTATION, createSystemVariables, {
+      sender,
+      code: walletVerification.secretVerificationCode,
+      type: walletVerification.verificationType,
+    });
 
     // Query for the deployed system contract
-    const queryVariables: VariablesOf<
-      typeof FIND_SYSTEM_FOR_TRANSACTION_QUERY
-    > = {
+    const queryVariables: VariablesOf<typeof FIND_SYSTEM_FOR_TRANSACTION_QUERY> = {
       deployedInTransaction: transactionHash,
     };
 
@@ -190,13 +182,10 @@ export const create = onboardedRouter.system.create
       ),
     });
 
-    const result = await context.theGraphClient.query(
-      FIND_SYSTEM_FOR_TRANSACTION_QUERY,
-      {
-        input: queryVariables,
-        output: SystemQueryResultSchema,
-      }
-    );
+    const result = await context.theGraphClient.query(FIND_SYSTEM_FOR_TRANSACTION_QUERY, {
+      input: queryVariables,
+      output: SystemQueryResultSchema,
+    });
 
     if (result.systems.length === 0) {
       throw errors.NOT_FOUND({
@@ -212,9 +201,7 @@ export const create = onboardedRouter.system.create
     if (!system) {
       throw errors.INTERNAL_SERVER_ERROR({
         message: "Failed to create system",
-        cause: new Error(
-          `System object is null for transaction ${transactionHash}`
-        ),
+        cause: new Error(`System object is null for transaction ${transactionHash}`),
       });
     }
 
@@ -225,15 +212,11 @@ export const create = onboardedRouter.system.create
     };
 
     // Execute bootstrap transaction
-    await context.portalClient.mutate(
-      BOOTSTRAP_SYSTEM_MUTATION,
-      bootstrapVariables,
-      {
-        sender: sender,
-        code: walletVerification.secretVerificationCode,
-        type: walletVerification.verificationType,
-      }
-    );
+    await context.portalClient.mutate(BOOTSTRAP_SYSTEM_MUTATION, bootstrapVariables, {
+      sender,
+      code: walletVerification.secretVerificationCode,
+      type: walletVerification.verificationType,
+    });
 
     // Save the system address to settings using orpc BEFORE yielding final events
     await call(

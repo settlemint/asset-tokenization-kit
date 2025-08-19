@@ -8,7 +8,7 @@
 
 import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
 import { z } from "zod";
-import { UserSchema } from "../../user/routes/user.me.schema";
+import { UserSchema } from "@/routes/user/routes/user.me.schema";
 
 /**
  * Input schema for user read endpoint.

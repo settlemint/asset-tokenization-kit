@@ -1,6 +1,6 @@
 import { me } from "./routes/account.me";
-import { search } from "./routes/account.search";
 import { read } from "./routes/account.read";
+import { search } from "./routes/account.search";
 
 /**
  * Account router module.

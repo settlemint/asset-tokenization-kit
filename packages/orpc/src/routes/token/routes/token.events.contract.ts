@@ -1,8 +1,5 @@
-import { baseContract } from "../../../procedures/base.contract";
-import {
-  EventsResponseSchema,
-  TokenEventsInputSchema,
-} from "./token.events.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { EventsResponseSchema, TokenEventsInputSchema } from "./token.events.schema";
 
 export const tokenEventsContract = baseContract
   .route({

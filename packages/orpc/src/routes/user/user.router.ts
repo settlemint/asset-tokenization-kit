@@ -1,13 +1,13 @@
-import { list as actionsList } from "../../actions/routes/actions.list";
-import kyc from "../../user/kyc/kyc.router";
-import { createWallet } from "../../user/routes/mutations/create-wallet";
-import { list } from "../../user/routes/user.list";
-import { me } from "../../user/routes/user.me";
-import { read } from "../../user/routes/user.read";
-import { search } from "../../user/routes/user.search";
-import { stats } from "../../user/routes/user.stats";
-import { statsGrowthOverTime } from "../../user/routes/user.stats.growth-over-time";
-import { statsUserCount } from "../../user/routes/user.stats.user-count";
+import { list as actionsList } from "@/routes/actions/routes/actions.list";
+import kyc from "./kyc/kyc.router";
+import { createWallet } from "./routes/mutations/create-wallet";
+import { list } from "./routes/user.list";
+import { me } from "./routes/user.me";
+import { read } from "./routes/user.read";
+import { search } from "./routes/user.search";
+import { stats } from "./routes/user.stats";
+import { statsGrowthOverTime } from "./routes/user.stats.growth-over-time";
+import { statsUserCount } from "./routes/user.stats.user-count";
 
 /**
  * User router module.

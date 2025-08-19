@@ -1,6 +1,6 @@
-import { baseContract } from "../../../../../procedures/base.contract";
-import { TokenPauseInputSchema } from "./token.pause.schema";
-import { TokenSchema } from "../../token.read.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { TokenPauseInputSchema } from "@/routes/token/routes/mutations/pause/token.pause.schema";
+import { TokenSchema } from "@/routes/token/routes/token.read.schema";
 
 export const tokenPauseContract = baseContract
   .route({

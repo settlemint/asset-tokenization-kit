@@ -1,7 +1,7 @@
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { theGraphMiddleware } from "../../../../middlewares/services/the-graph.middleware";
-import { tokenRouter } from "../../../../procedures/token.router";
 import { z } from "zod";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { tokenRouter } from "@/procedures/token.router";
 
 /**
  * GraphQL query to fetch token collateral statistics from subgraph
@@ -68,15 +68,12 @@ export const statsCollateralRatio = tokenRouter.token.statsCollateralRatio
     // Token context is guaranteed by tokenRouter middleware
 
     // Fetch latest collateral stats from TheGraph
-    const response = await context.theGraphClient.query(
-      TOKEN_COLLATERAL_STATS_QUERY,
-      {
-        input: {
-          tokenId: input.tokenAddress.toLowerCase(),
-        },
-        output: TokenCollateralStatsResponseSchema,
-      }
-    );
+    const response = await context.theGraphClient.query(TOKEN_COLLATERAL_STATS_QUERY, {
+      input: {
+        tokenId: input.tokenAddress.toLowerCase(),
+      },
+      output: TokenCollateralStatsResponseSchema,
+    });
 
     const stats = response.tokenCollateralStats_collection[0];
 
@@ -99,10 +96,7 @@ export const statsCollateralRatio = tokenRouter.token.statsCollateralRatio
     ];
 
     // Calculate collateral ratio (used/total * 100)
-    const collateralRatio =
-      stats.collateral > 0
-        ? (stats.collateralUsed / stats.collateral) * 100
-        : 0;
+    const collateralRatio = stats.collateral > 0 ? (stats.collateralUsed / stats.collateral) * 100 : 0;
 
     return {
       buckets,

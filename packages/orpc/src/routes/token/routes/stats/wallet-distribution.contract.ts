@@ -1,8 +1,5 @@
-import { baseContract } from "../../../../procedures/base.contract";
-import {
-  StatsWalletDistributionInputSchema,
-  StatsWalletDistributionOutputSchema,
-} from "./wallet-distribution.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { StatsWalletDistributionInputSchema, StatsWalletDistributionOutputSchema } from "./wallet-distribution.schema";
 
 export const statsWalletDistributionContract = baseContract
   .route({

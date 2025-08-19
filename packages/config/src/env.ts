@@ -49,10 +49,7 @@ export const env = createEnv({
     APP_URL: z
       .url()
       .default(
-        process.env.VITE_APP_URL ??
-          process.env.BETTER_AUTH_URL ??
-          process.env.NEXTAUTH_URL ??
-          "http://localhost:3000"
+        process.env.VITE_APP_URL ?? process.env.BETTER_AUTH_URL ?? process.env.NEXTAUTH_URL ?? "http://localhost:3000"
       ),
 
     /**
@@ -60,9 +57,7 @@ export const env = createEnv({
      * Required for server-side GraphQL operations with admin privileges.
      * @required
      */
-    SETTLEMINT_HASURA_ADMIN_SECRET: z
-      .string()
-      .nonempty("SETTLEMINT_HASURA_ADMIN_SECRET is required"),
+    SETTLEMINT_HASURA_ADMIN_SECRET: z.string().nonempty("SETTLEMINT_HASURA_ADMIN_SECRET is required"),
 
     /**
      * HD wallet private key identifier.
@@ -86,9 +81,7 @@ export const env = createEnv({
      * SECURITY: Debug logs may contain sensitive information - use carefully.
      * @default "info"
      */
-    SETTLEMINT_LOG_LEVEL: z
-      .enum(["debug", "info", "warn", "error"])
-      .default("info"),
+    SETTLEMINT_LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
 
     /**
      * SettleMint platform instance identifier.
@@ -136,10 +129,7 @@ export const env = createEnv({
     VITE_APP_URL: z
       .url()
       .default(
-        process.env.VITE_APP_URL ??
-          process.env.BETTER_AUTH_URL ??
-          process.env.NEXTAUTH_URL ??
-          "http://localhost:3000"
+        process.env.VITE_APP_URL ?? process.env.BETTER_AUTH_URL ?? process.env.NEXTAUTH_URL ?? "http://localhost:3000"
       ),
 
     /**
@@ -157,9 +147,7 @@ export const env = createEnv({
      * DEBUGGING: Essential for troubleshooting client-side issues in production.
      * @default "info"
      */
-    VITE_SETTLEMINT_LOG_LEVEL: z
-      .enum(["debug", "info", "warn", "error"])
-      .default("info"),
+    VITE_SETTLEMINT_LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
   },
 
   /**

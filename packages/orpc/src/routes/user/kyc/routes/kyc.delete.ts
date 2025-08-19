@@ -1,9 +1,9 @@
 import { kycProfiles } from "@atk/db/schemas/kyc";
-import { offChainPermissionsMiddleware } from "../../../../middlewares/auth/offchain-permissions.middleware";
-import { databaseMiddleware } from "../../../../middlewares/services/db.middleware";
-import { authRouter } from "../../../../procedures/auth.router";
 import { eq } from "drizzle-orm";
-import { KycDeleteInputSchema } from "./kyc.delete.schema";
+import { offChainPermissionsMiddleware } from "@/middlewares/auth/offchain-permissions.middleware";
+import { databaseMiddleware } from "@/middlewares/services/db.middleware";
+import { authRouter } from "@/procedures/auth.router";
+import type { KycDeleteInputSchema } from "@/routes/user/kyc/routes/kyc.delete.schema";
 
 export const remove = authRouter.user.kyc.remove
   .use(
@@ -23,8 +23,7 @@ export const remove = authRouter.user.kyc.remove
 
     if (!deleted) {
       throw errors.NOT_FOUND({
-        message:
-          "No KYC profile found to delete. The profile may have already been removed.",
+        message: "No KYC profile found to delete. The profile may have already been removed.",
       });
     }
 

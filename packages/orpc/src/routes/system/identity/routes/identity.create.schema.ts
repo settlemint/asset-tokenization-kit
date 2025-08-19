@@ -1,5 +1,5 @@
-import { UserVerificationSchema } from "../common/schemas/user-verification.schema";
 import { z } from "zod";
+import { UserVerificationSchema } from "@/routes/common/schemas/user-verification.schema";
 
 /**
  * Input schema for identity creation

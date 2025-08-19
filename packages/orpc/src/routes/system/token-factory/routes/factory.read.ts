@@ -1,7 +1,7 @@
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { theGraphMiddleware } from "../../../../middlewares/services/the-graph.middleware";
-import { authRouter } from "../../../../procedures/auth.router";
 import { z } from "zod";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { authRouter } from "@/procedures/auth.router";
 import { TokenFactoryDetailSchema } from "./factory.read.schema";
 
 /**
@@ -62,16 +62,13 @@ const READ_TOKEN_FACTORY_QUERY = theGraphGraphql(`
 export const factoryRead = authRouter.system.tokenFactoryRead
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
-    const result = await context.theGraphClient.query(
-      READ_TOKEN_FACTORY_QUERY,
-      {
-        input: {
-          id: input.id.toLowerCase(), // The Graph uses lowercase addresses
-        },
-        output: z.object({
-          tokenFactory: TokenFactoryDetailSchema,
-        }),
-      }
-    );
+    const result = await context.theGraphClient.query(READ_TOKEN_FACTORY_QUERY, {
+      input: {
+        id: input.id.toLowerCase(), // The Graph uses lowercase addresses
+      },
+      output: z.object({
+        tokenFactory: TokenFactoryDetailSchema,
+      }),
+    });
     return result.tokenFactory;
   });

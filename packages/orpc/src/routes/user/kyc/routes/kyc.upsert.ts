@@ -1,10 +1,10 @@
 import { kycProfiles } from "@atk/db/schemas/kyc";
-import { offChainPermissionsMiddleware } from "../../../../middlewares/auth/offchain-permissions.middleware";
-import { databaseMiddleware } from "../../../../middlewares/services/db.middleware";
-import { authRouter } from "../../../../procedures/auth.router";
 import { generateId } from "better-auth";
 import { sql } from "drizzle-orm";
-import { KycUpsertInputSchema } from "./kyc.upsert.schema";
+import { offChainPermissionsMiddleware } from "@/middlewares/auth/offchain-permissions.middleware";
+import { databaseMiddleware } from "@/middlewares/services/db.middleware";
+import { authRouter } from "@/procedures/auth.router";
+import type { KycUpsertInputSchema } from "@/routes/user/kyc/routes/kyc.upsert.schema";
 
 export const upsert = authRouter.user.kyc.upsert
   .use(
@@ -40,8 +40,7 @@ export const upsert = authRouter.user.kyc.upsert
 
       if (!result) {
         throw errors.INTERNAL_SERVER_ERROR({
-          message:
-            "Failed to save KYC profile. Please check your data and try again.",
+          message: "Failed to save KYC profile. Please check your data and try again.",
         });
       }
 

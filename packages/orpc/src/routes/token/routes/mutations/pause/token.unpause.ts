@@ -1,9 +1,9 @@
 import { portalGraphql } from "@atk/settlemint/portal";
-import { tokenPermissionMiddleware } from "../../../../../middlewares/auth/token-permission.middleware";
-import { tokenRouter } from "../../../../../procedures/token.router";
-import { TOKEN_PERMISSIONS } from "../../../token.permissions";
 import { call } from "@orpc/server";
-import { read } from "../../token.read";
+import { tokenPermissionMiddleware } from "@/middlewares/auth/token-permission.middleware";
+import { tokenRouter } from "@/procedures/token.router";
+import { read } from "@/routes/token/routes/token.read";
+import { TOKEN_PERMISSIONS } from "@/routes/token/token.permissions";
 
 const TOKEN_UNPAUSE_MUTATION = portalGraphql(`
   mutation TokenUnpause(

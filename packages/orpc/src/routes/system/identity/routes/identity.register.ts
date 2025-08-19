@@ -1,10 +1,10 @@
 import { portalGraphql } from "@atk/settlemint/portal";
-import { blockchainPermissionsMiddleware } from "../../middlewares/auth/blockchain-permissions.middleware";
-import { portalRouter } from "../../procedures/portal.router";
-import { read as readAccount } from "../../account/routes/account.read";
-import { SYSTEM_PERMISSIONS } from "../../system/system.permissions";
 import { call } from "@orpc/server";
 import countries from "i18n-iso-countries";
+import { blockchainPermissionsMiddleware } from "@/middlewares/auth/blockchain-permissions.middleware";
+import { portalRouter } from "@/procedures/portal.router";
+import { read as readAccount } from "@/routes/account/routes/account.read";
+import { SYSTEM_PERMISSIONS } from "@/routes/system/system.permissions";
 
 const IDENTITY_REGISTER_MUTATION = portalGraphql(`
   mutation IdentityRegister(

@@ -29,6 +29,7 @@
  * @see {@link ./schema} - Database schema definitions and table relationships
  * @see {@link ../settlemint/postgres} - PostgreSQL connection pool configuration
  */
+/** biome-ignore-all lint/performance/noNamespaceImport: needed for the db */
 
 import { env } from "@atk/config/env";
 import { hasuraMetadataClient } from "@atk/settlemint/hasura";

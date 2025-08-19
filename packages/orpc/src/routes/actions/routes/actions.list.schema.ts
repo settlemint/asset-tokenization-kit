@@ -10,12 +10,7 @@ import { z } from "zod";
  * - EXECUTED: Action has been successfully executed
  * - EXPIRED: Action has expired without being executed
  */
-export const ActionStatusSchema = z.enum([
-  "PENDING",
-  "ACTIVE",
-  "EXECUTED",
-  "EXPIRED",
-]);
+export const ActionStatusSchema = z.enum(["PENDING", "ACTIVE", "EXECUTED", "EXPIRED"]);
 export type ActionStatus = z.infer<typeof ActionStatusSchema>;
 
 /**
@@ -26,9 +21,7 @@ export type ActionStatus = z.infer<typeof ActionStatusSchema>;
  */
 export const ActionExecutorSchema = z.object({
   id: z.string().describe("Unique identifier for the action executor"),
-  executors: z
-    .array(ethereumAddress)
-    .describe("List of addresses authorized to execute actions"),
+  executors: z.array(ethereumAddress).describe("List of addresses authorized to execute actions"),
 });
 
 /**
@@ -42,20 +35,11 @@ export const ActionSchema = z.object({
   name: z.string().describe("Human-readable name of the action"),
   target: ethereumAddress.describe("Target address for the action"),
   // TheGraph returns BigInt scalars as strings; coerce to bigint
-  activeAt: z.coerce
-    .bigint()
-    .describe("Timestamp when the action becomes active"),
+  activeAt: z.coerce.bigint().describe("Timestamp when the action becomes active"),
   status: ActionStatusSchema.describe("Current status of the action"),
-  executedAt: z.coerce
-    .bigint()
-    .nullable()
-    .describe("Timestamp when the action was executed"),
-  executedBy: ethereumAddress
-    .nullable()
-    .describe("Address that executed the action"),
-  executor: ActionExecutorSchema.describe(
-    "Executor information for the action"
-  ),
+  executedAt: z.coerce.bigint().nullable().describe("Timestamp when the action was executed"),
+  executedBy: ethereumAddress.nullable().describe("Address that executed the action"),
+  executor: ActionExecutorSchema.describe("Executor information for the action"),
 });
 
 /**
@@ -104,9 +88,7 @@ export const ActionsListSchema = z.object({
    * When specified, only actions with the matching status will be returned.
    * This is useful for showing pending actions, executed actions, etc.
    */
-  status: ActionStatusSchema.optional().describe(
-    "Filter actions by their current status"
-  ),
+  status: ActionStatusSchema.optional().describe("Filter actions by their current status"),
 
   /**
    * Filter by target address.
@@ -114,9 +96,7 @@ export const ActionsListSchema = z.object({
    * When specified, only actions targeting the specified address will be returned.
    * This is useful for showing actions related to a specific token or contract.
    */
-  target: ethereumAddress
-    .optional()
-    .describe("Filter actions by their target address"),
+  target: ethereumAddress.optional().describe("Filter actions by their target address"),
 
   /**
    * Filter by action name.

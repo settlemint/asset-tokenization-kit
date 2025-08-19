@@ -36,13 +36,9 @@ export const StatsWalletDistributionOutputSchema = z.object({
 /**
  * Type definition for wallet distribution input
  */
-export type StatsWalletDistributionInput = z.infer<
-  typeof StatsWalletDistributionInputSchema
->;
+export type StatsWalletDistributionInput = z.infer<typeof StatsWalletDistributionInputSchema>;
 
 /**
  * Type definition for wallet distribution output
  */
-export type StatsWalletDistributionOutput = z.infer<
-  typeof StatsWalletDistributionOutputSchema
->;
+export type StatsWalletDistributionOutput = z.infer<typeof StatsWalletDistributionOutputSchema>;

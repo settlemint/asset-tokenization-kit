@@ -27,6 +27,7 @@
  * @see {@link generatePincodeResponse} PINCODE cryptographic challenge handling
  */
 
+import { createHash, randomUUID } from "node:crypto";
 import type { SessionUser } from "@atk/auth/server";
 import { portalClient, portalGraphql } from "@atk/settlemint/portal";
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
@@ -39,11 +40,10 @@ import {
 import type { TadaDocumentNode } from "gql.tada";
 import { getOperationAST } from "graphql";
 import type { Variables } from "graphql-request";
-import { createHash, randomUUID } from "node:crypto";
 import { z } from "zod";
-import { getVerificationId } from "../../helpers/get-verification-id";
-import type { ValidatedTheGraphClient } from "../../middlewares/services/the-graph.middleware";
-import { baseRouter } from "../../procedures/base.router";
+import { getVerificationId } from "@/helpers/get-verification-id";
+import type { ValidatedTheGraphClient } from "@/middlewares/services/the-graph.middleware";
+import { baseRouter } from "@/procedures/base.router";
 
 const CreateVerificationChallengeMutation = portalGraphql(`
   mutation CreateVerificationChallenge($userWalletAddress: String!, $verificationType: WalletVerificationType!) {
@@ -284,7 +284,7 @@ function createValidatedPortalClient(
           // VERIFICATION TYPE: PINCODE (numerical PIN with cryptographic challenge)
           // WHY: PINCODE requires a dynamic challenge-response protocol to prevent replay attacks.
           // Portal generates a unique salt and secret for each verification attempt.
-          if (!challenge.challenge || !challenge.challenge.salt || !challenge.challenge.secret) {
+          if (!(challenge.challenge?.salt && challenge.challenge.secret)) {
             throw errors.PORTAL_ERROR({
               message: "Failed to create verification challenge",
               data: {
@@ -767,7 +767,7 @@ function mapPortalErrorMessage(message: string) {
  */
 function extractRevertReason(message: string) {
   const match = message.match(/reverted with the following reason: (.*)/i);
-  return match && match[1] ? `Transaction reverted: ${match[1]}` : undefined;
+  return match?.[1] ? `Transaction reverted: ${match[1]}` : undefined;
 }
 
 // ===== VERIFICATION ARCHITECTURE SUMMARY =====

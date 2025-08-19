@@ -1,7 +1,7 @@
-import { baseContract } from "../../procedures/base.contract";
-import { AccountSchema } from "../../account/routes/account.read.schema";
-import { IdentityCreateSchema } from "../../system/identity/routes/identity.create.schema";
-import { IdentityRegisterSchema } from "../../system/identity/routes/identity.register.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { AccountSchema } from "@/routes/account/routes/account.read.schema";
+import { IdentityCreateSchema } from "@/routes/system/identity/routes/identity.create.schema";
+import { IdentityRegisterSchema } from "@/routes/system/identity/routes/identity.register.schema";
 
 const TAGS = ["system", "identity"];
 
@@ -24,8 +24,7 @@ const identityRegister = baseContract
     path: "/system/identity/register",
     description:
       "Register identity claims (country, accreditation status) for the current user. Requires an identity contract to be created first",
-    successDescription:
-      "Identity claims registered successfully with updated account details",
+    successDescription: "Identity claims registered successfully with updated account details",
     tags: TAGS,
   })
   .input(IdentityRegisterSchema)

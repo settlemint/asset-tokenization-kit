@@ -1,7 +1,7 @@
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { theGraphMiddleware } from "../../../../middlewares/services/the-graph.middleware";
-import { tokenRouter } from "../../../../procedures/token.router";
 import { z } from "zod";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { tokenRouter } from "@/procedures/token.router";
 
 /**
  * GraphQL query to fetch token-specific total supply history
@@ -98,28 +98,20 @@ export const statsTotalSupply = tokenRouter.token.statsTotalSupply
 
     // Validate timestamp is not too far in the past (blockchain inception)
     const minTimestamp = Math.floor(new Date("2015-07-30").getTime() / 1000); // Ethereum mainnet launch
-    const sinceTimestamp = Math.max(
-      minTimestamp,
-      Math.floor(since.getTime() / 1000)
-    );
+    const sinceTimestamp = Math.max(minTimestamp, Math.floor(since.getTime() / 1000));
 
     // Fetch token total supply history from TheGraph
     // tokenAddress is already validated and checksummed by ethereumAddress schema
-    const response = await context.theGraphClient.query(
-      TOKEN_TOTAL_SUPPLY_QUERY,
-      {
-        input: {
-          tokenId: tokenAddress.toLowerCase(),
-          since: sinceTimestamp.toString(),
-        },
-        output: StatsTotalSupplyResponseSchema,
-      }
-    );
+    const response = await context.theGraphClient.query(TOKEN_TOTAL_SUPPLY_QUERY, {
+      input: {
+        tokenId: tokenAddress.toLowerCase(),
+        since: sinceTimestamp.toString(),
+      },
+      output: StatsTotalSupplyResponseSchema,
+    });
 
     // Process the raw data into the expected output format
-    const totalSupplyHistory = processTotalSupplyHistoryData(
-      response.tokenStats_collection
-    );
+    const totalSupplyHistory = processTotalSupplyHistoryData(response.tokenStats_collection);
 
     return {
       totalSupplyHistory,

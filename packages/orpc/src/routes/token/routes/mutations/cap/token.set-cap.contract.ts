@@ -1,6 +1,6 @@
-import { baseContract } from "../../../../../procedures/base.contract";
+import { baseContract } from "@/procedures/base.contract";
+import { TokenSchema } from "@/routes/token/routes/token.read.schema";
 import { TokenSetCapInputSchema } from "./token.set-cap.schema";
-import { TokenSchema } from "../../token.read.schema";
 
 export const tokenSetCapContract = baseContract
   .route({

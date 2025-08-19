@@ -1,12 +1,12 @@
 import { portalGraphql } from "@atk/settlemint/portal";
-import { getTransactionReceipt } from "../../../../../helpers/transaction-receipt";
-import { tokenPermissionMiddleware } from "../../../../../middlewares/auth/token-permission.middleware";
-import { tokenRouter } from "../../../../../procedures/token.router";
-import { TOKEN_PERMISSIONS } from "../../../token.permissions";
 import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
 import { call } from "@orpc/server";
 import { logger } from "better-auth";
-import { read } from "../../token.read";
+import { getTransactionReceipt } from "@/helpers/transaction-receipt";
+import { tokenPermissionMiddleware } from "@/middlewares/auth/token-permission.middleware";
+import { tokenRouter } from "@/procedures/token.router";
+import { read } from "@/routes/token/routes/token.read";
+import { TOKEN_PERMISSIONS } from "@/routes/token/token.permissions";
 
 const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
   mutation TokenSetYieldSchedule(
@@ -69,14 +69,7 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
     })
   )
   .handler(async ({ input, context, errors }) => {
-    const {
-      contract,
-      walletVerification,
-      yieldRate,
-      paymentInterval,
-      startTime,
-      endTime,
-    } = input;
+    const { contract, walletVerification, yieldRate, paymentInterval, startTime, endTime } = input;
     const { auth } = context;
 
     const sender = auth.user;
@@ -92,7 +85,7 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
         token: contract,
       },
       {
-        sender: sender,
+        sender,
         code: walletVerification.secretVerificationCode,
         type: walletVerification.verificationType,
       }
@@ -123,12 +116,7 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
     if (logs.length > 0) {
       const lastLog = logs.at(-1) as { address?: string } | undefined;
       logger.debug("Last log:", lastLog);
-      if (
-        lastLog &&
-        typeof lastLog === "object" &&
-        "address" in lastLog &&
-        typeof lastLog.address === "string"
-      ) {
+      if (lastLog && typeof lastLog === "object" && "address" in lastLog && typeof lastLog.address === "string") {
         scheduleAddress = lastLog.address;
       }
     }
@@ -147,7 +135,7 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
         schedule: getEthereumAddress(scheduleAddress),
       },
       {
-        sender: sender,
+        sender,
         code: walletVerification.secretVerificationCode,
         type: walletVerification.verificationType,
       }

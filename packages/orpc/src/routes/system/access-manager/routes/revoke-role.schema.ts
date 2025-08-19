@@ -1,7 +1,7 @@
 import { accessControlRole } from "@atk/zod/validators/access-control-roles";
 import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
 import { z } from "zod";
-import { UserVerificationSchema } from "../common/schemas/user-verification.schema";
+import { UserVerificationSchema } from "@/routes/common/schemas/user-verification.schema";
 
 /**
  * Input schema for revoking roles from accounts

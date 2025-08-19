@@ -43,6 +43,4 @@ export type ExchangeRatesReadInput = z.infer<typeof ExchangeRatesReadSchema>;
 /**
  * Type for exchange rate read output
  */
-export type ExchangeRatesReadOutput = z.infer<
-  typeof ExchangeRatesReadOutputSchema
->;
+export type ExchangeRatesReadOutput = z.infer<typeof ExchangeRatesReadOutputSchema>;

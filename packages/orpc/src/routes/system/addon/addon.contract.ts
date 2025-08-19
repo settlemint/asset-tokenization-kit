@@ -1,11 +1,8 @@
-import { baseContract } from "../../procedures/base.contract";
-import { SystemAddonCreateSchema } from "../../system/addon/routes/addon.create.schema";
-import {
-  SystemAddonListSchema,
-  SystemAddonSchema,
-} from "../../system/addon/routes/addon.list.schema";
-import { SystemReadOutputSchema } from "../../system/routes/system.read.schema";
 import { z } from "zod";
+import { baseContract } from "@/procedures/base.contract";
+import { SystemAddonCreateSchema } from "@/routes/system/addon/routes/addon.create.schema";
+import { SystemAddonListSchema, SystemAddonSchema } from "@/routes/system/addon/routes/addon.list.schema";
+import { SystemReadOutputSchema } from "@/routes/system/routes/system.read.schema";
 
 const TAGS = ["system", "addon"];
 
@@ -25,10 +22,8 @@ const addonCreate = baseContract
   .route({
     method: "POST",
     path: "/systems/addons",
-    description:
-      "Register system add-ons to extend SMART system functionality with additional modules and features",
-    successDescription:
-      "System add-ons registered successfully with updated system configuration",
+    description: "Register system add-ons to extend SMART system functionality with additional modules and features",
+    successDescription: "System add-ons registered successfully with updated system configuration",
     tags: TAGS,
   })
   .input(SystemAddonCreateSchema)
@@ -50,10 +45,8 @@ const addonList = baseContract
   .route({
     method: "GET",
     path: "/systems/addons",
-    description:
-      "List system addons (extensions that add functionality to tokens)",
-    successDescription:
-      "List of system addons with their types and deployment info",
+    description: "List system addons (extensions that add functionality to tokens)",
+    successDescription: "List of system addons with their types and deployment info",
     tags: TAGS,
   })
   .input(SystemAddonListSchema) // Extended list schema with addon-specific filters

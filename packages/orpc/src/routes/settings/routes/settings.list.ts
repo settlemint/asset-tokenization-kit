@@ -1,8 +1,8 @@
 import { settings } from "@atk/db/schemas/settings";
-import { offChainPermissionsMiddleware } from "../../../middlewares/auth/offchain-permissions.middleware";
-import { databaseMiddleware } from "../../../middlewares/services/db.middleware";
-import { authRouter } from "../../../procedures/auth.router";
 import { asc, desc } from "drizzle-orm";
+import { offChainPermissionsMiddleware } from "@/middlewares/auth/offchain-permissions.middleware";
+import { databaseMiddleware } from "@/middlewares/services/db.middleware";
+import { authRouter } from "@/procedures/auth.router";
 
 /**
  * Settings listing route handler.
@@ -46,8 +46,7 @@ export const list = authRouter.settings.list
 
     // Map orderBy field to the correct column
     // Support both 'key' and 'lastUpdated' as valid sort fields
-    const orderColumn =
-      orderBy === "lastUpdated" ? settings.lastUpdated : settings.key;
+    const orderColumn = orderBy === "lastUpdated" ? settings.lastUpdated : settings.key;
 
     // Query settings with pagination and sorting
     const result = await context.db

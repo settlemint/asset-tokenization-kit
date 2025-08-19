@@ -5,14 +5,12 @@
  * including CRUD operations and synchronization with external providers.
  * @module ExchangeRatesContract
  */
-import { baseContract } from "../../procedures/base.contract";
+
 import { z } from "zod";
+import { baseContract } from "@/procedures/base.contract";
 import { ExchangeRatesDeleteSchema } from "./routes/exchange-rates.delete.schema";
 import { ExchangeRatesHistorySchema } from "./routes/exchange-rates.history.schema";
-import {
-  ExchangeRatesListOutputSchema,
-  ExchangeRatesListSchema,
-} from "./routes/exchange-rates.list.schema";
+import { ExchangeRatesListOutputSchema, ExchangeRatesListSchema } from "./routes/exchange-rates.list.schema";
 import { ExchangeRatesReadSchema } from "./routes/exchange-rates.read.schema";
 import { ExchangeRatesSyncSchema } from "./routes/exchange-rates.sync.schema";
 import { ExchangeRatesUpdateSchema } from "./routes/exchange-rates.update.schema";

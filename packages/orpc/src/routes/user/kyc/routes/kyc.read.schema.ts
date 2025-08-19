@@ -1,6 +1,6 @@
+import { residencyStatusEnum } from "@atk/db/schemas/kyc";
 import { isoCountryCode } from "@atk/zod/validators/iso-country-code";
 import { z } from "zod";
-import { residencyStatusEnum } from "@atk/db/schemas/kyc";
 
 const residencyStatusValues = residencyStatusEnum.enumValues;
 const residencyStatusZod = z.enum(residencyStatusValues);

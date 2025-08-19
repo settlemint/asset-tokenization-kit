@@ -21,9 +21,7 @@ export const TokenBalanceSchema = z.object({
 export const TokenHoldersResponseSchema = z.object({
   token: z
     .object({
-      balances: z
-        .array(TokenBalanceSchema)
-        .describe("List of token balances ordered by last updated time"),
+      balances: z.array(TokenBalanceSchema).describe("List of token balances ordered by last updated time"),
     })
     .nullable(),
 });

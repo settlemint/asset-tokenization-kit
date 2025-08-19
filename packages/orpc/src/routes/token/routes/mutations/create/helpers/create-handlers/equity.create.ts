@@ -36,12 +36,9 @@
  */
 
 import { portalGraphql } from "@atk/settlemint/portal";
-import {
-  createToken,
-  type TokenCreateContext,
-} from "../token.base-create";
-import type { TokenCreateInput } from "../../token.create.schema";
 import { AssetTypeEnum } from "@atk/zod/validators/asset-types";
+import { createToken, type TokenCreateContext } from "@/routes/token/routes/mutations/create/helpers/token.base-create";
+import type { TokenCreateInput } from "@/routes/token/routes/mutations/create/token.create.schema";
 
 /**
  * GraphQL mutation for equity token deployment with compliance integration.
@@ -125,10 +122,7 @@ const CREATE_EQUITY_MUTATION = portalGraphql(`
  * @returns Transaction hash from successful equity token deployment
  * @throws Error When input type doesn't match equity token requirements
  */
-export const equityCreateHandler = async (
-  input: TokenCreateInput,
-  context: TokenCreateContext
-) => {
+export const equityCreateHandler = async (input: TokenCreateInput, context: TokenCreateContext) => {
   // TYPE VALIDATION: Ensure this handler only processes equity token requests
   // WHY: Each token type has specific parameters and compliance requirements
   // Wrong handler could create tokens with incorrect configurations

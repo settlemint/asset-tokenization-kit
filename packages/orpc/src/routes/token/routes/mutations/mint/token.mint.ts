@@ -36,12 +36,12 @@
  */
 
 import { portalGraphql } from "@atk/settlemint/portal";
-import { validateBatchArrays } from "../../../../../helpers/array-validation";
-import { tokenPermissionMiddleware } from "../../../../../middlewares/auth/token-permission.middleware";
-import { tokenRouter } from "../../../../../procedures/token.router";
-import { read } from "../../token.read";
-import { TOKEN_PERMISSIONS } from "../../../token.permissions";
 import { call } from "@orpc/server";
+import { validateBatchArrays } from "@/helpers/array-validation";
+import { tokenPermissionMiddleware } from "@/middlewares/auth/token-permission.middleware";
+import { tokenRouter } from "@/procedures/token.router";
+import { read } from "@/routes/token/routes/token.read";
+import { TOKEN_PERMISSIONS } from "@/routes/token/token.permissions";
 
 /**
  * GraphQL mutation for single-recipient token minting.
@@ -219,7 +219,7 @@ export const mint = tokenRouter.token.mint
           amounts: amounts.map((a) => a.toString()),
         },
         {
-          sender: sender,
+          sender,
           code: walletVerification.secretVerificationCode,
           type: walletVerification.verificationType,
         }
@@ -234,7 +234,7 @@ export const mint = tokenRouter.token.mint
       // PARAMETER VALIDATION: Ensure required values are present
       // WHY: TypeScript can't guarantee array elements exist at runtime
       // Explicit validation prevents undefined parameter errors
-      if (!to || !amount) {
+      if (!(to && amount)) {
         throw errors.INPUT_VALIDATION_FAILED({
           message: "Missing recipient or amount",
           data: { errors: ["Invalid input data"] },
@@ -253,7 +253,7 @@ export const mint = tokenRouter.token.mint
           amount: amount.toString(),
         },
         {
-          sender: sender,
+          sender,
           code: walletVerification.secretVerificationCode,
           type: walletVerification.verificationType,
         }

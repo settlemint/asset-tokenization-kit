@@ -17,11 +17,8 @@
  * @see {@link ./actions.router} - Implementation router
  */
 
-import { baseContract } from "../../procedures/base.contract";
-import {
-  ActionsListResponseSchema,
-  ActionsListSchema,
-} from "./routes/actions.list.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { ActionsListResponseSchema, ActionsListSchema } from "./routes/actions.list.schema";
 
 /**
  * List actions for the authenticated user.

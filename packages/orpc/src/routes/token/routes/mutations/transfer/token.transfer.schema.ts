@@ -1,9 +1,9 @@
-import { BaseMutationOutputSchema } from "../../../../common/schemas/mutation-output.schema";
-import { MutationInputSchemaWithContract } from "../../../../common/schemas/mutation.schema";
 import { bigDecimal } from "@atk/zod/validators/bigdecimal";
 import { apiBigInt } from "@atk/zod/validators/bigint";
 import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
 import { z } from "zod";
+import { MutationInputSchemaWithContract } from "@/routes/common/schemas/mutation.schema";
+import { BaseMutationOutputSchema } from "@/routes/common/schemas/mutation-output.schema";
 
 /**
  * Schema for unified token transfer operation (supports standard, transferFrom, and forced transfer)
@@ -14,7 +14,10 @@ export const TokenTransferSchema = MutationInputSchemaWithContract.extend({
       // Single recipient - transform to array
       ethereumAddress.transform((addr) => [addr]),
       // Array of recipients
-      z.array(ethereumAddress).min(1).max(100),
+      z
+        .array(ethereumAddress)
+        .min(1)
+        .max(100),
     ])
     .describe("Recipient address(es) for tokens"),
   amounts: z
@@ -22,7 +25,10 @@ export const TokenTransferSchema = MutationInputSchemaWithContract.extend({
       // Single amount - transform to array
       apiBigInt.transform((amt) => [amt]),
       // Array of amounts
-      z.array(apiBigInt).min(1).max(100),
+      z
+        .array(apiBigInt)
+        .min(1)
+        .max(100),
     ])
     .describe("Amount(s) of tokens to transfer"),
   from: z
@@ -30,12 +36,13 @@ export const TokenTransferSchema = MutationInputSchemaWithContract.extend({
       // Single from address - transform to array
       ethereumAddress.transform((addr) => [addr]),
       // Array of from addresses
-      z.array(ethereumAddress).min(1).max(100),
+      z
+        .array(ethereumAddress)
+        .min(1)
+        .max(100),
     ])
     .optional()
-    .describe(
-      "Address(es) to transfer from (for transferFrom and forced transfer)"
-    ),
+    .describe("Address(es) to transfer from (for transferFrom and forced transfer)"),
   transferType: z
     .enum(["standard", "transferFrom", "forced"])
     .optional()
@@ -45,7 +52,12 @@ export const TokenTransferSchema = MutationInputSchemaWithContract.extend({
     ),
 })
   .refine(
-    (data) => {
+    (data: {
+      recipients: string[];
+      amounts: bigint[];
+      from?: string[];
+      transferType: "standard" | "transferFrom" | "forced";
+    }) => {
       // Ensure arrays have the same length after transformation
       const recipientsLength = data.recipients.length;
       const amountsLength = data.amounts.length;
@@ -61,19 +73,14 @@ export const TokenTransferSchema = MutationInputSchemaWithContract.extend({
       return fromLength === recipientsLength && fromLength === amountsLength;
     },
     {
-      message:
-        "Number of recipients, amounts, and from addresses must match based on transfer type",
+      message: "Number of recipients, amounts, and from addresses must match based on transfer type",
       path: ["amounts"],
     }
   )
   .refine(
     (data) => {
       // For transferFrom and forced transfers, 'from' is required
-      if (
-        (data.transferType === "transferFrom" ||
-          data.transferType === "forced") &&
-        !data.from
-      ) {
+      if ((data.transferType === "transferFrom" || data.transferType === "forced") && !data.from) {
         return false;
       }
       return true;
@@ -93,22 +100,11 @@ export const TokenTransferSchema = MutationInputSchemaWithContract.extend({
 export const TokenTransferOutputSchema = BaseMutationOutputSchema.extend({
   data: z
     .object({
-      totalTransferred: bigDecimal().describe(
-        "Total amount of tokens transferred"
-      ),
-      transferType: z
-        .enum(["standard", "transferFrom", "forced"])
-        .describe("Type of transfer performed"),
-      recipients: z
-        .array(ethereumAddress)
-        .describe("Addresses tokens were transferred to"),
-      amounts: z
-        .array(bigDecimal())
-        .describe("Amounts transferred to each address"),
-      from: z
-        .array(ethereumAddress)
-        .optional()
-        .describe("Source addresses for transferFrom/forced transfers"),
+      totalTransferred: bigDecimal().describe("Total amount of tokens transferred"),
+      transferType: z.enum(["standard", "transferFrom", "forced"]).describe("Type of transfer performed"),
+      recipients: z.array(ethereumAddress).describe("Addresses tokens were transferred to"),
+      amounts: z.array(bigDecimal()).describe("Amounts transferred to each address"),
+      from: z.array(ethereumAddress).optional().describe("Source addresses for transferFrom/forced transfers"),
       tokenName: z.string().optional().describe("Name of the token"),
       tokenSymbol: z.string().optional().describe("Symbol of the token"),
     })

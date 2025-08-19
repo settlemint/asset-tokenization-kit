@@ -47,11 +47,12 @@
  * });
  * // result.tokens contains ALL tokens, regardless of pagination limits
  */
+
 import { theGraphClient } from "@atk/settlemint/the-graph";
 import type { TadaDocumentNode } from "gql.tada";
 import { ClientError, type RequestDocument, type Variables } from "graphql-request";
 import { z } from "zod";
-import { baseRouter } from "../../procedures/base.router";
+import { baseRouter } from "@/procedures/base.router";
 
 /**
  * Creates a validated TheGraph client with advanced querying capabilities

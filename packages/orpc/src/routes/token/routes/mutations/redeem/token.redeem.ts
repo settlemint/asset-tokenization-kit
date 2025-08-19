@@ -1,10 +1,10 @@
 import { portalGraphql } from "@atk/settlemint/portal";
-import { tokenPermissionMiddleware } from "../../../../../middlewares/auth/token-permission.middleware";
-import { tokenRouter } from "../../../../../procedures/token.router";
-import { TOKEN_PERMISSIONS } from "../../../token.permissions";
-import { read } from "../../token.read";
 import { call } from "@orpc/server";
 import { from } from "dnum";
+import { tokenPermissionMiddleware } from "@/middlewares/auth/token-permission.middleware";
+import { tokenRouter } from "@/procedures/token.router";
+import { read } from "@/routes/token/routes/token.read";
+import { TOKEN_PERMISSIONS } from "@/routes/token/token.permissions";
 import type { TokenRedeemOutput } from "./token.redeem.schema";
 
 const TOKEN_REDEEM_MUTATION = portalGraphql(`
@@ -59,7 +59,7 @@ export const redeem = tokenRouter.token.redeem
     const { auth } = context;
 
     // Validate input parameters
-    if (!redeemAll && !amount) {
+    if (!(redeemAll || amount)) {
       throw errors.INPUT_VALIDATION_FAILED({
         message: "Amount or redeem all required",
         data: { errors: ["Invalid redeem parameters"] },
@@ -76,7 +76,7 @@ export const redeem = tokenRouter.token.redeem
             from: sender.wallet,
           },
           {
-            sender: sender,
+            sender,
             code: walletVerification.secretVerificationCode,
             type: walletVerification.verificationType,
           }
@@ -89,18 +89,14 @@ export const redeem = tokenRouter.token.redeem
             amount: amount?.toString() ?? "",
           },
           {
-            sender: sender,
+            sender,
             code: walletVerification.secretVerificationCode,
             type: walletVerification.verificationType,
           }
         ));
 
     // Get updated token data
-    const updatedToken = await call(
-      read,
-      { tokenAddress: contract },
-      { context }
-    );
+    const updatedToken = await call(read, { tokenAddress: contract }, { context });
 
     // Calculate redeemed amount
     const amountRedeemed = redeemAll

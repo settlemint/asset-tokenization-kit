@@ -1,8 +1,5 @@
-import { baseContract } from "../../../../procedures/base.contract";
-import {
-  FactoryReadSchema,
-  TokenFactoryDetailSchema,
-} from "./factory.read.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { FactoryReadSchema, TokenFactoryDetailSchema } from "./factory.read.schema";
 
 export const factoryReadContract = baseContract
   .route({

@@ -16,15 +16,12 @@ export const exchangeRateProviders = ["er-api", "ECB", "manual"] as const;
 /**
  * Schema for exchange rate provider validation.
  */
-export const exchangeRateProvider = () =>
-  z.enum(exchangeRateProviders).describe("Exchange rate data provider");
+export const exchangeRateProvider = () => z.enum(exchangeRateProviders).describe("Exchange rate data provider");
 
 /**
  * Type representing a validated exchange rate provider.
  */
-export type ExchangeRateProvider = z.infer<
-  ReturnType<typeof exchangeRateProvider>
->;
+export type ExchangeRateProvider = z.infer<ReturnType<typeof exchangeRateProvider>>;
 
 /**
  * Schema for the ExchangeRate-API response.
@@ -58,6 +55,4 @@ export const exchangeRateApiResponseSchema = z.object({
 /**
  * Type representing the ExchangeRate-API response.
  */
-export type ExchangeRateApiResponse = z.infer<
-  typeof exchangeRateApiResponseSchema
->;
+export type ExchangeRateApiResponse = z.infer<typeof exchangeRateApiResponseSchema>;

@@ -1,8 +1,8 @@
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { theGraphMiddleware } from "../../../../middlewares/services/the-graph.middleware";
-import { tokenRouter } from "../../../../procedures/token.router";
 import { from } from "dnum";
 import { z } from "zod";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { tokenRouter } from "@/procedures/token.router";
 
 /**
  * GraphQL query to fetch bond status statistics for a specific token
@@ -78,15 +78,12 @@ export const statsBondStatus = tokenRouter.token.statsBondStatus
     const { tokenAddress } = input;
 
     // Fetch bond status from TheGraph
-    const response = await context.theGraphClient.query(
-      TOKEN_BOND_STATUS_QUERY,
-      {
-        input: {
-          tokenId: tokenAddress.toLowerCase(),
-        },
-        output: StatsBondStatusResponseSchema,
-      }
-    );
+    const response = await context.theGraphClient.query(TOKEN_BOND_STATUS_QUERY, {
+      input: {
+        tokenId: tokenAddress.toLowerCase(),
+      },
+      output: StatsBondStatusResponseSchema,
+    });
 
     // Check if bond stats exist
     const bondStats = response.token.bond?.stats;
@@ -101,12 +98,8 @@ export const statsBondStatus = tokenRouter.token.statsBondStatus
 
     // Convert string values to dnum for precise arithmetic
     return {
-      denominationAssetBalanceAvailable: from(
-        bondStats.denominationAssetBalanceAvailable
-      ),
-      denominationAssetBalanceRequired: from(
-        bondStats.denominationAssetBalanceRequired
-      ),
+      denominationAssetBalanceAvailable: from(bondStats.denominationAssetBalanceAvailable),
+      denominationAssetBalanceRequired: from(bondStats.denominationAssetBalanceRequired),
       coveredPercentage: from(bondStats.coveredPercentage),
     };
   });

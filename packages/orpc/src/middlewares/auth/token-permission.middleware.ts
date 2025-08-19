@@ -2,7 +2,7 @@ import type { AccessControlRoles } from "@atk/auth/fragments/the-graph/access-co
 import type { AssetExtension } from "@atk/zod/validators/asset-extensions";
 import type { RoleRequirement } from "@atk/zod/validators/role-requirement";
 import { satisfiesRoleRequirement } from "@atk/zod/validators/role-requirement";
-import { baseRouter } from "../../procedures/base.router";
+import { baseRouter } from "@/procedures/base.router";
 
 /**
  * Middleware to check if
@@ -20,7 +20,7 @@ export function tokenPermissionMiddleware({
   requiredRoles?: RoleRequirement;
   requiredExtensions?: AssetExtension[];
 } = {}) {
-  return baseRouter.middleware(async ({ context, next, errors }) => {
+  return baseRouter.middleware(({ context, next, errors }) => {
     const { token } = context;
 
     if (!token) {
@@ -29,7 +29,7 @@ export function tokenPermissionMiddleware({
       });
     }
 
-    if (!token.implementsERC3643 && !token.implementsSMART) {
+    if (!(token.implementsERC3643 || token.implementsSMART)) {
       throw errors.TOKEN_INTERFACE_NOT_SUPPORTED({
         data: {
           requiredInterfaces: ["ERC3643 or SMART"],

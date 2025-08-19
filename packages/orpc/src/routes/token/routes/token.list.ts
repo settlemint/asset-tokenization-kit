@@ -1,6 +1,6 @@
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { theGraphMiddleware } from "../../../middlewares/services/the-graph.middleware";
-import { authRouter } from "../../../procedures/auth.router";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { authRouter } from "@/procedures/auth.router";
 import { TokensResponseSchema } from "./token.list.schema";
 
 /**
@@ -80,18 +80,14 @@ const LIST_TOKEN_QUERY = theGraphGraphql(`
  * @see {@link TokenListSchema} for the response structure
  * @see {@link ListSchema} for pagination parameters
  */
-export const list = authRouter.token.list
-  .use(theGraphMiddleware)
-  .handler(async ({ input, context }) => {
-    // Manually construct GraphQL variables for pagination and filtering
-    const response = await context.theGraphClient.query(LIST_TOKEN_QUERY, {
-      input: {
-        where: input.tokenFactory
-          ? { tokenFactory_: { id: input.tokenFactory } }
-          : undefined,
-      },
-      output: TokensResponseSchema,
-    });
-
-    return response.tokens;
+export const list = authRouter.token.list.use(theGraphMiddleware).handler(async ({ input, context }) => {
+  // Manually construct GraphQL variables for pagination and filtering
+  const response = await context.theGraphClient.query(LIST_TOKEN_QUERY, {
+    input: {
+      where: input.tokenFactory ? { tokenFactory_: { id: input.tokenFactory } } : undefined,
+    },
+    output: TokensResponseSchema,
   });
+
+  return response.tokens;
+});

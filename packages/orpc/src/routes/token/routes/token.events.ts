@@ -1,6 +1,6 @@
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { theGraphMiddleware } from "../../../middlewares/services/the-graph.middleware";
-import { tokenRouter } from "../../../procedures/token.router";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { tokenRouter } from "@/procedures/token.router";
 import { EventsResponseSchema } from "./token.events.schema";
 
 /**
@@ -72,15 +72,13 @@ const TOKEN_EVENTS_QUERY = theGraphGraphql(`
  *
  * @see {@link EventSchema} for the response structure
  */
-export const events = tokenRouter.token.events
-  .use(theGraphMiddleware)
-  .handler(async ({ context }) => {
-    const response = await context.theGraphClient.query(TOKEN_EVENTS_QUERY, {
-      input: {
-        emitter: context.token.id.toLowerCase(),
-      },
-      output: EventsResponseSchema,
-    });
-
-    return response;
+export const events = tokenRouter.token.events.use(theGraphMiddleware).handler(async ({ context }) => {
+  const response = await context.theGraphClient.query(TOKEN_EVENTS_QUERY, {
+    input: {
+      emitter: context.token.id.toLowerCase(),
+    },
+    output: EventsResponseSchema,
   });
+
+  return response;
+});

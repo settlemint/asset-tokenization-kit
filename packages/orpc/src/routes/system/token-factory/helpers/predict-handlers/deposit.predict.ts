@@ -1,11 +1,11 @@
 import { portalGraphql } from "@atk/settlemint/portal";
+import { AssetTypeEnum } from "@atk/zod/validators/asset-types";
+import z from "zod";
 import type {
   PredictAddressInput,
   PredictAddressOutput,
-} from "../../routes/factory.predict-address.schema";
-import { PredictAddressOutputSchema } from "../../routes/factory.predict-address.schema";
-import { AssetTypeEnum } from "@atk/zod/validators/asset-types";
-import z from "zod";
+} from "@/routes/system/token-factory/routes/factory.predict-address.schema";
+import { PredictAddressOutputSchema } from "@/routes/system/token-factory/routes/factory.predict-address.schema";
 import type { PredictHandlerContext } from "./handler-map";
 
 const PREDICT_DEPOSIT_ADDRESS_QUERY = portalGraphql(`

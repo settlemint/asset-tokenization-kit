@@ -1,5 +1,5 @@
 import { db } from "@atk/db";
-import { baseRouter } from "../../procedures/base.router";
+import { baseRouter } from "@/procedures/base.router";
 
 /**
  * Database connection middleware.
@@ -45,7 +45,7 @@ import { baseRouter } from "../../procedures/base.router";
  * ```
  * @see {@link @/lib/db} - Database configuration and connection
  */
-export const databaseMiddleware = baseRouter.middleware(async ({ context, next }) => {
+export const databaseMiddleware = baseRouter.middleware(({ context, next }) => {
   return next({
     context: {
       // Use existing database connection if available (e.g., for testing),

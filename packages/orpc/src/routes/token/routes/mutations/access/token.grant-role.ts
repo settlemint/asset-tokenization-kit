@@ -25,11 +25,11 @@
  */
 
 import { getRoleByFieldName } from "@atk/auth/constants/roles";
-import { portalGraphql } from "@atk/settlemint/portal";
-import { tokenPermissionMiddleware } from "../../../../../middlewares/auth/token-permission.middleware";
-import { tokenRouter } from "../../../../../procedures/token.router";
-import { TOKEN_PERMISSIONS } from "../../../token.permissions";
 import type { AccessControlRoles } from "@atk/auth/fragments/the-graph/access-control-fragment";
+import { portalGraphql } from "@atk/settlemint/portal";
+import { tokenPermissionMiddleware } from "@/middlewares/auth/token-permission.middleware";
+import { tokenRouter } from "@/procedures/token.router";
+import { TOKEN_PERMISSIONS } from "../../../token.permissions";
 import type { TokenGrantRoleInput } from "./token.grant-role.schema";
 
 // Single address, single role
@@ -131,25 +131,18 @@ export const grantRole = tokenRouter.token.grantRole
 
     // INPUT POLYMORPHISM: Runtime type guards to determine mutation strategy
     // WHY: Single API endpoint handles multiple role grant patterns for better UX
-    const hasKeys = (
-      obj: unknown,
-      keys: Array<string>
-    ): obj is Record<string, unknown> =>
+    const hasKeys = (obj: unknown, keys: string[]): obj is Record<string, unknown> =>
       typeof obj === "object" && obj !== null && keys.every((k) => k in obj);
 
     const isManyAccounts = (
       i: TokenGrantRoleInput
-    ): i is Extract<
-      TokenGrantRoleInput,
-      { accounts: string[]; role: AccessControlRoles }
-    > => hasKeys(i, ["accounts", "role"]);
+    ): i is Extract<TokenGrantRoleInput, { accounts: string[]; role: AccessControlRoles }> =>
+      hasKeys(i, ["accounts", "role"]);
 
     const isOneAccountManyRoles = (
       i: TokenGrantRoleInput
-    ): i is Extract<
-      TokenGrantRoleInput,
-      { address: string; roles: AccessControlRoles[] }
-    > => hasKeys(i, ["address", "roles"]);
+    ): i is Extract<TokenGrantRoleInput, { address: string; roles: AccessControlRoles[] }> =>
+      hasKeys(i, ["address", "roles"]);
 
     if (isManyAccounts(typedInput)) {
       const { accounts, role } = typedInput;
@@ -178,7 +171,7 @@ export const grantRole = tokenRouter.token.grantRole
           },
           {
             // VERIFICATION: Same pattern across all grant operations
-            sender: sender,
+            sender,
             code: walletVerification.secretVerificationCode,
             type: walletVerification.verificationType,
           }
@@ -193,7 +186,7 @@ export const grantRole = tokenRouter.token.grantRole
             role: roleInfo.bytes,
           },
           {
-            sender: sender,
+            sender,
             code: walletVerification.secretVerificationCode,
             type: walletVerification.verificationType,
           }
@@ -207,9 +200,7 @@ export const grantRole = tokenRouter.token.grantRole
       if (!Array.isArray(roles) || roles.length === 0) {
         return { accounts: [] };
       }
-      const roleInfos = roles
-        .map((r) => getRoleByFieldName(r as AccessControlRoles))
-        .filter(Boolean);
+      const roleInfos = roles.map((r) => getRoleByFieldName(r as AccessControlRoles)).filter(Boolean);
       if (roleInfos.length !== roles.length) {
         throw errors.NOT_FOUND({ message: "One or more roles not found" });
       }
@@ -229,7 +220,7 @@ export const grantRole = tokenRouter.token.grantRole
             role: single.bytes,
           },
           {
-            sender: sender,
+            sender,
             code: walletVerification.secretVerificationCode,
             type: walletVerification.verificationType,
           }
@@ -237,7 +228,9 @@ export const grantRole = tokenRouter.token.grantRole
       } else {
         const rolesBytes = roleInfos.reduce<string[]>((acc, ri) => {
           // ri may be undefined in type inference; guard explicitly
-          if (ri) acc.push(ri.bytes);
+          if (ri) {
+            acc.push(ri.bytes);
+          }
           return acc;
         }, []);
         await portalClient.mutate(
@@ -249,7 +242,7 @@ export const grantRole = tokenRouter.token.grantRole
             roles: rolesBytes,
           },
           {
-            sender: sender,
+            sender,
             code: walletVerification.secretVerificationCode,
             type: walletVerification.verificationType,
           }

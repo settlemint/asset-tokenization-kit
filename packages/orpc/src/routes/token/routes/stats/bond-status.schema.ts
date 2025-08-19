@@ -6,9 +6,7 @@ import { z } from "zod";
  * Input schema for bond status statistics
  */
 export const StatsBondStatusInputSchema = z.object({
-  tokenAddress: ethereumAddress.describe(
-    "The token contract address to get bond status for"
-  ),
+  tokenAddress: ethereumAddress.describe("The token contract address to get bond status for"),
 });
 
 /**
@@ -22,9 +20,7 @@ export const StatsBondStatusOutputSchema = z.object({
   denominationAssetBalanceRequired: bigDecimal().describe(
     "Total denomination asset balance required for full redemption"
   ),
-  coveredPercentage: bigDecimal().describe(
-    "Percentage of denomination assets available (0-100)"
-  ),
+  coveredPercentage: bigDecimal().describe("Percentage of denomination assets available (0-100)"),
 });
 
 export type StatsBondStatusInput = z.infer<typeof StatsBondStatusInputSchema>;

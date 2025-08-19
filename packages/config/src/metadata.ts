@@ -23,7 +23,7 @@ export const metadata = {
    * Default page title.
    * Used as the base title for all pages and appended to page-specific titles.
    */
-  title: `Asset Tokenization Kit | SettleMint`,
+  title: "Asset Tokenization Kit | SettleMint",
 
   /**
    * Default meta description.
@@ -127,9 +127,7 @@ export const seo = ({
   // WHY: Spread and join keywords in single operation for performance
   // PERFORMANCE: Avoids creating intermediate arrays; single join operation
   // SEO: Combines page-specific terms with base brand keywords for broader reach
-  const resolvedKeywords = [...metadata.keywords, ...(keywords ?? [])].join(
-    ", "
-  );
+  const resolvedKeywords = [...metadata.keywords, ...(keywords ?? [])].join(", ");
 
   // WHY: Pre-allocate array with known base size to avoid dynamic resizing
   // PERFORMANCE: Most pages have 10 base tags, conditional expansion is efficient

@@ -24,11 +24,11 @@
  */
 
 import { portalGraphql } from "@atk/settlemint/portal";
-import { validateBatchArrays } from "../../../../../helpers/array-validation";
-import { tokenPermissionMiddleware } from "../../../../../middlewares/auth/token-permission.middleware";
-import { tokenRouter } from "../../../../../procedures/token.router";
-import { TOKEN_PERMISSIONS } from "../../../token.permissions";
 import { call } from "@orpc/server";
+import { validateBatchArrays } from "@/helpers/array-validation";
+import { tokenPermissionMiddleware } from "@/middlewares/auth/token-permission.middleware";
+import { tokenRouter } from "@/procedures/token.router";
+import { TOKEN_PERMISSIONS } from "../../../token.permissions";
 import { read } from "../../token.read";
 
 const TOKEN_SINGLE_BURN_MUTATION = portalGraphql(`
@@ -121,7 +121,7 @@ export const burn = tokenRouter.token.burn
           // - Gets challengeId from sender based on verificationType
           // - Generates challengeResponse using appropriate algorithm
           // - Adds both to GraphQL variables before mutation execution
-          sender: sender,
+          sender,
           code: walletVerification.secretVerificationCode,
           type: walletVerification.verificationType,
         }
@@ -129,7 +129,7 @@ export const burn = tokenRouter.token.burn
     } else {
       const [userAddress] = addresses;
       const [amount] = amounts;
-      if (!userAddress || !amount) {
+      if (!(userAddress && amount)) {
         throw errors.INPUT_VALIDATION_FAILED({
           message: "Missing address or amount",
           data: { errors: ["Invalid input data"] },
@@ -146,7 +146,7 @@ export const burn = tokenRouter.token.burn
         },
         {
           // SAME VERIFICATION PATTERN: Middleware enrichment works for all mutation types
-          sender: sender,
+          sender,
           code: walletVerification.secretVerificationCode,
           type: walletVerification.verificationType,
         }

@@ -5,12 +5,12 @@
  * @module ExchangeRatesList
  */
 
+import { fxRatesLatest } from "@atk/db/schemas/exchange-rates";
 import type { FiatCurrency } from "@atk/zod/validators/fiat-currency";
 import { and, count, eq, sql } from "drizzle-orm";
-import { fxRatesLatest } from "@atk/db/schemas/exchange-rates";
-import { offChainPermissionsMiddleware } from "../../../middlewares/auth/offchain-permissions.middleware";
-import { databaseMiddleware } from "../../../middlewares/services/db.middleware";
-import { publicRouter } from "../../../procedures/public.router";
+import { offChainPermissionsMiddleware } from "@/middlewares/auth/offchain-permissions.middleware";
+import { databaseMiddleware } from "@/middlewares/services/db.middleware";
+import { publicRouter } from "@/procedures/public.router";
 
 /**
  * Exchange rates list route handler.
@@ -32,14 +32,7 @@ export const list = publicRouter.exchangeRates.list
   )
   .use(databaseMiddleware)
   .handler(async ({ input, context }) => {
-    const {
-      offset = 0,
-      limit,
-      baseCurrency,
-      quoteCurrency,
-      orderBy = "id",
-      orderDirection = "asc",
-    } = input;
+    const { offset = 0, limit, baseCurrency, quoteCurrency, orderBy = "id", orderDirection = "asc" } = input;
 
     // Build filter conditions
     const conditions = [];
@@ -53,10 +46,7 @@ export const list = publicRouter.exchangeRates.list
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
     // Get total count
-    const [countResult] = await context.db
-      .select({ total: count() })
-      .from(fxRatesLatest)
-      .where(whereClause);
+    const [countResult] = await context.db.select({ total: count() }).from(fxRatesLatest).where(whereClause);
 
     const total = countResult?.total ?? 0;
 
@@ -72,10 +62,7 @@ export const list = publicRouter.exchangeRates.list
       }[orderBy] ?? fxRatesLatest.baseCode;
 
     // Get paginated results
-    const orderSql =
-      orderDirection === "desc"
-        ? sql`${orderColumn} DESC`
-        : sql`${orderColumn} ASC`;
+    const orderSql = orderDirection === "desc" ? sql`${orderColumn} DESC` : sql`${orderColumn} ASC`;
 
     const rates = await context.db
       .select({

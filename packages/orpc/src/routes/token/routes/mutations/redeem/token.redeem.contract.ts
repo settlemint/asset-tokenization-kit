@@ -1,8 +1,5 @@
-import { baseContract } from "../../../../../procedures/base.contract";
-import {
-  TokenRedeemInputSchema,
-  TokenRedeemOutputSchema,
-} from "./token.redeem.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { TokenRedeemInputSchema, TokenRedeemOutputSchema } from "./token.redeem.schema";
 
 export const tokenRedeemContract = baseContract
   .route({

@@ -1,8 +1,8 @@
-import { ListSchema } from "../../../common/schemas/list.schema";
 import { assetExtensionArray } from "@atk/zod/validators/asset-extensions";
 import { assetFactoryTypeId } from "@atk/zod/validators/asset-types";
 import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
 import { z } from "zod";
+import { ListSchema } from "@/routes/common/schemas/list.schema";
 
 /**
  * Schema for a token factory in the list
@@ -31,9 +31,7 @@ export const TokenFactorySchema = z.object({
   /**
    * The token extensions of the token factory
    */
-  tokenExtensions: assetExtensionArray().describe(
-    "The token extensions of the token factory"
-  ),
+  tokenExtensions: assetExtensionArray().describe("The token extensions of the token factory"),
 });
 
 /**
@@ -54,10 +52,7 @@ export const TokenFactoryListSchema = ListSchema.extend({
    * When true, only factories with tokens are returned.
    * When false, only factories without tokens are returned.
    */
-  hasTokens: z
-    .boolean()
-    .optional()
-    .describe("Filter factories by whether they have created tokens"),
+  hasTokens: z.boolean().optional().describe("Filter factories by whether they have created tokens"),
 });
 
 /**

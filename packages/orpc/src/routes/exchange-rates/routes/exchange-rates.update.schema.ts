@@ -40,13 +40,9 @@ export const ExchangeRatesUpdateOutputSchema = z.object({
 /**
  * Type for exchange rate update input
  */
-export type ExchangeRatesUpdateInput = z.infer<
-  typeof ExchangeRatesUpdateSchema
->;
+export type ExchangeRatesUpdateInput = z.infer<typeof ExchangeRatesUpdateSchema>;
 
 /**
  * Type for exchange rate update output
  */
-export type ExchangeRatesUpdateOutput = z.infer<
-  typeof ExchangeRatesUpdateOutputSchema
->;
+export type ExchangeRatesUpdateOutput = z.infer<typeof ExchangeRatesUpdateOutputSchema>;

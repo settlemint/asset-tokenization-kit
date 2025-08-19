@@ -1,8 +1,5 @@
-import { baseContract } from "../../../../procedures/base.contract";
-import {
-  StatsVolumeInputSchema,
-  StatsVolumeOutputSchema,
-} from "./volume.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { StatsVolumeInputSchema, StatsVolumeOutputSchema } from "./volume.schema";
 
 export const statsVolumeContract = baseContract
   .route({

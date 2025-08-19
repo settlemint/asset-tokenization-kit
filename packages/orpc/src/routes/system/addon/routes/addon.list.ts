@@ -1,9 +1,9 @@
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { theGraphMiddleware } from "../../middlewares/services/the-graph.middleware";
-import { authRouter } from "../../procedures/auth.router";
-import { AddonsResponseSchema } from "../../system/addon/routes/addon.list.schema";
 import { getFactoryTypeIdsFromAddonType } from "@atk/zod/validators/addon-types";
 import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { authRouter } from "@/procedures/auth.router";
+import { AddonsResponseSchema } from "@/routes/system/addon/routes/addon.list.schema";
 
 /**
  * GraphQL query for retrieving system addons from TheGraph.
@@ -86,38 +86,33 @@ const LIST_SYSTEM_ADDONS_QUERY = theGraphGraphql(`
  * });
  * ```
  */
-export const addonList = authRouter.system.addonList
-  .use(theGraphMiddleware)
-  .handler(async ({ input, context }) => {
-    // Build where clause based on filters
-    const where: Record<string, unknown> = {};
+export const addonList = authRouter.system.addonList.use(theGraphMiddleware).handler(async ({ input, context }) => {
+  // Build where clause based on filters
+  const where: Record<string, unknown> = {};
 
-    if (input.typeId !== undefined) {
-      // Map AddonType to corresponding AddonFactoryTypeIds
-      where.typeId_in = getFactoryTypeIdsFromAddonType(input.typeId);
-    }
+  if (input.typeId !== undefined) {
+    // Map AddonType to corresponding AddonFactoryTypeIds
+    where.typeId_in = getFactoryTypeIdsFromAddonType(input.typeId);
+  }
 
-    if (input.account !== undefined) {
-      where.account = input.account.toLowerCase();
-    }
+  if (input.account !== undefined) {
+    where.account = input.account.toLowerCase();
+  }
 
-    const response = await context.theGraphClient.query(
-      LIST_SYSTEM_ADDONS_QUERY,
-      {
-        input: {
-          ...input,
-          where: Object.keys(where).length > 0 ? where : undefined,
-        },
-        output: AddonsResponseSchema,
-      }
-    );
-
-    // Transform the response to match the schema with hoisted account address
-    return response.systemAddons.map((addon) => ({
-      id: addon.id,
-      name: addon.name,
-      typeId: addon.typeId,
-      deployedInTransaction: addon.deployedInTransaction,
-      account: getEthereumAddress(addon.account.id),
-    }));
+  const response = await context.theGraphClient.query(LIST_SYSTEM_ADDONS_QUERY, {
+    input: {
+      ...input,
+      where: Object.keys(where).length > 0 ? where : undefined,
+    },
+    output: AddonsResponseSchema,
   });
+
+  // Transform the response to match the schema with hoisted account address
+  return response.systemAddons.map((addon) => ({
+    id: addon.id,
+    name: addon.name,
+    typeId: addon.typeId,
+    deployedInTransaction: addon.deployedInTransaction,
+    account: getEthereumAddress(addon.account.id),
+  }));
+});

@@ -1,8 +1,5 @@
-import { baseContract } from "../../../procedures/base.contract";
-import {
-  AccountSearchInputSchema,
-  AccountSearchResultSchema,
-} from "./account.search.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { AccountSearchInputSchema, AccountSearchResultSchema } from "./account.search.schema";
 
 export const accountSearchContract = baseContract
   .route({

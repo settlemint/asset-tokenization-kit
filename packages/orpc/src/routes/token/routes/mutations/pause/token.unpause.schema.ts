@@ -1,7 +1,7 @@
-import { MutationInputSchemaWithContract } from "../../../../common/schemas/mutation.schema";
-import { BaseMutationOutputSchema } from "../../../../common/schemas/mutation-output.schema";
-import { TokenSchema } from "../../token.read.schema";
-import { z } from "zod";
+import type { z } from "zod";
+import { MutationInputSchemaWithContract } from "@/routes/common/schemas/mutation.schema";
+import { BaseMutationOutputSchema } from "@/routes/common/schemas/mutation-output.schema";
+import { TokenSchema } from "@/routes/token/routes/token.read.schema";
 
 export const TokenUnpauseInputSchema = MutationInputSchemaWithContract;
 

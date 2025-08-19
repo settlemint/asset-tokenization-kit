@@ -1,8 +1,5 @@
-import { baseContract } from "../../../../procedures/base.contract";
-import {
-  KycDeleteInputSchema,
-  KycDeleteOutputSchema,
-} from "./kyc.delete.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { KycDeleteInputSchema, KycDeleteOutputSchema } from "@/routes/user/kyc/routes/kyc.delete.schema";
 
 export const kycDeleteContract = baseContract
   .route({

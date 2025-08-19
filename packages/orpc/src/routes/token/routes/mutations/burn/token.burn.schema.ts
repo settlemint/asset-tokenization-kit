@@ -1,9 +1,9 @@
-import { BaseMutationOutputSchema } from "../../../../common/schemas/mutation-output.schema";
-import { MutationInputSchemaWithContract } from "../../../../common/schemas/mutation.schema";
 import { bigDecimal } from "@atk/zod/validators/bigdecimal";
 import { apiBigInt } from "@atk/zod/validators/bigint";
 import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
 import { z } from "zod";
+import { MutationInputSchemaWithContract } from "@/routes/common/schemas/mutation.schema";
+import { BaseMutationOutputSchema } from "@/routes/common/schemas/mutation-output.schema";
 
 export const TokenBurnInputSchema = MutationInputSchemaWithContract.extend({
   addresses: z
@@ -29,7 +29,7 @@ export const TokenBurnInputSchema = MutationInputSchemaWithContract.extend({
     ])
     .describe("Amount(s) of tokens to burn"),
 }).refine(
-  (data) => {
+  (data: { addresses: string[]; amounts: bigint[] }) => {
     // Ensure arrays have the same length after transformation
     return data.addresses.length === data.amounts.length;
   },
@@ -47,17 +47,11 @@ export const TokenBurnOutputSchema = BaseMutationOutputSchema.extend({
   data: z
     .object({
       totalBurned: bigDecimal().describe("Total amount of tokens burned"),
-      addresses: z
-        .array(ethereumAddress)
-        .describe("Addresses tokens were burned from"),
-      amounts: z
-        .array(bigDecimal())
-        .describe("Amounts burned from each address"),
+      addresses: z.array(ethereumAddress).describe("Addresses tokens were burned from"),
+      amounts: z.array(bigDecimal()).describe("Amounts burned from each address"),
       tokenName: z.string().optional().describe("Name of the token"),
       tokenSymbol: z.string().optional().describe("Symbol of the token"),
-      newTotalSupply: bigDecimal()
-        .optional()
-        .describe("New total supply after burn"),
+      newTotalSupply: bigDecimal().optional().describe("New total supply after burn"),
     })
     .optional()
     .describe("Burn operation details"),

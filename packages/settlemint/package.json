@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "lint": "biome check --write --unsafe",
-    "codegen": "settlemint codegen",
+    "codegen": "settlemint codegen --bun",
     "typecheck": "tsgo --noEmit",
     "posttypecheck": "bun gql-tada check"
   },
@@ -20,11 +20,11 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@settlemint/sdk-blockscout": "2.5.11",
-    "@settlemint/sdk-hasura": "2.5.11",
-    "@settlemint/sdk-ipfs": "2.5.11",
-    "@settlemint/sdk-minio": "2.5.11",
-    "@settlemint/sdk-portal": "2.5.11",
-    "@settlemint/sdk-thegraph": "2.5.11"
+    "@settlemint/sdk-blockscout": "2.5.13",
+    "@settlemint/sdk-hasura": "2.5.13",
+    "@settlemint/sdk-ipfs": "2.5.13",
+    "@settlemint/sdk-minio": "2.5.13",
+    "@settlemint/sdk-portal": "2.5.13",
+    "@settlemint/sdk-thegraph": "2.5.13"
   }
 }

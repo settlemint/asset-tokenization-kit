@@ -1,6 +1,6 @@
-import { baseContract } from "../../../../../procedures/base.contract";
-import { TokenBurnInputSchema } from "./token.burn.schema";
+import { baseContract } from "@/procedures/base.contract";
 import { TokenSchema } from "../../token.read.schema";
+import { TokenBurnInputSchema } from "./token.burn.schema";
 
 export const tokenBurnContract = baseContract
   .route({

@@ -1,6 +1,6 @@
-import { baseContract } from "../../../../../procedures/base.contract";
-import { TokenFreezeAddressInputSchema } from "./token.freeze-address.schema";
-import { TokenSchema } from "../../token.read.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { TokenFreezeAddressInputSchema } from "@/routes/token/routes/mutations/freeze/token.freeze-address.schema";
+import { TokenSchema } from "@/routes/token/routes/token.read.schema";
 
 export const tokenFreezeAddressContract = baseContract
   .route({

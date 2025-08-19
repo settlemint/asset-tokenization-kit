@@ -25,15 +25,7 @@
  * @module KycSchema
  */
 
-import {
-  date,
-  index,
-  pgEnum,
-  pgTable,
-  text,
-  timestamp,
-  uniqueIndex,
-} from "drizzle-orm/pg-core";
+import { date, index, pgEnum, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 import { user } from "./auth";
 
 /**
@@ -54,13 +46,13 @@ import { user } from "./auth";
 export const residencyStatusEnum = pgEnum("residency_status", [
   // COMPLIANCE: Standard tax residency for local investors
   "resident",
-  
+
   // COMPLIANCE: Non-resident status may trigger FATCA/CRS reporting
   "non_resident",
-  
+
   // COMPLIANCE: Dual residency requires enhanced due diligence
   "dual_resident",
-  
+
   // BUSINESS: Initial state - must be resolved before asset participation
   "unknown",
 ]);
@@ -118,10 +110,8 @@ export const kycProfiles = pgTable(
     nationalId: text("national_id").notNull(),
 
     // AUDIT: KYC profile creation tracking for compliance documentation
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
-      
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+
     // AUDIT: Modification tracking for regulatory change documentation
     updatedAt: timestamp("updated_at", { withTimezone: true })
       .notNull()
@@ -132,11 +122,11 @@ export const kycProfiles = pgTable(
     // INTEGRITY: Enforces one KYC profile per user account
     // WHY: Prevents duplicate identity verification and compliance confusion
     uniqueIndex("kyc_user_id_idx").on(table.userId),
-    
+
     // COMPLIANCE: Country-based compliance rule application
     // WHY: Enables jurisdiction-specific AML/KYC requirements
     index("kyc_country_idx").on(table.country),
-    
+
     // SECURITY: Name-based customer search for AML monitoring
     // WHY: Supports sanctions screening and suspicious activity detection
     index("kyc_first_name_idx").on(table.firstName),

@@ -1,6 +1,6 @@
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { theGraphMiddleware } from "../../../../middlewares/services/the-graph.middleware";
-import { authRouter } from "../../../../procedures/auth.router";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { authRouter } from "@/procedures/auth.router";
 import { FactoriesResponseSchema } from "./factory.list.schema";
 
 /**
@@ -80,21 +80,15 @@ export const factoryList = authRouter.system.tokenFactoryList
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
     // Build where clause if hasTokens filter is provided
-    const where =
-      input.hasTokens === undefined
-        ? undefined
-        : { hasTokens: input.hasTokens };
+    const where = input.hasTokens === undefined ? undefined : { hasTokens: input.hasTokens };
 
-    const response = await context.theGraphClient.query(
-      LIST_TOKEN_FACTORIES_QUERY,
-      {
-        input: {
-          ...input,
-          where,
-        },
-        output: FactoriesResponseSchema,
-      }
-    );
+    const response = await context.theGraphClient.query(LIST_TOKEN_FACTORIES_QUERY, {
+      input: {
+        ...input,
+        where,
+      },
+      output: FactoriesResponseSchema,
+    });
 
     return response.tokenFactories;
   });

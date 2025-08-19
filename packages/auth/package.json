@@ -1,6 +1,5 @@
 {
   "name": "@atk/auth",
-  "module": "src/index.ts",
   "type": "module",
   "scripts": {
     "typecheck": "tsgo --noEmit",
@@ -14,6 +13,18 @@
     "./*": {
       "import": "./src/*.ts",
       "types": "./src/*.ts"
+    },
+    "./fragments/*": {
+      "import": "./src/fragments/*.ts",
+      "types": "./src/fragments/*.ts"
+    },
+    "./contstants/*": {
+      "import": "./src/contstants/*.ts",
+      "types": "./src/contstants/*.ts"
+    },
+    "./test/*": {
+      "import": "./test/*.ts",
+      "types": "./test/*.ts"
     }
   },
   "devDependencies": {
@@ -24,7 +35,7 @@
     "typescript": "5.9.2"
   },
   "dependencies": {
-    "@settlemint/sdk-portal": "2.5.11",
+    "@settlemint/sdk-portal": "2.5.13",
     "@tanstack/react-start": "1.131.27",
     "better-auth": "1.3.7",
     "drizzle-orm": "0.44.4",

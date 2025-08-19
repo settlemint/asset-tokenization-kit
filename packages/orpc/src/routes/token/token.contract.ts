@@ -17,15 +17,6 @@ import { tokenRecoverTokensContract } from "./routes/mutations/recovery/token.re
 import { tokenRedeemContract } from "./routes/mutations/redeem/token.redeem.contract";
 import { tokenTransferContract } from "./routes/mutations/transfer/token.transfer.contract";
 import { tokenSetYieldScheduleContract } from "./routes/mutations/yield/token.set-yield-schedule.contract";
-
-// Query contracts
-import { tokenActionsContract } from "./routes/token.actions.contract";
-import { tokenEventsContract } from "./routes/token.events.contract";
-import { tokenHoldersContract } from "./routes/token.holders.contract";
-import { tokenListContract } from "./routes/token.list.contract";
-import { tokenReadContract } from "./routes/token.read.contract";
-import { tokenSearchContract } from "./routes/token.search.contract";
-
 // Stats contracts
 import { statsBondStatusContract } from "./routes/stats/bond-status.contract";
 import { statsCollateralRatioContract } from "./routes/stats/collateral-ratio.contract";
@@ -33,6 +24,13 @@ import { statsSupplyChangesContract } from "./routes/stats/supply-changes.contra
 import { statsTotalSupplyContract } from "./routes/stats/total-supply.contract";
 import { statsVolumeContract } from "./routes/stats/volume.contract";
 import { statsWalletDistributionContract } from "./routes/stats/wallet-distribution.contract";
+// Query contracts
+import { tokenActionsContract } from "./routes/token.actions.contract";
+import { tokenEventsContract } from "./routes/token.events.contract";
+import { tokenHoldersContract } from "./routes/token.holders.contract";
+import { tokenListContract } from "./routes/token.list.contract";
+import { tokenReadContract } from "./routes/token.read.contract";
+import { tokenSearchContract } from "./routes/token.search.contract";
 
 export const tokenContract = {
   // Mutations

@@ -46,10 +46,10 @@ import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
 export const SETTING_KEYS = [
   // BUSINESS: Default currency for asset pricing and financial calculations
   "BASE_CURRENCY",
-  
+
   // INTEGRATION: Blockchain system contract address for asset operations
   "SYSTEM_ADDRESS",
-  
+
   // UX: Onboarding flow state - whether user completed addon configuration
   "SYSTEM_ADDONS_SKIPPED",
 ] as const;
@@ -82,11 +82,11 @@ export const DEFAULT_SETTINGS: {
   // WHY EUR: European market focus and regulatory framework alignment
   // BUSINESS: Can be changed to USD, GBP, etc. based on deployment region
   BASE_CURRENCY: "EUR",
-  
+
   // WHY EMPTY: Forces explicit configuration during deployment setup
   // SECURITY: Prevents accidental use of wrong contract address
   SYSTEM_ADDRESS: "",
-  
+
   // WHY FALSE: Default to complete onboarding for better user education
   // UX: Users must explicitly choose to skip addon configuration
   SYSTEM_ADDONS_SKIPPED: "false",
@@ -117,11 +117,11 @@ export const settings = pgTable("settings", {
   // WHY TEXT PRIMARY KEY: Human-readable setting identification and validation
   // PERFORMANCE: String comparison faster than integer joins for small dataset
   key: text("key").primaryKey(),
-  
+
   // WHY TEXT VALUES: Accommodates string, number, boolean, and JSON setting types
   // FLEXIBILITY: Application-layer parsing handles type conversion and validation
   value: text("value").notNull(),
-  
+
   // AUDIT: Configuration change tracking for operational monitoring
   // WHY DEFAULT NOW: Automatic timestamping reduces application complexity
   lastUpdated: timestamp("last_updated").notNull().defaultNow(),

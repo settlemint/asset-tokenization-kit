@@ -1,8 +1,8 @@
 import { kycProfiles } from "@atk/db/schemas/kyc";
-import { offChainPermissionsMiddleware } from "../../../../middlewares/auth/offchain-permissions.middleware";
-import { databaseMiddleware } from "../../../../middlewares/services/db.middleware";
-import { authRouter } from "../../../../procedures/auth.router";
-import { asc, desc, ilike, or, sql, type AnyColumn } from "drizzle-orm";
+import { type AnyColumn, asc, desc, ilike, or, sql } from "drizzle-orm";
+import { offChainPermissionsMiddleware } from "@/middlewares/auth/offchain-permissions.middleware";
+import { databaseMiddleware } from "@/middlewares/services/db.middleware";
+import { authRouter } from "@/procedures/auth.router";
 
 export const list = authRouter.user.kyc.list
   .use(
@@ -16,15 +16,10 @@ export const list = authRouter.user.kyc.list
 
     const order = orderDirection === "desc" ? desc : asc;
     const orderColumn =
-      (kycProfiles[orderBy as keyof typeof kycProfiles] as
-        | AnyColumn
-        | undefined) ?? kycProfiles.createdAt;
+      (kycProfiles[orderBy as keyof typeof kycProfiles] as AnyColumn | undefined) ?? kycProfiles.createdAt;
 
     const whereCondition = search
-      ? or(
-          ilike(kycProfiles.firstName, `%${search}%`),
-          ilike(kycProfiles.lastName, `%${search}%`)
-        )
+      ? or(ilike(kycProfiles.firstName, `%${search}%`), ilike(kycProfiles.lastName, `%${search}%`))
       : undefined;
 
     const [countResult] = await context.db

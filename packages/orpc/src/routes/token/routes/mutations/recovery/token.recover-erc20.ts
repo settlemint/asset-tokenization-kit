@@ -1,9 +1,9 @@
 import { portalGraphql } from "@atk/settlemint/portal";
-import { tokenPermissionMiddleware } from "../../../../../middlewares/auth/token-permission.middleware";
-import { tokenRouter } from "../../../../../procedures/token.router";
-import { read } from "../../token.read";
-import { TOKEN_PERMISSIONS } from "../../../token.permissions";
 import { call } from "@orpc/server";
+import { tokenPermissionMiddleware } from "@/middlewares/auth/token-permission.middleware";
+import { tokenRouter } from "@/procedures/token.router";
+import { read } from "@/routes/token/routes/token.read";
+import { TOKEN_PERMISSIONS } from "@/routes/token/token.permissions";
 
 const TOKEN_RECOVER_ERC20_MUTATION = portalGraphql(`
   mutation TokenRecoverERC20(
@@ -38,8 +38,7 @@ export const recoverERC20 = tokenRouter.token.recoverERC20
     })
   )
   .handler(async ({ input, context }) => {
-    const { contract, walletVerification, tokenAddress, recipient, amount } =
-      input;
+    const { contract, walletVerification, tokenAddress, recipient, amount } = input;
     const { auth } = context;
 
     const sender = auth.user;
@@ -53,7 +52,7 @@ export const recoverERC20 = tokenRouter.token.recoverERC20
         amount: amount.toString(),
       },
       {
-        sender: sender,
+        sender,
         code: walletVerification.secretVerificationCode,
         type: walletVerification.verificationType,
       }

@@ -6,10 +6,10 @@
  * @module ExchangeRatesRead
  */
 import { fxRatesLatest } from "@atk/db/schemas/exchange-rates";
-import { offChainPermissionsMiddleware } from "../../../middlewares/auth/offchain-permissions.middleware";
-import { databaseMiddleware } from "../../../middlewares/services/db.middleware";
-import { publicRouter } from "../../../procedures/public.router";
 import { and, desc, eq, or } from "drizzle-orm";
+import { offChainPermissionsMiddleware } from "@/middlewares/auth/offchain-permissions.middleware";
+import { databaseMiddleware } from "@/middlewares/services/db.middleware";
+import { publicRouter } from "@/procedures/public.router";
 import { syncExchangeRatesInternal } from "./exchange-rates.sync";
 
 /**
@@ -52,12 +52,7 @@ export const read = publicRouter.exchangeRates.read
     const conditions = [];
 
     // Direct rate condition
-    conditions.push(
-      and(
-        eq(fxRatesLatest.baseCode, baseCurrency),
-        eq(fxRatesLatest.quoteCode, quoteCurrency)
-      )
-    );
+    conditions.push(and(eq(fxRatesLatest.baseCode, baseCurrency), eq(fxRatesLatest.quoteCode, quoteCurrency)));
 
     // Query for the rate
     const [rate] = await context.db
@@ -114,12 +109,7 @@ export const read = publicRouter.exchangeRates.read
     const [inverseRate] = await context.db
       .select()
       .from(fxRatesLatest)
-      .where(
-        and(
-          eq(fxRatesLatest.baseCode, quoteCurrency),
-          eq(fxRatesLatest.quoteCode, baseCurrency)
-        )
-      )
+      .where(and(eq(fxRatesLatest.baseCode, quoteCurrency), eq(fxRatesLatest.quoteCode, baseCurrency)))
       .limit(1);
 
     if (inverseRate) {

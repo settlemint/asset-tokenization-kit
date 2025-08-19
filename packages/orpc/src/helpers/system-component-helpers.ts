@@ -30,7 +30,7 @@ export function parseSystemComponent(component: unknown): { id: EthereumAddress;
   }
 
   // Check if it has the required structure
-  if (!hasId(component) || !hasAccessControl(component)) {
+  if (!(hasId(component) && hasAccessControl(component))) {
     logger.error("parseSystemComponent: component missing required properties", {
       hasId: hasId(component),
       hasAccessControl: hasAccessControl(component),
@@ -73,7 +73,7 @@ export function parseSystemComponent(component: unknown): { id: EthereumAddress;
  * @returns The ethereum address or null if invalid
  */
 export function getComponentId(component: unknown): EthereumAddress | null {
-  if (!component || !hasId(component)) {
+  if (!(component && hasId(component))) {
     logger.error("getComponentId: component is null or missing id", {
       component: component ? JSON.stringify(component) : "null",
       hasId: component ? hasId(component) : false,

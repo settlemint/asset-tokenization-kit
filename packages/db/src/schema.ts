@@ -56,6 +56,7 @@
 
 // CRITICAL PATH: Authentication schemas must be available for all application operations
 // SECURITY: User identity and session management - foundation for all authorization decisions
+// biome-ignore lint/performance/noBarrelFile: needed for the db
 export * from "./schemas/auth";
 // FINANCIAL CORE: Currency conversion rates essential for multi-currency asset pricing
 // PERFORMANCE: Pre-loaded schemas enable real-time price calculations without API delays

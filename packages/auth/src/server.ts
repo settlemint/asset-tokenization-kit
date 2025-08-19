@@ -15,6 +15,8 @@
  * @see {@link ./auth.client} - Client-side authentication configuration
  * @see {@link ../db/schemas/auth} - Database schema for authentication
  */
+/** biome-ignore-all lint/performance/noNamespaceImport: needed for the db */
+/** biome-ignore-all lint/performance/noBarrelFile: required */
 
 import { env } from "@atk/config/env";
 import { metadata } from "@atk/config/metadata";
@@ -24,7 +26,7 @@ import { kycProfiles } from "@atk/db/schemas/kyc";
 import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
 import type { UserRole } from "@atk/zod/validators/user-roles";
 import { serverOnly } from "@tanstack/react-start";
-import { betterAuth, type BetterAuthOptions, type InferUser, type User } from "better-auth";
+import { type BetterAuthOptions, betterAuth, type InferUser, type User } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { APIError } from "better-auth/api";
 import { admin, apiKey, customSession } from "better-auth/plugins";
@@ -397,5 +399,3 @@ export interface SessionUser extends InferUser<typeof options> {
   wallet: EthereumAddress;
   role: UserRole;
 }
-
-export * from "./fragments/the-graph/access-control-fragment";

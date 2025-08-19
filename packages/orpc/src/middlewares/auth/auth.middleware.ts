@@ -1,4 +1,4 @@
-import { baseRouter } from "../../procedures/base.router";
+import { baseRouter } from "@/procedures/base.router";
 
 /**
  * Authentication enforcement middleware.

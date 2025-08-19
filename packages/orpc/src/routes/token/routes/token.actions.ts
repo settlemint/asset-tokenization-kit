@@ -1,7 +1,7 @@
 import { call } from "@orpc/server";
-import { authRouter } from "../../../procedures/auth.router";
-import { list as actionsList } from "../../actions/routes/actions.list";
-import type { ActionsListResponse } from "../../actions/routes/actions.list.schema";
+import { authRouter } from "@/procedures/auth.router";
+import { list as actionsList } from "@/routes/actions/routes/actions.list";
+import type { ActionsListResponse } from "@/routes/actions/routes/actions.list.schema";
 
 /**
  * Token actions route handler.
@@ -17,17 +17,15 @@ import type { ActionsListResponse } from "../../actions/routes/actions.list.sche
  * @param context - Request context with TheGraph client and authenticated user
  * @returns Promise<ActionsListResponse> - List of actions for the token
  */
-export const actions = authRouter.token.actions.handler(
-  async ({ input, context }): Promise<ActionsListResponse> => {
-    // Call the existing actions.list procedure using ORPC's call utility
-    return await call(
-      actionsList,
-      {
-        target: input.tokenAddress,
-        status: input.status,
-        name: input.name,
-      },
-      { context }
-    );
-  }
-);
+export const actions = authRouter.token.actions.handler(async ({ input, context }): Promise<ActionsListResponse> => {
+  // Call the existing actions.list procedure using ORPC's call utility
+  return await call(
+    actionsList,
+    {
+      target: input.tokenAddress,
+      status: input.status,
+      name: input.name,
+    },
+    { context }
+  );
+});

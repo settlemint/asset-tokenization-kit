@@ -7,8 +7,8 @@
  * capabilities for user management interfaces.
  */
 
-import { UserSchema } from "../../user/routes/user.me.schema";
 import { z } from "zod";
+import { UserSchema } from "@/routes/user/routes/user.me.schema";
 
 /**
  * Input schema for user search endpoint.

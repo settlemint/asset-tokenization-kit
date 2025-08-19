@@ -1,8 +1,5 @@
-import { baseContract } from "../../../../procedures/base.contract";
-import {
-  PredictAddressInputSchema,
-  PredictAddressOutputSchema,
-} from "./factory.predict-address.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { PredictAddressInputSchema, PredictAddressOutputSchema } from "./factory.predict-address.schema";
 
 export const factoryPredictAddressContract = baseContract
   .route({

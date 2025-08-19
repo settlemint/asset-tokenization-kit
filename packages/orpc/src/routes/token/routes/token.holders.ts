@@ -1,6 +1,6 @@
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { theGraphMiddleware } from "../../../middlewares/services/the-graph.middleware";
-import { tokenRouter } from "../../../procedures/token.router";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { tokenRouter } from "@/procedures/token.router";
 import { TokenHoldersResponseSchema } from "./token.holders.schema";
 
 /**
@@ -66,15 +66,13 @@ const TOKEN_HOLDERS_QUERY = theGraphGraphql(`
  *
  * @see {@link TokenHoldersResponseSchema} for the response structure
  */
-export const holders = tokenRouter.token.holders
-  .use(theGraphMiddleware)
-  .handler(async ({ context }) => {
-    const response = await context.theGraphClient.query(TOKEN_HOLDERS_QUERY, {
-      input: {
-        id: context.token.id.toLowerCase(),
-      },
-      output: TokenHoldersResponseSchema,
-    });
-
-    return response;
+export const holders = tokenRouter.token.holders.use(theGraphMiddleware).handler(async ({ context }) => {
+  const response = await context.theGraphClient.query(TOKEN_HOLDERS_QUERY, {
+    input: {
+      id: context.token.id.toLowerCase(),
+    },
+    output: TokenHoldersResponseSchema,
   });
+
+  return response;
+});

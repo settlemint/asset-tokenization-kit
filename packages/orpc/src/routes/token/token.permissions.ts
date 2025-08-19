@@ -1,5 +1,5 @@
-import type { TokenContractMutations } from "./token.contract";
 import type { RoleRequirement } from "@atk/zod/validators/role-requirement";
+import type { TokenContractMutations } from "./token.contract";
 
 /**
  * The permissions for the token contract
@@ -8,10 +8,7 @@ import type { RoleRequirement } from "@atk/zod/validators/role-requirement";
  * This is a mapping of the token contract methods to the roles that are required to call them.
  * Supports complex AND/OR logic for role requirements.
  */
-export const TOKEN_PERMISSIONS: Record<
-  TokenContractMutations,
-  RoleRequirement
-> = {
+export const TOKEN_PERMISSIONS: Record<TokenContractMutations, RoleRequirement> = {
   burn: "supplyManagement",
   create: "tokenManager",
   grantRole: "admin",

@@ -1,7 +1,7 @@
-import { MutationInputSchemaWithContract } from "../../../../common/schemas/mutation.schema";
 import { assetAccessControlRole } from "@atk/zod/validators/access-control-roles";
 import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
 import { z } from "zod";
+import { MutationInputSchemaWithContract } from "@/routes/common/schemas/mutation.schema";
 
 /**
  * Input schema for revoking roles from accounts on a token
@@ -10,13 +10,12 @@ import { z } from "zod";
  * - Multiple addresses, single role
  * - Single address, multiple roles
  */
-export const TokenRevokeRoleInputSchema =
-  MutationInputSchemaWithContract.extend({
-    /** The account(s) to revoke the role(s) from */
-    address: z.union([ethereumAddress, z.array(ethereumAddress)]),
-    /** The role(s) to revoke (limited to asset access control roles) */
-    role: z.union([assetAccessControlRole, z.array(assetAccessControlRole)]),
-  });
+export const TokenRevokeRoleInputSchema = MutationInputSchemaWithContract.extend({
+  /** The account(s) to revoke the role(s) from */
+  address: z.union([ethereumAddress, z.array(ethereumAddress)]),
+  /** The role(s) to revoke (limited to asset access control roles) */
+  role: z.union([assetAccessControlRole, z.array(assetAccessControlRole)]),
+});
 
 /**
  * Response schema for revoking roles on a token

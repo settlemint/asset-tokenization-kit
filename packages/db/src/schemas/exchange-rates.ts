@@ -16,14 +16,7 @@
  */
 
 import { fiatCurrency } from "@atk/zod/validators/fiat-currency";
-import {
-  index,
-  numeric,
-  pgTable,
-  primaryKey,
-  timestamp,
-  varchar,
-} from "drizzle-orm/pg-core";
+import { index, numeric, pgTable, primaryKey, timestamp, varchar } from "drizzle-orm/pg-core";
 import { z } from "zod";
 
 /**
@@ -43,10 +36,10 @@ import { z } from "zod";
 export const currencies = pgTable("currencies", {
   // WHY: ISO-4217 standard ensures global consistency and interoperability
   code: varchar("code", { length: 3 }).primaryKey(),
-  
+
   // UX: Human-readable currency names for user interfaces
   name: varchar("name", { length: 64 }).notNull(),
-  
+
   // PRECISION: Decimal places vary by currency (JPY=0, USD=2, crypto=8)
   // WHY: Numeric instead of integer to maintain PostgreSQL precision semantics
   decimals: numeric("decimals", { precision: 2, scale: 0 }).default("2"),
@@ -79,60 +72,42 @@ export const fxRates = pgTable(
     baseCode: varchar("base_code", { length: 3 })
       .references(() => currencies.code, { onDelete: "restrict" })
       .notNull(),
-    
+
     // INTEGRITY: Quote currency must exist in reference table
     quoteCode: varchar("quote_code", { length: 3 })
       .references(() => currencies.code, { onDelete: "restrict" })
       .notNull(),
-    
+
     // WHY: Provider separation enables rate comparison and failover strategies
     provider: varchar("provider", { length: 32 }).notNull(),
-    
+
     // PERFORMANCE: Timezone-aware timestamps enable global rate coordination
     effectiveAt: timestamp("effective_at", { withTimezone: true }).notNull(),
-    
+
     // PRECISION: 38,18 handles extreme rates (1 BTC = 50,000 USD and micro-currencies)
     // WHY: PostgreSQL NUMERIC avoids floating-point precision errors in financial calculations
     rate: numeric("rate", { precision: 38, scale: 18 }).notNull(),
-    
+
     // AUDIT: Ingestion timestamp for data pipeline monitoring
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .defaultNow()
-      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
     // WHY: Composite primary key prevents duplicate rates and enables efficient point lookups
     primaryKey({
-      columns: [
-        table.baseCode,
-        table.quoteCode,
-        table.provider,
-        table.effectiveAt,
-      ],
+      columns: [table.baseCode, table.quoteCode, table.provider, table.effectiveAt],
     }),
-    
+
     // PERF: Reverse pair lookups for bidirectional rate calculations (EUR/USD -> USD/EUR)
     // WHY: DESC on timestamp prioritizes recent rates for cache locality
-    index("idx_fx_rates_quote_base_ts").on(
-      table.quoteCode,
-      table.baseCode,
-      table.effectiveAt.desc()
-    ),
-    
+    index("idx_fx_rates_quote_base_ts").on(table.quoteCode, table.baseCode, table.effectiveAt.desc()),
+
     // PERF: Forward pair lookups - most common query pattern
     // WHY: Three-column index supports partial matching on base or base+quote
-    index("idx_fx_rates_base_quote_ts").on(
-      table.baseCode,
-      table.quoteCode,
-      table.effectiveAt.desc()
-    ),
-    
+    index("idx_fx_rates_base_quote_ts").on(table.baseCode, table.quoteCode, table.effectiveAt.desc()),
+
     // PERF: Provider health monitoring and rate comparison queries
     // WHY: DESC timestamp enables "latest from each provider" queries
-    index("idx_fx_rates_provider_ts").on(
-      table.provider,
-      table.effectiveAt.desc()
-    ),
+    index("idx_fx_rates_provider_ts").on(table.provider, table.effectiveAt.desc()),
   ]
 );
 
@@ -164,25 +139,23 @@ export const fxRatesLatest = pgTable(
     baseCode: varchar("base_code", { length: 3 })
       .references(() => currencies.code, { onDelete: "restrict" })
       .notNull(),
-    
+
     // INTEGRITY: Quote currency validation prevents invalid pairs
     quoteCode: varchar("quote_code", { length: 3 })
       .references(() => currencies.code, { onDelete: "restrict" })
       .notNull(),
-    
+
     // PROVIDER: Enables multi-source rate validation and fallback logic
     provider: varchar("provider", { length: 32 }).notNull(),
-    
+
     // PRECISION: Same high precision as historical table for consistency
     rate: numeric("rate", { precision: 38, scale: 18 }).notNull(),
-    
+
     // BUSINESS: When this rate became effective (copied from source)
     effectiveAt: timestamp("effective_at", { withTimezone: true }).notNull(),
-    
+
     // AUDIT: Cache update timestamp for freshness monitoring
-    updatedAt: timestamp("updated_at", { withTimezone: true })
-      .defaultNow()
-      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
     // WHY: Primary key enforces exactly one rate per pair/provider combination
@@ -190,11 +163,11 @@ export const fxRatesLatest = pgTable(
     primaryKey({
       columns: [table.baseCode, table.quoteCode, table.provider],
     }),
-    
+
     // PERF: Reverse pair lookups for bidirectional conversions (USD/EUR -> EUR/USD)
     // WHY: Two-column index sufficient since we don't filter by time in this table
     index("idx_fx_latest_quote_base").on(table.quoteCode, table.baseCode),
-    
+
     // PERF: Provider health monitoring - find all rates from specific provider
     // WHY: Enables quick provider failover and rate staleness detection
     index("idx_fx_latest_provider").on(table.provider),
@@ -254,21 +227,28 @@ export const fxRateDataSchema = z.object({
   rate: z.string().refine(
     (val) => {
       // Validate positive decimal numbers
-      if (!val || val.trim() === "") return false;
+      if (!val || val.trim() === "") {
+        return false;
+      }
 
       // Trim the value for validation
       const trimmed = val.trim();
 
       // Check length bounds first
-      if (trimmed.length > 40) return false;
+      if (trimmed.length > 40) {
+        return false;
+      }
 
       // Use a simpler regex pattern to avoid ReDoS
       const parts = trimmed.split(".");
-      if (parts.length > 2) return false;
+      if (parts.length > 2) {
+        return false;
+      }
 
       // Check if all parts are valid digits
-      if (!parts.every((part) => part.length > 0 && /^\d+$/.test(part)))
+      if (!parts.every((part) => part.length > 0 && /^\d+$/.test(part))) {
         return false;
+      }
 
       // Ensure the number is positive (not zero)
       const num = Number.parseFloat(trimmed);
@@ -289,21 +269,28 @@ export const fxRateLatestDataSchema = z.object({
   rate: z.string().refine(
     (val) => {
       // Validate positive decimal numbers
-      if (!val || val.trim() === "") return false;
+      if (!val || val.trim() === "") {
+        return false;
+      }
 
       // Trim the value for validation
       const trimmed = val.trim();
 
       // Check length bounds first
-      if (trimmed.length > 40) return false;
+      if (trimmed.length > 40) {
+        return false;
+      }
 
       // Use a simpler regex pattern to avoid ReDoS
       const parts = trimmed.split(".");
-      if (parts.length > 2) return false;
+      if (parts.length > 2) {
+        return false;
+      }
 
       // Check if all parts are valid digits
-      if (!parts.every((part) => part.length > 0 && /^\d+$/.test(part)))
+      if (!parts.every((part) => part.length > 0 && /^\d+$/.test(part))) {
         return false;
+      }
 
       // Ensure the number is positive (not zero)
       const num = Number.parseFloat(trimmed);

@@ -16,9 +16,5 @@ export const UserStatsUserCountOutputSchema = z.object({
   timeRangeDays: z.number().int().min(1).max(365),
 });
 
-export type UserStatsUserCountInput = z.infer<
-  typeof UserStatsUserCountInputSchema
->;
-export type UserStatsUserCountOutput = z.infer<
-  typeof UserStatsUserCountOutputSchema
->;
+export type UserStatsUserCountInput = z.infer<typeof UserStatsUserCountInputSchema>;
+export type UserStatsUserCountOutput = z.infer<typeof UserStatsUserCountOutputSchema>;

@@ -5,10 +5,10 @@
  * @module ExchangeRatesHistory
  */
 import { fxRates } from "@atk/db/schemas/exchange-rates";
-import { offChainPermissionsMiddleware } from "../../../middlewares/auth/offchain-permissions.middleware";
-import { databaseMiddleware } from "../../../middlewares/services/db.middleware";
-import { publicRouter } from "../../../procedures/public.router";
 import { and, between, desc, eq, gte, lte } from "drizzle-orm";
+import { offChainPermissionsMiddleware } from "@/middlewares/auth/offchain-permissions.middleware";
+import { databaseMiddleware } from "@/middlewares/services/db.middleware";
+import { publicRouter } from "@/procedures/public.router";
 
 /**
  * Exchange rate history route handler.
@@ -36,19 +36,10 @@ export const history = publicRouter.exchangeRates.history
   )
   .use(databaseMiddleware)
   .handler(async ({ input, context }) => {
-    const {
-      baseCurrency,
-      quoteCurrency,
-      startDate,
-      endDate,
-      limit = 100,
-    } = input;
+    const { baseCurrency, quoteCurrency, startDate, endDate, limit = 100 } = input;
 
     // Build filter conditions
-    const conditions = [
-      eq(fxRates.baseCode, baseCurrency),
-      eq(fxRates.quoteCode, quoteCurrency),
-    ];
+    const conditions = [eq(fxRates.baseCode, baseCurrency), eq(fxRates.quoteCode, quoteCurrency)];
 
     if (startDate && endDate) {
       conditions.push(between(fxRates.effectiveAt, startDate, endDate));

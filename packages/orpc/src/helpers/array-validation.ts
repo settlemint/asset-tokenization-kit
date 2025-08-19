@@ -8,10 +8,14 @@ import { ORPCError } from "@orpc/server";
  */
 export function validateArrayLengths(arrays: Record<string, unknown[]>, operation: string): void {
   const entries = Object.entries(arrays);
-  if (entries.length < 2) return;
+  if (entries.length < 2) {
+    return;
+  }
 
   const firstEntry = entries[0];
-  if (!firstEntry) return;
+  if (!firstEntry) {
+    return;
+  }
 
   const [firstName, firstArray] = firstEntry;
   const expectedLength = firstArray.length;

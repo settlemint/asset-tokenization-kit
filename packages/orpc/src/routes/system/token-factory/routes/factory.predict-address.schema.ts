@@ -31,13 +31,13 @@
  * ```
  */
 
-import { BondTokenSchema } from "../../../token/routes/mutations/create/helpers/create-handlers/bond.create.schema";
-import { DepositTokenSchema } from "../../../token/routes/mutations/create/helpers/create-handlers/deposit.create.schema";
-import { EquityTokenSchema } from "../../../token/routes/mutations/create/helpers/create-handlers/equity.create.schema";
-import { FundTokenSchema } from "../../../token/routes/mutations/create/helpers/create-handlers/fund.create.schema";
-import { StablecoinTokenSchema } from "../../../token/routes/mutations/create/helpers/create-handlers/stablecoin.create.schema";
 import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
 import { z } from "zod";
+import { BondTokenSchema } from "@/routes/token/routes/mutations/create/helpers/create-handlers/bond.create.schema";
+import { DepositTokenSchema } from "@/routes/token/routes/mutations/create/helpers/create-handlers/deposit.create.schema";
+import { EquityTokenSchema } from "@/routes/token/routes/mutations/create/helpers/create-handlers/equity.create.schema";
+import { FundTokenSchema } from "@/routes/token/routes/mutations/create/helpers/create-handlers/fund.create.schema";
+import { StablecoinTokenSchema } from "@/routes/token/routes/mutations/create/helpers/create-handlers/stablecoin.create.schema";
 
 /**
  * Predict address input schema - reuses token creation schemas but removes verification field
@@ -55,9 +55,7 @@ export const PredictAddressInputSchema = z.discriminatedUnion("type", [
  * Output schema for address prediction
  */
 export const PredictAddressOutputSchema = z.object({
-  predictedAddress: ethereumAddress.describe(
-    "The predicted address of the token"
-  ),
+  predictedAddress: ethereumAddress.describe("The predicted address of the token"),
 });
 
 // Type exports using Zod's type inference

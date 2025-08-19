@@ -1,9 +1,9 @@
-import { TokenBaseSchema } from "../token.base-create.schema";
 import { AssetTypeEnum } from "@atk/zod/validators/asset-types";
 import { apiBigInt } from "@atk/zod/validators/bigint";
 import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
 import { timestamp } from "@atk/zod/validators/timestamp";
 import { z } from "zod";
+import { TokenBaseSchema } from "@/routes/token/routes/mutations/create/helpers/token.base-create.schema";
 
 export const BondSchema = z.object({
   cap: apiBigInt.describe("The cap of the bond"),
@@ -11,9 +11,7 @@ export const BondSchema = z.object({
   maturityDate: timestamp()
     .transform((date) => date.getTime().toString())
     .describe("The maturity date of the bond"),
-  denominationAsset: ethereumAddress.describe(
-    "The denomination asset of the bond"
-  ),
+  denominationAsset: ethereumAddress.describe("The denomination asset of the bond"),
 });
 
 /**

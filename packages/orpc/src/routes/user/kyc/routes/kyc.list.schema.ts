@@ -1,6 +1,6 @@
+import { residencyStatusEnum } from "@atk/db/schemas/kyc";
 import { isoCountryCode } from "@atk/zod/validators/iso-country-code";
 import { z } from "zod";
-import { residencyStatusEnum } from "@atk/db/schemas/kyc";
 
 const residencyStatusValues = residencyStatusEnum.enumValues;
 const residencyStatusZod = z.enum(residencyStatusValues);
@@ -8,9 +8,7 @@ const residencyStatusZod = z.enum(residencyStatusValues);
 export const KycListInputSchema = z.object({
   limit: z.number().int().positive().max(100).default(20),
   offset: z.number().int().nonnegative().default(0),
-  orderBy: z
-    .enum(["createdAt", "updatedAt", "lastName", "firstName"])
-    .default("createdAt"),
+  orderBy: z.enum(["createdAt", "updatedAt", "lastName", "firstName"]).default("createdAt"),
   orderDirection: z.enum(["asc", "desc"]).default("desc"),
   search: z.string().min(1).optional(),
 });

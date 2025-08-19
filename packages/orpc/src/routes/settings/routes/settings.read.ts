@@ -1,8 +1,8 @@
 import { settings } from "@atk/db/schemas/settings";
-import { offChainPermissionsMiddleware } from "../../../middlewares/auth/offchain-permissions.middleware";
-import { databaseMiddleware } from "../../../middlewares/services/db.middleware";
-import { authRouter } from "../../../procedures/auth.router";
 import { eq } from "drizzle-orm";
+import { offChainPermissionsMiddleware } from "@/middlewares/auth/offchain-permissions.middleware";
+import { databaseMiddleware } from "@/middlewares/services/db.middleware";
+import { authRouter } from "@/procedures/auth.router";
 
 /**
  * Setting read route handler.
@@ -39,11 +39,7 @@ export const read = authRouter.settings.read
     const { key } = input;
 
     // Query the setting from the database
-    const [setting] = await context.db
-      .select()
-      .from(settings)
-      .where(eq(settings.key, key))
-      .limit(1);
+    const [setting] = await context.db.select().from(settings).where(eq(settings.key, key)).limit(1);
 
     // Check if the setting exists
     if (!setting) {

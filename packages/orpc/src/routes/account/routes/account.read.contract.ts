@@ -1,8 +1,5 @@
-import { baseContract } from "../../../procedures/base.contract";
-import {
-  AccountReadSchema,
-  AccountSchema,
-} from "./account.read.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { AccountReadSchema, AccountSchema } from "./account.read.schema";
 
 export const accountReadContract = baseContract
   .route({

@@ -16,11 +16,7 @@ export const ComplianceModuleSchema = z.object({
 /**
  * Schema for the compliance modules list output
  */
-export const ComplianceModulesListOutputSchema = z.array(
-  ComplianceModuleSchema
-);
+export const ComplianceModulesListOutputSchema = z.array(ComplianceModuleSchema);
 
 export type ComplianceModule = z.infer<typeof ComplianceModuleSchema>;
-export type ComplianceModulesList = z.infer<
-  typeof ComplianceModulesListOutputSchema
->;
+export type ComplianceModulesList = z.infer<typeof ComplianceModulesListOutputSchema>;

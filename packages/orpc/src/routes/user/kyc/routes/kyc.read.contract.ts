@@ -1,5 +1,5 @@
-import { baseContract } from "../../../../procedures/base.contract";
-import { KycReadInputSchema, KycReadOutputSchema } from "./kyc.read.schema";
+import { baseContract } from "@/procedures/base.contract";
+import { KycReadInputSchema, KycReadOutputSchema } from "@/routes/user/kyc/routes/kyc.read.schema";
 
 export const kycReadContract = baseContract
   .route({

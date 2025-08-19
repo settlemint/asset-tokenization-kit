@@ -1,8 +1,8 @@
 import { theGraphGraphql } from "@atk/settlemint/the-graph";
-import { theGraphMiddleware } from "../../../middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "../../../middlewares/system/system.middleware";
-import { authRouter } from "../../../procedures/auth.router";
 import { z } from "zod";
+import { theGraphMiddleware } from "@/middlewares/services/the-graph.middleware";
+import { systemMiddleware } from "@/middlewares/system/system.middleware";
+import { authRouter } from "@/procedures/auth.router";
 
 /**
  * GraphQL query to fetch user count metrics
@@ -53,9 +53,7 @@ const UserCountResponseSchema = z.object({
 /**
  * Helper function to count unique recent users from account stats
  */
-function countUniqueRecentUsers(
-  recentUsers: { account: { id: string } }[]
-): number {
+function countUniqueRecentUsers(recentUsers: { account: { id: string } }[]): number {
   const uniqueUsers = new Set<string>();
 
   for (const user of recentUsers) {

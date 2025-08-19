@@ -1,6 +1,6 @@
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { afterAll, beforeAll } from "vitest";
-import { startApiServer } from "../fixtures/dapp";
+import { startApiServer } from "../../../../packages/orpc/test/dapp";
 
 const logger = createLogger({ level: "info" });
 

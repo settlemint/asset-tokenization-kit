@@ -37,6 +37,4 @@ export type StatsTotalSupplyInput = z.infer<typeof StatsTotalSupplyInputSchema>;
 /**
  * Type definition for asset-specific total supply output
  */
-export type StatsTotalSupplyOutput = z.infer<
-  typeof StatsTotalSupplyOutputSchema
->;
+export type StatsTotalSupplyOutput = z.infer<typeof StatsTotalSupplyOutputSchema>;

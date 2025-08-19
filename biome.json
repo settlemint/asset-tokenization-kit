@@ -22,17 +22,25 @@
     "rules": {
       "recommended": true,
       "suspicious": {
-        "noEmptyBlockStatements": "off"
+        "noEmptyBlockStatements": "off",
+        "useAwait": "off"
       },
       "correctness": {
-        "noChildrenProp": "off"
+        "noChildrenProp": "off",
+        "noUndeclaredVariables": {
+          "level": "error",
+          "options": {
+            "checkTypes": true
+          }
+        }
       },
       "style": {
         "noMagicNumbers": "off",
         "noNestedTernary": "off"
       },
       "performance": {
-        "useTopLevelRegex": "off"
+        "useTopLevelRegex": "off",
+        "noNamespaceImport": "off"
       },
       "complexity": {
         "noExcessiveCognitiveComplexity": "off"
@@ -41,6 +49,7 @@
     }
   },
   "javascript": {
+    "globals": ["Bun"],
     "formatter": {
       "quoteStyle": "double",
       "trailingCommas": "es5"

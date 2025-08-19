@@ -27,9 +27,9 @@
 
 import { portalGraphql } from "@atk/settlemint/portal";
 import { AssetTypeEnum } from "@atk/zod/validators/asset-types";
-import type { TokenCreateContext } from "../token.base-create";
-import { createToken } from "../token.base-create";
-import type { TokenCreateInput } from "../../token.create.schema";
+import type { TokenCreateContext } from "@/routes/token/routes/mutations/create/helpers/token.base-create";
+import { createToken } from "@/routes/token/routes/mutations/create/helpers/token.base-create";
+import type { TokenCreateInput } from "@/routes/token/routes/mutations/create/token.create.schema";
 
 const CREATE_BOND_MUTATION = portalGraphql(`
   mutation CreateBondMutation(
