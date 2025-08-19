@@ -1,3 +1,7 @@
+import { isEthereumAddress } from "@atk/zod/validators/ethereum-address";
+import { satisfiesRoleRequirement } from "@atk/zod/validators/role-requirement";
+import { createLogger } from "@settlemint/sdk-utils/logging";
+import type { ResultOf } from "gql.tada";
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { AccessControlFragment } from "@/lib/fragments/the-graph/access-control-fragment";
 import { TokenYieldFragment } from "@/lib/fragments/the-graph/token-yield-fragment";
@@ -6,9 +10,6 @@ import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { isEthereumAddress } from "@atk/zod/validators/ethereum-address";
-import { satisfiesRoleRequirement } from "@atk/zod/validators/role-requirement";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 
 const logger = createLogger();
 
@@ -99,10 +100,24 @@ export const tokenMiddleware = baseRouter.middleware(
       });
     }
 
-    const { token } = await theGraphClient.request(READ_TOKEN_QUERY, {
-      id: tokenAddress,
-    });
+    let result: ResultOf<typeof READ_TOKEN_QUERY>;
+    try {
+      result = await theGraphClient.request(READ_TOKEN_QUERY, {
+        id: tokenAddress,
+      });
+    } catch (error) {
+      logger.error("GraphQL read token query failed:", {
+        error,
+        tokenAddress,
+        query: "READ_TOKEN_QUERY",
+      });
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: "Failed to read token data",
+        cause: error,
+      });
+    }
 
+    const token = result.token;
     if (!token) {
       throw errors.NOT_FOUND({
         message: "Token not found",
