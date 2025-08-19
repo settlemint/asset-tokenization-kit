@@ -13,8 +13,8 @@ const DEFAULT_PASSWORD = "settlemint";
 export const DEFAULT_PINCODE = "123456";
 
 export const DEFAULT_ADMIN: User = {
-  email: "snigdha@settlemint.com", // TODO: change back to admin@test.com
-  name: "Snigdha",
+  email: "admin@test.com",
+  name: "admin",
   password: DEFAULT_PASSWORD,
 };
 
@@ -81,7 +81,7 @@ export async function setupUser(user: User) {
     const { error: signUpError } = await authClient.signUp.email(user);
 
     if (signUpError) {
-      if (signUpError.code !== "USER_ALREADY_EXISTS") {
+      if (signUpError.code !== "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL") {
         console.error(`[setupUser] Sign up error for ${user.email}:`, {
           code: signUpError.code,
           message: signUpError.message,
