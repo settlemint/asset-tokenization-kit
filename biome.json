@@ -26,6 +26,18 @@
       }
     }
   },
+  "overrides": [
+    {
+      "include": ["kit/subgraph/**/*"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noShadowRestrictedNames": "off"
+          }
+        }
+      }
+    }
+  ],
   "javascript": {
     "formatter": {
       "quoteStyle": "double",

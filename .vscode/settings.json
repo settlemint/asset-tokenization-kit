@@ -29,6 +29,7 @@
   "coderabbit.autoReviewMode": "disabled",
   "dotenv.enableAutocloaking": false,
   "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
     "source.organizeImports.biome": "explicit"
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
