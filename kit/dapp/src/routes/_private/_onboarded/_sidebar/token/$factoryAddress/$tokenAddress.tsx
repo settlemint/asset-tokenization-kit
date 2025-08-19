@@ -7,7 +7,7 @@ import {
   type EthereumAddress,
   ethereumAddress,
 } from "@atk/zod/validators/ethereum-address";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -110,18 +110,30 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { asset: loaderAsset, factory } = Route.useLoaderData();
   const { factoryAddress, tokenAddress } = Route.useParams();
+  const queryClient = useQueryClient();
 
   // Get asset type from factory
   const assetType = getAssetTypeFromFactoryTypeId(factory.typeId);
 
   // Subscribe to live asset so UI reacts to invalidations from actions
-  const { data: queriedAsset } = useQuery(
-    orpc.token.read.queryOptions({
+  const { data: queriedAsset, refetch } = useQuery({
+    ...orpc.token.read.queryOptions({
       input: { tokenAddress },
-    })
-  );
+    }),
+    staleTime: 0, // Always refetch to get latest permissions
+    gcTime: 0, // Don't cache
+  });
 
   const asset = queriedAsset ?? loaderAsset;
+
+  // Force refresh function for debugging
+  const forceRefresh = () => {
+    queryClient.invalidateQueries({
+      queryKey: orpc.token.read.queryOptions({ input: { tokenAddress } })
+        .queryKey,
+    });
+    refetch();
+  };
 
   return (
     <div className="space-y-6 p-6">
@@ -132,7 +144,15 @@ function RouteComponent() {
             <h1 className="text-3xl font-bold tracking-tight">{asset.name}</h1>
             <AssetStatusBadge paused={asset.pausable.paused} />
           </div>
-          <ManageAssetDropdown asset={asset} />
+          <div className="flex items-center gap-2">
+            <button
+              onClick={forceRefresh}
+              className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Refresh Permissions
+            </button>
+            <ManageAssetDropdown asset={asset} />
+          </div>
         </div>
       </div>
 

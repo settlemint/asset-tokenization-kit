@@ -1,5 +1,6 @@
 import { PauseUnpauseConfirmationSheet } from "./sheets/pause-unpause-confirmation-sheet";
 import { MintSheet } from "./sheets/mint-sheet";
+import { BurnSheet } from "./sheets/burn-sheet";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { ChevronDown, Pause, Play, Plus } from "lucide-react";
+import { ChevronDown, Flame, Pause, Play, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -17,7 +18,7 @@ interface ManageAssetDropdownProps {
   asset: Token; // Keep Token type to maintain API compatibility
 }
 
-type Action = "pause" | "unpause" | "mint" | "viewEvents";
+type Action = "pause" | "unpause" | "mint" | "burn" | "viewEvents";
 
 function isCurrentAction({
   target,
@@ -71,12 +72,26 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
       });
     }
 
+    // Burn only visible if user can burn and token is not paused
+    const canBurn =
+      (asset.userPermissions?.actions?.burn ?? false) && !isPaused;
+    if (canBurn) {
+      arr.push({
+        id: "burn",
+        label: t("tokens:actions.burn.label"),
+        icon: Flame,
+        openAction: "burn",
+        disabled: false,
+      });
+    }
+
     return arr;
   }, [
     isPaused,
     t,
     hasPausableCapability,
     asset.userPermissions?.actions?.mint,
+    asset.userPermissions?.actions?.burn,
   ]);
 
   const onActionOpenChange = (open: boolean) => {
@@ -132,6 +147,15 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
       {(asset.userPermissions?.actions?.mint ?? false) && !isPaused && (
         <MintSheet
           open={isCurrentAction({ target: "mint", current: openAction })}
+          onOpenChange={onActionOpenChange}
+          asset={asset}
+        />
+      )}
+
+      {/* Burn */}
+      {(asset.userPermissions?.actions?.burn ?? false) && !isPaused && (
+        <BurnSheet
+          open={isCurrentAction({ target: "burn", current: openAction })}
           onOpenChange={onActionOpenChange}
           asset={asset}
         />
