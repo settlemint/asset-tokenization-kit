@@ -1,10 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { ORPCError } from "@orpc/server";
-import {
-  validateArrayLengths,
-  validateBatchArrays,
-  validateNonEmptyArrays,
-} from "../../src/helpers/array-validation";
+import { validateArrayLengths, validateBatchArrays, validateNonEmptyArrays } from "../../src/helpers/array-validation";
 
 describe("array-validation", () => {
   describe("validateArrayLengths", () => {
@@ -16,7 +12,7 @@ describe("array-validation", () => {
             amounts: [100, 200, 300],
             tokens: ["A", "B", "C"],
           },
-          "batchTransfer",
+          "batchTransfer"
         );
       }).not.toThrow();
     });
@@ -27,7 +23,7 @@ describe("array-validation", () => {
           {
             addresses: ["0x1", "0x2", "0x3"],
           },
-          "singleArray",
+          "singleArray"
         );
       }).not.toThrow();
     });
@@ -45,7 +41,7 @@ describe("array-validation", () => {
             addresses: ["0x1", "0x2", "0x3"],
             amounts: [100, 200], // Different length
           },
-          "batchTransfer",
+          "batchTransfer"
         );
       }).toThrow(ORPCError);
 
@@ -55,7 +51,7 @@ describe("array-validation", () => {
             addresses: ["0x1", "0x2", "0x3"],
             amounts: [100, 200],
           },
-          "batchTransfer",
+          "batchTransfer"
         );
       } catch (error) {
         expect(error).toBeInstanceOf(ORPCError);
@@ -81,7 +77,7 @@ describe("array-validation", () => {
             third: [5, 6, 7], // Mismatched
             fourth: [8, 9],
           },
-          "multiArray",
+          "multiArray"
         );
       }).toThrow(ORPCError);
 
@@ -93,14 +89,12 @@ describe("array-validation", () => {
             third: [5, 6, 7],
             fourth: [8, 9],
           },
-          "multiArray",
+          "multiArray"
         );
       } catch (error) {
         expect(error).toBeInstanceOf(ORPCError);
         if (error instanceof ORPCError) {
-          expect(error.data.error).toBe(
-            "first has 2 elements but third has 3 elements",
-          );
+          expect(error.data.error).toBe("first has 2 elements but third has 3 elements");
         }
       }
     });
@@ -113,7 +107,7 @@ describe("array-validation", () => {
             amounts: [],
             tokens: [],
           },
-          "emptyArrays",
+          "emptyArrays"
         );
       }).not.toThrow();
     });
@@ -125,7 +119,7 @@ describe("array-validation", () => {
             addresses: ["0x1", "0x2"],
             amounts: [],
           },
-          "mixedEmpty",
+          "mixedEmpty"
         );
       }).toThrow(ORPCError);
     });
@@ -140,7 +134,7 @@ describe("array-validation", () => {
             amounts: [100, 200],
             tokens: ["A", "B", "C"],
           },
-          "nonEmpty",
+          "nonEmpty"
         );
       }).not.toThrow();
     });
@@ -159,7 +153,7 @@ describe("array-validation", () => {
             amounts: [], // Empty array
             tokens: ["A"],
           },
-          "batchOperation",
+          "batchOperation"
         );
       }).toThrow(ORPCError);
 
@@ -170,7 +164,7 @@ describe("array-validation", () => {
             amounts: [],
             tokens: ["A"],
           },
-          "batchOperation",
+          "batchOperation"
         );
       } catch (error) {
         expect(error).toBeInstanceOf(ORPCError);
@@ -193,14 +187,12 @@ describe("array-validation", () => {
             second: [], // First empty
             third: [], // Also empty
           },
-          "multiEmpty",
+          "multiEmpty"
         );
       } catch (error) {
         expect(error).toBeInstanceOf(ORPCError);
         if (error instanceof ORPCError) {
-          expect(error.data.error).toBe(
-            "second must contain at least one element",
-          );
+          expect(error.data.error).toBe("second must contain at least one element");
         }
       }
     });
@@ -215,7 +207,7 @@ describe("array-validation", () => {
             amounts: [100, 200],
             tokens: ["A", "B"],
           },
-          "batchOperation",
+          "batchOperation"
         );
       }).not.toThrow();
     });
@@ -227,7 +219,7 @@ describe("array-validation", () => {
             addresses: [],
             amounts: [],
           },
-          "emptyBatch",
+          "emptyBatch"
         );
       }).toThrow("Empty array in emptyBatch");
     });
@@ -239,7 +231,7 @@ describe("array-validation", () => {
             addresses: ["0x1", "0x2"],
             amounts: [100],
           },
-          "mismatchedBatch",
+          "mismatchedBatch"
         );
       }).toThrow("Array length mismatch in mismatchedBatch");
     });
@@ -254,7 +246,7 @@ describe("array-validation", () => {
             addresses: largeArray,
             amounts: largeNumbers,
           },
-          "largeBatch",
+          "largeBatch"
         );
       }).toThrow(ORPCError);
 
@@ -264,7 +256,7 @@ describe("array-validation", () => {
             addresses: largeArray,
             amounts: largeNumbers,
           },
-          "largeBatch",
+          "largeBatch"
         );
       } catch (error) {
         expect(error).toBeInstanceOf(ORPCError);
@@ -288,7 +280,7 @@ describe("array-validation", () => {
             items: smallArray,
           },
           "customMax",
-          5,
+          5
         );
       }).toThrow("Too many elements in customMax");
 
@@ -298,7 +290,7 @@ describe("array-validation", () => {
             items: smallArray.slice(0, 5),
           },
           "customMax",
-          5,
+          5
         );
       }).not.toThrow();
     });
@@ -311,7 +303,7 @@ describe("array-validation", () => {
             addresses: [],
             amounts: ["a"], // Different length, but empty check comes first
           },
-          "orderTest",
+          "orderTest"
         );
       } catch (error) {
         expect(error).toBeInstanceOf(ORPCError);
@@ -331,7 +323,7 @@ describe("array-validation", () => {
             second: smallArray,
           },
           "orderTest2",
-          30, // Both arrays exceed max, but length mismatch comes first
+          30 // Both arrays exceed max, but length mismatch comes first
         );
       } catch (error) {
         expect(error).toBeInstanceOf(ORPCError);
@@ -347,7 +339,7 @@ describe("array-validation", () => {
           {
             items: ["a", "b", "c"],
           },
-          "singleArray",
+          "singleArray"
         );
       }).not.toThrow();
 
@@ -357,7 +349,7 @@ describe("array-validation", () => {
           {
             items: [],
           },
-          "emptySingle",
+          "emptySingle"
         );
       }).toThrow("Empty array in emptySingle");
 
@@ -368,7 +360,7 @@ describe("array-validation", () => {
           {
             items: largeArray,
           },
-          "largeSingle",
+          "largeSingle"
         );
       }).toThrow("Too many elements in largeSingle");
     });
@@ -395,7 +387,7 @@ describe("array-validation", () => {
             recipients,
             amounts,
           },
-          "batchTransfer",
+          "batchTransfer"
         );
       }).not.toThrow();
     });
@@ -412,7 +404,7 @@ describe("array-validation", () => {
             tokenIds,
             uris,
           },
-          "batchMint",
+          "batchMint"
         );
       }).not.toThrow();
     });
@@ -427,14 +419,12 @@ describe("array-validation", () => {
             validData: validArray,
             invalidData: invalidArray,
           },
-          "complexOperation",
+          "complexOperation"
         );
       } catch (error) {
         expect(error).toBeInstanceOf(ORPCError);
         if (error instanceof ORPCError) {
-          expect(error.message).toBe(
-            "Array length mismatch in complexOperation",
-          );
+          expect(error.message).toBe("Array length mismatch in complexOperation");
           expect(error.data.expected).toBe(50);
           expect(error.data.actual).toBe(51);
         }

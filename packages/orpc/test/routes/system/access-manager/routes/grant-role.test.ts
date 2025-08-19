@@ -281,7 +281,7 @@ describe("system.access-manager.grant-role unit", () => {
     });
 
     expect(context.portalClient.mutate).toHaveBeenCalledTimes(1);
-    const call = (context.portalClient.mutate as Mock<any>).mock.calls[0];
+    const call = (context.portalClient.mutate as Mock<(...args: unknown[]) => unknown>).mock.calls[0];
     expect(call?.[1]).toMatchObject({
       address: context.system.systemAccessManager.id,
       from: context.auth.user.wallet,
@@ -323,7 +323,7 @@ describe("system.access-manager.grant-role unit", () => {
     expect(result.roles).toEqual(["complianceManager"]);
 
     expect(context.portalClient.mutate).toHaveBeenCalledTimes(1);
-    const call = (context.portalClient.mutate as Mock<any>).mock.calls[0];
+    const call = (context.portalClient.mutate as Mock<(...args: unknown[]) => unknown>).mock.calls[0];
     expect(call?.[1]).toMatchObject({
       accounts: ["0x1111111111111111111111111111111111111111", "0x2222222222222222222222222222222222222222"],
       role: expect.stringMatching(/^0x[0-9a-f]{64}$/),
@@ -350,7 +350,7 @@ describe("system.access-manager.grant-role unit", () => {
     expect(result.roles).toEqual(["systemManager", "tokenManager"]);
 
     expect(context.portalClient.mutate).toHaveBeenCalledTimes(1);
-    const call = (context.portalClient.mutate as Mock<any>).mock.calls[0];
+    const call = (context.portalClient.mutate as Mock<(...args: unknown[]) => unknown>).mock.calls[0];
     expect(call?.[1]).toMatchObject({
       account: "0x3333333333333333333333333333333333333333",
       roles: expect.arrayContaining([

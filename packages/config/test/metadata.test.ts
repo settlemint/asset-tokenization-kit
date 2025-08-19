@@ -98,9 +98,7 @@ describe("metadata", () => {
       const customKeywords = ["blockchain", "web3", "defi"];
       const tags = seo({ keywords: customKeywords });
 
-      const expectedKeywords = [...metadata.keywords, ...customKeywords].join(
-        ", ",
-      );
+      const expectedKeywords = [...metadata.keywords, ...customKeywords].join(", ");
       expect(tags).toContainEqual({
         name: "keywords",
         content: expectedKeywords,
@@ -126,10 +124,7 @@ describe("metadata", () => {
       const tags = seo({});
 
       const imageTags = tags.filter(
-        (tag) =>
-          tag.name === "twitter:image" ||
-          tag.name === "twitter:card" ||
-          tag.name === "og:image",
+        (tag) => tag.name === "twitter:image" || tag.name === "twitter:card" || tag.name === "og:image"
       );
       expect(imageTags).toHaveLength(0);
     });
@@ -148,9 +143,7 @@ describe("metadata", () => {
       });
 
       const expectedTitle = `${customTitle} | ${metadata.title}`;
-      const expectedKeywords = [...metadata.keywords, ...customKeywords].join(
-        ", ",
-      );
+      const expectedKeywords = [...metadata.keywords, ...customKeywords].join(", ");
 
       // Check all tags are present with correct values
       expect(tags).toContainEqual({ title: expectedTitle });
@@ -233,10 +226,7 @@ describe("metadata", () => {
       });
       // Empty image should not include image tags
       const imageTags = tags.filter(
-        (tag) =>
-          tag.name === "twitter:image" ||
-          tag.name === "twitter:card" ||
-          tag.name === "og:image",
+        (tag) => tag.name === "twitter:image" || tag.name === "twitter:card" || tag.name === "og:image"
       );
       expect(imageTags).toHaveLength(0);
     });
@@ -284,15 +274,10 @@ describe("metadata", () => {
     });
 
     it("should handle very long keyword lists", () => {
-      const longKeywordList = Array.from(
-        { length: 50 },
-        (_, i) => `keyword${i}`,
-      );
+      const longKeywordList = Array.from({ length: 50 }, (_, i) => `keyword${i}`);
       const tags = seo({ keywords: longKeywordList });
 
-      const expectedKeywords = [...metadata.keywords, ...longKeywordList].join(
-        ", ",
-      );
+      const expectedKeywords = [...metadata.keywords, ...longKeywordList].join(", ");
       expect(tags).toContainEqual({
         name: "keywords",
         content: expectedKeywords,
@@ -303,10 +288,7 @@ describe("metadata", () => {
       // Test with null (simulated as undefined in parameters)
       const tagsWithUndefined = seo({ image: undefined });
       const imageTagsUndefined = tagsWithUndefined.filter(
-        (tag) =>
-          tag.name === "twitter:image" ||
-          tag.name === "twitter:card" ||
-          tag.name === "og:image",
+        (tag) => tag.name === "twitter:image" || tag.name === "twitter:card" || tag.name === "og:image"
       );
       expect(imageTagsUndefined).toHaveLength(0);
 

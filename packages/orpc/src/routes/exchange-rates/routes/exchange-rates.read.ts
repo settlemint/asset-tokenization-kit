@@ -6,7 +6,7 @@
  * @module ExchangeRatesRead
  */
 import { fxRatesLatest } from "@atk/db/schemas/exchange-rates";
-import { and, desc, eq, or } from "drizzle-orm";
+import { and, desc, eq, or, type SQL } from "drizzle-orm";
 import { offChainPermissionsMiddleware } from "@/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/middlewares/services/db.middleware";
 import { publicRouter } from "@/procedures/public.router";
@@ -49,10 +49,13 @@ export const read = publicRouter.exchangeRates.read
     }
 
     // Build query conditions
-    const conditions = [];
+    const conditions: SQL[] = [];
 
     // Direct rate condition
-    conditions.push(and(eq(fxRatesLatest.baseCode, baseCurrency), eq(fxRatesLatest.quoteCode, quoteCurrency)));
+    const directCondition = and(eq(fxRatesLatest.baseCode, baseCurrency), eq(fxRatesLatest.quoteCode, quoteCurrency));
+    if (directCondition) {
+      conditions.push(directCondition);
+    }
 
     // Query for the rate
     const [rate] = await context.db

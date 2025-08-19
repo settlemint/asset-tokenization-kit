@@ -8,10 +8,7 @@
  */
 
 import { describe, expect, it } from "bun:test";
-import {
-  currencyDataSchema,
-  insertCurrencySchema,
-} from "@atk/db/schemas/exchange-rates";
+import { currencyDataSchema, insertCurrencySchema } from "@atk/db/schemas/exchange-rates";
 import { ExchangeRatesDeleteSchema } from "../../../src/routes/exchange-rates/routes/exchange-rates.delete.schema";
 import { ExchangeRatesHistorySchema } from "../../../src/routes/exchange-rates/routes/exchange-rates.history.schema";
 import { ExchangeRatesListSchema } from "../../../src/routes/exchange-rates/routes/exchange-rates.list.schema";
@@ -177,18 +174,7 @@ describe("Exchange Rates Schemas", () => {
 
   describe("Currency Validation", () => {
     it("should validate all supported fiat currencies", () => {
-      const supportedCurrencies = [
-        "USD",
-        "EUR",
-        "GBP",
-        "JPY",
-        "CHF",
-        "CAD",
-        "AUD",
-        "AED",
-        "SGD",
-        "SAR",
-      ] as const;
+      const supportedCurrencies = ["USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD", "AED", "SGD", "SAR"] as const;
 
       for (const currency of supportedCurrencies) {
         const input = {
@@ -236,9 +222,7 @@ describe("Exchange Rates Schemas", () => {
         });
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error.issues[0]?.message).toBe(
-            "Decimals must be between 0 and 8",
-          );
+          expect(result.error.issues[0]?.message).toBe("Decimals must be between 0 and 8");
         }
       }
     });

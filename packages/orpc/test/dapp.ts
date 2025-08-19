@@ -1,7 +1,7 @@
 import { auth } from "@atk/auth/server";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { serve } from "bun";
-import { orpcRpcHandler } from "@/server";
+import { orpcRpcHandler } from "../src/server";
 
 const logger = createLogger();
 

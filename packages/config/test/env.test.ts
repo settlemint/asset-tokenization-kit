@@ -38,9 +38,7 @@ describe("env", () => {
     const { env } = require("../src/env");
 
     expect(env.SETTLEMINT_HASURA_ADMIN_SECRET).toBe("test-secret");
-    expect(env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT).toBe(
-      "https://rpc.example.com",
-    );
+    expect(env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT).toBe("https://rpc.example.com");
     expect(env.BETTER_AUTH_URL).toBe("https://auth.example.com");
     expect(env.NEXTAUTH_URL).toBe("https://nextauth.example.com");
     expect(env.SETTLEMINT_HD_PRIVATE_KEY).toBe("test-key-123");
@@ -266,16 +264,13 @@ describe("env", () => {
     process.env = {
       ...originalEnv,
       SETTLEMINT_HASURA_ADMIN_SECRET: "test-secret",
-      SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT:
-        "wss://websocket.example.com",
+      SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT: "wss://websocket.example.com",
       BETTER_AUTH_URL: "http://localhost:3000",
     };
 
     const { env } = require("../src/env");
     // WHY: Verify that different protocols are accepted and preserved
-    expect(env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT).toBe(
-      "wss://websocket.example.com",
-    );
+    expect(env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT).toBe("wss://websocket.example.com");
     expect(env.BETTER_AUTH_URL).toBe("http://localhost:3000");
   });
 });

@@ -1,6 +1,6 @@
-import { createBlockscoutClient } from "@settlemint/sdk-blockscout";
 import type { introspection } from "@schemas/blockscout-env";
-import { createLogger, requestLogger, type LogLevel } from '@settlemint/sdk-utils/logging';
+import { createBlockscoutClient } from "@settlemint/sdk-blockscout";
+import { createLogger, type LogLevel, requestLogger } from "@settlemint/sdk-utils/logging";
 
 const logger = createLogger({ level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel });
 
@@ -9,11 +9,11 @@ const blockscoutEndpoint = process.env.SETTLEMINT_BLOCKSCOUT_ENDPOINT;
 const blockscoutUiEndpointVar = process.env.SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT;
 
 if (!blockscoutEndpoint) {
-  throw new Error('SETTLEMINT_BLOCKSCOUT_ENDPOINT environment variable is required');
+  throw new Error("SETTLEMINT_BLOCKSCOUT_ENDPOINT environment variable is required");
 }
 
 if (!blockscoutUiEndpointVar) {
-  throw new Error('SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT environment variable is required');
+  throw new Error("SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT environment variable is required");
 }
 
 export const { client: blockscoutClient, graphql: blockscoutGraphql } = createBlockscoutClient<{
@@ -37,11 +37,14 @@ export const { client: blockscoutClient, graphql: blockscoutGraphql } = createBl
     /** Smallest fractional unit of Ether, represented as a string for integer math */
     Wei: string;
   };
-}>({
-  instance: blockscoutEndpoint,
-  accessToken: process.env.SETTLEMINT_ACCESS_TOKEN,
-}, {
-  fetch: requestLogger(logger, "blockscout", fetch) as typeof fetch,
-});
+}>(
+  {
+    instance: blockscoutEndpoint,
+    accessToken: process.env.SETTLEMINT_ACCESS_TOKEN,
+  },
+  {
+    fetch: requestLogger(logger, "blockscout", fetch) as typeof fetch,
+  }
+);
 
 export const blockscoutUiEndpoint = blockscoutUiEndpointVar;

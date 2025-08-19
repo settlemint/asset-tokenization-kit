@@ -41,9 +41,9 @@ describe("Token Stats: Wallet Distribution", () => {
       expect(result.buckets).toHaveLength(5); // Always 5 buckets
 
       // All bucket counts should be zero for new tokens
-      result.buckets.forEach((bucket) => {
+      for (const bucket of result.buckets) {
         expect(bucket.count).toBe(0);
-      });
+      }
     });
 
     it("validates distribution bucket integrity", async () => {
@@ -55,11 +55,11 @@ describe("Token Stats: Wallet Distribution", () => {
       });
 
       // Business logic: buckets must be valid and consistent
-      result.buckets.forEach((bucket) => {
+      for (const bucket of result.buckets) {
         // Core business rules for distribution buckets
         expect(bucket.count).toBeGreaterThanOrEqual(0); // Count can't be negative
         expect(bucket.range).toMatch(/^\d+-\d+%$/); // Valid percentage range format
-      });
+      }
 
       // Business rule: total holders must equal sum of bucket counts
       const sumOfBuckets = result.buckets.reduce((sum, bucket) => sum + bucket.count, 0);
@@ -79,12 +79,12 @@ describe("Token Stats: Wallet Distribution", () => {
 
       // Verify expected range patterns
       const expectedRanges = ["0-2%", "2-10%", "10-20%", "20-40%", "40-100%"];
-      result.buckets.forEach((bucket, index) => {
+      for (const [index, bucket] of result.buckets.entries()) {
         const expectedRange = expectedRanges[index];
         if (expectedRange) {
           expect(bucket.range).toBe(expectedRange);
         }
-      });
+      }
     });
   });
 

@@ -51,11 +51,11 @@ describe("Token Stats: Volume", () => {
       });
 
       // Business logic: if volume history exists, it must be valid
-      result.volumeHistory.forEach((item) => {
+      for (const item of result.volumeHistory) {
         // Core business rules for volume data
         expect(item.timestamp).toBeLessThanOrEqual(Date.now() / 1000); // No future dates
         expect(item.totalVolume).toBeGreaterThanOrEqual(0); // Volume can't be negative
-      });
+      }
     });
   });
 

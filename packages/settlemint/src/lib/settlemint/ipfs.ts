@@ -4,7 +4,7 @@ import { createServerIpfsClient } from "@settlemint/sdk-ipfs";
 const ipfsApiEndpoint = process.env.SETTLEMINT_IPFS_API_ENDPOINT;
 
 if (!ipfsApiEndpoint) {
-  throw new Error('SETTLEMINT_IPFS_API_ENDPOINT environment variable is required');
+  throw new Error("SETTLEMINT_IPFS_API_ENDPOINT environment variable is required");
 }
 
 export const { client } = createServerIpfsClient({

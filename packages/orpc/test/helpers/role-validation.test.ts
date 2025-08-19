@@ -1,17 +1,12 @@
 import { describe, expect, test } from "bun:test";
-import type {
-  AccessControl,
-  AccessControlRoles,
-} from "@atk/auth/src/fragments/the-graph/access-control-fragment";
+import type { AccessControl, AccessControlRoles } from "@atk/auth/src/fragments/the-graph/access-control-fragment";
 import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
 import { mapUserRoles } from "../../src/helpers/role-validation";
 
 describe("role-validation", () => {
   describe("mapUserRoles", () => {
-    const mockWallet =
-      "0x1234567890123456789012345678901234567890" as EthereumAddress;
-    const anotherWallet =
-      "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd" as EthereumAddress;
+    const mockWallet = "0x1234567890123456789012345678901234567890" as EthereumAddress;
+    const anotherWallet = "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd" as EthereumAddress;
 
     test("should return all roles as false when accessControl is null", () => {
       const result = mapUserRoles(mockWallet, null);
@@ -103,28 +98,19 @@ describe("role-validation", () => {
       } as unknown as AccessControl;
 
       // Test with lowercase wallet
-      const resultForLowercase = mapUserRoles(
-        walletAddress.toLowerCase() as EthereumAddress,
-        accessControl,
-      );
+      const resultForLowercase = mapUserRoles(walletAddress.toLowerCase() as EthereumAddress, accessControl);
       expect(resultForLowercase.admin).toBe(true);
       expect(resultForLowercase.minter).toBe(true);
       expect(resultForLowercase.burner).toBe(true);
 
       // Test with uppercase wallet
-      const resultForUppercase = mapUserRoles(
-        walletAddress.toUpperCase() as EthereumAddress,
-        accessControl,
-      );
+      const resultForUppercase = mapUserRoles(walletAddress.toUpperCase() as EthereumAddress, accessControl);
       expect(resultForUppercase.admin).toBe(true);
       expect(resultForUppercase.minter).toBe(true);
       expect(resultForUppercase.burner).toBe(true);
 
       // Test with mixed-case wallet
-      const resultForMixedCase = mapUserRoles(
-        walletAddress as EthereumAddress,
-        accessControl,
-      );
+      const resultForMixedCase = mapUserRoles(walletAddress as EthereumAddress, accessControl);
       expect(resultForMixedCase.admin).toBe(true);
       expect(resultForMixedCase.minter).toBe(true);
       expect(resultForMixedCase.burner).toBe(true);
@@ -137,9 +123,9 @@ describe("role-validation", () => {
       const result = mapUserRoles(mockWallet, accessControl);
 
       // All roles should be false
-      Object.values(result).forEach((value) => {
+      for (const value of Object.values(result)) {
         expect(value).toBe(false);
-      });
+      }
     });
 
     test("should handle accessControl with GraphQL internal fields", () => {
@@ -215,18 +201,15 @@ describe("role-validation", () => {
       const result = mapUserRoles(mockWallet, accessControl);
 
       // All roles should be false
-      Object.values(result).forEach((value) => {
+      for (const value of Object.values(result)) {
         expect(value).toBe(false);
-      });
+      }
     });
 
     test("should handle multiple accounts in same role", () => {
-      const wallet1 =
-        "0x1111111111111111111111111111111111111111" as EthereumAddress;
-      const wallet2 =
-        "0x2222222222222222222222222222222222222222" as EthereumAddress;
-      const wallet3 =
-        "0x3333333333333333333333333333333333333333" as EthereumAddress;
+      const wallet1 = "0x1111111111111111111111111111111111111111" as EthereumAddress;
+      const wallet2 = "0x2222222222222222222222222222222222222222" as EthereumAddress;
+      const wallet3 = "0x3333333333333333333333333333333333333333" as EthereumAddress;
 
       const accessControl = {
         id: "access-manager-address",
@@ -301,15 +284,15 @@ describe("role-validation", () => {
         { id: "access-manager-address" } as Record<
           AccessControlRoles,
           { id: EthereumAddress; isContract: boolean }[]
-        > & { id: string },
+        > & { id: string }
       );
 
       const result = mapUserRoles(mockWallet, accessControl);
 
       // All roles should be true
-      allRoles.forEach((role) => {
+      for (const role of allRoles) {
         expect(result[role]).toBe(true);
-      });
+      }
     });
   });
 });

@@ -288,7 +288,12 @@ export const addonCreate = portalRouter.system.addonCreate
     // WHY: Each addon registration requires a unique challenge response from Portal
     // Parallel processing would cause challenge response conflicts and transaction failures
     // TRADEOFF: Slower batch processing but guaranteed transaction success
-    const results = [];
+    const results: Array<{
+      success: boolean;
+      name: string;
+      error?: string;
+      address?: string;
+    }> = [];
 
     for (const addonConfig of addonsToRegister) {
       const { name } = addonConfig;
@@ -324,11 +329,11 @@ export const addonCreate = portalRouter.system.addonCreate
           type: walletVerification.verificationType,
         });
 
-        results.push({ status: "success" as const, addon: name, txHash });
+        results.push({ success: true, name, address: txHash });
         logger.info(`Addon ${name} registered successfully`);
       } catch (error) {
         logger.error(`Failed to create addon ${name}:`, error);
-        results.push({ status: "failed" as const, addon: name, error });
+        results.push({ success: false, name, error: String(error) });
       }
     }
 

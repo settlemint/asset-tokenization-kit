@@ -21,7 +21,11 @@ describe("optionalString", () => {
 
   it("should accept undefined", () => {
     const schema = optionalString(z.string().min(3).max(10));
-    expect(schema.parse(undefined)).toBe(undefined);
+    const result = schema.safeParse(undefined);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data).toBeUndefined();
+    }
   });
 
   it("should reject invalid values", () => {
@@ -39,9 +43,15 @@ describe("optionalString", () => {
     // Empty string
     expect(schema.parse("")).toBe("");
 
-    // Null and undefined
+    // Null
     expect(schema.parse(null)).toBe(null);
-    expect(schema.parse(undefined)).toBe(undefined);
+
+    // Undefined
+    const undefinedResult = schema.safeParse(undefined);
+    expect(undefinedResult.success).toBe(true);
+    if (undefinedResult.success) {
+      expect(undefinedResult.data).toBeUndefined();
+    }
 
     // Invalid ISIN
     expect(() => schema.parse("INVALID")).toThrow();

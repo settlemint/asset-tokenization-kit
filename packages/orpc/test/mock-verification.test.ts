@@ -2,12 +2,7 @@
  * Test to verify Bun mocking capabilities are working
  */
 import { describe, expect, it } from "bun:test";
-import {
-  createBaseContext,
-  createMockErrors,
-  mockCall,
-  resetAllMocks,
-} from "./orpc-route-helpers";
+import { createBaseContext, createMockErrors, mockCall, resetAllMocks } from "./orpc-route-helpers";
 
 describe("Mock verification", () => {
   it("should create base context with mocked services", () => {
@@ -22,14 +17,12 @@ describe("Mock verification", () => {
   it("should create mock errors that throw properly", () => {
     const errors = createMockErrors();
 
-    expect(() => errors.NOT_FOUND({ message: "Test error" })).toThrow(
-      "Test error",
-    );
+    expect(() => errors.NOT_FOUND({ message: "Test error" })).toThrow("Test error");
 
     try {
       errors.UNAUTHORIZED();
-    } catch (error: any) {
-      expect(error.code).toBe("UNAUTHORIZED");
+    } catch (error) {
+      expect((error as { code?: string }).code).toBe("UNAUTHORIZED");
     }
   });
 

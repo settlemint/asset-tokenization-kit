@@ -52,7 +52,7 @@ describe("Token Stats: Supply Changes", () => {
       });
 
       // Business logic: if supply changes exist, they must be valid
-      result.supplyChangesHistory.forEach((item) => {
+      for (const item of result.supplyChangesHistory) {
         // Core business rules for supply changes
         expect(item.timestamp).toBeLessThanOrEqual(Date.now() / 1000); // No future timestamps
         expect(BigInt(item.totalMinted)).toBeGreaterThanOrEqual(0n); // Can't mint negative amounts
@@ -61,7 +61,7 @@ describe("Token Stats: Supply Changes", () => {
         // Values must be valid decimal strings (Wei format)
         expect(item.totalMinted).toMatch(/^\d+$/);
         expect(item.totalBurned).toMatch(/^\d+$/);
-      });
+      }
     });
   });
 

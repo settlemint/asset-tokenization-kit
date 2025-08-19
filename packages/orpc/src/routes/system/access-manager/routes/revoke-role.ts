@@ -209,7 +209,7 @@ export const revokeRole = portalRouter.system.revokeRole
         }
         return roleInfo;
       })
-      .filter((r): r is NonNullable<typeof r> => r !== null);
+      .filter((r): r is NonNullable<ReturnType<typeof getRoleByFieldName>> => r !== null);
 
     if (invalidRoles.length > 0) {
       throw errors.NOT_FOUND({

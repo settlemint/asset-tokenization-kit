@@ -1,10 +1,7 @@
 {
-  "aderyn.config.autoCheckHealth": false,
   "biome.enabled": true,
   "biome.requireConfiguration": true,
-  "coderabbit.autoReviewMode": "disabled",
-  "dotenv.enableAutocloaking": false,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.defaultFormatter": "biomejs.biome",
   "[typescript]": {
     "editor.defaultFormatter": "biomejs.biome"
   },

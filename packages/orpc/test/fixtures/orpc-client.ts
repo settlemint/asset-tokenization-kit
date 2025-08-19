@@ -4,7 +4,7 @@ import { timestampSerializer } from "@atk/zod/validators/timestamp";
 import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
 import type { RouterClient } from "@orpc/server";
-import type { router } from "@/routes/router";
+import type { router } from "../../src/routes/router";
 
 export type OrpcClient = RouterClient<typeof router>;
 

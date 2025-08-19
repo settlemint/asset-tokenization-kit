@@ -111,7 +111,7 @@ export const revokeRole = tokenRouter.token.revokeRole
         }
         return info;
       })
-      .filter((r): r is NonNullable<typeof r> => r !== null);
+      .filter((r): r is NonNullable<ReturnType<typeof getRoleByFieldName>> => r !== null);
 
     if (invalidRoles.length > 0) {
       throw errors.NOT_FOUND({

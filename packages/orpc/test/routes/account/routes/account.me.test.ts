@@ -36,16 +36,16 @@ describe("account.me (unit)", () => {
 
   beforeEach(() => {
     resetAllMocks();
-    handler = getPublicHandler()!;
-    errors = createMockErrors();
-
-    if (!handler) {
+    const capturedHandler = getPublicHandler();
+    if (!capturedHandler) {
       throw new Error("Handler not captured - check mock setup");
     }
+    handler = capturedHandler;
+    errors = createMockErrors();
   });
 
   it("throws UNAUTHORIZED when no auth context", async () => {
-    await expect(
+    expect(
       handler({
         context: createUnauthenticatedContext(),
         input: undefined,

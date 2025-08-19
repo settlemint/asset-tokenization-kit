@@ -1,10 +1,41 @@
-import { jest, mock } from "bun:test";
 import type { Mock } from "bun:test";
+import { jest, mock } from "bun:test";
+
+// Define context type before using it
+type BaseContext = {
+  auth?: {
+    user: {
+      id: string;
+      wallet: string;
+      pincodeVerificationId: string;
+      secretCodeVerificationId: string;
+      twoFactorVerificationId: string;
+    };
+    session: {
+      id: string;
+    };
+  };
+  system: {
+    systemAccessManager: {
+      id: string;
+      accessControl: {
+        roles: unknown[];
+      };
+    };
+  };
+  portalClient: {
+    mutate: Mock<(...args: unknown[]) => unknown>;
+    query: Mock<(...args: unknown[]) => unknown>;
+  };
+  theGraphClient: {
+    query: Mock<(...args: unknown[]) => unknown>;
+  };
+};
 
 export type OrpcHandler<Input = unknown, Output = unknown> = (args: {
   input: Input;
-  context: any;
-  errors: any;
+  context: BaseContext;
+  errors: ReturnType<typeof createMockErrors>;
 }) => Promise<Output>;
 
 /**
@@ -54,22 +85,25 @@ const captureStates = {
  * This allows us to test route handlers in isolation.
  */
 function createRouterCapture(captureState: HandlerCapture) {
-  const builderTarget: Record<string, unknown> = {} as any;
+  const builderTarget: Record<string, unknown> = {};
   const builderProxy: unknown = new Proxy(builderTarget, {
     get(_t, _prop: string): unknown {
       const chain = new Proxy(
         {},
         {
           get(_t2, prop2: string): unknown {
-            if (prop2 === "use") return () => chain;
-            if (prop2 === "handler")
+            if (prop2 === "use") {
+              return () => chain;
+            }
+            if (prop2 === "handler") {
               return (fn: OrpcHandler) => {
                 captureState.handler = fn;
                 return chain;
               };
+            }
             return chain;
           },
-        },
+        }
       );
       return chain;
     },
@@ -179,9 +213,7 @@ mock.module("@atk/settlemint/portal", () => ({
  * Mock challenge response helper
  */
 mock.module("@/helpers/challenge-response", () => ({
-  handleChallenge: jest.fn(() =>
-    Promise.resolve({ challengeId: "verif_1", challengeResponse: "signed" }),
-  ),
+  handleChallenge: jest.fn(() => Promise.resolve({ challengeId: "verif_1", challengeResponse: "signed" })),
 }));
 
 /**
@@ -190,14 +222,14 @@ mock.module("@/helpers/challenge-response", () => ({
 mock.module("@atk/auth/constants/roles", () => ({
   getRoleByFieldName: jest.fn((role: string) => {
     const roleMap: Record<string, { fieldName: string; bytes: string }> = {
-      tokenManager: { fieldName: "tokenManager", bytes: "0x" + "1".repeat(64) },
+      tokenManager: { fieldName: "tokenManager", bytes: `0x${"1".repeat(64)}` },
       complianceManager: {
         fieldName: "complianceManager",
-        bytes: "0x" + "2".repeat(64),
+        bytes: `0x${"2".repeat(64)}`,
       },
       systemManager: {
         fieldName: "systemManager",
-        bytes: "0x" + "3".repeat(64),
+        bytes: `0x${"3".repeat(64)}`,
       },
     };
     return roleMap[role] || null;
@@ -287,9 +319,9 @@ export function resetCapturedOnboardedHandler() {
  * Reset all captured handlers - useful for test cleanup
  */
 export function resetAllHandlers() {
-  Object.values(captureStates).forEach((state) => {
+  for (const state of Object.values(captureStates)) {
     state.handler = undefined;
-  });
+  }
 }
 
 /**
@@ -304,9 +336,7 @@ export function resetAllMocks() {
 /**
  * Builds a minimal valid context required by routes.
  */
-export function createBaseContext(
-  overrides: Partial<Record<string, unknown>> = {},
-) {
+export function createBaseContext(overrides: Partial<Record<string, unknown>> = {}) {
   const context = {
     auth: {
       user: {
@@ -329,11 +359,11 @@ export function createBaseContext(
       },
     },
     portalClient: {
-      mutate: jest.fn() as Mock<any>,
-      query: jest.fn() as Mock<any>,
+      mutate: jest.fn() as Mock<(...args: unknown[]) => unknown>,
+      query: jest.fn() as Mock<(...args: unknown[]) => unknown>,
     },
     theGraphClient: {
-      query: jest.fn() as Mock<any>,
+      query: jest.fn() as Mock<(...args: unknown[]) => unknown>,
     },
   };
   return { ...context, ...overrides };
@@ -342,9 +372,7 @@ export function createBaseContext(
 /**
  * Creates a context without authentication - useful for testing unauthorized access
  */
-export function createUnauthenticatedContext(
-  overrides: Partial<Record<string, unknown>> = {},
-) {
+export function createUnauthenticatedContext(overrides: Partial<Record<string, unknown>> = {}) {
   const context = {
     auth: undefined,
     system: {
@@ -356,11 +384,11 @@ export function createUnauthenticatedContext(
       },
     },
     portalClient: {
-      mutate: jest.fn() as Mock<any>,
-      query: jest.fn() as Mock<any>,
+      mutate: jest.fn() as Mock<(...args: unknown[]) => unknown>,
+      query: jest.fn() as Mock<(...args: unknown[]) => unknown>,
     },
     theGraphClient: {
-      query: jest.fn() as Mock<any>,
+      query: jest.fn() as Mock<(...args: unknown[]) => unknown>,
     },
   };
   return { ...context, ...overrides };

@@ -7,7 +7,7 @@
 
 import { fxRatesLatest } from "@atk/db/schemas/exchange-rates";
 import type { FiatCurrency } from "@atk/zod/validators/fiat-currency";
-import { and, count, eq, sql } from "drizzle-orm";
+import { and, count, eq, type SQL, sql } from "drizzle-orm";
 import { offChainPermissionsMiddleware } from "@/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/middlewares/services/db.middleware";
 import { publicRouter } from "@/procedures/public.router";
@@ -35,7 +35,7 @@ export const list = publicRouter.exchangeRates.list
     const { offset = 0, limit, baseCurrency, quoteCurrency, orderBy = "id", orderDirection = "asc" } = input;
 
     // Build filter conditions
-    const conditions = [];
+    const conditions: SQL[] = [];
     if (baseCurrency) {
       conditions.push(eq(fxRatesLatest.baseCode, baseCurrency));
     }

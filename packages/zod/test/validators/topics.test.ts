@@ -224,7 +224,10 @@ describe("topic ID generation consistency", () => {
       for (const topic of atkTopics) {
         const currentId = getTopicId(topic);
         const baselineId = baselineIds.get(topic);
-        expect(currentId).toBe(baselineId);
+        expect(baselineId).toBeDefined();
+        if (baselineId !== undefined) {
+          expect(currentId).toBe(baselineId);
+        }
       }
     }
   });

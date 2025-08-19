@@ -117,7 +117,12 @@ export const factoryCreate = portalRouter.system.tokenFactoryCreate
     const factoriesToDeploy = factoryList.filter((factory) => !existingFactoryNames.has(factory.name.toLowerCase()));
 
     // Process factories sequentially - parallel challenge generation not working
-    const results = [];
+    const results: Array<{
+      status: "success" | "failed";
+      factory: string;
+      txHash?: string;
+      error?: unknown;
+    }> = [];
 
     for (const factory of factoriesToDeploy) {
       const { type, name } = factory;

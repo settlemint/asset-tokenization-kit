@@ -314,13 +314,13 @@ describe("User search", () => {
       expect(Array.isArray(users)).toBe(true);
 
       // Verify all returned users have required fields
-      users.forEach((user) => {
+      for (const user of users) {
         expect(user.id).toBeDefined();
         expect(user.name).toBeDefined();
         expect(user.email).toBeDefined();
         expect(user.role).toBeDefined();
         expect(user.wallet).toBeDefined();
-      });
+      }
     });
   });
 });

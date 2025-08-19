@@ -49,12 +49,12 @@ describe("account.search (unit)", () => {
 
   beforeEach(() => {
     resetAllMocks();
-    handler = getAuthHandler()!;
-    errors = createMockErrors();
-
-    if (!handler) {
+    const capturedHandler = getAuthHandler();
+    if (!capturedHandler) {
       throw new Error("Handler not captured - check mock setup");
     }
+    handler = capturedHandler;
+    errors = createMockErrors();
   });
 
   it("returns empty array for non-address queries", async () => {
@@ -76,7 +76,7 @@ describe("account.search (unit)", () => {
     const context = createBaseContext();
 
     // Mock TheGraph query to return account data
-    (context.theGraphClient.query as Mock<any>).mockResolvedValue({
+    (context.theGraphClient.query as Mock<(...args: unknown[]) => Promise<unknown>>).mockResolvedValue({
       account: {
         id: ADDRESS,
         isContract: true,
@@ -108,7 +108,7 @@ describe("account.search (unit)", () => {
     const context = createBaseContext();
 
     // Mock TheGraph query to return null
-    (context.theGraphClient.query as Mock<any>).mockResolvedValue({
+    (context.theGraphClient.query as Mock<(...args: unknown[]) => Promise<unknown>>).mockResolvedValue({
       account: null,
     });
 

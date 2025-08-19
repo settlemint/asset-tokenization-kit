@@ -227,9 +227,7 @@ describe("the-graph.middleware", () => {
           },
         };
 
-        (
-          theGraphClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce(mockResponse);
+        (theGraphClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(mockResponse);
 
         const schema = z.object({
           token: z.object({
@@ -286,7 +284,7 @@ describe("the-graph.middleware", () => {
             pausable: z.object({
               paused: z.boolean(),
             }),
-          }),
+          })
         ),
       });
 
@@ -307,9 +305,7 @@ describe("the-graph.middleware", () => {
           },
         };
 
-        (
-          theGraphClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce({
+        (theGraphClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce({
           tokens: [mockTokenResponse],
         });
 
@@ -329,8 +325,7 @@ describe("the-graph.middleware", () => {
         expect(result.tokens[0]?.pausable.paused).toBe(false);
 
         // Verify the query was called with correct where clause
-        const callArgs = (theGraphClient.request as ReturnType<typeof jest.fn>)
-          .mock.calls[0];
+        const callArgs = (theGraphClient.request as ReturnType<typeof jest.fn>).mock.calls[0];
         expect(callArgs?.[1]).toEqual({
           where: {
             id: searchAddress.toLowerCase(),
@@ -380,9 +375,7 @@ describe("the-graph.middleware", () => {
           ],
         };
 
-        (
-          theGraphClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce(mockResponse);
+        (theGraphClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(mockResponse);
 
         const schema = z.object({
           tokens: z.array(
@@ -394,9 +387,9 @@ describe("the-graph.middleware", () => {
                   id: z.string(),
                   account: z.object({ id: z.string() }),
                   value: z.string(),
-                }),
+                })
               ),
-            }),
+            })
           ),
         });
 
@@ -413,22 +406,17 @@ describe("the-graph.middleware", () => {
 
     describe("error handling", () => {
       test("should handle ClientError with GraphQL errors", async () => {
-        const graphQLErrors = [
-          { message: "Field 'invalid' not found" },
-          { message: "Permission denied" },
-        ];
+        const graphQLErrors = [{ message: "Field 'invalid' not found" }, { message: "Permission denied" }];
 
         const clientError = new ClientError(
           {
             data: null,
             errors: graphQLErrors,
           } as never,
-          { query: "query { invalid }" } as never,
+          { query: "query { invalid }" } as never
         );
 
-        (
-          theGraphClient.request as ReturnType<typeof jest.fn>
-        ).mockRejectedValueOnce(clientError);
+        (theGraphClient.request as ReturnType<typeof jest.fn>).mockRejectedValueOnce(clientError);
 
         const SIMPLE_QUERY = createMockDocument(`
           query SimpleQuery {
@@ -442,7 +430,7 @@ describe("the-graph.middleware", () => {
           client.query(SIMPLE_QUERY, {
             input: {},
             output: z.object({ tokens: z.array(z.object({ id: z.string() })) }),
-          }),
+          })
         ).rejects.toThrow();
 
         expect(mockErrors.THE_GRAPH_ERROR).toHaveBeenCalledWith({
@@ -484,7 +472,7 @@ describe("the-graph.middleware", () => {
               id: z.string(),
               name: z.string(),
               symbol: z.string(), // Required field
-            }),
+            })
           ),
         });
 
@@ -492,7 +480,7 @@ describe("the-graph.middleware", () => {
           client.query(TYPED_QUERY, {
             input: {},
             output: strictSchema,
-          }),
+          })
         ).rejects.toThrow();
 
         expect(mockErrors.THE_GRAPH_ERROR).toHaveBeenCalledWith(
@@ -502,16 +490,14 @@ describe("the-graph.middleware", () => {
               responseValidation: expect.any(String),
             }),
             cause: expect.any(z.ZodError),
-          }),
+          })
         );
       });
 
       test("should handle generic errors", async () => {
         const genericError = new Error("Network timeout");
         (theGraphClient.request as ReturnType<typeof jest.fn>).mockReset();
-        (
-          theGraphClient.request as ReturnType<typeof jest.fn>
-        ).mockRejectedValueOnce(genericError);
+        (theGraphClient.request as ReturnType<typeof jest.fn>).mockRejectedValueOnce(genericError);
 
         const QUERY = createMockDocument("query { tokens { id } }");
 
@@ -519,7 +505,7 @@ describe("the-graph.middleware", () => {
           client.query(QUERY, {
             input: {},
             output: z.object({ tokens: z.array(z.object({ id: z.string() })) }),
-          }),
+          })
         ).rejects.toThrow();
 
         expect(mockErrors.THE_GRAPH_ERROR).toHaveBeenCalledWith({
@@ -533,9 +519,7 @@ describe("the-graph.middleware", () => {
     describe("edge cases", () => {
       test("should handle null list field", async () => {
         (theGraphClient.request as ReturnType<typeof jest.fn>).mockReset();
-        (
-          theGraphClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce({
+        (theGraphClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce({
           tokens: null,
           meta: { version: "1.0" },
         });
@@ -575,9 +559,7 @@ describe("the-graph.middleware", () => {
         `);
 
         (theGraphClient.request as ReturnType<typeof jest.fn>).mockReset();
-        (
-          theGraphClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce({
+        (theGraphClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce({
           allTokens: [
             { tokenId: "0x123", tokenName: "Token 1" },
             { tokenId: "0x456", tokenName: "Token 2" },
@@ -591,7 +573,7 @@ describe("the-graph.middleware", () => {
               z.object({
                 tokenId: z.string(),
                 tokenName: z.string(),
-              }),
+              })
             ),
           }),
         });
@@ -613,9 +595,7 @@ describe("the-graph.middleware", () => {
         `);
 
         (theGraphClient.request as ReturnType<typeof jest.fn>).mockReset();
-        (
-          theGraphClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce({
+        (theGraphClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce({
           tokens: [
             {
               id: "0x111",
@@ -636,7 +616,7 @@ describe("the-graph.middleware", () => {
                 id: z.string(),
                 type: z.string(),
                 totalSupply: z.string(),
-              }),
+              })
             ),
           }),
         });
@@ -661,12 +641,10 @@ describe("the-graph.middleware", () => {
         }) => Promise<unknown>;
 
         let capturedContext: Record<string, unknown> | undefined;
-        const customNext = jest.fn(
-          (params: { context: Record<string, unknown> }) => {
-            capturedContext = params?.context;
-            return { context: params?.context };
-          },
-        );
+        const customNext = jest.fn((params: { context: Record<string, unknown> }) => {
+          capturedContext = params?.context;
+          return { context: params?.context };
+        });
 
         await middlewareHandler({
           context: customContext,
@@ -677,9 +655,7 @@ describe("the-graph.middleware", () => {
         expect(customNext).toHaveBeenCalledTimes(1);
         expect(capturedContext).toBeDefined();
         expect(capturedContext?.theGraphClient).toBeDefined();
-        expect(
-          (capturedContext?.theGraphClient as Record<string, unknown>)?.query,
-        ).toBeInstanceOf(Function);
+        expect((capturedContext?.theGraphClient as Record<string, unknown>)?.query).toBeInstanceOf(Function);
         // The middleware only passes theGraphClient in the context
         // It doesn't merge with the original context
         expect(capturedContext?.user).toBeUndefined();

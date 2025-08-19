@@ -77,7 +77,8 @@ export async function bootstrapTokenFactories(
 
   const tokenFactories = await orpClient.system.tokenFactoryList({});
 
-  const factories: Parameters<typeof orpClient.system.tokenFactoryCreate>[0]["factories"] = [
+  type FactoryInput = Parameters<OrpcClient["system"]["tokenFactoryCreate"]>[0]["factories"];
+  const factories: FactoryInput = [
     { type: "bond", name: "Bond Factory" },
     { type: "deposit", name: "Deposit Factory" },
     { type: "equity", name: "Equrity Factory" },

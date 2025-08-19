@@ -5,7 +5,6 @@
  * @module ExchangeRatesSync
  */
 
-import type * as schema from "@atk/db/schemas/exchange-rates";
 import {
   currencies,
   currencyDataSchema,
@@ -16,7 +15,6 @@ import {
 } from "@atk/db/schemas/exchange-rates";
 import { fiatCurrencies, fiatCurrencyMetadata } from "@atk/zod/validators/fiat-currency";
 import { sql } from "drizzle-orm";
-import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { offChainPermissionsMiddleware } from "@/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/middlewares/services/db.middleware";
 import { authRouter } from "@/procedures/auth.router";
@@ -89,7 +87,7 @@ async function calculateCrossRates(): Promise<Map<string, { rate: number; effect
  * Used by the public read route for auto-sync.
  */
 export async function syncExchangeRatesInternal(
-  db: NodePgDatabase<typeof schema>,
+  db: typeof import("@atk/db").db,
   force = false
 ): Promise<{
   success: boolean;

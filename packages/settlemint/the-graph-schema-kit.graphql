@@ -7,7 +7,9 @@ Marks the GraphQL type as indexable entity.  Each type that should be an entity 
 """
 directive @entity on OBJECT
 
-"""Defined a Subgraph ID for an object type"""
+"""
+Defined a Subgraph ID for an object type
+"""
 directive @subgraphId(id: String!) on OBJECT
 
 """
@@ -17,38 +19,230 @@ directive @derivedFrom(field: String!) on FIELD_DEFINITION
 
 type AccessControl {
   id: Bytes!
-  admin(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  systemManager(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  identityManager(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  tokenManager(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  complianceManager(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  addonManager(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  claimPolicyManager(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  auditor(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  systemModule(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  identityRegistryModule(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  tokenFactoryRegistryModule(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  tokenFactoryModule(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  addonRegistryModule(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  addonModule(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  governance(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  supplyManagement(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  custodian(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  emergency(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  burner(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  capManagement(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  complianceAdmin(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  forcedTransfer(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  freezer(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  minter(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  pauser(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  recovery(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  tokenAdmin(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  verificationAdmin(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  fundsManager(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  saleAdmin(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  signer(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  globalListManager(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
+  admin(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  systemManager(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  identityManager(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  tokenManager(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  complianceManager(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  addonManager(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  claimPolicyManager(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  auditor(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  systemModule(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  identityRegistryModule(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  tokenFactoryRegistryModule(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  tokenFactoryModule(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  addonRegistryModule(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  addonModule(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  governance(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  supplyManagement(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  custodian(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  emergency(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  burner(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  capManagement(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  complianceAdmin(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  forcedTransfer(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  freezer(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  minter(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  pauser(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  recovery(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  tokenAdmin(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  verificationAdmin(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  fundsManager(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  saleAdmin(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  signer(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  globalListManager(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
 }
 
 input AccessControl_filter {
@@ -287,7 +481,9 @@ input AccessControl_filter {
   globalListManager_not_contains_nocase: [String!]
   globalListManager_: Account_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [AccessControl_filter]
   or: [AccessControl_filter]
@@ -335,7 +531,13 @@ type Account {
   contractName: String
   identity: Identity
   country: Int
-  balances(skip: Int = 0, first: Int = 100, orderBy: TokenBalance_orderBy, orderDirection: OrderDirection, where: TokenBalance_filter): [TokenBalance!]! @fetchAll
+  balances(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TokenBalance_orderBy
+    orderDirection: OrderDirection
+    where: TokenBalance_filter
+  ): [TokenBalance!]! @fetchAll
   isLost: Boolean!
   recoveredAccount: Account
   stats: AccountStatsState
@@ -412,7 +614,9 @@ input AccountStatsData_filter {
   balancesCount_in: [Int!]
   balancesCount_not_in: [Int!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [AccountStatsData_filter]
   or: [AccountStatsData_filter]
@@ -487,7 +691,9 @@ input AccountStatsState_filter {
   balancesCount_in: [Int!]
   balancesCount_not_in: [Int!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [AccountStatsState_filter]
   or: [AccountStatsState_filter]
@@ -521,7 +727,9 @@ input AccountStats_filter {
   account: String
   account_: Account_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [AccountStats_filter]
   or: [AccountStats_filter]
@@ -632,7 +840,9 @@ input Account_filter {
   recoveredAccount_: Account_filter
   stats_: AccountStatsState_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [Account_filter]
   or: [Account_filter]
@@ -680,7 +890,13 @@ type Action {
 type ActionExecutor {
   id: Bytes!
   executors: [Bytes!]!
-  actions(skip: Int = 0, first: Int = 100, orderBy: Action_orderBy, orderDirection: OrderDirection, where: Action_filter): [Action!]! @fetchAll
+  actions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Action_orderBy
+    orderDirection: OrderDirection
+    where: Action_filter
+  ): [Action!]! @fetchAll
 }
 
 input ActionExecutor_filter {
@@ -702,7 +918,9 @@ input ActionExecutor_filter {
   executors_not_contains_nocase: [Bytes!]
   actions_: Action_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [ActionExecutor_filter]
   or: [ActionExecutor_filter]
@@ -874,7 +1092,9 @@ input Action_filter {
   executor_not_ends_with_nocase: String
   executor_: ActionExecutor_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [Action_filter]
   or: [Action_filter]
@@ -911,8 +1131,20 @@ type Airdrop {
   typeId: String!
   amountTransferred: BigDecimal!
   amountTransferredExact: BigInt!
-  recipients(skip: Int = 0, first: Int = 100, orderBy: AirdropRecipient_orderBy, orderDirection: OrderDirection, where: AirdropRecipient_filter): [AirdropRecipient!]! @fetchAll
-  allocations(skip: Int = 0, first: Int = 100, orderBy: AirdropAllocation_orderBy, orderDirection: OrderDirection, where: AirdropAllocation_filter): [AirdropAllocation!]! @fetchAll
+  recipients(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: AirdropRecipient_orderBy
+    orderDirection: OrderDirection
+    where: AirdropRecipient_filter
+  ): [AirdropRecipient!]! @fetchAll
+  allocations(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: AirdropAllocation_orderBy
+    orderDirection: OrderDirection
+    where: AirdropAllocation_filter
+  ): [AirdropAllocation!]! @fetchAll
   vestingAirdrop: VestingAirdrop
   pushAirdrop: PushAirdrop
   timeBoundAirdrop: TimeBoundAirdrop
@@ -1011,7 +1243,9 @@ input AirdropAllocation_filter {
   initialized_in: [Boolean!]
   initialized_not_in: [Boolean!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [AirdropAllocation_filter]
   or: [AirdropAllocation_filter]
@@ -1040,7 +1274,13 @@ enum AirdropAllocation_orderBy {
 type AirdropFactory {
   id: Bytes!
   systemAddon: SystemAddon!
-  airdrops(skip: Int = 0, first: Int = 100, orderBy: Airdrop_orderBy, orderDirection: OrderDirection, where: Airdrop_filter): [Airdrop!]! @fetchAll
+  airdrops(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Airdrop_orderBy
+    orderDirection: OrderDirection
+    where: Airdrop_filter
+  ): [Airdrop!]! @fetchAll
   deployedInTransaction: Bytes!
 }
 
@@ -1088,7 +1328,9 @@ input AirdropFactory_filter {
   deployedInTransaction_contains: Bytes
   deployedInTransaction_not_contains: Bytes
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [AirdropFactory_filter]
   or: [AirdropFactory_filter]
@@ -1109,7 +1351,13 @@ type AirdropRecipient {
   id: Bytes!
   airdrop: Airdrop!
   account: Account!
-  allocations(skip: Int = 0, first: Int = 100, orderBy: AirdropAllocation_orderBy, orderDirection: OrderDirection, where: AirdropAllocation_filter): [AirdropAllocation!]! @fetchAll
+  allocations(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: AirdropAllocation_orderBy
+    orderDirection: OrderDirection
+    where: AirdropAllocation_filter
+  ): [AirdropAllocation!]! @fetchAll
   amountTransferred: BigDecimal!
   amountTransferredExact: BigInt!
 }
@@ -1185,7 +1433,9 @@ input AirdropRecipient_filter {
   amountTransferredExact_in: [BigInt!]
   amountTransferredExact_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [AirdropRecipient_filter]
   or: [AirdropRecipient_filter]
@@ -1407,7 +1657,9 @@ input Airdrop_filter {
   deployedInTransaction_contains: Bytes
   deployedInTransaction_not_contains: Bytes
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [Airdrop_filter]
   or: [Airdrop_filter]
@@ -1471,8 +1723,20 @@ scalar Bytes
 type Compliance {
   id: Bytes!
   account: Account!
-  bypassList(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  complianceModuleConfigs(skip: Int = 0, first: Int = 100, orderBy: GlobalComplianceModuleConfig_orderBy, orderDirection: OrderDirection, where: GlobalComplianceModuleConfig_filter): [GlobalComplianceModuleConfig!]! @fetchAll
+  bypassList(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  complianceModuleConfigs(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: GlobalComplianceModuleConfig_orderBy
+    orderDirection: OrderDirection
+    where: GlobalComplianceModuleConfig_filter
+  ): [GlobalComplianceModuleConfig!]! @fetchAll
 }
 
 type ComplianceModule {
@@ -1482,8 +1746,20 @@ type ComplianceModule {
   account: Account!
   deployedInTransaction: Bytes!
   complianceModuleRegistry: ComplianceModuleRegistry
-  tokenConfigs(skip: Int = 0, first: Int = 100, orderBy: TokenComplianceModuleConfig_orderBy, orderDirection: OrderDirection, where: TokenComplianceModuleConfig_filter): [TokenComplianceModuleConfig!]! @fetchAll
-  globalConfigs(skip: Int = 0, first: Int = 100, orderBy: GlobalComplianceModuleConfig_orderBy, orderDirection: OrderDirection, where: GlobalComplianceModuleConfig_filter): [GlobalComplianceModuleConfig!]! @fetchAll
+  tokenConfigs(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TokenComplianceModuleConfig_orderBy
+    orderDirection: OrderDirection
+    where: TokenComplianceModuleConfig_filter
+  ): [TokenComplianceModuleConfig!]! @fetchAll
+  globalConfigs(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: GlobalComplianceModuleConfig_orderBy
+    orderDirection: OrderDirection
+    where: GlobalComplianceModuleConfig_filter
+  ): [GlobalComplianceModuleConfig!]! @fetchAll
 }
 
 type ComplianceModuleParameters {
@@ -1491,7 +1767,13 @@ type ComplianceModuleParameters {
   encodedParams: Bytes!
   addresses: [Bytes!]
   countries: [Int!]
-  expression(skip: Int = 0, first: Int = 100, orderBy: ExpressionNode_orderBy, orderDirection: OrderDirection, where: ExpressionNode_filter): [ExpressionNode!] @fetchAll
+  expression(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ExpressionNode_orderBy
+    orderDirection: OrderDirection
+    where: ExpressionNode_filter
+  ): [ExpressionNode!] @fetchAll
 }
 
 input ComplianceModuleParameters_filter {
@@ -1529,7 +1811,9 @@ input ComplianceModuleParameters_filter {
   countries_not_contains_nocase: [Int!]
   expression_: ExpressionNode_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [ComplianceModuleParameters_filter]
   or: [ComplianceModuleParameters_filter]
@@ -1547,7 +1831,13 @@ type ComplianceModuleRegistry {
   id: Bytes!
   account: Account!
   deployedInTransaction: Bytes!
-  complianceModules(skip: Int = 0, first: Int = 100, orderBy: ComplianceModule_orderBy, orderDirection: OrderDirection, where: ComplianceModule_filter): [ComplianceModule!]! @fetchAll
+  complianceModules(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ComplianceModule_orderBy
+    orderDirection: OrderDirection
+    where: ComplianceModule_filter
+  ): [ComplianceModule!]! @fetchAll
 }
 
 input ComplianceModuleRegistry_filter {
@@ -1594,7 +1884,9 @@ input ComplianceModuleRegistry_filter {
   deployedInTransaction_not_contains: Bytes
   complianceModules_: ComplianceModule_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [ComplianceModuleRegistry_filter]
   or: [ComplianceModuleRegistry_filter]
@@ -1718,7 +2010,9 @@ input ComplianceModule_filter {
   tokenConfigs_: TokenComplianceModuleConfig_filter
   globalConfigs_: GlobalComplianceModuleConfig_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [ComplianceModule_filter]
   or: [ComplianceModule_filter]
@@ -1783,7 +2077,9 @@ input Compliance_filter {
   bypassList_: Account_filter
   complianceModuleConfigs_: GlobalComplianceModuleConfig_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [Compliance_filter]
   or: [Compliance_filter]
@@ -1810,8 +2106,20 @@ type Event {
   transactionHash: Bytes!
   emitter: Account!
   sender: Account!
-  involved(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  values(skip: Int = 0, first: Int = 100, orderBy: EventValue_orderBy, orderDirection: OrderDirection, where: EventValue_filter): [EventValue!]! @fetchAll
+  involved(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  values(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: EventValue_orderBy
+    orderDirection: OrderDirection
+    where: EventValue_filter
+  ): [EventValue!]! @fetchAll
 }
 
 type EventStats {
@@ -1888,7 +2196,9 @@ input EventStatsData_filter {
   eventName_not_ends_with: String
   eventName_not_ends_with_nocase: String
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [EventStatsData_filter]
   or: [EventStatsData_filter]
@@ -1923,7 +2233,9 @@ input EventStats_filter {
   account_: Account_filter
   eventName: String
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [EventStats_filter]
   or: [EventStats_filter]
@@ -2022,7 +2334,9 @@ input EventValue_filter {
   entry_not_ends_with_nocase: String
   entry_: Event_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [EventValue_filter]
   or: [EventValue_filter]
@@ -2157,7 +2471,9 @@ input Event_filter {
   involved_: Account_filter
   values_: EventValue_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [Event_filter]
   or: [Event_filter]
@@ -2267,7 +2583,9 @@ input ExpressionNode_filter {
   topicScheme_not_ends_with_nocase: String
   topicScheme_: TopicScheme_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [ExpressionNode_filter]
   or: [ExpressionNode_filter]
@@ -2371,7 +2689,9 @@ input GlobalComplianceModuleConfig_filter {
   parameters_not_ends_with_nocase: String
   parameters_: ComplianceModuleParameters_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [GlobalComplianceModuleConfig_filter]
   or: [GlobalComplianceModuleConfig_filter]
@@ -2394,8 +2714,20 @@ enum GlobalComplianceModuleConfig_orderBy {
 type Identity {
   id: Bytes!
   registryStorage: IdentityRegistryStorage
-  claims(skip: Int = 0, first: Int = 100, orderBy: IdentityClaim_orderBy, orderDirection: OrderDirection, where: IdentityClaim_filter): [IdentityClaim!]! @fetchAll
-  keys(skip: Int = 0, first: Int = 100, orderBy: IdentityKey_orderBy, orderDirection: OrderDirection, where: IdentityKey_filter): [IdentityKey!]! @fetchAll
+  claims(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: IdentityClaim_orderBy
+    orderDirection: OrderDirection
+    where: IdentityClaim_filter
+  ): [IdentityClaim!]! @fetchAll
+  keys(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: IdentityKey_orderBy
+    orderDirection: OrderDirection
+    where: IdentityKey_filter
+  ): [IdentityKey!]! @fetchAll
   account: Account
   isContract: Boolean
   deployedInTransaction: Bytes!
@@ -2409,7 +2741,13 @@ type IdentityClaim {
   uri: String
   signature: String!
   revoked: Boolean!
-  values(skip: Int = 0, first: Int = 100, orderBy: IdentityClaimValue_orderBy, orderDirection: OrderDirection, where: IdentityClaimValue_filter): [IdentityClaimValue!]! @fetchAll
+  values(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: IdentityClaimValue_orderBy
+    orderDirection: OrderDirection
+    where: IdentityClaimValue_filter
+  ): [IdentityClaimValue!]! @fetchAll
   deployedInTransaction: Bytes!
 }
 
@@ -2493,7 +2831,9 @@ input IdentityClaimValue_filter {
   value_not_ends_with: String
   value_not_ends_with_nocase: String
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [IdentityClaimValue_filter]
   or: [IdentityClaimValue_filter]
@@ -2641,7 +2981,9 @@ input IdentityClaim_filter {
   deployedInTransaction_contains: Bytes
   deployedInTransaction_not_contains: Bytes
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [IdentityClaim_filter]
   or: [IdentityClaim_filter]
@@ -2714,7 +3056,9 @@ input IdentityFactory_filter {
   deployedInTransaction_contains: Bytes
   deployedInTransaction_not_contains: Bytes
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [IdentityFactory_filter]
   or: [IdentityFactory_filter]
@@ -2833,7 +3177,9 @@ input IdentityKey_filter {
   deployedInTransaction_contains: Bytes
   deployedInTransaction_not_contains: Bytes
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [IdentityKey_filter]
   or: [IdentityKey_filter]
@@ -2864,8 +3210,20 @@ type IdentityRegistryStorage {
   id: Bytes!
   account: Account!
   deployedInTransaction: Bytes!
-  registries(skip: Int = 0, first: Int = 100, orderBy: IdentityRegistry_orderBy, orderDirection: OrderDirection, where: IdentityRegistry_filter): [IdentityRegistry!]! @fetchAll
-  identities(skip: Int = 0, first: Int = 100, orderBy: Identity_orderBy, orderDirection: OrderDirection, where: Identity_filter): [Identity!]! @fetchAll
+  registries(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: IdentityRegistry_orderBy
+    orderDirection: OrderDirection
+    where: IdentityRegistry_filter
+  ): [IdentityRegistry!]! @fetchAll
+  identities(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Identity_orderBy
+    orderDirection: OrderDirection
+    where: Identity_filter
+  ): [Identity!]! @fetchAll
 }
 
 input IdentityRegistryStorage_filter {
@@ -2913,7 +3271,9 @@ input IdentityRegistryStorage_filter {
   registries_: IdentityRegistry_filter
   identities_: Identity_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [IdentityRegistryStorage_filter]
   or: [IdentityRegistryStorage_filter]
@@ -3038,7 +3398,9 @@ input IdentityRegistry_filter {
   deployedInTransaction_contains: Bytes
   deployedInTransaction_not_contains: Bytes
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [IdentityRegistry_filter]
   or: [IdentityRegistry_filter]
@@ -3134,7 +3496,9 @@ input Identity_filter {
   deployedInTransaction_contains: Bytes
   deployedInTransaction_not_contains: Bytes
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [Identity_filter]
   or: [Identity_filter]
@@ -3194,7 +3558,9 @@ input LinearVestingStrategy_filter {
   cliffDuration_in: [BigInt!]
   cliffDuration_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [LinearVestingStrategy_filter]
   or: [LinearVestingStrategy_filter]
@@ -3206,7 +3572,9 @@ enum LinearVestingStrategy_orderBy {
   cliffDuration
 }
 
-"""Defines the order direction, either ascending or descending"""
+"""
+Defines the order direction, either ascending or descending
+"""
 enum OrderDirection {
   asc
   desc
@@ -3246,7 +3614,9 @@ input PushAirdrop_filter {
   distributionCapExact_in: [BigInt!]
   distributionCapExact_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [PushAirdrop_filter]
   or: [PushAirdrop_filter]
@@ -5480,7 +5850,9 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [TokenDistributionStatsData!]!
 
-  """Collection of aggregated `SystemStats` values"""
+  """
+  Collection of aggregated `SystemStats` values
+  """
   systemStats_collection(
     skip: Int = 0 @fetchAll
     first: Int = 100
@@ -5500,7 +5872,9 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [SystemStats!]!
 
-  """Collection of aggregated `AccountStats` values"""
+  """
+  Collection of aggregated `AccountStats` values
+  """
   accountStats_collection(
     skip: Int = 0 @fetchAll
     first: Int = 100
@@ -5520,7 +5894,9 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [AccountStats!]!
 
-  """Collection of aggregated `EventStats` values"""
+  """
+  Collection of aggregated `EventStats` values
+  """
   eventStats_collection(
     skip: Int = 0 @fetchAll
     first: Int = 100
@@ -5540,7 +5916,9 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [EventStats!]!
 
-  """Collection of aggregated `TokenTypeStats` values"""
+  """
+  Collection of aggregated `TokenTypeStats` values
+  """
   tokenTypeStats_collection(
     skip: Int = 0 @fetchAll
     first: Int = 100
@@ -5560,7 +5938,9 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [TokenTypeStats!]!
 
-  """Collection of aggregated `TokenStats` values"""
+  """
+  Collection of aggregated `TokenStats` values
+  """
   tokenStats_collection(
     skip: Int = 0 @fetchAll
     first: Int = 100
@@ -5580,7 +5960,9 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [TokenStats!]!
 
-  """Collection of aggregated `TokenCollateralStats` values"""
+  """
+  Collection of aggregated `TokenCollateralStats` values
+  """
   tokenCollateralStats_collection(
     skip: Int = 0 @fetchAll
     first: Int = 100
@@ -5600,7 +5982,9 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [TokenCollateralStats!]!
 
-  """Collection of aggregated `TokenBondStats` values"""
+  """
+  Collection of aggregated `TokenBondStats` values
+  """
   tokenBondStats_collection(
     skip: Int = 0 @fetchAll
     first: Int = 100
@@ -5620,7 +6004,9 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [TokenBondStats!]!
 
-  """Collection of aggregated `TokenDistributionStats` values"""
+  """
+  Collection of aggregated `TokenDistributionStats` values
+  """
   tokenDistributionStats_collection(
     skip: Int = 0 @fetchAll
     first: Int = 100
@@ -5640,7 +6026,9 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [TokenDistributionStats!]!
 
-  """Access to subgraph metadata"""
+  """
+  Access to subgraph metadata
+  """
   _meta(block: Block_height): _Meta_
 }
 
@@ -5659,7 +6047,13 @@ type System {
   systemAddonRegistry: SystemAddonRegistry
   systemAccessManager: SystemAccessManager
   systemStats: SystemStatsState
-  tokenTypeStats(skip: Int = 0, first: Int = 100, orderBy: TokenTypeStatsState_orderBy, orderDirection: OrderDirection, where: TokenTypeStatsState_filter): [TokenTypeStatsState!] @fetchAll
+  tokenTypeStats(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TokenTypeStatsState_orderBy
+    orderDirection: OrderDirection
+    where: TokenTypeStatsState_filter
+  ): [TokenTypeStatsState!] @fetchAll
 }
 
 type SystemAccessManager {
@@ -5733,7 +6127,9 @@ input SystemAccessManager_filter {
   accessControl_not_ends_with_nocase: String
   accessControl_: AccessControl_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [SystemAccessManager_filter]
   or: [SystemAccessManager_filter]
@@ -5762,7 +6158,13 @@ type SystemAddonRegistry {
   id: Bytes!
   account: Account!
   deployedInTransaction: Bytes!
-  systemAddons(skip: Int = 0, first: Int = 100, orderBy: SystemAddon_orderBy, orderDirection: OrderDirection, where: SystemAddon_filter): [SystemAddon!]! @fetchAll
+  systemAddons(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: SystemAddon_orderBy
+    orderDirection: OrderDirection
+    where: SystemAddon_filter
+  ): [SystemAddon!]! @fetchAll
 }
 
 input SystemAddonRegistry_filter {
@@ -5809,7 +6211,9 @@ input SystemAddonRegistry_filter {
   deployedInTransaction_not_contains: Bytes
   systemAddons_: SystemAddon_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [SystemAddonRegistry_filter]
   or: [SystemAddonRegistry_filter]
@@ -5931,7 +6335,9 @@ input SystemAddon_filter {
   account_not_ends_with_nocase: String
   account_: Account_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [SystemAddon_filter]
   or: [SystemAddon_filter]
@@ -6014,7 +6420,9 @@ input SystemStatsData_filter {
   totalValueInBaseCurrency_in: [BigDecimal!]
   totalValueInBaseCurrency_not_in: [BigDecimal!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [SystemStatsData_filter]
   or: [SystemStatsData_filter]
@@ -6076,7 +6484,9 @@ input SystemStatsState_filter {
   totalValueInBaseCurrency_in: [BigDecimal!]
   totalValueInBaseCurrency_not_in: [BigDecimal!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [SystemStatsState_filter]
   or: [SystemStatsState_filter]
@@ -6106,7 +6516,9 @@ input SystemStats_filter {
   system: String
   system_: System_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [SystemStats_filter]
   or: [SystemStats_filter]
@@ -6376,7 +6788,9 @@ input System_filter {
   systemStats_: SystemStatsState_filter
   tokenTypeStats_: TokenTypeStatsState_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [System_filter]
   or: [System_filter]
@@ -6460,7 +6874,9 @@ input TimeBoundAirdrop_filter {
   endTime_in: [BigInt!]
   endTime_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TimeBoundAirdrop_filter]
   or: [TimeBoundAirdrop_filter]
@@ -6482,7 +6898,13 @@ type Token {
   deployedInTransaction: Bytes!
   account: Account!
   accessControl: AccessControl
-  balances(skip: Int = 0, first: Int = 100, orderBy: TokenBalance_orderBy, orderDirection: OrderDirection, where: TokenBalance_filter): [TokenBalance!]! @fetchAll
+  balances(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TokenBalance_orderBy
+    orderDirection: OrderDirection
+    where: TokenBalance_filter
+  ): [TokenBalance!]! @fetchAll
   type: String!
   tokenFactory: TokenFactory
   name: String!
@@ -6501,7 +6923,13 @@ type Token {
   bond: TokenBond
   fund: TokenFund
   basePriceClaim: IdentityClaim
-  complianceModuleConfigs(skip: Int = 0, first: Int = 100, orderBy: TokenComplianceModuleConfig_orderBy, orderDirection: OrderDirection, where: TokenComplianceModuleConfig_filter): [TokenComplianceModuleConfig!]! @fetchAll
+  complianceModuleConfigs(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TokenComplianceModuleConfig_orderBy
+    orderDirection: OrderDirection
+    where: TokenComplianceModuleConfig_filter
+  ): [TokenComplianceModuleConfig!]! @fetchAll
   stats: TokenStatsState
   distributionStats: TokenDistributionStatsState
 }
@@ -6634,7 +7062,9 @@ input TokenBalance_filter {
   availableExact_in: [BigInt!]
   availableExact_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenBalance_filter]
   or: [TokenBalance_filter]
@@ -6781,7 +7211,9 @@ input TokenBondStatsData_filter {
   coveredPercentage_in: [BigDecimal!]
   coveredPercentage_not_in: [BigDecimal!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenBondStatsData_filter]
   or: [TokenBondStatsData_filter]
@@ -6886,7 +7318,9 @@ input TokenBondStatsState_filter {
   coveredPercentage_in: [BigDecimal!]
   coveredPercentage_not_in: [BigDecimal!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenBondStatsState_filter]
   or: [TokenBondStatsState_filter]
@@ -6923,7 +7357,9 @@ input TokenBondStats_filter {
   bond: String
   bond_: TokenBond_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenBondStats_filter]
   or: [TokenBondStats_filter]
@@ -7007,7 +7443,9 @@ input TokenBond_filter {
   denominationAsset_: Token_filter
   stats_: TokenBondStatsState_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenBond_filter]
   or: [TokenBond_filter]
@@ -7074,7 +7512,9 @@ input TokenCapped_filter {
   capExact_in: [BigInt!]
   capExact_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenCapped_filter]
   or: [TokenCapped_filter]
@@ -7215,7 +7655,9 @@ input TokenCollateralStatsData_filter {
   collateralUsedExact_in: [BigInt!]
   collateralUsedExact_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenCollateralStatsData_filter]
   or: [TokenCollateralStatsData_filter]
@@ -7261,7 +7703,9 @@ input TokenCollateralStats_filter {
   token: String
   token_: Token_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenCollateralStats_filter]
   or: [TokenCollateralStats_filter]
@@ -7348,7 +7792,9 @@ input TokenCollateral_filter {
   collateralExact_in: [BigInt!]
   collateralExact_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenCollateral_filter]
   or: [TokenCollateral_filter]
@@ -7450,7 +7896,9 @@ input TokenComplianceModuleConfig_filter {
   parameters_not_ends_with_nocase: String
   parameters_: ComplianceModuleParameters_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenComplianceModuleConfig_filter]
   or: [TokenComplianceModuleConfig_filter]
@@ -7691,7 +8139,9 @@ input TokenDistributionStatsData_filter {
   totalValueSegment5Exact_in: [BigInt!]
   totalValueSegment5Exact_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenDistributionStatsData_filter]
   or: [TokenDistributionStatsData_filter]
@@ -7733,7 +8183,13 @@ enum TokenDistributionStatsData_orderBy {
 type TokenDistributionStatsState {
   id: Bytes!
   token: Token!
-  topHolders(skip: Int = 0, first: Int = 100, orderBy: TokenTopHolder_orderBy, orderDirection: OrderDirection, where: TokenTopHolder_filter): [TokenTopHolder!]! @fetchAll
+  topHolders(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TokenTopHolder_orderBy
+    orderDirection: OrderDirection
+    where: TokenTopHolder_filter
+  ): [TokenTopHolder!]! @fetchAll
   percentageOwnedByTop5Holders: BigDecimal!
   balancesCountSegment1: Int!
   totalValueSegment1: BigDecimal!
@@ -7914,7 +8370,9 @@ input TokenDistributionStatsState_filter {
   totalValueSegment5Exact_in: [BigInt!]
   totalValueSegment5Exact_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenDistributionStatsState_filter]
   or: [TokenDistributionStatsState_filter]
@@ -7969,7 +8427,9 @@ input TokenDistributionStats_filter {
   token: String
   token_: Token_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenDistributionStats_filter]
   or: [TokenDistributionStats_filter]
@@ -8028,7 +8488,13 @@ type TokenFactory {
   typeId: String!
   tokenFactoryRegistry: TokenFactoryRegistry
   account: Account!
-  tokens(skip: Int = 0, first: Int = 100, orderBy: Token_orderBy, orderDirection: OrderDirection, where: Token_filter): [Token!]! @fetchAll
+  tokens(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Token_orderBy
+    orderDirection: OrderDirection
+    where: Token_filter
+  ): [Token!]! @fetchAll
   hasTokens: Boolean!
   tokenImplementsERC3643: Boolean!
   tokenImplementsSMART: Boolean!
@@ -8040,7 +8506,13 @@ type TokenFactoryRegistry {
   system: System!
   account: Account!
   deployedInTransaction: Bytes!
-  tokenFactories(skip: Int = 0, first: Int = 100, orderBy: TokenFactory_orderBy, orderDirection: OrderDirection, where: TokenFactory_filter): [TokenFactory!]! @fetchAll
+  tokenFactories(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TokenFactory_orderBy
+    orderDirection: OrderDirection
+    where: TokenFactory_filter
+  ): [TokenFactory!]! @fetchAll
 }
 
 input TokenFactoryRegistry_filter {
@@ -8108,7 +8580,9 @@ input TokenFactoryRegistry_filter {
   deployedInTransaction_not_contains: Bytes
   tokenFactories_: TokenFactory_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenFactoryRegistry_filter]
   or: [TokenFactoryRegistry_filter]
@@ -8242,7 +8716,9 @@ input TokenFactory_filter {
   tokenExtensions_not_contains: [TokenExtension!]
   tokenExtensions_not_contains_nocase: [TokenExtension!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenFactory_filter]
   or: [TokenFactory_filter]
@@ -8287,7 +8763,13 @@ type TokenFixedYieldSchedule {
   denominationAsset: Token!
   currentPeriod: TokenFixedYieldSchedulePeriod
   nextPeriod: TokenFixedYieldSchedulePeriod
-  periods(skip: Int = 0, first: Int = 100, orderBy: TokenFixedYieldSchedulePeriod_orderBy, orderDirection: OrderDirection, where: TokenFixedYieldSchedulePeriod_filter): [TokenFixedYieldSchedulePeriod!]! @fetchAll
+  periods(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TokenFixedYieldSchedulePeriod_orderBy
+    orderDirection: OrderDirection
+    where: TokenFixedYieldSchedulePeriod_filter
+  ): [TokenFixedYieldSchedulePeriod!]! @fetchAll
   deployedInTransaction: Bytes!
 }
 
@@ -8412,7 +8894,9 @@ input TokenFixedYieldSchedulePeriod_filter {
   deployedInTransaction_contains: Bytes
   deployedInTransaction_not_contains: Bytes
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenFixedYieldSchedulePeriod_filter]
   or: [TokenFixedYieldSchedulePeriod_filter]
@@ -8682,7 +9166,9 @@ input TokenFixedYieldSchedule_filter {
   deployedInTransaction_contains: Bytes
   deployedInTransaction_not_contains: Bytes
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenFixedYieldSchedule_filter]
   or: [TokenFixedYieldSchedule_filter]
@@ -8788,7 +9274,9 @@ input TokenFund_filter {
   managementFeeBps_in: [Int!]
   managementFeeBps_not_in: [Int!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenFund_filter]
   or: [TokenFund_filter]
@@ -8820,7 +9308,9 @@ input TokenPausable_filter {
   paused_in: [Boolean!]
   paused_not_in: [Boolean!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenPausable_filter]
   or: [TokenPausable_filter]
@@ -8865,7 +9355,9 @@ input TokenRedeemable_filter {
   redeemedAmountExact_in: [BigInt!]
   redeemedAmountExact_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenRedeemable_filter]
   or: [TokenRedeemable_filter]
@@ -9040,7 +9532,9 @@ input TokenStatsData_filter {
   transferredExact_in: [BigInt!]
   transferredExact_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenStatsData_filter]
   or: [TokenStatsData_filter]
@@ -9120,7 +9614,9 @@ input TokenStatsState_filter {
   balancesCount_in: [Int!]
   balancesCount_not_in: [Int!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenStatsState_filter]
   or: [TokenStatsState_filter]
@@ -9160,7 +9656,9 @@ input TokenStats_filter {
   token_: Token_filter
   type: String
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenStats_filter]
   or: [TokenStats_filter]
@@ -9280,7 +9778,9 @@ input TokenTopHolder_filter {
   rank_in: [Int!]
   rank_not_in: [Int!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenTopHolder_filter]
   or: [TokenTopHolder_filter]
@@ -9410,7 +9910,9 @@ input TokenTypeStatsData_filter {
   percentageOfTotalSupply_in: [BigDecimal!]
   percentageOfTotalSupply_not_in: [BigDecimal!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenTypeStatsData_filter]
   or: [TokenTypeStatsData_filter]
@@ -9513,7 +10015,9 @@ input TokenTypeStatsState_filter {
   percentageOfTotalSupply_in: [BigDecimal!]
   percentageOfTotalSupply_not_in: [BigDecimal!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenTypeStatsState_filter]
   or: [TokenTypeStatsState_filter]
@@ -9547,7 +10051,9 @@ input TokenTypeStats_filter {
   system_: System_filter
   type: String
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenTypeStats_filter]
   or: [TokenTypeStats_filter]
@@ -9602,7 +10108,9 @@ input TokenYield_filter {
   schedule_not_ends_with_nocase: String
   schedule_: TokenFixedYieldSchedule_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TokenYield_filter]
   or: [TokenYield_filter]
@@ -10010,7 +10518,9 @@ input Token_filter {
   stats_: TokenStatsState_filter
   distributionStats_: TokenDistributionStatsState_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [Token_filter]
   or: [Token_filter]
@@ -10122,7 +10632,13 @@ type TopicScheme {
 type TopicSchemeRegistry {
   id: Bytes!
   account: Account!
-  schemes(skip: Int = 0, first: Int = 100, orderBy: TopicScheme_orderBy, orderDirection: OrderDirection, where: TopicScheme_filter): [TopicScheme!]! @fetchAll
+  schemes(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TopicScheme_orderBy
+    orderDirection: OrderDirection
+    where: TopicScheme_filter
+  ): [TopicScheme!]! @fetchAll
   deployedInTransaction: Bytes!
 }
 
@@ -10170,7 +10686,9 @@ input TopicSchemeRegistry_filter {
   deployedInTransaction_contains: Bytes
   deployedInTransaction_not_contains: Bytes
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TopicSchemeRegistry_filter]
   or: [TopicSchemeRegistry_filter]
@@ -10283,7 +10801,9 @@ input TopicScheme_filter {
   deployedInTransaction_contains: Bytes
   deployedInTransaction_not_contains: Bytes
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TopicScheme_filter]
   or: [TopicScheme_filter]
@@ -10305,7 +10825,13 @@ type TrustedIssuer {
   id: Bytes!
   deployedInTransaction: Bytes!
   registry: TrustedIssuersRegistry!
-  claimTopics(skip: Int = 0, first: Int = 100, orderBy: TopicScheme_orderBy, orderDirection: OrderDirection, where: TopicScheme_filter): [TopicScheme!]! @fetchAll
+  claimTopics(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TopicScheme_orderBy
+    orderDirection: OrderDirection
+    where: TopicScheme_filter
+  ): [TopicScheme!]! @fetchAll
 }
 
 input TrustedIssuer_filter {
@@ -10358,7 +10884,9 @@ input TrustedIssuer_filter {
   claimTopics_not_contains_nocase: [String!]
   claimTopics_: TopicScheme_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TrustedIssuer_filter]
   or: [TrustedIssuer_filter]
@@ -10377,7 +10905,13 @@ type TrustedIssuersRegistry {
   id: Bytes!
   account: Account!
   deployedInTransaction: Bytes!
-  trustedIssuers(skip: Int = 0, first: Int = 100, orderBy: TrustedIssuer_orderBy, orderDirection: OrderDirection, where: TrustedIssuer_filter): [TrustedIssuer!]! @fetchAll
+  trustedIssuers(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TrustedIssuer_orderBy
+    orderDirection: OrderDirection
+    where: TrustedIssuer_filter
+  ): [TrustedIssuer!]! @fetchAll
 }
 
 input TrustedIssuersRegistry_filter {
@@ -10424,7 +10958,9 @@ input TrustedIssuersRegistry_filter {
   deployedInTransaction_not_contains: Bytes
   trustedIssuers_: TrustedIssuer_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [TrustedIssuersRegistry_filter]
   or: [TrustedIssuersRegistry_filter]
@@ -10450,13 +10986,31 @@ type Vault {
   account: Account!
   accessControl: AccessControl!
   required: BigInt!
-  signers(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]! @fetchAll
-  transactions(skip: Int = 0, first: Int = 100, orderBy: VaultTransaction_orderBy, orderDirection: OrderDirection, where: VaultTransaction_filter): [VaultTransaction!]! @fetchAll
+  signers(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+  ): [Account!]! @fetchAll
+  transactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: VaultTransaction_orderBy
+    orderDirection: OrderDirection
+    where: VaultTransaction_filter
+  ): [VaultTransaction!]! @fetchAll
   balance: BigDecimal!
   balanceExact: BigInt!
   deployedInTransaction: Bytes!
   weightedSignaturesEnabled: Boolean!
-  signerWeights(skip: Int = 0, first: Int = 100, orderBy: VaultSigner_orderBy, orderDirection: OrderDirection, where: VaultSigner_filter): [VaultSigner!]! @fetchAll
+  signerWeights(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: VaultSigner_orderBy
+    orderDirection: OrderDirection
+    where: VaultSigner_filter
+  ): [VaultSigner!]! @fetchAll
   onchainId: Account
 }
 
@@ -10520,7 +11074,9 @@ input VaultContractCall_filter {
   returnData_contains: Bytes
   returnData_not_contains: Bytes
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [VaultContractCall_filter]
   or: [VaultContractCall_filter]
@@ -10594,7 +11150,9 @@ input VaultERC20Transfer_filter {
   amountExact_in: [BigInt!]
   amountExact_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [VaultERC20Transfer_filter]
   or: [VaultERC20Transfer_filter]
@@ -10617,7 +11175,13 @@ type VaultFactory {
   deployedInTransaction: Bytes!
   systemAddon: SystemAddon!
   account: Account!
-  vaults(skip: Int = 0, first: Int = 100, orderBy: Vault_orderBy, orderDirection: OrderDirection, where: Vault_filter): [Vault!]! @fetchAll
+  vaults(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Vault_orderBy
+    orderDirection: OrderDirection
+    where: Vault_filter
+  ): [Vault!]! @fetchAll
 }
 
 input VaultFactory_filter {
@@ -10685,7 +11249,9 @@ input VaultFactory_filter {
   account_: Account_filter
   vaults_: Vault_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [VaultFactory_filter]
   or: [VaultFactory_filter]
@@ -10788,7 +11354,9 @@ input VaultSigner_filter {
   deployedInTransaction_contains: Bytes
   deployedInTransaction_not_contains: Bytes
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [VaultSigner_filter]
   or: [VaultSigner_filter]
@@ -10826,7 +11394,13 @@ type VaultTransaction {
   executed: Boolean!
   confirmationsRequired: BigInt!
   confirmationsCount: BigInt!
-  confirmations(skip: Int = 0, first: Int = 100, orderBy: VaultTransactionConfirmation_orderBy, orderDirection: OrderDirection, where: VaultTransactionConfirmation_filter): [VaultTransactionConfirmation!]! @fetchAll
+  confirmations(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: VaultTransactionConfirmation_orderBy
+    orderDirection: OrderDirection
+    where: VaultTransactionConfirmation_filter
+  ): [VaultTransactionConfirmation!]! @fetchAll
   submittedBy: Account!
   submittedAt: BigInt!
   executedAt: BigInt
@@ -10930,7 +11504,9 @@ input VaultTransactionConfirmation_filter {
   deployedInTransaction_contains: Bytes
   deployedInTransaction_not_contains: Bytes
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [VaultTransactionConfirmation_filter]
   or: [VaultTransactionConfirmation_filter]
@@ -11202,7 +11778,9 @@ input VaultTransaction_filter {
   deployedInTransaction_contains: Bytes
   deployedInTransaction_not_contains: Bytes
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [VaultTransaction_filter]
   or: [VaultTransaction_filter]
@@ -11430,7 +12008,9 @@ input Vault_filter {
   onchainId_not_ends_with_nocase: String
   onchainId_: Account_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [Vault_filter]
   or: [Vault_filter]
@@ -11530,7 +12110,9 @@ input VestingAirdrop_filter {
   linearVestingStrategy_not_ends_with_nocase: String
   linearVestingStrategy_: LinearVestingStrategy_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [VestingAirdrop_filter]
   or: [VestingAirdrop_filter]
@@ -11554,8 +12136,20 @@ type XvPSettlement {
   executed: Boolean!
   cancelled: Boolean!
   createdAt: BigInt!
-  flows(skip: Int = 0, first: Int = 100, orderBy: XvPSettlementFlow_orderBy, orderDirection: OrderDirection, where: XvPSettlementFlow_filter): [XvPSettlementFlow!]! @fetchAll
-  approvals(skip: Int = 0, first: Int = 100, orderBy: XvPSettlementApproval_orderBy, orderDirection: OrderDirection, where: XvPSettlementApproval_filter): [XvPSettlementApproval!]! @fetchAll
+  flows(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: XvPSettlementFlow_orderBy
+    orderDirection: OrderDirection
+    where: XvPSettlementFlow_filter
+  ): [XvPSettlementFlow!]! @fetchAll
+  approvals(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: XvPSettlementApproval_orderBy
+    orderDirection: OrderDirection
+    where: XvPSettlementApproval_filter
+  ): [XvPSettlementApproval!]! @fetchAll
   deployedInTransaction: Bytes!
 }
 
@@ -11633,7 +12227,9 @@ input XvPSettlementApproval_filter {
   timestamp_in: [BigInt!]
   timestamp_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [XvPSettlementApproval_filter]
   or: [XvPSettlementApproval_filter]
@@ -11782,7 +12378,9 @@ input XvPSettlementFlow_filter {
   amountExact_in: [BigInt!]
   amountExact_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [XvPSettlementFlow_filter]
   or: [XvPSettlementFlow_filter]
@@ -11899,7 +12497,9 @@ input XvPSettlement_filter {
   deployedInTransaction_contains: Bytes
   deployedInTransaction_not_contains: Bytes
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [XvPSettlement_filter]
   or: [XvPSettlement_filter]
@@ -11919,33 +12519,49 @@ enum XvPSettlement_orderBy {
 }
 
 type _Block_ {
-  """The hash of the block"""
+  """
+  The hash of the block
+  """
   hash: Bytes
 
-  """The block number"""
+  """
+  The block number
+  """
   number: Int!
 
-  """Integer representation of the timestamp stored in blocks for the chain"""
+  """
+  Integer representation of the timestamp stored in blocks for the chain
+  """
   timestamp: Int
 
-  """The hash of the parent block"""
+  """
+  The hash of the parent block
+  """
   parentHash: Bytes
 }
 
-"""The type for the top-level _meta field"""
+"""
+The type for the top-level _meta field
+"""
 type _Meta_ {
   "Information about a specific subgraph block. The hash of the block\nwill be null if the _meta field has a block constraint that asks for\na block number. It will be filled if the _meta field has no block constraint\nand therefore asks for the latest  block\n"
   block: _Block_!
 
-  """The deployment ID"""
+  """
+  The deployment ID
+  """
   deployment: String!
 
-  """If `true`, the subgraph encountered indexing errors at some past block"""
+  """
+  If `true`, the subgraph encountered indexing errors at some past block
+  """
   hasIndexingErrors: Boolean!
 }
 
 enum _SubgraphErrorPolicy_ {
-  """Data will be returned even if the subgraph has indexing errors"""
+  """
+  Data will be returned even if the subgraph has indexing errors
+  """
   allow
 
   """

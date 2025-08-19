@@ -51,12 +51,12 @@ describe("Token Stats: Total Supply", () => {
       });
 
       // Business logic: if history exists, it must be valid
-      result.totalSupplyHistory.forEach((item) => {
+      for (const item of result.totalSupplyHistory) {
         // Core business rules for supply history
         expect(item.timestamp).toBeGreaterThan(0); // Valid timestamp
         expect(item.timestamp).toBeLessThanOrEqual(Date.now() / 1000); // No future dates
         expect(item.totalSupply).toBeGreaterThanOrEqual(0); // Supply can't be negative
-      });
+      }
     });
   });
 

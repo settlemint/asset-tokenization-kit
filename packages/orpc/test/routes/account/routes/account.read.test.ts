@@ -44,12 +44,12 @@ describe("account.read (unit)", () => {
 
   beforeEach(() => {
     resetAllMocks();
-    handler = getPublicHandler()!;
-    errors = createMockErrors();
-
-    if (!handler) {
+    const capturedHandler = getPublicHandler();
+    if (!capturedHandler) {
       throw new Error("Handler not captured - check mock setup");
     }
+    handler = capturedHandler;
+    errors = createMockErrors();
   });
 
   it("returns account payload when found", async () => {
@@ -57,7 +57,7 @@ describe("account.read (unit)", () => {
     const context = createBaseContext();
 
     // Mock TheGraph query to return account data
-    (context.theGraphClient.query as Mock<any>).mockResolvedValue({
+    (context.theGraphClient.query as Mock<(...args: unknown[]) => Promise<unknown>>).mockResolvedValue({
       account: { id: ADDRESS, country: null, identity: null },
     });
 
@@ -85,7 +85,7 @@ describe("account.read (unit)", () => {
     const context = createBaseContext();
 
     // Mock TheGraph query to return null (account not found)
-    (context.theGraphClient.query as Mock<any>).mockResolvedValue({
+    (context.theGraphClient.query as Mock<(...args: unknown[]) => Promise<unknown>>).mockResolvedValue({
       account: null,
     });
 
@@ -108,7 +108,7 @@ describe("account.read (unit)", () => {
     const context = createBaseContext();
 
     // Mock TheGraph query to return account with identity and country
-    (context.theGraphClient.query as Mock<any>).mockResolvedValue({
+    (context.theGraphClient.query as Mock<(...args: unknown[]) => Promise<unknown>>).mockResolvedValue({
       account: {
         id: ADDRESS,
         country: "US",

@@ -41,10 +41,7 @@ import { ClientError } from "graphql-request";
 import { z } from "zod";
 
 // Import the middleware
-import {
-  portalMiddleware,
-  type ValidatedPortalClient,
-} from "../../../src/middlewares/services/portal.middleware";
+import { portalMiddleware, type ValidatedPortalClient } from "../../../src/middlewares/services/portal.middleware";
 
 // Note: This test runs in Node environment (@bun:test-environment node)
 // to avoid browser environment checks in the SDK
@@ -79,9 +76,7 @@ import {
 function createMockDocument(query: string): TadaDocumentNode<unknown, unknown> {
   const doc = parse(query) as unknown as TadaDocumentNode<unknown, unknown>;
   // Add operation name metadata for better testing
-  const operationName = doc.definitions.find(
-    (def) => def.kind === Kind.OPERATION_DEFINITION,
-  )?.name?.value;
+  const operationName = doc.definitions.find((def) => def.kind === Kind.OPERATION_DEFINITION)?.name?.value;
   if (operationName) {
     (doc as unknown as Record<string, unknown>).__meta = { operationName };
   }
@@ -307,9 +302,7 @@ describe("portal.middleware", () => {
           },
         };
 
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce(mockResponse);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(mockResponse);
 
         const result = await client.mutate(CREATE_TOKEN_MUTATION, {
           from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
@@ -324,7 +317,7 @@ describe("portal.middleware", () => {
           },
           expect.objectContaining({
             "x-request-id": expect.stringMatching(/^atk-mut-/),
-          }),
+          })
         );
       });
 
@@ -360,9 +353,7 @@ describe("portal.middleware", () => {
           },
         };
 
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce(mockResponse);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(mockResponse);
 
         const result = await client.mutate(NESTED_MUTATION, {
           from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
@@ -383,9 +374,7 @@ describe("portal.middleware", () => {
           transactionHash: mockTxHash,
         };
 
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce(mockResponse);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(mockResponse);
 
         const result = await client.mutate(TOP_LEVEL_MUTATION, {
           from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
@@ -411,14 +400,12 @@ describe("portal.middleware", () => {
           },
         };
 
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce(mockResponse);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(mockResponse);
 
         await expect(
           client.mutate(NO_TX_MUTATION, {
             from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
-          }),
+          })
         ).rejects.toThrow();
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
@@ -447,25 +434,21 @@ describe("portal.middleware", () => {
           },
         };
 
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce(mockResponse);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(mockResponse);
 
         await expect(
           client.mutate(INVALID_TX_MUTATION, {
             from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
-          }),
+          })
         ).rejects.toThrow();
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith(
           expect.objectContaining({
             message: expect.stringContaining("Invalid transaction hash format"),
             data: expect.objectContaining({
-              responseValidation: expect.stringContaining(
-                "Invalid transaction hash at",
-              ),
+              responseValidation: expect.stringContaining("Invalid transaction hash at"),
             }),
-          }),
+          })
         );
       });
     });
@@ -487,9 +470,7 @@ describe("portal.middleware", () => {
           },
         };
 
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce(mockResponse);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(mockResponse);
 
         const result = await client.mutate(SIMPLE_MUTATION, {
           from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
@@ -540,9 +521,7 @@ describe("portal.middleware", () => {
         };
 
         // Initial mutation response
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce(mockResponse);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(mockResponse);
 
         // Transaction status checks
         (portalClient.request as ReturnType<typeof jest.fn>)
@@ -589,9 +568,7 @@ describe("portal.middleware", () => {
         });
 
         // Fast-forward through all timers
-        await (
-          jest as unknown as { runAllTimersAsync: () => Promise<void> }
-        ).runAllTimersAsync();
+        await (jest as unknown as { runAllTimersAsync: () => Promise<void> }).runAllTimersAsync();
 
         const result = await resultPromise;
 
@@ -602,8 +579,7 @@ describe("portal.middleware", () => {
         expect(mockTheGraphClient.query).toHaveBeenCalledTimes(2); // 2 indexing checks
 
         // Verify transaction query structure
-        const txQueryCall = (portalClient.request as ReturnType<typeof jest.fn>)
-          .mock.calls[1];
+        const txQueryCall = (portalClient.request as ReturnType<typeof jest.fn>).mock.calls[1];
         expect(txQueryCall?.[1]).toEqual({ transactionHash: mockTxHash });
 
         // Verify indexing query structure
@@ -633,14 +609,10 @@ describe("portal.middleware", () => {
           },
         };
 
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce(mockResponse);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(mockResponse);
 
         // Transaction reverted
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce({
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce({
           getTransaction: {
             receipt: {
               status: "Reverted",
@@ -654,15 +626,13 @@ describe("portal.middleware", () => {
         await expect(
           client.mutate(REVERT_MUTATION, {
             from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
-          }),
+          })
         ).rejects.toThrow();
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
           message: "Transaction reverted: Insufficient balance",
           data: expect.objectContaining({
-            responseValidation: expect.stringContaining(
-              "reverted with status Reverted",
-            ),
+            responseValidation: expect.stringContaining("reverted with status Reverted"),
           }),
         });
       });
@@ -686,15 +656,11 @@ describe("portal.middleware", () => {
           },
         };
 
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce(mockResponse);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(mockResponse);
 
         // Mock all 30 attempts returning null receipt
         for (let i = 0; i < 30; i++) {
-          (
-            portalClient.request as ReturnType<typeof jest.fn>
-          ).mockResolvedValueOnce({
+          (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce({
             getTransaction: {
               receipt: null,
             },
@@ -708,30 +674,22 @@ describe("portal.middleware", () => {
           })
           .catch((error: unknown) => {
             // Catch the error to prevent unhandled rejection
-            expect((error as Error).message).toBe(
-              "Transaction dropped from mempool",
-            );
+            expect((error as Error).message).toBe("Transaction dropped from mempool");
             return error;
           });
 
         // Advance all timers to trigger the timeout
-        await (
-          jest as unknown as { runAllTimersAsync: () => Promise<void> }
-        ).runAllTimersAsync();
+        await (jest as unknown as { runAllTimersAsync: () => Promise<void> }).runAllTimersAsync();
 
         // Wait for the promise to settle
         const error = await resultPromise;
         expect(error).toBeInstanceOf(Error);
-        expect((error as Error).message).toBe(
-          "Transaction dropped from mempool",
-        );
+        expect((error as Error).message).toBe("Transaction dropped from mempool");
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
           message: "Transaction dropped from mempool",
           data: expect.objectContaining({
-            responseValidation: expect.stringContaining(
-              "dropped after 30 attempts",
-            ),
+            responseValidation: expect.stringContaining("dropped after 30 attempts"),
           }),
         });
 
@@ -755,9 +713,7 @@ describe("portal.middleware", () => {
           },
         };
 
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce(mockResponse);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(mockResponse);
 
         // Mock Date.now to simulate timeout
         const originalDateNow = Date.now;
@@ -768,9 +724,7 @@ describe("portal.middleware", () => {
         });
 
         // Transaction not mined yet
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce({
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce({
           getTransaction: {
             receipt: null,
           },
@@ -779,7 +733,7 @@ describe("portal.middleware", () => {
         await expect(
           client.mutate(TIMEOUT_MUTATION, {
             from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
-          }),
+          })
         ).rejects.toThrow();
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
@@ -809,14 +763,10 @@ describe("portal.middleware", () => {
           },
         };
 
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce(mockResponse);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(mockResponse);
 
         // Transaction mined successfully
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce({
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce({
           getTransaction: {
             receipt: {
               status: "Success",
@@ -848,7 +798,7 @@ describe("portal.middleware", () => {
         await expect(
           client.mutate(INDEXING_TIMEOUT_MUTATION, {
             from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
-          }),
+          })
         ).rejects.toThrow();
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
@@ -865,22 +815,17 @@ describe("portal.middleware", () => {
 
     describe("error handling", () => {
       test("should handle GraphQL errors from Portal", async () => {
-        const graphQLErrors = [
-          { message: "Unauthorized" },
-          { message: "Invalid input" },
-        ];
+        const graphQLErrors = [{ message: "Unauthorized" }, { message: "Invalid input" }];
 
         const clientError = new ClientError(
           {
             data: null,
             errors: graphQLErrors,
           } as never,
-          { query: "mutation { invalid }" } as never,
+          { query: "mutation { invalid }" } as never
         );
 
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockRejectedValueOnce(clientError);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockRejectedValueOnce(clientError);
 
         const ERROR_MUTATION = createMockDocument(`
           mutation ErrorMutation {
@@ -893,7 +838,7 @@ describe("portal.middleware", () => {
         await expect(
           client.mutate(ERROR_MUTATION, {
             from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
-          }),
+          })
         ).rejects.toThrow();
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
@@ -910,9 +855,7 @@ describe("portal.middleware", () => {
 
       test("should handle network errors", async () => {
         const networkError = new Error("Network timeout");
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockRejectedValueOnce(networkError);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockRejectedValueOnce(networkError);
 
         const NETWORK_ERROR_MUTATION = createMockDocument(`
           mutation NetworkError {
@@ -925,7 +868,7 @@ describe("portal.middleware", () => {
         await expect(
           client.mutate(NETWORK_ERROR_MUTATION, {
             from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
-          }),
+          })
         ).rejects.toThrow();
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
@@ -981,9 +924,7 @@ describe("portal.middleware", () => {
           },
         };
 
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce(mockResponse);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(mockResponse);
 
         const schema = z.object({
           getToken: z.object({
@@ -995,11 +936,7 @@ describe("portal.middleware", () => {
           }),
         });
 
-        const result = await client.query(
-          GET_TOKEN_QUERY,
-          { id: "0x123" },
-          schema,
-        );
+        const result = await client.query(GET_TOKEN_QUERY, { id: "0x123" }, schema);
 
         expect(result.getToken.name).toBe("Test Token");
         expect(result.getToken.decimals).toBe(18);
@@ -1009,7 +946,7 @@ describe("portal.middleware", () => {
           { id: "0x123" },
           expect.objectContaining({
             "x-request-id": expect.stringMatching(/^atk-qry-/),
-          }),
+          })
         );
       });
 
@@ -1059,9 +996,7 @@ describe("portal.middleware", () => {
           },
         };
 
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce(mockResponse);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(mockResponse);
 
         const schema = z.object({
           getAccount: z.object({
@@ -1076,16 +1011,12 @@ describe("portal.middleware", () => {
                   number: z.number(),
                   timestamp: z.number(),
                 }),
-              }),
+              })
             ),
           }),
         });
 
-        const result = await client.query(
-          COMPLEX_QUERY,
-          { address: "0xabc" },
-          schema,
-        );
+        const result = await client.query(COMPLEX_QUERY, { address: "0xabc" }, schema);
 
         expect(result.getAccount.transactions).toHaveLength(2);
         expect(result.getAccount.transactions[0]?.block.number).toBe(12_345);
@@ -1112,9 +1043,7 @@ describe("portal.middleware", () => {
           },
         };
 
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce(mockResponse);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(mockResponse);
 
         const schema = z.object({
           getEntity: z.object({
@@ -1143,9 +1072,7 @@ describe("portal.middleware", () => {
           }
         `);
 
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce(null);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(null);
 
         const schema = z.object({
           getToken: z.object({
@@ -1154,9 +1081,7 @@ describe("portal.middleware", () => {
           }),
         });
 
-        await expect(
-          client.query(NULL_QUERY, { id: "nonexistent" }, schema),
-        ).rejects.toThrow();
+        await expect(client.query(NULL_QUERY, { id: "nonexistent" }, schema)).rejects.toThrow();
 
         expect(mockErrors.NOT_FOUND).toHaveBeenCalled();
       });
@@ -1178,9 +1103,7 @@ describe("portal.middleware", () => {
           },
         };
 
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce(mockResponse);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(mockResponse);
 
         const schema = z.object({
           getData: z.object({
@@ -1189,9 +1112,7 @@ describe("portal.middleware", () => {
           }),
         });
 
-        await expect(
-          client.query(MISMATCH_QUERY, {}, schema),
-        ).rejects.toThrow();
+        await expect(client.query(MISMATCH_QUERY, {}, schema)).rejects.toThrow();
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -1200,7 +1121,7 @@ describe("portal.middleware", () => {
               responseValidation: expect.any(String),
             }),
             cause: expect.any(z.ZodError),
-          }),
+          })
         );
       });
 
@@ -1223,9 +1144,7 @@ describe("portal.middleware", () => {
           },
         };
 
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce(mockResponse);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(mockResponse);
 
         const schema = z.object({
           getUser: z.object({
@@ -1235,37 +1154,30 @@ describe("portal.middleware", () => {
           }),
         });
 
-        await expect(
-          client.query(MISSING_FIELD_QUERY, {}, schema),
-        ).rejects.toThrow();
+        await expect(client.query(MISSING_FIELD_QUERY, {}, schema)).rejects.toThrow();
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith(
           expect.objectContaining({
             message: "Invalid response format from MissingField",
             cause: expect.any(z.ZodError),
-          }),
+          })
         );
       });
     });
 
     describe("error handling", () => {
       test("should handle GraphQL errors from Portal", async () => {
-        const graphQLErrors = [
-          { message: "Field not found" },
-          { message: "Permission denied" },
-        ];
+        const graphQLErrors = [{ message: "Field not found" }, { message: "Permission denied" }];
 
         const clientError = new ClientError(
           {
             data: null,
             errors: graphQLErrors,
           } as never,
-          { query: "query { invalid }" } as never,
+          { query: "query { invalid }" } as never
         );
 
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockRejectedValueOnce(clientError);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockRejectedValueOnce(clientError);
 
         const ERROR_QUERY = createMockDocument(`
           query ErrorQuery {
@@ -1276,11 +1188,7 @@ describe("portal.middleware", () => {
         `);
 
         await expect(
-          client.query(
-            ERROR_QUERY,
-            {},
-            z.object({ getData: z.object({ id: z.string() }) }),
-          ),
+          client.query(ERROR_QUERY, {}, z.object({ getData: z.object({ id: z.string() }) }))
         ).rejects.toThrow();
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
@@ -1295,9 +1203,7 @@ describe("portal.middleware", () => {
 
       test("should handle network errors", async () => {
         const networkError = new Error("Connection refused");
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockRejectedValueOnce(networkError);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockRejectedValueOnce(networkError);
 
         const NETWORK_QUERY = createMockDocument(`
           query NetworkQuery {
@@ -1308,11 +1214,7 @@ describe("portal.middleware", () => {
         `);
 
         await expect(
-          client.query(
-            NETWORK_QUERY,
-            {},
-            z.object({ getData: z.object({ id: z.string() }) }),
-          ),
+          client.query(NETWORK_QUERY, {}, z.object({ getData: z.object({ id: z.string() }) }))
         ).rejects.toThrow();
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
@@ -1359,9 +1261,7 @@ describe("portal.middleware", () => {
               id: "1",
             },
           },
-          mutation: createMockDocument(
-            "mutation Nested { createToken { transactionHash id } }",
-          ),
+          mutation: createMockDocument("mutation Nested { createToken { transactionHash id } }"),
         },
         {
           name: "deeply nested",
@@ -1374,26 +1274,20 @@ describe("portal.middleware", () => {
               },
             },
           },
-          mutation: createMockDocument(
-            "mutation Deep { data { result { transaction { transactionHash } } } }",
-          ),
+          mutation: createMockDocument("mutation Deep { data { result { transaction { transactionHash } } } }"),
         },
         {
           name: "in array",
           response: {
             transactions: [{ id: "1" }, { transactionHash: createTxHash(4) }],
           },
-          mutation: createMockDocument(
-            "mutation Array { transactions { id transactionHash } }",
-          ),
+          mutation: createMockDocument("mutation Array { transactions { id transactionHash } }"),
         },
       ];
 
       for (const testCase of testCases) {
         (portalClient.request as ReturnType<typeof jest.fn>).mockReset();
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce(testCase.response);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(testCase.response);
 
         const result = await client.mutate(testCase.mutation, {
           from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
@@ -1418,12 +1312,10 @@ describe("portal.middleware", () => {
       }) => Promise<unknown>;
 
       let capturedContext: Record<string, unknown> | undefined;
-      const customNext = jest.fn(
-        (params: { context: Record<string, unknown> }) => {
-          capturedContext = params?.context;
-          return { context: params?.context };
-        },
-      );
+      const customNext = jest.fn((params: { context: Record<string, unknown> }) => {
+        capturedContext = params?.context;
+        return { context: params?.context };
+      });
 
       await middlewareHandler({
         context: customContext,
@@ -1434,12 +1326,8 @@ describe("portal.middleware", () => {
       expect(customNext).toHaveBeenCalledTimes(1);
       expect(capturedContext).toBeDefined();
       expect(capturedContext?.portalClient).toBeDefined();
-      expect(
-        (capturedContext?.portalClient as Record<string, unknown>)?.mutate,
-      ).toBeInstanceOf(Function);
-      expect(
-        (capturedContext?.portalClient as Record<string, unknown>)?.query,
-      ).toBeInstanceOf(Function);
+      expect((capturedContext?.portalClient as Record<string, unknown>)?.mutate).toBeInstanceOf(Function);
+      expect((capturedContext?.portalClient as Record<string, unknown>)?.query).toBeInstanceOf(Function);
     });
   });
 
@@ -1473,9 +1361,7 @@ describe("portal.middleware", () => {
       `);
 
       const mockTxHash = createTxHash(10);
-      (
-        portalClient.request as ReturnType<typeof jest.fn>
-      ).mockResolvedValueOnce({
+      (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce({
         action: { transactionHash: mockTxHash },
       });
 
@@ -1502,9 +1388,7 @@ describe("portal.middleware", () => {
         },
       };
 
-      (
-        portalClient.request as ReturnType<typeof jest.fn>
-      ).mockResolvedValueOnce(mockResponse);
+      (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(mockResponse);
 
       const schema = z.object({
         getData: z.object({
@@ -1527,11 +1411,7 @@ describe("portal.middleware", () => {
         },
       };
 
-      const result = await client.query(
-        COMPLEX_VAR_QUERY,
-        complexVariables,
-        schema,
-      );
+      const result = await client.query(COMPLEX_VAR_QUERY, complexVariables, schema);
 
       expect(result.getData.value).toBe("test");
       expect(portalClient.request).toHaveBeenCalledWith(
@@ -1539,7 +1419,7 @@ describe("portal.middleware", () => {
         complexVariables,
         expect.objectContaining({
           "x-request-id": expect.stringMatching(/^atk-qry-/),
-        }),
+        })
       );
     });
 
@@ -1553,9 +1433,7 @@ describe("portal.middleware", () => {
       `);
 
       const mockTxHash = createTxHash(11);
-      (
-        portalClient.request as ReturnType<typeof jest.fn>
-      ).mockResolvedValueOnce({
+      (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce({
         createToken: { transactionHash: mockTxHash },
       });
 
@@ -1566,14 +1444,12 @@ describe("portal.middleware", () => {
 
       // The error messages should use the operation name
       (portalClient.request as ReturnType<typeof jest.fn>).mockReset();
-      (
-        portalClient.request as ReturnType<typeof jest.fn>
-      ).mockRejectedValueOnce(new Error("Test error"));
+      (portalClient.request as ReturnType<typeof jest.fn>).mockRejectedValueOnce(new Error("Test error"));
 
       await expect(
         client.mutate(NAMED_MUTATION, {
           from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
-        }),
+        })
       ).rejects.toThrow();
 
       expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
@@ -1599,9 +1475,7 @@ describe("portal.middleware", () => {
         },
       };
 
-      (
-        portalClient.request as ReturnType<typeof jest.fn>
-      ).mockResolvedValueOnce(mockResponse);
+      (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(mockResponse);
 
       const result = await client.mutate(NUMBER_TX_MUTATION, {
         from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
@@ -1625,24 +1499,18 @@ describe("portal.middleware", () => {
       ];
 
       for (const response of mockResponses) {
-        (
-          portalClient.request as ReturnType<typeof jest.fn>
-        ).mockResolvedValueOnce(response);
+        (portalClient.request as ReturnType<typeof jest.fn>).mockResolvedValueOnce(response);
       }
 
       const promises = mockResponses.map(() =>
         client.mutate(CONCURRENT_MUTATION, {
           from: "0x1234567890123456789012345678901234567890" as EthereumAddress,
-        }),
+        })
       );
 
       const results = await Promise.all(promises);
 
-      expect(results).toEqual([
-        createTxHash(13),
-        createTxHash(14),
-        createTxHash(15),
-      ]);
+      expect(results).toEqual([createTxHash(13), createTxHash(14), createTxHash(15)]);
     });
   });
 });

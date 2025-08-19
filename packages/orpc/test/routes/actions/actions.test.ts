@@ -97,9 +97,9 @@ describe("Actions API", () => {
       expect(activeActions).toBeInstanceOf(Array);
 
       // All returned actions should be ACTIVE
-      activeActions.forEach((action) => {
+      for (const action of activeActions) {
         expect(action.status).toBe("ACTIVE");
-      });
+      }
     });
 
     test("should filter by target address", async () => {
@@ -119,9 +119,9 @@ describe("Actions API", () => {
         expect(filteredActions).toBeInstanceOf(Array);
 
         // All returned actions should target the specified address
-        filteredActions.forEach((action) => {
+        for (const action of filteredActions) {
           expect(action.target).toBe(targetAddress);
-        });
+        }
       }
     });
 
@@ -257,10 +257,10 @@ describe("Actions Schemas", () => {
     it("should require all mandatory fields", () => {
       const requiredFields = ["id", "name", "target", "activeAt", "status", "executor"];
 
-      requiredFields.forEach((field) => {
+      for (const field of requiredFields) {
         const incompleteAction = Object.fromEntries(Object.entries(validAction).filter(([key]) => key !== field));
         expect(() => ActionSchema.parse(incompleteAction)).toThrow();
-      });
+      }
     });
 
     it("should validate target as Ethereum address", () => {

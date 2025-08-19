@@ -111,9 +111,9 @@ function processUserGrowthData(
     }
 
     // Add new users to the cumulative set
-    dayUsers.forEach((userId) => {
+    for (const userId of dayUsers) {
       allUsers.add(userId);
-    });
+    }
 
     result.push({
       timestamp: `${day}T00:00:00.000Z`, // Convert back to ISO format

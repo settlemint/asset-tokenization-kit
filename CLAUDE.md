@@ -503,3 +503,5 @@ try {
   console.log(e);
 }
 ```
+- CRITICAL: FOR FUCKS SAKE, NEVER EVER EVER ADD "ANY", it will not work! DO NOT FORGET THIS, DOING THIS MEANS IMMEDIATE FAILURE!
+- Never type orpc handlers, if the input/output and setup compile, the types are all inferred

@@ -79,7 +79,7 @@ export const search = authRouter.user.search
       .limit(limit);
 
     // Transform results to include human-readable roles
-    return result.map(({ user, kyc }) => {
+    return result.map(({ user, kyc }: { user: (typeof result)[0]["user"]; kyc: (typeof result)[0]["kyc"] }) => {
       if (!user.wallet) {
         throw new Error(`User ${user.id} has no wallet`);
       }

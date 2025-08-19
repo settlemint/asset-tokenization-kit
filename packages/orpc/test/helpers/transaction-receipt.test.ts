@@ -2,15 +2,7 @@
  * @bun:test-environment node
  */
 
-import {
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  jest,
-  type Mock,
-  test,
-} from "bun:test";
+import { afterEach, beforeEach, describe, expect, jest, type Mock, test } from "bun:test";
 import { portalClient } from "@atk/settlemint/portal";
 import { logger } from "better-auth";
 import { getTransactionReceipt } from "../../src/helpers/transaction-receipt";
@@ -19,10 +11,10 @@ import { getTransactionReceipt } from "../../src/helpers/transaction-receipt";
 // If the mock isn't working, we'll manually set it up
 if (
   typeof portalClient.request !== "function" ||
-  !(portalClient.request as any).mockResolvedValueOnce
+  !(portalClient.request as unknown as { mockResolvedValueOnce?: unknown }).mockResolvedValueOnce
 ) {
   // Replace the request method with a mock
-  (portalClient as unknown as { request: Mock<any> }).request = jest.fn();
+  (portalClient as unknown as { request: Mock<() => unknown> }).request = jest.fn();
 }
 
 const mockRequest = portalClient.request as ReturnType<typeof jest.fn>;
@@ -37,8 +29,7 @@ describe("transaction-receipt", () => {
   });
 
   describe("getTransactionReceipt", () => {
-    const mockTransactionHash =
-      "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
+    const mockTransactionHash = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
 
     describe("successful responses", () => {
       test("should return receipt for successful transaction", async () => {
@@ -174,53 +165,43 @@ describe("transaction-receipt", () => {
         const error = new Error("Network timeout");
         mockRequest.mockRejectedValueOnce(error);
 
-        await expect(
-          getTransactionReceipt(mockTransactionHash),
-        ).rejects.toThrow("Portal query failed: Network timeout");
-
-        expect(logger.error).toHaveBeenCalledWith(
-          "Getting transaction receipt failed:",
-          error,
+        await expect(getTransactionReceipt(mockTransactionHash)).rejects.toThrow(
+          "Portal query failed: Network timeout"
         );
+
+        expect(logger.error).toHaveBeenCalledWith("Getting transaction receipt failed:", error);
       });
 
       test("should handle non-Error exceptions", async () => {
         const error = { code: "TIMEOUT", message: "Request timed out" };
         mockRequest.mockRejectedValueOnce(error);
 
-        await expect(
-          getTransactionReceipt(mockTransactionHash),
-        ).rejects.toThrow("Portal query failed: [object Object]");
-
-        expect(logger.error).toHaveBeenCalledWith(
-          "Getting transaction receipt failed:",
-          error,
+        await expect(getTransactionReceipt(mockTransactionHash)).rejects.toThrow(
+          "Portal query failed: [object Object]"
         );
+
+        expect(logger.error).toHaveBeenCalledWith("Getting transaction receipt failed:", error);
       });
 
       test("should handle string errors", async () => {
         const error = "Connection refused";
         mockRequest.mockRejectedValueOnce(error);
 
-        await expect(
-          getTransactionReceipt(mockTransactionHash),
-        ).rejects.toThrow("Portal query failed: Connection refused");
+        await expect(getTransactionReceipt(mockTransactionHash)).rejects.toThrow(
+          "Portal query failed: Connection refused"
+        );
       });
 
       test("should handle null errors", async () => {
         mockRequest.mockRejectedValueOnce(null);
 
-        await expect(
-          getTransactionReceipt(mockTransactionHash),
-        ).rejects.toThrow("Portal query failed: null");
+        await expect(getTransactionReceipt(mockTransactionHash)).rejects.toThrow("Portal query failed: null");
       });
 
       test("should handle undefined errors", async () => {
         mockRequest.mockRejectedValueOnce(undefined);
 
-        await expect(
-          getTransactionReceipt(mockTransactionHash),
-        ).rejects.toThrow("Portal query failed: undefined");
+        await expect(getTransactionReceipt(mockTransactionHash)).rejects.toThrow("Portal query failed: undefined");
       });
     });
 
@@ -238,9 +219,7 @@ describe("transaction-receipt", () => {
 
         mockRequest.mockResolvedValueOnce(invalidReceipt);
 
-        await expect(
-          getTransactionReceipt(mockTransactionHash),
-        ).rejects.toThrow();
+        await expect(getTransactionReceipt(mockTransactionHash)).rejects.toThrow();
         expect(logger.error).toHaveBeenCalled();
       });
 
@@ -256,9 +235,7 @@ describe("transaction-receipt", () => {
 
         mockRequest.mockResolvedValueOnce(invalidReceipt);
 
-        await expect(
-          getTransactionReceipt(mockTransactionHash),
-        ).rejects.toThrow();
+        await expect(getTransactionReceipt(mockTransactionHash)).rejects.toThrow();
       });
 
       test("should throw error when getTransaction is null", async () => {
@@ -268,9 +245,7 @@ describe("transaction-receipt", () => {
 
         mockRequest.mockResolvedValueOnce(invalidReceipt);
 
-        await expect(
-          getTransactionReceipt(mockTransactionHash),
-        ).rejects.toThrow();
+        await expect(getTransactionReceipt(mockTransactionHash)).rejects.toThrow();
       });
 
       test("should throw error when response structure is invalid", async () => {
@@ -285,9 +260,7 @@ describe("transaction-receipt", () => {
 
         mockRequest.mockResolvedValueOnce(invalidReceipt);
 
-        await expect(
-          getTransactionReceipt(mockTransactionHash),
-        ).rejects.toThrow();
+        await expect(getTransactionReceipt(mockTransactionHash)).rejects.toThrow();
       });
 
       test("should handle contractAddress as empty string", async () => {
@@ -379,9 +352,7 @@ describe("transaction-receipt", () => {
           throw new Error("Should have thrown");
         } catch (error_) {
           expect(error_).toBeInstanceOf(Error);
-          expect((error_ as Error).message).toBe(
-            "Portal query failed: Test error",
-          );
+          expect((error_ as Error).message).toBe("Portal query failed: Test error");
         }
       });
     });
@@ -430,15 +401,13 @@ describe("transaction-receipt", () => {
           "0x3333333333333333333333333333333333333333333333333333333333333333",
         ];
 
-        const results = await Promise.all(
-          hashes.map((hash) => getTransactionReceipt(hash)),
-        );
+        const results = await Promise.all(hashes.map((hash) => getTransactionReceipt(hash)));
 
         expect(results).toHaveLength(3);
         expect(mockRequest).toHaveBeenCalledTimes(3);
-        results.forEach((result) => {
+        for (const result of results) {
           expect(result.status).toBe("Success");
-        });
+        }
       });
     });
 
@@ -470,9 +439,7 @@ describe("transaction-receipt", () => {
 
         expect(result.logs).toHaveLength(1);
         expect(result.logs[0].topics).toHaveLength(3);
-        expect(result.logs[0].topics[0]).toBe(
-          "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
-        );
+        expect(result.logs[0].topics[0]).toBe("0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef");
       });
 
       test("should handle failed transaction with revert reason", async () => {
@@ -502,9 +469,7 @@ describe("transaction-receipt", () => {
               logs: [
                 {
                   address: deployedAddress,
-                  topics: [
-                    "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
-                  ], // OwnershipTransferred
+                  topics: ["0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0"], // OwnershipTransferred
                   data: "0x",
                 },
               ],

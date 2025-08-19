@@ -248,13 +248,15 @@ describe("Token create", () => {
 
 // Mock error class that matches API error structure
 class APIError extends Error {
-  constructor(
-    public code: string,
-    public status: number,
-    message: string,
-    public data?: unknown
-  ) {
+  code: string;
+  status: number;
+  data?: unknown;
+
+  constructor(code: string, status: number, message: string, data?: unknown) {
     super(message);
+    this.code = code;
+    this.status = status;
+    this.data = data;
     this.name = "APIError";
   }
 }

@@ -119,10 +119,7 @@ describe("AccessControlFragment", () => {
             }
 
             const isContractSelection = selection.selectionSet?.selections[1];
-            if (
-              isContractSelection &&
-              isContractSelection.kind === Kind.FIELD
-            ) {
+            if (isContractSelection && isContractSelection.kind === Kind.FIELD) {
               expect(isContractSelection.name.value).toBe("isContract");
             }
           }

@@ -65,10 +65,9 @@
       "inputs": ["contracts/**", ".generated/out/**", "tools/artifacts-abi.ts"]
     },
     "format": {
-      "dependsOn": ["format:forge", "format:prettier"]
+      "dependsOn": ["format:forge"]
     },
     "format:forge": {},
-    "format:prettier": {},
     "publish": {
       "cache": false,
       "dependsOn": ["package", "codegen"]

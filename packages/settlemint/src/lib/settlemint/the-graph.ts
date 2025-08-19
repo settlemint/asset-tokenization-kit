@@ -1,6 +1,6 @@
+import type { introspection as kitIntrospection } from "@schemas/the-graph-env-kit";
 import { createTheGraphClient } from "@settlemint/sdk-thegraph";
-import { createLogger, requestLogger, type LogLevel } from '@settlemint/sdk-utils/logging';
-import type { introspection as kitIntrospection } from "@schemas/the-graph-env-kit"
+import { createLogger, type LogLevel, requestLogger } from "@settlemint/sdk-utils/logging";
 
 const logger = createLogger({ level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel });
 
@@ -15,14 +15,17 @@ export const { client: theGraphClientKit, graphql: theGraphGraphqlKit } = create
     BigDecimal: string;
     Timestamp: string;
   };
-  }>({
-  instances: JSON.parse(process.env.SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS || '[]'),
-  accessToken: process.env.SETTLEMINT_ACCESS_TOKEN,
-  subgraphName: "kit",
-  cache: "force-cache",
-}, {
-  fetch: requestLogger(logger, "the-graph-kit", fetch) as typeof fetch,
-});
+}>(
+  {
+    instances: JSON.parse(process.env.SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS || "[]"),
+    accessToken: process.env.SETTLEMINT_ACCESS_TOKEN,
+    subgraphName: "kit",
+    cache: "force-cache",
+  },
+  {
+    fetch: requestLogger(logger, "the-graph-kit", fetch) as typeof fetch,
+  }
+);
 
 export const theGraphClient = theGraphClientKit;
 export const theGraphGraphql = theGraphGraphqlKit;
