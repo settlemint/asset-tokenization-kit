@@ -125,6 +125,65 @@ export async function bootstrapTokenFactories(
   console.log("Token factories created");
 }
 
+export async function bootstrapSystemAddons(
+  orpClient: OrpcClient,
+  system: {
+    id: string;
+    systemAddonRegistry: string | null;
+    systemAddons?: Array<{ name: string; typeId: string; id: string }>;
+  }
+) {
+  if (!system.systemAddonRegistry) {
+    console.log("System addon registry not yet initialized");
+    throw new Error(
+      "System not fully initialized - system addon registry not found"
+    );
+  }
+
+  // Define the addons we want to create (matching onboarding flow names)
+  const requiredAddons: Array<{ type: "airdrops" | "yield" | "xvp"; name: string }> = [
+    { type: "airdrops", name: "Airdrops" },
+    { type: "yield", name: "Yield" },
+    { type: "xvp", name: "XvP" },
+  ];
+
+  // Get existing addon names
+  const existingAddonNames = new Set(
+    (system.systemAddons ?? []).map((addon) => addon.name.toLowerCase())
+  );
+
+  // Filter out addons that already exist
+  const addonsToCreate = requiredAddons.filter(
+    (addon) => !existingAddonNames.has(addon.name.toLowerCase())
+  );
+
+  if (addonsToCreate.length === 0) {
+    console.log("All system addons already exist");
+    return;
+  }
+
+  const result = await orpClient.system.addonCreate({
+    walletVerification: {
+      secretVerificationCode: DEFAULT_PINCODE,
+      verificationType: "PINCODE",
+    },
+    addons: addonsToCreate,
+  });
+
+  // Verify the addons were created
+  if (!result.id || !result.systemAddons) {
+    throw new Error(`System addon creation failed: invalid response`);
+  }
+
+  const createdCount = result.systemAddons.length - (system.systemAddons?.length ?? 0);
+  if (createdCount !== addonsToCreate.length) {
+    throw new Error(
+      `System addons attempted: ${addonsToCreate.length}, succeeded: ${createdCount}`
+    );
+  }
+  console.log(`System addons created: ${addonsToCreate.map((a) => a.name).join(", ")}`);
+}
+
 export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
   const issuerOrpcClient = getOrpcClient(await signInWithUser(DEFAULT_ISSUER));
   const issuerMe = await issuerOrpcClient.user.me({});

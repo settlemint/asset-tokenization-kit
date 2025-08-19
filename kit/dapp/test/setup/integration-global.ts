@@ -4,6 +4,7 @@ import { getOrpcClient } from "../fixtures/orpc-client";
 import {
   bootstrapSystem,
   bootstrapTokenFactories,
+  bootstrapSystemAddons,
   setupDefaultIssuerRoles,
 } from "../fixtures/system-bootstrap";
 import {
@@ -35,6 +36,7 @@ export async function setup() {
     // Parallelize post-boot operations
     await Promise.all([
       bootstrapTokenFactories(orpClient, system),
+      bootstrapSystemAddons(orpClient, system),
       setupDefaultIssuerRoles(orpClient),
     ]);
 
