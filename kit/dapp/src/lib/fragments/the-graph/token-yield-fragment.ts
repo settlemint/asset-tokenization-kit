@@ -1,5 +1,5 @@
-import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import type { FragmentOf } from "@settlemint/sdk-thegraph";
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 
 /**
  * The token yield data from The Graph
