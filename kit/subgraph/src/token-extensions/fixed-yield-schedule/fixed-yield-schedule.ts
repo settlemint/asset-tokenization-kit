@@ -3,6 +3,7 @@ import { TokenFixedYieldSchedulePeriod } from "../../../generated/schema";
 import {
   DenominationAssetTopUp,
   DenominationAssetWithdrawn,
+  FixedYieldSchedule,
   FixedYieldScheduleSet,
   YieldClaimed,
 } from "../../../generated/templates/FixedYieldSchedule/FixedYieldSchedule";
@@ -24,6 +25,13 @@ export function handleFixedYieldScheduleSet(
   if (fixedYieldSchedule.deployedInTransaction.equals(Bytes.empty())) {
     fixedYieldSchedule.deployedInTransaction = event.transaction.hash;
   }
+  if (fixedYieldSchedule.createdBy.equals(Address.zero())) {
+    fixedYieldSchedule.createdBy = event.transaction.from;
+  }
+  if (fixedYieldSchedule.createdAt.equals(BigInt.zero())) {
+    fixedYieldSchedule.createdAt = event.block.timestamp;
+  }
+
   const tokenAddress = Address.fromBytes(fixedYieldSchedule.token);
   const tokenDecimals = getTokenDecimals(tokenAddress);
   fixedYieldSchedule.startDate = event.params.startDate;
