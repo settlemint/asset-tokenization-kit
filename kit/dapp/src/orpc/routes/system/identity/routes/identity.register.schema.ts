@@ -1,5 +1,5 @@
-import { ethereumAddress } from "@/lib/zodsrc/validators/ethereum-address";
-import { isoCountryCode } from "@/lib/zodvalidators/iso-country-code";
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { isoCountryCode } from "@/lib/zod/validators/iso-country-code";
 import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { z } from "zod";
 

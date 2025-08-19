@@ -1,4 +1,4 @@
-import { ethereumAddress } from "@/lib/zodsrc/validators/ethereum-address";
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { z } from "zod";
 

@@ -18,7 +18,7 @@
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { complianceTypeIds } from "@/lib/zodvalidators/compliance";
+import { complianceTypeIds } from "@/lib/zod/validators/compliance";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import {

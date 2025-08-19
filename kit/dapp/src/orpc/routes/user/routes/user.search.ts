@@ -1,5 +1,5 @@
 import { kycProfiles, user } from "@/lib/db/schema";
-import { getUserRole } from "@/lib/zodvalidators/user-roles";
+import { getUserRole } from "@/lib/zod/validators/user-roles";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
