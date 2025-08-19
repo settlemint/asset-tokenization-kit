@@ -97,7 +97,8 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
 
     if (!system.systemAddons) {
       throw errors.NOT_FOUND({
-        message: "System addons are missing from system context. Cannot set yield schedule.",
+        message:
+          "System addons are missing from system context. Cannot set yield schedule.",
       });
     }
 
@@ -140,13 +141,28 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
       }
     );
 
-    const schedule = scheduleAddresses.tokenFixedYieldSchedules[0]?.id;
+    const schedules = scheduleAddresses.tokenFixedYieldSchedules;
 
-    if (!schedule) {
+    if (schedules.length === 0) {
       throw errors.NOT_FOUND({
         message: `No yield schedule found for the transaction ${transactionHash}`,
       });
     }
+
+    if (schedules.length > 1) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: `Multiple yield schedules detected for transaction ${transactionHash}. This scenario requires additional handling logic to determine the appropriate schedule.`,
+      });
+    }
+
+    const schedule = schedules[0]?.id;
+
+    if (!schedule) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: `No yield schedule found for transaction ${transactionHash}`,
+      });
+    }
+
     await context.portalClient.mutate(
       TOKEN_SET_YIELD_SCHEDULE_MUTATION,
       {
