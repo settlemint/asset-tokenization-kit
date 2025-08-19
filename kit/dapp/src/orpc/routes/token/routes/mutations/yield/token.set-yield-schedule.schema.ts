@@ -1,7 +1,7 @@
 import { apiBigInt } from "@/lib/zod/validators/bigint";
+import { isoCountryCodeNumeric } from "@/lib/zod/validators/iso-country-code";
 import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
 import type { z } from "zod";
-import { isoCountryCodeNumeric } from "@atk/zod/validators/iso-country-code";
 
 export const TokenSetYieldScheduleInputSchema =
   MutationInputSchemaWithContract.extend({
