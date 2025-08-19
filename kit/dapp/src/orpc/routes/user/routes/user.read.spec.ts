@@ -47,26 +47,15 @@ describe("User read", () => {
     const otherUserHeaders = await signInWithUser(otherUser.user);
     const otherUserClient = getOrpcClient(otherUserHeaders);
 
-    await Promise.all([
-      testUserClient.user.kyc.upsert({
-        userId: testUserData.id,
-        firstName: "TestFirst",
-        lastName: "TestLast",
-        dob: new Date("1990-01-01"),
-        country: "US",
-        residencyStatus: "resident",
-        nationalId: "TEST123456",
-      }),
-      otherUserClient.user.kyc.upsert({
-        userId: otherUserData.id,
-        firstName: "OtherFirst",
-        lastName: "OtherLast",
-        dob: new Date("1985-05-15"),
-        country: "GB",
-        residencyStatus: "resident",
-        nationalId: "OTHER987654",
-      }),
-    ]);
+    await otherUserClient.user.kyc.upsert({
+      userId: otherUserData.id,
+      firstName: "OtherFirst",
+      lastName: "OtherLast",
+      dob: new Date("1985-05-15"),
+      country: "GB",
+      residencyStatus: "resident",
+      nationalId: "OTHER987654",
+    });
   });
 
   describe("Admin access", () => {
