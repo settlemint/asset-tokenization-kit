@@ -6,15 +6,18 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
-import { describe, expect, test } from "vitest";
+import { beforeAll, describe, expect, test } from "vitest";
 
 describe("Identity register", () => {
+  let walletAddress: string;
+
+  beforeAll(async () => {
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    walletAddress = await createUserWithIdentity(headers);
+  }, 20_000);
+
   test("investor cannot register an identity", async () => {
-    const [headers, adminHeaders] = await Promise.all([
-      signInWithUser(DEFAULT_INVESTOR),
-      signInWithUser(DEFAULT_ADMIN),
-    ]);
-    const wallet = await createUserWithIdentity(adminHeaders);
+    const headers = await signInWithUser(DEFAULT_INVESTOR);
     const client = getOrpcClient(headers);
 
     await expect(
@@ -24,16 +27,15 @@ describe("Identity register", () => {
           verificationType: "PINCODE",
         },
         country: "BE",
-        wallet,
+        wallet: walletAddress,
       })
     ).rejects.toThrow(
       "User does not have the required role to execute this action."
     );
-  }, 20_000);
+  }, 10_000);
 
   test("admin can register an identity for another user", async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
-    const wallet = await createUserWithIdentity(headers);
     const client = getOrpcClient(headers);
 
     const result = await client.system.identityRegister({
@@ -42,12 +44,12 @@ describe("Identity register", () => {
         verificationType: "PINCODE",
       },
       country: "BE",
-      wallet,
+      wallet: walletAddress,
     });
-    expect(result.id).toBe(wallet);
+    expect(result.id).toBe(walletAddress);
     expect(result.identity).toBeDefined();
     expect(result.country).toBe("BE");
-  }, 20_000);
+  }, 10_000);
 });
 
 async function createUserWithIdentity(adminHeaders: Headers) {
