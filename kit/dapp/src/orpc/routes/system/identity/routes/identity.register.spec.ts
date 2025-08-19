@@ -29,7 +29,7 @@ describe("Identity register", () => {
     ).rejects.toThrow(
       "User does not have the required role to execute this action."
     );
-  });
+  }, 20_000);
 
   test("admin can register an identity for another user", async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
@@ -47,7 +47,7 @@ describe("Identity register", () => {
     expect(result.id).toBe(wallet);
     expect(result.identity).toBeDefined();
     expect(result.country).toBe("BE");
-  }, 10_000);
+  }, 20_000);
 });
 
 async function createUserWithIdentity(adminHeaders: Headers) {

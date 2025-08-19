@@ -10,15 +10,11 @@ import { describe, expect, test } from "vitest";
 
 describe("Identity create", () => {
   test("a user can create its own identity", async () => {
-    const [
-      {
-        session: { wallet },
-      },
-      headers,
-    ] = await Promise.all([
-      createTestUser(),
-      createTestUser().then(({ user }) => signInWithUser(user)),
-    ]);
+    const {
+      user,
+      session: { wallet },
+    } = await createTestUser();
+    const headers = await signInWithUser(user);
     const client = getOrpcClient(headers);
 
     const result = await client.system.identityCreate({
