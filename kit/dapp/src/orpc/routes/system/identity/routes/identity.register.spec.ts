@@ -9,11 +9,15 @@ import {
 import { beforeAll, describe, expect, test } from "vitest";
 
 describe("Identity register", () => {
-  let walletAddress: string;
+  let wallet1: string;
+  let wallet2: string;
 
   beforeAll(async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
-    walletAddress = await createUserWithIdentity(headers);
+    [wallet1, wallet2] = await Promise.all([
+      createUserWithIdentity(headers),
+      createUserWithIdentity(headers),
+    ]);
   }, 20_000);
 
   test("investor cannot register an identity", async () => {
@@ -27,7 +31,7 @@ describe("Identity register", () => {
           verificationType: "PINCODE",
         },
         country: "BE",
-        wallet: walletAddress,
+        wallet: wallet1,
       })
     ).rejects.toThrow(
       "User does not have the required role to execute this action."
@@ -44,9 +48,9 @@ describe("Identity register", () => {
         verificationType: "PINCODE",
       },
       country: "BE",
-      wallet: walletAddress,
+      wallet: wallet2,
     });
-    expect(result.id).toBe(walletAddress);
+    expect(result.id).toBe(wallet2);
     expect(result.identity).toBeDefined();
     expect(result.country).toBe("BE");
   }, 10_000);
