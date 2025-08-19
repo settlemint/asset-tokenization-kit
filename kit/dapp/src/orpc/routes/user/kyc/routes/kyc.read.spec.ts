@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
@@ -5,7 +6,6 @@ import {
   getUserData,
   signInWithUser,
 } from "@test/fixtures/user";
-import { randomUUID } from "node:crypto";
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe("KYC read", () => {
@@ -25,21 +25,12 @@ describe("KYC read", () => {
     testUserData = userData[0];
     otherUserData = userData[1];
 
-    // Create KYC profile for test user
-    const headers = await signInWithUser(testUser.user);
+    // Create KYC profile clients for both users in parallel
+    const [headers, otherHeaders] = await Promise.all([
+      signInWithUser(testUser.user),
+      signInWithUser(otherUser.user),
+    ]);
     const client = getOrpcClient(headers);
-    await client.user.kyc.upsert({
-      userId: testUserData.id,
-      firstName: "Alice",
-      lastName: "Johnson",
-      dob: new Date("1992-03-20"),
-      country: "CA",
-      residencyStatus: "resident",
-      nationalId: "AB123456",
-    });
-
-    // Create KYC profile for other user
-    const otherHeaders = await signInWithUser(otherUser.user);
     const otherClient = getOrpcClient(otherHeaders);
 
     await Promise.all([

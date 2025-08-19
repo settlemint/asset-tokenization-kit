@@ -239,7 +239,7 @@ export async function createAndRegisterUserIdentities(orpcClient: OrpcClient) {
           firstName: user.name,
           lastName: "(Integration tests)",
           dob: new Date("1990-01-01"),
-          country: "B E",
+          country: "BE",
           residencyStatus: "resident",
           nationalId: "1234567890",
           userId: me.id,
