@@ -35,7 +35,7 @@ library ATKPeopleRoles {
 
     /// @notice Role identifier for addresses that can manage organisation identity claims
     /// @dev Can manage claims for the organisation identity, including organisation-level KYC, AML, licenses, etc.
-    bytes32 public constant ORGANISATION_CLAIM_MANAGER_ROLE = keccak256("ORGANISATION_CLAIM_MANAGER_ROLE");
+    bytes32 public constant ORGANISATION_IDENTITY_MANAGER_ROLE = keccak256("ORGANISATION_IDENTITY_MANAGER_ROLE");
 
     /// @notice Role identifier for addresses that can audit the system
     /// @dev View-only role for permissions, identities, audit logs, system state

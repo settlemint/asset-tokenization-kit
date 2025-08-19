@@ -163,7 +163,8 @@ error ComponentImplementationNotSet(bytes32 componentTypeHash);
 error SystemAccessManagerImplementationNotSet();
 
 /// @notice Error indicating that the issuer identity has not been initialized.
-/// @dev This error is thrown if an operation requires the issuer identity, but it has not been created during bootstrap.
+/// @dev This error is thrown if an operation requires the issuer identity, but it has not been created during
+/// bootstrap.
 error IssuerIdentityNotInitialized();
 
 /// @notice Error indicating that an invalid target identity address was provided for claim operations.

@@ -357,8 +357,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
         IATKSystem system = IATKSystem(_systemAddress);
 
         // Create the contract identity using simple address-based salt
-        address contractIdentity =
-            IATKIdentityFactory(system.identityFactory()).createContractIdentity(contractAddress);
+        address contractIdentity = IATKIdentityFactory(system.identityFactory()).createContractIdentity(contractAddress);
 
         // Register the contract identity with the identity registry (same as any other identity)
         ISMARTIdentityRegistry(system.identityRegistry()).registerIdentity(
@@ -369,7 +368,8 @@ abstract contract AbstractATKTokenFactoryImplementation is
         address organisationIdentity = system.organisationIdentity();
 
         if (organisationIdentity != address(0)) {
-            uint256 topicId = IATKTopicSchemeRegistry(system.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
+            uint256 topicId =
+                IATKTopicSchemeRegistry(system.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
             bytes memory claimData = abi.encode(organisationIdentity);
 
             // Call the system function to issue the organisation claim

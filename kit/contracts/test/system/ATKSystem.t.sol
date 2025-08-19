@@ -741,12 +741,14 @@ contract ATKSystemTest is Test {
         vm.stopPrank();
 
         // Verify the role was granted
-        bool hasRole = systemUtils.systemAccessManager().hasRole(ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, testTokenFactory);
+        bool hasRole =
+            systemUtils.systemAccessManager().hasRole(ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, testTokenFactory);
         assertTrue(hasRole, "Token factory should have been granted the role");
 
         // Issue claim as token factory
         vm.startPrank(testTokenFactory);
-        uint256 topicId = ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
+        uint256 topicId =
+            ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
         ATKSystemImplementation(address(atkSystem)).issueClaimByOrganisation(address(subject), topicId, "");
         vm.stopPrank();
 
@@ -785,23 +787,26 @@ contract ATKSystemTest is Test {
 
     function test_IssuerIdentity_TopicRegistered() public view {
         // Test that TOPIC_ISSUER is properly registered
-        uint256 topicId = ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
+        uint256 topicId =
+            ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
         assertTrue(topicId != 0, "TOPIC_ASSET_ISSUER should be registered with non-zero ID");
     }
 
     function test_IssuerIdentity_TrustedIssuer() public view {
         // Test that issuer identity is registered as trusted issuer for TOPIC_ISSUER
         address organisationIdentity = ATKSystemImplementation(address(atkSystem)).organisationIdentity();
-        uint256 topicId = ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
+        uint256 topicId =
+            ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
 
         // Check if issuer identity is trusted for the TOPIC_ISSUER
-        bool isTrusted = IERC3643TrustedIssuersRegistry(atkSystem.trustedIssuersRegistry())
-            .isTrustedIssuer(organisationIdentity);
+        bool isTrusted =
+            IERC3643TrustedIssuersRegistry(atkSystem.trustedIssuersRegistry()).isTrustedIssuer(organisationIdentity);
         assertTrue(isTrusted, "Issuer identity should be registered as trusted issuer");
 
         // Check if it's trusted specifically for TOPIC_ISSUER topic
-        bool isTrustedForTopic = IERC3643TrustedIssuersRegistry(atkSystem.trustedIssuersRegistry())
-            .hasClaimTopic(organisationIdentity, topicId);
+        bool isTrustedForTopic = IERC3643TrustedIssuersRegistry(atkSystem.trustedIssuersRegistry()).hasClaimTopic(
+            organisationIdentity, topicId
+        );
         assertTrue(isTrustedForTopic, "Issuer identity should be trusted for TOPIC_ISSUER topic");
     }
 }

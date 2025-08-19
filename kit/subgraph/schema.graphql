@@ -92,6 +92,8 @@ type AccessControl @entity(immutable: false) {
   claimPolicyManager: [Account!]!
   # Read-only access for auditing purposes
   auditor: [Account!]!
+  # Manages organisation identity
+  organisationIdentityManager: [Account!]!
 
   # System Roles (ATKSystemRoles) - Smart contract module permissions
   # Core system module contracts

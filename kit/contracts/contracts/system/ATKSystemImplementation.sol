@@ -514,12 +514,14 @@ contract ATKSystemImplementation is
         IATKIdentityFactory(localIdentityFactoryProxy).setOnchainID(identityFactoryIdentity);
 
         // Create issuer identity for the system
-        address localOrganisationIdentity = IATKIdentityFactory(localIdentityFactoryProxy).createContractIdentity(address(this));
+        address localOrganisationIdentity =
+            IATKIdentityFactory(localIdentityFactoryProxy).createContractIdentity(address(this));
         _organisationIdentity = localOrganisationIdentity;
 
         // Register the issuer identity as a trusted issuer for TOPIC_ISSUER claims
         uint256[] memory issuerClaimTopics = new uint256[](1);
-        issuerClaimTopics[0] = IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
+        issuerClaimTopics[0] =
+            IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
         IATKTrustedIssuersRegistry(localTrustedIssuersRegistryProxy).addTrustedIssuer(
             IClaimIssuer(localOrganisationIdentity), issuerClaimTopics
         );
@@ -839,16 +841,16 @@ contract ATKSystemImplementation is
     /// @notice Checks if the caller can add claims to the issuer identity
     /// @dev Only accounts with ISSUER_CLAIM_MANAGER_ROLE can add claims
     function canAddClaim(address actor) external view override returns (bool) {
-        return _accessManager != address(0) &&
-               IATKSystemAccessManager(_accessManager).hasRole(ATKPeopleRoles.ORGANISATION_CLAIM_MANAGER_ROLE, actor);
+        return _accessManager != address(0)
+            && IATKSystemAccessManager(_accessManager).hasRole(ATKPeopleRoles.ORGANISATION_IDENTITY_MANAGER_ROLE, actor);
     }
 
     /// @inheritdoc IContractWithIdentity
     /// @notice Checks if the caller can remove claims from the issuer identity
     /// @dev Only accounts with ISSUER_CLAIM_MANAGER_ROLE can remove claims
     function canRemoveClaim(address actor) external view override returns (bool) {
-        return _accessManager != address(0) &&
-               IATKSystemAccessManager(_accessManager).hasRole(ATKPeopleRoles.ORGANISATION_CLAIM_MANAGER_ROLE, actor);
+        return _accessManager != address(0)
+            && IATKSystemAccessManager(_accessManager).hasRole(ATKPeopleRoles.ORGANISATION_IDENTITY_MANAGER_ROLE, actor);
     }
 
     // --- Issuer Claim Management Functions ---
@@ -858,7 +860,14 @@ contract ATKSystemImplementation is
     /// @param targetIdentity The identity contract to receive the claim
     /// @param topicId The topic ID of the claim
     /// @param claimData The claim data
-    function issueClaimByOrganisation(address targetIdentity, uint256 topicId, bytes calldata claimData) external onlySystemRoles2(ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKPeopleRoles.ORGANISATION_CLAIM_MANAGER_ROLE) {
+    function issueClaimByOrganisation(
+        address targetIdentity,
+        uint256 topicId,
+        bytes calldata claimData
+    )
+        external
+        onlySystemRoles2(ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKPeopleRoles.ORGANISATION_IDENTITY_MANAGER_ROLE)
+    {
         if (_organisationIdentity == address(0)) revert IssuerIdentityNotInitialized();
         if (targetIdentity == address(0)) revert InvalidTargetIdentity();
 
