@@ -33,12 +33,12 @@
 
 import { env } from "@atk/config/env";
 import { hasuraMetadataClient } from "@atk/settlemint/hasura";
-import { postgresPool } from "@atk/settlemint/postgres";
+import { client } from "@atk/settlemint/postgres";
 import { trackAllTables } from "@settlemint/sdk-hasura";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { serverOnly } from "@tanstack/react-start";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { migrate } from "drizzle-orm/node-postgres/migrator";
+import { drizzle } from "drizzle-orm/bun-sql";
+import { migrate } from "drizzle-orm/bun-sql/migrator";
 // WHY: Wildcard import ensures all schema tables are available to Drizzle's type system
 // PERFORMANCE: Tree-shaking eliminates unused schemas in production builds
 import * as schemas from "./schema";
@@ -106,7 +106,7 @@ const migrateDatabase = async () => {
   try {
     logger.info("Tracking all tables in Hasura");
     // WHY: Database name extraction ensures Hasura tracks correct schema in multi-tenant setups
-    const database = postgresPool.options.database ?? "default";
+    const database = client.options.database ?? "default";
     // PERFORMANCE: Automatic table tracking enables real-time GraphQL without manual configuration
     // SECURITY: Exclude "drizzle" schema to prevent exposure of migration metadata via GraphQL
     await trackAllTables(database, hasuraMetadataClient, {
@@ -147,7 +147,7 @@ const migrateDatabase = async () => {
  * @returns Configured Drizzle instance bound to application schema and connection pool
  */
 const getDb = serverOnly(() => {
-  return drizzle(postgresPool, {
+  return drizzle(client, {
     // DEBUGGING: Query logging disabled by default to prevent credential leakage in logs
     // PERFORMANCE: SQL logging has measurable overhead in high-throughput scenarios
     // Enable temporarily for development: logger: process.env.NODE_ENV === "development"

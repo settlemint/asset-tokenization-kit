@@ -4,6 +4,18 @@ import { createLogger, requestLogger, type LogLevel } from '@settlemint/sdk-util
 
 const logger = createLogger({ level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel });
 
+// Validate required environment variables
+const blockscoutEndpoint = process.env.SETTLEMINT_BLOCKSCOUT_ENDPOINT;
+const blockscoutUiEndpointVar = process.env.SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT;
+
+if (!blockscoutEndpoint) {
+  throw new Error('SETTLEMINT_BLOCKSCOUT_ENDPOINT environment variable is required');
+}
+
+if (!blockscoutUiEndpointVar) {
+  throw new Error('SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT environment variable is required');
+}
+
 export const { client: blockscoutClient, graphql: blockscoutGraphql } = createBlockscoutClient<{
   introspection: introspection;
   disableMasking: true;
@@ -26,10 +38,10 @@ export const { client: blockscoutClient, graphql: blockscoutGraphql } = createBl
     Wei: string;
   };
 }>({
-  instance: process.env.SETTLEMINT_BLOCKSCOUT_ENDPOINT!,
+  instance: blockscoutEndpoint,
   accessToken: process.env.SETTLEMINT_ACCESS_TOKEN,
 }, {
   fetch: requestLogger(logger, "blockscout", fetch) as typeof fetch,
 });
 
-export const blockscoutUiEndpoint = process.env.SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT!;
+export const blockscoutUiEndpoint = blockscoutUiEndpointVar;
