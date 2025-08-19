@@ -10,14 +10,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import {
-  formatValue,
-  safeToString,
-  type FormatValueOptions,
-} from "@/lib/utils/format-value";
+import { formatValue } from "@/lib/utils/format-value";
+import { safeToString } from "@/lib/utils/format-value/safe-to-string";
+import type { FormatValueOptions } from "@/lib/utils/format-value/types";
 import { Info } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import type { PropsWithChildren } from "react";
+import { useTranslation } from "react-i18next";
 
 export interface DetailGridItemProps extends PropsWithChildren {
   /** The label for the detail item */
@@ -62,7 +60,7 @@ export function DetailGridItem({
   emptyValue,
   showPrettyName,
 }: DetailGridItemProps) {
-  const { t, i18n } = useTranslation("detail-grid");
+  const { t } = useTranslation("detail-grid");
 
   // If children are provided, use them. Otherwise, format the value
   const displayContent =
@@ -71,8 +69,7 @@ export function DetailGridItem({
       ? formatValue(value, {
           type,
           displayName: displayName ?? label,
-          currency,
-          locale: i18n.language,
+          currency: currency as FormatValueOptions["currency"],
           emptyValue,
           showPrettyName,
         })

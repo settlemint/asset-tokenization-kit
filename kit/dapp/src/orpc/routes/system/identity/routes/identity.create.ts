@@ -36,8 +36,10 @@
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
+import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
+import type { IdentityCreateSchema } from "@/orpc/routes/system/identity/routes/identity.create.schema";
 import { call, ORPCError } from "@orpc/server";
 
 /**
@@ -69,6 +71,7 @@ const IDENTITY_CREATE_MUTATION = portalGraphql(`
     $challengeResponse: String
     $address: String!
     $from: String!
+    $wallet: String!
   ) {
     create: IATKIdentityFactoryCreateIdentity(
       address: $address
@@ -77,7 +80,7 @@ const IDENTITY_CREATE_MUTATION = portalGraphql(`
       challengeResponse: $challengeResponse
       input: {
         _managementKeys: []
-        _wallet: $from
+        _wallet: $wallet
       }
     ) {
       transactionHash
@@ -107,9 +110,23 @@ const IDENTITY_CREATE_MUTATION = portalGraphql(`
  * @throws INTERNAL_SERVER_ERROR When identity factory is not available
  * @throws CONFLICT When user already has an identity contract
  */
-export const identityCreate = portalRouter.system.identityCreate.handler(
-  async ({ input, context, errors }) => {
-    const { walletVerification } = input;
+export const identityCreate = portalRouter.system.identityCreate
+  .use(
+    offChainPermissionsMiddleware<typeof IdentityCreateSchema>({
+      requiredPermissions: {
+        account: ["create-identity"],
+      },
+      alwaysAllowIf: ({ auth }, { wallet }) => {
+        return (
+          wallet === undefined ||
+          wallet === null ||
+          wallet === auth?.user.wallet
+        );
+      },
+    })
+  )
+  .handler(async ({ input, context, errors }) => {
+    const { walletVerification, wallet } = input;
     const { auth, system } = context;
     const sender = auth.user;
 
@@ -124,13 +141,15 @@ export const identityCreate = portalRouter.system.identityCreate.handler(
       });
     }
 
+    const walletAddress = wallet ?? auth.user.wallet;
+
     // CONFLICT DETECTION: Check if user already has an identity contract
     // WHY: Each user should have at most one identity contract per system
     // Multiple identities would complicate compliance verification and access control
     const account = await call(
       readAccount,
       {
-        wallet: sender.wallet,
+        wallet: walletAddress,
       },
       { context }
     ).catch((error: unknown) => {
@@ -160,6 +179,7 @@ export const identityCreate = portalRouter.system.identityCreate.handler(
       {
         address: system.identityFactory,
         from: sender.wallet,
+        wallet: walletAddress,
       },
       {
         sender,
@@ -174,9 +194,8 @@ export const identityCreate = portalRouter.system.identityCreate.handler(
     return await call(
       readAccount,
       {
-        wallet: sender.wallet,
+        wallet: walletAddress,
       },
       { context }
     );
-  }
-);
+  });

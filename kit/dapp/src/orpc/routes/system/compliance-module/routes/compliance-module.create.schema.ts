@@ -58,45 +58,11 @@ export const SystemComplianceModuleCreateSchema = MutationInputSchema.extend({
 });
 
 /**
- * Schema for individual compliance module result in streaming output
- */
-const ComplianceModuleResultSchema = z.object({
-  type: complianceTypeId(),
-  proxyAddress: z.string().optional(),
-  transactionHash: z.string().optional(),
-  error: z.string().optional(),
-  implementations: z.record(z.string(), z.string()).optional(),
-});
-
-/**
- * Output schema for streaming events during compliance module registration
- */
-export const SystemComplianceModuleCreateOutputSchema = z.object({
-  status: z.enum(["pending", "confirmed", "failed", "completed"]),
-  message: z.string(),
-  currentComplianceModule: ComplianceModuleResultSchema.optional(),
-  results: z.array(ComplianceModuleResultSchema).optional(),
-  result: z.array(ComplianceModuleResultSchema).optional(), // For useStreamingMutation compatibility
-  progress: z
-    .object({
-      current: z.number(),
-      total: z.number(),
-    })
-    .optional(),
-});
-
-/**
  * Type definitions
  */
 export type SystemComplianceModuleCreateInput = z.infer<
   typeof SystemComplianceModuleCreateSchema
 >;
-export type SystemComplianceModuleCreateOutput = z.infer<
-  typeof SystemComplianceModuleCreateOutputSchema
->;
 export type SystemComplianceModuleConfig = z.infer<
   typeof SystemComplianceModuleConfigSchema
->;
-export type ComplianceModuleResult = z.infer<
-  typeof ComplianceModuleResultSchema
 >;

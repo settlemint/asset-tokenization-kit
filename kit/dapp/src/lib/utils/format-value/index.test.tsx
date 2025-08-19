@@ -2,7 +2,16 @@ import { render } from "@testing-library/react";
 import { from } from "dnum";
 import type React from "react";
 import { describe, expect, test, vi } from "vitest";
-import { formatValue, safeToString } from "./format-value";
+import { formatValue } from "./index";
+import { safeToString } from "./safe-to-string";
+
+// Mock the useTranslation hook
+vi.mock("react-i18next", () => ({
+  useTranslation: () => ({
+    t: (key: string) => (key === "yes" ? "Yes" : "No"),
+    i18n: { language: "en-US" },
+  }),
+}));
 
 // Mock the components used by formatValue (hoisted)
 vi.mock("@/components/ui/badge", () => {
@@ -134,52 +143,11 @@ describe("formatValue", () => {
     });
   });
 
-  describe("badge type", () => {
-    test("renders badge with default variant", () => {
-      const result = formatValue("Active", { type: "badge" });
-      const { container } = render(<>{result}</>);
-      const badge = container.querySelector('[data-testid="badge"]');
-      expect(badge).toHaveTextContent("Active");
-      expect(badge).toHaveAttribute("data-variant", "default");
-    });
-
-    test("uses secondary variant for symbol columns", () => {
-      const result = formatValue("ETH", {
-        type: "badge",
-        displayName: "Token Symbol",
-      });
-      const { container } = render(<>{result}</>);
-      const badge = container.querySelector('[data-testid="badge"]');
-      expect(badge).toHaveAttribute("data-variant", "secondary");
-      expect(badge).toHaveClass("font-mono");
-    });
-
-    test("uses appropriate variant for status values", () => {
-      const testCases = [
-        { value: "active", variant: "default" },
-        { value: "inactive", variant: "secondary" },
-        { value: "error", variant: "destructive" },
-        { value: "pending", variant: "outline" },
-      ];
-
-      testCases.forEach(({ value, variant }) => {
-        const result = formatValue(value, {
-          type: "badge",
-          displayName: "status",
-        });
-        const { container } = render(<>{result}</>);
-        const badge = container.querySelector('[data-testid="badge"]');
-        expect(badge).toHaveAttribute("data-variant", variant);
-      });
-    });
-  });
-
   describe("currency type", () => {
     test("formats currency values correctly", () => {
       const result = formatValue(1234.56, {
         type: "currency",
         currency: "USD",
-        locale: "en-US",
       });
       const { container } = render(<>{result}</>);
       expect(container.textContent).toBe("$1,234.56");
@@ -189,7 +157,6 @@ describe("formatValue", () => {
       const result = formatValue(1234.56, {
         type: "currency",
         currency: "EUR",
-        locale: "en-US",
       });
       const { container } = render(<>{result}</>);
       expect(container.textContent).toBe("€1,234.56");
@@ -198,8 +165,7 @@ describe("formatValue", () => {
     test("handles unknown currency symbols", () => {
       const result = formatValue(1234.56, {
         type: "currency",
-        currency: "ABC",
-        locale: "en-US",
+        currency: "ABC" as never,
       });
       const { container } = render(<>{result}</>);
       // Check that it contains the formatted number and currency
@@ -211,7 +177,6 @@ describe("formatValue", () => {
       const result = formatValue("1234.56", {
         type: "currency",
         currency: "USD",
-        locale: "en-US",
       });
       const { container } = render(<>{result}</>);
       expect(container.textContent).toBe("$1,234.56");
@@ -221,7 +186,7 @@ describe("formatValue", () => {
   describe("date type", () => {
     test("formats dates correctly", () => {
       const date = new Date("2024-01-15T10:00:00Z");
-      const result = formatValue(date, { type: "date", locale: "en-US" });
+      const result = formatValue(date, { type: "date" });
       const { container } = render(<>{result}</>);
       expect(container.textContent).toMatch(/Jan.*15.*2024/);
     });
@@ -231,7 +196,6 @@ describe("formatValue", () => {
       const result = formatValue(date, {
         type: "date",
         displayName: "datetime",
-        locale: "en-US",
       });
       const { container } = render(<>{result}</>);
       expect(container.textContent).toMatch(/Jan.*15.*2024/);
@@ -241,7 +205,6 @@ describe("formatValue", () => {
     test("handles date strings", () => {
       const result = formatValue("2024-01-15", {
         type: "date",
-        locale: "en-US",
       });
       const { container } = render(<>{result}</>);
       expect(container.textContent).toMatch(/Jan.*15.*2024/);
@@ -276,7 +239,7 @@ describe("formatValue", () => {
 
   describe("percentage type", () => {
     test("formats percentage values", () => {
-      const result = formatValue(75.5, { type: "percentage", locale: "en-US" });
+      const result = formatValue(75.5, { type: "percentage" });
       const { container } = render(<>{result}</>);
       expect(container.textContent).toBe("75.5%");
     });
@@ -284,7 +247,6 @@ describe("formatValue", () => {
     test("handles string percentages", () => {
       const result = formatValue("25.75", {
         type: "percentage",
-        locale: "en-US",
       });
       const { container } = render(<>{result}</>);
       expect(container.textContent).toBe("25.75%");
@@ -294,7 +256,6 @@ describe("formatValue", () => {
       const dnumValue = from(75.5, 18);
       const result = formatValue(dnumValue, {
         type: "percentage",
-        locale: "en-US",
       });
       const { container } = render(<>{result}</>);
       expect(container.textContent).toBe("75.5%");
@@ -305,7 +266,6 @@ describe("formatValue", () => {
     test("formats numbers with locale", () => {
       const result = formatValue(1_234_567.89, {
         type: "number",
-        locale: "en-US",
       });
       const { container } = render(<>{result}</>);
       expect(container.textContent).toBe("1,234,567.89");
@@ -315,7 +275,6 @@ describe("formatValue", () => {
       const result = formatValue(18, {
         type: "number",
         displayName: "decimals",
-        locale: "en-US",
       });
       const { container } = render(<>{result}</>);
       expect(container.textContent).toBe("18");
@@ -325,7 +284,6 @@ describe("formatValue", () => {
       const result = formatValue(1_234_567, {
         type: "number",
         displayName: "user count",
-        locale: "en-US",
       });
       const { container } = render(<>{result}</>);
       expect(container.textContent).toMatch(/1\.2M|1.2M/);
@@ -335,7 +293,6 @@ describe("formatValue", () => {
       const dnumValue = from(1234.56, 18);
       const result = formatValue(dnumValue, {
         type: "number",
-        locale: "en-US",
       });
       const { container } = render(<>{result}</>);
       expect(container.textContent).toBe("1,234.56");
@@ -344,7 +301,6 @@ describe("formatValue", () => {
     test("handles NaN values by converting to 0", () => {
       const result = formatValue(Number.NaN, {
         type: "number",
-        locale: "en-US",
       });
       const { container } = render(<>{result}</>);
       expect(container.textContent).toBe("0");
@@ -352,8 +308,7 @@ describe("formatValue", () => {
   });
 
   test("returns string representation for unknown type", () => {
-    // @ts-expect-error - test for unknown type
-    const result = formatValue("test value", { type: "unknown-type" });
+    const result = formatValue("test value", { type: "unknown-type" as never });
     const { container } = render(<>{result}</>);
     expect(container.textContent).toBe("test value");
   });

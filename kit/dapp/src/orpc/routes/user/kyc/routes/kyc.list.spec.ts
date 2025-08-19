@@ -1,42 +1,34 @@
-import { beforeAll, describe, expect, it } from "vitest";
-import { randomUUID } from "node:crypto";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
-  setupUser,
-  signInWithUser,
+  createTestUser,
   DEFAULT_ADMIN,
   getUserData,
+  signInWithUser,
 } from "@test/fixtures/user";
+import { beforeAll, describe, expect, it } from "vitest";
 
 describe("KYC list", () => {
-  const TEST_USER_1 = {
-    email: `${randomUUID()}@test.com`,
-    name: "KYC Test User 1",
-    password: "settlemint",
-  };
-
-  const TEST_USER_2 = {
-    email: `${randomUUID()}@test.com`,
-    name: "KYC Test User 2",
-    password: "settlemint",
-  };
-
+  let testUser1: Awaited<ReturnType<typeof createTestUser>>;
+  let testUser2: Awaited<ReturnType<typeof createTestUser>>;
   let user1Data: Awaited<ReturnType<typeof getUserData>>;
   let user2Data: Awaited<ReturnType<typeof getUserData>>;
 
   beforeAll(async () => {
     // Setup test users
-    await Promise.all([setupUser(TEST_USER_1), setupUser(TEST_USER_2)]);
-
-    [user1Data, user2Data] = await Promise.all([
-      getUserData(TEST_USER_1),
-      getUserData(TEST_USER_2),
+    const users = await Promise.all([createTestUser(), createTestUser()]);
+    testUser1 = users[0];
+    testUser2 = users[1];
+    const userData = await Promise.all([
+      getUserData(testUser1.user),
+      getUserData(testUser2.user),
     ]);
+    user1Data = userData[0];
+    user2Data = userData[1];
 
     // Create KYC profiles for test users
     const [headers1, headers2] = await Promise.all([
-      signInWithUser(TEST_USER_1),
-      signInWithUser(TEST_USER_2),
+      signInWithUser(testUser1.user),
+      signInWithUser(testUser2.user),
     ]);
     const client1 = getOrpcClient(headers1);
     const client2 = getOrpcClient(headers2);
@@ -168,7 +160,7 @@ describe("KYC list", () => {
   });
 
   it("regular user cannot list all KYC profiles without permission", async () => {
-    const headers = await signInWithUser(TEST_USER_1);
+    const headers = await signInWithUser(testUser1.user);
     const client = getOrpcClient(headers);
 
     await expect(

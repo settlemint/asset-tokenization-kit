@@ -13,6 +13,7 @@ const IDENTITY_REGISTER_MUTATION = portalGraphql(`
     $address: String!
     $from: String!
     $country: Int!
+    $wallet: String!
     $identity: String!
   ) {
     create: IATKIdentityRegistryRegisterIdentity(
@@ -23,7 +24,7 @@ const IDENTITY_REGISTER_MUTATION = portalGraphql(`
       input: {
         _country: $country
         _identity: $identity
-        _userAddress: $from
+        _userAddress: $wallet
       }
     ) {
       transactionHash
@@ -41,7 +42,7 @@ export const identityRegister = portalRouter.system.identityRegister
     })
   )
   .handler(async ({ input, context, errors }) => {
-    const { walletVerification, country } = input;
+    const { walletVerification, country, wallet } = input;
     const { auth, system } = context;
     const sender = auth.user;
 
@@ -53,17 +54,19 @@ export const identityRegister = portalRouter.system.identityRegister
       });
     }
 
+    const walletAddress = wallet ?? auth.user.wallet;
+
     const account = await call(
       readAccount,
       {
-        wallet: auth.user.wallet,
+        wallet: walletAddress,
       },
       { context }
     );
 
     if (!account.identity) {
       throw errors.NOT_FOUND({
-        message: "No identity found for the current user",
+        message: `No identity found for the account "${walletAddress}"`,
       });
     }
 
@@ -74,6 +77,7 @@ export const identityRegister = portalRouter.system.identityRegister
         from: sender.wallet,
         country: Number(countries.alpha2ToNumeric(country) ?? "0"),
         identity: account.identity,
+        wallet: walletAddress,
       },
       {
         sender,
@@ -86,7 +90,7 @@ export const identityRegister = portalRouter.system.identityRegister
     return await call(
       readAccount,
       {
-        wallet: sender.wallet,
+        wallet: walletAddress,
       },
       { context }
     );
