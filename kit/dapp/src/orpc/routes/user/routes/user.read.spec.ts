@@ -1,31 +1,17 @@
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
+  createTestUser,
   DEFAULT_ADMIN,
   getUserData,
-  setupUser,
   signInWithUser,
 } from "@test/fixtures/user";
 import { randomUUID } from "node:crypto";
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe("User read", () => {
-  const TEST_USER = {
-    email: `${randomUUID()}@test.com`,
-    name: "User Read Test User",
-    password: "settlemint",
-  };
-
-  const OTHER_USER = {
-    email: `${randomUUID()}@test.com`,
-    name: "Other Test User",
-    password: "settlemint",
-  };
-
-  const UNAUTHORIZED_USER = {
-    email: `${randomUUID()}@test.com`,
-    name: "Unauthorized User",
-    password: "settlemint",
-  };
+  let testUser: Awaited<ReturnType<typeof createTestUser>>;
+  let otherUser: Awaited<ReturnType<typeof createTestUser>>;
+  let unauthorizedUser: Awaited<ReturnType<typeof createTestUser>>;
 
   let testUserData: Awaited<ReturnType<typeof getUserData>>;
   let otherUserData: Awaited<ReturnType<typeof getUserData>>;
@@ -33,46 +19,43 @@ describe("User read", () => {
 
   beforeAll(async () => {
     // Setup test users
-    await Promise.all([
-      setupUser(TEST_USER),
-      setupUser(OTHER_USER),
-      setupUser(UNAUTHORIZED_USER),
+    [testUser, otherUser, unauthorizedUser] = await Promise.all([
+      createTestUser(),
+      createTestUser(),
+      createTestUser(),
     ]);
 
     [testUserData, otherUserData, unauthorizedUserData] = await Promise.all([
-      getUserData(TEST_USER),
-      getUserData(OTHER_USER),
-      getUserData(UNAUTHORIZED_USER),
+      getUserData(testUser.user),
+      getUserData(otherUser.user),
+      getUserData(unauthorizedUser.user),
     ]);
 
     // Create KYC profiles for better test coverage
-    const [testUserHeaders, otherUserHeaders] = await Promise.all([
-      signInWithUser(TEST_USER),
-      signInWithUser(OTHER_USER),
-    ]);
+    const testUserHeaders = await signInWithUser(testUser.user);
     const testUserClient = getOrpcClient(testUserHeaders);
+    await testUserClient.user.kyc.upsert({
+      userId: testUserData.id,
+      firstName: "TestFirst",
+      lastName: "TestLast",
+      dob: new Date("1990-01-01"),
+      country: "US",
+      residencyStatus: "resident",
+      nationalId: "TEST123456",
+    });
+
+    const otherUserHeaders = await signInWithUser(otherUser.user);
     const otherUserClient = getOrpcClient(otherUserHeaders);
 
-    await Promise.all([
-      testUserClient.user.kyc.upsert({
-        userId: testUserData.id,
-        firstName: "TestFirst",
-        lastName: "TestLast",
-        dob: new Date("1990-01-01"),
-        country: "US",
-        residencyStatus: "resident",
-        nationalId: "TEST123456",
-      }),
-      otherUserClient.user.kyc.upsert({
-        userId: otherUserData.id,
-        firstName: "OtherFirst",
-        lastName: "OtherLast",
-        dob: new Date("1985-05-15"),
-        country: "GB",
-        residencyStatus: "resident",
-        nationalId: "OTHER987654",
-      }),
-    ]);
+    await otherUserClient.user.kyc.upsert({
+      userId: otherUserData.id,
+      firstName: "OtherFirst",
+      lastName: "OtherLast",
+      dob: new Date("1985-05-15"),
+      country: "GB",
+      residencyStatus: "resident",
+      nationalId: "OTHER987654",
+    });
   });
 
   describe("Admin access", () => {
@@ -86,7 +69,7 @@ describe("User read", () => {
 
       expect(user).toBeDefined();
       expect(user.id).toBe(testUserData.id);
-      expect(user.email).toBe(TEST_USER.email);
+      expect(user.email).toBe(testUser.user.email);
       expect(user.wallet).toBe(testUserData.wallet);
       expect(user.firstName).toBe("TestFirst");
       expect(user.lastName).toBe("TestLast");
@@ -104,7 +87,7 @@ describe("User read", () => {
 
       expect(user).toBeDefined();
       expect(user.id).toBe(testUserData.id);
-      expect(user.email).toBe(TEST_USER.email);
+      expect(user.email).toBe(testUser.user.email);
       expect(user.wallet).toBe(testUserData.wallet);
       expect(user.firstName).toBe("TestFirst");
       expect(user.lastName).toBe("TestLast");
@@ -136,7 +119,7 @@ describe("User read", () => {
 
   describe("Permission checks", () => {
     it("regular user without 'user:list' permission cannot read other users by ID", async () => {
-      const headers = await signInWithUser(UNAUTHORIZED_USER);
+      const headers = await signInWithUser(unauthorizedUser.user);
       const client = getOrpcClient(headers);
 
       await expect(
@@ -147,7 +130,7 @@ describe("User read", () => {
     });
 
     it("regular user without 'user:list' permission cannot read other users by wallet", async () => {
-      const headers = await signInWithUser(UNAUTHORIZED_USER);
+      const headers = await signInWithUser(unauthorizedUser.user);
       const client = getOrpcClient(headers);
 
       await expect(
@@ -159,7 +142,7 @@ describe("User read", () => {
 
     it("regular user without permission cannot even read their own user data", async () => {
       // This tests that there's no alwaysAllowIf condition for own user
-      const headers = await signInWithUser(UNAUTHORIZED_USER);
+      const headers = await signInWithUser(unauthorizedUser.user);
       const client = getOrpcClient(headers);
 
       await expect(
@@ -214,13 +197,7 @@ describe("User read", () => {
   describe("Data integrity", () => {
     it("returns user without KYC data when KYC profile doesn't exist", async () => {
       // Create a new user without KYC profile
-      const userWithoutKyc = {
-        email: `${randomUUID()}@test.com`,
-        name: "No KYC User",
-        password: "settlemint",
-      };
-
-      await setupUser(userWithoutKyc);
+      const { user: userWithoutKyc } = await createTestUser();
       const userWithoutKycData = await getUserData(userWithoutKyc);
 
       const headers = await signInWithUser(DEFAULT_ADMIN);

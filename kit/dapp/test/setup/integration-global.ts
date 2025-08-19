@@ -2,8 +2,11 @@ import { createLogger } from "@settlemint/sdk-utils/logging";
 import { startApiServer } from "../fixtures/dapp";
 import { getOrpcClient } from "../fixtures/orpc-client";
 import {
+  bootstrapAddons,
   bootstrapSystem,
   bootstrapTokenFactories,
+  createAndRegisterUserIdentities,
+  setDefaultSystemSettings,
   setupDefaultIssuerRoles,
 } from "../fixtures/system-bootstrap";
 import {
@@ -32,10 +35,12 @@ export async function setup() {
     const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));
     const system = await bootstrapSystem(orpClient);
 
-    // Parallelize post-boot operations
     await Promise.all([
       bootstrapTokenFactories(orpClient, system),
+      bootstrapAddons(orpClient),
       setupDefaultIssuerRoles(orpClient),
+      setDefaultSystemSettings(orpClient),
+      createAndRegisterUserIdentities(orpClient),
     ]);
 
     stopApi();

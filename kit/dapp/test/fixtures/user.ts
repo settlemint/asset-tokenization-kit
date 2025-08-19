@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { zeroAddress } from "viem";
 import { getAuthClient } from "./auth-client";
 import { getOrpcClient } from "./orpc-client";
@@ -13,24 +14,29 @@ const DEFAULT_PASSWORD = "settlemint";
 export const DEFAULT_PINCODE = "123456";
 
 export const DEFAULT_ADMIN: User = {
-  email: "admin@test.com",
+  email: "admin@settlemint.com",
   name: "admin",
   password: DEFAULT_PASSWORD,
 };
 
 export const DEFAULT_INVESTOR: User = {
-  email: "investor@test.com",
+  email: "investor@settlemint.com",
   name: "investor",
   password: DEFAULT_PASSWORD,
 };
 
 export const DEFAULT_ISSUER: User = {
-  email: "issuer@test.com",
+  email: "issuer@settlemint.com",
   name: "issuer",
   password: DEFAULT_PASSWORD,
 };
 
-export async function signInWithUser(user: User) {
+const SIGN_IN_HEADERS_CACHE = new Map<string, Headers>();
+
+export async function signInWithUser(user: User, bypassCache = false) {
+  if (!bypassCache && SIGN_IN_HEADERS_CACHE.has(user.email)) {
+    return SIGN_IN_HEADERS_CACHE.get(user.email) as Headers;
+  }
   const authClient = getAuthClient();
   const newHeaders = new Headers();
   const { error: signInError } = await authClient.signIn.email(
@@ -71,6 +77,7 @@ export async function signInWithUser(user: User) {
     });
     throw signInError;
   }
+  SIGN_IN_HEADERS_CACHE.set(user.email, newHeaders);
   return newHeaders;
 }
 
@@ -81,7 +88,7 @@ export async function setupUser(user: User) {
     const { error: signUpError } = await authClient.signUp.email(user);
 
     if (signUpError) {
-      if (signUpError.code !== "USER_ALREADY_EXISTS") {
+      if (signUpError.code !== "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL") {
         console.error(`[setupUser] Sign up error for ${user.email}:`, {
           code: signUpError.code,
           message: signUpError.message,
@@ -94,7 +101,7 @@ export async function setupUser(user: User) {
     }
 
     // Step 2: Sign in and create wallet if needed
-    const signInHeaders = await signInWithUser(user);
+    const signInHeaders = await signInWithUser(user, true);
 
     // Check if user needs a wallet
     const sessionBeforeWallet = await authClient.getSession({
@@ -125,14 +132,10 @@ export async function setupUser(user: User) {
           `Failed to create wallet: ${error instanceof Error ? error.message : "Unknown error"}`
         );
       }
-
-      // Get fresh headers after wallet creation
-      signInWithUser(user);
-      // Wallet funding is now handled in wallet.ts createWallet function
     }
 
     // Step 3: Enable pincode
-    const pincodeHeaders = await signInWithUser(user);
+    const pincodeHeaders = await signInWithUser(user, true);
     const { error: pincodeError } = await authClient.pincode.enable(
       {
         pincode: DEFAULT_PINCODE,
@@ -158,7 +161,7 @@ export async function setupUser(user: User) {
     }
 
     // Step 4: Generate secret codes
-    const secretCodeHeaders = await signInWithUser(user);
+    const secretCodeHeaders = await signInWithUser(user, true);
     const { error: secretCodeError } = await authClient.secretCodes.generate(
       {
         password: user.password,
@@ -185,7 +188,7 @@ export async function setupUser(user: User) {
     }
 
     // Step 5: Confirm secret codes
-    const confirmSecretCodeHeaders = await signInWithUser(user);
+    const confirmSecretCodeHeaders = await signInWithUser(user, true);
     const { error: confirmSecretCodeError } =
       await authClient.secretCodes.confirm(
         {
@@ -212,7 +215,7 @@ export async function setupUser(user: User) {
     }
 
     // Step 6: Check onboarding status
-    const sessionHeaders = await signInWithUser(user);
+    const sessionHeaders = await signInWithUser(user, true);
     const session = await authClient.getSession({
       fetchOptions: {
         headers: {
@@ -232,6 +235,8 @@ export async function setupUser(user: User) {
       );
       throw new Error("User is not onboarded");
     }
+
+    return session.data?.user;
   } catch (err) {
     console.error(`[setupUser] Failed to create user ${user.email}:`, {
       message: err instanceof Error ? err.message : "Unknown error",
@@ -258,4 +263,14 @@ export async function getUserData(user: User) {
     throw new Error(`User ${user.email} not found`);
   }
   return userInfo;
+}
+
+export async function createTestUser(name = "test") {
+  const user = {
+    email: `${randomUUID()}@test.com`,
+    name,
+    password: DEFAULT_PASSWORD,
+  };
+  const session = await setupUser(user);
+  return { session, user };
 }
