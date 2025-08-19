@@ -1,8 +1,8 @@
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
+import type { RoleRequirement } from "@/lib/zod/validators/role-requirement";
+import { satisfiesRoleRequirement } from "@/lib/zod/validators/role-requirement";
+import type { AssetExtension } from "@/lib/zod/validators/asset-extensions";
 import { baseRouter } from "@/orpc/procedures/base.router";
-import type { AssetExtension } from "@atk/zod/validators/asset-extensions";
-import type { RoleRequirement } from "@atk/zod/validators/role-requirement";
-import { satisfiesRoleRequirement } from "@atk/zod/validators/role-requirement";
 
 /**
  * Middleware to check if

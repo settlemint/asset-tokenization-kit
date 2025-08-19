@@ -1,11 +1,11 @@
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
-import { createFileRoute } from "@tanstack/react-router";
-import { Copy } from "lucide-react";
-import { toast } from "sonner";
-import { z } from "zod";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
+import { Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const routeParamsSchema = z.object({
   addonAddress: ethereumAddress,

@@ -8,16 +8,13 @@
  * @see {@link @/orpc/procedures/auth.router} - Authentication requirements
  */
 
-import { AssetFactoryTypeIdEnum } from "@atk/zod/validators/asset-types";
-import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
-import { satisfiesRoleRequirement } from "@atk/zod/validators/role-requirement";
-import type { VerificationType } from "@atk/zod/validators/verification-type";
-import { VerificationType as VerificationTypeEnum } from "@atk/zod/validators/verification-type";
-import { call, ORPCError } from "@orpc/server";
-import { eq } from "drizzle-orm";
-import { zeroAddress } from "viem";
 import { kycProfiles, user as userTable } from "@/lib/db/schema";
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
+import { AssetFactoryTypeIdEnum } from "@/lib/zod/validators/asset-types";
+import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { satisfiesRoleRequirement } from "@/lib/zod/validators/role-requirement";
+import type { VerificationType } from "@/lib/zod/validators/verification-type";
+import { VerificationType as VerificationTypeEnum } from "@/lib/zod/validators/verification-type";
 import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { getSystemContext } from "@/orpc/middlewares/system/system.middleware";
@@ -25,6 +22,9 @@ import { authRouter } from "@/orpc/procedures/auth.router";
 import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
+import { call, ORPCError } from "@orpc/server";
+import { eq } from "drizzle-orm";
+import { zeroAddress } from "viem";
 
 /**
  * Get current authenticated user information.

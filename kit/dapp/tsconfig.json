@@ -42,9 +42,6 @@
       "@/locales/*": [
         "./locales/*"
       ],
-      "@atk/*": [
-        "../../packages/*"
-      ],
       "@test/*": [
         "./test/*"
       ]

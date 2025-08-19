@@ -90,7 +90,7 @@ Define validation schemas for inputs and outputs:
 ```typescript
 // account/routes/account.read.schema.ts
 import { z } from "zod";
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 
 export const AccountReadSchema = z.object({
   wallet: ethereumAddress.describe("The wallet address to read"),

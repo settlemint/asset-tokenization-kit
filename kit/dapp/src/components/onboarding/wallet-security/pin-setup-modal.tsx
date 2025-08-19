@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { authClient } from "@/lib/auth/auth.client";
-import { pincode } from "@atk/zod/validators/pincode";
+import { pincode } from "@/lib/zod/validators/pincode";
 import { useForm } from "@tanstack/react-form";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";

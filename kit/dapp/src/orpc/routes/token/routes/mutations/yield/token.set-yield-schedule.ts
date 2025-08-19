@@ -1,10 +1,10 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { AddonFactoryTypeIdEnum } from "@/lib/zod/validators/addon-types";
+import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { AddonFactoryTypeIdEnum } from "@atk/zod/src/validators/addon-types";
-import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
 import { call } from "@orpc/server";
 import { read } from "../../token.read";
 
@@ -134,7 +134,6 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
         message: `No yield schedule found for the transaction ${transactionHash}`,
       });
     }
-
     await context.portalClient.mutate(
       TOKEN_SET_YIELD_SCHEDULE_MUTATION,
       {

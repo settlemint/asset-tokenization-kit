@@ -1,7 +1,7 @@
 import {
-  type ExpressionType,
   ExpressionTypeEnum,
-} from "@atk/zod/validators/expression-type";
+  type ExpressionType,
+} from "@/lib/zod/validators/expression-type";
 
 /**
  * Centralized color configuration for expression builder components

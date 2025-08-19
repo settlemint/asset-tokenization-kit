@@ -16,8 +16,7 @@
     ":widenPeerDependencies",
     ":updateNotScheduled",
     "security:openssf-scorecard",
-    "schedule:nonOfficeHours",
-    "customManagers:biomeVersions"
+    "schedule:nonOfficeHours"
   ],
   "labels": ["dependencies"],
   "rebaseWhen": "conflicted",

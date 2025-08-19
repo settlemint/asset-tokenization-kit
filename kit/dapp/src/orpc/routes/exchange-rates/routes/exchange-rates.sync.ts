@@ -4,7 +4,6 @@
  * Synchronizes exchange rates with external providers.
  * @module ExchangeRatesSync
  */
-
 import type * as schema from "@/lib/db/schema";
 import {
   currencies,
@@ -14,13 +13,14 @@ import {
   fxRates,
   fxRatesLatest,
 } from "@/lib/db/schema";
-import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
-import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
-import { authRouter } from "@/orpc/procedures/auth.router";
+import { safeParse } from "@/lib/zod";
 import {
   fiatCurrencies,
   fiatCurrencyMetadata,
-} from "@atk/zod/validators/fiat-currency";
+} from "@/lib/zod/validators/fiat-currency";
+import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
+import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
+import { authRouter } from "@/orpc/procedures/auth.router";
 import { sql } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { exchangeRateApiResponseSchema } from "../schemas";
@@ -50,7 +50,7 @@ async function fetchExchangeRatesFromApi(
   const data = (await response.json()) as unknown;
 
   // Validate the response with Zod schema
-  const parsed = exchangeRateApiResponseSchema.parse(data);
+  const parsed = safeParse(exchangeRateApiResponseSchema, data);
 
   return parsed.rates;
 }
@@ -136,7 +136,7 @@ export async function syncExchangeRatesInternal(
       name: fiatCurrencyMetadata[code].name,
       decimals: fiatCurrencyMetadata[code].decimals.toString(),
     };
-    return currencyDataSchema.parse(data);
+    return safeParse(currencyDataSchema, data);
   });
 
   await db.insert(currencies).values(currencyInserts).onConflictDoNothing();
@@ -160,7 +160,7 @@ export async function syncExchangeRatesInternal(
         rate: rateString,
         effectiveAt: data.effectiveAt,
       };
-      const validatedFxRateData = fxRateDataSchema.parse(fxRateData);
+      const validatedFxRateData = safeParse(fxRateDataSchema, fxRateData);
 
       await tx.insert(fxRates).values(validatedFxRateData);
 
@@ -172,8 +172,10 @@ export async function syncExchangeRatesInternal(
         rate: rateString,
         effectiveAt: data.effectiveAt,
       };
-      const validatedFxRateLatestData =
-        fxRateLatestDataSchema.parse(fxRateLatestData);
+      const validatedFxRateLatestData = safeParse(
+        fxRateLatestDataSchema,
+        fxRateLatestData
+      );
 
       await tx
         .insert(fxRatesLatest)

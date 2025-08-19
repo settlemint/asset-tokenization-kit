@@ -1,6 +1,13 @@
+import { ORPCError } from "@orpc/server";
 import { retryWhenFailed } from "@settlemint/sdk-utils";
+import { DEFAULT_INVESTOR } from "@test/fixtures/user";
 import { getOrpcClient, type OrpcClient } from "./orpc-client";
-import { DEFAULT_ISSUER, DEFAULT_PINCODE, signInWithUser } from "./user";
+import {
+  DEFAULT_ADMIN,
+  DEFAULT_ISSUER,
+  DEFAULT_PINCODE,
+  signInWithUser,
+} from "./user";
 
 export async function bootstrapSystem(orpClient: OrpcClient) {
   const systems = await orpClient.system.list({});
@@ -125,63 +132,33 @@ export async function bootstrapTokenFactories(
   console.log("Token factories created");
 }
 
-export async function bootstrapSystemAddons(
-  orpClient: OrpcClient,
-  system: {
-    id: string;
-    systemAddonRegistry: string | null;
-    systemAddons?: Array<{ name: string; typeId: string; id: string }>;
-  }
-) {
-  if (!system.systemAddonRegistry) {
-    console.log("System addon registry not yet initialized");
-    throw new Error(
-      "System not fully initialized - system addon registry not found"
-    );
-  }
-
-  // Define the addons we want to create (matching onboarding flow names)
-  const requiredAddons: Array<{ type: "airdrops" | "yield" | "xvp"; name: string }> = [
-    { type: "airdrops", name: "Airdrops" },
-    { type: "yield", name: "Yield" },
-    { type: "xvp", name: "XvP" },
-  ];
-
-  // Get existing addon names
-  const existingAddonNames = new Set(
-    (system.systemAddons ?? []).map((addon) => addon.name.toLowerCase())
-  );
-
-  // Filter out addons that already exist
-  const addonsToCreate = requiredAddons.filter(
-    (addon) => !existingAddonNames.has(addon.name.toLowerCase())
-  );
-
-  if (addonsToCreate.length === 0) {
-    console.log("All system addons already exist");
+export async function bootstrapAddons(orpClient: OrpcClient) {
+  const addons = await orpClient.system.addonList({});
+  if (addons.length > 0) {
+    console.log("Addons already exist");
     return;
   }
 
-  const result = await orpClient.system.addonCreate({
+  await orpClient.system.addonCreate({
     walletVerification: {
       secretVerificationCode: DEFAULT_PINCODE,
       verificationType: "PINCODE",
     },
-    addons: addonsToCreate,
+    addons: [
+      {
+        type: "airdrops",
+        name: "Airdrops",
+      },
+      {
+        type: "yield",
+        name: "Yield",
+      },
+      {
+        type: "xvp",
+        name: "XvP",
+      },
+    ],
   });
-
-  // Verify the addons were created
-  if (!result.id || !result.systemAddons) {
-    throw new Error(`System addon creation failed: invalid response`);
-  }
-
-  const createdCount = result.systemAddons.length - (system.systemAddons?.length ?? 0);
-  if (createdCount !== addonsToCreate.length) {
-    throw new Error(
-      `System addons attempted: ${addonsToCreate.length}, succeeded: ${createdCount}`
-    );
-  }
-  console.log(`System addons created: ${addonsToCreate.map((a) => a.name).join(", ")}`);
 }
 
 export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
@@ -195,6 +172,9 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
     ...(!issuerMe.userSystemPermissions.roles.complianceManager
       ? ["complianceManager" as const]
       : []),
+    ...(!issuerMe.userSystemPermissions.roles.identityManager
+      ? ["identityManager" as const]
+      : []),
   ];
 
   if (rolesToGrant.length > 0) {
@@ -207,4 +187,66 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
       role: rolesToGrant,
     });
   }
+}
+
+export async function setDefaultSystemSettings(orpClient: OrpcClient) {
+  const settings = await orpClient.settings.list({});
+  if (settings.find((s) => s.key === "BASE_CURRENCY")) {
+    console.log("Base currency already set");
+    return;
+  }
+  await orpClient.settings.upsert({
+    key: "BASE_CURRENCY",
+    value: "USD",
+  });
+}
+
+export async function createAndRegisterUserIdentities(orpcClient: OrpcClient) {
+  const users = [DEFAULT_ISSUER, DEFAULT_INVESTOR, DEFAULT_ADMIN];
+
+  await Promise.all(
+    users.map(async (user) => {
+      const userOrpClient = getOrpcClient(await signInWithUser(user));
+      const me = await userOrpClient.user.me({});
+      if (me.wallet && !me.onboardingState.identitySetup) {
+        await orpcClient.system.identityCreate({
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
+          },
+          wallet: me.wallet,
+        });
+        try {
+          await orpcClient.system.identityRegister({
+            walletVerification: {
+              secretVerificationCode: DEFAULT_PINCODE,
+              verificationType: "PINCODE",
+            },
+            wallet: me.wallet,
+            country: "BE",
+          });
+        } catch (err) {
+          if (
+            !(
+              err instanceof ORPCError &&
+              err.message.includes("IdentityAlreadyRegistered")
+            )
+          ) {
+            throw err;
+          }
+        }
+      }
+      if (!me.onboardingState.identity) {
+        await orpcClient.user.kyc.upsert({
+          firstName: user.name,
+          lastName: "(Integration tests)",
+          dob: new Date("1990-01-01"),
+          country: "BE",
+          residencyStatus: "resident",
+          nationalId: "1234567890",
+          userId: me.id,
+        });
+      }
+    })
+  );
 }

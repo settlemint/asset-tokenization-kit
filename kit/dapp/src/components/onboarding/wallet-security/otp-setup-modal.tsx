@@ -15,7 +15,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { authClient } from "@/lib/auth/auth.client";
-import { twoFactorCode } from "@atk/zod/validators/two-factor-code";
+import { twoFactorCode } from "@/lib/zod/validators/two-factor-code";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";

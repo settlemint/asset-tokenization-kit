@@ -1,20 +1,19 @@
 /**
  * @vitest-environment node
  */
-
-import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, beforeEach, vi } from "vitest";
+import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 
 import {
+  installOnboardedRouterCaptureMock,
+  getCapturedOnboardedHandler,
   createBaseContext,
   createMockErrors,
-  getCapturedOnboardedHandler,
-  installOnboardedRouterCaptureMock,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
-import "./roles.list";
 
 installOnboardedRouterCaptureMock();
+import "./roles.list";
 
 function getHandler(): OrpcHandler<
   { excludeContracts?: boolean },

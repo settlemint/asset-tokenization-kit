@@ -1,10 +1,10 @@
-import { getUserRole } from "@atk/zod/validators/user-roles";
-import { eq, ilike, or } from "drizzle-orm";
 import { kycProfiles, user } from "@/lib/db/schema";
+import { getUserRole } from "@/lib/zodvalidators/user-roles";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
+import { desc, eq, ilike, or } from "drizzle-orm";
 
 /**
  * User search route handler.
@@ -77,6 +77,7 @@ export const search = authRouter.user.search
           ilike(user.wallet, `%${query}%`)
         )
       )
+      .orderBy(desc(user.updatedAt)) // Most recently updated users first
       .limit(limit);
 
     // Transform results to include human-readable roles

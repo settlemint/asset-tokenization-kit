@@ -1,8 +1,8 @@
 import type { AccessControl } from "@/lib/fragments/the-graph/access-control-fragment";
 import {
-  type EthereumAddress,
   getEthereumAddress,
-} from "@atk/zod/validators/ethereum-address";
+  type EthereumAddress,
+} from "@/lib/zod/validators/ethereum-address";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 
 const logger = createLogger();

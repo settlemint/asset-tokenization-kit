@@ -17,8 +17,8 @@ import { Button } from "@/components/ui/button";
 import { encodeExpressionParams } from "@/lib/compliance/encoding/encode-expression-params";
 import {
   convertInfixToPostfix,
-  type ExpressionWithGroups,
-} from "@atk/zod/validators/expression-node";
+  ExpressionWithGroups,
+} from "@/lib/zod/validators/expression-node";
 import { UserIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";

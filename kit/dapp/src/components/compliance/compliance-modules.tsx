@@ -1,14 +1,14 @@
 import { ComplianceModulesGrid } from "@/components/compliance/compliance-modules-grid";
 import { ComplianceModuleDetail } from "@/components/compliance/details/compliance-module-detail";
-import type { ComplianceModulesList } from "@/orpc/routes/system/compliance-module/routes/compliance-module.list.schema";
-import type {
-  ComplianceModulePairInput,
-  ComplianceModulePairInputArray,
-  ComplianceTypeId,
-} from "@atk/zod/validators/compliance";
+import {
+  type ComplianceModulePairInput,
+  type ComplianceModulePairInputArray,
+  type ComplianceTypeId,
+} from "@/lib/zod/validators/compliance";
+import { ComplianceModulesList } from "@/orpc/routes/system/compliance-module/routes/compliance-module.list.schema";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { type Address, getAddress } from "viem";
+import { getAddress, type Address } from "viem";
 
 interface ComplianceModulesProps {
   allModules: ComplianceModulesList;

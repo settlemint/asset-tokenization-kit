@@ -1,10 +1,10 @@
-import { getUserRole } from "@atk/zod/validators/user-roles";
-import { eq } from "drizzle-orm";
 import { kycProfiles, user } from "@/lib/db/schema";
+import { getUserRole } from "@/lib/zod/validators/user-roles";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
+import { eq } from "drizzle-orm";
 
 /**
  * User read route handler.

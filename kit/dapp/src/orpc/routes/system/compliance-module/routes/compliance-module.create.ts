@@ -18,16 +18,15 @@
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
+import { complianceTypeIds } from "@/lib/zodvalidators/compliance";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import {
   getDefaultComplianceModuleImplementations,
   type SystemComplianceModuleConfig,
-  type SystemComplianceModuleCreateOutput,
 } from "@/orpc/routes/system/compliance-module/routes/compliance-module.create.schema";
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
-import { complianceTypeIds } from "@atk/zod/validators/compliance";
 import { call } from "@orpc/server";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 
@@ -123,7 +122,7 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
         (complianceModule) => complianceModule.typeId
       ) ?? [];
 
-    const results: SystemComplianceModuleCreateOutput["results"] = [];
+    const complianceErrors: string[] = [];
 
     // Process each addon using a generator pattern for batch operations
     for (const moduleConfig of moduleList) {
@@ -131,12 +130,7 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
 
       // Check if module already exists (if we had that data)
       if (existingComplianceModuleTypeIds.includes(type)) {
-        results.push({
-          type,
-          transactionHash: "",
-          error: "Compliance module already exists",
-        });
-
+        logger.info(`Compliance module ${type} already exists`);
         continue; // Skip to next module
       }
 
@@ -163,7 +157,7 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
         };
 
         // Execute the mutation
-        const transactionHash = await context.portalClient.mutate(
+        await context.portalClient.mutate(
           REGISTER_COMPLIANCE_MODULE_MUTATION,
           variables,
           {
@@ -172,22 +166,22 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
             type: walletVerification.verificationType,
           }
         );
-
-        const implementationName = COMPLIANCE_TYPE_TO_IMPLEMENTATION_NAME[type];
-        results.push({
-          type,
-          transactionHash,
-          implementations: { [implementationName]: implementationAddress },
-        });
       } catch (error) {
-        results.push({
-          type,
-          error: error instanceof Error ? error.message : String(error),
+        const message = error instanceof Error ? error.message : String(error);
+        logger.error(`Failed to register compliance module ${type}:`, {
+          error,
         });
+        complianceErrors.push(
+          `Failed to register compliance module ${type}: ${message}`
+        );
       }
     }
 
-    // We don't need the final message anymore since we're returning the system
+    if (complianceErrors.length > 0) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: complianceErrors.join("\n"),
+      });
+    }
 
     // Return the updated system details
     return await call(

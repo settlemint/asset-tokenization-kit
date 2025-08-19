@@ -4,8 +4,8 @@ import {
   createAndExpressionNode,
   createOrExpressionNode,
   type ExpressionNode,
-} from "@atk/zod/validators/expression-node";
-import { ExpressionTypeEnum } from "@atk/zod/validators/expression-type";
+} from "@/lib/zod/validators/expression-node";
+import { ExpressionTypeEnum } from "@/lib/zod/validators/expression-type";
 import { useTranslation } from "react-i18next";
 
 export interface OperatorInputProps {
