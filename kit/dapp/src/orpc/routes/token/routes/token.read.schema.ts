@@ -1,13 +1,12 @@
 import type { AccessControl } from "@/lib/fragments/the-graph/access-control-fragment";
-import { accessControlRoles } from "@/lib/zod/validators/access-control-roles";
-import { assetExtensionArray } from "@/lib/zod/validators/asset-extensions";
-import { assetType } from "@/lib/zod/validators/asset-types";
-import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
-import { decimals } from "@/lib/zod/validators/decimals";
-import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { timestamp } from "@/lib/zod/validators/timestamp";
-import { tokenYield } from "@/lib/zod/validators/token-yield";
-import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import type { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { accessControlRoles } from "@atk/zod/validators/access-control-roles";
+import { assetExtensionArray } from "@atk/zod/validators/asset-extensions";
+import { assetType } from "@atk/zod/validators/asset-types";
+import { bigDecimal } from "@atk/zod/validators/bigdecimal";
+import { decimals } from "@atk/zod/validators/decimals";
+import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
+import { timestamp } from "@atk/zod/validators/timestamp";
 import { from } from "dnum";
 import { z } from "zod";
 

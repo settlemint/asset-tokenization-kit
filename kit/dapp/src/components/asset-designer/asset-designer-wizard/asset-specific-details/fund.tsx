@@ -3,7 +3,7 @@ import { isRequiredField } from "@/components/asset-designer/asset-designer-wiza
 import { withForm } from "@/hooks/use-app-form";
 import { formatValue } from "@/lib/utils/format-value";
 import type { KeysOfUnion } from "@/lib/utils/union";
-import { basisPointsToPercentage } from "@/lib/zod/validators/basis-points";
+import { basisPointsToPercentage } from "@atk/zod/validators/basis-points";
 import { useTranslation } from "react-i18next";
 
 export const fundFields: KeysOfUnion<AssetDesignerFormInputData>[] = [

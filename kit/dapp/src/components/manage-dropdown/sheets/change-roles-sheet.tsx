@@ -1,27 +1,27 @@
 import { AddressSelectOrInputToggle } from "@/components/address/address-select-or-input-toggle";
-import { ActionFormSheet } from "../core/action-form-sheet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppForm } from "@/hooks/use-app-form";
+import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { getAccessControlEntries } from "@/orpc/helpers/access-control-helpers";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
+import type { RoleRequirement } from "@atk/zod/validators/role-requirement";
+import {
+  isAllRoleRequirement,
+  isAnyRoleRequirement,
+  isSingleRole,
+} from "@atk/zod/validators/role-requirement";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Shield, CheckSquare } from "lucide-react";
+import { CheckSquare, Shield } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
-import {
-  isAnyRoleRequirement,
-  isAllRoleRequirement,
-  isSingleRole,
-} from "@/lib/zod/validators/role-requirement";
-import type { RoleRequirement } from "@/lib/zod/validators/role-requirement";
-import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { createActionFormStore } from "../core/action-form-sheet.store";
 import { toast } from "sonner";
+import { ActionFormSheet } from "../core/action-form-sheet";
+import { createActionFormStore } from "../core/action-form-sheet.store";
 
 interface ChangeRolesSheetProps {
   open: boolean;

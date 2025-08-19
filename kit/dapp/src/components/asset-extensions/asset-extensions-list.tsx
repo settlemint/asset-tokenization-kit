@@ -1,9 +1,9 @@
 import { cn } from "@/lib/utils";
 import {
-  AssetExtensionEnum,
   type AssetExtension,
+  AssetExtensionEnum,
   type AssetExtensionSet,
-} from "@/lib/zod/validators/asset-extensions";
+} from "@atk/zod/validators/asset-extensions";
 import { Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
 

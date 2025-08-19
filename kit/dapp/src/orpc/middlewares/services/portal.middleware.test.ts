@@ -32,15 +32,14 @@
  * @see PortalMiddleware
  */
 
+import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
 import type { TadaDocumentNode } from "gql.tada";
-import { parse, Kind } from "graphql";
+import { Kind, parse } from "graphql";
 import { ClientError } from "graphql-request";
-import { beforeEach, describe, expect, test, vi, type Mock } from "vitest";
+import { beforeEach, describe, expect, type Mock, test, vi } from "vitest";
 import { z } from "zod";
-
 // Import from the mocked module - vitest config alias handles this
 import { portalClient } from "@/lib/settlemint/portal";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 
 // Import the middleware
 import {

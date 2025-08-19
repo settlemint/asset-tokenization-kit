@@ -1,9 +1,9 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { getFactoryTypeIdsFromAddonType } from "@/lib/zod/validators/addon-types";
-import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { AddonsResponseSchema } from "@/orpc/routes/system/addon/routes/addon.list.schema";
+import { getFactoryTypeIdsFromAddonType } from "@atk/zod/validators/addon-types";
+import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
 
 /**
  * GraphQL query for retrieving system addons from TheGraph.

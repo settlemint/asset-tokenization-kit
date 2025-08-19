@@ -11,10 +11,9 @@
  * @see {@link ./routes/router} - Main router with all endpoints
  */
 
-import { bigDecimalSerializer } from "@/lib/zod/validators/bigdecimal";
-import { bigIntSerializer } from "@/lib/zod/validators/bigint";
-import { timestampSerializer } from "@/lib/zod/validators/timestamp";
-import type { contract } from "@/orpc/routes/contract";
+import { bigDecimalSerializer } from "@atk/zod/validators/bigdecimal";
+import { bigIntSerializer } from "@atk/zod/validators/bigint";
+import { timestampSerializer } from "@atk/zod/validators/timestamp";
 import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
 import type { ContractRouterClient } from "@orpc/contract";
@@ -24,6 +23,7 @@ import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { createIsomorphicFn } from "@tanstack/react-start";
 import { getHeaders } from "@tanstack/react-start/server";
+import type { contract } from "@/orpc/routes/contract";
 import { router } from "./routes/router";
 
 const logger = createLogger();

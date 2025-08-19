@@ -1,6 +1,6 @@
-import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
+import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
 import { z } from "zod";
+import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 
 /**
  * Schema definition for a SMART System entity.
