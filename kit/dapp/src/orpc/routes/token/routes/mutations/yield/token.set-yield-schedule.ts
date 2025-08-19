@@ -7,6 +7,7 @@ import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permiss
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { read } from "../../token.read";
+import { AddonFactoryTypeIdEnum } from "@atk/zod/src/validators/addon-types";
 
 const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
   mutation TokenSetYieldSchedule(
@@ -41,6 +42,7 @@ const TOKEN_CREATE_YIELD_SCHEDULE_MUTATION = portalGraphql(`
     $rate: String!
     $startTime: String!
     $token: String!
+    $country: Int!
   ) {
     createSchedule: IATKFixedYieldScheduleFactoryCreate(
       address: $address
@@ -48,7 +50,7 @@ const TOKEN_CREATE_YIELD_SCHEDULE_MUTATION = portalGraphql(`
       challengeId: $challengeId
       challengeResponse: $challengeResponse
       input: {
-        country: 1
+        country: $country
         endTime: $endTime
         interval: $interval
         rate: $rate
@@ -76,20 +78,33 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
       paymentInterval,
       startTime,
       endTime,
+      countryCode,
     } = input;
-    const { auth } = context;
+    const { auth, system } = context;
+    const systemAddons = system?.systemAddons;
+    const yieldScheduleAddon = systemAddons?.find(
+      (addon) =>
+        addon.typeId === AddonFactoryTypeIdEnum.ATKFixedYieldScheduleFactory
+    );
+
+    if (!yieldScheduleAddon) {
+      throw errors.NOT_FOUND({
+        message: "Yield schedule addon not found in system",
+      });
+    }
 
     const sender = auth.user;
     const transactionHash = await context.portalClient.mutate(
       TOKEN_CREATE_YIELD_SCHEDULE_MUTATION,
       {
-        address: contract,
+        address: yieldScheduleAddon.id,
         from: sender.wallet,
         endTime: endTime.toString(),
         interval: paymentInterval.toString(),
         rate: yieldRate.toString(),
         startTime: startTime.toString(),
         token: contract,
+        country: countryCode,
       },
       {
         sender: sender,
