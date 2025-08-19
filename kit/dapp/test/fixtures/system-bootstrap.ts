@@ -1,9 +1,6 @@
 import { retryWhenFailed } from "@settlemint/sdk-utils";
-import { createLogger } from "@settlemint/sdk-utils/logging";
-import { getOrpcClient, OrpcClient } from "./orpc-client";
+import { getOrpcClient, type OrpcClient } from "./orpc-client";
 import { DEFAULT_ISSUER, DEFAULT_PINCODE, signInWithUser } from "./user";
-
-const logger = createLogger({ level: "info" });
 
 export async function bootstrapSystem(orpClient: OrpcClient) {
   const systems = await orpClient.system.list({});
@@ -30,7 +27,7 @@ export async function bootstrapSystem(orpClient: OrpcClient) {
         1000 // wait 1 second between retries
       );
     }
-    logger.info("Using existing system", { systemId });
+    console.log("System already exists");
     return system;
   }
 
