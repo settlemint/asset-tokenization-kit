@@ -1,27 +1,22 @@
 import { getAuthClient } from "@test/fixtures/auth-client";
-import { setupUser, signInWithUser } from "@test/fixtures/user";
-import { randomUUID } from "node:crypto";
+import { createTestUser, signInWithUser } from "@test/fixtures/user";
 import { beforeAll, describe, expect, test } from "vitest";
 
 describe("Two factor verification", () => {
   let authClient: ReturnType<typeof getAuthClient>;
-
-  const TEST_USER = {
-    email: `${randomUUID()}@test.com`,
-    name: "test",
-    password: "settlemint",
-  };
+  let testUser: Awaited<ReturnType<typeof createTestUser>>["user"];
 
   beforeAll(async () => {
     authClient = getAuthClient();
-    await setupUser(TEST_USER);
+    const { user } = await createTestUser();
+    testUser = user;
   });
 
   test("can enable two factor verification", async () => {
-    const headers = await signInWithUser(TEST_USER);
+    const headers = await signInWithUser(testUser, true);
     const { data, error } = await authClient.twoFactor.enable(
       {
-        password: TEST_USER.password,
+        password: testUser.password,
       },
       {
         headers,
@@ -33,10 +28,10 @@ describe("Two factor verification", () => {
   });
 
   test("can disable two factor verification", async () => {
-    const headers = await signInWithUser(TEST_USER);
+    const headers = await signInWithUser(testUser, true);
     const { data, error } = await authClient.twoFactor.disable(
       {
-        password: TEST_USER.password,
+        password: testUser.password,
       },
       {
         headers,

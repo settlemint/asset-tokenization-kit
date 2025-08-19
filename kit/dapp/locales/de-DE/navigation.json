@@ -15,5 +15,15 @@
     "exchange": "Austausch",
     "custody": "Treuhand",
     "income": "Einkommen"
+  },
+  "administration": "Verwaltung",
+  "platformSettings": "Plattform-Einstellungen",
+  "userManagement": "Benutzerverwaltung",
+  "settings": {
+    "assetTypes": "Asset-Typen",
+    "compliance": "Compliance",
+    "addons": "Zusatzmodule",
+    "claimTopicsIssuers": "Claim-Themen & Aussteller",
+    "permissions": "Berechtigungen"
   }
 }

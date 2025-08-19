@@ -1,23 +1,16 @@
-import { describe, expect, it } from "vitest";
-import { randomUUID } from "node:crypto";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
-  setupUser,
-  signInWithUser,
+  createTestUser,
   DEFAULT_ADMIN,
   getUserData,
+  signInWithUser,
 } from "@test/fixtures/user";
+import { randomUUID } from "node:crypto";
+import { describe, expect, it } from "vitest";
 
 describe("KYC delete", () => {
-  const createTestUser = () => ({
-    email: `${randomUUID()}@test.com`,
-    name: "KYC Delete Test User",
-    password: "settlemint",
-  });
-
   it("can delete own KYC profile", async () => {
-    const testUser = createTestUser();
-    await setupUser(testUser);
+    const { user: testUser } = await createTestUser();
     const userData = await getUserData(testUser);
 
     const headers = await signInWithUser(testUser);
@@ -58,8 +51,7 @@ describe("KYC delete", () => {
   });
 
   it("admin can delete any user's KYC profile", async () => {
-    const testUser = createTestUser();
-    await setupUser(testUser);
+    const { user: testUser } = await createTestUser();
     const userData = await getUserData(testUser);
 
     // Create profile as user
@@ -96,15 +88,12 @@ describe("KYC delete", () => {
   });
 
   it("regular user cannot delete another user's KYC profile", async () => {
-    const user1 = createTestUser();
-    const user2 = createTestUser();
-
-    await Promise.all([setupUser(user1), setupUser(user2)]);
-
-    const [, user2Data] = await Promise.all([
-      getUserData(user1),
-      getUserData(user2),
+    const [{ user: user1 }, { user: user2 }] = await Promise.all([
+      createTestUser(),
+      createTestUser(),
     ]);
+
+    const user2Data = await getUserData(user2);
 
     // Create profile for user2
     const user2Headers = await signInWithUser(user2);
@@ -152,8 +141,7 @@ describe("KYC delete", () => {
   });
 
   it("can delete and recreate KYC profile", async () => {
-    const testUser = createTestUser();
-    await setupUser(testUser);
+    const { user: testUser } = await createTestUser();
     const userData = await getUserData(testUser);
 
     const headers = await signInWithUser(testUser);
@@ -193,8 +181,7 @@ describe("KYC delete", () => {
   });
 
   it("deleting already deleted profile throws NOT_FOUND", async () => {
-    const testUser = createTestUser();
-    await setupUser(testUser);
+    const { user: testUser } = await createTestUser();
     const userData = await getUserData(testUser);
 
     const headers = await signInWithUser(testUser);
