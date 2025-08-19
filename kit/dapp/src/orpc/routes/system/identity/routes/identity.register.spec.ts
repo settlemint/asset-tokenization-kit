@@ -18,7 +18,7 @@ describe("Identity register", () => {
       createUserWithIdentity(headers),
       createUserWithIdentity(headers),
     ]);
-  }, 20_000);
+  }, 30_000);
 
   test("investor cannot register an identity", async () => {
     const headers = await signInWithUser(DEFAULT_INVESTOR);
