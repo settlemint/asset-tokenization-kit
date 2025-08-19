@@ -7,7 +7,7 @@ import { read } from "../../token.read";
 
 const TOKEN_UNPAUSE_MUTATION = portalGraphql(`
   mutation TokenUnpause(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
@@ -15,7 +15,7 @@ const TOKEN_UNPAUSE_MUTATION = portalGraphql(`
     unpause: ISMARTPausableUnpause(
       address: $address
       from: $from
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
     ) {
       transactionHash

@@ -114,7 +114,6 @@ const sync = baseContract
       success: z.boolean(),
       ratesUpdated: z.number(),
       syncedAt: z.date(),
-      message: z.string().optional(),
     })
   );
 

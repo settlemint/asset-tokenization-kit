@@ -2,8 +2,8 @@ import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboar
 import { Badge } from "@/components/ui/badge";
 import { Web3Avatar } from "@/components/web3/web3-avatar";
 import { cn } from "@/lib/utils";
-import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { orpc } from "@/orpc/orpc-client";
+import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
 import { useQuery } from "@tanstack/react-query";
 import { memo, useMemo } from "react";
 

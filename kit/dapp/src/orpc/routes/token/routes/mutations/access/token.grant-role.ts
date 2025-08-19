@@ -35,7 +35,7 @@ import type { TokenGrantRoleInput } from "@/orpc/routes/token/routes/mutations/a
 // Single address, single role
 const TOKEN_GRANT_ROLE_MUTATION = portalGraphql(`
   mutation TokenGrantRoleMutation(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $account: String!
@@ -43,7 +43,7 @@ const TOKEN_GRANT_ROLE_MUTATION = portalGraphql(`
     $from: String!
   ) {
     ISMARTTokenAccessManagerGrantRole(
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       address: $address
       from: $from
@@ -57,7 +57,7 @@ const TOKEN_GRANT_ROLE_MUTATION = portalGraphql(`
 // Multiple addresses, single role
 const TOKEN_BATCH_GRANT_ROLE_MUTATION = portalGraphql(`
   mutation TokenBatchGrantRoleMutation(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $role: String!
@@ -65,7 +65,7 @@ const TOKEN_BATCH_GRANT_ROLE_MUTATION = portalGraphql(`
     $from: String!
   ) {
     ISMARTTokenAccessManagerBatchGrantRole(
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       address: $address
       from: $from
@@ -79,7 +79,7 @@ const TOKEN_BATCH_GRANT_ROLE_MUTATION = portalGraphql(`
 // Single address, multiple roles
 const TOKEN_GRANT_MULTIPLE_ROLES_MUTATION = portalGraphql(`
   mutation TokenGrantMultipleRolesMutation(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $account: String!
@@ -87,7 +87,7 @@ const TOKEN_GRANT_MULTIPLE_ROLES_MUTATION = portalGraphql(`
     $from: String!
   ) {
     ISMARTTokenAccessManagerGrantMultipleRoles(
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       address: $address
       from: $from

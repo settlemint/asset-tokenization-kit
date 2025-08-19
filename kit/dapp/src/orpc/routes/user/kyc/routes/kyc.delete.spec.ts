@@ -99,11 +99,12 @@ describe("KYC delete", () => {
     const user1 = createTestUser();
     const user2 = createTestUser();
 
-    await setupUser(user1);
-    await setupUser(user2);
+    await Promise.all([setupUser(user1), setupUser(user2)]);
 
-    await getUserData(user1);
-    const user2Data = await getUserData(user2);
+    const [, user2Data] = await Promise.all([
+      getUserData(user1),
+      getUserData(user2),
+    ]);
 
     // Create profile for user2
     const user2Headers = await signInWithUser(user2);

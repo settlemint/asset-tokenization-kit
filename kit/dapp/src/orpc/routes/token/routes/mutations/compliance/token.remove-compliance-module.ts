@@ -7,7 +7,7 @@ import { read } from "../../token.read";
 
 const TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
   mutation TokenRemoveComplianceModule(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
@@ -16,7 +16,7 @@ const TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
     removeComplianceModule: ISMARTRemoveComplianceModule(
       address: $address
       from: $from
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       input: {
         _module: $moduleAddress

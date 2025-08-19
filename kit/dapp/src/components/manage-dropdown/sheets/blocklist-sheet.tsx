@@ -3,10 +3,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppForm } from "@/hooks/use-app-form";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
+import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -42,11 +42,18 @@ export function BlocklistSheet({
   const { mutateAsync: freezeAddress } = useMutation(
     orpc.token.freezeAddress.mutationOptions({
       onSuccess: async () => {
-        await queryClient.invalidateQueries({
-          queryKey: orpc.token.read.queryOptions({
-            input: { tokenAddress: asset.id },
-          }).queryKey,
-        });
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: orpc.token.read.queryOptions({
+              input: { tokenAddress: asset.id },
+            }).queryKey,
+          }),
+          queryClient.invalidateQueries({
+            queryKey: orpc.token.holders.queryOptions({
+              input: { tokenAddress: asset.id },
+            }).queryKey,
+          }),
+        ]);
       },
     })
   );
@@ -143,11 +150,18 @@ export function BlocklistSheet({
                   userAddress: addr,
                   freeze: mode === "add" ? true : false,
                 });
-                await queryClient.invalidateQueries({
-                  queryKey: orpc.token.read.queryOptions({
-                    input: { tokenAddress: asset.id },
-                  }).queryKey,
-                });
+                await Promise.all([
+                  queryClient.invalidateQueries({
+                    queryKey: orpc.token.read.queryOptions({
+                      input: { tokenAddress: asset.id },
+                    }).queryKey,
+                  }),
+                  queryClient.invalidateQueries({
+                    queryKey: orpc.token.holders.queryOptions({
+                      input: { tokenAddress: asset.id },
+                    }).queryKey,
+                  }),
+                ]);
                 onCompleted({ address: addr, mode });
               })();
 

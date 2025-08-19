@@ -6,12 +6,12 @@ import { IdentityBlocklistModuleDetail } from "@/components/compliance/details/i
 import { IdentityRestrictionModuleDetail } from "@/components/compliance/details/smart-identity/smart-identity-verification-module-detail";
 import { getModuleConfig, isModuleEnabled } from "@/lib/compliance/utils";
 import {
-  ComplianceTypeIdEnum,
   type ComplianceModulePairInput,
   type ComplianceModulePairInputArray,
   type ComplianceParams,
   type ComplianceTypeId,
-} from "@/lib/zod/validators/compliance";
+  ComplianceTypeIdEnum,
+} from "@atk/zod/validators/compliance";
 import type { Address } from "viem";
 
 interface ComplianceModuleDetailProps {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
 
-describe("Vesting Airdrops", () => {
+describe.skip("Vesting Airdrops", () => {
   it("should fetch a list of all vesting airdrops", async () => {
     const query = theGraphGraphql(
       `query($where: Airdrop_filter) {

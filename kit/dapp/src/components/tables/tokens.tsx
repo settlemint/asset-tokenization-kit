@@ -1,6 +1,6 @@
 import {
-  ActionsCell,
   type ActionItem,
+  ActionsCell,
 } from "@/components/data-table/cells/actions-cell";
 import { createSelectionColumn } from "@/components/data-table/columns/selection-column";
 import { DataTable } from "@/components/data-table/data-table";
@@ -10,13 +10,13 @@ import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
 import { formatDate } from "@/lib/utils/date";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
+import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { format } from "dnum";
 import {
   Coins,
