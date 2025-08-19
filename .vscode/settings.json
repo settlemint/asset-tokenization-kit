@@ -24,14 +24,14 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "aderyn.config.autoCheckHealth": false,
-  "biome.enabled": true,
+  "biome.enabled": false,
   "biome.requireConfiguration": true,
   "coderabbit.autoReviewMode": "disabled",
   "dotenv.enableAutocloaking": false,
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit",
-    "source.fixAll.biome": "explicit"
+    "source.fixAll.oxlint": "explicit"
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.fontLigatures": true,

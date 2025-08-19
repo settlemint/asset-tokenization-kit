@@ -5,9 +5,9 @@
  * @module ExchangeRatesHistorySchema
  */
 import {
-  type FiatCurrency,
   fiatCurrency,
-} from "@atk/zod/validators/fiat-currency";
+  type FiatCurrency,
+} from "@/lib/zod/validators/fiat-currency";
 import { z } from "zod";
 
 /**

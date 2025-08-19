@@ -1,10 +1,10 @@
-import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
+import { env } from "@/lib/env";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { APIError } from "better-auth/api";
 import { createPublicClient, http, parseEther } from "viem";
 import { anvil } from "viem/chains";
 import { toHex } from "viem/utils";
-import { env } from "@/lib/env";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 
 export async function createWallet(email: string) {
   const CREATE_ACCOUNT_MUTATION = portalGraphql(`

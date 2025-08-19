@@ -1,5 +1,5 @@
 import type { StepGroup } from "@/components/stepper/types";
-import type { AssetType } from "@atk/zod/validators/asset-types";
+import type { AssetType } from "@/lib/zod/validators/asset-types";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 

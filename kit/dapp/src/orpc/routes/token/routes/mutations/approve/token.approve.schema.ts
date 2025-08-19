@@ -1,9 +1,9 @@
-import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
 import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
+import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { apiBigInt } from "@/lib/zod/validators/bigint";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
-import { apiBigInt } from "@atk/zod/validators/bigint";
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
-import type { z } from "zod";
+import { z } from "zod";
 
 export const TokenApproveInputSchema = MutationInputSchemaWithContract.extend({
   spender: ethereumAddress.describe("The address to approve as spender"),

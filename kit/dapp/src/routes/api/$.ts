@@ -17,7 +17,9 @@
  * @see {@link https://spec.openapis.org/oas/latest.html} - OpenAPI specification
  */
 
-import { bigDecimalSerializer } from "@atk/zod/validators/bigdecimal";
+import { metadata } from "@/config/metadata";
+import { bigDecimalSerializer } from "@/lib/zod/validators/bigdecimal";
+import { router } from "@/orpc/routes/router";
 import { onError } from "@orpc/client";
 import { experimental_SmartCoercionPlugin as SmartCoercionPlugin } from "@orpc/json-schema";
 import { OpenAPIHandler } from "@orpc/openapi/fetch";
@@ -29,8 +31,6 @@ import {
   createServerFileRoute,
   getHeaders,
 } from "@tanstack/react-start/server";
-import { metadata } from "@/config/metadata";
-import { router } from "@/orpc/routes/router";
 import pkgjson from "../../../package.json";
 
 const logger = createLogger();

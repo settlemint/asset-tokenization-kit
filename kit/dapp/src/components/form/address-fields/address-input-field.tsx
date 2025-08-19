@@ -1,4 +1,3 @@
-import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
 import { AddressInput } from "@/components/address/address-input";
 import {
   errorClassNames,
@@ -9,6 +8,7 @@ import {
 } from "@/components/form/field";
 import { useFieldContext } from "@/hooks/use-form-contexts";
 import { cn } from "@/lib/utils";
+import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 
 export interface AddressInputProps {
   label: string;

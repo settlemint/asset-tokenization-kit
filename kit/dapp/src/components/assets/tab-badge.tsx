@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import type { AssetType } from "@atk/zod/validators/asset-types";
+import type { AssetType } from "@/lib/zod/validators/asset-types";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { Suspense } from "react";
 import type { Address } from "viem";
@@ -41,7 +41,7 @@ function TabBadgeLoader({
   assetType: _assetType,
   badgeType,
 }: TabBadgeProps) {
-  let count: number | undefined;
+  let count: number | undefined = undefined;
 
   try {
     switch (badgeType) {

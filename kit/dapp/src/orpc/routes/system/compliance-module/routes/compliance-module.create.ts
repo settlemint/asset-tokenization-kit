@@ -18,6 +18,7 @@
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
+import { complianceTypeIds } from "@/lib/zodvalidators/compliance";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import {
@@ -26,7 +27,6 @@ import {
 } from "@/orpc/routes/system/compliance-module/routes/compliance-module.create.schema";
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
-import { complianceTypeIds } from "@atk/zod/validators/compliance";
 import { call } from "@orpc/server";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 

@@ -5,7 +5,7 @@ import {
 } from "@/components/form/multi-step/form-step";
 import { withForm } from "@/hooks/use-app-form";
 import { formatValue } from "@/lib/utils/format-value";
-import { basisPointsToPercentage } from "@atk/zod/validators/basis-points";
+import { basisPointsToPercentage } from "@/lib/zod/validators/basis-points";
 import { useStore } from "@tanstack/react-store";
 import { DollarSign } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -28,9 +28,7 @@ export const FundSummaryFields = withForm({
           title={t("wizard.steps.summary.instrumentSpecificDetails.title")}
           description={t(
             "wizard.steps.summary.instrumentSpecificDetails.description",
-            {
-              type: t(`asset-types:types.${values.type}.name`),
-            }
+            { type: t(`asset-types:types.${values.type}.name`) }
           )}
         >
           <FormSummaryItem

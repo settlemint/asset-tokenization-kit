@@ -1,12 +1,12 @@
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { AccessControlFragment } from "@/lib/fragments/the-graph/access-control-fragment";
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { isEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { isEthereumAddress } from "@atk/zod/validators/ethereum-address";
-import { satisfiesRoleRequirement } from "@atk/zod/validators/role-requirement";
+import { satisfiesRoleRequirement } from "@/lib/zod/validators/role-requirement";
+import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 
 const logger = createLogger();

@@ -1,7 +1,7 @@
+import { bigDecimalSerializer } from "@/lib/zod/validators/bigdecimal";
+import { bigIntSerializer } from "@/lib/zod/validators/bigint";
+import { timestampSerializer } from "@/lib/zod/validators/timestamp";
 import type { router } from "@/orpc/routes/router";
-import { bigDecimalSerializer } from "@atk/zod/validators/bigdecimal";
-import { bigIntSerializer } from "@atk/zod/validators/bigint";
-import { timestampSerializer } from "@atk/zod/validators/timestamp";
 import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
 import type { RouterClient } from "@orpc/server";

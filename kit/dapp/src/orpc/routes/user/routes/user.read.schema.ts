@@ -6,9 +6,9 @@
  * must be provided to identify the user to retrieve.
  */
 
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
-import { z } from "zod";
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { UserSchema } from "@/orpc/routes/user/routes/user.me.schema";
+import { z } from "zod";
 
 /**
  * Input schema for user read endpoint.

@@ -20,14 +20,14 @@
  * // Usage in a handler
  * const { contract, walletVerification, ...specificData } = input;
  * ```
- * @see {@link @atk/zod/validators/ethereum-address} - Ethereum address validation
- * @see {@link @atk/zod/validators/verification-code} - Verification code validation
- * @see {@link @atk/zod/validators/verification-type} - Verification type options
+ * @see {@link @/lib/zod/validators/ethereum-address} - Ethereum address validation
+ * @see {@link @/lib/zod/validators/verification-code} - Verification code validation
+ * @see {@link @/lib/zod/validators/verification-type} - Verification type options
  */
 
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
-import { z } from "zod";
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
+import { z } from "zod";
 
 export const MutationInputSchema = z.object({
   /**

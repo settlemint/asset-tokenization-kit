@@ -7,14 +7,14 @@ import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { WarningAlert } from "@/components/ui/warning-alert";
 import { useAppForm } from "@/hooks/use-app-form";
+import { addonTypes } from "@/lib/zod/validators/addon-types";
+import { AssetFactoryTypeIdEnum } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
 import {
-  type SystemAddonConfig,
-  type SystemAddonCreateInput,
+  SystemAddonConfig,
+  SystemAddonCreateInput,
   SystemAddonCreateSchema,
 } from "@/orpc/routes/system/addon/routes/addon.create.schema";
-import { addonTypes } from "@atk/zod/validators/addon-types";
-import { AssetFactoryTypeIdEnum } from "@atk/zod/validators/asset-types";
 import { useStore } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";

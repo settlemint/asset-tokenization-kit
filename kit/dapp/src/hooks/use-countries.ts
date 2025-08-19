@@ -4,7 +4,7 @@ import {
   getNumericCountriesSorted,
   getSupportedLocales,
   type SupportedLocale,
-} from "@atk/zod/validators/iso-country-code";
+} from "@/lib/zod/validators/iso-country-code";
 import countries from "i18n-iso-countries";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";

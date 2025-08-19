@@ -1,4 +1,4 @@
-import type { AssetClass } from "@atk/zod/validators/asset-types";
+import type { AssetClass } from "@/lib/zod/validators/asset-types";
 import type { CustomTypeOptions } from "i18next";
 
 /**

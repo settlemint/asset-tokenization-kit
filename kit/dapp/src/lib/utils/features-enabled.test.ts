@@ -1,4 +1,4 @@
-import type { AssetType } from "@atk/zod/validators/asset-types";
+import type { AssetType } from "@/lib/zod/validators/asset-types";
 import { describe, expect, test } from "vitest";
 import {
   hasAllowlist,

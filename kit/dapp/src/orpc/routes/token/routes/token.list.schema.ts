@@ -1,6 +1,6 @@
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
 import { z } from "zod";
 
 /**

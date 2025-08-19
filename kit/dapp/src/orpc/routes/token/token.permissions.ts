@@ -1,5 +1,5 @@
+import type { RoleRequirement } from "@/lib/zod/validators/role-requirement";
 import type { TokenContractMutations } from "@/orpc/routes/token/token.contract";
-import type { RoleRequirement } from "@atk/zod/validators/role-requirement";
 
 /**
  * The permissions for the token contract

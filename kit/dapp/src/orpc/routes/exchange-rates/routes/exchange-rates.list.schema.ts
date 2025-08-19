@@ -5,11 +5,11 @@
  * @module ExchangeRatesListSchema
  */
 import {
-  type FiatCurrency,
   fiatCurrency,
-} from "@atk/zod/validators/fiat-currency";
-import { z } from "zod";
+  type FiatCurrency,
+} from "@/lib/zod/validators/fiat-currency";
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
+import { z } from "zod";
 
 /**
  * Schema for listing exchange rates with optional filters.

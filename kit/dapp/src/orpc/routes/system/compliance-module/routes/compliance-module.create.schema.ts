@@ -1,8 +1,8 @@
-import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
 import {
-  type ComplianceTypeId,
+  ComplianceTypeId,
   complianceTypeId,
-} from "@atk/zod/validators/compliance";
+} from "@/lib/zod/validators/compliance";
+import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
 import { z } from "zod";
 
 /**
