@@ -46,7 +46,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0, // Lifetime
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0
+            basePriceTopicId: 0,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -60,7 +61,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: PERIOD_LENGTH,
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0
+            basePriceTopicId: 0,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -74,7 +76,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: PERIOD_LENGTH,
             rolling: true,
             useBasePrice: false,
-            basePriceTopicId: 0
+            basePriceTopicId: 0,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -88,7 +91,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0,
             rolling: false,
             useBasePrice: true,
-            basePriceTopicId: BASE_PRICE_TOPIC_ID
+            basePriceTopicId: BASE_PRICE_TOPIC_ID,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -102,7 +106,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0,
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0
+            basePriceTopicId: 0,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -121,7 +126,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0, // Invalid for rolling
             rolling: true,
             useBasePrice: false,
-            basePriceTopicId: 0
+            basePriceTopicId: 0,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -141,7 +147,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 1000, // Long period allowed for fixed periods
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0
+            basePriceTopicId: 0,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -156,7 +163,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 731, // Too long for rolling windows
             rolling: true,
             useBasePrice: false,
-            basePriceTopicId: 0
+            basePriceTopicId: 0,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -177,7 +185,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 730, // Exactly at limit
             rolling: true,
             useBasePrice: false,
-            basePriceTopicId: 0
+            basePriceTopicId: 0,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -191,7 +200,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0,
             rolling: false,
             useBasePrice: true,
-            basePriceTopicId: 0 // Invalid when useBasePrice is true
+            basePriceTopicId: 0, // Invalid when useBasePrice is true
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -218,7 +228,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0, // Lifetime
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0
+            basePriceTopicId: 0,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -233,7 +244,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0, // Lifetime
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0
+            basePriceTopicId: 0,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -252,7 +264,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0, // Lifetime
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0
+            basePriceTopicId: 0,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -280,7 +293,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0,
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0
+            basePriceTopicId: 0,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -297,7 +311,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: PERIOD_LENGTH,
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0
+            basePriceTopicId: 0,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -320,7 +335,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: PERIOD_LENGTH,
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0
+            basePriceTopicId: 0,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -347,7 +363,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 3, // 3-day rolling window
             rolling: true,
             useBasePrice: false,
-            basePriceTopicId: 0
+            basePriceTopicId: 0,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -379,7 +396,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 2, // 2-day rolling window
             rolling: true,
             useBasePrice: false,
-            basePriceTopicId: 0
+            basePriceTopicId: 0,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -410,7 +428,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 730, // 2 years - maximum allowed for rolling windows
             rolling: true,
             useBasePrice: false,
-            basePriceTopicId: 0
+            basePriceTopicId: 0,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -453,7 +472,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0,
             rolling: false,
             useBasePrice: true,
-            basePriceTopicId: BASE_PRICE_TOPIC_ID
+            basePriceTopicId: BASE_PRICE_TOPIC_ID,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -480,7 +500,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0,
             rolling: false,
             useBasePrice: true,
-            basePriceTopicId: BASE_PRICE_TOPIC_ID
+            basePriceTopicId: BASE_PRICE_TOPIC_ID,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -519,7 +540,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0, // Lifetime
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0
+            basePriceTopicId: 0,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -553,7 +575,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0,
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0
+            basePriceTopicId: 0,
+            global: false
         });
 
         bytes memory params = abi.encode(config);
@@ -584,7 +607,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0,
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0
+            basePriceTopicId: 0,
+            global: false
         });
 
         bytes memory params = abi.encode(config);

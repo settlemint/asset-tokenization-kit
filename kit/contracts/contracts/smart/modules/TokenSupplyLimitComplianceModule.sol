@@ -38,11 +38,14 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
         bool rolling;
         /// @notice Whether to convert token amounts to base currency using price claims
         /// @dev When true, token amounts are converted using basePriceTopicId claims for regulatory calculation
+        ///      Conversion happens once at issuance time and the converted value is stored permanently
         bool useBasePrice;
         /// @notice Topic ID for base price claims (required when useBasePrice is true)
         /// @dev References the claim topic containing price data in format (amount, currencyCode, decimals)
-        // TODO should we keep this? or can we access it differently?
         uint256 basePriceTopicId;
+        /// @notice Whether to track globally across all tokens for this issuer
+        /// @dev When true, sums supply across all tokens using this module (issuer-wide caps)
+        bool global;
     }
 
     /// @notice Internal tracking data for a specific token's supply limits
@@ -65,6 +68,10 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
     /// @notice Mapping from token address to supply tracker
     /// @dev Stores individual tracking data for each token that uses this compliance module
     mapping(address => SupplyTracker) private supplyTrackers;
+
+    /// @notice Global supply tracker for issuer-wide tracking across all tokens
+    /// @dev Used when config.global is true to enforce limits across all tokens
+    SupplyTracker private globalSupplyTracker;
 
     // --- Constructor ---
 
@@ -90,53 +97,17 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
     ) external override {
         SupplyLimitConfig memory config = abi.decode(_params, (SupplyLimitConfig));
 
+        // Convert to base currency at issuance time and freeze the value for compliance
         uint256 amount = _value;
         if (config.useBasePrice) {
             amount = _convertToBaseCurrency(_token, _value, config.basePriceTopicId);
         }
 
-        SupplyTracker storage tracker = supplyTrackers[_token];
-
-        if (config.periodLength == 0) {
-            // Lifetime cap
-            tracker.totalSupply += amount;
-        } else if (config.rolling) {
-            // True rolling window tracking - use fixed MAX_PERIOD_LENGTH circular buffer
-            uint256 currentDay = block.timestamp / 1 days;
-
-            // Always use fixed MAX_PERIOD_LENGTH circular buffer regardless of actual period length
-            uint256 bufferIndex = currentDay % MAX_PERIOD_LENGTH;
-
-            // Check if this buffer slot contains stale data from a previous cycle
-            if (tracker.bufferDayMapping[bufferIndex] != currentDay) {
-                // Clear stale data and start fresh for this day
-                tracker.dailySupply[bufferIndex] = amount;
-                tracker.bufferDayMapping[bufferIndex] = currentDay;
-            } else {
-                // Same day, accumulate
-                tracker.dailySupply[bufferIndex] += amount;
-            }
-        } else {
-            // Fixed period tracking
-            bool shouldStartNewPeriod = false;
-
-            if (tracker.periodStart == 0) {
-                // First time using this module for this token
-                shouldStartNewPeriod = true;
-            // solhint-disable-next-line gas-strict-inequalities
-            } else if (block.timestamp - tracker.periodStart >= config.periodLength * 1 days) {
-                // Current period has expired
-                shouldStartNewPeriod = true;
-            }
-
-            if (shouldStartNewPeriod) {
-                // Reset for new period
-                tracker.periodStart = block.timestamp;
-                tracker.totalSupply = amount;
-            } else {
-                // Same period, accumulate
-                tracker.totalSupply += amount;
-            }
+        // Update both token-specific and global trackers as needed
+        _updateTracker(supplyTrackers[_token], amount, config);
+        
+        if (config.global) {
+            _updateTracker(globalSupplyTracker, amount, config);
         }
     }
 
@@ -163,12 +134,19 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
 
         SupplyLimitConfig memory config = abi.decode(_params, (SupplyLimitConfig));
 
+        // Convert the amount being checked (new issuance uses current price)
         uint256 amount = _value;
         if (config.useBasePrice) {
             amount = _convertToBaseCurrency(_token, _value, config.basePriceTopicId);
         }
 
-        uint256 currentSupply = _getCurrentSupply(_token, config);
+        // Get current supply from stored converted values (historical conversions are frozen)
+        uint256 currentSupply;
+        if (config.global) {
+            currentSupply = _getCurrentSupply(address(0), config); // Use address(0) to indicate global
+        } else {
+            currentSupply = _getCurrentSupply(_token, config);
+        }
 
         if (currentSupply + amount > config.maxSupply) {
             revert ComplianceCheckFailed("Token supply would exceed configured limit");
@@ -206,29 +184,87 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
         // - Corporate programs: Typically annual cycles
         // Gas cost grows linearly: 365 days ≈ 73K gas, MAX_PERIOD_LENGTH days ≈ 146K gas (acceptable)
         if (config.rolling && config.periodLength > MAX_PERIOD_LENGTH) {
-            revert InvalidParameters("Rolling window cannot exceed MAX_PERIOD_LENGTH days (2 years) to prevent gas limit issues");
+            revert InvalidParameters("Rolling window cannot exceed 730 days (2 years) to prevent gas limit issues");
         }
 
         if (config.useBasePrice && config.basePriceTopicId == 0) {
             revert InvalidParameters("Base price topic ID required when useBasePrice is true");
         }
+
+        // Note: No additional validation needed for global flag - it can be combined with any other options
     }
 
     // --- Internal Functions ---
+
+    /// @notice Updates a supply tracker with the given amount based on configuration
+    /// @dev Handles lifetime, fixed period, and rolling window tracking modes
+    /// @param tracker The storage reference to the tracker to update
+    /// @param amount The already-converted amount to add to tracking
+    /// @param config The supply limit configuration
+    function _updateTracker(
+        SupplyTracker storage tracker,
+        uint256 amount,
+        SupplyLimitConfig memory config
+    ) private {
+        if (config.periodLength == 0) {
+            // Lifetime cap
+            tracker.totalSupply += amount;
+        } else if (config.rolling) {
+            // True rolling window tracking - use fixed MAX_PERIOD_LENGTH circular buffer
+            uint256 currentDay = block.timestamp / 1 days;
+            
+            // Always use fixed MAX_PERIOD_LENGTH circular buffer regardless of actual period length
+            uint256 bufferIndex = currentDay % MAX_PERIOD_LENGTH;
+            
+            // Check if this buffer slot contains stale data from a previous cycle
+            if (tracker.bufferDayMapping[bufferIndex] != currentDay) {
+                // Clear stale data and start fresh for this day
+                tracker.dailySupply[bufferIndex] = amount;
+                tracker.bufferDayMapping[bufferIndex] = currentDay;
+            } else {
+                // Same day, accumulate
+                tracker.dailySupply[bufferIndex] += amount;
+            }
+        } else {
+            // Fixed period tracking
+            bool shouldStartNewPeriod = false;
+
+            if (tracker.periodStart == 0) {
+                // First time using this module for this token
+                shouldStartNewPeriod = true;
+            // solhint-disable-next-line gas-strict-inequalities
+            } else if (block.timestamp - tracker.periodStart >= config.periodLength * 1 days) {
+                // Current period has expired
+                shouldStartNewPeriod = true;
+            }
+
+            if (shouldStartNewPeriod) {
+                // Reset for new period
+                tracker.periodStart = block.timestamp;
+                tracker.totalSupply = amount;
+            } else {
+                // Same period, accumulate
+                tracker.totalSupply += amount;
+            }
+        }
+    }
 
     /// @notice Calculates the current tracked supply based on the configuration type
     /// @dev Implements different calculation methods based on configuration:
     ///      - Lifetime: returns total cumulative supply
     ///      - Fixed period: returns supply for current period (0 if new period not yet started)
     ///      - Rolling window: sums supply for the last N days using fixed MAX_PERIOD_LENGTH circular buffer
-    /// @param _token The token address to check supply for
+    /// @param _token The token address to check supply for (address(0) for global tracking)
     /// @param config The supply limit configuration defining tracking method
-    /// @return The current supply amount in the same units as maxSupply
+    /// @return The current supply amount in already-converted base currency units
     function _getCurrentSupply(
         address _token,
         SupplyLimitConfig memory config
     ) private view returns (uint256) {
-        SupplyTracker storage tracker = supplyTrackers[_token];
+        // Use global tracker if _token is address(0) or config specifies global tracking
+        SupplyTracker storage tracker = (_token == address(0) || config.global) 
+            ? globalSupplyTracker 
+            : supplyTrackers[_token];
 
         if (config.periodLength == 0) {
             // Lifetime cap
@@ -239,8 +275,12 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
             uint256 daysInPeriod = config.periodLength;
             uint256 sum = 0;
 
+            // Gas optimization: cache storage reads for dailySupply and bufferDayMapping
+            mapping(uint256 => uint256) storage dailySupplyRef = tracker.dailySupply;
+            mapping(uint256 => uint256) storage bufferDayMappingRef = tracker.bufferDayMapping;
+
             // Sum from fixed MAX_PERIOD_LENGTH circular buffer, going back N days
-            for (uint256 i = 0; i < daysInPeriod; ++i) {
+            for (uint256 i = 0; i < daysInPeriod;) {
                 // Prevent underflow in day calculation
                 if (currentDay < i) {
                     break;
@@ -251,8 +291,13 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
                 uint256 bufferIndex = dayToCheck % MAX_PERIOD_LENGTH;
 
                 // Only include data if the buffer slot actually represents the day we're checking
-                if (tracker.bufferDayMapping[bufferIndex] == dayToCheck) {
-                    sum += tracker.dailySupply[bufferIndex];
+                if (bufferDayMappingRef[bufferIndex] == dayToCheck) {
+                    sum += dailySupplyRef[bufferIndex];
+                }
+
+                // Gas optimization: unchecked increment
+                unchecked {
+                    ++i;
                 }
             }
 
