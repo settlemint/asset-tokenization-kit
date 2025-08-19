@@ -146,9 +146,9 @@ export const tokenFixedYieldSchedule = () =>
 export const tokenYield = () =>
   z.object({
     id: ethereumAddress.describe("Token yield configuration address"),
-    schedule: tokenFixedYieldSchedule().describe(
-      "Fixed yield schedule configuration"
-    ),
+    schedule: tokenFixedYieldSchedule()
+      .nullable()
+      .describe("Fixed yield schedule configuration"),
   });
 
 // Export types

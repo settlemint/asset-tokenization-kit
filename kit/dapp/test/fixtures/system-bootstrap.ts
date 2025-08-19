@@ -1,9 +1,13 @@
 import { retryWhenFailed } from "@settlemint/sdk-utils";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { getOrpcClient, OrpcClient } from "./orpc-client";
 import { DEFAULT_ISSUER, DEFAULT_PINCODE, signInWithUser } from "./user";
 
+const logger = createLogger({ level: "info" });
+
 export async function bootstrapSystem(orpClient: OrpcClient) {
   const systems = await orpClient.system.list({});
+
   if (systems.length > 0) {
     const firstSystem = systems[0];
     if (!firstSystem) {
@@ -26,6 +30,7 @@ export async function bootstrapSystem(orpClient: OrpcClient) {
         1000 // wait 1 second between retries
       );
     }
+    logger.info("Using existing system", { systemId });
     return system;
   }
 
@@ -81,11 +86,11 @@ export async function bootstrapTokenFactories(
   const factories: Parameters<
     typeof orpClient.system.tokenFactoryCreate
   >[0]["factories"] = [
-    { type: "bond", name: "Bond Factory" },
-    { type: "deposit", name: "Deposit Factory" },
-    { type: "equity", name: "Equrity Factory" },
-    { type: "fund", name: "Fund Factory" },
-    { type: "stablecoin", name: "Stablecoin Factory" },
+    { type: "bond", name: "Bonds" },
+    { type: "deposit", name: "Deposits" },
+    { type: "equity", name: "Equities" },
+    { type: "fund", name: "Funds" },
+    { type: "stablecoin", name: "Stablecoins" },
   ];
 
   const nonExistingFactories = factories.filter(

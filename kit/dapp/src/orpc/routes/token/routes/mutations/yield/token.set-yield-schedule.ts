@@ -4,9 +4,9 @@ import { getTransactionReceipt } from "@/orpc/helpers/transaction-receipt";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { read } from "../../token.read";
 import { call } from "@orpc/server";
 import { logger } from "better-auth";
+import { read } from "../../token.read";
 
 const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
   mutation TokenSetYieldSchedule(
@@ -118,6 +118,9 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
     logger.debug("Receipt logs:", receipt.logs);
     logger.debug("Receipt contractAddress:", receipt.contractAddress);
     logger.debug("Receipt status:", receipt.status);
+    console.log("Receipt logs:", receipt.logs);
+    console.log("Receipt contractAddress:", receipt.contractAddress);
+    console.log("Receipt status:", receipt.status);
     const logs = Array.isArray(receipt.logs) ? receipt.logs : [];
     let scheduleAddress: string | undefined = undefined;
     if (logs.length > 0) {
@@ -138,8 +141,9 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
         cause: new Error("Schedule address not found in transaction logs"),
       });
     }
+    console.log("Schedule address:", scheduleAddress);
     // Now set the yield schedule with the created schedule address
-    await context.portalClient.mutate(
+    const setYieldScheduleResult = await context.portalClient.mutate(
       TOKEN_SET_YIELD_SCHEDULE_MUTATION,
       {
         address: contract,
@@ -152,7 +156,8 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
         type: walletVerification.verificationType,
       }
     );
-
+    logger.debug("Set yield schedule result:", setYieldScheduleResult);
+    console.log("Set yield schedule result:", setYieldScheduleResult);
     // Return updated token data
     return await call(read, { tokenAddress: contract }, { context });
   });

@@ -13,8 +13,8 @@ const DEFAULT_PASSWORD = "settlemint";
 export const DEFAULT_PINCODE = "123456";
 
 export const DEFAULT_ADMIN: User = {
-  email: "admin@test.com",
-  name: "admin",
+  email: "snigdha@settlemint.com", // TODO: change back to admin@test.com
+  name: "Snigdha",
   password: DEFAULT_PASSWORD,
 };
 
