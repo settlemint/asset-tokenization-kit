@@ -364,7 +364,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
         // Issue TOPIC_ISSUER claim to link the asset to its issuer
         IATKSystem system = IATKSystem(_systemAddress);
         address issuerIdentity = system.issuerIdentity();
-        
+
         if (issuerIdentity != address(0)) {
             // Call the system function to issue the issuer claim
             // This is necessary because only the system contract can manage claims on the issuer identity
