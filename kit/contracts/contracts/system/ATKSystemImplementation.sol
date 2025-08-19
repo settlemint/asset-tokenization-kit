@@ -857,7 +857,7 @@ contract ATKSystemImplementation is
     /// @notice Issues a TOPIC_ISSUER claim to a target identity
     /// @dev Only callable by accounts with TOKEN_FACTORY_MODULE_ROLE or ISSUER_CLAIM_MANAGER_ROLE
     /// @param targetIdentity The identity contract to receive the issuer claim
-    function issueIssuerClaim(address targetIdentity) external onlySystemRole(ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE) {
+    function issueIssuerClaim(address targetIdentity) external onlySystemRoles2(ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKPeopleRoles.ISSUER_CLAIM_MANAGER_ROLE) {
         if (_issuerIdentity == address(0)) revert IssuerIdentityNotInitialized();
         if (targetIdentity == address(0)) revert InvalidTargetIdentity();
 

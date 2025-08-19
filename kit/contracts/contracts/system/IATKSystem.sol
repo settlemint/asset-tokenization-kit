@@ -241,7 +241,7 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     function issuerIdentity() external view returns (address);
 
     /// @notice Issues a TOPIC_ISSUER claim to a target identity
-    /// @dev Only callable by accounts with TOKEN_FACTORY_MODULE_ROLE
+    /// @dev Only callable by accounts with TOKEN_FACTORY_MODULE_ROLE or ISSUER_CLAIM_MANAGER_ROLE
     /// @param targetIdentity The identity contract to receive the issuer claim
     function issueIssuerClaim(address targetIdentity) external;
 }
