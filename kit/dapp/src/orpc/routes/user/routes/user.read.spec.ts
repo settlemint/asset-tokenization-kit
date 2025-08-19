@@ -19,13 +19,17 @@ describe("User read", () => {
 
   beforeAll(async () => {
     // Setup test users
-    testUser = await createTestUser();
-    otherUser = await createTestUser();
-    unauthorizedUser = await createTestUser();
+    [testUser, otherUser, unauthorizedUser] = await Promise.all([
+      createTestUser(),
+      createTestUser(),
+      createTestUser(),
+    ]);
 
-    testUserData = await getUserData(testUser.user);
-    otherUserData = await getUserData(otherUser.user);
-    unauthorizedUserData = await getUserData(unauthorizedUser.user);
+    [testUserData, otherUserData, unauthorizedUserData] = await Promise.all([
+      getUserData(testUser.user),
+      getUserData(otherUser.user),
+      getUserData(unauthorizedUser.user),
+    ]);
 
     // Create KYC profiles for better test coverage
     const testUserHeaders = await signInWithUser(testUser.user);
@@ -42,15 +46,27 @@ describe("User read", () => {
 
     const otherUserHeaders = await signInWithUser(otherUser.user);
     const otherUserClient = getOrpcClient(otherUserHeaders);
-    await otherUserClient.user.kyc.upsert({
-      userId: otherUserData.id,
-      firstName: "OtherFirst",
-      lastName: "OtherLast",
-      dob: new Date("1985-05-15"),
-      country: "GB",
-      residencyStatus: "resident",
-      nationalId: "OTHER987654",
-    });
+
+    await Promise.all([
+      testUserClient.user.kyc.upsert({
+        userId: testUserData.id,
+        firstName: "TestFirst",
+        lastName: "TestLast",
+        dob: new Date("1990-01-01"),
+        country: "US",
+        residencyStatus: "resident",
+        nationalId: "TEST123456",
+      }),
+      otherUserClient.user.kyc.upsert({
+        userId: otherUserData.id,
+        firstName: "OtherFirst",
+        lastName: "OtherLast",
+        dob: new Date("1985-05-15"),
+        country: "GB",
+        residencyStatus: "resident",
+        nationalId: "OTHER987654",
+      }),
+    ]);
   });
 
   describe("Admin access", () => {

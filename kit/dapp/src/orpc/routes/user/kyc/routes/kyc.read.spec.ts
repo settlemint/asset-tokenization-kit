@@ -15,10 +15,15 @@ describe("KYC read", () => {
   let otherUserData: Awaited<ReturnType<typeof getUserData>>;
 
   beforeAll(async () => {
-    testUser = await createTestUser();
-    otherUser = await createTestUser();
-    testUserData = await getUserData(testUser.user);
-    otherUserData = await getUserData(otherUser.user);
+    const users = await Promise.all([createTestUser(), createTestUser()]);
+    testUser = users[0];
+    otherUser = users[1];
+    const userData = await Promise.all([
+      getUserData(testUser.user),
+      getUserData(otherUser.user),
+    ]);
+    testUserData = userData[0];
+    otherUserData = userData[1];
 
     // Create KYC profile for test user
     const headers = await signInWithUser(testUser.user);
@@ -36,15 +41,27 @@ describe("KYC read", () => {
     // Create KYC profile for other user
     const otherHeaders = await signInWithUser(otherUser.user);
     const otherClient = getOrpcClient(otherHeaders);
-    await otherClient.user.kyc.upsert({
-      userId: otherUserData.id,
-      firstName: "Bob",
-      lastName: "Wilson",
-      dob: new Date("1988-07-10"),
-      country: "US",
-      residencyStatus: "resident",
-      nationalId: "DL987654",
-    });
+
+    await Promise.all([
+      client.user.kyc.upsert({
+        userId: testUserData.id,
+        firstName: "Alice",
+        lastName: "Johnson",
+        dob: new Date("1992-03-20"),
+        country: "CA",
+        residencyStatus: "resident",
+        nationalId: "AB123456",
+      }),
+      otherClient.user.kyc.upsert({
+        userId: otherUserData.id,
+        firstName: "Bob",
+        lastName: "Wilson",
+        dob: new Date("1988-07-10"),
+        country: "US",
+        residencyStatus: "resident",
+        nationalId: "DL987654",
+      }),
+    ]);
   });
 
   it("can read own KYC profile", async () => {

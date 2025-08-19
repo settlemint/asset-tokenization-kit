@@ -18,15 +18,15 @@
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { complianceTypeIds } from "@/lib/zod/validators/compliance";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import {
   getDefaultComplianceModuleImplementations,
-  SystemComplianceModuleConfig,
+  type SystemComplianceModuleConfig,
 } from "@/orpc/routes/system/compliance-module/routes/compliance-module.create.schema";
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
+import { complianceTypeIds } from "@atk/zod/validators/compliance";
 import { call } from "@orpc/server";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 
@@ -37,7 +37,7 @@ const REGISTER_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
     $address: String!
     $from: String!
     $implementation: String!
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
   ) {
     IATKComplianceModuleRegistryRegisterComplianceModule(
@@ -46,7 +46,7 @@ const REGISTER_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
       input: {
         moduleAddress: $implementation
       }
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
     ) {
       transactionHash

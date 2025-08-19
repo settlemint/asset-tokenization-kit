@@ -7,16 +7,15 @@
  * Tests all input/output schemas for actions-related operations.
  * @module ActionsTests
  */
-import { safeParse } from "@/lib/zod";
 import { describe, expect, it } from "vitest";
 import {
-  ActionSchema,
   ActionExecutorSchema,
+  ActionSchema,
   ActionStatusSchema,
-  ActionsListSchema,
-  ActionsListResponseSchema,
   ActionsGraphResponseSchema,
   ActionsListDataSchema,
+  ActionsListResponseSchema,
+  ActionsListSchema,
 } from "./routes/actions.list.schema";
 
 // Logger is mocked via vitest.config.ts alias
@@ -32,7 +31,7 @@ describe("Actions Schemas", () => {
       ] as const;
 
       for (const status of validStatuses) {
-        const result = safeParse(ActionStatusSchema, status);
+        const result = ActionStatusSchema.parse(status);
         expect(result).toBe(status);
       }
     });
@@ -41,7 +40,7 @@ describe("Actions Schemas", () => {
       const invalidStatuses = ["UNKNOWN", "pending", "active", "", "COMPLETED"];
 
       for (const status of invalidStatuses) {
-        expect(() => safeParse(ActionStatusSchema, status)).toThrow();
+        expect(() => ActionStatusSchema.parse(status)).toThrow();
       }
     });
   });
@@ -55,7 +54,7 @@ describe("Actions Schemas", () => {
           "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
         ],
       };
-      const result = safeParse(ActionExecutorSchema, validExecutor);
+      const result = ActionExecutorSchema.parse(validExecutor);
       expect(result.id).toBe("executor-1");
       expect(result.executors).toHaveLength(2);
     });
@@ -65,21 +64,21 @@ describe("Actions Schemas", () => {
         id: "executor-1",
         executors: ["invalid-address", "0x123"], // Invalid Ethereum addresses
       };
-      expect(() => safeParse(ActionExecutorSchema, invalidExecutor)).toThrow();
+      expect(() => ActionExecutorSchema.parse(invalidExecutor)).toThrow();
     });
 
     it("should require id field", () => {
       const missingId = {
         executors: ["0x1234567890123456789012345678901234567890"],
       };
-      expect(() => safeParse(ActionExecutorSchema, missingId)).toThrow();
+      expect(() => ActionExecutorSchema.parse(missingId)).toThrow();
     });
 
     it("should require executors array", () => {
       const missingExecutors = {
         id: "executor-1",
       };
-      expect(() => safeParse(ActionExecutorSchema, missingExecutors)).toThrow();
+      expect(() => ActionExecutorSchema.parse(missingExecutors)).toThrow();
     });
 
     it("should allow empty executors array", () => {
@@ -87,7 +86,7 @@ describe("Actions Schemas", () => {
         id: "executor-1",
         executors: [],
       };
-      const result = safeParse(ActionExecutorSchema, emptyExecutors);
+      const result = ActionExecutorSchema.parse(emptyExecutors);
       expect(result.executors).toHaveLength(0);
     });
   });
@@ -108,7 +107,7 @@ describe("Actions Schemas", () => {
     };
 
     it("should validate complete action object", () => {
-      const result = safeParse(ActionSchema, validAction);
+      const result = ActionSchema.parse(validAction);
       expect(result.id).toBe("action-123");
       expect(result.name).toBe("Test Action");
       expect(result.status).toBe("ACTIVE");
@@ -121,7 +120,7 @@ describe("Actions Schemas", () => {
         executedAt: null,
         executedBy: null,
       };
-      const result = safeParse(ActionSchema, actionWithNulls);
+      const result = ActionSchema.parse(actionWithNulls);
       expect(result.executedAt).toBeNull();
       expect(result.executedBy).toBeNull();
     });
@@ -140,7 +139,7 @@ describe("Actions Schemas", () => {
         const incompleteAction = Object.fromEntries(
           Object.entries(validAction).filter(([key]) => key !== field)
         );
-        expect(() => safeParse(ActionSchema, incompleteAction)).toThrow();
+        expect(() => ActionSchema.parse(incompleteAction)).toThrow();
       });
     });
 
@@ -149,7 +148,7 @@ describe("Actions Schemas", () => {
         ...validAction,
         target: "invalid-address",
       };
-      expect(() => safeParse(ActionSchema, invalidTarget)).toThrow();
+      expect(() => ActionSchema.parse(invalidTarget)).toThrow();
     });
 
     it("should validate executedBy as Ethereum address when present", () => {
@@ -157,7 +156,7 @@ describe("Actions Schemas", () => {
         ...validAction,
         executedBy: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
       };
-      const result = safeParse(ActionSchema, validExecutedBy);
+      const result = ActionSchema.parse(validExecutedBy);
       // The ethereum address validator normalizes to checksum format
       expect(result.executedBy).toBe(
         "0xABcdEFABcdEFabcdEfAbCdefabcdeFABcDEFabCD"
@@ -167,7 +166,7 @@ describe("Actions Schemas", () => {
         ...validAction,
         executedBy: "invalid-address",
       };
-      expect(() => safeParse(ActionSchema, invalidExecutedBy)).toThrow();
+      expect(() => ActionSchema.parse(invalidExecutedBy)).toThrow();
     });
 
     it("should coerce string timestamps to bigint", () => {
@@ -175,7 +174,7 @@ describe("Actions Schemas", () => {
         ...validAction,
         activeAt: "1700000100", // String instead of bigint
       } as unknown;
-      const result = safeParse(ActionSchema, stringTimestamps);
+      const result = ActionSchema.parse(stringTimestamps);
       expect(result.activeAt).toBe(BigInt("1700000100"));
     });
   });
@@ -187,7 +186,7 @@ describe("Actions Schemas", () => {
         target: "0x1234567890123456789012345678901234567890",
         name: "settlement",
       };
-      const result = safeParse(ActionsListSchema, validInput);
+      const result = ActionsListSchema.parse(validInput);
       expect(result.status).toBe("PENDING");
       expect(result.target).toBe("0x1234567890123456789012345678901234567890");
       expect(result.name).toBe("settlement");
@@ -195,7 +194,7 @@ describe("Actions Schemas", () => {
 
     it("should work without optional filters", () => {
       const minimalInput = {};
-      const result = safeParse(ActionsListSchema, minimalInput);
+      const result = ActionsListSchema.parse(minimalInput);
       expect(result.status).toBeUndefined();
       expect(result.target).toBeUndefined();
       expect(result.name).toBeUndefined();
@@ -205,34 +204,34 @@ describe("Actions Schemas", () => {
       const invalidStatus = {
         status: "INVALID_STATUS",
       };
-      expect(() => safeParse(ActionsListSchema, invalidStatus)).toThrow();
+      expect(() => ActionsListSchema.parse(invalidStatus)).toThrow();
     });
 
     it("should reject invalid target address", () => {
       const invalidTarget = {
         target: "not-an-address",
       };
-      expect(() => safeParse(ActionsListSchema, invalidTarget)).toThrow();
+      expect(() => ActionsListSchema.parse(invalidTarget)).toThrow();
     });
 
     it("should validate individual filter types", () => {
       // Test status filter
       const statusFilter = { status: "EXECUTED" as const };
-      const statusResult = safeParse(ActionsListSchema, statusFilter);
+      const statusResult = ActionsListSchema.parse(statusFilter);
       expect(statusResult.status).toBe("EXECUTED");
 
       // Test target filter
       const targetFilter = {
         target: "0x1234567890123456789012345678901234567890",
       };
-      const targetResult = safeParse(ActionsListSchema, targetFilter);
+      const targetResult = ActionsListSchema.parse(targetFilter);
       expect(targetResult.target).toBe(
         "0x1234567890123456789012345678901234567890"
       );
 
       // Test name filter
       const nameFilter = { name: "bond maturity" };
-      const nameResult = safeParse(ActionsListSchema, nameFilter);
+      const nameResult = ActionsListSchema.parse(nameFilter);
       expect(nameResult.name).toBe("bond maturity");
     });
   });
@@ -254,14 +253,14 @@ describe("Actions Schemas", () => {
 
     it("should validate ActionsListResponseSchema", () => {
       const validResponse = [mockAction];
-      const result = safeParse(ActionsListResponseSchema, validResponse);
+      const result = ActionsListResponseSchema.parse(validResponse);
       expect(result).toHaveLength(1);
       expect(result[0]?.id).toBe(mockAction.id);
     });
 
     it("should validate ActionsListResponseSchema with empty data", () => {
       const emptyResponse: (typeof mockAction)[] = [];
-      const result = safeParse(ActionsListResponseSchema, emptyResponse);
+      const result = ActionsListResponseSchema.parse(emptyResponse);
       expect(result).toHaveLength(0);
     });
 
@@ -278,17 +277,14 @@ describe("Actions Schemas", () => {
           } as unknown,
         ],
       };
-      const result = safeParse(
-        ActionsGraphResponseSchema,
-        validGraphQLResponse
-      );
+      const result = ActionsGraphResponseSchema.parse(validGraphQLResponse);
       expect(result.actions).toHaveLength(1);
       expect(result.actions[0]?.id).toBe("action-123");
     });
 
     it("should validate ActionsListDataSchema", () => {
       const validDataArray = [mockAction];
-      const result = safeParse(ActionsListDataSchema, validDataArray);
+      const result = ActionsListDataSchema.parse(validDataArray);
       expect(result).toHaveLength(1);
       expect(result[0]?.id).toBe("action-123");
     });
@@ -309,7 +305,7 @@ describe("Actions Schemas", () => {
           executors: [],
         },
       };
-      const result = safeParse(ActionSchema, largeTimestamp);
+      const result = ActionSchema.parse(largeTimestamp);
       expect(result.activeAt).toBe(BigInt("99999999999999999"));
     });
 
@@ -322,7 +318,7 @@ describe("Actions Schemas", () => {
         id: "executor-many",
         executors: manyExecutors,
       };
-      const result = safeParse(ActionExecutorSchema, executor);
+      const result = ActionExecutorSchema.parse(executor);
       expect(result.executors).toHaveLength(100);
     });
 
@@ -341,14 +337,14 @@ describe("Actions Schemas", () => {
           executors: ["0x1234567890123456789012345678901234567890"],
         },
       };
-      const result = safeParse(ActionSchema, actionWithLongStrings);
+      const result = ActionSchema.parse(actionWithLongStrings);
       expect(result.name).toBe(longString);
       expect(result.id).toBe(longString);
     });
 
     it("should handle empty filters", () => {
       const emptyFilters = {};
-      const result = safeParse(ActionsListSchema, emptyFilters);
+      const result = ActionsListSchema.parse(emptyFilters);
       expect(result).toEqual({});
     });
   });

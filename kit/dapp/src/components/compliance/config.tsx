@@ -1,4 +1,4 @@
-import type { ComplianceTypeId } from "@/lib/zod/validators/compliance";
+import type { ComplianceTypeId } from "@atk/zod/validators/compliance";
 import {
   BanIcon,
   MapPinCheck,

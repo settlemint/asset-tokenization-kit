@@ -7,7 +7,7 @@ import { call } from "@orpc/server";
 
 const TOKEN_RECOVER_ERC20_MUTATION = portalGraphql(`
   mutation TokenRecoverERC20(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
@@ -18,7 +18,7 @@ const TOKEN_RECOVER_ERC20_MUTATION = portalGraphql(`
     recoverERC20: ISMARTRecoverERC20(
       address: $address
       from: $from
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       input: {
         token: $tokenAddress

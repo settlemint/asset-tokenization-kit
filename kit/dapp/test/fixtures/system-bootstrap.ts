@@ -1,12 +1,11 @@
 import { ORPCError } from "@orpc/server";
 import { retryWhenFailed } from "@settlemint/sdk-utils";
 import { DEFAULT_INVESTOR } from "@test/fixtures/user";
-import { getOrpcClient, OrpcClient } from "./orpc-client";
+import { getOrpcClient, type OrpcClient } from "./orpc-client";
 import {
   DEFAULT_ADMIN,
   DEFAULT_ISSUER,
   DEFAULT_PINCODE,
-  getUserData,
   signInWithUser,
 } from "./user";
 
@@ -139,8 +138,8 @@ export async function bootstrapAddons(orpClient: OrpcClient) {
   }
 
   await orpClient.system.addonCreate({
-    verification: {
-      verificationCode: DEFAULT_PINCODE,
+    walletVerification: {
+      secretVerificationCode: DEFAULT_PINCODE,
       verificationType: "pincode",
     },
     addons: [
@@ -161,7 +160,6 @@ export async function bootstrapAddons(orpClient: OrpcClient) {
 }
 
 export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
-  const issuer = await getUserData(DEFAULT_ISSUER);
   const issuerOrpcClient = getOrpcClient(await signInWithUser(DEFAULT_ISSUER));
   const issuerMe = await issuerOrpcClient.user.me({});
 
@@ -183,7 +181,7 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
       },
-      address: issuer.wallet,
+      address: issuerMe.wallet ?? "",
       role: rolesToGrant,
     });
   }
@@ -210,16 +208,16 @@ export async function createAndRegisterUserIdentities(orpcClient: OrpcClient) {
     const me = await userOrpClient.user.me({});
     if (me.wallet && !me.onboardingState.identitySetup) {
       await orpcClient.system.identityCreate({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "pincode",
         },
         wallet: me.wallet,
       });
       try {
         await orpcClient.system.identityRegister({
-          verification: {
-            verificationCode: DEFAULT_PINCODE,
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
             verificationType: "pincode",
           },
           wallet: me.wallet,

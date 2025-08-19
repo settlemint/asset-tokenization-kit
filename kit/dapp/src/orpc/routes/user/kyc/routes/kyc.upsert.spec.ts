@@ -9,14 +9,19 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 describe("KYC upsert", () => {
   let testUser: Awaited<ReturnType<typeof createTestUser>>;
+  let otherUser: Awaited<ReturnType<typeof createTestUser>>;
   let testUserData: Awaited<ReturnType<typeof getUserData>>;
   let otherUserData: Awaited<ReturnType<typeof getUserData>>;
 
   beforeAll(async () => {
-    testUser = await createTestUser();
-    const otherUser = await createTestUser();
-    testUserData = await getUserData(testUser.user);
-    otherUserData = await getUserData(otherUser.user);
+    [testUser, otherUser] = await Promise.all([
+      createTestUser(),
+      createTestUser(),
+    ]);
+    [testUserData, otherUserData] = await Promise.all([
+      getUserData(testUser.user),
+      getUserData(otherUser.user),
+    ]);
   });
 
   it("can create a new KYC profile", async () => {

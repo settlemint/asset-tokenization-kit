@@ -1,6 +1,6 @@
 import {
-  ActionsCell,
   type ActionItem,
+  ActionsCell,
 } from "@/components/data-table/cells/actions-cell";
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
@@ -9,11 +9,12 @@ import { ComponentErrorBoundary } from "@/components/error/component-error-bound
 import { BlocklistSheet } from "@/components/manage-dropdown/sheets/blocklist-sheet";
 import { Button } from "@/components/ui/button";
 import { Web3Address } from "@/components/web3/web3-address";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
-import { ShieldBan } from "lucide-react";
+import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
+import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
+import { useQuery } from "@tanstack/react-query";
+import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -26,8 +27,13 @@ const columnHelper = createColumnHelper<BlocklistRow>();
 export function TokenBlocklistTable({ token }: { token: Token }) {
   const { t } = useTranslation(["tokens", "common", "form"]);
 
-  // Placeholder until token.read includes blocklisted addresses from subgraph
-  const [rows, setRows] = useState<BlocklistRow[]>([]);
+  // Fetch token holders to get frozen addresses
+  const { data: holdersData } = useQuery(
+    orpc.token.holders.queryOptions({
+      input: { tokenAddress: token.id },
+    })
+  );
+
   const [openSheet, setOpenSheet] = useState(false);
   const [sheetPreset, setSheetPreset] = useState<EthereumAddress | undefined>(
     undefined
@@ -37,6 +43,14 @@ export function TokenBlocklistTable({ token }: { token: Token }) {
   const canManageBlocklist = Boolean(
     token.userPermissions?.actions.freezeAddress
   );
+
+  // Extract frozen addresses from holders data
+  const rows: BlocklistRow[] = useMemo(() => {
+    if (!holdersData?.token?.balances) return [];
+    return holdersData.token.balances
+      .filter((balance) => balance.isFrozen)
+      .map((balance) => ({ id: balance.account.id }));
+  }, [holdersData]);
 
   const columns = useMemo(
     () =>
@@ -84,20 +98,8 @@ export function TokenBlocklistTable({ token }: { token: Token }) {
         asset={token}
         presetAddress={sheetPreset}
         defaultMode={sheetMode}
-        onCompleted={({ address, mode }) => {
-          setRows((prev) => {
-            if (mode === "add") {
-              return prev.some(
-                (r) => r.id.toLowerCase() === address.toLowerCase()
-              )
-                ? prev
-                : [...prev, { id: address }];
-            }
-            // remove
-            return prev.filter(
-              (r) => r.id.toLowerCase() !== address.toLowerCase()
-            );
-          });
+        onCompleted={() => {
+          // Data will refresh automatically through query invalidation
         }}
       />
       <DataTable
@@ -131,11 +133,6 @@ export function TokenBlocklistTable({ token }: { token: Token }) {
             </div>
           ),
           placeholder: t("tokens:blocklist.searchPlaceholder"),
-        }}
-        customEmptyState={{
-          icon: ShieldBan,
-          title: t("tokens:blocklist.empty.title"),
-          description: t("tokens:blocklist.empty.description"),
         }}
       />
     </ComponentErrorBoundary>

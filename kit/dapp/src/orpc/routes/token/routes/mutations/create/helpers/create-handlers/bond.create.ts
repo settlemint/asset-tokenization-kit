@@ -26,10 +26,10 @@
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
 import type { TokenCreateContext } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create";
 import { createToken } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create";
 import type { TokenCreateInput } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
+import { AssetTypeEnum } from "@atk/zod/validators/asset-types";
 
 const CREATE_BOND_MUTATION = portalGraphql(`
   mutation CreateBondMutation(
@@ -43,7 +43,7 @@ const CREATE_BOND_MUTATION = portalGraphql(`
     $faceValue: String!
     $maturityDate: String!
     $denominationAsset: String!
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $countryCode: Int!
   ) {
@@ -63,7 +63,7 @@ const CREATE_BOND_MUTATION = portalGraphql(`
         }
         countryCode_: $countryCode
       }
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
     ) {
       transactionHash
@@ -102,7 +102,7 @@ export const bondCreateHandler = async (
           params: pair.params,
         })),
       },
-      // VERIFICATION DELEGATION: Portal middleware enriches with verificationId/challengeResponse
+      // VERIFICATION DELEGATION: Portal middleware enriches with challengeId/challengeResponse
       context.walletVerification
     );
   });

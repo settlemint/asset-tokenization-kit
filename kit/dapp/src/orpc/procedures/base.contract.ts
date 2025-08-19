@@ -1,7 +1,7 @@
-import { ErrorMap, oc } from "@orpc/contract";
+import { RoleRequirementSchema } from "@atk/zod/validators/role-requirement";
+import { type ErrorMap, oc } from "@orpc/contract";
 import { oo } from "@orpc/openapi";
 import { z } from "zod";
-import { RoleRequirementSchema } from "@/lib/zod/validators/role-requirement";
 
 export const CUSTOM_ERRORS = {
   /**

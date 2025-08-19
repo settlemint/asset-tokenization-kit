@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/card";
 import { useSettings } from "@/hooks/use-settings";
 import { DEFAULT_SETTINGS } from "@/lib/db/schemas/settings";
-import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
 import { orpc } from "@/orpc/orpc-client";
+import { bigDecimal } from "@atk/zod/validators/bigdecimal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { format } from "dnum";

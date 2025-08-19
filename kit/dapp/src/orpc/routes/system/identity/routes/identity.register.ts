@@ -8,7 +8,7 @@ import countries from "i18n-iso-countries";
 
 const IDENTITY_REGISTER_MUTATION = portalGraphql(`
   mutation IdentityRegister(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
@@ -19,7 +19,7 @@ const IDENTITY_REGISTER_MUTATION = portalGraphql(`
     create: IATKIdentityRegistryRegisterIdentity(
       address: $address
       from: $from
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       input: {
         _country: $country

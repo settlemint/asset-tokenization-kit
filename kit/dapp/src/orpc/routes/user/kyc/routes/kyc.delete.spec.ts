@@ -88,10 +88,11 @@ describe("KYC delete", () => {
   });
 
   it("regular user cannot delete another user's KYC profile", async () => {
-    const { user: user1 } = await createTestUser();
-    const { user: user2 } = await createTestUser();
+    const [{ user: user1 }, { user: user2 }] = await Promise.all([
+      createTestUser(),
+      createTestUser(),
+    ]);
 
-    await getUserData(user1);
     const user2Data = await getUserData(user2);
 
     // Create profile for user2

@@ -1,7 +1,6 @@
 /**
  * @vitest-environment node
  */
-import { TEST_CONSTANTS } from "@test/helpers/test-helpers";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
@@ -9,6 +8,7 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
+import { TEST_CONSTANTS } from "@test/helpers/test-helpers";
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe.concurrent("Token Stats: Wallet Distribution", () => {
@@ -28,9 +28,6 @@ describe.concurrent("Token Stats: Wallet Distribution", () => {
         verificationType: "PINCODE",
       },
     });
-
-    // Wait for TheGraph to index the token creation
-    await new Promise((resolve) => setTimeout(resolve, 3000));
   });
 
   describe("Business logic", () => {

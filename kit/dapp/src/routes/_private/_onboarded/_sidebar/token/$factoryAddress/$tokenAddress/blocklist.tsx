@@ -1,10 +1,10 @@
+import { getAssetTypeFromFactoryTypeId } from "@atk/zod/validators/asset-types";
+import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { TokenBlocklistTable } from "@/components/tables/token-blocklist";
 import { hasBlocklist } from "@/lib/utils/features-enabled";
-import { getAssetTypeFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
-import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 
 export const Route = createFileRoute(
   "/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist"

@@ -8,7 +8,7 @@
  * enriching them based on user verification settings.
  *
  * ARCHITECTURAL PATTERN:
- * - GraphQL mutations declare verificationId and challengeResponse as optional
+ * - GraphQL mutations declare challengeId and challengeResponse as optional
  * - Middleware enriches these parameters based on walletVerification context
  * - Different verification types (OTP, PINCODE, SECRET_CODES) have different protocols
  * - Centralized verification logic prevents code duplication across mutations
@@ -30,22 +30,20 @@
 import type { SessionUser } from "@/lib/auth";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { getVerificationId } from "@/orpc/helpers/get-verification-id";
+import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
+import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
 import {
   ethereumHash,
   getEthereumHash as getTransactionHash,
   type EthereumHash as TransactionHash,
-} from "@/lib/zod/validators/ethereum-hash";
-import { getVerificationId } from "@/orpc/helpers/get-verification-id";
-import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
-import { createLogger } from "@settlemint/sdk-utils/logging";
+} from "@atk/zod/validators/ethereum-hash";
 import type { TadaDocumentNode } from "gql.tada";
+import { getOperationAST } from "graphql";
 import type { Variables } from "graphql-request";
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { z } from "zod";
 import { baseRouter } from "../../procedures/base.router";
-
-const logger = createLogger();
 
 const CreateVerificationChallengeMutation = portalGraphql(`
   mutation CreateVerificationChallenge($userWalletAddress: String!, $verificationType: WalletVerificationType!) {
@@ -85,6 +83,37 @@ const GET_INDEXING_STATUS_QUERY = theGraphGraphql(`
     }
   }
 `);
+
+/**
+ * Extracts the operation name from a GraphQL document.
+ *
+ * @remarks
+ * This function parses the GraphQL document AST to find the operation name.
+ * It handles documents created by gql.tada which don't have __meta property.
+ *
+ * @param document - The GraphQL document to extract the operation name from
+ * @returns The operation name if found, or undefined
+ */
+function getOperationName<TResult, TVariables extends Variables>(
+  document: TadaDocumentNode<TResult, TVariables>
+): string | undefined {
+  // First check if __meta property exists (for backward compatibility)
+  const docWithMeta = document as TadaDocumentNode<TResult, TVariables> & {
+    __meta?: { operationName?: string };
+  };
+  if (docWithMeta.__meta?.operationName) {
+    return docWithMeta.__meta.operationName;
+  }
+
+  // Extract operation name from the AST
+  try {
+    const operationAST = getOperationAST(document);
+    return operationAST?.name?.value;
+  } catch {
+    // If parsing fails, return undefined
+    return undefined;
+  }
+}
 
 /**
  * Generates a challenge response for pincode verification using cryptographic hashing.
@@ -180,7 +209,7 @@ function createValidatedPortalClient(
      */
     async mutate<TResult, TVariables extends Variables & { from: string }>(
       document: TadaDocumentNode<TResult, TVariables>,
-      variables: Omit<TVariables, "verificationId" | "challengeResponse"> & {
+      variables: Omit<TVariables, "challengeId" | "challengeResponse"> & {
         from: EthereumAddress;
       },
       walletVerification?: {
@@ -189,19 +218,18 @@ function createValidatedPortalClient(
         type: "OTP" | "PINCODE" | "SECRET_CODES";
       }
     ): Promise<TransactionHash> {
-      // Extract operation name from document metadata
-      const operation =
-        (
-          document as TadaDocumentNode<TResult, TVariables> & {
-            __meta?: { operationName?: string };
-          }
-        ).__meta?.operationName ?? "GraphQL Mutation";
+      // Extract operation name from document
+      const operation = getOperationName(document) ?? "GraphQL Mutation";
+
+      // Generate a unique request ID that includes the operation name for tracing
+      const requestId = `atk-mut-${operation.replaceAll(/[^a-zA-Z0-9]/g, "-").toLowerCase()}-${randomUUID()}`;
 
       // WALLET VERIFICATION ENRICHMENT
-      // WHY: GraphQL mutations accept verificationId and challengeResponse as optional parameters,
+      // WHY: GraphQL mutations accept challengeId and challengeResponse as optional parameters,
       // but we enrich them here based on the user's verification type to ensure secure operations.
       // This pattern keeps verification logic centralized while making GraphQL schema flexible.
-      let enrichedVariables = variables as unknown as TVariables;
+      // IMPORTANT: Create a deep copy to prevent concurrent mutations from sharing state
+      let enrichedVariables = { ...variables } as unknown as TVariables;
 
       if (walletVerification) {
         const { sender, code, type } = walletVerification;
@@ -221,6 +249,35 @@ function createValidatedPortalClient(
           });
         }
 
+        // VERIFICATION CHALLENGE: All verification types require creating a challenge first
+        // The challenge provides a unique ID and cryptographic parameters for secure verification
+        const userWalletAddress = variables.from;
+
+        const challengeResult = await portalClient.request(
+          CreateVerificationChallengeMutation,
+          {
+            userWalletAddress,
+            verificationType: type,
+          },
+          {
+            "x-request-id": requestId,
+          }
+        );
+
+        if (!challengeResult.createVerificationChallenge) {
+          throw errors.PORTAL_ERROR({
+            message: "Failed to create verification challenge",
+            data: {
+              document,
+              variables,
+              responseValidation: `${type} verification failed`,
+            },
+          });
+        }
+
+        const challenge = challengeResult.createVerificationChallenge;
+        const challengeId = challenge.id;
+
         let challengeResponse: string;
 
         if (type === "OTP") {
@@ -235,30 +292,11 @@ function createValidatedPortalClient(
           // VERIFICATION TYPE: PINCODE (numerical PIN with cryptographic challenge)
           // WHY: PINCODE requires a dynamic challenge-response protocol to prevent replay attacks.
           // Portal generates a unique salt and secret for each verification attempt.
-          const userWalletAddress = variables.from;
-
-          const challengeResult = await portalClient.request(
-            CreateVerificationChallengeMutation,
-            {
-              userWalletAddress,
-              verificationType: type,
-            }
-          );
-
-          if (!challengeResult.createVerificationChallenge) {
-            throw errors.PORTAL_ERROR({
-              message: "Failed to create verification challenge",
-              data: {
-                document,
-                variables,
-                responseValidation: `${type} verification failed`,
-              },
-            });
-          }
-
-          const challenge =
-            challengeResult.createVerificationChallenge.challenge;
-          if (!challenge || !challenge.salt || !challenge.secret) {
+          if (
+            !challenge.challenge ||
+            !challenge.challenge.salt ||
+            !challenge.challenge.secret
+          ) {
             throw errors.PORTAL_ERROR({
               message: "Failed to create verification challenge",
               data: {
@@ -270,20 +308,21 @@ function createValidatedPortalClient(
           }
           challengeResponse = generatePincodeResponse(
             code,
-            challenge.salt,
-            challenge.secret
+            challenge.challenge.salt,
+            challenge.challenge.secret
           );
         }
 
         // PARAMETER ENRICHMENT: Add verification data to mutation variables
-        // WHY: GraphQL schema defines verificationId and challengeResponse as optional,
+        // WHY: GraphQL schema defines challengeId and challengeResponse as optional,
         // but we conditionally enrich them based on user verification settings.
         // This keeps the schema flexible while ensuring secure operations.
+
         enrichedVariables = {
           ...variables,
-          verificationId,
+          challengeId, // Portal expects the challenge ID from createVerificationChallenge
           challengeResponse,
-        } as TVariables & { verificationId: string; challengeResponse: string };
+        } as TVariables & { challengeId: string; challengeResponse: string };
       }
 
       let result: TResult;
@@ -293,17 +332,15 @@ function createValidatedPortalClient(
         result = await (
           portalClient.request as <D, V extends Variables>(
             doc: TadaDocumentNode<D, V>,
-            vars: V
+            vars: V,
+            headers?: Record<string, string>
           ) => Promise<D>
-        )(document, enrichedVariables);
+        )(document, enrichedVariables, {
+          "x-request-id": requestId,
+        });
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : String(error);
-        logger.error(`GraphQL ${operation} failed`, {
-          operation,
-          ...variables,
-          error: errorMessage,
-        });
         throw errors.PORTAL_ERROR({
           message:
             mapPortalErrorMessage(errorMessage) ??
@@ -319,11 +356,6 @@ function createValidatedPortalClient(
       // Find transaction hash in the result
       const found = findTransactionHash(result);
       if (!found) {
-        logger.error(`No transaction hash found in ${operation} response`, {
-          operation,
-          result,
-        });
-
         throw errors.PORTAL_ERROR({
           message: `No transaction hash found in ${operation} response`,
           data: {
@@ -338,13 +370,6 @@ function createValidatedPortalClient(
       try {
         transactionHash = ethereumHash.parse(found.value);
       } catch (zodError) {
-        logger.error(`Invalid transaction hash format`, {
-          operation,
-          value: found.value,
-          path: found.path,
-          error: zodError,
-        });
-
         throw errors.PORTAL_ERROR({
           message: `Invalid transaction hash format: ${zodError instanceof Error ? zodError.message : String(zodError)}`,
           data: {
@@ -358,7 +383,6 @@ function createValidatedPortalClient(
 
       // If no theGraphClient is provided, just return the transaction hash
       if (!theGraphClient) {
-        logger.info(`Transaction submitted: ${transactionHash}`);
         return getTransactionHash(transactionHash);
       }
 
@@ -389,7 +413,6 @@ function createValidatedPortalClient(
 
       for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
         if (Date.now() - streamStartTime > STREAM_TIMEOUT_MS) {
-          logger.error(`Transaction tracking timeout for ${transactionHash}`);
           throw errors.PORTAL_ERROR({
             message: `Transaction tracking timeout after ${STREAM_TIMEOUT_MS}ms`,
             data: {
@@ -423,15 +446,11 @@ function createValidatedPortalClient(
         receipt = result.getTransaction?.receipt ?? undefined;
 
         if (!receipt) {
-          logger.debug(
-            `Waiting for transaction ${transactionHash} to be mined...`
-          );
           await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
           continue;
         }
 
         if (receipt.status !== "Success") {
-          logger.error(`Transaction ${transactionHash} failed`);
           throw errors.PORTAL_ERROR({
             message: `Transaction reverted: ${receipt.revertReasonDecoded || receipt.revertReason || "Unknown reason"}`,
             data: {
@@ -446,7 +465,6 @@ function createValidatedPortalClient(
       }
 
       if (!receipt) {
-        logger.error(`Transaction ${transactionHash} dropped`);
         throw errors.PORTAL_ERROR({
           message: "Transaction dropped from mempool",
           data: {
@@ -462,9 +480,6 @@ function createValidatedPortalClient(
       // This ensures that the transaction data is available for queries.
       // TheGraph needs to process the block containing our transaction before
       // the dApp can display updated data.
-      logger.debug(
-        `Waiting for TheGraph to index transaction ${transactionHash}`
-      );
 
       const targetBlockNumber = Number(receipt.blockNumber);
       const indexingQueryVariables = {};
@@ -475,7 +490,6 @@ function createValidatedPortalClient(
         attempt++
       ) {
         if (Date.now() - streamStartTime > STREAM_TIMEOUT_MS) {
-          logger.error(`TheGraph indexing timeout for ${transactionHash}`);
           throw errors.PORTAL_ERROR({
             message: `TheGraph indexing timeout after ${STREAM_TIMEOUT_MS}ms`,
             data: {
@@ -502,7 +516,6 @@ function createValidatedPortalClient(
         const indexedBlock = result._meta?.block.number ?? 0;
 
         if (indexedBlock >= targetBlockNumber) {
-          logger.info(`Transaction ${transactionHash} successfully indexed`);
           return getTransactionHash(transactionHash);
         }
 
@@ -512,9 +525,6 @@ function createValidatedPortalClient(
       }
 
       // Indexing timeout - but transaction was confirmed, so we still return success
-      logger.error(
-        `TheGraph indexing timeout for ${transactionHash}, but transaction was confirmed`
-      );
       return getTransactionHash(transactionHash);
     },
 
@@ -583,29 +593,25 @@ function createValidatedPortalClient(
       variables: TVariables,
       schema: z.ZodType<TValidated>
     ): Promise<TValidated> {
-      const operation =
-        (
-          document as TadaDocumentNode<TResult, TVariables> & {
-            __meta?: { operationName?: string };
-          }
-        ).__meta?.operationName ?? "GraphQL Query";
+      const operation = getOperationName(document) ?? "GraphQL Query";
+
+      // Generate a unique request ID for query tracing
+      const requestId = `atk-qry-${operation.replaceAll(/[^a-zA-Z0-9]/g, "_")}-${Date.now()}-${Math.random().toString(36).slice(7)}`;
 
       let result: TResult;
       try {
         result = await (
           portalClient.request as <D, V extends Variables>(
             doc: TadaDocumentNode<D, V>,
-            vars: V
+            vars: V,
+            headers?: Record<string, string>
           ) => Promise<D>
-        )(document, variables);
+        )(document, variables, {
+          "x-request-id": requestId,
+        });
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : String(error);
-        logger.error(`GraphQL ${operation} failed`, {
-          operation,
-          ...variables,
-          error: errorMessage,
-        });
         throw errors.PORTAL_ERROR({
           message:
             mapPortalErrorMessage(errorMessage) ??
@@ -621,12 +627,6 @@ function createValidatedPortalClient(
       // Validate with Zod schema
       const parseResult = schema.safeParse(result);
       if (!parseResult.success) {
-        logger.error(`Invalid response format from ${operation}`, {
-          operation,
-          result,
-          error: parseResult.error,
-        });
-
         // Check if this is a null response (common for queries that return no data)
         if (result === null || result === undefined) {
           throw errors.NOT_FOUND();
@@ -812,7 +812,7 @@ function extractRevertReason(message: string) {
 // security, flexibility, and developer experience:
 //
 // 1. SCHEMA FLEXIBILITY:
-//    - GraphQL mutations declare verificationId and challengeResponse as optional
+//    - GraphQL mutations declare challengeId and challengeResponse as optional
 //    - This keeps the schema clean and doesn't force verification on all operations
 //    - Mutations can be called without verification for testing/development
 //

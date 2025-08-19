@@ -85,6 +85,11 @@ export const env = createEnv({
     SETTLEMINT_INSTANCE: z.string().optional(),
 
     SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT: z.url(),
+
+    /**
+     * Don't run database migrations on startup
+     */
+    DISABLE_MIGRATIONS_ON_STARTUP: z.coerce.boolean().default(false),
   },
 
   /**

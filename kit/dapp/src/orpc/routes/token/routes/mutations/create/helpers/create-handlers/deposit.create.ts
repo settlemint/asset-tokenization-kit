@@ -17,12 +17,12 @@
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
 import {
   createToken,
   type TokenCreateContext,
 } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create";
 import type { TokenCreateInput } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
+import { AssetTypeEnum } from "@atk/zod/validators/asset-types";
 
 const CREATE_DEPOSIT_MUTATION = portalGraphql(`
   mutation CreateDepositMutation(
@@ -32,7 +32,7 @@ const CREATE_DEPOSIT_MUTATION = portalGraphql(`
     $name: String!
     $decimals: Int!
     $initialModulePairs: [ATKDepositFactoryImplementationATKDepositFactoryImplementationCreateDepositInitialModulePairsInput!]!
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $countryCode: Int!
   ) {
@@ -46,7 +46,7 @@ const CREATE_DEPOSIT_MUTATION = portalGraphql(`
         initialModulePairs_: $initialModulePairs
         countryCode_: $countryCode
       }
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
     ) {
       transactionHash

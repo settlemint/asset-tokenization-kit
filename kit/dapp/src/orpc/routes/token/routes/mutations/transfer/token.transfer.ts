@@ -1,15 +1,15 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { AssetExtensionEnum } from "@/lib/zod/validators/asset-extensions";
 import { validateBatchArrays } from "@/orpc/helpers/array-validation";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { read } from "@/orpc/routes/token/routes/token.read";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { AssetExtensionEnum } from "@atk/zod/validators/asset-extensions";
 import { call } from "@orpc/server";
 
 const TOKEN_TRANSFER_MUTATION = portalGraphql(`
   mutation TokenTransfer(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
@@ -19,7 +19,7 @@ const TOKEN_TRANSFER_MUTATION = portalGraphql(`
     transfer: IERC3643Transfer(
       address: $address
       from: $from
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       input: {
         to: $to
@@ -33,7 +33,7 @@ const TOKEN_TRANSFER_MUTATION = portalGraphql(`
 
 const TOKEN_TRANSFER_FROM_MUTATION = portalGraphql(`
   mutation TokenTransferFrom(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
@@ -44,7 +44,7 @@ const TOKEN_TRANSFER_FROM_MUTATION = portalGraphql(`
     transferFrom: IERC3643TransferFrom(
       address: $address
       from: $from
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       input: {
         from: $owner
@@ -59,7 +59,7 @@ const TOKEN_TRANSFER_FROM_MUTATION = portalGraphql(`
 
 const TOKEN_FORCED_TRANSFER_MUTATION = portalGraphql(`
   mutation TokenForcedTransfer(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
@@ -70,7 +70,7 @@ const TOKEN_FORCED_TRANSFER_MUTATION = portalGraphql(`
     forcedTransfer: ISMARTCustodianForcedTransfer(
       address: $address
       from: $from
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       input: {
         from: $owner
@@ -85,7 +85,7 @@ const TOKEN_FORCED_TRANSFER_MUTATION = portalGraphql(`
 
 const TOKEN_BATCH_TRANSFER_MUTATION = portalGraphql(`
   mutation TokenBatchTransfer(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
@@ -95,7 +95,7 @@ const TOKEN_BATCH_TRANSFER_MUTATION = portalGraphql(`
     batchTransfer: IERC3643BatchTransfer(
       address: $address
       from: $from
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       input: {
         _toList: $recipients
@@ -111,7 +111,7 @@ const TOKEN_BATCH_TRANSFER_MUTATION = portalGraphql(`
 
 const TOKEN_BATCH_FORCED_TRANSFER_MUTATION = portalGraphql(`
   mutation TokenBatchForcedTransfer(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
@@ -122,7 +122,7 @@ const TOKEN_BATCH_FORCED_TRANSFER_MUTATION = portalGraphql(`
     batchForcedTransfer: ISMARTCustodianBatchForcedTransfer(
       address: $address
       from: $from
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       input: {
         fromList: $fromList
@@ -200,9 +200,7 @@ export const transfer = tokenRouter.token.transfer
         // Forced batch transfer is supported
         if (!from || from.length === 0) {
           throw errors.INPUT_VALIDATION_FAILED({
-            message: context.t(
-              "tokens:api.mutations.transfer.messages.fromRequired"
-            ),
+            message: "Missing required from addresses for forced transfer",
             data: { errors: ["Missing required from addresses"] },
           });
         }
@@ -233,9 +231,7 @@ export const transfer = tokenRouter.token.transfer
       } else {
         // transferType === "transferFrom" - not supported in batch, must be done individually
         throw errors.INPUT_VALIDATION_FAILED({
-          message: context.t(
-            "tokens:api.mutations.transfer.messages.batchTransferFromNotSupported"
-          ),
+          message: "Batch transferFrom not supported",
           data: { errors: ["Batch transferFrom not supported"] },
         });
       }
@@ -246,9 +242,7 @@ export const transfer = tokenRouter.token.transfer
       const [owner] = from ?? [];
       if (!to || !amount) {
         throw errors.INPUT_VALIDATION_FAILED({
-          message: context.t(
-            "tokens:api.mutations.transfer.messages.missingRecipientOrAmount"
-          ),
+          message: "Missing recipient or amount",
           data: { errors: ["Invalid input data"] },
         });
       }
@@ -268,11 +262,11 @@ export const transfer = tokenRouter.token.transfer
           }
         );
       } else if (transferType === "transferFrom") {
+        // CASE 2: Allowance-based transfer - requires owner parameter
+        // WHY: TransferFrom moves tokens from owner to recipient using sender's allowance
         if (!owner) {
           throw errors.INPUT_VALIDATION_FAILED({
-            message: context.t(
-              "tokens:api.mutations.transfer.messages.missingOwnerForTransferFrom"
-            ),
+            message: "Missing owner for transferFrom operation",
             data: { errors: ["Invalid input data"] },
           });
         }
@@ -292,12 +286,11 @@ export const transfer = tokenRouter.token.transfer
           }
         );
       } else {
-        // transferType === "forced"
+        // CASE 3: Forced transfer - administrative override requiring owner parameter
+        // WHY: Forced transfers move tokens from specified owner without consent
         if (!owner) {
           throw errors.INPUT_VALIDATION_FAILED({
-            message: context.t(
-              "tokens:api.mutations.transfer.messages.missingOwnerForForced"
-            ),
+            message: "Missing owner for forced transfer",
             data: { errors: ["Invalid input data"] },
           });
         }
@@ -319,7 +312,9 @@ export const transfer = tokenRouter.token.transfer
       }
     }
 
-    // Return the updated token data using the read handler
+    // UPDATED TOKEN DATA: Return fresh token information including new balances
+    // WHY: Client needs updated balance information for sender and recipients
+    // Portal middleware ensures transaction is confirmed and indexed before data refresh
     return await call(
       read,
       {
