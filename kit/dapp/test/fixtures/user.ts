@@ -88,7 +88,7 @@ export async function setupUser(user: User) {
     const { error: signUpError } = await authClient.signUp.email(user);
 
     if (signUpError) {
-      if (signUpError.code !== "USER_ALREADY_EXISTS") {
+      if (signUpError.code !== "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL") {
         console.error(`[setupUser] Sign up error for ${user.email}:`, {
           code: signUpError.code,
           message: signUpError.message,
@@ -132,10 +132,6 @@ export async function setupUser(user: User) {
           `Failed to create wallet: ${error instanceof Error ? error.message : "Unknown error"}`
         );
       }
-
-      // Get fresh headers after wallet creation
-      signInWithUser(user);
-      // Wallet funding is now handled in wallet.ts createWallet function
     }
 
     // Step 3: Enable pincode
@@ -269,10 +265,10 @@ export async function getUserData(user: User) {
   return userInfo;
 }
 
-export async function createTestUser() {
+export async function createTestUser(name = "test") {
   const user = {
     email: `${randomUUID()}@test.com`,
-    name: "test",
+    name,
     password: DEFAULT_PASSWORD,
   };
   const session = await setupUser(user);

@@ -18,7 +18,7 @@ describe("Secret codes verification", () => {
         password: testUser.password,
       },
       {
-        headers: await signInWithUser(testUser),
+        headers: await signInWithUser(testUser, true),
       }
     );
     expect(error).toBeNull();
@@ -32,7 +32,7 @@ describe("Secret codes verification", () => {
         password: "wrong-password",
       },
       {
-        headers: await signInWithUser(testUser),
+        headers: await signInWithUser(testUser, true),
       }
     );
     expect(error?.code).toBe("INVALID_PASSWORD");

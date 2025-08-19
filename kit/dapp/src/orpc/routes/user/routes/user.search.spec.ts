@@ -19,9 +19,9 @@ describe("User search", () => {
   beforeAll(async () => {
     // Setup test users
     [testUser, otherUser, unauthorizedUser] = await Promise.all([
-      createTestUser(),
-      createTestUser(),
-      createTestUser(),
+      createTestUser("User Search Test User"),
+      createTestUser("Other Search User"),
+      createTestUser("Unauthorized User"),
     ]);
 
     [testUserData, otherUserData] = await Promise.all([
@@ -228,7 +228,9 @@ describe("User search", () => {
 
     it("searches in user.name field when KYC data is not available", async () => {
       // Create a new user without KYC profile
-      const { user: userWithoutKyc } = await createTestUser();
+      const { user: userWithoutKyc } = await createTestUser(
+        "SearchableNoKyc User"
+      );
       const userWithoutKycData = await getUserData(userWithoutKyc);
 
       const headers = await signInWithUser(DEFAULT_ADMIN);

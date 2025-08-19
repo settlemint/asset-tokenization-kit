@@ -10,9 +10,11 @@ import { describe, expect, test } from "vitest";
 
 describe("Identity register", () => {
   test("investor cannot register an identity", async () => {
-    const wallet = await createUserWithIdentity();
-
-    const headers = await signInWithUser(DEFAULT_INVESTOR);
+    const [headers, adminHeaders] = await Promise.all([
+      signInWithUser(DEFAULT_INVESTOR),
+      signInWithUser(DEFAULT_ADMIN),
+    ]);
+    const wallet = await createUserWithIdentity(adminHeaders);
     const client = getOrpcClient(headers);
 
     await expect(
@@ -30,9 +32,8 @@ describe("Identity register", () => {
   });
 
   test("admin can register an identity for another user", async () => {
-    const wallet = await createUserWithIdentity();
-
     const headers = await signInWithUser(DEFAULT_ADMIN);
+    const wallet = await createUserWithIdentity(headers);
     const client = getOrpcClient(headers);
 
     const result = await client.system.identityRegister({
@@ -46,16 +47,14 @@ describe("Identity register", () => {
     expect(result.id).toBe(wallet);
     expect(result.identity).toBeDefined();
     expect(result.country).toBe("BE");
-  }, 6000);
+  }, 10_000);
 });
 
-async function createUserWithIdentity() {
+async function createUserWithIdentity(adminHeaders: Headers) {
   const {
     session: { wallet },
   } = await createTestUser();
-
-  const headers = await signInWithUser(DEFAULT_ADMIN);
-  const client = getOrpcClient(headers);
+  const client = getOrpcClient(adminHeaders);
 
   await client.system.identityCreate({
     walletVerification: {

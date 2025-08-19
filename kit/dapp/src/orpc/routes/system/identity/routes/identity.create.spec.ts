@@ -10,12 +10,15 @@ import { describe, expect, test } from "vitest";
 
 describe("Identity create", () => {
   test("a user can create its own identity", async () => {
-    const {
-      user,
-      session: { wallet },
-    } = await createTestUser();
-
-    const headers = await signInWithUser(user);
+    const [
+      {
+        session: { wallet },
+      },
+      headers,
+    ] = await Promise.all([
+      createTestUser(),
+      createTestUser().then(({ user }) => signInWithUser(user)),
+    ]);
     const client = getOrpcClient(headers);
 
     const result = await client.system.identityCreate({
@@ -29,11 +32,12 @@ describe("Identity create", () => {
   });
 
   test("investor cannot create an identity for another user", async () => {
-    const {
-      session: { wallet },
-    } = await createTestUser();
-
-    const headers = await signInWithUser(DEFAULT_INVESTOR);
+    const [
+      {
+        session: { wallet },
+      },
+      headers,
+    ] = await Promise.all([createTestUser(), signInWithUser(DEFAULT_INVESTOR)]);
     const client = getOrpcClient(headers);
 
     await expect(
@@ -48,11 +52,12 @@ describe("Identity create", () => {
   });
 
   test("admin can create an identity for another user", async () => {
-    const {
-      session: { wallet },
-    } = await createTestUser();
-
-    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const [
+      {
+        session: { wallet },
+      },
+      headers,
+    ] = await Promise.all([createTestUser(), signInWithUser(DEFAULT_ADMIN)]);
     const client = getOrpcClient(headers);
 
     const result = await client.system.identityCreate({
