@@ -31,7 +31,12 @@ export const DEFAULT_ISSUER: User = {
   password: DEFAULT_PASSWORD,
 };
 
-export async function signInWithUser(user: User) {
+const SIGN_IN_HEADERS_CACHE = new Map<string, Headers>();
+
+export async function signInWithUser(user: User, bypassCache = false) {
+  if (!bypassCache && SIGN_IN_HEADERS_CACHE.has(user.email)) {
+    return SIGN_IN_HEADERS_CACHE.get(user.email) as Headers;
+  }
   const authClient = getAuthClient();
   const newHeaders = new Headers();
   const { error: signInError } = await authClient.signIn.email(
@@ -72,6 +77,7 @@ export async function signInWithUser(user: User) {
     });
     throw signInError;
   }
+  SIGN_IN_HEADERS_CACHE.set(user.email, newHeaders);
   return newHeaders;
 }
 
@@ -95,7 +101,7 @@ export async function setupUser(user: User) {
     }
 
     // Step 2: Sign in and create wallet if needed
-    const signInHeaders = await signInWithUser(user);
+    const signInHeaders = await signInWithUser(user, true);
 
     // Check if user needs a wallet
     const sessionBeforeWallet = await authClient.getSession({
@@ -133,7 +139,7 @@ export async function setupUser(user: User) {
     }
 
     // Step 3: Enable pincode
-    const pincodeHeaders = await signInWithUser(user);
+    const pincodeHeaders = await signInWithUser(user, true);
     const { error: pincodeError } = await authClient.pincode.enable(
       {
         pincode: DEFAULT_PINCODE,
@@ -159,7 +165,7 @@ export async function setupUser(user: User) {
     }
 
     // Step 4: Generate secret codes
-    const secretCodeHeaders = await signInWithUser(user);
+    const secretCodeHeaders = await signInWithUser(user, true);
     const { error: secretCodeError } = await authClient.secretCodes.generate(
       {
         password: user.password,
@@ -186,7 +192,7 @@ export async function setupUser(user: User) {
     }
 
     // Step 5: Confirm secret codes
-    const confirmSecretCodeHeaders = await signInWithUser(user);
+    const confirmSecretCodeHeaders = await signInWithUser(user, true);
     const { error: confirmSecretCodeError } =
       await authClient.secretCodes.confirm(
         {
@@ -213,7 +219,7 @@ export async function setupUser(user: User) {
     }
 
     // Step 6: Check onboarding status
-    const sessionHeaders = await signInWithUser(user);
+    const sessionHeaders = await signInWithUser(user, true);
     const session = await authClient.getSession({
       fetchOptions: {
         headers: {
