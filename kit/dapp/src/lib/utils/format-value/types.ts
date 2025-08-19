@@ -1,4 +1,5 @@
-import { FiatCurrency } from "@/lib/zod/validators/fiat-currency";
+import type { FiatCurrency } from "@atk/zod/src/validators/fiat-currency";
+
 /**
  * Type definition for value formatting options
  */
@@ -15,7 +16,7 @@ export interface FormatValueOptions {
     | "multiOption"
     | "option";
   displayName?: string;
-  currency?: FiatCurrency | { assetSymbol: string };
+  currency?: { assetSymbol: string } | FiatCurrency;
 
   emptyValue?: React.ReactNode;
   showPrettyName?: boolean;

@@ -1,4 +1,4 @@
-import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
+import { bigDecimal } from "@atk/zod/validators/bigdecimal";
 import { toNumber } from "dnum";
 
 /**
