@@ -1,4 +1,4 @@
-import type { FiatCurrency } from "@/lib/zod/src/validators/fiat-currency";
+import type { FiatCurrency } from "@/lib/zod/validators/fiat-currency";
 
 /**
  * Type definition for value formatting options
