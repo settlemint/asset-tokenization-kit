@@ -55,8 +55,6 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IATKSystemAccessManaged } from "./access-manager/IATKSystemAccessManaged.sol";
 import { IContractWithIdentity } from "./identity-factory/IContractWithIdentity.sol";
 import { IATKContractIdentity } from "./identity-factory/identities/IATKContractIdentity.sol";
-import { IATKTopicSchemeRegistry } from "./topic-scheme-registry/IATKTopicSchemeRegistry.sol";
-import { ATKTopics } from "./ATKTopics.sol";
 
 // Extensions
 import { ATKSystemAccessManaged } from "./access-manager/ATKSystemAccessManaged.sol";
