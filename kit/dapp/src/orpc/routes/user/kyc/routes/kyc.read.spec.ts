@@ -26,37 +26,41 @@ describe("KYC read", () => {
 
   beforeAll(async () => {
     // Setup test users
-    await setupUser(TEST_USER);
-    await setupUser(OTHER_USER);
+    await Promise.all([setupUser(TEST_USER), setupUser(OTHER_USER)]);
 
-    testUserData = await getUserData(TEST_USER);
-    otherUserData = await getUserData(OTHER_USER);
+    [testUserData, otherUserData] = await Promise.all([
+      getUserData(TEST_USER),
+      getUserData(OTHER_USER),
+    ]);
 
-    // Create KYC profile for test user
-    const headers = await signInWithUser(TEST_USER);
+    // Create KYC profiles for both users
+    const [headers, otherHeaders] = await Promise.all([
+      signInWithUser(TEST_USER),
+      signInWithUser(OTHER_USER),
+    ]);
     const client = getOrpcClient(headers);
-    await client.user.kyc.upsert({
-      userId: testUserData.id,
-      firstName: "Alice",
-      lastName: "Johnson",
-      dob: new Date("1992-03-20"),
-      country: "CA",
-      residencyStatus: "resident",
-      nationalId: "AB123456",
-    });
-
-    // Create KYC profile for other user
-    const otherHeaders = await signInWithUser(OTHER_USER);
     const otherClient = getOrpcClient(otherHeaders);
-    await otherClient.user.kyc.upsert({
-      userId: otherUserData.id,
-      firstName: "Bob",
-      lastName: "Wilson",
-      dob: new Date("1988-07-10"),
-      country: "US",
-      residencyStatus: "resident",
-      nationalId: "DL987654",
-    });
+
+    await Promise.all([
+      client.user.kyc.upsert({
+        userId: testUserData.id,
+        firstName: "Alice",
+        lastName: "Johnson",
+        dob: new Date("1992-03-20"),
+        country: "CA",
+        residencyStatus: "resident",
+        nationalId: "AB123456",
+      }),
+      otherClient.user.kyc.upsert({
+        userId: otherUserData.id,
+        firstName: "Bob",
+        lastName: "Wilson",
+        dob: new Date("1988-07-10"),
+        country: "US",
+        residencyStatus: "resident",
+        nationalId: "DL987654",
+      }),
+    ]);
   });
 
   it("can read own KYC profile", async () => {

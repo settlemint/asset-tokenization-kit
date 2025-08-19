@@ -3,7 +3,7 @@ import { config } from "dotenv";
 
 const logger = createLogger({ level: "info" });
 
-config({ path: [".env", ".env.local"] });
+config({ path: [".env", ".env.local"], quiet: true });
 
 let dappUrl: string | undefined;
 

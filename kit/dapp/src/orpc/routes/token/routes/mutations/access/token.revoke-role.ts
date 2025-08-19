@@ -8,7 +8,7 @@ import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 // Single address, single role
 const REVOKE_ROLE_MUTATION = portalGraphql(`
   mutation TokenRevokeRoleMutation(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $account: String!
@@ -16,7 +16,7 @@ const REVOKE_ROLE_MUTATION = portalGraphql(`
     $from: String!
   ) {
     ISMARTTokenAccessManagerRevokeRole(
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       address: $address
       from: $from
@@ -30,7 +30,7 @@ const REVOKE_ROLE_MUTATION = portalGraphql(`
 // Multiple addresses, single role
 const BATCH_REVOKE_ROLE_MUTATION = portalGraphql(`
   mutation TokenBatchRevokeRoleMutation(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $role: String!
@@ -38,7 +38,7 @@ const BATCH_REVOKE_ROLE_MUTATION = portalGraphql(`
     $from: String!
   ) {
     ISMARTTokenAccessManagerBatchRevokeRole(
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       address: $address
       from: $from
@@ -52,7 +52,7 @@ const BATCH_REVOKE_ROLE_MUTATION = portalGraphql(`
 // Single address, multiple roles
 const REVOKE_MULTIPLE_ROLES_MUTATION = portalGraphql(`
   mutation TokenRevokeMultipleRolesMutation(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $account: String!
@@ -60,7 +60,7 @@ const REVOKE_MULTIPLE_ROLES_MUTATION = portalGraphql(`
     $from: String!
   ) {
     ISMARTTokenAccessManagerRevokeMultipleRoles(
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       address: $address
       from: $from

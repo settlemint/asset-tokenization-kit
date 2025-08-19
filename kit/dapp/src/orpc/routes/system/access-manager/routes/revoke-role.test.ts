@@ -15,7 +15,7 @@ vi.mock("@/lib/settlemint/portal"); // vitest config maps to test mocks
 vi.mock("@/orpc/helpers/challenge-response", () => ({
   // No await inside to satisfy require-await
   handleChallenge: vi.fn(() =>
-    Promise.resolve({ verificationId: "verif_1", challengeResponse: "signed" })
+    Promise.resolve({ challengeId: "verif_1", challengeResponse: "signed" })
   ),
 }));
 

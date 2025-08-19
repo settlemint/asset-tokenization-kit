@@ -11,7 +11,7 @@ import { withForm } from "@/hooks/use-app-form";
 import { assetClassIcon } from "@/hooks/use-asset-class";
 import { useCountries } from "@/hooks/use-countries";
 import { noop } from "@/lib/utils/noop";
-import { ComplianceModulePairInput } from "@/lib/zod/validators/compliance";
+import type { ComplianceModulePairInput } from "@atk/zod/validators/compliance";
 import { Shield } from "lucide-react";
 import { useTranslation } from "react-i18next";
 

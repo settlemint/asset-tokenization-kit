@@ -7,7 +7,7 @@ import { call } from "@orpc/server";
 
 const TOKEN_FREEZE_ADDRESS_MUTATION = portalGraphql(`
   mutation TokenFreezeAddress(
-    $verificationId: String
+    $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
@@ -17,7 +17,7 @@ const TOKEN_FREEZE_ADDRESS_MUTATION = portalGraphql(`
     setAddressFrozen: ISMARTCustodianSetAddressFrozen(
       address: $address
       from: $from
-      verificationId: $verificationId
+      challengeId: $challengeId
       challengeResponse: $challengeResponse
       input: {
         userAddress: $userAddress

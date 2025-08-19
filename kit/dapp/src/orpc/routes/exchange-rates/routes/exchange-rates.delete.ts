@@ -70,9 +70,5 @@ export const del = authRouter.exchangeRates.delete
 
     return {
       success: true,
-      message: context.t("exchange-rates:actions.delete.success", {
-        baseCurrency,
-        quoteCurrency,
-      }),
     };
   });

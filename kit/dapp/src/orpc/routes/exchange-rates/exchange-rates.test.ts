@@ -6,19 +6,18 @@
  * Unit tests for exchange rates schemas and validation.
  * @module ExchangeRatesTests
  */
-import { safeParse } from "@/lib/zod";
+import {
+  currencyDataSchema,
+  insertCurrencySchema,
+} from "@/lib/db/schemas/exchange-rates";
 import { describe, expect, it } from "vitest";
-import { ExchangeRatesReadSchema } from "./routes/exchange-rates.read.schema";
-import { ExchangeRatesUpdateSchema } from "./routes/exchange-rates.update.schema";
 import { ExchangeRatesDeleteSchema } from "./routes/exchange-rates.delete.schema";
 import { ExchangeRatesHistorySchema } from "./routes/exchange-rates.history.schema";
 import { ExchangeRatesListSchema } from "./routes/exchange-rates.list.schema";
+import { ExchangeRatesReadSchema } from "./routes/exchange-rates.read.schema";
 import { ExchangeRatesSyncSchema } from "./routes/exchange-rates.sync.schema";
+import { ExchangeRatesUpdateSchema } from "./routes/exchange-rates.update.schema";
 import { exchangeRateApiResponseSchema } from "./schemas";
-import {
-  insertCurrencySchema,
-  currencyDataSchema,
-} from "@/lib/db/schemas/exchange-rates";
 
 // Logger is mocked via vitest.config.ts alias
 
@@ -29,7 +28,7 @@ describe("Exchange Rates Schemas", () => {
         baseCurrency: "USD" as const,
         quoteCurrency: "EUR" as const,
       };
-      const result = safeParse(ExchangeRatesReadSchema, validInput);
+      const result = ExchangeRatesReadSchema.parse(validInput);
       expect(result).toEqual(validInput);
     });
 
@@ -38,7 +37,7 @@ describe("Exchange Rates Schemas", () => {
         baseCurrency: "INVALID",
         quoteCurrency: "EUR",
       };
-      expect(() => safeParse(ExchangeRatesReadSchema, invalidInput)).toThrow();
+      expect(() => ExchangeRatesReadSchema.parse(invalidInput)).toThrow();
     });
 
     it("should validate update schema with manual rate", () => {
@@ -47,7 +46,7 @@ describe("Exchange Rates Schemas", () => {
         quoteCurrency: "EUR" as const,
         rate: 0.85,
       };
-      const result = safeParse(ExchangeRatesUpdateSchema, validInput);
+      const result = ExchangeRatesUpdateSchema.parse(validInput);
       expect(result.baseCurrency).toBe("USD");
       expect(result.quoteCurrency).toBe("EUR");
       expect(result.rate).toBe(0.85);
@@ -59,7 +58,7 @@ describe("Exchange Rates Schemas", () => {
         quoteCurrency: "EUR" as const,
         rate: 0.86,
       };
-      const result = safeParse(ExchangeRatesUpdateSchema, validInput);
+      const result = ExchangeRatesUpdateSchema.parse(validInput);
       expect(result.rate).toBe(0.86);
     });
 
@@ -68,7 +67,7 @@ describe("Exchange Rates Schemas", () => {
         baseCurrency: "USD" as const,
         quoteCurrency: "EUR" as const,
       };
-      const result = safeParse(ExchangeRatesDeleteSchema, validInput);
+      const result = ExchangeRatesDeleteSchema.parse(validInput);
       expect(result).toEqual(validInput);
     });
 
@@ -91,7 +90,7 @@ describe("Exchange Rates Schemas", () => {
           JPY: 110.5,
         },
       };
-      const result = safeParse(exchangeRateApiResponseSchema, validResponse);
+      const result = exchangeRateApiResponseSchema.parse(validResponse);
       expect(result.result).toBe("success");
       expect(result.rates.EUR).toBe(0.85);
     });
@@ -106,7 +105,7 @@ describe("Exchange Rates Schemas", () => {
         endDate: new Date("2025-01-31"),
         limit: 100,
       };
-      const result = safeParse(ExchangeRatesHistorySchema, validInput);
+      const result = ExchangeRatesHistorySchema.parse(validInput);
       expect(result.baseCurrency).toBe("USD");
       expect(result.quoteCurrency).toBe("EUR");
       expect(result.limit).toBe(100);
@@ -117,7 +116,7 @@ describe("Exchange Rates Schemas", () => {
         baseCurrency: "USD",
         quoteCurrency: "EUR",
       };
-      const result = safeParse(ExchangeRatesHistorySchema, validInput);
+      const result = ExchangeRatesHistorySchema.parse(validInput);
       expect(result.limit).toBe(100);
     });
   });
@@ -130,7 +129,7 @@ describe("Exchange Rates Schemas", () => {
         baseCurrency: "USD",
         quoteCurrency: "EUR",
       };
-      const result = safeParse(ExchangeRatesListSchema, validInput);
+      const result = ExchangeRatesListSchema.parse(validInput);
       expect(result.offset).toBe(0);
       expect(result.limit).toBe(20);
       expect(result.baseCurrency).toBe("USD");
@@ -143,7 +142,7 @@ describe("Exchange Rates Schemas", () => {
         offset: 20,
         limit: 50,
       };
-      const result = safeParse(ExchangeRatesListSchema, validInput);
+      const result = ExchangeRatesListSchema.parse(validInput);
       expect(result.offset).toBe(20);
       expect(result.limit).toBe(50);
       expect(result.baseCurrency).toBeUndefined();
@@ -151,7 +150,7 @@ describe("Exchange Rates Schemas", () => {
 
     it("should apply defaults when no params provided", () => {
       const validInput = {};
-      const result = safeParse(ExchangeRatesListSchema, validInput);
+      const result = ExchangeRatesListSchema.parse(validInput);
       expect(result.offset).toBe(0);
       expect(result.limit).toBeUndefined();
       expect(result.orderDirection).toBe("asc");
@@ -164,13 +163,13 @@ describe("Exchange Rates Schemas", () => {
       const validInput = {
         force: true,
       };
-      const result = safeParse(ExchangeRatesSyncSchema, validInput);
+      const result = ExchangeRatesSyncSchema.parse(validInput);
       expect(result.force).toBe(true);
     });
 
     it("should apply defaults", () => {
       const validInput = {};
-      const result = safeParse(ExchangeRatesSyncSchema, validInput);
+      const result = ExchangeRatesSyncSchema.parse(validInput);
       expect(result.force).toBe(false);
     });
   });
@@ -195,7 +194,7 @@ describe("Exchange Rates Schemas", () => {
           baseCurrency: currency,
           quoteCurrency: "USD",
         };
-        const result = safeParse(ExchangeRatesReadSchema, input);
+        const result = ExchangeRatesReadSchema.parse(input);
         expect(result.baseCurrency).toBe(currency);
       }
     });
@@ -208,7 +207,7 @@ describe("Exchange Rates Schemas", () => {
           baseCurrency: currency,
           quoteCurrency: "USD",
         };
-        expect(() => safeParse(ExchangeRatesReadSchema, input)).toThrow();
+        expect(() => ExchangeRatesReadSchema.parse(input)).toThrow();
       }
     });
   });
@@ -259,7 +258,7 @@ describe("Exchange Rates Schemas", () => {
         quoteCurrency: "EUR",
         rate: 0.123_456_789_012_34,
       };
-      const result = safeParse(ExchangeRatesUpdateSchema, input);
+      const result = ExchangeRatesUpdateSchema.parse(input);
       expect(result.rate).toBe(0.123_456_789_012_34);
     });
 
@@ -269,7 +268,7 @@ describe("Exchange Rates Schemas", () => {
         quoteCurrency: "JPY",
         rate: 150.123_456_789,
       };
-      const result = safeParse(ExchangeRatesUpdateSchema, input);
+      const result = ExchangeRatesUpdateSchema.parse(input);
       expect(result.rate).toBe(150.123_456_789);
     });
 
@@ -279,7 +278,7 @@ describe("Exchange Rates Schemas", () => {
         quoteCurrency: "EUR",
         rate: -0.85,
       };
-      expect(() => safeParse(ExchangeRatesUpdateSchema, input)).toThrow();
+      expect(() => ExchangeRatesUpdateSchema.parse(input)).toThrow();
     });
 
     it("should reject zero rates", () => {
@@ -288,7 +287,7 @@ describe("Exchange Rates Schemas", () => {
         quoteCurrency: "EUR",
         rate: 0,
       };
-      expect(() => safeParse(ExchangeRatesUpdateSchema, input)).toThrow();
+      expect(() => ExchangeRatesUpdateSchema.parse(input)).toThrow();
     });
   });
 });

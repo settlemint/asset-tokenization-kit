@@ -12,13 +12,13 @@
  * @see {@link ./system.read.schema} - Input/output validation schemas
  */
 
-import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
+import { call } from "@orpc/server";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { getSystemContext } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
 import type { SystemReadOutput } from "@/orpc/routes/system/routes/system.read.schema";
-import { call } from "@orpc/server";
 
 /**
  * Reads system contract details including token factories.

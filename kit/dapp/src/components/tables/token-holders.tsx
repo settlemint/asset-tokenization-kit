@@ -1,6 +1,6 @@
 import {
-  ActionsCell,
   type ActionItem,
+  ActionsCell,
 } from "@/components/data-table/cells/actions-cell";
 import { createSelectionColumn } from "@/components/data-table/columns/selection-column";
 import { DataTable } from "@/components/data-table/data-table";
@@ -8,15 +8,17 @@ import { useBulkActions } from "@/components/data-table/data-table-bulk-actions"
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { BurnSheet } from "@/components/manage-dropdown/sheets/burn-sheet";
 import { Badge } from "@/components/ui/badge";
 import { Web3Address } from "@/components/web3/web3-address";
-import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenBalance } from "@/orpc/routes/token/routes/token.holders.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import type { Dnum } from "dnum";
 import { format } from "dnum";
 import {
   AlertCircle,
@@ -25,17 +27,15 @@ import {
   Coins,
   Copy,
   ExternalLink,
+  Flame,
   Lock,
   User,
   UserCircle,
   Wallet,
 } from "lucide-react";
-import { Flame } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { BurnSheet } from "@/components/manage-dropdown/sheets/burn-sheet";
-import type { Dnum } from "dnum";
 
 const columnHelper = createColumnHelper<TokenBalance>();
 
@@ -118,7 +118,7 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
         label: t("tokens:holders.actions.copyAddress"),
         icon: <Copy className="h-4 w-4" />,
         onClick: () => {
-          void navigator.clipboard.writeText(row.original.id);
+          void navigator.clipboard.writeText(row.original.account.id);
           toast.success(t("tokens:holders.actions.addressCopied"));
         },
       },
@@ -129,7 +129,7 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
               icon: <Flame className="h-4 w-4" />,
               onClick: () => {
                 setBurnTarget({
-                  address: row.original.id,
+                  address: row.original.account.id,
                   available: row.original.available,
                 });
               },
@@ -139,7 +139,7 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
       {
         label: t("tokens:holders.actions.viewOnEtherscan"),
         icon: <ExternalLink className="h-4 w-4" />,
-        href: `https://etherscan.io/address/${row.original.id}`,
+        href: `https://etherscan.io/address/${row.original.account.id}`,
         separator: "before",
       },
     ],
@@ -197,10 +197,10 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
     () =>
       withAutoFeatures([
         createSelectionColumn<TokenBalance>(),
-        columnHelper.accessor("id", {
+        columnHelper.accessor("account.id", {
           header: t("tokens:holders.columns.address"),
-          cell: ({ getValue }) => {
-            const address = getValue();
+          cell: ({ row }) => {
+            const address = row.original.account.id;
             return (
               <Web3Address
                 address={getEthereumAddress(address)}

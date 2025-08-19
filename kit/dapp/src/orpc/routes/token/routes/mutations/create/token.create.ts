@@ -88,15 +88,8 @@ export const create = portalRouter.token.create
 
     if (result.tokens.length === 0) {
       throw errors.NOT_FOUND({
-        message: context.t(
-          "tokens:api.mutations.create.messages.missingAfterCreation"
-        ),
-        cause: new Error(
-          context.t(
-            "tokens:api.mutations.create.messages.notFoundForTransaction",
-            { transactionHash }
-          )
-        ),
+        message: "Token not found after creation",
+        cause: new Error(`Token not found for transaction ${transactionHash}`),
       });
     }
 
@@ -104,11 +97,9 @@ export const create = portalRouter.token.create
 
     if (!token) {
       throw errors.INTERNAL_SERVER_ERROR({
-        message: context.t("tokens:api.mutations.create.messages.failed"),
+        message: "Token creation failed",
         cause: new Error(
-          context.t("tokens:api.mutations.create.messages.nullObject", {
-            transactionHash,
-          })
+          `Token object is null for transaction ${transactionHash}`
         ),
       });
     }
