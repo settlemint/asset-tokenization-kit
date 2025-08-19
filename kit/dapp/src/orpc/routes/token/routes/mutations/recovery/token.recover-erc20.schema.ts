@@ -1,6 +1,6 @@
+import { apiBigInt } from "@/lib/zod/validators/bigint";
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
-import { apiBigInt } from "@atk/zod/validators/bigint";
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
 import type { z } from "zod";
 
 export const TokenRecoverERC20InputSchema =

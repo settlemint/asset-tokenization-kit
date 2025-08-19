@@ -6,17 +6,17 @@ import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-
 import { InfoAlert } from "@/components/ui/info-alert";
 import { WarningAlert } from "@/components/ui/warning-alert";
 import { useAppForm } from "@/hooks/use-app-form";
+import {
+  type AssetFactoryTypeId,
+  getAssetTypeFromFactoryTypeId,
+} from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
 import {
-  type FactoryCreateInput,
+  FactoryCreateInput,
   FactoryCreateSchema,
   type SingleFactory,
   TokenTypeEnum,
 } from "@/orpc/routes/system/token-factory/routes/factory.create.schema";
-import {
-  type AssetFactoryTypeId,
-  getAssetTypeFromFactoryTypeId,
-} from "@atk/zod/validators/asset-types";
 import { useStore } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";

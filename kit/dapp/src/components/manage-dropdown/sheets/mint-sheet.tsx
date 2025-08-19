@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Web3Address } from "@/components/web3/web3-address";
 import { useAppForm } from "@/hooks/use-app-form";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
-import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   add,

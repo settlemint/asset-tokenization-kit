@@ -1,5 +1,5 @@
-import { complianceTypeId } from "@atk/zod/validators/compliance";
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
+import { complianceTypeId } from "@/lib/zod/validators/compliance";
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { z } from "zod";
 import { GlobalComplianceModuleConfigSchema } from "./compliance-module.config.schema";
 

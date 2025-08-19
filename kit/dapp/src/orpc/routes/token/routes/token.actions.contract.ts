@@ -1,9 +1,9 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import {
-  ActionsListResponseSchema,
   ActionsListSchema,
+  ActionsListResponseSchema,
 } from "@/orpc/routes/actions/routes/actions.list.schema";
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { z } from "zod";
 
 /**

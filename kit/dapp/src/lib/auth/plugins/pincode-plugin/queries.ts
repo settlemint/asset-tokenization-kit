@@ -1,6 +1,6 @@
-import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
-import { APIError } from "better-auth/api";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { APIError } from "better-auth/api";
 
 const SET_PINCODE_MUTATION = portalGraphql(`
   mutation SetPinCode($address: String!, $pincode: String!) {

@@ -1,7 +1,7 @@
-import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
 import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
-import { bigDecimal } from "@atk/zod/validators/bigdecimal";
-import { apiBigInt } from "@atk/zod/validators/bigint";
+import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
+import { apiBigInt } from "@/lib/zod/validators/bigint";
+import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
 import { z } from "zod";
 
 export const TokenRedeemInputSchema = MutationInputSchemaWithContract.extend({

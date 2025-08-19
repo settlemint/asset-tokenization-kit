@@ -1,12 +1,12 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
+import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { getTransactionReceipt } from "@/orpc/helpers/transaction-receipt";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
+import { read } from "../../token.read";
 import { call } from "@orpc/server";
 import { logger } from "better-auth";
-import { read } from "../../token.read";
 
 const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
   mutation TokenSetYieldSchedule(
@@ -119,7 +119,7 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
     logger.debug("Receipt contractAddress:", receipt.contractAddress);
     logger.debug("Receipt status:", receipt.status);
     const logs = Array.isArray(receipt.logs) ? receipt.logs : [];
-    let scheduleAddress: string | undefined;
+    let scheduleAddress: string | undefined = undefined;
     if (logs.length > 0) {
       const lastLog = logs.at(-1) as { address?: string } | undefined;
       logger.debug("Last log:", lastLog);

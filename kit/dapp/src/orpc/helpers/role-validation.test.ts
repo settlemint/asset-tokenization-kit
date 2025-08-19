@@ -1,12 +1,11 @@
 /**
  * @vitest-environment node
  */
-
 import type {
   AccessControl,
   AccessControlRoles,
 } from "@/lib/fragments/the-graph/access-control-fragment";
-import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { describe, expect, test } from "vitest";
 import { mapUserRoles } from "./role-validation";
 

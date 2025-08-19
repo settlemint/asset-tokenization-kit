@@ -1,4 +1,4 @@
-import type { FiatCurrency } from "@atk/zod/validators/fiat-currency";
+import type { FiatCurrency } from "@/lib/zod/validators/fiat-currency";
 import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 /**

@@ -1,7 +1,7 @@
-import type { AssetType } from "@atk/zod/validators/asset-types";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { TokenFactoryRelated } from "./token-factory-related";
+import type { AssetType } from "@/lib/zod/validators/asset-types";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({

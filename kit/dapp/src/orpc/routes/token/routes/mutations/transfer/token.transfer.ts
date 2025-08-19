@@ -1,10 +1,10 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
+import { AssetExtensionEnum } from "@/lib/zod/validators/asset-extensions";
 import { validateBatchArrays } from "@/orpc/helpers/array-validation";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { read } from "@/orpc/routes/token/routes/token.read";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { AssetExtensionEnum } from "@atk/zod/validators/asset-extensions";
 import { call } from "@orpc/server";
 
 const TOKEN_TRANSFER_MUTATION = portalGraphql(`

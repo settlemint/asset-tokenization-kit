@@ -6,12 +6,12 @@
  * data throughout the application.
  */
 
-import { accessControlRoles } from "@atk/zod/validators/access-control-roles";
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
-import { userRoles } from "@atk/zod/validators/user-roles";
-import { verificationType } from "@atk/zod/validators/verification-type";
+import { accessControlRoles } from "@/lib/zod/validators/access-control-roles";
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { userRoles } from "@/lib/zod/validators/user-roles";
+import { verificationType } from "@/lib/zod/validators/verification-type";
+import { type SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { z } from "zod";
-import type { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 
 const onboardingStateSchema = z.object({
   wallet: z.boolean().describe("Whether the user has a wallet"),
