@@ -15,6 +15,10 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 ///      This module is essential for regulatory compliance in jurisdictions with specific issuance caps.
 /// @custom:security-contact security@settlemint.com
 contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
+    /// @notice Maximum period length for rolling windows (730 days = 2 years)
+    /// @dev This defines the fixed circular buffer size to prevent unbounded storage growth
+    uint256 private constant MAX_PERIOD_LENGTH = 730;
+
     /// @notice Unique type identifier for this compliance module
     /// @dev Used by the compliance system to identify and manage module instances
     // solhint-disable-next-line const-name-snakecase, use-natspec
@@ -50,9 +54,12 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
         /// @notice Timestamp when the current period started (used for fixed periods only)
         /// @dev Used to determine if enough time has passed to start a new fixed period
         uint256 periodStart;
-        /// @notice Daily supply amounts for rolling window tracking
-        /// @dev Maps day number (block.timestamp / 1 days) to supply amount added on that day
+        /// @notice Daily supply amounts for rolling window tracking (fixed MAX_PERIOD_LENGTH circular buffer)
+        /// @dev Always maps (day % MAX_PERIOD_LENGTH) to supply amount, regardless of actual period length
         mapping(uint256 => uint256) dailySupply;
+        /// @notice Track which actual day each buffer slot represents to detect stale data
+        /// @dev Maps buffer index to the actual day number it represents
+        mapping(uint256 => uint256) bufferDayMapping;
     }
 
     /// @notice Mapping from token address to supply tracker
@@ -94,9 +101,21 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
             // Lifetime cap
             tracker.totalSupply += amount;
         } else if (config.rolling) {
-            // True rolling window tracking - track by day
+            // True rolling window tracking - use fixed MAX_PERIOD_LENGTH circular buffer
             uint256 currentDay = block.timestamp / 1 days;
-            tracker.dailySupply[currentDay] += amount;
+
+            // Always use fixed MAX_PERIOD_LENGTH circular buffer regardless of actual period length
+            uint256 bufferIndex = currentDay % MAX_PERIOD_LENGTH;
+
+            // Check if this buffer slot contains stale data from a previous cycle
+            if (tracker.bufferDayMapping[bufferIndex] != currentDay) {
+                // Clear stale data and start fresh for this day
+                tracker.dailySupply[bufferIndex] = amount;
+                tracker.bufferDayMapping[bufferIndex] = currentDay;
+            } else {
+                // Same day, accumulate
+                tracker.dailySupply[bufferIndex] += amount;
+            }
         } else {
             // Fixed period tracking
             bool shouldStartNewPeriod = false;
@@ -180,14 +199,14 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
         }
 
         // WHY: Rolling windows require iterating through daily supply data (up to periodLength iterations).
-        // We limit rolling periods to 730 days (2 years) to prevent excessive gas costs that could
+        // We limit rolling periods to MAX_PERIOD_LENGTH days (2 years) to prevent excessive gas costs that could
         // make transactions fail due to block gas limits. This covers all realistic regulatory scenarios:
         // - MiCA: 365 days (12 months)
         // - Most jurisdictions: ≤ 24 months for rolling caps
         // - Corporate programs: Typically annual cycles
-        // Gas cost grows linearly: 365 days ≈ 73K gas, 730 days ≈ 146K gas (acceptable)
-        if (config.rolling && config.periodLength > 730) {
-            revert InvalidParameters("Rolling window cannot exceed 730 days (2 years) to prevent gas limit issues");
+        // Gas cost grows linearly: 365 days ≈ 73K gas, MAX_PERIOD_LENGTH days ≈ 146K gas (acceptable)
+        if (config.rolling && config.periodLength > MAX_PERIOD_LENGTH) {
+            revert InvalidParameters("Rolling window cannot exceed MAX_PERIOD_LENGTH days (2 years) to prevent gas limit issues");
         }
 
         if (config.useBasePrice && config.basePriceTopicId == 0) {
@@ -201,7 +220,7 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
     /// @dev Implements different calculation methods based on configuration:
     ///      - Lifetime: returns total cumulative supply
     ///      - Fixed period: returns supply for current period (0 if new period not yet started)
-    ///      - Rolling window: sums supply for the last N days (true rolling window)
+    ///      - Rolling window: sums supply for the last N days using fixed MAX_PERIOD_LENGTH circular buffer
     /// @param _token The token address to check supply for
     /// @param config The supply limit configuration defining tracking method
     /// @return The current supply amount in the same units as maxSupply
@@ -215,13 +234,26 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
             // Lifetime cap
             return tracker.totalSupply;
         } else if (config.rolling) {
-            // True rolling window - sum last N days
+            // True rolling window - sum last N days from fixed MAX_PERIOD_LENGTH circular buffer
             uint256 currentDay = block.timestamp / 1 days;
             uint256 daysInPeriod = config.periodLength;
             uint256 sum = 0;
 
+            // Sum from fixed MAX_PERIOD_LENGTH circular buffer, going back N days
             for (uint256 i = 0; i < daysInPeriod; ++i) {
-                sum += tracker.dailySupply[currentDay - i];
+                // Prevent underflow in day calculation
+                if (currentDay < i) {
+                    break;
+                }
+
+                uint256 dayToCheck = currentDay - i;
+                // Always use fixed MAX_PERIOD_LENGTH buffer
+                uint256 bufferIndex = dayToCheck % MAX_PERIOD_LENGTH;
+
+                // Only include data if the buffer slot actually represents the day we're checking
+                if (tracker.bufferDayMapping[bufferIndex] == dayToCheck) {
+                    sum += tracker.dailySupply[bufferIndex];
+                }
             }
 
             return sum;
