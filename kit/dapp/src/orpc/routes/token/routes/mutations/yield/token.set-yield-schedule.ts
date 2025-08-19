@@ -88,15 +88,28 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
       countryCode,
     } = input;
     const { auth, system } = context;
-    const systemAddons = system?.systemAddons;
-    const yieldScheduleAddon = systemAddons?.find(
+
+    if (!system) {
+      throw errors.NOT_FOUND({
+        message: "System context is missing. Cannot set yield schedule.",
+      });
+    }
+
+    if (!system.systemAddons) {
+      throw errors.NOT_FOUND({
+        message: "System addons are missing from system context. Cannot set yield schedule.",
+      });
+    }
+
+    const systemAddons = system.systemAddons;
+    const yieldScheduleAddon = systemAddons.find(
       (addon) =>
         addon.typeId === AddonFactoryTypeIdEnum.ATKFixedYieldScheduleFactory
     );
 
     if (!yieldScheduleAddon) {
       throw errors.NOT_FOUND({
-        message: "Yield schedule addon not found in system",
+        message: "Yield schedule addon not found in system addons.",
       });
     }
 
