@@ -858,7 +858,7 @@ contract ATKSystemImplementation is
     /// @param targetIdentity The identity contract to receive the claim
     /// @param topicId The topic ID of the claim
     /// @param claimData The claim data
-    function issueClaimByOrganisation(address targetIdentity, uint256 topicId, bytes memory claimData) external onlySystemRoles2(ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKPeopleRoles.ORGANISATION_CLAIM_MANAGER_ROLE) {
+    function issueClaimByOrganisation(address targetIdentity, uint256 topicId, bytes calldata claimData) external onlySystemRoles2(ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKPeopleRoles.ORGANISATION_CLAIM_MANAGER_ROLE) {
         if (_organisationIdentity == address(0)) revert IssuerIdentityNotInitialized();
         if (targetIdentity == address(0)) revert InvalidTargetIdentity();
 
