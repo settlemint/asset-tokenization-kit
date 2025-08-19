@@ -1,6 +1,6 @@
 import { Bytes } from "@graphprotocol/graph-ts";
 
-import type {
+import {
   Bootstrapped,
   ComplianceImplementationUpdated,
   ComplianceModuleRegistryImplementationUpdated,
