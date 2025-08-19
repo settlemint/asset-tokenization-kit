@@ -11,6 +11,7 @@ import { z } from "zod";
 import { bigDecimal } from "./bigdecimal";
 import { ethereumAddress } from "./ethereum-address";
 import { ethereumHash } from "./ethereum-hash";
+import { ethereumHex } from "./ethereum-hex";
 import { timestamp } from "./timestamp";
 
 /**
@@ -38,7 +39,7 @@ import { timestamp } from "./timestamp";
  */
 export const tokenFixedYieldSchedulePeriod = () =>
   z.object({
-    id: ethereumHash.describe("Unique identifier for the yield period"),
+    id: ethereumHex.describe("Unique identifier for the yield period (composite hex ID from subgraph)"),
     startDate: timestamp().describe("Unix timestamp when period starts"),
     endDate: timestamp().describe("Unix timestamp when period ends"),
     totalClaimed: bigDecimal().describe("Total yield claimed in this period"),

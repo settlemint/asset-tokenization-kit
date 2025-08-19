@@ -1,13 +1,12 @@
-import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
-import { call } from "@orpc/server";
-import { logger } from "better-auth";
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { getTransactionReceipt } from "@/orpc/helpers/transaction-receipt";
+import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { read } from "../../token.read";
 import { AddonFactoryTypeIdEnum } from "@atk/zod/src/validators/addon-types";
+import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
+import { call } from "@orpc/server";
+import { read } from "../../token.read";
 
 const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
   mutation TokenSetYieldSchedule(
@@ -63,6 +62,14 @@ const TOKEN_CREATE_YIELD_SCHEDULE_MUTATION = portalGraphql(`
   }
 `);
 
+const GET_YIELD_SCHEDULE_ADDRESS_QUERY = theGraphGraphql(`
+query GetYieldScheduleAddress($transactionHash: Bytes!) {
+  tokenFixedYieldSchedules(where: {deployedInTransaction: $transactionHash}) {
+    id
+  }
+}
+`);
+
 export const setYieldSchedule = tokenRouter.token.setYieldSchedule
   .use(
     tokenPermissionMiddleware({
@@ -112,58 +119,28 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
         type: walletVerification.verificationType,
       }
     );
-    let receipt: Awaited<ReturnType<typeof getTransactionReceipt>>;
-    try {
-      receipt = await getTransactionReceipt(transactionHash);
-      // Check if transaction was successful
-      if (receipt.status !== "Success") {
-        throw errors.INTERNAL_SERVER_ERROR({
-          message: "Transaction failed",
-          cause: new Error(`Transaction failed with status: ${receipt.status}`),
-        });
+
+    const scheduleAddresses = await theGraphClient.request(
+      GET_YIELD_SCHEDULE_ADDRESS_QUERY,
+      {
+        transactionHash: transactionHash,
       }
-    } catch (error_) {
-      const error = error_ as Error;
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: "Failed to get transaction receipt",
-        cause: error.message,
+    );
+
+    const schedule = scheduleAddresses.tokenFixedYieldSchedules[0]?.id;
+
+    if (!schedule) {
+      throw errors.NOT_FOUND({
+        message: `No yield schedule found for the transaction ${transactionHash}`,
       });
     }
-    // Look for the last log entry which should contain the schedule created event
-    logger.debug("Receipt logs:", receipt.logs);
-    logger.debug("Receipt contractAddress:", receipt.contractAddress);
-    logger.debug("Receipt status:", receipt.status);
-    console.log("Receipt logs:", receipt.logs);
-    console.log("Receipt contractAddress:", receipt.contractAddress);
-    console.log("Receipt status:", receipt.status);
-    const logs = Array.isArray(receipt.logs) ? receipt.logs : [];
-    let scheduleAddress: string | undefined;
-    if (logs.length > 0) {
-      const lastLog = logs.at(-1) as { address?: string } | undefined;
-      logger.debug("Last log:", lastLog);
-      if (
-        lastLog &&
-        typeof lastLog === "object" &&
-        "address" in lastLog &&
-        typeof lastLog.address === "string"
-      ) {
-        scheduleAddress = lastLog.address;
-      }
-    }
-    if (!scheduleAddress) {
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: "Failed to create yield schedule",
-        cause: new Error("Schedule address not found in transaction logs"),
-      });
-    }
-    console.log("Schedule address:", scheduleAddress);
-    // Now set the yield schedule with the created schedule address
-    const setYieldScheduleResult = await context.portalClient.mutate(
+
+    await context.portalClient.mutate(
       TOKEN_SET_YIELD_SCHEDULE_MUTATION,
       {
         address: contract,
         from: sender.wallet,
-        schedule: getEthereumAddress(scheduleAddress),
+        schedule: getEthereumAddress(schedule),
       },
       {
         sender: sender,
@@ -171,8 +148,7 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
         type: walletVerification.verificationType,
       }
     );
-    logger.debug("Set yield schedule result:", setYieldScheduleResult);
-    console.log("Set yield schedule result:", setYieldScheduleResult);
+
     // Return updated token data
     return await call(read, { tokenAddress: contract }, { context });
   });

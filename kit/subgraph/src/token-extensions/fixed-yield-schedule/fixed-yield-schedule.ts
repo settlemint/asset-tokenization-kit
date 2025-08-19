@@ -25,15 +25,11 @@ export function handleFixedYieldScheduleSet(
   if (fixedYieldSchedule.deployedInTransaction.equals(Bytes.empty())) {
     fixedYieldSchedule.deployedInTransaction = event.transaction.hash;
   }
-  if (fixedYieldSchedule.createdBy.equals(Address.zero())) {
-    fixedYieldSchedule.createdBy = event.transaction.from;
-  }
-  if (fixedYieldSchedule.createdAt.equals(BigInt.zero())) {
-    fixedYieldSchedule.createdAt = event.block.timestamp;
-  }
 
   const tokenAddress = Address.fromBytes(fixedYieldSchedule.token);
   const tokenDecimals = getTokenDecimals(tokenAddress);
+  fixedYieldSchedule.createdBy = event.transaction.from;
+  fixedYieldSchedule.createdAt = event.block.timestamp;
   fixedYieldSchedule.startDate = event.params.startDate;
   fixedYieldSchedule.endDate = event.params.endDate;
   fixedYieldSchedule.rate = event.params.rate;

@@ -8,7 +8,10 @@ import { TokenYieldFragment } from "@/lib/fragments/the-graph/token-yield-fragme
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { baseRouter } from "@/orpc/procedures/base.router";
-import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
+import {
+  TokenSchema,
+  Token,
+} from "@/orpc/routes/token/routes/token.read.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 
 const logger = createLogger();
@@ -125,58 +128,73 @@ export const tokenMiddleware = baseRouter.middleware(
     }
 
     const userRoles = mapUserRoles(auth.user.wallet, token.accessControl);
-    const tokenContext = TokenSchema.parse({
-      ...token,
-      userPermissions: {
-        roles: userRoles,
-        // TODO: implement logic which checks if the user is allowed to interact with the token
-        // user is not allowed when in the block list or when it requires an allow list
-        // Another reason could be that the user is a citizen of a blocked country
-        // We should do this in the subgraph, more fine grained so we can derive the reason here
-        isAllowed: true,
-        notAllowedReason: undefined,
-        actions: (() => {
-          // Initialize all actions as false
-          const initialActions: Record<
-            keyof typeof TOKEN_PERMISSIONS,
-            boolean
-          > = {
-            burn: false,
-            create: false,
-            grantRole: false,
-            revokeRole: false,
-            mint: false,
-            pause: false,
-            addComplianceModule: false,
-            approve: false,
-            forcedRecover: false,
-            freezeAddress: false,
-            recoverERC20: false,
-            recoverTokens: false,
-            redeem: false,
-            removeComplianceModule: false,
-            setCap: false,
-            setYieldSchedule: false,
-            transfer: false,
-            unpause: false,
-          };
 
-          // Update based on user roles using the flexible role requirement system
-          Object.entries(TOKEN_PERMISSIONS).forEach(
-            ([action, roleRequirement]) => {
-              const userRoleList = Object.entries(userRoles)
-                .filter(([_, hasRole]) => hasRole)
-                .map(([role]) => role) as AccessControlRoles[];
+    let tokenContext: Token;
+    try {
+      tokenContext = TokenSchema.parse({
+        ...token,
+        userPermissions: {
+          roles: userRoles,
+          // TODO: implement logic which checks if the user is allowed to interact with the token
+          // user is not allowed when in the block list or when it requires an allow list
+          // Another reason could be that the user is a citizen of a blocked country
+          // We should do this in the subgraph, more fine grained so we can derive the reason here
+          isAllowed: true,
+          notAllowedReason: undefined,
+          actions: (() => {
+            // Initialize all actions as false
+            const initialActions: Record<
+              keyof typeof TOKEN_PERMISSIONS,
+              boolean
+            > = {
+              burn: false,
+              create: false,
+              grantRole: false,
+              revokeRole: false,
+              mint: false,
+              pause: false,
+              addComplianceModule: false,
+              approve: false,
+              forcedRecover: false,
+              freezeAddress: false,
+              recoverERC20: false,
+              recoverTokens: false,
+              redeem: false,
+              removeComplianceModule: false,
+              setCap: false,
+              setYieldSchedule: false,
+              transfer: false,
+              unpause: false,
+            };
 
-              initialActions[action as keyof typeof TOKEN_PERMISSIONS] =
-                satisfiesRoleRequirement(userRoleList, roleRequirement);
-            }
-          );
+            // Update based on user roles using the flexible role requirement system
+            Object.entries(TOKEN_PERMISSIONS).forEach(
+              ([action, roleRequirement]) => {
+                const userRoleList = Object.entries(userRoles)
+                  .filter(([_, hasRole]) => hasRole)
+                  .map(([role]) => role) as AccessControlRoles[];
 
-          return initialActions;
-        })(),
-      },
-    });
+                initialActions[action as keyof typeof TOKEN_PERMISSIONS] =
+                  satisfiesRoleRequirement(userRoleList, roleRequirement);
+              }
+            );
+
+            return initialActions;
+          })(),
+        },
+      });
+    } catch (error) {
+      logger.error("TokenSchema validation failed:", {
+        error: error instanceof Error ? error.message : error,
+        tokenAddress,
+        tokenData: token,
+        validationError: error,
+      });
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: "Failed to parse token",
+        cause: error,
+      });
+    }
 
     return next({
       context: {

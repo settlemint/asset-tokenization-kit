@@ -30,7 +30,8 @@
   "dotenv.enableAutocloaking": false,
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit",
-    "source.organizeImports.biome": "explicit"
+    "source.organizeImports": "explicit",
+    "source.fixAll.biome": "explicit"
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.fontLigatures": true,
