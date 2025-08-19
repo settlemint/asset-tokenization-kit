@@ -133,9 +133,9 @@ describe("accessControlRoles", () => {
       const result = accessControlRoles.parse({});
 
       // All roles should default to false
-      Object.values(result).forEach((value) => {
+      for (const value of Object.values(result)) {
         expect(value).toBe(false);
-      });
+      }
     });
 
     it("should throw on invalid property types", () => {
@@ -244,9 +244,9 @@ describe("accessControlRoles", () => {
       ];
 
       expect(schemaKeys).toHaveLength(expectedRoles.length);
-      expectedRoles.forEach((role) => {
+      for (const role of expectedRoles) {
         expect(schemaKeys).toContain(role);
-      });
+      }
 
       // Check that the enum has all the roles
       expect(Object.keys(accessControlRole.enum)).toHaveLength(expectedRoles.length);

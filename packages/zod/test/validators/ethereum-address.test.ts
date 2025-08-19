@@ -185,7 +185,7 @@ describe("ethereumAddress", () => {
         "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed",
       ];
 
-      validAddresses.forEach((address) => {
+      for (const address of validAddresses) {
         const result = ethereumAddress.parse(address);
         // The result should always be a valid address string
         expect(result).toBeDefined();
@@ -196,7 +196,7 @@ describe("ethereumAddress", () => {
         // Even if getAddress were to somehow fail (which it shouldn't),
         // the catch block ensures we still get a valid address type
         // This validates that our defensive programming works correctly
-      });
+      }
     });
 
     it("should cover catch block through schema internals", () => {
@@ -220,14 +220,14 @@ describe("ethereumAddress", () => {
         "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
       ];
 
-      testCases.forEach((testAddress) => {
+      for (const testAddress of testCases) {
         // Parse should never throw for valid addresses
         expect(() => {
           const result = ethereumAddress.parse(testAddress);
           expect(result).toBeTruthy();
           expect(result).toHaveLength(42);
         }).not.toThrow();
-      });
+      }
 
       // The defensive catch block ensures robustness
       // Even in the unlikely event of getAddress failure,
@@ -281,10 +281,10 @@ describe("ethereumAddress", () => {
       ];
 
       // All valid addresses should be transformed successfully
-      testAddresses.forEach(({ input, expected }) => {
+      for (const { input, expected } of testAddresses) {
         const result = ethereumAddress.parse(input);
         expect(result).toBe(expected as EthereumAddress);
-      });
+      }
 
       // The defensive catch block ensures that even if getAddress were to fail,
       // the validator would return the input value cast as Address rather than throwing
@@ -306,14 +306,14 @@ describe("ethereumAddress", () => {
         "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
       ];
 
-      edgeCaseAddresses.forEach((address) => {
+      for (const address of edgeCaseAddresses) {
         // These should all pass without throwing
         const result = ethereumAddress.parse(address);
         expect(result).toBeDefined();
         expect(typeof result).toBe("string");
         expect(result.startsWith("0x")).toBe(true);
         expect(result.length).toBe(42);
-      });
+      }
     });
 
     it("should handle all possible address formats correctly", () => {
@@ -351,16 +351,16 @@ describe("ethereumAddress", () => {
         },
       ];
 
-      addressVariations.forEach(({ input, expected }) => {
+      for (const { input, expected } of addressVariations) {
         const result = ethereumAddress.safeParse(input);
         expect(result.success).toBe(true);
         if (result.success) {
           // Verify the checksummed output matches expected
-          expect(result.data).toBe(expected);
+          expect(result.data).toBe(expected as `0x${string}`);
           expect(result.data.length).toBe(42);
           expect(result.data.startsWith("0x")).toBe(true);
         }
-      });
+      }
     });
   });
 

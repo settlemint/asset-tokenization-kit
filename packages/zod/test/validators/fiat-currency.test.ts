@@ -212,15 +212,15 @@ describe("allFiatCurrencies", () => {
   it("should be an array of strings", () => {
     expect(Array.isArray(allFiatCurrencies)).toBe(true);
     expect(allFiatCurrencies.length).toBeGreaterThan(0);
-    allFiatCurrencies.forEach((currency) => {
+    for (const currency of allFiatCurrencies) {
       expect(typeof currency).toBe("string");
-    });
+    }
   });
 
   it("should not include currencies starting with X", () => {
-    allFiatCurrencies.forEach((currency) => {
+    for (const currency of allFiatCurrencies) {
       expect(currency.startsWith("X")).toBe(false);
-    });
+    }
   });
 
   it("should include common currencies", () => {
@@ -233,12 +233,12 @@ describe("allFiatCurrencies", () => {
 
 describe("fiatCurrencyMetadata", () => {
   it("should contain metadata for all supported currencies", () => {
-    fiatCurrencies.forEach((currency) => {
+    for (const currency of fiatCurrencies) {
       expect(fiatCurrencyMetadata[currency]).toBeDefined();
       expect(fiatCurrencyMetadata[currency].name).toBeDefined();
       expect(typeof fiatCurrencyMetadata[currency].name).toBe("string");
       expect(typeof fiatCurrencyMetadata[currency].decimals).toBe("number");
-    });
+    }
   });
 
   it("should have correct metadata values", () => {
@@ -293,19 +293,19 @@ describe("edge cases and special scenarios", () => {
   test("type inference works correctly", () => {
     // Test that FiatCurrency type is correctly inferred
     const currencies: FiatCurrency[] = ["USD", "EUR", "GBP"];
-    currencies.forEach((currency) => {
+    for (const currency of currencies) {
       expect(fiatCurrencies).toContain(currency);
-    });
+    }
   });
 
   test("fiatCurrencyMetadata handles all supported currencies", () => {
     // All supported currencies should have valid metadata
-    fiatCurrencies.forEach((code) => {
+    for (const code of fiatCurrencies) {
       const metadata = fiatCurrencyMetadata[code];
       expect(metadata).toBeDefined();
       expect(metadata.name).toBeDefined();
       expect(metadata.decimals).toBeGreaterThanOrEqual(0);
-    });
+    }
   });
 
   test("getValidFiatCurrencies filters correctly", () => {
@@ -313,9 +313,9 @@ describe("edge cases and special scenarios", () => {
     const validCurrencies = allFiatCurrencies;
 
     // Should not include X-prefixed codes (test currencies, precious metals)
-    validCurrencies.forEach((code) => {
+    for (const code of validCurrencies) {
       expect(code.startsWith("X")).toBe(false);
-    });
+    }
 
     // Should include major currencies
     expect(validCurrencies).toContain("USD");

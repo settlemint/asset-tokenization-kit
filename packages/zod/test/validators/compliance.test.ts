@@ -1022,7 +1022,7 @@ describe("Edge cases and error handling", () => {
 
       try {
         complianceParams().parse(mismatch);
-        expect.fail("Should have thrown");
+        throw new Error("Should have thrown");
       } catch (error) {
         if (error instanceof z.ZodError) {
           // Should have validation error for invalid address format
@@ -1034,7 +1034,7 @@ describe("Edge cases and error handling", () => {
 
     it("should handle all compliance module types", () => {
       // Test that all types in complianceTypeIds are handled
-      complianceTypeIds.forEach((typeId) => {
+      for (const typeId of complianceTypeIds) {
         const hasCase = (() => {
           try {
             const testData = {
@@ -1050,7 +1050,7 @@ describe("Edge cases and error handling", () => {
           }
         })();
         expect(hasCase).toBe(true);
-      });
+      }
     });
   });
 });

@@ -59,7 +59,7 @@ describe("fundClass", () => {
 
 describe("isFundClass", () => {
   describe("valid fund classes", () => {
-    test.each(fundClasses)("should return true for '%s'", (cls) => {
+    test.each([...fundClasses])("should return true for '%s'", (cls) => {
       expect(isFundClass(cls)).toBe(true);
     });
   });
@@ -81,8 +81,8 @@ describe("isFundClass", () => {
       [new Date(), "Date object"],
       [/regex/, "RegExp"],
       [Number.NaN, "NaN"],
-      [Infinity, "Infinity"],
-      [-Infinity, "-Infinity"],
+      [Number.POSITIVE_INFINITY, "Infinity"],
+      [Number.NEGATIVE_INFINITY, "-Infinity"],
       ["INSTITUTIONAL", "uppercase variant"],
       ["Retail", "capitalized variant"],
       ["  retail  ", "string with spaces"],
@@ -114,7 +114,7 @@ describe("isFundClass", () => {
 
 describe("getFundClass", () => {
   describe("valid fund classes", () => {
-    test.each(fundClasses)("should return '%s' for valid input", (cls) => {
+    test.each([...fundClasses])("should return '%s' for valid input", (cls) => {
       expect(getFundClass(cls)).toBe(cls);
     });
   });
@@ -136,8 +136,8 @@ describe("getFundClass", () => {
       [new Date(), "Invalid option"],
       [/regex/, "Invalid option"],
       [Number.NaN, "Invalid option"],
-      [Infinity, "Invalid option"],
-      [-Infinity, "Invalid option"],
+      [Number.POSITIVE_INFINITY, "Invalid option"],
+      [Number.NEGATIVE_INFINITY, "Invalid option"],
       ["INSTITUTIONAL", "Invalid option"],
       ["Retail", "Invalid option"],
       ["  retail  ", "Invalid option"],
@@ -176,9 +176,9 @@ describe("getFundClass", () => {
     test("should throw for edge case values", () => {
       const edgeCases = [Object.create(null), { toString: () => "retail" }, { valueOf: () => "retail" }];
 
-      edgeCases.forEach((value) => {
+      for (const value of edgeCases) {
         expect(() => getFundClass(value)).toThrow();
-      });
+      }
     });
   });
 

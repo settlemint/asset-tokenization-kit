@@ -172,10 +172,10 @@ describe("security and edge cases", () => {
     // These are valid format-wise but weak security-wise
     // This test documents that the validator only checks format, not strength
     const weakPins = ["000000", "111111", "123456", "654321", "123123"];
-    weakPins.forEach((pin) => {
+    for (const pin of weakPins) {
       const result = pincode().parse(pin);
       expect(result).toBe(pin);
-    });
+    }
   });
 
   test("should handle unicode and emoji characters", () => {
@@ -276,11 +276,11 @@ describe("comprehensive type validation", () => {
       () => "123456",
     ];
 
-    invalidInputs.forEach((input) => {
+    for (const input of invalidInputs) {
       expect(() => pincode().parse(input)).toThrow();
       expect(isPincode(input)).toBe(false);
       expect(() => getPincode(input)).toThrow();
-    });
+    }
   });
 
   test("should handle boundary cases for safeParse", () => {
@@ -291,12 +291,12 @@ describe("comprehensive type validation", () => {
       pincode().safeParse(" "),
     ];
 
-    results.forEach((result) => {
+    for (const result of results) {
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.issues.length).toBeGreaterThan(0);
       }
-    });
+    }
   });
 });
 

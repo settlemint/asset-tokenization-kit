@@ -12,7 +12,7 @@ describe("atkTopic", () => {
   const validator = atkTopic();
 
   describe("valid inputs", () => {
-    it.each(atkTopics)("should accept topic '%s'", (topic) => {
+    it.each([...atkTopics])("should accept topic '%s'", (topic) => {
       expect(validator.parse(topic)).toBe(topic);
     });
 
@@ -126,10 +126,10 @@ describe("getTopicId", () => {
   });
 
   it("should generate positive IDs", () => {
-    atkTopics.forEach((topic) => {
+    for (const topic of atkTopics) {
       const id = getTopicId(topic);
       expect(id > 0n).toBe(true);
-    });
+    }
   });
 
   it("should use cache on subsequent calls", () => {
@@ -146,7 +146,7 @@ describe("getTopicId", () => {
     expect(end - start).toBeLessThan(10);
   });
 
-  it.each(atkTopics)("should generate ID for topic '%s'", (topic) => {
+  it.each([...atkTopics])("should generate ID for topic '%s'", (topic) => {
     const id = getTopicId(topic);
     expect(typeof id).toBe("bigint");
     expect(id > 0n).toBe(true);
@@ -159,16 +159,16 @@ describe("getTopicNameFromId", () => {
   beforeEach(() => {
     // Generate IDs for all topics
     topicIds = new Map();
-    atkTopics.forEach((topic) => {
+    for (const topic of atkTopics) {
       topicIds.set(topic, getTopicId(topic));
-    });
+    }
   });
 
   it("should return correct topic name for known IDs", () => {
-    topicIds.forEach((id, expectedTopic) => {
+    for (const [expectedTopic, id] of topicIds) {
       const topic = getTopicNameFromId(id);
       expect(topic).toBe(expectedTopic);
-    });
+    }
   });
 
   it("should handle cache correctly", () => {
@@ -193,19 +193,19 @@ describe("getTopicNameFromId", () => {
   });
 
   it("should be inverse of getTopicId", () => {
-    atkTopics.forEach((originalTopic) => {
+    for (const originalTopic of atkTopics) {
       const id = getTopicId(originalTopic);
       const retrievedTopic = getTopicNameFromId(id);
       expect(retrievedTopic).toBe(originalTopic);
-    });
+    }
   });
 
   it("should handle all ATKTopicEnum values", () => {
-    Object.values(ATKTopicEnum).forEach((topic) => {
+    for (const topic of Object.values(ATKTopicEnum)) {
       const id = getTopicId(topic);
       const retrievedTopic = getTopicNameFromId(id);
       expect(retrievedTopic).toBe(topic);
-    });
+    }
   });
 });
 
@@ -215,30 +215,30 @@ describe("topic ID generation consistency", () => {
     const baselineIds = new Map<ATKTopic, bigint>();
 
     // Generate baseline IDs
-    atkTopics.forEach((topic) => {
+    for (const topic of atkTopics) {
       baselineIds.set(topic, getTopicId(topic));
-    });
+    }
 
     // Test consistency across multiple iterations
     for (let i = 0; i < iterations; i++) {
-      atkTopics.forEach((topic) => {
+      for (const topic of atkTopics) {
         const currentId = getTopicId(topic);
         const baselineId = baselineIds.get(topic);
         expect(currentId).toBe(baselineId);
-      });
+      }
     }
   });
 
   it("should maintain bidirectional consistency", () => {
     // Test that getTopicId -> getTopicNameFromId -> getTopicId produces same result
-    atkTopics.forEach((originalTopic) => {
+    for (const originalTopic of atkTopics) {
       const id1 = getTopicId(originalTopic);
       const retrievedTopic = getTopicNameFromId(id1);
       const id2 = getTopicId(retrievedTopic);
 
       expect(id1).toBe(id2);
       expect(retrievedTopic).toBe(originalTopic);
-    });
+    }
   });
 
   it("should use cache on second call to getTopicNameFromId", () => {

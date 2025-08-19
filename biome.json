@@ -21,9 +21,23 @@
     "enabled": true,
     "rules": {
       "recommended": true,
+      "suspicious": {
+        "noEmptyBlockStatements": "off"
+      },
       "correctness": {
         "noChildrenProp": "off"
-      }
+      },
+      "style": {
+        "noMagicNumbers": "off",
+        "noNestedTernary": "off"
+      },
+      "performance": {
+        "useTopLevelRegex": "off"
+      },
+      "complexity": {
+        "noExcessiveCognitiveComplexity": "off"
+      },
+      "nursery": "off"
     }
   },
   "javascript": {
@@ -39,5 +53,6 @@
         "organizeImports": "on"
       }
     }
-  }
+  },
+  "extends": ["ultracite"]
 }

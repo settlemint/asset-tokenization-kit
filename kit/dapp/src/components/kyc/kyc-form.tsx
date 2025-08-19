@@ -1,6 +1,6 @@
 import { FormStepContent } from "@/components/form/multi-step/form-step";
 import { useAppForm } from "@/hooks/use-app-form";
-import { authClient } from "@/lib/auth/auth.client";
+import { authClient } from "@atk/auth/browser";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { KycUpsertInput } from "@/orpc/routes/user/kyc/routes/kyc.upsert.schema";

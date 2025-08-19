@@ -323,7 +323,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | support.redis.fullnameOverride | string | `"redis"` |  |
 | support.redis.image.registry | string | `"docker.io"` | Redis image registry |
 | support.redis.image.repository | string | `"redis"` | Redis image repository |
-| support.redis.image.tag | string | `"8.2.0-alpine"` | Redis image tag |
+| support.redis.image.tag | string | `"8.2.1-alpine"` | Redis image tag |
 | support.redis.persistence.enabled | bool | `true` |  |
 | support.redis.persistence.size | string | `"1Gi"` |  |
 | support.redis.resources.limits.cpu | string | `"200m"` |  |

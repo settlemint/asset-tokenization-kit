@@ -17,7 +17,7 @@
 
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { NotFound } from "@/components/error/not-found";
-import { orpc } from "@/orpc/orpc-client";
+import { orpc } from "@atk/orpc/browser";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { broadcastQueryClient } from "@tanstack/query-broadcast-client-experimental";
 import { QueryClient } from "@tanstack/react-query";
@@ -42,12 +42,7 @@ export function createRouter() {
         structuralSharing: true,
         retry: (failureCount, error) => {
           const queryError = error as { code?: string; status?: number };
-          if (
-            queryError.status &&
-            queryError.status >= 400 &&
-            queryError.status < 500 &&
-            queryError.status !== 408
-          ) {
+          if (queryError.status && queryError.status >= 400 && queryError.status < 500 && queryError.status !== 408) {
             return false;
           }
           return failureCount < 3;
@@ -66,18 +61,14 @@ export function createRouter() {
   });
 
   const persister = createAsyncStoragePersister({
-    storage:
-      globalThis.window === undefined ? undefined : globalThis.localStorage,
+    storage: globalThis.window === undefined ? undefined : globalThis.localStorage,
     key: "atk-query-cache",
     throttleTime: 1000,
     serialize: (data) => stringify(data),
     deserialize: async (data) => parse(data),
   });
 
-  if (
-    globalThis.window !== undefined &&
-    process.env.NODE_ENV !== "development"
-  ) {
+  if (globalThis.window !== undefined && process.env.NODE_ENV !== "development") {
     const buildId = process.env.BUILD_ID ?? new Date().toISOString();
     void persistQueryClient({
       queryClient,

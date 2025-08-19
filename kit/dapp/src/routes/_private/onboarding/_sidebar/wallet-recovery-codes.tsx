@@ -4,7 +4,7 @@ import {
   createOnboardingSearchSchema,
 } from "@/components/onboarding/route-helpers";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
-import { authClient } from "@/lib/auth/auth.client";
+import { authClient } from "@atk/auth/browser";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute(

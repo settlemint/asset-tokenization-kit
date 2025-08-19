@@ -235,9 +235,9 @@ describe("isAssetSymbol", () => {
       const validSymbols = mixedArray.filter((item) => isAssetSymbol(item));
       expect(validSymbols).toEqual(["BTC", "ETH", "USDT"]);
       // TypeScript should know validSymbols is AssetSymbol[]
-      validSymbols.forEach((symbol) => {
+      for (const symbol of validSymbols) {
         expect(symbol).toMatch(/^[A-Z0-9]+$/);
-      });
+      }
     });
   });
 });

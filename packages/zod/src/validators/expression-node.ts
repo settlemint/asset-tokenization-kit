@@ -264,7 +264,7 @@ export function convertInfixToPostfix(nodes: ExpressionWithGroups): ExpressionNo
           }
         }
       }
-    } else {
+    } else if (typeof node === "object") {
       // ExpressionNode
       if (node.nodeType === ExpressionTypeEnum.TOPIC) {
         // Operands go directly to output
@@ -350,7 +350,7 @@ export function convertPostfixToInfix(postfixNodes: ExpressionNode[]): Expressio
         }
         const right = stack.pop();
         const left = stack.pop();
-        if (!right || !left) {
+        if (!(right && left)) {
           return []; // Invalid expression
         }
 
@@ -375,7 +375,8 @@ export function convertPostfixToInfix(postfixNodes: ExpressionNode[]): Expressio
 
         break;
       }
-      // No default
+      default:
+        return []; // Invalid node type
     }
   }
 

@@ -14,7 +14,7 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { authClient } from "@/lib/auth/auth.client";
+import { authClient } from "@atk/auth/browser";
 import { twoFactorCode } from "@atk/zod/validators/two-factor-code";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useForm } from "@tanstack/react-form";

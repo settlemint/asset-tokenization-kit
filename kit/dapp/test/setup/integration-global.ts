@@ -15,7 +15,7 @@ import {
   DEFAULT_ISSUER,
   setupUser,
   signInWithUser,
-} from "../fixtures/user";
+} from "@atk/auth/test/fixtures/user";
 
 const logger = createLogger({ level: "info" });
 

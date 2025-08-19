@@ -103,8 +103,8 @@ describe("bigDecimal", () => {
     });
 
     it("should handle Infinity passed as a number", () => {
-      expect(() => validator.parse(Infinity)).toThrow();
-      expect(() => validator.parse(-Infinity)).toThrow();
+      expect(() => validator.parse(Number.POSITIVE_INFINITY)).toThrow();
+      expect(() => validator.parse(Number.NEGATIVE_INFINITY)).toThrow();
     });
 
     it("should reject non-string/number types", () => {

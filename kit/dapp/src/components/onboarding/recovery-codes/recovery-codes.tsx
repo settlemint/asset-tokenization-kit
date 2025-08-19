@@ -4,7 +4,7 @@ import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { WarningAlert } from "@/components/ui/warning-alert";
-import { authClient } from "@/lib/auth/auth.client";
+import { authClient } from "@atk/auth/browser";
 import { Route } from "@/routes/_private/onboarding/_sidebar/wallet-recovery-codes";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useCallback, useEffect, useMemo, useState } from "react";

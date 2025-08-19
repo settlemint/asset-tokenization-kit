@@ -1,4 +1,4 @@
-import type { router } from "@/orpc/routes/router";
+import type { router } from "@atk/orpc/routes/router";
 import { bigDecimalSerializer } from "@atk/zod/validators/bigdecimal";
 import { bigIntSerializer } from "@atk/zod/validators/bigint";
 import { timestampSerializer } from "@atk/zod/validators/timestamp";
@@ -9,7 +9,7 @@ import { getDappUrl } from "./dapp";
 
 export type OrpcClient = RouterClient<typeof router>;
 
-export const getOrpcClient = (
+export const getTestOrpcClient = (
   headers: Headers
 ): RouterClient<typeof router> => {
   const link = new RPCLink({

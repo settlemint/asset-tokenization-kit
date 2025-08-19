@@ -7,8 +7,8 @@ describe("price", () => {
   describe("non-finite number handling", () => {
     test("properly rejects non-finite numbers", () => {
       // Verify that Zod properly rejects non-finite numbers
-      expect(() => validator.parse(Infinity)).toThrow();
-      expect(() => validator.parse(-Infinity)).toThrow();
+      expect(() => validator.parse(Number.POSITIVE_INFINITY)).toThrow();
+      expect(() => validator.parse(Number.NEGATIVE_INFINITY)).toThrow();
       expect(() => validator.parse(Number.NaN)).toThrow();
 
       // Verify string representations are also rejected
@@ -111,8 +111,8 @@ describe("price", () => {
 
     test("should reject non-finite numbers", () => {
       // Zod rejects Infinity before our transform
-      expect(() => validator.parse(Infinity)).toThrow();
-      expect(() => validator.parse(-Infinity)).toThrow();
+      expect(() => validator.parse(Number.POSITIVE_INFINITY)).toThrow();
+      expect(() => validator.parse(Number.NEGATIVE_INFINITY)).toThrow();
       expect(() => validator.parse(Number.NaN)).toThrow();
     });
 
@@ -259,8 +259,8 @@ describe("isPrice", () => {
     expect(isPrice(-100)).toBe(false);
     expect(isPrice("0")).toBe(false);
     expect(isPrice("-100")).toBe(false);
-    expect(isPrice(Infinity)).toBe(false);
-    expect(isPrice(-Infinity)).toBe(false);
+    expect(isPrice(Number.POSITIVE_INFINITY)).toBe(false);
+    expect(isPrice(Number.NEGATIVE_INFINITY)).toBe(false);
     expect(isPrice(Number.NaN)).toBe(false);
     expect(isPrice("abc")).toBe(false);
     expect(isPrice("")).toBe(false);
@@ -303,8 +303,8 @@ describe("getPrice", () => {
 
   test("should throw for non-finite numbers", () => {
     // Zod rejects Infinity before our transform
-    expect(() => getPrice(Infinity)).toThrow();
-    expect(() => getPrice(-Infinity)).toThrow();
+    expect(() => getPrice(Number.POSITIVE_INFINITY)).toThrow();
+    expect(() => getPrice(Number.NEGATIVE_INFINITY)).toThrow();
     expect(() => getPrice(Number.NaN)).toThrow();
   });
 

@@ -19,7 +19,7 @@
  * @see {@link https://better-auth.com} - Better Auth documentation
  */
 
-import { authClient } from "@/lib/auth/auth.client";
+import { authClient } from "@atk/auth/browser";
 import { AuthQueryProvider } from "@daveyplate/better-auth-tanstack";
 import { AuthUIProviderTanstack } from "@daveyplate/better-auth-ui/tanstack";
 import { Link, useRouter } from "@tanstack/react-router";

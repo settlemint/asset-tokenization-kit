@@ -31,10 +31,10 @@ describe("timestamp", () => {
     it("should accept various ISO formats", () => {
       const formats = ["2023-04-01T12:00:00.000Z", "2023-04-01T12:00:00+00:00", "2023-04-01T12:00:00", "2023-04-01"];
 
-      formats.forEach((format) => {
+      for (const format of formats) {
         const result = validator.parse(format);
         expect(result).toBeInstanceOf(Date);
-      });
+      }
     });
 
     it("should reject invalid date strings", () => {

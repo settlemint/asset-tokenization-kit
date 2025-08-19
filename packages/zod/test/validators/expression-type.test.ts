@@ -5,7 +5,7 @@ describe("expressionType", () => {
   const validator = expressionType();
 
   describe("valid inputs", () => {
-    it.each(expressionTypes)("should accept literal value %s", (value) => {
+    it.each([...expressionTypes])("should accept literal value %s", (value) => {
       expect(validator.parse(value)).toBe(value);
     });
 

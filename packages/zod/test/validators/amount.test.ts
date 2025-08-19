@@ -46,8 +46,8 @@ describe("amount", () => {
     });
 
     it("should reject Infinity", () => {
-      expect(() => validator.parse(Infinity)).toThrow();
-      expect(() => validator.parse(-Infinity)).toThrow();
+      expect(() => validator.parse(Number.POSITIVE_INFINITY)).toThrow();
+      expect(() => validator.parse(Number.NEGATIVE_INFINITY)).toThrow();
     });
   });
 
@@ -134,8 +134,8 @@ describe("amount", () => {
       expect(isAmount({})).toBe(false);
       expect(isAmount([])).toBe(false);
       expect(isAmount(Number.NaN)).toBe(false);
-      expect(isAmount(Infinity)).toBe(false);
-      expect(isAmount(-Infinity)).toBe(false);
+      expect(isAmount(Number.POSITIVE_INFINITY)).toBe(false);
+      expect(isAmount(Number.NEGATIVE_INFINITY)).toBe(false);
     });
 
     it("should respect options when validating", () => {
@@ -186,7 +186,7 @@ describe("amount", () => {
       expect(() => getAmount({})).toThrow();
       expect(() => getAmount([])).toThrow();
       expect(() => getAmount(Number.NaN)).toThrow();
-      expect(() => getAmount(Infinity)).toThrow();
+      expect(() => getAmount(Number.POSITIVE_INFINITY)).toThrow();
     });
 
     it("should respect options when parsing", () => {

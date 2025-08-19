@@ -1,5 +1,4 @@
 import { describe, expect, it } from "bun:test";
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import {
   isAllRoleRequirement,
   isAnyRoleRequirement,
@@ -49,7 +48,7 @@ describe("role-requirement", () => {
   });
 
   describe("satisfiesRoleRequirement", () => {
-    const userRoles: AccessControlRoles[] = ["admin", "tokenManager"];
+    const userRoles: string[] = ["admin", "tokenManager"];
 
     describe("single role requirements", () => {
       it("should return true when user has the required role", () => {

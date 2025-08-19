@@ -24,15 +24,15 @@ describe("Ethereum Hex Validation", () => {
 
   describe("ethereumHex schema", () => {
     it("should accept valid hex strings", () => {
-      validHashes.forEach((hex) => {
+      for (const hex of validHashes) {
         expect(() => ethereumHex.parse(hex)).not.toThrow();
-      });
+      }
     });
 
     it("should reject invalid hex strings", () => {
-      invalidHashes.forEach((hex) => {
+      for (const hex of invalidHashes) {
         expect(() => ethereumHex.parse(hex)).toThrow();
-      });
+      }
     });
 
     it("should handle mixed case hex", () => {
@@ -43,15 +43,15 @@ describe("Ethereum Hex Validation", () => {
 
   describe("isEthereumHex", () => {
     it("should return true for valid hex", () => {
-      validHashes.forEach((hex) => {
+      for (const hex of validHashes) {
         expect(isEthereumHex(hex)).toBe(true);
-      });
+      }
     });
 
     it("should return false for invalid hex", () => {
-      invalidHashes.forEach((hex) => {
+      for (const hex of invalidHashes) {
         expect(isEthereumHex(hex)).toBe(false);
-      });
+      }
     });
   });
 

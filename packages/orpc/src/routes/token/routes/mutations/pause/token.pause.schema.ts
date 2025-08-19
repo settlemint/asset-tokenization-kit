@@ -1,0 +1,18 @@
+import { MutationInputSchemaWithContract } from "../../../../common/schemas/mutation.schema";
+import { BaseMutationOutputSchema } from "../../../../common/schemas/mutation-output.schema";
+import { TokenSchema } from "../../token.read.schema";
+import { z } from "zod";
+
+export const TokenPauseInputSchema = MutationInputSchemaWithContract;
+
+/**
+ * Output schema for token pause operation
+ * Returns the ethereum hash and the updated token data
+ */
+export const TokenPauseOutputSchema = BaseMutationOutputSchema.extend({
+  data: TokenSchema.partial().describe("The updated token data"),
+});
+
+// Type exports using Zod's type inference
+export type TokenPauseInput = z.infer<typeof TokenPauseInputSchema>;
+export type TokenPauseOutput = z.infer<typeof TokenPauseOutputSchema>;

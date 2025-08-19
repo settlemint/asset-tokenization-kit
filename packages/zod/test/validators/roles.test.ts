@@ -241,10 +241,10 @@ describe("isRoleMap", () => {
     const value: unknown = { user123: "investor" };
     if (isRoleMap(value)) {
       // TypeScript should recognize value as RoleMap here
-      Object.entries(value).forEach(([id, role]) => {
+      for (const [id, role] of Object.entries(value)) {
         expect(typeof id).toBe("string");
         expect(roleNames).toContain(role);
-      });
+      }
     }
   });
 });

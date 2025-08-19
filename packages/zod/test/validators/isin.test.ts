@@ -55,13 +55,13 @@ describe("isin", () => {
         "GB0002634946", // BAE Systems - different letters
       ];
 
-      validISINs.forEach((isinCode) => {
+      for (const isinCode of validISINs) {
         const result = validator.safeParse(isinCode);
         expect(result.success).toBe(true);
         if (result.success) {
           expect(result.data).toBe(isinCode);
         }
-      });
+      }
 
       // Test with ISINs that have valid format but invalid checksum
       const invalidChecksumISINs = [
@@ -69,10 +69,10 @@ describe("isin", () => {
         "GB0002634947", // Valid format but wrong checksum (should be 6)
       ];
 
-      invalidChecksumISINs.forEach((isinCode) => {
+      for (const isinCode of invalidChecksumISINs) {
         const result = validator.safeParse(isinCode);
         expect(result.success).toBe(false);
-      });
+      }
     });
   });
 
@@ -293,8 +293,8 @@ describe("validateIsinChecksum edge cases", () => {
   test("should handle strings with null characters", () => {
     // Test with null character in different positions
     expect(() => isin().parse("\0S0378331005")).toThrow();
-    expect(() => isin().parse("U\u0003" + "78331005")).toThrow();
-    expect(() => isin().parse("US\u0003" + "78331005")).toThrow();
+    expect(() => isin().parse("U\u000378331005")).toThrow();
+    expect(() => isin().parse("US\u000378331005")).toThrow();
   });
 
   test("should handle mixed case in NSIN portion", () => {

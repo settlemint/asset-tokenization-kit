@@ -1,0 +1,12 @@
+import type { Context } from "../../../../context/context";
+import {
+  type AssetType,
+  getFactoryTypeIdFromAssetType,
+} from "@atk/zod/validators/asset-types";
+
+export function getTokenFactory(context: Context, type: AssetType) {
+  return context.system?.tokenFactories.find(
+    (tokenFactory) =>
+      tokenFactory.typeId === getFactoryTypeIdFromAssetType(type)
+  );
+}

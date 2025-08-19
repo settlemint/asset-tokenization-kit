@@ -1,0 +1,1 @@
+console.warn("You should never import from @atk/settlemint, but from one of the submodules instead.");

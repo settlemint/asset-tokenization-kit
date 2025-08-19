@@ -1,0 +1,25 @@
+{
+  "name": "@atk/orpc",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsgo --noEmit",
+    "posttypecheck": "bun gql-tada check",
+    "lint": "biome check --write --unsafe",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "test:ci": "bun test:coverage"
+  },
+  "devDependencies": {
+    "@tools/typescript-config": "workspace:*",
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "5.9.2"
+  },
+  "exports": {
+    "./*": {
+      "import": "./src/*.ts",
+      "types": "./src/*.ts"
+    }
+  }
+}

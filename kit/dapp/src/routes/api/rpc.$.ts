@@ -17,57 +17,8 @@
  * @see {@link https://spec.openapis.org/oas/latest.html} - OpenAPI specification
  */
 
-import { bigDecimalSerializer } from "@atk/zod/validators/bigdecimal";
-import { bigIntSerializer } from "@atk/zod/validators/bigint";
-import { timestampSerializer } from "@atk/zod/validators/timestamp";
-import { onError } from "@orpc/client";
-import { RPCHandler } from "@orpc/server/fetch";
-import { BatchHandlerPlugin } from "@orpc/server/plugins";
-import { createLogger } from "@settlemint/sdk-utils/logging";
-import {
-  createServerFileRoute,
-  getHeaders,
-} from "@tanstack/react-start/server";
-import { router } from "@/orpc/routes/router";
-
-const logger = createLogger();
-
-/**
- * OpenAPI handler configuration.
- *
- * Configures the ORPC OpenAPI handler with:
- * - CORS plugin for cross-origin support
- * - OpenAPI reference plugin for API documentation
- * - Zod schema converter for JSON Schema generation
- * - Smart coercion for flexible parameter handling
- */
-const handler = new RPCHandler(router, {
-  // Log only unexpected server errors (skip 4xx like NOT_FOUND/UNAUTHORIZED)
-  interceptors: [
-    onError((error) => {
-      const e = error as { code?: string; status?: number; message?: string };
-      const status = typeof e?.status === "number" ? e.status : undefined;
-      const code = typeof e?.code === "string" ? e.code : undefined;
-
-      // Skip common/expected client-side errors
-      if (
-        (status && status < 500) /* 4xx */ ||
-        code === "NOT_FOUND" ||
-        code === "UNAUTHORIZED"
-      ) {
-        return;
-      }
-
-      logger.error(e?.message ?? "ORPC handler error", error);
-    }),
-  ],
-  plugins: [new BatchHandlerPlugin()],
-  customJsonSerializers: [
-    bigDecimalSerializer,
-    bigIntSerializer,
-    timestampSerializer,
-  ],
-});
+import { orpcRpcHandler } from "@atk/orpc/server";
+import { createServerFileRoute, getHeaders } from "@tanstack/react-start/server";
 
 /**
  * Request handler for all API routes.
@@ -81,7 +32,7 @@ const handler = new RPCHandler(router, {
  * @returns HTTP response from the matched procedure or 404 if not found
  */
 export async function handle({ request }: { request: Request }) {
-  const { response } = await handler.handle(request, {
+  const { response } = await orpcRpcHandler.handle(request, {
     prefix: "/api/rpc",
     context: {
       headers: getHeaders(),

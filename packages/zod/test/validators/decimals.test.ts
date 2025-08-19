@@ -89,8 +89,8 @@ describe("decimals", () => {
 
     it("should reject special numeric values", () => {
       expect(() => validator.parse(Number.NaN)).toThrow();
-      expect(() => validator.parse(Infinity)).toThrow();
-      expect(() => validator.parse(-Infinity)).toThrow();
+      expect(() => validator.parse(Number.POSITIVE_INFINITY)).toThrow();
+      expect(() => validator.parse(Number.NEGATIVE_INFINITY)).toThrow();
     });
   });
 
@@ -140,8 +140,8 @@ describe("isDecimals", () => {
     expect(isDecimals({})).toBe(false);
     expect(isDecimals([])).toBe(false);
     expect(isDecimals(Number.NaN)).toBe(false);
-    expect(isDecimals(Infinity)).toBe(false);
-    expect(isDecimals(-Infinity)).toBe(false);
+    expect(isDecimals(Number.POSITIVE_INFINITY)).toBe(false);
+    expect(isDecimals(Number.NEGATIVE_INFINITY)).toBe(false);
   });
 
   test("should work as type guard", () => {
@@ -150,7 +150,7 @@ describe("isDecimals", () => {
       // TypeScript should recognize value as Decimals type here
       expect(value).toBe(6);
     } else {
-      expect.fail("Should have been valid decimals");
+      throw new Error("Should have been valid decimals");
     }
   });
 });
@@ -176,8 +176,8 @@ describe("getDecimals", () => {
     expect(() => getDecimals(undefined)).toThrow();
     expect(() => getDecimals({})).toThrow();
     expect(() => getDecimals(Number.NaN)).toThrow();
-    expect(() => getDecimals(Infinity)).toThrow();
-    expect(() => getDecimals(-Infinity)).toThrow();
+    expect(() => getDecimals(Number.POSITIVE_INFINITY)).toThrow();
+    expect(() => getDecimals(Number.NEGATIVE_INFINITY)).toThrow();
   });
 
   test("should be used in token calculations", () => {

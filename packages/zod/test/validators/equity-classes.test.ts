@@ -71,7 +71,7 @@ describe("equity-classes", () => {
 
   describe("isEquityClass type guard", () => {
     describe("valid values", () => {
-      test.each(equityClasses)("should return true for '%s'", (cls) => {
+      test.each([...equityClasses])("should return true for '%s'", (cls) => {
         expect(isEquityClass(cls)).toBe(true);
       });
     });
@@ -129,7 +129,7 @@ describe("equity-classes", () => {
 
   describe("getEquityClass", () => {
     describe("valid values", () => {
-      test.each(equityClasses)("should return '%s' for valid input", (cls) => {
+      test.each([...equityClasses])("should return '%s' for valid input", (cls) => {
         expect(getEquityClass(cls)).toBe(cls);
       });
     });

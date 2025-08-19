@@ -17,107 +17,8 @@
  * @see {@link https://spec.openapis.org/oas/latest.html} - OpenAPI specification
  */
 
-import { bigDecimalSerializer } from "@atk/zod/validators/bigdecimal";
-import { onError } from "@orpc/client";
-import { experimental_SmartCoercionPlugin as SmartCoercionPlugin } from "@orpc/json-schema";
-import { OpenAPIHandler } from "@orpc/openapi/fetch";
-import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
-import { CORSPlugin } from "@orpc/server/plugins";
-import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
-import { createLogger } from "@settlemint/sdk-utils/logging";
-import {
-  createServerFileRoute,
-  getHeaders,
-} from "@tanstack/react-start/server";
-import { metadata } from "@/config/metadata";
-import { router } from "@/orpc/routes/router";
-import pkgjson from "../../../package.json";
-
-const logger = createLogger();
-
-/**
- * OpenAPI handler configuration.
- *
- * Configures the ORPC OpenAPI handler with:
- * - CORS plugin for cross-origin support
- * - OpenAPI reference plugin for API documentation
- * - Zod schema converter for JSON Schema generation
- * - Smart coercion for flexible parameter handling
- */
-const handler = new OpenAPIHandler(router, {
-  // Log only unexpected server errors (skip 4xx like NOT_FOUND/UNAUTHORIZED)
-  interceptors: [
-    onError((error) => {
-      const e = error as { code?: string; status?: number; message?: string };
-      const status = typeof e?.status === "number" ? e.status : undefined;
-      const code = typeof e?.code === "string" ? e.code : undefined;
-
-      // Skip common/expected client-side errors
-      if (
-        (status && status < 500) /* 4xx */ ||
-        code === "NOT_FOUND" ||
-        code === "UNAUTHORIZED"
-      ) {
-        return;
-      }
-
-      logger.error(e?.message ?? "OpenAPI handler error", error);
-    }),
-  ],
-  customJsonSerializers: [bigDecimalSerializer],
-  plugins: [
-    /**
-     * CORS plugin configuration.
-     * Enables cross-origin requests with credentials support.
-     */
-    new CORSPlugin({
-      allowMethods: ["GET", "HEAD", "PUT", "POST", "DELETE", "PATCH"],
-      allowHeaders: ["Content-Type", "X-Api-Key"],
-      exposeHeaders: ["Content-Disposition", "X-Retry-After"],
-      credentials: true,
-      origin: (origin) => origin || "http://localhost:3000",
-    }),
-
-    /**
-     * OpenAPI documentation plugin.
-     * Generates OpenAPI spec and provides API documentation endpoints.
-     */
-    new OpenAPIReferencePlugin({
-      schemaConverters: [new ZodToJsonSchemaConverter()],
-      specGenerateOptions: {
-        info: {
-          title: metadata.title,
-          version: pkgjson.version,
-          description: metadata.description,
-          license: {
-            name: "FSL-1.1-MIT",
-            url: "https://github.com/settlemint/asset-tokenization-kit/blob/main/LICENSE",
-          },
-        },
-        externalDocs: {
-          description: "SettleMint Asset Tokenization Kit",
-          url: "https://console.settlemint.com/documentation/application-kits/asset-tokenization/introduction",
-        },
-        security: [
-          {
-            apiKey: [],
-          },
-        ],
-        components: {
-          securitySchemes: {
-            apiKey: {
-              type: "apiKey",
-              in: "header",
-              name: "X-Api-Key",
-              description: "API key",
-            },
-          },
-        },
-      },
-    }),
-    new SmartCoercionPlugin(),
-  ],
-});
+import { orpcOpenApiHandler } from "@atk/orpc/server";
+import { createServerFileRoute, getHeaders } from "@tanstack/react-start/server";
 
 /**
  * Request handler for all API routes.
@@ -131,7 +32,7 @@ const handler = new OpenAPIHandler(router, {
  * @returns HTTP response from the matched procedure or 404 if not found
  */
 export async function handle({ request }: { request: Request }) {
-  const { response } = await handler.handle(request, {
+  const { response } = await orpcOpenApiHandler.handle(request, {
     prefix: "/api",
     context: {
       headers: getHeaders(),

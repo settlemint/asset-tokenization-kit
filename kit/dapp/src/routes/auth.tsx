@@ -53,9 +53,7 @@ function LayoutComponent() {
             <Logo variant="icon" forcedColorMode="dark" />
           </div>
           <div className="flex flex-col text-foreground leading-none">
-            <span className="font-bold text-lg text-primary-foreground">
-              SettleMint
-            </span>
+            <span className="font-bold text-lg text-primary-foreground">SettleMint</span>
             <span className="-mt-1 overflow-hidden truncate text-ellipsis text-md text-sm leading-snug text-primary-foreground dark:text-foreground ">
               {t("appDescription")}
             </span>

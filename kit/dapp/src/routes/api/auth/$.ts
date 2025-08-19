@@ -21,7 +21,7 @@
  * @see {@link https://better-auth.com} - Better Auth documentation
  */
 
-import { auth } from "@/lib/auth";
+import { auth } from "@atk/auth/server";
 import { createServerFileRoute } from "@tanstack/react-start/server";
 
 export const ServerRoute = createServerFileRoute("/api/auth/$").methods({

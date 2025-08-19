@@ -1,13 +1,6 @@
-import { ORPCError } from "@orpc/server";
+import { DEFAULT_ISSUER, DEFAULT_PINCODE, signInWithUser } from "@atk/auth/test/fixtures/user";
 import { retryWhenFailed } from "@settlemint/sdk-utils";
-import { DEFAULT_INVESTOR } from "@test/fixtures/user";
-import { getOrpcClient, type OrpcClient } from "./orpc-client";
-import {
-  DEFAULT_ADMIN,
-  DEFAULT_ISSUER,
-  DEFAULT_PINCODE,
-  signInWithUser,
-} from "./user";
+import { getTestOrpcClient, type OrpcClient } from "./orpc-client";
 
 export async function bootstrapSystem(orpClient: OrpcClient) {
   const systems = await orpClient.system.list({});
@@ -55,9 +48,7 @@ export async function bootstrapSystem(orpClient: OrpcClient) {
 
   // The create method already returns a fully initialized system
   if (!system.tokenFactoryRegistry) {
-    throw new Error(
-      "System created but not fully initialized - missing token factory registry"
-    );
+    throw new Error("System created but not fully initialized - missing token factory registry");
   }
 
   return system;
@@ -78,26 +69,20 @@ export async function bootstrapTokenFactories(
       tokenFactoryRegistry: system.tokenFactoryRegistry,
       compliance: system.compliance,
     });
-    throw new Error(
-      "System not fully initialized - token factory registry not found"
-    );
+    throw new Error("System not fully initialized - token factory registry not found");
   }
 
   const tokenFactories = await orpClient.system.tokenFactoryList({});
 
-  const factories: Parameters<
-    typeof orpClient.system.tokenFactoryCreate
-  >[0]["factories"] = [
-    { type: "bond", name: "Bonds" },
-    { type: "deposit", name: "Deposits" },
-    { type: "equity", name: "Equities" },
-    { type: "fund", name: "Funds" },
-    { type: "stablecoin", name: "Stablecoins" },
+  const factories: Parameters<typeof orpClient.system.tokenFactoryCreate>[0]["factories"] = [
+    { type: "bond", name: "Bond Factory" },
+    { type: "deposit", name: "Deposit Factory" },
+    { type: "equity", name: "Equrity Factory" },
+    { type: "fund", name: "Fund Factory" },
+    { type: "stablecoin", name: "Stablecoin Factory" },
   ];
 
-  const nonExistingFactories = factories.filter(
-    (factory) => !tokenFactories.some((t) => t.name === factory.name)
-  );
+  const nonExistingFactories = factories.filter((factory) => !tokenFactories.some((t) => t.name === factory.name));
 
   if (nonExistingFactories.length === 0) {
     console.log("All token factories already exist");
@@ -123,56 +108,18 @@ export async function bootstrapTokenFactories(
   const successfulCreations = finalFactoryCount - initialFactoryCount;
 
   if (successfulCreations !== nonExistingFactories.length) {
-    throw new Error(
-      `Token factories attempted: ${nonExistingFactories.length}, succeeded: ${successfulCreations}`
-    );
+    throw new Error(`Token factories attempted: ${nonExistingFactories.length}, succeeded: ${successfulCreations}`);
   }
   console.log("Token factories created");
 }
 
-export async function bootstrapAddons(orpClient: OrpcClient) {
-  const addons = await orpClient.system.addonList({});
-  if (addons.length > 0) {
-    console.log("Addons already exist");
-    return;
-  }
-
-  await orpClient.system.addonCreate({
-    walletVerification: {
-      secretVerificationCode: DEFAULT_PINCODE,
-      verificationType: "PINCODE",
-    },
-    addons: [
-      {
-        type: "airdrops",
-        name: "Airdrops",
-      },
-      {
-        type: "yield",
-        name: "Yield",
-      },
-      {
-        type: "xvp",
-        name: "XVP",
-      },
-    ],
-  });
-}
-
 export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
-  const issuerOrpcClient = getOrpcClient(await signInWithUser(DEFAULT_ISSUER));
+  const issuerOrpcClient = getTestOrpcClient(await signInWithUser(DEFAULT_ISSUER));
   const issuerMe = await issuerOrpcClient.user.me({});
 
   const rolesToGrant = [
-    ...(!issuerMe.userSystemPermissions.roles.tokenManager
-      ? ["tokenManager" as const]
-      : []),
-    ...(!issuerMe.userSystemPermissions.roles.complianceManager
-      ? ["complianceManager" as const]
-      : []),
-    ...(!issuerMe.userSystemPermissions.roles.identityManager
-      ? ["identityManager" as const]
-      : []),
+    ...(!issuerMe.userSystemPermissions.roles.tokenManager ? ["tokenManager" as const] : []),
+    ...(!issuerMe.userSystemPermissions.roles.complianceManager ? ["complianceManager" as const] : []),
   ];
 
   if (rolesToGrant.length > 0) {
@@ -185,66 +132,4 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
       role: rolesToGrant,
     });
   }
-}
-
-export async function setDefaultSystemSettings(orpClient: OrpcClient) {
-  const settings = await orpClient.settings.list({});
-  if (settings.find((s) => s.key === "BASE_CURRENCY")) {
-    console.log("Base currency already set");
-    return;
-  }
-  await orpClient.settings.upsert({
-    key: "BASE_CURRENCY",
-    value: "USD",
-  });
-}
-
-export async function createAndRegisterUserIdentities(orpcClient: OrpcClient) {
-  const users = [DEFAULT_ISSUER, DEFAULT_INVESTOR, DEFAULT_ADMIN];
-
-  await Promise.all(
-    users.map(async (user) => {
-      const userOrpClient = getOrpcClient(await signInWithUser(user));
-      const me = await userOrpClient.user.me({});
-      if (me.wallet && !me.onboardingState.identitySetup) {
-        await orpcClient.system.identityCreate({
-          walletVerification: {
-            secretVerificationCode: DEFAULT_PINCODE,
-            verificationType: "PINCODE",
-          },
-          wallet: me.wallet,
-        });
-        try {
-          await orpcClient.system.identityRegister({
-            walletVerification: {
-              secretVerificationCode: DEFAULT_PINCODE,
-              verificationType: "PINCODE",
-            },
-            wallet: me.wallet,
-            country: "BE",
-          });
-        } catch (err) {
-          if (
-            !(
-              err instanceof ORPCError &&
-              err.message.includes("IdentityAlreadyRegistered")
-            )
-          ) {
-            throw err;
-          }
-        }
-      }
-      if (!me.onboardingState.identity) {
-        await orpcClient.user.kyc.upsert({
-          firstName: user.name,
-          lastName: "(Integration tests)",
-          dob: new Date("1990-01-01"),
-          country: "BE",
-          residencyStatus: "resident",
-          nationalId: "1234567890",
-          userId: me.id,
-        });
-      }
-    })
-  );
 }

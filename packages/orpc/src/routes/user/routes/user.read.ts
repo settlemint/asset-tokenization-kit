@@ -1,0 +1,117 @@
+import { getUserRole } from "@atk/zod/validators/user-roles";
+import { eq } from "drizzle-orm";
+import { user } from "@atk/db/schemas/auth";
+import { kycProfiles } from "@atk/db/schemas/kyc";
+import { offChainPermissionsMiddleware } from "../../../middlewares/auth/offchain-permissions.middleware";
+import { databaseMiddleware } from "../../../middlewares/services/db.middleware";
+import { authRouter } from "../../../procedures/auth.router";
+import type { User } from "./user.me.schema";
+
+/**
+ * User read route handler.
+ *
+ * Retrieves detailed information about a specific user by either their
+ * internal ID or their wallet address. This endpoint is used for viewing
+ * user profiles, admin user management, and user lookup functionality.
+ *
+ * Authentication: Required (uses authenticated router)
+ * Permissions: Requires "list" permission on users resource
+ * Method: GET /user/read
+ *
+ * @param input - Read parameters with either {userId: string} or {wallet: Address}
+ * @param context - Request context with database connection and authenticated user
+ * @returns Promise<User> - Single user object with complete information
+ * @throws UNAUTHORIZED - If user is not authenticated
+ * @throws FORBIDDEN - If user lacks required list permissions
+ * @throws NOT_FOUND - If user is not found
+ * @throws INTERNAL_SERVER_ERROR - If database query fails
+ *
+ * @example
+ * ```typescript
+ * // Read user by ID
+ * const user = await orpc.user.read.query({
+ *   userId: "user-123"
+ * });
+ *
+ * // Read user by wallet address
+ * const user = await orpc.user.read.query({
+ *   wallet: "0x1234567890123456789012345678901234567890"
+ * });
+ * ```
+ *
+ * @remarks
+ * - Input uses discriminated union: either {userId} or {wallet} object
+ * - TypeScript properly narrows the input type for better type safety
+ * - Wallet address matching uses exact comparison after normalization
+ * - Returns complete user information including KYC data
+ * - User roles are transformed from internal codes to display names
+ */
+export const read = authRouter.user.read
+  .use(
+    offChainPermissionsMiddleware({ requiredPermissions: { user: ["list"] } })
+  )
+  .use(databaseMiddleware)
+  .handler(async ({ context, input, errors }) => {
+    // Build the query condition based on input type
+    // TypeScript now properly narrows the union type
+    const whereCondition =
+      "userId" in input
+        ? eq(user.id, input.userId)
+        : eq(user.wallet, input.wallet);
+
+    // Execute query to find the user with KYC data
+    const result = await context.db
+      .select({
+        user: user,
+        kyc: {
+          firstName: kycProfiles.firstName,
+          lastName: kycProfiles.lastName,
+        },
+      })
+      .from(user)
+      .leftJoin(kycProfiles, eq(kycProfiles.userId, user.id))
+      .where(whereCondition)
+      .limit(1);
+
+    if (result.length === 0) {
+      throw errors.NOT_FOUND({
+        message:
+          "userId" in input
+            ? `User with ID ${input.userId} not found`
+            : `User with wallet ${input.wallet} not found`,
+      });
+    }
+
+    const userResult = result[0];
+    if (!userResult) {
+      throw errors.NOT_FOUND({
+        message:
+          "userId" in input
+            ? `User with ID ${input.userId} not found`
+            : `User with wallet ${input.wallet} not found`,
+      });
+    }
+
+    const { user: userData, kyc } = userResult;
+
+    // Validate user has wallet
+    if (!userData.wallet) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: `User ${userData.id} has no wallet`,
+      });
+    }
+
+    // Transform result to include human-readable role
+    return {
+      id: userData.id,
+      name:
+        kyc?.firstName && kyc.lastName
+          ? `${kyc.firstName} ${kyc.lastName}`
+          : userData.name,
+      email: userData.email,
+      role: getUserRole(userData.role),
+      wallet: userData.wallet,
+      firstName: kyc?.firstName,
+      lastName: kyc?.lastName,
+    } as User;
+  });

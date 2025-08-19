@@ -1,0 +1,28 @@
+{
+  "name": "@atk/config",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsgo --noEmit",
+    "lint": "biome check --write --unsafe",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "test:ci": "bun test:coverage"
+  },
+  "exports": {
+    "./*": {
+      "import": "./src/*.ts",
+      "types": "./src/*.ts"
+    }
+  },
+  "devDependencies": {
+    "@tools/typescript-config": "workspace:*",
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "5.9.2"
+  },
+  "dependencies": {
+    "@t3-oss/env-core": "0.13.8",
+    "zod": "4.0.17"
+  }
+}

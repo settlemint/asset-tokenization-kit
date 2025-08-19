@@ -1,39 +1,28 @@
 {
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[jsonc]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[mdx]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[solidity]": {
-    "editor.defaultFormatter": "JuanBlanco.solidity"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[yaml]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
   "aderyn.config.autoCheckHealth": false,
   "biome.enabled": true,
   "biome.requireConfiguration": true,
   "coderabbit.autoReviewMode": "disabled",
   "dotenv.enableAutocloaking": false,
-  "editor.codeActionsOnSave": {
-    "source.fixAll": "explicit",
-    "source.organizeImports": "explicit",
-    "source.fixAll.biome": "explicit"
-  },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
   "editor.fontLigatures": true,
   "editor.formatOnSave": true,
   "editor.lineHeight": 0,
@@ -77,7 +66,6 @@
     "api.tsx": "api.tsx, ${capture}.handler.ts, ${capture}.middleware.ts, ${capture}.schema.ts",
     "__root.tsx": "__root.tsx, _layout.tsx, ${capture}.component.tsx, ${capture}.loader.ts"
   },
-  "extensions.ignoreRecommendations": true,
   "files.associations": {
     "*.css": "tailwindcss",
     ".env*": "dotenv"
@@ -101,12 +89,18 @@
   "i18n-ally.dirStructure": "dir",
   "i18n-ally.displayLanguage": "en",
   "i18n-ally.editor.preferEditor": true,
-  "i18n-ally.enabledFrameworks": ["react-i18next"],
-  "i18n-ally.enabledParsers": ["json"],
+  "i18n-ally.enabledFrameworks": [
+    "react-i18next"
+  ],
+  "i18n-ally.enabledParsers": [
+    "json"
+  ],
   "i18n-ally.extract.autoDetect": true,
   "i18n-ally.extract.targetPickingStrategy": "most-similar",
   "i18n-ally.keystyle": "flat",
-  "i18n-ally.localesPaths": ["kit/dapp/locales"],
+  "i18n-ally.localesPaths": [
+    "kit/dapp/locales"
+  ],
   "i18n-ally.namespace": true,
   "i18n-ally.pathMatcher": "{locale}/{namespaces}.json",
   "i18n-ally.sortKeys": true,
@@ -151,5 +145,18 @@
   "workbench.fontAliasing": "auto",
   "workbench.tips.enabled": false,
   "workbench.tree.enableStickyScroll": true,
-  "typescript.experimental.useTsgo": false
+  "typescript.experimental.useTsgo": false,
+  "javascript.preferGoToSourceDefinition": true,
+  "typescript.preferGoToSourceDefinition": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports.biome": "explicit",
+    "source.fixAll.biome": "explicit"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[graphql]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "editor.formatOnPaste": true
 }

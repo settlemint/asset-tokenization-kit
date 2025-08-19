@@ -48,8 +48,8 @@ describe("duration", () => {
 
     it("should reject special numeric values", () => {
       expect(() => validator.parse(Number.NaN)).toThrow();
-      expect(() => validator.parse(Infinity)).toThrow();
-      expect(() => validator.parse(-Infinity)).toThrow();
+      expect(() => validator.parse(Number.POSITIVE_INFINITY)).toThrow();
+      expect(() => validator.parse(Number.NEGATIVE_INFINITY)).toThrow();
     });
   });
 
@@ -121,8 +121,8 @@ describe("duration", () => {
 
       // Special numeric values
       expect(isDuration(Number.NaN)).toBe(false);
-      expect(isDuration(Infinity)).toBe(false);
-      expect(isDuration(-Infinity)).toBe(false);
+      expect(isDuration(Number.POSITIVE_INFINITY)).toBe(false);
+      expect(isDuration(Number.NEGATIVE_INFINITY)).toBe(false);
     });
 
     it("should work as a type guard", () => {
@@ -168,8 +168,8 @@ describe("duration", () => {
 
     it("should throw for special numeric values", () => {
       expect(() => getDuration(Number.NaN)).toThrow("Invalid input: expected number, received NaN");
-      expect(() => getDuration(Infinity)).toThrow("Invalid input: expected number, received number");
-      expect(() => getDuration(-Infinity)).toThrow("Invalid input: expected number, received number");
+      expect(() => getDuration(Number.POSITIVE_INFINITY)).toThrow("Invalid input: expected number, received number");
+      expect(() => getDuration(Number.NEGATIVE_INFINITY)).toThrow("Invalid input: expected number, received number");
     });
 
     it("should handle edge cases", () => {
@@ -185,7 +185,7 @@ describe("duration", () => {
       // Try-catch pattern
       try {
         getDuration(0);
-        expect.fail("Should have thrown");
+        throw new Error("Should have thrown");
       } catch (error) {
         expect(error).toBeDefined();
       }
@@ -213,10 +213,10 @@ describe("duration", () => {
     });
 
     it("should validate configuration objects", () => {
-      interface Config {
+      type Config = {
         timeout?: unknown;
         interval?: unknown;
-      }
+      };
 
       const config: Config = {
         timeout: 5000,

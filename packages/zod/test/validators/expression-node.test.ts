@@ -20,22 +20,22 @@ import { ATKTopicEnum } from "../../src/validators/topics";
 describe("expressionNode", () => {
   describe("valid inputs", () => {
     it("should accept valid TOPIC node", () => {
-      const node = { nodeType: 0, value: 1n };
+      const node = { nodeType: 0 as const, value: 1n };
       expect(expressionNode.parse(node)).toEqual(node);
     });
 
     it("should accept valid AND node", () => {
-      const node = { nodeType: 1, value: 0n };
+      const node = { nodeType: 1 as const, value: 0n };
       expect(expressionNode.parse(node)).toEqual(node);
     });
 
     it("should accept valid OR node", () => {
-      const node = { nodeType: 2, value: 0n };
+      const node = { nodeType: 2 as const, value: 0n };
       expect(expressionNode.parse(node)).toEqual(node);
     });
 
     it("should accept valid NOT node", () => {
-      const node = { nodeType: 3, value: 0n };
+      const node = { nodeType: 3 as const, value: 0n };
       expect(expressionNode.parse(node)).toEqual(node);
     });
   });
@@ -61,16 +61,16 @@ describe("expressionNode", () => {
 describe("expression", () => {
   it("should accept array of valid expression nodes", () => {
     const nodes = [
-      { nodeType: 0, value: 1n },
-      { nodeType: 0, value: 2n },
-      { nodeType: 1, value: 0n },
+      { nodeType: 0 as const, value: 1n },
+      { nodeType: 0 as const, value: 2n },
+      { nodeType: 1 as const, value: 0n },
     ];
     expect(expression.parse(nodes)).toEqual(nodes);
   });
 
   it("should reject array with invalid nodes", () => {
     const nodes = [
-      { nodeType: 0, value: 1n },
+      { nodeType: 0 as const, value: 1n },
       { nodeType: 4, value: 0n }, // Invalid nodeType
     ];
     expect(() => expression.parse(nodes)).toThrow();
@@ -83,7 +83,7 @@ describe("expression", () => {
 
 describe("expressionNodeWithGroups", () => {
   it("should accept valid expression node", () => {
-    const node = { nodeType: 0, value: 1n };
+    const node = { nodeType: 0 as const, value: 1n };
     expect(expressionNodeWithGroups.parse(node)).toEqual(node);
   });
 
@@ -103,14 +103,20 @@ describe("expressionNodeWithGroups", () => {
 
 describe("expressionWithGroups", () => {
   it("should accept mixed array of nodes and parentheses", () => {
-    const nodes = ["(", { nodeType: 0, value: 1n }, { nodeType: 0, value: 2n }, { nodeType: 1, value: 0n }, ")"];
+    const nodes = [
+      "(" as const,
+      { nodeType: 0 as const, value: 1n },
+      { nodeType: 0 as const, value: 2n },
+      { nodeType: 1 as const, value: 0n },
+      ")" as const,
+    ];
     expect(expressionWithGroups.parse(nodes)).toEqual(nodes);
   });
 
   it("should reject invalid elements", () => {
     const nodes = [
       "[", // Invalid grouping character
-      { nodeType: 0, value: 1n },
+      { nodeType: 0 as const, value: 1n },
     ];
     expect(() => expressionWithGroups.parse(nodes)).toThrow();
   });

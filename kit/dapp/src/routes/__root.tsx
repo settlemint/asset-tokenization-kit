@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 /**
  * Root Route Component
  *
@@ -15,24 +17,18 @@
  * @see {@link https://tanstack.com/router/latest/docs/guide/route-trees#the-root-route} - TanStack Router root routes
  */
 
-/// <reference types="vite/client" />
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { NotFound } from "@/components/error/not-found";
-import { seo } from "@/config/metadata";
-import type { orpc } from "@/orpc/orpc-client";
 import { Providers } from "@/providers";
 import appCss from "@/styles/app.css?url";
+import { seo } from "@atk/config/metadata";
+import type { orpc } from "@atk/orpc/browser";
 import { TanStackDevtools } from "@tanstack/react-devtools";
-import { type QueryClient } from "@tanstack/react-query";
+import type { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-import {
-  createRootRouteWithContext,
-  HeadContent,
-  Outlet,
-  Scripts,
-} from "@tanstack/react-router";
+import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { useMemo, type ReactNode } from "react";
+import { type ReactNode, useMemo } from "react";
 import { Toaster } from "sonner";
 
 export const Route = createRootRouteWithContext<{
@@ -122,6 +118,7 @@ function RootComponent() {
  */
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   return (
+    // biome-ignore lint/a11y/useHtmlLang: handled by the i18n provider
     <html suppressHydrationWarning>
       <head>
         <HeadContent />
@@ -131,6 +128,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
          * the user's theme preference from localStorage or system settings.
          */}
         <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: required to prevent flashing
           dangerouslySetInnerHTML={useMemo(
             () => ({
               __html: `

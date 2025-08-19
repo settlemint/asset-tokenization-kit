@@ -157,9 +157,9 @@ describe("TOTP compatibility", () => {
   it("should accept codes from common authenticator apps", () => {
     // Simulate codes that would come from popular TOTP apps
     const totpCodes = ["123456", "000001", "999999", "543210"];
-    totpCodes.forEach((code) => {
+    for (const code of totpCodes) {
       expect(twoFactorCode().parse(code)).toBe(code);
-    });
+    }
   });
 
   it("should not trim whitespace (security consideration)", () => {

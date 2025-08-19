@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { authClient } from "@/lib/auth/auth.client";
+import { authClient } from "@atk/auth/browser";
 import { pincode } from "@atk/zod/validators/pincode";
 import { useForm } from "@tanstack/react-form";
 import { useCallback } from "react";

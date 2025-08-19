@@ -4,7 +4,7 @@ import {
   updateOnboardingStateMachine,
 } from "@/components/onboarding/state-machine";
 import { useSession } from "@/hooks/use-auth";
-import { authClient } from "@/lib/auth/auth.client";
+import { authClient } from "@atk/auth/browser";
 import { orpc } from "@/orpc/orpc-client";
 import type { CurrentUser } from "@/orpc/routes/user/routes/user.me.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";

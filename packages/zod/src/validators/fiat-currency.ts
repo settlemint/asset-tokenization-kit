@@ -6,7 +6,7 @@
  * in digital asset platforms and stablecoin systems.
  * @module FiatCurrencyValidation
  */
-import * as cc from "currency-codes";
+import { code, codes } from "currency-codes";
 import { z } from "zod";
 
 /**
@@ -14,13 +14,17 @@ import { z } from "zod";
  * Filters out cryptocurrencies and test currencies.
  */
 function getValidFiatCurrencies(): string[] {
-  return cc.codes().filter((code) => {
-    const currency = cc.code(code);
-    if (!currency) return false;
+  return codes().filter((currencyCode) => {
+    const currency = code(currencyCode);
+    if (!currency) {
+      return false;
+    }
 
     // Exclude test currencies (XTS), precious metals (XAU, XAG, etc.),
     // and special drawing rights (XDR)
-    if (code.startsWith("X")) return false;
+    if (currencyCode.startsWith("X")) {
+      return false;
+    }
 
     // Exclude currencies without decimal information
     return typeof currency.digits === "number";
@@ -41,12 +45,14 @@ export const fiatCurrencies = ["USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD", 
 
 /**
  * Get currency metadata from ISO 4217 data.
- * @param code - Currency code
+ * @param currencyCode - Currency code
  * @returns Currency metadata or undefined
  */
-export function getCurrencyMetadata(code: string): { name: string; decimals: number } | undefined {
-  const currency = cc.code(code);
-  if (!currency) return undefined;
+export function getCurrencyMetadata(currencyCode: string): { name: string; decimals: number } | undefined {
+  const currency = code(currencyCode);
+  if (!currency) {
+    return;
+  }
 
   return {
     name: currency.currency,
@@ -59,9 +65,9 @@ export function getCurrencyMetadata(code: string): { name: string; decimals: num
  * Dynamically generated from currency-codes package.
  */
 export const fiatCurrencyMetadata = Object.fromEntries(
-  fiatCurrencies.map((code) => {
-    const metadata = getCurrencyMetadata(code);
-    return [code, metadata ?? { name: code, decimals: 2 }];
+  fiatCurrencies.map((currencyCode) => {
+    const metadata = getCurrencyMetadata(currencyCode);
+    return [currencyCode, metadata ?? { name: currencyCode, decimals: 2 }];
   })
 ) as Record<FiatCurrency, { name: string; decimals: number }>;
 

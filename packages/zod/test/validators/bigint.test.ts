@@ -113,8 +113,8 @@ describe("apiBigInt", () => {
     });
 
     it("should reject Infinity and NaN", () => {
-      expect(() => validator.parse(Infinity)).toThrow();
-      expect(() => validator.parse(-Infinity)).toThrow();
+      expect(() => validator.parse(Number.POSITIVE_INFINITY)).toThrow();
+      expect(() => validator.parse(Number.NEGATIVE_INFINITY)).toThrow();
       expect(() => validator.parse(Number.NaN)).toThrow();
     });
 
@@ -184,7 +184,7 @@ describe("isApiBigInt", () => {
     expect(isApiBigInt(undefined)).toBe(false);
     expect(isApiBigInt({})).toBe(false);
     expect(isApiBigInt(Number.NaN)).toBe(false);
-    expect(isApiBigInt(Infinity)).toBe(false);
+    expect(isApiBigInt(Number.POSITIVE_INFINITY)).toBe(false);
     expect(isApiBigInt("123.456.789")).toBe(false);
   });
 });

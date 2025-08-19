@@ -1,0 +1,34 @@
+{
+  "name": "@atk/auth",
+  "module": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsgo --noEmit",
+    "posttypecheck": "bun gql-tada check",
+    "lint": "biome check --write --unsafe",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "test:ci": "bun test:coverage"
+  },
+  "exports": {
+    "./*": {
+      "import": "./src/*.ts",
+      "types": "./src/*.ts"
+    }
+  },
+  "devDependencies": {
+    "@tools/typescript-config": "workspace:*",
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "5.9.2"
+  },
+  "dependencies": {
+    "@settlemint/sdk-portal": "2.5.11",
+    "@tanstack/react-start": "1.131.27",
+    "better-auth": "1.3.7",
+    "drizzle-orm": "0.44.4",
+    "viem": "2.34.0",
+    "zod": "4.0.17"
+  }
+}

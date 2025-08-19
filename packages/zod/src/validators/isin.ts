@@ -20,7 +20,9 @@ function validateIsinChecksum(isin: string): boolean {
   // Process all 12 characters
   for (let i = 0; i < 12; i++) {
     const char = isin[i];
-    if (!char) return false;
+    if (!char) {
+      return false;
+    }
 
     if (char >= "0" && char <= "9") {
       expandedString += char;
@@ -42,7 +44,9 @@ function validateIsinChecksum(isin: string): boolean {
   // Process from right to left
   for (let i = expandedString.length - 1; i >= 0; i--) {
     const char = expandedString[i];
-    if (!char) continue;
+    if (!char) {
+      continue;
+    }
     let digit = Number.parseInt(char, 10);
 
     if (alternate) {

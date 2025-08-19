@@ -68,10 +68,18 @@ export const timestamp = () =>
 
         // Detect timestamp precision based on length
         const len = value.length;
-        if (len === 10) return new Date(num * 1000); // Unix seconds to milliseconds
-        if (len === 13) return new Date(num); // Already milliseconds
-        if (len === 16) return new Date(num / 1000); // Microseconds to milliseconds
-        if (len === 19) return new Date(num / 1_000_000); // Nanoseconds to milliseconds
+        if (len === 10) {
+          return new Date(num * 1000); // Unix seconds to milliseconds
+        }
+        if (len === 13) {
+          return new Date(num); // Already milliseconds
+        }
+        if (len === 16) {
+          return new Date(num / 1000); // Microseconds to milliseconds
+        }
+        if (len === 19) {
+          return new Date(num / 1_000_000); // Nanoseconds to milliseconds
+        }
         // For other lengths, use heuristic
         return new Date(num < 10_000_000_000 ? num * 1000 : num);
       }
@@ -80,7 +88,7 @@ export const timestamp = () =>
       if (typeof value === "string") {
         const date = new Date(value);
         if (Number.isNaN(date.getTime())) {
-          throw new TypeError(`Invalid date string format`);
+          throw new TypeError("Invalid date string format");
         }
         return date;
       }
@@ -92,8 +100,12 @@ export const timestamp = () =>
           throw new Error("Timestamp cannot be negative");
         }
         // Convert seconds to milliseconds if needed
-        if (value < 10_000_000_000) return new Date(value * 1000);
-        if (value >= 10_000_000_000_000) return new Date(value / 1000); // Microseconds
+        if (value < 10_000_000_000) {
+          return new Date(value * 1000);
+        }
+        if (value >= 10_000_000_000_000) {
+          return new Date(value / 1000); // Microseconds
+        }
         return new Date(value); // Already milliseconds
       }
 

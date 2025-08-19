@@ -1,5 +1,4 @@
 import { z } from "zod";
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 
 /**
  * Role requirement type that supports both AND and OR logic
@@ -10,12 +9,12 @@ import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-contro
  * - AND logic: { all: ["admin", "tokenManager"] }
  * - Complex: { all: ["admin", { any: ["tokenManager", "systemManager"] }] }
  */
-export type RoleRequirement = AccessControlRoles | { any: RoleRequirement[] } | { all: RoleRequirement[] };
+export type RoleRequirement = string | { any: RoleRequirement[] } | { all: RoleRequirement[] };
 
 /**
  * Type guard to check if a role requirement is a single role
  */
-export function isSingleRole(req: RoleRequirement): req is AccessControlRoles {
+export function isSingleRole(req: RoleRequirement): req is string {
   return typeof req === "string";
 }
 
@@ -36,7 +35,7 @@ export function isAllRoleRequirement(req: RoleRequirement): req is { all: RoleRe
 /**
  * Check if a user with given roles satisfies the role requirement
  */
-export function satisfiesRoleRequirement(userRoles: AccessControlRoles[], requirement: RoleRequirement): boolean {
+export function satisfiesRoleRequirement(userRoles: string[], requirement: RoleRequirement): boolean {
   if (isSingleRole(requirement)) {
     return userRoles.includes(requirement);
   }
@@ -63,7 +62,7 @@ export function satisfiesRoleRequirement(userRoles: AccessControlRoles[], requir
  */
 const RoleRequirementSchema: z.ZodType<RoleRequirement> = z.lazy(() =>
   z.union([
-    z.string() as z.ZodType<AccessControlRoles>,
+    z.string() as z.ZodType<string>,
     z.object({
       any: z.array(RoleRequirementSchema),
     }),

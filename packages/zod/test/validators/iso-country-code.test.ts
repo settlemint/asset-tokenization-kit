@@ -474,11 +474,11 @@ describe("isoCountryCode validator", () => {
       const numericCountries = getNumericCountries();
 
       // All entries should have a non-empty string value
-      Object.entries(numericCountries).forEach(([_numeric, name]) => {
+      for (const [_numeric, name] of Object.entries(numericCountries)) {
         expect(name).toBeDefined();
         expect(typeof name).toBe("string");
         expect(name.length).toBeGreaterThan(0);
-      });
+      }
     });
   });
 

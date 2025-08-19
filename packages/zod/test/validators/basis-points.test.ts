@@ -46,8 +46,8 @@ describe("basisPoints", () => {
 
     it("should reject NaN and Infinity", () => {
       expect(() => validator.parse(Number.NaN)).toThrow();
-      expect(() => validator.parse(Infinity)).toThrow();
-      expect(() => validator.parse(-Infinity)).toThrow();
+      expect(() => validator.parse(Number.POSITIVE_INFINITY)).toThrow();
+      expect(() => validator.parse(Number.NEGATIVE_INFINITY)).toThrow();
     });
   });
 

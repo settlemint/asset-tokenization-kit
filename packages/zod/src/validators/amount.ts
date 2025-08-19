@@ -16,11 +16,11 @@ import { z } from "zod";
  * @property {number} [max] - Maximum allowed value (defaults to Number.MAX_SAFE_INTEGER)
  * @property {number} [decimals] - Used to calculate minimum if min not provided
  */
-export interface AmountOptions {
+export type AmountOptions = {
   min?: number;
   max?: number;
   decimals?: number;
-}
+};
 
 /**
  * Creates a Zod schema that validates positive numerical amounts with specific boundaries.

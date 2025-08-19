@@ -88,7 +88,7 @@ describe("equityCategory", () => {
 
 describe("isEquityCategory", () => {
   describe("valid categories", () => {
-    test.each(equityCategories)("should return true for '%s'", (category) => {
+    test.each([...equityCategories])("should return true for '%s'", (category) => {
       expect(isEquityCategory(category)).toBe(true);
     });
   });
@@ -139,7 +139,7 @@ describe("isEquityCategory", () => {
 
 describe("getEquityCategory", () => {
   describe("valid categories", () => {
-    test.each(equityCategories)("should return '%s' when parsing '%s'", (category) => {
+    test.each([...equityCategories])("should return '%s' when parsing '%s'", (category) => {
       expect(getEquityCategory(category)).toBe(category);
     });
   });

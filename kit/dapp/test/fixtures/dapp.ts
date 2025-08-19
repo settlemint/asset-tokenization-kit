@@ -13,7 +13,7 @@ export function getDappUrl() {
 
 export async function startApiServer() {
   try {
-    const { startServer } = await import("@/orpc/server");
+    const { startServer } = await import("@atk/orpc/server");
     const { stop, url } = await startServer(0);
     dappUrl = url;
     return { stop, url };
