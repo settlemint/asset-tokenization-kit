@@ -1,8 +1,9 @@
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import {
-  TopicListOutputSchema,
+  TopicListResponseSchema,
   type TopicListOutput,
 } from "./topic.list.schema";
 
@@ -33,16 +34,17 @@ const TOPIC_SCHEMES_QUERY = theGraphGraphql(
 
 /**
  * List all topic schemes from the registry
- * 
+ *
  * Fetches all registered topic schemes from the subgraph, ordered by topic ID.
  * Includes both system-reserved topics (ID 1-100) and custom topics (ID 101+).
- * 
+ *
  * @returns Array of topic schemes with their details
  */
 export const topicList = portalRouter.system.topicList
   .use(systemMiddleware)
+  .use(theGraphMiddleware)
   .handler(async ({ context, errors }): Promise<TopicListOutput> => {
-    const { system } = context;
+    const { system, theGraphClient } = context;
 
     // Get the topic scheme registry address from the system configuration
     const registryAddress = system?.topicSchemeRegistry;
@@ -53,13 +55,13 @@ export const topicList = portalRouter.system.topicList
     }
 
     // Query the subgraph for all topic schemes
-    const { topicSchemes } = await theGraphClient.request({
-      document: TOPIC_SCHEMES_QUERY,
-      variables: {
+    const { topicSchemes } = await theGraphClient.query(TOPIC_SCHEMES_QUERY, {
+      input: {
         registryAddress,
       },
+      output: TopicListResponseSchema,
     });
 
-    // Validate and return the topic schemes
-    return TopicListOutputSchema.parse(topicSchemes);
+    // Return the validated topic schemes
+    return topicSchemes;
   });

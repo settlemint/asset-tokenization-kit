@@ -17,9 +17,23 @@ export const TopicSchemeSchema = z.object({
 export type TopicScheme = z.infer<typeof TopicSchemeSchema>;
 
 /**
- * Topic List Output Schema
- * Array of topic schemes returned from the subgraph
+ * Topic List Schema
+ * Array of topic schemes
  */
-export const TopicListOutputSchema = z.array(TopicSchemeSchema);
+export const TopicListSchema = z.array(TopicSchemeSchema);
+
+/**
+ * Topic List Response Schema
+ * Wraps the array of topic schemes in a response object to match TheGraph's response structure
+ */
+export const TopicListResponseSchema = z.object({
+  topicSchemes: TopicListSchema,
+});
+
+/**
+ * Topic List Output Schema
+ * Array of topic schemes returned from the handler
+ */
+export const TopicListOutputSchema = TopicListSchema;
 
 export type TopicListOutput = z.infer<typeof TopicListOutputSchema>;

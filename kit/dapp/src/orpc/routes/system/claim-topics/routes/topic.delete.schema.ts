@@ -19,7 +19,6 @@ export type TopicDeleteInput = z.infer<typeof TopicDeleteInputSchema>;
  */
 export const TopicDeleteOutputSchema = z.object({
   transactionHash: z.string().describe("Transaction hash of the removal"),
-  topicId: z.string().describe("Topic ID that was removed"),
   name: z.string().describe("Name of the removed topic"),
 });
 

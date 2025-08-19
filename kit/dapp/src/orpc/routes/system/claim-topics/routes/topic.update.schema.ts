@@ -27,7 +27,6 @@ export type TopicUpdateInput = z.infer<typeof TopicUpdateInputSchema>;
  */
 export const TopicUpdateOutputSchema = z.object({
   transactionHash: z.string().describe("Transaction hash of the update"),
-  topicId: z.string().describe("Topic ID that was updated"),
   name: z.string().describe("Name of the updated topic"),
   newSignature: z.string().describe("New signature that was set"),
 });

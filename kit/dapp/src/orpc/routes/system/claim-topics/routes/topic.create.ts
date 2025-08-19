@@ -20,7 +20,6 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 // No need to import SYSTEM_PERMISSIONS - using direct role requirements
-import { keccak256, toHex } from "viem";
 import {
   TopicCreateOutputSchema,
   type TopicCreateOutput,
@@ -94,18 +93,6 @@ export const topicCreate = portalRouter.system.topicCreate
       });
     }
 
-    // Validate user session
-    if (!sender?.wallet) {
-      const cause = new Error("User wallet address not found");
-      throw errors.UNAUTHORIZED({
-        message: cause.message,
-        cause,
-      });
-    }
-
-    // Generate topic ID from name hash
-    const topicId = BigInt(keccak256(toHex(name)));
-
     // Execute the registration transaction
     const transactionHash = await context.portalClient.mutate(
       REGISTER_TOPIC_SCHEME_MUTATION,
@@ -120,7 +107,6 @@ export const topicCreate = portalRouter.system.topicCreate
     // Return success response with transaction details
     return TopicCreateOutputSchema.parse({
       transactionHash,
-      topicId: topicId.toString(),
       name,
     });
   });

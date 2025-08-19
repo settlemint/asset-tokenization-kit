@@ -28,7 +28,6 @@ export type TopicCreateInput = z.infer<typeof TopicCreateInputSchema>;
  */
 export const TopicCreateOutputSchema = z.object({
   transactionHash: z.string().describe("Transaction hash of the creation"),
-  topicId: z.string().describe("Generated topic ID from the name hash"),
   name: z.string().describe("Name of the created topic"),
 });
 
