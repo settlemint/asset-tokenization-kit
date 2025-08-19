@@ -1,9 +1,9 @@
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
+  createTestUser,
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
   DEFAULT_PINCODE,
-  createTestUser,
   signInWithUser,
 } from "@test/fixtures/user";
 import { describe, expect, test } from "vitest";
@@ -19,9 +19,9 @@ describe("Identity create", () => {
     const client = getOrpcClient(headers);
 
     const result = await client.system.identityCreate({
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
     });
     expect(result.id).toBe(wallet);
@@ -38,9 +38,9 @@ describe("Identity create", () => {
 
     await expect(
       client.system.identityCreate({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
         },
         wallet,
       })
@@ -56,9 +56,9 @@ describe("Identity create", () => {
     const client = getOrpcClient(headers);
 
     const result = await client.system.identityCreate({
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
       wallet,
     });

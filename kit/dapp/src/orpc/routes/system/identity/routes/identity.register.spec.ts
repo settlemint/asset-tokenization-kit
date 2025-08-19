@@ -17,9 +17,9 @@ describe("Identity register", () => {
 
     await expect(
       client.system.identityRegister({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
         },
         country: "BE",
         wallet,
@@ -36,9 +36,9 @@ describe("Identity register", () => {
     const client = getOrpcClient(headers);
 
     const result = await client.system.identityRegister({
-      verification: {
-        verificationCode: DEFAULT_PINCODE,
-        verificationType: "pincode",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
       },
       country: "BE",
       wallet,
@@ -58,9 +58,9 @@ async function createUserWithIdentity() {
   const client = getOrpcClient(headers);
 
   await client.system.identityCreate({
-    verification: {
-      verificationCode: DEFAULT_PINCODE,
-      verificationType: "pincode",
+    walletVerification: {
+      secretVerificationCode: DEFAULT_PINCODE,
+      verificationType: "PINCODE",
     },
     wallet,
   });

@@ -140,7 +140,7 @@ export async function bootstrapAddons(orpClient: OrpcClient) {
   await orpClient.system.addonCreate({
     walletVerification: {
       secretVerificationCode: DEFAULT_PINCODE,
-      verificationType: "pincode",
+      verificationType: "PINCODE",
     },
     addons: [
       {
@@ -202,48 +202,49 @@ export async function setDefaultSystemSettings(orpClient: OrpcClient) {
 export async function createAndRegisterUserIdentities(orpcClient: OrpcClient) {
   const users = [DEFAULT_ISSUER, DEFAULT_INVESTOR, DEFAULT_ADMIN];
 
-  // TODO: parallelize these operations when pincode concurrency issues are fixed
-  for (const user of users) {
-    const userOrpClient = getOrpcClient(await signInWithUser(user));
-    const me = await userOrpClient.user.me({});
-    if (me.wallet && !me.onboardingState.identitySetup) {
-      await orpcClient.system.identityCreate({
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
-        },
-        wallet: me.wallet,
-      });
-      try {
-        await orpcClient.system.identityRegister({
+  await Promise.all(
+    users.map(async (user) => {
+      const userOrpClient = getOrpcClient(await signInWithUser(user));
+      const me = await userOrpClient.user.me({});
+      if (me.wallet && !me.onboardingState.identitySetup) {
+        await orpcClient.system.identityCreate({
           walletVerification: {
             secretVerificationCode: DEFAULT_PINCODE,
-            verificationType: "pincode",
+            verificationType: "PINCODE",
           },
           wallet: me.wallet,
-          country: "BE",
         });
-      } catch (err) {
-        if (
-          !(
-            err instanceof ORPCError &&
-            err.message.includes("IdentityAlreadyRegistered")
-          )
-        ) {
-          throw err;
+        try {
+          await orpcClient.system.identityRegister({
+            walletVerification: {
+              secretVerificationCode: DEFAULT_PINCODE,
+              verificationType: "PINCODE",
+            },
+            wallet: me.wallet,
+            country: "BE",
+          });
+        } catch (err) {
+          if (
+            !(
+              err instanceof ORPCError &&
+              err.message.includes("IdentityAlreadyRegistered")
+            )
+          ) {
+            throw err;
+          }
         }
       }
-    }
-    if (!me.onboardingState.identity) {
-      await orpcClient.user.kyc.upsert({
-        firstName: user.name,
-        lastName: "(Integration tests)",
-        dob: new Date("1990-01-01"),
-        country: "BE",
-        residencyStatus: "resident",
-        nationalId: "1234567890",
-        userId: me.id,
-      });
-    }
-  }
+      if (!me.onboardingState.identity) {
+        await orpcClient.user.kyc.upsert({
+          firstName: user.name,
+          lastName: "(Integration tests)",
+          dob: new Date("1990-01-01"),
+          country: "B E",
+          residencyStatus: "resident",
+          nationalId: "1234567890",
+          userId: me.id,
+        });
+      }
+    })
+  );
 }

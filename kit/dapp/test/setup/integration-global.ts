@@ -35,12 +35,13 @@ export async function setup() {
     const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));
     const system = await bootstrapSystem(orpClient);
 
-    // TODO: parallelize these operations when pincode concurrency issues are fixed
-    await bootstrapTokenFactories(orpClient, system);
-    await bootstrapAddons(orpClient);
-    await setupDefaultIssuerRoles(orpClient);
-    await setDefaultSystemSettings(orpClient);
-    await createAndRegisterUserIdentities(orpClient);
+    await Promise.all([
+      bootstrapTokenFactories(orpClient, system),
+      bootstrapAddons(orpClient),
+      setupDefaultIssuerRoles(orpClient),
+      setDefaultSystemSettings(orpClient),
+      createAndRegisterUserIdentities(orpClient),
+    ]);
 
     stopApi();
   } catch (error: unknown) {
