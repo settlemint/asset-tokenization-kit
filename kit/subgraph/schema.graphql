@@ -757,7 +757,7 @@ type TokenYield @entity(immutable: false) {
   # Unique identifier - token address
   id: Bytes!
   # Fixed yield schedule configuration
-  schedule: TokenFixedYieldSchedule!
+  schedule: TokenFixedYieldSchedule
 }
 
 type TokenRedeemable @entity(immutable: false) {
