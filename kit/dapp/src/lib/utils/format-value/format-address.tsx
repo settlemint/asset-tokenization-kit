@@ -1,5 +1,5 @@
 import { Web3Address } from "@/components/web3/web3-address";
-import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
+import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { safeToString } from "./safe-to-string";
 import type { FormatValueProps } from "./types";
 

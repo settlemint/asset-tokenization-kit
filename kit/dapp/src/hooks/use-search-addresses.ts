@@ -1,8 +1,8 @@
-import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
+import { orpc } from "@/orpc/orpc-client";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { getAddress } from "viem";
-import { orpc } from "@/orpc/orpc-client";
 
 export type AddressSearchScope = "user" | "asset" | "all";
 

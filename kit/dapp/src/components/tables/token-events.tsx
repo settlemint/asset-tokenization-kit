@@ -25,8 +25,8 @@ import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import {
   getEthereumAddress,
   isEthereumAddress,
-} from "@atk/zod/validators/ethereum-address";
-import { isEthereumHash } from "@atk/zod/validators/ethereum-hash";
+} from "@atk/zod/ethereum-address";
+import { isEthereumHash } from "@atk/zod/ethereum-hash";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";

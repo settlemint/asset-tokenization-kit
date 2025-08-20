@@ -17,10 +17,7 @@ import {
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import {
-  fiatCurrencies,
-  fiatCurrencyMetadata,
-} from "@atk/zod/validators/fiat-currency";
+import { fiatCurrencies, fiatCurrencyMetadata } from "@atk/zod/fiat-currency";
 import { sql } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { exchangeRateApiResponseSchema } from "../schemas";

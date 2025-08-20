@@ -14,7 +14,7 @@ import { Web3Address } from "@/components/web3/web3-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenBalance } from "@/orpc/routes/token/routes/token.holders.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
+import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";

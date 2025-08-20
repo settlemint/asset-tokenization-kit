@@ -63,6 +63,7 @@ describe("AccessControlFragment", () => {
           "identityManager",
           "identityRegistryModule",
           "minter",
+          "organisationIdentityManager",
           "pauser",
           "recovery",
           "saleAdmin",
@@ -87,7 +88,7 @@ describe("AccessControlFragment", () => {
             return "";
           });
 
-        expect(fieldNames).toHaveLength(33);
+        expect(fieldNames).toHaveLength(34);
         expectedRoles.forEach((role) => {
           expect(fieldNames).toContain(role);
         });
@@ -164,6 +165,7 @@ describe("AccessControlFragment", () => {
         "identityManager",
         "identityRegistryModule",
         "minter",
+        "organisationIdentityManager",
         "pauser",
         "recovery",
         "saleAdmin",

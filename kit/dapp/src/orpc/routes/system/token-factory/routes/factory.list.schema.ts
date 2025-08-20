@@ -1,7 +1,7 @@
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
-import { assetExtensionArray } from "@atk/zod/validators/asset-extensions";
-import { assetFactoryTypeId } from "@atk/zod/validators/asset-types";
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
+import { assetExtensionArray } from "@atk/zod/asset-extensions";
+import { assetFactoryTypeId } from "@atk/zod/asset-types";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { z } from "zod";
 
 /**

@@ -4,7 +4,7 @@ import {
   isVerificationType,
   verificationType,
   verificationTypes,
-} from "../../src/validators/verification-type";
+} from "../../src/verification-type";
 
 describe("verificationType", () => {
   const validator = verificationType;

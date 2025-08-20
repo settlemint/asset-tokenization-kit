@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { SETTING_KEYS, settingKeySchema } from "../../src/validators/settings-key";
+import { SETTING_KEYS, settingKeySchema } from "../../src/settings-key";
 
 describe("settingKeySchema", () => {
   test("should accept valid setting keys", () => {

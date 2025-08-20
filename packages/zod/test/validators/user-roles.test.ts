@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { getUserRole, isUserRole, userRoleNames, userRoles } from "../../src/validators/user-roles";
+import { getUserRole, isUserRole, userRoleNames, userRoles } from "../../src/user-roles";
 
 describe("userRoles", () => {
   const validator = userRoles();

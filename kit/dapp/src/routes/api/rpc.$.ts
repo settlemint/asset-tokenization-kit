@@ -17,9 +17,10 @@
  * @see {@link https://spec.openapis.org/oas/latest.html} - OpenAPI specification
  */
 
-import { bigDecimalSerializer } from "@atk/zod/validators/bigdecimal";
-import { bigIntSerializer } from "@atk/zod/validators/bigint";
-import { timestampSerializer } from "@atk/zod/validators/timestamp";
+import { router } from "@/orpc/routes/router";
+import { bigDecimalSerializer } from "@atk/zod/bigdecimal";
+import { bigIntSerializer } from "@atk/zod/bigint";
+import { timestampSerializer } from "@atk/zod/timestamp";
 import { onError } from "@orpc/client";
 import { RPCHandler } from "@orpc/server/fetch";
 import { BatchHandlerPlugin } from "@orpc/server/plugins";
@@ -28,7 +29,6 @@ import {
   createServerFileRoute,
   getHeaders,
 } from "@tanstack/react-start/server";
-import { router } from "@/orpc/routes/router";
 
 const logger = createLogger();
 

@@ -1,4 +1,4 @@
-import type { UserRole } from "@atk/zod/validators/user-roles";
+import type { UserRole } from "@atk/zod/user-roles";
 import {
   boolean,
   integer,

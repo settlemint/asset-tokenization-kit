@@ -1,4 +1,3 @@
-import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
 import { getAccessControlEntries } from "@/orpc/helpers/access-control-helpers";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
@@ -6,6 +5,7 @@ import {
   type SystemRolesOutput,
   SystemRolesOutputSchema,
 } from "@/orpc/routes/system/access-manager/routes/roles.list.schema";
+import { getEthereumAddress } from "@atk/zod/ethereum-address";
 
 export const rolesList = onboardedRouter.system.rolesList
   .use(systemMiddleware)

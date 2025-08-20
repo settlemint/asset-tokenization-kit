@@ -32,12 +32,12 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { getVerificationId } from "@/orpc/helpers/get-verification-id";
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
-import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import {
   ethereumHash,
   getEthereumHash as getTransactionHash,
   type EthereumHash as TransactionHash,
-} from "@atk/zod/validators/ethereum-hash";
+} from "@atk/zod/ethereum-hash";
 import type { TadaDocumentNode } from "gql.tada";
 import { getOperationAST } from "graphql";
 import type { Variables } from "graphql-request";
@@ -175,6 +175,8 @@ function createValidatedPortalClient(
   theGraphClient?: ValidatedTheGraphClient
 ) {
   const client = {
+    raw: portalClient,
+
     /**
      * Executes a GraphQL mutation and waits for the transaction to complete.
      *

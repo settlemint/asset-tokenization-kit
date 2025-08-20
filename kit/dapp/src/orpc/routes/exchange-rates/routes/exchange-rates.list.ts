@@ -5,12 +5,12 @@
  * @module ExchangeRatesList
  */
 
-import type { FiatCurrency } from "@atk/zod/validators/fiat-currency";
-import { and, count, eq, sql } from "drizzle-orm";
 import { fxRatesLatest } from "@/lib/db/schema";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { publicRouter } from "@/orpc/procedures/public.router";
+import type { FiatCurrency } from "@atk/zod/fiat-currency";
+import { and, count, eq, sql } from "drizzle-orm";
 
 /**
  * Exchange rates list route handler.

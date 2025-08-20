@@ -1,13 +1,13 @@
 import type { auth } from "@/lib/auth";
+import { pincodeClient } from "@/lib/auth/plugins/pincode-plugin/client";
+import { secretCodesClient } from "@/lib/auth/plugins/secret-codes-plugin/client";
+import { twoFactorClient } from "@/lib/auth/plugins/two-factor/client";
 import {
   accessControl,
   adminRole,
   investorRole,
   issuerRole,
-} from "@/lib/auth/permissions";
-import { pincodeClient } from "@/lib/auth/plugins/pincode-plugin/client";
-import { secretCodesClient } from "@/lib/auth/plugins/secret-codes-plugin/client";
-import { twoFactorClient } from "@/lib/auth/plugins/two-factor/client";
+} from "@/lib/auth/utils/permissions";
 import {
   adminClient,
   apiKeyClient,

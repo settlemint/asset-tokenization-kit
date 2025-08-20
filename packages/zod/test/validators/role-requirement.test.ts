@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
+import { roles } from "../../src/access-control-roles";
 import {
   isAllRoleRequirement,
   isAnyRoleRequirement,
@@ -7,7 +7,9 @@ import {
   type RoleRequirement,
   RoleRequirementSchema,
   satisfiesRoleRequirement,
-} from "../../src/validators/role-requirement";
+} from "../../src/role-requirement";
+
+type AccessControlRoles = (typeof roles)[number];
 
 describe("role-requirement", () => {
   describe("type guards", () => {
@@ -178,8 +180,7 @@ describe("role-requirement", () => {
         // Create an invalid requirement that doesn't match any of the expected types
         const invalidRequirement = { invalid: "structure" };
         // TypeScript will complain here, but we're testing runtime behavior
-        // @ts-expect-error Testing invalid input
-        expect(satisfiesRoleRequirement(userRoles, invalidRequirement)).toBe(false);
+        expect(satisfiesRoleRequirement(userRoles, invalidRequirement as any)).toBe(false);
       });
     });
   });
@@ -191,20 +192,20 @@ describe("role-requirement", () => {
     });
 
     it("should parse valid 'any' requirement", () => {
-      const requirement = { any: ["admin", "tokenManager"] };
+      const requirement = { any: ["admin" as AccessControlRoles, "tokenManager" as AccessControlRoles] };
       const result = RoleRequirementSchema.parse(requirement);
       expect(result).toEqual(requirement);
     });
 
     it("should parse valid 'all' requirement", () => {
-      const requirement = { all: ["admin", "tokenManager"] };
+      const requirement = { all: ["admin" as AccessControlRoles, "tokenManager" as AccessControlRoles] };
       const result = RoleRequirementSchema.parse(requirement);
       expect(result).toEqual(requirement);
     });
 
     it("should parse nested requirements", () => {
       const requirement = {
-        all: ["admin", { any: ["tokenManager", "systemManager"] }],
+        all: ["admin" as AccessControlRoles, { any: ["tokenManager" as AccessControlRoles, "systemManager" as AccessControlRoles] }],
       };
       const result = RoleRequirementSchema.parse(requirement);
       expect(result).toEqual(requirement);
@@ -219,12 +220,12 @@ describe("role-requirement", () => {
     it("should handle deeply nested structures", () => {
       const deeplyNested = {
         any: [
-          "admin",
+          "admin" as AccessControlRoles,
           {
             all: [
-              "tokenManager",
+              "tokenManager" as AccessControlRoles,
               {
-                any: ["systemManager", { all: ["auditor", "complianceManager"] }],
+                any: ["systemManager" as AccessControlRoles, { all: ["auditor" as AccessControlRoles, "complianceManager" as AccessControlRoles] }],
               },
             ],
           },

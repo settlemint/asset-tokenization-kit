@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { ethereumHash, getEthereumHash, isEthereumHash } from "../../src/validators/ethereum-hash";
+import { ethereumHash, getEthereumHash, isEthereumHash } from "../../src/ethereum-hash";
 
 describe("Ethereum Hash Validation", () => {
   const validHash = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
@@ -264,7 +264,7 @@ describe("Ethereum Hash Validation", () => {
           expect(unknownValue).toBe(validHash);
         } else {
           // This branch should not be reached with validHash
-          expect.fail("Valid hash should pass type guard");
+          throw new Error("Valid hash should pass type guard");
         }
       });
     });

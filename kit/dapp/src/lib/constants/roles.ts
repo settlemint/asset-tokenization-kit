@@ -51,6 +51,10 @@ export const CLAIM_POLICY_MANAGER_ROLE = new RoleConfig(
   "claimPolicyManager"
 );
 export const AUDITOR_ROLE = new RoleConfig("AUDITOR_ROLE", "auditor");
+export const ORGANISATION_IDENTITY_MANAGER_ROLE = new RoleConfig(
+  "ORGANISATION_IDENTITY_MANAGER_ROLE",
+  "organisationIdentityManager"
+);
 
 // --- System Roles (ATKSystemRoles) ---
 export const SYSTEM_MODULE_ROLE = new RoleConfig(

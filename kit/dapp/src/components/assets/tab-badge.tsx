@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import type { AssetType } from "@atk/zod/validators/asset-types";
+import type { AssetType } from "@atk/zod/asset-types";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { Suspense } from "react";
 import type { Address } from "viem";

@@ -1,12 +1,12 @@
 import type { AccessControl } from "@/lib/fragments/the-graph/access-control-fragment";
 import type { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { accessControlRoles } from "@atk/zod/validators/access-control-roles";
-import { assetExtensionArray } from "@atk/zod/validators/asset-extensions";
-import { assetType } from "@atk/zod/validators/asset-types";
-import { bigDecimal } from "@atk/zod/validators/bigdecimal";
-import { decimals } from "@atk/zod/validators/decimals";
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
-import { timestamp } from "@atk/zod/validators/timestamp";
+import { accessControlRoles } from "@atk/zod/access-control-roles";
+import { assetExtensionArray } from "@atk/zod/asset-extensions";
+import { assetType } from "@atk/zod/asset-types";
+import { bigDecimal } from "@atk/zod/bigdecimal";
+import { decimals } from "@atk/zod/decimals";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { timestamp } from "@atk/zod/timestamp";
 import { from } from "dnum";
 import { z } from "zod";
 
@@ -82,6 +82,19 @@ export const RawTokenSchema = z.object({
     })
     .nullable()
     .describe("The amount of tokens redeemed"),
+  yield: z
+    .object({
+      id: ethereumAddress.describe("The address of the token"),
+      schedule: z
+        .object({
+          id: ethereumAddress.describe(
+            "The address of the yield schedule of the token"
+          ),
+        })
+        .nullable(),
+    })
+    .nullable()
+    .describe("The yield of the token"),
   bond: z
     .object({
       faceValue: bigDecimal().describe("The face value of the bond"),

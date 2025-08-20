@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { duration, getDuration, isDuration } from "../../src/validators/duration";
+import { duration, getDuration, isDuration } from "../../src/duration";
 
 describe("duration", () => {
   const validator = duration();
@@ -185,7 +185,7 @@ describe("duration", () => {
       // Try-catch pattern
       try {
         getDuration(0);
-        expect.fail("Should have thrown");
+        throw new Error("Should have thrown");
       } catch (error) {
         expect(error).toBeDefined();
       }

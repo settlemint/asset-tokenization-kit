@@ -26,7 +26,7 @@ import {
 } from "@/orpc/routes/system/compliance-module/routes/compliance-module.create.schema";
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
-import { complianceTypeIds } from "@atk/zod/validators/compliance";
+import { complianceTypeIds } from "@atk/zod/compliance";
 import { call } from "@orpc/server";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 

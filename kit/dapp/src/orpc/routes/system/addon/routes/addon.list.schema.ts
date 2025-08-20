@@ -1,7 +1,7 @@
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
-import { addonFactoryTypeId, addonType } from "@atk/zod/validators/addon-types";
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
-import { ethereumHash } from "@atk/zod/validators/ethereum-hash";
+import { addonFactoryTypeId, addonType } from "@atk/zod/addon-types";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { ethereumHash } from "@atk/zod/ethereum-hash";
 import { z } from "zod";
 
 /**

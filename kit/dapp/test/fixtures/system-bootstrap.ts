@@ -153,7 +153,7 @@ export async function bootstrapAddons(orpClient: OrpcClient) {
       },
       {
         type: "xvp",
-        name: "XVP",
+        name: "XvP",
       },
     ],
   });

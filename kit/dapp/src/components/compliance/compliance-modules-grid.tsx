@@ -7,7 +7,7 @@ import {
   SelectableCardTitle,
 } from "@/components/selectable-card/selectable-card";
 import { cn } from "@/lib/utils";
-import type { ComplianceTypeId } from "@atk/zod/validators/compliance";
+import type { ComplianceTypeId } from "@atk/zod/compliance";
 import { useTranslation } from "react-i18next";
 
 export interface ComplianceModulesGridProps {

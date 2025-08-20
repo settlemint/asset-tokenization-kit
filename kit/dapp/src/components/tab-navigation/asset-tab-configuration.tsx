@@ -5,7 +5,7 @@ import {
   hasYield,
   isMicaEnabledForAsset,
 } from "@/lib/utils/features-enabled";
-import type { AssetType } from "@atk/zod/validators/asset-types";
+import type { AssetType } from "@atk/zod/asset-types";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import type { Address } from "viem";
 

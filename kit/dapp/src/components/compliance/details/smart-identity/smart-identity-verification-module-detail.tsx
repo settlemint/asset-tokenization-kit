@@ -18,7 +18,7 @@ import { encodeExpressionParams } from "@/lib/compliance/encoding/encode-express
 import {
   convertInfixToPostfix,
   type ExpressionWithGroups,
-} from "@atk/zod/validators/expression-node";
+} from "@atk/zod/expression-node";
 import { UserIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";

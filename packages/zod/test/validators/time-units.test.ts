@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { getTimeUnit, isTimeUnit, timeUnit, timeUnits } from "../../src/validators/time-units";
+import { getTimeUnit, isTimeUnit, timeUnit, timeUnits } from "../../src/time-units";
 
 describe("timeUnit", () => {
   const validator = timeUnit();

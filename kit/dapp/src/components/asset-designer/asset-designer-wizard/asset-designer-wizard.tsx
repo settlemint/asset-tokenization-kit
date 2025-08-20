@@ -26,7 +26,7 @@ import type { FactoryList } from "@/orpc/routes/system/token-factory/routes/fact
 import {
   type AssetType,
   getFactoryTypeIdFromAssetType,
-} from "@atk/zod/validators/asset-types";
+} from "@atk/zod/asset-types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";

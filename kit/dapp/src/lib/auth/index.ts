@@ -16,12 +16,24 @@
  * @see {@link ../db/schemas/auth} - Database schema for authentication
  */
 
-import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
-import type { UserRole } from "@atk/zod/validators/user-roles";
+import { pincode } from "@/lib/auth/plugins/pincode-plugin";
+import { secretCodes } from "@/lib/auth/plugins/secret-codes-plugin";
+import { twoFactor } from "@/lib/auth/plugins/two-factor";
+import {
+  accessControl,
+  adminRole,
+  investorRole,
+  issuerRole,
+} from "@/lib/auth/utils/permissions";
+import { kycProfiles } from "@/lib/db/schema";
+import { env } from "@atk/config/env";
+import { metadata } from "@atk/config/metadata";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
+import type { UserRole } from "@atk/zod/user-roles";
 import { serverOnly } from "@tanstack/react-start";
 import {
-  type BetterAuthOptions,
   betterAuth,
+  type BetterAuthOptions,
   type InferUser,
   type User,
 } from "better-auth";
@@ -32,20 +44,8 @@ import { passkey } from "better-auth/plugins/passkey";
 import { reactStartCookies } from "better-auth/react-start";
 import { eq } from "drizzle-orm/sql";
 import { zeroAddress } from "viem";
-import { metadata } from "@/config/metadata";
-import {
-  accessControl,
-  adminRole,
-  investorRole,
-  issuerRole,
-} from "@/lib/auth/permissions";
-import { pincode } from "@/lib/auth/plugins/pincode-plugin";
-import { secretCodes } from "@/lib/auth/plugins/secret-codes-plugin";
-import { twoFactor } from "@/lib/auth/plugins/two-factor";
-import { kycProfiles } from "@/lib/db/schema";
 import { db } from "../db";
-import * as authSchema from "../db/schemas/auth";
-import { env } from "../env";
+import * as authSchema from "./db/auth";
 
 const options = {
   /**

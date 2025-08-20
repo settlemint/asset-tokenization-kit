@@ -1,5 +1,5 @@
 import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
-import { apiBigInt } from "@atk/zod/validators/bigint";
+import { apiBigInt } from "@atk/zod/bigint";
 import type { z } from "zod";
 
 export const TokenSetCapInputSchema = MutationInputSchemaWithContract.extend({
