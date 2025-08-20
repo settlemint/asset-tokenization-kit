@@ -30,6 +30,28 @@ export const addonTypes = ["airdrops", "yield", "xvp"] as const;
 export const addonCategories = ["distribution", "exchange", "custody", "income"] as const;
 
 /**
+ * Enum of valid addon factory typeId values for direct access.
+ * @remarks
+ * This constant defines all supported factory typeIds in the platform:
+ * - `ATKPushAirdropFactory`: Factory for push airdrops
+ * - `ATKVestingAirdropFactory`: Factory for vesting airdrops
+ * - `ATKTimeBoundAirdropFactory`: Factory for time-bound airdrops
+ * - `ATKFixedYieldScheduleFactory`: Factory for fixed yield schedules
+ * - `ATKXvPSettlementFactory`: Factory for XvP settlements
+ * - `ATKVaultFactory`: Factory for vaults
+ * - `unknown`: For unrecognized addon types (legacy support)
+ */
+export const AddonFactoryTypeIdEnum = {
+  ATKPushAirdropFactory: "ATKPushAirdropFactory",
+  ATKVestingAirdropFactory: "ATKVestingAirdropFactory",
+  ATKTimeBoundAirdropFactory: "ATKTimeBoundAirdropFactory",
+  ATKFixedYieldScheduleFactory: "ATKFixedYieldScheduleFactory",
+  ATKXvPSettlementFactory: "ATKXvPSettlementFactory",
+  ATKVaultFactory: "ATKVaultFactory",
+  unknown: "unknown",
+} as const;
+
+/**
  * Tuple of valid addon factory typeId values for type-safe iteration.
  * @remarks
  * This constant defines all supported factory typeIds in the platform:
@@ -50,6 +72,8 @@ export const addonFactoryTypeIds = [
   "ATKVaultFactory",
   "unknown",
 ] as const;
+
+
 
 /**
  * Creates a Zod schema that validates an addon type.
