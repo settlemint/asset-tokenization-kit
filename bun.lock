@@ -246,9 +246,6 @@
         "typescript-eslint": "8.40.0",
       },
     },
-    "tools/prettier-config": {
-      "name": "@tools/prettier-config",
-    },
     "tools/typescript-config": {
       "name": "@tools/typescript-config",
     },
@@ -1568,8 +1565,6 @@
     "@testing-library/user-event": ["@testing-library/user-event@14.6.1", "", { "peerDependencies": { "@testing-library/dom": ">=7.21.4" } }, "sha512-vq7fv0rnt+QTXgPxr5Hjc210p6YKq2kmdziLgnsZGgLJ9e6VAShx1pACLuRjd/AS/sr7phAR58OIIpf0LlmQNw=="],
 
     "@tools/eslint-config": ["@tools/eslint-config@workspace:tools/eslint-config"],
-
-    "@tools/prettier-config": ["@tools/prettier-config@workspace:tools/prettier-config"],
 
     "@tools/typescript-config": ["@tools/typescript-config@workspace:tools/typescript-config"],
 
