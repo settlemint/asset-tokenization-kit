@@ -52,6 +52,12 @@ const READ_TOKEN_QUERY = theGraphGraphql(
       accessControl {
         ...AccessControlFragment
       }
+      yield: yield_ {
+        id
+        schedule {
+          id
+        }
+      }
     }
   }
   `,
@@ -95,10 +101,11 @@ export const tokenMiddleware = baseRouter.middleware(
       });
     }
 
-    const { token } = await theGraphClient.request(READ_TOKEN_QUERY, {
+    const result = await theGraphClient.request(READ_TOKEN_QUERY, {
       id: tokenAddress,
     });
 
+    const token = result.token;
     if (!token) {
       throw errors.NOT_FOUND({
         message: "Token not found",

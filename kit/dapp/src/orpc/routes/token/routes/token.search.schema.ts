@@ -47,6 +47,7 @@ export const TokenSearchInputSchema = z.object({
  */
 export const TokenSearchResultSchema = TokenSchema.omit({
   collateral: true,
+  yield: true,
   fund: true,
   bond: true,
   redeemable: true,

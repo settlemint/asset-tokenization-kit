@@ -16,6 +16,12 @@ describe("Bonds", () => {
               name
             }
           }
+          yield_ {
+            id
+            schedule {
+              id
+            }
+          }
         }
       }
     `
@@ -38,7 +44,41 @@ describe("Bonds", () => {
             name: "Euro Deposits",
           },
         },
+        yield_: {
+          id: expect.any(String),
+          schedule: expect.any(Object), // This bond has yield configured in test fixtures
+        },
       },
     ]);
+  });
+
+  it("should handle bonds without yield configuration", async () => {
+    const query = theGraphGraphql(
+      `query {
+        tokens(where: { type: "bond" }, orderBy: createdAt) {
+          name
+          type
+          yield_ {
+            id
+            schedule {
+              id
+            }
+          }
+        }
+      }
+    `
+    );
+    const response = await theGraphClient.request(query);
+
+    // Check that bonds can have yield entity with null schedule
+    for (const token of response.tokens) {
+      if (token.yield_) {
+        expect(token.yield_.id).toBeDefined();
+        // Verify schedule can be null (no yield configured) or contain valid data
+        expect(
+          token.yield_.schedule === null || token.yield_.schedule?.id
+        ).toBeTruthy();
+      }
+    }
   });
 });

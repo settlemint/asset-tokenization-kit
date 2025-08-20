@@ -1,3 +1,21 @@
+/**
+ * @fileoverview Test suite for ISIN (International Securities Identification Number) validation
+ * 
+ * This test suite validates ISIN codes - 12-character alphanumeric securities identifiers
+ * used globally to uniquely identify financial instruments (stocks, bonds, derivatives).
+ * 
+ * Test Strategy:
+ * - Format Validation: 2-letter country + 9 alphanumeric + 1 check digit
+ * - Check Digit Validation: Luhn algorithm verification for data integrity
+ * - Case Handling: Accept lowercase, transform to standard uppercase format
+ * - Real-world Examples: Test with actual ISINs from major companies
+ * - Error Cases: Invalid format, wrong check digits, invalid countries
+ * - Type Safety: Branded string type prevents mixing with regular strings
+ * 
+ * STANDARD: ISO 6166 international standard for securities identification
+ * SECURITY: Check digit prevents typos that could reference wrong securities
+ */
+
 import { describe, expect, test } from "bun:test";
 import { getISIN, isISIN, isin, type ISIN } from "../../src/isin";
 
@@ -6,6 +24,8 @@ describe("isin", () => {
 
   describe("valid ISINs", () => {
     test("should accept valid ISINs", () => {
+      // WHY: Test real-world ISINs from major global companies
+      // VERIFICATION: Each ISIN includes valid check digit per Luhn algorithm
       expect(validator.parse("US0378331005")).toBe("US0378331005" as ISIN); // Apple Inc.
       expect(validator.parse("GB0002634946")).toBe("GB0002634946" as ISIN); // BAE Systems
       expect(validator.parse("DE0005557508")).toBe("DE0005557508" as ISIN); // Deutsche Telekom
@@ -14,6 +34,8 @@ describe("isin", () => {
     });
 
     test("should transform lowercase to uppercase", () => {
+      // WHY: ISINs are standardized as uppercase but may arrive lowercase from APIs
+      // NORMALIZATION: Convert to standard format for consistent storage/comparison
       expect(validator.parse("us0378331005")).toBe("US0378331005" as ISIN);
       expect(validator.parse("gb0002634946")).toBe("GB0002634946" as ISIN);
     });
