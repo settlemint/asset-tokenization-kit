@@ -6,6 +6,11 @@ import { AbstractComplianceModule } from "./AbstractComplianceModule.sol";
 import { ISMART } from "../interface/ISMART.sol";
 import { ISMARTIdentityRegistry } from "../interface/ISMARTIdentityRegistry.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
+import { IERC3643TrustedIssuersRegistry } from "../interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
+import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
+import { ATKTopics } from "../../system/ATKTopics.sol";
+import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
+import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 /// @title Token Supply Limit Compliance Module
 /// @author SettleMint
@@ -18,6 +23,9 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
     /// @notice Maximum period length for rolling windows (730 days = 2 years)
     /// @dev This defines the fixed circular buffer size to prevent unbounded storage growth
     uint256 private constant MAX_PERIOD_LENGTH = 730;
+
+    /// @notice Precomputed topic ID for the base price claim to avoid an external registry call
+    uint256 private constant BASE_PRICE_TOPIC_ID = uint256(keccak256(abi.encodePacked(ATKTopics.TOPIC_BASE_PRICE)));
 
     /// @notice Unique type identifier for this compliance module
     /// @dev Used by the compliance system to identify and manage module instances
@@ -40,9 +48,6 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
         /// @dev When true, token amounts are converted using basePriceTopicId claims for regulatory calculation
         ///      Conversion happens once at issuance time and the converted value is stored permanently
         bool useBasePrice;
-        /// @notice Topic ID for base price claims (required when useBasePrice is true)
-        /// @dev References the claim topic containing price data in format (amount, currencyCode, decimals)
-        uint256 basePriceTopicId;
         /// @notice Whether to track globally across all tokens for this issuer
         /// @dev When true, sums supply across all tokens using this module (issuer-wide caps)
         bool global;
@@ -100,7 +105,7 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
         // Convert to base currency at issuance time and freeze the value for compliance
         uint256 amount = _value;
         if (config.useBasePrice) {
-            amount = _convertToBaseCurrency(_token, _value, config.basePriceTopicId);
+            amount = _convertToBaseCurrency(_token, _value);
         }
 
         // Update both token-specific and global trackers as needed
@@ -134,7 +139,7 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
         // Convert the amount being checked (new issuance uses current price)
         uint256 amount = _value;
         if (config.useBasePrice) {
-            amount = _convertToBaseCurrency(_token, _value, config.basePriceTopicId);
+            amount = _convertToBaseCurrency(_token, _value);
         }
 
         // Get current supply from stored converted values (historical conversions are frozen)
@@ -183,12 +188,6 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
         if (config.rolling && config.periodLength > MAX_PERIOD_LENGTH) {
             revert InvalidParameters("Rolling window cannot exceed 730 days (2 years) to prevent gas limit issues");
         }
-
-        if (config.useBasePrice && config.basePriceTopicId == 0) {
-            revert InvalidParameters("Base price topic ID required when useBasePrice is true");
-        }
-
-        // Note: No additional validation needed for global flag - it can be combined with any other options
     }
 
     // --- Internal Functions ---
@@ -320,51 +319,79 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
     ///      The base price claim must contain (amount, currencyCode, decimals) data.
     ///      Conversion formula: (_amount * basePrice) / (10 ** decimals)
     /// @param _token The token address whose identity contains the price claim
-    /// @param _amount The token amount to convert to base currency
-    /// @param _basePriceTopicId The topic ID for base price claims in the token's identity
+    /// @param _tokenAmount The token amount to convert to base currency
     /// @return The equivalent amount in base currency units
     /// @custom:throws ComplianceCheckFailed when token has no identity, no price claim, or invalid claim data
     function _convertToBaseCurrency(
         address _token,
-        uint256 _amount,
-        uint256 _basePriceTopicId
+        uint256 _tokenAmount
     ) private view returns (uint256) {
+        // Ensure the token implements ISMART via ERC165
+        bool supportsSmart;
+        try IERC165(_token).supportsInterface(type(ISMART).interfaceId) returns (bool ok) {
+            supportsSmart = ok;
+        } catch {
+            supportsSmart = false;
+        }
+        if (!supportsSmart) {
+            revert ComplianceCheckFailed("Token does not implement ISMART");
+        }
+
         ISMART smartToken = ISMART(_token);
-        ISMARTIdentityRegistry registry = ISMARTIdentityRegistry(smartToken.identityRegistry());
+
 
         // Get token's identity
-        IIdentity tokenIdentity = registry.identity(_token);
+        IIdentity tokenIdentity = IIdentity(smartToken.onchainID());
         if (address(tokenIdentity) == address(0)) {
             revert ComplianceCheckFailed("Token has no identity");
         }
 
+        // Get registries
+        ISMARTIdentityRegistry registry = ISMARTIdentityRegistry(smartToken.identityRegistry());
+
         // Get claim IDs for base price topic
-        bytes32[] memory claimIds = tokenIdentity.getClaimIdsByTopic(_basePriceTopicId);
+        bytes32[] memory claimIds = tokenIdentity.getClaimIdsByTopic(BASE_PRICE_TOPIC_ID);
         if (claimIds.length == 0) {
             revert ComplianceCheckFailed("Token has no base price claim");
         }
 
-        // Get the first valid base price claim
-        for (uint256 i = 0; i < claimIds.length; ++i) {
-            try tokenIdentity.getClaim(claimIds[i]) returns (
-                uint256 topic,
-                uint256, // scheme
-                address, // issuer
-                bytes memory, // signature
-                bytes memory data,
-                string memory // uri
-            ) {
-                if (topic == _basePriceTopicId && data.length > 0) {
-                    // Decode base price claim (amount, currencyCode, decimals)
-                    (uint256 basePrice, , uint8 decimals) = abi.decode(data, (uint256, string, uint8));
+        IERC3643TrustedIssuersRegistry issuersRegistry = registry.issuersRegistry();
+        IClaimIssuer[] memory trustedIssuers = issuersRegistry.getTrustedIssuersForClaimTopic(BASE_PRICE_TOPIC_ID);
 
-                    // Convert token amount to base currency
-                    // basePrice is the price per token with decimals precision
-                    return (_amount * basePrice) / (10 ** decimals);
+        // Check each claim against the list of trusted issuers
+        for (uint256 i = 0; i < claimIds.length;) {
+            // Get claim details
+            (uint256 foundClaimTopic,, address issuer, bytes memory sig, bytes memory data,) =
+                tokenIdentity.getClaim(claimIds[i]);
+
+            // Verify the claim topic matches (should always be true due to getClaimIdsByTopic)
+            if (foundClaimTopic == BASE_PRICE_TOPIC_ID) {
+                // Check if the issuer is trusted for this topic
+                for (uint256 j = 0; j < trustedIssuers.length;) {
+                    if (address(trustedIssuers[j]) == issuer) {
+                        // Verify the claim is valid with the trusted issuer
+                        bool valid;
+                        // Protect against malicious issuers reverting
+                        try trustedIssuers[j].isClaimValid(tokenIdentity, BASE_PRICE_TOPIC_ID, sig, data) returns (bool ok) {
+                            valid = ok;
+                        } catch {
+                            valid = false;
+                        }
+                        if (valid) {
+                            (uint256 amount,, uint8 decimals) = abi.decode(data, (uint256, string, uint8));
+                            // Convert: baseCurrency = tokenAmount * basePrice / 10**decimals
+                            return Math.mulDiv(_tokenAmount, amount, 10 ** uint256(decimals));
+                        }
+                        break; // Found the issuer, no need to check others for this claim
+                    }
+                    unchecked {
+                        ++j;
+                    }
                 }
-            } catch {
-                // Continue to next claim if this one fails
-                continue;
+            }
+
+            unchecked {
+                ++i;
             }
         }
 

@@ -80,10 +80,11 @@ abstract contract AbstractComplianceModuleTest is Test {
         identityUtils.createClientIdentity(tokenIssuer, TestConstants.COUNTRY_CODE_BE);
 
         // Issue claims to the token issuer as well (assuming they need verification)
-        uint256[] memory claimTopics = new uint256[](3);
+        uint256[] memory claimTopics = new uint256[](4);
         claimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
         claimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_AML);
         claimTopics[2] = systemUtils.getTopicId(ATKTopics.TOPIC_COLLATERAL);
+        claimTopics[3] = systemUtils.getTopicId(ATKTopics.TOPIC_BASE_PRICE);
         // Use claimIssuer address directly, createIssuerIdentity handles creating the on-chain identity
         vm.label(claimIssuer, "Claim Issuer");
         address claimIssuerIdentity = identityUtils.createIssuerIdentity(claimIssuer, claimTopics);

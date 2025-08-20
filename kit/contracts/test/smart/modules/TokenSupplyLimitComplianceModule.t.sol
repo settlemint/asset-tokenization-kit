@@ -3,10 +3,11 @@ pragma solidity ^0.8.28;
 
 import { AbstractComplianceModuleTest } from "./AbstractComplianceModuleTest.t.sol";
 import { SMARTTokenSupplyLimitComplianceModule } from "../../../contracts/smart/modules/TokenSupplyLimitComplianceModule.sol";
-import { TestConstants } from "../../Constants.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
-import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
+import { SMARTToken } from "../examples/SMARTToken.sol";
+import { SMARTComplianceModuleParamPair } from
+    "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     SMARTTokenSupplyLimitComplianceModule internal module;
@@ -45,7 +46,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0, // Lifetime
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: false
         });
 
@@ -60,7 +60,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: PERIOD_LENGTH,
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: false
         });
 
@@ -75,7 +74,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: PERIOD_LENGTH,
             rolling: true,
             useBasePrice: false,
-            basePriceTopicId: 0,
+
             global: false
         });
 
@@ -90,7 +89,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0,
             rolling: false,
             useBasePrice: true,
-            basePriceTopicId: claimUtils.getTopicId(ATKTopics.TOPIC_BASE_PRICE),
             global: false
         });
 
@@ -105,7 +103,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0,
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: false
         });
 
@@ -125,7 +122,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0, // Invalid for rolling
             rolling: true,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: false
         });
 
@@ -146,7 +142,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 1000, // Long period allowed for fixed periods
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: false
         });
 
@@ -162,7 +157,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 731, // Too long for rolling windows
             rolling: true,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: false
         });
 
@@ -184,32 +178,11 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 730, // Exactly at limit
             rolling: true,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: false
         });
 
         bytes memory params = abi.encode(config);
         module.validateParameters(params); // Should not revert
-    }
-
-    function test_TokenSupplyLimit_RevertWhen_BasePriceWithoutTopicId() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: LIFETIME_MAX_SUPPLY,
-            periodLength: 0,
-            rolling: false,
-            useBasePrice: true,
-            basePriceTopicId: 0, // Invalid when useBasePrice is true
-            global: false
-        });
-
-        bytes memory params = abi.encode(config);
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                ISMARTComplianceModule.InvalidParameters.selector, "Base price topic ID required when useBasePrice is true"
-            )
-        );
-        module.validateParameters(params);
     }
 
     function test_TokenSupplyLimit_RevertWhen_InvalidParameters() public {
@@ -227,7 +200,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0, // Lifetime
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: false
         });
 
@@ -243,7 +215,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0, // Lifetime
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: false
         });
 
@@ -263,7 +234,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0, // Lifetime
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: false
         });
 
@@ -292,7 +262,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0,
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: false
         });
 
@@ -310,7 +279,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: PERIOD_LENGTH,
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: false
         });
 
@@ -334,7 +302,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: PERIOD_LENGTH,
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: false
         });
 
@@ -362,7 +329,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 3, // 3-day rolling window
             rolling: true,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: false
         });
 
@@ -397,7 +363,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 3, // 3-day rolling window
             rolling: true,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: false
         });
 
@@ -430,7 +395,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 3, // 3-day rolling window
             rolling: true,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: false
         });
 
@@ -470,7 +434,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 2, // 2-day rolling window
             rolling: true,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: false
         });
 
@@ -502,7 +465,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 730, // 2 years - maximum allowed for rolling windows
             rolling: true,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: false
         });
 
@@ -542,7 +504,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0, // Lifetime
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: true
         });
 
@@ -578,7 +539,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 3, // 3-day rolling window
             rolling: true,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: true
         });
 
@@ -617,7 +577,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 3, // 3-day rolling window
             rolling: true,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: true
         });
 
@@ -658,7 +617,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 2, // 2-day rolling window
             rolling: true,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: true
         });
 
@@ -700,7 +658,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 30, // 30-day fixed periods
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: true
         });
 
@@ -741,7 +698,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0, // Lifetime
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: false
         });
 
@@ -776,7 +732,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0,
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: false
         });
 
@@ -808,7 +763,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0,
             rolling: false,
             useBasePrice: false,
-            basePriceTopicId: 0,
             global: false
         });
 
@@ -830,7 +784,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0,
             rolling: false,
             useBasePrice: true,
-            basePriceTopicId: claimUtils.getTopicId(ATKTopics.TOPIC_BASE_PRICE),
             global: false
         });
 
@@ -849,8 +802,21 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_BasePrice_RevertWhen_NoIdentity() public {
-        // Create a config that uses base price for a token with no identity
-        address tokenWithoutIdentity = makeAddr("tokenWithoutIdentity");
+        // Create token
+        vm.startPrank(tokenIssuer);
+        address tokenWithoutIdentity = address(new SMARTToken(
+            "Test Token",
+            "TEST",
+            18,
+            1000e18, // cap
+            address(0), // onchainID_
+            address(systemUtils.identityRegistry()),
+            address(systemUtils.compliance()),
+            new SMARTComplianceModuleParamPair[](0),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            address(accessManager)
+        ));
+        vm.stopPrank();
 
         SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
@@ -858,7 +824,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0,
             rolling: false,
             useBasePrice: true,
-            basePriceTopicId: claimUtils.getTopicId(ATKTopics.TOPIC_BASE_PRICE),
             global: false
         });
 
@@ -868,25 +833,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token has no identity")
         );
         module.canTransfer(tokenWithoutIdentity, address(0), user1, 1000e18, params);
-    }
-
-    function test_TokenSupplyLimit_BasePrice_RevertWhen_NoPriceClaim() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 8000000e18,
-            periodLength: 0,
-            rolling: false,
-            useBasePrice: true,
-            basePriceTopicId: 999, // Non-existent topic
-            global: false
-        });
-
-        bytes memory params = abi.encode(config);
-
-        vm.expectRevert(
-            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token has no base price claim")
-        );
-        module.canTransfer(address(smartToken), address(0), user1, 1000e18, params);
     }
 
 }
