@@ -3,7 +3,7 @@
   "tasks": {
     "codegen:settlemint": {
       "cache": true,
-      "inputs": ["tsconfig.json", ".dev-reset"],
+      "inputs": ["tsconfig.json", ".dev-reset", "kit/subgraph/schema.graphql"],
       "outputs": [
         "src/lib/settlemint/**",
         "hasura-schema.graphql",
