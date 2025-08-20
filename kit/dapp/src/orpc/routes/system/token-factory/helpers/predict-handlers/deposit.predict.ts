@@ -4,7 +4,7 @@ import type {
   PredictAddressOutput,
 } from "@/orpc/routes/system/token-factory/routes/factory.predict-address.schema";
 import { PredictAddressOutputSchema } from "@/orpc/routes/system/token-factory/routes/factory.predict-address.schema";
-import { AssetTypeEnum } from "@atk/zod/validators/asset-types";
+import { AssetTypeEnum } from "@atk/zod/asset-types";
 import z from "zod";
 import type { PredictHandlerContext } from "./handler-map";
 

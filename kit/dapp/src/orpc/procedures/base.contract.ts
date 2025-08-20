@@ -1,4 +1,4 @@
-import { RoleRequirementSchema } from "@atk/zod/validators/role-requirement";
+import { RoleRequirementSchema } from "@atk/zod/role-requirement";
 import { type ErrorMap, oc } from "@orpc/contract";
 import { oo } from "@orpc/openapi";
 import { z } from "zod";

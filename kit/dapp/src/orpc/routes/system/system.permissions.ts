@@ -1,5 +1,5 @@
-import type { RoleRequirement } from "@atk/zod/validators/role-requirement";
 import type { systemContract } from "@/orpc/routes/system/system.contract";
+import type { RoleRequirement } from "@atk/zod/role-requirement";
 
 type SystemContractMutations = keyof Pick<
   typeof systemContract,

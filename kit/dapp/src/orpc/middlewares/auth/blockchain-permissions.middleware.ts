@@ -2,8 +2,8 @@ import type { AccessControl } from "@/lib/fragments/the-graph/access-control-fra
 import type { Context } from "@/orpc/context/context";
 import { getUserRoles } from "@/orpc/helpers/access-control-helpers";
 import { baseRouter } from "@/orpc/procedures/base.router";
-import type { RoleRequirement } from "@atk/zod/validators/role-requirement";
-import { satisfiesRoleRequirement } from "@atk/zod/validators/role-requirement";
+import type { RoleRequirement } from "@atk/zod/role-requirement";
+import { satisfiesRoleRequirement } from "@atk/zod/role-requirement";
 import type { z } from "zod";
 
 /**

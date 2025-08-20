@@ -32,7 +32,7 @@
  * @see PortalMiddleware
  */
 
-import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import type { TadaDocumentNode } from "gql.tada";
 import { Kind, parse } from "graphql";
 import { ClientError } from "graphql-request";

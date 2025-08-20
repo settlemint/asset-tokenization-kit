@@ -1,11 +1,4 @@
 import {
-  getAssetClassFromFactoryTypeId,
-  getAssetTypeFromFactoryTypeId,
-} from "@atk/zod/validators/asset-types";
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
-import { createFileRoute } from "@tanstack/react-router";
-import { z } from "zod";
-import {
   assetClassBreadcrumbs,
   createBreadcrumbMetadata,
 } from "@/components/breadcrumb/metadata";
@@ -15,6 +8,13 @@ import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary"
 import { TokenFactoryRelated } from "@/components/related/token-factory-related";
 import { TokensTable } from "@/components/tables/tokens";
 import { seo } from "@/config/metadata";
+import {
+  getAssetClassFromFactoryTypeId,
+  getAssetTypeFromFactoryTypeId,
+} from "@atk/zod/asset-types";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
 
 const routeParamsSchema = z.object({
   factoryAddress: ethereumAddress,

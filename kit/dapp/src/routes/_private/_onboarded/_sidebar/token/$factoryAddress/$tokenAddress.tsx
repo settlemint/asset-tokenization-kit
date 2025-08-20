@@ -1,17 +1,3 @@
-import {
-  type AssetType,
-  getAssetClassFromFactoryTypeId,
-  getAssetTypeFromFactoryTypeId,
-} from "@atk/zod/validators/asset-types";
-import {
-  type EthereumAddress,
-  ethereumAddress,
-} from "@atk/zod/validators/ethereum-address";
-import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import { z } from "zod";
 import { AssetStatusBadge } from "@/components/assets/asset-status-badge";
 import { TabBadge } from "@/components/assets/tab-badge";
 import {
@@ -25,6 +11,20 @@ import { getAssetTabConfiguration } from "@/components/tab-navigation/asset-tab-
 import { TabNavigation } from "@/components/tab-navigation/tab-navigation";
 import { seo } from "@/config/metadata";
 import { orpc } from "@/orpc/orpc-client";
+import {
+  type AssetType,
+  getAssetClassFromFactoryTypeId,
+  getAssetTypeFromFactoryTypeId,
+} from "@atk/zod/asset-types";
+import {
+  type EthereumAddress,
+  ethereumAddress,
+} from "@atk/zod/ethereum-address";
+import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { z } from "zod";
 
 const routeParamsSchema = z.object({
   factoryAddress: ethereumAddress,

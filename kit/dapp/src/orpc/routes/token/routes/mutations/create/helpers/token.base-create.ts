@@ -1,8 +1,8 @@
 import type { SessionUser } from "@/lib/auth";
 import type { ValidatedPortalClient } from "@/orpc/middlewares/services/portal.middleware";
 import type { TokenCreateInput } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
-import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
-import type { EthereumHash } from "@atk/zod/validators/ethereum-hash";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
+import type { EthereumHash } from "@atk/zod/ethereum-hash";
 
 export interface TokenCreateContext {
   mutationVariables: {

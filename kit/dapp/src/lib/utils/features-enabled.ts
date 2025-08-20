@@ -1,4 +1,4 @@
-import type { AssetType } from "@atk/zod/validators/asset-types";
+import type { AssetType } from "@atk/zod/asset-types";
 import type { Address } from "viem";
 
 /**

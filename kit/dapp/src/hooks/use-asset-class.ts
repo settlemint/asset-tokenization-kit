@@ -1,7 +1,8 @@
+import { orpc } from "@/orpc/orpc-client";
 import {
   type AssetClass,
   getAssetClassFromFactoryTypeId,
-} from "@atk/zod/validators/asset-types";
+} from "@atk/zod/asset-types";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import {
   BanknoteArrowUpIcon,
@@ -11,7 +12,6 @@ import {
 } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { orpc } from "@/orpc/orpc-client";
 
 /**
  * Hook that provides asset class data with grouped factories.

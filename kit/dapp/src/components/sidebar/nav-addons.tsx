@@ -1,15 +1,3 @@
-import { getAddonCategoryFromFactoryTypeId } from "@atk/zod/validators/addon-types";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { Link, useMatches, useNavigate } from "@tanstack/react-router";
-import {
-  ArrowLeftRight,
-  Banknote,
-  ChevronRight,
-  PlusIcon,
-  Truck,
-  Vault,
-} from "lucide-react";
-import { useTranslation } from "react-i18next";
 import {
   Collapsible,
   CollapsibleContent,
@@ -26,6 +14,18 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { orpc } from "@/orpc/orpc-client";
+import { getAddonCategoryFromFactoryTypeId } from "@atk/zod/addon-types";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { Link, useMatches, useNavigate } from "@tanstack/react-router";
+import {
+  ArrowLeftRight,
+  Banknote,
+  ChevronRight,
+  PlusIcon,
+  Truck,
+  Vault,
+} from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Navigation component for addon management in the sidebar.

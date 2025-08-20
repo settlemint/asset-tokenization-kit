@@ -5,7 +5,7 @@ import type {
   ComplianceModulePairInput,
   ComplianceModulePairInputArray,
   ComplianceTypeId,
-} from "@atk/zod/validators/compliance";
+} from "@atk/zod/compliance";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { type Address, getAddress } from "viem";
