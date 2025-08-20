@@ -30,6 +30,8 @@ export function handleFixedYieldScheduleSet(
   fixedYieldSchedule.endDate = event.params.endDate;
   fixedYieldSchedule.rate = event.params.rate;
   fixedYieldSchedule.interval = event.params.interval;
+  fixedYieldSchedule.createdAt = event.block.timestamp;
+  fixedYieldSchedule.createdBy = event.transaction.from;
   setBigNumber(
     fixedYieldSchedule,
     "totalClaimed",
