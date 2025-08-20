@@ -21,7 +21,7 @@ export type TokenFixedYieldSchedule = FragmentOf<
  * Contains the period-specific data for a fixed yield schedule, including:
  * - Period identification and timing (id, start/end dates)
  * - Yield tracking for the period (total claimed, unclaimed, and total yield)
- * 
+ *
  * This fragment is reused across currentPeriod, nextPeriod, and periods arrays
  * to ensure consistency in period data structure throughout the application.
  */
@@ -44,7 +44,7 @@ export const TokenFixedYieldSchedulePeriodFragment = theGraphGraphql(`
  * - Yield tracking (total claimed, unclaimed, and total yield)
  * - Denomination asset reference
  * - Period management (current, next, and all periods using reusable period fragment)
- * 
+ *
  * This fragment matches the structure expected by the fixed yield schedule
  * read endpoint and corresponds to the Zod schema validation.
  */
