@@ -6,13 +6,13 @@ import {
   atkTopics,
   getTopicId,
   getTopicNameFromId,
-} from "../../src/validators/topics";
+} from "../../src/topics";
 
 describe("atkTopic", () => {
   const validator = atkTopic();
 
   describe("valid inputs", () => {
-    it.each(atkTopics)("should accept topic '%s'", (topic) => {
+    it.each([...atkTopics])("should accept topic '%s'", (topic) => {
       expect(validator.parse(topic)).toBe(topic);
     });
 
@@ -146,7 +146,7 @@ describe("getTopicId", () => {
     expect(end - start).toBeLessThan(10);
   });
 
-  it.each(atkTopics)("should generate ID for topic '%s'", (topic) => {
+  it.each([...atkTopics])("should generate ID for topic '%s'", (topic) => {
     const id = getTopicId(topic);
     expect(typeof id).toBe("bigint");
     expect(id > 0n).toBe(true);
@@ -224,7 +224,7 @@ describe("topic ID generation consistency", () => {
       atkTopics.forEach((topic) => {
         const currentId = getTopicId(topic);
         const baselineId = baselineIds.get(topic);
-        expect(currentId).toBe(baselineId);
+        expect(currentId).toBe(baselineId!);
       });
     }
   });

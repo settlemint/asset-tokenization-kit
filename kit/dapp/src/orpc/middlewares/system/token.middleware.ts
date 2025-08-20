@@ -8,8 +8,8 @@ import {
   type Token,
 } from "@/orpc/routes/token/routes/token.read.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { isEthereumAddress } from "@atk/zod/validators/ethereum-address";
-import { satisfiesRoleRequirement } from "@atk/zod/validators/role-requirement";
+import { isEthereumAddress } from "@atk/zod/ethereum-address";
+import { satisfiesRoleRequirement } from "@atk/zod/role-requirement";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import type { ResultOf } from "gql.tada";
 

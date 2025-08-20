@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { getISIN, type ISIN, isISIN, isin } from "../../src/validators/isin";
+import { getISIN, isISIN, isin, type ISIN } from "../../src/isin";
 
 describe("isin", () => {
   const validator = isin();

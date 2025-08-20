@@ -1,5 +1,7 @@
 import { z } from "zod";
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
+import { roles } from "./access-control-roles";
+
+type AccessControlRoles = (typeof roles)[number];
 
 /**
  * Role requirement type that supports both AND and OR logic

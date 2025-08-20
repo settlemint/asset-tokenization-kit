@@ -4,7 +4,7 @@ import {
   isVerificationCode,
   type VerificationCode,
   verificationCode,
-} from "../../src/validators/verification-code";
+} from "../../src/verification-code";
 
 describe("verificationCode", () => {
   const validator = verificationCode;

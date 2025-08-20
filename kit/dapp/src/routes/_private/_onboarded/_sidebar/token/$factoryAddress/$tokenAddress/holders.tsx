@@ -1,8 +1,8 @@
-import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
-import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { createDataTableSearchParams } from "@/components/data-table/utils/data-table-url-state";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { TokenHoldersTable } from "@/components/tables/token-holders";
+import { getEthereumAddress } from "@atk/zod/ethereum-address";
+import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 
 /**
  * Route configuration for token holders page

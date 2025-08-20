@@ -4,7 +4,7 @@
  * Validation schemas for reading exchange rates between currency pairs.
  * @module ExchangeRatesReadSchema
  */
-import { fiatCurrency } from "@atk/zod/validators/fiat-currency";
+import { fiatCurrency } from "@atk/zod/fiat-currency";
 import { z } from "zod";
 
 /**

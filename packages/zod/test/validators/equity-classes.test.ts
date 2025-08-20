@@ -5,14 +5,14 @@ import {
   equityClasses,
   getEquityClass,
   isEquityClass,
-} from "../../src/validators/equity-classes";
+} from "../../src/equity-classes";
 
 describe("equity-classes", () => {
   describe("equityClass validator", () => {
     const validator = equityClass();
 
     describe("valid equity classes", () => {
-      test.each(equityClasses.map((c) => [c]))("should accept '%s'", (cls) => {
+      test.each([...equityClasses].map((c) => [c]))("should accept '%s'", (cls) => {
         expect(validator.parse(cls)).toBe(cls);
       });
     });
@@ -71,7 +71,7 @@ describe("equity-classes", () => {
 
   describe("isEquityClass type guard", () => {
     describe("valid values", () => {
-      test.each(equityClasses)("should return true for '%s'", (cls) => {
+      test.each([...equityClasses])("should return true for '%s'", (cls) => {
         expect(isEquityClass(cls)).toBe(true);
       });
     });
@@ -129,7 +129,7 @@ describe("equity-classes", () => {
 
   describe("getEquityClass", () => {
     describe("valid values", () => {
-      test.each(equityClasses)("should return '%s' for valid input", (cls) => {
+      test.each([...equityClasses])("should return '%s' for valid input", (cls) => {
         expect(getEquityClass(cls)).toBe(cls);
       });
     });
@@ -183,13 +183,13 @@ describe("equity-classes", () => {
   describe("equityClasses constant", () => {
     test("should contain exactly three classes", () => {
       expect(equityClasses).toHaveLength(3);
-      expect(equityClasses).toEqual(["A", "B", "C"]);
+      expect([...equityClasses]).toEqual(["A", "B", "C"]);
     });
 
     test("should be readonly", () => {
       // TypeScript ensures this at compile time through 'as const'
       // The array itself is not frozen at runtime, but TypeScript prevents modification
-      expect(equityClasses).toEqual(["A", "B", "C"]);
+      expect([...equityClasses]).toEqual(["A", "B", "C"]);
       // Verify it's an array
       expect(Array.isArray(equityClasses)).toBe(true);
     });

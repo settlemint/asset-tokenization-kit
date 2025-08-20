@@ -5,7 +5,7 @@ import {
   basisPointsToPercentage,
   getBasisPoints,
   isBasisPoints,
-} from "../../src/validators/basis-points";
+} from "../../src/basis-points";
 
 describe("basisPoints", () => {
   describe("basic validation", () => {

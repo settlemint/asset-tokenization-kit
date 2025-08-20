@@ -1,6 +1,6 @@
 import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
-import { assetAccessControlRole } from "@atk/zod/validators/access-control-roles";
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
+import { assetAccessControlRole } from "@atk/zod/access-control-roles";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { z } from "zod";
 
 /**

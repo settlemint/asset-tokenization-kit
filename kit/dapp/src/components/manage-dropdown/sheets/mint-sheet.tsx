@@ -5,8 +5,8 @@ import { Web3Address } from "@/components/web3/web3-address";
 import { useAppForm } from "@/hooks/use-app-form";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
-import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
+import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   add,

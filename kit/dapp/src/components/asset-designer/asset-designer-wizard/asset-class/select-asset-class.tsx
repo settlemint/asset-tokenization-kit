@@ -9,7 +9,7 @@ import { withForm } from "@/hooks/use-app-form";
 import { useAssetClass } from "@/hooks/use-asset-class";
 import { noop } from "@/lib/utils/noop";
 import type { KeysOfUnion } from "@/lib/utils/union";
-import { getAssetTypeFromFactoryTypeId } from "@atk/zod/validators/asset-types";
+import { getAssetTypeFromFactoryTypeId } from "@atk/zod/asset-types";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 

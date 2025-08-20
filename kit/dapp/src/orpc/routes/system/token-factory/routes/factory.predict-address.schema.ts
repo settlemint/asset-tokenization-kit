@@ -36,7 +36,7 @@ import { DepositTokenSchema } from "@/orpc/routes/token/routes/mutations/create/
 import { EquityTokenSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/equity.create.schema";
 import { FundTokenSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/fund.create.schema";
 import { StablecoinTokenSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/stablecoin.create.schema";
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { z } from "zod";
 
 /**

@@ -4,7 +4,7 @@
  * Validation schemas for synchronizing exchange rates with external providers.
  * @module ExchangeRatesSyncSchema
  */
-import { fiatCurrency } from "@atk/zod/validators/fiat-currency";
+import { fiatCurrency } from "@atk/zod/fiat-currency";
 import { z } from "zod";
 import { exchangeRateProvider } from "../schemas";
 

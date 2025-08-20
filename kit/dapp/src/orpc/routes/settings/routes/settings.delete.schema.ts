@@ -1,4 +1,4 @@
-import { settingKeySchema } from "@atk/zod/validators/settings-key";
+import { settingKeySchema } from "@atk/zod/settings-key";
 import { z } from "zod";
 
 /**

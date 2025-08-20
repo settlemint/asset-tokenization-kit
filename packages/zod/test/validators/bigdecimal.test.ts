@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
-import { add, type Dnum, divide, format, from, isDnum, multiply, subtract } from "dnum";
-import { bigDecimal, bigDecimalSerializer, getBigDecimal, isBigDecimal } from "../../src/validators/bigdecimal";
+import { add, divide, format, from, isDnum, multiply, subtract, type Dnum } from "dnum";
+import { bigDecimal, bigDecimalSerializer, getBigDecimal, isBigDecimal } from "../../src/bigdecimal";
 
 describe("bigDecimal", () => {
   const validator = bigDecimal();

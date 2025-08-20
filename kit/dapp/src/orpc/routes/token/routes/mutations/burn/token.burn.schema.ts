@@ -1,8 +1,8 @@
 import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
 import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
-import { bigDecimal } from "@atk/zod/validators/bigdecimal";
-import { apiBigInt } from "@atk/zod/validators/bigint";
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
+import { bigDecimal } from "@atk/zod/bigdecimal";
+import { apiBigInt } from "@atk/zod/bigint";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { z } from "zod";
 
 export const TokenBurnInputSchema = MutationInputSchemaWithContract.extend({

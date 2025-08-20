@@ -4,7 +4,7 @@ import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permiss
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { read } from "@/orpc/routes/token/routes/token.read";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { AssetExtensionEnum } from "@atk/zod/validators/asset-extensions";
+import { AssetExtensionEnum } from "@atk/zod/asset-extensions";
 import { call } from "@orpc/server";
 
 const TOKEN_TRANSFER_MUTATION = portalGraphql(`
