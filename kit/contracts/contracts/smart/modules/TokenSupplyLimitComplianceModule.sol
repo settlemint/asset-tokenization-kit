@@ -99,7 +99,7 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
         address, /* _to - unused */
         uint256 _value,
         bytes calldata _params
-    ) external override {
+    ) external override onlyTokenOrCompliance(_token) {
         SupplyLimitConfig memory config = abi.decode(_params, (SupplyLimitConfig));
 
         // Convert to base currency at issuance time and freeze the value for compliance

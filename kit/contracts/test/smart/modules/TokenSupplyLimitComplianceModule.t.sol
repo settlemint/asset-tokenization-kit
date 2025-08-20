@@ -241,6 +241,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
         // First mint should work
         module.canTransfer(address(smartToken), address(0), user1, 400000e18, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 400000e18, params);
 
         // Second mint that would exceed limit should fail
@@ -286,6 +287,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
         // First mint in period
         module.canTransfer(address(smartToken), address(0), user1, PERIOD_MAX_SUPPLY, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, PERIOD_MAX_SUPPLY, params);
 
         // Move time forward to next period
@@ -309,6 +311,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
         // First mint near limit
         module.canTransfer(address(smartToken), address(0), user1, PERIOD_MAX_SUPPLY - 1000e18, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, PERIOD_MAX_SUPPLY - 1000e18, params);
 
         // Second mint that would exceed period limit should fail
@@ -340,11 +343,13 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         // Day 1: Mint 100 tokens
         vm.warp(day1);
         module.canTransfer(address(smartToken), address(0), user1, 100e18, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 100e18, params);
 
         // Day 2: Mint 100 tokens (total in 3-day window: 200, at limit)
         vm.warp(day2);
         module.canTransfer(address(smartToken), address(0), user1, 100e18, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 100e18, params);
 
         // Day 2: Try to mint 1 more, should fail (rolling window includes day 1 + day 2)
@@ -372,11 +377,13 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         // First mint: 100 tokens
         vm.warp(sameDay);
         module.canTransfer(address(smartToken), address(0), user1, 100e18, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 100e18, params);
 
         // Second mint on SAME day: 100 tokens (should accumulate to 200 total)
         vm.warp(sameDay + 12 hours); // Still same day
         module.canTransfer(address(smartToken), address(0), user1, 100e18, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 100e18, params);
 
         // Try to mint 1 more token on same day - should fail
@@ -406,16 +413,19 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         // Day 1: Mint 100 tokens
         vm.warp(day1);
         module.canTransfer(address(smartToken), address(0), user1, 100e18, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 100e18, params);
 
         // Day 2: Mint 100 tokens (total in window: 200)
         vm.warp(day2);
         module.canTransfer(address(smartToken), address(0), user1, 100e18, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 100e18, params);
 
         // Day 3: Mint 50 tokens (total in window: 250, at limit)
         vm.warp(day3);
         module.canTransfer(address(smartToken), address(0), user1, 50e18, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 50e18, params);
 
         // Day 3: Try to mint 1 more - should fail (would make total 251 > 250)
@@ -444,11 +454,13 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         // Day 1: Mint 100 tokens
         vm.warp(startTime);
         module.canTransfer(address(smartToken), address(0), user1, dailyAmount, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, dailyAmount, params);
 
         // Day 2: Mint 50 tokens (total in 2-day window: 150, at limit)
         vm.warp(startTime + 1 days);
         module.canTransfer(address(smartToken), address(0), user1, 50e18, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 50e18, params);
 
         // Day 3: Window slides, day 1 falls out, so we can mint 100 again
@@ -474,11 +486,13 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         // Day 1: Should work efficiently
         vm.warp(startTime);
         module.canTransfer(address(smartToken), address(0), user1, 500e18, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 500e18, params);
 
         // Day 365: Add more within the window
         vm.warp(startTime + 364 days);
         module.canTransfer(address(smartToken), address(0), user1, 499e18, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 499e18, params);
 
         // Should be at limit now within 730-day window (999 total)
@@ -511,13 +525,28 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
         // Mint 200 tokens from token1
         module.canTransfer(address(smartToken), address(0), user1, 200e18, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 200e18, params);
 
-        // Create a second token address for testing
-        address token2 = address(0x9999);
+        // Create a second token address for testing (real SMARTToken instance)
+        vm.startPrank(tokenIssuer);
+        address token2 = address(new SMARTToken(
+            "Test Token 2",
+            "TEST2",
+            18,
+            1000e18, // cap
+            address(0), // onchainID_
+            address(systemUtils.identityRegistry()),
+            address(systemUtils.compliance()),
+            new SMARTComplianceModuleParamPair[](0),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            address(accessManager)
+        ));
+        vm.stopPrank();
 
         // Mint 200 tokens from token2 (global total: 400)
         module.canTransfer(token2, address(0), user1, 200e18, params);
+        vm.prank(token2);
         module.created(token2, user1, 200e18, params);
 
         // Try to mint 150 more from token1 - should fail (400 + 150 > 500)
@@ -544,21 +573,37 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
         bytes memory params = abi.encode(config);
         uint256 sameDay = 1000 * 86400;
-        address token2 = address(0x9999);
+        vm.startPrank(tokenIssuer);
+        address token2 = address(new SMARTToken(
+            "Test Token 2",
+            "TEST2",
+            18,
+            1000e18,
+            address(0),
+            address(systemUtils.identityRegistry()),
+            address(systemUtils.compliance()),
+            new SMARTComplianceModuleParamPair[](0),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            address(accessManager)
+        ));
+        vm.stopPrank();
 
         // Same day: mint 100 from token1
         vm.warp(sameDay);
         module.canTransfer(address(smartToken), address(0), user1, 100e18, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 100e18, params);
 
         // Same day: mint 100 from token2 (global total: 200)
         vm.warp(sameDay + 6 hours);
         module.canTransfer(token2, address(0), user1, 100e18, params);
+        vm.prank(token2);
         module.created(token2, user1, 100e18, params);
 
         // Same day: mint 100 more from token1 (global total: 300)
         vm.warp(sameDay + 12 hours);
         module.canTransfer(address(smartToken), address(0), user1, 100e18, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 100e18, params);
 
         // Try to mint 1 more - should fail (300 + 1 > 300)
@@ -567,7 +612,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
             )
         );
-        module.canTransfer(address(smartToken), address(0), user1, 1, params);
+        module.canTransfer(token2, address(0), user1, 1, params);
     }
 
     function test_TokenSupplyLimit_Global_RollingWindow_AcrossDays() public {
@@ -584,21 +629,37 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         uint256 day1 = 1000 * 86400;
         uint256 day2 = 1001 * 86400;
         uint256 day3 = 1002 * 86400;
-        address token2 = address(0x9999);
+        vm.startPrank(tokenIssuer);
+        address token2 = address(new SMARTToken(
+            "Test Token 2",
+            "TEST2",
+            18,
+            1000e18,
+            address(0),
+            address(systemUtils.identityRegistry()),
+            address(systemUtils.compliance()),
+            new SMARTComplianceModuleParamPair[](0),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            address(accessManager)
+        ));
+        vm.stopPrank();
 
         // Day 1: mint 100 from token1
         vm.warp(day1);
         module.canTransfer(address(smartToken), address(0), user1, 100e18, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 100e18, params);
 
         // Day 2: mint 150 from token2 (global window total: 250)
         vm.warp(day2);
         module.canTransfer(token2, address(0), user1, 150e18, params);
+        vm.prank(token2);
         module.created(token2, user1, 150e18, params);
 
         // Day 3: mint 150 from token1 (global window total: 400, at limit)
         vm.warp(day3);
         module.canTransfer(address(smartToken), address(0), user1, 150e18, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 150e18, params);
 
         // Day 3: try to mint 1 more from either token - should fail
@@ -624,22 +685,38 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         uint256 day1 = 1000 * 86400;
         uint256 day2 = 1001 * 86400;
         uint256 day3 = 1002 * 86400;
-        address token2 = address(0x9999);
+        vm.startPrank(tokenIssuer);
+        address token2 = address(new SMARTToken(
+            "Test Token 2",
+            "TEST2",
+            18,
+            1000e18,
+            address(0),
+            address(systemUtils.identityRegistry()),
+            address(systemUtils.compliance()),
+            new SMARTComplianceModuleParamPair[](0),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            address(accessManager)
+        ));
+        vm.stopPrank();
 
         // Day 1: mint 100 from token1
         vm.warp(day1);
         module.canTransfer(address(smartToken), address(0), user1, 100e18, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 100e18, params);
 
         // Day 2: mint 100 from token2 (global window: 200, at limit)
         vm.warp(day2);
         module.canTransfer(token2, address(0), user1, 100e18, params);
+        vm.prank(token2);
         module.created(token2, user1, 100e18, params);
 
         // Day 3: window slides - day 1 falls out, only day 2 and 3 in window
         // Current window has 100 from day 2, so we can mint 100 more
         vm.warp(day3);
         module.canTransfer(address(smartToken), address(0), user1, 100e18, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 100e18, params);
 
         // Now at limit again (day 2: 100 + day 3: 100 = 200)
@@ -663,15 +740,30 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
         bytes memory params = abi.encode(config);
         uint256 startTime = 1000 * 86400;
-        address token2 = address(0x9999);
+        vm.startPrank(tokenIssuer);
+        address token2 = address(new SMARTToken(
+            "Test Token 2",
+            "TEST2",
+            18,
+            1000e18, // cap
+            address(0), // onchainID_
+            address(systemUtils.identityRegistry()),
+            address(systemUtils.compliance()),
+            new SMARTComplianceModuleParamPair[](0),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            address(accessManager)
+        ));
+        vm.stopPrank();
 
         // Period 1: mint 150 from token1
         vm.warp(startTime);
         module.canTransfer(address(smartToken), address(0), user1, 150e18, params);
+        vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 150e18, params);
 
         // Period 1: mint 149 from token2 (total: 299, under limit)
         module.canTransfer(token2, address(0), user1, 149e18, params);
+        vm.prank(token2);
         module.created(token2, user1, 149e18, params);
 
         // Period 1: try to mint 2 more - should fail (299 + 2 > 300)
@@ -769,7 +861,11 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         bytes memory params = abi.encode(config);
 
         // These functions should not revert
+        vm.prank(address(smartToken));
         module.transferred(address(smartToken), tokenIssuer, user1, 100, params);
+        vm.prank(address(smartToken));
+        module.created(address(smartToken), user1, 100, params);
+        vm.prank(address(smartToken));
         module.destroyed(address(smartToken), user1, 100, params);
     }
 
