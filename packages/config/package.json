@@ -1,0 +1,28 @@
+{
+  "name": "@atk/config",
+  "type": "module",
+    "scripts": {
+    "typecheck": "tsgo --noEmit",
+    "lint": "eslint . --fix --max-warnings 0 --cache --cache-location .eslintcache",
+    "format": "prettier --experimental-cli --write .",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "test:ci": "bun test:coverage"
+  },
+  "exports": {
+    "./*": {
+      "import": "./src/*.ts",
+      "types": "./src/*.ts"
+    }
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "5.9.2"
+  },
+  "dependencies": {
+    "@t3-oss/env-core": "0.13.8",
+    "zod": "4.0.17"
+  }
+}
