@@ -31,7 +31,7 @@ import {
   adminRole,
   investorRole,
   issuerRole,
-} from "./permissions";
+} from "./utils/permissions";
 
 /**
  * The main authentication client instance for the application.
