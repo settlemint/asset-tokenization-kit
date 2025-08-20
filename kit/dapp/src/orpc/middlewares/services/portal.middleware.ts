@@ -341,8 +341,6 @@ function createValidatedPortalClient(
           "x-request-id": requestId,
         });
       } catch (error) {
-        console.log("error", error);
-
         const errorMessage =
           error instanceof Error ? error.message : String(error);
         throw errors.PORTAL_ERROR({
