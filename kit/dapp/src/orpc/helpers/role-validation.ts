@@ -2,7 +2,7 @@ import type {
   AccessControl,
   AccessControlRoles,
 } from "@/lib/fragments/the-graph/access-control-fragment";
-import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { getAccessControlEntries } from "./access-control-helpers";
 
 /**
@@ -42,6 +42,7 @@ export function mapUserRoles(
     identityManager: false,
     identityRegistryModule: false,
     minter: false,
+    organisationIdentityManager: false,
     pauser: false,
     recovery: false,
     saleAdmin: false,

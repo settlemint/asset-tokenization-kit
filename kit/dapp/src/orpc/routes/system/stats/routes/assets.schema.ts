@@ -1,4 +1,4 @@
-import { assetType } from "@atk/zod/validators/asset-types";
+import { assetType } from "@atk/zod/asset-types";
 import { z } from "zod";
 
 /**

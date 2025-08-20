@@ -37,7 +37,7 @@ import { DepositTokenSchema } from "@/orpc/routes/token/routes/mutations/create/
 import { EquityTokenSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/equity.create.schema";
 import { FundTokenSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/fund.create.schema";
 import { StablecoinTokenSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/stablecoin.create.schema";
-import { assetTypeArray } from "@atk/zod/validators/asset-types";
+import { assetTypeArray } from "@atk/zod/asset-types";
 import { z } from "zod";
 
 /**

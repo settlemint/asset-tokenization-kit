@@ -8,7 +8,7 @@ import {
   RelatedGridItemTitle,
 } from "@/components/related/related-grid";
 import { Button } from "@/components/ui/button";
-import type { AssetType } from "@atk/zod/validators/asset-types";
+import type { AssetType } from "@atk/zod/asset-types";
 import { useTranslation } from "react-i18next";
 
 interface TokenFactoryRelatedProps {

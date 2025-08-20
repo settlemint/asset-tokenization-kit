@@ -4,7 +4,6 @@
 import js from "@eslint/js";
 import pluginQuery from "@tanstack/eslint-plugin-query";
 import pluginRouter from "@tanstack/eslint-plugin-router";
-import boundaries from "eslint-plugin-boundaries";
 import noBarrelFiles from "eslint-plugin-no-barrel-files";
 import pluginReact from "eslint-plugin-react";
 import reactCompiler from "eslint-plugin-react-compiler";
@@ -99,49 +98,6 @@ export default defineConfig([
   },
 
   // ==========================================================================
-  // 4. ARCHITECTURE BOUNDARIES - KEEP THIS!
-  // ==========================================================================
-  {
-    files: ["src/**/*.{ts,tsx,js,jsx}"],
-    plugins: {
-      boundaries,
-    },
-    settings: {
-      "boundaries/element-types": [
-        "error",
-        {
-          default: "disallow",
-          rules: [
-            {
-              from: "orpc",
-              allow: ["lib", "config"],
-            },
-            {
-              from: "routes",
-              allow: [
-                "components",
-                "hooks",
-                "lib",
-                "providers",
-                "config",
-                "styles",
-              ],
-            },
-            {
-              from: "components",
-              allow: ["components", "hooks", "lib", "config", "styles"],
-            },
-            {
-              from: "lib",
-              allow: ["lib", "config"],
-            },
-          ],
-        },
-      ],
-    },
-  },
-
-  // ==========================================================================
   // 5. PLUGIN CONFIGURATIONS - SELECTIVE APPLICATION
   // ==========================================================================
   // React - Only for React files
@@ -175,7 +131,7 @@ export default defineConfig([
   // Unicorn - Apply to source files with performance-friendly rules
   {
     files: ["src/**/*.{ts,tsx,js,jsx}"],
-    ...unicorn.configs["flat/recommended"],
+    ...unicorn.configs.recommended,
   },
 
   // ==========================================================================
@@ -274,7 +230,6 @@ export default defineConfig([
     languageOptions: {
       parserOptions: {
         project: true,
-        tsconfigRootDir: import.meta.dirname,
         EXPERIMENTAL_useSourceOfProjectReferenceRedirect: true,
       },
     },

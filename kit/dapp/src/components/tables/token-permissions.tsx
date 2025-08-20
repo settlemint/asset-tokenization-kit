@@ -1,7 +1,7 @@
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
-import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
-import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
+import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { Shield } from "lucide-react";
 import { useMemo, useState } from "react";

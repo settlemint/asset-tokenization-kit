@@ -1,5 +1,5 @@
 import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
 import type { z } from "zod";
 
 export const TokenRecoverTokensInputSchema =

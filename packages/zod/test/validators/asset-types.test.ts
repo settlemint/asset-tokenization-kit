@@ -12,14 +12,14 @@ import {
   assetFactoryTypeIdArray,
   assetFactoryTypeIdRecord,
   assetFactoryTypeIdSet,
-  assetFactoryTypeIds,
   assetFactoryTypeIdWithDefault,
+  assetFactoryTypeIds,
   assetType,
   assetTypeArray,
   assetTypeRecord,
   assetTypeSet,
-  assetTypes,
   assetTypeWithDefault,
+  assetTypes,
   getAssetClassFromFactoryTypeId,
   getAssetFactoryTypeId,
   getAssetFactoryTypeIdArray,
@@ -35,7 +35,7 @@ import {
   isAssetType,
   isAssetTypeArray,
   isAssetTypeSet,
-} from "../../src/validators/asset-types";
+} from "../../src/asset-types";
 
 describe("assetType", () => {
   const validator = assetType();

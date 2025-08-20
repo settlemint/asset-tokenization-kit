@@ -1,6 +1,6 @@
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { z } from "zod";
 
 /**
@@ -23,6 +23,7 @@ import { z } from "zod";
 export const TokenListSchema = z.array(
   TokenSchema.omit({
     collateral: true,
+    yield: true,
     fund: true,
     bond: true,
     redeemable: true,

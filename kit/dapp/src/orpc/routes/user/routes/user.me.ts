@@ -8,14 +8,6 @@
  * @see {@link @/orpc/procedures/auth.router} - Authentication requirements
  */
 
-import { AssetFactoryTypeIdEnum } from "@atk/zod/validators/asset-types";
-import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
-import { satisfiesRoleRequirement } from "@atk/zod/validators/role-requirement";
-import type { VerificationType } from "@atk/zod/validators/verification-type";
-import { VerificationType as VerificationTypeEnum } from "@atk/zod/validators/verification-type";
-import { call, ORPCError } from "@orpc/server";
-import { eq } from "drizzle-orm";
-import { zeroAddress } from "viem";
 import { kycProfiles, user as userTable } from "@/lib/db/schema";
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { mapUserRoles } from "@/orpc/helpers/role-validation";
@@ -25,6 +17,14 @@ import { authRouter } from "@/orpc/procedures/auth.router";
 import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
+import { AssetFactoryTypeIdEnum } from "@atk/zod/asset-types";
+import { getEthereumAddress } from "@atk/zod/ethereum-address";
+import { satisfiesRoleRequirement } from "@atk/zod/role-requirement";
+import type { VerificationType } from "@atk/zod/verification-type";
+import { VerificationType as VerificationTypeEnum } from "@atk/zod/verification-type";
+import { call, ORPCError } from "@orpc/server";
+import { eq } from "drizzle-orm";
+import { zeroAddress } from "viem";
 
 /**
  * Get current authenticated user information.

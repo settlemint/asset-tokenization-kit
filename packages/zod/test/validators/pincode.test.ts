@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { getPincode, isPincode, pincode } from "../../src/validators/pincode";
+import { getPincode, isPincode, pincode } from "../../src/pincode";
 
 describe("PINCODE", () => {
   const validator = pincode();

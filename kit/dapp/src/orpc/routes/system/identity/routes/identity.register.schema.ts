@@ -1,7 +1,7 @@
-import { ethereumAddress } from "@atk/zod/src/validators/ethereum-address";
-import { isoCountryCode } from "@atk/zod/validators/iso-country-code";
-import { z } from "zod";
 import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { isoCountryCode } from "@atk/zod/iso-country-code";
+import { z } from "zod";
 
 /**
  * Input schema for identity registration

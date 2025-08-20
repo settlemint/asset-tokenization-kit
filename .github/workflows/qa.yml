@@ -8,8 +8,6 @@ on:
       - "v*"
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review, converted_to_draft, closed]
-  pull_request_review:
-    types: [submitted, dismissed]
 
 permissions:
   contents: read

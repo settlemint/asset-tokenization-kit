@@ -6,9 +6,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { ExpressionWithGroups } from "@atk/zod/validators/expression-node";
-import { ExpressionTypeEnum } from "@atk/zod/validators/expression-type";
-import { getTopicNameFromId } from "@atk/zod/validators/topics";
+import type { ExpressionWithGroups } from "@atk/zod/expression-node";
+import { ExpressionTypeEnum } from "@atk/zod/expression-type";
+import { getTopicNameFromId } from "@atk/zod/topics";
 import { Check, X } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";

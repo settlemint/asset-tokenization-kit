@@ -4,12 +4,9 @@
  * Validation schemas for listing exchange rates with pagination.
  * @module ExchangeRatesListSchema
  */
-import {
-  type FiatCurrency,
-  fiatCurrency,
-} from "@atk/zod/validators/fiat-currency";
-import { z } from "zod";
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
+import { type FiatCurrency, fiatCurrency } from "@atk/zod/fiat-currency";
+import { z } from "zod";
 
 /**
  * Schema for listing exchange rates with optional filters.

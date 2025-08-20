@@ -25,7 +25,7 @@
  * @see {@link ../../common/schemas/create.schema} - Base create schema
  */
 
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { MutationInputSchema } from "../../common/schemas/mutation.schema";
 
 export const SystemCreateSchema = MutationInputSchema.extend({

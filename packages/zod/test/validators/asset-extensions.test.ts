@@ -8,15 +8,15 @@ import {
   assetExtensionArray,
   assetExtensionRecord,
   assetExtensionSet,
-  assetExtensions,
   assetExtensionWithDefault,
+  assetExtensions,
   getAssetExtension,
   getAssetExtensionArray,
   getAssetExtensionSet,
   isAssetExtension,
   isAssetExtensionArray,
   isAssetExtensionSet,
-} from "../../src/validators/asset-extensions";
+} from "../../src/asset-extensions";
 
 describe("assetExtension", () => {
   const validator = assetExtension();

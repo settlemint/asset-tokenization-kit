@@ -5,13 +5,13 @@ import {
   fundCategory,
   getFundCategory,
   isFundCategory,
-} from "../../src/validators/fund-categories";
+} from "../../src/fund-categories";
 
 describe("fundCategory", () => {
   const validator = fundCategory();
 
   describe("valid fund categories", () => {
-    test.each(fundCategories.map((c) => [c]))("should accept '%s'", (category) => {
+    test.each([...fundCategories].map((c) => [c]))("should accept '%s'", (category) => {
       expect(validator.parse(category)).toBe(category);
     });
   });
@@ -79,7 +79,7 @@ describe("fundCategory", () => {
 
 describe("isFundCategory", () => {
   describe("valid fund categories", () => {
-    test.each(fundCategories)("should return true for '%s'", (category) => {
+    test.each([...fundCategories])("should return true for '%s'", (category) => {
       expect(isFundCategory(category)).toBe(true);
     });
   });
@@ -120,7 +120,7 @@ describe("isFundCategory", () => {
         const category: FundCategory = value;
         expect(category).toBe("etf");
       } else {
-        expect.fail("Should have been a valid fund category");
+        throw new Error("Should have been a valid fund category");
       }
     });
   });
@@ -128,7 +128,7 @@ describe("isFundCategory", () => {
 
 describe("getFundCategory", () => {
   describe("valid fund categories", () => {
-    test.each(fundCategories)("should return '%s' when valid", (category) => {
+    test.each([...fundCategories])("should return '%s' when valid", (category) => {
       expect(getFundCategory(category)).toBe(category);
     });
   });
@@ -165,7 +165,7 @@ describe("getFundCategory", () => {
     test("should throw with Zod error for invalid values", () => {
       try {
         getFundCategory("invalid");
-        expect.fail("Should have thrown an error");
+        throw new Error("Should have thrown an error");
       } catch (error) {
         expect(error).toBeDefined();
         // Zod throws a ZodError which includes validation details
@@ -196,7 +196,7 @@ describe("FundCategory type", () => {
 
 describe("fundCategories constant", () => {
   test("should contain all expected categories", () => {
-    expect(fundCategories).toEqual(["mutual", "hedge", "etf", "index"]);
+    expect([...fundCategories]).toEqual(["mutual", "hedge", "etf", "index"]);
   });
 
   test("should be readonly", () => {

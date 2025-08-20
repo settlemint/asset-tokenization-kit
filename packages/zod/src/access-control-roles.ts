@@ -21,6 +21,7 @@ export const roles = [
   "identityManager",
   "identityRegistryModule",
   "minter",
+  "organisationIdentityManager",
   "pauser",
   "recovery",
   "saleAdmin",

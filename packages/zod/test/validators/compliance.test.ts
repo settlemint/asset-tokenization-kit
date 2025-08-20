@@ -6,19 +6,19 @@ import { describe, expect, it } from "bun:test";
 import { z } from "zod";
 import {
   addressBlockListValues,
-  ComplianceTypeIdEnum,
   complianceModulePair,
   complianceModulePairArray,
   complianceParams,
   complianceTypeId,
+  ComplianceTypeIdEnum,
   complianceTypeIds,
   countryAllowListValues,
   countryBlockListValues,
   identityAllowListValues,
   identityBlockListValues,
   smartIdentityVerificationValues,
-} from "../../src/validators/compliance";
-import { getTopicId } from "../../src/validators/topics";
+} from "../../src/compliance";
+import { getTopicId } from "../../src/topics";
 
 describe("complianceTypeId", () => {
   const validator = complianceTypeId();
@@ -1022,7 +1022,7 @@ describe("Edge cases and error handling", () => {
 
       try {
         complianceParams().parse(mismatch);
-        expect.fail("Should have thrown");
+        throw new Error("Should have thrown");
       } catch (error) {
         if (error instanceof z.ZodError) {
           // Should have validation error for invalid address format

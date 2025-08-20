@@ -12,7 +12,7 @@ import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
 import { formatDate } from "@/lib/utils/date";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
-import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";

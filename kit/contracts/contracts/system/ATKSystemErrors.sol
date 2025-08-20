@@ -161,3 +161,12 @@ error ComponentImplementationNotSet(bytes32 componentTypeHash);
 /// address is
 /// zero or has not been configured in the `SMARTSystem`.
 error SystemAccessManagerImplementationNotSet();
+
+/// @notice Error indicating that the issuer identity has not been initialized.
+/// @dev This error is thrown if an operation requires the issuer identity, but it has not been created during
+/// bootstrap.
+error IssuerIdentityNotInitialized();
+
+/// @notice Error indicating that an invalid target identity address was provided for claim operations.
+/// @dev This error is thrown when trying to issue a claim to a zero address or invalid identity contract.
+error InvalidTargetIdentity();

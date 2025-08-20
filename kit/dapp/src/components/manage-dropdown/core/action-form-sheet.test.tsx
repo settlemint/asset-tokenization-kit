@@ -101,6 +101,7 @@ const mockToken = {
   bond: null,
   fund: null,
   collateral: null,
+  yield: null,
   accessControl: undefined,
   userPermissions: undefined,
 } satisfies Parameters<typeof ActionFormSheet>[0]["asset"];

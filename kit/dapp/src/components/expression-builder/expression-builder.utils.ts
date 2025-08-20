@@ -1,7 +1,7 @@
 import {
   type ExpressionWithGroups,
   validateExpressionWithGroups,
-} from "@atk/zod/validators/expression-node";
+} from "@atk/zod/expression-node";
 
 /**
  * Validate UI expression by converting to postfix and using expression validation

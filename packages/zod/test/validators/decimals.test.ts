@@ -1,19 +1,39 @@
+/**
+ * @fileoverview Test suite for decimal places validation
+ * 
+ * This test suite validates decimal precision settings for digital assets,
+ * ensuring proper handling of divisibility for different token/currency types.
+ * 
+ * Test Strategy:
+ * - Range Validation: 0-18 decimal places (standard for EVM tokens)
+ * - Common Values: Test standard decimals (2 for USD, 6 for USDC, 18 for ETH)
+ * - Boundary Testing: Edge cases at 0 and 18 decimal limits
+ * - Integer Constraint: Ensure only whole number decimal places
+ * - Type Safety: Branded number type for decimal-specific operations
+ * - Asset Context: Different asset types require different decimal precision
+ * 
+ * STANDARD: ERC-20 tokens typically use 0-18 decimals (18 is most common)
+ * FINANCIAL: Fiat currencies typically use 2 decimals, crypto varies widely
+ */
+
 import { describe, expect, it, test } from "bun:test";
-import { decimals, getDecimals, isDecimals } from "../../src/validators/decimals";
+import { decimals, getDecimals, isDecimals } from "../../src/decimals";
 
 describe("decimals", () => {
   const validator = decimals();
 
   describe("valid decimal values", () => {
     it("should accept zero", () => {
+      // WHY: Some tokens are indivisible (NFTs, certain governance tokens)
       expect(validator.parse(0)).toBe(0);
     });
 
     it("should accept common decimal values", () => {
-      expect(validator.parse(2)).toBe(2); // Common for fiat
-      expect(validator.parse(6)).toBe(6); // USDC
-      expect(validator.parse(8)).toBe(8); // BTC
-      expect(validator.parse(18)).toBe(18); // ETH and most ERC20s
+      // WHY: Different asset types have standard decimal conventions
+      expect(validator.parse(2)).toBe(2); // Fiat currencies (cents)
+      expect(validator.parse(6)).toBe(6); // USDC stablecoin standard
+      expect(validator.parse(8)).toBe(8); // Bitcoin's satoshi precision
+      expect(validator.parse(18)).toBe(18); // Ethereum and most ERC-20 tokens
     });
 
     it("should accept all values from 0 to 18", () => {
@@ -150,7 +170,7 @@ describe("isDecimals", () => {
       // TypeScript should recognize value as Decimals type here
       expect(value).toBe(6);
     } else {
-      expect.fail("Should have been valid decimals");
+      throw new Error("Should have been valid decimals");
     }
   });
 });

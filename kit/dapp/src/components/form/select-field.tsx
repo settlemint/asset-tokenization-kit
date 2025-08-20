@@ -27,6 +27,7 @@ export interface SelectFieldProps {
   options?: SelectOption[];
   placeholder?: string;
   disabled?: boolean;
+  className?: string;
 }
 
 export function SelectField({
@@ -36,6 +37,7 @@ export function SelectField({
   options = [],
   placeholder,
   disabled = false,
+  className,
 }: SelectFieldProps) {
   // The `Field` infers that it should have a `value` type of `string`
   const field = useFieldContext<string>();
@@ -53,7 +55,7 @@ export function SelectField({
       >
         <SelectTrigger
           id={field.name}
-          className={cn(errorClassNames(field.state.meta), "w-full")}
+          className={cn(errorClassNames(field.state.meta), "w-full", className)}
         >
           <SelectValue placeholder={placeholder ?? "Select an option"} />
         </SelectTrigger>

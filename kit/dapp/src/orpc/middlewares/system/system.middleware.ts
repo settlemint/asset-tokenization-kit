@@ -9,13 +9,13 @@ import {
 } from "@/orpc/helpers/system-component-helpers";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { read } from "@/orpc/routes/settings/routes/settings.read";
-import type { AddonFactoryTypeId } from "@atk/zod/validators/addon-types";
-import type { AssetFactoryTypeId } from "@atk/zod/validators/asset-types";
-import type { ComplianceTypeId } from "@atk/zod/validators/compliance";
+import type { AddonFactoryTypeId } from "@atk/zod/addon-types";
+import type { AssetFactoryTypeId } from "@atk/zod/asset-types";
+import type { ComplianceTypeId } from "@atk/zod/compliance";
 import {
   type EthereumAddress,
   getEthereumAddress,
-} from "@atk/zod/validators/ethereum-address";
+} from "@atk/zod/ethereum-address";
 import { call } from "@orpc/server";
 import type { Hex } from "viem";
 

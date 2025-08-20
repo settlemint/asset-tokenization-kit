@@ -23,11 +23,8 @@
   "[yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "aderyn.config.autoCheckHealth": false,
-  "biome.enabled": true,
+  "biome.enabled": false,
   "biome.requireConfiguration": true,
-  "coderabbit.autoReviewMode": "disabled",
-  "dotenv.enableAutocloaking": false,
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit",
@@ -130,9 +127,12 @@
   "typescript.inlayHints.variableTypes.enabled": true,
   "typescript.preferences.autoImportSpecifierExcludeRegexes": [
     "@radix-ui",
-    "next/router"
+    "next/router",
+    "@atk/zod/src",
+    "@atk/config/src"
   ],
   "typescript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.preferences.includePackageJsonAutoImports": "on",
   "typescript.preferences.preferTypeOnlyAutoImports": true,
   "typescript.preferences.useAliasesForRenames": false,
   "typescript.suggest.completeFunctionCalls": true,
