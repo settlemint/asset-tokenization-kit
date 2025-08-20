@@ -11,6 +11,7 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { ATKTopics } from "../../system/ATKTopics.sol";
 import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
 /// @title Token Supply Limit Compliance Module
 /// @author SettleMint
@@ -35,8 +36,12 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
     /// @notice Configuration parameters for supply limit enforcement
     /// @dev This struct defines how supply limits are calculated and enforced for a token
     struct SupplyLimitConfig {
-        /// @notice Maximum allowed supply (in tokens or base currency equivalent)
-        /// @dev Must be greater than zero. For MiCA compliance, this would typically be €8,000,000 equivalent
+        /// @notice Maximum allowed supply (logical whole numbers)
+        /// @dev Must be greater than zero. Always use whole numbers regardless of decimals:
+        ///      - When useBasePrice=false: Whole token count (e.g., 1000 = 1000 tokens)
+        ///      - When useBasePrice=true: Whole currency amount (e.g., 8000000 = €8M or $8M)
+        ///      The module automatically handles decimal conversions internally.
+        ///      For MiCA compliance, simply specify 8000000 for the €8M limit.
         uint256 maxSupply;
         /// @notice Length of tracking period in days (0 = lifetime cap, >0 = periodic cap)
         /// @dev If 0, tracks total lifetime supply. If >0, creates fixed or rolling periods of specified length
@@ -102,10 +107,14 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
     ) external override onlyTokenOrCompliance(_token) {
         SupplyLimitConfig memory config = abi.decode(_params, (SupplyLimitConfig));
 
-        // Convert to base currency at issuance time and freeze the value for compliance
-        uint256 amount = _value;
+        // Convert to normalized amount for compliance tracking
+        uint256 amount;
         if (config.useBasePrice) {
+            // Convert to whole currency units
             amount = _convertToBaseCurrency(_token, _value);
+        } else {
+            // Convert to whole token units
+            amount = _convertToWholeTokens(_token, _value);
         }
 
         // Update both token-specific and global trackers as needed
@@ -128,10 +137,14 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
     ) external override onlyTokenOrCompliance(_token) {
         SupplyLimitConfig memory config = abi.decode(_params, (SupplyLimitConfig));
 
-        // Convert to base currency at burn time (use current price for consistency)
-        uint256 amount = _value;
+        // Convert to normalized amount for compliance tracking
+        uint256 amount;
         if (config.useBasePrice) {
+            // Convert to whole currency units
             amount = _convertToBaseCurrency(_token, _value);
+        } else {
+            // Convert to whole token units
+            amount = _convertToWholeTokens(_token, _value);
         }
 
         // Update both token-specific and global trackers as needed
@@ -162,10 +175,14 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
 
         SupplyLimitConfig memory config = abi.decode(_params, (SupplyLimitConfig));
 
-        // Convert the amount being checked (new issuance uses current price)
-        uint256 amount = _value;
+        // Convert the amount being checked for compliance
+        uint256 amount;
         if (config.useBasePrice) {
+            // Convert to whole currency units
             amount = _convertToBaseCurrency(_token, _value);
+        } else {
+            // Convert to whole token units
+            amount = _convertToWholeTokens(_token, _value);
         }
 
         // Get current supply from stored converted values (historical conversions are frozen)
@@ -388,13 +405,14 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
         }
     }
 
-    /// @notice Converts token amount to base currency equivalent using on-chain price claims
+    /// @notice Converts raw token amount to whole base currency equivalent using on-chain price claims
     /// @dev Retrieves price data from the token's identity claims and performs currency conversion.
-    ///      The base price claim must contain (amount, currencyCode, decimals) data.
-    ///      Conversion formula: (_amount * basePrice) / (10 ** decimals)
+    ///      The base price claim must contain (priceAmount, currencyCode, priceDecimals) data.
+    ///      Conversion formula: (_tokenAmount * priceAmount) / (10^tokenDecimals * 10^priceDecimals)
+    ///      This converts from raw token units to whole currency units.
     /// @param _token The token address whose identity contains the price claim
-    /// @param _tokenAmount The token amount to convert to base currency
-    /// @return The equivalent amount in base currency units
+    /// @param _tokenAmount The raw token amount (including decimals) to convert
+    /// @return The equivalent amount in whole base currency units
     /// @custom:throws ComplianceCheckFailed when token has no identity, no price claim, or invalid claim data
     function _convertToBaseCurrency(
         address _token,
@@ -452,9 +470,15 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
                             valid = false;
                         }
                         if (valid) {
-                            (uint256 amount,, uint8 decimals) = abi.decode(data, (uint256, string, uint8));
-                            // Convert: baseCurrency = tokenAmount * basePrice / 10**decimals
-                            return Math.mulDiv(_tokenAmount, amount, 10 ** uint256(decimals));
+                            (uint256 priceAmount,, uint8 priceDecimals) = abi.decode(data, (uint256, string, uint8));
+
+                            // Get token decimals to normalize token amount to whole tokens
+                            uint8 tokenDecimals = IERC20Metadata(_token).decimals();
+
+                            // Convert raw token amount to whole tokens: tokenAmount / 10^tokenDecimals
+                            // Then multiply by price: (tokenAmount / 10^tokenDecimals) * (priceAmount / 10^priceDecimals)
+                            // Result should be whole currency units
+                            return Math.mulDiv(_tokenAmount, priceAmount, 10 ** uint256(tokenDecimals) * 10 ** uint256(priceDecimals));
                         }
                         break; // Found the issuer, no need to check others for this claim
                     }
@@ -470,5 +494,18 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
         }
 
         revert ComplianceCheckFailed("No valid base price claim found");
+    }
+
+    /// @notice Converts raw token amount to whole token count
+    /// @dev Divides raw token amount by 10^decimals to get whole token count
+    /// @param _token The token address to get decimals from
+    /// @param _tokenAmount The raw token amount (including decimals) to convert
+    /// @return The equivalent amount in whole tokens
+    function _convertToWholeTokens(
+        address _token,
+        uint256 _tokenAmount
+    ) private view returns (uint256) {
+        uint8 tokenDecimals = IERC20Metadata(_token).decimals();
+        return _tokenAmount / (10 ** uint256(tokenDecimals));
     }
 }
