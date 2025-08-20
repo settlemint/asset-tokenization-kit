@@ -35,14 +35,14 @@ export function EditTopicDialog({
   onOpenChange,
 }: EditTopicDialogProps) {
   const queryClient = useQueryClient();
-  const { t } = useTranslation("claim-topics");
+  const { t } = useTranslation("claim-topics-issuers");
 
   // Update topic mutation
   const updateMutation = useMutation({
     mutationFn: (data: z.infer<typeof TopicUpdateInputSchema>) =>
       client.system.topicUpdate(data),
     onSuccess: (result) => {
-      toast.success(t("toast.updated", { name: result.name }));
+      toast.success(t("claimTopics.toast.updated", { name: result.name }));
       // Invalidate and refetch topics data
       void queryClient.invalidateQueries({
         queryKey: orpc.system.topicList.queryKey(),
@@ -50,7 +50,7 @@ export function EditTopicDialog({
       onOpenChange(false);
     },
     onError: (error) => {
-      toast.error(t("toast.updateError", { error: error.message }));
+      toast.error(t("claimTopics.toast.updateError", { error: error.message }));
     },
   });
 
@@ -64,7 +64,7 @@ export function EditTopicDialog({
       onSubmit: ({ value }) => {
         // Additional validation: signature must be different from current
         if (value.signature === topic.signature) {
-          return { signature: t("edit.validation.signatureChanged") };
+          return { signature: t("claimTopics.edit.validation.signatureChanged") };
         }
       },
     },
@@ -89,8 +89,8 @@ export function EditTopicDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{t("edit.title")}</DialogTitle>
-          <DialogDescription>{t("edit.description")}</DialogDescription>
+          <DialogTitle>{t("claimTopics.edit.title")}</DialogTitle>
+          <DialogDescription>{t("claimTopics.edit.description")}</DialogDescription>
         </DialogHeader>
 
         <form.AppForm>
@@ -99,7 +99,7 @@ export function EditTopicDialog({
               {(field) => (
                 <div className="space-y-2">
                   <Label htmlFor={field.name}>
-                    {t("edit.fields.name.label")}
+                    {t("claimTopics.edit.fields.name.label")}
                   </Label>
                   <Input
                     id={field.name}
@@ -109,7 +109,7 @@ export function EditTopicDialog({
                     className="bg-muted"
                   />
                   <p className="text-xs text-muted-foreground">
-                    {t("edit.fields.name.description", {
+                    {t("claimTopics.edit.fields.name.description", {
                       topicId: Number(topic.topicId),
                     })}
                   </p>
@@ -121,15 +121,15 @@ export function EditTopicDialog({
               name="signature"
               children={(field) => (
                 <field.TextField
-                  label={t("edit.fields.signature.label")}
+                  label={t("claimTopics.edit.fields.signature.label")}
                   required={true}
-                  description={t("edit.fields.signature.description")}
+                  description={t("claimTopics.edit.fields.signature.description")}
                 />
               )}
             />
             <div className="text-xs text-muted-foreground">
               <p>
-                {t("edit.fields.signature.current", {
+                {t("claimTopics.edit.fields.signature.current", {
                   signature: topic.signature,
                 })}
               </p>
@@ -143,7 +143,7 @@ export function EditTopicDialog({
               onClick={handleClose}
               disabled={updateMutation.isPending}
             >
-              {t("edit.actions.cancel")}
+              {t("claimTopics.edit.actions.cancel")}
             </Button>
             <form.Subscribe>
               {(state) => (
@@ -157,8 +157,8 @@ export function EditTopicDialog({
                   }
                 >
                   {updateMutation.isPending
-                    ? t("edit.actions.updating")
-                    : t("edit.actions.update")}
+                    ? t("claimTopics.edit.actions.updating")
+                    : t("claimTopics.edit.actions.update")}
                 </Button>
               )}
             </form.Subscribe>

@@ -39,7 +39,7 @@ const isSystemTopic = (topic: TopicScheme): boolean => {
  */
 export function TopicsTable() {
   const [editingTopic, setEditingTopic] = useState<TopicScheme | null>(null);
-  const { t } = useTranslation("claim-topics");
+  const { t } = useTranslation("claim-topics-issuers");
 
   // Fetch topics data using ORPC
   const { data: topics } = useSuspenseQuery(
@@ -53,25 +53,25 @@ export function TopicsTable() {
     () =>
       withAutoFeatures([
         columnHelper.accessor("topicId", {
-          header: t("table.columns.id"),
+          header: t("claimTopics.table.columns.id"),
           cell: ({ getValue }) => {
             const topicId = getValue();
             return <span className="font-mono text-sm">{Number(topicId)}</span>;
           },
           meta: {
-            displayName: t("table.columns.id"),
+            displayName: t("claimTopics.table.columns.id"),
             type: "number",
             icon: FileText,
           },
         }),
         columnHelper.accessor("name", {
-          header: t("table.columns.name"),
+          header: t("claimTopics.table.columns.name"),
           cell: ({ getValue }) => {
             const name = getValue();
             return <span className="font-medium">{name}</span>;
           },
           meta: {
-            displayName: t("table.columns.name"),
+            displayName: t("claimTopics.table.columns.name"),
             type: "text",
             icon: FileText,
           },
@@ -80,7 +80,7 @@ export function TopicsTable() {
           (row) => (isSystemTopic(row) ? "system" : "custom"),
           {
             id: "source",
-            header: t("table.columns.source"),
+            header: t("claimTopics.table.columns.source"),
             cell: ({ getValue }) => {
               const source = getValue();
               const isSystem = source === "system";
@@ -93,30 +93,30 @@ export function TopicsTable() {
                   {isSystem ? (
                     <>
                       <Shield className="h-3 w-3" />
-                      {t("table.source.system")}
+                      {t("claimTopics.table.source.system")}
                     </>
                   ) : (
                     <>
                       <Edit className="h-3 w-3" />
-                      {t("table.source.custom")}
+                      {t("claimTopics.table.source.custom")}
                     </>
                   )}
                 </Badge>
               );
             },
             meta: {
-              displayName: t("table.columns.source"),
+              displayName: t("claimTopics.table.columns.source"),
               type: "option",
               icon: Settings,
               options: [
                 {
                   value: "system",
-                  label: t("table.source.system"),
+                  label: t("claimTopics.table.source.system"),
                   icon: Shield,
                 },
                 {
                   value: "custom",
-                  label: t("table.source.custom"),
+                  label: t("claimTopics.table.source.custom"),
                   icon: Edit,
                 },
               ],
@@ -125,7 +125,7 @@ export function TopicsTable() {
         ),
         columnHelper.display({
           id: "actions",
-          header: t("table.columns.actions"),
+          header: t("claimTopics.table.columns.actions"),
           meta: {
             enableCsvExport: false,
           },
@@ -170,7 +170,7 @@ export function TopicsTable() {
           enableFilters: true,
           enableExport: true,
           enableViewOptions: true,
-          placeholder: t("table.placeholder"),
+          placeholder: t("claimTopics.table.placeholder"),
         }}
         pagination={{
           enablePagination: true,

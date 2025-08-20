@@ -1,0 +1,94 @@
+{
+  "page": {
+    "title": "Anspruchsthemen und Aussteller",
+    "description": "Verwalten Sie Anspruchsthemen und vertrauenswürdige Aussteller für die Identitätsverifikation."
+  },
+  "claimTopics": {
+    "title": "Anspruchsthemen",
+    "description": "Konfigurieren Sie die verfügbaren Anspruchsthemen, die für die Identitätsverifikation verwendet werden können. Systemthemen sind vordefiniert und können nicht geändert werden.",
+    "addButton": "Thema hinzufügen",
+    "table": {
+      "title": "Anspruchsthemen",
+      "columns": {
+        "id": "ID",
+        "name": "Name",
+        "source": "Quelle",
+        "actions": "Aktionen"
+      },
+      "source": {
+        "system": "System",
+        "custom": "Benutzerdefiniert"
+      },
+      "placeholder": "Themen suchen..."
+    },
+    "actions": {
+      "menu": {
+        "openMenu": "Menü öffnen",
+        "editSignature": "Signatur bearbeiten",
+        "deleteTopic": "Thema löschen"
+      },
+      "delete": {
+        "title": "Anspruchsthema löschen",
+        "description": "Sind Sie sicher, dass Sie das Thema \"{topicName}\" löschen möchten?",
+        "warning": "Diese Aktion kann nicht rückgängig gemacht werden. Bestehende Ansprüche, die dieses Thema verwenden, können ungültig werden.",
+        "cancel": "Abbrechen",
+        "confirm": "Thema löschen",
+        "deleting": "Wird gelöscht..."
+      }
+    },
+    "add": {
+      "title": "Anspruchsthema hinzufügen",
+      "description": "Erstellen Sie ein neues benutzerdefiniertes Anspruchsthema für die Identitätsverifikation.",
+      "fields": {
+        "name": {
+          "label": "Themenname",
+          "description": "Ein eindeutiger, menschenlesbarer Name für dieses Anspruchsthema. Z.B. Berufslizenz"
+        },
+        "signature": {
+          "label": "Funktionssignatur",
+          "description": "Funktionssignatur für die Anspruchsverifikation. Muss dem Format folgen: functionName(parameterTypes). Z.B. hasLicense(address,bytes32)"
+        }
+      },
+      "verification": {
+        "title": "Themenerstellung bestätigen",
+        "description": "Bitte verifizieren Sie Ihre Identität, um dieses Anspruchsthema zu erstellen"
+      },
+      "actions": {
+        "cancel": "Abbrechen",
+        "create": "Thema erstellen",
+        "creating": "Wird erstellt..."
+      }
+    },
+    "edit": {
+      "title": "Themensignatur bearbeiten",
+      "description": "Aktualisieren Sie die Verifikationssignatur für dieses Anspruchsthema. Der Themenname kann nach der Erstellung nicht geändert werden.",
+      "fields": {
+        "name": {
+          "label": "Themenname",
+          "description": "Themen-ID: {topicId} • Themenname kann nicht geändert werden"
+        },
+        "signature": {
+          "label": "Funktionssignatur",
+          "description": "Funktionssignatur für die Anspruchsverifikation. Muss dem Format folgen: functionName(parameterTypes). Z.B. hasLicense(address,bytes32)",
+          "current": "Aktuell: {signature}"
+        }
+      },
+      "actions": {
+        "cancel": "Abbrechen",
+        "update": "Signatur aktualisieren",
+        "updating": "Wird aktualisiert..."
+      },
+      "validation": {
+        "signatureChanged": "Neue Signatur muss sich von der aktuellen Signatur unterscheiden"
+      }
+    },
+    "toast": {
+      "created": "Thema \"{name}\" erfolgreich erstellt",
+      "updated": "Thema \"{name}\" erfolgreich aktualisiert",
+      "deleted": "Thema erfolgreich gelöscht",
+      "createError": "Fehler beim Erstellen des Themas: {error}",
+      "updateError": "Fehler beim Aktualisieren des Themas: {error}",
+      "deleteError": "Fehler beim Löschen des Themas: {error}"
+    }
+  }
+}

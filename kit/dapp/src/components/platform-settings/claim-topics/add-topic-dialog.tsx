@@ -26,12 +26,12 @@ export function AddTopicDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const queryClient = useQueryClient();
-  const { t } = useTranslation("claim-topics");
+  const { t } = useTranslation("claim-topics-issuers");
 
   const createMutation = useMutation({
     mutationFn: (data: TopicCreateInput) => client.system.topicCreate(data),
     onSuccess: (result) => {
-      toast.success(t("toast.created", { name: result.name }));
+      toast.success(t("claimTopics.toast.created", { name: result.name }));
       void queryClient.invalidateQueries({
         queryKey: orpc.system.topicList.queryKey(),
       });
@@ -40,7 +40,7 @@ export function AddTopicDialog({
     },
     onError: (error) => {
       toast.error(
-        t("toast.createError", {
+        t("claimTopics.toast.createError", {
           error: error.message || error.toString() || "Unknown error",
         })
       );
@@ -75,8 +75,10 @@ export function AddTopicDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{t("add.title")}</DialogTitle>
-          <DialogDescription>{t("add.description")}</DialogDescription>
+          <DialogTitle>{t("claimTopics.add.title")}</DialogTitle>
+          <DialogDescription>
+            {t("claimTopics.add.description")}
+          </DialogDescription>
         </DialogHeader>
 
         <form.AppForm>
@@ -85,9 +87,9 @@ export function AddTopicDialog({
               name="name"
               children={(field) => (
                 <field.TextField
-                  label={t("add.fields.name.label")}
+                  label={t("claimTopics.add.fields.name.label")}
                   required={true}
-                  description={t("add.fields.name.description")}
+                  description={t("claimTopics.add.fields.name.description")}
                 />
               )}
             />
@@ -96,9 +98,11 @@ export function AddTopicDialog({
               name="signature"
               children={(field) => (
                 <field.TextField
-                  label={t("add.fields.signature.label")}
+                  label={t("claimTopics.add.fields.signature.label")}
                   required={true}
-                  description={t("add.fields.signature.description")}
+                  description={t(
+                    "claimTopics.add.fields.signature.description"
+                  )}
                 />
               )}
             />
@@ -111,13 +115,13 @@ export function AddTopicDialog({
               onClick={handleClose}
               disabled={createMutation.isPending}
             >
-              {t("add.actions.cancel")}
+              {t("claimTopics.add.actions.cancel")}
             </Button>
             <form.VerificationButton
               onSubmit={handleSubmit}
               walletVerification={{
-                title: t("add.verification.title"),
-                description: t("add.verification.description"),
+                title: t("claimTopics.add.verification.title"),
+                description: t("claimTopics.add.verification.description"),
                 setField: (verification) => {
                   form.setFieldValue("walletVerification", verification);
                 },
@@ -125,8 +129,8 @@ export function AddTopicDialog({
               disabled={createMutation.isPending}
             >
               {createMutation.isPending
-                ? t("add.actions.creating")
-                : t("add.actions.create")}
+                ? t("claimTopics.add.actions.creating")
+                : t("claimTopics.add.actions.create")}
             </form.VerificationButton>
           </DialogFooter>
         </form.AppForm>

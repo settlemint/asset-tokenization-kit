@@ -1,14 +1,16 @@
 /**
  * @vitest-environment node
  */
-import { describe, expect, it, beforeEach, vi } from "vitest";
 import {
-  installPortalRouterCaptureMock,
-  getCapturedHandler,
   createBaseContext,
   createMockErrors,
+  getCapturedHandler,
+  installPortalRouterCaptureMock,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
+import { VerificationType } from "@atk/zod/src/validators/verification-type";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import "./topic.create";
 import type {
   TopicCreateInput,
   TopicCreateOutput,
@@ -22,7 +24,6 @@ vi.mock("@/orpc/helpers/challenge-response", () => ({
 }));
 
 installPortalRouterCaptureMock();
-import "./topic.create";
 
 function getHandler(): OrpcHandler<TopicCreateInput, TopicCreateOutput> {
   const handler = getCapturedHandler();
@@ -62,6 +63,10 @@ describe("system.claim-topics.topic.create unit", () => {
     const input: TopicCreateInput = {
       name: "KYC Verification",
       signature: "isKYCVerified(address,bytes32)",
+      walletVerification: {
+        secretVerificationCode: "123456",
+        verificationType: VerificationType.pincode,
+      },
     };
 
     const result = await handler({
@@ -111,6 +116,10 @@ describe("system.claim-topics.topic.create unit", () => {
     const input: TopicCreateInput = {
       name: "Age Verification",
       signature: "isOver18(address)",
+      walletVerification: {
+        secretVerificationCode: "123456",
+        verificationType: VerificationType.pincode,
+      },
     };
 
     const result = await handler({
@@ -143,6 +152,10 @@ describe("system.claim-topics.topic.create unit", () => {
     const input: TopicCreateInput = {
       name: "Test Topic",
       signature: "testFunction(address)",
+      walletVerification: {
+        secretVerificationCode: "123456",
+        verificationType: VerificationType.pincode,
+      },
     };
 
     await expect(
@@ -180,6 +193,10 @@ describe("system.claim-topics.topic.create unit", () => {
     const input: TopicCreateInput = {
       name: "Test Topic",
       signature: "testFunction(address)",
+      walletVerification: {
+        secretVerificationCode: "123456",
+        verificationType: VerificationType.pincode,
+      },
     };
 
     await expect(
@@ -213,10 +230,23 @@ describe("system.claim-topics.topic.create unit", () => {
         "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
       );
 
+    const walletVerification = {
+      secretVerificationCode: "123456",
+      verificationType: VerificationType.pincode,
+    };
+
     const testCases = [
-      { name: "KYC", signature: "isKYC(address)" },
-      { name: "AML Check", signature: "isAMLCompliant(address,uint256)" },
-      { name: "Investor Status", signature: "isAccreditedInvestor(address)" },
+      { name: "KYC", signature: "isKYC(address)", walletVerification },
+      {
+        name: "AML Check",
+        signature: "isAMLCompliant(address,uint256)",
+        walletVerification,
+      },
+      {
+        name: "Investor Status",
+        signature: "isAccreditedInvestor(address)",
+        walletVerification,
+      },
     ];
 
     for (const testCase of testCases) {
@@ -265,6 +295,10 @@ describe("system.claim-topics.topic.create unit", () => {
     const input: TopicCreateInput = {
       name: "Credit Score",
       signature: "getCreditScore(address,uint256)",
+      walletVerification: {
+        secretVerificationCode: "123456",
+        verificationType: VerificationType.pincode,
+      },
     };
 
     await handler({

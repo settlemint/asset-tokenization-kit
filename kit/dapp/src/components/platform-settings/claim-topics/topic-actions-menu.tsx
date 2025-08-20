@@ -1,12 +1,4 @@
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -16,13 +8,21 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { client, orpc } from "@/orpc/orpc-client";
 import type { TopicScheme } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
-import { orpc, client } from "@/orpc/orpc-client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { MoreHorizontal, Edit, Trash2, AlertTriangle } from "lucide-react";
+import { AlertTriangle, Edit, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 interface TopicActionsMenuProps {
   topic: TopicScheme;
@@ -36,7 +36,7 @@ interface TopicActionsMenuProps {
 export function TopicActionsMenu({ topic, onEdit }: TopicActionsMenuProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const queryClient = useQueryClient();
-  const { t } = useTranslation("claim-topics");
+  const { t } = useTranslation("claim-topics-issuers");
 
   // Delete topic mutation
   const deleteMutation = useMutation({
@@ -45,7 +45,7 @@ export function TopicActionsMenu({ topic, onEdit }: TopicActionsMenuProps) {
         name: topic.name,
       }),
     onSuccess: () => {
-      toast.success(t("toast.deleted"));
+      toast.success(t("claimTopics.toast.deleted"));
       // Invalidate and refetch topics data
       void queryClient.invalidateQueries({
         queryKey: orpc.system.topicList.queryKey(),
@@ -53,7 +53,7 @@ export function TopicActionsMenu({ topic, onEdit }: TopicActionsMenuProps) {
       setShowDeleteDialog(false);
     },
     onError: (error) => {
-      toast.error(t("toast.deleteError", { error: error.message }));
+      toast.error(t("claimTopics.toast.deleteError", { error: error.message }));
     },
   });
 
@@ -66,14 +66,16 @@ export function TopicActionsMenu({ topic, onEdit }: TopicActionsMenuProps) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-            <span className="sr-only">{t("actions.menu.openMenu")}</span>
+            <span className="sr-only">
+              {t("claimTopics.actions.menu.openMenu")}
+            </span>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={onEdit}>
             <Edit className="mr-2 h-4 w-4" />
-            {t("actions.menu.editSignature")}
+            {t("claimTopics.actions.menu.editSignature")}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
@@ -83,7 +85,7 @@ export function TopicActionsMenu({ topic, onEdit }: TopicActionsMenuProps) {
             className="text-destructive focus:text-destructive"
           >
             <Trash2 className="mr-2 h-4 w-4" />
-            {t("actions.menu.deleteTopic")}
+            {t("claimTopics.actions.menu.deleteTopic")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -93,27 +95,31 @@ export function TopicActionsMenu({ topic, onEdit }: TopicActionsMenuProps) {
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-destructive" />
-              {t("actions.delete.title")}
+              {t("claimTopics.actions.delete.title")}
             </AlertDialogTitle>
             <AlertDialogDescription className="space-y-2">
               <p>
-                {t("actions.delete.description", { topicName: topic.name })}
+                {t("claimTopics.actions.delete.description", {
+                  topicName: topic.name,
+                })}
               </p>
               <p className="text-sm text-muted-foreground">
-                {t("actions.delete.warning")}
+                {t("claimTopics.actions.delete.warning")}
               </p>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t("actions.delete.cancel")}</AlertDialogCancel>
+            <AlertDialogCancel>
+              {t("claimTopics.actions.delete.cancel")}
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={deleteMutation.isPending}
               className="bg-destructive hover:bg-destructive/90"
             >
               {deleteMutation.isPending
-                ? t("actions.delete.deleting")
-                : t("actions.delete.confirm")}
+                ? t("claimTopics.actions.delete.deleting")
+                : t("claimTopics.actions.delete.confirm")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

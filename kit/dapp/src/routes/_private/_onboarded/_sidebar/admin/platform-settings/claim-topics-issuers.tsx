@@ -32,7 +32,8 @@ export const Route = createFileRoute(
 });
 
 function ClaimTopicsIssuersPage() {
-  const { t } = useTranslation("navigation");
+  const { t } = useTranslation("claim-topics-issuers");
+  const { t: tNav } = useTranslation("navigation");
   const [showAddDialog, setShowAddDialog] = useState(false);
 
   return (
@@ -40,10 +41,10 @@ function ClaimTopicsIssuersPage() {
       <RouterBreadcrumb />
       <div className="mb-8 mt-4">
         <h1 className="text-3xl font-bold">
-          {t("settings.claimTopicsIssuers")}
+          {tNav("settings.claimTopicsIssuers")}
         </h1>
         <p className="text-muted-foreground mt-2">
-          Manage claim topics and trusted issuers for identity verification.
+          {t("page.description")}
         </p>
       </div>
 
@@ -52,11 +53,9 @@ function ClaimTopicsIssuersPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>Claim Topics</CardTitle>
+                <CardTitle>{t("claimTopics.title")}</CardTitle>
                 <CardDescription>
-                  Configure the available claim topics that can be used for
-                  identity verification. System topics are predefined and cannot
-                  be modified.
+                  {t("claimTopics.description")}
                 </CardDescription>
               </div>
               <Button
@@ -65,7 +64,7 @@ function ClaimTopicsIssuersPage() {
                 }}
               >
                 <Plus className="mr-2 h-4 w-4" />
-                Add Topic
+                {t("claimTopics.addButton")}
               </Button>
             </div>
           </CardHeader>
