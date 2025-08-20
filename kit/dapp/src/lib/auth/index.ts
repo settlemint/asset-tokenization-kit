@@ -17,15 +17,15 @@
  */
 
 import { metadata } from "@/config/metadata";
+import { pincode } from "@/lib/auth/plugins/pincode-plugin";
+import { secretCodes } from "@/lib/auth/plugins/secret-codes-plugin";
+import { twoFactor } from "@/lib/auth/plugins/two-factor";
 import {
   accessControl,
   adminRole,
   investorRole,
   issuerRole,
-} from "@/lib/auth/permissions";
-import { pincode } from "@/lib/auth/plugins/pincode-plugin";
-import { secretCodes } from "@/lib/auth/plugins/secret-codes-plugin";
-import { twoFactor } from "@/lib/auth/plugins/two-factor";
+} from "@/lib/auth/utils/permissions";
 import { kycProfiles } from "@/lib/db/schema";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import type { UserRole } from "@atk/zod/user-roles";

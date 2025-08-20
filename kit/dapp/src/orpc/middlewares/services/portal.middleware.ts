@@ -175,6 +175,8 @@ function createValidatedPortalClient(
   theGraphClient?: ValidatedTheGraphClient
 ) {
   const client = {
+    raw: portalClient,
+
     /**
      * Executes a GraphQL mutation and waits for the transaction to complete.
      *
