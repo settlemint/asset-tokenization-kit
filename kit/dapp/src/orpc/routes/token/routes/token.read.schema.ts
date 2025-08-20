@@ -82,6 +82,16 @@ export const RawTokenSchema = z.object({
     })
     .nullable()
     .describe("The amount of tokens redeemed"),
+  yield: z.object({
+    id: ethereumAddress.describe("The address of the token"),
+    schedule: z
+      .object({
+        id: ethereumAddress.describe(
+          "The address of the yield schedule of the token"
+        ),
+      })
+      .nullable(),
+  }),
   bond: z
     .object({
       faceValue: bigDecimal().describe("The face value of the bond"),
