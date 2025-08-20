@@ -1,0 +1,81 @@
+{
+  "table": {
+    "title": "موضوعات المطالبات",
+    "columns": {
+      "id": "المعرف",
+      "name": "الاسم",
+      "source": "المصدر",
+      "actions": "الإجراءات"
+    },
+    "source": {
+      "system": "النظام",
+      "custom": "مخصص"
+    },
+    "placeholder": "البحث في الموضوعات..."
+  },
+  "actions": {
+    "menu": {
+      "openMenu": "فتح القائمة",
+      "editSignature": "تعديل التوقيع",
+      "deleteTopic": "حذف الموضوع"
+    },
+    "delete": {
+      "title": "حذف موضوع المطالبة",
+      "description": "هل أنت متأكد من أنك تريد حذف الموضوع \"{topicName}\"؟",
+      "warning": "لا يمكن التراجع عن هذا الإجراء. قد تصبح أي مطالبات موجودة تستخدم هذا الموضوع غير صالحة.",
+      "cancel": "إلغاء",
+      "confirm": "حذف الموضوع",
+      "deleting": "جاري الحذف..."
+    }
+  },
+  "add": {
+    "title": "إضافة موضوع مطالبة",
+    "description": "إنشاء موضوع مطالبة مخصص جديد للتحقق من الهوية.",
+    "fields": {
+      "name": {
+        "label": "اسم الموضوع",
+        "description": "اسم فريد ومقروء للإنسان لموضوع المطالبة هذا. مثال: رخصة مهنية"
+      },
+      "signature": {
+        "label": "توقيع الدالة",
+        "description": "توقيع الدالة للتحقق من المطالبة. يجب أن يتبع التنسيق: functionName(parameterTypes). مثال: hasLicense(address,bytes32)"
+      }
+    },
+    "actions": {
+      "cancel": "إلغاء",
+      "create": "إنشاء موضوع",
+      "creating": "جاري الإنشاء..."
+    }
+  },
+  "edit": {
+    "title": "تعديل توقيع الموضوع",
+    "description": "تحديث توقيع التحقق لموضوع المطالبة هذا. لا يمكن تغيير اسم الموضوع بعد الإنشاء.",
+    "fields": {
+      "name": {
+        "label": "اسم الموضوع",
+        "description": "معرف الموضوع: {topicId} • لا يمكن تغيير اسم الموضوع"
+      },
+      "signature": {
+        "label": "توقيع الدالة",
+        "description": "توقيع الدالة للتحقق من المطالبة. يجب أن يتبع التنسيق: functionName(parameterTypes). مثال: hasLicense(address,bytes32)",
+        "current": "الحالي: {signature}"
+      }
+    },
+    "actions": {
+      "cancel": "إلغاء",
+      "update": "تحديث التوقيع",
+      "updating": "جاري التحديث..."
+    },
+    "validation": {
+      "signatureChanged": "يجب أن يكون التوقيع الجديد مختلفاً عن التوقيع الحالي"
+    }
+  },
+  "toast": {
+    "created": "تم إنشاء الموضوع \"{name}\" بنجاح",
+    "updated": "تم تحديث الموضوع \"{name}\" بنجاح",
+    "deleted": "تم حذف الموضوع بنجاح",
+    "createError": "فشل في إنشاء الموضوع: {error}",
+    "updateError": "فشل في تحديث الموضوع: {error}",
+    "deleteError": "فشل في حذف الموضوع: {error}"
+  }
+}

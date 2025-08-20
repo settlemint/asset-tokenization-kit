@@ -22,6 +22,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { MoreHorizontal, Edit, Trash2, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface TopicActionsMenuProps {
   topic: TopicScheme;
@@ -35,6 +36,7 @@ interface TopicActionsMenuProps {
 export function TopicActionsMenu({ topic, onEdit }: TopicActionsMenuProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const queryClient = useQueryClient();
+  const { t } = useTranslation("claim-topics");
 
   // Delete topic mutation
   const deleteMutation = useMutation({
@@ -43,7 +45,7 @@ export function TopicActionsMenu({ topic, onEdit }: TopicActionsMenuProps) {
         name: topic.name,
       }),
     onSuccess: () => {
-      toast.success("Topic deleted successfully");
+      toast.success(t("toast.deleted"));
       // Invalidate and refetch topics data
       void queryClient.invalidateQueries({
         queryKey: orpc.system.topicList.queryKey(),
@@ -51,7 +53,7 @@ export function TopicActionsMenu({ topic, onEdit }: TopicActionsMenuProps) {
       setShowDeleteDialog(false);
     },
     onError: (error) => {
-      toast.error(`Failed to delete topic: ${error.message}`);
+      toast.error(t("toast.deleteError", { error: error.message }));
     },
   });
 
@@ -64,14 +66,14 @@ export function TopicActionsMenu({ topic, onEdit }: TopicActionsMenuProps) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
+            <span className="sr-only">{t("actions.menu.openMenu")}</span>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={onEdit}>
             <Edit className="mr-2 h-4 w-4" />
-            Edit Signature
+            {t("actions.menu.editSignature")}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
@@ -79,7 +81,7 @@ export function TopicActionsMenu({ topic, onEdit }: TopicActionsMenuProps) {
             className="text-destructive focus:text-destructive"
           >
             <Trash2 className="mr-2 h-4 w-4" />
-            Delete Topic
+            {t("actions.menu.deleteTopic")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -89,26 +91,25 @@ export function TopicActionsMenu({ topic, onEdit }: TopicActionsMenuProps) {
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-destructive" />
-              Delete Claim Topic
+              {t("actions.delete.title")}
             </AlertDialogTitle>
             <AlertDialogDescription className="space-y-2">
               <p>
-                Are you sure you want to delete the topic <strong>"{topic.name}"</strong>?
+                {t("actions.delete.description", { topicName: topic.name })}
               </p>
               <p className="text-sm text-muted-foreground">
-                This action cannot be undone. Any existing claims using this topic
-                may become invalid.
+                {t("actions.delete.warning")}
               </p>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("actions.delete.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={deleteMutation.isPending}
               className="bg-destructive hover:bg-destructive/90"
             >
-              {deleteMutation.isPending ? "Deleting..." : "Delete Topic"}
+              {deleteMutation.isPending ? t("actions.delete.deleting") : t("actions.delete.confirm")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -12,6 +12,7 @@ import { client, orpc } from "@/orpc/orpc-client";
 import { TopicCreateInputSchema } from "@/orpc/routes/system/claim-topics/routes/topic.create.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
 interface AddTopicDialogProps {
@@ -25,13 +26,14 @@ interface AddTopicDialogProps {
  */
 export function AddTopicDialog({ open, onOpenChange }: AddTopicDialogProps) {
   const queryClient = useQueryClient();
+  const { t } = useTranslation("claim-topics");
 
   // Create topic mutation
   const createMutation = useMutation({
     mutationFn: (data: z.infer<typeof TopicCreateInputSchema>) =>
       client.system.topicCreate(data),
     onSuccess: (result) => {
-      toast.success(`Topic "${result.name}" created successfully`);
+      toast.success(t("toast.created", { name: result.name }));
       // Invalidate and refetch topics data
       void queryClient.invalidateQueries({
         queryKey: orpc.system.topicList.queryKey(),
@@ -40,7 +42,7 @@ export function AddTopicDialog({ open, onOpenChange }: AddTopicDialogProps) {
       form.reset();
     },
     onError: (error) => {
-      toast.error(`Failed to create topic: ${error.message}`);
+      toast.error(t("toast.createError", { error: error.message }));
     },
   });
 
@@ -66,9 +68,9 @@ export function AddTopicDialog({ open, onOpenChange }: AddTopicDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Add Claim Topic</DialogTitle>
+          <DialogTitle>{t("add.title")}</DialogTitle>
           <DialogDescription>
-            Create a new custom claim topic for identity verification.
+            {t("add.description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -78,9 +80,9 @@ export function AddTopicDialog({ open, onOpenChange }: AddTopicDialogProps) {
               name="name"
               children={(field) => (
                 <field.TextField
-                  label="Topic Name"
+                  label={t("add.fields.name.label")}
                   required={true}
-                  description="A unique, human-readable name for this claim topic. E.g., Professional License"
+                  description={t("add.fields.name.description")}
                 />
               )}
             />
@@ -89,9 +91,9 @@ export function AddTopicDialog({ open, onOpenChange }: AddTopicDialogProps) {
               name="signature"
               children={(field) => (
                 <field.TextField
-                  label="Function Signature"
+                  label={t("add.fields.signature.label")}
                   required={true}
-                  description="Function signature for claim verification. Must follow the format: functionName(parameterTypes). E.g., hasLicense(address,bytes32)"
+                  description={t("add.fields.signature.description")}
                 />
               )}
             />
@@ -104,7 +106,7 @@ export function AddTopicDialog({ open, onOpenChange }: AddTopicDialogProps) {
               onClick={handleClose}
               disabled={createMutation.isPending}
             >
-              Cancel
+              {t("add.actions.cancel")}
             </Button>
             <form.Subscribe>
               {(state) => (
@@ -117,7 +119,7 @@ export function AddTopicDialog({ open, onOpenChange }: AddTopicDialogProps) {
                     Object.keys(state.errors).length > 0
                   }
                 >
-                  {createMutation.isPending ? "Creating..." : "Create Topic"}
+                  {createMutation.isPending ? t("add.actions.creating") : t("add.actions.create")}
                 </Button>
               )}
             </form.Subscribe>

@@ -8,6 +8,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { Edit, FileText, Settings, Shield } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { EditTopicDialog } from "./edit-topic-dialog";
 import { TopicActionsMenu } from "./topic-actions-menu";
 
@@ -38,6 +39,7 @@ const isSystemTopic = (topic: TopicScheme): boolean => {
  */
 export function TopicsTable() {
   const [editingTopic, setEditingTopic] = useState<TopicScheme | null>(null);
+  const { t } = useTranslation("claim-topics");
 
   // Fetch topics data using ORPC
   const { data: topics } = useSuspenseQuery(
@@ -51,25 +53,25 @@ export function TopicsTable() {
     () =>
       withAutoFeatures([
         columnHelper.accessor("topicId", {
-          header: "ID",
+          header: t("table.columns.id"),
           cell: ({ getValue }) => {
             const topicId = getValue();
             return <span className="font-mono text-sm">{Number(topicId)}</span>;
           },
           meta: {
-            displayName: "ID",
+            displayName: t("table.columns.id"),
             type: "number",
             icon: FileText,
           },
         }),
         columnHelper.accessor("name", {
-          header: "Name",
+          header: t("table.columns.name"),
           cell: ({ getValue }) => {
             const name = getValue();
             return <span className="font-medium">{name}</span>;
           },
           meta: {
-            displayName: "Name",
+            displayName: t("table.columns.name"),
             type: "text",
             icon: FileText,
           },
@@ -78,7 +80,7 @@ export function TopicsTable() {
           (row) => (isSystemTopic(row) ? "system" : "custom"),
           {
             id: "source",
-            header: "Source",
+            header: t("table.columns.source"),
             cell: ({ getValue }) => {
               const source = getValue();
               const isSystem = source === "system";
@@ -91,30 +93,30 @@ export function TopicsTable() {
                   {isSystem ? (
                     <>
                       <Shield className="h-3 w-3" />
-                      System
+                      {t("table.source.system")}
                     </>
                   ) : (
                     <>
                       <Edit className="h-3 w-3" />
-                      Custom
+                      {t("table.source.custom")}
                     </>
                   )}
                 </Badge>
               );
             },
             meta: {
-              displayName: "Source",
+              displayName: t("table.columns.source"),
               type: "option",
               icon: Settings,
               options: [
                 {
                   value: "system",
-                  label: "System",
+                  label: t("table.source.system"),
                   icon: Shield,
                 },
                 {
                   value: "custom",
-                  label: "Custom",
+                  label: t("table.source.custom"),
                   icon: Edit,
                 },
               ],
@@ -123,7 +125,7 @@ export function TopicsTable() {
         ),
         columnHelper.display({
           id: "actions",
-          header: "Actions",
+          header: t("table.columns.actions"),
           meta: {
             enableCsvExport: false,
           },
@@ -146,7 +148,7 @@ export function TopicsTable() {
           },
         }),
       ] as ColumnDef<TopicScheme>[]),
-    [setEditingTopic]
+    [setEditingTopic, t]
   );
 
   return (
@@ -168,7 +170,7 @@ export function TopicsTable() {
           enableFilters: true,
           enableExport: true,
           enableViewOptions: true,
-          placeholder: "Search topics...",
+          placeholder: t("table.placeholder"),
         }}
         pagination={{
           enablePagination: true,

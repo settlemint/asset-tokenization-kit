@@ -16,6 +16,7 @@ import { TopicUpdateInputSchema } from "@/orpc/routes/system/claim-topics/routes
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
 interface EditTopicDialogProps {
@@ -30,13 +31,14 @@ interface EditTopicDialogProps {
  */
 export function EditTopicDialog({ topic, open, onOpenChange }: EditTopicDialogProps) {
   const queryClient = useQueryClient();
+  const { t } = useTranslation("claim-topics");
 
   // Update topic mutation
   const updateMutation = useMutation({
     mutationFn: (data: z.infer<typeof TopicUpdateInputSchema>) =>
       client.system.topicUpdate(data),
     onSuccess: (result) => {
-      toast.success(`Topic "${result.name}" updated successfully`);
+      toast.success(t("toast.updated", { name: result.name }));
       // Invalidate and refetch topics data
       void queryClient.invalidateQueries({
         queryKey: orpc.system.topicList.queryKey(),
@@ -44,7 +46,7 @@ export function EditTopicDialog({ topic, open, onOpenChange }: EditTopicDialogPr
       onOpenChange(false);
     },
     onError: (error) => {
-      toast.error(`Failed to update topic: ${error.message}`);
+      toast.error(t("toast.updateError", { error: error.message }));
     },
   });
 
@@ -58,7 +60,7 @@ export function EditTopicDialog({ topic, open, onOpenChange }: EditTopicDialogPr
       onSubmit: ({ value }) => {
         // Additional validation: signature must be different from current
         if (value.signature === topic.signature) {
-          return { signature: "New signature must be different from current signature" };
+          return { signature: t("edit.validation.signatureChanged") };
         }
       },
     },
@@ -83,10 +85,9 @@ export function EditTopicDialog({ topic, open, onOpenChange }: EditTopicDialogPr
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Edit Topic Signature</DialogTitle>
+          <DialogTitle>{t("edit.title")}</DialogTitle>
           <DialogDescription>
-            Update the verification signature for this claim topic.
-            The topic name cannot be changed after creation.
+            {t("edit.description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -95,7 +96,7 @@ export function EditTopicDialog({ topic, open, onOpenChange }: EditTopicDialogPr
           <form.Field name="name">
             {(field) => (
               <div className="space-y-2">
-                <Label htmlFor={field.name}>Topic Name</Label>
+                <Label htmlFor={field.name}>{t("edit.fields.name.label")}</Label>
                 <Input
                   id={field.name}
                   value={field.state.value}
@@ -104,7 +105,7 @@ export function EditTopicDialog({ topic, open, onOpenChange }: EditTopicDialogPr
                   className="bg-muted"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Topic ID: {Number(topic.topicId)} • Topic name cannot be changed
+                  {t("edit.fields.name.description", { topicId: Number(topic.topicId) })}
                 </p>
               </div>
             )}
@@ -114,14 +115,14 @@ export function EditTopicDialog({ topic, open, onOpenChange }: EditTopicDialogPr
             name="signature"
             children={(field) => (
               <field.TextField
-                label="Function Signature"
+                label={t("edit.fields.signature.label")}
                 required={true}
-                description="Function signature for claim verification. Must follow the format: functionName(parameterTypes). E.g., hasLicense(address,bytes32)"
+                description={t("edit.fields.signature.description")}
               />
             )}
           />
           <div className="text-xs text-muted-foreground">
-            <p>Current: <code className="bg-muted px-1 py-0.5 rounded">{topic.signature}</code></p>
+            <p>{t("edit.fields.signature.current", { signature: topic.signature })}</p>
           </div>
           </div>
 
@@ -132,7 +133,7 @@ export function EditTopicDialog({ topic, open, onOpenChange }: EditTopicDialogPr
               onClick={handleClose}
               disabled={updateMutation.isPending}
             >
-              Cancel
+              {t("edit.actions.cancel")}
             </Button>
             <form.Subscribe>
               {(state) => (
@@ -145,7 +146,7 @@ export function EditTopicDialog({ topic, open, onOpenChange }: EditTopicDialogPr
                     Object.keys(state.errors).length > 0
                   }
                 >
-                  {updateMutation.isPending ? "Updating..." : "Update Signature"}
+                  {updateMutation.isPending ? t("edit.actions.updating") : t("edit.actions.update")}
                 </Button>
               )}
             </form.Subscribe>
