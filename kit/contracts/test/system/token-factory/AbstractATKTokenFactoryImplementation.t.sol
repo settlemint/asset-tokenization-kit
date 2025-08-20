@@ -6,22 +6,17 @@ import { AbstractATKTokenFactoryImplementation } from
     "../../../contracts/system/token-factory/AbstractATKTokenFactoryImplementation.sol";
 import { IATKTokenFactory } from "../../../contracts/system/token-factory/IATKTokenFactory.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
 
 // Import additional contracts for issuer identity tests
 import { IATKSystem } from "../../../contracts/system/IATKSystem.sol";
 import { ATKSystemImplementation } from "../../../contracts/system/ATKSystemImplementation.sol";
-import { ATKContractIdentityImplementation } from
-    "../../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
 import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
 import { ISMARTTopicSchemeRegistry } from "../../../contracts/smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { IERC735 } from "@onchainid/contracts/interface/IERC735.sol";
-import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
-import { IATKContractIdentity } from "../../../contracts/system/identity-factory/identities/IATKContractIdentity.sol";
 import { MockedSMARTToken } from "../../mocks/MockedSMARTToken.sol";
 import { IContractWithIdentity } from "../../../contracts/system/identity-factory/IContractWithIdentity.sol";
 

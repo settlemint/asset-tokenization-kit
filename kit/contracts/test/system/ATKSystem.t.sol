@@ -26,9 +26,6 @@ import { ATKRoles } from "../../contracts/system/ATKRoles.sol";
 import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
 import { IContractWithIdentity } from "../../contracts/system/identity-factory/IContractWithIdentity.sol";
-import { IATKContractIdentity } from "../../contracts/system/identity-factory/identities/IATKContractIdentity.sol";
-import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
-import { IERC735 } from "@onchainid/contracts/interface/IERC735.sol";
 import { MockedIdentity } from "../utils/mocks/MockedIdentity.sol";
 
 // Import system errors
@@ -37,7 +34,6 @@ import {
     ComplianceImplementationNotSet,
     IdentityRegistryImplementationNotSet,
     InvalidImplementationInterface,
-    IssuerIdentityNotInitialized,
     InvalidTargetIdentity
 } from "../../contracts/system/ATKSystemErrors.sol";
 
