@@ -1,5 +1,6 @@
 import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
 import { apiBigInt } from "@atk/zod/bigint";
+import { isoCountryCodeNumeric } from "@atk/zod/iso-country-code";
 import type { z } from "zod";
 
 export const TokenSetYieldScheduleInputSchema =
@@ -13,6 +14,9 @@ export const TokenSetYieldScheduleInputSchema =
     ),
     endTime: apiBigInt.describe(
       "The end time for yield payments as Unix timestamp"
+    ),
+    countryCode: isoCountryCodeNumeric.describe(
+      "ISO 3166-1 numeric country code for jurisdiction"
     ),
   });
 
