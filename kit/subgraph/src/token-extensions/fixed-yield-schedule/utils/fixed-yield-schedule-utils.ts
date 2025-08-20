@@ -17,7 +17,7 @@ export function getPeriodId(address: Address, periodNumber: i32): Bytes {
 export function updateYield(token: Token): void {
   const yield_ = fetchYield(Address.fromBytes(token.id));
   if (yield_.schedule === null) {
-    log.error("FixedYieldSchedule: no schedule set", []);
+    log.info("FixedYieldSchedule: no schedule set", []);
     return;
   }
   const fixedYieldScheduleAddress = Address.fromBytes(yield_.schedule!);

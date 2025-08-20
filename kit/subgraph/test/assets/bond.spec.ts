@@ -74,7 +74,7 @@ describe("Bonds", () => {
     for (const token of response.tokens) {
       if (token.yield_) {
         expect(token.yield_.id).toBeDefined();
-        // Schedule can be null if yield is not configured
+        // Verify schedule can be null (no yield configured) or contain valid data
         expect(
           token.yield_.schedule === null || token.yield_.schedule?.id
         ).toBeTruthy();

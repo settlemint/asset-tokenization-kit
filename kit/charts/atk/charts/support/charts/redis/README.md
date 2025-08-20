@@ -33,7 +33,7 @@ A simple Redis deployment for development environments
 | image.pullSecrets | list | `[]` | Redis image pull secrets |
 | image.registry | string | `"docker.io"` | Redis image registry |
 | image.repository | string | `"redis"` | Redis image repository |
-| image.tag | string | `"8.2.0-alpine"` | Redis image tag |
+| image.tag | string | `"8.2.1-alpine"` | Redis image tag |
 | livenessProbe.enabled | bool | `true` | Enable liveness probe |
 | livenessProbe.failureThreshold | int | `3` | Failure threshold |
 | livenessProbe.initialDelaySeconds | int | `30` | Initial delay seconds |
