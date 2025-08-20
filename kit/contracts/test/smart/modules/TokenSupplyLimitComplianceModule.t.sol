@@ -606,6 +606,205 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
     */
 
+    // --- Global Tracking Tests ---
+
+    function test_TokenSupplyLimit_Global_LifetimeCap() public {
+        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+            .SupplyLimitConfig({
+            maxSupply: 500e18, // 500 tokens global limit
+            periodLength: 0, // Lifetime
+            rolling: false,
+            useBasePrice: false,
+            basePriceTopicId: 0,
+            global: true
+        });
+
+        bytes memory params = abi.encode(config);
+
+        // Mint 200 tokens from token1
+        module.canTransfer(address(smartToken), address(0), user1, 200e18, params);
+        module.created(address(smartToken), user1, 200e18, params);
+
+        // Create a second token address for testing
+        address token2 = address(0x9999);
+
+        // Mint 200 tokens from token2 (global total: 400)
+        module.canTransfer(token2, address(0), user1, 200e18, params);
+        module.created(token2, user1, 200e18, params);
+
+        // Try to mint 150 more from token1 - should fail (400 + 150 > 500)
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
+            )
+        );
+        module.canTransfer(address(smartToken), address(0), user1, 150e18, params);
+
+        // But 100 more should work (400 + 100 = 500)
+        module.canTransfer(address(smartToken), address(0), user1, 100e18, params);
+    }
+
+    function test_TokenSupplyLimit_Global_RollingWindow_SameDayAccumulation() public {
+        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+            .SupplyLimitConfig({
+            maxSupply: 300e18, // 300 tokens global limit
+            periodLength: 3, // 3-day rolling window
+            rolling: true,
+            useBasePrice: false,
+            basePriceTopicId: 0,
+            global: true
+        });
+
+        bytes memory params = abi.encode(config);
+        uint256 sameDay = 1000 * 86400;
+        address token2 = address(0x9999);
+
+        // Same day: mint 100 from token1
+        vm.warp(sameDay);
+        module.canTransfer(address(smartToken), address(0), user1, 100e18, params);
+        module.created(address(smartToken), user1, 100e18, params);
+
+        // Same day: mint 100 from token2 (global total: 200)
+        vm.warp(sameDay + 6 hours);
+        module.canTransfer(token2, address(0), user1, 100e18, params);
+        module.created(token2, user1, 100e18, params);
+
+        // Same day: mint 100 more from token1 (global total: 300)
+        vm.warp(sameDay + 12 hours);
+        module.canTransfer(address(smartToken), address(0), user1, 100e18, params);
+        module.created(address(smartToken), user1, 100e18, params);
+
+        // Try to mint 1 more - should fail (300 + 1 > 300)
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
+            )
+        );
+        module.canTransfer(address(smartToken), address(0), user1, 1, params);
+    }
+
+    function test_TokenSupplyLimit_Global_RollingWindow_AcrossDays() public {
+        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+            .SupplyLimitConfig({
+            maxSupply: 400e18, // 400 tokens global limit
+            periodLength: 3, // 3-day rolling window
+            rolling: true,
+            useBasePrice: false,
+            basePriceTopicId: 0,
+            global: true
+        });
+
+        bytes memory params = abi.encode(config);
+        uint256 day1 = 1000 * 86400;
+        uint256 day2 = 1001 * 86400;
+        uint256 day3 = 1002 * 86400;
+        address token2 = address(0x9999);
+
+        // Day 1: mint 100 from token1
+        vm.warp(day1);
+        module.canTransfer(address(smartToken), address(0), user1, 100e18, params);
+        module.created(address(smartToken), user1, 100e18, params);
+
+        // Day 2: mint 150 from token2 (global window total: 250)
+        vm.warp(day2);
+        module.canTransfer(token2, address(0), user1, 150e18, params);
+        module.created(token2, user1, 150e18, params);
+
+        // Day 3: mint 150 from token1 (global window total: 400, at limit)
+        vm.warp(day3);
+        module.canTransfer(address(smartToken), address(0), user1, 150e18, params);
+        module.created(address(smartToken), user1, 150e18, params);
+
+        // Day 3: try to mint 1 more from either token - should fail
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
+            )
+        );
+        module.canTransfer(token2, address(0), user1, 1e18, params);
+    }
+
+    function test_TokenSupplyLimit_Global_RollingWindow_WindowSlides() public {
+        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+            .SupplyLimitConfig({
+            maxSupply: 200e18, // 200 tokens global limit
+            periodLength: 2, // 2-day rolling window
+            rolling: true,
+            useBasePrice: false,
+            basePriceTopicId: 0,
+            global: true
+        });
+
+        bytes memory params = abi.encode(config);
+        uint256 day1 = 1000 * 86400;
+        uint256 day2 = 1001 * 86400;
+        uint256 day3 = 1002 * 86400;
+        address token2 = address(0x9999);
+
+        // Day 1: mint 100 from token1
+        vm.warp(day1);
+        module.canTransfer(address(smartToken), address(0), user1, 100e18, params);
+        module.created(address(smartToken), user1, 100e18, params);
+
+        // Day 2: mint 100 from token2 (global window: 200, at limit)
+        vm.warp(day2);
+        module.canTransfer(token2, address(0), user1, 100e18, params);
+        module.created(token2, user1, 100e18, params);
+
+        // Day 3: window slides - day 1 falls out, only day 2 and 3 in window
+        // Current window has 100 from day 2, so we can mint 100 more
+        vm.warp(day3);
+        module.canTransfer(address(smartToken), address(0), user1, 100e18, params);
+        module.created(address(smartToken), user1, 100e18, params);
+
+        // Now at limit again (day 2: 100 + day 3: 100 = 200)
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
+            )
+        );
+        module.canTransfer(token2, address(0), user1, 1, params);
+    }
+
+    function test_TokenSupplyLimit_Global_FixedPeriod() public {
+        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+            .SupplyLimitConfig({
+            maxSupply: 300e18, // 300 tokens global limit per period
+            periodLength: 30, // 30-day fixed periods
+            rolling: false,
+            useBasePrice: false,
+            basePriceTopicId: 0,
+            global: true
+        });
+
+        bytes memory params = abi.encode(config);
+        uint256 startTime = 1000 * 86400;
+        address token2 = address(0x9999);
+
+        // Period 1: mint 150 from token1
+        vm.warp(startTime);
+        module.canTransfer(address(smartToken), address(0), user1, 150e18, params);
+        module.created(address(smartToken), user1, 150e18, params);
+
+        // Period 1: mint 149 from token2 (total: 299, under limit)
+        module.canTransfer(token2, address(0), user1, 149e18, params);
+        module.created(token2, user1, 149e18, params);
+
+        // Period 1: try to mint 2 more - should fail (299 + 2 > 300)
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
+            )
+        );
+        module.canTransfer(address(smartToken), address(0), user1, 2e18, params);
+
+        // Move to period 2 (after 30 days)
+        vm.warp(startTime + 31 days);
+
+        // Period 2: should allow minting again (fresh period)
+        module.canTransfer(address(smartToken), address(0), user1, 300e18, params);
+    }
+
     // --- Integration Tests ---
 
     function test_TokenSupplyLimit_Integration_TokenMintingWithModule() public {
