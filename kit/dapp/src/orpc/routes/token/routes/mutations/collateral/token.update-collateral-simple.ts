@@ -13,7 +13,7 @@ import { tokenRouter } from "@/orpc/procedures/token.router";
 import { read } from "@/orpc/routes/token/routes/token.read";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { call } from "@orpc/server";
-import { encodeAbiParameters } from "viem";
+import { encodeAbiParameters, encodePacked, keccak256 } from "viem";
 import { z } from "zod";
 
 /**
@@ -137,10 +137,14 @@ export const updateCollateral = tokenRouter.token.updateCollateral
     // Create claim topic for collateral (using padded topic like standalone version)
     const claimTopic = "0x" + "1".padStart(64, "0");
 
-    // Create signature hash for user-issued claim
-    // For now using a placeholder signature - in production this should be signed by the user's private key
-    const messageHash =
-      "0x0000000000000000000000000000000000000000000000000000000000000000";
+    // Create signature hash for self-issued claim (CONTRACT scheme)
+    // For CONTRACT scheme, identity contract acts as issuer and this message hash serves as signature
+    const messageHash = keccak256(
+      encodePacked(
+        ["address", "uint256", "bytes"],
+        [onchainID as `0x${string}`, BigInt(claimTopic), claimData]
+      )
+    );
 
     // Get the token's identity contract address from Portal
     const tokenIdentityAddress = await context.portalClient.query(
