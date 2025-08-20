@@ -7,7 +7,7 @@ export function fetchYield(address: Address): TokenYield {
 
   if (!tokenYield) {
     tokenYield = new TokenYield(address);
-    tokenYield.schedule = Address.zero();
+    tokenYield.schedule = null;
     tokenYield.save();
     YieldTemplate.create(address);
   }
