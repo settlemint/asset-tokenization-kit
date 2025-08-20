@@ -2,11 +2,6 @@
  * Shared Error Logging Helper for ORPC
  *
  * This helper provides comprehensive error logging for all ORPC error handling interceptors,
-
- *
- * Features:
- * - Logs all errors in test/development environments (not just 500+)
- * - Provides structured error output for debugging
  */
 
 import { createLogger } from "@settlemint/sdk-utils/logging";
