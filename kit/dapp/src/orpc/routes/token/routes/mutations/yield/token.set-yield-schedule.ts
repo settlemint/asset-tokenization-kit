@@ -94,7 +94,7 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
       {
         address: contract,
         from: sender.wallet,
-        schedule: schedule,
+        schedule,
       },
       {
         sender: sender,

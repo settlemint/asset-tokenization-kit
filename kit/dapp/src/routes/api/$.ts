@@ -17,8 +17,8 @@
  * @see {@link https://spec.openapis.org/oas/latest.html} - OpenAPI specification
  */
 
-import { metadata } from "@/config/metadata";
 import { router } from "@/orpc/routes/router";
+import { metadata } from "@atk/config/metadata";
 import { bigDecimalSerializer } from "@atk/zod/bigdecimal";
 import { onError } from "@orpc/client";
 import { experimental_SmartCoercionPlugin as SmartCoercionPlugin } from "@orpc/json-schema";
