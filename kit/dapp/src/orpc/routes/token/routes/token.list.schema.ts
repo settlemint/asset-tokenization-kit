@@ -23,6 +23,7 @@ import { z } from "zod";
 export const TokenListSchema = z.array(
   TokenSchema.omit({
     collateral: true,
+    yield: true,
     fund: true,
     bond: true,
     redeemable: true,

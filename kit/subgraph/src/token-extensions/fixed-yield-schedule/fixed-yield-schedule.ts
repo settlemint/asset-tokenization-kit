@@ -6,6 +6,7 @@ import {
   FixedYieldScheduleSet,
   YieldClaimed,
 } from "../../../generated/templates/FixedYieldSchedule/FixedYieldSchedule";
+import { fetchAccount } from "../../account/fetch/account";
 import { fetchEvent } from "../../event/fetch/event";
 import { setBigNumber } from "../../utils/bignumber";
 import { getTokenDecimals } from "../../utils/token-decimals";
@@ -30,6 +31,8 @@ export function handleFixedYieldScheduleSet(
   fixedYieldSchedule.endDate = event.params.endDate;
   fixedYieldSchedule.rate = event.params.rate;
   fixedYieldSchedule.interval = event.params.interval;
+  fixedYieldSchedule.createdAt = event.block.timestamp;
+  fixedYieldSchedule.createdBy = fetchAccount(event.transaction.from).id;
   setBigNumber(
     fixedYieldSchedule,
     "totalClaimed",
