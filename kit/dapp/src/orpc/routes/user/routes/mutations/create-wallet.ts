@@ -4,7 +4,8 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { getEthereumAddress } from "@atk/zod/src/ethereum-address";
+import { getEthereumAddress } from "@atk/zod/ethereum-address";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { eq } from "drizzle-orm/sql";
 import type { VariablesOf } from "gql.tada";
 import { createPublicClient, http, parseEther, toHex, zeroAddress } from "viem";
@@ -17,6 +18,8 @@ const CREATE_ACCOUNT_MUTATION = portalGraphql(`
     }
   }
 `);
+
+const logger = createLogger();
 
 export const createWallet = authRouter.user.createWallet
   .use(databaseMiddleware)
@@ -64,22 +67,22 @@ export const createWallet = authRouter.user.createWallet
         // In local dev, this will be http://localhost:8545 or similar
         const blockchainUrl = env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT;
 
-        try {
-          const client = createPublicClient({
-            chain: anvil,
-            transport: http(blockchainUrl),
-          });
+        const client = createPublicClient({
+          chain: anvil,
+          transport: http(blockchainUrl),
+        });
 
-          await client.request({
-            method: "anvil_setBalance",
-            params: [walletAddress, balanceInHex],
-          } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
-        } catch {
-          // Don't throw - wallet creation should still succeed
-          // The test will fail later if funding is actually needed
-        }
-      } catch {
-        // Ignore outer errors
+        await client.request({
+          method: "anvil_setBalance",
+          params: [walletAddress, balanceInHex],
+        } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+      } catch (error) {
+        // Don't throw - wallet creation should still succeed
+        // The test will fail later if funding is actually needed
+        logger.warn("Failed to fund wallet", {
+          walletAddress,
+          error,
+        });
       }
     }
 
