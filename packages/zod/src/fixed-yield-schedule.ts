@@ -1,16 +1,15 @@
 /**
- * Yield Schedule Validation Utilities
+ * Fixed Yield Schedule Validation Utilities
  *
- * This module provides comprehensive Zod schemas for validating yield schedule
+ * This module provides comprehensive Zod schemas for validating fixed yield schedule
  * data structures from TheGraph, ensuring type safety and proper data transformation
  * for yield-bearing assets in the asset tokenization platform.
- * @module YieldScheduleValidation
+ * @module FixedYieldScheduleValidation
  */
 
 import { z } from "zod";
 import { bigDecimal } from "./bigdecimal";
 import { ethereumAddress } from "./ethereum-address";
-import { ethereumHash } from "./ethereum-hash";
 import { ethereumHex } from "./ethereum-hex";
 import { timestamp } from "./timestamp";
 
@@ -45,7 +44,6 @@ export const fixedYieldSchedulePeriod = () =>
     totalClaimed: bigDecimal().describe("Total yield claimed in this period"),
     totalUnclaimedYield: bigDecimal().describe("Total unclaimed yield in this period"),
     totalYield: bigDecimal().describe("Total yield generated in this period"),
-    deployedInTransaction: ethereumHash.describe("Transaction hash where this period was created"),
   });
 
 /**
@@ -81,18 +79,6 @@ export const fixedYieldSchedulePeriod = () =>
 export const fixedYieldSchedule = () =>
   z.object({
     id: ethereumAddress.describe("Yield schedule contract address"),
-    createdAt: timestamp().describe("Unix timestamp when schedule was created"),
-    createdBy: z.object({
-      id: ethereumAddress.describe("Address of schedule creator"),
-      isContract: z.boolean().describe("Whether creator is a contract"),
-    }),
-    account: z.object({
-      id: ethereumAddress.describe("Schedule contract account address"),
-      isContract: z.boolean().describe("Whether account is a contract"),
-    }),
-    asset: z.object({
-      id: ethereumAddress.describe("Asset contract address"),
-    }),
     startDate: timestamp().describe("Unix timestamp when yield starts"),
     endDate: timestamp().describe("Unix timestamp when yield ends"),
     rate: z.string().describe("Yield rate in basis points"),
@@ -102,13 +88,10 @@ export const fixedYieldSchedule = () =>
     totalYield: bigDecimal().describe("Total yield generated"),
     denominationAsset: z.object({
       id: ethereumAddress.describe("Denomination asset contract address"),
-      symbol: z.string().describe("Denomination asset symbol"),
-      decimals: z.number().describe("Denomination asset decimals"),
     }),
     currentPeriod: fixedYieldSchedulePeriod().nullable().describe("Current active yield period"),
     nextPeriod: fixedYieldSchedulePeriod().nullable().describe("Next scheduled yield period"),
     periods: z.array(fixedYieldSchedulePeriod()).describe("Array of all yield periods"),
-    deployedInTransaction: ethereumHash.describe("Transaction hash where schedule was deployed"),
   });
 
 // Export types

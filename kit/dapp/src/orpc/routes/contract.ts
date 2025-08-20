@@ -1,6 +1,7 @@
 import { accountContract } from "@/orpc/routes/account/account.contract";
 import { actionsContract } from "@/orpc/routes/actions/actions.contract";
 import { exchangeRatesContract } from "@/orpc/routes/exchange-rates/exchange-rates.contract";
+import { fixedYieldScheduleContract } from "@/orpc/routes/fixed-yield-schedule/fixed-yield-schedule.contract";
 import { settingsContract } from "@/orpc/routes/settings/settings.contract";
 import { systemContract } from "@/orpc/routes/system/system.contract";
 import { tokenContract } from "@/orpc/routes/token/token.contract";
@@ -59,6 +60,18 @@ export const contract = {
    * @see {@link ./exchange-rates/exchange-rates.router} - Corresponding router implementation
    */
   exchangeRates: exchangeRatesContract,
+
+  /**
+   * Fixed yield schedule API contract.
+   *
+   * Contains type definitions for fixed yield schedule management procedures.
+   * Provides access to yield schedule configuration, tracking metrics, period
+   * management, and denomination asset details for tokenized assets with
+   * yield-bearing capabilities.
+   * @see {@link ./fixed-yield-schedule/fixed-yield-schedule.contract} - Fixed yield schedule contract implementation
+   * @see {@link ./fixed-yield-schedule/fixed-yield-schedule.router} - Corresponding router implementation
+   */
+  fixedYieldSchedule: fixedYieldScheduleContract,
 
   /**
    * Settings-related API contract.

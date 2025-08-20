@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { format, from } from "dnum";
-import { fixedYieldSchedulePeriod, fixedYieldSchedule } from "../../src/yield-schedule";
+import { fixedYieldSchedulePeriod, fixedYieldSchedule } from "../../src/fixed-yield-schedule";
 
 
 describe("fixedYieldSchedulePeriod", () => {
@@ -14,7 +14,6 @@ describe("fixedYieldSchedulePeriod", () => {
       totalClaimed: "1000.5",
       totalUnclaimedYield: "500.25",
       totalYield: "1500.75",
-      deployedInTransaction: "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
     };
 
     const result = validator.parse(validPeriod);
@@ -31,7 +30,6 @@ describe("fixedYieldSchedulePeriod", () => {
       totalClaimed: from("999999999999999999999999999999.99"),
       totalUnclaimedYield: from("0"),
       totalYield: from("999999999999999999999999999999.99"),
-      deployedInTransaction: "0x2222222222222222222222222222222222222222222222222222222222222222",
     };
 
     const result = validator.parse(validPeriod);
@@ -49,7 +47,6 @@ describe("fixedYieldSchedulePeriod", () => {
         totalClaimed: "1000",
         totalUnclaimedYield: "500",
         totalYield: "invalid-decimal",
-        deployedInTransaction: "0x123",
       })
     ).toThrow();
   });
@@ -61,18 +58,6 @@ describe("fixedYieldSchedule", () => {
   it("should accept complete valid schedule", () => {
     const validSchedule = {
       id: "0x1234567890abcdef1234567890abcdef12345678",
-      createdAt: "1680354000",
-      createdBy: {
-        id: "0xabcdef1234567890abcdef1234567890abcdef12",
-        isContract: false,
-      },
-      account: {
-        id: "0x9876543210fedcba9876543210fedcba98765432",
-        isContract: true,
-      },
-      asset: {
-        id: "0xfedcba9876543210fedcba9876543210fedcba98",
-      },
       startDate: "1680354000",
       endDate: "1711890000",
       rate: "500", // 5% in basis points
@@ -82,8 +67,6 @@ describe("fixedYieldSchedule", () => {
       totalYield: "15000.75",
       denominationAsset: {
         id: "0x1111111111111111111111111111111111111111",
-        symbol: "USDC",
-        decimals: 6,
       },
       currentPeriod: {
         id: "0x2222222222222222222222222222222222222222",
@@ -92,21 +75,18 @@ describe("fixedYieldSchedule", () => {
         totalClaimed: "1000",
         totalUnclaimedYield: "500",
         totalYield: "1500",
-        deployedInTransaction: "0x3333333333333333333333333333333333333333333333333333333333333333",
       },
       nextPeriod: null,
       periods: [],
-      deployedInTransaction: "0x4444444444444444444444444444444444444444444444444444444444444444",
     };
 
     const result = validator.parse(validSchedule);
 
     // Check essential fields
     expect(result.id.toLowerCase()).toBe(validSchedule.id.toLowerCase());
-    expect(result.createdAt).toBeInstanceOf(Date);
+    expect(result.startDate).toBeInstanceOf(Date);
     expect(result.rate).toBe("500");
-    expect(result.denominationAsset.symbol).toBe("USDC");
-    expect(result.denominationAsset.decimals).toBe(6);
+    expect(result.denominationAsset.id.toLowerCase()).toBe(validSchedule.denominationAsset.id.toLowerCase());
 
     // Check Dnum parsing
     expect(format(result.totalClaimed).replace(/,/g, "")).toBe("10000.5");
@@ -126,15 +106,10 @@ describe("fixedYieldSchedule", () => {
       totalClaimed: "1000",
       totalUnclaimedYield: "500",
       totalYield: "1500",
-      deployedInTransaction: "0xbbbb222222222222222222222222222222222222222222222222222222222222",
     };
 
     const schedule = {
       id: "0x1234567890abcdef1234567890abcdef12345678",
-      createdAt: new Date(),
-      createdBy: { id: "0xabcd1234567890abcdef1234567890abcdef1234", isContract: false },
-      account: { id: "0x9876543210fedcba9876543210fedcba98765432", isContract: true },
-      asset: { id: "0xfedcba9876543210fedcba9876543210fedcba98" },
       startDate: new Date("2023-01-01"),
       endDate: new Date("2024-01-01"),
       rate: "1000", // 10%
@@ -142,28 +117,22 @@ describe("fixedYieldSchedule", () => {
       totalClaimed: "3000",
       totalUnclaimedYield: "1500",
       totalYield: "4500",
-      denominationAsset: { id: "0x5555555555555555555555555555555555555555", symbol: "WETH", decimals: 18 },
+      denominationAsset: { id: "0x5555555555555555555555555555555555555555" },
       currentPeriod: null,
       nextPeriod: period1,
       periods: [period1],
-      deployedInTransaction: "0x6666666666666666666666666666666666666666666666666666666666666666",
     };
 
     const result = validator.parse(schedule);
     expect(result.periods).toHaveLength(1);
     expect(result.nextPeriod?.id).toBe(period1.id as `0x${string}`);
-    expect(result.denominationAsset.symbol).toBe("WETH");
-    expect(result.denominationAsset.decimals).toBe(18);
+    expect(result.denominationAsset.id.toLowerCase()).toBe("0x5555555555555555555555555555555555555555");
   });
 
   it("should handle edge cases correctly", () => {
     // Test with zero values and minimal data
     const minimalSchedule = {
       id: "0x0000000000000000000000000000000000000000",
-      createdAt: new Date(0), // Unix epoch
-      createdBy: { id: "0x0000000000000000000000000000000000000000", isContract: true },
-      account: { id: "0xffffffffffffffffffffffffffffffffffffffff", isContract: false },
-      asset: { id: "0x1111111111111111111111111111111111111111" },
       startDate: new Date(0),
       endDate: new Date("2038-01-19T03:14:07Z"), // Unix timestamp limit
       rate: "0", // 0%
@@ -171,11 +140,10 @@ describe("fixedYieldSchedule", () => {
       totalClaimed: "0",
       totalUnclaimedYield: "0.000000000000000001", // Very small decimal
       totalYield: "999999999999999999999999999999.999999999", // Very large decimal
-      denominationAsset: { id: "0x2222222222222222222222222222222222222222", symbol: "USDT", decimals: 6 },
+      denominationAsset: { id: "0x2222222222222222222222222222222222222222" },
       currentPeriod: null,
       nextPeriod: null,
       periods: [],
-      deployedInTransaction: "0x0000000000000000000000000000000000000000000000000000000000000000",
     };
 
     const result = validator.parse(minimalSchedule);
@@ -199,10 +167,6 @@ describe("fixedYieldSchedule", () => {
     expect(() =>
       validator.parse({
         id: "0x1234567890abcdef1234567890abcdef12345678",
-        createdAt: new Date(),
-        createdBy: { id: "0x1234567890abcdef1234567890abcdef12345678", isContract: false },
-        account: { id: "0x9876543210fedcba9876543210fedcba98765432", isContract: true },
-        asset: { id: "0xfedcba9876543210fedcba9876543210fedcba98" },
         startDate: new Date(),
         endDate: new Date(),
         rate: 500, // Should be string
@@ -210,22 +174,17 @@ describe("fixedYieldSchedule", () => {
         totalClaimed: "0",
         totalUnclaimedYield: "0",
         totalYield: "0",
-        denominationAsset: { id: "0x1111111111111111111111111111111111111111", symbol: "USDC", decimals: 6 },
+        denominationAsset: { id: "0x1111111111111111111111111111111111111111" },
         currentPeriod: null,
         nextPeriod: null,
         periods: [],
-        deployedInTransaction: "0x4444444444444444444444444444444444444444444444444444444444444444",
       })
     ).toThrow();
 
-    // Invalid decimals type
+    // Invalid denominationAsset structure (missing required field)
     expect(() =>
       validator.parse({
         id: "0x1234567890abcdef1234567890abcdef12345678",
-        createdAt: new Date(),
-        createdBy: { id: "0x1234567890abcdef1234567890abcdef12345678", isContract: false },
-        account: { id: "0x9876543210fedcba9876543210fedcba98765432", isContract: true },
-        asset: { id: "0xfedcba9876543210fedcba9876543210fedcba98" },
         startDate: new Date(),
         endDate: new Date(),
         rate: "500",
@@ -234,14 +193,11 @@ describe("fixedYieldSchedule", () => {
         totalUnclaimedYield: "0",
         totalYield: "0",
         denominationAsset: {
-          id: "0x1111111111111111111111111111111111111111",
-          symbol: "USDC",
-          decimals: "6", // Should be number
+          // Missing id field
         },
         currentPeriod: null,
         nextPeriod: null,
         periods: [],
-        deployedInTransaction: "0x4444444444444444444444444444444444444444444444444444444444444444",
       })
     ).toThrow();
   });
@@ -249,10 +205,6 @@ describe("fixedYieldSchedule", () => {
   it("should handle safeParse correctly", () => {
     const validData = {
       id: "0x1234567890abcdef1234567890abcdef12345678",
-      createdAt: new Date(),
-      createdBy: { id: "0xabcd1234567890abcdef1234567890abcdef1234", isContract: false },
-      account: { id: "0x9876543210fedcba9876543210fedcba98765432", isContract: true },
-      asset: { id: "0xfedcba9876543210fedcba9876543210fedcba98" },
       startDate: new Date(),
       endDate: new Date(Date.now() + 86400000),
       rate: "500",
@@ -260,11 +212,10 @@ describe("fixedYieldSchedule", () => {
       totalClaimed: "0",
       totalUnclaimedYield: "0",
       totalYield: "0",
-      denominationAsset: { id: "0x1111111111111111111111111111111111111111", symbol: "USDC", decimals: 6 },
+      denominationAsset: { id: "0x1111111111111111111111111111111111111111" },
       currentPeriod: null,
       nextPeriod: null,
       periods: [],
-      deployedInTransaction: "0x4444444444444444444444444444444444444444444444444444444444444444",
     };
 
     const validResult = validator.safeParse(validData);
@@ -277,10 +228,6 @@ describe("fixedYieldSchedule", () => {
   it("should preserve precision in scientific notation and large numbers", () => {
     const schedule = {
       id: "0x1234567890abcdef1234567890abcdef12345678",
-      createdAt: new Date(),
-      createdBy: { id: "0xabcd1234567890abcdef1234567890abcdef1234", isContract: false },
-      account: { id: "0x9876543210fedcba9876543210fedcba98765432", isContract: true },
-      asset: { id: "0xfedcba9876543210fedcba9876543210fedcba98" },
       startDate: new Date(),
       endDate: new Date(Date.now() + 86400000),
       rate: "10000", // 100%
@@ -288,11 +235,10 @@ describe("fixedYieldSchedule", () => {
       totalClaimed: "1.23e10", // Scientific notation
       totalUnclaimedYield: "0.000000000000000001", // Very small
       totalYield: "12345678901234567890123456789.123456789", // Very large with decimals
-      denominationAsset: { id: "0x1111111111111111111111111111111111111111", symbol: "DAI", decimals: 18 },
+      denominationAsset: { id: "0x1111111111111111111111111111111111111111" },
       currentPeriod: null,
       nextPeriod: null,
       periods: [],
-      deployedInTransaction: "0x4444444444444444444444444444444444444444444444444444444444444444",
     };
 
     const result = validator.parse(schedule);
