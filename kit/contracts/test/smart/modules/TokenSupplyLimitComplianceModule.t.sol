@@ -13,9 +13,9 @@ import { SMARTComplianceModuleParamPair } from
 contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     TokenSupplyLimitComplianceModule internal module;
 
-    // Test constants
-    uint256 constant LIFETIME_MAX_SUPPLY = 1000000e18; // 1M tokens
-    uint256 constant PERIOD_MAX_SUPPLY = 100000e18; // 100K tokens for periodic limits
+    // Test constants - now using whole numbers
+    uint256 constant LIFETIME_MAX_SUPPLY = 1000000; // 1M whole tokens
+    uint256 constant PERIOD_MAX_SUPPLY = 100000; // 100K whole tokens for periodic limits
     uint256 constant PERIOD_LENGTH = 30; // 30 days
 
     function setUp() public override {
@@ -225,7 +225,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
             )
         );
-        module.canTransfer(address(smartToken), address(0), user1, LIFETIME_MAX_SUPPLY + 1, params);
+        // Try to mint 1,000,001 whole tokens (exceeds 1M limit)
+        module.canTransfer(address(smartToken), address(0), user1, (LIFETIME_MAX_SUPPLY + 1) * 1e18, params);
     }
 
     function test_TokenSupplyLimit_LifetimeCap_TracksMintedTokens() public {
@@ -310,12 +311,12 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
         bytes memory params = abi.encode(config);
 
-        // First mint near limit
-        module.canTransfer(address(smartToken), address(0), user1, PERIOD_MAX_SUPPLY - 1000e18, params);
+        // First mint near limit (99,000 whole tokens, which is PERIOD_MAX_SUPPLY - 1000)
+        module.canTransfer(address(smartToken), address(0), user1, (PERIOD_MAX_SUPPLY - 1000) * 1e18, params);
         vm.prank(address(smartToken));
-        module.created(address(smartToken), user1, PERIOD_MAX_SUPPLY - 1000e18, params);
+        module.created(address(smartToken), user1, (PERIOD_MAX_SUPPLY - 1000) * 1e18, params);
 
-        // Second mint that would exceed period limit should fail
+        // Second mint that would exceed period limit should fail (99,000 + 2,000 = 101,000 > 100,000)
         vm.expectRevert(
             abi.encodeWithSelector(
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
@@ -329,7 +330,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_RollingWindow_BasicTracking() public {
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 200e18, // 200 tokens limit for rolling window
+            maxSupply: 200, // 200 whole tokens limit for rolling window
             periodLength: 3, // 3-day rolling window
             rolling: true,
             useBasePrice: false,
@@ -353,19 +354,19 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 100e18, params);
 
-        // Day 2: Try to mint 1 more, should fail (rolling window includes day 1 + day 2)
+        // Day 2: Try to mint 1 more whole token, should fail (rolling window includes day 1 + day 2)
         vm.expectRevert(
             abi.encodeWithSelector(
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
             )
         );
-        module.canTransfer(address(smartToken), address(0), user1, 1, params);
+        module.canTransfer(address(smartToken), address(0), user1, 1e18, params);
     }
 
     function test_TokenSupplyLimit_RollingWindow_SameDayAccumulation() public {
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 200e18, // 200 tokens limit
+            maxSupply: 200, // 200 whole tokens limit
             periodLength: 3, // 3-day rolling window
             rolling: true,
             useBasePrice: false,
@@ -387,19 +388,19 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 100e18, params);
 
-        // Try to mint 1 more token on same day - should fail
+        // Try to mint 1 more whole token on same day - should fail
         vm.expectRevert(
             abi.encodeWithSelector(
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
             )
         );
-        module.canTransfer(address(smartToken), address(0), user1, 1, params);
+        module.canTransfer(address(smartToken), address(0), user1, 1e18, params);
     }
 
     function test_TokenSupplyLimit_RollingWindow_ExceedsLimitAcrossDays() public {
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 250e18, // 250 tokens limit
+            maxSupply: 250, // 250 whole tokens limit
             periodLength: 3, // 3-day rolling window
             rolling: true,
             useBasePrice: false,
@@ -441,7 +442,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_RollingWindow_AllowsMintAfterWindowSlides() public {
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 150e18, // 150 tokens
+            maxSupply: 150, // 150 whole tokens
             periodLength: 2, // 2-day rolling window
             rolling: true,
             useBasePrice: false,
@@ -474,7 +475,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         // Test that maximum rolling window (730 days) works efficiently
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 1000e18,
+            maxSupply: 1000, // 1000 whole tokens
             periodLength: 730, // 2 years - maximum allowed for rolling windows
             rolling: true,
             useBasePrice: false,
@@ -515,7 +516,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Global_LifetimeCap() public {
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 500e18, // 500 tokens global limit
+            maxSupply: 500, // 500 whole tokens global limit
             periodLength: 0, // Lifetime
             rolling: false,
             useBasePrice: false,
@@ -565,7 +566,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Global_RollingWindow_SameDayAccumulation() public {
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 300e18, // 300 tokens global limit
+            maxSupply: 300, // 300 whole tokens global limit
             periodLength: 3, // 3-day rolling window
             rolling: true,
             useBasePrice: false,
@@ -613,13 +614,13 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
             )
         );
-        module.canTransfer(token2, address(0), user1, 1, params);
+        module.canTransfer(token2, address(0), user1, 1e18, params); // 1 whole token
     }
 
     function test_TokenSupplyLimit_Global_RollingWindow_AcrossDays() public {
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 400e18, // 400 tokens global limit
+            maxSupply: 400, // 400 whole tokens global limit
             periodLength: 3, // 3-day rolling window
             rolling: true,
             useBasePrice: false,
@@ -675,7 +676,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Global_RollingWindow_WindowSlides() public {
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 200e18, // 200 tokens global limit
+            maxSupply: 200, // 200 whole tokens global limit
             periodLength: 2, // 2-day rolling window
             rolling: true,
             useBasePrice: false,
@@ -726,13 +727,13 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
             )
         );
-        module.canTransfer(token2, address(0), user1, 1, params);
+        module.canTransfer(token2, address(0), user1, 1e18, params); // 1 whole token
     }
 
     function test_TokenSupplyLimit_Global_FixedPeriod() public {
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 300e18, // 300 tokens global limit per period
+            maxSupply: 300, // 300 whole tokens global limit per period
             periodLength: 30, // 30-day fixed periods
             rolling: false,
             useBasePrice: false,
@@ -787,7 +788,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Burn_LifetimeCap() public {
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 500e18, // 500 tokens lifetime limit
+            maxSupply: 500, // 500 whole tokens lifetime limit
             periodLength: 0, // Lifetime
             rolling: false,
             useBasePrice: false,
@@ -828,7 +829,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Burn_RollingWindow_SameDay() public {
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 200e18, // 200 tokens limit
+            maxSupply: 200, // 200 whole tokens limit
             periodLength: 3, // 3-day rolling window
             rolling: true,
             useBasePrice: false,
@@ -864,7 +865,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Burn_RollingWindow_AcrossDays() public {
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 300e18, // 300 tokens limit
+            maxSupply: 300, // 300 whole tokens limit
             periodLength: 3, // 3-day rolling window
             rolling: true,
             useBasePrice: false,
@@ -893,7 +894,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
             )
         );
-        module.canTransfer(address(smartToken), address(0), user1, 1, params);
+        module.canTransfer(address(smartToken), address(0), user1, 1e18, params); // 1 whole token
 
         // Day 2: Burn 50 tokens (reduces day 2 supply to 100, total window: 250)
         vm.prank(address(smartToken));
@@ -906,7 +907,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Burn_FixedPeriod() public {
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 400e18, // 400 tokens per period
+            maxSupply: 400, // 400 whole tokens per period
             periodLength: 30, // 30-day periods
             rolling: false,
             useBasePrice: false,
@@ -941,7 +942,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Burn_Global_CrossToken() public {
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 300e18, // 300 tokens global limit
+            maxSupply: 300, // 300 whole tokens global limit
             periodLength: 0, // Lifetime
             rolling: false,
             useBasePrice: false,
@@ -981,7 +982,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
             )
         );
-        module.canTransfer(address(smartToken), address(0), user1, 1, params);
+        module.canTransfer(address(smartToken), address(0), user1, 1e18, params); // 1 whole token
 
         // Burn 50 from token1 (reduces global supply to 250)
         vm.prank(address(smartToken));
@@ -994,7 +995,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Burn_EdgeCase_BurnMoreThanSupply() public {
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 500e18,
+            maxSupply: 500, // 500 whole tokens
             periodLength: 0, // Lifetime
             rolling: false,
             useBasePrice: false,
@@ -1019,7 +1020,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Burn_EdgeCase_BurnWithoutMint() public {
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 500e18,
+            maxSupply: 500, // 500 whole tokens
             periodLength: 3, // Rolling window
             rolling: true,
             useBasePrice: false,
@@ -1041,7 +1042,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Burn_MintBurnMintCycle() public {
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 200e18,
+            maxSupply: 200, // 200 whole tokens
             periodLength: 2, // 2-day rolling window
             rolling: true,
             useBasePrice: false,
@@ -1083,7 +1084,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Integration_BurnAndMintWithRealToken() public {
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 600e18, // 600 tokens - under the token cap of 1000e18
+            maxSupply: 600, // 600 whole tokens - under the token cap of 1000e18
             periodLength: 0, // Lifetime
             rolling: false,
             useBasePrice: false,
@@ -1099,13 +1100,13 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         smartToken.mint(user1, 500e18);
         assertEq(smartToken.balanceOf(user1), 500e18);
 
-        // Try to mint more - should fail
+        // Try to mint more - should fail (500 + 101 = 601 > 600 limit)
         vm.expectRevert(
             abi.encodeWithSelector(
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
             )
         );
-        smartToken.mint(user1, 150e18);
+        smartToken.mint(user1, 101e18);
 
         // Burn some tokens
         ISMARTBurnable(address(smartToken)).burn(user1, 100e18);
@@ -1115,13 +1116,13 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         smartToken.mint(user1, 200e18);
         assertEq(smartToken.balanceOf(user1), 600e18);
 
-        // But still at compliance limit
+        // But still at compliance limit (600 tokens minted, so 1 more whole token should fail)
         vm.expectRevert(
             abi.encodeWithSelector(
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
             )
         );
-        smartToken.mint(user1, 1);
+        smartToken.mint(user1, 1e18);
 
         vm.stopPrank();
     }
@@ -1131,7 +1132,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Integration_TokenMintingWithModule() public {
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 800e18, // 800 tokens - under the token cap of 1000e18
+            maxSupply: 800, // 800 whole tokens - under the token cap of 1000e18
             periodLength: 0, // Lifetime
             rolling: false,
             useBasePrice: false,
@@ -1165,7 +1166,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Integration_RegularTransfersUnaffected() public {
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 900e18, // 900 tokens - under the token cap of 1000e18
+            maxSupply: 900, // 900 whole tokens - under the token cap of 1000e18
             periodLength: 0,
             rolling: false,
             useBasePrice: false,
@@ -1221,7 +1222,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 8000000e18, // 8M EUR limit
+            maxSupply: 8000000, // 8M EUR limit (whole currency amount)
             periodLength: 0,
             rolling: false,
             useBasePrice: true,
@@ -1261,7 +1262,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 8000000e18,
+            maxSupply: 8000000, // 8M whole currency
             periodLength: 0,
             rolling: false,
             useBasePrice: true,
@@ -1344,12 +1345,13 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Decimals_WithBasePrice_Normalized() public {
         // Create tokens with different decimals but same base price
         vm.startPrank(tokenIssuer);
+        
         address token6Decimals = address(new SMARTToken(
             "USDC Token",
             "USDC",
             6,
             1000000e6,
-            address(0),
+            address(0), // Will be set by createAndSetTokenOnchainID
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             new SMARTComplianceModuleParamPair[](0),
@@ -1362,7 +1364,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             "ETH",
             18,
             1000e18,
-            address(0),
+            address(0), // Will be set by createAndSetTokenOnchainID
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             new SMARTComplianceModuleParamPair[](0),
@@ -1370,6 +1372,10 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             address(accessManager)
         ));
         vm.stopPrank();
+
+        // Create and set token identities
+        tokenUtils.createAndSetTokenOnchainID(token6Decimals, tokenIssuer);
+        tokenUtils.createAndSetTokenOnchainID(token18Decimals, tokenIssuer);
 
         // Both tokens have $1 base price with 18 decimals precision
         claimUtils.issueBasePriceClaim(token6Decimals, tokenIssuer, 1e18, "USD", 18);
@@ -1381,7 +1387,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0,
             rolling: false,
             useBasePrice: true,
-            global: false
+            global: true // Enable global tracking to test cross-token limits
         });
 
         bytes memory params = abi.encode(config);
@@ -1447,12 +1453,13 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Decimals_BasePriceWithDifferentDecimals() public {
         // Test base price claims with different decimal precision
         vm.startPrank(tokenIssuer);
+        
         address tokenWithClaim = address(new SMARTToken(
             "Test Token",
             "TEST",
             18,
             1000e18,
-            address(0),
+            address(0), // Will be set by createAndSetTokenOnchainID
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             new SMARTComplianceModuleParamPair[](0),
@@ -1461,12 +1468,15 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         ));
         vm.stopPrank();
 
+        // Create and set token identity
+        tokenUtils.createAndSetTokenOnchainID(tokenWithClaim, tokenIssuer);
+
         // Price claim with 6 decimals: $1.50 = 1500000 (6 decimals)
         claimUtils.issueBasePriceClaim(tokenWithClaim, tokenIssuer, 1500000, "USD", 6);
 
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 1500e18, // $1500 limit (18 decimals)
+            maxSupply: 1500, // $1500 whole currency limit
             periodLength: 0,
             rolling: false,
             useBasePrice: true,
@@ -1479,21 +1489,26 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         // Conversion: (1000e18 * 1500000) / 10^6 = 1500e18
         module.canTransfer(tokenWithClaim, address(0), user1, 1000e18, params);
 
-        // 1 more token would exceed: $1501.50 > $1500
+        // 1 more whole token would exceed: $1501.50 > $1500
         vm.expectRevert(
             abi.encodeWithSelector(
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
             )
         );
-        module.canTransfer(tokenWithClaim, address(0), user1, 1000e18 + 1, params);
+        module.canTransfer(tokenWithClaim, address(0), user1, 1001e18, params);
     }
 
     function test_TokenSupplyLimit_Decimals_Global_MixedDecimals() public {
         // Test global tracking with tokens of different decimals
         vm.startPrank(tokenIssuer);
+        
         address token6 = address(new SMARTToken("USDC", "USDC", 6, 1000000e6, address(0), address(systemUtils.identityRegistry()), address(systemUtils.compliance()), new SMARTComplianceModuleParamPair[](0), systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL), address(accessManager)));
         address token18 = address(new SMARTToken("ETH", "ETH", 18, 1000e18, address(0), address(systemUtils.identityRegistry()), address(systemUtils.compliance()), new SMARTComplianceModuleParamPair[](0), systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL), address(accessManager)));
         vm.stopPrank();
+
+        // Create and set token identities
+        tokenUtils.createAndSetTokenOnchainID(token6, tokenIssuer);
+        tokenUtils.createAndSetTokenOnchainID(token18, tokenIssuer);
 
         // Both have $2 price in 18 decimal precision
         claimUtils.issueBasePriceClaim(token6, tokenIssuer, 2e18, "USD", 18);
@@ -1501,7 +1516,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 2000e18, // $2000 global limit
+            maxSupply: 2000, // $2000 whole currency global limit
             periodLength: 0,
             rolling: false,
             useBasePrice: true,
@@ -1542,8 +1557,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         address tokenHighDecimals = address(new SMARTToken(
             "High Precision Token",
             "HPT",
-            27, // Very high decimals
-            1e27, // 1 token cap
+            18, // Standard decimals (within valid range)
+            1e18, // 1 token cap
             address(0),
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
@@ -1555,7 +1570,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 5e26, // 0.5 tokens in 27-decimal precision
+            maxSupply: 5, // 5 whole tokens
             periodLength: 0,
             rolling: false,
             useBasePrice: false,
@@ -1564,16 +1579,16 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
         bytes memory params = abi.encode(config);
 
-        // Should work with 0.5 tokens
-        module.canTransfer(tokenHighDecimals, address(0), user1, 5e26, params);
+        // Should work with 5 whole tokens (standard 18 decimals)
+        module.canTransfer(tokenHighDecimals, address(0), user1, 5e18, params);
 
-        // Should fail with 0.5 + smallest unit
+        // Should fail with 6 whole tokens (exceeds limit of 5)
         vm.expectRevert(
             abi.encodeWithSelector(
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
             )
         );
-        module.canTransfer(tokenHighDecimals, address(0), user1, 5e26 + 1, params);
+        module.canTransfer(tokenHighDecimals, address(0), user1, 6e18, params);
     }
 
     // --- Bug Demonstration: Incorrect Base Currency Conversion ---
@@ -1590,13 +1605,17 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         address token18 = address(new SMARTToken("ETH", "ETH", 18, 1000e18, address(0), address(systemUtils.identityRegistry()), address(systemUtils.compliance()), new SMARTComplianceModuleParamPair[](0), systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL), address(accessManager)));
         vm.stopPrank();
 
+        // Create and set token identities
+        tokenUtils.createAndSetTokenOnchainID(token6, tokenIssuer);
+        tokenUtils.createAndSetTokenOnchainID(token18, tokenIssuer);
+
         // Both tokens have SAME $1 price, but price claim has 18 decimals
         claimUtils.issueBasePriceClaim(token6, tokenIssuer, 1e18, "USD", 18);   // $1.00 with 18 decimals
         claimUtils.issueBasePriceClaim(token18, tokenIssuer, 1e18, "USD", 18);  // $1.00 with 18 decimals
 
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 1000e18, // $1000 limit  
+            maxSupply: 1000, // $1000 whole currency limit
             periodLength: 0,
             rolling: false,
             useBasePrice: true,
@@ -1630,13 +1649,17 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         address token18 = address(new SMARTToken("ETH", "ETH", 18, 1000e18, address(0), address(systemUtils.identityRegistry()), address(systemUtils.compliance()), new SMARTComplianceModuleParamPair[](0), systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL), address(accessManager)));
         vm.stopPrank();
 
+        // Create and set token identities
+        tokenUtils.createAndSetTokenOnchainID(token6, tokenIssuer);
+        tokenUtils.createAndSetTokenOnchainID(token18, tokenIssuer);
+
         // Same $1 price for both
         claimUtils.issueBasePriceClaim(token6, tokenIssuer, 1e18, "USD", 18);
         claimUtils.issueBasePriceClaim(token18, tokenIssuer, 1e18, "USD", 18);
 
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 2000e18, // $2000 limit
+            maxSupply: 2000, // $2000 whole currency limit
             periodLength: 0,
             rolling: false,
             useBasePrice: true,
@@ -1652,6 +1675,55 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
         // This test demonstrates the EXPECTED behavior (may fail due to current bug)
         // When fixed, both should work and total should be exactly $2000
+    }
+
+    function test_TokenSupplyLimit_Decimals_FractionalTokens_Fixed() public {
+        // Test that fractional tokens now work correctly with the precision fix
+        // The module now tracks raw amounts internally and converts only during limit checks
+        vm.startPrank(tokenIssuer);
+        address token18 = address(new SMARTToken(
+            "Test Token",
+            "TEST",
+            18,
+            1000e18,
+            address(0),
+            address(systemUtils.identityRegistry()),
+            address(systemUtils.compliance()),
+            new SMARTComplianceModuleParamPair[](0),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            address(accessManager)
+        ));
+        vm.stopPrank();
+
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
+            .SupplyLimitConfig({
+            maxSupply: 1, // 1 whole token limit
+            periodLength: 0,
+            rolling: false,
+            useBasePrice: false,
+            global: false
+        });
+
+        bytes memory params = abi.encode(config);
+
+        // Mint 0.5 tokens (should work)
+        module.canTransfer(token18, address(0), user1, 0.5e18, params);
+        vm.prank(token18);
+        module.created(token18, user1, 0.5e18, params);
+
+        // Mint another 0.5 tokens (should work, total = 1 whole token)
+        module.canTransfer(token18, address(0), user1, 0.5e18, params);
+        vm.prank(token18);
+        module.created(token18, user1, 0.5e18, params);
+
+        // NOW with the fix: trying to mint even 1 wei more should fail 
+        // because raw tracking preserves precision: 0.5e18 + 0.5e18 + 1 = 1e18 + 1 = 1.000...001 tokens
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
+            )
+        );
+        module.canTransfer(token18, address(0), user1, 1, params);
     }
 
 }
