@@ -7,7 +7,7 @@ import { createDataTableSearchParams } from "@/components/data-table/utils/data-
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { TokenFactoryRelated } from "@/components/related/token-factory-related";
 import { TokensTable } from "@/components/tables/tokens";
-import { seo } from "@/config/metadata";
+import { seo } from "@atk/config/metadata";
 import {
   getAssetClassFromFactoryTypeId,
   getAssetTypeFromFactoryTypeId,

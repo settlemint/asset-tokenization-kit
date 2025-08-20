@@ -1,9 +1,9 @@
 import { user } from "@/lib/db/schema";
-import { env } from "@/lib/env";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { env } from "@atk/config/env";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { eq } from "drizzle-orm/sql";
