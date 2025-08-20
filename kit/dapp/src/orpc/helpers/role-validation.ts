@@ -42,6 +42,7 @@ export function mapUserRoles(
     identityManager: false,
     identityRegistryModule: false,
     minter: false,
+    organisationIdentityManager: false,
     pauser: false,
     recovery: false,
     saleAdmin: false,

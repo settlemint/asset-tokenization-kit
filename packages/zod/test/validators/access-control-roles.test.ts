@@ -26,6 +26,7 @@ describe("accessControlRoles", () => {
         identityManager: false,
         identityRegistryModule: false,
         minter: false,
+        organisationIdentityManager: false,
         pauser: false,
         recovery: false,
         saleAdmin: false,
@@ -66,6 +67,7 @@ describe("accessControlRoles", () => {
         identityManager: true,
         identityRegistryModule: false,
         minter: true,
+        organisationIdentityManager: false,
         pauser: false,
         recovery: true,
         saleAdmin: false,
@@ -116,6 +118,7 @@ describe("accessControlRoles", () => {
       expect(result.identityManager).toBe(false);
       expect(result.identityRegistryModule).toBe(false);
       expect(result.minter).toBe(false);
+      expect(result.organisationIdentityManager).toBe(false);
       expect(result.pauser).toBe(false);
       expect(result.recovery).toBe(false);
       expect(result.saleAdmin).toBe(false);
@@ -229,6 +232,7 @@ describe("accessControlRoles", () => {
         "identityManager",
         "identityRegistryModule",
         "minter",
+        "organisationIdentityManager",
         "pauser",
         "recovery",
         "saleAdmin",
