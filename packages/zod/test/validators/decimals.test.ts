@@ -1,5 +1,5 @@
 import { describe, expect, it, test } from "bun:test";
-import { decimals, getDecimals, isDecimals } from "../../src/validators/decimals";
+import { decimals, getDecimals, isDecimals } from "../../src/decimals";
 
 describe("decimals", () => {
   const validator = decimals();
@@ -150,7 +150,7 @@ describe("isDecimals", () => {
       // TypeScript should recognize value as Decimals type here
       expect(value).toBe(6);
     } else {
-      expect.fail("Should have been valid decimals");
+      throw new Error("Should have been valid decimals");
     }
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { amount, getAmount, isAmount } from "../../src/validators/amount";
+import { amount, getAmount, isAmount } from "../../src/amount";
 
 describe("amount", () => {
   describe("basic validation", () => {

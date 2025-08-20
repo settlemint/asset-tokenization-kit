@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { getSecretCode, isSecretCode, secretCode } from "../../src/validators/secret-code";
+import { getSecretCode, isSecretCode, secretCode } from "../../src/secret-code";
 
 describe("secretCode", () => {
   const validator = secretCode();

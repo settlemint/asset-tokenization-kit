@@ -1,4 +1,4 @@
-import type { FiatCurrency } from "@atk/zod/src/validators/fiat-currency";
+import type { FiatCurrency } from "@atk/zod/fiat-currency";
 
 /**
  * Type definition for value formatting options

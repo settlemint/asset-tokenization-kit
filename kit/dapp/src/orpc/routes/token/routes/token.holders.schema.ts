@@ -1,5 +1,5 @@
-import { bigDecimal } from "@atk/zod/validators/bigdecimal";
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
+import { bigDecimal } from "@atk/zod/bigdecimal";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { z } from "zod";
 
 /**

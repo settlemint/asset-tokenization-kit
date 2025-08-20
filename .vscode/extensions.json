@@ -13,8 +13,6 @@
     "usernamehw.errorlens",
     "dbaeumer.vscode-eslint",
     "github.vscode-pull-request-github",
-    "typescriptteam.native-preview",
-    "biomejs.biome",
-    "anthropic.claude-code"
+    "typescriptteam.native-preview"
   ]
 }

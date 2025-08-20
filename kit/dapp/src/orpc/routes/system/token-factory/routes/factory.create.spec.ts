@@ -1,4 +1,4 @@
-import { isAssetExtensionArray } from "@atk/zod/validators/asset-extensions";
+import { isAssetExtensionArray } from "@atk/zod/asset-extensions";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   DEFAULT_ADMIN,

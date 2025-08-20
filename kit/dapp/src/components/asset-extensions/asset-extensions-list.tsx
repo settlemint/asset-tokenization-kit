@@ -3,7 +3,7 @@ import {
   type AssetExtension,
   AssetExtensionEnum,
   type AssetExtensionSet,
-} from "@atk/zod/validators/asset-extensions";
+} from "@atk/zod/asset-extensions";
 import { Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
 

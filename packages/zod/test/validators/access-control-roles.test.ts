@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import type { z } from "zod";
-import { accessControlRole, accessControlRoles } from "../../src/validators/access-control-roles";
+import { accessControlRole, accessControlRoles } from "../../src/access-control-roles";
 
 describe("accessControlRoles", () => {
   describe("schema validation for access control roles", () => {

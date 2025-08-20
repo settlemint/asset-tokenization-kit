@@ -1,14 +1,14 @@
 import { describe, expect, it, test } from "bun:test";
 import {
   allFiatCurrencies,
-  type FiatCurrency,
   fiatCurrencies,
   fiatCurrency,
   fiatCurrencyMetadata,
   getCurrencyMetadata,
   getFiatCurrency,
   isFiatCurrency,
-} from "../../src/validators/fiat-currency";
+  type FiatCurrency,
+} from "../../src/fiat-currency";
 
 describe("fiatCurrency", () => {
   const validator = fiatCurrency();

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { type AssetSymbol, assetSymbol, getAssetSymbol, isAssetSymbol } from "../../src/validators/asset-symbol";
+import { type AssetSymbol, assetSymbol, getAssetSymbol, isAssetSymbol } from "../../src/asset-symbol";
 
 describe("assetSymbol", () => {
   const validator = assetSymbol();

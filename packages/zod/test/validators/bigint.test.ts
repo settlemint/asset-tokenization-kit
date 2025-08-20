@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { z } from "zod";
-import { apiBigInt, bigIntSerializer, getApiBigInt, isApiBigInt } from "../../src/validators/bigint";
+import { apiBigInt, bigIntSerializer, getApiBigInt, isApiBigInt } from "../../src/bigint";
 
 describe("apiBigInt", () => {
   const validator = apiBigInt;

@@ -4,10 +4,7 @@
  * Validation schemas for retrieving historical exchange rates.
  * @module ExchangeRatesHistorySchema
  */
-import {
-  type FiatCurrency,
-  fiatCurrency,
-} from "@atk/zod/validators/fiat-currency";
+import { type FiatCurrency, fiatCurrency } from "@atk/zod/fiat-currency";
 import { z } from "zod";
 
 /**

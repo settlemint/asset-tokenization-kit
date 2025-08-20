@@ -13,7 +13,6 @@ export function getViemChain(): viemChains.Chain {
 
   if (chainId) {
     for (const chainKey in viemChains) {
-      // biome-ignore lint/suspicious/noExplicitAny: Iterating over module exports
       const chain = (viemChains as any)[chainKey] as viemChains.Chain;
       if (chain.id === chainId) {
         viemChainInstance = chain;

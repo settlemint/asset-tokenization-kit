@@ -2,7 +2,7 @@
  * @vitest-environment node
  */
 
-import { getEthereumAddress } from "@atk/zod/validators/ethereum-address";
+import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {

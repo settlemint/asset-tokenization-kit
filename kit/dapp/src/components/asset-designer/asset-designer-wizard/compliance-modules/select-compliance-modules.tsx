@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
 import type { ComplianceModulesList } from "@/orpc/routes/system/compliance-module/routes/compliance-module.list.schema";
-import type { ComplianceModulePairInput } from "@atk/zod/validators/compliance";
+import type { ComplianceModulePairInput } from "@atk/zod/compliance";
 import { useStore } from "@tanstack/react-store";
 import { useTranslation } from "react-i18next";
 

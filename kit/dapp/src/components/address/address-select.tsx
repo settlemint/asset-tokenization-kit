@@ -20,7 +20,7 @@ import {
 import { useDebouncedCallback } from "@/lib/hooks/use-debounced-callback";
 import { useRecentCache } from "@/lib/hooks/use-recent-cache";
 import { cn } from "@/lib/utils";
-import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import {
   Check,
   ChevronsUpDown,

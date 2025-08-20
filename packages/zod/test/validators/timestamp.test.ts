@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { getTimestamp, isTimestamp, timestamp, timestampSerializer } from "../../src/validators/timestamp";
+import { getTimestamp, isTimestamp, timestamp, timestampSerializer } from "../../src/timestamp";
 
 describe("timestamp", () => {
   const validator = timestamp();

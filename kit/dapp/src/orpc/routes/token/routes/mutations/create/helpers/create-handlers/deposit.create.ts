@@ -22,7 +22,7 @@ import {
   type TokenCreateContext,
 } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create";
 import type { TokenCreateInput } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
-import { AssetTypeEnum } from "@atk/zod/validators/asset-types";
+import { AssetTypeEnum } from "@atk/zod/asset-types";
 
 const CREATE_DEPOSIT_MUTATION = portalGraphql(`
   mutation CreateDepositMutation(

@@ -1,6 +1,6 @@
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
-import { ethereumHash } from "@atk/zod/validators/ethereum-hash";
-import { timestamp } from "@atk/zod/validators/timestamp";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { ethereumHash } from "@atk/zod/ethereum-hash";
+import { timestamp } from "@atk/zod/timestamp";
 import { z } from "zod";
 
 /**

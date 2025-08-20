@@ -40,7 +40,7 @@ vi.mock("@/components/web3/web3-address", () => {
   };
 });
 
-vi.mock("@atk/zod/validators/ethereum-address", () => ({
+vi.mock("@atk/zod/ethereum-address", () => ({
   getEthereumAddress: (value: unknown) => {
     const addr = String(value);
     if (addr.startsWith("0x") && addr.length === 42) {

@@ -16,7 +16,7 @@ import {
 import {
   type AssetFactoryTypeId,
   getAssetTypeFromFactoryTypeId,
-} from "@atk/zod/validators/asset-types";
+} from "@atk/zod/asset-types";
 import { useStore } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
