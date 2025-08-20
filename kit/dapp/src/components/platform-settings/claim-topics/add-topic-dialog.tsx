@@ -9,11 +9,10 @@ import {
 } from "@/components/ui/dialog";
 import { useAppForm } from "@/hooks/use-app-form";
 import { client, orpc } from "@/orpc/orpc-client";
-import { TopicCreateInputSchema } from "@/orpc/routes/system/claim-topics/routes/topic.create.schema";
+import { type TopicCreateInput } from "@/orpc/routes/system/claim-topics/routes/topic.create.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { z } from "zod";
 
 /**
  * Dialog component for adding new claim topics
@@ -29,10 +28,8 @@ export function AddTopicDialog({
   const queryClient = useQueryClient();
   const { t } = useTranslation("claim-topics");
 
-
   const createMutation = useMutation({
-    mutationFn: (data: z.infer<typeof TopicCreateInputSchema>) =>
-      client.system.topicCreate(data),
+    mutationFn: (data: TopicCreateInput) => client.system.topicCreate(data),
     onSuccess: (result) => {
       toast.success(t("toast.created", { name: result.name }));
       void queryClient.invalidateQueries({
@@ -42,7 +39,11 @@ export function AddTopicDialog({
       form.reset();
     },
     onError: (error) => {
-      toast.error(t("toast.createError", { error: error.message }));
+      toast.error(
+        t("toast.createError", {
+          error: error.message || error.toString() || "Unknown error",
+        })
+      );
     },
   });
 
@@ -50,15 +51,15 @@ export function AddTopicDialog({
     defaultValues: {
       name: "",
       signature: "",
-    },
-    validators: {
-      onChange: TopicCreateInputSchema,
+      walletVerification: {
+        secretVerificationCode: "",
+        verificationType: "PINCODE",
+      },
     },
     onSubmit: ({ value }) => {
-      createMutation.mutate(value);
+      createMutation.mutate(value as TopicCreateInput);
     },
   });
-
 
   const handleClose = () => {
     form.reset();
@@ -112,23 +113,21 @@ export function AddTopicDialog({
             >
               {t("add.actions.cancel")}
             </Button>
-            <form.Subscribe>
-              {(state) => (
-                <Button
-                  type="button"
-                  onClick={handleSubmit}
-                  disabled={
-                    createMutation.isPending ||
-                    !state.canSubmit ||
-                    Object.keys(state.errors).length > 0
-                  }
-                >
-                  {createMutation.isPending
-                    ? t("add.actions.creating")
-                    : t("add.actions.create")}
-                </Button>
-              )}
-            </form.Subscribe>
+            <form.VerificationButton
+              onSubmit={handleSubmit}
+              walletVerification={{
+                title: t("add.verification.title"),
+                description: t("add.verification.description"),
+                setField: (verification) => {
+                  form.setFieldValue("walletVerification", verification);
+                },
+              }}
+              disabled={createMutation.isPending}
+            >
+              {createMutation.isPending
+                ? t("add.actions.creating")
+                : t("add.actions.create")}
+            </form.VerificationButton>
           </DialogFooter>
         </form.AppForm>
       </DialogContent>

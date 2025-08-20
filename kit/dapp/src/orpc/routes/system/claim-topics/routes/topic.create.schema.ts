@@ -1,10 +1,11 @@
 import { z } from "zod";
+import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
 
 /**
  * Topic Create Input Schema
  * Validates input for creating a new topic scheme
  */
-export const TopicCreateInputSchema = z.object({
+export const TopicCreateInputSchema = MutationInputSchema.extend({
   name: z
     .string()
     .min(1, "Topic name is required")
@@ -13,10 +14,6 @@ export const TopicCreateInputSchema = z.object({
   signature: z
     .string()
     .min(1, "Signature is required")
-    .regex(
-      /^[a-zA-Z_][a-zA-Z0-9_]*\([^)]*\)$/,
-      "Signature must be a valid function selector (e.g., 'isOver18(address,bytes32)')"
-    )
     .describe("Function signature for claim verification"),
 });
 
