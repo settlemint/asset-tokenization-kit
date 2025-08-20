@@ -1,13 +1,19 @@
-import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
-import { TopicsTable } from "@/components/platform-settings/claim-topics/topics-table";
+import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { AddTopicDialog } from "@/components/platform-settings/claim-topics/add-topic-dialog";
+import { TopicsTable } from "@/components/platform-settings/claim-topics/topics-table";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { createFileRoute } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
+import { Plus } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
   "/_private/_onboarded/_sidebar/admin/platform-settings/claim-topics-issuers"
@@ -48,11 +54,16 @@ function ClaimTopicsIssuersPage() {
               <div>
                 <CardTitle>Claim Topics</CardTitle>
                 <CardDescription>
-                  Configure the available claim topics that can be used for identity verification.
-                  System topics (ID 1-100) are predefined and cannot be modified.
+                  Configure the available claim topics that can be used for
+                  identity verification. System topics are predefined and cannot
+                  be modified.
                 </CardDescription>
               </div>
-              <Button onClick={() => { setShowAddDialog(true); }}>
+              <Button
+                onClick={() => {
+                  setShowAddDialog(true);
+                }}
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 Add Topic
               </Button>
@@ -64,10 +75,7 @@ function ClaimTopicsIssuersPage() {
         </Card>
       </div>
 
-      <AddTopicDialog 
-        open={showAddDialog} 
-        onOpenChange={setShowAddDialog}
-      />
+      <AddTopicDialog open={showAddDialog} onOpenChange={setShowAddDialog} />
     </div>
   );
 }

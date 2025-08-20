@@ -49,8 +49,6 @@ export const topicList = portalRouter.system.topicList
     // Get the topic scheme registry address from the system configuration
     const registryAddress = system?.topicSchemeRegistry;
 
-    console.log("registryAddress", registryAddress);
-
     if (!registryAddress) {
       throw errors.INTERNAL_SERVER_ERROR({
         message: "System topic scheme registry not found",
