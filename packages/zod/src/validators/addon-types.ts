@@ -73,8 +73,6 @@ export const addonFactoryTypeIds = [
   "unknown",
 ] as const;
 
-
-
 /**
  * Creates a Zod schema that validates an addon type.
  * @remarks
