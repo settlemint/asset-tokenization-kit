@@ -1,5 +1,6 @@
 import { list as actionsList } from "@/orpc/routes/actions/routes/actions.list";
 import kyc from "@/orpc/routes/user/kyc/kyc.router";
+import pincode from "@/orpc/routes/user/pincode/pincode.router";
 import { createWallet } from "@/orpc/routes/user/routes/mutations/create-wallet";
 import { list } from "@/orpc/routes/user/routes/user.list";
 import { me } from "@/orpc/routes/user/routes/user.me";
@@ -42,6 +43,7 @@ const routes = {
   statsGrowthOverTime,
   statsUserCount,
   kyc,
+  pincode,
   createWallet,
 };
 

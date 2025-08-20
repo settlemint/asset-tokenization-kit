@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { getPincode, isPincode, pincode } from "../../src/pincode";
 
 describe("PINCODE", () => {
-  const validator = pincode();
+  const validator = pincode;
 
   describe("valid pincodes", () => {
     test("should accept 6-digit pincodes", () => {
@@ -152,20 +152,20 @@ describe("getPincode helper", () => {
 
 describe("security and edge cases", () => {
   test("should not trim whitespace automatically", () => {
-    expect(() => pincode().parse(" 123456")).toThrow();
-    expect(() => pincode().parse("123456 ")).toThrow();
-    expect(() => pincode().parse(" 123456 ")).toThrow();
-    expect(() => pincode().parse("\t123456")).toThrow();
-    expect(() => pincode().parse("123456\n")).toThrow();
+    expect(() => pincode.parse(" 123456")).toThrow();
+    expect(() => pincode.parse("123456 ")).toThrow();
+    expect(() => pincode.parse(" 123456 ")).toThrow();
+    expect(() => pincode.parse("\t123456")).toThrow();
+    expect(() => pincode.parse("123456\n")).toThrow();
   });
 
   test("should handle numeric-looking strings correctly", () => {
-    expect(() => pincode().parse("1e5678")).toThrow(); // Scientific notation
-    expect(() => pincode().parse("0x1234")).toThrow(); // Hex notation
-    expect(() => pincode().parse("123456.0")).toThrow(); // Decimal
-    expect(() => pincode().parse("123,456")).toThrow(); // Thousands separator
-    expect(() => pincode().parse("ABCDEF")).toThrow(); // Uppercase hex-like
-    expect(() => pincode().parse("abcdef")).toThrow(); // Lowercase hex-like
+    expect(() => pincode.parse("1e5678")).toThrow(); // Scientific notation
+    expect(() => pincode.parse("0x1234")).toThrow(); // Hex notation
+    expect(() => pincode.parse("123456.0")).toThrow(); // Decimal
+    expect(() => pincode.parse("123,456")).toThrow(); // Thousands separator
+    expect(() => pincode.parse("ABCDEF")).toThrow(); // Uppercase hex-like
+    expect(() => pincode.parse("abcdef")).toThrow(); // Lowercase hex-like
   });
 
   test("should not accept common weak PINs (documentation only)", () => {
@@ -173,40 +173,40 @@ describe("security and edge cases", () => {
     // This test documents that the validator only checks format, not strength
     const weakPins = ["000000", "111111", "123456", "654321", "123123"];
     weakPins.forEach((pin) => {
-      const result = pincode().parse(pin);
+      const result = pincode.parse(pin);
       expect(result).toBe(pin);
     });
   });
 
   test("should handle unicode and emoji characters", () => {
-    expect(() => pincode().parse("12345😊")).toThrow();
-    expect(() => pincode().parse("１２３４５６")).toThrow(); // Full-width numbers
-    expect(() => pincode().parse("¹²³⁴⁵⁶")).toThrow(); // Superscript numbers
-    expect(() => pincode().parse("₁₂₃₄₅₆")).toThrow(); // Subscript numbers
+    expect(() => pincode.parse("12345😊")).toThrow();
+    expect(() => pincode.parse("１２３４５６")).toThrow(); // Full-width numbers
+    expect(() => pincode.parse("¹²³⁴⁵⁶")).toThrow(); // Superscript numbers
+    expect(() => pincode.parse("₁₂₃₄₅₆")).toThrow(); // Subscript numbers
   });
 
   test("should reject strings that look like 6 digits but aren't", () => {
-    expect(() => pincode().parse("12\u200B3456")).toThrow(); // Zero-width space
-    expect(() => pincode().parse("12\u00AD3456")).toThrow(); // Soft hyphen
-    expect(() => pincode().parse("12\uFEFF3456")).toThrow(); // Zero-width no-break space
+    expect(() => pincode.parse("12\u200B3456")).toThrow(); // Zero-width space
+    expect(() => pincode.parse("12\u00AD3456")).toThrow(); // Soft hyphen
+    expect(() => pincode.parse("12\uFEFF3456")).toThrow(); // Zero-width no-break space
   });
 
   test("should handle empty-like values", () => {
-    expect(() => pincode().parse("      ")).toThrow(); // Six spaces
-    expect(() => pincode().parse("\0\0\0\0\0\0")).toThrow(); // Null characters
-    expect(() => pincode().parse("\r\n\r\n\r\n")).toThrow(); // Line endings
+    expect(() => pincode.parse("      ")).toThrow(); // Six spaces
+    expect(() => pincode.parse("\0\0\0\0\0\0")).toThrow(); // Null characters
+    expect(() => pincode.parse("\r\n\r\n\r\n")).toThrow(); // Line endings
   });
 });
 
 describe("schema metadata", () => {
   test("should have correct description", () => {
-    const schema = pincode();
+    const schema = pincode;
     expect(schema.description).toBe("6-digit PIN code");
   });
 
   test("should validate after multiple instantiations", () => {
-    const schema1 = pincode();
-    const schema2 = pincode();
+    const schema1 = pincode;
+    const schema2 = pincode;
 
     expect(schema1.parse("123456")).toBe("123456");
     expect(schema2.parse("654321")).toBe("654321");
@@ -219,7 +219,7 @@ describe("schema metadata", () => {
 
 describe("error message validation", () => {
   test("should provide correct error message for length validation", () => {
-    const result = pincode().safeParse("12345");
+    const result = pincode.safeParse("12345");
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.issues[0]?.message).toBe("PIN code must be exactly 6 digits");
@@ -228,7 +228,7 @@ describe("error message validation", () => {
   });
 
   test("should provide correct error message for regex validation", () => {
-    const result = pincode().safeParse("12345a");
+    const result = pincode.safeParse("12345a");
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.issues[0]?.message).toBe("PIN code must contain only numeric digits (0-9)");
@@ -237,7 +237,7 @@ describe("error message validation", () => {
   });
 
   test("should handle non-string input with appropriate error", () => {
-    const result = pincode().safeParse(123_456);
+    const result = pincode.safeParse(123_456);
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.issues[0]?.code).toBe("invalid_type");
@@ -247,7 +247,7 @@ describe("error message validation", () => {
   });
 
   test("should provide error for too long PIN codes", () => {
-    const result = pincode().safeParse("1234567");
+    const result = pincode.safeParse("1234567");
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.issues[0]?.message).toBe("PIN code must be exactly 6 digits");
@@ -277,7 +277,7 @@ describe("comprehensive type validation", () => {
     ];
 
     invalidInputs.forEach((input) => {
-      expect(() => pincode().parse(input)).toThrow();
+      expect(() => pincode.parse(input)).toThrow();
       expect(isPincode(input)).toBe(false);
       expect(() => getPincode(input)).toThrow();
     });
@@ -285,10 +285,10 @@ describe("comprehensive type validation", () => {
 
   test("should handle boundary cases for safeParse", () => {
     const results = [
-      pincode().safeParse(""),
-      pincode().safeParse("1234567890"),
-      pincode().safeParse("abcdef"),
-      pincode().safeParse(" "),
+      pincode.safeParse(""),
+      pincode.safeParse("1234567890"),
+      pincode.safeParse("abcdef"),
+      pincode.safeParse(" "),
     ];
 
     results.forEach((result) => {
@@ -306,35 +306,35 @@ describe("parsing behavior consistency", () => {
     const invalidInput = "12345";
 
     // Valid input should work for both
-    expect(pincode().parse(validInput)).toBe(validInput);
-    const safeResult = pincode().safeParse(validInput);
+    expect(pincode.parse(validInput)).toBe(validInput);
+    const safeResult = pincode.safeParse(validInput);
     expect(safeResult.success).toBe(true);
     if (safeResult.success) {
       expect(safeResult.data).toBe(validInput);
     }
 
     // Invalid input should fail for both
-    expect(() => pincode().parse(invalidInput)).toThrow();
-    const safeInvalidResult = pincode().safeParse(invalidInput);
+    expect(() => pincode.parse(invalidInput)).toThrow();
+    const safeInvalidResult = pincode.safeParse(invalidInput);
     expect(safeInvalidResult.success).toBe(false);
   });
 
   test("should handle the exact boundary cases", () => {
     // Exactly 5 digits - too short
-    expect(() => pincode().parse("12345")).toThrow();
+    expect(() => pincode.parse("12345")).toThrow();
 
     // Exactly 6 digits - valid
-    expect(pincode().parse("123456")).toBe("123456");
+    expect(pincode.parse("123456")).toBe("123456");
 
     // Exactly 7 digits - too long
-    expect(() => pincode().parse("1234567")).toThrow();
+    expect(() => pincode.parse("1234567")).toThrow();
   });
 
   test("should validate the regex pattern after length check", () => {
     // This tests that both validations are applied
     // If it passes length but fails regex
     const sixCharNonDigit = "12345x";
-    const result = pincode().safeParse(sixCharNonDigit);
+    const result = pincode.safeParse(sixCharNonDigit);
     expect(result.success).toBe(false);
     if (!result.success) {
       // Should fail on regex, not length
@@ -345,8 +345,8 @@ describe("parsing behavior consistency", () => {
 
 describe("zod schema behavior", () => {
   test("should create independent schema instances", () => {
-    const schema1 = pincode();
-    const schema2 = pincode();
+    const schema1 = pincode;
+    const schema2 = pincode;
 
     // They should be different instances
     expect(schema1).not.toBe(schema2);
@@ -361,16 +361,16 @@ describe("zod schema behavior", () => {
   });
 
   test("should have consistent schema description", () => {
-    const schema = pincode();
+    const schema = pincode;
     expect(schema.description).toBe("6-digit PIN code");
 
     // Description should be the same for all instances
-    const schema2 = pincode();
+    const schema2 = pincode;
     expect(schema2.description).toBe("6-digit PIN code");
   });
 
   test("should validate consistently across multiple calls", () => {
-    const schema = pincode();
+    const schema = pincode;
 
     // Multiple calls with same input should produce same result
     expect(schema.parse("123456")).toBe("123456");

@@ -139,24 +139,6 @@ const options = {
         input: false,
       },
       /**
-       * Whether the user has enabled pincode.
-       */
-      pincodeEnabled: {
-        type: "boolean",
-        required: false,
-        defaultValue: false,
-        input: false,
-      },
-      /**
-       * The verification id for the pincode.
-       */
-      pincodeVerificationId: {
-        type: "string",
-        required: false,
-        unique: true,
-        input: false,
-      },
-      /**
        * Whether the user has enabled two-factor authentication.
        * Only set after the first otp code is verified.
        */

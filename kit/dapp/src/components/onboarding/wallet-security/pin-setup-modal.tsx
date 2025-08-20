@@ -50,7 +50,7 @@ export function PinSetupModal({ open, onOpenChange }: PinSetupModalProps) {
     },
     onSubmit: async ({ value }) => {
       // Validate PIN format before submission
-      const pincodeResult = pincode().safeParse(value.pincode);
+      const pincodeResult = pincode.safeParse(value.pincode);
       if (!pincodeResult.success) {
         toast.error(t("wallet-security.pincode.invalid-pin-format"));
         return;

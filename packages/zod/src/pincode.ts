@@ -31,18 +31,18 @@ import { z } from "zod";
  * @example
  * ```typescript
  * // Valid PIN code parsing
- * const userPin = pincode().parse("123456");
+ * const userPin = pincode.parse("123456");
  * // Returns: "123456"
  * // Type: string
  *
- * const pinWithLeadingZeros = pincode().parse("000123");
+ * const pinWithLeadingZeros = pincode.parse("000123");
  * // Returns: "000123"
  *
- * const bankPin = pincode().parse("987654");
+ * const bankPin = pincode.parse("987654");
  * // Returns: "987654"
  *
  * // Safe parsing with error handling
- * const result = pincode().safeParse("12345"); // Too short
+ * const result = pincode.safeParse("12345"); // Too short
  * if (result.success) {
  *   console.log(result.data); // Valid PIN
  * } else {
@@ -56,14 +56,14 @@ import { z } from "zod";
  * }
  *
  * // Invalid examples
- * pincode().parse("12345");    // throws - too short
- * pincode().parse("1234567");  // throws - too long
- * pincode().parse("12345a");   // throws - contains letter
- * pincode().parse("123 456");  // throws - contains space
+ * pincode.parse("12345");    // throws - too short
+ * pincode.parse("1234567");  // throws - too long
+ * pincode.parse("12345a");   // throws - contains letter
+ * pincode.parse("123 456");  // throws - contains space
  * ```
  * @throws {ZodError} When the input fails validation at any step
  */
-export const pincode = () =>
+export const pincode =
   z
     .string()
     .length(6, "PIN code must be exactly 6 digits")
@@ -77,7 +77,7 @@ export const pincode = () =>
  *
  * This type ensures that only validated PIN codes can be assigned to variables of this type.
  */
-export type Pincode = z.infer<ReturnType<typeof pincode>>;
+export type Pincode = z.infer<typeof pincode>;
 
 /**
  * Type guard function to check if a value is a valid PIN code
@@ -99,7 +99,7 @@ export type Pincode = z.infer<ReturnType<typeof pincode>>;
  * ```
  */
 export function isPincode(value: unknown): value is Pincode {
-  return pincode().safeParse(value).success;
+  return pincode.safeParse(value).success;
 }
 
 /**
@@ -122,5 +122,5 @@ export function isPincode(value: unknown): value is Pincode {
  * ```
  */
 export function getPincode(value: unknown): Pincode {
-  return pincode().parse(value);
+  return pincode.parse(value);
 }
