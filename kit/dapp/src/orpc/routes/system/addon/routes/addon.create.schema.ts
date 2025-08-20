@@ -1,5 +1,5 @@
 import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
-import { type AddonType, addonType } from "@atk/zod/validators/addon-types";
+import { type AddonType, addonType } from "@atk/zod/addon-types";
 import { z } from "zod";
 
 /**

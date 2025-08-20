@@ -1,8 +1,8 @@
-import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
-import type { VariablesOf } from "@settlemint/sdk-portal";
-import { APIError } from "better-auth/api";
 import { metadata } from "@/config/metadata";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
+import type { VariablesOf } from "@settlemint/sdk-portal";
+import { APIError } from "better-auth/api";
 
 const DELETE_WALLET_VERIFICATION_MUTATION = portalGraphql(`
   mutation DisableTwoFactor($address: String!, $verificationId: String!) {

@@ -7,7 +7,7 @@ import {
 } from "@/components/form/field";
 import { useFieldContext } from "@/hooks/use-form-contexts";
 import type { AddressSearchScope } from "@/hooks/use-search-addresses";
-import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
 
 interface AddressSelectProps {
   label: string;

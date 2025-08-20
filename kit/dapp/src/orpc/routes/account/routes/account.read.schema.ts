@@ -1,5 +1,5 @@
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
-import { isoCountryCode } from "@atk/zod/validators/iso-country-code";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { isoCountryCode } from "@atk/zod/iso-country-code";
 import { z } from "zod";
 
 export const AccountReadSchema = z.object({

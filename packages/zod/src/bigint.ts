@@ -6,7 +6,6 @@
  * @module BigIntValidation
  */
 import type { StandardRPCCustomJsonSerializer } from "@orpc/client/standard";
-// biome-ignore lint/suspicious/noShadowRestrictedNames: `toString` is a valid import from dnum
 import { abs, type Dnum, floor, from, multiply, type Numberish, toString } from "dnum";
 import { z } from "zod";
 

@@ -1,7 +1,7 @@
 import type {
   ExpressionNode,
   ExpressionWithGroups,
-} from "@atk/zod/validators/expression-node";
+} from "@atk/zod/expression-node";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {

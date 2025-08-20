@@ -1,5 +1,5 @@
-import { assetFactoryTypeId } from "@atk/zod/validators/asset-types";
-import { ethereumAddress } from "@atk/zod/validators/ethereum-address";
+import { assetFactoryTypeId } from "@atk/zod/asset-types";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { z } from "zod";
 
 /**

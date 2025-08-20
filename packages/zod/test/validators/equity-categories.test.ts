@@ -6,13 +6,13 @@ import {
   equityCategory,
   getEquityCategory,
   isEquityCategory,
-} from "../../src/validators/equity-categories";
+} from "../../src/equity-categories";
 
 describe("equityCategory", () => {
   const validator = equityCategory();
 
   describe("valid equity categories", () => {
-    test.each(equityCategories.map((c) => [c]))("should accept '%s'", (category) => {
+    test.each([...equityCategories].map((c) => [c]))("should accept '%s'", (category) => {
       expect(validator.parse(category)).toBe(category);
     });
   });
@@ -88,7 +88,7 @@ describe("equityCategory", () => {
 
 describe("isEquityCategory", () => {
   describe("valid categories", () => {
-    test.each(equityCategories)("should return true for '%s'", (category) => {
+    test.each([...equityCategories])("should return true for '%s'", (category) => {
       expect(isEquityCategory(category)).toBe(true);
     });
   });
@@ -139,7 +139,7 @@ describe("isEquityCategory", () => {
 
 describe("getEquityCategory", () => {
   describe("valid categories", () => {
-    test.each(equityCategories)("should return '%s' when parsing '%s'", (category) => {
+    test.each([...equityCategories])("should return '%s' when parsing '%s'", (category) => {
       expect(getEquityCategory(category)).toBe(category);
     });
   });
@@ -229,6 +229,6 @@ describe("equityCategories constant", () => {
     // TypeScript's 'as const' makes it readonly at compile time
     // Runtime check: ensure it's an array with expected values
     expect(Array.isArray(equityCategories)).toBe(true);
-    expect(equityCategories).toEqual(["common", "preferred", "restricted"]);
+    expect([...equityCategories]).toEqual(["common", "preferred", "restricted"]);
   });
 });

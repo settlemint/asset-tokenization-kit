@@ -1,4 +1,4 @@
-import { complianceTypeIds } from "@atk/zod/validators/compliance";
+import { complianceTypeIds } from "@atk/zod/compliance";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   DEFAULT_ADMIN,

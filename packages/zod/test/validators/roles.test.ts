@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { getRole, getRoleMap, isRole, isRoleMap, roleMap, roleNames, roles } from "../../src/validators/roles";
+import { getRole, getRoleMap, isRole, isRoleMap, roleMap, roleNames, roles } from "../../src/roles";
 
 describe("roles", () => {
   const validator = roles();

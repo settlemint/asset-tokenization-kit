@@ -8,13 +8,13 @@ import { getAccessControlEntries } from "@/orpc/helpers/access-control-helpers";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import type { EthereumAddress } from "@atk/zod/validators/ethereum-address";
-import type { RoleRequirement } from "@atk/zod/validators/role-requirement";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
+import type { RoleRequirement } from "@atk/zod/role-requirement";
 import {
   isAllRoleRequirement,
   isAnyRoleRequirement,
   isSingleRole,
-} from "@atk/zod/validators/role-requirement";
+} from "@atk/zod/role-requirement";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckSquare, Shield } from "lucide-react";
 import { useMemo, useRef, useState } from "react";

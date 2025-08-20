@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { z } from "zod";
-import { optionalString } from "../../src/utils/optional-string";
-import { isin } from "../../src/validators/isin";
+import { isin } from "../../src/isin";
+import { optionalString } from "../../src/optional-string";
 
 describe("optionalString", () => {
   it("should accept valid values", () => {
@@ -21,6 +21,7 @@ describe("optionalString", () => {
 
   it("should accept undefined", () => {
     const schema = optionalString(z.string().min(3).max(10));
+    // @ts-expect-error - Testing undefined handling
     expect(schema.parse(undefined)).toBe(undefined);
   });
 
@@ -41,6 +42,7 @@ describe("optionalString", () => {
 
     // Null and undefined
     expect(schema.parse(null)).toBe(null);
+    // @ts-expect-error - Testing undefined handling
     expect(schema.parse(undefined)).toBe(undefined);
 
     // Invalid ISIN

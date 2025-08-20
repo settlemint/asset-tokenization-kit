@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { ethereumHex, getEthereumHex, isEthereumHex } from "../../src/validators/ethereum-hex";
+import { ethereumHex, getEthereumHex, isEthereumHex } from "../../src/ethereum-hex";
 
 describe("Ethereum Hex Validation", () => {
   const validHashes = [

@@ -4,7 +4,7 @@ import {
   ethereumAddress,
   getEthereumAddress,
   isEthereumAddress,
-} from "../../src/validators/ethereum-address";
+} from "../../src/ethereum-address";
 
 describe("ethereumAddress", () => {
   describe("valid addresses", () => {
@@ -356,7 +356,7 @@ describe("ethereumAddress", () => {
         expect(result.success).toBe(true);
         if (result.success) {
           // Verify the checksummed output matches expected
-          expect(result.data).toBe(expected);
+          expect(result.data).toBe(expected as `0x${string}`);
           expect(result.data.length).toBe(42);
           expect(result.data.startsWith("0x")).toBe(true);
         }

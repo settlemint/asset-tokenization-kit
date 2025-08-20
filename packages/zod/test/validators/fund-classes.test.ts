@@ -1,11 +1,11 @@
 import { describe, expect, test } from "bun:test";
-import { type FundClass, fundClass, fundClasses, getFundClass, isFundClass } from "../../src/validators/fund-classes";
+import { type FundClass, fundClass, fundClasses, getFundClass, isFundClass } from "../../src/fund-classes";
 
 describe("fundClass", () => {
   const validator = fundClass();
 
   describe("valid fund classes", () => {
-    test.each(fundClasses.map((c) => [c]))("should accept '%s'", (cls) => {
+    test.each([...fundClasses].map((c) => [c]))("should accept '%s'", (cls) => {
       expect(validator.parse(cls)).toBe(cls);
     });
   });
@@ -59,7 +59,7 @@ describe("fundClass", () => {
 
 describe("isFundClass", () => {
   describe("valid fund classes", () => {
-    test.each(fundClasses)("should return true for '%s'", (cls) => {
+    test.each([...fundClasses])("should return true for '%s'", (cls) => {
       expect(isFundClass(cls)).toBe(true);
     });
   });
@@ -87,7 +87,8 @@ describe("isFundClass", () => {
       ["Retail", "capitalized variant"],
       ["  retail  ", "string with spaces"],
       ["retail\n", "string with newline"],
-    ])("should return false for invalid value", (value, _description) => {
+    // eslint-disable-next-line no-unused-vars
+    ])("should return false for invalid value %s - %s", (value, _description) => {
       expect(isFundClass(value)).toBe(false);
     });
   });
@@ -114,7 +115,7 @@ describe("isFundClass", () => {
 
 describe("getFundClass", () => {
   describe("valid fund classes", () => {
-    test.each(fundClasses)("should return '%s' for valid input", (cls) => {
+    test.each([...fundClasses])("should return '%s' for valid input", (cls) => {
       expect(getFundClass(cls)).toBe(cls);
     });
   });
@@ -142,7 +143,8 @@ describe("getFundClass", () => {
       ["Retail", "Invalid option"],
       ["  retail  ", "Invalid option"],
       ["retail\n", "Invalid option"],
-    ])("should throw for invalid value", (value, _expectedError) => {
+    // eslint-disable-next-line no-unused-vars
+    ])("should throw for invalid value %s - %s", (value, _expectedError) => {
       expect(() => getFundClass(value)).toThrow();
       try {
         getFundClass(value);
@@ -239,13 +241,13 @@ describe("FundClass type", () => {
 
 describe("fundClasses constant", () => {
   test("should contain all expected values", () => {
-    expect(fundClasses).toEqual(["institutional", "retail", "accredited"]);
+    expect([...fundClasses]).toEqual(["institutional", "retail", "accredited"]);
   });
 
   test("should be readonly", () => {
     // The const assertion makes it readonly in TypeScript,
     // but doesn't freeze it at runtime
-    expect(fundClasses).toEqual(["institutional", "retail", "accredited"]);
+    expect([...fundClasses]).toEqual(["institutional", "retail", "accredited"]);
     // Verify it's typed as readonly
     const readonlyTest: readonly string[] = fundClasses;
     expect(readonlyTest).toBe(fundClasses);

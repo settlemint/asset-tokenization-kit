@@ -1,6 +1,6 @@
 import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboard";
 import { cn } from "@/lib/utils";
-import type { EthereumHash } from "@atk/zod/validators/ethereum-hash";
+import type { EthereumHash } from "@atk/zod/ethereum-hash";
 
 interface Web3TransactionHashProps {
   /**

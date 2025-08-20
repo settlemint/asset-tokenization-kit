@@ -13,8 +13,8 @@ import {
   type SystemAddonCreateInput,
   SystemAddonCreateSchema,
 } from "@/orpc/routes/system/addon/routes/addon.create.schema";
-import { addonTypes } from "@atk/zod/validators/addon-types";
-import { AssetFactoryTypeIdEnum } from "@atk/zod/validators/asset-types";
+import { addonTypes } from "@atk/zod/addon-types";
+import { AssetFactoryTypeIdEnum } from "@atk/zod/asset-types";
 import { useStore } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
