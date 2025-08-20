@@ -1,7 +1,7 @@
 /**
  * Shared Error Logging Helper for ORPC
  *
- * This helper provides comprehensive error logging for all ORPC error handling interceptors,
+ * Provides centralized error logging for ORPC handlers with filtering for expected client errors.
  */
 
 import { createLogger } from "@settlemint/sdk-utils/logging";
@@ -9,10 +9,10 @@ import { createLogger } from "@settlemint/sdk-utils/logging";
 const logger = createLogger();
 
 /**
- * Creates a shared error interceptor for ORPC handlers
+ * Logs unexpected errors while filtering out expected client-side errors (4xx status codes).
+ * Skips logging for NOT_FOUND and UNAUTHORIZED errors to reduce noise.
  *
- * @param context - Optional context about where the interceptor is being used
- * @returns ORPC error interceptor
+ * @param error - The error object to potentially log
  */
 export function logUnexpectedError(error: unknown) {
   const e = error as {
