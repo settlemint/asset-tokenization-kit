@@ -114,6 +114,32 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
     }
 
     /// @inheritdoc AbstractComplianceModule
+    /// @notice Tracks burned tokens to reduce tracked supply limits
+    /// @dev Called after tokens are burned to update supply tracking. Updates the appropriate
+    ///      tracking mechanism based on configuration (lifetime, fixed period, or rolling window).
+    /// @param _token The address of the token being burned
+    /// @param _value The amount of tokens being burned
+    /// @param _params ABI-encoded SupplyLimitConfig containing the compliance configuration
+    function destroyed(
+        address _token,
+        address, /* _from - unused */
+        uint256 _value,
+        bytes calldata _params
+    ) external override onlyTokenOrCompliance(_token) {
+        SupplyLimitConfig memory config = abi.decode(_params, (SupplyLimitConfig));
+
+        // Convert to base currency at burn time (use current price for consistency)
+        uint256 amount = _value;
+        if (config.useBasePrice) {
+            amount = _convertToBaseCurrency(_token, _value);
+        }
+
+        // Update both token-specific and global trackers as needed
+        _subtractFromTracker(supplyTrackers[_token], amount, config);
+        _subtractFromTracker(globalSupplyTracker, amount, config);
+    }
+
+    /// @inheritdoc AbstractComplianceModule
     /// @notice Checks if minting new tokens would exceed supply limits
     /// @dev Only validates mint operations (when _from == address(0)). Regular transfers are not restricted.
     ///      Calculates current supply based on configuration and checks if adding _value would exceed maxSupply.
@@ -242,6 +268,54 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
                 // Same period, accumulate
                 tracker.totalSupply += amount;
             }
+        }
+    }
+
+    /// @notice Subtracts burned tokens from a supply tracker based on configuration
+    /// @dev Handles lifetime, fixed period, and rolling window tracking modes for burns
+    /// @param tracker The storage reference to the tracker to update
+    /// @param amount The already-converted amount to subtract from tracking
+    /// @param config The supply limit configuration
+    function _subtractFromTracker(
+        SupplyTracker storage tracker,
+        uint256 amount,
+        SupplyLimitConfig memory config
+    ) private {
+        if (config.periodLength == 0) {
+            // Lifetime cap - simply subtract from total, but don't go below zero
+            if (tracker.totalSupply >= amount) {
+                tracker.totalSupply -= amount;
+            } else {
+                tracker.totalSupply = 0;
+            }
+        } else if (config.rolling) {
+            // True rolling window tracking - subtract from current day's bucket
+            uint256 currentDay = block.timestamp / 1 days;
+            
+            // Always use fixed MAX_PERIOD_LENGTH circular buffer regardless of actual period length
+            uint256 bufferIndex = currentDay % MAX_PERIOD_LENGTH;
+            
+            // Only subtract if this day has data and matches current day
+            if (tracker.bufferDayMapping[bufferIndex] == currentDay) {
+                if (tracker.dailySupply[bufferIndex] >= amount) {
+                    tracker.dailySupply[bufferIndex] -= amount;
+                } else {
+                    tracker.dailySupply[bufferIndex] = 0;
+                }
+            }
+            // If burning on a day with no tracked supply, ignore (can't burn what wasn't minted)
+        } else {
+            // Fixed period tracking
+            // Only subtract if we're in an active period
+            if (tracker.periodStart != 0 && 
+                block.timestamp - tracker.periodStart < config.periodLength * 1 days) {
+                if (tracker.totalSupply >= amount) {
+                    tracker.totalSupply -= amount;
+                } else {
+                    tracker.totalSupply = 0;
+                }
+            }
+            // If burning outside an active period, ignore (can't burn what wasn't minted in this period)
         }
     }
 
