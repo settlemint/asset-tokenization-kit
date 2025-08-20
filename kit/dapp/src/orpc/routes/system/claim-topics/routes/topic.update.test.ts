@@ -9,7 +9,10 @@ import {
   createMockErrors,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
-import type { TopicUpdateInput, TopicUpdateOutput } from "./topic.update.schema";
+import type {
+  TopicUpdateInput,
+  TopicUpdateOutput,
+} from "./topic.update.schema";
 
 vi.mock("@/lib/settlemint/portal");
 vi.mock("@/orpc/helpers/challenge-response", () => ({
@@ -50,9 +53,11 @@ describe("system.claim-topics.topic.update unit", () => {
     });
 
     // Mock successful portal mutation
-    context.portalClient.mutate = vi.fn().mockResolvedValue(
-      "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-    );
+    context.portalClient.mutate = vi
+      .fn()
+      .mockResolvedValue(
+        "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      );
 
     const input: TopicUpdateInput = {
       name: "KYC Verification",
@@ -66,7 +71,8 @@ describe("system.claim-topics.topic.update unit", () => {
     });
 
     expect(result).toEqual({
-      transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      transactionHash:
+        "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       name: "KYC Verification",
       newSignature: "isKYCVerified(address,bytes32,uint256)",
     });
@@ -97,9 +103,11 @@ describe("system.claim-topics.topic.update unit", () => {
       },
     });
 
-    context.portalClient.mutate = vi.fn().mockResolvedValue(
-      "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
-    );
+    context.portalClient.mutate = vi
+      .fn()
+      .mockResolvedValue(
+        "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
+      );
 
     const input: TopicUpdateInput = {
       name: "Age Verification",
@@ -113,7 +121,8 @@ describe("system.claim-topics.topic.update unit", () => {
     });
 
     expect(result).toEqual({
-      transactionHash: "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+      transactionHash:
+        "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
       name: "Age Verification",
       newSignature: "checkAge(address)",
     });
@@ -200,14 +209,19 @@ describe("system.claim-topics.topic.update unit", () => {
       },
     });
 
-    context.portalClient.mutate = vi.fn().mockResolvedValue(
-      "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-    );
+    context.portalClient.mutate = vi
+      .fn()
+      .mockResolvedValue(
+        "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      );
 
     const testCases = [
       { name: "KYC", signature: "isKYC(address,uint256)" },
       { name: "AML Check", signature: "isAMLCompliant(address,bytes32)" },
-      { name: "Investor Status", signature: "isAccreditedInvestor(address,bool)" },
+      {
+        name: "Investor Status",
+        signature: "isAccreditedInvestor(address,bool)",
+      },
     ];
 
     for (const testCase of testCases) {
@@ -219,7 +233,9 @@ describe("system.claim-topics.topic.update unit", () => {
 
       expect(result.name).toBe(testCase.name);
       expect(result.newSignature).toBe(testCase.signature);
-      expect(result.transactionHash).toBe("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef");
+      expect(result.transactionHash).toBe(
+        "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      );
     }
   });
 
@@ -246,9 +262,11 @@ describe("system.claim-topics.topic.update unit", () => {
       },
     });
 
-    context.portalClient.mutate = vi.fn().mockResolvedValue(
-      "0xfedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321"
-    );
+    context.portalClient.mutate = vi
+      .fn()
+      .mockResolvedValue(
+        "0xfedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321"
+      );
 
     const input: TopicUpdateInput = {
       name: "Credit Score",

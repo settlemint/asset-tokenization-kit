@@ -29,7 +29,11 @@ interface EditTopicDialogProps {
  * Dialog component for editing claim topic signatures
  * Allows administrators to update the verification signature for custom topics
  */
-export function EditTopicDialog({ topic, open, onOpenChange }: EditTopicDialogProps) {
+export function EditTopicDialog({
+  topic,
+  open,
+  onOpenChange,
+}: EditTopicDialogProps) {
   const queryClient = useQueryClient();
   const { t } = useTranslation("claim-topics");
 
@@ -86,44 +90,50 @@ export function EditTopicDialog({ topic, open, onOpenChange }: EditTopicDialogPr
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{t("edit.title")}</DialogTitle>
-          <DialogDescription>
-            {t("edit.description")}
-          </DialogDescription>
+          <DialogDescription>{t("edit.description")}</DialogDescription>
         </DialogHeader>
 
         <form.AppForm>
           <div className="space-y-4">
-          <form.Field name="name">
-            {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>{t("edit.fields.name.label")}</Label>
-                <Input
-                  id={field.name}
-                  value={field.state.value}
-                  readOnly
-                  disabled
-                  className="bg-muted"
-                />
-                <p className="text-xs text-muted-foreground">
-                  {t("edit.fields.name.description", { topicId: Number(topic.topicId) })}
-                </p>
-              </div>
-            )}
-          </form.Field>
+            <form.Field name="name">
+              {(field) => (
+                <div className="space-y-2">
+                  <Label htmlFor={field.name}>
+                    {t("edit.fields.name.label")}
+                  </Label>
+                  <Input
+                    id={field.name}
+                    value={field.state.value}
+                    readOnly
+                    disabled
+                    className="bg-muted"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {t("edit.fields.name.description", {
+                      topicId: Number(topic.topicId),
+                    })}
+                  </p>
+                </div>
+              )}
+            </form.Field>
 
-          <form.AppField
-            name="signature"
-            children={(field) => (
-              <field.TextField
-                label={t("edit.fields.signature.label")}
-                required={true}
-                description={t("edit.fields.signature.description")}
-              />
-            )}
-          />
-          <div className="text-xs text-muted-foreground">
-            <p>{t("edit.fields.signature.current", { signature: topic.signature })}</p>
-          </div>
+            <form.AppField
+              name="signature"
+              children={(field) => (
+                <field.TextField
+                  label={t("edit.fields.signature.label")}
+                  required={true}
+                  description={t("edit.fields.signature.description")}
+                />
+              )}
+            />
+            <div className="text-xs text-muted-foreground">
+              <p>
+                {t("edit.fields.signature.current", {
+                  signature: topic.signature,
+                })}
+              </p>
+            </div>
           </div>
 
           <DialogFooter className="gap-2 mt-6">
@@ -146,7 +156,9 @@ export function EditTopicDialog({ topic, open, onOpenChange }: EditTopicDialogPr
                     Object.keys(state.errors).length > 0
                   }
                 >
-                  {updateMutation.isPending ? t("edit.actions.updating") : t("edit.actions.update")}
+                  {updateMutation.isPending
+                    ? t("edit.actions.updating")
+                    : t("edit.actions.update")}
                 </Button>
               )}
             </form.Subscribe>

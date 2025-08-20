@@ -11,30 +11,30 @@ import { useAppForm } from "@/hooks/use-app-form";
 import { client, orpc } from "@/orpc/orpc-client";
 import { TopicCreateInputSchema } from "@/orpc/routes/system/claim-topics/routes/topic.create.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { z } from "zod";
-
-interface AddTopicDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
 
 /**
  * Dialog component for adding new claim topics
  * Allows administrators to create custom topics for identity verification
  */
-export function AddTopicDialog({ open, onOpenChange }: AddTopicDialogProps) {
+export function AddTopicDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const queryClient = useQueryClient();
   const { t } = useTranslation("claim-topics");
 
-  // Create topic mutation
+
   const createMutation = useMutation({
     mutationFn: (data: z.infer<typeof TopicCreateInputSchema>) =>
       client.system.topicCreate(data),
     onSuccess: (result) => {
       toast.success(t("toast.created", { name: result.name }));
-      // Invalidate and refetch topics data
       void queryClient.invalidateQueries({
         queryKey: orpc.system.topicList.queryKey(),
       });
@@ -50,7 +50,7 @@ export function AddTopicDialog({ open, onOpenChange }: AddTopicDialogProps) {
     defaultValues: {
       name: "",
       signature: "",
-    } as z.infer<typeof TopicCreateInputSchema>,
+    },
     validators: {
       onChange: TopicCreateInputSchema,
     },
@@ -59,9 +59,15 @@ export function AddTopicDialog({ open, onOpenChange }: AddTopicDialogProps) {
     },
   });
 
+
   const handleClose = () => {
     form.reset();
     onOpenChange(false);
+  };
+
+  // Avoids reference to an unbound method which may cause unintentional scoping of `this`
+  const handleSubmit = () => {
+    void form.handleSubmit();
   };
 
   return (
@@ -69,9 +75,7 @@ export function AddTopicDialog({ open, onOpenChange }: AddTopicDialogProps) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{t("add.title")}</DialogTitle>
-          <DialogDescription>
-            {t("add.description")}
-          </DialogDescription>
+          <DialogDescription>{t("add.description")}</DialogDescription>
         </DialogHeader>
 
         <form.AppForm>
@@ -112,14 +116,16 @@ export function AddTopicDialog({ open, onOpenChange }: AddTopicDialogProps) {
               {(state) => (
                 <Button
                   type="button"
-                  onClick={() => void form.handleSubmit()}
+                  onClick={handleSubmit}
                   disabled={
                     createMutation.isPending ||
                     !state.canSubmit ||
                     Object.keys(state.errors).length > 0
                   }
                 >
-                  {createMutation.isPending ? t("add.actions.creating") : t("add.actions.create")}
+                  {createMutation.isPending
+                    ? t("add.actions.creating")
+                    : t("add.actions.create")}
                 </Button>
               )}
             </form.Subscribe>

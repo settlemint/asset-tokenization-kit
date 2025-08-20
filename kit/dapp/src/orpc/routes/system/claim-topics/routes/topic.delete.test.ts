@@ -9,7 +9,10 @@ import {
   createMockErrors,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
-import type { TopicDeleteInput, TopicDeleteOutput } from "./topic.delete.schema";
+import type {
+  TopicDeleteInput,
+  TopicDeleteOutput,
+} from "./topic.delete.schema";
 
 vi.mock("@/lib/settlemint/portal");
 vi.mock("@/orpc/helpers/challenge-response", () => ({
@@ -50,9 +53,11 @@ describe("system.claim-topics.topic.delete unit", () => {
     });
 
     // Mock successful portal mutation
-    context.portalClient.mutate = vi.fn().mockResolvedValue(
-      "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-    );
+    context.portalClient.mutate = vi
+      .fn()
+      .mockResolvedValue(
+        "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      );
 
     const input: TopicDeleteInput = {
       name: "KYC Verification",
@@ -65,7 +70,8 @@ describe("system.claim-topics.topic.delete unit", () => {
     });
 
     expect(result).toEqual({
-      transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      transactionHash:
+        "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       name: "KYC Verification",
     });
 
@@ -159,9 +165,11 @@ describe("system.claim-topics.topic.delete unit", () => {
       },
     });
 
-    context.portalClient.mutate = vi.fn().mockResolvedValue(
-      "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
-    );
+    context.portalClient.mutate = vi
+      .fn()
+      .mockResolvedValue(
+        "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
+      );
 
     const testCases = [
       { name: "KYC" },
@@ -177,7 +185,9 @@ describe("system.claim-topics.topic.delete unit", () => {
       });
 
       expect(result.name).toBe(testCase.name);
-      expect(result.transactionHash).toBe("0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890");
+      expect(result.transactionHash).toBe(
+        "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
+      );
     }
 
     expect(context.portalClient.mutate).toHaveBeenCalledTimes(3);
@@ -206,9 +216,11 @@ describe("system.claim-topics.topic.delete unit", () => {
       },
     });
 
-    context.portalClient.mutate = vi.fn().mockResolvedValue(
-      "0xfedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321"
-    );
+    context.portalClient.mutate = vi
+      .fn()
+      .mockResolvedValue(
+        "0xfedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321"
+      );
 
     const input: TopicDeleteInput = {
       name: "Credit Score",

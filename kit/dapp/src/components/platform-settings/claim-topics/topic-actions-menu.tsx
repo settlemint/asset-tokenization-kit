@@ -77,7 +77,9 @@ export function TopicActionsMenu({ topic, onEdit }: TopicActionsMenuProps) {
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            onClick={() => { setShowDeleteDialog(true); }}
+            onClick={() => {
+              setShowDeleteDialog(true);
+            }}
             className="text-destructive focus:text-destructive"
           >
             <Trash2 className="mr-2 h-4 w-4" />
@@ -109,7 +111,9 @@ export function TopicActionsMenu({ topic, onEdit }: TopicActionsMenuProps) {
               disabled={deleteMutation.isPending}
               className="bg-destructive hover:bg-destructive/90"
             >
-              {deleteMutation.isPending ? t("actions.delete.deleting") : t("actions.delete.confirm")}
+              {deleteMutation.isPending
+                ? t("actions.delete.deleting")
+                : t("actions.delete.confirm")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

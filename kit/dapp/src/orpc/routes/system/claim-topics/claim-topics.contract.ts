@@ -7,9 +7,7 @@ import {
   TopicDeleteInputSchema,
   TopicDeleteOutputSchema,
 } from "@/orpc/routes/system/claim-topics/routes/topic.delete.schema";
-import {
-  TopicListOutputSchema,
-} from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
+import { TopicListOutputSchema } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
 import {
   TopicUpdateInputSchema,
   TopicUpdateOutputSchema,
@@ -19,7 +17,7 @@ const TAGS = ["system", "claim-topics"];
 
 /**
  * Contract definition for listing topic schemes.
- * 
+ *
  * Retrieves all registered topic schemes from the subgraph,
  * including both system-reserved and custom topics.
  */
@@ -35,7 +33,7 @@ const topicList = baseContract
 
 /**
  * Contract definition for creating topic schemes.
- * 
+ *
  * Registers a new topic scheme that can be used for identity claims.
  * Requires CLAIM_POLICY_MANAGER_ROLE or SYSTEM_MODULE_ROLE permissions.
  */
@@ -52,7 +50,7 @@ const topicCreate = baseContract
 
 /**
  * Contract definition for updating topic schemes.
- * 
+ *
  * Updates the signature of an existing topic scheme.
  * Only the signature can be modified - name and ID remain immutable.
  */
@@ -69,7 +67,7 @@ const topicUpdate = baseContract
 
 /**
  * Contract definition for removing topic schemes.
- * 
+ *
  * Permanently removes a topic scheme from the registry.
  * This prevents new claims from being issued for this topic.
  */
