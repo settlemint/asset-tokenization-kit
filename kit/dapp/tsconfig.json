@@ -2,8 +2,6 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "../../packages/config/src/env.ts",
-    "../../packages/config/src/metadata.ts"
   ],
   "compilerOptions": {
     "lib": [

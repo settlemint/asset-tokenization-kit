@@ -26,6 +26,7 @@ import {
   issuerRole,
 } from "@/lib/auth/utils/permissions";
 import { kycProfiles } from "@/lib/db/schema";
+import { env } from "@atk/config/env";
 import { metadata } from "@atk/config/metadata";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import type { UserRole } from "@atk/zod/user-roles";
@@ -43,7 +44,6 @@ import { passkey } from "better-auth/plugins/passkey";
 import { reactStartCookies } from "better-auth/react-start";
 import { eq } from "drizzle-orm/sql";
 import { zeroAddress } from "viem";
-import { env } from "../../../../../packages/config/src/env";
 import { db } from "../db";
 import * as authSchema from "./db/auth";
 
