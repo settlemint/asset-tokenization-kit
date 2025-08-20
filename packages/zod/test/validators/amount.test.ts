@@ -1,3 +1,21 @@
+/**
+ * @fileoverview Test suite for financial amount validation
+ * 
+ * This test suite validates monetary amount handling with configurable constraints,
+ * ensuring safe financial calculations and proper boundary enforcement.
+ * 
+ * Test Strategy:
+ * - Range Validation: Enforces min/max bounds to prevent invalid transactions
+ * - Decimal Precision: Configurable decimal places for different asset types
+ * - String Coercion: Accepts numeric strings from forms/APIs with proper parsing
+ * - Edge Cases: Scientific notation, boundary values, floating-point precision
+ * - Type Safety: Branded number type prevents primitive obsession
+ * - Financial Safety: Rejects negative amounts, infinity, NaN
+ * 
+ * CRITICAL: Financial amounts must be validated to prevent monetary loss
+ * PRECISION: Uses native numbers - for high precision use BigDecimal validator
+ */
+
 import { describe, expect, it } from "bun:test";
 import { amount, getAmount, isAmount } from "../../src/amount";
 
@@ -6,26 +24,33 @@ describe("amount", () => {
     const validator = amount();
 
     it("should accept positive numbers", () => {
+      // WHY: Positive amounts represent valid monetary values
       expect(validator.parse(1)).toBe(1);
       expect(validator.parse(100)).toBe(100);
       expect(validator.parse(999.99)).toBe(999.99);
     });
 
     it("should accept very small positive numbers", () => {
+      // WHY: Micro-payments and high-precision assets need very small amounts
+      // EDGE_CASE: Number.EPSILON is smallest representable positive number
       expect(validator.parse(0.000_001)).toBe(0.000_001);
       expect(validator.parse(Number.EPSILON)).toBe(Number.EPSILON);
     });
 
     it("should accept zero by default", () => {
+      // WHY: Zero amounts are valid for balance checks, free transactions
       expect(validator.parse(0)).toBe(0);
     });
 
     it("should reject negative numbers", () => {
+      // SECURITY: Negative amounts could represent debt/refunds, not valid payment amounts
+      // FINANCIAL_SAFETY: Prevent accidental negative transactions
       expect(() => validator.parse(-1)).toThrow("Amount must be at least 0");
       expect(() => validator.parse(-0.01)).toThrow("Amount must be at least 0");
     });
 
     it("should reject non-numeric string types", () => {
+      // SECURITY: Prevent injection of non-numeric data into financial calculations
       expect(() => validator.parse("abc")).toThrow();
       expect(() => validator.parse("")).toThrow();
       expect(() => validator.parse("not a number")).toThrow();
@@ -35,17 +60,21 @@ describe("amount", () => {
     });
 
     it("should accept numeric strings", () => {
+      // WHY: Form inputs and API payloads often send amounts as strings
+      // COERCION: Automatic string-to-number conversion for convenience
       expect(validator.parse("100")).toBe(100);
-      expect(validator.parse("100.50")).toBe(100.5);
+      expect(validator.parse("100.50")).toBe(100.5); // Trailing zero removed
       expect(validator.parse("0")).toBe(0);
       expect(validator.parse("999.99")).toBe(999.99);
     });
 
     it("should reject NaN", () => {
+      // FINANCIAL_SAFETY: NaN represents invalid calculation, not valid amount
       expect(() => validator.parse(Number.NaN)).toThrow();
     });
 
     it("should reject Infinity", () => {
+      // FINANCIAL_SAFETY: Infinite amounts are not valid monetary values
       expect(() => validator.parse(Infinity)).toThrow();
       expect(() => validator.parse(-Infinity)).toThrow();
     });
@@ -55,17 +84,22 @@ describe("amount", () => {
     const validator = amount({ min: 10, max: 1000 });
 
     it("should accept values within range", () => {
-      expect(validator.parse(10)).toBe(10);
-      expect(validator.parse(500)).toBe(500);
-      expect(validator.parse(1000)).toBe(1000);
+      // WHY: Business logic may require minimum transaction amounts
+      // USE_CASE: Prevent micro-transactions that cost more in fees than value
+      expect(validator.parse(10)).toBe(10); // Minimum boundary
+      expect(validator.parse(500)).toBe(500); // Within range
+      expect(validator.parse(1000)).toBe(1000); // Maximum boundary
     });
 
     it("should reject values below minimum", () => {
+      // BUSINESS_RULE: Enforce minimum transaction amounts
       expect(() => validator.parse(9.99)).toThrow("Amount must be at least 10");
       expect(() => validator.parse(0)).toThrow("Amount must be at least 10");
     });
 
     it("should reject values above maximum", () => {
+      // SECURITY: Prevent extraordinarily large transactions that might be errors
+      // RISK_MANAGEMENT: Daily/per-transaction limits
       expect(() => validator.parse(1000.01)).toThrow("Amount must not exceed 1000");
       expect(() => validator.parse(10_000)).toThrow("Amount must not exceed 1000");
     });
@@ -75,16 +109,21 @@ describe("amount", () => {
     const validator = amount({ decimals: 2 });
 
     it("should set minimum based on decimals", () => {
+      // WHY: Decimals option sets minimum to smallest representable unit (10^-decimals)
+      // USE_CASE: USD has 2 decimals (cents), so minimum is $0.01
       expect(validator.parse(0.01)).toBe(0.01);
       expect(validator.parse(10.99)).toBe(10.99);
     });
 
     it("should reject values below decimal-based minimum", () => {
+      // WHY: Amounts smaller than smallest unit are invalid (e.g., 0.5 cents)
       expect(() => validator.parse(0.009)).toThrow("Amount must be at least 0.01");
       expect(() => validator.parse(0)).toThrow("Amount must be at least 0.01");
     });
 
     it("should accept any number of decimal places above minimum", () => {
+      // WHY: Decimals option sets minimum unit, but allows higher precision
+      // FLEXIBLE: Internal calculations may need more precision than currency unit
       expect(validator.parse(10.999)).toBe(10.999);
       expect(validator.parse(10.123_45)).toBe(10.123_45);
     });
@@ -274,6 +313,7 @@ describe("amount", () => {
     });
 
     it("should handle the schema description", () => {
+      // WHY: Dynamic descriptions help with API documentation and debugging
       const validator1 = amount();
       expect(validator1.description).toBe("A positive numerical amount between 0 and 9007199254740991");
 

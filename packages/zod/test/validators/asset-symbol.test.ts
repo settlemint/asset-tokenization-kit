@@ -1,3 +1,21 @@
+/**
+ * @fileoverview Test suite for asset symbol validation (ticker symbols)
+ * 
+ * This test suite validates financial asset ticker symbols with strict formatting rules
+ * to ensure compatibility with trading platforms and financial data providers.
+ * 
+ * Test Strategy:
+ * - Format Validation: Uppercase A-Z and numbers 0-9 only (no special characters)
+ * - Length Constraints: 1-12 characters (standard ticker length limits)
+ * - Character Set: Strict ASCII alphanumeric to prevent Unicode confusion
+ * - Type Safety: Branded string type prevents mixing with regular strings
+ * - Edge Cases: Single characters, maximum length, special character rejection
+ * - Internationalization: Explicitly reject Unicode/emoji to maintain compatibility
+ * 
+ * STANDARD: Follows exchange ticker symbol conventions (NYSE, NASDAQ, etc.)
+ * SECURITY: Strict character validation prevents injection and display issues
+ */
+
 import { describe, expect, it } from "bun:test";
 import { type AssetSymbol, assetSymbol, getAssetSymbol, isAssetSymbol } from "../../src/asset-symbol";
 
@@ -6,15 +24,17 @@ describe("assetSymbol", () => {
 
   describe("valid asset symbols", () => {
     it("should accept valid uppercase symbols", () => {
+      // WHY: Standard crypto/stock ticker format (BTC, ETH, AAPL)
       expect(validator.parse("BTC")).toBe("BTC" as AssetSymbol);
       expect(validator.parse("ETH")).toBe("ETH" as AssetSymbol);
       expect(validator.parse("USDT")).toBe("USDT" as AssetSymbol);
     });
 
     it("should accept symbols with numbers", () => {
+      // WHY: Some assets include numbers in their ticker (1INCH token, C98)
       expect(validator.parse("USDC6")).toBe("USDC6" as AssetSymbol);
-      expect(validator.parse("1INCH")).toBe("1INCH" as AssetSymbol);
-      expect(validator.parse("C98")).toBe("C98" as AssetSymbol);
+      expect(validator.parse("1INCH")).toBe("1INCH" as AssetSymbol); // Real DeFi token
+      expect(validator.parse("C98")).toBe("C98" as AssetSymbol); // Coin98 token
     });
 
     it("should accept single character symbols", () => {
@@ -37,6 +57,8 @@ describe("assetSymbol", () => {
     });
 
     it("should reject lowercase letters", () => {
+      // STANDARD: Financial tickers are always uppercase by convention
+      // WHY: Prevents confusion between BTC (Bitcoin) and btc (invalid)
       expect(() => validator.parse("btc")).toThrow(
         "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
       );
@@ -49,6 +71,8 @@ describe("assetSymbol", () => {
     });
 
     it("should reject special characters", () => {
+      // SECURITY: Special characters could cause display/parsing issues
+      // STANDARD: Pure alphanumeric symbols are universally compatible
       expect(() => validator.parse("BTC-USD")).toThrow(
         "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
       );
