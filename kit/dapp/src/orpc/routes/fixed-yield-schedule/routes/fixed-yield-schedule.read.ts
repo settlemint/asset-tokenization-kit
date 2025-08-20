@@ -69,7 +69,7 @@ const READ_FIXED_YIELD_SCHEDULE_QUERY = theGraphGraphql(
  */
 export const read = authRouter.fixedYieldSchedule.read
   .use(theGraphMiddleware)
-  .handler(async ({ input, context }) => {
+  .handler(async ({ input, context, errors }) => {
     const response = await context.theGraphClient.query(
       READ_FIXED_YIELD_SCHEDULE_QUERY,
       {
@@ -83,7 +83,9 @@ export const read = authRouter.fixedYieldSchedule.read
     );
 
     if (!response.tokenFixedYieldSchedule) {
-      throw new Error("Fixed yield schedule not found");
+      throw errors.NOT_FOUND({
+        message: `Fixed yield schedule not found for address ${input.id}`,
+      });
     }
 
     return response.tokenFixedYieldSchedule;

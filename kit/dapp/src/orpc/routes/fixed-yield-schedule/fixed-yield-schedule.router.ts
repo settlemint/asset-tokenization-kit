@@ -1,3 +1,4 @@
+import { create } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.create";
 import { read } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.read";
 
 /**
@@ -14,6 +15,7 @@ import { read } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-sche
  * - OpenAPI documentation integration
  *
  * Available routes:
+ * - create: Deploy a new fixed yield schedule contract
  * - read: Retrieve detailed information about a specific fixed yield schedule
  *
  * Future routes can be added here as needed, such as:
@@ -22,6 +24,17 @@ import { read } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-sche
  * - periods: Get detailed period information
  */
 const routes = {
+  /**
+   * Create a new fixed yield schedule contract.
+   *
+   * Deploys a new yield schedule contract with specified parameters
+   * including yield rate, payment intervals, timing, and jurisdiction.
+   * Returns the deployed contract address for subsequent operations.
+   *
+   * @see {@link ./routes/fixed-yield-schedule.create} - Implementation details
+   */
+  create,
+
   /**
    * Read fixed yield schedule details by contract address.
    *

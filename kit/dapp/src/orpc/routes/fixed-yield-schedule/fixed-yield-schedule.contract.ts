@@ -1,3 +1,4 @@
+import { fixedYieldScheduleCreateContract } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.create.contract";
 import { fixedYieldScheduleReadContract } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.read.contract";
 
 /**
@@ -17,6 +18,17 @@ import { fixedYieldScheduleReadContract } from "@/orpc/routes/fixed-yield-schedu
  * input/output schemas and HTTP method specifications.
  */
 export const fixedYieldScheduleContract = {
+  /**
+   * Create a new fixed yield schedule contract.
+   *
+   * Deploys a new fixed yield schedule contract with specified parameters
+   * including yield rate, payment intervals, timing, and jurisdiction.
+   * Returns the deployed contract address for subsequent operations.
+   *
+   * @see {@link ./routes/fixed-yield-schedule.create.contract} - Contract implementation
+   */
+  create: fixedYieldScheduleCreateContract,
+
   /**
    * Read fixed yield schedule details by ID.
    *
