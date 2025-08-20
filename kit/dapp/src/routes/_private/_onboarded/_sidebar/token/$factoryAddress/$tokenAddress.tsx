@@ -9,8 +9,8 @@ import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary"
 import { ManageAssetDropdown } from "@/components/manage-dropdown/manage-asset-dropdown";
 import { getAssetTabConfiguration } from "@/components/tab-navigation/asset-tab-configuration";
 import { TabNavigation } from "@/components/tab-navigation/tab-navigation";
-import { seo } from "@/config/metadata";
 import { orpc } from "@/orpc/orpc-client";
+import { seo } from "@atk/config/metadata";
 import {
   type AssetType,
   getAssetClassFromFactoryTypeId,

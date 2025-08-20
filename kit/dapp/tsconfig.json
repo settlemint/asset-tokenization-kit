@@ -1,7 +1,7 @@
 {
   "include": [
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
   ],
   "compilerOptions": {
     "lib": [

@@ -16,7 +16,6 @@
  * @see {@link ../db/schemas/auth} - Database schema for authentication
  */
 
-import { metadata } from "@/config/metadata";
 import { pincode } from "@/lib/auth/plugins/pincode-plugin";
 import { secretCodes } from "@/lib/auth/plugins/secret-codes-plugin";
 import { twoFactor } from "@/lib/auth/plugins/two-factor";
@@ -27,6 +26,8 @@ import {
   issuerRole,
 } from "@/lib/auth/utils/permissions";
 import { kycProfiles } from "@/lib/db/schema";
+import { env } from "@atk/config/env";
+import { metadata } from "@atk/config/metadata";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import type { UserRole } from "@atk/zod/user-roles";
 import { serverOnly } from "@tanstack/react-start";
@@ -44,8 +45,7 @@ import { reactStartCookies } from "better-auth/react-start";
 import { eq } from "drizzle-orm/sql";
 import { zeroAddress } from "viem";
 import { db } from "../db";
-import * as authSchema from "../db/schemas/auth";
-import { env } from "../env";
+import * as authSchema from "./db/auth";
 
 const options = {
   /**

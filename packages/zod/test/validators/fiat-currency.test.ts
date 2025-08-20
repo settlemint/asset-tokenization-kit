@@ -1,3 +1,21 @@
+/**
+ * @fileoverview Test suite for fiat currency validation and metadata
+ * 
+ * This test suite validates ISO 4217 currency codes and provides metadata
+ * for major world currencies used in financial applications.
+ * 
+ * Test Strategy:
+ * - Currency Codes: 3-letter ISO 4217 standard codes (USD, EUR, GBP, etc.)
+ * - Case Handling: Accept lowercase, transform to standard uppercase
+ * - Metadata Validation: Currency names, symbols, and decimal places
+ * - Geographic Coverage: Major currencies from different regions
+ * - Type Safety: Branded string type for currency-specific operations
+ * - Helper Functions: Currency lookup, validation, and metadata retrieval
+ * 
+ * STANDARD: ISO 4217 international standard for currency codes
+ * COVERAGE: Supports 20+ major world currencies for global financial apps
+ */
+
 import { describe, expect, it, test } from "bun:test";
 import {
   allFiatCurrencies,
@@ -15,9 +33,10 @@ describe("fiatCurrency", () => {
 
   describe("valid currencies", () => {
     it("should accept common 3-letter currency codes", () => {
-      expect(validator.parse("USD")).toBe("USD");
-      expect(validator.parse("EUR")).toBe("EUR");
-      expect(validator.parse("GBP")).toBe("GBP");
+      // WHY: ISO 4217 standard 3-letter codes for major world currencies
+      expect(validator.parse("USD")).toBe("USD"); // US Dollar
+      expect(validator.parse("EUR")).toBe("EUR"); // Euro
+      expect(validator.parse("GBP")).toBe("GBP"); // British Pound
       expect(validator.parse("JPY")).toBe("JPY");
     });
 

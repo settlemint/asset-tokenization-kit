@@ -7,7 +7,7 @@ import {
   timestamp,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { user } from "./auth";
+import { user } from "../../auth/db/auth";
 
 export const residencyStatusEnum = pgEnum("residency_status", [
   "resident",

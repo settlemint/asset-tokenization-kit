@@ -128,7 +128,8 @@
   "typescript.preferences.autoImportSpecifierExcludeRegexes": [
     "@radix-ui",
     "next/router",
-    "@atk/zod/src"
+    "@atk/zod/src",
+    "@atk/config/src"
   ],
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "typescript.preferences.includePackageJsonAutoImports": "on",
