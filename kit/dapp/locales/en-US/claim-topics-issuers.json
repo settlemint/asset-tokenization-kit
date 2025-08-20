@@ -29,7 +29,7 @@
       },
       "delete": {
         "title": "Delete claim topic",
-        "description": "Are you sure you want to delete the topic \"{topicName}\"?",
+        "description": "Are you sure you want to delete the topic \"{{topicName}}\"?",
         "warning": "This action cannot be undone. Any existing claims using this topic may become invalid.",
         "cancel": "Cancel",
         "confirm": "Delete topic",
