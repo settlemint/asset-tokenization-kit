@@ -1,28 +1,26 @@
 {
   "name": "@atk/zod",
-  "module": "src/index.ts",
   "type": "module",
   "scripts": {
-    "lint": "biome check --write --unsafe",
+    "typecheck": "tsgo --noEmit",
+    "lint": "eslint . --fix --max-warnings 0 --cache --cache-location .eslintcache",
+    "format": "prettier --experimental-cli --write .",
     "test": "bun test",
     "test:coverage": "bun test --coverage",
     "test:ci": "bun test:coverage"
   },
   "exports": {
-    "./utils/*": {
-      "import": "./src/utils/*.ts",
-      "types": "./src/utils/*.ts"
-    },
-    "./validators/*": {
-      "import": "./src/validators/*.ts",
-      "types": "./src/validators/*.ts"
+    "./*": {
+      "import": "./src/*.ts",
+      "types": "./src/*.ts"
     }
   },
   "devDependencies": {
+    "@tools/typescript-config": "workspace:*",
     "@types/bun": "latest"
   },
   "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "5.9.2"
   },
   "dependencies": {
     "zod": "4.0.17"

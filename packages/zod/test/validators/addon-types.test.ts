@@ -16,7 +16,7 @@ import {
   addonTypes,
   getAddonCategoryFromFactoryTypeId,
   getFactoryTypeIdsFromAddonType,
-} from "../../src/validators/addon-types";
+} from "../../src/addon-types";
 
 describe("addonType", () => {
   const schema = addonType();
@@ -26,7 +26,7 @@ describe("addonType", () => {
   });
 
   describe("valid inputs", () => {
-    it.each(addonTypes)('should accept "%s"', (type) => {
+    it.each([...addonTypes])('should accept "%s"', (type) => {
       const result = schema.parse(type);
       expect(result).toBe(type);
     });
@@ -76,7 +76,7 @@ describe("addonCategory", () => {
   });
 
   describe("valid inputs", () => {
-    it.each(addonCategories)('should accept "%s"', (category) => {
+    it.each([...addonCategories])('should accept "%s"', (category) => {
       const result = schema.parse(category);
       expect(result).toBe(category);
     });
@@ -126,7 +126,7 @@ describe("addonFactoryTypeId", () => {
   });
 
   describe("valid inputs", () => {
-    it.each(addonFactoryTypeIds)('should accept "%s"', (typeId) => {
+    it.each([...addonFactoryTypeIds])('should accept "%s"', (typeId) => {
       const result = schema.parse(typeId);
       expect(result).toBe(typeId);
     });

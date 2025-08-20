@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { getPrice, isPrice, price } from "../../src/validators/price";
+import { getPrice, isPrice, price } from "../../src/price";
 
 describe("price", () => {
   const validator = price();

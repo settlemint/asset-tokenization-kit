@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { getTwoFactorCode, isTwoFactorCode, twoFactorCode } from "../../src/validators/two-factor-code";
+import { getTwoFactorCode, isTwoFactorCode, twoFactorCode } from "../../src/two-factor-code";
 
 describe("twoFactorCode", () => {
   const validator = twoFactorCode();
