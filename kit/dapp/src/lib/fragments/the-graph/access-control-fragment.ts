@@ -45,6 +45,7 @@ export const AccessControlFragment = theGraphGraphql(`
     identityManager { id isContract }
     identityRegistryModule { id isContract }
     minter { id isContract }
+    organisationIdentityManager { id isContract }
     pauser { id isContract }
     recovery { id isContract }
     saleAdmin { id isContract }
