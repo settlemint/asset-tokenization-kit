@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 import { AbstractComplianceModuleTest } from "./AbstractComplianceModuleTest.t.sol";
-import { SMARTTokenSupplyLimitComplianceModule } from "../../../contracts/smart/modules/TokenSupplyLimitComplianceModule.sol";
+import { TokenSupplyLimitComplianceModule } from "../../../contracts/smart/modules/TokenSupplyLimitComplianceModule.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
 import { SMARTToken } from "../examples/SMARTToken.sol";
@@ -11,7 +11,7 @@ import { SMARTComplianceModuleParamPair } from
     "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
-    SMARTTokenSupplyLimitComplianceModule internal module;
+    TokenSupplyLimitComplianceModule internal module;
 
     // Test constants
     uint256 constant LIFETIME_MAX_SUPPLY = 1000000e18; // 1M tokens
@@ -20,7 +20,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
     function setUp() public override {
         super.setUp();
-        module = new SMARTTokenSupplyLimitComplianceModule(address(0));
+        module = new TokenSupplyLimitComplianceModule(address(0));
 
         // Issue claims to users for testing (smartToken claims are handled in parent setUp)
         claimUtils.issueAllClaims(user1);
@@ -31,7 +31,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
     function test_TokenSupplyLimit_InitialState() public view {
         assertEq(module.name(), "Token Supply Limit Compliance Module");
-        assertEq(module.typeId(), keccak256("SMARTTokenSupplyLimitComplianceModule"));
+        assertEq(module.typeId(), keccak256("TokenSupplyLimitComplianceModule"));
     }
 
     function test_TokenSupplyLimit_SupportsInterface() public view {
@@ -41,7 +41,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     // --- Parameter Validation Tests ---
 
     function test_TokenSupplyLimit_ValidateParameters_LifetimeConfig() public view {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: LIFETIME_MAX_SUPPLY,
             periodLength: 0, // Lifetime
@@ -55,7 +55,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_ValidateParameters_FixedPeriodConfig() public view {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: PERIOD_MAX_SUPPLY,
             periodLength: PERIOD_LENGTH,
@@ -69,7 +69,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_ValidateParameters_RollingWindowConfig() public view {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: PERIOD_MAX_SUPPLY,
             periodLength: PERIOD_LENGTH,
@@ -84,7 +84,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_ValidateParameters_BasePriceConfig() public view {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: LIFETIME_MAX_SUPPLY,
             periodLength: 0,
@@ -98,7 +98,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_RevertWhen_MaxSupplyZero() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 0, // Invalid
             periodLength: 0,
@@ -117,7 +117,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_RevertWhen_RollingWithoutPeriod() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: LIFETIME_MAX_SUPPLY,
             periodLength: 0, // Invalid for rolling
@@ -137,7 +137,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
     function test_TokenSupplyLimit_ValidateParameters_LongPeriod() public view {
         // Long periods should be allowed for fixed periods (no gas limit issues)
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: PERIOD_MAX_SUPPLY,
             periodLength: 1000, // Long period allowed for fixed periods
@@ -152,7 +152,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
     function test_TokenSupplyLimit_RevertWhen_RollingPeriodTooLong() public {
         // Rolling windows are limited to 730 days (2 years) for gas efficiency
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: PERIOD_MAX_SUPPLY,
             periodLength: 731, // Too long for rolling windows
@@ -173,7 +173,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
     function test_TokenSupplyLimit_ValidateParameters_MaxRollingPeriod() public view {
         // 730 days should be allowed for rolling windows
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: PERIOD_MAX_SUPPLY,
             periodLength: 730, // Exactly at limit
@@ -195,7 +195,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     // --- Lifetime Cap Tests ---
 
     function test_TokenSupplyLimit_LifetimeCap_AllowMintUnderLimit() public view {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: LIFETIME_MAX_SUPPLY,
             periodLength: 0, // Lifetime
@@ -210,7 +210,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_LifetimeCap_RevertWhen_ExceedsLimit() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: LIFETIME_MAX_SUPPLY,
             periodLength: 0, // Lifetime
@@ -229,7 +229,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_LifetimeCap_TracksMintedTokens() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: LIFETIME_MAX_SUPPLY,
             periodLength: 0, // Lifetime
@@ -258,7 +258,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_AllowsRegularTransfers() public view {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: LIFETIME_MAX_SUPPLY,
             periodLength: 0,
@@ -275,7 +275,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     // --- Fixed Period Tests ---
 
     function test_TokenSupplyLimit_FixedPeriod_AllowMintInNewPeriod() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: PERIOD_MAX_SUPPLY,
             periodLength: PERIOD_LENGTH,
@@ -299,7 +299,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_FixedPeriod_RevertWhen_ExceedsLimitInPeriod() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: PERIOD_MAX_SUPPLY,
             periodLength: PERIOD_LENGTH,
@@ -327,7 +327,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     // --- Rolling Window Tests ---
 
     function test_TokenSupplyLimit_RollingWindow_BasicTracking() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 200e18, // 200 tokens limit for rolling window
             periodLength: 3, // 3-day rolling window
@@ -363,7 +363,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_RollingWindow_SameDayAccumulation() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 200e18, // 200 tokens limit
             periodLength: 3, // 3-day rolling window
@@ -397,7 +397,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_RollingWindow_ExceedsLimitAcrossDays() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 250e18, // 250 tokens limit
             periodLength: 3, // 3-day rolling window
@@ -439,7 +439,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_RollingWindow_AllowsMintAfterWindowSlides() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 150e18, // 150 tokens
             periodLength: 2, // 2-day rolling window
@@ -472,7 +472,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
     function test_TokenSupplyLimit_MaxRollingWindow_730Days() public {
         // Test that maximum rolling window (730 days) works efficiently
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 1000e18,
             periodLength: 730, // 2 years - maximum allowed for rolling windows
@@ -513,7 +513,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     // --- Global Tracking Tests ---
 
     function test_TokenSupplyLimit_Global_LifetimeCap() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 500e18, // 500 tokens global limit
             periodLength: 0, // Lifetime
@@ -563,7 +563,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Global_RollingWindow_SameDayAccumulation() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 300e18, // 300 tokens global limit
             periodLength: 3, // 3-day rolling window
@@ -617,7 +617,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Global_RollingWindow_AcrossDays() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 400e18, // 400 tokens global limit
             periodLength: 3, // 3-day rolling window
@@ -673,7 +673,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Global_RollingWindow_WindowSlides() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 200e18, // 200 tokens global limit
             periodLength: 2, // 2-day rolling window
@@ -730,7 +730,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Global_FixedPeriod() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 300e18, // 300 tokens global limit per period
             periodLength: 30, // 30-day fixed periods
@@ -785,7 +785,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     // --- Burn Tracking Tests ---
 
     function test_TokenSupplyLimit_Burn_LifetimeCap() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 500e18, // 500 tokens lifetime limit
             periodLength: 0, // Lifetime
@@ -826,7 +826,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Burn_RollingWindow_SameDay() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 200e18, // 200 tokens limit
             periodLength: 3, // 3-day rolling window
@@ -862,7 +862,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Burn_RollingWindow_AcrossDays() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 300e18, // 300 tokens limit
             periodLength: 3, // 3-day rolling window
@@ -904,7 +904,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Burn_FixedPeriod() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 400e18, // 400 tokens per period
             periodLength: 30, // 30-day periods
@@ -939,7 +939,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Burn_Global_CrossToken() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 300e18, // 300 tokens global limit
             periodLength: 0, // Lifetime
@@ -992,7 +992,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Burn_EdgeCase_BurnMoreThanSupply() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 500e18,
             periodLength: 0, // Lifetime
@@ -1017,7 +1017,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Burn_EdgeCase_BurnWithoutMint() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 500e18,
             periodLength: 3, // Rolling window
@@ -1039,7 +1039,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Burn_MintBurnMintCycle() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 200e18,
             periodLength: 2, // 2-day rolling window
@@ -1081,7 +1081,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Integration_BurnAndMintWithRealToken() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 600e18, // 600 tokens - under the token cap of 1000e18
             periodLength: 0, // Lifetime
@@ -1129,7 +1129,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     // --- Integration Tests ---
 
     function test_TokenSupplyLimit_Integration_TokenMintingWithModule() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 800e18, // 800 tokens - under the token cap of 1000e18
             periodLength: 0, // Lifetime
@@ -1163,7 +1163,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Integration_RegularTransfersUnaffected() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 900e18, // 900 tokens - under the token cap of 1000e18
             periodLength: 0,
@@ -1194,7 +1194,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     // --- Lifecycle Function Tests ---
 
     function test_TokenSupplyLimit_Lifecycle_Functions() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: LIFETIME_MAX_SUPPLY,
             periodLength: 0,
@@ -1219,7 +1219,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         // First, add a base price claim to the token's identity
         claimUtils.issueBasePriceClaim(address(smartToken), tokenIssuer, 2e18, "EUR", 18);
 
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 8000000e18, // 8M EUR limit
             periodLength: 0,
@@ -1259,7 +1259,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         ));
         vm.stopPrank();
 
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
             maxSupply: 8000000e18,
             periodLength: 0,

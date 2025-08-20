@@ -40,6 +40,7 @@ import {
   systemAddonRegistryAbi,
   timeBoundAirdropFactoryAbi,
   tokenFactoryRegistryAbi,
+  tokenSupplyLimitAbi,
   topicSchemeRegistryAbi,
   trustedIssuersRegistryAbi,
   vestingAirdropFactoryAbi,
@@ -93,6 +94,7 @@ export const ATKContracts = {
   identityBlockListModule: identityBlockListAbi,
   identityAllowListModule: identityAllowListAbi,
   identityVerificationModule: identityVerificationAbi,
+  tokenSupplyLimitModule: tokenSupplyLimitAbi,
   // addons
   fixedYieldScheduleFactory: fixedYieldScheduleFactoryAbi,
   fixedYieldSchedule: fixedYieldScheduleAbi,

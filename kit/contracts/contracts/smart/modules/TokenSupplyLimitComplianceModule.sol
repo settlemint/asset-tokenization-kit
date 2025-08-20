@@ -19,7 +19,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 ///      Supports both token-amount-based limits and base-currency-equivalent limits using on-chain price claims.
 ///      This module is essential for regulatory compliance in jurisdictions with specific issuance caps.
 /// @custom:security-contact security@settlemint.com
-contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
+contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
     /// @notice Maximum period length for rolling windows (730 days = 2 years)
     /// @dev This defines the fixed circular buffer size to prevent unbounded storage growth
     uint256 private constant MAX_PERIOD_LENGTH = 730;
@@ -30,7 +30,7 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
     /// @notice Unique type identifier for this compliance module
     /// @dev Used by the compliance system to identify and manage module instances
     // solhint-disable-next-line const-name-snakecase, use-natspec
-    bytes32 public constant override typeId = keccak256("SMARTTokenSupplyLimitComplianceModule");
+    bytes32 public constant override typeId = keccak256("TokenSupplyLimitComplianceModule");
 
     /// @notice Configuration parameters for supply limit enforcement
     /// @dev This struct defines how supply limits are calculated and enforced for a token
@@ -291,10 +291,10 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
         } else if (config.rolling) {
             // True rolling window tracking - subtract from current day's bucket
             uint256 currentDay = block.timestamp / 1 days;
-            
+
             // Always use fixed MAX_PERIOD_LENGTH circular buffer regardless of actual period length
             uint256 bufferIndex = currentDay % MAX_PERIOD_LENGTH;
-            
+
             // Only subtract if this day has data and matches current day
             if (tracker.bufferDayMapping[bufferIndex] == currentDay) {
                 if (tracker.dailySupply[bufferIndex] >= amount) {
@@ -307,7 +307,7 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
         } else {
             // Fixed period tracking
             // Only subtract if we're in an active period
-            if (tracker.periodStart != 0 && 
+            if (tracker.periodStart != 0 &&
                 block.timestamp - tracker.periodStart < config.periodLength * 1 days) {
                 if (tracker.totalSupply >= amount) {
                     tracker.totalSupply -= amount;
