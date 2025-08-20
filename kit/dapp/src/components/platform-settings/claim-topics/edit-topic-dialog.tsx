@@ -9,12 +9,12 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAppForm } from "@/hooks/use-app-form";
 import { orpc, client } from "@/orpc/orpc-client";
 import type { TopicScheme } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
 import { TopicUpdateInputSchema } from "@/orpc/routes/system/claim-topics/routes/topic.update.schema";
-import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -48,32 +48,19 @@ export function EditTopicDialog({ topic, open, onOpenChange }: EditTopicDialogPr
     },
   });
 
-  const onValidate = useCallback(
-    ({ value }: { value: z.infer<typeof TopicUpdateInputSchema> }) => {
-      const result = TopicUpdateInputSchema.safeParse(value);
-      if (result.error) {
-        return result.error.issues.reduce<Record<string, string>>((acc, issue) => {
-          acc[issue.path[0] as keyof typeof value] = issue.message;
-          return acc;
-        }, {});
-      }
-      
-      // Additional validation: signature must be different from current
-      if (value.signature === topic.signature) {
-        return { signature: "New signature must be different from current signature" };
-      }
-    },
-    [topic.signature]
-  );
-
-  const form = useForm({
+  const form = useAppForm({
     defaultValues: {
       name: topic.name,
       signature: topic.signature,
-    },
+    } as z.infer<typeof TopicUpdateInputSchema>,
     validators: {
-      onChange: onValidate,
-      onSubmit: onValidate,
+      onChange: TopicUpdateInputSchema,
+      onSubmit: ({ value }) => {
+        // Additional validation: signature must be different from current
+        if (value.signature === topic.signature) {
+          return { signature: "New signature must be different from current signature" };
+        }
+      },
     },
     onSubmit: ({ value }) => {
       updateMutation.mutate(value);
@@ -103,14 +90,8 @@ export function EditTopicDialog({ topic, open, onOpenChange }: EditTopicDialogPr
           </DialogDescription>
         </DialogHeader>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            void form.handleSubmit();
-          }}
-          className="space-y-4"
-        >
+        <form.AppForm>
+          <div className="space-y-4">
           <form.Field name="name">
             {(field) => (
               <div className="space-y-2">
@@ -129,33 +110,22 @@ export function EditTopicDialog({ topic, open, onOpenChange }: EditTopicDialogPr
             )}
           </form.Field>
 
-          <form.Field name="signature">
-            {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>
-                  Function Signature <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id={field.name}
-                  value={field.state.value}
-                  onChange={(e) => { field.handleChange(e.target.value); }}
-                  placeholder="e.g., hasLicense(address,bytes32)"
-                  disabled={updateMutation.isPending}
-                />
-                {field.state.meta.errors.length > 0 && (
-                  <p className="text-sm text-destructive">
-                    {field.state.meta.errors[0]}
-                  </p>
-                )}
-                <div className="text-xs text-muted-foreground space-y-1">
-                  <p>Current: <code className="bg-muted px-1 py-0.5 rounded">{topic.signature}</code></p>
-                  <p>Function signature for claim verification. Must follow the format: functionName(parameterTypes)</p>
-                </div>
-              </div>
+          <form.AppField
+            name="signature"
+            children={(field) => (
+              <field.TextField
+                label="Function Signature"
+                required={true}
+                description="Function signature for claim verification. Must follow the format: functionName(parameterTypes). E.g., hasLicense(address,bytes32)"
+              />
             )}
-          </form.Field>
+          />
+          <div className="text-xs text-muted-foreground">
+            <p>Current: <code className="bg-muted px-1 py-0.5 rounded">{topic.signature}</code></p>
+          </div>
+          </div>
 
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 mt-6">
             <Button
               type="button"
               variant="outline"
@@ -164,14 +134,23 @@ export function EditTopicDialog({ topic, open, onOpenChange }: EditTopicDialogPr
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={updateMutation.isPending || !form.state.canSubmit}
-            >
-              {updateMutation.isPending ? "Updating..." : "Update Signature"}
-            </Button>
+            <form.Subscribe>
+              {(state) => (
+                <Button
+                  type="button"
+                  onClick={() => void form.handleSubmit()}
+                  disabled={
+                    updateMutation.isPending ||
+                    !state.canSubmit ||
+                    Object.keys(state.errors).length > 0
+                  }
+                >
+                  {updateMutation.isPending ? "Updating..." : "Update Signature"}
+                </Button>
+              )}
+            </form.Subscribe>
           </DialogFooter>
-        </form>
+        </form.AppForm>
       </DialogContent>
     </Dialog>
   );

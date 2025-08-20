@@ -7,13 +7,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { orpc, client } from "@/orpc/orpc-client";
+import { useAppForm } from "@/hooks/use-app-form";
+import { client, orpc } from "@/orpc/orpc-client";
 import { TopicCreateInputSchema } from "@/orpc/routes/system/claim-topics/routes/topic.create.schema";
-import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useCallback } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -47,27 +44,13 @@ export function AddTopicDialog({ open, onOpenChange }: AddTopicDialogProps) {
     },
   });
 
-  const onValidate = useCallback(
-    ({ value }: { value: z.infer<typeof TopicCreateInputSchema> }) => {
-      const result = TopicCreateInputSchema.safeParse(value);
-      if (result.error) {
-        return result.error.issues.reduce<Record<string, string>>((acc, issue) => {
-          acc[issue.path[0] as keyof typeof value] = issue.message;
-          return acc;
-        }, {});
-      }
-    },
-    []
-  );
-
-  const form = useForm({
+  const form = useAppForm({
     defaultValues: {
       name: "",
       signature: "",
-    },
+    } as z.infer<typeof TopicCreateInputSchema>,
     validators: {
-      onChange: onValidate,
-      onSubmit: onValidate,
+      onChange: TopicCreateInputSchema,
     },
     onSubmit: ({ value }) => {
       createMutation.mutate(value);
@@ -86,70 +69,35 @@ export function AddTopicDialog({ open, onOpenChange }: AddTopicDialogProps) {
           <DialogTitle>Add Claim Topic</DialogTitle>
           <DialogDescription>
             Create a new custom claim topic for identity verification.
-            System topics (ID 1-100) are reserved and cannot be created.
           </DialogDescription>
         </DialogHeader>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            void form.handleSubmit();
-          }}
-          className="space-y-4"
-        >
-          <form.Field name="name">
-            {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>
-                  Topic Name <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id={field.name}
-                  value={field.state.value}
-                  onChange={(e) => { field.handleChange(e.target.value); }}
-                  placeholder="e.g., Professional License"
-                  disabled={createMutation.isPending}
+        <form.AppForm>
+          <div className="space-y-4">
+            <form.AppField
+              name="name"
+              children={(field) => (
+                <field.TextField
+                  label="Topic Name"
+                  required={true}
+                  description="A unique, human-readable name for this claim topic. E.g., Professional License"
                 />
-                {field.state.meta.errors.length > 0 && (
-                  <p className="text-sm text-destructive">
-                    {field.state.meta.errors[0]}
-                  </p>
-                )}
-                <p className="text-xs text-muted-foreground">
-                  A unique, human-readable name for this claim topic.
-                </p>
-              </div>
-            )}
-          </form.Field>
+              )}
+            />
 
-          <form.Field name="signature">
-            {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>
-                  Function Signature <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id={field.name}
-                  value={field.state.value}
-                  onChange={(e) => { field.handleChange(e.target.value); }}
-                  placeholder="e.g., hasLicense(address,bytes32)"
-                  disabled={createMutation.isPending}
+            <form.AppField
+              name="signature"
+              children={(field) => (
+                <field.TextField
+                  label="Function Signature"
+                  required={true}
+                  description="Function signature for claim verification. Must follow the format: functionName(parameterTypes). E.g., hasLicense(address,bytes32)"
                 />
-                {field.state.meta.errors.length > 0 && (
-                  <p className="text-sm text-destructive">
-                    {field.state.meta.errors[0]}
-                  </p>
-                )}
-                <p className="text-xs text-muted-foreground">
-                  Function signature for claim verification. Must follow the format:
-                  functionName(parameterTypes)
-                </p>
-              </div>
-            )}
-          </form.Field>
+              )}
+            />
+          </div>
 
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 mt-6">
             <Button
               type="button"
               variant="outline"
@@ -158,14 +106,23 @@ export function AddTopicDialog({ open, onOpenChange }: AddTopicDialogProps) {
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={createMutation.isPending || !form.state.canSubmit}
-            >
-              {createMutation.isPending ? "Creating..." : "Create Topic"}
-            </Button>
+            <form.Subscribe>
+              {(state) => (
+                <Button
+                  type="button"
+                  onClick={() => void form.handleSubmit()}
+                  disabled={
+                    createMutation.isPending ||
+                    !state.canSubmit ||
+                    Object.keys(state.errors).length > 0
+                  }
+                >
+                  {createMutation.isPending ? "Creating..." : "Create Topic"}
+                </Button>
+              )}
+            </form.Subscribe>
           </DialogFooter>
-        </form>
+        </form.AppForm>
       </DialogContent>
     </Dialog>
   );
