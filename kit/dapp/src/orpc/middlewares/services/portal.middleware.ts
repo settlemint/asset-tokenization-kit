@@ -341,10 +341,18 @@ function createValidatedPortalClient(
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : String(error);
+
+        // Log the actual error for debugging
+        console.error(`[Portal Middleware] GraphQL ${operation} error:`, {
+          errorMessage,
+          error,
+          variables: enrichedVariables,
+        });
+
         throw errors.PORTAL_ERROR({
           message:
             mapPortalErrorMessage(errorMessage) ??
-            `GraphQL ${operation} failed`,
+            `GraphQL ${operation} failed: ${errorMessage}`,
           data: {
             document,
             variables,

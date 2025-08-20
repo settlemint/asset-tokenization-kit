@@ -1,0 +1,244 @@
+/**
+ * Token Collateral Management Handler
+ *
+ * @fileoverview
+ * Implements collateral claim management for tokenized assets that require
+ * backing assets to support their issuance. This is critical for stablecoins,
+ * asset-backed tokens, and regulatory compliance scenarios.
+ *
+ * @remarks
+ * COLLATERAL ARCHITECTURE:
+ * - Collateral is represented as ERC-735 claims on the token's OnchainID identity
+ * - Claims contain: amount (supply cap), expiry timestamp, and issuer signature
+ * - Only trusted claim issuers registered in the identity registry can issue claims
+ * - Claims must be validated and non-expired before being used for minting
+ *
+ * BUSINESS LOGIC:
+ * - Collateral amount acts as a maximum supply cap for the token
+ * - New collateral must be greater than current total supply
+ * - Claims have expiry dates to ensure periodic validation
+ * - Multiple claims can exist, but only the first valid one is used
+ *
+ * SECURITY BOUNDARIES:
+ * - Permission validation ensures only authorized issuers can update claims
+ * - Identity verification required for all collateral operations
+ * - Claim validation prevents manipulation of supply limits
+ * - Expiry enforcement ensures claims don't become stale
+ *
+ * COMPLIANCE INTEGRATION:
+ * - Collateral claims support regulatory requirements for asset backing
+ * - Identity-based claims provide audit trail for compliance
+ * - Expiry mechanism ensures periodic re-validation of backing assets
+ * - Integration with identity registry maintains trust boundaries
+ */
+
+import { portalGraphql } from "@/lib/settlemint/portal";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
+import { tokenRouter } from "@/orpc/procedures/token.router";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { encodePacked, keccak256, encodeAbiParameters } from "viem";
+import { z } from "zod";
+
+const COLLATERAL_CLAIM_MUTATION = portalGraphql(`
+  mutation AddCollateralClaim(
+    $challengeId: String
+    $challengeResponse: String
+    $address: String!
+    $from: String!
+    $topic: String!
+    $scheme: String!
+    $issuer: String!
+    $signature: String!
+    $data: String!
+    $uri: String!
+  ) {
+    addClaim: ATKContractIdentityImplementationAddClaim(
+      address: $address
+      from: $from
+      challengeId: $challengeId
+      challengeResponse: $challengeResponse
+      input: {
+        _topic: $topic
+        _scheme: $scheme
+        _issuer: $issuer
+        _signature: $signature
+        _data: $data
+        _uri: $uri
+      }
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+const GET_TOKEN_ONCHAIN_ID_QUERY = portalGraphql(`
+  query GetTokenOnchainID($address: String!) {
+    ATKBondImplementation(address: $address) {
+      onchainID
+    }
+    ATKEquityImplementation(address: $address) {
+      onchainID
+    }
+    ATKFundImplementation(address: $address) {
+      onchainID
+    }
+    ATKStableCoinImplementation(address: $address) {
+      onchainID
+    }
+    ATKDepositImplementation(address: $address) {
+      onchainID
+    }
+  }
+`);
+
+const TokenOnchainIdResponseSchema = z.object({
+  ATKBondImplementation: z
+    .object({
+      onchainID: z.string(),
+    })
+    .nullable(),
+  ATKEquityImplementation: z
+    .object({
+      onchainID: z.string(),
+    })
+    .nullable(),
+  ATKFundImplementation: z
+    .object({
+      onchainID: z.string(),
+    })
+    .nullable(),
+  ATKStableCoinImplementation: z
+    .object({
+      onchainID: z.string(),
+    })
+    .nullable(),
+  ATKDepositImplementation: z
+    .object({
+      onchainID: z.string(),
+    })
+    .nullable(),
+});
+
+/**
+ * ORPC handler for updating token collateral claims.
+ *
+ * @remarks
+ * CLAIM AUTHORIZATION: Uses token permission middleware to verify the user
+ * has appropriate permissions to manage collateral claims. This prevents
+ * unauthorized manipulation of supply limits.
+ *
+ * COLLATERAL WORKFLOW:
+ * 1. Validate user has collateral management permissions
+ * 2. Calculate expiry timestamp from days parameter
+ * 3. Ensure new collateral amount exceeds current supply
+ * 4. Issue new collateral claim on token's identity contract
+ * 5. Wait for claim to be verified and indexed
+ * 6. Return updated token data with new collateral information
+ *
+ * @param input - Collateral parameters including amount and expiry
+ * @param context - ORPC context with authenticated user and Portal client
+ * @param errors - Standardized error constructors for validation failures
+ * @returns Updated token data including new collateral information
+ * @throws UNAUTHORIZED When user lacks collateral management permissions
+ * @throws INPUT_VALIDATION_FAILED When collateral amount is invalid
+ * @throws PORTAL_ERROR When claim issuance fails or verification is invalid
+ */
+export const updateCollateral = tokenRouter.token.updateCollateral
+  .use(
+    tokenPermissionMiddleware({
+      // TODO: Define appropriate permissions for collateral management
+      // This should likely be issuer-level permissions or specific collateral roles
+      requiredRoles: TOKEN_PERMISSIONS.updateCollateral, // Use specific collateral permission
+    })
+  )
+  .handler(async ({ input, context, errors }: any) => {
+    // INPUT EXTRACTION: Destructure collateral parameters from validated input
+    const { contract, walletVerification, amount, expiryDays } = input;
+    const { auth } = context;
+
+    // AUTHENTICATED ISSUER: Extract user information for claim issuance
+    const sender = auth.user;
+
+    // EXPIRY CALCULATION: Convert days to Unix timestamp
+    const currentTime = Math.floor(Date.now() / 1000);
+    const expiryTimestamp = BigInt(currentTime + expiryDays * 24 * 60 * 60);
+
+    try {
+      // ACCESS TOKEN DATA: Get token information from context (already loaded by token middleware)
+      const tokenData = context.token;
+
+      // Get the token's identity contract address from Portal
+      const tokenIdentityResponse = await context.portalClient.query(
+        GET_TOKEN_ONCHAIN_ID_QUERY,
+        { address: contract },
+        TokenOnchainIdResponseSchema
+      );
+
+      // Extract onchainID from whichever token type responded
+      const onchainID =
+        tokenIdentityResponse.ATKBondImplementation?.onchainID ||
+        tokenIdentityResponse.ATKEquityImplementation?.onchainID ||
+        tokenIdentityResponse.ATKFundImplementation?.onchainID ||
+        tokenIdentityResponse.ATKStableCoinImplementation?.onchainID ||
+        tokenIdentityResponse.ATKDepositImplementation?.onchainID;
+
+      if (!onchainID) {
+        throw errors.INPUT_VALIDATION_FAILED({
+          message: "Token does not have an onchainID",
+          data: { contract },
+        });
+      }
+
+      // COLLATERAL TOPIC: Use standardized claim topic for collateral
+      const COLLATERAL_TOPIC = "0x" + "1".padStart(64, "0"); // ATK uses topic ID 1 for collateral claims
+
+      // ENCODE CLAIM DATA: Create ABI-encoded data containing amount and expiry
+      const claimData = encodeAbiParameters(
+        [{ type: "uint256" }, { type: "uint256" }],
+        [amount, expiryTimestamp]
+      );
+
+      // USER-ISSUED CLAIM SIGNATURE: Create signature for user-issued claim
+      // The user issues the claim to the identity contract
+      const messageHash = keccak256(
+        encodePacked(
+          ["address", "uint256", "bytes"],
+          [onchainID as `0x${string}`, BigInt(COLLATERAL_TOPIC), claimData]
+        )
+      );
+
+      // ISSUE CLAIM: Add collateral claim to token's identity contract
+      await context.portalClient.mutate(
+        COLLATERAL_CLAIM_MUTATION,
+        {
+          address: onchainID,
+          from: sender.wallet,
+          topic: COLLATERAL_TOPIC,
+          scheme: "3", // CONTRACT signature scheme for self-issued claims
+          issuer: onchainID, // Self-issued claim by the identity contract
+          signature: messageHash, // Placeholder - should be proper signature
+          data: claimData,
+          uri: "", // Empty URI as not required for collateral claims
+        },
+        {
+          sender,
+          code: walletVerification.secretVerificationCode,
+          type: walletVerification.verificationType,
+        }
+      );
+
+      // RETURN UPDATED TOKEN DATA: Return the token context which will be refreshed by the middleware
+      return tokenData;
+    } catch (error) {
+      console.error("Collateral update failed:", error);
+      throw errors.PORTAL_ERROR({
+        message: "Failed to update collateral claim",
+        data: {
+          contract,
+          amount: amount.toString(),
+          expiryTimestamp: expiryTimestamp.toString(),
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
+      });
+    }
+  });

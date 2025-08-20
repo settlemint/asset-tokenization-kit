@@ -1,5 +1,6 @@
 import { PauseUnpauseConfirmationSheet } from "./sheets/pause-unpause-confirmation-sheet";
 import { MintSheet } from "./sheets/mint-sheet";
+import { CollateralSheet } from "./sheets/collateral-sheet";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { ChevronDown, Pause, Play, Plus } from "lucide-react";
+import { ChevronDown, Pause, Play, Plus, Shield } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -17,7 +18,7 @@ interface ManageAssetDropdownProps {
   asset: Token; // Keep Token type to maintain API compatibility
 }
 
-type Action = "pause" | "unpause" | "mint" | "viewEvents";
+type Action = "pause" | "unpause" | "mint" | "collateral" | "viewEvents";
 
 function isCurrentAction({
   target,
@@ -71,12 +72,25 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
       });
     }
 
+    // Collateral management
+    const hasCollateralCapability = asset.collateral != null;
+    if (hasCollateralCapability) {
+      arr.push({
+        id: "collateral",
+        label: t("tokens:actions.collateral.label"),
+        icon: Shield,
+        openAction: "collateral",
+        disabled: false,
+      });
+    }
+
     return arr;
   }, [
     isPaused,
     t,
     hasPausableCapability,
     asset.userPermissions?.actions?.mint,
+    asset.collateral,
   ]);
 
   const onActionOpenChange = (open: boolean) => {
@@ -132,6 +146,15 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
       {(asset.userPermissions?.actions?.mint ?? false) && !isPaused && (
         <MintSheet
           open={isCurrentAction({ target: "mint", current: openAction })}
+          onOpenChange={onActionOpenChange}
+          asset={asset}
+        />
+      )}
+
+      {/* Collateral Management */}
+      {asset.collateral != null && (
+        <CollateralSheet
+          open={isCurrentAction({ target: "collateral", current: openAction })}
           onOpenChange={onActionOpenChange}
           asset={asset}
         />

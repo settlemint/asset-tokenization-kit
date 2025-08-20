@@ -140,6 +140,7 @@ export const tokenMiddleware = baseRouter.middleware(
             setYieldSchedule: false,
             transfer: false,
             unpause: false,
+            updateCollateral: false,
           };
 
           // Update based on user roles using the flexible role requirement system

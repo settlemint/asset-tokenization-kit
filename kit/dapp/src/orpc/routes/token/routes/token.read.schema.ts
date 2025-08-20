@@ -189,6 +189,11 @@ export const RawTokenSchema = z.object({
               unpause: z
                 .boolean()
                 .describe("Whether the user can execute the unpause action"),
+              updateCollateral: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the updateCollateral action"
+                ),
             };
             return actionsSchema;
           })()

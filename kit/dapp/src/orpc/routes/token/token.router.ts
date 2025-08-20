@@ -3,6 +3,7 @@ import { revokeRole } from "@/orpc/routes/token/routes/mutations/access/token.re
 import { approve } from "@/orpc/routes/token/routes/mutations/approve/token.approve";
 import { burn } from "@/orpc/routes/token/routes/mutations/burn/token.burn";
 import { setCap } from "@/orpc/routes/token/routes/mutations/cap/token.set-cap";
+import { updateCollateral } from "@/orpc/routes/token/routes/mutations/collateral/token.update-collateral-simple";
 import { addComplianceModule } from "@/orpc/routes/token/routes/mutations/compliance/token.add-compliance-module";
 import { removeComplianceModule } from "@/orpc/routes/token/routes/mutations/compliance/token.remove-compliance-module";
 import { create } from "@/orpc/routes/token/routes/mutations/create/token.create";
@@ -51,6 +52,7 @@ const routes = {
   forcedRecover,
   recoverERC20,
   setCap,
+  updateCollateral,
   setYieldSchedule,
   addComplianceModule,
   removeComplianceModule,
