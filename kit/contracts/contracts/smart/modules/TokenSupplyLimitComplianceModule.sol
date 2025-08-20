@@ -105,10 +105,7 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
 
         // Update both token-specific and global trackers as needed
         _updateTracker(supplyTrackers[_token], amount, config);
-        
-        if (config.global) {
-            _updateTracker(globalSupplyTracker, amount, config);
-        }
+        _updateTracker(globalSupplyTracker, amount, config);
     }
 
     /// @inheritdoc AbstractComplianceModule
@@ -212,10 +209,10 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
         } else if (config.rolling) {
             // True rolling window tracking - use fixed MAX_PERIOD_LENGTH circular buffer
             uint256 currentDay = block.timestamp / 1 days;
-            
+
             // Always use fixed MAX_PERIOD_LENGTH circular buffer regardless of actual period length
             uint256 bufferIndex = currentDay % MAX_PERIOD_LENGTH;
-            
+
             // Check if this buffer slot contains stale data from a previous cycle
             if (tracker.bufferDayMapping[bufferIndex] != currentDay) {
                 // Clear stale data and start fresh for this day
@@ -262,8 +259,8 @@ contract SMARTTokenSupplyLimitComplianceModule is AbstractComplianceModule {
         SupplyLimitConfig memory config
     ) private view returns (uint256) {
         // Use global tracker if _token is address(0) or config specifies global tracking
-        SupplyTracker storage tracker = (_token == address(0) || config.global) 
-            ? globalSupplyTracker 
+        SupplyTracker storage tracker = (_token == address(0) || config.global)
+            ? globalSupplyTracker
             : supplyTrackers[_token];
 
         if (config.periodLength == 0) {
