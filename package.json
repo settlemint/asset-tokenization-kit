@@ -101,7 +101,8 @@
   ],
   "workspaces": [
     "kit/*",
-    "packages/*"
+    "packages/*",
+    "tools/*"
   ],
   "packageManager": "bun@1.2.19"
 }
