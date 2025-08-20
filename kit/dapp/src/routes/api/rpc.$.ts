@@ -17,7 +17,7 @@
  * @see {@link https://spec.openapis.org/oas/latest.html} - OpenAPI specification
  */
 
-import { handleError } from "@/orpc/helpers/error";
+import { logUnexpectedError } from "@/orpc/helpers/error";
 import { router } from "@/orpc/routes/router";
 import { bigDecimalSerializer } from "@atk/zod/bigdecimal";
 import { bigIntSerializer } from "@atk/zod/bigint";
@@ -40,7 +40,7 @@ import {
  * - Smart coercion for flexible parameter handling
  */
 const handler = new RPCHandler(router, {
-  interceptors: [onError(handleError)],
+  interceptors: [onError(logUnexpectedError)],
   plugins: [new BatchHandlerPlugin()],
   customJsonSerializers: [
     bigDecimalSerializer,

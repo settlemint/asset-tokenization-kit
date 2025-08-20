@@ -17,7 +17,7 @@
  * @see {@link https://spec.openapis.org/oas/latest.html} - OpenAPI specification
  */
 
-import { handleError } from "@/orpc/helpers/error";
+import { logUnexpectedError } from "@/orpc/helpers/error";
 import { router } from "@/orpc/routes/router";
 import { metadata } from "@atk/config/metadata";
 import { bigDecimalSerializer } from "@atk/zod/bigdecimal";
@@ -43,7 +43,7 @@ import pkgjson from "../../../package.json";
  * - Smart coercion for flexible parameter handling
  */
 const handler = new OpenAPIHandler(router, {
-  interceptors: [onError(handleError)],
+  interceptors: [onError(logUnexpectedError)],
   customJsonSerializers: [bigDecimalSerializer],
   plugins: [
     /**

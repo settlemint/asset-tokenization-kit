@@ -14,7 +14,7 @@ const logger = createLogger();
  * @param context - Optional context about where the interceptor is being used
  * @returns ORPC error interceptor
  */
-export function handleError(error: unknown) {
+export function logUnexpectedError(error: unknown) {
   const e = error as {
     code?: string;
     status?: number;
