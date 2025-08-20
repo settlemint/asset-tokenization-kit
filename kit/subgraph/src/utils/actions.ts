@@ -1,6 +1,7 @@
 import { BigInt, Bytes, ethereum, log } from "@graphprotocol/graph-ts";
 
 import { Action, ActionExecutor } from "../../generated/schema";
+import { fetchAccount } from "../account/fetch/account";
 
 // ActionStatus constants (enum-like values)
 export class ActionStatus {
@@ -391,7 +392,8 @@ export function actionExecuted(
 
   action.executed = true;
   action.executedAt = event.block.timestamp;
-  action.executedBy = event.transaction.from;
+  const executedBy = fetchAccount(event.transaction.from);
+  action.executedBy = executedBy.id;
   action.status = ActionStatus.EXECUTED;
   action.save();
 
@@ -401,7 +403,7 @@ export function actionExecuted(
       id.toHexString(),
       actionName,
       target.toHexString(),
-      event.transaction.from.toHexString(),
+      executedBy.id.toHexString(),
     ]
   );
 }
