@@ -215,6 +215,26 @@ contract ClaimUtils is Test {
     }
 
     /**
+     * @notice Issues a base price claim from the configured issuer to the token's identity.
+     * @dev The base price claim is typically added to the *token's* identity, not a client's.
+     * @param tokenAddress_ The identity contract address associated with the SMART token.
+     * @param tokenOwner_ The wallet address of the token owner.
+     * @param price The base price.
+     * @param currency The currency of the base price.
+     * @param decimals The number of decimals of the base price.
+     */
+    function issueBasePriceClaim(
+        address tokenAddress_,
+        address tokenOwner_,
+        uint256 price,
+        string memory currency,
+        uint8 decimals
+    ) public {
+        bytes memory encodedData = abi.encode(price, currency, decimals);
+        _issueTokenIdentityClaimInternal(tokenAddress_, tokenOwner_, getTopicId(ATKTopics.TOPIC_BASE_PRICE), encodedData);
+    }
+
+    /**
      * @notice Issues a standard KYC claim.
      * @param clientWalletAddress_ The wallet address of the client receiving the claim.
      */

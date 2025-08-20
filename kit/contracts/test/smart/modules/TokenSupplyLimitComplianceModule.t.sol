@@ -15,7 +15,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     uint256 constant LIFETIME_MAX_SUPPLY = 1000000e18; // 1M tokens
     uint256 constant PERIOD_MAX_SUPPLY = 100000e18; // 100K tokens for periodic limits
     uint256 constant PERIOD_LENGTH = 30; // 30 days
-    uint256 constant BASE_PRICE_TOPIC_ID = 42; // Mock topic ID for base price claims
 
     function setUp() public override {
         super.setUp();
@@ -91,7 +90,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: 0,
             rolling: false,
             useBasePrice: true,
-            basePriceTopicId: BASE_PRICE_TOPIC_ID,
+            basePriceTopicId: claimUtils.getTopicId(ATKTopics.TOPIC_BASE_PRICE),
             global: false
         });
 
@@ -532,79 +531,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         module.canTransfer(address(smartToken), address(0), user1, 1e18, params);
     }
 
-    // --- Base Price Conversion Tests ---
-    // Note: These tests are commented out as they require complex setup with identity claims
-    // They test the base currency conversion functionality
 
-    /*
-    function test_TokenSupplyLimit_BasePrice_ConvertsTokenAmounts() public {
-        // First, add a base price claim to the token's identity
-        _addBasePriceClaim(address(smartToken), BASE_PRICE_TOPIC_ID, 2e18, "EUR", 18); // 2 EUR per token
-
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 8000000e18, // 8M EUR limit
-            periodLength: 0,
-            rolling: false,
-            useBasePrice: true,
-            basePriceTopicId: BASE_PRICE_TOPIC_ID,
-            global: false
-        });
-
-        bytes memory params = abi.encode(config);
-
-        // Should allow minting 4M tokens (= 8M EUR)
-        module.canTransfer(address(smartToken), address(0), user1, 4000000e18, params);
-
-        // Should reject minting 4M + 1 tokens (= 8M + 2 EUR)
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
-            )
-        );
-        module.canTransfer(address(smartToken), address(0), user1, 4000001e18, params);
-    }
-
-    function test_TokenSupplyLimit_BasePrice_RevertWhen_NoIdentity() public {
-        // Create a config that uses base price for a token with no identity
-        address tokenWithoutIdentity = makeAddr("tokenWithoutIdentity");
-
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 8000000e18,
-            periodLength: 0,
-            rolling: false,
-            useBasePrice: true,
-            basePriceTopicId: BASE_PRICE_TOPIC_ID,
-            global: false
-        });
-
-        bytes memory params = abi.encode(config);
-
-        vm.expectRevert(
-            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token has no identity")
-        );
-        module.canTransfer(tokenWithoutIdentity, address(0), user1, 1000e18, params);
-    }
-
-    function test_TokenSupplyLimit_BasePrice_RevertWhen_NoPriceClaim() public {
-        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 8000000e18,
-            periodLength: 0,
-            rolling: false,
-            useBasePrice: true,
-            basePriceTopicId: 999 // Non-existent topic
-        });
-
-        bytes memory params = abi.encode(config);
-
-        vm.expectRevert(
-            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token has no base price claim")
-        );
-        module.canTransfer(address(smartToken), address(0), user1, 1000e18, params);
-    }
-    */
 
     // --- Global Tracking Tests ---
 
@@ -892,22 +819,74 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         module.destroyed(address(smartToken), user1, 100, params);
     }
 
-    // --- Helper Functions ---
+     // --- Base Price Conversion Tests ---
+    function test_TokenSupplyLimit_BasePrice_ConvertsTokenAmounts() public {
+        // First, add a base price claim to the token's identity
+        claimUtils.issueBasePriceClaim(address(smartToken), tokenIssuer, 2e18, "EUR", 18);
 
-    /*
-    function _addBasePriceClaim(address token, uint256 topicId, uint256 price, string memory currency, uint8 decimals)
-        private
-    {
-        // Get token's identity
-        IIdentity tokenIdentity = systemUtils.identityRegistry().identity(token);
-        require(address(tokenIdentity) != address(0), "Token has no identity");
+        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+            .SupplyLimitConfig({
+            maxSupply: 8000000e18, // 8M EUR limit
+            periodLength: 0,
+            rolling: false,
+            useBasePrice: true,
+            basePriceTopicId: claimUtils.getTopicId(ATKTopics.TOPIC_BASE_PRICE),
+            global: false
+        });
 
-        // Encode price data
-        bytes memory claimData = abi.encode(price, currency, decimals);
+        bytes memory params = abi.encode(config);
 
-        // Add the claim (using claimIssuer that was set up in test setup)
-        vm.prank(claimIssuer);
-        tokenIdentity.addClaim(topicId, 1, claimIssuer, "", claimData, "");
+        // Should allow minting 4M tokens (= 8M EUR)
+        module.canTransfer(address(smartToken), address(0), user1, 4000000e18, params);
+
+        // Should reject minting 4M + 1 tokens (= 8M + 2 EUR)
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
+            )
+        );
+        module.canTransfer(address(smartToken), address(0), user1, 4000001e18, params);
     }
-    */
+
+    function test_TokenSupplyLimit_BasePrice_RevertWhen_NoIdentity() public {
+        // Create a config that uses base price for a token with no identity
+        address tokenWithoutIdentity = makeAddr("tokenWithoutIdentity");
+
+        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+            .SupplyLimitConfig({
+            maxSupply: 8000000e18,
+            periodLength: 0,
+            rolling: false,
+            useBasePrice: true,
+            basePriceTopicId: claimUtils.getTopicId(ATKTopics.TOPIC_BASE_PRICE),
+            global: false
+        });
+
+        bytes memory params = abi.encode(config);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token has no identity")
+        );
+        module.canTransfer(tokenWithoutIdentity, address(0), user1, 1000e18, params);
+    }
+
+    function test_TokenSupplyLimit_BasePrice_RevertWhen_NoPriceClaim() public {
+        SMARTTokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = SMARTTokenSupplyLimitComplianceModule
+            .SupplyLimitConfig({
+            maxSupply: 8000000e18,
+            periodLength: 0,
+            rolling: false,
+            useBasePrice: true,
+            basePriceTopicId: 999, // Non-existent topic
+            global: false
+        });
+
+        bytes memory params = abi.encode(config);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token has no base price claim")
+        );
+        module.canTransfer(address(smartToken), address(0), user1, 1000e18, params);
+    }
+
 }
