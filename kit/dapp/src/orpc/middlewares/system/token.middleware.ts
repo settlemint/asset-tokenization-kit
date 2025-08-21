@@ -1,6 +1,6 @@
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { AccessControlFragment } from "@/lib/fragments/the-graph/access-control-fragment";
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
@@ -71,7 +71,7 @@ const READ_TOKEN_QUERY = theGraphGraphql(
 export const tokenMiddleware = baseRouter.middleware(
   async ({ next, context, errors }, input) => {
     // Always fetch fresh token data - no caching
-    const { auth, userClaimTopics } = context;
+    const { auth, userClaimTopics, theGraphClient } = context;
 
     // Early authorization check before making expensive queries
     if (!auth?.user.wallet) {
@@ -90,6 +90,12 @@ export const tokenMiddleware = baseRouter.middleware(
       });
     }
 
+    if (!theGraphClient) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: "theGraphMiddleware should be called before tokenMiddleware",
+      });
+    }
+
     const tokenAddress = getTokenAddress(input);
 
     if (!isEthereumAddress(tokenAddress)) {
@@ -101,16 +107,12 @@ export const tokenMiddleware = baseRouter.middleware(
       });
     }
 
-    const result = await theGraphClient.request(READ_TOKEN_QUERY, {
-      id: tokenAddress,
+    const token = await theGraphClient.query(READ_TOKEN_QUERY, {
+      input: {
+        id: tokenAddress,
+      },
+      output: TokenSchema,
     });
-
-    const token = result.token;
-    if (!token) {
-      throw errors.NOT_FOUND({
-        message: "Token not found",
-      });
-    }
 
     const userRoles = mapUserRoles(auth.user.wallet, token.accessControl);
 
