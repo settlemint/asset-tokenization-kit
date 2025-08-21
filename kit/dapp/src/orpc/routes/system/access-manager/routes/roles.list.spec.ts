@@ -31,7 +31,9 @@ describe("Access Manager - Roles List ORPC routes (integration)", () => {
   }, 60_000);
 
   it("should return roles grouped by account and respect excludeContracts flag", async () => {
-    const all = await adminClient.system.accessManager.rolesList({ excludeContracts: false });
+    const all = await adminClient.system.accessManager.rolesList({
+      excludeContracts: false,
+    });
     const filtered = await adminClient.system.accessManager.rolesList({
       excludeContracts: true,
     });

@@ -23,8 +23,10 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
 vi.mock("@/orpc/orpc-client", () => ({
   orpc: {
     system: {
-      statsAssets: {
-        queryOptions: vi.fn(),
+      stats: {
+        assets: {
+          queryOptions: vi.fn(),
+        },
       },
     },
   },

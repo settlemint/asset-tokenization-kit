@@ -16,14 +16,19 @@ type IdentityOperations = keyof typeof systemContract.identity;
 type SystemContractValidation = {
   factoryHasCreate: "create" extends FactoryOperations ? true : never;
   addonHasCreate: "create" extends AddonOperations ? true : never;
-  accessManagerHasGrantRole: "grantRole" extends AccessManagerOperations ? true : never;
-  accessManagerHasRevokeRole: "revokeRole" extends AccessManagerOperations ? true : never;
+  accessManagerHasGrantRole: "grantRole" extends AccessManagerOperations
+    ? true
+    : never;
+  accessManagerHasRevokeRole: "revokeRole" extends AccessManagerOperations
+    ? true
+    : never;
   complianceHasCreate: "create" extends ComplianceOperations ? true : never;
   identityHasRegister: "register" extends IdentityOperations ? true : never;
 };
 
 // This type will cause a compile error if any operation is missing
-type AssertValidContract = SystemContractValidation extends Record<string, true> ? true : never;
+type AssertValidContract =
+  SystemContractValidation extends Record<string, true> ? true : never;
 
 /**
  * The permissions for the system operations
@@ -31,7 +36,7 @@ type AssertValidContract = SystemContractValidation extends Record<string, true>
  * @description
  * This is a mapping of the system operation names to the roles that are required to call them.
  * Uses OR logic - user needs any of the listed roles.
- * 
+ *
  * The keys are flat names for clarity and backward compatibility with middleware,
  * but they map to nested contract methods:
  * - tokenFactoryCreate -> system.factory.create
@@ -40,7 +45,7 @@ type AssertValidContract = SystemContractValidation extends Record<string, true>
  * - revokeRole -> system.accessManager.revokeRole
  * - complianceModuleCreate -> system.compliance.create
  * - identityRegister -> system.identity.register
- * 
+ *
  * The SystemContractValidation type above ensures these mappings stay valid during refactoring.
  */
 export const SYSTEM_PERMISSIONS: Record<string, RoleRequirement> & {
