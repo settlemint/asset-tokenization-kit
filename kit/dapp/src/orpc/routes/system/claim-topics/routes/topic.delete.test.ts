@@ -87,6 +87,11 @@ describe("system.claim-topics.topic.delete unit", () => {
         address: "0xBBBBbBBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb",
         from: context.auth.user.wallet,
         name: "KYC Verification",
+      },
+      {
+        sender: context.auth.user,
+        code: "123456",
+        type: "PINCODE",
       }
     );
   });
@@ -260,6 +265,14 @@ describe("system.claim-topics.topic.delete unit", () => {
         address: "0xCCCCcCCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCc",
         from: "0x2222222222222222222222222222222222222222",
         name: "Credit Score",
+      },
+      {
+        sender: {
+          id: "user_2",
+          wallet: "0x2222222222222222222222222222222222222222",
+        },
+        code: "123456",
+        type: "PINCODE",
       }
     );
   });

@@ -90,6 +90,11 @@ describe("system.claim-topics.topic.update unit", () => {
         from: context.auth.user.wallet,
         name: "KYC Verification",
         newSignature: "isKYCVerified(address,bytes32,uint256)",
+      },
+      {
+        sender: context.auth.user,
+        code: "123456",
+        type: "PINCODE",
       }
     );
   });
@@ -313,6 +318,14 @@ describe("system.claim-topics.topic.update unit", () => {
         from: "0x2222222222222222222222222222222222222222",
         name: "Credit Score",
         newSignature: "getCreditScore(address,uint256,bool)",
+      },
+      {
+        sender: {
+          id: "user_2",
+          wallet: "0x2222222222222222222222222222222222222222",
+        },
+        code: "123456",
+        type: "PINCODE",
       }
     );
   });
