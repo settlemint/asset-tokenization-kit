@@ -57,20 +57,9 @@ export function decodeClaimValues(
     hasTupleWrapper.toString()
   ]);
 
-  if (!hasTupleWrapper) {
-    // Data is standard ABI-encoded, prepend tuple wrapper (32-byte offset pointer)
-    const offsetPointer =
-      "0000000000000000000000000000000000000000000000000000000000000020";
-    const wrappedDataHex = "0x" + offsetPointer + dataHex.slice(2);
-    processedData = Bytes.fromHexString(wrappedDataHex);
-    log.info("Wrapped data for tuple decoding: {} (length: {})", [
-      processedData.toHexString(),
-      processedData.toHexString().length.toString()
-    ]);
-  }
-
-  // Create signature based on whether data is already tuple-wrapped
+  // Create signature based on data format and parameter count
   let decodingSignature = "";
+  
   if (hasTupleWrapper) {
     // Data is already tuple-wrapped, use standard signature
     if (paramTypes.length == 1) {
@@ -79,11 +68,25 @@ export function decodeClaimValues(
       decodingSignature = paramTypes.join(",");
     }
   } else {
-    // Data was just wrapped by us, use tuple signature
+    // Data is standard ABI-encoded
     if (paramTypes.length == 1) {
+      // Single parameter: add tuple wrapper for consistency
+      const offsetPointer =
+        "0000000000000000000000000000000000000000000000000000000000000020";
+      const wrappedDataHex = "0x" + offsetPointer + dataHex.slice(2);
+      processedData = Bytes.fromHexString(wrappedDataHex);
       decodingSignature = "(" + paramTypes[0] + ")";
+      log.info("Wrapped single param data: {} (length: {})", [
+        processedData.toHexString(),
+        processedData.toHexString().length.toString()
+      ]);
     } else {
+      // Multiple parameters: The Graph seems to require tuple signatures
+      // but the data format varies based on whether it contains dynamic types
       decodingSignature = "(" + paramTypes.join(",") + ")";
+      log.info("Using tuple signature for standard multi-param data: {}", [
+        processedData.toHexString()
+      ]);
     }
   }
 
@@ -101,24 +104,51 @@ export function decodeClaimValues(
       processedData.toHexString(),
       paramTypes.join(",")
     ]);
+    
+    // For debugging: try to understand why collateral is failing
+    if (topicScheme.name == "collateral" && paramTypes.length == 2) {
+      // The data should be exactly 64 bytes (2 * 32)
+      log.warning("Collateral claim debug - data length: {}, expected: 64 bytes (130 hex chars with 0x)", [
+        dataHex.length.toString()
+      ]);
+      
+      // Try manual extraction to verify the data is correct
+      if (data.length == 64) {
+        const amount = data.toHexString().substring(2, 66); // First 32 bytes
+        const expiry = data.toHexString().substring(66, 130); // Second 32 bytes
+        log.warning("Manual extraction - amount hex: {}, expiry hex: {}", [amount, expiry]);
+      }
+    }
+    
     const claimValue = fetchIdentityClaimValue(claim, "rawData");
     claimValue.value = data.toHexString();
     claimValue.save();
     return;
   }
 
-  // Handle both single values and tuples based on the data format
-  if (paramTypes.length == 1 && hasTupleWrapper) {
-    // Single parameter with tuple-wrapped data - decoded directly as the value
-    let value = convertEthereumValue(decoded);
+  // Handle decoding result based on what we expect
+  if (paramTypes.length == 1) {
+    // Single parameter - could be direct value or tuple depending on wrapping
+    let value: string;
+    if (hasTupleWrapper) {
+      // Already tuple-wrapped, decoded as direct value
+      value = convertEthereumValue(decoded);
+    } else {
+      // We wrapped it, so it's now a tuple
+      let decodedTuple = decoded.toTuple();
+      value = convertEthereumValue(decodedTuple[0]);
+    }
+    log.info("Decoded single value for {}: {}", [paramNames[0], value]);
     let claimValue = fetchIdentityClaimValue(claim, paramNames[0]);
     claimValue.value = value;
     claimValue.save();
   } else {
-    // Multiple parameters or newly wrapped data - should be a tuple
+    // Multiple parameters - always decode as tuple
     let decodedTuple = decoded.toTuple();
+    log.info("Decoded tuple with {} elements", [decodedTuple.length.toString()]);
     for (let i = 0; i < paramNames.length; i++) {
       let value = convertEthereumValue(decodedTuple[i]);
+      log.info("Decoded value for {}: {}", [paramNames[i], value]);
       let claimValue = fetchIdentityClaimValue(claim, paramNames[i]);
       claimValue.value = value;
       claimValue.save();
