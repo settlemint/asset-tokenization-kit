@@ -192,9 +192,13 @@ export const updateCollateral = tokenRouter.token.updateCollateral
       // COLLATERAL TOPIC: Use standardized claim topic for collateral
       const COLLATERAL_TOPIC = "0x" + "1".padStart(64, "0"); // ATK uses topic ID 1 for collateral claims
 
-      // ENCODE CLAIM DATA: Create ABI-encoded data containing amount and expiry
+      // ENCODE CLAIM DATA: Create ABI-encoded data containing amount and expiryTimestamp
+      // Note: Field names must match what the subgraph expects
       const claimData = encodeAbiParameters(
-        [{ type: "uint256" }, { type: "uint256" }],
+        [
+          { type: "uint256", name: "amount" },
+          { type: "uint256", name: "expiryTimestamp" },
+        ],
         [amount, expiryTimestamp]
       );
 
