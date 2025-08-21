@@ -8,6 +8,7 @@ import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { isEthereumAddress } from "@atk/zod/ethereum-address";
 import { satisfiesRoleRequirement } from "@atk/zod/role-requirement";
 import { createLogger } from "@settlemint/sdk-utils/logging";
+import z from "zod";
 
 const logger = createLogger();
 
@@ -107,13 +108,16 @@ export const tokenMiddleware = baseRouter.middleware(
       });
     }
 
-    const token = await theGraphClient.query(READ_TOKEN_QUERY, {
+    const result = await theGraphClient.query(READ_TOKEN_QUERY, {
       input: {
         id: tokenAddress,
       },
-      output: TokenSchema,
+      output: z.object({
+        token: TokenSchema,
+      }),
     });
 
+    const token = result.token;
     const userRoles = mapUserRoles(auth.user.wallet, token.accessControl);
 
     const tokenContext = TokenSchema.parse({
