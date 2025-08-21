@@ -1,6 +1,7 @@
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { accessManagerContract } from "@/orpc/routes/system/access-manager/access-manager.contract";
 import { addonContract } from "@/orpc/routes/system/addon/addon.contract";
+import { claimTopicsContract } from "@/orpc/routes/system/claim-topics/claim-topics.contract";
 import { complianceModuleContract } from "@/orpc/routes/system/compliance-module/compliance-module.contract";
 import { identityContract } from "@/orpc/routes/system/identity/identity.contract";
 import { SystemCreateSchema } from "@/orpc/routes/system/routes/system.create.schema";
@@ -97,6 +98,10 @@ const read = baseContract
  * - identityCreate: Create blockchain identity contracts
  * - identityRegister: Register identity claims
  * - complianceModuleCreate: Deploy compliance modules
+ * - topicList: List all registered topic schemes
+ * - topicCreate: Register new topic schemes
+ * - topicUpdate: Update topic scheme signatures
+ * - topicDelete: Remove topic schemes
  * - statsAssets: System-wide asset statistics
  * - statsValue: System-wide value metrics
  * - statsTransactionCount: System-wide transaction count statistics
@@ -113,6 +118,7 @@ export const systemContract = {
   addon: addonContract,
   identity: identityContract,
   compliance: complianceModuleContract,
+  claimTopics: claimTopicsContract,
   stats: statsContract,
   accessManager: accessManagerContract,
   factory: factoryContract,
