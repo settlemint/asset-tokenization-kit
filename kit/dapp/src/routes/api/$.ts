@@ -17,6 +17,7 @@
  * @see {@link https://spec.openapis.org/oas/latest.html} - OpenAPI specification
  */
 
+import { logUnexpectedError } from "@/orpc/helpers/error";
 import { router } from "@/orpc/routes/router";
 import { metadata } from "@atk/config/metadata";
 import { bigDecimalSerializer } from "@atk/zod/bigdecimal";
@@ -26,14 +27,11 @@ import { OpenAPIHandler } from "@orpc/openapi/fetch";
 import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
 import { CORSPlugin } from "@orpc/server/plugins";
 import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 import {
   createServerFileRoute,
   getHeaders,
 } from "@tanstack/react-start/server";
 import pkgjson from "../../../package.json";
-
-const logger = createLogger();
 
 /**
  * OpenAPI handler configuration.
@@ -45,25 +43,7 @@ const logger = createLogger();
  * - Smart coercion for flexible parameter handling
  */
 const handler = new OpenAPIHandler(router, {
-  // Log only unexpected server errors (skip 4xx like NOT_FOUND/UNAUTHORIZED)
-  interceptors: [
-    onError((error) => {
-      const e = error as { code?: string; status?: number; message?: string };
-      const status = typeof e?.status === "number" ? e.status : undefined;
-      const code = typeof e?.code === "string" ? e.code : undefined;
-
-      // Skip common/expected client-side errors
-      if (
-        (status && status < 500) /* 4xx */ ||
-        code === "NOT_FOUND" ||
-        code === "UNAUTHORIZED"
-      ) {
-        return;
-      }
-
-      logger.error(e?.message ?? "OpenAPI handler error", error);
-    }),
-  ],
+  interceptors: [onError(logUnexpectedError)],
   customJsonSerializers: [bigDecimalSerializer],
   plugins: [
     /**
