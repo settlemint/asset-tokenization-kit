@@ -46,24 +46,15 @@ export function TopicsTable() {
     orpc.system.topicList.queryOptions()
   );
 
+  // Get current user data with roles
+  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
+
   /**
    * Defines the column configuration for the topics table
    */
   const columns = useMemo(
     () =>
       withAutoFeatures([
-        columnHelper.accessor("topicId", {
-          header: t("claimTopics.table.columns.id"),
-          cell: ({ getValue }) => {
-            const topicId = getValue();
-            return <span className="font-mono text-sm">{Number(topicId)}</span>;
-          },
-          meta: {
-            displayName: t("claimTopics.table.columns.id"),
-            type: "number",
-            icon: FileText,
-          },
-        }),
         columnHelper.accessor("name", {
           header: t("claimTopics.table.columns.name"),
           cell: ({ getValue }) => {
@@ -74,6 +65,27 @@ export function TopicsTable() {
             displayName: t("claimTopics.table.columns.name"),
             type: "text",
             icon: FileText,
+          },
+        }),
+        columnHelper.accessor("topicId", {
+          header: t("claimTopics.table.columns.id"),
+          cell: ({ getValue }) => {
+            const topicId = getValue();
+            const truncatedId = topicId.length > 10 
+              ? `${topicId.slice(0, 6)}…${topicId.slice(-4)}`
+              : topicId;
+            return (
+              <span 
+                className="font-mono text-xs" 
+                title={topicId}
+              >
+                {truncatedId}
+              </span>
+            );
+          },
+          meta: {
+            displayName: t("claimTopics.table.columns.id"),
+            type: "text",
           },
         }),
         columnHelper.accessor(
@@ -132,8 +144,10 @@ export function TopicsTable() {
           cell: ({ row }) => {
             const topic = row.original;
             const isSystem = isSystemTopic(topic);
+            const hasClaimPolicyManagerRole =
+              user?.userSystemPermissions?.roles?.claimPolicyManager;
 
-            if (isSystem) {
+            if (isSystem || !hasClaimPolicyManagerRole) {
               return <span className="text-muted-foreground text-sm" />;
             }
 
@@ -148,7 +162,7 @@ export function TopicsTable() {
           },
         }),
       ] as ColumnDef<TopicScheme>[]),
-    [setEditingTopic, t]
+    [setEditingTopic, t, user]
   );
 
   return (
@@ -177,7 +191,7 @@ export function TopicsTable() {
         }}
         initialSorting={[
           {
-            id: "topicId",
+            id: "name",
             desc: false,
           },
         ]}

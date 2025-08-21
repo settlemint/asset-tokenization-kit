@@ -16,8 +16,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import { client, orpc } from "@/orpc/orpc-client";
 import type { TopicScheme } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
+import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, Edit, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -35,14 +37,16 @@ interface TopicActionsMenuProps {
  */
 export function TopicActionsMenu({ topic, onEdit }: TopicActionsMenuProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showVerificationDialog, setShowVerificationDialog] = useState(false);
   const queryClient = useQueryClient();
   const { t } = useTranslation("claim-topics-issuers");
 
   // Delete topic mutation
   const deleteMutation = useMutation({
-    mutationFn: () =>
+    mutationFn: (verification: UserVerification) =>
       client.system.topicDelete({
         name: topic.name,
+        walletVerification: verification,
       }),
     onSuccess: () => {
       toast.success(t("claimTopics.toast.deleted"));
@@ -51,14 +55,26 @@ export function TopicActionsMenu({ topic, onEdit }: TopicActionsMenuProps) {
         queryKey: orpc.system.topicList.queryKey(),
       });
       setShowDeleteDialog(false);
+      setShowVerificationDialog(false);
     },
     onError: (error) => {
       toast.error(t("claimTopics.toast.deleteError", { error: error.message }));
+      setShowVerificationDialog(false);
     },
   });
 
   const handleDelete = () => {
-    deleteMutation.mutate();
+    // Show verification dialog after user confirms deletion
+    setShowDeleteDialog(false);
+    setShowVerificationDialog(true);
+  };
+
+  const handleVerificationSubmit = (verification: UserVerification) => {
+    deleteMutation.mutate(verification);
+  };
+
+  const handleVerificationCancel = () => {
+    setShowVerificationDialog(false);
   };
 
   return (
@@ -124,6 +140,15 @@ export function TopicActionsMenu({ topic, onEdit }: TopicActionsMenuProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <VerificationDialog
+        open={showVerificationDialog}
+        onOpenChange={setShowVerificationDialog}
+        title={t("claimTopics.add.verification.title")}
+        description={t("claimTopics.add.verification.description")}
+        onSubmit={handleVerificationSubmit}
+        onCancel={handleVerificationCancel}
+      />
     </>
   );
 }

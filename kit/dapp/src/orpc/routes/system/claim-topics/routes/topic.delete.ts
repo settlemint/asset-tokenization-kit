@@ -73,7 +73,7 @@ const REMOVE_TOPIC_SCHEME_MUTATION = portalGraphql(`
 export const topicDelete = systemRouter.system.topicDelete
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: { any: ["claimPolicyManager", "systemManager"] },
+      requiredRoles: { any: ["claimPolicyManager", "systemModule"] },
       getAccessControl: ({ context }) => {
         const systemData = context.system;
         return systemData?.systemAccessManager?.accessControl;
@@ -82,7 +82,7 @@ export const topicDelete = systemRouter.system.topicDelete
   )
   .handler(async ({ input, context, errors }): Promise<TopicDeleteOutput> => {
     const { system } = context;
-    const { name } = input;
+    const { name, walletVerification } = input;
     const sender = context.auth.user;
 
     // Validate system configuration
@@ -104,6 +104,11 @@ export const topicDelete = systemRouter.system.topicDelete
         address: registryAddress,
         from: sender.wallet,
         name,
+      },
+      {
+        sender,
+        code: walletVerification.secretVerificationCode,
+        type: walletVerification.verificationType,
       }
     );
 

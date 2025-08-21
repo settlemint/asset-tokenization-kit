@@ -70,7 +70,7 @@ const REGISTER_TOPIC_SCHEME_MUTATION = portalGraphql(`
 export const topicCreate = systemRouter.system.topicCreate
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: { any: ["claimPolicyManager", "systemManager"] },
+      requiredRoles: { any: ["claimPolicyManager", "systemModule"] },
       getAccessControl: ({ context }) => {
         const systemData = context.system;
         return systemData?.systemAccessManager?.accessControl;
@@ -79,7 +79,7 @@ export const topicCreate = systemRouter.system.topicCreate
   )
   .handler(async ({ input, context, errors }): Promise<TopicCreateOutput> => {
     const { system } = context;
-    const { name, signature } = input;
+    const { name, signature, walletVerification } = input;
     const sender = context.auth.user;
 
     // Validate system configuration
@@ -102,6 +102,11 @@ export const topicCreate = systemRouter.system.topicCreate
         from: sender.wallet,
         name,
         signature,
+      },
+      {
+        sender,
+        code: walletVerification.secretVerificationCode,
+        type: walletVerification.verificationType,
       }
     );
 

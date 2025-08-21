@@ -9,7 +9,7 @@ import { getKitProjectPath } from "../../../tools/root";
  * Usage:
  *   - From kit/charts: bun run tools/package-ecr.ts
  *   - From root: turbo run ecr --filter=charts
- * 
+ *
  * Environment Variables:
  *   - ECR_REGISTRY: AWS ECR registry URL (required)
  */
@@ -24,7 +24,9 @@ const ECR_REGISTRY = process.env.ECR_REGISTRY;
 if (!ECR_REGISTRY) {
   logger.error("ECR_REGISTRY environment variable is not set!");
   logger.info("Please set ECR_REGISTRY to your AWS ECR registry URL");
-  logger.info("Example: ECR_REGISTRY='123456789.dkr.ecr.us-east-1.amazonaws.com/myorg' bun run tools/package-ecr.ts");
+  logger.info(
+    "Example: ECR_REGISTRY='123456789.dkr.ecr.us-east-1.amazonaws.com/myorg' bun run tools/package-ecr.ts"
+  );
   process.exit(1);
 }
 
@@ -39,7 +41,7 @@ function isImplicitDockerHubImage(value: string): boolean {
   }
 
   // If it starts with localhost, it's a local registry
-  if (value.startsWith('localhost')) {
+  if (value.startsWith("localhost")) {
     return false;
   }
 
@@ -55,13 +57,13 @@ function isImplicitDockerHubImage(value: string): boolean {
 
   // Now check for implicit Docker Hub patterns:
   // 1. Simple image names without / (e.g., "postgres", "nginx")
-  if (!value.includes('/')) {
+  if (!value.includes("/")) {
     return true;
   }
 
   // 2. Org/repo patterns without explicit registry (e.g., "graphprotocol/graph-node", "bitnami/postgresql")
   // This should only match if it doesn't contain dots that would indicate a registry
-  if (value.includes('/') && !value.includes('.')) {
+  if (value.includes("/") && !value.includes(".")) {
     return true;
   }
 
@@ -114,7 +116,10 @@ async function findValuesFiles(dir: string): Promise<string[]> {
     for await (const file of valuesGlob.scan({ cwd: dir, dot: false })) {
       // Only include files that match our exact pattern
       const basename = file.split("/").pop() || "";
-      if (basename === "values.yaml" || (basename.startsWith("values-") && basename.endsWith(".yaml"))) {
+      if (
+        basename === "values.yaml" ||
+        (basename.startsWith("values-") && basename.endsWith(".yaml"))
+      ) {
         files.push(file);
       }
     }
@@ -146,7 +151,7 @@ async function getChartFiles(projectDir: string): Promise<string[]> {
   const relativeFiles = await findValuesFiles(atkDir);
 
   // Convert to absolute paths and add the atk prefix
-  const files = relativeFiles.map(file => join(atkDir, file));
+  const files = relativeFiles.map((file) => join(atkDir, file));
 
   // Filter out files that don't exist (shouldn't happen, but defensive programming)
   const existingFiles: string[] = [];
@@ -165,7 +170,9 @@ async function getChartFiles(projectDir: string): Promise<string[]> {
 /**
  * Process a single file to update registry values
  */
-async function processFile(filePath: string): Promise<{ modified: boolean; changes: number }> {
+async function processFile(
+  filePath: string
+): Promise<{ modified: boolean; changes: number }> {
   try {
     const content = await Bun.file(filePath).text();
     const lines = content.split("\n");
@@ -231,9 +238,9 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
             registryMatch[2] &&
             registryMatch[2] !== ECR_REGISTRY &&
             !registryMatch[2].startsWith(`${ECR_REGISTRY}/`) &&
-            registryMatch[2] !== '""' &&  // Skip empty string values
-            registryMatch[2] !== "''" &&  // Skip empty string values with single quotes
-            registryMatch[2].trim() !== ""  // Skip actual empty values
+            registryMatch[2] !== '""' && // Skip empty string values
+            registryMatch[2] !== "''" && // Skip empty string values with single quotes
+            registryMatch[2].trim() !== "" // Skip actual empty values
           ) {
             line = line.replace(
               /(\s+registry:\s+)([^\s\n]+)/,
@@ -261,9 +268,9 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
             registryMatch[2] &&
             registryMatch[2] !== ECR_REGISTRY &&
             !registryMatch[2].startsWith(`${ECR_REGISTRY}/`) &&
-            registryMatch[2] !== '""' &&  // Skip empty string values
-            registryMatch[2] !== "''" &&  // Skip empty string values with single quotes
-            registryMatch[2].trim() !== ""  // Skip actual empty values
+            registryMatch[2] !== '""' && // Skip empty string values
+            registryMatch[2] !== "''" && // Skip empty string values with single quotes
+            registryMatch[2].trim() !== "" // Skip actual empty values
           ) {
             line = line.replace(
               /(\s+imageRegistry:\s+)([^\s\n]+)/,
@@ -290,11 +297,20 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
             const currentLineIndex = index;
             let hasNearbyRegistry = false;
 
-            for (let i = Math.max(0, currentLineIndex - 5); i < currentLineIndex; i++) {
-              if (lines[i]?.includes('registry:') && lines[i]?.includes(ECR_REGISTRY) && !lines[i]?.trim().startsWith('#')) {
+            for (
+              let i = Math.max(0, currentLineIndex - 5);
+              i < currentLineIndex;
+              i++
+            ) {
+              if (
+                lines[i]?.includes("registry:") &&
+                lines[i]?.includes(ECR_REGISTRY) &&
+                !lines[i]?.trim().startsWith("#")
+              ) {
                 // Check if it's at similar indentation (same image block)
                 const currentIndent = line.match(/^\s*/)?.[0]?.length ?? 0;
-                const registryIndent = lines[i]?.match(/^\s*/)?.[0]?.length ?? 0;
+                const registryIndent =
+                  lines[i]?.match(/^\s*/)?.[0]?.length ?? 0;
                 if (Math.abs(currentIndent - registryIndent) <= 2) {
                   hasNearbyRegistry = true;
                   break;
@@ -304,11 +320,16 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
 
             // If there's a nearby registry field, remove ECR prefix from repository
             if (hasNearbyRegistry) {
-              const registries = ["registry.k8s.io", "quay.io", "ghcr.io", "docker.io"];
+              const registries = [
+                "registry.k8s.io",
+                "quay.io",
+                "ghcr.io",
+                "docker.io",
+              ];
               for (const registry of registries) {
                 const pattern = `${ECR_REGISTRY}/${registry}/`;
                 if (repoValue.startsWith(pattern)) {
-                  const cleanedValue = repoValue.replace(pattern, '');
+                  const cleanedValue = repoValue.replace(pattern, "");
                   line = line.replace(repoValue, cleanedValue);
                   break; // Break after cleanup instead of returning early
                 }
@@ -320,7 +341,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
             "registry.k8s.io",
             "quay.io",
             "ghcr.io",
-            "docker.io"
+            "docker.io",
           ];
 
           let processed = false;
@@ -348,11 +369,19 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
             const currentLineIndex = index;
             let hasNearbyRegistry = false;
 
-            for (let i = Math.max(0, currentLineIndex - 5); i < currentLineIndex; i++) {
-              if (lines[i]?.includes('registry:') && !lines[i]?.trim().startsWith('#')) {
+            for (
+              let i = Math.max(0, currentLineIndex - 5);
+              i < currentLineIndex;
+              i++
+            ) {
+              if (
+                lines[i]?.includes("registry:") &&
+                !lines[i]?.trim().startsWith("#")
+              ) {
                 // Check if it's at similar indentation (same image block)
                 const currentIndent = line.match(/^\s*/)?.[0]?.length ?? 0;
-                const registryIndent = lines[i]?.match(/^\s*/)?.[0]?.length ?? 0;
+                const registryIndent =
+                  lines[i]?.match(/^\s*/)?.[0]?.length ?? 0;
                 if (Math.abs(currentIndent - registryIndent) <= 2) {
                   hasNearbyRegistry = true;
                   break;
@@ -372,17 +401,39 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
         }
       }
 
+      // Process tag: values to add -amd64 suffix
+      if (line.includes("tag:") && !line.includes("-amd64")) {
+        const tagMatch = line.match(/(\s+tag:\s+)([^\s\n]+)/);
+        if (tagMatch && tagMatch[2]) {
+          const tagValue = tagMatch[2];
+          // Don't add -amd64 if it's already there or if it's an empty value
+          if (
+            !tagValue.includes("-amd64") &&
+            tagValue !== '""' &&
+            tagValue !== "''" &&
+            tagValue.trim() !== ""
+          ) {
+            const newValue = tagValue.includes('"')
+              ? tagValue.replace(/"$/, '-amd64"')
+              : tagValue.includes("'")
+                ? tagValue.replace(/'$/, "-amd64'")
+                : `${tagValue}-amd64`;
+            line = line.replace(tagMatch[0], `${tagMatch[1]}${newValue}`);
+          }
+        }
+      }
+
       // Process image: values
       if (line.includes("image:") && !line.includes("imageRegistry")) {
         const imageMatch = line.match(/(\s+image:\s+)([^\s\n]+)/);
         if (imageMatch && imageMatch[2]) {
-          const imageValue = imageMatch[2];
+          let imageValue = imageMatch[2];
 
           const registries = [
             "registry.k8s.io",
             "quay.io",
             "ghcr.io",
-            "docker.io"
+            "docker.io",
           ];
 
           let processed = false;
@@ -397,7 +448,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
                 registry,
                 `${ECR_REGISTRY}/${registry}`
               );
-              line = line.replace(imageValue, newValue);
+              imageValue = newValue;
               processed = true;
               break;
             }
@@ -407,9 +458,22 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
           if (!processed && !imageValue.includes(ECR_REGISTRY)) {
             // Check if it's an implicit Docker Hub image
             if (isImplicitDockerHubImage(imageValue)) {
-              const newValue = `${ECR_REGISTRY}/docker.io/${imageValue}`;
-              line = line.replace(imageValue, newValue);
+              imageValue = `${ECR_REGISTRY}/docker.io/${imageValue}`;
             }
+          }
+
+          // Now check if the image value contains a tag (after : symbol)
+          // and add -amd64 suffix if it doesn't already have it
+          if (imageValue.includes(":") && !imageValue.includes("-amd64")) {
+            const [imageName, tag] = imageValue.split(":");
+            if (tag && tag !== '""' && tag !== "''" && tag.trim() !== "") {
+              imageValue = `${imageName}:${tag}-amd64`;
+            }
+          }
+
+          // Replace the original value with the processed value
+          if (imageValue !== imageMatch[2]) {
+            line = line.replace(imageMatch[2], imageValue);
           }
         }
       }
@@ -496,13 +560,16 @@ async function main(): Promise<void> {
     }
 
     if (totalModified > 0) {
-      logger.info(`Successfully updated ${totalModified} files with ${totalChanges} total changes!`);
+      logger.info(
+        `Successfully updated ${totalModified} files with ${totalChanges} total changes!`
+      );
     } else {
       logger.info("All files are already up to date!");
     }
-
   } catch (error) {
-    logger.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error(
+      `Error: ${error instanceof Error ? error.message : String(error)}`
+    );
     process.exit(1);
   }
 }
