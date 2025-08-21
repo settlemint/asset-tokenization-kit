@@ -181,12 +181,12 @@ abstract contract _SMARTCollateralLogic is _SMARTExtension, ISMARTCollateral {
         // The data is tuple-wrapped for The Graph compatibility, so we skip the first 32 bytes (offset pointer)
         // and decode the remaining data as standard (uint256, uint256)
         require(data.length >= 32, "Invalid tuple-wrapped collateral data length");
-        
+
         bytes memory actualData = new bytes(data.length - 32);
         for (uint256 i = 0; i < actualData.length; i++) {
             actualData[i] = data[i + 32];
         }
-        
+
         (amount, expiry) = abi.decode(actualData, (uint256, uint256));
     }
 
