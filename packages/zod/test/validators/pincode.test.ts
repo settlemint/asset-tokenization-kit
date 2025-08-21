@@ -344,22 +344,6 @@ describe("parsing behavior consistency", () => {
 });
 
 describe("zod schema behavior", () => {
-  test("should create independent schema instances", () => {
-    const schema1 = pincode;
-    const schema2 = pincode;
-
-    // They should be different instances
-    expect(schema1).not.toBe(schema2);
-
-    // But behave the same
-    expect(schema1.parse("123456")).toBe("123456");
-    expect(schema2.parse("123456")).toBe("123456");
-
-    // Both should throw on same invalid input
-    expect(() => schema1.parse("invalid")).toThrow();
-    expect(() => schema2.parse("invalid")).toThrow();
-  });
-
   test("should have consistent schema description", () => {
     const schema = pincode;
     expect(schema.description).toBe("6-digit PIN code");
