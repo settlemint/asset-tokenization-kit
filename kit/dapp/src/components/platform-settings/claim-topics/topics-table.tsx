@@ -46,6 +46,9 @@ export function TopicsTable() {
     orpc.system.topicList.queryOptions()
   );
 
+  // Get current user data with roles
+  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
+
   /**
    * Defines the column configuration for the topics table
    */
@@ -132,8 +135,9 @@ export function TopicsTable() {
           cell: ({ row }) => {
             const topic = row.original;
             const isSystem = isSystemTopic(topic);
+            const hasClaimPolicyManagerRole = user?.userSystemPermissions?.roles?.claimPolicyManager;
 
-            if (isSystem) {
+            if (isSystem || !hasClaimPolicyManagerRole) {
               return <span className="text-muted-foreground text-sm" />;
             }
 
@@ -148,7 +152,7 @@ export function TopicsTable() {
           },
         }),
       ] as ColumnDef<TopicScheme>[]),
-    [setEditingTopic, t]
+    [setEditingTopic, t, user]
   );
 
   return (
