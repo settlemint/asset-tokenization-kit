@@ -113,6 +113,7 @@ export const tokenMiddleware = baseRouter.middleware(
     }
 
     const userRoles = mapUserRoles(auth.user.wallet, token.accessControl);
+
     const tokenContext = TokenSchema.parse({
       ...token,
       userPermissions: {
