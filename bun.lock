@@ -11,8 +11,8 @@
       },
       "devDependencies": {
         "@prettier/plugin-oxc": "0.0.4",
-        "@settlemint/sdk-cli": "2.5.11",
-        "@settlemint/sdk-utils": "2.5.11",
+        "@settlemint/sdk-cli": "2.5.14",
+        "@settlemint/sdk-utils": "2.5.14",
         "@types/lodash": "4.17.20",
         "@typescript/native-preview": "7.0.0-dev.20250818.1",
         "graphql": "16.11.0",
@@ -26,7 +26,7 @@
       "name": "charts",
       "version": "2.0.0",
       "devDependencies": {
-        "@settlemint/sdk-utils": "2.5.11",
+        "@settlemint/sdk-utils": "2.5.14",
         "contracts": "workspace:*",
         "subgraph": "workspace:*",
       },
@@ -93,13 +93,13 @@
         "@radix-ui/react-toggle": "1.1.10",
         "@radix-ui/react-toggle-group": "1.1.11",
         "@radix-ui/react-tooltip": "1.2.8",
-        "@settlemint/sdk-blockscout": "2.5.11",
-        "@settlemint/sdk-hasura": "2.5.11",
-        "@settlemint/sdk-ipfs": "2.5.11",
-        "@settlemint/sdk-minio": "2.5.11",
-        "@settlemint/sdk-portal": "2.5.11",
-        "@settlemint/sdk-thegraph": "2.5.11",
-        "@settlemint/sdk-utils": "2.5.11",
+        "@settlemint/sdk-blockscout": "2.5.14",
+        "@settlemint/sdk-hasura": "2.5.14",
+        "@settlemint/sdk-ipfs": "2.5.14",
+        "@settlemint/sdk-minio": "2.5.14",
+        "@settlemint/sdk-portal": "2.5.14",
+        "@settlemint/sdk-thegraph": "2.5.14",
+        "@settlemint/sdk-utils": "2.5.14",
         "@tailwindcss/postcss": "4.1.12",
         "@tanstack/query-async-storage-persister": "5.85.5",
         "@tanstack/query-broadcast-client-experimental": "5.85.5",
@@ -205,7 +205,7 @@
         "@graphprotocol/graph-ts": "0.38.1",
       },
       "devDependencies": {
-        "@settlemint/sdk-thegraph": "2.5.11",
+        "@settlemint/sdk-thegraph": "2.5.14",
         "contracts": "workspace:*",
         "matchstick-as": "0.6.0",
         "yaml": "2.8.1",
@@ -1320,23 +1320,23 @@
 
     "@sentry/utils": ["@sentry/utils@5.30.0", "", { "dependencies": { "@sentry/types": "5.30.0", "tslib": "^1.9.3" } }, "sha512-zaYmoH0NWWtvnJjC9/CBseXMtKHm/tm40sz3YfJRxeQjyzRqNQPgivpd9R/oDJCYj999mzdW382p/qi2ypjLww=="],
 
-    "@settlemint/sdk-blockscout": ["@settlemint/sdk-blockscout@2.5.11", "", { "dependencies": { "@settlemint/sdk-utils": "2.5.11", "gql.tada": "^1", "graphql-request": "^7", "zod": "^4" } }, "sha512-uwIJ/lVUNSSwtgZPpjCam0GzQgqBEIco1Ps03pFZN6NqUQyMOWY101jkizahe+O2IC/UIr095ILj+UbaYsmZmQ=="],
+    "@settlemint/sdk-blockscout": ["@settlemint/sdk-blockscout@2.5.14", "", { "dependencies": { "@settlemint/sdk-utils": "2.5.14", "gql.tada": "^1", "graphql-request": "^7", "zod": "^4" } }, "sha512-OG7XtkVGNChxFPt3vmILBAl07ZNVP47fWmRPPyTrK/wgkk+b5OdGJRypktq6f08koN2AnfzWARUq9DwRu5Howw=="],
 
-    "@settlemint/sdk-cli": ["@settlemint/sdk-cli@2.5.11", "", { "dependencies": { "@gql.tada/cli-utils": "1.7.1", "@inquirer/core": "10.1.15", "node-fetch-native": "1.6.7", "zod": "^4" }, "peerDependencies": { "@settlemint/sdk-js": "2.5.11", "hardhat": "<= 4" }, "optionalPeers": ["hardhat"], "bin": { "settlemint": "dist/cli.js" } }, "sha512-bS+fIfJ6nDgKAmeMehvaR+EWUbHfVjvwlWiTyoPIsk20B8kIUtnz/lG02th0plGMetpI5CgW0b75I7kJsO/dcw=="],
+    "@settlemint/sdk-cli": ["@settlemint/sdk-cli@2.5.14", "", { "dependencies": { "@gql.tada/cli-utils": "1.7.1", "@inquirer/core": "10.1.15", "node-fetch-native": "1.6.7", "zod": "^4" }, "peerDependencies": { "@settlemint/sdk-js": "2.5.14", "hardhat": "<= 4" }, "optionalPeers": ["hardhat"], "bin": { "settlemint": "dist/cli.js" } }, "sha512-sx+Cau3J/lPU0jV3btWkt6OKVN6XWQMzsS3UNMBs1YWySTEc/UPPB0ma4xRG5j2CS2pNI9VtYsyUaCOM2eXjLg=="],
 
-    "@settlemint/sdk-hasura": ["@settlemint/sdk-hasura@2.5.11", "", { "dependencies": { "@settlemint/sdk-utils": "2.5.11", "drizzle-kit": "^0.31.0", "drizzle-orm": "^0.44.0", "gql.tada": "^1", "graphql-request": "^7", "pg": "^8", "zod": "^4" } }, "sha512-Cpmf3wiwrBMkshrx1bu0Q2oOUM7Yu1GXGqbpH8/Hw1LqozB38xvI+XEvtAD8SZxWssEwyRxDWY5LwlIe0GbEYg=="],
+    "@settlemint/sdk-hasura": ["@settlemint/sdk-hasura@2.5.14", "", { "dependencies": { "@settlemint/sdk-utils": "2.5.14", "drizzle-kit": "^0.31.0", "drizzle-orm": "^0.44.0", "gql.tada": "^1", "graphql-request": "^7", "pg": "^8", "zod": "^4" } }, "sha512-zxtvAZdccfEcR4hDR2xtUexqC2VYJ0p7+Dga2FDp+1lvsYu+ICSqdmiMhiTwdLa+JtN/RBa6Ga5YytSMQLZCUQ=="],
 
-    "@settlemint/sdk-ipfs": ["@settlemint/sdk-ipfs@2.5.11", "", { "dependencies": { "@settlemint/sdk-utils": "2.5.11", "kubo-rpc-client": "^5", "zod": "^4" } }, "sha512-k+CIGjk5KPgm6yZR+Vt5calp974N1XceJAKbkMpog7mDQiz87D8muqVw5VaEbVJjrm+yLZjw9t3DRFzuRU1nHA=="],
+    "@settlemint/sdk-ipfs": ["@settlemint/sdk-ipfs@2.5.14", "", { "dependencies": { "@settlemint/sdk-utils": "2.5.14", "kubo-rpc-client": "^5", "zod": "^4" } }, "sha512-AxKQZtxHZsGnuK3sDT2lW2Dg/oj2K1ClpunIW1wdLhwoytYpbr915paojeoJzq/NUR2Rac3oAtE6otg4TfzWWA=="],
 
     "@settlemint/sdk-js": ["@settlemint/sdk-js@2.5.11", "", { "dependencies": { "@settlemint/sdk-utils": "2.5.11", "gql.tada": "^1", "graphql": "^16", "graphql-request": "^7", "zod": "^4" } }, "sha512-0oUhT4+WyQQbWqKEjXizDN1lR2M+VBqQGUmdoQnyVEdd4NbVMg7sQYW4r3dzq1TAYrpqRwict68xP0Y0DRGzVA=="],
 
-    "@settlemint/sdk-minio": ["@settlemint/sdk-minio@2.5.11", "", { "dependencies": { "@settlemint/sdk-utils": "2.5.11", "minio": "^8", "zod": "^4" } }, "sha512-qo0801NevLFe8MCmJBKlF8YKE/QHIxgFiXC7dNSq0EHAUEtSCpRPq7s7VlMJDqb8ZVBwj5BUi7/AFrNU7ND6YQ=="],
+    "@settlemint/sdk-minio": ["@settlemint/sdk-minio@2.5.14", "", { "dependencies": { "@settlemint/sdk-utils": "2.5.14", "minio": "^8", "zod": "^4" } }, "sha512-iEitgefsYfwKqRVN7zkh0O4z91eHGi0UX1KyTI/atzO0eKjRfDyJH8twxK9xr1uxWX3GYSDwI64Q7VdQCzmcTw=="],
 
-    "@settlemint/sdk-portal": ["@settlemint/sdk-portal@2.5.11", "", { "dependencies": { "@settlemint/sdk-utils": "2.5.11", "gql.tada": "^1", "graphql-request": "^7", "graphql-ws": "^6", "zod": "^4" } }, "sha512-KNM4yM5KnaMtn0/z13MUK/KD8Ljq7MXcu4bhDR9F+49J366/NCtKQ2E81e9PDmTvF1uX+TFqPEpQzuvpzKVprQ=="],
+    "@settlemint/sdk-portal": ["@settlemint/sdk-portal@2.5.14", "", { "dependencies": { "@settlemint/sdk-utils": "2.5.14", "gql.tada": "^1", "graphql-request": "^7", "graphql-ws": "^6", "zod": "^4" } }, "sha512-DLjLQPGbsmwnsfC0FC9gayE+ebVRLDMEFs53arjajJHR954QydVnOGeSHneWsLcH14kuNZsU78TK0/YJW8n/3g=="],
 
-    "@settlemint/sdk-thegraph": ["@settlemint/sdk-thegraph@2.5.11", "", { "dependencies": { "@settlemint/sdk-utils": "2.5.11", "es-toolkit": "^1", "gql.tada": "^1", "graphql": "^16", "graphql-request": "^7", "zod": "^4" } }, "sha512-kHIV9HKRs8dc8bkIZ2UA3iQT7PLktrpvf8OYxJmRct7/+cSqdTga7F/wGQ6PSTw/HmUXn8VpPgLP0c3U8cGBVw=="],
+    "@settlemint/sdk-thegraph": ["@settlemint/sdk-thegraph@2.5.14", "", { "dependencies": { "@settlemint/sdk-utils": "2.5.14", "es-toolkit": "^1", "gql.tada": "^1", "graphql": "^16", "graphql-request": "^7", "zod": "^4" } }, "sha512-x4VqKzFzA2wuYpPsTKJ7dXVhrbH0eDiKiYvV2nZ5FYwSz1npK6lInBeBKC3CFYIycFOxLIjaopOsIIUdedIC7Q=="],
 
-    "@settlemint/sdk-utils": ["@settlemint/sdk-utils@2.5.11", "", { "dependencies": { "@antfu/install-pkg": "^1", "@dotenvx/dotenvx": "^1", "@manypkg/find-root": "^3.0.0", "@npmcli/package-json": "^6", "console-table-printer": "^2", "deepmerge-ts": "^7", "environment": "^1", "find-up": "^7", "glob": "11.0.3", "is-in-ci": "^2.0.0", "nano-spawn": "^1.0.0", "package-manager-detector": "^1.0.0", "yocto-spinner": "^1.0.0", "yoctocolors": "^2", "zod": "^4" } }, "sha512-2vtSg0BSwYv77C0jmA3+g5BDuFsj3aZYzxKhkdnD5bIR29rKjawSfuc9SA/Ze1d3E8gtqfJHOcPdSVtM1Z+EJw=="],
+    "@settlemint/sdk-utils": ["@settlemint/sdk-utils@2.5.14", "", { "dependencies": { "@antfu/install-pkg": "^1", "@dotenvx/dotenvx": "^1", "@manypkg/find-root": "^3.0.0", "@npmcli/package-json": "^6", "console-table-printer": "^2", "deepmerge-ts": "^7", "environment": "^1", "find-up": "^7", "glob": "11.0.3", "is-in-ci": "^2.0.0", "nano-spawn": "^1.0.0", "package-manager-detector": "^1.0.0", "yocto-spinner": "^1.0.0", "yoctocolors": "^2", "zod": "^4" } }, "sha512-IlBmIH0F3AEM0FqaRl8PK7a0lrW5i/119xFGM7kahxiPiTxFfr4x+wAuoTMFcqm7PfvD3xjcv6TY5lJMh0htnA=="],
 
     "@simplewebauthn/browser": ["@simplewebauthn/browser@13.1.2", "", {}, "sha512-aZnW0KawAM83fSBUgglP5WofbrLbLyr7CoPqYr66Eppm7zO86YX6rrCjRB3hQKPrL7ATvY4FVXlykZ6w6FwYYw=="],
 
@@ -4343,6 +4343,8 @@
     "@sentry/tracing/tslib": ["tslib@1.14.1", "", {}, "sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg=="],
 
     "@sentry/utils/tslib": ["tslib@1.14.1", "", {}, "sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg=="],
+
+    "@settlemint/sdk-js/@settlemint/sdk-utils": ["@settlemint/sdk-utils@2.5.11", "", { "dependencies": { "@antfu/install-pkg": "^1", "@dotenvx/dotenvx": "^1", "@manypkg/find-root": "^3.0.0", "@npmcli/package-json": "^6", "console-table-printer": "^2", "deepmerge-ts": "^7", "environment": "^1", "find-up": "^7", "glob": "11.0.3", "is-in-ci": "^2.0.0", "nano-spawn": "^1.0.0", "package-manager-detector": "^1.0.0", "yocto-spinner": "^1.0.0", "yoctocolors": "^2", "zod": "^4" } }, "sha512-2vtSg0BSwYv77C0jmA3+g5BDuFsj3aZYzxKhkdnD5bIR29rKjawSfuc9SA/Ze1d3E8gtqfJHOcPdSVtM1Z+EJw=="],
 
     "@tailwindcss/oxide-wasm32-wasi/@emnapi/core": ["@emnapi/core@1.4.5", "", { "dependencies": { "@emnapi/wasi-threads": "1.0.4", "tslib": "^2.4.0" }, "bundled": true }, "sha512-XsLw1dEOpkSX/WucdqUhPWP7hDxSvZiY+fsUC14h+FtQ2Ifni4znbBt8punRX+Uj2JG/uDb8nEHVKvrVlvdZ5Q=="],
 
