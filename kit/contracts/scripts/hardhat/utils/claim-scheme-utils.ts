@@ -70,18 +70,8 @@ export function encodeClaimData(
     throw new Error(`Unknown claim topic: ${topicId}`);
   }
 
-  console.log(`[encodeClaimData] Topic: ${claimTopic}, ID: ${topicId}`);
-  console.log(`[encodeClaimData] Signature: ${signature}`);
-  console.log(`[encodeClaimData] Values:`, values);
-
   const abiParams = parseAbiParameters(signature);
-  console.log(`[encodeClaimData] Parsed ABI params:`, abiParams);
-
-  // Standard ABI encoding - The Graph handles tuple wrapping on its side for decoding
   const encodedData = encodeAbiParameters(abiParams, values);
-
-  console.log(`[encodeClaimData] Encoded result: ${encodedData}`);
-  console.log(`[encodeClaimData] Encoded length: ${encodedData.length}`);
 
   return encodedData;
 }
