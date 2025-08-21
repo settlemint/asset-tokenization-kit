@@ -1,7 +1,30 @@
 import { RoleRequirementSchema } from "@atk/zod/role-requirement";
-import { type ErrorMap, oc } from "@orpc/contract";
+import { type ErrorMap, type ErrorMapItem, oc } from "@orpc/contract";
 import { oo } from "@orpc/openapi";
 import { z } from "zod";
+
+export const CUSTOM_ERROR_CODES = {
+  USER_NOT_AUTHORIZED: "USER_NOT_AUTHORIZED",
+  USER_NOT_ALLOWED: "USER_NOT_ALLOWED",
+  FORBIDDEN: "FORBIDDEN",
+  INPUT_VALIDATION_FAILED: "INPUT_VALIDATION_FAILED",
+  TOKEN_INTERFACE_NOT_SUPPORTED: "TOKEN_INTERFACE_NOT_SUPPORTED",
+  OUTPUT_VALIDATION_FAILED: "OUTPUT_VALIDATION_FAILED",
+  INTERNAL_SERVER_ERROR: "INTERNAL_SERVER_ERROR",
+  RATE_LIMIT_EXCEEDED: "RATE_LIMIT_EXCEEDED",
+  THE_GRAPH_ERROR: "THE_GRAPH_ERROR",
+  CONFLICT: "CONFLICT",
+  PORTAL_ERROR: "PORTAL_ERROR",
+  SYSTEM_NOT_CREATED: "SYSTEM_NOT_CREATED",
+  NOT_FOUND: "NOT_FOUND",
+  RESOURCE_ALREADY_EXISTS: "RESOURCE_ALREADY_EXISTS",
+  NOT_ONBOARDED: "NOT_ONBOARDED",
+  VERIFICATION_ID_NOT_FOUND: "VERIFICATION_ID_NOT_FOUND",
+  CHALLENGE_FAILED: "CHALLENGE_FAILED",
+  TIMEOUT: "TIMEOUT",
+  CONFIRMATION_TIMEOUT: "CONFIRMATION_TIMEOUT",
+  UNAUTHORIZED: "UNAUTHORIZED",
+} as const;
 
 export const CUSTOM_ERRORS = {
   /**
@@ -337,7 +360,9 @@ export const CUSTOM_ERRORS = {
     message: "Conflict",
     status: 409,
   },
-} satisfies ErrorMap;
+} satisfies ErrorMap & {
+  [key in keyof typeof CUSTOM_ERROR_CODES]: ErrorMapItem<z.ZodType>;
+};
 
 export type CUSTOM_ERROR_CODES = keyof typeof CUSTOM_ERRORS;
 
