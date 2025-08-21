@@ -142,7 +142,7 @@ describe.concurrent("Token Stats: Bond Status", () => {
           },
           {
             context: {
-              expectErrors: [CUSTOM_ERROR_CODES.THE_GRAPH_ERROR],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.THE_GRAPH_ERROR],
             },
           }
         )

@@ -165,7 +165,7 @@ describe("Access Manager - Grant Role ORPC routes", () => {
           },
           {
             context: {
-              expectErrors: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
             },
           }
         )
@@ -189,7 +189,7 @@ describe("Access Manager - Grant Role ORPC routes", () => {
           },
           {
             context: {
-              expectErrors: [
+              skipLoggingFor: [
                 CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED,
                 CUSTOM_ERROR_CODES.BAD_REQUEST,
               ],
@@ -214,7 +214,7 @@ describe("Access Manager - Grant Role ORPC routes", () => {
           },
           {
             context: {
-              expectErrors: [
+              skipLoggingFor: [
                 CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED,
                 CUSTOM_ERROR_CODES.BAD_REQUEST,
               ],
@@ -243,7 +243,7 @@ describe("Access Manager - Grant Role ORPC routes", () => {
           },
           {
             context: {
-              expectErrors: [
+              skipLoggingFor: [
                 CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED,
                 CUSTOM_ERROR_CODES.BAD_REQUEST,
               ],
@@ -268,7 +268,7 @@ describe("Access Manager - Grant Role ORPC routes", () => {
           },
           {
             context: {
-              expectErrors: [CUSTOM_ERROR_CODES.PORTAL_ERROR],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.PORTAL_ERROR],
             },
           }
         )

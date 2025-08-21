@@ -104,7 +104,7 @@ describe.concurrent("Token Stats: Wallet Distribution", () => {
           },
           {
             context: {
-              expectErrors: [CUSTOM_ERROR_CODES.THE_GRAPH_ERROR],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.THE_GRAPH_ERROR],
             },
           }
         )

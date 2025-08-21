@@ -74,7 +74,7 @@ describe.concurrent("Token Stats: Volume", () => {
           { tokenAddress: testToken.id, days: 0 },
           {
             context: {
-              expectErrors: [CUSTOM_ERROR_CODES.BAD_REQUEST],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.BAD_REQUEST],
             },
           }
         )
@@ -88,7 +88,7 @@ describe.concurrent("Token Stats: Volume", () => {
           },
           {
             context: {
-              expectErrors: [CUSTOM_ERROR_CODES.BAD_REQUEST],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.BAD_REQUEST],
             },
           }
         )
@@ -125,7 +125,7 @@ describe.concurrent("Token Stats: Volume", () => {
           },
           {
             context: {
-              expectErrors: [CUSTOM_ERROR_CODES.THE_GRAPH_ERROR],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.THE_GRAPH_ERROR],
             },
           }
         )

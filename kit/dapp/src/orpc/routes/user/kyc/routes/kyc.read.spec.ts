@@ -99,7 +99,7 @@ describe("KYC read", () => {
         },
         {
           context: {
-            expectErrors: [CUSTOM_ERROR_CODES.FORBIDDEN],
+            skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
           },
         }
       )
@@ -119,7 +119,7 @@ describe("KYC read", () => {
         },
         {
           context: {
-            expectErrors: [CUSTOM_ERROR_CODES.NOT_FOUND],
+            skipLoggingFor: [CUSTOM_ERROR_CODES.NOT_FOUND],
           },
         }
       )

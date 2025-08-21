@@ -130,7 +130,7 @@ describe("User read", () => {
           },
           {
             context: {
-              expectErrors: [CUSTOM_ERROR_CODES.FORBIDDEN],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
             },
           }
         )
@@ -148,7 +148,7 @@ describe("User read", () => {
           },
           {
             context: {
-              expectErrors: [CUSTOM_ERROR_CODES.FORBIDDEN],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
             },
           }
         )
@@ -167,7 +167,7 @@ describe("User read", () => {
           },
           {
             context: {
-              expectErrors: [CUSTOM_ERROR_CODES.FORBIDDEN],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
             },
           }
         )
@@ -202,7 +202,7 @@ describe("User read", () => {
           },
           {
             context: {
-              expectErrors: [CUSTOM_ERROR_CODES.NOT_FOUND],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.NOT_FOUND],
             },
           }
         )
@@ -222,7 +222,7 @@ describe("User read", () => {
           },
           {
             context: {
-              expectErrors: [CUSTOM_ERROR_CODES.NOT_FOUND],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.NOT_FOUND],
             },
           }
         )

@@ -123,7 +123,7 @@ describe("KYC upsert", () => {
         },
         {
           context: {
-            expectErrors: [CUSTOM_ERROR_CODES.FORBIDDEN],
+            skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
           },
         }
       )

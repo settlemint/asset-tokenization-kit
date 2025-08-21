@@ -93,7 +93,7 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
           },
           {
             context: {
-              expectErrors: [CUSTOM_ERROR_CODES.THE_GRAPH_ERROR],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.THE_GRAPH_ERROR],
             },
           }
         )

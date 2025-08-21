@@ -42,7 +42,7 @@ const logger = createLogger();
  * ]);
  */
 export interface TestClientContext {
-  expectErrors?: CUSTOM_ERROR_CODES[];
+  skipLoggingFor?: CUSTOM_ERROR_CODES[];
 }
 
 export const getOrpcClient = (
@@ -63,7 +63,7 @@ export const getOrpcClient = (
         if (error instanceof ORPCError) {
           const errorCode = error.code;
 
-          const expectedErrors = options.context?.expectErrors ?? [];
+          const expectedErrors = options.context?.skipLoggingFor ?? [];
           if (expectedErrors?.includes(errorCode)) {
             return;
           }

@@ -83,7 +83,7 @@ describe.concurrent("Token Stats: Supply Changes", () => {
           },
           {
             context: {
-              expectErrors: [CUSTOM_ERROR_CODES.BAD_REQUEST],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.BAD_REQUEST],
             },
           }
         )
@@ -97,7 +97,7 @@ describe.concurrent("Token Stats: Supply Changes", () => {
           },
           {
             context: {
-              expectErrors: [CUSTOM_ERROR_CODES.BAD_REQUEST],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.BAD_REQUEST],
             },
           }
         )
@@ -134,7 +134,7 @@ describe.concurrent("Token Stats: Supply Changes", () => {
           },
           {
             context: {
-              expectErrors: [CUSTOM_ERROR_CODES.THE_GRAPH_ERROR],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.THE_GRAPH_ERROR],
             },
           }
         )

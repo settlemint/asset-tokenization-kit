@@ -51,7 +51,7 @@ describe("KYC delete", () => {
         },
         {
           context: {
-            expectErrors: [CUSTOM_ERROR_CODES.NOT_FOUND],
+            skipLoggingFor: [CUSTOM_ERROR_CODES.NOT_FOUND],
           },
         }
       )
@@ -95,7 +95,7 @@ describe("KYC delete", () => {
         },
         {
           context: {
-            expectErrors: [CUSTOM_ERROR_CODES.NOT_FOUND],
+            skipLoggingFor: [CUSTOM_ERROR_CODES.NOT_FOUND],
           },
         }
       )
@@ -135,7 +135,7 @@ describe("KYC delete", () => {
         },
         {
           context: {
-            expectErrors: [CUSTOM_ERROR_CODES.FORBIDDEN],
+            skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
           },
         }
       )
@@ -162,7 +162,7 @@ describe("KYC delete", () => {
         },
         {
           context: {
-            expectErrors: [CUSTOM_ERROR_CODES.NOT_FOUND],
+            skipLoggingFor: [CUSTOM_ERROR_CODES.NOT_FOUND],
           },
         }
       )
@@ -239,7 +239,7 @@ describe("KYC delete", () => {
         },
         {
           context: {
-            expectErrors: [CUSTOM_ERROR_CODES.NOT_FOUND],
+            skipLoggingFor: [CUSTOM_ERROR_CODES.NOT_FOUND],
           },
         }
       )

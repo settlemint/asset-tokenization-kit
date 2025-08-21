@@ -1,9 +1,11 @@
-import {
-  CUSTOM_ERROR_CODES,
-} from "@/orpc/procedures/base.contract";
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import { getAnvilTimeMilliseconds } from "@/test/anvil";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
-import { getOrpcClient, type OrpcClient, errorMessageForCode } from "@test/fixtures/orpc-client";
+import {
+  errorMessageForCode,
+  getOrpcClient,
+  type OrpcClient,
+} from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
   DEFAULT_ADMIN,
@@ -115,7 +117,7 @@ describe("Fixed yield schedule create", async () => {
     await expect(
       investorClient.fixedYieldSchedule.create(yieldScheduleData, {
         context: {
-          expectErrors: [expectedErrorCode],
+          skipLoggingFor: [expectedErrorCode],
         },
       })
     ).rejects.toThrow(errorMessageForCode(expectedErrorCode));

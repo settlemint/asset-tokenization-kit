@@ -75,7 +75,7 @@ describe("Token read", () => {
         },
         {
           context: {
-            expectErrors: [CUSTOM_ERROR_CODES.THE_GRAPH_ERROR],
+            skipLoggingFor: [CUSTOM_ERROR_CODES.THE_GRAPH_ERROR],
           },
         }
       )
@@ -93,7 +93,7 @@ describe("Token read", () => {
         },
         {
           context: {
-            expectErrors: [CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED],
+            skipLoggingFor: [CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED],
           },
         }
       )

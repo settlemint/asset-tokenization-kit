@@ -1,9 +1,7 @@
 // @vitest-environment node
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
-import {
-  CUSTOM_ERROR_CODES,
-} from "@/orpc/procedures/base.contract";
-import { getOrpcClient, errorMessageForCode } from "@test/fixtures/orpc-client";
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
+import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
@@ -197,7 +195,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
           },
           {
             context: {
-              expectErrors: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
             },
           }
         )
@@ -221,7 +219,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
           },
           {
             context: {
-              expectErrors: [
+              skipLoggingFor: [
                 CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED,
                 CUSTOM_ERROR_CODES.BAD_REQUEST,
               ],
@@ -246,7 +244,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
           },
           {
             context: {
-              expectErrors: [
+              skipLoggingFor: [
                 CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED,
                 CUSTOM_ERROR_CODES.BAD_REQUEST,
               ],
@@ -275,7 +273,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
           },
           {
             context: {
-              expectErrors: [
+              skipLoggingFor: [
                 CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED,
                 CUSTOM_ERROR_CODES.BAD_REQUEST,
               ],
@@ -300,7 +298,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
           },
           {
             context: {
-              expectErrors: [CUSTOM_ERROR_CODES.PORTAL_ERROR],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.PORTAL_ERROR],
             },
           }
         )
