@@ -6,9 +6,10 @@ import { authRouter } from "@/orpc/procedures/auth.router";
 import { env } from "@atk/config/env";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { createLogger } from "@settlemint/sdk-utils/logging";
+import { getPublicClient } from "@settlemint/sdk-viem";
 import { eq } from "drizzle-orm/sql";
 import type { VariablesOf } from "gql.tada";
-import { createPublicClient, http, parseEther, toHex, zeroAddress } from "viem";
+import { parseEther, toHex, zeroAddress } from "viem";
 import { anvil } from "viem/chains";
 
 const CREATE_ACCOUNT_MUTATION = portalGraphql(`
@@ -67,15 +68,12 @@ export const createWallet = authRouter.user.createWallet
         // In local dev, this will be http://localhost:8545 or similar
         const blockchainUrl = env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT;
 
-        const client = createPublicClient({
-          chain: anvil,
-          transport: http(blockchainUrl),
+        const client = getPublicClient({
+          chainId: anvil.id.toString(),
+          chainName: anvil.name,
+          rpcUrl: blockchainUrl,
         });
-
-        await client.request({
-          method: "anvil_setBalance",
-          params: [walletAddress, balanceInHex],
-        } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+        await client.anvilSetBalance([walletAddress, balanceInHex]);
       } catch (error) {
         // Don't throw - wallet creation should still succeed
         // The test will fail later if funding is actually needed
