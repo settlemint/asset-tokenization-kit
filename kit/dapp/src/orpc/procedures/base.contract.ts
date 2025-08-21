@@ -339,6 +339,8 @@ export const CUSTOM_ERRORS = {
   },
 } satisfies ErrorMap;
 
+export type CUSTOM_ERROR_CODES = keyof typeof CUSTOM_ERRORS;
+
 /**
  * Base ORPC contract with common error definitions.
  *
