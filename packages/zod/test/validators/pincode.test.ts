@@ -201,7 +201,7 @@ describe("security and edge cases", () => {
 describe("schema metadata", () => {
   test("should have correct description", () => {
     const schema = pincode;
-    expect(schema.description).toBe("6-digit PIN code");
+    expect(schema.description).toBe("6-digit PIN code for secure authentication");
   });
 
   test("should validate after multiple instantiations", () => {
@@ -346,11 +346,11 @@ describe("parsing behavior consistency", () => {
 describe("zod schema behavior", () => {
   test("should have consistent schema description", () => {
     const schema = pincode;
-    expect(schema.description).toBe("6-digit PIN code");
+    expect(schema.description).toBe("6-digit PIN code for secure authentication");
 
     // Description should be the same for all instances
     const schema2 = pincode;
-    expect(schema2.description).toBe("6-digit PIN code");
+    expect(schema2.description).toBe("6-digit PIN code for secure authentication");
   });
 
   test("should validate consistently across multiple calls", () => {

@@ -17,6 +17,8 @@ import {
 } from "@/orpc/routes/actions/routes/actions.list.schema";
 import { kycContract } from "@/orpc/routes/user/kyc/kyc.contract";
 import { pincodeContract } from "@/orpc/routes/user/pincode/pincode.contract";
+import { secretCodesContract } from "@/orpc/routes/user/secret-codes/secret-codes.contract";
+import { twoFactorContract } from "@/orpc/routes/user/two-factor/two-factor.contract";
 import { createWalletContract } from "@/orpc/routes/user/routes/mutations/create-wallet.contract";
 import {
   UserListInputSchema,
@@ -205,5 +207,7 @@ export const userContract = {
   statsUserCount,
   kyc: kycContract,
   pincode: pincodeContract,
+  secretCodes: secretCodesContract,
+  twoFactor: twoFactorContract,
   createWallet: createWalletContract,
 };

@@ -15,9 +15,7 @@ describe("Two factor verification", () => {
   test("can enable two factor verification", async () => {
     const headers = await signInWithUser(testUser, true);
     const { data, error } = await authClient.twoFactor.enable(
-      {
-        password: testUser.password,
-      },
+      {},
       {
         headers,
       }
@@ -30,9 +28,7 @@ describe("Two factor verification", () => {
   test("can disable two factor verification", async () => {
     const headers = await signInWithUser(testUser, true);
     const { data, error } = await authClient.twoFactor.disable(
-      {
-        password: testUser.password,
-      },
+      {},
       {
         headers,
       }

@@ -1,21 +1,11 @@
-import type { SessionUser } from "@/lib/auth";
-import {
-  disableTwoFactor,
-  enableTwoFactor,
-  verifyTwoFactorOTP,
-} from "@/lib/auth/plugins/two-factor/queries";
-import type { BetterAuthPlugin, GenericEndpointContext } from "better-auth";
+import { orpc } from "@/orpc/orpc-client";
+import type { BetterAuthPlugin } from "better-auth";
 import {
   APIError,
   createAuthEndpoint,
   sessionMiddleware,
 } from "better-auth/api";
 import { z } from "zod";
-import { isOnboarded, updateSession, validatePassword } from "../utils";
-
-const OTP_DIGITS = 6;
-const OTP_PERIOD = 30;
-const OTP_ALGORITHM = "SHA256";
 
 export const twoFactor = () => {
   return {
@@ -45,24 +35,13 @@ export const twoFactor = () => {
         "/two-factor/enable",
         {
           method: "POST",
-          body: z.object({
-            password: z
-              .string()
-              .describe(
-                "User password, only required if the user has done the initial onboarding"
-              )
-              .optional(),
-            issuer: z
-              .string()
-              .describe("Custom issuer for the TOTP URI")
-              .optional(),
-          }),
+          body: z.object({}),
           use: [sessionMiddleware],
           metadata: {
             openapi: {
               summary: "Enable two factor authentication",
               description:
-                "Use this endpoint to enable two factor authentication. This will generate a TOTP URI and backup codes. Once the user verifies the TOTP URI, the two factor authentication will be enabled.",
+                "Use this endpoint to enable two factor authentication. This will generate a TOTP URI. Once the user verifies the TOTP URI, the two factor authentication will be enabled.",
               responses: {
                 200: {
                   description: "Successful response",
@@ -85,47 +64,28 @@ export const twoFactor = () => {
           },
         },
         async (ctx) => {
-          const user = ctx.context.session.user as SessionUser;
-          const { password } = ctx.body;
-          // Skip password validation during onboarding flow
-          if (isOnboarded(user)) {
-            if (!password) {
-              throw new APIError("BAD_REQUEST", {
-                message: "Password is required",
-              });
-            }
-            const isPasswordValid = await validatePassword(ctx, {
-              password,
-              userId: user.id,
+          try {
+            // Delegate to ORPC for TOTP setup with Portal
+            const { totpURI } = await orpc.user.twoFactor.enable.call({});
+
+            // Note: The ORPC route already updates the database with the verification ID
+            // and sets twoFactorEnabled to false initially (will be set to true on first verify)
+            // We just need to return the TOTP URI for the client
+
+            return await ctx.json({ totpURI });
+          } catch (error) {
+            throw new APIError("INTERNAL_SERVER_ERROR", {
+              message: "Failed to enable two-factor authentication",
+              cause: error,
             });
-            if (!isPasswordValid) {
-              throw new APIError("BAD_REQUEST", {
-                message: "Invalid password",
-              });
-            }
           }
-          const { totpURI, verificationId } = await enableTwoFactor(
-            {
-              algorithm: OTP_ALGORITHM,
-              digits: OTP_DIGITS,
-              period: OTP_PERIOD,
-            },
-            user
-          );
-          await updateSession(ctx, {
-            twoFactorEnabled: false, // Set when first otp is verified successfully
-            twoFactorVerificationId: verificationId,
-          });
-          return ctx.json({ totpURI });
         }
       ),
       disableTwoFactor: createAuthEndpoint(
         "/two-factor/disable",
         {
           method: "POST",
-          body: z.object({
-            password: z.string().describe("User password"),
-          }),
+          body: z.object({}),
           use: [sessionMiddleware],
           metadata: {
             openapi: {
@@ -153,23 +113,20 @@ export const twoFactor = () => {
           },
         },
         async (ctx) => {
-          const user = ctx.context.session.user as SessionUser;
-          const isPasswordValid = await validatePassword(ctx, {
-            password: ctx.body.password,
-            userId: user.id,
-          });
-          if (!isPasswordValid) {
-            throw new APIError("BAD_REQUEST", {
-              message: "Invalid password",
+          try {
+            // Delegate to ORPC for TOTP removal from Portal
+            const { status } = await orpc.user.twoFactor.disable.call({});
+
+            // Note: The ORPC route already updates the database to clear
+            // twoFactorEnabled and twoFactorVerificationId
+
+            return await ctx.json({ status });
+          } catch (error) {
+            throw new APIError("INTERNAL_SERVER_ERROR", {
+              message: "Failed to disable two-factor authentication",
+              cause: error,
             });
           }
-          await disableTwoFactor(user);
-          await updateSession(ctx, {
-            twoFactorEnabled: false,
-            twoFactorVerificationId: null,
-          });
-
-          return ctx.json({ status: true });
         }
       ),
       verifyTOTP: createAuthEndpoint(
@@ -205,30 +162,66 @@ export const twoFactor = () => {
           },
         },
         async (ctx) => {
-          const user = ctx.context.session.user as SessionUser;
           const { code } = ctx.body;
-          const result = await verifyTwoFactorOTP(user, code);
-          if (!result.verified) {
-            throw new APIError("UNAUTHORIZED", {
-              message: "Invalid two factor code",
+
+          try {
+            // Delegate to ORPC for TOTP verification with Portal
+            const { status } = await orpc.user.twoFactor.verify.call({ code });
+
+            // Note: The ORPC route already updates the database to set
+            // twoFactorEnabled to true on first successful verification
+
+            return await ctx.json({ status });
+          } catch (error) {
+            // Check if it's an UNAUTHORIZED error from ORPC
+            if (
+              error &&
+              typeof error === "object" &&
+              "status" in error &&
+              error.status === 401
+            ) {
+              throw new APIError("UNAUTHORIZED", {
+                message: "Invalid two factor code",
+              });
+            }
+            throw new APIError("INTERNAL_SERVER_ERROR", {
+              message: "Failed to verify two-factor code",
+              cause: error,
             });
           }
-          if (!user.twoFactorEnabled) {
-            await updateSession(ctx as GenericEndpointContext, {
-              twoFactorEnabled: true,
-            });
-          }
-          return ctx.json({ status: true });
         }
       ),
     },
+    /**
+     * Rate limiting configuration for two-factor authentication endpoints.
+     *
+     * @remarks
+     * SECURITY: Prevents brute force attacks on TOTP verification endpoints.
+     * TOTP codes are time-sensitive (30-second windows) but still require
+     * protection against automated guessing attacks.
+     *
+     * RATIONALE: The 3/10s limit balances security with legitimate use:
+     * - Prevents automated brute force attacks on 6-digit TOTP codes
+     * - Allows for user errors (wrong code, timing issues)
+     * - Covers setup, verification, and disable operations
+     * - Accommodates clock synchronization issues between devices
+     *
+     * ATTACK VECTORS MITIGATED:
+     * - Automated TOTP code guessing (1 in 1,000,000 chance per attempt)
+     * - Rapid verification attempts to exploit time window overlaps
+     * - Resource exhaustion attacks on Portal API verification calls
+     * - Setup/disable endpoint abuse
+     *
+     * TIME WINDOW CONSIDERATIONS: TOTP codes change every 30 seconds,
+     * so rate limiting complements the natural time-based protection.
+     */
     rateLimit: [
       {
         pathMatcher(path) {
-          return path.startsWith("/two-factor/");
+          return path.startsWith("/two-factor/"); // WHY: Covers all TOTP endpoints
         },
-        window: 10,
-        max: 3,
+        window: 10, // SECURITY: 10-second window prevents rapid-fire attacks
+        max: 3, // SECURITY: 3 attempts allows for user/clock errors while blocking automation
       },
     ],
   } satisfies BetterAuthPlugin;

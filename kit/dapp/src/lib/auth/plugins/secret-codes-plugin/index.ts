@@ -1,6 +1,4 @@
-import type { SessionUser } from "@/lib/auth";
-import { validatePassword } from "@/lib/auth/plugins/utils";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { orpc } from "@/orpc/orpc-client";
 import type { BetterAuthPlugin } from "better-auth";
 import {
   APIError,
@@ -8,32 +6,6 @@ import {
   sessionMiddleware,
 } from "better-auth/api";
 import { z } from "zod";
-import { updateSession } from "../utils";
-
-const GENERATE_SECRET_CODES_MUTATION = portalGraphql(`
-  mutation GenerateSecretCodes($address: String!) {
-    createWalletVerification(
-      userWalletAddress: $address
-      verificationInfo: { secretCodes: { name: "SECRET_CODES" } }
-    ) {
-      id
-      name
-      parameters
-      verificationType
-    }
-  }
-`);
-
-const REMOVE_SECRET_CODES_MUTATION = portalGraphql(`
-  mutation RemoveSecretCodes($address: String!, $verificationId: String!) {
-    deleteWalletVerification(
-      userWalletAddress: $address
-      verificationId: $verificationId
-    ) {
-      success
-    }
-  }
-`);
 
 export const secretCodes = () => {
   return {
@@ -97,52 +69,26 @@ export const secretCodes = () => {
           },
         },
         async (ctx) => {
-          const user = ctx.context.session.user as SessionUser;
-          const { password } = ctx.body;
-          // Skip password validation if the user has not confirmed the secret codes yet
-          if (user.secretCodesConfirmed) {
-            if (!password) {
-              throw new APIError("BAD_REQUEST", {
-                message: "Password is required",
-              });
-            }
-            const isPasswordValid = await validatePassword(ctx, {
-              password,
-              userId: user.id,
-            });
-            if (!isPasswordValid) {
-              throw new APIError("BAD_REQUEST", {
-                message: "Invalid password",
-              });
-            }
-          }
-          if (user.secretCodeVerificationId) {
-            await portalClient.request(REMOVE_SECRET_CODES_MUTATION, {
-              address: user.wallet,
-              verificationId: user.secretCodeVerificationId,
-            });
-          }
-          const result = await portalClient.request(
-            GENERATE_SECRET_CODES_MUTATION,
-            {
-              address: user.wallet,
-            }
-          );
-          if (!result.createWalletVerification?.id) {
-            throw new APIError("INTERNAL_SERVER_ERROR", {
-              message: "Failed to create wallet verification",
-            });
-          }
+          try {
+            const { secretCodes, verificationId } =
+              await orpc.user.secretCodes.generate.call(ctx.body);
 
-          await updateSession(ctx, {
-            secretCodeVerificationId: result.createWalletVerification.id,
-          });
-          const parameters = result.createWalletVerification.parameters as {
-            secretCodes?: string;
-          };
-          return ctx.json({
-            secretCodes: parameters.secretCodes?.split(",") ?? [],
-          });
+            await ctx.context.internalAdapter.updateSession(
+              ctx.context.session.user.id,
+              {
+                secretCodeVerificationId: verificationId,
+              }
+            );
+
+            return await ctx.json({ secretCodes });
+          } catch (error) {
+            // ERROR BOUNDARY: Convert ORPC errors to Better Auth APIError format
+            // WHY: Maintains consistent error handling across authentication endpoints
+            throw new APIError("INTERNAL_SERVER_ERROR", {
+              message: "Secret codes could not be set",
+              cause: error,
+            });
+          }
         }
       ),
       confirmSecretCodes: createAuthEndpoint(
@@ -181,25 +127,55 @@ export const secretCodes = () => {
           },
         },
         async (ctx) => {
-          const { stored } = ctx.body;
-          if (stored) {
-            await updateSession(ctx, {
-              secretCodesConfirmed: true,
+          try {
+            const { success } = await orpc.user.secretCodes.confirm.call(
+              ctx.body
+            );
+
+            await ctx.context.internalAdapter.updateSession(
+              ctx.context.session.user.id,
+              {
+                secretCodesConfirmed: success,
+              }
+            );
+
+            return await ctx.json({ success });
+          } catch (error) {
+            // ERROR BOUNDARY: Convert ORPC errors to Better Auth APIError format
+            // WHY: Maintains consistent error handling across authentication endpoints
+            throw new APIError("INTERNAL_SERVER_ERROR", {
+              message: "Secret codes could not be confirmed",
+              cause: error,
             });
           }
-          return ctx.json({
-            success: stored,
-          });
         }
       ),
     },
+    /**
+     * Rate limiting configuration for secret code endpoints.
+     *
+     * @remarks
+     * SECURITY: Prevents abuse of backup code generation and confirmation
+     * endpoints. Backup codes are sensitive authentication factors that
+     * require protection against automated attacks.
+     *
+     * RATIONALE: The 3/10s limit balances security with legitimate use:
+     * - Prevents automated generation of multiple code sets
+     * - Allows for user errors during confirmation process
+     * - Covers both /secret-codes/generate and /secret-codes/confirm
+     *
+     * ATTACK VECTORS MITIGATED:
+     * - Automated code generation flooding Portal API
+     * - Rapid confirmation attempts to bypass storage verification
+     * - Resource exhaustion attacks on cryptographic operations
+     */
     rateLimit: [
       {
         pathMatcher(path) {
-          return path.startsWith("/secret-codes/");
+          return path.startsWith("/secret-codes/"); // WHY: Covers all secret code endpoints
         },
-        window: 10,
-        max: 3,
+        window: 10, // SECURITY: 10-second window prevents rapid-fire attacks
+        max: 3, // SECURITY: 3 attempts allows for user error while blocking automation
       },
     ],
   } satisfies BetterAuthPlugin;

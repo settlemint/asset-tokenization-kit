@@ -1,6 +1,8 @@
 import { list as actionsList } from "@/orpc/routes/actions/routes/actions.list";
 import kyc from "@/orpc/routes/user/kyc/kyc.router";
 import pincode from "@/orpc/routes/user/pincode/pincode.router";
+import secretCodes from "@/orpc/routes/user/secret-codes/secret-codes.router";
+import twoFactor from "@/orpc/routes/user/two-factor/two-factor.router";
 import { createWallet } from "@/orpc/routes/user/routes/mutations/create-wallet";
 import { list } from "@/orpc/routes/user/routes/user.list";
 import { me } from "@/orpc/routes/user/routes/user.me";
@@ -24,6 +26,9 @@ import { statsUserCount } from "@/orpc/routes/user/routes/user.stats.user-count"
  * - read: GET /user/read - Get specific user by ID or wallet address
  * - stats: GET /user/stats - User statistics and metrics
  * - kyc: KYC profile management routes (nested namespace)
+ * - pincode: PIN code management routes (nested namespace)
+ * - secretCodes: Secret codes recovery management routes (nested namespace)
+ * - twoFactor: Two-factor authentication management routes (nested namespace)
  * - actions: GET /user/actions - User's accessible actions (alias for /actions/list)
  *
  * The router is designed to be extended with additional user management
@@ -32,6 +37,9 @@ import { statsUserCount } from "@/orpc/routes/user/routes/user.stats.user-count"
  * @see {@link ./routes/user.me} - Current user endpoint implementation
  * @see {@link ./routes/user.stats} - User statistics endpoint implementation
  * @see {@link ./kyc/kyc.router} - KYC profile management routes
+ * @see {@link ./pincode/pincode.router} - PIN code management routes
+ * @see {@link ./secret-codes/secret-codes.router} - Secret codes management routes
+ * @see {@link ./two-factor/two-factor.router} - Two-factor authentication routes
  */
 const routes = {
   me,
@@ -44,6 +52,8 @@ const routes = {
   statsUserCount,
   kyc,
   pincode,
+  secretCodes,
+  twoFactor,
   createWallet,
 };
 

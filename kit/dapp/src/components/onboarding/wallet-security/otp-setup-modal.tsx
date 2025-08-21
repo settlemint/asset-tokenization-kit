@@ -39,10 +39,7 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
   const [otpSecret, setOtpSecret] = useState<string | null>(null);
 
   const { mutate: enableTwoFactor } = useMutation({
-    mutationFn: async () =>
-      authClient.twoFactor.enable({
-        password: undefined,
-      }),
+    mutationFn: async () => authClient.twoFactor.enable({}),
     onSuccess: async (data) => {
       try {
         await refreshUserState();
