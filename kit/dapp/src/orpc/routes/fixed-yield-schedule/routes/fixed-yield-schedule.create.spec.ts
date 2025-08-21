@@ -1,10 +1,9 @@
 import {
   CUSTOM_ERROR_CODES,
-  CUSTOM_ERRORS,
 } from "@/orpc/procedures/base.contract";
 import { getAnvilTimeMilliseconds } from "@/test/anvil";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
-import { getOrpcClient, type OrpcClient } from "@test/fixtures/orpc-client";
+import { getOrpcClient, type OrpcClient, errorMessageForCode } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
   DEFAULT_ADMIN,
@@ -98,7 +97,7 @@ describe("Fixed yield schedule create", async () => {
   test("regular users cannot create yield schedules without proper permissions", async () => {
     const headers = await signInWithUser(DEFAULT_INVESTOR);
     const expectedErrorCode = CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED;
-    const investorClient = getOrpcClient(headers, [expectedErrorCode]);
+    const investorClient = getOrpcClient(headers);
 
     const yieldScheduleData = {
       yieldRate: "250",
@@ -114,7 +113,11 @@ describe("Fixed yield schedule create", async () => {
     };
 
     await expect(
-      investorClient.fixedYieldSchedule.create(yieldScheduleData)
-    ).rejects.toThrow(CUSTOM_ERRORS[expectedErrorCode].message);
+      investorClient.fixedYieldSchedule.create(yieldScheduleData, {
+        context: {
+          expectErrors: [expectedErrorCode],
+        },
+      })
+    ).rejects.toThrow(errorMessageForCode(expectedErrorCode));
   });
 });

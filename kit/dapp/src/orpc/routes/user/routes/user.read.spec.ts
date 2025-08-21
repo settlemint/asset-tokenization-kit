@@ -1,4 +1,5 @@
-import { getOrpcClient } from "@test/fixtures/orpc-client";
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
+import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
   DEFAULT_ADMIN,
@@ -123,10 +124,17 @@ describe("User read", () => {
       const client = getOrpcClient(headers);
 
       await expect(
-        client.user.read({
-          userId: testUserData.id,
-        })
-      ).rejects.toThrow("Forbidden");
+        client.user.read(
+          {
+            userId: testUserData.id,
+          },
+          {
+            context: {
+              expectErrors: [CUSTOM_ERROR_CODES.FORBIDDEN],
+            },
+          }
+        )
+      ).rejects.toThrow(errorMessageForCode(CUSTOM_ERROR_CODES.FORBIDDEN));
     });
 
     it("regular user without 'user:list' permission cannot read other users by wallet", async () => {
@@ -134,9 +142,16 @@ describe("User read", () => {
       const client = getOrpcClient(headers);
 
       await expect(
-        client.user.read({
-          wallet: testUserData.wallet,
-        })
+        client.user.read(
+          {
+            wallet: testUserData.wallet,
+          },
+          {
+            context: {
+              expectErrors: [CUSTOM_ERROR_CODES.FORBIDDEN],
+            },
+          }
+        )
       ).rejects.toThrow();
     });
 
@@ -146,9 +161,16 @@ describe("User read", () => {
       const client = getOrpcClient(headers);
 
       await expect(
-        client.user.read({
-          userId: unauthorizedUserData.id,
-        })
+        client.user.read(
+          {
+            userId: unauthorizedUserData.id,
+          },
+          {
+            context: {
+              expectErrors: [CUSTOM_ERROR_CODES.FORBIDDEN],
+            },
+          }
+        )
       ).rejects.toThrow();
     });
 
@@ -174,9 +196,16 @@ describe("User read", () => {
       const nonExistentUserId = randomUUID();
 
       await expect(
-        client.user.read({
-          userId: nonExistentUserId,
-        })
+        client.user.read(
+          {
+            userId: nonExistentUserId,
+          },
+          {
+            context: {
+              expectErrors: [CUSTOM_ERROR_CODES.NOT_FOUND],
+            },
+          }
+        )
       ).rejects.toThrow();
     });
 
@@ -187,9 +216,16 @@ describe("User read", () => {
       const nonExistentWallet = "0x0000000000000000000000000000000000000000";
 
       await expect(
-        client.user.read({
-          wallet: nonExistentWallet,
-        })
+        client.user.read(
+          {
+            wallet: nonExistentWallet,
+          },
+          {
+            context: {
+              expectErrors: [CUSTOM_ERROR_CODES.NOT_FOUND],
+            },
+          }
+        )
       ).rejects.toThrow();
     });
   });

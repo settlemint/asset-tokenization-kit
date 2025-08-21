@@ -7,6 +7,7 @@ export const CUSTOM_ERROR_CODES = {
   USER_NOT_AUTHORIZED: "USER_NOT_AUTHORIZED",
   USER_NOT_ALLOWED: "USER_NOT_ALLOWED",
   FORBIDDEN: "FORBIDDEN",
+  BAD_REQUEST: "BAD_REQUEST",
   INPUT_VALIDATION_FAILED: "INPUT_VALIDATION_FAILED",
   TOKEN_INTERFACE_NOT_SUPPORTED: "TOKEN_INTERFACE_NOT_SUPPORTED",
   OUTPUT_VALIDATION_FAILED: "OUTPUT_VALIDATION_FAILED",
@@ -28,7 +29,17 @@ export const CUSTOM_ERROR_CODES = {
 
 export const CUSTOM_ERRORS = {
   /**
-   * Input validation failure error.
+   * Bad request error.
+   *
+   * Thrown when a request is malformed or contains invalid data.
+   */
+  BAD_REQUEST: {
+    status: 400,
+    message: "Input validation failed",
+  },
+
+  /**
+   * Input validation failed error.
    *
    * Thrown when request data fails schema validation, typically due to:
    * - Missing required fields

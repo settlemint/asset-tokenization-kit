@@ -1,4 +1,5 @@
-import { getOrpcClient } from "@test/fixtures/orpc-client";
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
+import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
   DEFAULT_ADMIN,
@@ -68,9 +69,16 @@ describe("Token read", () => {
 
     // Use a valid but non-existent address
     await expect(
-      client.token.read({
-        tokenAddress: "0x0000000000000000000000000000000000000001",
-      })
+      client.token.read(
+        {
+          tokenAddress: "0x0000000000000000000000000000000000000001",
+        },
+        {
+          context: {
+            expectErrors: [CUSTOM_ERROR_CODES.NOT_FOUND],
+          },
+        }
+      )
     ).rejects.toThrow("Token not found");
   });
 
@@ -79,10 +87,17 @@ describe("Token read", () => {
     const client = getOrpcClient(headers);
 
     await expect(
-      client.token.read({
-        tokenAddress: "invalid-address" as unknown as string,
-      })
-    ).rejects.toThrow();
+      client.token.read(
+        {
+          tokenAddress: "invalid-address" as unknown as string,
+        },
+        {
+          context: {
+            expectErrors: [CUSTOM_ERROR_CODES.BAD_REQUEST],
+          },
+        }
+      )
+    ).rejects.toThrow(errorMessageForCode(CUSTOM_ERROR_CODES.BAD_REQUEST));
   });
 
   it("includes token-specific metadata when present", async () => {
