@@ -39,7 +39,7 @@ import {
   type EthereumHash as TransactionHash,
 } from "@atk/zod/ethereum-hash";
 import type { TadaDocumentNode } from "gql.tada";
-import { getOperationAST } from "graphql";
+import { getOperationAST, print } from "graphql";
 import type { Variables } from "graphql-request";
 import { createHash, randomUUID } from "node:crypto";
 import { z } from "zod";
@@ -244,7 +244,7 @@ function createValidatedPortalClient(
           throw errors.PORTAL_ERROR({
             message: `Verification ID not found for ${type}`,
             data: {
-              document,
+              document: print(document),
               variables,
               responseValidation: `No verification ID configured for ${type}`,
             },
@@ -270,7 +270,7 @@ function createValidatedPortalClient(
           throw errors.PORTAL_ERROR({
             message: "Failed to create verification challenge",
             data: {
-              document,
+              document: print(document),
               variables,
               responseValidation: `${type} verification failed`,
             },
@@ -302,7 +302,7 @@ function createValidatedPortalClient(
             throw errors.PORTAL_ERROR({
               message: "Failed to create verification challenge",
               data: {
-                document,
+                document: print(document),
                 variables,
                 responseValidation: `${type} verification failed`,
               },
@@ -348,7 +348,7 @@ function createValidatedPortalClient(
             mapPortalErrorMessage(errorMessage) ??
             `GraphQL ${operation} failed`,
           data: {
-            document,
+            document: print(document),
             variables,
             stack: error instanceof Error ? error.stack : undefined,
           },
