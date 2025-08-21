@@ -1,25 +1,28 @@
-import type { systemContract } from "@/orpc/routes/system/system.contract";
 import type { RoleRequirement } from "@atk/zod/role-requirement";
 
-type SystemContractMutations = keyof Pick<
-  typeof systemContract,
+/**
+ * System operation permission keys
+ * 
+ * These keys represent the logical operations in the system
+ * and are used by middleware to check permissions.
+ */
+type SystemOperation = 
   | "tokenFactoryCreate"
   | "addonCreate"
   | "grantRole"
   | "revokeRole"
   | "complianceModuleCreate"
-  | "identityRegister"
->;
+  | "identityRegister";
 
 /**
- * The permissions for the token factory contract
+ * The permissions for the system operations
  *
  * @description
- * This is a mapping of the token factory contract methods to the roles that are required to call them.
- * Uses OR logic - user needs either tokenManager OR systemManager role.
+ * This is a mapping of the system operation names to the roles that are required to call them.
+ * Uses OR logic - user needs any of the listed roles.
  */
 export const SYSTEM_PERMISSIONS: Record<
-  SystemContractMutations,
+  SystemOperation,
   RoleRequirement
 > = {
   tokenFactoryCreate: { any: ["systemManager"] },
