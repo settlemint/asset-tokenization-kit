@@ -53,15 +53,19 @@ library ATKTopics {
 
     /// @notice Get all topic signatures for registry registration
     /// @return _signatures Array of topic signatures for batchRegisterTopicSchemes
+    /// @dev ALL signatures use tuple format for The Graph compatibility
+    // WHY: The Graph's ethereum.decode() function has limitations when handling ABI-encoded data.
+    // This means even single parameters like "string claim" become "((string))" when encoded.
+    // To maintain consistency between encoding and decoding, all signatures must define the tuple format.
     function signatures() internal pure returns (string[] memory _signatures) {
         _signatures = new string[](8);
-        _signatures[0] = "string claim"; // kyc
-        _signatures[1] = "string claim"; // aml
-        _signatures[2] = "uint256 amount, uint256 expiryTimestamp"; // collateral
-        _signatures[3] = "string isin"; // isin
-        _signatures[4] = "string class, string category"; // assetClassification
-        _signatures[5] = "uint256 amount, string currencyCode, uint8 decimals"; // basePrice
-        _signatures[6] = "address contractAddress"; // contractIdentity
-        _signatures[7] = "address issuerAddress"; // issuer
+        _signatures[0] = "(string claim)"; // kyc
+        _signatures[1] = "(string claim)"; // aml
+        _signatures[2] = "(uint256 amount, uint256 expiryTimestamp)"; // collateral
+        _signatures[3] = "(string isin)"; // isin
+        _signatures[4] = "(string class, string category)"; // assetClassification
+        _signatures[5] = "(uint256 amount, string currencyCode, uint8 decimals)"; // basePrice
+        _signatures[6] = "(address contractAddress)"; // contractIdentity
+        _signatures[7] = "(address issuerAddress)"; // issuer
     }
 }

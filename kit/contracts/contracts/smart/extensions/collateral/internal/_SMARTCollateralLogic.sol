@@ -148,21 +148,20 @@ abstract contract _SMARTCollateralLogic is _SMARTExtension, ISMARTCollateral {
     }
 
     /// @notice Decodes collateral claim data into amount and expiry, and checks expiry.
-    /// @dev Expects `data` to be ABI encoded as `(uint256 amount, uint256 expiryTimestamp)`.
-    ///      Checks if the data is exactly 64 bytes (2 x uint256).
+    /// @dev Expects `data` to be ABI encoded as `((uint256 amount, uint256 expiryTimestamp))` (tuple-wrapped for The Graph).
     ///      Also verifies that the decoded `expiry` timestamp is in the future.
     /// @param data The raw `bytes` data of the claim.
     /// @return decoded `true` if data was successfully decoded and is not expired, `false` otherwise.
     /// @return amount The decoded collateral amount (0 if decoding fails or claim expired).
     /// @return expiry The decoded expiry timestamp (0 if decoding fails or claim expired).
     function __decodeClaimData(bytes memory data) private view returns (bool decoded, uint256 amount, uint256 expiry) {
-        // A valid (uint256, uint256) encoding will be exactly 64 bytes long.
-        if (data.length != 64) {
-            return (false, 0, 0); // Invalid data length.
+        // Attempt to decode the tuple-wrapped data.
+        try this.__decodeCollateralTuple(data) returns (uint256 _amount, uint256 _expiry) {
+            amount = _amount;
+            expiry = _expiry;
+        } catch {
+            return (false, 0, 0); // Decoding failed.
         }
-
-        // Attempt to decode the data.
-        (amount, expiry) = abi.decode(data, (uint256, uint256));
 
         // Check if the claim has already expired.
         if (expiry < block.timestamp || expiry == block.timestamp) {
@@ -170,6 +169,25 @@ abstract contract _SMARTCollateralLogic is _SMARTExtension, ISMARTCollateral {
         }
 
         return (true, amount, expiry); // Successfully decoded and not expired.
+    }
+
+    /// @notice Helper function to decode tuple-wrapped collateral data
+    /// @dev Claim data is wrapped in an extra tuple layer for The Graph compatibility.
+    ///      The Graph's decode functions require tuple wrapping for reliable parsing of mixed static/dynamic types.
+    /// @param data The raw bytes data to decode
+    /// @return amount The collateral amount
+    /// @return expiry The expiry timestamp
+    function __decodeCollateralTuple(bytes memory data) public pure returns (uint256 amount, uint256 expiry) {
+        // The data is tuple-wrapped for The Graph compatibility, so we skip the first 32 bytes (offset pointer)
+        // and decode the remaining data as standard (uint256, uint256)
+        require(data.length >= 32, "Invalid tuple-wrapped collateral data length");
+        
+        bytes memory actualData = new bytes(data.length - 32);
+        for (uint256 i = 0; i < actualData.length; i++) {
+            actualData[i] = data[i + 32];
+        }
+        
+        (amount, expiry) = abi.decode(actualData, (uint256, uint256));
     }
 
     /// @notice Validates a claim with a specific issuer and decodes its data if valid.
