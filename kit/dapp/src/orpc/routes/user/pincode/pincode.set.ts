@@ -111,31 +111,42 @@ export const set = authRouter.user.pincode.set
     }
 
     // PORTAL-FIRST: Create cryptographic verification before local state update
-    const result = await portalClient.raw.request(SET_PINCODE_MUTATION, {
-      address: wallet,
-      pincode: input.pincode,
-    });
+    try {
+      const result = await portalClient.raw.request(SET_PINCODE_MUTATION, {
+        address: wallet,
+        pincode: input.pincode,
+      });
 
-    // VALIDATION: Ensure Portal successfully created verification record
-    if (!result.createWalletVerification?.id) {
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: "Failed to create wallet verification",
+      // VALIDATION: Ensure Portal successfully created verification record
+      if (!result.createWalletVerification?.id) {
+        throw errors.INTERNAL_SERVER_ERROR({
+          message: "Failed to create wallet verification",
+        });
+      }
+
+      // LOCAL STATE: Update user preferences only after Portal success
+      // WHY ATOMIC: Database update must succeed to maintain consistency
+      await db
+        .update(user)
+        .set({
+          pincodeEnabled: true,
+          pincodeVerificationId: result.createWalletVerification.id,
+        })
+        .where(eq(user.id, auth.user.id));
+
+      // AUDIT: Return verification ID for client-side confirmation and logging
+      return {
+        success: true,
+        verificationId: result.createWalletVerification.id,
+      };
+    } catch (error) {
+      throw errors.PORTAL_ERROR({
+        data: {
+          document: SET_PINCODE_MUTATION,
+          variables: { address: wallet, pincode: input.pincode },
+          responseValidation: "Failed to create wallet verification",
+        },
+        cause: error,
       });
     }
-
-    // LOCAL STATE: Update user preferences only after Portal success
-    // WHY ATOMIC: Database update must succeed to maintain consistency
-    await db
-      .update(user)
-      .set({
-        pincodeEnabled: true,
-        pincodeVerificationId: result.createWalletVerification.id,
-      })
-      .where(eq(user.id, auth.user.id));
-
-    // AUDIT: Return verification ID for client-side confirmation and logging
-    return {
-      success: true,
-      verificationId: result.createWalletVerification.id,
-    };
   });

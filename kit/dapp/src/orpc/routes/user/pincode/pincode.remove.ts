@@ -125,30 +125,41 @@ export const remove = authRouter.user.pincode.remove
 
     // PORTAL-FIRST: Remove cryptographic verification before local state cleanup
     // SECURITY: Ensures cryptographic state is authoritative source of truth
-    const result = await portalClient.request(REMOVE_PINCODE_MUTATION, {
-      address: wallet,
-      verificationId: pincodeVerificationId,
-    });
+    try {
+      const result = await portalClient.request(REMOVE_PINCODE_MUTATION, {
+        address: wallet,
+        verificationId: pincodeVerificationId,
+      });
 
-    // VALIDATION: Ensure Portal successfully processed deletion request
-    if (!result.deleteWalletVerification?.success) {
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: "Failed to delete wallet verification",
+      // VALIDATION: Ensure Portal successfully processed deletion request
+      if (!result.deleteWalletVerification?.success) {
+        throw errors.INTERNAL_SERVER_ERROR({
+          message: "Failed to delete wallet verification",
+        });
+      }
+
+      // LOCAL CLEANUP: Reset user preferences only after Portal success
+      // WHY EXPLICIT NULL: Clear indication that verification ID is removed
+      await db
+        .update(user)
+        .set({
+          pincodeEnabled: false,
+          pincodeVerificationId: null,
+        })
+        .where(eq(user.id, auth.user.id));
+
+      // MINIMAL RESPONSE: No sensitive data in response for security
+      return {
+        success: true,
+      };
+    } catch (error) {
+      throw errors.PORTAL_ERROR({
+        data: {
+          document: REMOVE_PINCODE_MUTATION,
+          variables: { address: wallet, verificationId: pincodeVerificationId },
+          responseValidation: "Failed to delete wallet verification",
+        },
+        cause: error,
       });
     }
-
-    // LOCAL CLEANUP: Reset user preferences only after Portal success
-    // WHY EXPLICIT NULL: Clear indication that verification ID is removed
-    await db
-      .update(user)
-      .set({
-        pincodeEnabled: false,
-        pincodeVerificationId: null,
-      })
-      .where(eq(user.id, auth.user.id));
-
-    // MINIMAL RESPONSE: No sensitive data in response for security
-    return {
-      success: true,
-    };
   });

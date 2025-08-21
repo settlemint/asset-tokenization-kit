@@ -1,4 +1,7 @@
-import { orpc } from "@/orpc/orpc-client";
+import { disable } from "@/orpc/routes/user/two-factor/two-factor.disable";
+import { enable } from "@/orpc/routes/user/two-factor/two-factor.enable";
+import { verify } from "@/orpc/routes/user/two-factor/two-factor.verify";
+import { call } from "@orpc/server";
 import type { BetterAuthPlugin } from "better-auth";
 import {
   APIError,
@@ -66,7 +69,15 @@ export const twoFactor = () => {
         async (ctx) => {
           try {
             // Delegate to ORPC for TOTP setup with Portal
-            const { totpURI } = await orpc.user.twoFactor.enable.call({});
+            const { totpURI } = await call(
+              enable,
+              {},
+              {
+                context: {
+                  headers: Object.fromEntries(ctx.headers?.entries() ?? []),
+                },
+              }
+            );
 
             // Note: The ORPC route already updates the database with the verification ID
             // and sets twoFactorEnabled to false initially (will be set to true on first verify)
@@ -75,8 +86,11 @@ export const twoFactor = () => {
             return await ctx.json({ totpURI });
           } catch (error) {
             throw new APIError("INTERNAL_SERVER_ERROR", {
-              message: "Failed to enable two-factor authentication",
-              cause: error,
+              message:
+                error instanceof Error
+                  ? error.message
+                  : "Failed to enable two-factor authentication",
+              errorWithStack: error,
             });
           }
         }
@@ -115,7 +129,15 @@ export const twoFactor = () => {
         async (ctx) => {
           try {
             // Delegate to ORPC for TOTP removal from Portal
-            const { status } = await orpc.user.twoFactor.disable.call({});
+            const { status } = await call(
+              disable,
+              {},
+              {
+                context: {
+                  headers: Object.fromEntries(ctx.headers?.entries() ?? []),
+                },
+              }
+            );
 
             // Note: The ORPC route already updates the database to clear
             // twoFactorEnabled and twoFactorVerificationId
@@ -123,8 +145,11 @@ export const twoFactor = () => {
             return await ctx.json({ status });
           } catch (error) {
             throw new APIError("INTERNAL_SERVER_ERROR", {
-              message: "Failed to disable two-factor authentication",
-              cause: error,
+              message:
+                error instanceof Error
+                  ? error.message
+                  : "Failed to disable two-factor authentication",
+              errorWithStack: error,
             });
           }
         }
@@ -166,7 +191,15 @@ export const twoFactor = () => {
 
           try {
             // Delegate to ORPC for TOTP verification with Portal
-            const { status } = await orpc.user.twoFactor.verify.call({ code });
+            const { status } = await call(
+              verify,
+              { code },
+              {
+                context: {
+                  headers: Object.fromEntries(ctx.headers?.entries() ?? []),
+                },
+              }
+            );
 
             // Note: The ORPC route already updates the database to set
             // twoFactorEnabled to true on first successful verification
@@ -185,8 +218,11 @@ export const twoFactor = () => {
               });
             }
             throw new APIError("INTERNAL_SERVER_ERROR", {
-              message: "Failed to verify two-factor code",
-              cause: error,
+              message:
+                error instanceof Error
+                  ? error.message
+                  : "Failed to verify two-factor code",
+              errorWithStack: error,
             });
           }
         }

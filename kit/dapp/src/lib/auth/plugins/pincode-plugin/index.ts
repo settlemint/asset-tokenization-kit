@@ -23,8 +23,11 @@
  */
 
 import { updateSession } from "@/lib/auth/plugins/utils";
-import { orpc } from "@/orpc/orpc-client";
+import { remove } from "@/orpc/routes/user/pincode/pincode.remove";
+import { set } from "@/orpc/routes/user/pincode/pincode.set";
+import { update } from "@/orpc/routes/user/pincode/pincode.update";
 import { pincode as pincodeValidator } from "@atk/zod/pincode";
+import { call } from "@orpc/server";
 import type { BetterAuthPlugin } from "better-auth";
 import {
   APIError,
@@ -138,8 +141,11 @@ export const pincode = () => {
           try {
             // DELEGATION: ORPC handles PIN hashing, salting, and Portal verification ID creation
             // WHY: Centralizes cryptographic operations and maintains security boundaries
-            const { success, verificationId } =
-              await orpc.user.pincode.set.call(ctx.body);
+            const { success, verificationId } = await call(set, ctx.body, {
+              context: {
+                headers: Object.fromEntries(ctx.headers?.entries() ?? []),
+              },
+            });
 
             if (success) {
               // ATOMIC UPDATE: Both fields updated together to prevent inconsistent state
@@ -153,8 +159,11 @@ export const pincode = () => {
             // ERROR BOUNDARY: Convert ORPC errors to Better Auth APIError format
             // WHY: Maintains consistent error handling across authentication endpoints
             throw new APIError("INTERNAL_SERVER_ERROR", {
-              message: "Pincode could not be set",
-              cause: error,
+              message:
+                error instanceof Error
+                  ? error.message
+                  : "Pincode could not be set",
+              errorWithStack: error,
             });
           }
           return ctx.json({ success: true });
@@ -213,7 +222,11 @@ export const pincode = () => {
           try {
             // DELEGATION: ORPC handles PIN removal from Portal verification system
             // WHY: Ensures PIN is properly removed from cryptographic storage
-            const { success } = await orpc.user.pincode.remove.call(ctx.body);
+            const { success } = await call(remove, ctx.body, {
+              context: {
+                headers: Object.fromEntries(ctx.headers?.entries() ?? []),
+              },
+            });
 
             if (success) {
               // CLEANUP: Clear both session fields to fully disable PIN functionality
@@ -226,8 +239,11 @@ export const pincode = () => {
           } catch (error) {
             // ERROR BOUNDARY: Convert ORPC errors to Better Auth APIError format
             throw new APIError("INTERNAL_SERVER_ERROR", {
-              message: "Pincode could not be disabled",
-              cause: error,
+              message:
+                error instanceof Error
+                  ? error.message
+                  : "Pincode could not be disabled",
+              errorWithStack: error,
             });
           }
           return ctx.json({ success: true });
@@ -291,10 +307,17 @@ export const pincode = () => {
           try {
             // DELEGATION: ORPC handles PIN update with fresh cryptographic parameters
             // WHY: Ensures new PIN gets proper salting and generates new verification ID
-            const { success, verificationId } =
-              await orpc.user.pincode.update.call({
+            const { success, verificationId } = await call(
+              update,
+              {
                 pincode: ctx.body.newPincode,
-              });
+              },
+              {
+                context: {
+                  headers: Object.fromEntries(ctx.headers?.entries() ?? []),
+                },
+              }
+            );
 
             if (success) {
               // UPDATE: New verification ID ensures cryptographic freshness
@@ -307,8 +330,11 @@ export const pincode = () => {
           } catch (error) {
             // ERROR BOUNDARY: Convert ORPC errors to Better Auth APIError format
             throw new APIError("INTERNAL_SERVER_ERROR", {
-              message: "Pincode could not be set",
-              cause: error,
+              message:
+                error instanceof Error
+                  ? error.message
+                  : "Pincode could not be updated",
+              errorWithStack: error,
             });
           }
           return ctx.json({ success: true });

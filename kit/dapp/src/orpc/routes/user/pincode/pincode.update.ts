@@ -121,31 +121,42 @@ export const update = authRouter.user.pincode.update
 
     // PORTAL-FIRST: Create new verification record before local state update
     // TRADEOFF: Network call overhead vs consistency guarantees (consistency wins)
-    const result = await portalClient.raw.request(UPDATE_PINCODE_MUTATION, {
-      address: wallet,
-      pincode: input.pincode,
-    });
+    try {
+      const result = await portalClient.raw.request(UPDATE_PINCODE_MUTATION, {
+        address: wallet,
+        pincode: input.pincode,
+      });
 
-    // VALIDATION: Ensure Portal successfully created new verification record
-    if (!result.createWalletVerification?.id) {
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: "Failed to create wallet verification",
+      // VALIDATION: Ensure Portal successfully created new verification record
+      if (!result.createWalletVerification?.id) {
+        throw errors.INTERNAL_SERVER_ERROR({
+          message: "Failed to create wallet verification",
+        });
+      }
+
+      // STATE REPLACEMENT: Update local reference to new verification record
+      // WHY ALWAYS ENABLED: Successful PIN update implies PIN feature is active
+      await db
+        .update(user)
+        .set({
+          pincodeEnabled: true,
+          pincodeVerificationId: result.createWalletVerification.id,
+        })
+        .where(eq(user.id, auth.user.id));
+
+      // CONFIRMATION: Return new verification ID for audit and client confirmation
+      return {
+        success: true,
+        verificationId: result.createWalletVerification.id,
+      };
+    } catch (error) {
+      throw errors.PORTAL_ERROR({
+        data: {
+          document: UPDATE_PINCODE_MUTATION,
+          variables: { address: wallet, pincode: input.pincode },
+          responseValidation: "Failed to update wallet verification",
+        },
+        cause: error,
       });
     }
-
-    // STATE REPLACEMENT: Update local reference to new verification record
-    // WHY ALWAYS ENABLED: Successful PIN update implies PIN feature is active
-    await db
-      .update(user)
-      .set({
-        pincodeEnabled: true,
-        pincodeVerificationId: result.createWalletVerification.id,
-      })
-      .where(eq(user.id, auth.user.id));
-
-    // CONFIRMATION: Return new verification ID for audit and client confirmation
-    return {
-      success: true,
-      verificationId: result.createWalletVerification.id,
-    };
   });

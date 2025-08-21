@@ -1,5 +1,7 @@
 import { updateSession } from "@/lib/auth/plugins/utils";
 import { orpc } from "@/orpc/orpc-client";
+import { generate } from "@/orpc/routes/user/secret-codes/secret-codes.generate";
+import { call } from "@orpc/server";
 import type { BetterAuthPlugin } from "better-auth";
 import {
   APIError,
@@ -71,8 +73,15 @@ export const secretCodes = () => {
         },
         async (ctx) => {
           try {
-            const { secretCodes, verificationId } =
-              await orpc.user.secretCodes.generate.call(ctx.body);
+            const { secretCodes, verificationId } = await call(
+              generate,
+              ctx.body,
+              {
+                context: {
+                  headers: Object.fromEntries(ctx.headers?.entries() ?? []),
+                },
+              }
+            );
 
             await updateSession(ctx, {
               secretCodeVerificationId: verificationId,
@@ -83,8 +92,11 @@ export const secretCodes = () => {
             // ERROR BOUNDARY: Convert ORPC errors to Better Auth APIError format
             // WHY: Maintains consistent error handling across authentication endpoints
             throw new APIError("INTERNAL_SERVER_ERROR", {
-              message: "Secret codes could not be set",
-              cause: error,
+              message:
+                error instanceof Error
+                  ? error.message
+                  : "Secret codes could not be set",
+              errorWithStack: error,
             });
           }
         }
@@ -127,7 +139,12 @@ export const secretCodes = () => {
         async (ctx) => {
           try {
             const { success } = await orpc.user.secretCodes.confirm.call(
-              ctx.body
+              ctx.body,
+              {
+                context: {
+                  headers: Object.fromEntries(ctx.headers?.entries() ?? []),
+                },
+              }
             );
 
             await updateSession(ctx, {
@@ -139,8 +156,11 @@ export const secretCodes = () => {
             // ERROR BOUNDARY: Convert ORPC errors to Better Auth APIError format
             // WHY: Maintains consistent error handling across authentication endpoints
             throw new APIError("INTERNAL_SERVER_ERROR", {
-              message: "Secret codes could not be confirmed",
-              cause: error,
+              message:
+                error instanceof Error
+                  ? error.message
+                  : "Secret codes could not be confirmed",
+              errorWithStack: error,
             });
           }
         }
