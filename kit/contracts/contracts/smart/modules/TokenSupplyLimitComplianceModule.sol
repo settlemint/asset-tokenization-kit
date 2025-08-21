@@ -328,7 +328,7 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
 
             // Only subtract if this day has data and matches current day
             if (tracker.bufferDayMapping[bufferIndex] == currentDay) {
-                if (tracker.dailySupply[bufferIndex] >= amount) {
+                if (tracker.dailySupply[bufferIndex] > amount - 1) {
                     tracker.dailySupply[bufferIndex] -= amount;
                 } else {
                     tracker.dailySupply[bufferIndex] = 0;
@@ -339,7 +339,7 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
             // Fixed period tracking
             // Only subtract if we're in an active period
             if (tracker.periodStart != 0 && block.timestamp - tracker.periodStart < config.periodLength * 1 days) {
-                if (tracker.totalSupply >= amount) {
+                if (tracker.totalSupply > amount - 1) {
                     tracker.totalSupply -= amount;
                 } else {
                     tracker.totalSupply = 0;
