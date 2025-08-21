@@ -1,14 +1,15 @@
 /**
  * @vitest-environment node
  */
-import { describe, expect, it, beforeEach, vi } from "vitest";
 import {
-  installPortalRouterCaptureMock,
-  getCapturedHandler,
   createBaseContext,
   createMockErrors,
+  getCapturedHandler,
+  installSystemRouterCaptureMock,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import "./topic.update";
 import type {
   TopicUpdateInput,
   TopicUpdateOutput,
@@ -21,8 +22,7 @@ vi.mock("@/orpc/helpers/challenge-response", () => ({
   ),
 }));
 
-installPortalRouterCaptureMock();
-import "./topic.update";
+installSystemRouterCaptureMock();
 
 function getHandler(): OrpcHandler<TopicUpdateInput, TopicUpdateOutput> {
   const handler = getCapturedHandler();

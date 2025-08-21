@@ -19,7 +19,8 @@
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { systemRouter } from "@/orpc/procedures/system.router";
 // No need to import SYSTEM_PERMISSIONS - using direct role requirements
-import { portalGraphql } from "@test/mocks/portal-mocks";
+
+import { portalGraphql } from "@/lib/settlemint/portal";
 import {
   TopicCreateOutputSchema,
   type TopicCreateOutput,

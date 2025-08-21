@@ -5,7 +5,7 @@ import {
   createBaseContext,
   createMockErrors,
   getCapturedHandler,
-  installPortalRouterCaptureMock,
+  installSystemRouterCaptureMock,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
 import { VerificationType } from "@atk/zod/verification-type";
@@ -23,7 +23,7 @@ vi.mock("@/orpc/helpers/challenge-response", () => ({
   ),
 }));
 
-installPortalRouterCaptureMock();
+installSystemRouterCaptureMock();
 
 function getHandler(): OrpcHandler<TopicCreateInput, TopicCreateOutput> {
   const handler = getCapturedHandler();
