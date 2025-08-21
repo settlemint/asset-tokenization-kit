@@ -16,10 +16,10 @@
  * @see {@link @/lib/settlemint/portal} - Portal GraphQL client for transaction execution
  */
 
-import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { portalRouter } from "@/orpc/procedures/portal.router";
+import { systemRouter } from "@/orpc/procedures/system.router";
 // No need to import SYSTEM_PERMISSIONS - using direct role requirements
+import { portalGraphql } from "@test/mocks/portal-mocks";
 import {
   TopicCreateOutputSchema,
   type TopicCreateOutput,
@@ -66,7 +66,7 @@ const REGISTER_TOPIC_SCHEME_MUTATION = portalGraphql(`
  * @param input.signature - Function signature for claim verification
  * @returns Transaction hash and generated topic ID
  */
-export const topicCreate = portalRouter.system.topicCreate
+export const topicCreate = systemRouter.system.topicCreate
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: { any: ["claimPolicyManager", "systemManager"] },
