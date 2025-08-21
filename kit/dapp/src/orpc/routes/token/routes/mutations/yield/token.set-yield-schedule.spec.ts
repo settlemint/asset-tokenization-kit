@@ -108,7 +108,7 @@ describe("Token set yield schedule", async () => {
         },
         {
           context: {
-            expectErrors: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
+            skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
           },
         }
       )
