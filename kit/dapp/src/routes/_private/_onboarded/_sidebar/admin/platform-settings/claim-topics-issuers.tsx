@@ -10,6 +10,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { orpc } from "@/orpc/orpc-client";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { useState } from "react";
@@ -35,6 +37,9 @@ function ClaimTopicsIssuersPage() {
   const { t } = useTranslation("claim-topics-issuers");
   const { t: tNav } = useTranslation("navigation");
   const [showAddDialog, setShowAddDialog] = useState(false);
+  
+  // Get current user data with roles
+  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
 
   return (
     <div className="container mx-auto p-6">
@@ -58,14 +63,16 @@ function ClaimTopicsIssuersPage() {
                   {t("claimTopics.description")}
                 </CardDescription>
               </div>
-              <Button
-                onClick={() => {
-                  setShowAddDialog(true);
-                }}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                {t("claimTopics.addButton")}
-              </Button>
+              {user?.userSystemPermissions?.roles?.claimPolicyManager && (
+                <Button
+                  onClick={() => {
+                    setShowAddDialog(true);
+                  }}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t("claimTopics.addButton")}
+                </Button>
+              )}
             </div>
           </CardHeader>
           <CardContent>

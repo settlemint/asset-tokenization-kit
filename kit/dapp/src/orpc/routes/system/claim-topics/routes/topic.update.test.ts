@@ -9,6 +9,7 @@ import {
   createMockErrors,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
+import { VerificationType } from "@atk/zod/verification-type";
 import type {
   TopicUpdateInput,
   TopicUpdateOutput,
@@ -62,6 +63,10 @@ describe("system.claim-topics.topic.update unit", () => {
     const input: TopicUpdateInput = {
       name: "KYC Verification",
       signature: "isKYCVerified(address,bytes32,uint256)",
+      walletVerification: {
+        secretVerificationCode: "123456",
+        verificationType: VerificationType.pincode,
+      },
     };
 
     const result = await handler({
@@ -85,6 +90,11 @@ describe("system.claim-topics.topic.update unit", () => {
         from: context.auth.user.wallet,
         name: "KYC Verification",
         newSignature: "isKYCVerified(address,bytes32,uint256)",
+      },
+      {
+        sender: context.auth.user,
+        code: "123456",
+        type: "PINCODE",
       }
     );
   });
@@ -112,6 +122,10 @@ describe("system.claim-topics.topic.update unit", () => {
     const input: TopicUpdateInput = {
       name: "Age Verification",
       signature: "checkAge(address)",
+      walletVerification: {
+        secretVerificationCode: "123456",
+        verificationType: VerificationType.pincode,
+      },
     };
 
     const result = await handler({
@@ -145,6 +159,10 @@ describe("system.claim-topics.topic.update unit", () => {
     const input: TopicUpdateInput = {
       name: "Test Topic",
       signature: "testFunction(address)",
+      walletVerification: {
+        secretVerificationCode: "123456",
+        verificationType: VerificationType.pincode,
+      },
     };
 
     await expect(
@@ -182,6 +200,10 @@ describe("system.claim-topics.topic.update unit", () => {
     const input: TopicUpdateInput = {
       name: "Test Topic",
       signature: "testFunction(address)",
+      walletVerification: {
+        secretVerificationCode: "123456",
+        verificationType: VerificationType.pincode,
+      },
     };
 
     await expect(
@@ -215,12 +237,18 @@ describe("system.claim-topics.topic.update unit", () => {
         "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
       );
 
+    const walletVerification = {
+      secretVerificationCode: "123456",
+      verificationType: VerificationType.pincode,
+    };
+    
     const testCases = [
-      { name: "KYC", signature: "isKYC(address,uint256)" },
-      { name: "AML Check", signature: "isAMLCompliant(address,bytes32)" },
+      { name: "KYC", signature: "isKYC(address,uint256)", walletVerification },
+      { name: "AML Check", signature: "isAMLCompliant(address,bytes32)", walletVerification },
       {
         name: "Investor Status",
         signature: "isAccreditedInvestor(address,bool)",
+        walletVerification,
       },
     ];
 
@@ -271,6 +299,10 @@ describe("system.claim-topics.topic.update unit", () => {
     const input: TopicUpdateInput = {
       name: "Credit Score",
       signature: "getCreditScore(address,uint256,bool)",
+      walletVerification: {
+        secretVerificationCode: "123456",
+        verificationType: VerificationType.pincode,
+      },
     };
 
     await handler({
@@ -286,6 +318,14 @@ describe("system.claim-topics.topic.update unit", () => {
         from: "0x2222222222222222222222222222222222222222",
         name: "Credit Score",
         newSignature: "getCreditScore(address,uint256,bool)",
+      },
+      {
+        sender: {
+          id: "user_2",
+          wallet: "0x2222222222222222222222222222222222222222",
+        },
+        code: "123456",
+        type: "PINCODE",
       }
     );
   });

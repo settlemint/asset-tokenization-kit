@@ -70,7 +70,7 @@ const UPDATE_TOPIC_SCHEME_MUTATION = portalGraphql(`
 export const topicUpdate = portalRouter.system.topicUpdate
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: { any: ["claimPolicyManager", "systemManager"] },
+      requiredRoles: { any: ["claimPolicyManager", "systemModule"] },
       getAccessControl: ({ context }) => {
         const systemData = context.system;
         return systemData?.systemAccessManager?.accessControl;
@@ -79,7 +79,7 @@ export const topicUpdate = portalRouter.system.topicUpdate
   )
   .handler(async ({ input, context, errors }): Promise<TopicUpdateOutput> => {
     const { system } = context;
-    const { name, signature } = input;
+    const { name, signature, walletVerification } = input;
     const sender = context.auth.user;
 
     // Validate system configuration
@@ -102,6 +102,11 @@ export const topicUpdate = portalRouter.system.topicUpdate
         from: sender.wallet,
         name,
         newSignature: signature,
+      },
+      {
+        sender,
+        code: walletVerification.secretVerificationCode,
+        type: walletVerification.verificationType,
       }
     );
 

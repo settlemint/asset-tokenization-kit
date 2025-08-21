@@ -9,6 +9,7 @@ import {
   createMockErrors,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
+import { VerificationType } from "@atk/zod/verification-type";
 import type {
   TopicDeleteInput,
   TopicDeleteOutput,
@@ -61,6 +62,10 @@ describe("system.claim-topics.topic.delete unit", () => {
 
     const input: TopicDeleteInput = {
       name: "KYC Verification",
+      walletVerification: {
+        secretVerificationCode: "123456",
+        verificationType: VerificationType.pincode,
+      },
     };
 
     const result = await handler({
@@ -82,6 +87,11 @@ describe("system.claim-topics.topic.delete unit", () => {
         address: "0xBBBBbBBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb",
         from: context.auth.user.wallet,
         name: "KYC Verification",
+      },
+      {
+        sender: context.auth.user,
+        code: "123456",
+        type: "PINCODE",
       }
     );
   });
@@ -102,6 +112,10 @@ describe("system.claim-topics.topic.delete unit", () => {
 
     const input: TopicDeleteInput = {
       name: "Test Topic",
+      walletVerification: {
+        secretVerificationCode: "123456",
+        verificationType: VerificationType.pincode,
+      },
     };
 
     await expect(
@@ -138,6 +152,10 @@ describe("system.claim-topics.topic.delete unit", () => {
 
     const input: TopicDeleteInput = {
       name: "Test Topic",
+      walletVerification: {
+        secretVerificationCode: "123456",
+        verificationType: VerificationType.pincode,
+      },
     };
 
     await expect(
@@ -171,10 +189,15 @@ describe("system.claim-topics.topic.delete unit", () => {
         "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
       );
 
+    const walletVerification = {
+      secretVerificationCode: "123456",
+      verificationType: VerificationType.pincode,
+    };
+    
     const testCases = [
-      { name: "KYC" },
-      { name: "AML Check" },
-      { name: "Investor Status" },
+      { name: "KYC", walletVerification },
+      { name: "AML Check", walletVerification },
+      { name: "Investor Status", walletVerification },
     ];
 
     for (const testCase of testCases) {
@@ -224,6 +247,10 @@ describe("system.claim-topics.topic.delete unit", () => {
 
     const input: TopicDeleteInput = {
       name: "Credit Score",
+      walletVerification: {
+        secretVerificationCode: "123456",
+        verificationType: VerificationType.pincode,
+      },
     };
 
     await handler({
@@ -238,6 +265,14 @@ describe("system.claim-topics.topic.delete unit", () => {
         address: "0xCCCCcCCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCc",
         from: "0x2222222222222222222222222222222222222222",
         name: "Credit Score",
+      },
+      {
+        sender: {
+          id: "user_2",
+          wallet: "0x2222222222222222222222222222222222222222",
+        },
+        code: "123456",
+        type: "PINCODE",
       }
     );
   });
