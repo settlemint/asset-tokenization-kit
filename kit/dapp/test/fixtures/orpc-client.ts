@@ -17,29 +17,9 @@ export type OrpcClient = RouterClient<typeof router>;
 const logger = createLogger();
 
 /**
- * Creates an ORPC client with optional expected error filtering for tests.
+ * Creates an ORPC client for testing with error logging suppression.
  *
- * @param headers - Authentication headers (usually from signInWithUser)
- * @param expectErrors - Array of error codes that should NOT be logged as errors.
- *                      Use this in tests where you expect specific errors to prevent
- *                      confusing error logs during test runs.
- *
- * @example
- * // For tests that expect no errors (normal case)
- * const client = getOrpcClient(headers);
- *
- * @example
- * // For tests that expect a specific error (prevents error logging)
- * const expectedError = CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED;
- * const client = getOrpcClient(headers, [expectedError]);
- * await expect(client.someAction()).rejects.toThrow(CUSTOM_ERRORS[expectedError].message);
- *
- * @example
- * // For tests that might expect multiple types of errors
- * const client = getOrpcClient(headers, [
- *   CUSTOM_ERROR_CODES.FORBIDDEN,
- *   CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED
- * ]);
+ * @param headers Authentication headers from signInWithUser
  */
 export interface TestClientContext {
   skipLoggingFor?: CUSTOM_ERROR_CODES[];

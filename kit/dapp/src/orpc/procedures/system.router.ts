@@ -2,9 +2,8 @@ import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 
 /**
- * Portal router
+ * System router
  *
- * @description
- * This router is used to handle requests that require a portal client and system.
+ * Router for requests that require system middleware and an onboarded user.
  */
 export const systemRouter = onboardedRouter.use(systemMiddleware);
