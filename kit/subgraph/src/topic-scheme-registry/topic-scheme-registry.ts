@@ -12,7 +12,7 @@ export function handleTopicSchemeRegistered(
   event: TopicSchemeRegistered
 ): void {
   fetchEvent(event, "TopicSchemeRegistered");
-  const topicScheme = fetchTopicScheme(event.params.topicId);
+  const topicScheme = fetchTopicScheme(event.params.topicId, event.address);
   if (topicScheme.deployedInTransaction.equals(Bytes.empty())) {
     topicScheme.deployedInTransaction = event.transaction.hash;
   }
@@ -24,14 +24,14 @@ export function handleTopicSchemeRegistered(
 
 export function handleTopicSchemeRemoved(event: TopicSchemeRemoved): void {
   fetchEvent(event, "TopicSchemeRemoved");
-  const topicScheme = fetchTopicScheme(event.params.topicId);
+  const topicScheme = fetchTopicScheme(event.params.topicId, event.address);
   topicScheme.enabled = false;
   topicScheme.save();
 }
 
 export function handleTopicSchemeUpdated(event: TopicSchemeUpdated): void {
   fetchEvent(event, "TopicSchemeUpdated");
-  const topicScheme = fetchTopicScheme(event.params.topicId);
+  const topicScheme = fetchTopicScheme(event.params.topicId, event.address);
   topicScheme.name = event.params.name;
   topicScheme.topicId = event.params.topicId;
   topicScheme.signature = event.params.newSignature;
@@ -48,7 +48,7 @@ export function handleTopicSchemesBatchRegistered(
   const signatures = event.params.signatures;
 
   for (let i = 0; i < topicIds.length; i++) {
-    const topicScheme = fetchTopicScheme(topicIds[i]);
+    const topicScheme = fetchTopicScheme(topicIds[i], event.address);
     if (topicScheme.deployedInTransaction.equals(Bytes.empty())) {
       topicScheme.deployedInTransaction = event.transaction.hash;
     }
