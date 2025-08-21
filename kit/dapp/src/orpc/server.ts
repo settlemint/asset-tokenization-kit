@@ -1,14 +1,26 @@
 import { auth } from "@/lib/auth";
+import { logUnexpectedError } from "@/orpc/helpers/error";
 import { router } from "@/orpc/routes/router";
 import { bigDecimalSerializer } from "@atk/zod/bigdecimal";
 import { bigIntSerializer } from "@atk/zod/bigint";
 import { timestampSerializer } from "@atk/zod/timestamp";
+import { onError } from "@orpc/server";
 import { RPCHandler } from "@orpc/server/node";
 import { BatchHandlerPlugin } from "@orpc/server/plugins";
 import { toNodeHandler } from "better-auth/node";
 import { createServer } from "node:http";
 
 const handler = new RPCHandler(router, {
+  interceptors: [
+    onError((error) => {
+      const isTestOrDev =
+        process.env.NODE_ENV === "test" ||
+        process.env.NODE_ENV === "development";
+      if (isTestOrDev) {
+        logUnexpectedError(error);
+      }
+    }),
+  ],
   plugins: [new BatchHandlerPlugin()],
   customJsonSerializers: [
     bigDecimalSerializer,
