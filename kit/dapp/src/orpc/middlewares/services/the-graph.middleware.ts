@@ -111,6 +111,7 @@ function createValidatedTheGraphClient(
           data: {
             document,
             variables: input as TVariables,
+            stack: error instanceof Error ? error.stack : undefined,
             responseValidation:
               error instanceof z.ZodError ? z.prettifyError(error) : undefined,
           },

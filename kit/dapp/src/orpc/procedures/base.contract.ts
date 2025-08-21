@@ -302,6 +302,7 @@ export const CUSTOM_ERRORS = {
     data: z.object({
       document: z.unknown(),
       variables: z.unknown(),
+      stack: z.string().optional(),
       responseValidation: z.string().optional(),
     }),
   },
@@ -320,6 +321,7 @@ export const CUSTOM_ERRORS = {
     data: z.object({
       document: z.unknown(),
       variables: z.unknown(),
+      stack: z.string().optional(),
       responseValidation: z.string().optional(),
     }),
   },

@@ -350,6 +350,7 @@ function createValidatedPortalClient(
           data: {
             document,
             variables,
+            stack: error instanceof Error ? error.stack : undefined,
           },
           cause: error,
         });
