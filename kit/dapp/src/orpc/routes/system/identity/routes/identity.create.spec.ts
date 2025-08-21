@@ -48,13 +48,11 @@ describe("Identity create", () => {
         },
         {
           context: {
-            expectErrors: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
+            expectErrors: [CUSTOM_ERROR_CODES.FORBIDDEN],
           },
         }
       )
-    ).rejects.toThrow(
-      errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
-    );
+    ).rejects.toThrow(errorMessageForCode(CUSTOM_ERROR_CODES.FORBIDDEN));
   });
 
   test("admin can create an identity for another user", async () => {

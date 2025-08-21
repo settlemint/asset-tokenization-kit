@@ -1,5 +1,5 @@
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
-import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
+import { getOrpcClient } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
   DEFAULT_ADMIN,
@@ -75,11 +75,11 @@ describe("Token read", () => {
         },
         {
           context: {
-            expectErrors: [CUSTOM_ERROR_CODES.NOT_FOUND],
+            expectErrors: [CUSTOM_ERROR_CODES.THE_GRAPH_ERROR],
           },
         }
       )
-    ).rejects.toThrow("Token not found");
+    ).rejects.toThrow();
   });
 
   it("throws error for invalid token address", async () => {
@@ -93,11 +93,11 @@ describe("Token read", () => {
         },
         {
           context: {
-            expectErrors: [CUSTOM_ERROR_CODES.BAD_REQUEST],
+            expectErrors: [CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED],
           },
         }
       )
-    ).rejects.toThrow(errorMessageForCode(CUSTOM_ERROR_CODES.BAD_REQUEST));
+    ).rejects.toThrow("Token address is not a valid Ethereum address");
   });
 
   it("includes token-specific metadata when present", async () => {

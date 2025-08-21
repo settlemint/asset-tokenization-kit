@@ -182,13 +182,11 @@ describe("User search", () => {
           },
           {
             context: {
-              expectErrors: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
+              expectErrors: [CUSTOM_ERROR_CODES.FORBIDDEN],
             },
           }
         )
-      ).rejects.toThrow(
-        errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
-      );
+      ).rejects.toThrow(errorMessageForCode(CUSTOM_ERROR_CODES.FORBIDDEN));
     });
 
     it("user with proper permissions can search users", async () => {

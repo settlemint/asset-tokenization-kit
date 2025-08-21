@@ -1,3 +1,4 @@
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
@@ -44,9 +45,16 @@ describe("KYC delete", () => {
 
     // Verify it's deleted
     await expect(
-      client.user.kyc.read({
-        userId: userData.id,
-      })
+      client.user.kyc.read(
+        {
+          userId: userData.id,
+        },
+        {
+          context: {
+            expectErrors: [CUSTOM_ERROR_CODES.NOT_FOUND],
+          },
+        }
+      )
     ).rejects.toThrow();
   });
 
@@ -81,9 +89,16 @@ describe("KYC delete", () => {
 
     // Verify it's deleted
     await expect(
-      adminClient.user.kyc.read({
-        userId: userData.id,
-      })
+      adminClient.user.kyc.read(
+        {
+          userId: userData.id,
+        },
+        {
+          context: {
+            expectErrors: [CUSTOM_ERROR_CODES.NOT_FOUND],
+          },
+        }
+      )
     ).rejects.toThrow();
   });
 
@@ -114,9 +129,16 @@ describe("KYC delete", () => {
     const user1Client = getOrpcClient(user1Headers);
 
     await expect(
-      user1Client.user.kyc.remove({
-        userId: user2Data.id,
-      })
+      user1Client.user.kyc.remove(
+        {
+          userId: user2Data.id,
+        },
+        {
+          context: {
+            expectErrors: [CUSTOM_ERROR_CODES.FORBIDDEN],
+          },
+        }
+      )
     ).rejects.toThrow();
 
     // Verify profile still exists
@@ -134,9 +156,16 @@ describe("KYC delete", () => {
     const nonExistentUserId = randomUUID();
 
     await expect(
-      client.user.kyc.remove({
-        userId: nonExistentUserId,
-      })
+      client.user.kyc.remove(
+        {
+          userId: nonExistentUserId,
+        },
+        {
+          context: {
+            expectErrors: [CUSTOM_ERROR_CODES.NOT_FOUND],
+          },
+        }
+      )
     ).rejects.toThrow();
   });
 
@@ -204,9 +233,16 @@ describe("KYC delete", () => {
 
     // Try to delete again - should throw NOT_FOUND
     await expect(
-      client.user.kyc.remove({
-        userId: userData.id,
-      })
+      client.user.kyc.remove(
+        {
+          userId: userData.id,
+        },
+        {
+          context: {
+            expectErrors: [CUSTOM_ERROR_CODES.NOT_FOUND],
+          },
+        }
+      )
     ).rejects.toThrow();
   });
 });
