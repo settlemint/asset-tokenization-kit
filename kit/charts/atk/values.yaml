@@ -16,7 +16,7 @@ global:
     image:
       registry: ghcr.io
       repository: settlemint/asset-tokenization-kit-artifacts
-      tag: 2.0.1
+      tag: 2.0.0
       pullPolicy: IfNotPresent
 
 
@@ -235,6 +235,9 @@ graph-node:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8040"
     prometheus.io/path: "/metrics"
+  postgresReadinessCheck:
+    enabled: true
+    image: docker.io/postgres:17.6-alpine
 
 hasura:
   enabled: true
@@ -514,13 +517,13 @@ observability:
     alloy:
       resources: {}
     image:
-      registry: "docker.io"
+      registry: docker.io
       # -- Grafana Alloy image repository.
       repository: grafana/alloy
       tag: v1.10.2
     configReloader:
       image:
-        registry: "quay.io"
+        registry: quay.io
         # -- Repository to get config reloader image from.
         repository: prometheus-operator/prometheus-config-reloader
         # -- Tag of image to use for config reloading.
