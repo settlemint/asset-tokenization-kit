@@ -39,7 +39,7 @@ export function TextField({
       <Input
         type="text"
         id={field.name}
-        value={field.state.value || ""}
+        value={field.state.value ?? ""}
         onChange={handleChange}
         className={cn(className, errorClassNames(field.state.meta))}
       />
