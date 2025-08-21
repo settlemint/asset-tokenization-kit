@@ -142,7 +142,7 @@
         "react": "19.1.1",
         "react-day-picker": "9.9.0",
         "react-dom": "19.1.1",
-        "react-i18next": "15.6.1",
+        "react-i18next": "15.7.0",
         "react-jazzicon": "1.0.4",
         "react-qr-code": "2.0.18",
         "react-resizable-panels": "3.0.4",
@@ -3494,7 +3494,7 @@
 
     "react-hook-form": ["react-hook-form@7.62.0", "", { "peerDependencies": { "react": "^16.8.0 || ^17 || ^18 || ^19" } }, "sha512-7KWFejc98xqG/F4bAxpL41NB3o1nnvQO1RWZT3TqRZYL8RryQETGfEdVnJN2fy1crCiBLLjkRBVK05j24FxJGA=="],
 
-    "react-i18next": ["react-i18next@15.6.1", "", { "dependencies": { "@babel/runtime": "^7.27.6", "html-parse-stringify": "^3.0.1" }, "peerDependencies": { "i18next": ">= 23.2.3", "react": ">= 16.8.0", "typescript": "^5" }, "optionalPeers": ["typescript"] }, "sha512-uGrzSsOUUe2sDBG/+FJq2J1MM+Y4368/QW8OLEKSFvnDflHBbZhSd1u3UkW0Z06rMhZmnB/AQrhCpYfE5/5XNg=="],
+    "react-i18next": ["react-i18next@15.7.0", "", { "dependencies": { "@babel/runtime": "^7.27.6", "html-parse-stringify": "^3.0.1" }, "peerDependencies": { "i18next": ">= 23.2.3", "react": ">= 16.8.0", "typescript": "^5" }, "optionalPeers": ["typescript"] }, "sha512-hogS6K+7hJnGN1k5hpxcY0x3SnQ30K2Cj9PMKSwP8lqyhfbj7DEdjFhc7tXh9+z+npDQaxvPCGnpkRmCnRNCcQ=="],
 
     "react-is": ["react-is@18.3.1", "", {}, "sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg=="],
 
