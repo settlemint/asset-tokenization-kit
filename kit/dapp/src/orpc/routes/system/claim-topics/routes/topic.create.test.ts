@@ -8,7 +8,7 @@ import {
   installPortalRouterCaptureMock,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
-import { VerificationType } from "@atk/zod/src/validators/verification-type";
+import { VerificationType } from "@atk/zod/verification-type";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import "./topic.create";
 import type {
