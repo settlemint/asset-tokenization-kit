@@ -54,6 +54,7 @@ import {
   type RequestDocument,
   type Variables,
 } from "graphql-request";
+import { print } from "graphql";
 import { z } from "zod";
 import { baseRouter } from "../../procedures/base.router";
 
@@ -109,7 +110,7 @@ function createValidatedTheGraphClient(
                 (error as Error).message)
               : (error as Error).message,
           data: {
-            document,
+            document: print(document),
             variables: input as TVariables,
             stack: error instanceof Error ? error.stack : undefined,
             responseValidation:
