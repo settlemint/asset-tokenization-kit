@@ -7,6 +7,7 @@ import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { eq } from "drizzle-orm/sql";
 import type { VariablesOf } from "gql.tada";
+import { print } from "graphql";
 import { createPublicClient, http, parseEther, toHex, zeroAddress } from "viem";
 import { anvil } from "viem/chains";
 
@@ -44,7 +45,7 @@ export const createWallet = authRouter.user.createWallet
       throw errors.PORTAL_ERROR({
         message: "Failed to create wallet",
         data: {
-          document: CREATE_ACCOUNT_MUTATION,
+          document: print(CREATE_ACCOUNT_MUTATION),
           variables: createAccountVariables,
         },
       });
