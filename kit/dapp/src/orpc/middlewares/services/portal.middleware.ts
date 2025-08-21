@@ -419,7 +419,7 @@ function createValidatedPortalClient(
           throw errors.PORTAL_ERROR({
             message: `Transaction tracking timeout after ${STREAM_TIMEOUT_MS}ms`,
             data: {
-              document: print(GET_TRANSACTION_QUERY),
+              document: print(document),
               variables: { transactionHash },
               responseValidation: `Transaction ${transactionHash} timed out after ${Date.now() - streamStartTime}ms`,
             },
@@ -457,7 +457,7 @@ function createValidatedPortalClient(
           throw errors.PORTAL_ERROR({
             message: `Transaction reverted: ${receipt.revertReasonDecoded || receipt.revertReason || "Unknown reason"}`,
             data: {
-              document: print(GET_TRANSACTION_QUERY),
+              document: print(document),
               variables: transactionQueryVariables,
               responseValidation: `Transaction ${transactionHash} reverted with status ${receipt.status}`,
             },
@@ -471,7 +471,7 @@ function createValidatedPortalClient(
         throw errors.PORTAL_ERROR({
           message: "Transaction dropped from mempool",
           data: {
-            document: print(GET_TRANSACTION_QUERY),
+            document: print(document),
             variables: { transactionHash },
             responseValidation: `Transaction ${transactionHash} dropped after ${MAX_ATTEMPTS} attempts`,
           },
@@ -496,7 +496,7 @@ function createValidatedPortalClient(
           throw errors.PORTAL_ERROR({
             message: `TheGraph indexing timeout after ${STREAM_TIMEOUT_MS}ms`,
             data: {
-              document: print(GET_INDEXING_STATUS_QUERY),
+              document: print(document),
               variables: indexingQueryVariables,
               responseValidation: `Indexing timeout for transaction ${transactionHash} at block ${targetBlockNumber}`,
             },
