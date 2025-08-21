@@ -188,7 +188,8 @@ function createValidatedPortalClient(
       // but we enrich them here based on the user's verification type to ensure secure operations.
       // This pattern keeps verification logic centralized while making GraphQL schema flexible.
       // IMPORTANT: Create a deep copy to prevent concurrent mutations from sharing state
-      let enrichedVariables = { ...variables } as unknown as TVariables;
+      let enrichedVariables = { ...variables } as typeof variables &
+        Awaited<ReturnType<typeof handleWalletVerificationChallenge>>;
 
       if (walletVerification) {
         const { sender, code, type } = walletVerification;
@@ -230,7 +231,7 @@ function createValidatedPortalClient(
         enrichedVariables = {
           ...variables,
           ...challengeResult,
-        } as TVariables & typeof challengeResult;
+        };
       }
 
       let result: TResult;
@@ -243,7 +244,7 @@ function createValidatedPortalClient(
             vars: V,
             headers?: Record<string, string>
           ) => Promise<D>
-        )(document, enrichedVariables, {
+        )(document, enrichedVariables as unknown as TVariables, {
           "x-request-id": requestId,
         });
       } catch (error) {
