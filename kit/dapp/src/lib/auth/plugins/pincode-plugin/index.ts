@@ -22,6 +22,7 @@
  * @see {@link ./client} Client-side PIN code utilities
  */
 
+import { updateSession } from "@/lib/auth/plugins/utils";
 import { orpc } from "@/orpc/orpc-client";
 import { pincode as pincodeValidator } from "@atk/zod/pincode";
 import type { BetterAuthPlugin } from "better-auth";
@@ -143,13 +144,10 @@ export const pincode = () => {
             if (success) {
               // ATOMIC UPDATE: Both fields updated together to prevent inconsistent state
               // WHY: UI and middleware depend on these fields being synchronized
-              await ctx.context.internalAdapter.updateSession(
-                ctx.context.session.user.id,
-                {
-                  pincodeEnabled: true, // UI feature flag
-                  pincodeVerificationId: verificationId, // Portal verification link
-                }
-              );
+              await updateSession(ctx, {
+                pincodeEnabled: true, // UI feature flag
+                pincodeVerificationId: verificationId, // Portal verification link
+              });
             }
           } catch (error) {
             // ERROR BOUNDARY: Convert ORPC errors to Better Auth APIError format
@@ -220,13 +218,10 @@ export const pincode = () => {
             if (success) {
               // CLEANUP: Clear both session fields to fully disable PIN functionality
               // WHY: UI components check pincodeEnabled, middleware checks pincodeVerificationId
-              await ctx.context.internalAdapter.updateSession(
-                ctx.context.session.user.id,
-                {
-                  pincodeEnabled: false, // UI feature flag
-                  pincodeVerificationId: null, // Break Portal verification link
-                }
-              );
+              await updateSession(ctx, {
+                pincodeEnabled: false, // UI feature flag
+                pincodeVerificationId: null, // Break Portal verification link
+              });
             }
           } catch (error) {
             // ERROR BOUNDARY: Convert ORPC errors to Better Auth APIError format
@@ -304,13 +299,10 @@ export const pincode = () => {
             if (success) {
               // UPDATE: New verification ID ensures cryptographic freshness
               // WHY: Prevents security issues from PIN reuse and ensures Portal link is current
-              await ctx.context.internalAdapter.updateSession(
-                ctx.context.session.user.id,
-                {
-                  pincodeEnabled: true, // Maintain enabled state
-                  pincodeVerificationId: verificationId, // Fresh Portal verification link
-                }
-              );
+              await updateSession(ctx, {
+                pincodeEnabled: true, // Maintain enabled state
+                pincodeVerificationId: verificationId, // Fresh Portal verification link
+              });
             }
           } catch (error) {
             // ERROR BOUNDARY: Convert ORPC errors to Better Auth APIError format

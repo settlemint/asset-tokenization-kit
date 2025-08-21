@@ -60,7 +60,7 @@ export function KycForm({ onComplete }: KycFormProps) {
   // BLOCKCHAIN: Mutation for registering new identity smart contract
   const { mutateAsync: registerIdentity, isPending: isRegisteringIdentity } =
     useMutation(
-      orpc.system.identityRegister.mutationOptions({
+      orpc.system.identity.register.mutationOptions({
         onSuccess: async () => {
           // PERFORMANCE: Invalidate both account and user queries to refresh UI
           // Account query updates blockchain-related data, user query updates profile

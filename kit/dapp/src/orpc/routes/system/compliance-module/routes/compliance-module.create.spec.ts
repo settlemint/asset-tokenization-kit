@@ -12,7 +12,7 @@ describe("System Compliance Module create", () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
 
-    const result = await client.system.complianceModuleCreate({
+    const result = await client.system.compliance.create({
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
@@ -38,7 +38,7 @@ describe("System Compliance Module create", () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
 
-    const result = await client.system.complianceModuleCreate({
+    const result = await client.system.compliance.create({
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",

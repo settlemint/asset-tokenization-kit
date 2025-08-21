@@ -24,7 +24,7 @@ const TAGS = ["system", "addon"];
 const addonCreate = baseContract
   .route({
     method: "POST",
-    path: "/systems/addons",
+    path: "/systems/addon",
     description:
       "Register system add-ons to extend SMART system functionality with additional modules and features",
     successDescription:
@@ -49,7 +49,7 @@ const addonCreate = baseContract
 const addonList = baseContract
   .route({
     method: "GET",
-    path: "/systems/addons",
+    path: "/systems/addon",
     description:
       "List system addons (extensions that add functionality to tokens)",
     successDescription:
@@ -60,6 +60,6 @@ const addonList = baseContract
   .output(z.array(SystemAddonSchema)); // Return array of system addon objects
 
 export const addonContract = {
-  addonCreate,
-  addonList,
+  create: addonCreate,
+  list: addonList,
 };

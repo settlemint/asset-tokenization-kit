@@ -22,12 +22,12 @@ const routes = {
   list,
   create,
   read,
-  ...addonRouter,
-  ...identityRouter,
-  ...complianceModuleRouter,
-  ...statsRouter,
-  ...accessManagerRouter,
-  ...tokenFactoryRouter,
+  addon: addonRouter,
+  identity: identityRouter,
+  compliance: complianceModuleRouter,
+  stats: statsRouter,
+  accessManager: accessManagerRouter,
+  factory: tokenFactoryRouter,
 };
 
 export default routes;

@@ -56,7 +56,7 @@ export function AssetTypeSelection() {
 
   const { mutateAsync: createFactories, isPending: isFactoriesCreating } =
     useMutation(
-      orpc.system.tokenFactoryCreate.mutationOptions({
+      orpc.system.factory.create.mutationOptions({
         onSuccess: async () => {
           // Refetch all relevant data
           await Promise.all([

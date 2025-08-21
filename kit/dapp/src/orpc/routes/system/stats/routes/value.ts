@@ -44,11 +44,11 @@ const TotalValueResponseSchema = z.object({
  * @example
  * ```typescript
  * // Get the total system value
- * const { totalValue } = await orpc.system.statsValue.query();
+ * const { totalValue } = await orpc.system.stats.value.query();
  * console.log(`Total system value: ${totalValue}`);
  * ```
  */
-export const statsValue = authRouter.system.statsValue
+export const statsValue = authRouter.system.stats.value
   .use(systemMiddleware)
   .use(theGraphMiddleware)
   .handler(async ({ context }) => {

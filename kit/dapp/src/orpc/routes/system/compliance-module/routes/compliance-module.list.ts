@@ -26,7 +26,7 @@ const COMPLIANCE_MODULES_QUERY = theGraphGraphql(
   []
 );
 
-export const complianceModuleList = portalRouter.system.complianceModuleList
+export const complianceModuleList = portalRouter.system.compliance.list
   .use(systemMiddleware)
   .handler(async ({ context, errors }): Promise<ComplianceModulesList> => {
     const { system } = context;

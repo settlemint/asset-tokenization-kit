@@ -11,7 +11,7 @@ describe("System Addon create", () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
 
-    const result = await client.system.addonCreate({
+    const result = await client.system.addon.create({
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",

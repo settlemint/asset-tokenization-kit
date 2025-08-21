@@ -110,7 +110,7 @@ const IDENTITY_CREATE_MUTATION = portalGraphql(`
  * @throws INTERNAL_SERVER_ERROR When identity factory is not available
  * @throws CONFLICT When user already has an identity contract
  */
-export const identityCreate = portalRouter.system.identityCreate
+export const identityCreate = portalRouter.system.identity.create
   .use(
     offChainPermissionsMiddleware<typeof IdentityCreateSchema>({
       requiredPermissions: {

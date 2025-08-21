@@ -1,3 +1,4 @@
+import { updateSession } from "@/lib/auth/plugins/utils";
 import { orpc } from "@/orpc/orpc-client";
 import type { BetterAuthPlugin } from "better-auth";
 import {
@@ -73,12 +74,9 @@ export const secretCodes = () => {
             const { secretCodes, verificationId } =
               await orpc.user.secretCodes.generate.call(ctx.body);
 
-            await ctx.context.internalAdapter.updateSession(
-              ctx.context.session.user.id,
-              {
-                secretCodeVerificationId: verificationId,
-              }
-            );
+            await updateSession(ctx, {
+              secretCodeVerificationId: verificationId,
+            });
 
             return await ctx.json({ secretCodes });
           } catch (error) {
@@ -132,12 +130,9 @@ export const secretCodes = () => {
               ctx.body
             );
 
-            await ctx.context.internalAdapter.updateSession(
-              ctx.context.session.user.id,
-              {
-                secretCodesConfirmed: success,
-              }
-            );
+            await updateSession(ctx, {
+              secretCodesConfirmed: success,
+            });
 
             return await ctx.json({ success });
           } catch (error) {

@@ -48,6 +48,7 @@ import { db } from "../db";
 import * as authSchema from "./db/auth";
 
 const options = {
+  telemetry: { enabled: false }, // Disable telemetry for privacy
   /**
    * Application name used in authentication flows and emails.
    */
