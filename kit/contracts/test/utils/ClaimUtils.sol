@@ -208,8 +208,8 @@ contract ClaimUtils is Test {
     )
         public
     {
-        // Encode as tuple-wrapped for The Graph compatibility to match production encoding
-        bytes memory encodedData = _encodeTupleWrappedCollateralData(amount, expiryTimestamp);
+        // Standard ABI encoding for collateral data
+        bytes memory encodedData = abi.encode(amount, expiryTimestamp);
         _issueTokenIdentityClaimInternal(
             tokenAddress_, tokenOwner_, getTopicId(ATKTopics.TOPIC_COLLATERAL), encodedData
         );
@@ -231,8 +231,8 @@ contract ClaimUtils is Test {
         string memory currency,
         uint8 decimals
     ) public {
-        // Encode as tuple-wrapped for The Graph compatibility to match production encoding
-        bytes memory encodedData = _encodeTupleWrappedBasePriceData(price, currency, decimals);
+        // Standard ABI encoding for base price data
+        bytes memory encodedData = abi.encode(price, currency, decimals);
         _issueTokenIdentityClaimInternal(tokenAddress_, tokenOwner_, getTopicId(ATKTopics.TOPIC_BASE_PRICE), encodedData);
     }
 
@@ -271,44 +271,4 @@ contract ClaimUtils is Test {
         return _identityFactory.getIdentity(_claimIssuer);
     }
 
-    /// @notice Helper function to encode tuple-wrapped collateral data for The Graph compatibility
-    /// @dev The Graph requires tuple wrapping for reliable parsing of mixed static/dynamic types.
-    ///      This function creates the tuple-wrapped format by prepending an offset pointer.
-    /// @param amount The collateral amount
-    /// @param expiryTimestamp The expiry timestamp
-    /// @return The tuple-wrapped encoded data
-    function _encodeTupleWrappedCollateralData(uint256 amount, uint256 expiryTimestamp)
-        private
-        pure
-        returns (bytes memory)
-    {
-        // First encode the actual data normally
-        bytes memory actualData = abi.encode(amount, expiryTimestamp);
-
-        // Create tuple-wrapped data by prepending 32-byte offset pointer (0x20 = 32 in hex)
-        bytes memory tupleWrappedData = abi.encodePacked(bytes32(uint256(0x20)), actualData);
-
-        return tupleWrappedData;
-    }
-
-    /// @notice Helper function to encode tuple-wrapped base price data for The Graph compatibility
-    /// @dev The Graph requires tuple wrapping for reliable parsing of mixed static/dynamic types.
-    ///      This function creates the tuple-wrapped format by prepending an offset pointer.
-    /// @param priceAmount The price amount
-    /// @param currencyCode The currency code
-    /// @param priceDecimals The price decimals
-    /// @return The tuple-wrapped encoded data
-    function _encodeTupleWrappedBasePriceData(uint256 priceAmount, string memory currencyCode, uint8 priceDecimals)
-        private
-        pure
-        returns (bytes memory)
-    {
-        // First encode the actual data normally
-        bytes memory actualData = abi.encode(priceAmount, currencyCode, priceDecimals);
-
-        // Create tuple-wrapped data by prepending 32-byte offset pointer (0x20 = 32 in hex)
-        bytes memory tupleWrappedData = abi.encodePacked(bytes32(uint256(0x20)), actualData);
-
-        return tupleWrappedData;
-    }
 }

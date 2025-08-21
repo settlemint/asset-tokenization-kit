@@ -473,9 +473,9 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
                             valid = false;
                         }
                         if (valid) {
-                            // Decode the tuple-wrapped claim data using helper function
-                            (uint256 priceAmount, string memory currencyCode, uint8 priceDecimals) = 
-                                _decodeTupleWrappedBasePriceData(data);
+                            // Decode the standard ABI-encoded claim data
+                            (uint256 priceAmount,, uint8 priceDecimals) =
+                                _decodeBasePriceData(data);
 
                             // Get token decimals to convert token amount
                             uint8 tokenDecimals = IERC20Metadata(_token).decimals();
@@ -525,35 +525,23 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
         }
     }
 
-    /// @notice Helper function to decode tuple-wrapped base price claim data
-    /// @dev Claim data is wrapped in an extra tuple layer for The Graph compatibility.
-    ///      The Graph's decode functions require tuple wrapping for reliable parsing of mixed static/dynamic types.
-    ///      This function properly decodes the tuple-wrapped (uint256, string, uint8) data.
+    /// @notice Helper function to decode base price data
+    /// @dev Standard ABI decoding for base price claims
     /// @param data The raw claim data bytes
     /// @return priceAmount The price amount
     /// @return currencyCode The currency code
     /// @return priceDecimals The price decimals
-    function _decodeTupleWrappedBasePriceData(bytes memory data) 
-        private 
-        pure 
-        returns (uint256 priceAmount, string memory currencyCode, uint8 priceDecimals) 
+    function _decodeBasePriceData(bytes memory data)
+        private
+        pure
+        returns (uint256 priceAmount, string memory currencyCode, uint8 priceDecimals)
     {
-        // The data is tuple-wrapped for The Graph compatibility, so we skip the first 32 bytes (offset pointer)
-        // and decode the remaining data as standard (uint256, string, uint8)
-        require(data.length >= 32, "Invalid tuple-wrapped data length");
-        
-        bytes memory actualData = new bytes(data.length - 32);
-        for (uint256 i = 0; i < actualData.length; i++) {
-            actualData[i] = data[i + 32];
-        }
-        
-        (priceAmount, currencyCode, priceDecimals) = abi.decode(actualData, (uint256, string, uint8));
+        (priceAmount, currencyCode, priceDecimals) = abi.decode(data, (uint256, string, uint8));
     }
 
     /// @notice Helper function to decode claim data for debugging
     /// @dev This is a public function so it can be called via try/catch
-    /// @dev The data is tuple-wrapped for The Graph compatibility
     function decodeClaimData(bytes memory data) public pure returns (uint256, string memory, uint8) {
-        return _decodeTupleWrappedBasePriceData(data);
+        return _decodeBasePriceData(data);
     }
 }

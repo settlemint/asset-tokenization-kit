@@ -148,15 +148,15 @@ abstract contract _SMARTCollateralLogic is _SMARTExtension, ISMARTCollateral {
     }
 
     /// @notice Decodes collateral claim data into amount and expiry, and checks expiry.
-    /// @dev Expects `data` to be ABI encoded as `((uint256 amount, uint256 expiryTimestamp))` (tuple-wrapped for The Graph).
+    /// @dev Expects `data` to be ABI encoded as `abi.encode(uint256 amount, uint256 expiryTimestamp)`.
     ///      Also verifies that the decoded `expiry` timestamp is in the future.
     /// @param data The raw `bytes` data of the claim.
     /// @return decoded `true` if data was successfully decoded and is not expired, `false` otherwise.
     /// @return amount The decoded collateral amount (0 if decoding fails or claim expired).
     /// @return expiry The decoded expiry timestamp (0 if decoding fails or claim expired).
     function __decodeClaimData(bytes memory data) private view returns (bool decoded, uint256 amount, uint256 expiry) {
-        // Attempt to decode the tuple-wrapped data.
-        try this.__decodeCollateralTuple(data) returns (uint256 _amount, uint256 _expiry) {
+        // Attempt to decode the standard ABI-encoded data.
+        try this.__decodeCollateralData(data) returns (uint256 _amount, uint256 _expiry) {
             amount = _amount;
             expiry = _expiry;
         } catch {
@@ -171,23 +171,13 @@ abstract contract _SMARTCollateralLogic is _SMARTExtension, ISMARTCollateral {
         return (true, amount, expiry); // Successfully decoded and not expired.
     }
 
-    /// @notice Helper function to decode tuple-wrapped collateral data
-    /// @dev Claim data is wrapped in an extra tuple layer for The Graph compatibility.
-    ///      The Graph's decode functions require tuple wrapping for reliable parsing of mixed static/dynamic types.
+    /// @notice Helper function to decode collateral data
+    /// @dev Standard ABI decoding for collateral claims
     /// @param data The raw bytes data to decode
     /// @return amount The collateral amount
     /// @return expiry The expiry timestamp
-    function __decodeCollateralTuple(bytes memory data) public pure returns (uint256 amount, uint256 expiry) {
-        // The data is tuple-wrapped for The Graph compatibility, so we skip the first 32 bytes (offset pointer)
-        // and decode the remaining data as standard (uint256, uint256)
-        require(data.length >= 32, "Invalid tuple-wrapped collateral data length");
-
-        bytes memory actualData = new bytes(data.length - 32);
-        for (uint256 i = 0; i < actualData.length; i++) {
-            actualData[i] = data[i + 32];
-        }
-
-        (amount, expiry) = abi.decode(actualData, (uint256, uint256));
+    function __decodeCollateralData(bytes memory data) public pure returns (uint256 amount, uint256 expiry) {
+        (amount, expiry) = abi.decode(data, (uint256, uint256));
     }
 
     /// @notice Validates a claim with a specific issuer and decodes its data if valid.
@@ -211,16 +201,15 @@ abstract contract _SMARTCollateralLogic is _SMARTExtension, ISMARTCollateral {
         view
         returns (bool success, uint256 amount, uint256 expiry)
     {
+
         // Step 1: Check if the issuer considers the claim valid.
         bool isValidByIssuer = __checkClaimValidity(issuer, tokenIdentity, topic, signature, data);
-
         if (!isValidByIssuer) {
             return (false, 0, 0); // Issuer does not validate this claim.
         }
 
         // Step 2: Decode the claim data and check its expiry.
         (bool decodedSuccessfully, uint256 decodedAmount, uint256 decodedExpiry) = __decodeClaimData(data);
-
         if (!decodedSuccessfully) {
             return (false, 0, 0); // Data decoding failed or claim expired.
         }
@@ -324,6 +313,7 @@ abstract contract _SMARTCollateralLogic is _SMARTExtension, ISMARTCollateral {
         (uint256 collateralAmountFromClaim,,) = findValidCollateralClaim();
 
         uint256 currentTotalSupply = __collateral_totalSupply();
+
         // Calculate what the total supply would be *after* the proposed mint operation.
         // Solidity ^0.8.x provides automatic overflow/underflow checks for arithmetic.
         uint256 requiredTotalSupply = currentTotalSupply + amountToMint;

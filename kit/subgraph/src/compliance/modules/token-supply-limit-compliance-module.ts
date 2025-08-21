@@ -75,7 +75,7 @@ export function decodeTokenSupplyLimitParams(
   const globalVal = ethereum.decode("bool", globalBytes);
   if (globalVal === null) return null;
 
-  const periodLengthDays = periodLenVal!.toBigInt().toI32();
+  const periodLengthDays = periodLenVal.toBigInt().toI32();
   const rolling = (rollingVal as ethereum.Value).toBoolean();
   const useBasePrice = (useBasePriceVal as ethereum.Value).toBoolean();
   const global = (globalVal as ethereum.Value).toBoolean();
