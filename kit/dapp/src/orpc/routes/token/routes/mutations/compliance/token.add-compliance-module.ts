@@ -1,6 +1,6 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
-import { portalRouter } from "@/orpc/procedures/portal.router";
+import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { call } from "@orpc/server";
 import { read } from "../../token.read";
@@ -29,7 +29,7 @@ const TOKEN_ADD_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
   }
 `);
 
-export const addComplianceModule = portalRouter.token.addComplianceModule
+export const addComplianceModule = tokenRouter.token.addComplianceModule
   .use(
     tokenPermissionMiddleware({
       requiredRoles: TOKEN_PERMISSIONS.addComplianceModule,

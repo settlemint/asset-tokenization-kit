@@ -1,6 +1,6 @@
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { portalRouter } from "@/orpc/procedures/portal.router";
+import { systemRouter } from "@/orpc/procedures/system.router";
 import {
   ComplianceModulesListOutputSchema,
   type ComplianceModulesList,
@@ -26,7 +26,7 @@ const COMPLIANCE_MODULES_QUERY = theGraphGraphql(
   []
 );
 
-export const complianceModuleList = portalRouter.system.complianceModuleList
+export const complianceModuleList = systemRouter.system.complianceModuleList
   .use(systemMiddleware)
   .handler(async ({ context, errors }): Promise<ComplianceModulesList> => {
     const { system } = context;

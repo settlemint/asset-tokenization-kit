@@ -16,7 +16,7 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { portalRouter } from "@/orpc/procedures/portal.router";
+import { systemRouter } from "@/orpc/procedures/system.router";
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call } from "@orpc/server";
@@ -65,7 +65,7 @@ const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
  *
  * This handler creates token factories, supporting both single and batch operations.
  */
-export const factoryCreate = portalRouter.system.tokenFactoryCreate
+export const factoryCreate = systemRouter.system.tokenFactoryCreate
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.tokenFactoryCreate,

@@ -65,7 +65,8 @@ export const read = onboardedRouter.system.read
       });
     }
     const systemContext = await getSystemContext(
-      getEthereumAddress(systemAddress)
+      getEthereumAddress(systemAddress),
+      context.theGraphClient
     );
     if (!systemContext) {
       throw errors.NOT_FOUND({

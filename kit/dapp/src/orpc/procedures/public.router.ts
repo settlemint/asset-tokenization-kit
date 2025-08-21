@@ -1,4 +1,5 @@
-import { sessionMiddleware } from "../middlewares/auth/session.middleware";
+import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
+import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { baseRouter } from "./base.router";
 
 /**
@@ -23,4 +24,6 @@ import { baseRouter } from "./base.router";
  * @see {@link ../../middlewares/auth/session.middleware} - Session loading middleware
  * @see {@link ./base.router} - Base router implementation
  */
-export const publicRouter = baseRouter.use(sessionMiddleware);
+export const publicRouter = baseRouter
+  .use(theGraphMiddleware)
+  .use(portalMiddleware);

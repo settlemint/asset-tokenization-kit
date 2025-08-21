@@ -1,7 +1,7 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { portalRouter } from "@/orpc/procedures/portal.router";
+import { systemRouter } from "@/orpc/procedures/system.router";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { AddonFactoryTypeIdEnum } from "@atk/zod/addon-types";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
@@ -100,7 +100,7 @@ const GET_YIELD_SCHEDULE_ADDRESS_QUERY = theGraphGraphql(`
  * @see {@link FixedYieldScheduleCreateInputSchema} for input validation
  * @see {@link FixedYieldScheduleCreateOutputSchema} for response structure
  */
-export const create = portalRouter.fixedYieldSchedule.create
+export const create = systemRouter.fixedYieldSchedule.create
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.addonCreate,
