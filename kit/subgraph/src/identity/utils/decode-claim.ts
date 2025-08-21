@@ -40,22 +40,66 @@ export function decodeClaimValues(
     }
   }
 
-  // Create signature without parameter names for decoding
-  let decodingSignature = "";
+  // Check if the data needs tuple wrapping for The Graph compatibility
+  let processedData = data;
 
-  if (paramTypes.length == 1) {
-    // Always wrap single values in a tuple for consistency
-    decodingSignature = "(" + paramTypes[0] + ")";
-  } else {
-    // Multiple parameters - wrap them in a tuple
-    decodingSignature = "(" + paramTypes.join(",") + ")";
+  // Detect if data is missing tuple wrapper by checking if it starts with 0x0000...0020
+  // Standard ABI-encoded data won't have this offset pointer, tuple-wrapped data will
+  const dataHex = data.toHexString();
+  const hasTupleWrapper = dataHex.startsWith(
+    "0x0000000000000000000000000000000000000000000000000000000000000020"
+  );
+
+  log.info("Decoding claim for topic {} - Original data: {} (length: {}), Has tuple wrapper: {}", [
+    topicScheme.name,
+    dataHex,
+    dataHex.length.toString(),
+    hasTupleWrapper.toString()
+  ]);
+
+  if (!hasTupleWrapper) {
+    // Data is standard ABI-encoded, prepend tuple wrapper (32-byte offset pointer)
+    const offsetPointer =
+      "0000000000000000000000000000000000000000000000000000000000000020";
+    const wrappedDataHex = "0x" + offsetPointer + dataHex.slice(2);
+    processedData = Bytes.fromHexString(wrappedDataHex);
+    log.info("Wrapped data for tuple decoding: {} (length: {})", [
+      processedData.toHexString(),
+      processedData.toHexString().length.toString()
+    ]);
   }
 
-  let decoded = ethereum.decode(decodingSignature, data);
+  // Create signature based on whether data is already tuple-wrapped
+  let decodingSignature = "";
+  if (hasTupleWrapper) {
+    // Data is already tuple-wrapped, use standard signature
+    if (paramTypes.length == 1) {
+      decodingSignature = paramTypes[0];
+    } else {
+      decodingSignature = paramTypes.join(",");
+    }
+  } else {
+    // Data was just wrapped by us, use tuple signature
+    if (paramTypes.length == 1) {
+      decodingSignature = "(" + paramTypes[0] + ")";
+    } else {
+      decodingSignature = "(" + paramTypes.join(",") + ")";
+    }
+  }
+
+  log.info("Attempting to decode with signature: {} using data: {}", [
+    decodingSignature,
+    processedData.toHexString()
+  ]);
+
+  let decoded = ethereum.decode(decodingSignature, processedData);
   if (decoded == null) {
-    log.warning("Decoding claim values for topic {} with signature {} failed", [
+    log.warning("Decoding claim values for topic {} with signature {} failed. Original data: {}, Processed data: {}, Param types: {}", [
       topicScheme.name,
       decodingSignature,
+      dataHex,
+      processedData.toHexString(),
+      paramTypes.join(",")
     ]);
     const claimValue = fetchIdentityClaimValue(claim, "rawData");
     claimValue.value = data.toHexString();
@@ -63,12 +107,21 @@ export function decodeClaimValues(
     return;
   }
 
-  // Always treat the result as a tuple
-  let decodedTuple = decoded.toTuple();
-  for (let i = 0; i < paramNames.length; i++) {
-    let value = convertEthereumValue(decodedTuple[i]);
-    let claimValue = fetchIdentityClaimValue(claim, paramNames[i]);
+  // Handle both single values and tuples based on the data format
+  if (paramTypes.length == 1 && hasTupleWrapper) {
+    // Single parameter with tuple-wrapped data - decoded directly as the value
+    let value = convertEthereumValue(decoded);
+    let claimValue = fetchIdentityClaimValue(claim, paramNames[0]);
     claimValue.value = value;
     claimValue.save();
+  } else {
+    // Multiple parameters or newly wrapped data - should be a tuple
+    let decodedTuple = decoded.toTuple();
+    for (let i = 0; i < paramNames.length; i++) {
+      let value = convertEthereumValue(decodedTuple[i]);
+      let claimValue = fetchIdentityClaimValue(claim, paramNames[i]);
+      claimValue.value = value;
+      claimValue.save();
+    }
   }
 }
