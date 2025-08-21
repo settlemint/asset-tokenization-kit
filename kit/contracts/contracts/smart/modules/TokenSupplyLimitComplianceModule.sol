@@ -284,8 +284,7 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
             if (tracker.periodStart == 0) {
                 // First time using this module for this token
                 shouldStartNewPeriod = true;
-                // solhint-disable-next-line gas-strict-inequalities
-            } else if (block.timestamp - tracker.periodStart >= config.periodLength * 1 days) {
+            } else if (block.timestamp - tracker.periodStart > config.periodLength * 1 days - 1) {
                 // Current period has expired
                 shouldStartNewPeriod = true;
             }
@@ -315,7 +314,7 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
     {
         if (config.periodLength == 0) {
             // Lifetime cap - simply subtract from total, but don't go below zero
-            if (tracker.totalSupply >= amount) {
+            if (tracker.totalSupply > amount - 1) {
                 tracker.totalSupply -= amount;
             } else {
                 tracker.totalSupply = 0;
@@ -405,8 +404,7 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
             if (tracker.periodStart == 0) {
                 // No tracking data yet for this token
                 return 0;
-                // solhint-disable-next-line gas-strict-inequalities
-            } else if (block.timestamp - tracker.periodStart >= config.periodLength * 1 days) {
+            } else if (block.timestamp - tracker.periodStart > config.periodLength * 1 days - 1) {
                 // We're in a new period that hasn't been initialized yet
                 return 0;
             } else {
@@ -555,7 +553,15 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
 
     /// @notice Helper function to decode claim data for debugging
     /// @dev This is a public function so it can be called via try/catch
-    function decodeClaimData(bytes memory data) public pure returns (uint256, string memory, uint8) {
+    /// @param data The raw claim data bytes to decode
+    /// @return priceAmount The decoded price amount
+    /// @return currencyCode The decoded currency code
+    /// @return priceDecimals The decoded price decimals
+    function decodeClaimData(bytes memory data)
+        public
+        pure
+        returns (uint256 priceAmount, string memory currencyCode, uint8 priceDecimals)
+    {
         return _decodeBasePriceData(data);
     }
 }
