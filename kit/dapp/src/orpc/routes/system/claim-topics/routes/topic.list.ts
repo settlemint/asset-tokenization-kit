@@ -40,7 +40,7 @@ const TOPIC_SCHEMES_QUERY = theGraphGraphql(
  *
  * @returns Array of topic schemes with their details
  */
-export const topicList = portalRouter.system.topicList
+export const topicList = portalRouter.system.claimTopics.topicList
   .use(systemMiddleware)
   .use(theGraphMiddleware)
   .handler(async ({ context, errors }): Promise<TopicListOutput> => {

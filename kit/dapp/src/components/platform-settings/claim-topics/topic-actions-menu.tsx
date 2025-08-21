@@ -41,14 +41,14 @@ export function TopicActionsMenu({ topic, onEdit }: TopicActionsMenuProps) {
   // Delete topic mutation
   const deleteMutation = useMutation({
     mutationFn: () =>
-      client.system.topicDelete({
+      client.system.claimTopics.topicDelete({
         name: topic.name,
       }),
     onSuccess: () => {
       toast.success(t("claimTopics.toast.deleted"));
       // Invalidate and refetch topics data
       void queryClient.invalidateQueries({
-        queryKey: orpc.system.topicList.queryKey(),
+        queryKey: orpc.system.claimTopics.topicList.queryKey(),
       });
       setShowDeleteDialog(false);
     },

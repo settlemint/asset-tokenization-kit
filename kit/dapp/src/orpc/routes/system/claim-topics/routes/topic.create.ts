@@ -66,7 +66,7 @@ const REGISTER_TOPIC_SCHEME_MUTATION = portalGraphql(`
  * @param input.signature - Function signature for claim verification
  * @returns Transaction hash and generated topic ID
  */
-export const topicCreate = portalRouter.system.topicCreate
+export const topicCreate = portalRouter.system.claimTopics.topicCreate
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: { any: ["claimPolicyManager", "systemManager"] },

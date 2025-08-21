@@ -67,7 +67,7 @@ const UPDATE_TOPIC_SCHEME_MUTATION = portalGraphql(`
  * @param input.signature - New function signature for claim verification
  * @returns Transaction hash and updated topic information
  */
-export const topicUpdate = portalRouter.system.topicUpdate
+export const topicUpdate = portalRouter.system.claimTopics.topicUpdate
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: { any: ["claimPolicyManager", "systemManager"] },

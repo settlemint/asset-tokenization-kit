@@ -70,7 +70,7 @@ const REMOVE_TOPIC_SCHEME_MUTATION = portalGraphql(`
  * @param input.name - Name of the topic scheme to remove
  * @returns Transaction hash and removed topic information
  */
-export const topicDelete = portalRouter.system.topicDelete
+export const topicDelete = portalRouter.system.claimTopics.topicDelete
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: { any: ["claimPolicyManager", "systemManager"] },
