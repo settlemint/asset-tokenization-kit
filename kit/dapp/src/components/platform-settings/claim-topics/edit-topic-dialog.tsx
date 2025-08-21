@@ -12,12 +12,23 @@ import { Label } from "@/components/ui/label";
 import { useAppForm } from "@/hooks/use-app-form";
 import { orpc, client } from "@/orpc/orpc-client";
 import type { TopicScheme } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
-import { TopicUpdateInputSchema } from "@/orpc/routes/system/claim-topics/routes/topic.update.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
+
+// Form schema with only editable fields
+const EditTopicFormSchema = z.object({
+  signature: z
+    .string()
+    .min(1, "Signature is required")
+    .describe("New function signature for claim verification"),
+  walletVerification: z.object({
+    secretVerificationCode: z.string(),
+    verificationType: z.enum(["PINCODE", "OTP", "SECRET_CODES"]),
+  }),
+});
 
 interface EditTopicDialogProps {
   topic: TopicScheme;
@@ -39,8 +50,11 @@ export function EditTopicDialog({
 
   // Update topic mutation
   const updateMutation = useMutation({
-    mutationFn: (data: z.infer<typeof TopicUpdateInputSchema>) =>
-      client.system.topicUpdate(data),
+    mutationFn: (data: z.infer<typeof EditTopicFormSchema>) =>
+      client.system.topicUpdate({
+        ...data,
+        name: topic.name, // Pass name from topic prop, not form
+      }),
     onSuccess: (result) => {
       toast.success(t("claimTopics.toast.updated", { name: result.name }));
       // Invalidate and refetch topics data
@@ -56,11 +70,14 @@ export function EditTopicDialog({
 
   const form = useAppForm({
     defaultValues: {
-      name: topic.name,
       signature: topic.signature,
-    } as z.infer<typeof TopicUpdateInputSchema>,
+      walletVerification: {
+        secretVerificationCode: "",
+        verificationType: "PINCODE",
+      },
+    } as z.infer<typeof EditTopicFormSchema>,
     validators: {
-      onChange: TopicUpdateInputSchema,
+      onChange: EditTopicFormSchema,
       onSubmit: ({ value }) => {
         // Additional validation: signature must be different from current
         if (value.signature === topic.signature) {
@@ -76,13 +93,18 @@ export function EditTopicDialog({
   // Reset form when topic changes
   useEffect(() => {
     if (open) {
-      form.setFieldValue("name", topic.name);
       form.setFieldValue("signature", topic.signature);
     }
-  }, [open, topic.name, topic.signature, form]);
+  }, [open, topic.signature, form]);
 
   const handleClose = () => {
+    form.reset();
     onOpenChange(false);
+  };
+
+  // Avoids reference to an unbound method which may cause unintentional scoping of `this`
+  const handleSubmit = () => {
+    void form.handleSubmit();
   };
 
   return (
@@ -95,27 +117,21 @@ export function EditTopicDialog({
 
         <form.AppForm>
           <div className="space-y-4">
-            <form.Field name="name">
-              {(field) => (
-                <div className="space-y-2">
-                  <Label htmlFor={field.name}>
-                    {t("claimTopics.edit.fields.name.label")}
-                  </Label>
-                  <Input
-                    id={field.name}
-                    value={field.state.value}
-                    readOnly
-                    disabled
-                    className="bg-muted"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {t("claimTopics.edit.fields.name.description", {
-                      topicId: Number(topic.topicId),
-                    })}
-                  </p>
-                </div>
-              )}
-            </form.Field>
+            {/* Display topic name as read-only info, not as a form field */}
+            <div className="space-y-2">
+              <Label>{t("claimTopics.edit.fields.name.label")}</Label>
+              <Input
+                value={topic.name}
+                readOnly
+                disabled
+                className="bg-muted"
+              />
+              <p className="text-xs text-muted-foreground">
+                {t("claimTopics.edit.fields.name.description", {
+                  topicId: Number(topic.topicId),
+                })}
+              </p>
+            </div>
 
             <form.AppField
               name="signature"
@@ -145,23 +161,21 @@ export function EditTopicDialog({
             >
               {t("claimTopics.edit.actions.cancel")}
             </Button>
-            <form.Subscribe>
-              {(state) => (
-                <Button
-                  type="button"
-                  onClick={() => void form.handleSubmit()}
-                  disabled={
-                    updateMutation.isPending ||
-                    !state.canSubmit ||
-                    Object.keys(state.errors).length > 0
-                  }
-                >
-                  {updateMutation.isPending
-                    ? t("claimTopics.edit.actions.updating")
-                    : t("claimTopics.edit.actions.update")}
-                </Button>
-              )}
-            </form.Subscribe>
+            <form.VerificationButton
+              onSubmit={handleSubmit}
+              walletVerification={{
+                title: t("claimTopics.add.verification.title"),
+                description: t("claimTopics.add.verification.description"),
+                setField: (verification) => {
+                  form.setFieldValue("walletVerification", verification);
+                },
+              }}
+              disabled={updateMutation.isPending}
+            >
+              {updateMutation.isPending
+                ? t("claimTopics.edit.actions.updating")
+                : t("claimTopics.edit.actions.update")}
+            </form.VerificationButton>
           </DialogFooter>
         </form.AppForm>
       </DialogContent>
