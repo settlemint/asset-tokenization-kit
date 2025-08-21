@@ -11,6 +11,9 @@ const complianceManagerRole = keccak256(toBytes("COMPLIANCE_MANAGER_ROLE"));
 const addonManagerRole = keccak256(toBytes("ADDON_MANAGER_ROLE"));
 const claimPolicyManagerRole = keccak256(toBytes("CLAIM_POLICY_MANAGER_ROLE"));
 const auditorRole = keccak256(toBytes("AUDITOR_ROLE"));
+const organisationIdentityManagerRole = keccak256(
+  toBytes("ORGANISATION_IDENTITY_MANAGER_ROLE")
+);
 
 // System Roles (from ATKSystemRoles.sol)
 const systemModuleRole = keccak256(toBytes("SYSTEM_MODULE_ROLE"));
@@ -42,6 +45,7 @@ export const ATKRoles = {
     addonManagerRole,
     claimPolicyManagerRole,
     auditorRole,
+    organisationIdentityManagerRole,
   },
   system: {
     systemModuleRole,

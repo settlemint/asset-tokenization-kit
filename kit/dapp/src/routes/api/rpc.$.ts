@@ -17,6 +17,7 @@
  * @see {@link https://spec.openapis.org/oas/latest.html} - OpenAPI specification
  */
 
+import { logUnexpectedError } from "@/orpc/helpers/error";
 import { router } from "@/orpc/routes/router";
 import { bigDecimalSerializer } from "@atk/zod/bigdecimal";
 import { bigIntSerializer } from "@atk/zod/bigint";
@@ -24,13 +25,10 @@ import { timestampSerializer } from "@atk/zod/timestamp";
 import { onError } from "@orpc/client";
 import { RPCHandler } from "@orpc/server/fetch";
 import { BatchHandlerPlugin } from "@orpc/server/plugins";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 import {
   createServerFileRoute,
   getHeaders,
 } from "@tanstack/react-start/server";
-
-const logger = createLogger();
 
 /**
  * OpenAPI handler configuration.
@@ -42,25 +40,7 @@ const logger = createLogger();
  * - Smart coercion for flexible parameter handling
  */
 const handler = new RPCHandler(router, {
-  // Log only unexpected server errors (skip 4xx like NOT_FOUND/UNAUTHORIZED)
-  interceptors: [
-    onError((error) => {
-      const e = error as { code?: string; status?: number; message?: string };
-      const status = typeof e?.status === "number" ? e.status : undefined;
-      const code = typeof e?.code === "string" ? e.code : undefined;
-
-      // Skip common/expected client-side errors
-      if (
-        (status && status < 500) /* 4xx */ ||
-        code === "NOT_FOUND" ||
-        code === "UNAUTHORIZED"
-      ) {
-        return;
-      }
-
-      logger.error(e?.message ?? "ORPC handler error", error);
-    }),
-  ],
+  interceptors: [onError(logUnexpectedError)],
   plugins: [new BatchHandlerPlugin()],
   customJsonSerializers: [
     bigDecimalSerializer,

@@ -24,7 +24,9 @@ import {
     TrustedIssuersRegistryImplementationNotSet,
     ComplianceModuleRegistryImplementationNotSet,
     AddonRegistryImplementationNotSet,
-    TokenFactoryRegistryImplementationNotSet
+    TokenFactoryRegistryImplementationNotSet,
+    IssuerIdentityNotInitialized,
+    InvalidTargetIdentity
 } from "./ATKSystemErrors.sol";
 import { ATKTypedImplementationProxy } from "./ATKTypedImplementationProxy.sol";
 
@@ -51,6 +53,8 @@ import { IATKSystemAddonRegistry } from "./addons/IATKSystemAddonRegistry.sol";
 import { IATKSystemAccessManager } from "./access-manager/IATKSystemAccessManager.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IATKSystemAccessManaged } from "./access-manager/IATKSystemAccessManaged.sol";
+import { IContractWithIdentity } from "./identity-factory/IContractWithIdentity.sol";
+import { IATKContractIdentity } from "./identity-factory/identities/IATKContractIdentity.sol";
 
 // Extensions
 import { ATKSystemAccessManaged } from "./access-manager/ATKSystemAccessManaged.sol";
@@ -79,7 +83,8 @@ contract ATKSystemImplementation is
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
     ReentrancyGuardUpgradeable,
-    UUPSUpgradeable
+    UUPSUpgradeable,
+    IContractWithIdentity
 {
     // --- Module Type Hashes ---
     bytes32 internal constant COMPLIANCE = keccak256("COMPLIANCE");
@@ -153,6 +158,9 @@ contract ATKSystemImplementation is
 
     /// @dev Stores the address of the token factory registry proxy contract.
     address private _tokenFactoryRegistryProxy;
+
+    /// @dev Stores the address of the organisation identity contract.
+    address private _organisationIdentity;
 
     // --- Internal Helper for Interface Check ---
     /// @notice Internal helper function to check if a given contract address supports a specific interface
@@ -505,6 +513,19 @@ contract ATKSystemImplementation is
         // Set the identity factory's own OnChainID (this will now successfully issue claims)
         IATKIdentityFactory(localIdentityFactoryProxy).setOnchainID(identityFactoryIdentity);
 
+        // Create issuer identity for the system
+        address localOrganisationIdentity =
+            IATKIdentityFactory(localIdentityFactoryProxy).createContractIdentity(address(this));
+        _organisationIdentity = localOrganisationIdentity;
+
+        // Register the issuer identity as a trusted issuer for TOPIC_ISSUER claims
+        uint256[] memory issuerClaimTopics = new uint256[](1);
+        issuerClaimTopics[0] =
+            IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
+        IATKTrustedIssuersRegistry(localTrustedIssuersRegistryProxy).addTrustedIssuer(
+            IClaimIssuer(localOrganisationIdentity), issuerClaimTopics
+        );
+
         // Mark the system as bootstrapped
         _bootstrapped = true;
 
@@ -519,7 +540,8 @@ contract ATKSystemImplementation is
             _identityFactoryProxy,
             _tokenFactoryRegistryProxy,
             _addonRegistryProxy,
-            _complianceModuleRegistryProxy
+            _complianceModuleRegistryProxy,
+            _organisationIdentity
         );
     }
 
@@ -801,6 +823,66 @@ contract ATKSystemImplementation is
         return _tokenFactoryRegistryProxy;
     }
 
+    /// @notice Gets the address of the organisation identity contract.
+    /// @return The address of the organisation identity contract.
+    function organisationIdentity() public view returns (address) {
+        return _organisationIdentity;
+    }
+
+    // --- IContractWithIdentity Implementation ---
+
+    /// @inheritdoc IContractWithIdentity
+    /// @notice Returns the address of the issuer identity
+    function onchainID() external view override returns (address) {
+        return _organisationIdentity;
+    }
+
+    /// @inheritdoc IContractWithIdentity
+    /// @notice Checks if the caller can add claims to the issuer identity
+    /// @dev Only accounts with ISSUER_CLAIM_MANAGER_ROLE can add claims
+    function canAddClaim(address actor) external view override returns (bool) {
+        return _accessManager != address(0)
+            && IATKSystemAccessManager(_accessManager).hasRole(ATKPeopleRoles.ORGANISATION_IDENTITY_MANAGER_ROLE, actor);
+    }
+
+    /// @inheritdoc IContractWithIdentity
+    /// @notice Checks if the caller can remove claims from the issuer identity
+    /// @dev Only accounts with ISSUER_CLAIM_MANAGER_ROLE can remove claims
+    function canRemoveClaim(address actor) external view override returns (bool) {
+        return _accessManager != address(0)
+            && IATKSystemAccessManager(_accessManager).hasRole(ATKPeopleRoles.ORGANISATION_IDENTITY_MANAGER_ROLE, actor);
+    }
+
+    // --- Issuer Claim Management Functions ---
+
+    /// @notice Issues a claim by the organisation identity to a target identity
+    /// @dev Only callable by accounts with TOKEN_FACTORY_MODULE_ROLE or ISSUER_CLAIM_MANAGER_ROLE
+    /// @param targetIdentity The identity contract to receive the claim
+    /// @param topicId The topic ID of the claim
+    /// @param claimData The claim data
+    function issueClaimByOrganisation(
+        address targetIdentity,
+        uint256 topicId,
+        bytes calldata claimData
+    )
+        external
+        onlySystemRoles2(ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKPeopleRoles.ORGANISATION_IDENTITY_MANAGER_ROLE)
+    {
+        if (_organisationIdentity == address(0)) revert IssuerIdentityNotInitialized();
+        if (targetIdentity == address(0)) revert InvalidTargetIdentity();
+
+        // Issue the claim from the issuer identity to the target identity
+        IATKContractIdentity organisationIdentityContract = IATKContractIdentity(_organisationIdentity);
+        IIdentity targetIdentityContract = IIdentity(targetIdentity);
+
+        organisationIdentityContract.issueClaimTo(
+            targetIdentityContract,
+            topicId,
+            claimData,
+            "" // No URI needed for this claim
+        );
+    }
+
     // --- Governance Functions ---
 
     // --- Internal Functions (Overrides for ERC2771Context and ERC165/AccessControl) ---
@@ -826,6 +908,7 @@ contract ATKSystemImplementation is
     function supportsInterface(bytes4 interfaceId) public view override(ERC165Upgradeable, IERC165) returns (bool) {
         return super.supportsInterface(interfaceId) || interfaceId == type(IATKSystem).interfaceId
             || interfaceId == type(IATKTypedImplementationRegistry).interfaceId
-            || interfaceId == type(IATKSystemAccessManaged).interfaceId;
+            || interfaceId == type(IATKSystemAccessManaged).interfaceId
+            || interfaceId == type(IContractWithIdentity).interfaceId;
     }
 }
