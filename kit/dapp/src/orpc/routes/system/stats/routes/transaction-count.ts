@@ -1,7 +1,5 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { authRouter } from "@/orpc/procedures/auth.router";
+import { systemRouter } from "@/orpc/procedures/system.router";
 import { z } from "zod";
 
 /**
@@ -76,9 +74,7 @@ function sumEventCounts(eventStats: { eventsCount: number }[]): number {
  * console.log(`Total: ${stats.totalTransactions}, Recent: ${stats.recentTransactions}`);
  * ```
  */
-export const statsTransactionCount = authRouter.system.statsTransactionCount
-  .use(systemMiddleware)
-  .use(theGraphMiddleware)
+export const statsTransactionCount = systemRouter.system.statsTransactionCount
   .handler(async ({ context, input }) => {
     // System context is guaranteed by systemMiddleware
 

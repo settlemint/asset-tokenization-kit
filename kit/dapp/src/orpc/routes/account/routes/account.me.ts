@@ -1,4 +1,3 @@
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { publicRouter } from "@/orpc/procedures/public.router";
 import { read } from "@/orpc/routes/account/routes/account.read";
 import { call } from "@orpc/server";
@@ -30,9 +29,8 @@ import { call } from "@orpc/server";
  * });
  * ```
  */
-export const me = publicRouter.account.me
-  .use(theGraphMiddleware)
-  .handler(async ({ context, errors }) => {
+export const me = publicRouter.account.me.handler(
+  async ({ context, errors }) => {
     if (!context.auth) {
       throw errors.UNAUTHORIZED();
     }
@@ -49,4 +47,5 @@ export const me = publicRouter.account.me
     } catch {
       return null;
     }
-  });
+  }
+);

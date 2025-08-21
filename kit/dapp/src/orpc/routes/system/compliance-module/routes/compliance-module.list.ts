@@ -1,5 +1,4 @@
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import {
   ComplianceModulesListOutputSchema,
@@ -27,7 +26,6 @@ const COMPLIANCE_MODULES_QUERY = theGraphGraphql(
 );
 
 export const complianceModuleList = systemRouter.system.complianceModuleList
-  .use(systemMiddleware)
   .handler(async ({ context, errors }): Promise<ComplianceModulesList> => {
     const { system } = context;
 
@@ -38,12 +36,13 @@ export const complianceModuleList = systemRouter.system.complianceModuleList
       });
     }
 
-    const { complianceModules } = await theGraphClient.request({
-      document: COMPLIANCE_MODULES_QUERY,
-      variables: {
-        registryAddress,
-      },
-    });
+    const response = await context.theGraphClient.query(
+      COMPLIANCE_MODULES_QUERY,
+      {
+        input: { registryAddress },
+        output: ComplianceModulesListOutputSchema,
+      }
+    );
 
-    return ComplianceModulesListOutputSchema.parse(complianceModules);
+    return response;
   });

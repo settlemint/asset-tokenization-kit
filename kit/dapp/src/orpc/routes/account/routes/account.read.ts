@@ -1,5 +1,4 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { publicRouter } from "@/orpc/procedures/public.router";
 import {
@@ -38,7 +37,6 @@ export const read = publicRouter.account.read
         input.wallet === context.auth?.user.wallet,
     })
   )
-  .use(theGraphMiddleware)
   .handler(async ({ input, context, errors }) => {
     const { wallet } = input;
 

@@ -1,7 +1,6 @@
 import { user } from "@/lib/db/schema";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { env } from "@atk/config/env";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
@@ -23,7 +22,6 @@ const logger = createLogger();
 
 export const createWallet = authRouter.user.createWallet
   .use(databaseMiddleware)
-  .use(portalMiddleware)
   .handler(async function ({ context: { auth, db, portalClient }, errors }) {
     if (auth.user.wallet !== zeroAddress) {
       throw errors.CONFLICT({

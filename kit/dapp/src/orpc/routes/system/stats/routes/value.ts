@@ -1,7 +1,5 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { authRouter } from "@/orpc/procedures/auth.router";
+import { systemRouter } from "@/orpc/procedures/system.router";
 import { z } from "zod";
 
 /**
@@ -48,9 +46,7 @@ const TotalValueResponseSchema = z.object({
  * console.log(`Total system value: ${totalValue}`);
  * ```
  */
-export const statsValue = authRouter.system.statsValue
-  .use(systemMiddleware)
-  .use(theGraphMiddleware)
+export const statsValue = systemRouter.system.statsValue
   .handler(async ({ context }) => {
     // System context is guaranteed by systemMiddleware
 

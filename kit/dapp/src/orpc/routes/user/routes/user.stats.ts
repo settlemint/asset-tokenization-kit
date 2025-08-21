@@ -1,7 +1,5 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { authRouter } from "@/orpc/procedures/auth.router";
+import { systemRouter } from "@/orpc/procedures/system.router";
 import { z } from "zod";
 
 /**
@@ -162,9 +160,7 @@ function countUniqueRecentUsers(
  * console.log(metrics.totalUsers, metrics.userGrowth);
  * ```
  */
-export const stats = authRouter.user.stats
-  .use(systemMiddleware)
-  .use(theGraphMiddleware)
+export const stats = systemRouter.user.stats
   .handler(async ({ context, input }) => {
     // System context is guaranteed by systemMiddleware
 

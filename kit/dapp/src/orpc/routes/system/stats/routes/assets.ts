@@ -1,7 +1,5 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { authRouter } from "@/orpc/procedures/auth.router";
+import { systemRouter } from "@/orpc/procedures/system.router";
 import { type AssetType, assetType } from "@atk/zod/asset-types";
 import { z } from "zod";
 
@@ -57,9 +55,7 @@ const AssetCountResponseSchema = z.object({
  * ```
  */
 
-export const statsAssets = authRouter.system.statsAssets
-  .use(systemMiddleware)
-  .use(theGraphMiddleware)
+export const statsAssets = systemRouter.system.statsAssets
   .handler(async ({ context }) => {
     // System context is guaranteed by systemMiddleware
     const { system } = context;
