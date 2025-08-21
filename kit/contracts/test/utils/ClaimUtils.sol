@@ -230,10 +230,14 @@ contract ClaimUtils is Test {
         uint256 price,
         string memory currency,
         uint8 decimals
-    ) public {
+    )
+        public
+    {
         // Standard ABI encoding for base price data
         bytes memory encodedData = abi.encode(price, currency, decimals);
-        _issueTokenIdentityClaimInternal(tokenAddress_, tokenOwner_, getTopicId(ATKTopics.TOPIC_BASE_PRICE), encodedData);
+        _issueTokenIdentityClaimInternal(
+            tokenAddress_, tokenOwner_, getTopicId(ATKTopics.TOPIC_BASE_PRICE), encodedData
+        );
     }
 
     /**
@@ -270,5 +274,4 @@ contract ClaimUtils is Test {
     function _claimIssuerIdentity() internal view returns (address) {
         return _identityFactory.getIdentity(_claimIssuer);
     }
-
 }

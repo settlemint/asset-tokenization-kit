@@ -14,8 +14,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     TokenSupplyLimitComplianceModule internal module;
 
     // Test constants - now using whole numbers
-    uint256 constant LIFETIME_MAX_SUPPLY = 1000000; // 1M whole tokens
-    uint256 constant PERIOD_MAX_SUPPLY = 100000; // 100K whole tokens for periodic limits
+    uint256 constant LIFETIME_MAX_SUPPLY = 1_000_000; // 1M whole tokens
+    uint256 constant PERIOD_MAX_SUPPLY = 100_000; // 100K whole tokens for periodic limits
     uint256 constant PERIOD_LENGTH = 30; // 30 days
 
     function setUp() public override {
@@ -75,7 +75,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             periodLength: PERIOD_LENGTH,
             rolling: true,
             useBasePrice: false,
-
             global: false
         });
 
@@ -206,7 +205,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
         bytes memory params = abi.encode(config);
         // Should not revert for mint under limit
-        module.canTransfer(address(smartToken), address(0), user1, 500000e18, params);
+        module.canTransfer(address(smartToken), address(0), user1, 500_000e18, params);
     }
 
     function test_TokenSupplyLimit_LifetimeCap_RevertWhen_ExceedsLimit() public {
@@ -242,9 +241,9 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         bytes memory params = abi.encode(config);
 
         // First mint should work
-        module.canTransfer(address(smartToken), address(0), user1, 400000e18, params);
+        module.canTransfer(address(smartToken), address(0), user1, 400_000e18, params);
         vm.prank(address(smartToken));
-        module.created(address(smartToken), user1, 400000e18, params);
+        module.created(address(smartToken), user1, 400_000e18, params);
 
         // Second mint that would exceed limit should fail
         vm.expectRevert(
@@ -252,10 +251,10 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
             )
         );
-        module.canTransfer(address(smartToken), address(0), user1, 700000e18, params);
+        module.canTransfer(address(smartToken), address(0), user1, 700_000e18, params);
 
         // But smaller mint should work
-        module.canTransfer(address(smartToken), address(0), user1, 500000e18, params);
+        module.canTransfer(address(smartToken), address(0), user1, 500_000e18, params);
     }
 
     function test_TokenSupplyLimit_AllowsRegularTransfers() public view {
@@ -339,8 +338,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
         bytes memory params = abi.encode(config);
         // Use clean day boundaries to avoid timestamp calculation issues
-        uint256 day1 = 1000 * 86400; // Day 1000 at midnight
-        uint256 day2 = 1001 * 86400; // Day 1001 at midnight
+        uint256 day1 = 1000 * 86_400; // Day 1000 at midnight
+        uint256 day2 = 1001 * 86_400; // Day 1001 at midnight
 
         // Day 1: Mint 100 tokens
         vm.warp(day1);
@@ -374,7 +373,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         });
 
         bytes memory params = abi.encode(config);
-        uint256 sameDay = 1000 * 86400; // Day 1000 at midnight
+        uint256 sameDay = 1000 * 86_400; // Day 1000 at midnight
 
         // First mint: 100 tokens
         vm.warp(sameDay);
@@ -408,9 +407,9 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         });
 
         bytes memory params = abi.encode(config);
-        uint256 day1 = 1000 * 86400;
-        uint256 day2 = 1001 * 86400;
-        uint256 day3 = 1002 * 86400;
+        uint256 day1 = 1000 * 86_400;
+        uint256 day2 = 1001 * 86_400;
+        uint256 day3 = 1002 * 86_400;
 
         // Day 1: Mint 100 tokens
         vm.warp(day1);
@@ -509,8 +508,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         module.canTransfer(address(smartToken), address(0), user1, 1e18, params);
     }
 
-
-
     // --- Global Tracking Tests ---
 
     function test_TokenSupplyLimit_Global_LifetimeCap() public {
@@ -532,18 +529,20 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
         // Create a second token address for testing (real SMARTToken instance)
         vm.startPrank(tokenIssuer);
-        address token2 = address(new SMARTToken(
-            "Test Token 2",
-            "TEST2",
-            18,
-            1000e18, // cap
-            address(0), // onchainID_
-            address(systemUtils.identityRegistry()),
-            address(systemUtils.compliance()),
-            new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
-            address(accessManager)
-        ));
+        address token2 = address(
+            new SMARTToken(
+                "Test Token 2",
+                "TEST2",
+                18,
+                1000e18, // cap
+                address(0), // onchainID_
+                address(systemUtils.identityRegistry()),
+                address(systemUtils.compliance()),
+                new SMARTComplianceModuleParamPair[](0),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                address(accessManager)
+            )
+        );
         vm.stopPrank();
 
         // Mint 200 tokens from token2 (global total: 400)
@@ -574,20 +573,22 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         });
 
         bytes memory params = abi.encode(config);
-        uint256 sameDay = 1000 * 86400;
+        uint256 sameDay = 1000 * 86_400;
         vm.startPrank(tokenIssuer);
-        address token2 = address(new SMARTToken(
-            "Test Token 2",
-            "TEST2",
-            18,
-            1000e18,
-            address(0),
-            address(systemUtils.identityRegistry()),
-            address(systemUtils.compliance()),
-            new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
-            address(accessManager)
-        ));
+        address token2 = address(
+            new SMARTToken(
+                "Test Token 2",
+                "TEST2",
+                18,
+                1000e18,
+                address(0),
+                address(systemUtils.identityRegistry()),
+                address(systemUtils.compliance()),
+                new SMARTComplianceModuleParamPair[](0),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                address(accessManager)
+            )
+        );
         vm.stopPrank();
 
         // Same day: mint 100 from token1
@@ -628,22 +629,24 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         });
 
         bytes memory params = abi.encode(config);
-        uint256 day1 = 1000 * 86400;
-        uint256 day2 = 1001 * 86400;
-        uint256 day3 = 1002 * 86400;
+        uint256 day1 = 1000 * 86_400;
+        uint256 day2 = 1001 * 86_400;
+        uint256 day3 = 1002 * 86_400;
         vm.startPrank(tokenIssuer);
-        address token2 = address(new SMARTToken(
-            "Test Token 2",
-            "TEST2",
-            18,
-            1000e18,
-            address(0),
-            address(systemUtils.identityRegistry()),
-            address(systemUtils.compliance()),
-            new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
-            address(accessManager)
-        ));
+        address token2 = address(
+            new SMARTToken(
+                "Test Token 2",
+                "TEST2",
+                18,
+                1000e18,
+                address(0),
+                address(systemUtils.identityRegistry()),
+                address(systemUtils.compliance()),
+                new SMARTComplianceModuleParamPair[](0),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                address(accessManager)
+            )
+        );
         vm.stopPrank();
 
         // Day 1: mint 100 from token1
@@ -684,22 +687,24 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         });
 
         bytes memory params = abi.encode(config);
-        uint256 day1 = 1000 * 86400;
-        uint256 day2 = 1001 * 86400;
-        uint256 day3 = 1002 * 86400;
+        uint256 day1 = 1000 * 86_400;
+        uint256 day2 = 1001 * 86_400;
+        uint256 day3 = 1002 * 86_400;
         vm.startPrank(tokenIssuer);
-        address token2 = address(new SMARTToken(
-            "Test Token 2",
-            "TEST2",
-            18,
-            1000e18,
-            address(0),
-            address(systemUtils.identityRegistry()),
-            address(systemUtils.compliance()),
-            new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
-            address(accessManager)
-        ));
+        address token2 = address(
+            new SMARTToken(
+                "Test Token 2",
+                "TEST2",
+                18,
+                1000e18,
+                address(0),
+                address(systemUtils.identityRegistry()),
+                address(systemUtils.compliance()),
+                new SMARTComplianceModuleParamPair[](0),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                address(accessManager)
+            )
+        );
         vm.stopPrank();
 
         // Day 1: mint 100 from token1
@@ -741,20 +746,22 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         });
 
         bytes memory params = abi.encode(config);
-        uint256 startTime = 1000 * 86400;
+        uint256 startTime = 1000 * 86_400;
         vm.startPrank(tokenIssuer);
-        address token2 = address(new SMARTToken(
-            "Test Token 2",
-            "TEST2",
-            18,
-            1000e18, // cap
-            address(0), // onchainID_
-            address(systemUtils.identityRegistry()),
-            address(systemUtils.compliance()),
-            new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
-            address(accessManager)
-        ));
+        address token2 = address(
+            new SMARTToken(
+                "Test Token 2",
+                "TEST2",
+                18,
+                1000e18, // cap
+                address(0), // onchainID_
+                address(systemUtils.identityRegistry()),
+                address(systemUtils.compliance()),
+                new SMARTComplianceModuleParamPair[](0),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                address(accessManager)
+            )
+        );
         vm.stopPrank();
 
         // Period 1: mint 150 from token1
@@ -837,7 +844,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         });
 
         bytes memory params = abi.encode(config);
-        uint256 sameDay = 1000 * 86400;
+        uint256 sameDay = 1000 * 86_400;
 
         // Mint 150 tokens
         vm.warp(sameDay);
@@ -873,8 +880,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         });
 
         bytes memory params = abi.encode(config);
-        uint256 day1 = 1000 * 86400;
-        uint256 day2 = 1001 * 86400;
+        uint256 day1 = 1000 * 86_400;
+        uint256 day2 = 1001 * 86_400;
 
         // Day 1: Mint 150 tokens
         vm.warp(day1);
@@ -915,7 +922,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         });
 
         bytes memory params = abi.encode(config);
-        uint256 startTime = 1000 * 86400;
+        uint256 startTime = 1000 * 86_400;
 
         // Mint 350 tokens in period 1
         vm.warp(startTime);
@@ -952,18 +959,20 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         bytes memory params = abi.encode(config);
 
         vm.startPrank(tokenIssuer);
-        address token2 = address(new SMARTToken(
-            "Test Token 2",
-            "TEST2",
-            18,
-            1000e18,
-            address(0),
-            address(systemUtils.identityRegistry()),
-            address(systemUtils.compliance()),
-            new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
-            address(accessManager)
-        ));
+        address token2 = address(
+            new SMARTToken(
+                "Test Token 2",
+                "TEST2",
+                18,
+                1000e18,
+                address(0),
+                address(systemUtils.identityRegistry()),
+                address(systemUtils.compliance()),
+                new SMARTComplianceModuleParamPair[](0),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                address(accessManager)
+            )
+        );
         vm.stopPrank();
 
         // Mint 150 from token1
@@ -1028,7 +1037,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         });
 
         bytes memory params = abi.encode(config);
-        uint256 today = 1000 * 86400;
+        uint256 today = 1000 * 86_400;
 
         // Burn tokens without any prior mints (should be no-op)
         vm.warp(today);
@@ -1050,9 +1059,9 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         });
 
         bytes memory params = abi.encode(config);
-        uint256 day1 = 1000 * 86400;
-        uint256 day2 = 1001 * 86400;
-        uint256 day3 = 1002 * 86400;
+        uint256 day1 = 1000 * 86_400;
+        uint256 day2 = 1001 * 86_400;
+        uint256 day3 = 1002 * 86_400;
 
         // Day 1: Mint 100
         vm.warp(day1);
@@ -1215,14 +1224,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         module.destroyed(address(smartToken), user1, 100, params);
     }
 
-     // --- Base Price Conversion Tests ---
+    // --- Base Price Conversion Tests ---
     function test_TokenSupplyLimit_BasePrice_ConvertsTokenAmounts() public {
         // First, add a base price claim to the token's identity
         claimUtils.issueBasePriceClaim(address(smartToken), tokenIssuer, 2e18, "EUR", 18);
 
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 8000000, // 8M EUR limit (whole currency amount)
+            maxSupply: 8_000_000, // 8M EUR limit (whole currency amount)
             periodLength: 0,
             rolling: false,
             useBasePrice: true,
@@ -1232,7 +1241,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         bytes memory params = abi.encode(config);
 
         // Should allow minting 4M tokens (= 8M EUR)
-        module.canTransfer(address(smartToken), address(0), user1, 4000000e18, params);
+        module.canTransfer(address(smartToken), address(0), user1, 4_000_000e18, params);
 
         // Should reject minting 4M + 1 tokens (= 8M + 2 EUR)
         vm.expectRevert(
@@ -1240,29 +1249,31 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
             )
         );
-        module.canTransfer(address(smartToken), address(0), user1, 4000001e18, params);
+        module.canTransfer(address(smartToken), address(0), user1, 4_000_001e18, params);
     }
 
     function test_TokenSupplyLimit_BasePrice_RevertWhen_NoIdentity() public {
         // Create token
         vm.startPrank(tokenIssuer);
-        address tokenWithoutIdentity = address(new SMARTToken(
-            "Test Token",
-            "TEST",
-            18,
-            1000e18, // cap
-            address(0), // onchainID_
-            address(systemUtils.identityRegistry()),
-            address(systemUtils.compliance()),
-            new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
-            address(accessManager)
-        ));
+        address tokenWithoutIdentity = address(
+            new SMARTToken(
+                "Test Token",
+                "TEST",
+                18,
+                1000e18, // cap
+                address(0), // onchainID_
+                address(systemUtils.identityRegistry()),
+                address(systemUtils.compliance()),
+                new SMARTComplianceModuleParamPair[](0),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                address(accessManager)
+            )
+        );
         vm.stopPrank();
 
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
-            maxSupply: 8000000, // 8M whole currency
+            maxSupply: 8_000_000, // 8M whole currency
             periodLength: 0,
             rolling: false,
             useBasePrice: true,
@@ -1282,31 +1293,35 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Decimals_WithoutBasePrice_WholeTokens() public {
         // Create tokens with different decimals
         vm.startPrank(tokenIssuer);
-        address token6Decimals = address(new SMARTToken(
-            "USDC Token",
-            "USDC",
-            6, // 6 decimals like USDC
-            1000000e6, // 1M cap
-            address(0),
-            address(systemUtils.identityRegistry()),
-            address(systemUtils.compliance()),
-            new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
-            address(accessManager)
-        ));
+        address token6Decimals = address(
+            new SMARTToken(
+                "USDC Token",
+                "USDC",
+                6, // 6 decimals like USDC
+                1_000_000e6, // 1M cap
+                address(0),
+                address(systemUtils.identityRegistry()),
+                address(systemUtils.compliance()),
+                new SMARTComplianceModuleParamPair[](0),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                address(accessManager)
+            )
+        );
 
-        address token18Decimals = address(new SMARTToken(
-            "ETH Token",
-            "ETH",
-            18, // 18 decimals like ETH
-            1000e18, // 1K cap
-            address(0),
-            address(systemUtils.identityRegistry()),
-            address(systemUtils.compliance()),
-            new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
-            address(accessManager)
-        ));
+        address token18Decimals = address(
+            new SMARTToken(
+                "ETH Token",
+                "ETH",
+                18, // 18 decimals like ETH
+                1000e18, // 1K cap
+                address(0),
+                address(systemUtils.identityRegistry()),
+                address(systemUtils.compliance()),
+                new SMARTComplianceModuleParamPair[](0),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                address(accessManager)
+            )
+        );
         vm.stopPrank();
 
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
@@ -1345,32 +1360,36 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Decimals_WithBasePrice_Normalized() public {
         // Create tokens with different decimals but same base price
         vm.startPrank(tokenIssuer);
-        
-        address token6Decimals = address(new SMARTToken(
-            "USDC Token",
-            "USDC",
-            6,
-            1000000e6,
-            address(0), // Will be set by createAndSetTokenOnchainID
-            address(systemUtils.identityRegistry()),
-            address(systemUtils.compliance()),
-            new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
-            address(accessManager)
-        ));
 
-        address token18Decimals = address(new SMARTToken(
-            "ETH Token",
-            "ETH",
-            18,
-            1000e18,
-            address(0), // Will be set by createAndSetTokenOnchainID
-            address(systemUtils.identityRegistry()),
-            address(systemUtils.compliance()),
-            new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
-            address(accessManager)
-        ));
+        address token6Decimals = address(
+            new SMARTToken(
+                "USDC Token",
+                "USDC",
+                6,
+                1_000_000e6,
+                address(0), // Will be set by createAndSetTokenOnchainID
+                address(systemUtils.identityRegistry()),
+                address(systemUtils.compliance()),
+                new SMARTComplianceModuleParamPair[](0),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                address(accessManager)
+            )
+        );
+
+        address token18Decimals = address(
+            new SMARTToken(
+                "ETH Token",
+                "ETH",
+                18,
+                1000e18,
+                address(0), // Will be set by createAndSetTokenOnchainID
+                address(systemUtils.identityRegistry()),
+                address(systemUtils.compliance()),
+                new SMARTComplianceModuleParamPair[](0),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                address(accessManager)
+            )
+        );
         vm.stopPrank();
 
         // Create and set token identities
@@ -1388,7 +1407,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             rolling: false,
             useBasePrice: true,
             global: true // Enable global tracking to test cross-token limits
-        });
+         });
 
         bytes memory params = abi.encode(config);
 
@@ -1414,18 +1433,20 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Decimals_ZeroDecimals() public {
         // Create token with 0 decimals (like some NFT tokens)
         vm.startPrank(tokenIssuer);
-        address token0Decimals = address(new SMARTToken(
-            "NFT Token",
-            "NFT",
-            0, // 0 decimals
-            1000, // 1000 cap
-            address(0),
-            address(systemUtils.identityRegistry()),
-            address(systemUtils.compliance()),
-            new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
-            address(accessManager)
-        ));
+        address token0Decimals = address(
+            new SMARTToken(
+                "NFT Token",
+                "NFT",
+                0, // 0 decimals
+                1000, // 1000 cap
+                address(0),
+                address(systemUtils.identityRegistry()),
+                address(systemUtils.compliance()),
+                new SMARTComplianceModuleParamPair[](0),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                address(accessManager)
+            )
+        );
         vm.stopPrank();
 
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
@@ -1453,26 +1474,28 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Decimals_BasePriceWithDifferentDecimals() public {
         // Test base price claims with different decimal precision
         vm.startPrank(tokenIssuer);
-        
-        address tokenWithClaim = address(new SMARTToken(
-            "Test Token",
-            "TEST",
-            18,
-            1000e18,
-            address(0), // Will be set by createAndSetTokenOnchainID
-            address(systemUtils.identityRegistry()),
-            address(systemUtils.compliance()),
-            new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
-            address(accessManager)
-        ));
+
+        address tokenWithClaim = address(
+            new SMARTToken(
+                "Test Token",
+                "TEST",
+                18,
+                1000e18,
+                address(0), // Will be set by createAndSetTokenOnchainID
+                address(systemUtils.identityRegistry()),
+                address(systemUtils.compliance()),
+                new SMARTComplianceModuleParamPair[](0),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                address(accessManager)
+            )
+        );
         vm.stopPrank();
 
         // Create and set token identity
         tokenUtils.createAndSetTokenOnchainID(tokenWithClaim, tokenIssuer);
 
         // Price claim with 6 decimals: $1.50 = 1500000 (6 decimals)
-        claimUtils.issueBasePriceClaim(tokenWithClaim, tokenIssuer, 1500000, "USD", 6);
+        claimUtils.issueBasePriceClaim(tokenWithClaim, tokenIssuer, 1_500_000, "USD", 6);
 
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
@@ -1501,9 +1524,35 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Decimals_Global_MixedDecimals() public {
         // Test global tracking with tokens of different decimals
         vm.startPrank(tokenIssuer);
-        
-        address token6 = address(new SMARTToken("USDC", "USDC", 6, 1000000e6, address(0), address(systemUtils.identityRegistry()), address(systemUtils.compliance()), new SMARTComplianceModuleParamPair[](0), systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL), address(accessManager)));
-        address token18 = address(new SMARTToken("ETH", "ETH", 18, 1000e18, address(0), address(systemUtils.identityRegistry()), address(systemUtils.compliance()), new SMARTComplianceModuleParamPair[](0), systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL), address(accessManager)));
+
+        address token6 = address(
+            new SMARTToken(
+                "USDC",
+                "USDC",
+                6,
+                1_000_000e6,
+                address(0),
+                address(systemUtils.identityRegistry()),
+                address(systemUtils.compliance()),
+                new SMARTComplianceModuleParamPair[](0),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                address(accessManager)
+            )
+        );
+        address token18 = address(
+            new SMARTToken(
+                "ETH",
+                "ETH",
+                18,
+                1000e18,
+                address(0),
+                address(systemUtils.identityRegistry()),
+                address(systemUtils.compliance()),
+                new SMARTComplianceModuleParamPair[](0),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                address(accessManager)
+            )
+        );
         vm.stopPrank();
 
         // Create and set token identities
@@ -1554,18 +1603,20 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_Decimals_HighDecimalToken() public {
         // Test with very high decimals (extreme but possible)
         vm.startPrank(tokenIssuer);
-        address tokenHighDecimals = address(new SMARTToken(
-            "High Precision Token",
-            "HPT",
-            18, // Standard decimals (within valid range)
-            1e18, // 1 token cap
-            address(0),
-            address(systemUtils.identityRegistry()),
-            address(systemUtils.compliance()),
-            new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
-            address(accessManager)
-        ));
+        address tokenHighDecimals = address(
+            new SMARTToken(
+                "High Precision Token",
+                "HPT",
+                18, // Standard decimals (within valid range)
+                1e18, // 1 token cap
+                address(0),
+                address(systemUtils.identityRegistry()),
+                address(systemUtils.compliance()),
+                new SMARTComplianceModuleParamPair[](0),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                address(accessManager)
+            )
+        );
         vm.stopPrank();
 
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
@@ -1596,13 +1647,39 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_BUG_IncorrectDecimalConversion() public {
         // This test demonstrates the bug in _convertToBaseCurrency
         // The function doesn't account for token decimals properly
-        
+
         vm.startPrank(tokenIssuer);
         // Create 6-decimal token (like USDC)
-        address token6 = address(new SMARTToken("USDC", "USDC", 6, 1000000e6, address(0), address(systemUtils.identityRegistry()), address(systemUtils.compliance()), new SMARTComplianceModuleParamPair[](0), systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL), address(accessManager)));
-        
-        // Create 18-decimal token (like ETH)  
-        address token18 = address(new SMARTToken("ETH", "ETH", 18, 1000e18, address(0), address(systemUtils.identityRegistry()), address(systemUtils.compliance()), new SMARTComplianceModuleParamPair[](0), systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL), address(accessManager)));
+        address token6 = address(
+            new SMARTToken(
+                "USDC",
+                "USDC",
+                6,
+                1_000_000e6,
+                address(0),
+                address(systemUtils.identityRegistry()),
+                address(systemUtils.compliance()),
+                new SMARTComplianceModuleParamPair[](0),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                address(accessManager)
+            )
+        );
+
+        // Create 18-decimal token (like ETH)
+        address token18 = address(
+            new SMARTToken(
+                "ETH",
+                "ETH",
+                18,
+                1000e18,
+                address(0),
+                address(systemUtils.identityRegistry()),
+                address(systemUtils.compliance()),
+                new SMARTComplianceModuleParamPair[](0),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                address(accessManager)
+            )
+        );
         vm.stopPrank();
 
         // Create and set token identities
@@ -1610,8 +1687,8 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         tokenUtils.createAndSetTokenOnchainID(token18, tokenIssuer);
 
         // Both tokens have SAME $1 price, but price claim has 18 decimals
-        claimUtils.issueBasePriceClaim(token6, tokenIssuer, 1e18, "USD", 18);   // $1.00 with 18 decimals
-        claimUtils.issueBasePriceClaim(token18, tokenIssuer, 1e18, "USD", 18);  // $1.00 with 18 decimals
+        claimUtils.issueBasePriceClaim(token6, tokenIssuer, 1e18, "USD", 18); // $1.00 with 18 decimals
+        claimUtils.issueBasePriceClaim(token18, tokenIssuer, 1e18, "USD", 18); // $1.00 with 18 decimals
 
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
             .SupplyLimitConfig({
@@ -1620,21 +1697,21 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             rolling: false,
             useBasePrice: true,
             global: true // Use global to see the bug clearly
-        });
+         });
 
         bytes memory params = abi.encode(config);
 
         // BUG: These should both convert to the same USD value but they don't!
-        
+
         // 1000 USDC (6 decimals) = 1000e6 raw units = should be $1000
         // But conversion: (1000e6 * 1e18) / 1e18 = 1000e6 ≠ $1000
         module.canTransfer(token6, address(0), user1, 1000e6, params);
         vm.prank(token6);
         module.created(token6, user1, 1000e6, params);
 
-        // 1000 ETH (18 decimals) = 1000e18 raw units = should be $1000  
+        // 1000 ETH (18 decimals) = 1000e18 raw units = should be $1000
         // But conversion: (1000e18 * 1e18) / 1e18 = 1000e18 = $1000 (correct)
-        
+
         // This will fail because global tracker has wrong value from 6-decimal token
         // Expected behavior: should work since both represent $1000, but it will fail due to bug
         module.canTransfer(token18, address(0), user1, 0, params); // Even 0 might fail due to incorrect prior tracking
@@ -1643,10 +1720,36 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TokenSupplyLimit_ExpectedBehavior_SameValueDifferentDecimals() public {
         // This test shows what SHOULD happen when the bug is fixed
         // Both tokens represent the same value and should be tracked equivalently
-        
+
         vm.startPrank(tokenIssuer);
-        address token6 = address(new SMARTToken("USDC", "USDC", 6, 1000000e6, address(0), address(systemUtils.identityRegistry()), address(systemUtils.compliance()), new SMARTComplianceModuleParamPair[](0), systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL), address(accessManager)));
-        address token18 = address(new SMARTToken("ETH", "ETH", 18, 1000e18, address(0), address(systemUtils.identityRegistry()), address(systemUtils.compliance()), new SMARTComplianceModuleParamPair[](0), systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL), address(accessManager)));
+        address token6 = address(
+            new SMARTToken(
+                "USDC",
+                "USDC",
+                6,
+                1_000_000e6,
+                address(0),
+                address(systemUtils.identityRegistry()),
+                address(systemUtils.compliance()),
+                new SMARTComplianceModuleParamPair[](0),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                address(accessManager)
+            )
+        );
+        address token18 = address(
+            new SMARTToken(
+                "ETH",
+                "ETH",
+                18,
+                1000e18,
+                address(0),
+                address(systemUtils.identityRegistry()),
+                address(systemUtils.compliance()),
+                new SMARTComplianceModuleParamPair[](0),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                address(accessManager)
+            )
+        );
         vm.stopPrank();
 
         // Create and set token identities
@@ -1681,18 +1784,20 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         // Test that fractional tokens now work correctly with the precision fix
         // The module now tracks raw amounts internally and converts only during limit checks
         vm.startPrank(tokenIssuer);
-        address token18 = address(new SMARTToken(
-            "Test Token",
-            "TEST",
-            18,
-            1000e18,
-            address(0),
-            address(systemUtils.identityRegistry()),
-            address(systemUtils.compliance()),
-            new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
-            address(accessManager)
-        ));
+        address token18 = address(
+            new SMARTToken(
+                "Test Token",
+                "TEST",
+                18,
+                1000e18,
+                address(0),
+                address(systemUtils.identityRegistry()),
+                address(systemUtils.compliance()),
+                new SMARTComplianceModuleParamPair[](0),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                address(accessManager)
+            )
+        );
         vm.stopPrank();
 
         TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
@@ -1716,7 +1821,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         vm.prank(token18);
         module.created(token18, user1, 0.5e18, params);
 
-        // NOW with the fix: trying to mint even 1 wei more should fail 
+        // NOW with the fix: trying to mint even 1 wei more should fail
         // because raw tracking preserves precision: 0.5e18 + 0.5e18 + 1 = 1e18 + 1 = 1.000...001 tokens
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -1725,5 +1830,4 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         );
         module.canTransfer(token18, address(0), user1, 1, params);
     }
-
 }

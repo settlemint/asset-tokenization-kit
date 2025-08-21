@@ -47,7 +47,8 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
         /// @dev If 0, tracks total lifetime supply. If >0, creates fixed or rolling periods of specified length
         uint256 periodLength;
         /// @notice Whether to use rolling window (true) or fixed periods (false)
-        /// @dev Only applicable when periodLength > 0. Rolling windows track the last N days, fixed periods reset at intervals
+        /// @dev Only applicable when periodLength > 0. Rolling windows track the last N days, fixed periods reset at
+        /// intervals
         bool rolling;
         /// @notice Whether to convert token amounts to base currency using price claims
         /// @dev When true, token amounts are converted using basePriceTopicId claims for regulatory calculation
@@ -87,7 +88,8 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
 
     /// @notice Initializes the TokenSupplyLimitComplianceModule
     /// @dev Sets up the module with meta-transaction support via trusted forwarder
-    /// @param _trustedForwarder Address of the trusted forwarder for meta transactions (can be zero address if not used)
+    /// @param _trustedForwarder Address of the trusted forwarder for meta transactions (can be zero address if not
+    /// used)
     constructor(address _trustedForwarder) AbstractComplianceModule(_trustedForwarder) { }
 
     // --- Functions ---
@@ -104,7 +106,11 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
         address, /* _to - unused */
         uint256 _value,
         bytes calldata _params
-    ) external override onlyTokenOrCompliance(_token) {
+    )
+        external
+        override
+        onlyTokenOrCompliance(_token)
+    {
         SupplyLimitConfig memory config = abi.decode(_params, (SupplyLimitConfig));
 
         // Store raw amounts for precise tracking, convert only at limit check time
@@ -134,7 +140,11 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
         address, /* _from - unused */
         uint256 _value,
         bytes calldata _params
-    ) external override onlyTokenOrCompliance(_token) {
+    )
+        external
+        override
+        onlyTokenOrCompliance(_token)
+    {
         SupplyLimitConfig memory config = abi.decode(_params, (SupplyLimitConfig));
 
         // Convert to same raw amount format used in created() for precise tracking
@@ -167,7 +177,11 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
         address, /* _to - unused */
         uint256 _value,
         bytes calldata _params
-    ) external view override {
+    )
+        external
+        view
+        override
+    {
         // Only check for mints (from == address(0))
         if (_from != address(0)) {
             return;
@@ -243,11 +257,7 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
     /// @param tracker The storage reference to the tracker to update
     /// @param amount The already-converted amount to add to tracking
     /// @param config The supply limit configuration
-    function _updateTracker(
-        SupplyTracker storage tracker,
-        uint256 amount,
-        SupplyLimitConfig memory config
-    ) private {
+    function _updateTracker(SupplyTracker storage tracker, uint256 amount, SupplyLimitConfig memory config) private {
         if (config.periodLength == 0) {
             // Lifetime cap
             tracker.totalSupply += amount;
@@ -274,7 +284,7 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
             if (tracker.periodStart == 0) {
                 // First time using this module for this token
                 shouldStartNewPeriod = true;
-            // solhint-disable-next-line gas-strict-inequalities
+                // solhint-disable-next-line gas-strict-inequalities
             } else if (block.timestamp - tracker.periodStart >= config.periodLength * 1 days) {
                 // Current period has expired
                 shouldStartNewPeriod = true;
@@ -300,7 +310,9 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
         SupplyTracker storage tracker,
         uint256 amount,
         SupplyLimitConfig memory config
-    ) private {
+    )
+        private
+    {
         if (config.periodLength == 0) {
             // Lifetime cap - simply subtract from total, but don't go below zero
             if (tracker.totalSupply >= amount) {
@@ -327,8 +339,7 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
         } else {
             // Fixed period tracking
             // Only subtract if we're in an active period
-            if (tracker.periodStart != 0 &&
-                block.timestamp - tracker.periodStart < config.periodLength * 1 days) {
+            if (tracker.periodStart != 0 && block.timestamp - tracker.periodStart < config.periodLength * 1 days) {
                 if (tracker.totalSupply >= amount) {
                     tracker.totalSupply -= amount;
                 } else {
@@ -347,14 +358,10 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
     /// @param _token The token address to check supply for (address(0) for global tracking)
     /// @param config The supply limit configuration defining tracking method
     /// @return The current supply amount in raw units (tokens or currency with full precision)
-    function _getCurrentRawSupply(
-        address _token,
-        SupplyLimitConfig memory config
-    ) private view returns (uint256) {
+    function _getCurrentRawSupply(address _token, SupplyLimitConfig memory config) private view returns (uint256) {
         // Use global tracker if _token is address(0) or config specifies global tracking
-        SupplyTracker storage tracker = (_token == address(0) || config.global)
-            ? globalSupplyTracker
-            : supplyTrackers[_token];
+        SupplyTracker storage tracker =
+            (_token == address(0) || config.global) ? globalSupplyTracker : supplyTrackers[_token];
 
         if (config.periodLength == 0) {
             // Lifetime cap
@@ -398,7 +405,7 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
             if (tracker.periodStart == 0) {
                 // No tracking data yet for this token
                 return 0;
-            // solhint-disable-next-line gas-strict-inequalities
+                // solhint-disable-next-line gas-strict-inequalities
             } else if (block.timestamp - tracker.periodStart >= config.periodLength * 1 days) {
                 // We're in a new period that hasn't been initialized yet
                 return 0;
@@ -418,10 +425,7 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
     /// @param _tokenAmount The raw token amount (including decimals) to convert
     /// @return The equivalent amount in raw base currency units (with price decimals)
     /// @custom:throws ComplianceCheckFailed when token has no identity, no price claim, or invalid claim data
-    function _convertToRawBaseCurrency(
-        address _token,
-        uint256 _tokenAmount
-    ) private view returns (uint256) {
+    function _convertToRawBaseCurrency(address _token, uint256 _tokenAmount) private view returns (uint256) {
         // Ensure the token implements ISMART via ERC165
         bool supportsSmart;
         try IERC165(_token).supportsInterface(type(ISMART).interfaceId) returns (bool ok) {
@@ -467,15 +471,16 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
                         // Verify the claim is valid with the trusted issuer
                         bool valid;
                         // Protect against malicious issuers reverting
-                        try trustedIssuers[j].isClaimValid(tokenIdentity, BASE_PRICE_TOPIC_ID, sig, data) returns (bool ok) {
+                        try trustedIssuers[j].isClaimValid(tokenIdentity, BASE_PRICE_TOPIC_ID, sig, data) returns (
+                            bool ok
+                        ) {
                             valid = ok;
                         } catch {
                             valid = false;
                         }
                         if (valid) {
                             // Decode the standard ABI-encoded claim data
-                            (uint256 priceAmount,, uint8 priceDecimals) =
-                                _decodeBasePriceData(data);
+                            (uint256 priceAmount,, uint8 priceDecimals) = _decodeBasePriceData(data);
 
                             // Get token decimals to convert token amount
                             uint8 tokenDecimals = IERC20Metadata(_token).decimals();
@@ -483,8 +488,13 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
                             // Always normalize to 18 decimals for consistent base currency tracking
                             // Formula: (_tokenAmount * priceAmount * 10^18) / (10^tokenDecimals * 10^priceDecimals)
                             // This ensures all base currency amounts have exactly 18 decimals for global tracking
-                            // 18 decimals is more than sufficient for fiat currencies (USD, EUR typically need 2-4 decimals)
-                            uint256 result = Math.mulDiv(_tokenAmount * 1e18, priceAmount, 10 ** uint256(tokenDecimals) * 10 ** uint256(priceDecimals));
+                            // 18 decimals is more than sufficient for fiat currencies (USD, EUR typically need 2-4
+                            // decimals)
+                            uint256 result = Math.mulDiv(
+                                _tokenAmount * 1e18,
+                                priceAmount,
+                                10 ** uint256(tokenDecimals) * 10 ** uint256(priceDecimals)
+                            );
                             return result;
                         }
                         break; // Found the issuer, no need to check others for this claim
@@ -513,7 +523,11 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
         uint256 _configLimit,
         address _token,
         SupplyLimitConfig memory config
-    ) private view returns (uint256) {
+    )
+        private
+        view
+        returns (uint256)
+    {
         if (config.useBasePrice) {
             // For base price mode, we normalize all base currency to 18 decimals
             // Convert whole currency units to raw 18-decimal currency

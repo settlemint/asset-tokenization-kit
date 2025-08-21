@@ -201,7 +201,6 @@ abstract contract _SMARTCollateralLogic is _SMARTExtension, ISMARTCollateral {
         view
         returns (bool success, uint256 amount, uint256 expiry)
     {
-
         // Step 1: Check if the issuer considers the claim valid.
         bool isValidByIssuer = __checkClaimValidity(issuer, tokenIdentity, topic, signature, data);
         if (!isValidByIssuer) {
