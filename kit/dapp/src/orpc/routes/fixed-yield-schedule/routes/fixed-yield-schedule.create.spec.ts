@@ -74,7 +74,7 @@ describe("Fixed yield schedule create", async () => {
     expect(bondToken.type).toBe(bondData.type);
   });
 
-  test.skip("can create fixed yield schedule", async () => {
+  test("can create fixed yield schedule", async () => {
     const yieldScheduleData = {
       yieldRate: "250", // 2.5%
       paymentInterval: "86400", // Daily payments (24 hours in seconds)
@@ -98,7 +98,6 @@ describe("Fixed yield schedule create", async () => {
 
   test("regular users cannot create yield schedules without proper permissions", async () => {
     const headers = await signInWithUser(DEFAULT_INVESTOR);
-    const expectedErrorCode = CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED;
     const investorClient = getOrpcClient(headers);
 
     const yieldScheduleData = {
@@ -117,9 +116,11 @@ describe("Fixed yield schedule create", async () => {
     await expect(
       investorClient.fixedYieldSchedule.create(yieldScheduleData, {
         context: {
-          skipLoggingFor: [expectedErrorCode],
+          skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
         },
       })
-    ).rejects.toThrow(errorMessageForCode(expectedErrorCode));
+    ).rejects.toThrow(
+      errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
+    );
   });
 });
