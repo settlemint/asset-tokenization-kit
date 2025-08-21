@@ -38,6 +38,26 @@ const REMOVE_SECRET_CODES_MUTATION = portalGraphql(`
 export const secretCodes = () => {
   return {
     id: "secret-codes",
+    schema: {
+      user: {
+        fields: {
+          secretCodesConfirmed: {
+            type: "boolean",
+            defaultValue: false,
+            required: false,
+            input: false, // SECURITY: Prevent direct manipulation via registration/update APIs
+            returned: true, // UI needs this for conditional rendering
+          },
+          secretCodeVerificationId: {
+            type: "string",
+            required: false,
+            unique: true, // SECURITY: Ensures one-to-one mapping between users and verification IDs
+            input: false, // SECURITY: Only set internally, never from user input
+            returned: true, // Middleware needs this for Portal verification calls
+          },
+        },
+      },
+    },
     endpoints: {
       generateSecretCodes: createAuthEndpoint(
         "/secret-codes/generate",

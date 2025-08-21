@@ -20,6 +20,26 @@ const OTP_ALGORITHM = "SHA256";
 export const twoFactor = () => {
   return {
     id: "two-factor",
+    schema: {
+      user: {
+        fields: {
+          twoFactorEnabled: {
+            type: "boolean",
+            defaultValue: false,
+            required: false,
+            input: false, // SECURITY: Prevent direct manipulation via registration/update APIs
+            returned: true, // UI needs this for conditional rendering
+          },
+          twoFactorVerificationId: {
+            type: "string",
+            required: false,
+            unique: true, // SECURITY: Ensures one-to-one mapping between users and verification IDs
+            input: false, // SECURITY: Only set internally, never from user input
+            returned: true, // Middleware needs this for Portal verification calls
+          },
+        },
+      },
+    },
     endpoints: {
       enableTwoFactor: createAuthEndpoint(
         "/two-factor/enable",

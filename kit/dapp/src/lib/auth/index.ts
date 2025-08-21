@@ -138,43 +138,6 @@ const options = {
         defaultValue: "investor",
         input: false,
       },
-      /**
-       * Whether the user has enabled two-factor authentication.
-       * Only set after the first otp code is verified.
-       */
-      twoFactorEnabled: {
-        type: "boolean",
-        required: false,
-        defaultValue: false,
-        input: false,
-      },
-      /**
-       * The verification id for the two-factor authentication.
-       */
-      twoFactorVerificationId: {
-        type: "string",
-        required: false,
-        unique: true,
-        input: false,
-      },
-      /**
-       * The verification id for the secret code.
-       */
-      secretCodeVerificationId: {
-        type: "string",
-        required: false,
-        unique: true,
-        input: false,
-      },
-      /**
-       * Whether the user has confirmed the secret codes.
-       */
-      secretCodesConfirmed: {
-        type: "boolean",
-        required: false,
-        defaultValue: false,
-        input: false,
-      },
     },
   },
   /**

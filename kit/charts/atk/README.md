@@ -230,7 +230,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.alloy.configReloader.image.tag | string | `"v0.84.1"` | Tag of image to use for config reloading. |
 | observability.alloy.image.registry | string | `"docker.io"` |  |
 | observability.alloy.image.repository | string | `"grafana/alloy"` | Grafana Alloy image repository. |
-| observability.alloy.image.tag | string | `"v1.10.1"` |  |
+| observability.alloy.image.tag | string | `"v1.10.2"` |  |
 | observability.enabled | bool | `true` |  |
 | observability.grafana.adminPassword | string | `"atk"` |  |
 | observability.grafana.adminUser | string | `"settlemint"` |  |
