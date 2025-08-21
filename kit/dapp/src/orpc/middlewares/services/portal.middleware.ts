@@ -38,7 +38,10 @@ import {
   getEthereumHash as getTransactionHash,
   type EthereumHash as TransactionHash,
 } from "@atk/zod/ethereum-hash";
-import { handleWalletVerificationChallenge } from "@settlemint/sdk-portal";
+import {
+  handleWalletVerificationChallenge,
+  WalletVerificationChallengeError,
+} from "@settlemint/sdk-portal";
 import type { TadaDocumentNode } from "gql.tada";
 import { getOperationAST } from "graphql";
 import type { Variables } from "graphql-request";
@@ -213,15 +216,33 @@ function createValidatedPortalClient(
         // The challenge provides a unique ID and cryptographic parameters for secure verification
         const userWalletAddress = variables.from;
 
-        const challengeResult = await handleWalletVerificationChallenge({
-          portalClient,
-          portalGraphql,
-          userWalletAddress,
-          verificationId,
-          verificationType: type,
-          code,
-          requestId,
-        });
+        let challengeResult: Awaited<
+          ReturnType<typeof handleWalletVerificationChallenge>
+        >;
+        try {
+          challengeResult = await handleWalletVerificationChallenge({
+            portalClient,
+            portalGraphql,
+            userWalletAddress,
+            verificationId,
+            verificationType: type,
+            code,
+            requestId,
+          });
+        } catch (error: unknown) {
+          if (error instanceof WalletVerificationChallengeError) {
+            throw errors.PORTAL_ERROR({
+              message: error.message,
+              data: {
+                document,
+                variables,
+                responseValidation: `Wallet verification challenge failed: ${error.message}`,
+              },
+              cause: error,
+            });
+          }
+          throw error;
+        }
 
         // PARAMETER ENRICHMENT: Add verification data to mutation variables
         // WHY: GraphQL schema defines challengeId and challengeResponse as optional,
