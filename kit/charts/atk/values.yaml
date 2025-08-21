@@ -517,7 +517,7 @@ observability:
       registry: "docker.io"
       # -- Grafana Alloy image repository.
       repository: grafana/alloy
-      tag: v1.10.1
+      tag: v1.10.2
     configReloader:
       image:
         registry: "quay.io"
