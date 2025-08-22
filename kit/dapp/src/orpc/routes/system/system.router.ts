@@ -5,6 +5,7 @@ import complianceModuleRouter from "@/orpc/routes/system/compliance-module/compl
 import identityRouter from "@/orpc/routes/system/identity/identity.router";
 import statsRouter from "@/orpc/routes/system/stats/stats.router";
 import tokenFactoryRouter from "@/orpc/routes/system/token-factory/factory.router";
+import trustedIssuersRouter from "@/orpc/routes/system/trusted-issuers/trusted-issuers.router";
 import { create } from "./routes/system.create";
 import { list } from "./routes/system.list";
 import { read } from "./routes/system.read";
@@ -27,6 +28,7 @@ const routes = {
   identity: identityRouter,
   compliance: complianceModuleRouter,
   claimTopics: claimTopicsRouter,
+  trustedIssuers: trustedIssuersRouter,
   stats: statsRouter,
   accessManager: accessManagerRouter,
   factory: tokenFactoryRouter,
