@@ -1,0 +1,8 @@
+[install]
+exact = true
+
+[console]
+depth = 5
+
+[run]
+bun = true
