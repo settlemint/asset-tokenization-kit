@@ -5,6 +5,14 @@ import { defaultExclude, defineConfig } from "vitest/config";
 
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
+  build: {
+    rollupOptions: {
+      external: ["bun"],
+    },
+  },
+  optimizeDeps: {
+    exclude: ["bun"],
+  },
   test: {
     globals: true,
     passWithNoTests: true,
