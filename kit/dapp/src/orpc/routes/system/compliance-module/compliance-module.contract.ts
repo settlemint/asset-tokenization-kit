@@ -8,7 +8,7 @@ const TAGS = ["system", "compliance-module"];
 const complianceModuleCreate = baseContract
   .route({
     method: "POST",
-    path: "/systems/compliance-module",
+    path: "/systems/compliance-modules",
     description: "Register system compliance modules",
     successDescription: "System compliance modules registered successfully",
     tags: TAGS,

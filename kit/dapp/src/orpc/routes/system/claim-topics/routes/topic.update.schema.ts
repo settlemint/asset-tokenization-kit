@@ -1,10 +1,11 @@
 import { z } from "zod";
+import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
 
 /**
  * Topic Update Input Schema
  * Validates input for updating a topic scheme's signature
  */
-export const TopicUpdateInputSchema = z.object({
+export const TopicUpdateInputSchema = MutationInputSchema.extend({
   name: z
     .string()
     .min(1, "Topic name is required")

@@ -21,7 +21,8 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { portalRouter } from "@/orpc/procedures/portal.router";
+import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 // No need to import SYSTEM_PERMISSIONS - using direct role requirements
 import {
   TopicDeleteOutputSchema,
@@ -70,7 +71,8 @@ const REMOVE_TOPIC_SCHEME_MUTATION = portalGraphql(`
  * @param input.name - Name of the topic scheme to remove
  * @returns Transaction hash and removed topic information
  */
-export const topicDelete = portalRouter.system.claimTopics.topicDelete
+export const topicDelete = onboardedRouter.system.claimTopics.topicDelete
+  .use(systemMiddleware)
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: { any: ["claimPolicyManager", "systemManager"] },
@@ -82,7 +84,7 @@ export const topicDelete = portalRouter.system.claimTopics.topicDelete
   )
   .handler(async ({ input, context, errors }): Promise<TopicDeleteOutput> => {
     const { system } = context;
-    const { name } = input;
+    const { name, walletVerification } = input;
     const sender = context.auth.user;
 
     // Validate system configuration
@@ -104,6 +106,11 @@ export const topicDelete = portalRouter.system.claimTopics.topicDelete
         address: registryAddress,
         from: sender.wallet,
         name,
+      },
+      {
+        sender,
+        code: walletVerification.secretVerificationCode,
+        type: walletVerification.verificationType,
       }
     );
 

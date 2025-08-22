@@ -1,10 +1,11 @@
 import { z } from "zod";
+import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
 
 /**
  * Topic Delete Input Schema
  * Validates input for removing a topic scheme
  */
-export const TopicDeleteInputSchema = z.object({
+export const TopicDeleteInputSchema = MutationInputSchema.extend({
   name: z
     .string()
     .min(1, "Topic name is required")

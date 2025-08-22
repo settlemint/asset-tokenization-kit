@@ -1,7 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { portalRouter } from "@/orpc/procedures/portal.router";
+import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import {
   TopicListResponseSchema,
   type TopicListOutput,
@@ -40,7 +40,7 @@ const TOPIC_SCHEMES_QUERY = theGraphGraphql(
  *
  * @returns Array of topic schemes with their details
  */
-export const topicList = portalRouter.system.claimTopics.topicList
+export const topicList = onboardedRouter.system.claimTopics.topicList
   .use(systemMiddleware)
   .use(theGraphMiddleware)
   .handler(async ({ context, errors }): Promise<TopicListOutput> => {

@@ -61,8 +61,8 @@ const TokenCollateralStatsResponseSchema = z.object({
  * console.log(`Collateral ratio: ${collateralData.collateralRatio}%`);
  * ```
  */
-export const statsCollateralRatio = tokenRouter.token.statsCollateralRatio
-  .handler(async ({ context, input }) => {
+export const statsCollateralRatio =
+  tokenRouter.token.statsCollateralRatio.handler(async ({ context, input }) => {
     // Token context is guaranteed by tokenRouter middleware
 
     // Fetch latest collateral stats from TheGraph

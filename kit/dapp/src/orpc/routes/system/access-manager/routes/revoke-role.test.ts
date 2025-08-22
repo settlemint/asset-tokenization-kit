@@ -4,8 +4,8 @@
 import {
   createBaseContext,
   createMockErrors,
-  getCapturedHandler,
-  installSystemRouterCaptureMock,
+  getCapturedOnboardedHandler,
+  installOnboardedRouterCaptureMock,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -21,10 +21,10 @@ vi.mock("@/orpc/helpers/challenge-response", () => ({
 }));
 
 // Install the system router capture mock BEFORE importing the route
-installSystemRouterCaptureMock();
+installOnboardedRouterCaptureMock();
 
 function getHandler(): OrpcHandler {
-  const handler = getCapturedHandler();
+  const handler = getCapturedOnboardedHandler();
   if (!handler) throw new Error("Handler not captured");
   return handler;
 }

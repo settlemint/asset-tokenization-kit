@@ -4,10 +4,11 @@
 import {
   createBaseContext,
   createMockErrors,
-  getCapturedHandler,
-  installPortalRouterCaptureMock,
+  getCapturedOnboardedHandler,
+  installOnboardedRouterCaptureMock,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
+import { DEFAULT_PINCODE } from "@test/fixtures/user";
 import { VerificationType } from "@atk/zod/verification-type";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import "./topic.create";
@@ -23,10 +24,10 @@ vi.mock("@/orpc/helpers/challenge-response", () => ({
   ),
 }));
 
-installPortalRouterCaptureMock();
+installOnboardedRouterCaptureMock();
 
 function getHandler(): OrpcHandler<TopicCreateInput, TopicCreateOutput> {
-  const handler = getCapturedHandler();
+  const handler = getCapturedOnboardedHandler();
   if (!handler) throw new Error("Handler not captured");
   return handler as OrpcHandler<TopicCreateInput, TopicCreateOutput>;
 }
@@ -64,7 +65,7 @@ describe("system.claim-topics.topic.create unit", () => {
       name: "KYC Verification",
       signature: "isKYCVerified(address,bytes32)",
       walletVerification: {
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
         verificationType: VerificationType.pincode,
       },
     };
@@ -89,6 +90,11 @@ describe("system.claim-topics.topic.create unit", () => {
         from: context.auth.user.wallet,
         name: "KYC Verification",
         signature: "isKYCVerified(address,bytes32)",
+      },
+      {
+        sender: context.auth.user,
+        code: DEFAULT_PINCODE,
+        type: VerificationType.pincode,
       }
     );
   });
@@ -117,7 +123,7 @@ describe("system.claim-topics.topic.create unit", () => {
       name: "Age Verification",
       signature: "isOver18(address)",
       walletVerification: {
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
         verificationType: VerificationType.pincode,
       },
     };
@@ -153,7 +159,7 @@ describe("system.claim-topics.topic.create unit", () => {
       name: "Test Topic",
       signature: "testFunction(address)",
       walletVerification: {
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
         verificationType: VerificationType.pincode,
       },
     };
@@ -194,7 +200,7 @@ describe("system.claim-topics.topic.create unit", () => {
       name: "Test Topic",
       signature: "testFunction(address)",
       walletVerification: {
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
         verificationType: VerificationType.pincode,
       },
     };
@@ -296,7 +302,7 @@ describe("system.claim-topics.topic.create unit", () => {
       name: "Credit Score",
       signature: "getCreditScore(address,uint256)",
       walletVerification: {
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
         verificationType: VerificationType.pincode,
       },
     };
@@ -314,6 +320,11 @@ describe("system.claim-topics.topic.create unit", () => {
         from: "0x2222222222222222222222222222222222222222",
         name: "Credit Score",
         signature: "getCreditScore(address,uint256)",
+      },
+      {
+        sender: context.auth.user,
+        code: DEFAULT_PINCODE,
+        type: VerificationType.pincode,
       }
     );
   });

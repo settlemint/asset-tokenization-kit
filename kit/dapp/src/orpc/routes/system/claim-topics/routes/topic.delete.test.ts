@@ -3,12 +3,14 @@
  */
 import { describe, expect, it, beforeEach, vi } from "vitest";
 import {
-  installPortalRouterCaptureMock,
-  getCapturedHandler,
+  installOnboardedRouterCaptureMock,
+  getCapturedOnboardedHandler,
   createBaseContext,
   createMockErrors,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
+import { DEFAULT_PINCODE } from "@test/fixtures/user";
+import { VerificationType } from "@atk/zod/verification-type";
 import type {
   TopicDeleteInput,
   TopicDeleteOutput,
@@ -21,11 +23,11 @@ vi.mock("@/orpc/helpers/challenge-response", () => ({
   ),
 }));
 
-installPortalRouterCaptureMock();
+installOnboardedRouterCaptureMock();
 import "./topic.delete";
 
 function getHandler(): OrpcHandler<TopicDeleteInput, TopicDeleteOutput> {
-  const handler = getCapturedHandler();
+  const handler = getCapturedOnboardedHandler();
   if (!handler) throw new Error("Handler not captured");
   return handler as OrpcHandler<TopicDeleteInput, TopicDeleteOutput>;
 }
@@ -61,6 +63,10 @@ describe("system.claim-topics.topic.delete unit", () => {
 
     const input: TopicDeleteInput = {
       name: "KYC Verification",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: VerificationType.pincode,
+      },
     };
 
     const result = await handler({
@@ -82,6 +88,11 @@ describe("system.claim-topics.topic.delete unit", () => {
         address: "0xBBBBbBBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb",
         from: context.auth.user.wallet,
         name: "KYC Verification",
+      },
+      {
+        sender: context.auth.user,
+        code: DEFAULT_PINCODE,
+        type: VerificationType.pincode,
       }
     );
   });
@@ -102,6 +113,10 @@ describe("system.claim-topics.topic.delete unit", () => {
 
     const input: TopicDeleteInput = {
       name: "Test Topic",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: VerificationType.pincode,
+      },
     };
 
     await expect(
@@ -138,6 +153,10 @@ describe("system.claim-topics.topic.delete unit", () => {
 
     const input: TopicDeleteInput = {
       name: "Test Topic",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: VerificationType.pincode,
+      },
     };
 
     await expect(
@@ -172,9 +191,27 @@ describe("system.claim-topics.topic.delete unit", () => {
       );
 
     const testCases = [
-      { name: "KYC" },
-      { name: "AML Check" },
-      { name: "Investor Status" },
+      {
+        name: "KYC",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: VerificationType.pincode,
+        },
+      },
+      {
+        name: "AML Check",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: VerificationType.pincode,
+        },
+      },
+      {
+        name: "Investor Status",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: VerificationType.pincode,
+        },
+      },
     ];
 
     for (const testCase of testCases) {
@@ -224,6 +261,10 @@ describe("system.claim-topics.topic.delete unit", () => {
 
     const input: TopicDeleteInput = {
       name: "Credit Score",
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: VerificationType.pincode,
+      },
     };
 
     await handler({
@@ -238,6 +279,11 @@ describe("system.claim-topics.topic.delete unit", () => {
         address: "0xCCCCcCCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCc",
         from: "0x2222222222222222222222222222222222222222",
         name: "Credit Score",
+      },
+      {
+        sender: context.auth.user,
+        code: DEFAULT_PINCODE,
+        type: VerificationType.pincode,
       }
     );
   });

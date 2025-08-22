@@ -1,6 +1,5 @@
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -16,7 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
+import { VerificationButton } from "@/components/verification-dialog/verification-button";
 import { client, orpc } from "@/orpc/orpc-client";
 import type { TopicScheme } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
@@ -37,44 +36,31 @@ interface TopicActionsMenuProps {
  */
 export function TopicActionsMenu({ topic, onEdit }: TopicActionsMenuProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [showVerificationDialog, setShowVerificationDialog] = useState(false);
   const queryClient = useQueryClient();
   const { t } = useTranslation("claim-topics-issuers");
 
   // Delete topic mutation
   const deleteMutation = useMutation({
-    mutationFn: (verification: UserVerification) =>
-      client.system.topicDelete({
+    mutationFn: (walletVerification: UserVerification) =>
+      client.system.claimTopics.topicDelete({
         name: topic.name,
-        walletVerification: verification,
+        walletVerification,
       }),
     onSuccess: () => {
       toast.success(t("claimTopics.toast.deleted"));
+      setShowDeleteDialog(false);
       // Invalidate and refetch topics data
       void queryClient.invalidateQueries({
-        queryKey: orpc.system.topicList.queryKey(),
+        queryKey: orpc.system.claimTopics.topicList.queryKey(),
       });
-      setShowDeleteDialog(false);
-      setShowVerificationDialog(false);
     },
     onError: (error) => {
       toast.error(t("claimTopics.toast.deleteError", { error: error.message }));
-      setShowVerificationDialog(false);
     },
   });
 
-  const handleDelete = () => {
-    // Show verification dialog after user confirms deletion
-    setShowDeleteDialog(false);
-    setShowVerificationDialog(true);
-  };
-
-  const handleVerificationSubmit = (verification: UserVerification) => {
-    deleteMutation.mutate(verification);
-  };
-
-  const handleVerificationCancel = () => {
-    setShowVerificationDialog(false);
+  const handleDelete = (walletVerification: UserVerification) => {
+    deleteMutation.mutate(walletVerification);
   };
 
   return (
@@ -128,27 +114,27 @@ export function TopicActionsMenu({ topic, onEdit }: TopicActionsMenuProps) {
             <AlertDialogCancel>
               {t("claimTopics.actions.delete.cancel")}
             </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
+            <VerificationButton
               disabled={deleteMutation.isPending}
-              className="bg-destructive hover:bg-destructive/90"
+              walletVerification={{
+                title: t("claimTopics.actions.delete.title"),
+                description: t("claimTopics.actions.delete.description"),
+              }}
+              onSubmit={handleDelete}
             >
-              {deleteMutation.isPending
-                ? t("claimTopics.actions.delete.deleting")
-                : t("claimTopics.actions.delete.confirm")}
-            </AlertDialogAction>
+              <Button
+                variant="destructive"
+                disabled={deleteMutation.isPending}
+                className="bg-destructive hover:bg-destructive/90"
+              >
+                {deleteMutation.isPending
+                  ? t("claimTopics.actions.delete.deleting")
+                  : t("claimTopics.actions.delete.confirm")}
+              </Button>
+            </VerificationButton>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      <VerificationDialog
-        open={showVerificationDialog}
-        onOpenChange={setShowVerificationDialog}
-        title={t("claimTopics.add.verification.title")}
-        description={t("claimTopics.add.verification.description")}
-        onSubmit={handleVerificationSubmit}
-        onCancel={handleVerificationCancel}
-      />
     </>
   );
 }

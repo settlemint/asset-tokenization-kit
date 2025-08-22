@@ -62,7 +62,7 @@ export const SYSTEM_PERMISSIONS: Record<string, RoleRequirement> & {
   revokeRole: { any: ["admin"] },
   complianceModuleCreate: { any: ["complianceManager", "systemManager"] },
   identityRegister: { any: ["identityManager", "systemManager"] },
-} as const;
+};
 
 // Use the validation type to ensure it's not stripped
 export type _SystemContractIsValid = AssertValidContract;
