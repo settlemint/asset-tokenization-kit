@@ -1,4 +1,4 @@
-import { Bytes } from "@graphprotocol/graph-ts";
+import { Bytes, store } from "@graphprotocol/graph-ts";
 import {
   ComplianceModule,
   ComplianceModuleParameters,
@@ -90,7 +90,7 @@ export function updateComplianceModuleParameters(
     } else {
       // Clear if not decodable
       if (tsl !== null) {
-        // We do not delete entities in subgraph, just unlink
+        store.remove("TokenSupplyLimitParams", tsl.id.toHexString());
       }
       complianceModuleParameters.tokenSupplyLimit = null;
     }
