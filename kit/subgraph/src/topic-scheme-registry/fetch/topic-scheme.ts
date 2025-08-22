@@ -2,7 +2,10 @@ import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { TopicScheme } from "../../../generated/schema";
 import { fetchTopicSchemeRegistry } from "./topic-scheme-registry";
 
-export function fetchTopicScheme(topicId: BigInt, registryAddress: Address | null = null): TopicScheme {
+export function fetchTopicScheme(
+  topicId: BigInt,
+  registryAddress: Address | null = null
+): TopicScheme {
   const id = Bytes.fromUTF8(topicId.toHexString());
   let topicScheme = TopicScheme.load(id);
 
