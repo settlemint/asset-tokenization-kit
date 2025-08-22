@@ -169,7 +169,6 @@ abstract contract _SMARTCollateralLogic is _SMARTExtension, ISMARTCollateral {
         return (true, amount, expiry); // Successfully decoded and not expired.
     }
 
-
     /// @notice Validates a claim with a specific issuer and decodes its data if valid.
     /// @dev This helper combines checking issuer validity and data decoding/expiry.
     /// @param issuer The `IClaimIssuer` to validate against.
