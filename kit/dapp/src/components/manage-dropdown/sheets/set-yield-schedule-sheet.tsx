@@ -87,13 +87,13 @@ export function SetYieldScheduleSheet({
   }, [open, form]);
 
   // Handle form submission
-  const handleSubmit = async (verification: {
+  const handleSubmit = (verification: {
     secretVerificationCode: string;
     verificationType?: "OTP" | "PINCODE" | "SECRET_CODES";
   }) => {
     const values = form.state.values;
-    toast.loading(t("tokens:actions.setYieldSchedule.messages.preparing"));
-    try {
+
+    const createAndSet = async () => {
       // Step 1: Create the yield schedule
       const scheduleResult = await createYieldSchedule({
         yieldRate: values.yieldRate,
@@ -117,12 +117,15 @@ export function SetYieldScheduleSheet({
           verificationType: verification.verificationType || "PINCODE",
         },
       });
+    };
 
-      toast.success(t("tokens:actions.setYieldSchedule.messages.success"));
-      onOpenChange(false);
-    } catch {
-      toast.error(t("tokens:actions.setYieldSchedule.messages.failed"));
-    }
+    toast.promise(createAndSet(), {
+      loading: t("tokens:actions.setYieldSchedule.messages.preparing"),
+      success: t("tokens:actions.setYieldSchedule.messages.success"),
+      error: t("tokens:actions.setYieldSchedule.messages.failed"),
+    });
+
+    onOpenChange(false);
   };
 
   return (

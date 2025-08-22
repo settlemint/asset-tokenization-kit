@@ -1,20 +1,14 @@
-import { DataTable } from "@/components/data-table/data-table";
-import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { DetailGrid } from "@/components/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { SetYieldScheduleSheet } from "@/components/manage-dropdown/sheets/set-yield-schedule-sheet";
+import { FixedYieldSchedulePeriodsTable } from "@/components/tables/fixed-yield-schedule-periods";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { formatDate } from "@/lib/utils/date";
 import { orpc } from "@/orpc/orpc-client";
-import type { FixedYieldSchedulePeriod } from "@atk/zod/fixed-yield-schedule";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
-import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
-import type { Dnum } from "dnum";
 import { Calendar } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -38,48 +32,6 @@ export const Route = createFileRoute(
   component: RouteComponent,
 });
 
-const columnHelper = createColumnHelper<FixedYieldSchedulePeriod>();
-
-/**
- * Calculate progress percentage from claimed and total yield amounts
- */
-function calculateProgress(claimed: Dnum, total: Dnum): number {
-  const claimedNum = Number.parseFloat(claimed.toString());
-  const totalNum = Number.parseFloat(total.toString());
-  if (totalNum === 0) return 0;
-  return Math.min((claimedNum / totalNum) * 100, 100);
-}
-
-/**
- * Determine period status based on current date and period dates
- */
-function determineStatus(
-  startDate: Date,
-  endDate: Date
-): "scheduled" | "active" | "completed" | "expired" {
-  const now = new Date();
-
-  if (now < startDate) {
-    return "scheduled";
-  } else if (now >= startDate && now <= endDate) {
-    return "active";
-  } else {
-    return "completed";
-  }
-}
-
-/**
- * Format claimed/total amounts for display
- */
-function formatClaimedTotal(
-  claimed: Dnum,
-  total: Dnum,
-  symbol: string
-): string {
-  const claimedNum = Number.parseFloat(claimed.toString()).toFixed(2);
-  const totalNum = Number.parseFloat(total.toString()).toFixed(2);
-  return `${claimedNum} / ${totalNum} ${symbol}`;
-}
 
 /**
  * Token yield details page component
@@ -98,100 +50,6 @@ function RouteComponent() {
   const { t } = useTranslation(["tokens", "common"]);
   const [isYieldScheduleSheetOpen, setIsYieldScheduleSheetOpen] =
     useState(false);
-
-  // Columns definition for periods table
-  const periodsColumns = useMemo(
-    () =>
-      withAutoFeatures([
-        columnHelper.accessor("startDate", {
-          header: t("tokens:yield.periodsTable.columns.startDate"),
-          cell: (cellProps) => {
-            const timestamp = cellProps.getValue();
-            return formatDate(timestamp);
-          },
-          meta: {
-            displayName: t("tokens:yield.periodsTable.columns.startDate"),
-            type: "date",
-          },
-        }),
-        columnHelper.accessor("endDate", {
-          header: t("tokens:yield.periodsTable.columns.endDate"),
-          cell: (cellProps) => {
-            const timestamp = cellProps.getValue();
-            return formatDate(timestamp);
-          },
-          meta: {
-            displayName: t("tokens:yield.periodsTable.columns.endDate"),
-            type: "date",
-          },
-        }),
-        columnHelper.display({
-          id: "claimedTotal",
-          header: t("tokens:yield.periodsTable.columns.claimedTotal"),
-          cell: ({ row }) => {
-            return formatClaimedTotal(
-              row.original.totalClaimed,
-              row.original.totalYield,
-              asset.symbol
-            );
-          },
-          meta: {
-            displayName: t("tokens:yield.periodsTable.columns.claimedTotal"),
-            type: "text",
-          },
-        }),
-        columnHelper.display({
-          id: "progress",
-          header: t("tokens:yield.periodsTable.columns.progress"),
-          cell: ({ row }) => {
-            const progress = calculateProgress(
-              row.original.totalClaimed,
-              row.original.totalYield
-            );
-            return (
-              <div className="flex items-center gap-2">
-                <Progress value={progress} className="w-16 h-2" />
-                <span className="text-sm text-muted-foreground">
-                  {progress.toFixed(1)}%
-                </span>
-              </div>
-            );
-          },
-          meta: {
-            displayName: t("tokens:yield.periodsTable.columns.progress"),
-            type: "progress",
-          },
-        }),
-        columnHelper.display({
-          id: "status",
-          header: t("tokens:yield.periodsTable.columns.status"),
-          cell: ({ row }) => {
-            const status = determineStatus(
-              row.original.startDate,
-              row.original.endDate
-            );
-            return (
-              <span
-                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  status === "active"
-                    ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                    : status === "completed"
-                      ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                      : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
-                }`}
-              >
-                {t(`tokens:yield.periodsTable.status.${status}`)}
-              </span>
-            );
-          },
-          meta: {
-            displayName: t("tokens:yield.periodsTable.columns.status"),
-            type: "badge",
-          },
-        }),
-      ] as ColumnDef<FixedYieldSchedulePeriod>[]),
-    [t, asset.symbol]
-  );
 
   // Check if token has a yield schedule configured
   const yieldScheduleId = asset.yield?.schedule?.id;
@@ -414,33 +272,10 @@ function RouteComponent() {
       )}
 
       {yieldSchedule.periods && yieldSchedule.periods.length > 0 && (
-        <div className="space-y-4">
-          <div>
-            <h2 className="text-xl font-medium text-accent">
-              {t("tokens:yield.periodsTable.title")}
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              {t("tokens:yield.periodsTable.description")}
-            </p>
-          </div>
-          <DataTable
-            name="yield-periods"
-            data={yieldSchedule.periods}
-            columns={periodsColumns}
-            urlState={{
-              enabled: false,
-              enableUrlPersistence: false,
-              enableRowSelection: false,
-              defaultPageSize: 10,
-            }}
-            advancedToolbar={{
-              enableGlobalSearch: true,
-              enableFilters: true,
-              enableExport: false,
-              enableViewOptions: false,
-            }}
-          />
-        </div>
+        <FixedYieldSchedulePeriodsTable
+          periods={yieldSchedule.periods}
+          assetSymbol={asset.symbol}
+        />
       )}
 
       {/* Set Yield Schedule Sheet */}
