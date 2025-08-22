@@ -32,7 +32,6 @@ export const Route = createFileRoute(
   component: RouteComponent,
 });
 
-
 /**
  * Token yield details page component
  *
@@ -55,47 +54,15 @@ function RouteComponent() {
   const yieldScheduleId = asset.yield?.schedule?.id;
 
   // Fetch yield schedule details if available
-  const { data: yieldSchedule, isLoading } = useQuery({
+  const { data: yieldSchedule } = useQuery({
     ...orpc.fixedYieldSchedule.read.queryOptions({
       input: { id: yieldScheduleId ?? "" },
     }),
     enabled: !!yieldScheduleId,
   });
 
-  // If asset is not loaded yet, show loading state
-  if (!asset) {
-    return (
-      <div className="space-y-6">
-        <div className="animate-pulse">
-          <div className="h-8 w-48 bg-muted rounded mb-4" />
-          <div className="space-y-3">
-            <div className="h-4 bg-muted rounded w-full" />
-            <div className="h-4 bg-muted rounded w-3/4" />
-            <div className="h-4 bg-muted rounded w-1/2" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Show loading state
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="animate-pulse">
-          <div className="h-8 w-48 bg-muted rounded mb-4" />
-          <div className="space-y-3">
-            <div className="h-4 bg-muted rounded w-full" />
-            <div className="h-4 bg-muted rounded w-3/4" />
-            <div className="h-4 bg-muted rounded w-1/2" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   // Show empty state if no yield schedule exists
-  if (!yieldScheduleId || !yieldSchedule) {
+  if (!yieldScheduleId) {
     return (
       <>
         <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
@@ -127,26 +94,35 @@ function RouteComponent() {
     );
   }
 
+  // Show loading state
+  if (!yieldSchedule) {
+    return (
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="h-8 w-48 bg-muted rounded mb-4" />
+          <div className="space-y-3">
+            <div className="h-4 bg-muted rounded w-full" />
+            <div className="h-4 bg-muted rounded w-3/4" />
+            <div className="h-4 bg-muted rounded w-1/2" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Helper function to format interval from seconds to readable format
   const formatInterval = (seconds: string) => {
     const secondsNum = Number.parseInt(seconds, 10);
     const days = Math.floor(secondsNum / 86_400);
 
-    if (days === 30 || days === 31) return t("tokens:yield.intervals.monthly");
-    if (days === 365) return t("tokens:yield.intervals.yearly");
-    if (days === 90 || days === 91)
-      return t("tokens:yield.intervals.quarterly");
+    if (days === 30 || days === 31) return t("common:timeInterval.MONTHLY");
+    if (days === 365) return t("common:timeInterval.YEARLY");
+    if (days === 90 || days === 91) return t("common:timeInterval.QUARTERLY");
     if (days % 7 === 0) {
       const weeks = days / 7;
-      return t("tokens:yield.intervals.weeks", { count: weeks });
+      return t("common:timeInterval.WEEKLY", { count: weeks });
     }
-    return t("tokens:yield.intervals.days", { count: days });
-  };
-
-  // Helper function to format rate from basis points to percentage
-  const formatRate = (basisPoints: string) => {
-    const rate = Number.parseInt(basisPoints, 10) / 100;
-    return `${rate}%`;
+    return t("common:timeInterval.DAILY", { count: days });
   };
 
   return (
@@ -167,8 +143,8 @@ function RouteComponent() {
         <DetailGridItem
           label={t("tokens:yield.fields.rate")}
           info={t("tokens:yield.fields.rateInfo")}
-          value={formatRate(yieldSchedule.rate)}
-          type="text"
+          value={yieldSchedule.rate}
+          type="basisPoints"
         />
         <DetailGridItem
           label={t("tokens:yield.fields.interval")}
