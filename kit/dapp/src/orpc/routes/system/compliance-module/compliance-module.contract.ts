@@ -8,7 +8,7 @@ const TAGS = ["system", "compliance-module"];
 const complianceModuleCreate = baseContract
   .route({
     method: "POST",
-    path: "/systems/compliance-modules",
+    path: "/systems/compliance-module",
     description: "Register system compliance modules",
     successDescription: "System compliance modules registered successfully",
     tags: TAGS,
@@ -19,7 +19,7 @@ const complianceModuleCreate = baseContract
 const complianceModuleList = baseContract
   .route({
     method: "GET",
-    path: "/system/compliance-modules",
+    path: "/system/compliance-module",
     description: "List all compliance modules registered in the system",
     successDescription: "Compliance modules retrieved successfully",
     tags: TAGS,
@@ -27,6 +27,6 @@ const complianceModuleList = baseContract
   .output(ComplianceModulesListOutputSchema);
 
 export const complianceModuleContract = {
-  complianceModuleCreate,
-  complianceModuleList,
+  create: complianceModuleCreate,
+  list: complianceModuleList,
 };

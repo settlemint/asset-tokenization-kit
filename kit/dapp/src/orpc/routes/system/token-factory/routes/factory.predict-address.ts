@@ -3,7 +3,7 @@ import { getTokenFactory } from "@/orpc/routes/system/token-factory/helpers/fact
 import { predictAddressHandlerMap } from "@/orpc/routes/system/token-factory/helpers/predict-handlers/handler-map";
 
 export const factoryPredictAddress =
-  portalRouter.system.tokenFactoryPredictAddress.handler(
+  portalRouter.system.factory.predictAddress.handler(
     ({ input, context, errors }) => {
       const tokenFactory = getTokenFactory(context, input.type);
       if (!tokenFactory) {

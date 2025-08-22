@@ -4,10 +4,10 @@ import { factoryPredictAddress } from "@/orpc/routes/system/token-factory/routes
 import { factoryRead } from "@/orpc/routes/system/token-factory/routes/factory.read";
 
 const routes = {
-  tokenFactoryCreate: factoryCreate,
-  tokenFactoryList: factoryList,
-  tokenFactoryPredictAddress: factoryPredictAddress,
-  tokenFactoryRead: factoryRead,
+  create: factoryCreate,
+  list: factoryList,
+  predictAddress: factoryPredictAddress,
+  read: factoryRead,
 };
 
 export default routes;

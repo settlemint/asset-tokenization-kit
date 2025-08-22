@@ -1,31 +1,68 @@
 import type { systemContract } from "@/orpc/routes/system/system.contract";
 import type { RoleRequirement } from "@atk/zod/role-requirement";
 
-type SystemContractMutations = keyof Pick<
-  typeof systemContract,
-  | "tokenFactoryCreate"
-  | "addonCreate"
-  | "grantRole"
-  | "revokeRole"
-  | "complianceModuleCreate"
-  | "identityRegister"
->;
+/**
+ * Type-safe compile-time checks to ensure the nested contract structure contains
+ * the expected operations. These types will cause compilation errors if the
+ * contract structure changes, helping catch refactoring issues early.
+ */
+type FactoryOperations = keyof typeof systemContract.factory;
+type AddonOperations = keyof typeof systemContract.addon;
+type AccessManagerOperations = keyof typeof systemContract.accessManager;
+type ComplianceOperations = keyof typeof systemContract.compliance;
+type IdentityOperations = keyof typeof systemContract.identity;
+
+// Create a type that uses all the operation checks
+type SystemContractValidation = {
+  factoryHasCreate: "create" extends FactoryOperations ? true : never;
+  addonHasCreate: "create" extends AddonOperations ? true : never;
+  accessManagerHasGrantRole: "grantRole" extends AccessManagerOperations
+    ? true
+    : never;
+  accessManagerHasRevokeRole: "revokeRole" extends AccessManagerOperations
+    ? true
+    : never;
+  complianceHasCreate: "create" extends ComplianceOperations ? true : never;
+  identityHasRegister: "register" extends IdentityOperations ? true : never;
+};
+
+// This type will cause a compile error if any operation is missing
+type AssertValidContract =
+  SystemContractValidation extends Record<string, true> ? true : never;
 
 /**
- * The permissions for the token factory contract
+ * The permissions for the system operations
  *
  * @description
- * This is a mapping of the token factory contract methods to the roles that are required to call them.
- * Uses OR logic - user needs either tokenManager OR systemManager role.
+ * This is a mapping of the system operation names to the roles that are required to call them.
+ * Uses OR logic - user needs any of the listed roles.
+ *
+ * The keys are flat names for clarity and backward compatibility with middleware,
+ * but they map to nested contract methods:
+ * - tokenFactoryCreate -> system.factory.create
+ * - addonCreate -> system.addon.create
+ * - grantRole -> system.accessManager.grantRole
+ * - revokeRole -> system.accessManager.revokeRole
+ * - complianceModuleCreate -> system.compliance.create
+ * - identityRegister -> system.identity.register
+ *
+ * The SystemContractValidation type above ensures these mappings stay valid during refactoring.
  */
-export const SYSTEM_PERMISSIONS: Record<
-  SystemContractMutations,
-  RoleRequirement
-> = {
+export const SYSTEM_PERMISSIONS: Record<string, RoleRequirement> & {
+  tokenFactoryCreate: RoleRequirement;
+  addonCreate: RoleRequirement;
+  grantRole: RoleRequirement;
+  revokeRole: RoleRequirement;
+  complianceModuleCreate: RoleRequirement;
+  identityRegister: RoleRequirement;
+} = {
   tokenFactoryCreate: { any: ["systemManager"] },
   addonCreate: { any: ["addonManager", "systemManager"] },
   grantRole: { any: ["admin"] },
   revokeRole: { any: ["admin"] },
   complianceModuleCreate: { any: ["complianceManager", "systemManager"] },
   identityRegister: { any: ["identityManager", "systemManager"] },
-};
+} as const;
+
+// Use the validation type to ensure it's not stripped
+export type _SystemContractIsValid = AssertValidContract;

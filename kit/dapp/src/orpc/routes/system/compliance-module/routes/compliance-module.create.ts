@@ -90,7 +90,7 @@ function getComplianceImplementationAddress(
   return defaultImplementation;
 }
 
-export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
+export const complianceModuleCreate = portalRouter.system.compliance.create
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.complianceModuleCreate,

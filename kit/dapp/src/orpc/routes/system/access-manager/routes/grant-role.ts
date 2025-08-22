@@ -156,7 +156,7 @@ const GRANT_MULTIPLE_ROLES_MUTATION = portalGraphql(`
  * @throws INTERNAL_SERVER_ERROR When system access manager is not available
  * @throws INPUT_VALIDATION_FAILED When attempting unsupported multi-address + multi-role operations
  */
-export const grantRole = portalRouter.system.grantRole
+export const grantRole = portalRouter.system.accessManager.grantRole
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.grantRole,

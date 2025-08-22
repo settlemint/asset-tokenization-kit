@@ -51,13 +51,13 @@ const AssetCountResponseSchema = z.object({
  * @example
  * ```typescript
  * // Get system asset count stats
- * const stats = await orpc.system.statsAssets.query();
+ * const stats = await orpc.system.stats.assets.query();
  * console.log(`Total assets: ${stats.totalAssets}`);
  * console.log('Breakdown:', stats.assetBreakdown);
  * ```
  */
 
-export const statsAssets = authRouter.system.statsAssets
+export const statsAssets = authRouter.system.stats.assets
   .use(systemMiddleware)
   .use(theGraphMiddleware)
   .handler(async ({ context }) => {

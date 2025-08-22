@@ -65,7 +65,7 @@ const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
  *
  * This handler creates token factories, supporting both single and batch operations.
  */
-export const factoryCreate = portalRouter.system.tokenFactoryCreate
+export const factoryCreate = portalRouter.system.factory.create
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.tokenFactoryCreate,

@@ -83,10 +83,10 @@ export async function bootstrapTokenFactories(
     );
   }
 
-  const tokenFactories = await orpClient.system.tokenFactoryList({});
+  const tokenFactories = await orpClient.system.factory.list({});
 
   const factories: Parameters<
-    typeof orpClient.system.tokenFactoryCreate
+    typeof orpClient.system.factory.create
   >[0]["factories"] = [
     { type: "bond", name: "Bonds" },
     { type: "deposit", name: "Deposits" },
@@ -106,7 +106,7 @@ export async function bootstrapTokenFactories(
 
   const initialFactoryCount = tokenFactories.length;
 
-  const result = await orpClient.system.tokenFactoryCreate({
+  const result = await orpClient.system.factory.create({
     walletVerification: {
       secretVerificationCode: DEFAULT_PINCODE,
       verificationType: "PINCODE",
@@ -131,13 +131,13 @@ export async function bootstrapTokenFactories(
 }
 
 export async function bootstrapAddons(orpClient: OrpcClient) {
-  const addons = await orpClient.system.addonList({});
+  const addons = await orpClient.system.addon.list({});
   if (addons.length > 0) {
     console.log("Addons already exist");
     return;
   }
 
-  await orpClient.system.addonCreate({
+  await orpClient.system.addon.create({
     walletVerification: {
       secretVerificationCode: DEFAULT_PINCODE,
       verificationType: "PINCODE",
@@ -153,7 +153,7 @@ export async function bootstrapAddons(orpClient: OrpcClient) {
       },
       {
         type: "xvp",
-        name: "XVP",
+        name: "XvP",
       },
     ],
   });
@@ -176,7 +176,7 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
   ];
 
   if (rolesToGrant.length > 0) {
-    await orpClient.system.grantRole({
+    await orpClient.system.accessManager.grantRole({
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
@@ -207,7 +207,7 @@ export async function createAndRegisterUserIdentities(orpcClient: OrpcClient) {
       const userOrpClient = getOrpcClient(await signInWithUser(user));
       const me = await userOrpClient.user.me({});
       if (me.wallet && !me.onboardingState.identitySetup) {
-        await orpcClient.system.identityCreate({
+        await orpcClient.system.identity.create({
           walletVerification: {
             secretVerificationCode: DEFAULT_PINCODE,
             verificationType: "PINCODE",
@@ -215,7 +215,7 @@ export async function createAndRegisterUserIdentities(orpcClient: OrpcClient) {
           wallet: me.wallet,
         });
         try {
-          await orpcClient.system.identityRegister({
+          await orpcClient.system.identity.register({
             walletVerification: {
               secretVerificationCode: DEFAULT_PINCODE,
               verificationType: "PINCODE",

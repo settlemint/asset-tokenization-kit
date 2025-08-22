@@ -32,7 +32,7 @@ const IDENTITY_REGISTER_MUTATION = portalGraphql(`
   }
 `);
 
-export const identityRegister = portalRouter.system.identityRegister
+export const identityRegister = portalRouter.system.identity.register
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.identityRegister,

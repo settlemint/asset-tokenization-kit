@@ -106,46 +106,47 @@ function processTransactionHistoryData(
  * @example
  * ```typescript
  * // Get transaction metrics for the last 14 days
- * const metrics = await orpc.system.statsTransactionHistory.query({ input: { timeRange: 14 } });
+ * const metrics = await orpc.system.stats.transactionHistory.query({ input: { timeRange: 14 } });
  * console.log(metrics.totalTransactions, metrics.transactionHistory);
  * ```
  */
-export const statsTransactionHistory = authRouter.system.statsTransactionHistory
-  .use(systemMiddleware)
-  .use(theGraphMiddleware)
-  .handler(async ({ context, input }) => {
-    // System context is guaranteed by systemMiddleware
+export const statsTransactionHistory =
+  authRouter.system.stats.transactionHistory
+    .use(systemMiddleware)
+    .use(theGraphMiddleware)
+    .handler(async ({ context, input }) => {
+      // System context is guaranteed by systemMiddleware
 
-    // timeRange is guaranteed to have a value from the schema default
-    const timeRange = input.timeRange;
+      // timeRange is guaranteed to have a value from the schema default
+      const timeRange = input.timeRange;
 
-    // Calculate the date range for queries
-    const since = new Date();
-    since.setDate(since.getDate() - timeRange);
-    const sinceTimestamp = Math.floor(since.getTime() / 1000); // Convert to Unix timestamp
+      // Calculate the date range for queries
+      const since = new Date();
+      since.setDate(since.getDate() - timeRange);
+      const sinceTimestamp = Math.floor(since.getTime() / 1000); // Convert to Unix timestamp
 
-    // Fetch all transaction-related data in a single query
-    const response = await context.theGraphClient.query(
-      TRANSACTION_METRICS_QUERY,
-      {
-        input: {
-          since: sinceTimestamp.toString(),
-        },
-        output: TransactionMetricsResponseSchema,
-      }
-    );
+      // Fetch all transaction-related data in a single query
+      const response = await context.theGraphClient.query(
+        TRANSACTION_METRICS_QUERY,
+        {
+          input: {
+            since: sinceTimestamp.toString(),
+          },
+          output: TransactionMetricsResponseSchema,
+        }
+      );
 
-    // Calculate metrics
-    const totalTransactions = sumEventCounts(response.totalTransactions);
-    const recentTransactions = sumEventCounts(response.recentTransactions);
-    const transactionHistory = processTransactionHistoryData(
-      response.transactionHistory
-    );
+      // Calculate metrics
+      const totalTransactions = sumEventCounts(response.totalTransactions);
+      const recentTransactions = sumEventCounts(response.recentTransactions);
+      const transactionHistory = processTransactionHistoryData(
+        response.transactionHistory
+      );
 
-    return {
-      totalTransactions,
-      recentTransactions,
-      transactionHistory,
-      timeRangeDays: timeRange,
-    };
-  });
+      return {
+        totalTransactions,
+        recentTransactions,
+        transactionHistory,
+        timeRangeDays: timeRange,
+      };
+    });

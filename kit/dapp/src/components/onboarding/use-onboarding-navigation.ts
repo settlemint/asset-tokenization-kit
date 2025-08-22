@@ -83,7 +83,7 @@ export function useOnboardingNavigation() {
           await Promise.all([
             // Invalidate factory list for sidebar
             queryClient.invalidateQueries({
-              queryKey: orpc.system.tokenFactoryList.key(),
+              queryKey: orpc.system.factory.list.key(),
               refetchType: "all",
             }),
             // Invalidate system data

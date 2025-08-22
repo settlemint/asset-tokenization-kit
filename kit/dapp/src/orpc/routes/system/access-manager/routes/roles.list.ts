@@ -7,7 +7,7 @@ import {
 } from "@/orpc/routes/system/access-manager/routes/roles.list.schema";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 
-export const rolesList = onboardedRouter.system.rolesList
+export const rolesList = onboardedRouter.system.accessManager.rolesList
   .use(systemMiddleware)
   .handler(({ input, context }) => {
     const { excludeContracts } = input;

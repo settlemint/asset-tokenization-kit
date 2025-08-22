@@ -228,7 +228,7 @@ function getImplementationAddress(addonConfig: SystemAddonConfig): string {
  *
  * This handler registers system addons, supporting both single and batch operations.
  */
-export const addonCreate = portalRouter.system.addonCreate
+export const addonCreate = portalRouter.system.addon.create
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.addonCreate,
