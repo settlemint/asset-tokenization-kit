@@ -40,115 +40,81 @@ export function decodeClaimValues(
     }
   }
 
-  // Check if the data needs tuple wrapping for The Graph compatibility
-  let processedData = data;
+  // Try graceful fallback decoding approaches
+  let decoded: ethereum.Value | null = null;
+  let successfulSignature = "";
+  let standardSignature = paramTypes.join(",");
+  let tupleSignature = "(" + paramTypes.join(",") + ")";
 
-  // Detect if data is missing tuple wrapper by checking if it starts with 0x0000...0020
-  // Standard ABI-encoded data won't have this offset pointer, tuple-wrapped data will
-  const dataHex = data.toHexString();
-  const hasTupleWrapper = dataHex.startsWith(
-    "0x0000000000000000000000000000000000000000000000000000000000000020"
-  );
+  // Approach 1: Try standard signature with original data
+  decoded = ethereum.decode(standardSignature, data);
+  if (decoded != null) {
+    successfulSignature = standardSignature;
+    log.info("Standard signature succeeded for topic: {}", [topicScheme.name]);
+  }
 
-  log.info("Decoding claim for topic {} - Original data: {} (length: {}), Has tuple wrapper: {}", [
-    topicScheme.name,
-    dataHex,
-    dataHex.length.toString(),
-    hasTupleWrapper.toString()
-  ]);
-
-  // Create signature based on data format and parameter count
-  let decodingSignature = "";
-  
-  if (hasTupleWrapper) {
-    // Data is already tuple-wrapped, use standard signature
-    if (paramTypes.length == 1) {
-      decodingSignature = paramTypes[0];
-    } else {
-      decodingSignature = paramTypes.join(",");
+  // Approach 2: Try tuple signature with original data
+  if (decoded == null) {
+    decoded = ethereum.decode(tupleSignature, data);
+    if (decoded != null) {
+      successfulSignature = tupleSignature;
+      log.info("Tuple signature succeeded for topic: {}", [topicScheme.name]);
     }
-  } else {
-    // Data is standard ABI-encoded
-    if (paramTypes.length == 1) {
-      // Single parameter: add tuple wrapper for consistency
-      const offsetPointer =
-        "0000000000000000000000000000000000000000000000000000000000000020";
-      const wrappedDataHex = "0x" + offsetPointer + dataHex.slice(2);
-      processedData = Bytes.fromHexString(wrappedDataHex);
-      decodingSignature = "(" + paramTypes[0] + ")";
-      log.info("Wrapped single param data: {} (length: {})", [
-        processedData.toHexString(),
-        processedData.toHexString().length.toString()
-      ]);
-    } else {
-      // Multiple parameters: The Graph seems to require tuple signatures
-      // but the data format varies based on whether it contains dynamic types
-      decodingSignature = "(" + paramTypes.join(",") + ")";
-      log.info("Using tuple signature for standard multi-param data: {}", [
-        processedData.toHexString()
+  }
+
+  // Approach 3: Try tuple signature with 0x20 prefixed data
+  if (decoded == null) {
+    let dataHex = data.toHexString();
+    let prefixedDataHex =
+      "0x0000000000000000000000000000000000000000000000000000000000000020" +
+      dataHex.slice(2);
+    let prefixedData = Bytes.fromHexString(prefixedDataHex);
+
+    decoded = ethereum.decode(tupleSignature, prefixedData);
+    if (decoded != null) {
+      successfulSignature = tupleSignature;
+      log.info("Tuple signature with 0x20 prefix succeeded for topic: {}", [
+        topicScheme.name,
       ]);
     }
   }
 
-  log.info("Attempting to decode with signature: {} using data: {}", [
-    decodingSignature,
-    processedData.toHexString()
-  ]);
-
-  let decoded = ethereum.decode(decodingSignature, processedData);
   if (decoded == null) {
-    log.warning("Decoding claim values for topic {} with signature {} failed. Original data: {}, Processed data: {}, Param types: {}", [
+    log.warning("All decoding approaches failed for topic {} with data: {}", [
       topicScheme.name,
-      decodingSignature,
-      dataHex,
-      processedData.toHexString(),
-      paramTypes.join(",")
+      data.toHexString(),
     ]);
-    
-    // For debugging: try to understand why collateral is failing
-    if (topicScheme.name == "collateral" && paramTypes.length == 2) {
-      // The data should be exactly 64 bytes (2 * 32)
-      log.warning("Collateral claim debug - data length: {}, expected: 64 bytes (130 hex chars with 0x)", [
-        dataHex.length.toString()
-      ]);
-      
-      // Try manual extraction to verify the data is correct
-      if (data.length == 64) {
-        const amount = data.toHexString().substring(2, 66); // First 32 bytes
-        const expiry = data.toHexString().substring(66, 130); // Second 32 bytes
-        log.warning("Manual extraction - amount hex: {}, expiry hex: {}", [amount, expiry]);
-      }
-    }
-    
-    const claimValue = fetchIdentityClaimValue(claim, "rawData");
+    let claimValue = fetchIdentityClaimValue(claim, "rawData");
     claimValue.value = data.toHexString();
     claimValue.save();
     return;
   }
 
-  // Handle decoding result based on what we expect
+  log.info("Successfully decoded claim {} using signature: {}", [
+    topicScheme.name,
+    successfulSignature,
+  ]);
+
+  // Handle decoding based on number of expected parameters
   if (paramTypes.length == 1) {
-    // Single parameter - could be direct value or tuple depending on wrapping
+    // Single parameter - could be direct value or tuple with one element
     let value: string;
-    if (hasTupleWrapper) {
-      // Already tuple-wrapped, decoded as direct value
-      value = convertEthereumValue(decoded);
-    } else {
-      // We wrapped it, so it's now a tuple
+    if (successfulSignature.startsWith("(")) {
+      // Tuple signature was used, extract from tuple
       let decodedTuple = decoded.toTuple();
       value = convertEthereumValue(decodedTuple[0]);
+    } else {
+      // Standard signature was used, direct value
+      value = convertEthereumValue(decoded);
     }
-    log.info("Decoded single value for {}: {}", [paramNames[0], value]);
     let claimValue = fetchIdentityClaimValue(claim, paramNames[0]);
     claimValue.value = value;
     claimValue.save();
   } else {
-    // Multiple parameters - always decode as tuple
+    // Multiple parameters - always extract from tuple
     let decodedTuple = decoded.toTuple();
-    log.info("Decoded tuple with {} elements", [decodedTuple.length.toString()]);
     for (let i = 0; i < paramNames.length; i++) {
       let value = convertEthereumValue(decodedTuple[i]);
-      log.info("Decoded value for {}: {}", [paramNames[i], value]);
       let claimValue = fetchIdentityClaimValue(claim, paramNames[i]);
       claimValue.value = value;
       claimValue.save();
