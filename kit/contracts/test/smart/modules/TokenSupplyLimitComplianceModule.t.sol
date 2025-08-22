@@ -1715,7 +1715,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         // This WOULD have failed due to the bug, but now works correctly
         // The bug would have caused incorrect conversion: (1000e6 * 1e18) / 1e18 = 1000e6 (wrong!)
         // This would make the global tracker think 6-decimal tokens contribute less than they should
-        
+
         // Now with the fix: should be able to mint more ETH since both are properly tracked as $1000 each
         // But we're at $2000 limit, so any additional mint should fail correctly
         vm.expectRevert(
@@ -1724,7 +1724,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
             )
         );
         module.canTransfer(token18, address(0), user1, 1e18, params); // $1 more should fail
-        
+
         // The fact that this test passes shows the bug has been fixed
         // Previously, the 6-decimal token would have been under-counted in the global tracker
     }
@@ -1813,8 +1813,6 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Decimals_FractionalTokens_Fixed() public {
-        // Test that fractional tokens now work correctly with the precision fix
-        // The module now tracks raw amounts internally and converts only during limit checks
         vm.startPrank(tokenIssuer);
         address token18 = address(
             new SMARTToken(
