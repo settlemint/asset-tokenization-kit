@@ -60,6 +60,10 @@ export const Roles = [
   new RoleConfig("TOKEN_FACTORY_MODULE_ROLE", "tokenFactoryModule"),
   new RoleConfig("ADDON_FACTORY_REGISTRY_MODULE_ROLE", "addonRegistryModule"),
   new RoleConfig("ADDON_FACTORY_MODULE_ROLE", "addonModule"),
+  new RoleConfig(
+    "ORGANISATION_IDENTITY_MANAGER_ROLE",
+    "organisationIdentityManager"
+  ),
 
   // --- Asset Roles (ATKAssetRoles) ---
   new RoleConfig("GOVERNANCE_ROLE", "governance"),

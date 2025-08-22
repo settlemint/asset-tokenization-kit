@@ -63,6 +63,20 @@ export const router = baseRouter.router({
   ),
 
   /**
+   * Fixed yield schedule API procedures.
+   *
+   * Lazy-loaded module containing fixed yield schedule management operations.
+   * Provides access to yield schedule configuration, tracking metrics, period
+   * management, and denomination asset details for tokenized assets with
+   * yield-bearing capabilities. This module enables comprehensive yield
+   * schedule data retrieval for client applications.
+   * @see {@link ./fixed-yield-schedule/fixed-yield-schedule.router} - Fixed yield schedule router implementation
+   */
+  fixedYieldSchedule: baseRouter.fixedYieldSchedule.lazy(
+    async () => import("./fixed-yield-schedule/fixed-yield-schedule.router")
+  ),
+
+  /**
    * Settings-related API procedures.
    *
    * Lazy-loaded module containing settings management operations.

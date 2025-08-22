@@ -18,7 +18,7 @@ import { getAccessControlEntries } from "./access-control-helpers";
  */
 export function mapUserRoles(
   wallet: EthereumAddress,
-  accessControl: AccessControl | null
+  accessControl?: AccessControl | null
 ) {
   // Initialize with all roles set to false
   const initialUserRoles: Record<AccessControlRoles, boolean> = {
@@ -42,6 +42,7 @@ export function mapUserRoles(
     identityManager: false,
     identityRegistryModule: false,
     minter: false,
+    organisationIdentityManager: false,
     pauser: false,
     recovery: false,
     saleAdmin: false,

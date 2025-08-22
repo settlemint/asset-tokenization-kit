@@ -1,4 +1,5 @@
-import { getOrpcClient } from "@test/fixtures/orpc-client";
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
+import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
@@ -236,19 +237,26 @@ describe("Token create", () => {
     const client = getOrpcClient(headers);
 
     await expect(
-      client.token.create({
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
+      client.token.create(
+        {
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
+          },
+          type: "stablecoin",
+          name: `Test Stablecoin Investor ${Date.now()}`,
+          symbol: "TSTC",
+          decimals: 18,
+          countryCode: "056", // Belgium numeric code for testing
         },
-        type: "stablecoin",
-        name: `Test Stablecoin Investor ${Date.now()}`,
-        symbol: "TSTC",
-        decimals: 18,
-        countryCode: "056", // Belgium numeric code for testing
-      })
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
+          },
+        }
+      )
     ).rejects.toThrow(
-      "User does not have the required role to execute this action."
+      errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
     );
   });
 });

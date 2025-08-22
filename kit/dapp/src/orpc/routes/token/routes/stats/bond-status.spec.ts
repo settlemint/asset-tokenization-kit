@@ -1,6 +1,7 @@
 /**
  * @vitest-environment node
  */
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
@@ -135,9 +136,16 @@ describe.concurrent("Token Stats: Bond Status", () => {
       const client = getOrpcClient(headers);
 
       await expect(
-        client.token.statsBondStatus({
-          tokenAddress: TEST_CONSTANTS.ZERO_ADDRESS,
-        })
+        client.token.statsBondStatus(
+          {
+            tokenAddress: TEST_CONSTANTS.ZERO_ADDRESS,
+          },
+          {
+            context: {
+              skipLoggingFor: [CUSTOM_ERROR_CODES.THE_GRAPH_ERROR],
+            },
+          }
+        )
       ).rejects.toThrow();
     });
   });

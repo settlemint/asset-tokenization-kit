@@ -1,6 +1,6 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
-import { portalRouter } from "@/orpc/procedures/portal.router";
+import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { call } from "@orpc/server";
 import { read } from "../../token.read";
@@ -27,7 +27,7 @@ const TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
   }
 `);
 
-export const removeComplianceModule = portalRouter.token.removeComplianceModule
+export const removeComplianceModule = tokenRouter.token.removeComplianceModule
   .use(
     tokenPermissionMiddleware({
       requiredRoles: TOKEN_PERMISSIONS.removeComplianceModule,

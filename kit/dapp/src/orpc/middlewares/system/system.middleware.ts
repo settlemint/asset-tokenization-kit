@@ -2,11 +2,12 @@ import {
   type AccessControl,
   AccessControlFragment,
 } from "@/lib/fragments/the-graph/access-control-fragment";
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import {
   getComponentId,
   parseSystemComponent,
 } from "@/orpc/helpers/system-component-helpers";
+import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { read } from "@/orpc/routes/settings/routes/settings.read";
 import type { AddonFactoryTypeId } from "@atk/zod/addon-types";
@@ -16,6 +17,7 @@ import {
   type EthereumAddress,
   getEthereumAddress,
 } from "@atk/zod/ethereum-address";
+import { systemContextSchema } from "@atk/zod/system-context";
 import { call } from "@orpc/server";
 import type { Hex } from "viem";
 
@@ -148,6 +150,14 @@ export interface SystemContext {
  */
 export const systemMiddleware = baseRouter.middleware(
   async ({ context, next, errors }) => {
+    const { theGraphClient } = context;
+
+    if (!theGraphClient) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: "theGraphMiddleware should be called before systemMiddleware",
+      });
+    }
+
     // Always fetch fresh system data - no caching
     const systemAddressHeader = context.headers["x-system-address"];
     const systemAddress =
@@ -166,7 +176,8 @@ export const systemMiddleware = baseRouter.middleware(
       throw errors.SYSTEM_NOT_CREATED();
     }
     const systemContext = await getSystemContext(
-      getEthereumAddress(systemAddress)
+      getEthereumAddress(systemAddress),
+      theGraphClient
     );
 
     if (!systemContext) {
@@ -184,13 +195,14 @@ export const systemMiddleware = baseRouter.middleware(
 );
 
 export const getSystemContext = async (
-  systemAddress: EthereumAddress
+  systemAddress: EthereumAddress,
+  theGraphClient: ValidatedTheGraphClient
 ): Promise<SystemContext | null> => {
-  const { system } = await theGraphClient.request({
-    document: SYSTEM_QUERY,
-    variables: {
+  const { system } = await theGraphClient.query(SYSTEM_QUERY, {
+    input: {
       systemAddress,
     },
+    output: systemContextSchema(),
   });
 
   if (!system) {
@@ -199,20 +211,20 @@ export const getSystemContext = async (
   const tokenFactories =
     system.tokenFactoryRegistry?.tokenFactories.map(({ id, name, typeId }) => ({
       name,
-      typeId: typeId as AssetFactoryTypeId,
+      typeId,
       id: getEthereumAddress(id),
     })) ?? [];
   const systemAddons =
     system.systemAddonRegistry?.systemAddons.map(({ id, name, typeId }) => ({
       name,
-      typeId: typeId as AddonFactoryTypeId,
+      typeId,
       id: getEthereumAddress(id),
     })) ?? [];
   const complianceModules =
     system.complianceModuleRegistry?.complianceModules.map(
       ({ id, typeId, name }) => ({
         id: getEthereumAddress(id),
-        typeId: typeId as ComplianceTypeId,
+        typeId,
         name,
       })
     ) ?? [];

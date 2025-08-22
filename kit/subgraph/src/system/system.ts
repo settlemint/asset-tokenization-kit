@@ -21,6 +21,7 @@ import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentityFactory } from "../identity-factory/fetch/identity-factory";
 import { fetchIdentityRegistryStorage } from "../identity-registry-storage/fetch/identity-registry-storage";
 import { fetchIdentityRegistry } from "../identity-registry/fetch/identity-registry";
+import { fetchIdentity } from "../identity/fetch/identity";
 import { fetchSystemAddonRegistry } from "../system-addons/fetch/system-addon-registry";
 import { fetchTokenFactoryRegistry } from "../token-factory/fetch/token-factory-registry";
 import { fetchTopicSchemeRegistry } from "../topic-scheme-registry/fetch/topic-scheme-registry";
@@ -97,6 +98,13 @@ export function handleBootstrapped(event: Bootstrapped): void {
   }
   systemAddonRegistry.save();
 
+  const organisationIdentity = fetchIdentity(event.params.organisationIdentity);
+  organisationIdentity.isContract = true;
+  if (organisationIdentity.deployedInTransaction.equals(Bytes.empty())) {
+    organisationIdentity.deployedInTransaction = event.transaction.hash;
+  }
+  organisationIdentity.save();
+
   system.compliance = fetchCompliance(event.params.complianceProxy).id;
   system.identityRegistry = identityRegistry.id;
   system.identityRegistryStorage = identityRegistryStorage.id;
@@ -106,6 +114,7 @@ export function handleBootstrapped(event: Bootstrapped): void {
   system.tokenFactoryRegistry = tokenFactoryRegistry.id;
   system.complianceModuleRegistry = complianceModuleRegistry.id;
   system.systemAddonRegistry = systemAddonRegistry.id;
+  system.organisationIdentity = organisationIdentity.id;
   system.save();
 }
 

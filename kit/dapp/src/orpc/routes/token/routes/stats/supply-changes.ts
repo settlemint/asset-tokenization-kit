@@ -1,5 +1,4 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { z } from "zod";
 
@@ -89,7 +88,6 @@ function processSupplyChangesHistoryData(
  * ```
  */
 export const statsSupplyChanges = tokenRouter.token.statsSupplyChanges
-  .use(theGraphMiddleware)
   .handler(async ({ context, input }) => {
     // Token context is guaranteed by tokenRouter middleware
 

@@ -1,6 +1,7 @@
 /**
  * @vitest-environment node
  */
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
@@ -69,14 +70,28 @@ describe.concurrent("Token Stats: Volume", () => {
 
       // Business rule: days must be within valid range (1-365)
       await expect(
-        client.token.statsVolume({ tokenAddress: testToken.id, days: 0 })
+        client.token.statsVolume(
+          { tokenAddress: testToken.id, days: 0 },
+          {
+            context: {
+              skipLoggingFor: [CUSTOM_ERROR_CODES.BAD_REQUEST],
+            },
+          }
+        )
       ).rejects.toThrow();
 
       await expect(
-        client.token.statsVolume({
-          tokenAddress: testToken.id,
-          days: 400,
-        })
+        client.token.statsVolume(
+          {
+            tokenAddress: testToken.id,
+            days: 400,
+          },
+          {
+            context: {
+              skipLoggingFor: [CUSTOM_ERROR_CODES.BAD_REQUEST],
+            },
+          }
+        )
       ).rejects.toThrow();
     });
 
@@ -103,10 +118,17 @@ describe.concurrent("Token Stats: Volume", () => {
       const client = getOrpcClient(headers);
 
       await expect(
-        client.token.statsVolume({
-          tokenAddress: TEST_CONSTANTS.ZERO_ADDRESS,
-          days: 30,
-        })
+        client.token.statsVolume(
+          {
+            tokenAddress: TEST_CONSTANTS.ZERO_ADDRESS,
+            days: 30,
+          },
+          {
+            context: {
+              skipLoggingFor: [CUSTOM_ERROR_CODES.THE_GRAPH_ERROR],
+            },
+          }
+        )
       ).rejects.toThrow();
     });
   });

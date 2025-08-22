@@ -1,7 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
-import { publicRouter } from "@/orpc/procedures/public.router";
+import { authRouter } from "@/orpc/procedures/auth.router";
 import {
   AccountReadSchema,
   AccountResponseSchema,
@@ -30,7 +29,7 @@ const READ_ACCOUNT_QUERY = theGraphGraphql(`
  * Is used during onboarding so cannot use the onboarded router
  *
  */
-export const read = publicRouter.account.read
+export const read = authRouter.account.read
   .use(
     offChainPermissionsMiddleware<typeof AccountReadSchema>({
       requiredPermissions: { account: ["read"] },
@@ -38,13 +37,8 @@ export const read = publicRouter.account.read
         input.wallet === context.auth?.user.wallet,
     })
   )
-  .use(theGraphMiddleware)
   .handler(async ({ input, context, errors }) => {
     const { wallet } = input;
-
-    if (!context.auth) {
-      throw errors.UNAUTHORIZED();
-    }
 
     // Execute TheGraph query with type-safe parameters
     // The Zod schema ensures type safety at both compile-time and runtime

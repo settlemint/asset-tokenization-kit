@@ -1,4 +1,5 @@
-import { getOrpcClient } from "@test/fixtures/orpc-client";
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
+import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
   DEFAULT_ADMIN,
@@ -110,16 +111,23 @@ describe("KYC upsert", () => {
     const client = getOrpcClient(headers);
 
     await expect(
-      client.user.kyc.upsert({
-        userId: otherUserData.id,
-        firstName: "Unauthorized",
-        lastName: "Update",
-        dob: new Date("1990-01-01"),
-        country: "US",
-        residencyStatus: "resident",
-        nationalId: "UNAUTH123",
-      })
-    ).rejects.toThrow();
+      client.user.kyc.upsert(
+        {
+          userId: otherUserData.id,
+          firstName: "Unauthorized",
+          lastName: "Update",
+          dob: new Date("1990-01-01"),
+          country: "US",
+          residencyStatus: "resident",
+          nationalId: "UNAUTH123",
+        },
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
+          },
+        }
+      )
+    ).rejects.toThrow(errorMessageForCode(CUSTOM_ERROR_CODES.FORBIDDEN));
   });
 
   it("can upsert with minimal required fields", async () => {

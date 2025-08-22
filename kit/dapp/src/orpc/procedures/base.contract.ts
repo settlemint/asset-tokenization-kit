@@ -1,11 +1,45 @@
 import { RoleRequirementSchema } from "@atk/zod/role-requirement";
-import { type ErrorMap, oc } from "@orpc/contract";
+import { type ErrorMap, type ErrorMapItem, oc } from "@orpc/contract";
 import { oo } from "@orpc/openapi";
 import { z } from "zod";
 
+export const CUSTOM_ERROR_CODES = {
+  USER_NOT_AUTHORIZED: "USER_NOT_AUTHORIZED",
+  USER_NOT_ALLOWED: "USER_NOT_ALLOWED",
+  FORBIDDEN: "FORBIDDEN",
+  BAD_REQUEST: "BAD_REQUEST",
+  INPUT_VALIDATION_FAILED: "INPUT_VALIDATION_FAILED",
+  TOKEN_INTERFACE_NOT_SUPPORTED: "TOKEN_INTERFACE_NOT_SUPPORTED",
+  OUTPUT_VALIDATION_FAILED: "OUTPUT_VALIDATION_FAILED",
+  INTERNAL_SERVER_ERROR: "INTERNAL_SERVER_ERROR",
+  RATE_LIMIT_EXCEEDED: "RATE_LIMIT_EXCEEDED",
+  THE_GRAPH_ERROR: "THE_GRAPH_ERROR",
+  CONFLICT: "CONFLICT",
+  PORTAL_ERROR: "PORTAL_ERROR",
+  SYSTEM_NOT_CREATED: "SYSTEM_NOT_CREATED",
+  NOT_FOUND: "NOT_FOUND",
+  RESOURCE_ALREADY_EXISTS: "RESOURCE_ALREADY_EXISTS",
+  NOT_ONBOARDED: "NOT_ONBOARDED",
+  VERIFICATION_ID_NOT_FOUND: "VERIFICATION_ID_NOT_FOUND",
+  CHALLENGE_FAILED: "CHALLENGE_FAILED",
+  TIMEOUT: "TIMEOUT",
+  CONFIRMATION_TIMEOUT: "CONFIRMATION_TIMEOUT",
+  UNAUTHORIZED: "UNAUTHORIZED",
+} as const;
+
 export const CUSTOM_ERRORS = {
   /**
-   * Input validation failure error.
+   * Bad request error.
+   *
+   * Thrown when a request is malformed or contains invalid data.
+   */
+  BAD_REQUEST: {
+    status: 400,
+    message: "Input validation failed",
+  },
+
+  /**
+   * Input validation failed error.
    *
    * Thrown when request data fails schema validation, typically due to:
    * - Missing required fields
@@ -302,6 +336,7 @@ export const CUSTOM_ERRORS = {
     data: z.object({
       document: z.unknown(),
       variables: z.unknown(),
+      stack: z.string().optional(),
       responseValidation: z.string().optional(),
     }),
   },
@@ -320,6 +355,7 @@ export const CUSTOM_ERRORS = {
     data: z.object({
       document: z.unknown(),
       variables: z.unknown(),
+      stack: z.string().optional(),
       responseValidation: z.string().optional(),
     }),
   },
@@ -335,7 +371,11 @@ export const CUSTOM_ERRORS = {
     message: "Conflict",
     status: 409,
   },
-} satisfies ErrorMap;
+} satisfies ErrorMap & {
+  [key in keyof typeof CUSTOM_ERROR_CODES]: ErrorMapItem<z.ZodType>;
+};
+
+export type CUSTOM_ERROR_CODES = keyof typeof CUSTOM_ERRORS;
 
 /**
  * Base ORPC contract with common error definitions.

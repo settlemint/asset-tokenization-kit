@@ -1,5 +1,4 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { from } from "dnum";
 import { z } from "zod";
@@ -72,7 +71,6 @@ const StatsBondStatusResponseSchema = z.object({
  * ```
  */
 export const statsBondStatus = tokenRouter.token.statsBondStatus
-  .use(theGraphMiddleware)
   .handler(async ({ context, input }) => {
     // Token context is guaranteed by tokenRouter middleware
     const { tokenAddress } = input;
