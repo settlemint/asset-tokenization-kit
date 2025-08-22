@@ -314,6 +314,8 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
     {
         if (config.periodLength == 0) {
             // Lifetime cap - simply subtract from total, but don't go below zero
+            // WHY: Using >= avoids underflow with zero amounts and saves gas vs > amount-1
+            // solhint-disable-next-line gas-strict-inequalities
             if (tracker.totalSupply >= amount) {
                 tracker.totalSupply -= amount;
             } else {
@@ -328,6 +330,8 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
 
             // Only subtract if this day has data and matches current day
             if (tracker.bufferDayMapping[bufferIndex] == currentDay) {
+                // WHY: Using >= avoids underflow with zero amounts and saves gas vs > amount-1
+                // solhint-disable-next-line gas-strict-inequalities
                 if (tracker.dailySupply[bufferIndex] >= amount) {
                     tracker.dailySupply[bufferIndex] -= amount;
                 } else {
@@ -339,6 +343,8 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
             // Fixed period tracking
             // Only subtract if we're in an active period
             if (tracker.periodStart != 0 && block.timestamp - tracker.periodStart < config.periodLength * 1 days) {
+                // WHY: Using >= avoids underflow with zero amounts and saves gas vs > amount-1
+                // solhint-disable-next-line gas-strict-inequalities
                 if (tracker.totalSupply >= amount) {
                     tracker.totalSupply -= amount;
                 } else {
