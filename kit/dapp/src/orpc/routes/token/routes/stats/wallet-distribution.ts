@@ -65,34 +65,36 @@ const TokenDistributionStatsResponseSchema = z.object({
  * console.log(`Total holders: ${distribution.totalHolders}`);
  * ```
  */
-export const statsWalletDistribution = tokenRouter.token.statsWalletDistribution
-  .handler(async ({ context, input }) => {
-    // Token context is guaranteed by tokenRouter middleware
+export const statsWalletDistribution =
+  tokenRouter.token.statsWalletDistribution.handler(
+    async ({ context, input }) => {
+      // Token context is guaranteed by tokenRouter middleware
 
-    // Fetch pre-calculated distribution stats from TheGraph
-    const response = await context.theGraphClient.query(
-      TOKEN_DISTRIBUTION_STATS_QUERY,
-      {
-        input: {
-          tokenId: input.tokenAddress.toLowerCase(),
-        },
-        output: TokenDistributionStatsResponseSchema,
-      }
-    );
+      // Fetch pre-calculated distribution stats from TheGraph
+      const response = await context.theGraphClient.query(
+        TOKEN_DISTRIBUTION_STATS_QUERY,
+        {
+          input: {
+            tokenId: input.tokenAddress.toLowerCase(),
+          },
+          output: TokenDistributionStatsResponseSchema,
+        }
+      );
 
-    const stats = response.tokenDistributionStatsState;
+      const stats = response.tokenDistributionStatsState;
 
-    // Convert subgraph segments to API response format (handles null case with ??)
-    const buckets = [
-      { range: "0-2%", count: stats?.balancesCountSegment1 ?? 0 },
-      { range: "2-10%", count: stats?.balancesCountSegment2 ?? 0 },
-      { range: "10-20%", count: stats?.balancesCountSegment3 ?? 0 },
-      { range: "20-40%", count: stats?.balancesCountSegment4 ?? 0 },
-      { range: "40-100%", count: stats?.balancesCountSegment5 ?? 0 },
-    ];
+      // Convert subgraph segments to API response format (handles null case with ??)
+      const buckets = [
+        { range: "0-2%", count: stats?.balancesCountSegment1 ?? 0 },
+        { range: "2-10%", count: stats?.balancesCountSegment2 ?? 0 },
+        { range: "10-20%", count: stats?.balancesCountSegment3 ?? 0 },
+        { range: "20-40%", count: stats?.balancesCountSegment4 ?? 0 },
+        { range: "40-100%", count: stats?.balancesCountSegment5 ?? 0 },
+      ];
 
-    return {
-      buckets,
-      totalHolders: buckets.reduce((sum, bucket) => sum + bucket.count, 0),
-    };
-  });
+      return {
+        buckets,
+        totalHolders: buckets.reduce((sum, bucket) => sum + bucket.count, 0),
+      };
+    }
+  );

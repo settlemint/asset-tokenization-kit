@@ -8,9 +8,78 @@ import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { isEthereumAddress } from "@atk/zod/ethereum-address";
 import { satisfiesRoleRequirement } from "@atk/zod/role-requirement";
 import { createLogger } from "@settlemint/sdk-utils/logging";
+import { from } from "dnum";
+import { createPublicClient, http } from "viem";
+import { anvil } from "viem/chains";
 import z from "zod";
 
 const logger = createLogger();
+
+// ABI for the findValidCollateralClaim function
+const COLLATERAL_ABI = [
+  {
+    inputs: [],
+    name: "findValidCollateralClaim",
+    outputs: [
+      { name: "amount", type: "uint256" },
+      { name: "issuer", type: "address" },
+      { name: "expiryTimestamp", type: "uint256" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+] as const;
+
+// Create viem client for direct contract calls
+const publicClient = createPublicClient({
+  chain: anvil,
+  transport: http(process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT),
+});
+
+/**
+ * Query collateral directly from the smart contract
+ */
+async function queryContractCollateral(tokenAddress: `0x${string}`) {
+  try {
+    logger.info(`🔍 Querying collateral for token: ${tokenAddress}`);
+
+    const result = await publicClient.readContract({
+      address: tokenAddress,
+      abi: COLLATERAL_ABI,
+      functionName: "findValidCollateralClaim",
+    });
+
+    const [amount, issuer, expiryTimestamp] = result;
+
+    logger.info(`📊 Contract collateral result:`, {
+      tokenAddress,
+      amount: amount.toString(),
+      issuer,
+      expiryTimestamp: Number(expiryTimestamp),
+      currentTime: Math.floor(Date.now() / 1000),
+    });
+
+    return {
+      amount: from(amount.toString(), 18), // Convert to Dnum with 18 decimals
+      issuer,
+      expiryTimestamp: Number(expiryTimestamp),
+      hasValidClaim:
+        amount > 0n && expiryTimestamp > BigInt(Math.floor(Date.now() / 1000)),
+    };
+  } catch (error) {
+    logger.warn(
+      `❌ Failed to query collateral from contract ${tokenAddress}:`,
+      error
+    );
+    return {
+      amount: from(0),
+      issuer: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+      expiryTimestamp: 0,
+      hasValidClaim: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
 
 const READ_TOKEN_QUERY = theGraphGraphql(
   `
@@ -108,6 +177,7 @@ export const tokenMiddleware = baseRouter.middleware(
       });
     }
 
+    // Fetch token data from The Graph
     const result = await theGraphClient.query(READ_TOKEN_QUERY, {
       input: {
         id: tokenAddress,
@@ -118,10 +188,27 @@ export const tokenMiddleware = baseRouter.middleware(
     });
 
     const token = result.token;
+
+    // Query real-time collateral data directly from contract
+    const contractCollateral = await queryContractCollateral(tokenAddress);
+
     const userRoles = mapUserRoles(auth.user.wallet, token.accessControl);
 
     const tokenContext = TokenSchema.parse({
       ...token,
+      // Override collateral data with real-time contract data
+      collateral: token.collateral
+        ? {
+            ...token.collateral,
+            collateral: contractCollateral.amount,
+            expiryTimestamp:
+              contractCollateral.expiryTimestamp > 0
+                ? contractCollateral.expiryTimestamp
+                : token.collateral.expiryTimestamp,
+          }
+        : null,
+      // Add contract collateral details for debugging
+      contractCollateral,
       userPermissions: {
         roles: userRoles,
         // TODO: implement logic which checks if the user is allowed to interact with the token

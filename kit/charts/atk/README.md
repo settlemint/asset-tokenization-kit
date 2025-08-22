@@ -229,7 +229,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.alloy.alloy.resources | object | `{}` |  |
 | observability.alloy.configReloader.image.registry | string | `"quay.io"` |  |
 | observability.alloy.configReloader.image.repository | string | `"prometheus-operator/prometheus-config-reloader"` | Repository to get config reloader image from. |
-| observability.alloy.configReloader.image.tag | string | `"v0.84.1"` | Tag of image to use for config reloading. |
+| observability.alloy.configReloader.image.tag | string | `"v0.85.0"` | Tag of image to use for config reloading. |
 | observability.alloy.image.registry | string | `"docker.io"` |  |
 | observability.alloy.image.repository | string | `"grafana/alloy"` | Grafana Alloy image repository. |
 | observability.alloy.image.tag | string | `"v1.10.2"` |  |

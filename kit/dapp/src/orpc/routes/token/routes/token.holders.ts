@@ -65,8 +65,8 @@ const TOKEN_HOLDERS_QUERY = theGraphGraphql(`
  *
  * @see {@link TokenHoldersResponseSchema} for the response structure
  */
-export const holders = tokenRouter.token.holders
-  .handler(async ({ context }) => {
+export const holders = tokenRouter.token.holders.handler(
+  async ({ context }) => {
     const response = await context.theGraphClient.query(TOKEN_HOLDERS_QUERY, {
       input: {
         id: context.token.id.toLowerCase(),
@@ -75,4 +75,5 @@ export const holders = tokenRouter.token.holders
     });
 
     return response;
-  });
+  }
+);

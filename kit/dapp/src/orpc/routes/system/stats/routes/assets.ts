@@ -55,8 +55,8 @@ const AssetCountResponseSchema = z.object({
  * ```
  */
 
-export const statsAssets = systemRouter.system.statsAssets
-  .handler(async ({ context }) => {
+export const statsAssets = systemRouter.system.statsAssets.handler(
+  async ({ context }) => {
     // System context is guaranteed by systemMiddleware
     const { system } = context;
     // Fetch asset count data in a single query
@@ -90,4 +90,5 @@ export const statsAssets = systemRouter.system.statsAssets
       totalAssets,
       assetBreakdown,
     };
-  });
+  }
+);

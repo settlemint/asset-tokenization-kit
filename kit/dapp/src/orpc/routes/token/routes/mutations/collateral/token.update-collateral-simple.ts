@@ -211,9 +211,11 @@ export const updateCollateral = tokenRouter.token.updateCollateral
 
     if (!onchainID) {
       throw new Error(
-        `Token does not have an onchainID. Contract: ${contract}`
+        `Token does not have an OnchainID identity contract linked. Contract: ${contract}`
       );
     }
+
+    console.log(`🔧 Adding collateral claim to identity: ${onchainID}`);
 
     // Encode collateral claim data according to ERC-735 standard
     const claimData = encodeAbiParameters(
@@ -226,6 +228,8 @@ export const updateCollateral = tokenRouter.token.updateCollateral
 
     // Create claim topic for collateral (using padded topic like standalone version)
     const claimTopic = "0x" + "1".padStart(64, "0");
+    console.log(`🔧 Claim topic: ${claimTopic}`);
+    console.log(`🔧 Claim data: ${claimData}`);
 
     // Create signature hash for self-issued claim (CONTRACT scheme)
     // For CONTRACT scheme, identity contract acts as issuer and this message hash serves as signature
@@ -235,8 +239,20 @@ export const updateCollateral = tokenRouter.token.updateCollateral
         [onchainID as `0x${string}`, BigInt(claimTopic), claimData]
       )
     );
+    console.log(`🔧 Message hash: ${messageHash}`);
 
-    await context.portalClient.mutate(
+    console.log(`🔧 Executing Portal mutation with params:`, {
+      address: onchainID,
+      from: sender.wallet,
+      topic: claimTopic,
+      scheme: "3",
+      issuer: onchainID,
+      signature: messageHash,
+      data: claimData,
+      uri: "",
+    });
+
+    const mutationResult = await context.portalClient.mutate(
       COLLATERAL_CLAIM_MUTATION,
       {
         address: onchainID,
@@ -254,6 +270,8 @@ export const updateCollateral = tokenRouter.token.updateCollateral
         type: walletVerification.verificationType,
       }
     );
+
+    console.log(`✅ Portal mutation result:`, mutationResult);
 
     // Return updated token data
     return await call(
