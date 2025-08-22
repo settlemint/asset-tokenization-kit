@@ -9,6 +9,7 @@ export default defineConfig({
     target: "es2022",
     sourcemap: true,
     rollupOptions: {
+      external: ["bun"],
       onwarn(warning, warn) {
         // Suppress unused import warnings from external modules
         if (warning.code === "UNUSED_EXTERNAL_IMPORT") {
@@ -31,10 +32,38 @@ export default defineConfig({
     esbuildOptions: {
       target: "es2022",
     },
+    exclude: ["bun"],
     include: [
       // Only include dependencies that cause full-page reloads or are CommonJS
       "date-fns", // CommonJS library
       "recharts", // Large charting library with d3 dependencies
+      "@tanstack/query-async-storage-persister",
+      "@tanstack/query-broadcast-client-experimental",
+      "superjson",
+      "@settlemint/sdk-utils/logging",
+      "@orpc/client",
+      "@orpc/client/fetch",
+      "@orpc/tanstack-query",
+      "lucide-react",
+      "dnum",
+      "zod",
+      "class-variance-authority",
+      "motion/react",
+      "better-auth/client/plugins",
+      "better-auth/react",
+      "viem",
+      "clsx",
+      "tailwind-merge",
+      "@daveyplate/better-auth-ui/tanstack",
+      "better-auth/plugins/access",
+      "better-auth/plugins/admin/access",
+      "i18next",
+      "crypto-js/md5",
+      "react-jazzicon",
+      "lodash/capitalize",
+      "i18n-iso-countries",
+      "date-fns/locale",
+      "drizzle-orm/pg-core",
     ],
   },
   server: {

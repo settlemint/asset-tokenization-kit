@@ -81,7 +81,9 @@ export function EditTopicDialog({
       onSubmit: ({ value }) => {
         // Additional validation: signature must be different from current
         if (value.signature === topic.signature) {
-          return { signature: t("claimTopics.edit.validation.signatureChanged") };
+          return {
+            signature: t("claimTopics.edit.validation.signatureChanged"),
+          };
         }
       },
     },
@@ -112,7 +114,9 @@ export function EditTopicDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{t("claimTopics.edit.title")}</DialogTitle>
-          <DialogDescription>{t("claimTopics.edit.description")}</DialogDescription>
+          <DialogDescription>
+            {t("claimTopics.edit.description")}
+          </DialogDescription>
         </DialogHeader>
 
         <form.AppForm>
@@ -139,7 +143,9 @@ export function EditTopicDialog({
                 <field.TextField
                   label={t("claimTopics.edit.fields.signature.label")}
                   required={true}
-                  description={t("claimTopics.edit.fields.signature.description")}
+                  description={t(
+                    "claimTopics.edit.fields.signature.description"
+                  )}
                 />
               )}
             />

@@ -74,36 +74,38 @@ function sumEventCounts(eventStats: { eventsCount: number }[]): number {
  * console.log(`Total: ${stats.totalTransactions}, Recent: ${stats.recentTransactions}`);
  * ```
  */
-export const statsTransactionCount = systemRouter.system.statsTransactionCount
-  .handler(async ({ context, input }) => {
-    // System context is guaranteed by systemMiddleware
+export const statsTransactionCount =
+  systemRouter.system.statsTransactionCount.handler(
+    async ({ context, input }) => {
+      // System context is guaranteed by systemMiddleware
 
-    // timeRange is guaranteed to have a value from the schema default
-    const timeRange = input.timeRange;
+      // timeRange is guaranteed to have a value from the schema default
+      const timeRange = input.timeRange;
 
-    // Calculate the date range for queries
-    const since = new Date();
-    since.setDate(since.getDate() - timeRange);
-    const sinceTimestamp = Math.floor(since.getTime() / 1000); // Convert to Unix timestamp
+      // Calculate the date range for queries
+      const since = new Date();
+      since.setDate(since.getDate() - timeRange);
+      const sinceTimestamp = Math.floor(since.getTime() / 1000); // Convert to Unix timestamp
 
-    // Fetch transaction count data in a single query
-    const response = await context.theGraphClient.query(
-      TRANSACTION_COUNT_QUERY,
-      {
-        input: {
-          since: sinceTimestamp.toString(),
-        },
-        output: TransactionCountResponseSchema,
-      }
-    );
+      // Fetch transaction count data in a single query
+      const response = await context.theGraphClient.query(
+        TRANSACTION_COUNT_QUERY,
+        {
+          input: {
+            since: sinceTimestamp.toString(),
+          },
+          output: TransactionCountResponseSchema,
+        }
+      );
 
-    // Calculate metrics
-    const totalTransactions = sumEventCounts(response.totalTransactions);
-    const recentTransactions = sumEventCounts(response.recentTransactions);
+      // Calculate metrics
+      const totalTransactions = sumEventCounts(response.totalTransactions);
+      const recentTransactions = sumEventCounts(response.recentTransactions);
 
-    return {
-      totalTransactions,
-      recentTransactions,
-      timeRangeDays: timeRange,
-    };
-  });
+      return {
+        totalTransactions,
+        recentTransactions,
+        timeRangeDays: timeRange,
+      };
+    }
+  );

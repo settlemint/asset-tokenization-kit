@@ -58,8 +58,8 @@ const READ_TOKEN_FACTORY_QUERY = theGraphGraphql(`
  *
  * @see {@link TokenFactoryDetailSchema} for the response structure
  */
-export const factoryRead = authRouter.system.tokenFactoryRead
-  .handler(async ({ input, context }) => {
+export const factoryRead = authRouter.system.tokenFactoryRead.handler(
+  async ({ input, context }) => {
     const result = await context.theGraphClient.query(
       READ_TOKEN_FACTORY_QUERY,
       {
@@ -72,4 +72,5 @@ export const factoryRead = authRouter.system.tokenFactoryRead
       }
     );
     return result.tokenFactory;
-  });
+  }
+);

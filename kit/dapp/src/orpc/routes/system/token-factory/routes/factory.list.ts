@@ -75,8 +75,8 @@ const LIST_TOKEN_FACTORIES_QUERY = theGraphGraphql(`
  * });
  * ```
  */
-export const factoryList = authRouter.system.tokenFactoryList
-  .handler(async ({ input, context }) => {
+export const factoryList = authRouter.system.tokenFactoryList.handler(
+  async ({ input, context }) => {
     // Build where clause if hasTokens filter is provided
     const where =
       input.hasTokens === undefined
@@ -95,4 +95,5 @@ export const factoryList = authRouter.system.tokenFactoryList
     );
 
     return response.tokenFactories;
-  });
+  }
+);

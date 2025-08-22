@@ -70,8 +70,8 @@ const StatsBondStatusResponseSchema = z.object({
  * console.log(`Coverage: ${bondStatus.coveredPercentage}%`);
  * ```
  */
-export const statsBondStatus = tokenRouter.token.statsBondStatus
-  .handler(async ({ context, input }) => {
+export const statsBondStatus = tokenRouter.token.statsBondStatus.handler(
+  async ({ context, input }) => {
     // Token context is guaranteed by tokenRouter middleware
     const { tokenAddress } = input;
 
@@ -107,4 +107,5 @@ export const statsBondStatus = tokenRouter.token.statsBondStatus
       ),
       coveredPercentage: from(bondStats.coveredPercentage),
     };
-  });
+  }
+);

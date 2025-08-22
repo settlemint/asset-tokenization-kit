@@ -37,7 +37,7 @@ function ClaimTopicsIssuersPage() {
   const { t } = useTranslation("claim-topics-issuers");
   const { t: tNav } = useTranslation("navigation");
   const [showAddDialog, setShowAddDialog] = useState(false);
-  
+
   // Get current user data with roles
   const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
 
@@ -48,9 +48,7 @@ function ClaimTopicsIssuersPage() {
         <h1 className="text-3xl font-bold">
           {tNav("settings.claimTopicsIssuers")}
         </h1>
-        <p className="text-muted-foreground mt-2">
-          {t("page.description")}
-        </p>
+        <p className="text-muted-foreground mt-2">{t("page.description")}</p>
       </div>
 
       <div className="space-y-6">

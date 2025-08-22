@@ -82,8 +82,8 @@ function processVolumeHistoryData(
  * console.log(metrics.volumeHistory);
  * ```
  */
-export const statsVolume = tokenRouter.token.statsVolume
-  .handler(async ({ context, input }) => {
+export const statsVolume = tokenRouter.token.statsVolume.handler(
+  async ({ context, input }) => {
     // Token context is guaranteed by tokenRouter middleware
 
     // Extract parameters with defaults applied by schema
@@ -119,4 +119,5 @@ export const statsVolume = tokenRouter.token.statsVolume
     return {
       volumeHistory,
     };
-  });
+  }
+);

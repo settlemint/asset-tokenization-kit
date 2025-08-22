@@ -208,6 +208,8 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | graph-node.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
 | graph-node.podAnnotations."prometheus.io/port" | string | `"8040"` |  |
 | graph-node.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
+| graph-node.postgresReadinessCheck.enabled | bool | `true` |  |
+| graph-node.postgresReadinessCheck.image | string | `"docker.io/postgres:17.6-alpine"` |  |
 | hasura.enabled | bool | `true` |  |
 | hasura.graphql-engine.image.pullPolicy | string | `"IfNotPresent"` |  |
 | hasura.graphql-engine.image.repository | string | `"docker.io/hasura/graphql-engine"` |  |
@@ -227,7 +229,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.alloy.alloy.resources | object | `{}` |  |
 | observability.alloy.configReloader.image.registry | string | `"quay.io"` |  |
 | observability.alloy.configReloader.image.repository | string | `"prometheus-operator/prometheus-config-reloader"` | Repository to get config reloader image from. |
-| observability.alloy.configReloader.image.tag | string | `"v0.84.1"` | Tag of image to use for config reloading. |
+| observability.alloy.configReloader.image.tag | string | `"v0.85.0"` | Tag of image to use for config reloading. |
 | observability.alloy.image.registry | string | `"docker.io"` |  |
 | observability.alloy.image.repository | string | `"grafana/alloy"` | Grafana Alloy image repository. |
 | observability.alloy.image.tag | string | `"v1.10.2"` |  |

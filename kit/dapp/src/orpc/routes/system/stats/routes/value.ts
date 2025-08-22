@@ -46,8 +46,8 @@ const TotalValueResponseSchema = z.object({
  * console.log(`Total system value: ${totalValue}`);
  * ```
  */
-export const statsValue = systemRouter.system.statsValue
-  .handler(async ({ context }) => {
+export const statsValue = systemRouter.system.statsValue.handler(
+  async ({ context }) => {
     // System context is guaranteed by systemMiddleware
 
     // Fetch system value from TheGraph
@@ -65,4 +65,5 @@ export const statsValue = systemRouter.system.statsValue
     return {
       totalValue,
     };
-  });
+  }
+);

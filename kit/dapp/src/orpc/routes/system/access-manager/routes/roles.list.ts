@@ -6,8 +6,8 @@ import {
 } from "@/orpc/routes/system/access-manager/routes/roles.list.schema";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 
-export const rolesList = systemRouter.system.rolesList
-  .handler(({ input, context }) => {
+export const rolesList = systemRouter.system.rolesList.handler(
+  ({ input, context }) => {
     const { excludeContracts } = input;
     const { system } = context;
 
@@ -39,4 +39,5 @@ export const rolesList = systemRouter.system.rolesList
     }
 
     return SystemRolesOutputSchema.parse([...rolesByAccount.values()]);
-  });
+  }
+);
