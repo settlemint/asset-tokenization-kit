@@ -74,8 +74,8 @@
   },
   "devDependencies": {
     "@prettier/plugin-oxc": "0.0.4",
-    "@settlemint/sdk-cli": "2.5.14",
-    "@settlemint/sdk-utils": "2.5.14",
+    "@settlemint/sdk-cli": "2.6.0",
+    "@settlemint/sdk-utils": "2.6.0",
     "@types/lodash": "4.17.20",
     "@typescript/native-preview": "7.0.0-dev.20250821.1",
     "graphql": "16.11.0",
