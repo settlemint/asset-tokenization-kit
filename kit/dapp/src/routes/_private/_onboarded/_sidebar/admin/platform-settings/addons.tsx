@@ -1,5 +1,6 @@
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
+import { AddonsManagement } from "@/components/platform-settings/addons/addons-management";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
@@ -32,9 +33,7 @@ function AddonsSettingsPage() {
         </p>
       </div>
 
-      <div className="rounded-lg border bg-card p-6">
-        <p className="text-muted-foreground">Addon settings coming soon...</p>
-      </div>
+      <AddonsManagement />
     </div>
   );
 }

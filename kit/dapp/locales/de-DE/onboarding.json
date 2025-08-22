@@ -210,7 +210,7 @@
       "failed-toast": "Bereitstellung der Add-ons fehlgeschlagen: ",
       "no-system": "System nicht gefunden. Bitte stellen Sie zuerst das System bereit.",
       "select-all-addons": "Wählen Sie alle Add-ons aus, die Sie aktivieren möchten",
-      "title": "Plattform-Add-Ons konfigurieren",
+      "title": "Plattform-Add-Ons Konfigurieren",
       "validation": {
         "invalid": "Wählen Sie mindestens ein Add-on aus"
       },
@@ -220,7 +220,10 @@
       "deployment-warning": "Dieser Prozess kann je nach Ihren Auswahlmöglichkeiten bis zu 2–3 Minuten dauern.",
       "intro-1": "Plattform-Add-Ons ermöglichen es Ihnen, die Funktionen Ihrer Tokenisierungsplattform zu erweitern. Diese Funktionen — wie Airdrops, Erträge oder XVP — werden als Smart Contracts bereitgestellt, genau wie das Kernsystem.",
       "intro-2": "Sie können die, die Sie jetzt benötigen, aktivieren und später in den Einstellungen einfach ändern oder erweitern.",
-      "transaction-confirmation-info": "Sie werden gebeten, jede Transaktion mit Ihrer PIN oder OTP zu bestätigen."
+      "transaction-confirmation-info": "Sie werden gebeten, jede Transaktion mit Ihrer PIN oder OTP zu bestätigen.",
+      "enabled-addons": "Aktivierte Add-Ons",
+      "enabled-addons-description": "Diese Add-Ons sind derzeit in Ihrem System aktiv und können nicht deaktiviert werden",
+      "all-addons-enabled": "Alle verfügbaren Add-Ons wurden aktiviert."
     }
   },
   "system-settings": {
