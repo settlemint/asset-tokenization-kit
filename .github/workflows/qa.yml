@@ -179,24 +179,6 @@ jobs:
             bun run ci:gha:main --concurrency=100%
           fi
 
-      - name: Docker compose logs on failure
-        if: failure()
-        run: |
-          echo "CI tests failed - collecting docker compose logs for debugging"
-          echo "============================================"
-          echo "Docker compose service status:"
-          echo "============================================"
-          docker compose -p atk ps
-          echo ""
-          echo "============================================"
-          echo "Docker compose logs:"
-          echo "============================================"
-          for service in $(docker compose -p atk ps --services); do
-            echo ""
-            echo "--- Logs for service: $service ---"
-            docker compose -p atk logs "$service" || true
-          done
-
       - name: Store predeployed output
         if: |
           github.event_name == 'push' ||
