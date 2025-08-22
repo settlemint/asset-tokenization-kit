@@ -69,7 +69,7 @@ export default defineConfig({
         resolve: {
           alias: [
             {
-              find: "@/lib/auth",
+              find: /^@\/lib\/auth.*/,
               replacement: path.resolve(
                 __dirname,
                 "./test/mocks/auth-lib-mock.ts"
