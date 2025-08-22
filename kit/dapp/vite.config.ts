@@ -9,6 +9,7 @@ export default defineConfig({
     target: "es2022",
     sourcemap: true,
     rollupOptions: {
+      external: ["bun"],
       onwarn(warning, warn) {
         // Suppress unused import warnings from external modules
         if (warning.code === "UNUSED_EXTERNAL_IMPORT") {

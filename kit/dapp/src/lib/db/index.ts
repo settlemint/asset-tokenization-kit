@@ -15,13 +15,13 @@
  */
 
 import { hasuraMetadataClient } from "@/lib/settlemint/hasura";
-import { postgresPool } from "@/lib/settlemint/postgres";
+import { client } from "@/lib/settlemint/postgres";
 import { env } from "@atk/config/env";
 import { trackAllTables } from "@settlemint/sdk-hasura";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { serverOnly } from "@tanstack/react-start";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { migrate } from "drizzle-orm/node-postgres/migrator";
+import { drizzle } from "drizzle-orm/bun-sql";
+import { migrate } from "drizzle-orm/bun-sql/migrator";
 import * as schemas from "./schema";
 
 const logger = createLogger();
@@ -59,7 +59,7 @@ export const migrateDatabase = async () => {
 
   try {
     logger.info("Tracking all tables in Hasura");
-    const database = postgresPool.options.database ?? "default";
+    const database = "default";
     await trackAllTables(database, hasuraMetadataClient, {
       excludeSchemas: ["drizzle"],
     });
@@ -89,7 +89,7 @@ export const migrateDatabase = async () => {
  * - Integrates all schema definitions for type-safe database operations
  */
 const getDb = serverOnly(() => {
-  return drizzle(postgresPool, {
+  return drizzle(client, {
     /**
      * Query logging configuration.
      * When enabled in development, logs all SQL queries to the console

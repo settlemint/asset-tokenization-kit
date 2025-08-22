@@ -19,7 +19,7 @@ import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { fiatCurrencies, fiatCurrencyMetadata } from "@atk/zod/fiat-currency";
 import { sql } from "drizzle-orm";
-import type { NodePgDatabase } from "drizzle-orm/node-postgres";
+import type { BunSQLDatabase } from "drizzle-orm/bun-sql";
 import { exchangeRateApiResponseSchema } from "../schemas";
 
 /**
@@ -98,7 +98,7 @@ async function calculateCrossRates(): Promise<
  * Used by the public read route for auto-sync.
  */
 export async function syncExchangeRatesInternal(
-  db: NodePgDatabase<typeof schema>,
+  db: BunSQLDatabase<typeof schema>,
   force = false
 ): Promise<{
   success: boolean;

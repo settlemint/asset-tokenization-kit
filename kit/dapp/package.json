@@ -13,7 +13,7 @@
     "watch": "tsgo --noEmit --watch",
     "build": "vite build --logLevel=error",
     "shadcn": "bunx shadcn@canary",
-    "codegen:settlemint": "settlemint codegen",
+    "codegen:settlemint": "settlemint codegen --bun",
     "codegen:interface-ids": "bun run ./tools/generate-interface-ids.ts",
     "codegen": "bun run codegen:interface-ids",
     "format": "prettier --experimental-cli --write .",
