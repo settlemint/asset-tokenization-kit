@@ -1,7 +1,7 @@
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
-import { getAddonIcon } from "@/components/onboarding/system-addons/addon-icons";
-import { AddonTypeCard } from "@/components/onboarding/system-addons/addon-type-card";
-import { getAddonTypeFromTypeId } from "@/components/onboarding/system-addons/addon-types-mapping";
+import { getAddonIcon } from "@/components/system-addons/components/addon-icons";
+import { AddonTypeCard } from "@/components/system-addons/components/addon-type-card";
+import { getAddonTypeFromTypeId } from "@/components/system-addons/components/addon-types-mapping";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";

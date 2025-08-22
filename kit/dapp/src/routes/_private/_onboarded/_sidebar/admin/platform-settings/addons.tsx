@@ -1,6 +1,6 @@
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
-import { AddonsManagement } from "@/components/platform-settings/addons/addons-management";
+import { AddonsManagement } from "@/components/system-addons/management/addons-management";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
