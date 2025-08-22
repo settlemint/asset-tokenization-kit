@@ -220,8 +220,8 @@ async function getSystemInfo(
 }
 
 function getSystemPermissions(userRoles: ReturnType<typeof mapUserRoles>) {
-  // Initialize all actions as false
-  const initialActions: Record<keyof typeof SYSTEM_PERMISSIONS, boolean> = {
+  // Initialize all actions as false, allowing TypeScript to infer the precise type
+  const initialActions = {
     tokenFactoryCreate: false,
     addonCreate: false,
     grantRole: false,
@@ -230,14 +230,16 @@ function getSystemPermissions(userRoles: ReturnType<typeof mapUserRoles>) {
     identityRegister: false,
   };
 
+  const userRoleList = Object.entries(userRoles)
+    .filter(([, hasRole]) => hasRole)
+    .map(([role]) => role) as AccessControlRoles[];
+
   // Update based on user roles using the flexible role requirement system
   Object.entries(SYSTEM_PERMISSIONS).forEach(([action, roleRequirement]) => {
-    const userRoleList = Object.entries(userRoles)
-      .filter(([_, hasRole]) => hasRole)
-      .map(([role]) => role) as AccessControlRoles[];
-
-    initialActions[action as keyof typeof SYSTEM_PERMISSIONS] =
-      satisfiesRoleRequirement(userRoleList, roleRequirement);
+    if (action in initialActions) {
+      initialActions[action as keyof typeof initialActions] =
+        satisfiesRoleRequirement(userRoleList, roleRequirement);
+    }
   });
   return initialActions;
 }

@@ -143,7 +143,8 @@ const translationModules = {
     assets: () => import("@/locales/de-DE/assets.json"),
     auth: () => import("@/locales/de-DE/auth.json"),
     blockchain: () => import("@/locales/de-DE/blockchain.json"),
-    "claim-topics-issuers": () => import("@/locales/de-DE/claim-topics-issuers.json"),
+    "claim-topics-issuers": () =>
+      import("@/locales/de-DE/claim-topics-issuers.json"),
     "compliance-modules": () =>
       import("@/locales/de-DE/compliance-modules.json"),
     common: () => import("@/locales/de-DE/common.json"),
@@ -184,7 +185,8 @@ const translationModules = {
     assets: () => import("@/locales/ar-SA/assets.json"),
     auth: () => import("@/locales/ar-SA/auth.json"),
     blockchain: () => import("@/locales/ar-SA/blockchain.json"),
-    "claim-topics-issuers": () => import("@/locales/ar-SA/claim-topics-issuers.json"),
+    "claim-topics-issuers": () =>
+      import("@/locales/ar-SA/claim-topics-issuers.json"),
     "compliance-modules": () =>
       import("@/locales/ar-SA/compliance-modules.json"),
     common: () => import("@/locales/ar-SA/common.json"),
@@ -225,7 +227,8 @@ const translationModules = {
     assets: () => import("@/locales/ja-JP/assets.json"),
     auth: () => import("@/locales/ja-JP/auth.json"),
     blockchain: () => import("@/locales/ja-JP/blockchain.json"),
-    "claim-topics-issuers": () => import("@/locales/ja-JP/claim-topics-issuers.json"),
+    "claim-topics-issuers": () =>
+      import("@/locales/ja-JP/claim-topics-issuers.json"),
     "compliance-modules": () =>
       import("@/locales/ja-JP/compliance-modules.json"),
     common: () => import("@/locales/ja-JP/common.json"),

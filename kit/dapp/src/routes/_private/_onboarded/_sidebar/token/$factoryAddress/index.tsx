@@ -68,7 +68,7 @@ export const Route = createFileRoute(
   }) => {
     // Ensure factory data is loaded
     const factory = await queryClient.ensureQueryData(
-      orpc.system.tokenFactoryRead.queryOptions({
+      orpc.system.factory.read.queryOptions({
         input: { id: factoryAddress },
       })
     );

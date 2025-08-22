@@ -1,4 +1,5 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { FactoriesResponseSchema } from "@/orpc/routes/system/token-factory/routes/factory.list.schema";
 
@@ -54,28 +55,29 @@ const LIST_TOKEN_FACTORIES_QUERY = theGraphGraphql(`
  * @example
  * ```typescript
  * // Get all token factories (default pagination)
- * const factories = await orpc.system.tokenFactoryList.query({});
+ * const factories = await orpc.system.factory.list.query({});
  *
  * // Get only factories that have created tokens
- * const activeFactories = await orpc.system.tokenFactoryList.query({
+ * const activeFactories = await orpc.system.factory.list.query({
  *   hasTokens: true
  * });
  *
  * // Get empty factories, sorted by name
- * const emptyFactories = await orpc.system.tokenFactoryList.query({
+ * const emptyFactories = await orpc.system.factory.list.query({
  *   hasTokens: false,
  *   orderBy: 'name',
  *   orderDirection: 'asc'
  * });
  *
  * // Paginated retrieval (page 2, 50 items per page)
- * const page2 = await orpc.system.tokenFactoryList.query({
+ * const page2 = await orpc.system.factory.list.query({
  *   offset: 50,
  *   limit: 50
  * });
  * ```
  */
-export const factoryList = authRouter.system.tokenFactoryList
+export const factoryList = authRouter.system.factory.list
+  .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
     // Build where clause if hasTokens filter is provided
     const where =

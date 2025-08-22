@@ -29,11 +29,12 @@ export function AddTopicDialog({
   const { t } = useTranslation("claim-topics-issuers");
 
   const createMutation = useMutation({
-    mutationFn: (data: TopicCreateInput) => client.system.topicCreate(data),
+    mutationFn: (data: TopicCreateInput) =>
+      client.system.claimTopics.topicCreate(data),
     onSuccess: (result) => {
       toast.success(t("claimTopics.toast.created", { name: result.name }));
       void queryClient.invalidateQueries({
-        queryKey: orpc.system.topicList.queryKey(),
+        queryKey: orpc.system.claimTopics.topicList.queryKey(),
       });
       onOpenChange(false);
       form.reset();

@@ -42,8 +42,8 @@ import { call } from "@orpc/server";
  * });
  * ```
  */
-export const read = publicRouter.system.read
-  .handler(async ({ input, context, errors }) => {
+export const read = publicRouter.system.read.handler(
+  async ({ input, context, errors }) => {
     // Query system details from TheGraph with automatic ID transformation
     const systemAddress =
       input.id === "default"
@@ -86,4 +86,5 @@ export const read = publicRouter.system.read
       systemAccessManager: systemContext.systemAccessManager?.id ?? null,
     };
     return output;
-  });
+  }
+);

@@ -1,6 +1,7 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { systemRouter } from "@/orpc/procedures/system.router";
+import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call } from "@orpc/server";
@@ -32,7 +33,8 @@ const IDENTITY_REGISTER_MUTATION = portalGraphql(`
   }
 `);
 
-export const identityRegister = systemRouter.system.identityRegister
+export const identityRegister = onboardedRouter.system.identity.register
+  .use(systemMiddleware)
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.identityRegister,

@@ -79,8 +79,8 @@ const LIST_TOKEN_QUERY = theGraphGraphql(`
  * @see {@link TokenListSchema} for the response structure
  * @see {@link ListSchema} for pagination parameters
  */
-export const list = authRouter.token.list
-  .handler(async ({ input, context }) => {
+export const list = authRouter.token.list.handler(
+  async ({ input, context }) => {
     // Manually construct GraphQL variables for pagination and filtering
     const response = await context.theGraphClient.query(LIST_TOKEN_QUERY, {
       input: {
@@ -92,4 +92,5 @@ export const list = authRouter.token.list
     });
 
     return response.tokens;
-  });
+  }
+);

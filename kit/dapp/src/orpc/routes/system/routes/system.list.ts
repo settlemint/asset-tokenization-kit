@@ -51,8 +51,8 @@ const LIST_SYSTEM_QUERY = theGraphGraphql(`
  * });
  * ```
  */
-export const list = publicRouter.system.list
-  .handler(async ({ input, context }) => {
+export const list = publicRouter.system.list.handler(
+  async ({ input, context }) => {
     // Execute TheGraph query with automatic variable transformation
     // The middleware handles offset/limit to skip/first conversion
     const result = await context.theGraphClient.query(LIST_SYSTEM_QUERY, {
@@ -62,4 +62,5 @@ export const list = publicRouter.system.list
 
     // Return the array of system contracts
     return result.systems;
-  });
+  }
+);

@@ -18,8 +18,9 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
+import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 // No need to import SYSTEM_PERMISSIONS - using direct role requirements
-import { systemRouter } from "@/orpc/procedures/system.router";
 import {
   TopicUpdateOutputSchema,
   type TopicUpdateOutput,
@@ -67,10 +68,11 @@ const UPDATE_TOPIC_SCHEME_MUTATION = portalGraphql(`
  * @param input.signature - New function signature for claim verification
  * @returns Transaction hash and updated topic information
  */
-export const topicUpdate = systemRouter.system.topicUpdate
+export const topicUpdate = onboardedRouter.system.claimTopics.topicUpdate
+  .use(systemMiddleware)
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: { any: ["claimPolicyManager", "systemModule"] },
+      requiredRoles: { any: ["claimPolicyManager", "systemManager"] },
       getAccessControl: ({ context }) => {
         const systemData = context.system;
         return systemData?.systemAccessManager?.accessControl;

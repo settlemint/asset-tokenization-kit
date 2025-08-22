@@ -19,13 +19,17 @@ export const TrustedIssuerCreateInputSchema = MutationInputSchema.extend({
  * Output schema for creating a trusted issuer
  */
 export const TrustedIssuerCreateOutputSchema = z.object({
-  transactionHash: z.string().describe(
-    "Transaction hash of the create operation"
-  ),
+  transactionHash: z
+    .string()
+    .describe("Transaction hash of the create operation"),
   issuerAddress: ethereumAddress.describe(
     "Address of the added trusted issuer"
   ),
 });
 
-export type TrustedIssuerCreateInput = z.infer<typeof TrustedIssuerCreateInputSchema>;
-export type TrustedIssuerCreateOutput = z.infer<typeof TrustedIssuerCreateOutputSchema>;
+export type TrustedIssuerCreateInput = z.infer<
+  typeof TrustedIssuerCreateInputSchema
+>;
+export type TrustedIssuerCreateOutput = z.infer<
+  typeof TrustedIssuerCreateOutputSchema
+>;

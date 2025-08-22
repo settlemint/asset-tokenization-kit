@@ -23,7 +23,7 @@ export function AssetStatsWidget() {
 
   // Fetch just the asset count metrics - more efficient than fetching all metrics
   const { data: metrics } = useSuspenseQuery(
-    orpc.system.statsAssets.queryOptions({ input: {} })
+    orpc.system.stats.assets.queryOptions({ input: {} })
   );
 
   // Create dynamic breakdown text using proper i18n pluralization

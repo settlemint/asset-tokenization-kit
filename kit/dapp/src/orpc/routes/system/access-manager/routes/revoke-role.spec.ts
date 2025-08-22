@@ -38,7 +38,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
     ];
     await Promise.all(
       rolesToGrant.map((role) =>
-        adminClient.system.grantRole({
+        adminClient.system.accessManager.grantRole({
           walletVerification: {
             secretVerificationCode: DEFAULT_PINCODE,
             verificationType: "PINCODE",
@@ -56,7 +56,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
 
   describe("successful role revokes", () => {
     it("should revoke a single role from a single account", async () => {
-      const result = await adminClient.system.revokeRole({
+      const result = await adminClient.system.accessManager.revokeRole({
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -70,7 +70,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
         roles: ["tokenManager"],
       });
 
-      const systemRoles = await adminClient.system.rolesList({
+      const systemRoles = await adminClient.system.accessManager.rolesList({
         excludeContracts: true,
       });
       const updatedSystemRoles = systemRoles.find(
@@ -81,7 +81,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
     });
 
     it("should revoke a single role from multiple accounts", async () => {
-      const result = await adminClient.system.revokeRole({
+      const result = await adminClient.system.accessManager.revokeRole({
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -103,7 +103,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
         roles: ["complianceManager"],
       });
 
-      const systemRoles = await adminClient.system.rolesList({
+      const systemRoles = await adminClient.system.accessManager.rolesList({
         excludeContracts: true,
       });
       const updatedSystemRoles = systemRoles.find(
@@ -115,7 +115,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
 
     it("should revoke multiple roles from a single account", async () => {
       // Grant the roles first since previous tests may have revoked them
-      await adminClient.system.grantRole({
+      await adminClient.system.accessManager.grantRole({
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -124,7 +124,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
         role: ["systemManager", "tokenManager"],
       });
 
-      const result = await adminClient.system.revokeRole({
+      const result = await adminClient.system.accessManager.revokeRole({
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -138,7 +138,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
         roles: ["systemManager", "tokenManager"],
       });
 
-      const systemRoles = await adminClient.system.rolesList({
+      const systemRoles = await adminClient.system.accessManager.rolesList({
         excludeContracts: true,
       });
       const updatedSystemRoles = systemRoles.find(
@@ -149,7 +149,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
     });
 
     it("should handle empty arrays", async () => {
-      const result = await adminClient.system.revokeRole({
+      const result = await adminClient.system.accessManager.revokeRole({
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -167,7 +167,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
 
   describe("permission validation", () => {
     it("should allow admin users to revoke roles", async () => {
-      const result = await adminClient.system.revokeRole({
+      const result = await adminClient.system.accessManager.revokeRole({
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -184,7 +184,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
 
     it("should reject non-admin users from revoking roles", async () => {
       await expect(
-        investorClient.system.revokeRole(
+        investorClient.system.accessManager.revokeRole(
           {
             walletVerification: {
               secretVerificationCode: DEFAULT_PINCODE,
@@ -208,7 +208,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
   describe("error handling", () => {
     it("should reject invalid role names", async () => {
       await expect(
-        adminClient.system.revokeRole(
+        adminClient.system.accessManager.revokeRole(
           {
             walletVerification: {
               secretVerificationCode: DEFAULT_PINCODE,
@@ -233,7 +233,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
 
     it("should reject invalid wallet addresses", async () => {
       await expect(
-        adminClient.system.revokeRole(
+        adminClient.system.accessManager.revokeRole(
           {
             walletVerification: {
               secretVerificationCode: DEFAULT_PINCODE,
@@ -258,7 +258,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
 
     it("should reject mixed valid and invalid addresses", async () => {
       await expect(
-        adminClient.system.revokeRole(
+        adminClient.system.accessManager.revokeRole(
           {
             walletVerification: {
               secretVerificationCode: DEFAULT_PINCODE,
@@ -287,7 +287,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
 
     it("should reject incorrect pincode verification", async () => {
       await expect(
-        adminClient.system.revokeRole(
+        adminClient.system.accessManager.revokeRole(
           {
             walletVerification: {
               secretVerificationCode: "000000",
@@ -308,7 +308,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
 
   describe("edge cases", () => {
     it("should handle duplicate accounts in the array", async () => {
-      const result = await adminClient.system.revokeRole({
+      const result = await adminClient.system.accessManager.revokeRole({
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -328,7 +328,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
     });
 
     it("should handle duplicate roles in the array", async () => {
-      const result = await adminClient.system.revokeRole({
+      const result = await adminClient.system.accessManager.revokeRole({
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",

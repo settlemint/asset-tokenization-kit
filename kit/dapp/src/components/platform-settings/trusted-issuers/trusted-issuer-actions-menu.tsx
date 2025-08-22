@@ -47,14 +47,14 @@ export function TrustedIssuerActionsMenu({
   // Remove issuer mutation
   const removeMutation = useMutation({
     mutationFn: (verification: UserVerification) =>
-      client.system.trustedIssuerDelete({
+      client.system.trustedIssuers.delete({
         issuerAddress: issuer.id,
         walletVerification: verification,
       }),
     onSuccess: () => {
       toast.success(t("trustedIssuers.toast.removed"));
       void queryClient.invalidateQueries({
-        queryKey: orpc.system.trustedIssuerList.queryKey(),
+        queryKey: orpc.system.trustedIssuers.list.queryKey(),
       });
       setShowRemoveDialog(false);
       setShowVerificationDialog(false);
@@ -151,7 +151,9 @@ export function TrustedIssuerActionsMenu({
         open={showVerificationDialog}
         onOpenChange={setShowVerificationDialog}
         title={t("trustedIssuers.actions.remove.verification.title")}
-        description={t("trustedIssuers.actions.remove.verification.description")}
+        description={t(
+          "trustedIssuers.actions.remove.verification.description"
+        )}
         onSubmit={handleVerificationSubmit}
         onCancel={handleVerificationCancel}
       />

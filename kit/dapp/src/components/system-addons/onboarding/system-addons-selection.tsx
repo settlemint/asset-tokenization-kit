@@ -90,7 +90,7 @@ export function SystemAddonsSelection() {
 
   const { mutateAsync: createAddons, isPending: isAddonsCreating } =
     useMutation(
-      orpc.system.addonCreate.mutationOptions({
+      orpc.system.addon.create.mutationOptions({
         onSuccess: async () => {
           // Reset the skip setting since user deployed addons
           await updateSetting({

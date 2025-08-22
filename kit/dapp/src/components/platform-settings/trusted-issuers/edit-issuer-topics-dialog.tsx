@@ -15,11 +15,15 @@ import { client, orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { TrustedIssuer } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.list.schema";
 import type { TrustedIssuerUpdateInput } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.update.schema";
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import type { TopicListOutput } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
 
 interface EditIssuerTopicsDialogProps {
   issuer: TrustedIssuer;
@@ -41,20 +45,23 @@ export function EditIssuerTopicsDialog({
 
   // Fetch available topics for selection
   const { data: topics } = useSuspenseQuery(
-    orpc.system.topicList.queryOptions()
-  );
+    orpc.system.claimTopics.topicList.queryOptions()
+  ) as { data: TopicListOutput };
 
   // Update issuer topics mutation
   const updateMutation = useMutation({
-    mutationFn: (data: { claimTopicIds: string[]; walletVerification: UserVerification }) =>
-      client.system.trustedIssuerUpdate({
+    mutationFn: (data: {
+      claimTopicIds: string[];
+      walletVerification: UserVerification;
+    }) =>
+      client.system.trustedIssuers.update({
         ...data,
         issuerAddress: issuer.id,
       } as TrustedIssuerUpdateInput),
     onSuccess: () => {
       toast.success(t("trustedIssuers.toast.updated"));
       void queryClient.invalidateQueries({
-        queryKey: orpc.system.trustedIssuerList.queryKey(),
+        queryKey: orpc.system.trustedIssuers.list.queryKey(),
       });
       onOpenChange(false);
     },
@@ -83,7 +90,10 @@ export function EditIssuerTopicsDialog({
   // Reset form when issuer changes
   useEffect(() => {
     if (open) {
-      form.setFieldValue("claimTopicIds", issuer.claimTopics.map((topic) => topic.topicId));
+      form.setFieldValue(
+        "claimTopicIds",
+        issuer.claimTopics.map((topic) => topic.topicId)
+      );
     }
   }, [open, issuer.claimTopics, form]);
 
@@ -98,7 +108,7 @@ export function EditIssuerTopicsDialog({
 
   // Create a lookup map for O(1) topic retrieval and options
   const { topicLookup, topicOptions } = useMemo(() => {
-    const lookup = new Map(topics.map(topic => [topic.topicId, topic.name]));
+    const lookup = new Map(topics.map((topic) => [topic.topicId, topic.name]));
     const options = topics.map((topic) => ({
       value: topic.topicId,
       label: topic.name,
@@ -120,7 +130,9 @@ export function EditIssuerTopicsDialog({
           <div className="space-y-4">
             {/* Display issuer address as read-only info */}
             <div className="space-y-2">
-              <Label>{t("trustedIssuers.edit.fields.issuerAddress.label")}</Label>
+              <Label>
+                {t("trustedIssuers.edit.fields.issuerAddress.label")}
+              </Label>
               <Input
                 value={issuer.id}
                 readOnly
@@ -143,7 +155,7 @@ export function EditIssuerTopicsDialog({
                   <MultipleSelector
                     value={field.state.value.map((id: string) => ({
                       value: id,
-                      label: topicLookup.get(id) || id
+                      label: topicLookup.get(id) || id,
                     }))}
                     onChange={(options) => {
                       field.handleChange(options.map((o) => o.value));
@@ -169,7 +181,9 @@ export function EditIssuerTopicsDialog({
             <div className="text-xs text-muted-foreground">
               <p>
                 {t("trustedIssuers.edit.fields.claimTopics.current", {
-                  topics: issuer.claimTopics.map((topic) => topic.name).join(", "),
+                  topics: issuer.claimTopics
+                    .map((topic) => topic.name)
+                    .join(", "),
                 })}
               </p>
             </div>
