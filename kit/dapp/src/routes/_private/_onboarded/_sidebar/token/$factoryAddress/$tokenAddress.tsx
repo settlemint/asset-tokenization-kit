@@ -46,7 +46,7 @@ export const Route = createFileRoute(
         })
       ),
       queryClient.fetchQuery(
-        orpc.system.tokenFactoryRead.queryOptions({
+        orpc.system.factory.read.queryOptions({
           input: { id: factoryAddress },
         })
       ),

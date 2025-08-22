@@ -54,8 +54,8 @@ const statsValue = baseContract
   .output(StatsValueOutputSchema);
 
 export const statsContract = {
-  statsAssets,
-  statsTransactionCount,
-  statsTransactionHistory,
-  statsValue,
+  assets: statsAssets,
+  transactionCount: statsTransactionCount,
+  transactionHistory: statsTransactionHistory,
+  value: statsValue,
 };

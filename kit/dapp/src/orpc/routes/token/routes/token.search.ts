@@ -82,8 +82,8 @@ const SEARCH_TOKEN_QUERY = theGraphGraphql(`
  * @see {@link TokenSearchInputSchema} for the input parameters
  * @see {@link TokenSearchResponseSchema} for the response structure
  */
-export const search = authRouter.token.search
-  .handler(async ({ input, context }) => {
+export const search = authRouter.token.search.handler(
+  async ({ input, context }) => {
     const { query, limit } = input;
 
     // Prepare search variables
@@ -109,4 +109,5 @@ export const search = authRouter.token.search
     });
 
     return response.tokens;
-  });
+  }
+);

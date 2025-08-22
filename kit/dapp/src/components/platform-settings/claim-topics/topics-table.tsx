@@ -43,7 +43,7 @@ export function TopicsTable() {
 
   // Fetch topics data using ORPC
   const { data: topics } = useSuspenseQuery(
-    orpc.system.topicList.queryOptions()
+    orpc.system.claimTopics.topicList.queryOptions()
   );
 
   // Get current user data with roles
@@ -71,14 +71,12 @@ export function TopicsTable() {
           header: t("claimTopics.table.columns.id"),
           cell: ({ getValue }) => {
             const topicId = getValue();
-            const truncatedId = topicId.length > 10 
-              ? `${topicId.slice(0, 6)}…${topicId.slice(-4)}`
-              : topicId;
+            const truncatedId =
+              topicId.length > 10
+                ? `${topicId.slice(0, 6)}…${topicId.slice(-4)}`
+                : topicId;
             return (
-              <span 
-                className="font-mono text-xs" 
-                title={topicId}
-              >
+              <span className="font-mono text-xs" title={topicId}>
                 {truncatedId}
               </span>
             );

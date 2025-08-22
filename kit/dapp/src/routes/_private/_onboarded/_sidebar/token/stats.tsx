@@ -19,7 +19,7 @@ export const Route = createFileRoute(
   loader: async ({ context: { queryClient, orpc } }) => {
     // Ensure all token factories are loaded for statistics overview
     const factories = await queryClient.ensureQueryData(
-      orpc.system.tokenFactoryList.queryOptions({ input: {} })
+      orpc.system.factory.list.queryOptions({ input: {} })
     );
 
     // Get tokens from the first factory for demonstration

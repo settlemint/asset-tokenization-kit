@@ -109,8 +109,8 @@ function processUserGrowthData(
  * console.log('Growth:', growth.userGrowth);
  * ```
  */
-export const statsGrowthOverTime = systemRouter.user.statsGrowthOverTime
-  .handler(async ({ context, input }) => {
+export const statsGrowthOverTime =
+  systemRouter.user.statsGrowthOverTime.handler(async ({ context, input }) => {
     // System context is guaranteed by systemMiddleware
 
     // timeRange is guaranteed to have a value from the schema default

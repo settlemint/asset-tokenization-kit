@@ -51,7 +51,7 @@ export function EditTopicDialog({
   // Update topic mutation
   const updateMutation = useMutation({
     mutationFn: (data: z.infer<typeof EditTopicFormSchema>) =>
-      client.system.topicUpdate({
+      client.system.claimTopics.topicUpdate({
         ...data,
         name: topic.name, // Pass name from topic prop, not form
       }),
@@ -59,7 +59,7 @@ export function EditTopicDialog({
       toast.success(t("claimTopics.toast.updated", { name: result.name }));
       // Invalidate and refetch topics data
       void queryClient.invalidateQueries({
-        queryKey: orpc.system.topicList.queryKey(),
+        queryKey: orpc.system.claimTopics.topicList.queryKey(),
       });
       onOpenChange(false);
     },
@@ -81,7 +81,9 @@ export function EditTopicDialog({
       onSubmit: ({ value }) => {
         // Additional validation: signature must be different from current
         if (value.signature === topic.signature) {
-          return { signature: t("claimTopics.edit.validation.signatureChanged") };
+          return {
+            signature: t("claimTopics.edit.validation.signatureChanged"),
+          };
         }
       },
     },
@@ -112,7 +114,9 @@ export function EditTopicDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{t("claimTopics.edit.title")}</DialogTitle>
-          <DialogDescription>{t("claimTopics.edit.description")}</DialogDescription>
+          <DialogDescription>
+            {t("claimTopics.edit.description")}
+          </DialogDescription>
         </DialogHeader>
 
         <form.AppForm>
@@ -139,7 +143,9 @@ export function EditTopicDialog({
                 <field.TextField
                   label={t("claimTopics.edit.fields.signature.label")}
                   required={true}
-                  description={t("claimTopics.edit.fields.signature.description")}
+                  description={t(
+                    "claimTopics.edit.fields.signature.description"
+                  )}
                 />
               )}
             />

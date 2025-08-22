@@ -9,7 +9,6 @@ export const TopicDeleteInputSchema = MutationInputSchema.extend({
   name: z
     .string()
     .min(1, "Topic name is required")
-    .max(100, "Topic name must be less than 100 characters")
     .describe("Name of the topic scheme to remove"),
 });
 

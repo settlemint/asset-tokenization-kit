@@ -8,7 +8,7 @@ const TAGS = ["system", "identity"];
 const identityCreate = baseContract
   .route({
     method: "POST",
-    path: "/system/identity/create",
+    path: "/system/identity",
     description:
       "Create a new blockchain identity contract for the authenticated user. This is required before registering claims or interacting with regulated tokens",
     successDescription:
@@ -21,7 +21,7 @@ const identityCreate = baseContract
 const identityRegister = baseContract
   .route({
     method: "PUT",
-    path: "/system/identity/register",
+    path: "/system/identity",
     description:
       "Register identity claims (country, accreditation status) for the current user. Requires an identity contract to be created first",
     successDescription:
@@ -32,6 +32,6 @@ const identityRegister = baseContract
   .output(AccountSchema);
 
 export const identityContract = {
-  identityCreate,
-  identityRegister,
+  create: identityCreate,
+  register: identityRegister,
 };

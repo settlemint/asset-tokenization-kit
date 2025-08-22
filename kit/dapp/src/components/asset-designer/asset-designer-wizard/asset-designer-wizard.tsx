@@ -37,10 +37,10 @@ import { toast } from "sonner";
 
 export const AssetDesignerWizard = ({ onSubmit }: { onSubmit: () => void }) => {
   const { data: factories } = useQuery(
-    orpc.system.tokenFactoryList.queryOptions({ input: {} })
+    orpc.system.factory.list.queryOptions({ input: {} })
   );
   const { data: complianceModules } = useQuery(
-    orpc.system.complianceModuleList.queryOptions({ input: {} })
+    orpc.system.compliance.list.queryOptions({ input: {} })
   );
   const { t } = useTranslation(["asset-designer"]);
 
@@ -57,7 +57,7 @@ export const AssetDesignerWizard = ({ onSubmit }: { onSubmit: () => void }) => {
         await Promise.all([
           // Invalidate factory list queries
           queryClient.invalidateQueries({
-            queryKey: orpc.system.tokenFactoryList.queryOptions({
+            queryKey: orpc.system.factory.list.queryOptions({
               input: { hasTokens: true },
             }).queryKey,
           }),

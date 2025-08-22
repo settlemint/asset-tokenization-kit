@@ -4,8 +4,8 @@ import { factoryPredictAddressContract } from "@/orpc/routes/system/token-factor
 import { factoryReadContract } from "@/orpc/routes/system/token-factory/routes/factory.read.contract";
 
 export const factoryContract = {
-  tokenFactoryCreate: factoryCreateContract,
-  tokenFactoryList: factoryListContract,
-  tokenFactoryRead: factoryReadContract,
-  tokenFactoryPredictAddress: factoryPredictAddressContract,
+  create: factoryCreateContract,
+  list: factoryListContract,
+  read: factoryReadContract,
+  predictAddress: factoryPredictAddressContract,
 };

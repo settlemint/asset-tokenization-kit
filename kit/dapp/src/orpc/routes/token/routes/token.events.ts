@@ -71,14 +71,13 @@ const TOKEN_EVENTS_QUERY = theGraphGraphql(`
  *
  * @see {@link EventSchema} for the response structure
  */
-export const events = tokenRouter.token.events
-  .handler(async ({ context }) => {
-    const response = await context.theGraphClient.query(TOKEN_EVENTS_QUERY, {
-      input: {
-        emitter: context.token.id.toLowerCase(),
-      },
-      output: EventsResponseSchema,
-    });
-
-    return response;
+export const events = tokenRouter.token.events.handler(async ({ context }) => {
+  const response = await context.theGraphClient.query(TOKEN_EVENTS_QUERY, {
+    input: {
+      emitter: context.token.id.toLowerCase(),
+    },
+    output: EventsResponseSchema,
   });
+
+  return response;
+});

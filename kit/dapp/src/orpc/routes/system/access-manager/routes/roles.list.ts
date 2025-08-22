@@ -1,12 +1,14 @@
 import { getAccessControlEntries } from "@/orpc/helpers/access-control-helpers";
-import { systemRouter } from "@/orpc/procedures/system.router";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
+import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import {
   type SystemRolesOutput,
   SystemRolesOutputSchema,
 } from "@/orpc/routes/system/access-manager/routes/roles.list.schema";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 
-export const rolesList = systemRouter.system.rolesList
+export const rolesList = onboardedRouter.system.accessManager.rolesList
+  .use(systemMiddleware)
   .handler(({ input, context }) => {
     const { excludeContracts } = input;
     const { system } = context;

@@ -1,5 +1,4 @@
-import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
-import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
+import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
   DEFAULT_ADMIN,
@@ -26,23 +25,16 @@ describe("Identity register", () => {
     const client = getOrpcClient(headers);
 
     await expect(
-      client.system.identityRegister(
-        {
-          walletVerification: {
-            secretVerificationCode: DEFAULT_PINCODE,
-            verificationType: "PINCODE",
-          },
-          country: "BE",
-          wallet: wallet1,
+      client.system.identity.register({
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
         },
-        {
-          context: {
-            skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
-          },
-        }
-      )
+        country: "BE",
+        wallet: wallet1,
+      })
     ).rejects.toThrow(
-      errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
+      "User does not have the required role to execute this action."
     );
   }, 10_000);
 
@@ -50,7 +42,7 @@ describe("Identity register", () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
 
-    const result = await client.system.identityRegister({
+    const result = await client.system.identity.register({
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
@@ -70,7 +62,7 @@ async function createUserWithIdentity(adminHeaders: Headers) {
   } = await createTestUser();
   const client = getOrpcClient(adminHeaders);
 
-  await client.system.identityCreate({
+  await client.system.identity.create({
     walletVerification: {
       secretVerificationCode: DEFAULT_PINCODE,
       verificationType: "PINCODE",
