@@ -1712,15 +1712,24 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         // 1000 ETH (18 decimals) = 1000e18 raw units = should be $1000
         // But conversion: (1000e18 * 1e18) / 1e18 = 1000e18 = $1000 (correct)
 
-        // This will fail because global tracker has wrong value from 6-decimal token
-        // Expected behavior: should work since both represent $1000, but it will fail due to bug
-        module.canTransfer(token18, address(0), user1, 0, params); // Even 0 might fail due to incorrect prior tracking
+        // This WOULD have failed due to the bug, but now works correctly
+        // The bug would have caused incorrect conversion: (1000e6 * 1e18) / 1e18 = 1000e6 (wrong!)
+        // This would make the global tracker think 6-decimal tokens contribute less than they should
+        
+        // Now with the fix: should be able to mint more ETH since both are properly tracked as $1000 each
+        // But we're at $2000 limit, so any additional mint should fail correctly
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
+            )
+        );
+        module.canTransfer(token18, address(0), user1, 1e18, params); // $1 more should fail
+        
+        // The fact that this test passes shows the bug has been fixed
+        // Previously, the 6-decimal token would have been under-counted in the global tracker
     }
 
     function test_TokenSupplyLimit_ExpectedBehavior_SameValueDifferentDecimals() public {
-        // This test shows what SHOULD happen when the bug is fixed
-        // Both tokens represent the same value and should be tracked equivalently
-
         vm.startPrank(tokenIssuer);
         address token6 = address(
             new SMARTToken(
@@ -1776,8 +1785,31 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         // 1000 ETH (1000e18 raw) should = $1000
         // Total = $2000, exactly at limit
 
-        // This test demonstrates the EXPECTED behavior (may fail due to current bug)
-        // When fixed, both should work and total should be exactly $2000
+        // Mint 1000 USDC (6 decimals) = should be $1000
+        module.canTransfer(token6, address(0), user1, 1000e6, params);
+        vm.prank(token6);
+        module.created(token6, user1, 1000e6, params);
+
+        // Mint 1000 ETH (18 decimals) = should be $1000, bringing global total to $2000 (at limit)
+        module.canTransfer(token18, address(0), user1, 1000e18, params);
+        vm.prank(token18);
+        module.created(token18, user1, 1000e18, params);
+
+        // Both tokens should now be at the exact global limit ($2000)
+        // Any additional mint should fail
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
+            )
+        );
+        module.canTransfer(token6, address(0), user1, 1e6, params); // Even $1 more should fail
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Token supply would exceed configured limit"
+            )
+        );
+        module.canTransfer(token18, address(0), user1, 1e18, params); // Even $1 more should fail
     }
 
     function test_TokenSupplyLimit_Decimals_FractionalTokens_Fixed() public {
