@@ -232,8 +232,10 @@ function getSystemPermissions(userRoles: ReturnType<typeof mapUserRoles>) {
       .filter(([_, hasRole]) => hasRole)
       .map(([role]) => role) as AccessControlRoles[];
 
-    initialActions[action as keyof typeof SYSTEM_PERMISSIONS] =
-      satisfiesRoleRequirement(userRoleList, roleRequirement);
+    initialActions[action] = satisfiesRoleRequirement(
+      userRoleList,
+      roleRequirement
+    );
   });
   return initialActions;
 }
