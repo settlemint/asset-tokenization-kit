@@ -11,6 +11,7 @@ import {
 } from "@/orpc/routes/system/routes/system.read.schema";
 import { statsContract } from "@/orpc/routes/system/stats/stats.contract";
 import { factoryContract } from "@/orpc/routes/system/token-factory/factory.contract";
+import { trustedIssuersContract } from "@/orpc/routes/system/trusted-issuers/trusted-issuers.contract";
 import { z } from "zod";
 import { baseContract } from "../../procedures/base.contract";
 import { SystemSchema } from "./routes/system.list.schema";
@@ -102,6 +103,10 @@ const read = baseContract
  * - topicCreate: Register new topic schemes
  * - topicUpdate: Update topic scheme signatures
  * - topicDelete: Remove topic schemes
+ * - trustedIssuerList: List all trusted issuers
+ * - trustedIssuerCreate: Create a new trusted issuer
+ * - trustedIssuerUpdate: Update issuer's claim topics
+ * - trustedIssuerDelete: Delete a trusted issuer
  * - statsAssets: System-wide asset statistics
  * - statsValue: System-wide value metrics
  * - statsTransactionCount: System-wide transaction count statistics
@@ -119,6 +124,7 @@ export const systemContract = {
   ...identityContract,
   ...complianceModuleContract,
   ...claimTopicsContract,
+  ...trustedIssuersContract,
   ...statsContract,
   ...accessManagerContract,
   ...factoryContract,
