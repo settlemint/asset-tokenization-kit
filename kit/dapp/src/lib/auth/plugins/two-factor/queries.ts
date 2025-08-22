@@ -17,12 +17,12 @@ const DELETE_WALLET_VERIFICATION_MUTATION = portalGraphql(`
 
 const VERIFY_WALLET_VERIFICATION_CHALLENGE_MUTATION = portalGraphql(`
   mutation VerifyTwoFactorOTP($address: String!, $verificationId: String!, $otp: String!) {
-    validateOtpConfiguration(
+    verifyWalletVerificationChallenge(
       userWalletAddress: $address
       verificationId: $verificationId
-      otpCode: $otp
+      challengeResponse: $otp
     ) {
-      valid
+      verified
     }
   }
 `);
