@@ -37,7 +37,7 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
-import { portalRouter } from "@/orpc/procedures/portal.router";
+import { systemRouter } from "@/orpc/procedures/system.router";
 import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
 import type { IdentityCreateSchema } from "@/orpc/routes/system/identity/routes/identity.create.schema";
 import { call, ORPCError } from "@orpc/server";
@@ -110,7 +110,7 @@ const IDENTITY_CREATE_MUTATION = portalGraphql(`
  * @throws INTERNAL_SERVER_ERROR When identity factory is not available
  * @throws CONFLICT When user already has an identity contract
  */
-export const identityCreate = portalRouter.system.identityCreate
+export const identityCreate = systemRouter.system.identityCreate
   .use(
     offChainPermissionsMiddleware<typeof IdentityCreateSchema>({
       requiredPermissions: {

@@ -33,7 +33,7 @@
 import { getRoleByFieldName } from "@/lib/constants/roles";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { portalRouter } from "@/orpc/procedures/portal.router";
+import { systemRouter } from "@/orpc/procedures/system.router";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 
 /**
@@ -154,7 +154,7 @@ const REVOKE_MULTIPLE_ROLES_MUTATION = portalGraphql(`
  * @throws INTERNAL_SERVER_ERROR When system access manager is not available
  * @throws INPUT_VALIDATION_FAILED When attempting unsupported multi-address + multi-role operations
  */
-export const revokeRole = portalRouter.system.revokeRole
+export const revokeRole = systemRouter.system.revokeRole
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.revokeRole,

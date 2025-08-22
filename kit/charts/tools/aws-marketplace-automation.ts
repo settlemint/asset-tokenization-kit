@@ -181,8 +181,42 @@ class AWSMarketplaceAutomation {
       imagePath = imageWithoutTag;
     }
 
-    // AWS Marketplace expects settlemint/{registry}/{image} format
-    return `${ecrPrefix}/settlemint/${registryPrefix}/${imagePath}:${tag}`;
+    // AWS Marketplace expects settlemint/{registry}/{image} format with -amd64 suffix
+    return `${ecrPrefix}/settlemint/${registryPrefix}/${imagePath}:${tag}-amd64`;
+  }
+
+  /**
+   * Convert ECR format back to original image format for Docker operations
+   */
+  convertECRToOriginal(ecrUrl) {
+    if (!ecrUrl) return null;
+
+    // Remove the ECR prefix and -amd64 suffix if present
+    let url = ecrUrl;
+
+    // Remove ECR registry prefix: 709825985650.dkr.ecr.us-east-1.amazonaws.com/settlemint/
+    const ecrPrefix = `${this.targetEcrAccount}.dkr.ecr.us-east-1.amazonaws.com/settlemint/`;
+    if (url.startsWith(ecrPrefix)) {
+      url = url.replace(ecrPrefix, "");
+    }
+
+    // Parse image and tag
+    const parts = url.split(":");
+    const imageWithoutTag = parts[0];
+    let tag = parts.length > 1 ? parts[1] : "latest";
+
+    // Remove -amd64 suffix from tag
+    if (tag.endsWith("-amd64")) {
+      tag = tag.replace("-amd64", "");
+    }
+
+    // Reconstruct the original image URL
+    let originalUrl = imageWithoutTag;
+    if (tag && tag !== "latest") {
+      originalUrl += `:${tag}`;
+    }
+
+    return originalUrl;
   }
 
   /**
@@ -215,22 +249,46 @@ class AWSMarketplaceAutomation {
               originalImageUrl += `:${value.tag}`;
             }
 
-            if (originalImageUrl && !images.includes(originalImageUrl)) {
-              images.push(originalImageUrl);
+            if (originalImageUrl) {
+              // Convert ECR format back to original format
+              const convertedUrl = this.convertECRToOriginal(originalImageUrl);
+              if (convertedUrl && !images.includes(convertedUrl)) {
+                images.push(convertedUrl);
+              }
             }
-          } else if (
-            key === "repository" &&
-            typeof value === "string" &&
-            path.includes("image")
-          ) {
-            let originalImageUrl = value;
-            const parentObj = path.reduce((obj, key) => obj[key], values);
-            if (parentObj.tag) {
-              originalImageUrl += `:${parentObj.tag}`;
+          } else if (key === "repository" && typeof value === "string") {
+            // Check if this is part of an image configuration
+            // Look for a sibling 'tag' field in the same parent object
+            let parentObj;
+            if (path.length > 0) {
+              parentObj = path.reduce((obj, key) => obj[key], values);
+            } else {
+              parentObj = obj;
             }
 
-            if (originalImageUrl && !images.includes(originalImageUrl)) {
-              images.push(originalImageUrl);
+            // Check if the parent object has a tag field (sibling to repository)
+            if (parentObj && typeof parentObj === "object" && parentObj.tag) {
+              let originalImageUrl = value;
+              originalImageUrl += `:${parentObj.tag}`;
+
+              // Convert ECR format back to original format
+              const convertedUrl = this.convertECRToOriginal(originalImageUrl);
+              if (convertedUrl && !images.includes(convertedUrl)) {
+                images.push(convertedUrl);
+              }
+            }
+            // Also check if this repository is under an "image" key
+            else if (path.includes("image")) {
+              let originalImageUrl = value;
+              if (parentObj && parentObj.tag) {
+                originalImageUrl += `:${parentObj.tag}`;
+              }
+
+              // Convert ECR format back to original format
+              const convertedUrl = this.convertECRToOriginal(originalImageUrl);
+              if (convertedUrl && !images.includes(convertedUrl)) {
+                images.push(convertedUrl);
+              }
             }
           } else {
             extractImagesRecursively(value, [...path, key]);
@@ -304,6 +362,9 @@ class AWSMarketplaceAutomation {
     const originalImages = this.getOriginalImages();
 
     console.log(`📦 Found ${originalImages.length} images to upload:`);
+    originalImages.forEach((img, idx) => {
+      console.log(`  ${idx + 1}. ${img}`);
+    });
 
     // Login to ECR using AWS CLI method
     try {
@@ -342,7 +403,7 @@ class AWSMarketplaceAutomation {
         }
 
         const repoName = `settlemint/${registryPrefix}/${imagePath}`;
-        const ecrImage = `${this.targetEcrPrefix}/${repoName}:${tag}`;
+        const ecrImage = `${this.targetEcrPrefix}/${repoName}:${tag}-amd64`;
 
         try {
           // Create ECR repository if it doesn't exist
@@ -894,6 +955,24 @@ Documentation: https://docs.settlemint.com`;
   }
 }
 
+// Function to upload only Docker images (no Helm chart)
+export async function uploadImagesOnly() {
+  try {
+    console.log("🚀 Starting Docker images upload to ECR...");
+    console.log("ℹ️  Skipping Helm chart upload as requested");
+
+    const automation = new AWSMarketplaceAutomation();
+
+    // Upload all container images to ECR
+    await automation.uploadImagesToECR();
+
+    console.log("✅ Docker images upload completed successfully!");
+  } catch (error) {
+    console.error("❌ Image upload failed:", error);
+    process.exit(1);
+  }
+}
+
 // Main execution
 export async function main() {
   try {
@@ -941,7 +1020,13 @@ export async function main() {
 }
 
 if (import.meta.main) {
-  main();
+  // Check if user wants to upload images only
+  const args = process.argv.slice(2);
+  if (args.includes("--images-only")) {
+    uploadImagesOnly();
+  } else {
+    main();
+  }
 }
 
 export { AWSMarketplaceAutomation, MARKETPLACE_CONFIG };

@@ -1,5 +1,4 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { z } from "zod";
 import { TokenFactoryDetailSchema } from "./factory.read.schema";
@@ -60,7 +59,6 @@ const READ_TOKEN_FACTORY_QUERY = theGraphGraphql(`
  * @see {@link TokenFactoryDetailSchema} for the response structure
  */
 export const factoryRead = authRouter.system.tokenFactoryRead
-  .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
     const result = await context.theGraphClient.query(
       READ_TOKEN_FACTORY_QUERY,

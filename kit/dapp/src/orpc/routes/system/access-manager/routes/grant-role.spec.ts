@@ -1,5 +1,6 @@
 // @vitest-environment node
-import { getOrpcClient } from "@test/fixtures/orpc-client";
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
+import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
@@ -153,16 +154,23 @@ describe("Access Manager - Grant Role ORPC routes", () => {
 
     it("should reject non-admin users from granting roles", async () => {
       await expect(
-        investorClient.system.grantRole({
-          walletVerification: {
-            secretVerificationCode: DEFAULT_PINCODE,
-            verificationType: "PINCODE",
+        investorClient.system.grantRole(
+          {
+            walletVerification: {
+              secretVerificationCode: DEFAULT_PINCODE,
+              verificationType: "PINCODE",
+            },
+            address: testAddresses.valid1,
+            role: "tokenManager",
           },
-          address: testAddresses.valid1,
-          role: "tokenManager",
-        })
+          {
+            context: {
+              skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
+            },
+          }
+        )
       ).rejects.toThrow(
-        "User does not have the required role to execute this action."
+        errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
       );
     });
   });
@@ -170,57 +178,100 @@ describe("Access Manager - Grant Role ORPC routes", () => {
   describe("error handling", () => {
     it("should reject invalid role names", async () => {
       await expect(
-        adminClient.system.grantRole({
-          walletVerification: {
-            secretVerificationCode: DEFAULT_PINCODE,
-            verificationType: "PINCODE",
+        adminClient.system.grantRole(
+          {
+            walletVerification: {
+              secretVerificationCode: DEFAULT_PINCODE,
+              verificationType: "PINCODE",
+            },
+            address: testAddresses.valid1,
+            role: "invalidRole" as never,
           },
-          address: testAddresses.valid1,
-          role: "invalidRole" as never,
-        })
-      ).rejects.toThrow("Input validation failed");
+          {
+            context: {
+              skipLoggingFor: [
+                CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED,
+                CUSTOM_ERROR_CODES.BAD_REQUEST,
+              ],
+            },
+          }
+        )
+      ).rejects.toThrow(
+        errorMessageForCode(CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED)
+      );
     });
 
     it("should reject invalid wallet addresses", async () => {
       await expect(
-        adminClient.system.grantRole({
-          walletVerification: {
-            secretVerificationCode: DEFAULT_PINCODE,
-            verificationType: "PINCODE",
+        adminClient.system.grantRole(
+          {
+            walletVerification: {
+              secretVerificationCode: DEFAULT_PINCODE,
+              verificationType: "PINCODE",
+            },
+            address: testAddresses.invalid,
+            role: "tokenManager",
           },
-          address: testAddresses.invalid,
-          role: "tokenManager",
-        })
-      ).rejects.toThrow("Input validation failed");
+          {
+            context: {
+              skipLoggingFor: [
+                CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED,
+                CUSTOM_ERROR_CODES.BAD_REQUEST,
+              ],
+            },
+          }
+        )
+      ).rejects.toThrow(
+        errorMessageForCode(CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED)
+      );
     });
 
     it("should reject mixed valid and invalid addresses", async () => {
       await expect(
-        adminClient.system.grantRole({
-          walletVerification: {
-            secretVerificationCode: DEFAULT_PINCODE,
-            verificationType: "PINCODE",
+        adminClient.system.grantRole(
+          {
+            walletVerification: {
+              secretVerificationCode: DEFAULT_PINCODE,
+              verificationType: "PINCODE",
+            },
+            address: [
+              testAddresses.valid1,
+              testAddresses.invalid,
+              testAddresses.valid2,
+            ],
+            role: "tokenManager",
           },
-          address: [
-            testAddresses.valid1,
-            testAddresses.invalid,
-            testAddresses.valid2,
-          ],
-          role: "tokenManager",
-        })
-      ).rejects.toThrow("Input validation failed");
+          {
+            context: {
+              skipLoggingFor: [
+                CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED,
+                CUSTOM_ERROR_CODES.BAD_REQUEST,
+              ],
+            },
+          }
+        )
+      ).rejects.toThrow(
+        errorMessageForCode(CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED)
+      );
     });
 
     it("should reject incorrect pincode verification", async () => {
       await expect(
-        adminClient.system.grantRole({
-          walletVerification: {
-            secretVerificationCode: "000000",
-            verificationType: "PINCODE",
+        adminClient.system.grantRole(
+          {
+            walletVerification: {
+              secretVerificationCode: "000000",
+              verificationType: "PINCODE",
+            },
+            address: testAddresses.valid1,
+            role: "tokenManager",
           },
-          address: testAddresses.valid1,
-          role: "tokenManager",
-        })
+          {
+            context: {
+              skipLoggingFor: [CUSTOM_ERROR_CODES.PORTAL_ERROR],
+            },
+          }
+        )
       ).rejects.toThrow(/GraphQL.*failed|Invalid authentication challenge/);
     });
   });

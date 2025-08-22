@@ -1,13 +1,17 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { AddonFactoryTypeIdEnum } from "@atk/zod/addon-types";
-import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { call } from "@orpc/server";
 import { read } from "../../token.read";
 
+/**
+ * Portal GraphQL mutation for setting a yield schedule on a token.
+ *
+ * This mutation associates an existing fixed yield schedule contract
+ * with a token contract, enabling yield-bearing functionality for the token.
+ * The yield schedule must already exist and be deployed.
+ */
 const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
   mutation TokenSetYieldSchedule(
     $challengeId: String
@@ -30,46 +34,48 @@ const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
   }
 `);
 
-const TOKEN_CREATE_YIELD_SCHEDULE_MUTATION = portalGraphql(`
-  mutation TokenCreateYieldSchedule(
-    $challengeId: String
-    $challengeResponse: String
-    $address: String!
-    $from: String!
-    $endTime: String!
-    $interval: String!
-    $rate: String!
-    $startTime: String!
-    $token: String!
-    $country: Int!
-  ) {
-    createSchedule: IATKFixedYieldScheduleFactoryCreate(
-      address: $address
-      from: $from
-      challengeId: $challengeId
-      challengeResponse: $challengeResponse
-      input: {
-        country: $country
-        endTime: $endTime
-        interval: $interval
-        rate: $rate
-        startTime: $startTime
-        token: $token
-      }
-    ) {
-      transactionHash
-    }
-  }
-`);
-
-const GET_YIELD_SCHEDULE_ADDRESS_QUERY = theGraphGraphql(`
-query GetYieldScheduleAddress($transactionHash: Bytes!) {
-  tokenFixedYieldSchedules(where: {deployedInTransaction: $transactionHash}) {
-    id
-  }
-}
-`);
-
+/**
+ * Token set yield schedule route handler.
+ *
+ * Associates an existing fixed yield schedule contract with a token,
+ * enabling yield-bearing functionality. This endpoint only handles the
+ * association operation - the yield schedule must already exist and be
+ * created through the fixed yield schedule create endpoint.
+ *
+ * Authentication: Required (uses token router with permissions middleware)
+ * Permissions: Requires "setYieldSchedule" permission and "YIELD" extension
+ * Method: PUT /token/{tokenAddress}/yield-schedule
+ *
+ * @param input - Request parameters containing token and yield schedule addresses
+ * @param context - Request context with Portal client and authenticated user
+ * @returns Promise<Token> - Updated token object with yield schedule association
+ * @throws UNAUTHORIZED - If user is not authenticated
+ * @throws FORBIDDEN - If user lacks required permissions or token doesn't support yield
+ * @throws INTERNAL_SERVER_ERROR - If Portal mutation fails
+ *
+ * @example
+ * ```typescript
+ * // First create a yield schedule
+ * const schedule = await orpc.fixedYieldSchedule.create.mutate({
+ *   yieldRate: "500", // 5%
+ *   paymentInterval: "86400", // Daily
+ *   startTime: "1690876800",
+ *   endTime: "1722499200",
+ *   token: tokenAddress,
+ *   countryCode: 840,
+ *   walletVerification: { ... }
+ * });
+ *
+ * // Then set it on the token
+ * const updatedToken = await orpc.token.setYieldSchedule.mutate({
+ *   contract: tokenAddress,
+ *   schedule: schedule.address,
+ *   walletVerification: { ... }
+ * });
+ * ```
+ *
+ * @see {@link TokenSetYieldScheduleInputSchema} for input validation
+ */
 export const setYieldSchedule = tokenRouter.token.setYieldSchedule
   .use(
     tokenPermissionMiddleware({
@@ -77,98 +83,18 @@ export const setYieldSchedule = tokenRouter.token.setYieldSchedule
       requiredExtensions: ["YIELD"],
     })
   )
-  .handler(async ({ input, context, errors }) => {
-    const {
-      contract,
-      walletVerification,
-      yieldRate,
-      paymentInterval,
-      startTime,
-      endTime,
-      countryCode,
-    } = input;
-    const { auth, system } = context;
-
-    if (!system) {
-      throw errors.NOT_FOUND({
-        message: "System context is missing. Cannot set yield schedule.",
-      });
-    }
-
-    if (!system.systemAddons) {
-      throw errors.NOT_FOUND({
-        message:
-          "System addons are missing from system context. Cannot set yield schedule.",
-      });
-    }
-
-    const systemAddons = system.systemAddons;
-    const yieldScheduleAddon = systemAddons.find(
-      (addon) =>
-        addon.typeId === AddonFactoryTypeIdEnum.ATKFixedYieldScheduleFactory
-    );
-
-    if (!yieldScheduleAddon) {
-      throw errors.NOT_FOUND({
-        message: "Yield schedule addon not found in system addons.",
-      });
-    }
+  .handler(async ({ input, context }) => {
+    const { contract, schedule, walletVerification } = input;
+    const { auth } = context;
 
     const sender = auth.user;
-    const transactionHash = await context.portalClient.mutate(
-      TOKEN_CREATE_YIELD_SCHEDULE_MUTATION,
-      {
-        address: yieldScheduleAddon.id,
-        from: sender.wallet,
-        endTime: endTime.toString(),
-        interval: paymentInterval.toString(),
-        rate: yieldRate.toString(),
-        startTime: startTime.toString(),
-        token: contract,
-        country: countryCode,
-      },
-      {
-        sender: sender,
-        code: walletVerification.secretVerificationCode,
-        type: walletVerification.verificationType,
-      }
-    );
-
-    const scheduleAddresses = await theGraphClient.request(
-      GET_YIELD_SCHEDULE_ADDRESS_QUERY,
-      {
-        transactionHash: transactionHash,
-      }
-    );
-
-    const schedules = scheduleAddresses.tokenFixedYieldSchedules;
-
-    if (schedules.length === 0) {
-      throw errors.NOT_FOUND({
-        message: `No yield schedule found for the transaction ${transactionHash}`,
-      });
-    }
-
-    if (schedules.length > 1) {
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: `Multiple yield schedules detected for transaction ${transactionHash}. This scenario requires additional handling logic to determine the appropriate schedule.`,
-      });
-    }
-
-    const schedule = schedules[0]?.id;
-
-    if (!schedule) {
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: `No yield schedule found for transaction ${transactionHash}`,
-      });
-    }
 
     await context.portalClient.mutate(
       TOKEN_SET_YIELD_SCHEDULE_MUTATION,
       {
         address: contract,
         from: sender.wallet,
-        schedule: getEthereumAddress(schedule),
+        schedule,
       },
       {
         sender: sender,

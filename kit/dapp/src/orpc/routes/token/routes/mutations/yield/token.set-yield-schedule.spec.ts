@@ -1,5 +1,11 @@
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import { getAnvilTimeMilliseconds } from "@/test/anvil";
-import { getOrpcClient, type OrpcClient } from "@test/fixtures/orpc-client";
+import { createFixedYieldSchedule } from "@test/fixtures/fixed-yield-schedule";
+import {
+  errorMessageForCode,
+  getOrpcClient,
+  type OrpcClient,
+} from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
   DEFAULT_ADMIN,
@@ -13,6 +19,7 @@ import { beforeAll, describe, expect, test } from "vitest";
 describe("Token set yield schedule", async () => {
   let bondToken: Awaited<ReturnType<typeof createToken>>;
   let stablecoinToken: Awaited<ReturnType<typeof createToken>>;
+  let yieldSchedule: Awaited<ReturnType<typeof createFixedYieldSchedule>>;
   let adminClient: OrpcClient;
 
   const anvilTime = await getAnvilTimeMilliseconds();
@@ -21,18 +28,6 @@ describe("Token set yield schedule", async () => {
 
   const startTimestamp = Math.ceil(startDate.getTime() / 1000); // Convert to seconds like hardhat
   const endTimestamp = Math.ceil(endDate.getTime() / 1000);
-
-  const yieldScheduleData = {
-    yieldRate: "50", // 0.5%
-    paymentInterval: "43200", // 12 hours in seconds
-    startTime: startTimestamp,
-    endTime: endTimestamp,
-    walletVerification: {
-      secretVerificationCode: DEFAULT_PINCODE,
-      verificationType: "PINCODE" as const,
-    },
-    countryCode: 56,
-  };
 
   beforeAll(async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
@@ -81,17 +76,44 @@ describe("Token set yield schedule", async () => {
     expect(bondToken).toBeDefined();
     expect(bondToken.id).toBeDefined();
     expect(bondToken.type).toBe(bondData.type);
+
+    yieldSchedule = await createFixedYieldSchedule(adminClient, {
+      yieldRate: "50", // 0.5%
+      paymentInterval: "43200", // 12 hours in seconds
+      startTime: startTimestamp,
+      endTime: endTimestamp,
+      token: bondToken.id,
+      countryCode: 56,
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
+    });
+
+    expect(yieldSchedule).toBeDefined();
+    expect(yieldSchedule.address).toBeDefined();
   });
 
   test("can set yield schedule on bond", async () => {
     // First, expect the call to fail because admin doesn't have the governance role
     await expect(
-      adminClient.token.setYieldSchedule({
-        contract: bondToken.id,
-        ...yieldScheduleData,
-      })
+      adminClient.token.setYieldSchedule(
+        {
+          contract: bondToken.id,
+          schedule: yieldSchedule.address,
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
+          },
+        },
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
+          },
+        }
+      )
     ).rejects.toThrow(
-      "User does not have the required role to execute this action."
+      errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
     );
 
     // Get the admin's wallet address
@@ -110,17 +132,20 @@ describe("Token set yield schedule", async () => {
       },
     });
 
-    // Now create and set the yield schedule
     const yieldScheduleResult = await adminClient.token.setYieldSchedule({
       contract: bondToken.id,
-      ...yieldScheduleData,
+      schedule: yieldSchedule.address,
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
     });
 
     expect(yieldScheduleResult).toBeDefined();
     expect(yieldScheduleResult.id).toBe(bondToken.id);
     expect(yieldScheduleResult.yield).toBeDefined();
     expect(yieldScheduleResult.yield?.schedule).toBeDefined();
-    expect(yieldScheduleResult.yield?.schedule?.id).toBeDefined();
+    expect(yieldScheduleResult.yield?.schedule?.id).toBe(yieldSchedule.address);
   }, 100_000);
 
   test("regular users cant set yield schedule", async () => {
@@ -128,12 +153,23 @@ describe("Token set yield schedule", async () => {
     const client = getOrpcClient(headers);
 
     await expect(
-      client.token.setYieldSchedule({
-        ...yieldScheduleData,
-        contract: bondToken.id,
-      })
+      client.token.setYieldSchedule(
+        {
+          contract: bondToken.id,
+          schedule: yieldSchedule.address,
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
+          },
+        },
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
+          },
+        }
+      )
     ).rejects.toThrow(
-      "User does not have the required role to execute this action."
+      errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
     );
   });
 });

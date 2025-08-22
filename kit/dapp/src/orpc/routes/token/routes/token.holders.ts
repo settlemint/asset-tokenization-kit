@@ -1,5 +1,4 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TokenHoldersResponseSchema } from "@/orpc/routes/token/routes/token.holders.schema";
 
@@ -67,7 +66,6 @@ const TOKEN_HOLDERS_QUERY = theGraphGraphql(`
  * @see {@link TokenHoldersResponseSchema} for the response structure
  */
 export const holders = tokenRouter.token.holders
-  .use(theGraphMiddleware)
   .handler(async ({ context }) => {
     const response = await context.theGraphClient.query(TOKEN_HOLDERS_QUERY, {
       input: {
