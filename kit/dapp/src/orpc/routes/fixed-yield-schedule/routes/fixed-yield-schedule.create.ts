@@ -153,10 +153,10 @@ export const create = systemRouter.fixedYieldSchedule.create
       {
         address: yieldScheduleAddon.id,
         from: sender.wallet,
-        endTime: endTime.toString(),
+        endTime: Math.floor(endTime.getTime() / 1000).toString(),
         interval: paymentInterval.toString(),
         rate: yieldRate.toString(),
-        startTime: startTime.toString(),
+        startTime: Math.floor(startTime.getTime() / 1000).toString(),
         token: token,
         country: countryCode,
       },

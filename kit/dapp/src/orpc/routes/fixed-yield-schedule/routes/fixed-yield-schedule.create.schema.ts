@@ -1,7 +1,9 @@
 import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
+import { basisPoints } from "@atk/zod/basis-points";
 import { apiBigInt } from "@atk/zod/bigint";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { isoCountryCodeNumeric } from "@atk/zod/iso-country-code";
+import { timestamp } from "@atk/zod/timestamp";
 import { z } from "zod";
 
 /**
@@ -19,14 +21,16 @@ import { z } from "zod";
  * @property {Object} walletVerification - Wallet verification details for transaction signing
  */
 export const FixedYieldScheduleCreateInputSchema = MutationInputSchema.extend({
-  yieldRate: apiBigInt.describe("The yield rate in basis points (1% = 100)"),
+  yieldRate: basisPoints().describe(
+    "The yield rate in basis points (1% = 100)"
+  ),
   paymentInterval: apiBigInt.describe(
     "The payment interval in seconds (e.g., 86400 for daily)"
   ),
-  startTime: apiBigInt.describe(
+  startTime: timestamp().describe(
     "The start time for yield payments as Unix timestamp"
   ),
-  endTime: apiBigInt.describe(
+  endTime: timestamp().describe(
     "The end time for yield payments as Unix timestamp"
   ),
   token: ethereumAddress.describe(

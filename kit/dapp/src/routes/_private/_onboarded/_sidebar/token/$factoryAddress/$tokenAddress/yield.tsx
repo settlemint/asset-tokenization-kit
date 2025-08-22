@@ -1,11 +1,13 @@
 import { DetailGrid } from "@/components/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
+import { SetYieldScheduleSheet } from "@/components/manage-dropdown/sheets/set-yield-schedule-sheet";
 import { Button } from "@/components/ui/button";
 import { orpc } from "@/orpc/orpc-client";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { Calendar } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -44,6 +46,8 @@ function RouteComponent() {
   });
 
   const { t } = useTranslation(["tokens", "common"]);
+  const [isYieldScheduleSheetOpen, setIsYieldScheduleSheetOpen] =
+    useState(false);
 
   // Check if token has a yield schedule configured
   const yieldScheduleId = asset.yield?.schedule?.id;
@@ -91,24 +95,33 @@ function RouteComponent() {
   // Show empty state if no yield schedule exists
   if (!yieldScheduleId || !yieldSchedule) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-        <div className="rounded-full bg-muted p-3 mb-4">
-          <Calendar className="h-6 w-6 text-muted-foreground" />
+      <>
+        <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+          <div className="rounded-full bg-muted p-3 mb-4">
+            <Calendar className="h-6 w-6 text-muted-foreground" />
+          </div>
+          <h3 className="text-lg font-semibold mb-2">
+            {t("tokens:yield.emptyState.title")}
+          </h3>
+          <p className="text-muted-foreground max-w-md mb-6">
+            {t("tokens:yield.emptyState.description")}
+          </p>
+          <Button
+            onClick={() => {
+              setIsYieldScheduleSheetOpen(true);
+            }}
+          >
+            {t("tokens:yield.emptyState.setScheduleButton")}
+          </Button>
         </div>
-        <h3 className="text-lg font-semibold mb-2">
-          {t("tokens:yield.emptyState.title")}
-        </h3>
-        <p className="text-muted-foreground max-w-md mb-6">
-          {t("tokens:yield.emptyState.description")}
-        </p>
-        <Button
-          onClick={() => {
-            // TODO: Implement yield schedule creation
-          }}
-        >
-          {t("tokens:yield.emptyState.setScheduleButton")}
-        </Button>
-      </div>
+
+        {/* Set Yield Schedule Sheet */}
+        <SetYieldScheduleSheet
+          open={isYieldScheduleSheetOpen}
+          onOpenChange={setIsYieldScheduleSheetOpen}
+          asset={asset}
+        />
+      </>
     );
   }
 
@@ -258,6 +271,13 @@ function RouteComponent() {
           />
         </DetailGrid>
       )}
+
+      {/* Set Yield Schedule Sheet */}
+      <SetYieldScheduleSheet
+        open={isYieldScheduleSheetOpen}
+        onOpenChange={setIsYieldScheduleSheetOpen}
+        asset={asset}
+      />
     </>
   );
 }

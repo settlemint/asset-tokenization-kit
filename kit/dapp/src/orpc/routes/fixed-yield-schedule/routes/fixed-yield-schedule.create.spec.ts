@@ -76,7 +76,7 @@ describe("Fixed yield schedule create", async () => {
 
   test("can create fixed yield schedule", async () => {
     const yieldScheduleData = {
-      yieldRate: "250", // 2.5%
+      yieldRate: 250, // 2.5%
       paymentInterval: "86400", // Daily payments (24 hours in seconds)
       startTime: startTimestamp,
       endTime: endTimestamp,
@@ -101,7 +101,7 @@ describe("Fixed yield schedule create", async () => {
     const investorClient = getOrpcClient(headers);
 
     const yieldScheduleData = {
-      yieldRate: "250",
+      yieldRate: 250,
       paymentInterval: "86400",
       startTime: startTimestamp,
       endTime: endTimestamp,

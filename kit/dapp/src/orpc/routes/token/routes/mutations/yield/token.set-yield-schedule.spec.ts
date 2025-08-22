@@ -78,7 +78,7 @@ describe("Token set yield schedule", async () => {
     expect(bondToken.type).toBe(bondData.type);
 
     yieldSchedule = await createFixedYieldSchedule(adminClient, {
-      yieldRate: "50", // 0.5%
+      yieldRate: 50, // 0.5%
       paymentInterval: "43200", // 12 hours in seconds
       startTime: startTimestamp,
       endTime: endTimestamp,
