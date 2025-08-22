@@ -155,13 +155,11 @@ abstract contract _SMARTCollateralLogic is _SMARTExtension, ISMARTCollateral {
     /// @return amount The decoded collateral amount (0 if decoding fails or claim expired).
     /// @return expiry The decoded expiry timestamp (0 if decoding fails or claim expired).
     function __decodeClaimData(bytes memory data) private view returns (bool decoded, uint256 amount, uint256 expiry) {
-        // Attempt to decode the standard ABI-encoded data.
-        try this.__decodeCollateralData(data) returns (uint256 _amount, uint256 _expiry) {
-            amount = _amount;
-            expiry = _expiry;
-        } catch {
-            return (false, 0, 0); // Decoding failed.
+        // WHY: Check if it is a valid claim containing two uint256 values (2 * 32 bytes)
+        if (data.length != 64) {
+            return (false, 0, 0);
         }
+        (amount, expiry) = abi.decode(data, (uint256, uint256));
 
         // Check if the claim has already expired.
         if (expiry < block.timestamp || expiry == block.timestamp) {
@@ -171,14 +169,6 @@ abstract contract _SMARTCollateralLogic is _SMARTExtension, ISMARTCollateral {
         return (true, amount, expiry); // Successfully decoded and not expired.
     }
 
-    /// @notice Helper function to decode collateral data
-    /// @dev Standard ABI decoding for collateral claims
-    /// @param data The raw bytes data to decode
-    /// @return amount The collateral amount
-    /// @return expiry The expiry timestamp
-    function __decodeCollateralData(bytes memory data) public pure returns (uint256 amount, uint256 expiry) {
-        (amount, expiry) = abi.decode(data, (uint256, uint256));
-    }
 
     /// @notice Validates a claim with a specific issuer and decodes its data if valid.
     /// @dev This helper combines checking issuer validity and data decoding/expiry.
