@@ -1,5 +1,4 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { FactoriesResponseSchema } from "@/orpc/routes/system/token-factory/routes/factory.list.schema";
 
@@ -77,7 +76,6 @@ const LIST_TOKEN_FACTORIES_QUERY = theGraphGraphql(`
  * ```
  */
 export const factoryList = authRouter.system.tokenFactoryList
-  .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
     // Build where clause if hasTokens filter is provided
     const where =

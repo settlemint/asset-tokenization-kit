@@ -11,7 +11,7 @@ export type OrpcHandler<Input = unknown, Output = unknown> = (args: {
 }) => Promise<Output>;
 
 // Use hoisted storage to be accessible inside vi.mock factory (which is hoisted)
-const portalMockState = vi.hoisted(() => ({
+const systemMockState = vi.hoisted(() => ({
   handler: undefined as OrpcHandler | undefined,
 }));
 const onboardedMockState = vi.hoisted(() => ({
@@ -22,12 +22,12 @@ const authMockState = vi.hoisted(() => ({
 }));
 
 /**
- * Installs a vi.mock for `@/orpc/procedures/portal.router` that captures the handler
- * passed via `.handler(fn)` for any nested path like `portalRouter.system.revokeRole`.
+ * Installs a vi.mock for `@/orpc/procedures/system.router` that captures the handler
+ * passed via `.handler(fn)` for any nested path like `systemRouter.system.revokeRole`.
  * Call this before importing the route module under test.
  */
-export function installPortalRouterCaptureMock() {
-  vi.mock("@/orpc/procedures/portal.router", () => {
+export function installSystemRouterCaptureMock() {
+  vi.mock("@/orpc/procedures/system.router", () => {
     // Chainable builder proxy: any property access returns the same proxy,
     // and it exposes .use() and .handler(fn) methods.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -38,7 +38,7 @@ export function installPortalRouterCaptureMock() {
         if (prop === "use") return vi.fn(() => builderProxy);
         if (prop === "handler")
           return vi.fn((fn: OrpcHandler) => {
-            portalMockState.handler = fn;
+            systemMockState.handler = fn;
             return builderProxy;
           });
         return builderProxy;
@@ -46,17 +46,17 @@ export function installPortalRouterCaptureMock() {
     });
 
     return {
-      portalRouter: builderProxy as Record<string, unknown>,
+      systemRouter: builderProxy as Record<string, unknown>,
     };
   });
 }
 
 export function getCapturedHandler() {
-  return portalMockState.handler;
+  return systemMockState.handler;
 }
 
 export function resetCapturedHandler() {
-  portalMockState.handler = undefined;
+  systemMockState.handler = undefined;
 }
 
 /**

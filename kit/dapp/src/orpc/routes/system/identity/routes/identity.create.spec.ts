@@ -1,4 +1,5 @@
-import { getOrpcClient } from "@test/fixtures/orpc-client";
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
+import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
   DEFAULT_ADMIN,
@@ -37,14 +38,21 @@ describe("Identity create", () => {
     const client = getOrpcClient(headers);
 
     await expect(
-      client.system.identityCreate({
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
+      client.system.identityCreate(
+        {
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
+          },
+          wallet,
         },
-        wallet,
-      })
-    ).rejects.toThrow("Forbidden");
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
+          },
+        }
+      )
+    ).rejects.toThrow(errorMessageForCode(CUSTOM_ERROR_CODES.FORBIDDEN));
   });
 
   test("admin can create an identity for another user", async () => {

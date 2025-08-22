@@ -1,15 +1,16 @@
 /**
  * @vitest-environment node
  */
-import { describe, expect, it, beforeEach, vi } from "vitest";
 import {
-  installPortalRouterCaptureMock,
-  getCapturedHandler,
   createBaseContext,
   createMockErrors,
+  getCapturedHandler,
+  installSystemRouterCaptureMock,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
 import { VerificationType } from "@atk/zod/verification-type";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import "./topic.update";
 import type {
   TopicUpdateInput,
   TopicUpdateOutput,
@@ -22,8 +23,7 @@ vi.mock("@/orpc/helpers/challenge-response", () => ({
   ),
 }));
 
-installPortalRouterCaptureMock();
-import "./topic.update";
+installSystemRouterCaptureMock();
 
 function getHandler(): OrpcHandler<TopicUpdateInput, TopicUpdateOutput> {
   const handler = getCapturedHandler();
@@ -241,10 +241,14 @@ describe("system.claim-topics.topic.update unit", () => {
       secretVerificationCode: "123456",
       verificationType: VerificationType.pincode,
     };
-    
+
     const testCases = [
       { name: "KYC", signature: "isKYC(address,uint256)", walletVerification },
-      { name: "AML Check", signature: "isAMLCompliant(address,bytes32)", walletVerification },
+      {
+        name: "AML Check",
+        signature: "isAMLCompliant(address,bytes32)",
+        walletVerification,
+      },
       {
         name: "Investor Status",
         signature: "isAccreditedInvestor(address,bool)",

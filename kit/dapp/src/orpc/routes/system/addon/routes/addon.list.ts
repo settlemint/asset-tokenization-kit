@@ -1,5 +1,4 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { AddonsResponseSchema } from "@/orpc/routes/system/addon/routes/addon.list.schema";
 import { getFactoryTypeIdsFromAddonType } from "@atk/zod/addon-types";
@@ -86,9 +85,8 @@ const LIST_SYSTEM_ADDONS_QUERY = theGraphGraphql(`
  * });
  * ```
  */
-export const addonList = authRouter.system.addonList
-  .use(theGraphMiddleware)
-  .handler(async ({ input, context }) => {
+export const addonList = authRouter.system.addonList.handler(
+  async ({ input, context }) => {
     // Build where clause based on filters
     const where: Record<string, unknown> = {};
 
@@ -120,4 +118,5 @@ export const addonList = authRouter.system.addonList
       deployedInTransaction: addon.deployedInTransaction,
       account: getEthereumAddress(addon.account.id),
     }));
-  });
+  }
+);

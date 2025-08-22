@@ -1,6 +1,11 @@
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import { getAnvilTimeMilliseconds } from "@/test/anvil";
 import { createFixedYieldSchedule } from "@test/fixtures/fixed-yield-schedule";
-import { getOrpcClient, type OrpcClient } from "@test/fixtures/orpc-client";
+import {
+  errorMessageForCode,
+  getOrpcClient,
+  type OrpcClient,
+} from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
   DEFAULT_ADMIN,
@@ -92,16 +97,23 @@ describe("Token set yield schedule", async () => {
   test("can set yield schedule on bond", async () => {
     // First, expect the call to fail because admin doesn't have the governance role
     await expect(
-      adminClient.token.setYieldSchedule({
-        contract: bondToken.id,
-        schedule: yieldSchedule.address,
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
+      adminClient.token.setYieldSchedule(
+        {
+          contract: bondToken.id,
+          schedule: yieldSchedule.address,
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
+          },
         },
-      })
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
+          },
+        }
+      )
     ).rejects.toThrow(
-      "User does not have the required role to execute this action."
+      errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
     );
 
     // Get the admin's wallet address
@@ -141,16 +153,23 @@ describe("Token set yield schedule", async () => {
     const client = getOrpcClient(headers);
 
     await expect(
-      client.token.setYieldSchedule({
-        contract: bondToken.id,
-        schedule: yieldSchedule.address,
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
+      client.token.setYieldSchedule(
+        {
+          contract: bondToken.id,
+          schedule: yieldSchedule.address,
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
+          },
         },
-      })
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
+          },
+        }
+      )
     ).rejects.toThrow(
-      "User does not have the required role to execute this action."
+      errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
     );
   });
 });

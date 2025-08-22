@@ -1,6 +1,5 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { authRouter } from "@/orpc/procedures/auth.router";
+import { publicRouter } from "@/orpc/procedures/public.router";
 import { SystemsResponseSchema } from "@/orpc/routes/system/routes/system.list.schema";
 
 /**
@@ -52,8 +51,7 @@ const LIST_SYSTEM_QUERY = theGraphGraphql(`
  * });
  * ```
  */
-export const list = authRouter.system.list
-  .use(theGraphMiddleware)
+export const list = publicRouter.system.list
   .handler(async ({ input, context }) => {
     // Execute TheGraph query with automatic variable transformation
     // The middleware handles offset/limit to skip/first conversion

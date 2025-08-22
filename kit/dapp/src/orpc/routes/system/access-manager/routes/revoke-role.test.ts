@@ -1,14 +1,15 @@
 /**
  * @vitest-environment node
  */
-import { describe, expect, it, beforeEach, vi } from "vitest";
 import {
-  installPortalRouterCaptureMock,
-  getCapturedHandler,
   createBaseContext,
   createMockErrors,
+  getCapturedHandler,
+  installSystemRouterCaptureMock,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import "./revoke-role";
 
 // Mock shared dependencies used by the route for fast unit execution
 vi.mock("@/lib/settlemint/portal"); // vitest config maps to test mocks
@@ -19,9 +20,8 @@ vi.mock("@/orpc/helpers/challenge-response", () => ({
   ),
 }));
 
-// Install the portal router capture mock BEFORE importing the route
-installPortalRouterCaptureMock();
-import "./revoke-role";
+// Install the system router capture mock BEFORE importing the route
+installSystemRouterCaptureMock();
 
 function getHandler(): OrpcHandler {
   const handler = getCapturedHandler();

@@ -12,9 +12,8 @@
  * @see {@link ./system.read.schema} - Input/output validation schemas
  */
 
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { getSystemContext } from "@/orpc/middlewares/system/system.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { publicRouter } from "@/orpc/procedures/public.router";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
 import type { SystemReadOutput } from "@/orpc/routes/system/routes/system.read.schema";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
@@ -43,8 +42,7 @@ import { call } from "@orpc/server";
  * });
  * ```
  */
-export const read = onboardedRouter.system.read
-  .use(theGraphMiddleware)
+export const read = publicRouter.system.read
   .handler(async ({ input, context, errors }) => {
     // Query system details from TheGraph with automatic ID transformation
     const systemAddress =
@@ -65,7 +63,8 @@ export const read = onboardedRouter.system.read
       });
     }
     const systemContext = await getSystemContext(
-      getEthereumAddress(systemAddress)
+      getEthereumAddress(systemAddress),
+      context.theGraphClient
     );
     if (!systemContext) {
       throw errors.NOT_FOUND({
