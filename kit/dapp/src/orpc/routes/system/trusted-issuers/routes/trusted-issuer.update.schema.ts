@@ -19,9 +19,9 @@ export const TrustedIssuerUpdateInputSchema = MutationInputSchema.extend({
  * Output schema for updating a trusted issuer
  */
 export const TrustedIssuerUpdateOutputSchema = z.object({
-  transactionHash: z.string().describe(
-    "Transaction hash of the update operation"
-  ),
+  transactionHash: z
+    .string()
+    .describe("Transaction hash of the update operation"),
   issuerAddress: ethereumAddress.describe(
     "Address of the updated trusted issuer"
   ),

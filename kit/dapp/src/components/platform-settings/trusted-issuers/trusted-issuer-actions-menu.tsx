@@ -151,7 +151,9 @@ export function TrustedIssuerActionsMenu({
         open={showVerificationDialog}
         onOpenChange={setShowVerificationDialog}
         title={t("trustedIssuers.actions.remove.verification.title")}
-        description={t("trustedIssuers.actions.remove.verification.description")}
+        description={t(
+          "trustedIssuers.actions.remove.verification.description"
+        )}
         onSubmit={handleVerificationSubmit}
         onCancel={handleVerificationCancel}
       />

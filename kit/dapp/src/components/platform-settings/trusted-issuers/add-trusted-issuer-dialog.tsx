@@ -13,11 +13,14 @@ import { useAppForm } from "@/hooks/use-app-form";
 import { client, orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { TrustedIssuerCreateInput } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.create.schema";
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
 
 interface AddTrustedIssuerDialogProps {
   open: boolean;
@@ -86,7 +89,7 @@ export function AddTrustedIssuerDialog({
 
   // Create a lookup map for O(1) topic retrieval and options
   const { topicLookup, topicOptions } = useMemo(() => {
-    const lookup = new Map(topics.map(topic => [topic.topicId, topic.name]));
+    const lookup = new Map(topics.map((topic) => [topic.topicId, topic.name]));
     const options = topics.map((topic) => ({
       value: topic.topicId,
       label: topic.name,
@@ -130,7 +133,7 @@ export function AddTrustedIssuerDialog({
                   <MultipleSelector
                     value={field.state.value.map((id: string) => ({
                       value: id,
-                      label: topicLookup.get(id) || id
+                      label: topicLookup.get(id) || id,
                     }))}
                     onChange={(options) => {
                       field.handleChange(options.map((o) => o.value));

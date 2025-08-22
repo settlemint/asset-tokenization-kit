@@ -73,42 +73,44 @@ export const trustedIssuerCreate = systemRouter.system.trustedIssuerCreate
       },
     })
   )
-  .handler(async ({ input, context, errors }): Promise<TrustedIssuerCreateOutput> => {
-    const { system } = context;
-    const { issuerAddress, claimTopicIds, walletVerification } = input;
-    const sender = context.auth.user;
+  .handler(
+    async ({ input, context, errors }): Promise<TrustedIssuerCreateOutput> => {
+      const { system } = context;
+      const { issuerAddress, claimTopicIds, walletVerification } = input;
+      const sender = context.auth.user;
 
-    // Validate system configuration
-    const registryAddress = system?.trustedIssuersRegistry;
-    if (!registryAddress) {
-      const cause = new Error(
-        "Trusted issuers registry not found in system configuration"
+      // Validate system configuration
+      const registryAddress = system?.trustedIssuersRegistry;
+      if (!registryAddress) {
+        const cause = new Error(
+          "Trusted issuers registry not found in system configuration"
+        );
+        throw errors.INTERNAL_SERVER_ERROR({
+          message: cause.message,
+          cause,
+        });
+      }
+
+      // Execute the registration transaction
+      const transactionHash = await context.portalClient.mutate(
+        CREATE_TRUSTED_ISSUER_MUTATION,
+        {
+          address: registryAddress,
+          from: sender.wallet,
+          trustedIssuer: issuerAddress,
+          claimTopics: claimTopicIds,
+        },
+        {
+          sender,
+          code: walletVerification.secretVerificationCode,
+          type: walletVerification.verificationType,
+        }
       );
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: cause.message,
-        cause,
+
+      // Return success response with transaction details
+      return TrustedIssuerCreateOutputSchema.parse({
+        transactionHash,
+        issuerAddress,
       });
     }
-
-    // Execute the registration transaction
-    const transactionHash = await context.portalClient.mutate(
-      CREATE_TRUSTED_ISSUER_MUTATION,
-      {
-        address: registryAddress,
-        from: sender.wallet,
-        trustedIssuer: issuerAddress,
-        claimTopics: claimTopicIds,
-      },
-      {
-        sender,
-        code: walletVerification.secretVerificationCode,
-        type: walletVerification.verificationType,
-      }
-    );
-
-    // Return success response with transaction details
-    return TrustedIssuerCreateOutputSchema.parse({
-      transactionHash,
-      issuerAddress,
-    });
-  });
+  );

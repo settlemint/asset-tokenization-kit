@@ -2,7 +2,11 @@ import { DataTable } from "@/components/data-table/data-table";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Web3Address } from "@/components/web3/web3-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { TrustedIssuer } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.list.schema";
@@ -21,7 +25,9 @@ const columnHelper = createColumnHelper<TrustedIssuer>();
  * Shows issuer identity, assigned topics, and actions for each issuer
  */
 export function TrustedIssuersTable() {
-  const [editingIssuer, setEditingIssuer] = useState<TrustedIssuer | null>(null);
+  const [editingIssuer, setEditingIssuer] = useState<TrustedIssuer | null>(
+    null
+  );
   const { t } = useTranslation("claim-topics-issuers");
 
   // Fetch trusted issuers data using ORPC
@@ -62,7 +68,7 @@ export function TrustedIssuersTable() {
           header: t("trustedIssuers.table.columns.assignedTopics"),
           cell: ({ getValue }) => {
             const topics = getValue();
-            
+
             if (topics.length === 0) {
               return (
                 <span className="text-muted-foreground text-sm">
