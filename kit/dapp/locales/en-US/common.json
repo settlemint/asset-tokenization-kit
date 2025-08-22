@@ -39,5 +39,12 @@
   "add": "Grant",
   "none": "None",
   "yes": "Yes",
-  "no": "No"
+  "no": "No",
+  "timeInterval": {
+    "DAILY": "Daily",
+    "WEEKLY": "Weekly", 
+    "MONTHLY": "Monthly",
+    "QUARTERLY": "Quarterly",
+    "YEARLY": "Yearly"
+  }
 }

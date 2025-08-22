@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/select";
 import { useFieldContext } from "@/hooks/use-form-contexts";
 import { cn } from "@/lib/utils";
-import { TIME_INTERVAL_VALUES } from "@atk/zod/time-interval";
+import { timeIntervals } from "@atk/zod/time-interval";
 import {
   errorClassNames,
   FieldDescription,
@@ -38,7 +38,7 @@ export function SelectTimeIntervalField({
   const field = useFieldContext<string>();
   const { t } = useTranslation(["common"]);
 
-  const options = TIME_INTERVAL_VALUES.map((interval) => ({
+  const options = timeIntervals.map((interval) => ({
     label: t(`common:timeInterval.${interval}`),
     value: interval,
   }));

@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppForm } from "@/hooks/use-app-form";
 import { useCountries } from "@/hooks/use-countries";
 import { formatValue } from "@/lib/utils/format-value";
-import { isTimeInterval } from "@atk/zod/time-interval";
 import { orpc } from "@/orpc/orpc-client";
 import { FixedYieldScheduleCreateInput } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.create.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
@@ -194,7 +193,7 @@ export function SetYieldScheduleSheet({
                       </div>
                       <div className="text-sm font-medium">
                         {values.paymentInterval
-                          ? getTimeIntervalLabel(values.paymentInterval)
+                          ? t(`common:timeInterval.${values.paymentInterval}`)
                           : "—"}
                       </div>
                     </div>
@@ -215,103 +214,103 @@ export function SetYieldScheduleSheet({
             </Card>
           }
         >
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 gap-4">
-            <form.AppField
-              name="startTime"
-              children={(field) => (
-                <field.DateTimeField
-                  label={t("tokens:yield.fields.startDate")}
-                  required={true}
-                  minDate={new Date()}
-                />
-              )}
-            />
-
-            <form.Subscribe selector={(state) => state.values.startTime}>
-              {(startTime) => {
-                return (
-                  <form.AppField
-                    name="endTime"
-                    children={(field) => (
-                      <field.DateTimeField
-                        label={t("tokens:yield.fields.endDate")}
-                        required={true}
-                        minDate={startTime ?? new Date()}
-                      />
-                    )}
-                  />
-                );
-              }}
-            </form.Subscribe>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Yield Rate */}
-            <div>
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 gap-4">
               <form.AppField
-                name="yieldRate"
+                name="startTime"
                 children={(field) => (
-                  <field.NumberField
-                    label={t("tokens:yield.fields.rate")}
-                    endAddon="bps"
+                  <field.DateTimeField
+                    label={t("tokens:yield.fields.startDate")}
                     required={true}
-                    description={t("tokens:yield.fields.rateInfo")}
+                    minDate={new Date()}
                   />
                 )}
               />
-              <form.Subscribe
-                selector={(state) => ({
-                  yieldRate:
-                    state.errors?.length === 0
-                      ? state.values.yieldRate
-                      : undefined,
-                })}
-              >
-                {({ yieldRate }) => {
-                  if (!yieldRate) return null;
-                  const percentage = formatValue(
-                    basisPointsToPercentage(yieldRate),
-                    {
-                      type: "percentage",
-                    }
-                  );
+
+              <form.Subscribe selector={(state) => state.values.startTime}>
+                {(startTime) => {
                   return (
-                    <div className="ml-1 text-sm text-muted-foreground mt-1 flex items-center gap-2">
-                      {t("tokens:yield.fields.rateInPercentage")} {percentage}
-                    </div>
+                    <form.AppField
+                      name="endTime"
+                      children={(field) => (
+                        <field.DateTimeField
+                          label={t("tokens:yield.fields.endDate")}
+                          required={true}
+                          minDate={startTime ?? new Date()}
+                        />
+                      )}
+                    />
                   );
                 }}
               </form.Subscribe>
             </div>
 
-            {/* Payment Interval */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Yield Rate */}
+              <div>
+                <form.AppField
+                  name="yieldRate"
+                  children={(field) => (
+                    <field.NumberField
+                      label={t("tokens:yield.fields.rate")}
+                      endAddon="bps"
+                      required={true}
+                      description={t("tokens:yield.fields.rateInfo")}
+                    />
+                  )}
+                />
+                <form.Subscribe
+                  selector={(state) => ({
+                    yieldRate:
+                      state.errors?.length === 0
+                        ? state.values.yieldRate
+                        : undefined,
+                  })}
+                >
+                  {({ yieldRate }) => {
+                    if (!yieldRate) return null;
+                    const percentage = formatValue(
+                      basisPointsToPercentage(yieldRate),
+                      {
+                        type: "percentage",
+                      }
+                    );
+                    return (
+                      <div className="ml-1 text-sm text-muted-foreground mt-1 flex items-center gap-2">
+                        {t("tokens:yield.fields.rateInPercentage")} {percentage}
+                      </div>
+                    );
+                  }}
+                </form.Subscribe>
+              </div>
+
+              {/* Payment Interval */}
+              <form.AppField
+                name="paymentInterval"
+                children={(field) => (
+                  <field.SelectTimeIntervalField
+                    label={t("tokens:yield.fields.interval")}
+                    required={true}
+                    description={t("tokens:yield.fields.intervalInfo")}
+                    placeholder={t("tokens:yield.form.selectInterval")}
+                  />
+                )}
+              />
+            </div>
+
             <form.AppField
-              name="paymentInterval"
+              name="countryCode"
               children={(field) => (
-                <field.SelectTimeIntervalField
-                  label={t("tokens:yield.fields.interval")}
-                  required={true}
-                  description={t("tokens:yield.fields.intervalInfo")}
-                  placeholder={t("tokens:yield.form.selectInterval")}
+                <field.CountrySelectField
+                  label={t("tokens:yield.fields.country")}
+                  required={isRequiredField("countryCode")}
+                  valueType="numeric"
+                  description={t("tokens:yield.fields.countryInfo")}
                 />
               )}
             />
           </div>
-
-          <form.AppField
-            name="countryCode"
-            children={(field) => (
-              <field.CountrySelectField
-                label={t("tokens:yield.fields.country")}
-                required={isRequiredField("countryCode")}
-                valueType="numeric"
-                description={t("tokens:yield.fields.countryInfo")}
-              />
-            )}
-          />
-        </div>
-      </ActionFormSheet>
+        </ActionFormSheet>
       )}
     </form.Subscribe>
   );

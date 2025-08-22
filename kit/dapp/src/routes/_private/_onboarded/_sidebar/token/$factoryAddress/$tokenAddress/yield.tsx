@@ -182,21 +182,21 @@ function RouteComponent() {
           info={t("tokens:yield.fields.totalYieldInfo")}
           value={yieldSchedule.totalYield}
           type="currency"
-          currency={asset.symbol}
+          currency={{ assetSymbol: asset.symbol }}
         />
         <DetailGridItem
           label={t("tokens:yield.fields.totalClaimed")}
           info={t("tokens:yield.fields.totalClaimedInfo")}
           value={yieldSchedule.totalClaimed}
           type="currency"
-          currency={asset.symbol}
+          currency={{ assetSymbol: asset.symbol }}
         />
         <DetailGridItem
           label={t("tokens:yield.fields.totalUnclaimed")}
           info={t("tokens:yield.fields.totalUnclaimedInfo")}
           value={yieldSchedule.totalUnclaimedYield}
           type="currency"
-          currency={asset.symbol}
+          currency={{ assetSymbol: asset.symbol }}
         />
         <DetailGridItem
           label={t("tokens:yield.fields.denominationAsset")}
@@ -225,14 +225,14 @@ function RouteComponent() {
             info={t("tokens:yield.fields.periodYieldInfo")}
             value={yieldSchedule.currentPeriod.totalYield}
             type="currency"
-            currency={asset.symbol}
+            currency={{ assetSymbol: asset.symbol }}
           />
           <DetailGridItem
             label={t("tokens:yield.fields.periodClaimed")}
             info={t("tokens:yield.fields.periodClaimedInfo")}
             value={yieldSchedule.currentPeriod.totalClaimed}
             type="currency"
-            currency={asset.symbol}
+            currency={{ assetSymbol: asset.symbol }}
           />
         </DetailGrid>
       )}
@@ -256,7 +256,7 @@ function RouteComponent() {
             info={t("tokens:yield.fields.periodYieldInfo")}
             value={yieldSchedule.nextPeriod.totalYield}
             type="currency"
-            currency={asset.symbol}
+            currency={{ assetSymbol: asset.symbol }}
           />
         </DetailGrid>
       )}

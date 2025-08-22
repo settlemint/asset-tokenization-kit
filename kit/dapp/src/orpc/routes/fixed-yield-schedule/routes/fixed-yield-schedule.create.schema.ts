@@ -1,8 +1,8 @@
 import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
 import { basisPoints } from "@atk/zod/basis-points";
-import { apiBigInt } from "@atk/zod/bigint";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { isoCountryCodeNumeric } from "@atk/zod/iso-country-code";
+import { timeInterval } from "@atk/zod/time-interval";
 import { timestamp } from "@atk/zod/timestamp";
 import { z } from "zod";
 
@@ -13,7 +13,7 @@ import { z } from "zod";
  * contract, ensuring all required configuration is provided with proper validation.
  *
  * @property {string} yieldRate - The yield rate in basis points (1% = 100)
- * @property {string} paymentInterval - The payment interval in seconds
+ * @property {string} paymentInterval - The payment interval (DAILY, WEEKLY, MONTHLY, QUARTERLY, YEARLY)
  * @property {string} startTime - The start time for yield payments as Unix timestamp
  * @property {string} endTime - The end time for yield payments as Unix timestamp
  * @property {string} token - The token contract address that will use this yield schedule
@@ -24,8 +24,8 @@ export const FixedYieldScheduleCreateInputSchema = MutationInputSchema.extend({
   yieldRate: basisPoints().describe(
     "The yield rate in basis points (1% = 100)"
   ),
-  paymentInterval: apiBigInt.describe(
-    "The payment interval in seconds (e.g., 86400 for daily)"
+  paymentInterval: timeInterval().describe(
+    "The payment interval (DAILY, WEEKLY, MONTHLY, QUARTERLY, YEARLY)"
   ),
   startTime: timestamp().describe(
     "The start time for yield payments as Unix timestamp"
