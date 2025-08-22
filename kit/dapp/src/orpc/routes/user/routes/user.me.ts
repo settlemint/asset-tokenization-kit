@@ -12,6 +12,7 @@ import { kycProfiles, user as userTable } from "@/lib/db/schema";
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
+import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
 import { getSystemContext } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
@@ -114,7 +115,8 @@ export const me = authRouter.user.me
 
     const { accessControl, ...systemOnboardingState } = await getSystemInfo(
       systemAddress,
-      systemAddonsSkipped
+      systemAddonsSkipped,
+      context.theGraphClient
     );
     const userRoles = mapUserRoles(authUser.wallet, accessControl);
     return {
@@ -154,7 +156,8 @@ export const me = authRouter.user.me
 
 async function getSystemInfo(
   systemAddress: string | null,
-  systemAddonsSkipped: string | null
+  systemAddonsSkipped: string | null,
+  theGraphClient: ValidatedTheGraphClient
 ) {
   const systemOnboardingState = {
     system: false,
@@ -170,7 +173,8 @@ async function getSystemInfo(
   }
   try {
     const systemData = await getSystemContext(
-      getEthereumAddress(systemAddress)
+      getEthereumAddress(systemAddress),
+      theGraphClient
     );
     if (!systemData) {
       return {

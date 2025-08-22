@@ -1,6 +1,6 @@
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { portalRouter } from "@/orpc/procedures/portal.router";
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { systemRouter } from "@/orpc/procedures/system.router";
+import z from "zod";
 import {
   ComplianceModulesListOutputSchema,
   type ComplianceModulesList,
@@ -26,24 +26,28 @@ const COMPLIANCE_MODULES_QUERY = theGraphGraphql(
   []
 );
 
-export const complianceModuleList = portalRouter.system.complianceModuleList
-  .use(systemMiddleware)
-  .handler(async ({ context, errors }): Promise<ComplianceModulesList> => {
-    const { system } = context;
+export const complianceModuleList =
+  systemRouter.system.complianceModuleList.handler(
+    async ({ context, errors }): Promise<ComplianceModulesList> => {
+      const { system } = context;
 
-    const registryAddress = system?.complianceModuleRegistry;
-    if (!registryAddress) {
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: "System compliance module registry not found",
-      });
+      const registryAddress = system?.complianceModuleRegistry;
+      if (!registryAddress) {
+        throw errors.INTERNAL_SERVER_ERROR({
+          message: "System compliance module registry not found",
+        });
+      }
+
+      const response = await context.theGraphClient.query(
+        COMPLIANCE_MODULES_QUERY,
+        {
+          input: { registryAddress },
+          output: z.object({
+            complianceModules: ComplianceModulesListOutputSchema,
+          }),
+        }
+      );
+
+      return response.complianceModules;
     }
-
-    const { complianceModules } = await theGraphClient.request({
-      document: COMPLIANCE_MODULES_QUERY,
-      variables: {
-        registryAddress,
-      },
-    });
-
-    return ComplianceModulesListOutputSchema.parse(complianceModules);
-  });
+  );

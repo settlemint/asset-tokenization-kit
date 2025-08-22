@@ -1,3 +1,4 @@
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
@@ -164,12 +165,19 @@ describe("KYC list", () => {
     const client = getOrpcClient(headers);
 
     await expect(
-      client.user.kyc.list({
-        limit: 10,
-        offset: 0,
-        orderBy: "createdAt",
-        orderDirection: "desc",
-      })
+      client.user.kyc.list(
+        {
+          limit: 10,
+          offset: 0,
+          orderBy: "createdAt",
+          orderDirection: "desc",
+        },
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
+          },
+        }
+      )
     ).rejects.toThrow();
   });
 });

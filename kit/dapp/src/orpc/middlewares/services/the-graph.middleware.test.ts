@@ -28,7 +28,7 @@
  */
 
 import type { TadaDocumentNode } from "gql.tada";
-import { parse } from "graphql";
+import { parse, print } from "graphql";
 import { ClientError } from "graphql-request";
 import { beforeEach, describe, expect, test, vi, type Mock } from "vitest";
 import { z } from "zod";
@@ -440,7 +440,7 @@ describe("the-graph.middleware", () => {
         expect(mockErrors.THE_GRAPH_ERROR).toHaveBeenCalledWith({
           message: "Field 'invalid' not found, Permission denied",
           data: expect.objectContaining({
-            document: SIMPLE_QUERY,
+            document: print(SIMPLE_QUERY),
             variables: {},
           }),
           cause: clientError,

@@ -1,5 +1,4 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { TokenSearchResponseSchema } from "@/orpc/routes/token/routes/token.search.schema";
 import { isAddress } from "viem";
@@ -84,7 +83,6 @@ const SEARCH_TOKEN_QUERY = theGraphGraphql(`
  * @see {@link TokenSearchResponseSchema} for the response structure
  */
 export const search = authRouter.token.search
-  .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
     const { query, limit } = input;
 

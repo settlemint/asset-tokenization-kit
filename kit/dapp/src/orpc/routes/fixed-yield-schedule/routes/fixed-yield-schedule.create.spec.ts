@@ -1,6 +1,11 @@
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import { getAnvilTimeMilliseconds } from "@/test/anvil";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
-import { getOrpcClient, type OrpcClient } from "@test/fixtures/orpc-client";
+import {
+  errorMessageForCode,
+  getOrpcClient,
+  type OrpcClient,
+} from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
   DEFAULT_ADMIN,
@@ -109,9 +114,13 @@ describe("Fixed yield schedule create", async () => {
     };
 
     await expect(
-      investorClient.fixedYieldSchedule.create(yieldScheduleData)
+      investorClient.fixedYieldSchedule.create(yieldScheduleData, {
+        context: {
+          skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
+        },
+      })
     ).rejects.toThrow(
-      "User does not have the required role to execute this action."
+      errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
     );
   });
 });

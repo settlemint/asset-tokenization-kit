@@ -1,6 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { portalRouter } from "@/orpc/procedures/portal.router";
+import { systemRouter } from "@/orpc/procedures/system.router";
 import { getTokenFactory } from "@/orpc/routes/system/token-factory/helpers/factory-context";
 import { tokenCreateHandlerMap } from "@/orpc/routes/token/routes/mutations/create/helpers/handler-map";
 import type { TokenCreateSchema } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
@@ -26,7 +26,7 @@ const FIND_TOKEN_FOR_TRANSACTION_QUERY = theGraphGraphql(`
   }
 `);
 
-export const create = portalRouter.token.create
+export const create = systemRouter.token.create
   .use(
     blockchainPermissionsMiddleware<typeof TokenCreateSchema>({
       requiredRoles: TOKEN_PERMISSIONS.create,

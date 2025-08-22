@@ -1,7 +1,5 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { authRouter } from "@/orpc/procedures/auth.router";
+import { systemRouter } from "@/orpc/procedures/system.router";
 import { z } from "zod";
 
 /**
@@ -110,9 +108,7 @@ function processTransactionHistoryData(
  * console.log(metrics.totalTransactions, metrics.transactionHistory);
  * ```
  */
-export const statsTransactionHistory = authRouter.system.statsTransactionHistory
-  .use(systemMiddleware)
-  .use(theGraphMiddleware)
+export const statsTransactionHistory = systemRouter.system.statsTransactionHistory
   .handler(async ({ context, input }) => {
     // System context is guaranteed by systemMiddleware
 

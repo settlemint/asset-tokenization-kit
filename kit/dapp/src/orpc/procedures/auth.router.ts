@@ -1,3 +1,4 @@
+import { sessionMiddleware } from "@/orpc/middlewares/auth/session.middleware";
 import { authMiddleware } from "../middlewares/auth/auth.middleware";
 import { publicRouter } from "./public.router";
 
@@ -28,4 +29,6 @@ import { publicRouter } from "./public.router";
  * @see {@link ./public.router} - Public router that this extends
  * @see {@link ../../middlewares/auth/auth.middleware} - Authentication middleware
  */
-export const authRouter = publicRouter.use(authMiddleware);
+export const authRouter = publicRouter
+  .use(sessionMiddleware)
+  .use(authMiddleware);

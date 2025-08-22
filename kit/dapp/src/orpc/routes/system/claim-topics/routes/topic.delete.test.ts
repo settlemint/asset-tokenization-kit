@@ -1,15 +1,16 @@
 /**
  * @vitest-environment node
  */
-import { describe, expect, it, beforeEach, vi } from "vitest";
 import {
-  installPortalRouterCaptureMock,
-  getCapturedHandler,
   createBaseContext,
   createMockErrors,
+  getCapturedHandler,
+  installSystemRouterCaptureMock,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
 import { VerificationType } from "@atk/zod/verification-type";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import "./topic.delete";
 import type {
   TopicDeleteInput,
   TopicDeleteOutput,
@@ -22,8 +23,7 @@ vi.mock("@/orpc/helpers/challenge-response", () => ({
   ),
 }));
 
-installPortalRouterCaptureMock();
-import "./topic.delete";
+installSystemRouterCaptureMock();
 
 function getHandler(): OrpcHandler<TopicDeleteInput, TopicDeleteOutput> {
   const handler = getCapturedHandler();
@@ -193,7 +193,7 @@ describe("system.claim-topics.topic.delete unit", () => {
       secretVerificationCode: "123456",
       verificationType: VerificationType.pincode,
     };
-    
+
     const testCases = [
       { name: "KYC", walletVerification },
       { name: "AML Check", walletVerification },

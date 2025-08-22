@@ -39,7 +39,7 @@ import {
   type EthereumHash as TransactionHash,
 } from "@atk/zod/ethereum-hash";
 import type { TadaDocumentNode } from "gql.tada";
-import { getOperationAST } from "graphql";
+import { getOperationAST, print } from "graphql";
 import type { Variables } from "graphql-request";
 import { createHash, randomUUID } from "node:crypto";
 import { z } from "zod";
@@ -244,7 +244,7 @@ function createValidatedPortalClient(
           throw errors.PORTAL_ERROR({
             message: `Verification ID not found for ${type}`,
             data: {
-              document,
+              document: print(document),
               variables,
               responseValidation: `No verification ID configured for ${type}`,
             },
@@ -270,7 +270,7 @@ function createValidatedPortalClient(
           throw errors.PORTAL_ERROR({
             message: "Failed to create verification challenge",
             data: {
-              document,
+              document: print(document),
               variables,
               responseValidation: `${type} verification failed`,
             },
@@ -302,7 +302,7 @@ function createValidatedPortalClient(
             throw errors.PORTAL_ERROR({
               message: "Failed to create verification challenge",
               data: {
-                document,
+                document: print(document),
                 variables,
                 responseValidation: `${type} verification failed`,
               },
@@ -348,8 +348,9 @@ function createValidatedPortalClient(
             mapPortalErrorMessage(errorMessage) ??
             `GraphQL ${operation} failed`,
           data: {
-            document,
+            document: print(document),
             variables,
+            stack: error instanceof Error ? error.stack : undefined,
           },
           cause: error,
         });
@@ -361,7 +362,7 @@ function createValidatedPortalClient(
         throw errors.PORTAL_ERROR({
           message: `No transaction hash found in ${operation} response`,
           data: {
-            document,
+            document: print(document),
             variables,
           },
         });
@@ -375,7 +376,7 @@ function createValidatedPortalClient(
         throw errors.PORTAL_ERROR({
           message: `Invalid transaction hash format: ${zodError instanceof Error ? zodError.message : String(zodError)}`,
           data: {
-            document,
+            document: print(document),
             variables,
             responseValidation: `Invalid transaction hash at ${found.path}: ${found.value}`,
           },
@@ -418,7 +419,7 @@ function createValidatedPortalClient(
           throw errors.PORTAL_ERROR({
             message: `Transaction tracking timeout after ${STREAM_TIMEOUT_MS}ms`,
             data: {
-              document: GET_TRANSACTION_QUERY,
+              document: print(document),
               variables: { transactionHash },
               responseValidation: `Transaction ${transactionHash} timed out after ${Date.now() - streamStartTime}ms`,
             },
@@ -456,7 +457,7 @@ function createValidatedPortalClient(
           throw errors.PORTAL_ERROR({
             message: `Transaction reverted: ${receipt.revertReasonDecoded || receipt.revertReason || "Unknown reason"}`,
             data: {
-              document: GET_TRANSACTION_QUERY,
+              document: print(document),
               variables: transactionQueryVariables,
               responseValidation: `Transaction ${transactionHash} reverted with status ${receipt.status}`,
             },
@@ -470,7 +471,7 @@ function createValidatedPortalClient(
         throw errors.PORTAL_ERROR({
           message: "Transaction dropped from mempool",
           data: {
-            document: GET_TRANSACTION_QUERY,
+            document: print(document),
             variables: { transactionHash },
             responseValidation: `Transaction ${transactionHash} dropped after ${MAX_ATTEMPTS} attempts`,
           },
@@ -495,7 +496,7 @@ function createValidatedPortalClient(
           throw errors.PORTAL_ERROR({
             message: `TheGraph indexing timeout after ${STREAM_TIMEOUT_MS}ms`,
             data: {
-              document: GET_INDEXING_STATUS_QUERY,
+              document: print(document),
               variables: indexingQueryVariables,
               responseValidation: `Indexing timeout for transaction ${transactionHash} at block ${targetBlockNumber}`,
             },
@@ -619,7 +620,7 @@ function createValidatedPortalClient(
             mapPortalErrorMessage(errorMessage) ??
             `GraphQL ${operation} failed`,
           data: {
-            document,
+            document: print(document),
             variables,
           },
           cause: error,
@@ -637,7 +638,7 @@ function createValidatedPortalClient(
         throw errors.PORTAL_ERROR({
           message: `Invalid response format from ${operation}`,
           data: {
-            document,
+            document: print(document),
             variables,
             responseValidation: z.prettifyError(parseResult.error),
           },

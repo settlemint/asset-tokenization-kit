@@ -1,13 +1,13 @@
 import { user } from "@/lib/db/schema";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { env } from "@atk/config/env";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { eq } from "drizzle-orm/sql";
 import type { VariablesOf } from "gql.tada";
+import { print } from "graphql";
 import { createPublicClient, http, parseEther, toHex, zeroAddress } from "viem";
 import { anvil } from "viem/chains";
 
@@ -23,7 +23,6 @@ const logger = createLogger();
 
 export const createWallet = authRouter.user.createWallet
   .use(databaseMiddleware)
-  .use(portalMiddleware)
   .handler(async function ({ context: { auth, db, portalClient }, errors }) {
     if (auth.user.wallet !== zeroAddress) {
       throw errors.CONFLICT({
@@ -46,7 +45,7 @@ export const createWallet = authRouter.user.createWallet
       throw errors.PORTAL_ERROR({
         message: "Failed to create wallet",
         data: {
-          document: CREATE_ACCOUNT_MUTATION,
+          document: print(CREATE_ACCOUNT_MUTATION),
           variables: createAccountVariables,
         },
       });

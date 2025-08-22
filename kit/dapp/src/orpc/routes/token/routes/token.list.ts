@@ -1,5 +1,4 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { TokensResponseSchema } from "@/orpc/routes/token/routes/token.list.schema";
 
@@ -81,7 +80,6 @@ const LIST_TOKEN_QUERY = theGraphGraphql(`
  * @see {@link ListSchema} for pagination parameters
  */
 export const list = authRouter.token.list
-  .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
     // Manually construct GraphQL variables for pagination and filtering
     const response = await context.theGraphClient.query(LIST_TOKEN_QUERY, {
