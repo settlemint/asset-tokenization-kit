@@ -1,5 +1,6 @@
 // @vitest-environment node
-import { getOrpcClient } from "@test/fixtures/orpc-client";
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
+import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
@@ -31,7 +32,7 @@ describe("Access Manager - Grant Role ORPC routes", () => {
 
   describe("successful role grants", () => {
     it("should grant a single role to a single account", async () => {
-      const result = await adminClient.system.grantRole({
+      const result = await adminClient.system.accessManager.grantRole({
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -45,7 +46,7 @@ describe("Access Manager - Grant Role ORPC routes", () => {
         roles: ["tokenManager"],
       });
 
-      const systemRoles = await adminClient.system.rolesList({
+      const systemRoles = await adminClient.system.accessManager.rolesList({
         excludeContracts: true,
       });
       const updatedSystemRoles = systemRoles.find(
@@ -56,7 +57,7 @@ describe("Access Manager - Grant Role ORPC routes", () => {
     });
 
     it("should grant a single role to multiple accounts", async () => {
-      const result = await adminClient.system.grantRole({
+      const result = await adminClient.system.accessManager.grantRole({
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -78,7 +79,7 @@ describe("Access Manager - Grant Role ORPC routes", () => {
         roles: ["complianceManager"],
       });
 
-      const systemRoles = await adminClient.system.rolesList({
+      const systemRoles = await adminClient.system.accessManager.rolesList({
         excludeContracts: true,
       });
       const updatedSystemRoles = systemRoles.find(
@@ -92,7 +93,7 @@ describe("Access Manager - Grant Role ORPC routes", () => {
     });
 
     it("should grant multiple roles to a single account", async () => {
-      const result = await adminClient.system.grantRole({
+      const result = await adminClient.system.accessManager.grantRole({
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -106,7 +107,7 @@ describe("Access Manager - Grant Role ORPC routes", () => {
         roles: ["tokenManager", "complianceManager"],
       });
 
-      const systemRoles = await adminClient.system.rolesList({
+      const systemRoles = await adminClient.system.accessManager.rolesList({
         excludeContracts: true,
       });
       const updatedSystemRoles = systemRoles.find(
@@ -118,7 +119,7 @@ describe("Access Manager - Grant Role ORPC routes", () => {
     });
 
     it("should handle empty arrays", async () => {
-      const result = await adminClient.system.grantRole({
+      const result = await adminClient.system.accessManager.grantRole({
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -136,7 +137,7 @@ describe("Access Manager - Grant Role ORPC routes", () => {
 
   describe("permission validation", () => {
     it("should allow admin users to grant roles", async () => {
-      const result = await adminClient.system.grantRole({
+      const result = await adminClient.system.accessManager.grantRole({
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -153,16 +154,23 @@ describe("Access Manager - Grant Role ORPC routes", () => {
 
     it("should reject non-admin users from granting roles", async () => {
       await expect(
-        investorClient.system.grantRole({
-          walletVerification: {
-            secretVerificationCode: DEFAULT_PINCODE,
-            verificationType: "PINCODE",
+        investorClient.system.accessManager.grantRole(
+          {
+            walletVerification: {
+              secretVerificationCode: DEFAULT_PINCODE,
+              verificationType: "PINCODE",
+            },
+            address: testAddresses.valid1,
+            role: "tokenManager",
           },
-          address: testAddresses.valid1,
-          role: "tokenManager",
-        })
+          {
+            context: {
+              skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
+            },
+          }
+        )
       ).rejects.toThrow(
-        "User does not have the required role to execute this action."
+        errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
       );
     });
   });
@@ -170,64 +178,107 @@ describe("Access Manager - Grant Role ORPC routes", () => {
   describe("error handling", () => {
     it("should reject invalid role names", async () => {
       await expect(
-        adminClient.system.grantRole({
-          walletVerification: {
-            secretVerificationCode: DEFAULT_PINCODE,
-            verificationType: "PINCODE",
+        adminClient.system.accessManager.grantRole(
+          {
+            walletVerification: {
+              secretVerificationCode: DEFAULT_PINCODE,
+              verificationType: "PINCODE",
+            },
+            address: testAddresses.valid1,
+            role: "invalidRole" as never,
           },
-          address: testAddresses.valid1,
-          role: "invalidRole" as never,
-        })
-      ).rejects.toThrow("Input validation failed");
+          {
+            context: {
+              skipLoggingFor: [
+                CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED,
+                CUSTOM_ERROR_CODES.BAD_REQUEST,
+              ],
+            },
+          }
+        )
+      ).rejects.toThrow(
+        errorMessageForCode(CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED)
+      );
     });
 
     it("should reject invalid wallet addresses", async () => {
       await expect(
-        adminClient.system.grantRole({
-          walletVerification: {
-            secretVerificationCode: DEFAULT_PINCODE,
-            verificationType: "PINCODE",
+        adminClient.system.accessManager.grantRole(
+          {
+            walletVerification: {
+              secretVerificationCode: DEFAULT_PINCODE,
+              verificationType: "PINCODE",
+            },
+            address: testAddresses.invalid,
+            role: "tokenManager",
           },
-          address: testAddresses.invalid,
-          role: "tokenManager",
-        })
-      ).rejects.toThrow("Input validation failed");
+          {
+            context: {
+              skipLoggingFor: [
+                CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED,
+                CUSTOM_ERROR_CODES.BAD_REQUEST,
+              ],
+            },
+          }
+        )
+      ).rejects.toThrow(
+        errorMessageForCode(CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED)
+      );
     });
 
     it("should reject mixed valid and invalid addresses", async () => {
       await expect(
-        adminClient.system.grantRole({
-          walletVerification: {
-            secretVerificationCode: DEFAULT_PINCODE,
-            verificationType: "PINCODE",
+        adminClient.system.accessManager.grantRole(
+          {
+            walletVerification: {
+              secretVerificationCode: DEFAULT_PINCODE,
+              verificationType: "PINCODE",
+            },
+            address: [
+              testAddresses.valid1,
+              testAddresses.invalid,
+              testAddresses.valid2,
+            ],
+            role: "tokenManager",
           },
-          address: [
-            testAddresses.valid1,
-            testAddresses.invalid,
-            testAddresses.valid2,
-          ],
-          role: "tokenManager",
-        })
-      ).rejects.toThrow("Input validation failed");
+          {
+            context: {
+              skipLoggingFor: [
+                CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED,
+                CUSTOM_ERROR_CODES.BAD_REQUEST,
+              ],
+            },
+          }
+        )
+      ).rejects.toThrow(
+        errorMessageForCode(CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED)
+      );
     });
 
     it("should reject incorrect pincode verification", async () => {
       await expect(
-        adminClient.system.grantRole({
-          walletVerification: {
-            secretVerificationCode: "000000",
-            verificationType: "PINCODE",
+        adminClient.system.accessManager.grantRole(
+          {
+            walletVerification: {
+              secretVerificationCode: "000000",
+              verificationType: "PINCODE",
+            },
+            address: testAddresses.valid1,
+            role: "tokenManager",
           },
-          address: testAddresses.valid1,
-          role: "tokenManager",
-        })
+          {
+            context: {
+              skipLoggingFor: [CUSTOM_ERROR_CODES.PORTAL_ERROR],
+            },
+          }
+        )
       ).rejects.toThrow(/GraphQL.*failed|Invalid authentication challenge/);
     });
   });
 
   describe("edge cases", () => {
     it("should handle duplicate accounts in the array", async () => {
-      const result = await adminClient.system.grantRole({
+      const result = await adminClient.system.accessManager.grantRole({
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -247,7 +298,7 @@ describe("Access Manager - Grant Role ORPC routes", () => {
     });
 
     it("should handle duplicate roles in the array", async () => {
-      const result = await adminClient.system.grantRole({
+      const result = await adminClient.system.accessManager.grantRole({
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",

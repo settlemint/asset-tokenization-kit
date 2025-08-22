@@ -1,5 +1,4 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { EventsResponseSchema } from "@/orpc/routes/token/routes/token.events.schema";
 
@@ -72,15 +71,13 @@ const TOKEN_EVENTS_QUERY = theGraphGraphql(`
  *
  * @see {@link EventSchema} for the response structure
  */
-export const events = tokenRouter.token.events
-  .use(theGraphMiddleware)
-  .handler(async ({ context }) => {
-    const response = await context.theGraphClient.query(TOKEN_EVENTS_QUERY, {
-      input: {
-        emitter: context.token.id.toLowerCase(),
-      },
-      output: EventsResponseSchema,
-    });
-
-    return response;
+export const events = tokenRouter.token.events.handler(async ({ context }) => {
+  const response = await context.theGraphClient.query(TOKEN_EVENTS_QUERY, {
+    input: {
+      emitter: context.token.id.toLowerCase(),
+    },
+    output: EventsResponseSchema,
   });
+
+  return response;
+});

@@ -31,6 +31,7 @@ import enUSAssetTypes from "@/locales/en-US/asset-types.json";
 import enUSAssets from "@/locales/en-US/assets.json";
 import enUSAuth from "@/locales/en-US/auth.json";
 import enUSBlockchain from "@/locales/en-US/blockchain.json";
+import enUSClaimTopicsIssuers from "@/locales/en-US/claim-topics-issuers.json";
 import enUSCommon from "@/locales/en-US/common.json";
 import enUSComplianceModules from "@/locales/en-US/compliance-modules.json";
 import enUSComponents from "@/locales/en-US/components.json";
@@ -91,6 +92,7 @@ export const namespaces = [
   "assets",
   "auth",
   "blockchain",
+  "claim-topics-issuers",
   "compliance-modules",
   "common",
   "country-multiselect",
@@ -141,6 +143,8 @@ const translationModules = {
     assets: () => import("@/locales/de-DE/assets.json"),
     auth: () => import("@/locales/de-DE/auth.json"),
     blockchain: () => import("@/locales/de-DE/blockchain.json"),
+    "claim-topics-issuers": () =>
+      import("@/locales/de-DE/claim-topics-issuers.json"),
     "compliance-modules": () =>
       import("@/locales/de-DE/compliance-modules.json"),
     common: () => import("@/locales/de-DE/common.json"),
@@ -181,6 +185,8 @@ const translationModules = {
     assets: () => import("@/locales/ar-SA/assets.json"),
     auth: () => import("@/locales/ar-SA/auth.json"),
     blockchain: () => import("@/locales/ar-SA/blockchain.json"),
+    "claim-topics-issuers": () =>
+      import("@/locales/ar-SA/claim-topics-issuers.json"),
     "compliance-modules": () =>
       import("@/locales/ar-SA/compliance-modules.json"),
     common: () => import("@/locales/ar-SA/common.json"),
@@ -221,6 +227,8 @@ const translationModules = {
     assets: () => import("@/locales/ja-JP/assets.json"),
     auth: () => import("@/locales/ja-JP/auth.json"),
     blockchain: () => import("@/locales/ja-JP/blockchain.json"),
+    "claim-topics-issuers": () =>
+      import("@/locales/ja-JP/claim-topics-issuers.json"),
     "compliance-modules": () =>
       import("@/locales/ja-JP/compliance-modules.json"),
     common: () => import("@/locales/ja-JP/common.json"),
@@ -271,6 +279,7 @@ async function loadResource(lng: SupportedLanguage, ns: Namespace) {
         assets: enUSAssets,
         auth: enUSAuth,
         blockchain: enUSBlockchain,
+        "claim-topics-issuers": enUSClaimTopicsIssuers,
         "compliance-modules": enUSComplianceModules,
         common: enUSCommon,
         "country-multiselect": enUSCountryMultiselect,
@@ -379,6 +388,7 @@ void i18n.init({
       assets: enUSAssets,
       auth: enUSAuth,
       blockchain: enUSBlockchain,
+      "claim-topics-issuers": enUSClaimTopicsIssuers,
       "compliance-modules": enUSComplianceModules,
       common: enUSCommon,
       "country-multiselect": enUSCountryMultiselect,

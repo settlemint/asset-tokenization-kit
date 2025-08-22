@@ -1,5 +1,4 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { z } from "zod";
 
@@ -83,9 +82,8 @@ function processVolumeHistoryData(
  * console.log(metrics.volumeHistory);
  * ```
  */
-export const statsVolume = tokenRouter.token.statsVolume
-  .use(theGraphMiddleware)
-  .handler(async ({ context, input }) => {
+export const statsVolume = tokenRouter.token.statsVolume.handler(
+  async ({ context, input }) => {
     // Token context is guaranteed by tokenRouter middleware
 
     // Extract parameters with defaults applied by schema
@@ -121,4 +119,5 @@ export const statsVolume = tokenRouter.token.statsVolume
     return {
       volumeHistory,
     };
-  });
+  }
+);

@@ -33,7 +33,8 @@
 import { getRoleByFieldName } from "@/lib/constants/roles";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { portalRouter } from "@/orpc/procedures/portal.router";
+import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 
 /**
@@ -156,7 +157,8 @@ const GRANT_MULTIPLE_ROLES_MUTATION = portalGraphql(`
  * @throws INTERNAL_SERVER_ERROR When system access manager is not available
  * @throws INPUT_VALIDATION_FAILED When attempting unsupported multi-address + multi-role operations
  */
-export const grantRole = portalRouter.system.grantRole
+export const grantRole = onboardedRouter.system.accessManager.grantRole
+  .use(systemMiddleware)
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.grantRole,

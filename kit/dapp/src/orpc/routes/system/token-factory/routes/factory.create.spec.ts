@@ -12,7 +12,7 @@ describe("Token factory create", () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
 
-    const result = await client.system.tokenFactoryCreate({
+    const result = await client.system.factory.create({
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
@@ -25,7 +25,7 @@ describe("Token factory create", () => {
     expect(result.tokenFactories).toBeDefined();
     expect(result.tokenFactories.length).toBeGreaterThan(0);
 
-    const factories = await client.system.tokenFactoryList({});
+    const factories = await client.system.factory.list({});
     expect(factories.length).toBeGreaterThan(0);
     const factory = factories.find((f) => f.name === "Test Token");
     expect(factory).toEqual({

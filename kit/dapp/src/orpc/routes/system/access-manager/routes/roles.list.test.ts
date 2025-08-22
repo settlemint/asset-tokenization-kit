@@ -12,9 +12,9 @@ import {
   installOnboardedRouterCaptureMock,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
-import "./roles.list";
 
 installOnboardedRouterCaptureMock();
+import "./roles.list";
 
 function getHandler(): OrpcHandler<
   { excludeContracts?: boolean },

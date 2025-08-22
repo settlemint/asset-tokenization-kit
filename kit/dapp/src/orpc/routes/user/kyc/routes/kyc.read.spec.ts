@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
@@ -6,6 +6,7 @@ import {
   getUserData,
   signInWithUser,
 } from "@test/fixtures/user";
+import { randomUUID } from "node:crypto";
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe("KYC read", () => {
@@ -92,9 +93,16 @@ describe("KYC read", () => {
     const client = getOrpcClient(headers);
 
     await expect(
-      client.user.kyc.read({
-        userId: otherUserData.id,
-      })
+      client.user.kyc.read(
+        {
+          userId: otherUserData.id,
+        },
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
+          },
+        }
+      )
     ).rejects.toThrow();
   });
 
@@ -105,9 +113,16 @@ describe("KYC read", () => {
     const nonExistentUserId = randomUUID();
 
     await expect(
-      client.user.kyc.read({
-        userId: nonExistentUserId,
-      })
+      client.user.kyc.read(
+        {
+          userId: nonExistentUserId,
+        },
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.NOT_FOUND],
+          },
+        }
+      )
     ).rejects.toThrow();
   });
 

@@ -1,6 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { useFieldContext } from "@/hooks/use-form-contexts";
 import { cn } from "@/lib/utils";
+import React from "react";
 import {
   errorClassNames,
   FieldDescription,
@@ -26,22 +27,32 @@ export function TextField({
   // The `Field` infers that it should have a `value` type of `string`
   const field = useFieldContext<string>();
 
+  const handleChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      field.handleChange(e.target.value);
+    },
+    [field]
+  );
+
+  const renderInput = React.useCallback(
+    ({ className }: { className?: string }) => (
+      <Input
+        type="text"
+        id={field.name}
+        value={field.state.value ?? ""}
+        onChange={handleChange}
+        className={cn(className, errorClassNames(field.state.meta))}
+      />
+    ),
+    [field.name, field.state.value, field.state.meta, handleChange]
+  );
+
   return (
     <FieldLayout>
       <FieldLabel htmlFor={field.name} label={label} required={required} />
       <FieldDescription description={description} />
       <FieldWithAddons startAddon={startAddon} endAddon={endAddon}>
-        {({ className }) => (
-          <Input
-            type="text"
-            id={field.name}
-            value={field.state.value}
-            onChange={(e) => {
-              field.handleChange(e.target.value);
-            }}
-            className={cn(className, errorClassNames(field.state.meta))}
-          />
-        )}
+        {renderInput}
       </FieldWithAddons>
       <FieldErrors {...field.state.meta} />
     </FieldLayout>

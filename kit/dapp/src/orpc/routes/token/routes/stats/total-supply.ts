@@ -1,5 +1,4 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { z } from "zod";
 
@@ -83,9 +82,8 @@ function processTotalSupplyHistoryData(
  * console.log(metrics.totalSupplyHistory);
  * ```
  */
-export const statsTotalSupply = tokenRouter.token.statsTotalSupply
-  .use(theGraphMiddleware)
-  .handler(async ({ context, input }) => {
+export const statsTotalSupply = tokenRouter.token.statsTotalSupply.handler(
+  async ({ context, input }) => {
     // Token context is guaranteed by tokenRouter middleware
 
     // Extract parameters with defaults applied by schema
@@ -124,4 +122,5 @@ export const statsTotalSupply = tokenRouter.token.statsTotalSupply
     return {
       totalSupplyHistory,
     };
-  });
+  }
+);

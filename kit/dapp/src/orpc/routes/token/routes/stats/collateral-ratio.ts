@@ -1,5 +1,4 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { z } from "zod";
 
@@ -62,9 +61,8 @@ const TokenCollateralStatsResponseSchema = z.object({
  * console.log(`Collateral ratio: ${collateralData.collateralRatio}%`);
  * ```
  */
-export const statsCollateralRatio = tokenRouter.token.statsCollateralRatio
-  .use(theGraphMiddleware)
-  .handler(async ({ context, input }) => {
+export const statsCollateralRatio =
+  tokenRouter.token.statsCollateralRatio.handler(async ({ context, input }) => {
     // Token context is guaranteed by tokenRouter middleware
 
     // Fetch latest collateral stats from TheGraph

@@ -12,14 +12,15 @@
  * - XvP settlement tests in xvp.spec.ts
  */
 
-import { beforeAll, describe, expect, test } from "vitest";
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import type { OrpcClient } from "@test/fixtures/orpc-client";
-import { getOrpcClient } from "@test/fixtures/orpc-client";
+import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
-  signInWithUser,
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
+  signInWithUser,
 } from "@test/fixtures/user";
+import { beforeAll, describe, expect, test } from "vitest";
 
 let client: OrpcClient;
 let investorClient: OrpcClient;
@@ -37,7 +38,16 @@ describe("Actions API", () => {
   describe("Authentication", () => {
     test("should require authentication for actions.list", async () => {
       const publicClient = getOrpcClient(new Headers()); // No auth headers
-      await expect(publicClient.actions.list({})).rejects.toThrow();
+      await expect(
+        publicClient.actions.list(
+          {},
+          {
+            context: {
+              skipLoggingFor: [CUSTOM_ERROR_CODES.UNAUTHORIZED],
+            },
+          }
+        )
+      ).rejects.toThrow(errorMessageForCode(CUSTOM_ERROR_CODES.UNAUTHORIZED));
     });
   });
 

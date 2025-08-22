@@ -19,7 +19,8 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { portalRouter } from "@/orpc/procedures/portal.router";
+import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import {
   getDefaultComplianceModuleImplementations,
   type SystemComplianceModuleConfig,
@@ -90,7 +91,8 @@ function getComplianceImplementationAddress(
   return defaultImplementation;
 }
 
-export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
+export const complianceModuleCreate = onboardedRouter.system.compliance.create
+  .use(systemMiddleware)
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.complianceModuleCreate,

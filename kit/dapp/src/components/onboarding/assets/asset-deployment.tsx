@@ -32,7 +32,7 @@ export function AssetDeployment() {
     try {
       // Invalidate token factory list to update sidebar
       await queryClient.invalidateQueries({
-        queryKey: orpc.system.tokenFactoryList.queryOptions({
+        queryKey: orpc.system.factory.list.queryOptions({
           input: { hasTokens: true },
         }).queryKey,
         refetchType: "all",

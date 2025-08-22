@@ -1,6 +1,7 @@
 import { AccessControlFragment } from "@/lib/fragments/the-graph/access-control-fragment";
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { baseRouter } from "@/orpc/procedures/base.router";
+import z from "zod";
 
 const READ_ACCOUNT_QUERY = theGraphGraphql(
   `
@@ -23,13 +24,28 @@ const READ_ACCOUNT_QUERY = theGraphGraphql(
  * @returns The middleware function.
  */
 export const userClaimsMiddleware = baseRouter.middleware(
-  async ({ next, context }) => {
+  async ({ next, context, errors }) => {
     if (!context.auth) {
       return next();
     }
+    const { theGraphClient } = context;
 
-    const { account } = await theGraphClient.request(READ_ACCOUNT_QUERY, {
-      id: context.auth.user.wallet,
+    if (!theGraphClient) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message:
+          "theGraphMiddleware should be called before userClaimsMiddleware",
+      });
+    }
+
+    const { account } = await theGraphClient.query(READ_ACCOUNT_QUERY, {
+      input: { id: context.auth.user.wallet },
+      output: z.object({
+        account: z.object({
+          identity: z.object({
+            claims: z.array(z.object({ name: z.string() })),
+          }),
+        }),
+      }),
     });
 
     const userClaimTopics =

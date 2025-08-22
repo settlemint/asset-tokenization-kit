@@ -1,6 +1,22 @@
-import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
+import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
+import { AddTopicDialog } from "@/components/platform-settings/claim-topics/add-topic-dialog";
+import { TopicsTable } from "@/components/platform-settings/claim-topics/topics-table";
+import { AddTrustedIssuerDialog } from "@/components/platform-settings/trusted-issuers/add-trusted-issuer-dialog";
+import { TrustedIssuersTable } from "@/components/platform-settings/trusted-issuers/trusted-issuers-table";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { orpc } from "@/orpc/orpc-client";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { Plus } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
@@ -20,25 +36,86 @@ export const Route = createFileRoute(
 });
 
 function ClaimTopicsIssuersPage() {
-  const { t } = useTranslation("navigation");
+  const { t } = useTranslation("claim-topics-issuers");
+  const { t: tNav } = useTranslation("navigation");
+  const [showAddTopicDialog, setShowAddTopicDialog] = useState(false);
+  const [showAddIssuerDialog, setShowAddIssuerDialog] = useState(false);
+
+  // Get current user data with roles
+  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
 
   return (
     <div className="container mx-auto p-6">
       <RouterBreadcrumb />
       <div className="mb-8 mt-4">
         <h1 className="text-3xl font-bold">
-          {t("settings.claimTopicsIssuers")}
+          {tNav("settings.claimTopicsIssuers")}
         </h1>
-        <p className="text-muted-foreground mt-2">
-          Manage claim topics and trusted issuers for identity verification.
-        </p>
+        <p className="text-muted-foreground mt-2">{t("page.description")}</p>
       </div>
 
-      <div className="rounded-lg border bg-card p-6">
-        <p className="text-muted-foreground">
-          Claim topics and issuers configuration coming soon...
-        </p>
+      <div className="space-y-6">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>{t("claimTopics.title")}</CardTitle>
+                <CardDescription>
+                  {t("claimTopics.description")}
+                </CardDescription>
+              </div>
+              {user?.userSystemPermissions?.roles?.claimPolicyManager && (
+                <Button
+                  onClick={() => {
+                    setShowAddTopicDialog(true);
+                  }}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t("claimTopics.addButton")}
+                </Button>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent>
+            <TopicsTable />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>{t("trustedIssuers.title")}</CardTitle>
+                <CardDescription>
+                  {t("trustedIssuers.description")}
+                </CardDescription>
+              </div>
+              {user?.userSystemPermissions?.roles?.claimPolicyManager && (
+                <Button
+                  onClick={() => {
+                    setShowAddIssuerDialog(true);
+                  }}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t("trustedIssuers.addButton")}
+                </Button>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent>
+            <TrustedIssuersTable />
+          </CardContent>
+        </Card>
       </div>
+
+      <AddTopicDialog
+        open={showAddTopicDialog}
+        onOpenChange={setShowAddTopicDialog}
+      />
+      <AddTrustedIssuerDialog
+        open={showAddIssuerDialog}
+        onOpenChange={setShowAddIssuerDialog}
+      />
     </div>
   );
 }

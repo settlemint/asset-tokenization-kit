@@ -1,7 +1,5 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { authRouter } from "@/orpc/procedures/auth.router";
+import { systemRouter } from "@/orpc/procedures/system.router";
 import { z } from "zod";
 
 /**
@@ -89,10 +87,8 @@ function countUniqueRecentUsers(
  * console.log(`Total: ${stats.totalUsers}, Recent: ${stats.recentUsers}`);
  * ```
  */
-export const statsUserCount = authRouter.user.statsUserCount
-  .use(systemMiddleware)
-  .use(theGraphMiddleware)
-  .handler(async ({ context, input }) => {
+export const statsUserCount = systemRouter.user.statsUserCount.handler(
+  async ({ context, input }) => {
     // System context is guaranteed by systemMiddleware
 
     // timeRange is guaranteed to have a value from the schema default
@@ -120,4 +116,5 @@ export const statsUserCount = authRouter.user.statsUserCount
       recentUsers,
       timeRangeDays: timeRange,
     };
-  });
+  }
+);

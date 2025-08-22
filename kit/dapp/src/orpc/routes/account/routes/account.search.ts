@@ -1,6 +1,5 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { isAddress } from "viem";
 import { z } from "zod";
@@ -21,7 +20,7 @@ export const search = authRouter.account.search
       requiredPermissions: { account: ["list"] },
     })
   )
-  .use(theGraphMiddleware)
+
   .handler(async ({ input, context }) => {
     const { query } = input;
 

@@ -1,6 +1,5 @@
 import { TokenFixedYieldScheduleFragment } from "@/lib/fragments/the-graph/fixed-yield-schedule-fragment";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { FixedYieldScheduleSchema } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.read.schema";
 import { z } from "zod";
@@ -67,9 +66,8 @@ const READ_FIXED_YIELD_SCHEDULE_QUERY = theGraphGraphql(
  * @see {@link FixedYieldScheduleSchema} for the response structure
  * @see {@link FixedYieldScheduleReadInputSchema} for input validation
  */
-export const read = authRouter.fixedYieldSchedule.read
-  .use(theGraphMiddleware)
-  .handler(async ({ input, context, errors }) => {
+export const read = authRouter.fixedYieldSchedule.read.handler(
+  async ({ input, context, errors }) => {
     const response = await context.theGraphClient.query(
       READ_FIXED_YIELD_SCHEDULE_QUERY,
       {
@@ -89,4 +87,5 @@ export const read = authRouter.fixedYieldSchedule.read
     }
 
     return response.tokenFixedYieldSchedule;
-  });
+  }
+);

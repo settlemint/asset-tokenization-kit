@@ -1,10 +1,11 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { portalRouter } from "@/orpc/procedures/portal.router";
+import { systemRouter } from "@/orpc/procedures/system.router";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { AddonFactoryTypeIdEnum } from "@atk/zod/addon-types";
-import { getEthereumAddress } from "@atk/zod/ethereum-address";
+import { ethereumAddress, getEthereumAddress } from "@atk/zod/ethereum-address";
+import { z } from "zod";
 
 /**
  * Portal GraphQL mutation for creating a fixed yield schedule contract.
@@ -100,7 +101,7 @@ const GET_YIELD_SCHEDULE_ADDRESS_QUERY = theGraphGraphql(`
  * @see {@link FixedYieldScheduleCreateInputSchema} for input validation
  * @see {@link FixedYieldScheduleCreateOutputSchema} for response structure
  */
-export const create = portalRouter.fixedYieldSchedule.create
+export const create = systemRouter.fixedYieldSchedule.create
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.addonCreate,
@@ -167,10 +168,13 @@ export const create = portalRouter.fixedYieldSchedule.create
     );
 
     // Query TheGraph to get the deployed contract address
-    const scheduleAddresses = await theGraphClient.request(
+    const scheduleAddresses = await context.theGraphClient.query(
       GET_YIELD_SCHEDULE_ADDRESS_QUERY,
       {
-        transactionHash: transactionHash,
+        input: { transactionHash },
+        output: z.object({
+          tokenFixedYieldSchedules: z.array(z.object({ id: ethereumAddress })),
+        }),
       }
     );
 

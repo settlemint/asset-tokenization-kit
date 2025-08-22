@@ -1,14 +1,15 @@
 /**
  * @vitest-environment node
  */
-import { describe, expect, it, beforeEach, vi } from "vitest";
 import {
-  installPortalRouterCaptureMock,
-  getCapturedHandler,
   createBaseContext,
   createMockErrors,
+  getCapturedOnboardedHandler,
+  installOnboardedRouterCaptureMock,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import "./grant-role";
 
 vi.mock("@/lib/settlemint/portal");
 vi.mock("@/orpc/helpers/challenge-response", () => ({
@@ -17,11 +18,10 @@ vi.mock("@/orpc/helpers/challenge-response", () => ({
   ),
 }));
 
-installPortalRouterCaptureMock();
-import "./grant-role";
+installOnboardedRouterCaptureMock();
 
 function getHandler(): OrpcHandler {
-  const handler = getCapturedHandler();
+  const handler = getCapturedOnboardedHandler();
   if (!handler) throw new Error("Handler not captured");
   return handler;
 }

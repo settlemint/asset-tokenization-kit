@@ -1,6 +1,7 @@
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { accessManagerContract } from "@/orpc/routes/system/access-manager/access-manager.contract";
 import { addonContract } from "@/orpc/routes/system/addon/addon.contract";
+import { claimTopicsContract } from "@/orpc/routes/system/claim-topics/claim-topics.contract";
 import { complianceModuleContract } from "@/orpc/routes/system/compliance-module/compliance-module.contract";
 import { identityContract } from "@/orpc/routes/system/identity/identity.contract";
 import { SystemCreateSchema } from "@/orpc/routes/system/routes/system.create.schema";
@@ -10,6 +11,7 @@ import {
 } from "@/orpc/routes/system/routes/system.read.schema";
 import { statsContract } from "@/orpc/routes/system/stats/stats.contract";
 import { factoryContract } from "@/orpc/routes/system/token-factory/factory.contract";
+import { trustedIssuersContract } from "@/orpc/routes/system/trusted-issuers/trusted-issuers.contract";
 import { z } from "zod";
 import { baseContract } from "../../procedures/base.contract";
 import { SystemSchema } from "./routes/system.list.schema";
@@ -97,6 +99,14 @@ const read = baseContract
  * - identityCreate: Create blockchain identity contracts
  * - identityRegister: Register identity claims
  * - complianceModuleCreate: Deploy compliance modules
+ * - topicList: List all registered topic schemes
+ * - topicCreate: Register new topic schemes
+ * - topicUpdate: Update topic scheme signatures
+ * - topicDelete: Remove topic schemes
+ * - trustedIssuerList: List all trusted issuers
+ * - trustedIssuerCreate: Create a new trusted issuer
+ * - trustedIssuerUpdate: Update issuer's claim topics
+ * - trustedIssuerDelete: Delete a trusted issuer
  * - statsAssets: System-wide asset statistics
  * - statsValue: System-wide value metrics
  * - statsTransactionCount: System-wide transaction count statistics
@@ -110,10 +120,12 @@ export const systemContract = {
   list,
   create,
   read,
-  ...addonContract,
-  ...identityContract,
-  ...complianceModuleContract,
-  ...statsContract,
-  ...accessManagerContract,
-  ...factoryContract,
+  addon: addonContract,
+  identity: identityContract,
+  compliance: complianceModuleContract,
+  claimTopics: claimTopicsContract,
+  trustedIssuers: trustedIssuersContract,
+  stats: statsContract,
+  accessManager: accessManagerContract,
+  factory: factoryContract,
 };

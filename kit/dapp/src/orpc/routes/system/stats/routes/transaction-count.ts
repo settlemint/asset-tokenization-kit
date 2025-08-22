@@ -72,11 +72,11 @@ function sumEventCounts(eventStats: { eventsCount: number }[]): number {
  * @example
  * ```typescript
  * // Get transaction count for the last 14 days
- * const stats = await orpc.system.statsTransactionCount.query({ input: { timeRange: 14 } });
+ * const stats = await orpc.system.stats.transactionCount.query({ input: { timeRange: 14 } });
  * console.log(`Total: ${stats.totalTransactions}, Recent: ${stats.recentTransactions}`);
  * ```
  */
-export const statsTransactionCount = authRouter.system.statsTransactionCount
+export const statsTransactionCount = authRouter.system.stats.transactionCount
   .use(systemMiddleware)
   .use(theGraphMiddleware)
   .handler(async ({ context, input }) => {

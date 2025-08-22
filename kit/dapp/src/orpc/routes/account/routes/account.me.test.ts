@@ -2,6 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 import {
   createBaseContext,
   createMockErrors,
+  getCapturedAuthHandler,
+  installAuthRouterCaptureMock,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
 
@@ -32,53 +34,24 @@ vi.mock("./account.read", () => ({
   read: {},
 }));
 
-// Capture public router handler locally
-const publicState = vi.hoisted(() => ({
-  handler: undefined as OrpcHandler | undefined,
-}));
-
-vi.mock("@/orpc/procedures/public.router", () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const builderTarget: Record<string, unknown> = {} as any;
-  const builderProxy: unknown = new Proxy(builderTarget, {
-    get(_t, _prop: string): unknown {
-      const chain = new Proxy(
-        {},
-        {
-          get(_t2, prop2: string): unknown {
-            if (prop2 === "use") return () => chain;
-            if (prop2 === "handler")
-              return (fn: OrpcHandler) => {
-                publicState.handler = fn;
-                return chain;
-              };
-            return chain;
-          },
-        }
-      );
-      return chain;
-    },
-  });
-  return { publicRouter: builderProxy as Record<string, unknown> };
-});
+installAuthRouterCaptureMock();
 
 // Import route to register handler (after mocks)
 import "./account.me";
 
 describe("account.me (unit)", () => {
-  it("throws UNAUTHORIZED when no auth context", async () => {
-    const handler = publicState.handler as OrpcHandler;
-    await expect(
-      handler({
-        context: { theGraphClient: { query: vi.fn() } },
-        input: undefined,
-        errors: createMockErrors(),
-      })
-    ).rejects.toThrowError(/UNAUTHORIZED/);
+  it("returns null when no auth context", async () => {
+    const handler = getCapturedAuthHandler() as OrpcHandler;
+    const result = await handler({
+      context: { theGraphClient: { query: vi.fn() } },
+      input: undefined,
+      errors: createMockErrors(),
+    });
+    expect(result).toBe(null);
   });
 
   it("returns account from nested read", async () => {
-    const handler = publicState.handler as OrpcHandler;
+    const handler = getCapturedAuthHandler() as OrpcHandler;
     const ADDRESS = "0x1111111111111111111111111111111111111111" as const;
     const result = await handler({
       context: createBaseContext({ theGraphClient: { query: vi.fn() } }),

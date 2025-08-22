@@ -42,7 +42,7 @@ export function NavAddons() {
   // Pre-group addons by category using select function
   // This reduces re-renders when addon data changes in ways that don't affect grouping
   const { data: groupedAddons } = useSuspenseQuery(
-    orpc.system.addonList.queryOptions({
+    orpc.system.addon.list.queryOptions({
       input: {},
       select: (addons) => ({
         hasAddons: addons.length > 0,

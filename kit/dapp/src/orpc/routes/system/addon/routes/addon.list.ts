@@ -86,7 +86,7 @@ const LIST_SYSTEM_ADDONS_QUERY = theGraphGraphql(`
  * });
  * ```
  */
-export const addonList = authRouter.system.addonList
+export const addonList = authRouter.system.addon.list
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
     // Build where clause based on filters

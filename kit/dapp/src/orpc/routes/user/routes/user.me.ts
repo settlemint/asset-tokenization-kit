@@ -12,6 +12,7 @@ import { kycProfiles, user as userTable } from "@/lib/db/schema";
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
+import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
 import { getSystemContext } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
@@ -114,7 +115,8 @@ export const me = authRouter.user.me
 
     const { accessControl, ...systemOnboardingState } = await getSystemInfo(
       systemAddress,
-      systemAddonsSkipped
+      systemAddonsSkipped,
+      context.theGraphClient
     );
     const userRoles = mapUserRoles(authUser.wallet, accessControl);
     return {
@@ -154,7 +156,8 @@ export const me = authRouter.user.me
 
 async function getSystemInfo(
   systemAddress: string | null,
-  systemAddonsSkipped: string | null
+  systemAddonsSkipped: string | null,
+  theGraphClient: ValidatedTheGraphClient
 ) {
   const systemOnboardingState = {
     system: false,
@@ -170,7 +173,8 @@ async function getSystemInfo(
   }
   try {
     const systemData = await getSystemContext(
-      getEthereumAddress(systemAddress)
+      getEthereumAddress(systemAddress),
+      theGraphClient
     );
     if (!systemData) {
       return {
@@ -216,8 +220,8 @@ async function getSystemInfo(
 }
 
 function getSystemPermissions(userRoles: ReturnType<typeof mapUserRoles>) {
-  // Initialize all actions as false
-  const initialActions: Record<keyof typeof SYSTEM_PERMISSIONS, boolean> = {
+  // Initialize all actions as false, allowing TypeScript to infer the precise type
+  const initialActions = {
     tokenFactoryCreate: false,
     addonCreate: false,
     grantRole: false,
@@ -226,14 +230,16 @@ function getSystemPermissions(userRoles: ReturnType<typeof mapUserRoles>) {
     identityRegister: false,
   };
 
+  const userRoleList = Object.entries(userRoles)
+    .filter(([, hasRole]) => hasRole)
+    .map(([role]) => role) as AccessControlRoles[];
+
   // Update based on user roles using the flexible role requirement system
   Object.entries(SYSTEM_PERMISSIONS).forEach(([action, roleRequirement]) => {
-    const userRoleList = Object.entries(userRoles)
-      .filter(([_, hasRole]) => hasRole)
-      .map(([role]) => role) as AccessControlRoles[];
-
-    initialActions[action as keyof typeof SYSTEM_PERMISSIONS] =
-      satisfiesRoleRequirement(userRoleList, roleRequirement);
+    if (action in initialActions) {
+      initialActions[action as keyof typeof initialActions] =
+        satisfiesRoleRequirement(userRoleList, roleRequirement);
+    }
   });
   return initialActions;
 }

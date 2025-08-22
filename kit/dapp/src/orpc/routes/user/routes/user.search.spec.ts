@@ -1,11 +1,12 @@
-import { randomUUID } from "node:crypto";
-import { getOrpcClient } from "@test/fixtures/orpc-client";
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
+import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
   DEFAULT_ADMIN,
   getUserData,
   signInWithUser,
 } from "@test/fixtures/user";
+import { randomUUID } from "node:crypto";
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe("User search", () => {
@@ -174,11 +175,18 @@ describe("User search", () => {
       const client = getOrpcClient(headers);
 
       await expect(
-        client.user.search({
-          query: "TestFirst",
-          limit: 10,
-        })
-      ).rejects.toThrow("Forbidden");
+        client.user.search(
+          {
+            query: "TestFirst",
+            limit: 10,
+          },
+          {
+            context: {
+              skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
+            },
+          }
+        )
+      ).rejects.toThrow(errorMessageForCode(CUSTOM_ERROR_CODES.FORBIDDEN));
     });
 
     it("user with proper permissions can search users", async () => {
