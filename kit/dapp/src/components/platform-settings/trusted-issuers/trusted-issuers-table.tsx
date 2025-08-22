@@ -2,6 +2,7 @@ import { DataTable } from "@/components/data-table/data-table";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { Badge } from "@/components/ui/badge";
+import { Web3Address } from "@/components/web3/web3-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { TrustedIssuer } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.list.schema";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -40,16 +41,14 @@ export function TrustedIssuersTable() {
           header: t("trustedIssuers.table.columns.issuerIdentity"),
           cell: ({ getValue }) => {
             const address = getValue();
-            const truncatedAddress = address.length > 16 
-              ? `${address.slice(0, 8)}…${address.slice(-6)}`
-              : address;
             return (
-              <span 
-                className="font-mono text-sm" 
-                title={address}
-              >
-                {truncatedAddress}
-              </span>
+              <Web3Address
+                address={address}
+                size="tiny"
+                copyToClipboard={true}
+                showPrettyName={true}
+                showBadge={true}
+              />
             );
           },
           meta: {
