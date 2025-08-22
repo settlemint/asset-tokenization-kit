@@ -213,7 +213,8 @@ describe("User read", () => {
       const headers = await signInWithUser(DEFAULT_ADMIN);
       const client = getOrpcClient(headers);
 
-      const nonExistentWallet = "0x0000000000000000000000000000000000000000";
+      // Use a definitely non-existent wallet address (not zero address which might exist)
+      const nonExistentWallet = "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef";
 
       await expect(
         client.user.read(
