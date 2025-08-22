@@ -42,9 +42,19 @@ export const Route = createFileRoute(
  * - Empty state for tokens without yield schedules
  */
 function RouteComponent() {
-  const { asset } = useLoaderData({
+  const { tokenAddress } = Route.useParams();
+  const { asset: loaderAsset } = useLoaderData({
     from: "/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress",
   });
+
+  // Subscribe to live asset updates so UI reacts to invalidations from actions
+  const { data: queriedAsset } = useQuery(
+    orpc.token.read.queryOptions({
+      input: { tokenAddress },
+    })
+  );
+
+  const asset = queriedAsset ?? loaderAsset;
 
   const { t } = useTranslation(["tokens", "common"]);
   const [isYieldScheduleSheetOpen, setIsYieldScheduleSheetOpen] =
