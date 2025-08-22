@@ -8,8 +8,6 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createServerRootRoute } from '@tanstack/react-start/server'
-
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PrivateRouteImport } from './routes/_private'
@@ -42,15 +40,11 @@ import { Route as PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuers
 import { Route as PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRouteImport } from './routes/_private/_onboarded/_sidebar/admin/platform-settings/asset-types'
 import { Route as PrivateOnboardedSidebarAdminPlatformSettingsAddonsRouteImport } from './routes/_private/_onboarded/_sidebar/admin/platform-settings/addons'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/index'
+import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/yield'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/permissions'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/events'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist'
-import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
-import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
-import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
-
-const rootServerRouteImport = createServerRootRoute()
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -232,6 +226,15 @@ const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute =
         PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute,
     } as any,
   )
+const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute =
+  PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRouteImport.update(
+    {
+      id: '/yield',
+      path: '/yield',
+      getParentRoute: () =>
+        PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute,
+    } as any,
+  )
 const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute =
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRouteImport.update(
     {
@@ -268,21 +271,6 @@ const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute =
         PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute,
     } as any,
   )
-const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
-  id: '/api/$',
-  path: '/api/$',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
-const ApiRpcSplatServerRoute = ApiRpcSplatServerRouteImport.update({
-  id: '/api/rpc/$',
-  path: '/api/rpc/$',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
-const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
@@ -315,6 +303,7 @@ export interface FileRoutesByFullPath {
   '/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
   '/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
   '/token/$factoryAddress/$tokenAddress/permissions': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute
+  '/token/$factoryAddress/$tokenAddress/yield': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute
   '/token/$factoryAddress/$tokenAddress/': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute
 }
 export interface FileRoutesByTo {
@@ -346,6 +335,7 @@ export interface FileRoutesByTo {
   '/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
   '/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
   '/token/$factoryAddress/$tokenAddress/permissions': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute
+  '/token/$factoryAddress/$tokenAddress/yield': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute
   '/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute
 }
 export interface FileRoutesById {
@@ -384,6 +374,7 @@ export interface FileRoutesById {
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/permissions': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute
+  '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/yield': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute
 }
 export interface FileRouteTypes {
@@ -419,6 +410,7 @@ export interface FileRouteTypes {
     | '/token/$factoryAddress/$tokenAddress/events'
     | '/token/$factoryAddress/$tokenAddress/holders'
     | '/token/$factoryAddress/$tokenAddress/permissions'
+    | '/token/$factoryAddress/$tokenAddress/yield'
     | '/token/$factoryAddress/$tokenAddress/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -450,6 +442,7 @@ export interface FileRouteTypes {
     | '/token/$factoryAddress/$tokenAddress/events'
     | '/token/$factoryAddress/$tokenAddress/holders'
     | '/token/$factoryAddress/$tokenAddress/permissions'
+    | '/token/$factoryAddress/$tokenAddress/yield'
     | '/token/$factoryAddress/$tokenAddress'
   id:
     | '__root__'
@@ -487,41 +480,13 @@ export interface FileRouteTypes {
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/events'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/permissions'
+    | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/yield'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   PrivateRoute: typeof PrivateRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
-}
-export interface FileServerRoutesByFullPath {
-  '/api/$': typeof ApiSplatServerRoute
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
-  '/api/rpc/$': typeof ApiRpcSplatServerRoute
-}
-export interface FileServerRoutesByTo {
-  '/api/$': typeof ApiSplatServerRoute
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
-  '/api/rpc/$': typeof ApiRpcSplatServerRoute
-}
-export interface FileServerRoutesById {
-  __root__: typeof rootServerRouteImport
-  '/api/$': typeof ApiSplatServerRoute
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
-  '/api/rpc/$': typeof ApiRpcSplatServerRoute
-}
-export interface FileServerRouteTypes {
-  fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths: '/api/$' | '/api/auth/$' | '/api/rpc/$'
-  fileServerRoutesByTo: FileServerRoutesByTo
-  to: '/api/$' | '/api/auth/$' | '/api/rpc/$'
-  id: '__root__' | '/api/$' | '/api/auth/$' | '/api/rpc/$'
-  fileServerRoutesById: FileServerRoutesById
-}
-export interface RootServerRouteChildren {
-  ApiSplatServerRoute: typeof ApiSplatServerRoute
-  ApiAuthSplatServerRoute: typeof ApiAuthSplatServerRoute
-  ApiRpcSplatServerRoute: typeof ApiRpcSplatServerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -743,6 +708,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRouteImport
       parentRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute
     }
+    '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/yield': {
+      id: '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/yield'
+      path: '/yield'
+      fullPath: '/token/$factoryAddress/$tokenAddress/yield'
+      preLoaderRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute
+    }
     '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/permissions': {
       id: '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/permissions'
       path: '/permissions'
@@ -773,37 +745,13 @@ declare module '@tanstack/react-router' {
     }
   }
 }
-declare module '@tanstack/react-start/server' {
-  interface ServerFileRoutesByPath {
-    '/api/$': {
-      id: '/api/$'
-      path: '/api/$'
-      fullPath: '/api/$'
-      preLoaderRoute: typeof ApiSplatServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/rpc/$': {
-      id: '/api/rpc/$'
-      path: '/api/rpc/$'
-      fullPath: '/api/rpc/$'
-      preLoaderRoute: typeof ApiRpcSplatServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-  }
-}
 
 interface PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteChildren {
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute
+  PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute
 }
 
@@ -817,6 +765,8 @@ const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteChildren: Priva
       PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute,
     PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute:
       PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute,
+    PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute:
+      PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute,
     PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute:
       PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute,
   }
@@ -968,11 +918,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-const rootServerRouteChildren: RootServerRouteChildren = {
-  ApiSplatServerRoute: ApiSplatServerRoute,
-  ApiAuthSplatServerRoute: ApiAuthSplatServerRoute,
-  ApiRpcSplatServerRoute: ApiRpcSplatServerRoute,
-}
-export const serverRouteTree = rootServerRouteImport
-  ._addFileChildren(rootServerRouteChildren)
-  ._addFileTypes<FileServerRouteTypes>()
