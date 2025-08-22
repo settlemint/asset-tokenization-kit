@@ -314,7 +314,7 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
     {
         if (config.periodLength == 0) {
             // Lifetime cap - simply subtract from total, but don't go below zero
-            if (tracker.totalSupply > amount - 1) {
+            if (tracker.totalSupply >= amount) {
                 tracker.totalSupply -= amount;
             } else {
                 tracker.totalSupply = 0;
@@ -328,7 +328,7 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
 
             // Only subtract if this day has data and matches current day
             if (tracker.bufferDayMapping[bufferIndex] == currentDay) {
-                if (tracker.dailySupply[bufferIndex] > amount - 1) {
+                if (tracker.dailySupply[bufferIndex] >= amount) {
                     tracker.dailySupply[bufferIndex] -= amount;
                 } else {
                     tracker.dailySupply[bufferIndex] = 0;
@@ -339,7 +339,7 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
             // Fixed period tracking
             // Only subtract if we're in an active period
             if (tracker.periodStart != 0 && block.timestamp - tracker.periodStart < config.periodLength * 1 days) {
-                if (tracker.totalSupply > amount - 1) {
+                if (tracker.totalSupply >= amount) {
                     tracker.totalSupply -= amount;
                 } else {
                     tracker.totalSupply = 0;
