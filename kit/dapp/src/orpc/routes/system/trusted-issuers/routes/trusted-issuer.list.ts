@@ -41,7 +41,7 @@ const TRUSTED_ISSUERS_QUERY = theGraphGraphql(
  *
  * @returns Array of trusted issuers with their claim topic assignments
  */
-export const trustedIssuerList = systemRouter.system.trustedIssuerList
+export const trustedIssuerList = systemRouter.system.trustedIssuers.list
   .use(systemMiddleware)
   .use(theGraphMiddleware)
   .handler(async ({ context, errors }): Promise<TrustedIssuerListOutput> => {

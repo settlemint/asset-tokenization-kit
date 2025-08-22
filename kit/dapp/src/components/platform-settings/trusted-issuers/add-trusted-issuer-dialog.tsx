@@ -13,6 +13,7 @@ import { useAppForm } from "@/hooks/use-app-form";
 import { client, orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { TrustedIssuerCreateInput } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.create.schema";
+import type { TopicListOutput } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
 import {
   useMutation,
   useQueryClient,
@@ -40,8 +41,8 @@ export function AddTrustedIssuerDialog({
 
   // Fetch available topics for selection
   const { data: topics } = useSuspenseQuery(
-    orpc.system.claimTopics.list.queryOptions()
-  );
+    orpc.system.claimTopics.topicList.queryOptions()
+  ) as { data: TopicListOutput };
 
   // Create trusted issuer mutation
   const createMutation = useMutation({

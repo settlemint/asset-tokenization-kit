@@ -63,7 +63,7 @@ const UPDATE_ISSUER_TOPICS_MUTATION = portalGraphql(`
  * @param input.claimTopicIds - New array of topic IDs the issuer can verify
  * @returns Transaction hash and issuer address
  */
-export const trustedIssuerUpdate = systemRouter.system.trustedIssuerUpdate
+export const trustedIssuerUpdate = systemRouter.system.trustedIssuers.update
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: { any: ["claimPolicyManager", "systemModule"] },

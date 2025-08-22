@@ -15,6 +15,7 @@ import { client, orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { TrustedIssuer } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.list.schema";
 import type { TrustedIssuerUpdateInput } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.update.schema";
+import type { TopicListOutput } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
 import {
   useMutation,
   useQueryClient,
@@ -44,8 +45,8 @@ export function EditIssuerTopicsDialog({
 
   // Fetch available topics for selection
   const { data: topics } = useSuspenseQuery(
-    orpc.system.claimTopics.list.queryOptions()
-  );
+    orpc.system.claimTopics.topicList.queryOptions()
+  ) as { data: TopicListOutput };
 
   // Update issuer topics mutation
   const updateMutation = useMutation({
