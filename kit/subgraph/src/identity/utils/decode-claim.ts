@@ -46,11 +46,15 @@ export function decodeClaimValues(
   let standardSignature = paramTypes.join(",");
   let tupleSignature = "(" + paramTypes.join(",") + ")";
 
-  // Approach 1: Try standard signature with original data
-  decoded = ethereum.decode(standardSignature, data);
-  if (decoded != null) {
-    successfulSignature = standardSignature;
-    log.info("Standard signature succeeded for topic: {}", [topicScheme.name]);
+  // Approach 1: Try standard signature with original data (only for single parameters)
+  if (paramTypes.length == 1) {
+    decoded = ethereum.decode(standardSignature, data);
+    if (decoded != null) {
+      successfulSignature = standardSignature;
+      log.info("Standard signature succeeded for topic: {}", [
+        topicScheme.name,
+      ]);
+    }
   }
 
   // Approach 2: Try tuple signature with original data
@@ -111,7 +115,7 @@ export function decodeClaimValues(
     claimValue.value = value;
     claimValue.save();
   } else {
-    // Multiple parameters - always extract from tuple
+    // Multiple parameters - always decoded using tuple signature, so always extract from tuple
     let decodedTuple = decoded.toTuple();
     for (let i = 0; i < paramNames.length; i++) {
       let value = convertEthereumValue(decodedTuple[i]);
