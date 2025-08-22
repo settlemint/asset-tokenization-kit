@@ -1,16 +1,16 @@
 /**
  * @vitest-environment node
  */
+import { describe, expect, it, beforeEach, vi } from "vitest";
 import {
+  installOnboardedRouterCaptureMock,
+  getCapturedOnboardedHandler,
   createBaseContext,
   createMockErrors,
-  getCapturedHandler,
-  installSystemRouterCaptureMock,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
+import { DEFAULT_PINCODE } from "@test/fixtures/user";
 import { VerificationType } from "@atk/zod/verification-type";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import "./topic.update";
 import type {
   TopicUpdateInput,
   TopicUpdateOutput,
@@ -23,10 +23,11 @@ vi.mock("@/orpc/helpers/challenge-response", () => ({
   ),
 }));
 
-installSystemRouterCaptureMock();
+installOnboardedRouterCaptureMock();
+import "./topic.update";
 
 function getHandler(): OrpcHandler<TopicUpdateInput, TopicUpdateOutput> {
-  const handler = getCapturedHandler();
+  const handler = getCapturedOnboardedHandler();
   if (!handler) throw new Error("Handler not captured");
   return handler as OrpcHandler<TopicUpdateInput, TopicUpdateOutput>;
 }
@@ -64,7 +65,7 @@ describe("system.claim-topics.topic.update unit", () => {
       name: "KYC Verification",
       signature: "isKYCVerified(address,bytes32,uint256)",
       walletVerification: {
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
         verificationType: VerificationType.pincode,
       },
     };
@@ -93,8 +94,8 @@ describe("system.claim-topics.topic.update unit", () => {
       },
       {
         sender: context.auth.user,
-        code: "123456",
-        type: "PINCODE",
+        code: DEFAULT_PINCODE,
+        type: VerificationType.pincode,
       }
     );
   });
@@ -123,7 +124,7 @@ describe("system.claim-topics.topic.update unit", () => {
       name: "Age Verification",
       signature: "checkAge(address)",
       walletVerification: {
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
         verificationType: VerificationType.pincode,
       },
     };
@@ -160,7 +161,7 @@ describe("system.claim-topics.topic.update unit", () => {
       name: "Test Topic",
       signature: "testFunction(address)",
       walletVerification: {
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
         verificationType: VerificationType.pincode,
       },
     };
@@ -201,7 +202,7 @@ describe("system.claim-topics.topic.update unit", () => {
       name: "Test Topic",
       signature: "testFunction(address)",
       walletVerification: {
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
         verificationType: VerificationType.pincode,
       },
     };
@@ -237,22 +238,30 @@ describe("system.claim-topics.topic.update unit", () => {
         "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
       );
 
-    const walletVerification = {
-      secretVerificationCode: "123456",
-      verificationType: VerificationType.pincode,
-    };
-
     const testCases = [
-      { name: "KYC", signature: "isKYC(address,uint256)", walletVerification },
+      {
+        name: "KYC",
+        signature: "isKYC(address,uint256)",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: VerificationType.pincode,
+        },
+      },
       {
         name: "AML Check",
         signature: "isAMLCompliant(address,bytes32)",
-        walletVerification,
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: VerificationType.pincode,
+        },
       },
       {
         name: "Investor Status",
         signature: "isAccreditedInvestor(address,bool)",
-        walletVerification,
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: VerificationType.pincode,
+        },
       },
     ];
 
@@ -304,7 +313,7 @@ describe("system.claim-topics.topic.update unit", () => {
       name: "Credit Score",
       signature: "getCreditScore(address,uint256,bool)",
       walletVerification: {
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
         verificationType: VerificationType.pincode,
       },
     };
@@ -324,12 +333,9 @@ describe("system.claim-topics.topic.update unit", () => {
         newSignature: "getCreditScore(address,uint256,bool)",
       },
       {
-        sender: {
-          id: "user_2",
-          wallet: "0x2222222222222222222222222222222222222222",
-        },
-        code: "123456",
-        type: "PINCODE",
+        sender: context.auth.user,
+        code: DEFAULT_PINCODE,
+        type: VerificationType.pincode,
       }
     );
   });

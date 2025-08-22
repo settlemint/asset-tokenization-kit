@@ -1,16 +1,16 @@
 /**
  * @vitest-environment node
  */
+import { describe, expect, it, beforeEach, vi } from "vitest";
 import {
+  installOnboardedRouterCaptureMock,
+  getCapturedOnboardedHandler,
   createBaseContext,
   createMockErrors,
-  getCapturedHandler,
-  installSystemRouterCaptureMock,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
+import { DEFAULT_PINCODE } from "@test/fixtures/user";
 import { VerificationType } from "@atk/zod/verification-type";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import "./topic.delete";
 import type {
   TopicDeleteInput,
   TopicDeleteOutput,
@@ -23,10 +23,11 @@ vi.mock("@/orpc/helpers/challenge-response", () => ({
   ),
 }));
 
-installSystemRouterCaptureMock();
+installOnboardedRouterCaptureMock();
+import "./topic.delete";
 
 function getHandler(): OrpcHandler<TopicDeleteInput, TopicDeleteOutput> {
-  const handler = getCapturedHandler();
+  const handler = getCapturedOnboardedHandler();
   if (!handler) throw new Error("Handler not captured");
   return handler as OrpcHandler<TopicDeleteInput, TopicDeleteOutput>;
 }
@@ -63,7 +64,7 @@ describe("system.claim-topics.topic.delete unit", () => {
     const input: TopicDeleteInput = {
       name: "KYC Verification",
       walletVerification: {
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
         verificationType: VerificationType.pincode,
       },
     };
@@ -90,8 +91,8 @@ describe("system.claim-topics.topic.delete unit", () => {
       },
       {
         sender: context.auth.user,
-        code: "123456",
-        type: "PINCODE",
+        code: DEFAULT_PINCODE,
+        type: VerificationType.pincode,
       }
     );
   });
@@ -113,7 +114,7 @@ describe("system.claim-topics.topic.delete unit", () => {
     const input: TopicDeleteInput = {
       name: "Test Topic",
       walletVerification: {
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
         verificationType: VerificationType.pincode,
       },
     };
@@ -153,7 +154,7 @@ describe("system.claim-topics.topic.delete unit", () => {
     const input: TopicDeleteInput = {
       name: "Test Topic",
       walletVerification: {
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
         verificationType: VerificationType.pincode,
       },
     };
@@ -189,15 +190,28 @@ describe("system.claim-topics.topic.delete unit", () => {
         "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
       );
 
-    const walletVerification = {
-      secretVerificationCode: "123456",
-      verificationType: VerificationType.pincode,
-    };
-
     const testCases = [
-      { name: "KYC", walletVerification },
-      { name: "AML Check", walletVerification },
-      { name: "Investor Status", walletVerification },
+      {
+        name: "KYC",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: VerificationType.pincode,
+        },
+      },
+      {
+        name: "AML Check",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: VerificationType.pincode,
+        },
+      },
+      {
+        name: "Investor Status",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: VerificationType.pincode,
+        },
+      },
     ];
 
     for (const testCase of testCases) {
@@ -248,7 +262,7 @@ describe("system.claim-topics.topic.delete unit", () => {
     const input: TopicDeleteInput = {
       name: "Credit Score",
       walletVerification: {
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
         verificationType: VerificationType.pincode,
       },
     };
@@ -267,12 +281,9 @@ describe("system.claim-topics.topic.delete unit", () => {
         name: "Credit Score",
       },
       {
-        sender: {
-          id: "user_2",
-          wallet: "0x2222222222222222222222222222222222222222",
-        },
-        code: "123456",
-        type: "PINCODE",
+        sender: context.auth.user,
+        code: DEFAULT_PINCODE,
+        type: VerificationType.pincode,
       }
     );
   });

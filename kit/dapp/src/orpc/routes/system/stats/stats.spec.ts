@@ -11,7 +11,7 @@ describe("system stats ORPC routes", () => {
   });
 
   it("should fetch system assets stats", async () => {
-    const result = await client.system.statsAssets({});
+    const result = await client.system.stats.assets({});
     expect(result).toEqual({
       totalAssets: expect.any(Number),
       assetBreakdown: {
@@ -25,7 +25,7 @@ describe("system stats ORPC routes", () => {
   });
 
   it("should fetch system transaction count stats", async () => {
-    const result = await client.system.statsTransactionCount({
+    const result = await client.system.stats.transactionCount({
       timeRange: 5,
     });
     expect(result).toEqual({
@@ -36,7 +36,7 @@ describe("system stats ORPC routes", () => {
   });
 
   it("should fetch system transaction history stats", async () => {
-    const result = await client.system.statsTransactionHistory({
+    const result = await client.system.stats.transactionHistory({
       timeRange: 20,
     });
     expect(result).toEqual({
@@ -48,7 +48,7 @@ describe("system stats ORPC routes", () => {
   });
 
   it("should fetch system value stats", async () => {
-    const result = await client.system.statsValue({});
+    const result = await client.system.stats.value({});
     expect(result).toEqual({
       totalValue: expect.any(String),
     });

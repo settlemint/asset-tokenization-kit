@@ -4,10 +4,10 @@ import { statsTransactionHistory } from "@/orpc/routes/system/stats/routes/trans
 import { statsValue } from "@/orpc/routes/system/stats/routes/value";
 
 const routes = {
-  statsAssets,
-  statsTransactionCount,
-  statsTransactionHistory,
-  statsValue,
+  assets: statsAssets,
+  transactionCount: statsTransactionCount,
+  transactionHistory: statsTransactionHistory,
+  value: statsValue,
 };
 
 export default routes;

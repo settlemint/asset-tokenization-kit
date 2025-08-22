@@ -51,7 +51,7 @@ export function EditTopicDialog({
   // Update topic mutation
   const updateMutation = useMutation({
     mutationFn: (data: z.infer<typeof EditTopicFormSchema>) =>
-      client.system.topicUpdate({
+      client.system.claimTopics.topicUpdate({
         ...data,
         name: topic.name, // Pass name from topic prop, not form
       }),
@@ -59,7 +59,7 @@ export function EditTopicDialog({
       toast.success(t("claimTopics.toast.updated", { name: result.name }));
       // Invalidate and refetch topics data
       void queryClient.invalidateQueries({
-        queryKey: orpc.system.topicList.queryKey(),
+        queryKey: orpc.system.claimTopics.topicList.queryKey(),
       });
       onOpenChange(false);
     },

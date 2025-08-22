@@ -1,5 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { systemRouter } from "@/orpc/procedures/system.router";
+import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
+import { authRouter } from "@/orpc/procedures/auth.router";
 import { z } from "zod";
 
 /**
@@ -104,13 +106,15 @@ function processTransactionHistoryData(
  * @example
  * ```typescript
  * // Get transaction metrics for the last 14 days
- * const metrics = await orpc.system.statsTransactionHistory.query({ input: { timeRange: 14 } });
+ * const metrics = await orpc.system.stats.transactionHistory.query({ input: { timeRange: 14 } });
  * console.log(metrics.totalTransactions, metrics.transactionHistory);
  * ```
  */
 export const statsTransactionHistory =
-  systemRouter.system.statsTransactionHistory.handler(
-    async ({ context, input }) => {
+  authRouter.system.stats.transactionHistory
+    .use(systemMiddleware)
+    .use(theGraphMiddleware)
+    .handler(async ({ context, input }) => {
       // System context is guaranteed by systemMiddleware
 
       // timeRange is guaranteed to have a value from the schema default
@@ -145,5 +149,4 @@ export const statsTransactionHistory =
         transactionHistory,
         timeRangeDays: timeRange,
       };
-    }
-  );
+    });

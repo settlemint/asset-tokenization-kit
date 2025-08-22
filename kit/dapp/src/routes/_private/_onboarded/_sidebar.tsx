@@ -14,12 +14,12 @@ export const Route = createFileRoute("/_private/_onboarded/_sidebar")({
     // Ensure both factory and addon lists are loaded for the sidebar navigation
     await Promise.all([
       queryClient.ensureQueryData(
-        orpc.system.tokenFactoryList.queryOptions({
+        orpc.system.factory.list.queryOptions({
           input: {},
         })
       ),
       queryClient.ensureQueryData(
-        orpc.system.addonList.queryOptions({
+        orpc.system.addon.list.queryOptions({
           input: {},
         })
       ),

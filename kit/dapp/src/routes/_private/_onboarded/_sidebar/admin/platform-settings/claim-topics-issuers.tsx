@@ -2,6 +2,8 @@ import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { AddTopicDialog } from "@/components/platform-settings/claim-topics/add-topic-dialog";
 import { TopicsTable } from "@/components/platform-settings/claim-topics/topics-table";
+import { AddTrustedIssuerDialog } from "@/components/platform-settings/trusted-issuers/add-trusted-issuer-dialog";
+import { TrustedIssuersTable } from "@/components/platform-settings/trusted-issuers/trusted-issuers-table";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -36,7 +38,8 @@ export const Route = createFileRoute(
 function ClaimTopicsIssuersPage() {
   const { t } = useTranslation("claim-topics-issuers");
   const { t: tNav } = useTranslation("navigation");
-  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showAddTopicDialog, setShowAddTopicDialog] = useState(false);
+  const [showAddIssuerDialog, setShowAddIssuerDialog] = useState(false);
 
   // Get current user data with roles
   const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
@@ -64,7 +67,7 @@ function ClaimTopicsIssuersPage() {
               {user?.userSystemPermissions?.roles?.claimPolicyManager && (
                 <Button
                   onClick={() => {
-                    setShowAddDialog(true);
+                    setShowAddTopicDialog(true);
                   }}
                 >
                   <Plus className="mr-2 h-4 w-4" />
@@ -77,9 +80,42 @@ function ClaimTopicsIssuersPage() {
             <TopicsTable />
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>{t("trustedIssuers.title")}</CardTitle>
+                <CardDescription>
+                  {t("trustedIssuers.description")}
+                </CardDescription>
+              </div>
+              {user?.userSystemPermissions?.roles?.claimPolicyManager && (
+                <Button
+                  onClick={() => {
+                    setShowAddIssuerDialog(true);
+                  }}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t("trustedIssuers.addButton")}
+                </Button>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent>
+            <TrustedIssuersTable />
+          </CardContent>
+        </Card>
       </div>
 
-      <AddTopicDialog open={showAddDialog} onOpenChange={setShowAddDialog} />
+      <AddTopicDialog
+        open={showAddTopicDialog}
+        onOpenChange={setShowAddTopicDialog}
+      />
+      <AddTrustedIssuerDialog
+        open={showAddIssuerDialog}
+        onOpenChange={setShowAddIssuerDialog}
+      />
     </div>
   );
 }

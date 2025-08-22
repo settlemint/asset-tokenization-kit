@@ -2,8 +2,8 @@ import { complianceModuleCreate } from "@/orpc/routes/system/compliance-module/r
 import { complianceModuleList } from "@/orpc/routes/system/compliance-module/routes/compliance-module.list";
 
 const routes = {
-  complianceModuleCreate,
-  complianceModuleList,
+  create: complianceModuleCreate,
+  list: complianceModuleList,
 };
 
 export default routes;

@@ -8,19 +8,19 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createBaseContext,
   createMockErrors,
-  getCapturedHandler,
-  installSystemRouterCaptureMock,
+  getCapturedOnboardedHandler,
+  installOnboardedRouterCaptureMock,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
 
-installSystemRouterCaptureMock();
+installOnboardedRouterCaptureMock();
 import "./roles.list";
 
 function getHandler(): OrpcHandler<
   { excludeContracts?: boolean },
   Array<{ account: string; roles: string[] }>
 > {
-  const handler = getCapturedHandler();
+  const handler = getCapturedOnboardedHandler();
   if (!handler) throw new Error("Handler not captured");
   return handler as OrpcHandler<
     { excludeContracts?: boolean },

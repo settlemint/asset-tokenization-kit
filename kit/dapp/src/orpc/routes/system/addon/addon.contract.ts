@@ -60,6 +60,6 @@ const addonList = baseContract
   .output(z.array(SystemAddonSchema)); // Return array of system addon objects
 
 export const addonContract = {
-  addonCreate,
-  addonList,
+  create: addonCreate,
+  list: addonList,
 };

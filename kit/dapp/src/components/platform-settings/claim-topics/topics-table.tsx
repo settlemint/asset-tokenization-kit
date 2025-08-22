@@ -43,7 +43,7 @@ export function TopicsTable() {
 
   // Fetch topics data using ORPC
   const { data: topics } = useSuspenseQuery(
-    orpc.system.topicList.queryOptions()
+    orpc.system.claimTopics.topicList.queryOptions()
   );
 
   // Get current user data with roles

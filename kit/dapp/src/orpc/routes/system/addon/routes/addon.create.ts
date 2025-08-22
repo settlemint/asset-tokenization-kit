@@ -38,7 +38,8 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import type { Context } from "@/orpc/context/context";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { systemRouter } from "@/orpc/procedures/system.router";
+import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call } from "@orpc/server";
@@ -228,7 +229,8 @@ function getImplementationAddress(addonConfig: SystemAddonConfig): string {
  *
  * This handler registers system addons, supporting both single and batch operations.
  */
-export const addonCreate = systemRouter.system.addonCreate
+export const addonCreate = onboardedRouter.system.addon.create
+  .use(systemMiddleware)
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.addonCreate,

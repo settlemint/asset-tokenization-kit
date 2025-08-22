@@ -31,7 +31,7 @@ process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test_secret";
 process.env.SETTLEMINT_POSTGRES_URL =
   "postgres://user:pass@localhost:5432/testdb";
 process.env.SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT =
-  "http://localhost:3001/graphql";
+  "http://localhost:7701/graphql";
 
 // jest-dom matchers already extended via import
 
