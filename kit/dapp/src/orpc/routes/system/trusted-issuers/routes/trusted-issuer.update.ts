@@ -7,9 +7,8 @@
  *
  * The handler performs the following operations:
  * 1. Validates user authentication and authorization (CLAIM_POLICY_MANAGER_ROLE)
- * 2. Converts topic IDs from strings to bigints for contract interaction
- * 3. Executes the update transaction via Portal GraphQL
- * 4. Returns transaction details and the issuer address
+ * 2. Executes the update transaction via Portal GraphQL
+ * 3. Returns transaction details and the issuer address
  *
  * @see {@link ./trusted-issuer.update.schema} - Input validation schema
  * @see {@link @/lib/settlemint/portal} - Portal GraphQL client for transaction execution

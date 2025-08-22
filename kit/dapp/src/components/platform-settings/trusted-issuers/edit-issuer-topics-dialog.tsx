@@ -16,7 +16,7 @@ import type { UserVerification } from "@/orpc/routes/common/schemas/user-verific
 import type { TrustedIssuer } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.list.schema";
 import type { TrustedIssuerUpdateInput } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.update.schema";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -96,11 +96,15 @@ export function EditIssuerTopicsDialog({
     void form.handleSubmit();
   };
 
-  // Transform topics for multiselect options
-  const topicOptions = topics.map((topic) => ({
-    value: topic.topicId,
-    label: topic.name,
-  }));
+  // Create a lookup map for O(1) topic retrieval and options
+  const { topicLookup, topicOptions } = useMemo(() => {
+    const lookup = new Map(topics.map(topic => [topic.topicId, topic.name]));
+    const options = topics.map((topic) => ({
+      value: topic.topicId,
+      label: topic.name,
+    }));
+    return { topicLookup: lookup, topicOptions: options };
+  }, [topics]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -137,10 +141,10 @@ export function EditIssuerTopicsDialog({
                     <span className="text-destructive ml-1">*</span>
                   </Label>
                   <MultipleSelector
-                    value={field.state.value.map((id: string) => {
-                      const topic = topics.find((t) => t.topicId === id);
-                      return { value: id, label: topic?.name || id };
-                    })}
+                    value={field.state.value.map((id: string) => ({
+                      value: id,
+                      label: topicLookup.get(id) || id
+                    }))}
                     onChange={(options) => {
                       field.handleChange(options.map((o) => o.value));
                     }}
@@ -183,8 +187,8 @@ export function EditIssuerTopicsDialog({
             <form.VerificationButton
               onSubmit={handleSubmit}
               walletVerification={{
-                title: t("trustedIssuers.add.verification.title"),
-                description: t("trustedIssuers.add.verification.description"),
+                title: t("trustedIssuers.edit.verification.title"),
+                description: t("trustedIssuers.edit.verification.description"),
                 setField: (verification) => {
                   form.setFieldValue("walletVerification", verification);
                 },

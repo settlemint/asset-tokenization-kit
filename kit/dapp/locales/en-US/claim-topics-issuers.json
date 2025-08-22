@@ -115,6 +115,10 @@
         "title": "Remove trusted issuer",
         "description": "Are you sure you want to remove the issuer \"{{issuerAddress}}\"?",
         "warning": "This action will revoke all permissions for this issuer to verify identity claims.",
+        "verification": {
+          "title": "Confirm issuer removal",
+          "description": "Please verify your identity to remove this trusted issuer"
+        },
         "cancel": "Cancel",
         "confirm": "Remove issuer",
         "removing": "Removing..."
@@ -156,6 +160,10 @@
           "description": "Select the topics this issuer can verify. At least one topic must be selected.",
           "current": "Current topics: {{topics}}"
         }
+      },
+      "verification": {
+        "title": "Confirm topic changes",
+        "description": "Please verify your identity to update the issuer's topics"
       },
       "actions": {
         "cancel": "Cancel",

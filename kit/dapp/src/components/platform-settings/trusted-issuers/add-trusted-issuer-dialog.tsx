@@ -14,6 +14,7 @@ import { client, orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { TrustedIssuerCreateInput } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.create.schema";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -83,11 +84,15 @@ export function AddTrustedIssuerDialog({
     void form.handleSubmit();
   };
 
-  // Transform topics for multiselect options
-  const topicOptions = topics.map((topic) => ({
-    value: topic.topicId,
-    label: topic.name,
-  }));
+  // Create a lookup map for O(1) topic retrieval and options
+  const { topicLookup, topicOptions } = useMemo(() => {
+    const lookup = new Map(topics.map(topic => [topic.topicId, topic.name]));
+    const options = topics.map((topic) => ({
+      value: topic.topicId,
+      label: topic.name,
+    }));
+    return { topicLookup: lookup, topicOptions: options };
+  }, [topics]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -123,10 +128,10 @@ export function AddTrustedIssuerDialog({
                     <span className="text-destructive ml-1">*</span>
                   </Label>
                   <MultipleSelector
-                    value={field.state.value.map((id: string) => {
-                      const topic = topics.find((t) => t.topicId === id);
-                      return { value: id, label: topic?.name || id };
-                    })}
+                    value={field.state.value.map((id: string) => ({
+                      value: id,
+                      label: topicLookup.get(id) || id
+                    }))}
                     onChange={(options) => {
                       field.handleChange(options.map((o) => o.value));
                     }}

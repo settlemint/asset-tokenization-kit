@@ -2,6 +2,7 @@ import { DataTable } from "@/components/data-table/data-table";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Web3Address } from "@/components/web3/web3-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { TrustedIssuer } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.list.schema";
@@ -83,9 +84,29 @@ export function TrustedIssuersTable() {
                   </Badge>
                 ))}
                 {topics.length > 3 && (
-                  <Badge variant="outline" className="text-xs">
-                    +{topics.length - 3} more
-                  </Badge>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge variant="outline" className="text-xs cursor-help">
+                        +{topics.length - 3} more
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      <div className="space-y-1">
+                        <p className="font-medium">Additional topics:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {topics.slice(3).map((topic) => (
+                            <Badge
+                              key={topic.id}
+                              variant="secondary"
+                              className="text-xs"
+                            >
+                              {topic.name}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
                 )}
               </div>
             );
