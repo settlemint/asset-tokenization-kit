@@ -21,7 +21,7 @@ const TAGS = ["system", "trusted-issuers"];
  * Retrieves all registered trusted issuers from the subgraph,
  * including their assigned claim topics.
  */
-const trustedIssuerList = baseContract
+const list = baseContract
   .route({
     method: "GET",
     path: "/system/trusted-issuers",
@@ -37,7 +37,7 @@ const trustedIssuerList = baseContract
  * Registers a new trusted issuer that can verify identity claims.
  * Requires CLAIM_POLICY_MANAGER_ROLE or SYSTEM_MODULE_ROLE permissions.
  */
-const trustedIssuerCreate = baseContract
+const create = baseContract
   .route({
     method: "POST",
     path: "/system/trusted-issuers",
@@ -54,7 +54,7 @@ const trustedIssuerCreate = baseContract
  * Updates the claim topics that a trusted issuer is allowed to verify.
  * The issuer address remains immutable.
  */
-const trustedIssuerUpdate = baseContract
+const update = baseContract
   .route({
     method: "PUT",
     path: "/system/trusted-issuers/:issuerAddress",
@@ -71,7 +71,7 @@ const trustedIssuerUpdate = baseContract
  * Permanently deletes a trusted issuer from the registry.
  * This prevents the issuer from verifying new claims.
  */
-const trustedIssuerDelete = baseContract
+const remove = baseContract
   .route({
     method: "DELETE",
     path: "/system/trusted-issuers/:issuerAddress",
@@ -83,8 +83,8 @@ const trustedIssuerDelete = baseContract
   .output(TrustedIssuerDeleteOutputSchema);
 
 export const trustedIssuersContract = {
-  trustedIssuerList,
-  trustedIssuerCreate,
-  trustedIssuerUpdate,
-  trustedIssuerDelete,
+  list,
+  create,
+  update,
+  delete: remove,
 };

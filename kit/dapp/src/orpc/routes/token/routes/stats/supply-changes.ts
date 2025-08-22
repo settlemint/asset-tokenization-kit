@@ -87,8 +87,8 @@ function processSupplyChangesHistoryData(
  * console.log(metrics.supplyChangesHistory);
  * ```
  */
-export const statsSupplyChanges = tokenRouter.token.statsSupplyChanges
-  .handler(async ({ context, input }) => {
+export const statsSupplyChanges = tokenRouter.token.statsSupplyChanges.handler(
+  async ({ context, input }) => {
     // Token context is guaranteed by tokenRouter middleware
 
     // Extract parameters with defaults applied by schema
@@ -127,4 +127,5 @@ export const statsSupplyChanges = tokenRouter.token.statsSupplyChanges
     return {
       supplyChangesHistory,
     };
-  });
+  }
+);

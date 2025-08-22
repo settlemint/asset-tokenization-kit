@@ -59,7 +59,7 @@ const REMOVE_TRUSTED_ISSUER_MUTATION = portalGraphql(`
  * @param input.issuerAddress - Address of the issuer to delete
  * @returns Transaction hash and deleted issuer address
  */
-export const trustedIssuerDelete = systemRouter.system.trustedIssuerDelete
+export const trustedIssuerDelete = systemRouter.system.trustedIssuers.delete
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: { any: ["claimPolicyManager", "systemModule"] },

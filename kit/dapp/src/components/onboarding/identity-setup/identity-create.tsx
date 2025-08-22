@@ -17,7 +17,7 @@ export function IdentityCreate() {
 
   const { mutateAsync: createIdentity, isPending: isIdentityCreating } =
     useMutation(
-      orpc.system.identityCreate.mutationOptions({
+      orpc.system.identity.create.mutationOptions({
         onSuccess: async () => {
           // Refetch all relevant data
           await queryClient.invalidateQueries({

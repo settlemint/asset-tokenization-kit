@@ -2,8 +2,8 @@ import { identityCreate } from "@/orpc/routes/system/identity/routes/identity.cr
 import { identityRegister } from "@/orpc/routes/system/identity/routes/identity.register";
 
 const routes = {
-  identityCreate,
-  identityRegister,
+  create: identityCreate,
+  register: identityRegister,
 };
 
 export default routes;

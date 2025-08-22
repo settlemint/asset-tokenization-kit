@@ -15,9 +15,9 @@ export const TrustedIssuerDeleteInputSchema = MutationInputSchema.extend({
  * Output schema for deleting a trusted issuer
  */
 export const TrustedIssuerDeleteOutputSchema = z.object({
-  transactionHash: z.string().describe(
-    "Transaction hash of the delete operation"
-  ),
+  transactionHash: z
+    .string()
+    .describe("Transaction hash of the delete operation"),
   issuerAddress: ethereumAddress.describe(
     "Address of the removed trusted issuer"
   ),

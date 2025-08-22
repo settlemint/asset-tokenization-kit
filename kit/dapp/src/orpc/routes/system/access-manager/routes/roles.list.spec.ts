@@ -19,7 +19,7 @@ describe("Access Manager - Roles List ORPC routes (integration)", () => {
     // Ensure there is at least one role to list by granting a role to admin
     const me = await adminClient.account.me({});
     if (me) {
-      await adminClient.system.grantRole({
+      await adminClient.system.accessManager.grantRole({
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -31,8 +31,10 @@ describe("Access Manager - Roles List ORPC routes (integration)", () => {
   }, 60_000);
 
   it("should return roles grouped by account and respect excludeContracts flag", async () => {
-    const all = await adminClient.system.rolesList({ excludeContracts: false });
-    const filtered = await adminClient.system.rolesList({
+    const all = await adminClient.system.accessManager.rolesList({
+      excludeContracts: false,
+    });
+    const filtered = await adminClient.system.accessManager.rolesList({
       excludeContracts: true,
     });
 

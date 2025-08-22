@@ -24,14 +24,14 @@ const routes = {
   list,
   create,
   read,
-  ...addonRouter,
-  ...identityRouter,
-  ...complianceModuleRouter,
-  ...claimTopicsRouter,
-  ...trustedIssuersRouter,
-  ...statsRouter,
-  ...accessManagerRouter,
-  ...tokenFactoryRouter,
+  addon: addonRouter,
+  identity: identityRouter,
+  compliance: complianceModuleRouter,
+  claimTopics: claimTopicsRouter,
+  trustedIssuers: trustedIssuersRouter,
+  stats: statsRouter,
+  accessManager: accessManagerRouter,
+  factory: tokenFactoryRouter,
 };
 
 export default routes;

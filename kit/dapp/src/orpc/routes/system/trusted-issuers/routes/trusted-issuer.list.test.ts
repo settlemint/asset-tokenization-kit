@@ -31,13 +31,13 @@ describe("system.trusted-issuers.list unit", () => {
 
   it("returns empty array when no trusted issuers exist", async () => {
     const handler = getHandler();
-    
+
     const mockTheGraphClient = {
       query: vi.fn().mockResolvedValue({
         trustedIssuers: [],
       }),
     };
-    
+
     const context = createBaseContext({
       system: {
         trustedIssuersRegistry: "0xBBBBbBBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb",
@@ -67,7 +67,7 @@ describe("system.trusted-issuers.list unit", () => {
 
   it("returns list of trusted issuers with their claim topics", async () => {
     const handler = getHandler();
-    
+
     const mockTrustedIssuers = [
       {
         id: "0x1111111111111111111111111111111111111111",
@@ -106,7 +106,7 @@ describe("system.trusted-issuers.list unit", () => {
         trustedIssuers: mockTrustedIssuers,
       }),
     };
-    
+
     const context = createBaseContext({
       system: {
         trustedIssuersRegistry: "0xBBBBbBBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb",
@@ -143,11 +143,11 @@ describe("system.trusted-issuers.list unit", () => {
 
   it("handles TheGraph query failures gracefully", async () => {
     const handler = getHandler();
-    
+
     const mockTheGraphClient = {
       query: vi.fn().mockRejectedValue(new Error("Network error")),
     };
-    
+
     const context = createBaseContext({
       system: {
         trustedIssuersRegistry: "0xBBBBbBBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb",

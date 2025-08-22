@@ -87,8 +87,8 @@ function countUniqueRecentUsers(
  * console.log(`Total: ${stats.totalUsers}, Recent: ${stats.recentUsers}`);
  * ```
  */
-export const statsUserCount = systemRouter.user.statsUserCount
-  .handler(async ({ context, input }) => {
+export const statsUserCount = systemRouter.user.statsUserCount.handler(
+  async ({ context, input }) => {
     // System context is guaranteed by systemMiddleware
 
     // timeRange is guaranteed to have a value from the schema default
@@ -116,4 +116,5 @@ export const statsUserCount = systemRouter.user.statsUserCount
       recentUsers,
       timeRangeDays: timeRange,
     };
-  });
+  }
+);

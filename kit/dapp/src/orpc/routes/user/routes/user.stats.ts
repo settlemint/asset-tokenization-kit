@@ -160,8 +160,8 @@ function countUniqueRecentUsers(
  * console.log(metrics.totalUsers, metrics.userGrowth);
  * ```
  */
-export const stats = systemRouter.user.stats
-  .handler(async ({ context, input }) => {
+export const stats = systemRouter.user.stats.handler(
+  async ({ context, input }) => {
     // System context is guaranteed by systemMiddleware
 
     // timeRange is guaranteed to have a value from the schema default
@@ -191,4 +191,5 @@ export const stats = systemRouter.user.stats
       userGrowth,
       timeRangeDays: timeRange,
     };
-  });
+  }
+);
