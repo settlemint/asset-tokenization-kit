@@ -108,7 +108,6 @@ export async function verifyTwoFactorOTP(
   const result = await portalClient.request(
     VERIFY_WALLET_VERIFICATION_CHALLENGE_MUTATION,
     {
-      address: user.wallet,
       verificationId: user.twoFactorVerificationId,
       otp: code,
     }
