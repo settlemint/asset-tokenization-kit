@@ -130,7 +130,7 @@ function RouteComponent() {
           info={t("tokens:fields.totalSupplyInfo")}
           value={asset.totalSupply}
           type="currency"
-          currency={asset.symbol}
+          currency={{ assetSymbol: asset.symbol }}
         />
 
         <DetailGridItem
@@ -146,7 +146,7 @@ function RouteComponent() {
             info={t("tokens:fields.capInfo")}
             value={asset.capped.cap}
             type="currency"
-            currency={asset.symbol}
+            currency={{ assetSymbol: asset.symbol }}
           />
         )}
 
@@ -156,7 +156,7 @@ function RouteComponent() {
             info={t("tokens:fields.redeemedAmountInfo")}
             value={asset.redeemable.redeemedAmount}
             type="currency"
-            currency={asset.symbol}
+            currency={{ assetSymbol: asset.symbol }}
           />
         )}
       </DetailGrid>
@@ -168,7 +168,7 @@ function RouteComponent() {
             info={t("tokens:fields.collateralInfo")}
             value={asset.collateral.collateral}
             type="currency"
-            currency={asset.symbol}
+            currency={{ assetSymbol: asset.symbol }}
           />
           <DetailGridItem
             label={t("tokens:fields.collateralExpiry")}
@@ -187,7 +187,7 @@ function RouteComponent() {
             info={t("tokens:fields.faceValueInfo")}
             value={asset.bond.faceValue}
             type="currency"
-            currency={asset.symbol}
+            currency={{ assetSymbol: asset.symbol }}
           />
           <DetailGridItem
             label={t("tokens:fields.isMatured")}

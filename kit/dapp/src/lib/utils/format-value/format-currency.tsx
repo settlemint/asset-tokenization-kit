@@ -16,7 +16,7 @@ export function FormatCurrency({ value, options }: FormatValueProps) {
       maximumFractionDigits: 2,
     }).format(currencyValue);
     return (
-      <span className="text-right block tabular-nums">
+      <span className="block tabular-nums">
         {formatted} {currency.assetSymbol}
       </span>
     );
@@ -25,7 +25,7 @@ export function FormatCurrency({ value, options }: FormatValueProps) {
   // Try to format with Intl.NumberFormat
   try {
     return (
-      <span className="text-right block tabular-nums">
+      <span className="block tabular-nums">
         {new Intl.NumberFormat(locale, {
           style: "currency",
           currency: currency,

@@ -8,6 +8,7 @@
   "appName": "Asset Tokenization Kit",
   "complete": "Complete",
   "continue": "Continue",
+  "days": "days",
   "deploying": "Deploying...",
   "generating": "Generating...",
   "next": "Next",
@@ -38,5 +39,12 @@
   "add": "Grant",
   "none": "None",
   "yes": "Yes",
-  "no": "No"
+  "no": "No",
+  "timeInterval": {
+    "DAILY": "Daily",
+    "WEEKLY": "Weekly",
+    "MONTHLY": "Monthly",
+    "QUARTERLY": "Quarterly",
+    "YEARLY": "Yearly"
+  }
 }

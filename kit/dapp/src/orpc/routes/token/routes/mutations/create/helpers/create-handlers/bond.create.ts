@@ -30,6 +30,7 @@ import type { TokenCreateContext } from "@/orpc/routes/token/routes/mutations/cr
 import { createToken } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create";
 import type { TokenCreateInput } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 import { AssetTypeEnum } from "@atk/zod/asset-types";
+import { parseUnits } from "viem";
 
 const CREATE_BOND_MUTATION = portalGraphql(`
   mutation CreateBondMutation(
@@ -79,6 +80,8 @@ export const bondCreateHandler = async (
     throw new Error("Invalid token type");
   }
 
+  const cap = parseUnits(input.cap.toString(), input.decimals).toString();
+
   // DELEGATION PATTERN: createToken base handler manages verification flow
   // WHY: Consistent verification handling across all token types while allowing
   // type-specific parameter validation and mutation execution
@@ -93,7 +96,7 @@ export const bondCreateHandler = async (
         name: input.name,
         decimals: input.decimals,
         countryCode: input.countryCode,
-        cap: input.cap.toString(),
+        cap,
         faceValue: input.faceValue.toString(),
         maturityDate: input.maturityDate,
         denominationAsset: input.denominationAsset,
