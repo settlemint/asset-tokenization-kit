@@ -1,7 +1,8 @@
-import { Bytes } from "@graphprotocol/graph-ts";
+import { Bytes, store } from "@graphprotocol/graph-ts";
 import {
   ComplianceModule,
   ComplianceModuleParameters,
+  TokenSupplyLimitParams,
 } from "../../../generated/schema";
 import { getEncodedTypeId } from "../../type-identifier/type-identifier";
 import {
@@ -16,6 +17,10 @@ import {
   decodeExpressionParams,
   isIdentityVerificationComplianceModule,
 } from "../modules/identity-verification-compliance-module";
+import {
+  decodeTokenSupplyLimitParams,
+  isTokenSupplyLimitComplianceModule,
+} from "../modules/token-supply-limit-compliance-module";
 
 export function fetchComplianceModuleParameters(
   configId: Bytes
@@ -61,6 +66,34 @@ export function updateComplianceModuleParameters(
     )
   ) {
     decodeExpressionParams(complianceModuleParameters, encodedParams);
+  }
+  if (
+    isTokenSupplyLimitComplianceModule(
+      getEncodedTypeId(complianceModule.typeId)
+    )
+  ) {
+    const decoded = decodeTokenSupplyLimitParams(encodedParams);
+    let tsl = TokenSupplyLimitParams.load(complianceModuleParameters.id);
+    if (decoded !== null) {
+      if (tsl === null) {
+        tsl = new TokenSupplyLimitParams(complianceModuleParameters.id);
+        tsl.parameters = complianceModuleParameters.id;
+      }
+      tsl.maxSupplyExact = decoded.maxSupplyExact;
+      tsl.periodLengthDays = decoded.periodLengthDays;
+      tsl.rolling = decoded.rolling;
+      tsl.useBasePrice = decoded.useBasePrice;
+      tsl.global = decoded.global;
+      tsl.save();
+
+      complianceModuleParameters.tokenSupplyLimit = tsl.id;
+    } else {
+      // Clear if not decodable
+      if (tsl !== null) {
+        store.remove("TokenSupplyLimitParams", tsl.id.toHexString());
+      }
+      complianceModuleParameters.tokenSupplyLimit = null;
+    }
   }
 
   complianceModuleParameters.save();

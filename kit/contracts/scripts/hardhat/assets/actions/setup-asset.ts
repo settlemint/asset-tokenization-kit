@@ -7,6 +7,7 @@ import { atkDeployer } from "../../services/deployer";
 import { getAnvilTimeMilliseconds } from "../../utils/anvil";
 import { expressionBuilder } from "../../utils/expression-builder";
 import { addCountryComplianceModule } from "./compliance/add-country-allow-list-compliance-module";
+import { addTokenSupplyLimitComplianceModule } from "./compliance/add-token-supply-limit-compliance-module";
 import { removeComplianceModule } from "./compliance/remove-compliance-module";
 import { setCountryParametersForComplianceModule } from "./compliance/set-country-parameters-for-compliance-module";
 import { grantRoles } from "./core/grant-roles";
@@ -87,6 +88,14 @@ export const setupAsset = async (
   if (basePrice) {
     // issue base price claim
     await issueBasePriceClaim(asset, basePrice);
+    // add token supply limit compliance module for MiCa compliance
+    await addTokenSupplyLimitComplianceModule(asset, {
+      maxSupplyExact: 8_000_000,
+      periodLengthDays: 365,
+      rolling: true,
+      useBasePrice: true,
+      global: false,
+    });
   }
 
   // needs supply management role to mint
