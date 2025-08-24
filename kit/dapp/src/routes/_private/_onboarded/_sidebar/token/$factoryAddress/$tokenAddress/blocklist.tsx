@@ -9,11 +9,6 @@ import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 export const Route = createFileRoute(
   "/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist"
 )({
-  loader: ({ context: { queryClient, orpc }, params: { tokenAddress } }) => {
-    void queryClient.prefetchQuery(
-      orpc.token.read.queryOptions({ input: { tokenAddress } })
-    );
-  },
   errorComponent: DefaultCatchBoundary,
   component: RouteComponent,
 });

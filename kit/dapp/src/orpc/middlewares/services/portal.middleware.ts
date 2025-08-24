@@ -46,20 +46,22 @@ import { z } from "zod";
 import { baseRouter } from "../../procedures/base.router";
 
 const CreateVerificationChallengeMutation = portalGraphql(`
-  mutation CreateVerificationChallenge($userWalletAddress: String!, $verificationType: WalletVerificationType!) {
-    createVerificationChallenge(
+  mutation CreateVerificationChallenge($userWalletAddress: String!, $verificationId: String!) {
+    createWalletVerificationChallenge(
       userWalletAddress: $userWalletAddress
-      verificationType: $verificationType
+      verificationId: $verificationId
     ) {
       id
       name
+      verificationId
       verificationType
       challenge {
         salt
         secret
       }
     }
-  }`);
+  }
+`);
 
 const GET_TRANSACTION_QUERY = portalGraphql(`
   query GetTransaction($transactionHash: String!) {
@@ -259,14 +261,14 @@ function createValidatedPortalClient(
           CreateVerificationChallengeMutation,
           {
             userWalletAddress,
-            verificationType: type,
+            verificationId: verificationId,
           },
           {
             "x-request-id": requestId,
           }
         );
 
-        if (!challengeResult.createVerificationChallenge) {
+        if (!challengeResult.createWalletVerificationChallenge) {
           throw errors.PORTAL_ERROR({
             message: "Failed to create verification challenge",
             data: {
@@ -277,7 +279,7 @@ function createValidatedPortalClient(
           });
         }
 
-        const challenge = challengeResult.createVerificationChallenge;
+        const challenge = challengeResult.createWalletVerificationChallenge;
         const challengeId = challenge.id;
 
         let challengeResponse: string;

@@ -36,5 +36,12 @@
   "unknown": "غير معروف",
   "save": "احفظ",
   "add": "منح",
-  "none": "لا شيء"
+  "none": "لا شيء",
+  "timeInterval": {
+    "DAILY": "يومي",
+    "WEEKLY": "أسبوعي",
+    "MONTHLY": "شهري",
+    "QUARTERLY": "ربع سنوي",
+    "YEARLY": "سنوي"
+  }
 }
