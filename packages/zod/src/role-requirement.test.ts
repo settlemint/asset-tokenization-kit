@@ -180,6 +180,7 @@ describe("role-requirement", () => {
         // Create an invalid requirement that doesn't match any of the expected types
         const invalidRequirement = { invalid: "structure" };
         // TypeScript will complain here, but we're testing runtime behavior
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         expect(satisfiesRoleRequirement(userRoles, invalidRequirement as any)).toBe(false);
       });
     });
