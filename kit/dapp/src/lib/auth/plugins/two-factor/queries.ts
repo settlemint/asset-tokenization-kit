@@ -16,14 +16,13 @@ const DELETE_WALLET_VERIFICATION_MUTATION = portalGraphql(`
 `);
 
 const VERIFY_WALLET_VERIFICATION_CHALLENGE_MUTATION = portalGraphql(`
-  mutation VerifyTwoFactorOTP($address: String!, $verificationId: String!, $otp: String!) {
-    validateOtpConfiguration(
-      userWalletAddress: $address
-      verificationId: $verificationId
-      otpCode: $otp
-    ) {
-      valid
-    }
+  mutation VerifyTwoFactorOTP($verificationId: String!, $otp: String!) {
+   verifyWalletVerificationChallengeById(
+    challengeId: $verificationId
+    challengeResponse: $otp
+   ) {
+    verified
+   }
   }
 `);
 
@@ -115,7 +114,7 @@ export async function verifyTwoFactorOTP(
     }
   );
   return {
-    verified: result.validateOtpConfiguration?.valid ?? false,
+    verified: result.verifyWalletVerificationChallengeById?.verified ?? false,
   };
 }
 
