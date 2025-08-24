@@ -1,3 +1,4 @@
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
@@ -25,14 +26,21 @@ describe("Identity register", () => {
     const client = getOrpcClient(headers);
 
     await expect(
-      client.system.identity.register({
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
+      client.system.identity.register(
+        {
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
+          },
+          country: "BE",
+          wallet: wallet1,
         },
-        country: "BE",
-        wallet: wallet1,
-      })
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
+          },
+        }
+      )
     ).rejects.toThrow(
       "User does not have the required role to execute this action."
     );

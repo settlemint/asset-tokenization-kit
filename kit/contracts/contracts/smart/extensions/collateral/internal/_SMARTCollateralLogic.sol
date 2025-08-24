@@ -148,20 +148,17 @@ abstract contract _SMARTCollateralLogic is _SMARTExtension, ISMARTCollateral {
     }
 
     /// @notice Decodes collateral claim data into amount and expiry, and checks expiry.
-    /// @dev Expects `data` to be ABI encoded as `(uint256 amount, uint256 expiryTimestamp)`.
-    ///      Checks if the data is exactly 64 bytes (2 x uint256).
+    /// @dev Expects `data` to be ABI encoded as `abi.encode(uint256 amount, uint256 expiryTimestamp)`.
     ///      Also verifies that the decoded `expiry` timestamp is in the future.
     /// @param data The raw `bytes` data of the claim.
     /// @return decoded `true` if data was successfully decoded and is not expired, `false` otherwise.
     /// @return amount The decoded collateral amount (0 if decoding fails or claim expired).
     /// @return expiry The decoded expiry timestamp (0 if decoding fails or claim expired).
     function __decodeClaimData(bytes memory data) private view returns (bool decoded, uint256 amount, uint256 expiry) {
-        // A valid (uint256, uint256) encoding will be exactly 64 bytes long.
+        // WHY: Check if it is a valid claim containing two uint256 values (2 * 32 bytes)
         if (data.length != 64) {
-            return (false, 0, 0); // Invalid data length.
+            return (false, 0, 0);
         }
-
-        // Attempt to decode the data.
         (amount, expiry) = abi.decode(data, (uint256, uint256));
 
         // Check if the claim has already expired.
@@ -195,14 +192,12 @@ abstract contract _SMARTCollateralLogic is _SMARTExtension, ISMARTCollateral {
     {
         // Step 1: Check if the issuer considers the claim valid.
         bool isValidByIssuer = __checkClaimValidity(issuer, tokenIdentity, topic, signature, data);
-
         if (!isValidByIssuer) {
             return (false, 0, 0); // Issuer does not validate this claim.
         }
 
         // Step 2: Decode the claim data and check its expiry.
         (bool decodedSuccessfully, uint256 decodedAmount, uint256 decodedExpiry) = __decodeClaimData(data);
-
         if (!decodedSuccessfully) {
             return (false, 0, 0); // Data decoding failed or claim expired.
         }
@@ -306,6 +301,7 @@ abstract contract _SMARTCollateralLogic is _SMARTExtension, ISMARTCollateral {
         (uint256 collateralAmountFromClaim,,) = findValidCollateralClaim();
 
         uint256 currentTotalSupply = __collateral_totalSupply();
+
         // Calculate what the total supply would be *after* the proposed mint operation.
         // Solidity ^0.8.x provides automatic overflow/underflow checks for arithmetic.
         uint256 requiredTotalSupply = currentTotalSupply + amountToMint;

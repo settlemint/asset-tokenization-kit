@@ -97,15 +97,21 @@ contract AbstractComplianceModuleTest is Test {
     }
 
     function test_Transferred_Hook() public {
+        vm.startPrank(tokenContract);
         module.transferred(tokenContract, user1, user2, 100, "");
+        vm.stopPrank();
     }
 
     function test_Created_Hook() public {
+        vm.startPrank(tokenContract);
         module.created(tokenContract, user1, 100, "");
+        vm.stopPrank();
     }
 
     function test_Destroyed_Hook() public {
+        vm.startPrank(tokenContract);
         module.destroyed(tokenContract, user1, 100, "");
+        vm.stopPrank();
     }
 
     function test_SupportsInterface() public view {
@@ -117,9 +123,11 @@ contract AbstractComplianceModuleTest is Test {
     function test_HooksWithParameters() public {
         bytes memory params = abi.encode(uint256(123), "test");
 
+        vm.startPrank(tokenContract);
         module.transferred(tokenContract, user1, user2, 100, params);
         module.created(tokenContract, user1, 100, params);
         module.destroyed(tokenContract, user1, 100, params);
+        vm.stopPrank();
     }
 
     function test_CanTransferWithParameters() public {
@@ -154,8 +162,10 @@ contract AbstractComplianceModuleTest is Test {
         module.canTransfer(tokenContract, user2, user1, 200, "");
 
         // State changes should not affect other calls since modules are stateless
+        vm.startPrank(tokenContract);
         module.transferred(tokenContract, user1, user2, 100, "");
         module.canTransfer(tokenContract, user1, user2, 300, "");
+        vm.stopPrank();
     }
 
     function test_Fuzz_CanTransfer(
@@ -172,15 +182,19 @@ contract AbstractComplianceModuleTest is Test {
     }
 
     function test_Fuzz_Hooks(address token, address addr, uint256 value, bytes calldata params) public {
+        vm.startPrank(token);
         module.transferred(token, addr, addr, value, params);
         module.created(token, addr, value, params);
         module.destroyed(token, addr, value, params);
+        vm.stopPrank();
     }
 
     function test_EdgeCase_ZeroValues() public {
+        vm.startPrank(address(0));
         module.transferred(address(0), address(0), address(0), 0, "");
         module.created(address(0), address(0), 0, "");
         module.destroyed(address(0), address(0), 0, "");
+        vm.stopPrank();
 
         module.setAllowTransfers(true);
         module.canTransfer(address(0), address(0), address(0), 0, "");
@@ -189,9 +203,11 @@ contract AbstractComplianceModuleTest is Test {
     function test_EdgeCase_LargeValues() public {
         uint256 maxValue = type(uint256).max;
 
+        vm.startPrank(tokenContract);
         module.transferred(tokenContract, user1, user2, maxValue, "");
         module.created(tokenContract, user1, maxValue, "");
         module.destroyed(tokenContract, user1, maxValue, "");
+        vm.stopPrank();
 
         module.setAllowTransfers(true);
         module.canTransfer(tokenContract, user1, user2, maxValue, "");
@@ -214,8 +230,10 @@ contract AbstractComplianceModuleTest is Test {
         // All lifecycle functions should not revert for stateless modules by default
         bytes memory params = abi.encode("test");
 
+        vm.startPrank(tokenContract);
         module.transferred(tokenContract, user1, user2, 100, params);
         module.created(tokenContract, user1, 100, params);
         module.destroyed(tokenContract, user1, 100, params);
+        vm.stopPrank();
     }
 }

@@ -16,6 +16,7 @@ import CountryBlockListModule from "./predeployed/modules/country-block-list-mod
 import IdentityAllowListModule from "./predeployed/modules/identity-allow-list-module";
 import IdentityBlockListModule from "./predeployed/modules/identity-block-list-module";
 import IdentityVerificationModule from "./predeployed/modules/identity-verification-module";
+import TokenSupplyLimitModule from "./predeployed/modules/token-supply-limit-module";
 import SystemFactoryModule from "./predeployed/system-factory";
 
 /**
@@ -59,6 +60,7 @@ const ATKModule = buildModule("ATKModule", (m) => {
   const { identityVerificationModule } = m.useModule(
     IdentityVerificationModule
   );
+  const { tokenSupplyLimitModule } = m.useModule(TokenSupplyLimitModule);
 
   return {
     systemFactory,
@@ -86,6 +88,7 @@ const ATKModule = buildModule("ATKModule", (m) => {
     identityBlockListModule,
     identityAllowListModule,
     identityVerificationModule,
+    tokenSupplyLimitModule,
   };
 });
 

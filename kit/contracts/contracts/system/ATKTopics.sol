@@ -53,6 +53,7 @@ library ATKTopics {
 
     /// @notice Get all topic signatures for registry registration
     /// @return _signatures Array of topic signatures for batchRegisterTopicSchemes
+    /// @dev Standard ABI signatures - The Graph handles tuple wrapping on its side for decoding
     function signatures() internal pure returns (string[] memory _signatures) {
         _signatures = new string[](8);
         _signatures[0] = "string claim"; // kyc

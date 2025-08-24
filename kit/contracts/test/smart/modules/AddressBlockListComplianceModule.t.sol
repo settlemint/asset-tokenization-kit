@@ -110,9 +110,11 @@ contract AddressBlockListComplianceModuleTest is AbstractComplianceModuleTest {
     function test_AddressBlockList_Lifecycle_Functions() public {
         bytes memory params = abi.encode(new address[](0));
 
+        vm.startPrank(address(smartToken));
         // These functions should not revert for stateless modules
         module.transferred(address(smartToken), tokenIssuer, user1, 100, params);
         module.created(address(smartToken), user1, 100, params);
         module.destroyed(address(smartToken), user1, 100, params);
+        vm.stopPrank();
     }
 }
