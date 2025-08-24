@@ -172,9 +172,9 @@ export function FixedYieldSchedulePeriodsTable({
               row.original.endDate
             );
             return (
-              <FormatStatus 
-                value={t(`tokens:yield.periodsTable.status.${status}`)} 
-                options={{ type: "status" }} 
+              <FormatStatus
+                value={t(`tokens:yield.periodsTable.status.${status}`)}
+                options={{ type: "status" }}
               />
             );
           },

@@ -42,7 +42,7 @@
   "no": "No",
   "timeInterval": {
     "DAILY": "Daily",
-    "WEEKLY": "Weekly", 
+    "WEEKLY": "Weekly",
     "MONTHLY": "Monthly",
     "QUARTERLY": "Quarterly",
     "YEARLY": "Yearly"
