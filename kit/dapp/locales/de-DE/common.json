@@ -36,5 +36,12 @@
   "unknown": "Unbekannt",
   "save": "Speichern",
   "add": "Gewähren",
-  "none": "Keine"
+  "none": "Keine",
+  "timeInterval": {
+    "DAILY": "Täglich",
+    "WEEKLY": "Wöchentlich",
+    "MONTHLY": "Monatlich",
+    "QUARTERLY": "Vierteljährlich",
+    "YEARLY": "Jährlich"
+  }
 }

@@ -42,6 +42,7 @@ import { Route as PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuers
 import { Route as PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRouteImport } from './routes/_private/_onboarded/_sidebar/admin/platform-settings/asset-types'
 import { Route as PrivateOnboardedSidebarAdminPlatformSettingsAddonsRouteImport } from './routes/_private/_onboarded/_sidebar/admin/platform-settings/addons'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/index'
+import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/yield'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/permissions'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/events'
@@ -232,6 +233,15 @@ const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute =
         PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute,
     } as any,
   )
+const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute =
+  PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRouteImport.update(
+    {
+      id: '/yield',
+      path: '/yield',
+      getParentRoute: () =>
+        PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute,
+    } as any,
+  )
 const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute =
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRouteImport.update(
     {
@@ -315,6 +325,7 @@ export interface FileRoutesByFullPath {
   '/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
   '/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
   '/token/$factoryAddress/$tokenAddress/permissions': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute
+  '/token/$factoryAddress/$tokenAddress/yield': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute
   '/token/$factoryAddress/$tokenAddress/': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute
 }
 export interface FileRoutesByTo {
@@ -346,6 +357,7 @@ export interface FileRoutesByTo {
   '/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
   '/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
   '/token/$factoryAddress/$tokenAddress/permissions': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute
+  '/token/$factoryAddress/$tokenAddress/yield': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute
   '/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute
 }
 export interface FileRoutesById {
@@ -384,6 +396,7 @@ export interface FileRoutesById {
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/permissions': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute
+  '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/yield': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute
 }
 export interface FileRouteTypes {
@@ -419,6 +432,7 @@ export interface FileRouteTypes {
     | '/token/$factoryAddress/$tokenAddress/events'
     | '/token/$factoryAddress/$tokenAddress/holders'
     | '/token/$factoryAddress/$tokenAddress/permissions'
+    | '/token/$factoryAddress/$tokenAddress/yield'
     | '/token/$factoryAddress/$tokenAddress/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -450,6 +464,7 @@ export interface FileRouteTypes {
     | '/token/$factoryAddress/$tokenAddress/events'
     | '/token/$factoryAddress/$tokenAddress/holders'
     | '/token/$factoryAddress/$tokenAddress/permissions'
+    | '/token/$factoryAddress/$tokenAddress/yield'
     | '/token/$factoryAddress/$tokenAddress'
   id:
     | '__root__'
@@ -487,6 +502,7 @@ export interface FileRouteTypes {
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/events'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/permissions'
+    | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/yield'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/'
   fileRoutesById: FileRoutesById
 }
@@ -743,6 +759,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRouteImport
       parentRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute
     }
+    '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/yield': {
+      id: '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/yield'
+      path: '/yield'
+      fullPath: '/token/$factoryAddress/$tokenAddress/yield'
+      preLoaderRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute
+    }
     '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/permissions': {
       id: '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/permissions'
       path: '/permissions'
@@ -804,6 +827,7 @@ interface PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteChildren {
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute
+  PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute
 }
 
@@ -817,6 +841,8 @@ const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteChildren: Priva
       PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute,
     PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute:
       PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute,
+    PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute:
+      PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute,
     PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute:
       PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute,
   }

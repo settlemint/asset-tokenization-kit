@@ -14,7 +14,8 @@ export interface FormatValueOptions {
     | "text"
     | "boolean"
     | "multiOption"
-    | "option";
+    | "option"
+    | "basisPoints";
   displayName?: string;
   currency?: { assetSymbol: string } | FiatCurrency;
 
