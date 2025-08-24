@@ -36,7 +36,7 @@ describe("fixedYieldSchedulePeriod", () => {
 
     const result = validator.parse(validPeriod);
     expect(result.totalClaimed).toEqual(validPeriod.totalClaimed);
-    expect(format(result.totalYield, { digits: 30 }).replace(/,/g, "")).toBe("999999999999999999999999999999.99");
+    expect(format(result.totalYield, { digits: 30 }).replaceAll(',', "")).toBe("999999999999999999999999999999.99");
   });
 
   it("should reject invalid data", () => {
@@ -109,8 +109,8 @@ describe("fixedYieldSchedule", () => {
     expect(result.denominationAsset.decimals).toBe(6);
 
     // Check Dnum parsing
-    expect(format(result.totalClaimed).replace(/,/g, "")).toBe("10000.5");
-    expect(format(result.totalYield).replace(/,/g, "")).toBe("15000.75");
+    expect(format(result.totalClaimed).replaceAll(',', "")).toBe("10000.5");
+    expect(format(result.totalYield).replaceAll(',', "")).toBe("15000.75");
 
     // Check nullable fields
     expect(result.nextPeriod).toBeNull();
@@ -182,7 +182,7 @@ describe("fixedYieldSchedule", () => {
     expect(result.rate).toBe("0");
     expect(result.interval).toBe("1");
     expect(format(result.totalClaimed)).toBe("0");
-    expect(format(result.totalYield, { digits: 30 }).replace(/,/g, "")).toBe(
+    expect(format(result.totalYield, { digits: 30 }).replaceAll(',', "")).toBe(
       "999999999999999999999999999999.999999999"
     );
   });
@@ -254,7 +254,7 @@ describe("fixedYieldSchedule", () => {
       account: { id: "0x9876543210fedcba9876543210fedcba98765432", isContract: true },
       asset: { id: "0xfedcba9876543210fedcba9876543210fedcba98" },
       startDate: new Date(),
-      endDate: new Date(Date.now() + 86400000),
+      endDate: new Date(Date.now() + 86_400_000),
       rate: "500",
       interval: "86400",
       totalClaimed: "0",
@@ -282,7 +282,7 @@ describe("fixedYieldSchedule", () => {
       account: { id: "0x9876543210fedcba9876543210fedcba98765432", isContract: true },
       asset: { id: "0xfedcba9876543210fedcba9876543210fedcba98" },
       startDate: new Date(),
-      endDate: new Date(Date.now() + 86400000),
+      endDate: new Date(Date.now() + 86_400_000),
       rate: "10000", // 100%
       interval: "31536000", // 1 year
       totalClaimed: "1.23e10", // Scientific notation
@@ -296,9 +296,9 @@ describe("fixedYieldSchedule", () => {
     };
 
     const result = validator.parse(schedule);
-    expect(format(result.totalClaimed).replace(/,/g, "")).toBe("12300000000");
+    expect(format(result.totalClaimed).replaceAll(',', "")).toBe("12300000000");
     expect(format(result.totalUnclaimedYield)).toBe("0.000000000000000001");
-    expect(format(result.totalYield, { digits: 30 }).replace(/,/g, "")).toBe(
+    expect(format(result.totalYield, { digits: 30 }).replaceAll(',', "")).toBe(
       "12345678901234567890123456789.123456789"
     );
   });
