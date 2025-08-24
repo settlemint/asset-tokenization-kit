@@ -220,7 +220,10 @@
       "deployment-warning": "このプロセスは、選択内容に応じて最大2〜3分かかる場合があります。",
       "intro-1": "プラットフォームアドオンは、トークン化プラットフォームの機能を拡張することを可能にします。これらの機能（エアドロップ、利回り、XVPなど）は、コアシステムと同様にスマートコントラクトとしてデプロイされます。",
       "intro-2": "今必要なものを有効にし、後で設定で簡単に変更または拡張できます。",
-      "transaction-confirmation-info": "各取引をPINまたはOTPを使用して確認するよう求められます。"
+      "transaction-confirmation-info": "各取引をPINまたはOTPを使用して確認するよう求められます。",
+      "enabled-addons": "有効なアドオン",
+      "enabled-addons-description": "これらのアドオンは現在システムでアクティブであり、無効にすることはできません",
+      "all-addons-enabled": "利用可能なすべてのアドオンが有効になりました。"
     }
   },
   "system-settings": {

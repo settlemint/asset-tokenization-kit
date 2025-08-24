@@ -3,8 +3,8 @@ import {
   createOnboardingSearchSchema,
 } from "@/components/onboarding/route-helpers";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
-import { SystemAddonsDeployment } from "@/components/onboarding/system-addons/system-addons-deployment";
-import { SystemAddonsSelection } from "@/components/onboarding/system-addons/system-addons-selection";
+import { SystemAddonsDeployment } from "@/components/system-addons/onboarding/system-addons-deployment";
+import { SystemAddonsSelection } from "@/components/system-addons/onboarding/system-addons-selection";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
