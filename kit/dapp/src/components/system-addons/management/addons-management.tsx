@@ -18,16 +18,16 @@ import {
 } from "@/orpc/routes/system/addon/routes/addon.create.schema";
 import { addonTypes } from "@atk/zod/addon-types";
 import { AssetFactoryTypeIdEnum } from "@atk/zod/asset-types";
+import { useStore } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export function AddonsManagement() {
   const { t } = useTranslation(["onboarding", "common"]);
   const queryClient = useQueryClient();
-  const [selectedAddons, setSelectedAddons] = useState<SystemAddonConfig[]>([]);
 
   // Fetch system details to see which addons are deployed
   const { data: systemDetails, isLoading } = useQuery(
@@ -40,7 +40,8 @@ export function AddonsManagement() {
   const { data: user } = useQuery(orpc.user.me.queryOptions());
 
   // Check if user has system manager role for enabling addons
-  const hasSystemManagerRole = user?.userSystemPermissions?.roles?.systemManager;
+  const hasSystemManagerRole =
+    user?.userSystemPermissions?.roles?.systemManager;
 
   // Check if bond factory is deployed
   const hasBondFactory = useMemo(
@@ -62,26 +63,13 @@ export function AddonsManagement() {
     [systemDetails?.systemAddons]
   );
 
-  // Auto-select yield if bond factory exists and yield isn't deployed
-  useEffect(() => {
-    if (hasBondFactory && !deployedAddons.has("yield")) {
-      const yieldConfig: SystemAddonConfig = {
-        type: "yield",
-        name: t(
-          "onboarding:system-addons.addon-selection.addon-types.yield.title"
-        ),
-      };
-
-      setSelectedAddons((prev) => {
-        if (prev.some((a) => a.type === "yield")) return prev;
-        return [...prev, yieldConfig];
-      });
-    }
-  }, [hasBondFactory, deployedAddons, t]);
-
   const form = useAppForm({
     defaultValues: {
-      addons: selectedAddons,
+      addons: [],
+      walletVerification: {
+        secretVerificationCode: "",
+        verificationType: "PINCODE" as const,
+      },
     } as SystemAddonCreateInput,
     onSubmit: ({ value }) => {
       if (!systemDetails?.systemAddonRegistry) {
@@ -99,29 +87,46 @@ export function AddonsManagement() {
     },
   });
 
-  // Update form when selectedAddons changes
-  useEffect(() => {
-    form.setFieldValue("addons", selectedAddons);
-  }, [selectedAddons, form]);
-
   const { mutateAsync: createAddons, isPending: isDeploying } = useMutation(
-    orpc.system.addonCreate.mutationOptions({
+    orpc.system.addon.create.mutationOptions({
       onSuccess: async () => {
         // Refetch system data
         await queryClient.invalidateQueries({
           queryKey: orpc.system.read.key(),
         });
         // Clear selection
-        setSelectedAddons([]);
         form.setFieldValue("addons", []);
       },
     })
   );
 
+  // Get selected addons from form state
+  const selectedAddons = useStore(
+    form.store,
+    (state) => state.values.addons ?? []
+  );
+
+  // Auto-select yield if bond factory exists and yield isn't deployed
+  useEffect(() => {
+    if (hasBondFactory && !deployedAddons.has("yield")) {
+      const currentAddons = form.getFieldValue("addons") ?? [];
+      if (!currentAddons.some((a) => a.type === "yield")) {
+        const yieldConfig: SystemAddonConfig = {
+          type: "yield",
+          name: t(
+            "onboarding:system-addons.addon-selection.addon-types.yield.title"
+          ),
+        };
+        form.setFieldValue("addons", [...currentAddons, yieldConfig]);
+      }
+    }
+  }, [hasBondFactory, deployedAddons, t, form]);
+
   const handleToggleAddon = (
     addonType: (typeof addonTypes)[number],
     checked: boolean
   ) => {
+    const currentAddons = form.getFieldValue("addons") ?? [];
     const addonConfig: SystemAddonConfig = {
       type: addonType,
       name: t(
@@ -130,13 +135,12 @@ export function AddonsManagement() {
     };
 
     if (checked) {
-      const newSelection = [...selectedAddons, addonConfig];
-      setSelectedAddons(newSelection);
-      form.setFieldValue("addons", newSelection);
+      form.setFieldValue("addons", [...currentAddons, addonConfig]);
     } else {
-      const newSelection = selectedAddons.filter((a) => a.type !== addonType);
-      setSelectedAddons(newSelection);
-      form.setFieldValue("addons", newSelection);
+      form.setFieldValue(
+        "addons",
+        currentAddons.filter((a) => a.type !== addonType)
+      );
     }
   };
 
@@ -160,14 +164,20 @@ export function AddonsManagement() {
       <div className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>{t("onboarding:system-addons.addon-selection.available-addons")}</CardTitle>
+            <CardTitle>
+              {t("onboarding:system-addons.addon-selection.available-addons")}
+            </CardTitle>
             <CardDescription>
               {t("onboarding:system-addons.addon-selection.intro-1")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {hasUndeployedAddons && (
-              <InfoAlert description={t("onboarding:system-addons.addon-selection.intro-2")} />
+              <InfoAlert
+                description={t(
+                  "onboarding:system-addons.addon-selection.intro-2"
+                )}
+              />
             )}
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -180,7 +190,10 @@ export function AddonsManagement() {
                 const isYieldRequiredForBond =
                   addonType === "yield" && hasBondFactory;
                 const isDisabled =
-                  isDeploying || isDeployed || isYieldRequiredForBond || !hasSystemManagerRole;
+                  isDeploying ||
+                  isDeployed ||
+                  isYieldRequiredForBond ||
+                  !hasSystemManagerRole;
 
                 return (
                   <AddonTypeCard
@@ -192,7 +205,9 @@ export function AddonsManagement() {
                     isRequired={isYieldRequiredForBond}
                     disabledLabel={
                       isYieldRequiredForBond
-                        ? t("onboarding:system-addons.addon-selection.required-for-bonds")
+                        ? t(
+                            "onboarding:system-addons.addon-selection.required-for-bonds"
+                          )
                         : isDeployed
                           ? t("assets.deployed-label")
                           : undefined
@@ -213,8 +228,12 @@ export function AddonsManagement() {
                   }}
                   disabled={isDeploying || selectedAddons.length === 0}
                   walletVerification={{
-                    title: t("onboarding:system-addons.addon-selection.confirm-deployment-title"),
-                    description: t("onboarding:system-addons.addon-selection.confirm-deployment-description"),
+                    title: t(
+                      "onboarding:system-addons.addon-selection.confirm-deployment-title"
+                    ),
+                    description: t(
+                      "onboarding:system-addons.addon-selection.confirm-deployment-description"
+                    ),
                     setField: (verification) => {
                       form.setFieldValue("walletVerification", verification);
                     },
@@ -223,7 +242,7 @@ export function AddonsManagement() {
                   {isDeploying ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-{t("onboarding:system-addons.addon-selection.deploying")}
+                      {t("onboarding:system-addons.addon-selection.deploying")}
                     </>
                   ) : selectedAddons.length > 1 ? (
                     `${t("onboarding:system-addons.addon-selection.deploy-addons")} (${selectedAddons.length})`
@@ -236,7 +255,11 @@ export function AddonsManagement() {
 
             {!hasUndeployedAddons && (
               <div className="text-center py-8 text-muted-foreground">
-                <p>{t("onboarding:system-addons.addon-selection.all-addons-enabled")}</p>
+                <p>
+                  {t(
+                    "onboarding:system-addons.addon-selection.all-addons-enabled"
+                  )}
+                </p>
               </div>
             )}
           </CardContent>
@@ -247,9 +270,13 @@ export function AddonsManagement() {
           systemDetails.systemAddons.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle>{t("onboarding:system-addons.addon-selection.enabled-addons")}</CardTitle>
+                <CardTitle>
+                  {t("onboarding:system-addons.addon-selection.enabled-addons")}
+                </CardTitle>
                 <CardDescription>
-                  {t("onboarding:system-addons.addon-selection.enabled-addons-description")}
+                  {t(
+                    "onboarding:system-addons.addon-selection.enabled-addons-description"
+                  )}
                 </CardDescription>
               </CardHeader>
               <CardContent>

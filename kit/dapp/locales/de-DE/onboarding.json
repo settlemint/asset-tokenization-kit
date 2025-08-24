@@ -210,7 +210,7 @@
       "failed-toast": "Bereitstellung der Add-ons fehlgeschlagen: ",
       "no-system": "System nicht gefunden. Bitte stellen Sie zuerst das System bereit.",
       "select-all-addons": "Wählen Sie alle Add-ons aus, die Sie aktivieren möchten",
-      "title": "Plattform-Add-Ons Konfigurieren",
+      "title": "Plattform-Add-Ons konfigurieren",
       "validation": {
         "invalid": "Wählen Sie mindestens ein Add-on aus"
       },
