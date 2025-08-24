@@ -87,7 +87,7 @@ describe("isFundClass", () => {
       ["Retail", "capitalized variant"],
       ["  retail  ", "string with spaces"],
       ["retail\n", "string with newline"],
-    // eslint-disable-next-line no-unused-vars
+     
     ])("should return false for invalid value %s - %s", (value, _description) => {
       expect(isFundClass(value)).toBe(false);
     });
@@ -143,7 +143,7 @@ describe("getFundClass", () => {
       ["Retail", "Invalid option"],
       ["  retail  ", "Invalid option"],
       ["retail\n", "Invalid option"],
-    // eslint-disable-next-line no-unused-vars
+     
     ])("should throw for invalid value %s - %s", (value, _expectedError) => {
       expect(() => getFundClass(value)).toThrow();
       try {

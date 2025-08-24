@@ -112,6 +112,7 @@
     "@settlemint/sdk-portal": "2.6.0",
     "@settlemint/sdk-thegraph": "2.6.0",
     "@settlemint/sdk-utils": "2.6.0",
+    "@settlemint/sdk-viem": "2.6.0",
     "@tailwindcss/postcss": "4.1.12",
     "@tanstack/query-async-storage-persister": "5.85.5",
     "@tanstack/query-broadcast-client-experimental": "5.85.5",
