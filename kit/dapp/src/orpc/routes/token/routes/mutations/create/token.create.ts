@@ -46,18 +46,22 @@ export const create = systemRouter.token.create
     const handler = tokenCreateHandlerMap[input.type];
 
     // The handler will return the transaction hash
-    const transactionHash = await handler(input, {
-      mutationVariables: {
-        address: tokenFactory.id,
-        from: context.auth.user.wallet,
+    const transactionHash = await handler(
+      input,
+      {
+        mutationVariables: {
+          address: tokenFactory.id,
+          from: context.auth.user.wallet,
+        },
+        portalClient: context.portalClient,
+        walletVerification: {
+          sender: context.auth.user,
+          code: input.walletVerification.secretVerificationCode,
+          type: input.walletVerification.verificationType,
+        },
       },
-      portalClient: context.portalClient,
-      walletVerification: {
-        sender: context.auth.user,
-        code: input.walletVerification.secretVerificationCode,
-        type: input.walletVerification.verificationType,
-      },
-    });
+      context
+    );
 
     // Query for the deployed token contract
     const queryVariables: VariablesOf<typeof FIND_TOKEN_FOR_TRANSACTION_QUERY> =

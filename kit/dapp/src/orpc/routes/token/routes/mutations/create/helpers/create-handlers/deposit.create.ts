@@ -17,6 +17,7 @@
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
+import type { Context } from "@/orpc/context/context";
 import {
   createToken,
   type TokenCreateContext,
@@ -56,7 +57,8 @@ const CREATE_DEPOSIT_MUTATION = portalGraphql(`
 
 export const depositCreateHandler = async (
   input: TokenCreateInput,
-  context: TokenCreateContext
+  context: TokenCreateContext,
+  _requestContext: Context
 ) => {
   if (input.type !== AssetTypeEnum.deposit) {
     throw new Error("Invalid token type");

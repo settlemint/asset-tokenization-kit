@@ -26,11 +26,12 @@ export function handleBondCreated(event: BondCreated): void {
   }
 
   const bond = fetchBond(event.params.tokenAddress);
+  const denominationAsset = fetchToken(event.params.denominationAsset);
   setBigNumber(
     bond,
     "faceValue",
     event.params.faceValue,
-    event.params.decimals
+    denominationAsset.decimals
   );
   bond.maturityDate = event.params.maturityDate;
   bond.isMatured = false;
