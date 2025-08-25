@@ -36,8 +36,7 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { encodePacked, keccak256, encodeAbiParameters } from "viem";
-import { z } from "zod";
+import { encodeAbiParameters, encodePacked, keccak256 } from "viem";
 
 const COLLATERAL_CLAIM_MUTATION = portalGraphql(`
   mutation AddCollateralClaim(
@@ -71,54 +70,6 @@ const COLLATERAL_CLAIM_MUTATION = portalGraphql(`
   }
 `);
 
-const GET_TOKEN_ONCHAIN_ID_QUERY = portalGraphql(`
-  query GetTokenOnchainID($address: String!) {
-    ATKBondImplementation(address: $address) {
-      onchainID
-    }
-    ATKEquityImplementation(address: $address) {
-      onchainID
-    }
-    ATKFundImplementation(address: $address) {
-      onchainID
-    }
-    ATKStableCoinImplementation(address: $address) {
-      onchainID
-    }
-    ATKDepositImplementation(address: $address) {
-      onchainID
-    }
-  }
-`);
-
-const TokenOnchainIdResponseSchema = z.object({
-  ATKBondImplementation: z
-    .object({
-      onchainID: z.string(),
-    })
-    .nullable(),
-  ATKEquityImplementation: z
-    .object({
-      onchainID: z.string(),
-    })
-    .nullable(),
-  ATKFundImplementation: z
-    .object({
-      onchainID: z.string(),
-    })
-    .nullable(),
-  ATKStableCoinImplementation: z
-    .object({
-      onchainID: z.string(),
-    })
-    .nullable(),
-  ATKDepositImplementation: z
-    .object({
-      onchainID: z.string(),
-    })
-    .nullable(),
-});
-
 /**
  * ORPC handler for updating token collateral claims.
  *
@@ -151,7 +102,7 @@ export const updateCollateral = tokenRouter.token.updateCollateral
       requiredRoles: TOKEN_PERMISSIONS.updateCollateral, // Use specific collateral permission
     })
   )
-  .handler(async ({ input, context, errors }: any) => {
+  .handler(async ({ input, context, errors }) => {
     // INPUT EXTRACTION: Destructure collateral parameters from validated input
     const { contract, walletVerification, amount, expiryDays } = input;
     const { auth } = context;
@@ -163,32 +114,24 @@ export const updateCollateral = tokenRouter.token.updateCollateral
     const currentTime = Math.floor(Date.now() / 1000);
     const expiryTimestamp = BigInt(currentTime + expiryDays * 24 * 60 * 60);
 
+    // ACCESS TOKEN DATA: Get token information from context (already loaded by token middleware)
+    const tokenData = context.token;
+
+    // Get the token's identity contract address from the graph data
+    const onchainID = tokenData.account.identity?.id;
+
+    if (!onchainID) {
+      throw errors.INPUT_VALIDATION_FAILED({
+        message: "Token does not have an associated identity contract",
+        data: {
+          errors: [
+            `Token at address ${contract} does not have an associated identity contract`,
+          ],
+        },
+      });
+    }
+
     try {
-      // ACCESS TOKEN DATA: Get token information from context (already loaded by token middleware)
-      const tokenData = context.token;
-
-      // Get the token's identity contract address from Portal
-      const tokenIdentityResponse = await context.portalClient.query(
-        GET_TOKEN_ONCHAIN_ID_QUERY,
-        { address: contract },
-        TokenOnchainIdResponseSchema
-      );
-
-      // Extract onchainID from whichever token type responded
-      const onchainID =
-        tokenIdentityResponse.ATKBondImplementation?.onchainID ||
-        tokenIdentityResponse.ATKEquityImplementation?.onchainID ||
-        tokenIdentityResponse.ATKFundImplementation?.onchainID ||
-        tokenIdentityResponse.ATKStableCoinImplementation?.onchainID ||
-        tokenIdentityResponse.ATKDepositImplementation?.onchainID;
-
-      if (!onchainID) {
-        throw errors.INPUT_VALIDATION_FAILED({
-          message: "Token does not have an onchainID",
-          data: { contract },
-        });
-      }
-
       // COLLATERAL TOPIC: Use standardized claim topic for collateral
       const COLLATERAL_TOPIC = "0x" + "1".padStart(64, "0"); // ATK uses topic ID 1 for collateral claims
 
@@ -234,14 +177,20 @@ export const updateCollateral = tokenRouter.token.updateCollateral
       // RETURN UPDATED TOKEN DATA: Return the token context which will be refreshed by the middleware
       return tokenData;
     } catch (error) {
-      console.error("Collateral update failed:", error);
       throw errors.PORTAL_ERROR({
         message: "Failed to update collateral claim",
         data: {
-          contract,
-          amount: amount.toString(),
-          expiryTimestamp: expiryTimestamp.toString(),
-          error: error instanceof Error ? error.message : "Unknown error",
+          document: COLLATERAL_CLAIM_MUTATION,
+          variables: {
+            address: onchainID,
+            from: auth.user.wallet,
+            topic: "0x" + "1".padStart(64, "0"),
+            scheme: "3",
+            issuer: onchainID,
+            data: "encoded_claim_data",
+            uri: "",
+          },
+          stack: error instanceof Error ? error.stack : undefined,
         },
       });
     }

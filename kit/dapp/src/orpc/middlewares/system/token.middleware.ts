@@ -95,6 +95,11 @@ const READ_TOKEN_QUERY = theGraphGraphql(
       extensions
       implementsERC3643
       implementsSMART
+      account {
+        identity {
+          id
+        }
+      }
       pausable {
         paused
       }

@@ -48,6 +48,16 @@ export const RawTokenSchema = z.object({
     .boolean()
     .describe("Whether the token implements ERC3643"),
   implementsSMART: z.boolean().describe("Whether the token implements SMART"),
+  account: z
+    .object({
+      identity: z
+        .object({
+          id: ethereumAddress.describe("The identity contract address"),
+        })
+        .nullable()
+        .describe("The identity associated with this token"),
+    })
+    .describe("The account associated with this token"),
   pausable: z.object({
     paused: z.boolean().describe("Whether the token is paused"),
   }),

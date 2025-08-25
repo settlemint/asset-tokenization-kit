@@ -14,10 +14,10 @@ import { read } from "@/orpc/routes/token/routes/token.read";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { call } from "@orpc/server";
 import {
+  decodeAbiParameters,
   encodeAbiParameters,
   encodePacked,
   keccak256,
-  decodeAbiParameters,
 } from "viem";
 import { z } from "zod";
 
@@ -55,60 +55,6 @@ const COLLATERAL_CLAIM_MUTATION = portalGraphql(`
     }
   }
 `);
-
-/**
- * GraphQL query for getting token's onchainID.
- */
-const GET_TOKEN_ONCHAIN_ID_QUERY = portalGraphql(`
-  query GetTokenOnchainID($address: String!) {
-    ATKBondImplementation(address: $address) {
-      onchainID
-    }
-    ATKEquityImplementation(address: $address) {
-      onchainID
-    }
-    ATKFundImplementation(address: $address) {
-      onchainID
-    }
-    ATKStableCoinImplementation(address: $address) {
-      onchainID
-    }
-    ATKDepositImplementation(address: $address) {
-      onchainID
-    }
-  }
-`);
-
-/**
- * Zod schema for token onchainID response
- */
-const TokenOnchainIdResponseSchema = z.object({
-  ATKBondImplementation: z
-    .object({
-      onchainID: z.string(),
-    })
-    .nullable(),
-  ATKEquityImplementation: z
-    .object({
-      onchainID: z.string(),
-    })
-    .nullable(),
-  ATKFundImplementation: z
-    .object({
-      onchainID: z.string(),
-    })
-    .nullable(),
-  ATKStableCoinImplementation: z
-    .object({
-      onchainID: z.string(),
-    })
-    .nullable(),
-  ATKDepositImplementation: z
-    .object({
-      onchainID: z.string(),
-    })
-    .nullable(),
-});
 
 /**
  * GraphQL query for getting claims by topic
@@ -194,24 +140,13 @@ export const updateCollateral = tokenRouter.token.updateCollateral
     const expiryTimestamp =
       Math.floor(Date.now() / 1000) + expiryDays * 24 * 60 * 60;
 
-    // Get the token's identity contract address from Portal first
-    const tokenIdentityAddress = await context.portalClient.query(
-      GET_TOKEN_ONCHAIN_ID_QUERY,
-      { address: contract },
-      TokenOnchainIdResponseSchema
-    );
-
-    // Extract onchainID from whichever token type responded
-    const onchainID =
-      tokenIdentityAddress.ATKBondImplementation?.onchainID ||
-      tokenIdentityAddress.ATKEquityImplementation?.onchainID ||
-      tokenIdentityAddress.ATKFundImplementation?.onchainID ||
-      tokenIdentityAddress.ATKStableCoinImplementation?.onchainID ||
-      tokenIdentityAddress.ATKDepositImplementation?.onchainID;
+    // Get the token's identity contract address from the graph data
+    const tokenData = context.token;
+    const onchainID = tokenData.account.identity?.id;
 
     if (!onchainID) {
       throw new Error(
-        `Token does not have an OnchainID identity contract linked. Contract: ${contract}`
+        `Token at address ${contract} does not have an associated identity contract`
       );
     }
 
@@ -272,6 +207,13 @@ export const updateCollateral = tokenRouter.token.updateCollateral
     );
 
     console.log(`✅ Portal mutation result:`, mutationResult);
+
+    console.log(
+      `✅ Collateral claim transaction submitted successfully! Hash: ${mutationResult}`
+    );
+    console.log(
+      `ℹ️  Note: The Graph subgraph may take 30-60 seconds to index the new claim.`
+    );
 
     // Return updated token data
     return await call(
