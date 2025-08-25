@@ -4,7 +4,7 @@ import {
 } from "@/components/confirmation-dialog";
 import { DialogCardLayout } from "@/components/layout/dialog-card-layout";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { XIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -30,6 +30,7 @@ interface FullScreenDialogLayoutProps {
   className?: string;
   header?: ReactNode;
   closeOptions?: DialogCloseOptions;
+  title?: string;
 }
 
 /**
@@ -43,6 +44,7 @@ export function FullScreenDialogLayout({
   className,
   header,
   closeOptions = {},
+  title = "Dialog",
 }: FullScreenDialogLayoutProps) {
   const { closeOnEscape, closeOnOutsideClick, closeIcon, closeConfirmation } =
     closeOptions;
@@ -59,6 +61,7 @@ export function FullScreenDialogLayout({
           if (!closeOnOutsideClick) e.preventDefault();
         }}
       >
+        <DialogTitle className="sr-only">{title}</DialogTitle>
         <DialogCardLayout
           className={className}
           header={header}

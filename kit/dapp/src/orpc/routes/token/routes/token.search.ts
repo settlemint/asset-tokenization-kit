@@ -34,6 +34,11 @@ const SEARCH_TOKEN_QUERY = theGraphGraphql(`
       symbol
       decimals
       totalSupply
+      account {
+        identity {
+          id
+        }
+      }
       pausable {
         paused
       }

@@ -30,4 +30,5 @@ export const TOKEN_PERMISSIONS: Record<
   setYieldSchedule: "governance",
   transfer: { any: [] }, // TODO: requires custodian on a forced transfer (would generate a dedicated endpoint )
   unpause: "emergency",
+  updateCollateral: "governance",
 };

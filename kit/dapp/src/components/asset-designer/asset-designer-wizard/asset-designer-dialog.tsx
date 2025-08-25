@@ -16,6 +16,7 @@ export function AssetDesignerDialog({
     <FullScreenDialogLayout
       open={open}
       onOpenChange={onOpenChange}
+      title={t("asset-designer:title", "Asset Designer")}
       closeOptions={{
         closeOnEscape: false,
         closeOnOutsideClick: false,

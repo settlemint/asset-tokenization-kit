@@ -4,6 +4,7 @@ import { tokenRevokeRoleContract } from "@/orpc/routes/token/routes/mutations/ac
 import { tokenApproveContract } from "@/orpc/routes/token/routes/mutations/approve/token.approve.contract";
 import { tokenBurnContract } from "@/orpc/routes/token/routes/mutations/burn/token.burn.contract";
 import { tokenSetCapContract } from "@/orpc/routes/token/routes/mutations/cap/token.set-cap.contract";
+import { tokenUpdateCollateralContract } from "@/orpc/routes/token/routes/mutations/collateral/token.update-collateral.contract";
 import { tokenAddComplianceModuleContract } from "@/orpc/routes/token/routes/mutations/compliance/token.add-compliance-module.contract";
 import { tokenRemoveComplianceModuleContract } from "@/orpc/routes/token/routes/mutations/compliance/token.remove-compliance-module.contract";
 import { tokenCreateContract } from "@/orpc/routes/token/routes/mutations/create/token.create.contract";
@@ -51,6 +52,7 @@ export const tokenContract = {
   forcedRecover: tokenForcedRecoverContract,
   recoverERC20: tokenRecoverERC20Contract,
   setCap: tokenSetCapContract,
+  updateCollateral: tokenUpdateCollateralContract,
   setYieldSchedule: tokenSetYieldScheduleContract,
   addComplianceModule: tokenAddComplianceModuleContract,
   removeComplianceModule: tokenRemoveComplianceModuleContract,
@@ -89,6 +91,7 @@ export type TokenContractMutations =
   | "redeem"
   | "removeComplianceModule"
   | "setCap"
+  | "updateCollateral"
   | "setYieldSchedule"
   | "transfer"
   | "unpause";
