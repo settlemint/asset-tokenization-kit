@@ -38,16 +38,16 @@ export function BurnSheet({
     orpc.token.burn.mutationOptions({
       onSuccess: async () => {
         await qc.invalidateQueries({
-          queryKey: orpc.token.read.queryOptions({
+          queryKey: orpc.token.read.queryKey({
             input: { tokenAddress: asset.id },
-          }).queryKey,
+          }),
         });
-        
+
         // Refresh holders data to show updated balances
         await qc.invalidateQueries({
-          queryKey: orpc.token.holders.queryOptions({
+          queryKey: orpc.token.holders.queryKey({
             input: { tokenAddress: asset.id },
-          }).queryKey,
+          }),
         });
       },
     })
