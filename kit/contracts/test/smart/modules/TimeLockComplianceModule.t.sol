@@ -7,6 +7,8 @@ import { AbstractComplianceModuleTest } from "./AbstractComplianceModuleTest.t.s
 import { TimeLockComplianceModule } from "../../../contracts/smart/modules/TimeLockComplianceModule.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
 import { ExpressionNode, ExpressionType } from "../../../contracts/smart/interface/structs/ExpressionNode.sol";
+import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
+import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
 contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     TimeLockComplianceModule internal module;
@@ -45,6 +47,24 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         // Issue KYC/AML claims to test users
         claimUtils.issueAllClaims(user1);
         claimUtils.issueAllClaims(user2);
+
+        // Register custom topic ID 7 for secondary sale approval testing
+        vm.startPrank(platformAdmin);
+        systemUtils.topicSchemeRegistry().registerTopicScheme("Secondary Sale Approved", "string claim");
+        vm.stopPrank();
+
+        // Add topic 7 to the existing claim issuer's allowed topics
+        // The claim issuer is already a trusted issuer from the base setup
+        uint256[] memory existingTopics = new uint256[](5);
+        existingTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
+        existingTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_AML);
+        existingTopics[2] = systemUtils.getTopicId(ATKTopics.TOPIC_COLLATERAL);
+        existingTopics[3] = systemUtils.getTopicId(ATKTopics.TOPIC_BASE_PRICE);
+        existingTopics[4] = 7; // Add our custom topic
+
+        vm.startPrank(platformAdmin);
+        systemUtils.trustedIssuersRegistry().updateIssuerClaimTopics(IClaimIssuer(claimIssuer), existingTopics);
+        vm.stopPrank();
 
         // Default 6-month lock period without exemptions
         defaultParams = TimeLockComplianceModule.TimeLockParams({
