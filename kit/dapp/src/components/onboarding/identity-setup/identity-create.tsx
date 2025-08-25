@@ -21,7 +21,7 @@ export function IdentityCreate() {
         onSuccess: async () => {
           // Refetch all relevant data
           await queryClient.invalidateQueries({
-            queryKey: orpc.account.me.queryOptions().queryKey,
+            queryKey: orpc.account.me.queryKey(),
             refetchType: "all",
           });
           await refreshUserState();

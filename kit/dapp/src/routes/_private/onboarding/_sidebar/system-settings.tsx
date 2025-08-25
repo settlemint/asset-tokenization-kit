@@ -63,7 +63,7 @@ function RouteComponent() {
         onSuccess: async () => {
           logger.debug("Settings mutation successful, refetching queries");
           await queryClient.refetchQueries({
-            queryKey: orpc.settings.read.key({
+            queryKey: orpc.settings.read.queryKey({
               input: { key: "BASE_CURRENCY" },
             }),
           });

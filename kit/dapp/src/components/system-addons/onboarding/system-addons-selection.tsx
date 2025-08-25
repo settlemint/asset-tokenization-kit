@@ -1,8 +1,8 @@
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { getAddonIcon } from "@/components/system-addons/components/addon-icons";
 import { AddonTypeCard } from "@/components/system-addons/components/addon-type-card";
 import { getAddonTypeFromTypeId } from "@/components/system-addons/components/addon-types-mapping";
-import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { WarningAlert } from "@/components/ui/warning-alert";
@@ -101,9 +101,9 @@ export function SystemAddonsSelection() {
           await Promise.all([
             queryClient.invalidateQueries({ queryKey: orpc.system.read.key() }),
             queryClient.invalidateQueries({
-              queryKey: orpc.system.read.queryOptions({
+              queryKey: orpc.system.read.queryKey({
                 input: { id: "default" },
-              }).queryKey,
+              }),
               refetchType: "all",
             }),
           ]);

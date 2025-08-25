@@ -222,11 +222,7 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
             const value = getValue();
             return (
               <span className="font-medium">
-                {format(value, {
-                  compact: true,
-                  digits: 2,
-                })}{" "}
-                {token.symbol}
+                {format(value)} {token.symbol}
               </span>
             );
           },
@@ -242,11 +238,7 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
             const available = getValue();
             return (
               <span>
-                {format(available, {
-                  compact: true,
-                  digits: 2,
-                })}{" "}
-                {token.symbol}
+                {format(available)} {token.symbol}
               </span>
             );
           },
@@ -262,11 +254,7 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
             const frozen = getValue();
             return (
               <span className="text-muted-foreground">
-                {format(frozen, {
-                  compact: true,
-                  digits: 2,
-                })}{" "}
-                {token.symbol}
+                {format(frozen)} {token.symbol}
               </span>
             );
           },

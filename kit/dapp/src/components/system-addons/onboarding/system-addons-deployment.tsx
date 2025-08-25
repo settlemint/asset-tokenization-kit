@@ -1,8 +1,8 @@
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { getAddonIcon } from "@/components/system-addons/components/addon-icons";
 import { getAddonTypeFromTypeId } from "@/components/system-addons/components/addon-types-mapping";
-import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { orpc } from "@/orpc/orpc-client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
@@ -33,12 +33,11 @@ export function SystemAddonsDeployment() {
       // Invalidate system data to update any components that depend on system addons
       await Promise.all([
         queryClient.invalidateQueries({
-          queryKey: orpc.system.read.queryOptions({ input: { id: "default" } })
-            .queryKey,
+          queryKey: orpc.system.read.queryKey({ input: { id: "default" } }),
           refetchType: "all",
         }),
         queryClient.invalidateQueries({
-          queryKey: orpc.user.me.queryOptions().queryKey,
+          queryKey: orpc.user.me.queryKey(),
           refetchType: "all",
         }),
       ]);

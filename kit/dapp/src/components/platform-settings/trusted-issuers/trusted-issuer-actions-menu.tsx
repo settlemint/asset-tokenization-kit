@@ -18,8 +18,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import { client, orpc } from "@/orpc/orpc-client";
-import type { TrustedIssuer } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.list.schema";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
+import type { TrustedIssuer } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.list.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, Edit, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";

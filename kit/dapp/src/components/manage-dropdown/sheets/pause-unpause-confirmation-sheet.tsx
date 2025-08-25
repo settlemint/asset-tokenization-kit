@@ -1,4 +1,3 @@
-import { ActionFormSheet } from "../core/action-form-sheet";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
@@ -8,6 +7,7 @@ import { ArrowRight } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { ActionFormSheet } from "../core/action-form-sheet";
 
 interface PauseUnpauseConfirmationSheetProps {
   open: boolean;
@@ -45,7 +45,7 @@ export function PauseUnpauseConfirmationSheet({
         // Invalidate both single asset and list queries
         await Promise.all([
           queryClient.invalidateQueries({
-            queryKey: orpc.token.read.key({
+            queryKey: orpc.token.read.queryKey({
               input: { tokenAddress: asset.id },
             }),
           }),
@@ -64,7 +64,7 @@ export function PauseUnpauseConfirmationSheet({
         // Invalidate both single asset and list queries
         await Promise.all([
           queryClient.invalidateQueries({
-            queryKey: orpc.token.read.key({
+            queryKey: orpc.token.read.queryKey({
               input: { tokenAddress: asset.id },
             }),
           }),
