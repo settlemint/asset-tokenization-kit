@@ -36,6 +36,8 @@
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
+import type { Context } from "@/orpc/context/context";
+
 import {
   createToken,
   type TokenCreateContext,
@@ -127,7 +129,8 @@ const CREATE_EQUITY_MUTATION = portalGraphql(`
  */
 export const equityCreateHandler = async (
   input: TokenCreateInput,
-  context: TokenCreateContext
+  context: TokenCreateContext,
+  _requestContext: Context
 ) => {
   // TYPE VALIDATION: Ensure this handler only processes equity token requests
   // WHY: Each token type has specific parameters and compliance requirements
