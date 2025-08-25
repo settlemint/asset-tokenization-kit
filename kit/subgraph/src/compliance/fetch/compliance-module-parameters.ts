@@ -165,16 +165,20 @@ function clearInvestorCountExpressionNodes(
   investorCountParams: InvestorCountParams
 ): void {
   // Load and remove existing expression nodes for InvestorCountParams
-  // Similar to clearExpressionNodes but for investorCountParams
-  for (let i = 0; i < 100; i++) {
-    // Assume max 100 nodes
-    const nodeId = investorCountParams.id.concat(Bytes.fromI32(i));
-    const nodeIdHex = nodeId.toHexString();
+  // We iterate sequentially since nodes are created with consecutive indices
+  // This is more efficient than trying to query all related nodes
 
-    if (ExpressionNode.load(nodeId) !== null) {
-      store.remove("ExpressionNode", nodeIdHex);
+  let i = 0;
+  while (true) {
+    const nodeId = investorCountParams.id.concat(Bytes.fromI32(i));
+    const existingNode = ExpressionNode.load(nodeId);
+
+    if (existingNode !== null) {
+      store.remove("ExpressionNode", nodeId.toHexString());
+      i++;
     } else {
-      break; // No more nodes found
+      // No more sequential nodes found - we're done
+      break;
     }
   }
 }

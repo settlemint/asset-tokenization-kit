@@ -90,14 +90,16 @@ export function decodeInvestorCountParams(
 
   // Extract topicFilter (ExpressionNode[])
   const topicFilterArray = tuple[4].toArray();
-  const topicFilter = new Array<DecodedExpressionNode>(topicFilterArray.length);
+  const topicFilter: DecodedExpressionNode[] = [];
   for (let i = 0; i < topicFilterArray.length; i++) {
     const nodeTuple = topicFilterArray[i].toTuple();
     if (nodeTuple.length >= 2) {
       const nodeType = nodeTuple[0].toI32(); // ExpressionType enum as uint8
       const value = nodeTuple[1].toBigInt();
-      topicFilter[i] = new DecodedExpressionNode(nodeType, value);
+      topicFilter.push(new DecodedExpressionNode(nodeType, value));
     }
+    // Skip malformed tuples - they won't be added to the result array
+    // This prevents undefined entries while maintaining array integrity
   }
 
   return new DecodedInvestorCountParams(
