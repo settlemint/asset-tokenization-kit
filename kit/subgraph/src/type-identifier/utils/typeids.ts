@@ -92,6 +92,10 @@ export class TypeIds {
       name: "TokenSupplyLimitComplianceModule",
       id: getTypeId("TokenSupplyLimitComplianceModule"),
     },
+    {
+      name: "InvestorCountComplianceModule",
+      id: getTypeId("InvestorCountComplianceModule"),
+    },
   ];
 }
 

@@ -547,13 +547,17 @@ type ComplianceModuleParameters @entity(immutable: false) {
   expression: [ExpressionNode!] @derivedFrom(field: "parameters")
   # Token supply limit parameters (if module type matches)
   tokenSupplyLimit: TokenSupplyLimitParams
+  # Investor count limit parameters (if module type matches)
+  investorCount: InvestorCountParams
 }
 
 type ExpressionNode @entity(immutable: true) {
   # Unique identifier for this node
   id: Bytes!
-  # Parameters this node belongs to
-  parameters: ComplianceModuleParameters!
+  # Parameters this node belongs to (for IdentityVerification module)
+  parameters: ComplianceModuleParameters
+  # InvestorCount params this node belongs to (for InvestorCount module)
+  investorCountParams: InvestorCountParams
   # Type of logical operation
   nodeType: ExpressionNodeType!
   # Position in the expression tree
@@ -614,6 +618,23 @@ type TokenSupplyLimitParams @entity(immutable: false) {
   useBasePrice: Boolean!
   # Whether tracking is global across tokens
   global: Boolean!
+}
+
+type InvestorCountParams @entity(immutable: false) {
+  # Unique identifier - same as ComplianceModuleParameters.id
+  id: Bytes!
+  # Back-reference to the owning parameters entity
+  parameters: ComplianceModuleParameters!
+  # Maximum total investors across all countries (0 = no global limit)
+  maxInvestors: BigInt!
+  # Whether to track globally across all tokens for this issuer
+  global: Boolean!
+  # Array of ISO country codes for country-specific limits
+  countryCodes: [Int!]!
+  # Array of corresponding investor limits per country
+  countryLimits: [BigInt!]!
+  # Topic filter expression nodes for complex compliance rules
+  topicFilter: [ExpressionNode!] @derivedFrom(field: "investorCountParams")
 }
 
 type TokenFactoryRegistry @entity(immutable: false) {
