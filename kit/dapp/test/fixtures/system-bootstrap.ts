@@ -1,3 +1,4 @@
+import { isContractAddress } from "@/test/anvil";
 import { ORPCError } from "@orpc/server";
 import { retryWhenFailed } from "@settlemint/sdk-utils";
 import { DEFAULT_INVESTOR } from "@test/fixtures/user";
@@ -143,6 +144,21 @@ export async function bootstrapTokenFactories(
       };
     }),
   });
+
+  const allTokenFactories = await orpClient.system.factory.list({});
+  for (const factory of allTokenFactories) {
+    const { id: address, typeId, name } = factory;
+    const isContract = await isContractAddress(address);
+    if (!isContract) {
+      console.log(
+        `Token factory ${name} (${typeId}) at ${address} is not a contract`
+      );
+    } else {
+      console.log(
+        `Token factory ${name} (${typeId}) at ${address} is a contract`
+      );
+    }
+  }
 }
 
 export async function bootstrapAddons(orpClient: OrpcClient) {
