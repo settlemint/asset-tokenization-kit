@@ -73,7 +73,8 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
 
     /// @notice Initializes the InvestorCountComplianceModule
     /// @dev Sets up the module with meta-transaction support via trusted forwarder
-    /// @param _trustedForwarder Address of the trusted forwarder for meta transactions (can be zero address if not used)
+    /// @param _trustedForwarder Address of the trusted forwarder for meta transactions (can be zero address if not
+    /// used)
     constructor(address _trustedForwarder) AbstractComplianceModule(_trustedForwarder) { }
 
     // --- Functions ---
@@ -201,7 +202,7 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
         uint256 countryLimit = _getCountryLimit(_token, investorCountry, config);
         if (countryLimit > 0) {
             uint256 currentCountryCount = _getCountryInvestorCount(_token, investorCountry, config);
-            if (currentCountryCount >= countryLimit) {
+            if (currentCountryCount == countryLimit) {
                 revert ComplianceCheckFailed("Adding investor would exceed country-specific investor limit");
             }
         }
@@ -210,7 +211,7 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
         // Note: maxInvestors = 0 means no global limit, only country-specific limits apply
         if (config.maxInvestors > 0) {
             uint256 currentCount = _getCurrentInvestorCount(_token, config);
-            if (currentCount >= config.maxInvestors) {
+            if (currentCount == config.maxInvestors) {
                 revert ComplianceCheckFailed("Adding investor would exceed maximum total investor limit");
             }
         }
@@ -237,8 +238,8 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
 
         // Check for duplicate country codes
         if (config.countryCodes.length > 1) {
-            for (uint256 i = 0; i < config.countryCodes.length - 1; i++) {
-                for (uint256 j = i + 1; j < config.countryCodes.length; j++) {
+            for (uint256 i = 0; i < config.countryCodes.length - 1; ++i) {
+                for (uint256 j = i + 1; j < config.countryCodes.length; ++j) {
                     if (config.countryCodes[i] == config.countryCodes[j]) {
                         revert InvalidParameters("Duplicate country codes are not allowed");
                     }
@@ -252,7 +253,7 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
         }
 
         // Validate country limits are non-zero
-        for (uint256 i = 0; i < config.countryLimits.length; i++) {
+        for (uint256 i = 0; i < config.countryLimits.length; ++i) {
             if (config.countryLimits[i] == 0) {
                 revert InvalidParameters("Country limits must be greater than zero");
             }
@@ -376,12 +377,12 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
     {
         // First try to get country from token-specific tracker
         uint16 investorCountry = investorTrackers[_token].investorCountry[_investor];
-        
+
         // If not found and global tracking is enabled, check global tracker
         if (investorCountry == 0 && config.global) {
             investorCountry = globalInvestorTracker.investorCountry[_investor];
         }
-        
+
         return investorCountry;
     }
 
@@ -408,17 +409,17 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
             // Add new investor
             tracker.investors[_investor] = true;
             tracker.investorCountry[_investor] = _country;
-            tracker.currentCount++;
+            ++tracker.currentCount;
             if (_country > 0) {
-                tracker.countryInvestorCounts[_country]++;
+                ++tracker.countryInvestorCounts[_country];
             }
         } else if (!_isAddition && tracker.investors[_investor]) {
             // Remove existing investor
             tracker.investors[_investor] = false;
             delete tracker.investorCountry[_investor];
-            tracker.currentCount--;
+            --tracker.currentCount;
             if (_country > 0 && tracker.countryInvestorCounts[_country] > 0) {
-                tracker.countryInvestorCounts[_country]--;
+                --tracker.countryInvestorCounts[_country];
             }
         }
     }
@@ -489,7 +490,7 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
         }
 
         // Otherwise check config for limit
-        for (uint256 i = 0; i < config.countryCodes.length; i++) {
+        for (uint256 i = 0; i < config.countryCodes.length; ++i) {
             if (config.countryCodes[i] == _country) {
                 return config.countryLimits[i];
             }
@@ -502,18 +503,13 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
     /// @dev Sets all country limits from config to avoid lazy initialization inconsistencies
     /// @param tracker The storage reference to the tracker to initialize
     /// @param config The compliance configuration containing country codes and limits
-    function _initializeCountryLimits(
-        InvestorTracker storage tracker,
-        InvestorCountConfig memory config
-    )
-        private
-    {
+    function _initializeCountryLimits(InvestorTracker storage tracker, InvestorCountConfig memory config) private {
         // Only initialize if we have country limits configured and they haven't been set yet
         if (config.countryCodes.length > 0) {
             // Check if already initialized by testing the first country code
             if (config.countryCodes.length > 0 && tracker.maxInvestorsPerCountry[config.countryCodes[0]] == 0) {
                 // Initialize all country limits at once
-                for (uint256 i = 0; i < config.countryCodes.length; i++) {
+                for (uint256 i = 0; i < config.countryCodes.length; ++i) {
                     tracker.maxInvestorsPerCountry[config.countryCodes[i]] = config.countryLimits[i];
                 }
             }

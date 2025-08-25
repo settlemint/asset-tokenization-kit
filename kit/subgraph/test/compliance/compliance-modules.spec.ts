@@ -20,7 +20,7 @@ describe("Compliance Modules", () => {
     );
     const response = await theGraphClient.request(query, {});
     const complianceModules = response.complianceModules;
-    expect(complianceModules.length).toBe(7);
+    expect(complianceModules.length).toBe(8);
 
     expect(complianceModules).toEqual([
       {
@@ -54,13 +54,13 @@ describe("Compliance Modules", () => {
         globalConfigs: expect.any(Array),
       },
       {
-        name: "Token Supply Limit Compliance Module",
-        typeId: "TokenSupplyLimitComplianceModule",
+        name: "Investor Count Compliance Module",
+        typeId: "InvestorCountComplianceModule",
         globalConfigs: expect.any(Array),
       },
       {
-        name: "Investor Count Compliance Module",
-        typeId: "InvestorCountComplianceModule",
+        name: "Token Supply Limit Compliance Module",
+        typeId: "TokenSupplyLimitComplianceModule",
         globalConfigs: expect.any(Array),
       },
     ]);

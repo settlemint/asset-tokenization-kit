@@ -4,16 +4,16 @@ pragma solidity ^0.8.28;
 /**
  * @title InvestorCountComplianceModuleTest
  * @dev Comprehensive test suite for the Investor Count Compliance Module.
- * 
+ *
  * This module enables enforcement of investor limits in various configurations:
- * 
+ *
  * CONFIGURATION EXAMPLES:
  * - "Max 50 US, 30 EU": maxInvestors=0, countryCodes=[840,276], countryLimits=[50,30]
  * - "Max 100 total with 50 US, 30 EU": maxInvestors=100, countryCodes=[840,276], countryLimits=[50,30]
  * - "Max 100 total, no country limits": maxInvestors=100, countryCodes=[], countryLimits=[]
  * - "Global tracking across all tokens": maxInvestors=1000, global=true
  * - "Topic-filtered counting (KYC holders only)": topicFilter=[KYC]
- * 
+ *
  * FEATURE COVERAGE:
  * ✓ Parameter validation (arrays must match, limits > 0)
  * ✓ Global investor caps (across single/multiple tokens)
@@ -24,7 +24,6 @@ pragma solidity ^0.8.28;
  * ✓ View functions for current counts
  * ✓ Edge cases (no identity = not counted)
  */
-
 import { AbstractComplianceModuleTest } from "./AbstractComplianceModuleTest.t.sol";
 import { InvestorCountComplianceModule } from "../../../contracts/smart/modules/InvestorCountComplianceModule.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
@@ -218,7 +217,8 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
         bytes memory params = abi.encode(config);
         vm.expectRevert(
             abi.encodeWithSelector(
-                ISMARTComplianceModule.InvalidParameters.selector, "Country codes and limits arrays must have same length"
+                ISMARTComplianceModule.InvalidParameters.selector,
+                "Country codes and limits arrays must have same length"
             )
         );
         module.validateParameters(params);
@@ -243,7 +243,9 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
 
         bytes memory params = abi.encode(config);
         vm.expectRevert(
-            abi.encodeWithSelector(ISMARTComplianceModule.InvalidParameters.selector, "Country limits must be greater than zero")
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.InvalidParameters.selector, "Country limits must be greater than zero"
+            )
         );
         module.validateParameters(params);
     }
@@ -271,7 +273,9 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
 
         bytes memory params = abi.encode(config);
         vm.expectRevert(
-            abi.encodeWithSelector(ISMARTComplianceModule.InvalidParameters.selector, "Duplicate country codes are not allowed")
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.InvalidParameters.selector, "Duplicate country codes are not allowed"
+            )
         );
         module.validateParameters(params);
     }
@@ -466,10 +470,8 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
     function test_InvestorCount_TopicFilter_SingleTopic() public {
         // Create topic filter requiring KYC
         ExpressionNode[] memory topicFilter = new ExpressionNode[](1);
-        topicFilter[0] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: systemUtils.getTopicId(ATKTopics.TOPIC_KYC)
-        });
+        topicFilter[0] =
+            ExpressionNode({ nodeType: ExpressionType.TOPIC, value: systemUtils.getTopicId(ATKTopics.TOPIC_KYC) });
 
         InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
             .InvestorCountConfig({
@@ -496,20 +498,16 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
     function test_InvestorCount_TopicFilter_ComplexExpression() public {
         // Create expression: (KYC AND AML) OR COLLATERAL
         ExpressionNode[] memory topicFilter = new ExpressionNode[](5);
-        topicFilter[0] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: systemUtils.getTopicId(ATKTopics.TOPIC_KYC)
-        });
-        topicFilter[1] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: systemUtils.getTopicId(ATKTopics.TOPIC_AML)
-        });
-        topicFilter[2] = ExpressionNode({nodeType: ExpressionType.AND, value: 0});
+        topicFilter[0] =
+            ExpressionNode({ nodeType: ExpressionType.TOPIC, value: systemUtils.getTopicId(ATKTopics.TOPIC_KYC) });
+        topicFilter[1] =
+            ExpressionNode({ nodeType: ExpressionType.TOPIC, value: systemUtils.getTopicId(ATKTopics.TOPIC_AML) });
+        topicFilter[2] = ExpressionNode({ nodeType: ExpressionType.AND, value: 0 });
         topicFilter[3] = ExpressionNode({
             nodeType: ExpressionType.TOPIC,
             value: systemUtils.getTopicId(ATKTopics.TOPIC_COLLATERAL)
         });
-        topicFilter[4] = ExpressionNode({nodeType: ExpressionType.OR, value: 0});
+        topicFilter[4] = ExpressionNode({ nodeType: ExpressionType.OR, value: 0 });
 
         InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
             .InvestorCountConfig({
