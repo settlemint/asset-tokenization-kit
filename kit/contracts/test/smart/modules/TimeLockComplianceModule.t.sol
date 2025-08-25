@@ -491,19 +491,52 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         assertEq(module.getAvailableBalance(address(smartToken), user1, defaultParamsEncoded), 0);
     }
 
-    // ============ Exemption Tests (Placeholder) ============
+    // ============ Exemption Tests ============
 
-    function test_TimeLock_WithExemptions_Placeholder() public pure {
-        // TODO: Implement exemption testing once ClaimUtils supports custom topic IDs
-        // For now, this test demonstrates the exemption structure
-        TimeLockComplianceModule.TimeLockParams memory params = TimeLockComplianceModule.TimeLockParams({
+    function test_TimeLock_WithExemptions() public {
+        // Create time-lock params with secondary sale approval exemption
+        TimeLockComplianceModule.TimeLockParams memory paramsWithExemption = TimeLockComplianceModule.TimeLockParams({
             holdPeriod: ONE_YEAR,
             allowExemptions: true,
             exemptionExpression: _secondarySaleApprovalExpression()
         });
+        bytes memory paramsEncoded = abi.encode(paramsWithExemption);
 
-        // This would work if we had a way to issue the claim
-        assertEq(params.allowExemptions, true);
-        assertEq(params.exemptionExpression.length, 1);
+        // Create initial batch for user1
+        vm.prank(address(smartToken));
+        module.created(address(smartToken), user1, TEST_VALUE, paramsEncoded);
+
+        // Without exemption, transfer should fail immediately
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector,
+                "Insufficient unlocked tokens available"
+            )
+        );
+        module.canTransfer(address(smartToken), user1, user2, TEST_VALUE, paramsEncoded);
+
+        // Issue secondary sale approval claim to user1
+        claimUtils.issueCustomClaim(user1, 7, "Secondary Sale Approved by Issuer");
+
+        // Now transfer should be allowed even during lock period (exemption applies)
+        module.canTransfer(address(smartToken), user1, user2, TEST_VALUE, paramsEncoded);
+
+        // Test that user2 (without exemption) still cannot transfer after receiving tokens
+        vm.prank(address(smartToken));
+        module.transferred(address(smartToken), user1, user2, TEST_VALUE, paramsEncoded);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector,
+                "Insufficient unlocked tokens available"
+            )
+        );
+        module.canTransfer(address(smartToken), user2, user1, TEST_VALUE, paramsEncoded);
+
+        // Issue exemption to user2 as well
+        claimUtils.issueCustomClaim(user2, 7, "Secondary Sale Approved by Issuer");
+
+        // Now user2 should also be able to transfer
+        module.canTransfer(address(smartToken), user2, user1, TEST_VALUE, paramsEncoded);
     }
 }
