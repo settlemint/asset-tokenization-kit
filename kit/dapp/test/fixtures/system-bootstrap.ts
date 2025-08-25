@@ -127,7 +127,22 @@ export async function bootstrapTokenFactories(
       `Token factories attempted: ${nonExistingFactories.length}, succeeded: ${successfulCreations}`
     );
   }
-  console.log("Token factories created");
+  console.log("Token factories created", {
+    created: result.tokenFactories.map((f) => {
+      return {
+        typeId: f.typeId,
+        address: f.id,
+        name: f.name,
+      };
+    }),
+    existing: tokenFactories.map((f) => {
+      return {
+        typeId: f.typeId,
+        address: f.id,
+        name: f.name,
+      };
+    }),
+  });
 }
 
 export async function bootstrapAddons(orpClient: OrpcClient) {
