@@ -50,7 +50,13 @@ export interface CollateralUpdateParams {
     secretVerificationCode: string;
     verificationType?: "OTP" | "PINCODE" | "SECRET_CODES";
   };
-  portalClient: any;
+  portalClient: {
+    mutate: (
+      mutation: string,
+      variables: Record<string, unknown>,
+      context?: Record<string, unknown>
+    ) => Promise<unknown>;
+  };
 }
 
 /**

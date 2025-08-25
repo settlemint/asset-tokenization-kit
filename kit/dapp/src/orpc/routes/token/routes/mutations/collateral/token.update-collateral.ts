@@ -150,7 +150,7 @@ export const updateCollateral = tokenRouter.token.updateCollateral
       const messageHash = keccak256(
         encodePacked(
           ["address", "uint256", "bytes"],
-          [onchainID as `0x${string}`, BigInt(COLLATERAL_TOPIC), claimData]
+          [onchainID, BigInt(COLLATERAL_TOPIC), claimData]
         )
       );
 

@@ -181,7 +181,7 @@ export function CollateralSheet({
                 walletVerification: verification,
               });
 
-              toast.promise(promise, {
+              await toast.promise(promise, {
                 loading: t("common:saving"),
                 success: t("tokens:actions.collateral.success"),
                 error: t("common:error"),
