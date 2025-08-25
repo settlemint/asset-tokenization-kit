@@ -93,6 +93,10 @@ export const bondCreateHandler = async (
     { context: requestContext }
   );
   const denominationAssetDecimals = denominationAsset.decimals;
+  const faceValue = parseUnits(
+    input.faceValue.toString(),
+    denominationAssetDecimals
+  ).toString();
 
   // DELEGATION PATTERN: createToken base handler manages verification flow
   // WHY: Consistent verification handling across all token types while allowing
@@ -109,12 +113,7 @@ export const bondCreateHandler = async (
         decimals: input.decimals,
         countryCode: input.countryCode,
         cap,
-        // FACE VALUE: Raw units of denomination asset (NOT bond token units)
-        // The subgraph will use the denomination asset's decimals for proper scaling
-        faceValue: parseUnits(
-          input.faceValue.toString(),
-          denominationAssetDecimals
-        ).toString(),
+        faceValue,
         maturityDate: input.maturityDate,
         denominationAsset: input.denominationAsset,
         initialModulePairs: input.initialModulePairs.map((pair) => ({
