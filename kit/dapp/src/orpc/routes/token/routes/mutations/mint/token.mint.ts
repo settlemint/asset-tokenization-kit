@@ -183,6 +183,7 @@ export const mint = tokenRouter.token.mint
     // Recipients and amounts arrays enable both single and batch operations
     const { contract, walletVerification, recipients, amounts } = input;
     const { auth, token } = context;
+    const tokenDecimals = token.decimals;
 
     // OPERATION CLASSIFICATION: Determine optimal minting strategy
     // WHY: Single operations use different GraphQL mutations for gas efficiency
@@ -211,7 +212,7 @@ export const mint = tokenRouter.token.mint
       // BATCH MINT EXECUTION: Submit batch minting transaction
       // WHY: Single transaction for multiple recipients provides gas efficiency
       // Amount conversion to string matches GraphQL BigInt scalar requirements
-      const tokenDecimals = token.decimals;
+
       await context.portalClient.mutate(
         TOKEN_BATCH_MINT_MUTATION,
         {
@@ -254,7 +255,7 @@ export const mint = tokenRouter.token.mint
           address: contract,
           from: sender.wallet,
           to,
-          amount: amount.toString(),
+          amount: parseUnits(amount.toString(), tokenDecimals).toString(),
         },
         {
           sender: sender,

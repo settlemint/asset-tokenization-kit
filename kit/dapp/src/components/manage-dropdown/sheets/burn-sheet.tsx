@@ -42,6 +42,13 @@ export function BurnSheet({
             input: { tokenAddress: asset.id },
           }).queryKey,
         });
+        
+        // Refresh holders data to show updated balances
+        await qc.invalidateQueries({
+          queryKey: orpc.token.holders.queryOptions({
+            input: { tokenAddress: asset.id },
+          }).queryKey,
+        });
       },
     })
   );

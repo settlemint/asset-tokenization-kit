@@ -80,6 +80,13 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
             input: { tokenAddress: asset.id },
           }).queryKey,
         });
+        
+        // PERFORMANCE: Refresh holders data to show updated balances
+        await qc.invalidateQueries({
+          queryKey: orpc.token.holders.queryOptions({
+            input: { tokenAddress: asset.id },
+          }).queryKey,
+        });
       },
     })
   );
