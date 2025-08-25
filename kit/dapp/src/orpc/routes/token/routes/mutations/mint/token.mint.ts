@@ -42,6 +42,7 @@ import { tokenRouter } from "@/orpc/procedures/token.router";
 import { read } from "@/orpc/routes/token/routes/token.read";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { call } from "@orpc/server";
+import { parseUnits } from "viem";
 
 /**
  * GraphQL mutation for single-recipient token minting.
@@ -181,7 +182,7 @@ export const mint = tokenRouter.token.mint
     // WHY: Type-safe extraction ensures all required parameters are present
     // Recipients and amounts arrays enable both single and batch operations
     const { contract, walletVerification, recipients, amounts } = input;
-    const { auth } = context;
+    const { auth, token } = context;
 
     // OPERATION CLASSIFICATION: Determine optimal minting strategy
     // WHY: Single operations use different GraphQL mutations for gas efficiency
@@ -210,13 +211,16 @@ export const mint = tokenRouter.token.mint
       // BATCH MINT EXECUTION: Submit batch minting transaction
       // WHY: Single transaction for multiple recipients provides gas efficiency
       // Amount conversion to string matches GraphQL BigInt scalar requirements
+      const tokenDecimals = token.decimals;
       await context.portalClient.mutate(
         TOKEN_BATCH_MINT_MUTATION,
         {
           address: contract,
           from: sender.wallet,
           toList: recipients,
-          amounts: amounts.map((a) => a.toString()),
+          amounts: amounts.map((a) =>
+            parseUnits(a.toString(), tokenDecimals).toString()
+          ),
         },
         {
           sender: sender,
