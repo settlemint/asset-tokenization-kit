@@ -2,8 +2,11 @@ import { Bytes, store } from "@graphprotocol/graph-ts";
 import {
   ComplianceModule,
   ComplianceModuleParameters,
+  ExpressionNode,
+  InvestorCountParams,
   TokenSupplyLimitParams,
 } from "../../../generated/schema";
+import { fetchTopicScheme } from "../../topic-scheme-registry/fetch/topic-scheme";
 import { getEncodedTypeId } from "../../type-identifier/type-identifier";
 import {
   decodeAddressListParams,
@@ -17,6 +20,10 @@ import {
   decodeExpressionParams,
   isIdentityVerificationComplianceModule,
 } from "../modules/identity-verification-compliance-module";
+import {
+  decodeInvestorCountParams,
+  isInvestorCountComplianceModule,
+} from "../modules/investor-count-compliance-module";
 import {
   decodeTokenSupplyLimitParams,
   isTokenSupplyLimitComplianceModule,
@@ -95,6 +102,79 @@ export function updateComplianceModuleParameters(
       complianceModuleParameters.tokenSupplyLimit = null;
     }
   }
+  if (
+    isInvestorCountComplianceModule(getEncodedTypeId(complianceModule.typeId))
+  ) {
+    const decoded = decodeInvestorCountParams(encodedParams);
+    let icp = InvestorCountParams.load(complianceModuleParameters.id);
+    if (decoded !== null) {
+      if (icp === null) {
+        icp = new InvestorCountParams(complianceModuleParameters.id);
+        icp.parameters = complianceModuleParameters.id;
+      }
+      icp.maxInvestors = decoded.maxInvestors;
+      icp.global = decoded.global;
+      icp.countryCodes = decoded.countryCodes;
+      icp.countryLimits = decoded.countryLimits;
+      icp.save();
+
+      // Create ExpressionNode entities for the topic filter
+      // First clear any existing nodes for this InvestorCountParams
+      clearInvestorCountExpressionNodes(icp);
+
+      // Then create new nodes
+      for (let i = 0; i < decoded.topicFilter.length; i++) {
+        const node = decoded.topicFilter[i];
+        const nodeId = icp.id.concat(Bytes.fromI32(i));
+
+        const expressionNode = new ExpressionNode(nodeId);
+        expressionNode.investorCountParams = icp.id;
+        expressionNode.index = i;
+
+        // Set node type based on the enum value
+        if (node.nodeType === 0) {
+          expressionNode.nodeType = "TOPIC";
+          // For TOPIC nodes, link to TopicScheme if needed
+          const topicScheme = fetchTopicScheme(node.value);
+          expressionNode.topicScheme = topicScheme.id;
+        } else if (node.nodeType === 1) {
+          expressionNode.nodeType = "AND";
+        } else if (node.nodeType === 2) {
+          expressionNode.nodeType = "OR";
+        } else if (node.nodeType === 3) {
+          expressionNode.nodeType = "NOT";
+        }
+
+        expressionNode.save();
+      }
+
+      complianceModuleParameters.investorCount = icp.id;
+    } else {
+      // Clear if not decodable
+      if (icp !== null) {
+        store.remove("InvestorCountParams", icp.id.toHexString());
+      }
+      complianceModuleParameters.investorCount = null;
+    }
+  }
 
   complianceModuleParameters.save();
+}
+
+function clearInvestorCountExpressionNodes(
+  investorCountParams: InvestorCountParams
+): void {
+  // Load and remove existing expression nodes for InvestorCountParams
+  // Similar to clearExpressionNodes but for investorCountParams
+  for (let i = 0; i < 100; i++) {
+    // Assume max 100 nodes
+    const nodeId = investorCountParams.id.concat(Bytes.fromI32(i));
+    const nodeIdHex = nodeId.toHexString();
+
+    if (ExpressionNode.load(nodeId) !== null) {
+      store.remove("ExpressionNode", nodeIdHex);
+    } else {
+      break; // No more nodes found
+    }
+  }
 }

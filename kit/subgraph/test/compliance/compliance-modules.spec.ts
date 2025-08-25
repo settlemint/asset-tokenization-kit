@@ -58,6 +58,11 @@ describe("Compliance Modules", () => {
         typeId: "TokenSupplyLimitComplianceModule",
         globalConfigs: expect.any(Array),
       },
+      {
+        name: "Investor Count Compliance Module",
+        typeId: "InvestorCountComplianceModule",
+        globalConfigs: expect.any(Array),
+      },
     ]);
   });
 

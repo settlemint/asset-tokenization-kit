@@ -117,6 +117,7 @@ const CONTRACT_ADDRESSES = {
     "0x5e771e1417100000000000000000000000020105",
   TokenSupplyLimitComplianceModule:
     "0x5e771e1417100000000000000000000000020106",
+  InvestorCountComplianceModule: "0x5e771e1417100000000000000000000000020107",
 
   // Addon factory implementations
   ATKFixedYieldScheduleFactoryImplementation:
@@ -203,6 +204,8 @@ const CONTRACT_FILES = {
     "contracts/smart/modules/IdentityAllowListComplianceModule.sol",
   TokenSupplyLimitComplianceModule:
     "contracts/smart/modules/TokenSupplyLimitComplianceModule.sol",
+  InvestorCountComplianceModule:
+    "contracts/smart/modules/InvestorCountComplianceModule.sol",
 
   // Addon factory implementations
   ATKFixedYieldScheduleFactoryImplementation:
