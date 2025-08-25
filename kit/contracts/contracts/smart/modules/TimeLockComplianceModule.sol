@@ -17,9 +17,6 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
     /// @notice Unique type identifier for this compliance module
     bytes32 public constant TYPE_ID = keccak256("TimeLockComplianceModule");
 
-    /// @notice Claim topic for secondary sale approval exemption
-    uint256 public constant TOPIC_SECONDARY_SALE_APPROVED = 7;
-
     /// @notice Configuration parameters for time-lock enforcement
     /// @dev This struct defines how holding periods and exemptions are enforced for a token
     struct TimeLockParams {

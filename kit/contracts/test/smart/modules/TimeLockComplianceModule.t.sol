@@ -33,7 +33,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         ExpressionNode[] memory expression = new ExpressionNode[](1);
         expression[0] = ExpressionNode({
             nodeType: ExpressionType.TOPIC,
-            value: 7 // TOPIC_SECONDARY_SALE_APPROVED
+            value: 7 // Custom topic ID for secondary sale approval
         });
         return expression;
     }
@@ -61,7 +61,6 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         assertEq(module.name(), "TimeLockComplianceModule");
         assertEq(module.typeId(), keccak256("TimeLockComplianceModule"));
         assertEq(module.TYPE_ID(), keccak256("TimeLockComplianceModule"));
-        assertEq(module.TOPIC_SECONDARY_SALE_APPROVED(), 7);
     }
 
     function test_TimeLock_SupportsInterface() public view {
