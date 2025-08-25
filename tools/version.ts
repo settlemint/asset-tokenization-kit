@@ -155,7 +155,8 @@ function updateWorkspaceDependencies(
 
   let workspaceCount = 0;
   for (const [depName, depVersion] of Object.entries(deps)) {
-    if (depVersion === "workspace:*") {
+    // Skip @atk/* packages - they should remain as workspace:*
+    if (depVersion === "workspace:*" && !depName.startsWith("@atk/")) {
       deps[depName] = newVersion;
       workspaceCount++;
     }
