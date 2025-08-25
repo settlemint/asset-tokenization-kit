@@ -1,13 +1,16 @@
 #!/usr/bin/env bun
 
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { Glob } from "bun";
 import { relative } from "path";
 import { parse, stringify } from "yaml";
 import { findTurboRoot } from "./root";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 
 const logger = createLogger({
-  level: (process.env.LOG_LEVEL as LogLevel) || (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || "info",
+  level:
+    (process.env.LOG_LEVEL as LogLevel) ||
+    (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ||
+    "info",
 });
 
 interface VersionInfo {
@@ -155,7 +158,7 @@ function updateWorkspaceDependencies(
 
   let workspaceCount = 0;
   for (const [depName, depVersion] of Object.entries(deps)) {
-    // Skip @atk/* packages - they should remain as workspace:*
+    // Skip @atk/* packages - not published to npm
     if (depVersion === "workspace:*" && !depName.startsWith("@atk/")) {
       deps[depName] = newVersion;
       workspaceCount++;
