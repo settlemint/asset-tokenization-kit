@@ -14,7 +14,10 @@ export function FormatCurrency({ value, options }: FormatValueProps) {
   if (typeof currency === "object" && "assetSymbol" in currency) {
     return (
       <span className="block tabular-nums">
-        <FormatNumber value={value} options={options} /> {currency.assetSymbol}
+        <div className="flex items-center gap-1">
+          <FormatNumber value={value} options={options} />
+          {currency.assetSymbol}
+        </div>
       </span>
     );
   }
