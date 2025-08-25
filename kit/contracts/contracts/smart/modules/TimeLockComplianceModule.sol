@@ -49,14 +49,14 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
     /// @param user The user address acquiring tokens
     /// @param amount The amount of tokens acquired
     /// @param timestamp When the tokens were acquired
-    event AcquisitionRecorded(address indexed token, address indexed user, uint256 amount, uint256 timestamp);
+    event AcquisitionRecorded(address indexed token, address indexed user, uint256 indexed amount, uint256 timestamp);
 
     /// @notice Emitted when locked tokens become available for transfer
     /// @param token The token contract address
     /// @param user The user address whose tokens are unlocked
     /// @param amount The amount of tokens unlocked
     /// @param timestamp When the tokens were unlocked
-    event TokensUnlocked(address indexed token, address indexed user, uint256 amount, uint256 timestamp);
+    event TokensUnlocked(address indexed token, address indexed user, uint256 indexed amount, uint256 timestamp);
 
     /// @notice Initialize the TimeLockComplianceModule
     /// @param _trustedForwarder Address of the trusted forwarder for meta transactions

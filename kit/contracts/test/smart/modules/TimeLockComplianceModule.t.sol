@@ -10,7 +10,7 @@ import { ExpressionNode, ExpressionType } from "../../../contracts/smart/interfa
 
 contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     TimeLockComplianceModule internal module;
-    
+
     // Test constants
     uint256 constant TEST_VALUE = 1000;
     uint256 constant ONE_DAY = 86400;
@@ -18,7 +18,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     uint256 constant SIX_MONTHS = 6 * ONE_MONTH;
     uint256 constant ONE_YEAR = 365 * ONE_DAY;
     uint256 constant TEN_YEARS = 10 * ONE_YEAR;
-    
+
     // Default test parameters
     TimeLockComplianceModule.TimeLockParams defaultParams;
     bytes defaultParamsEncoded;
@@ -41,11 +41,11 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     function setUp() public override {
         super.setUp();
         module = new TimeLockComplianceModule(address(0));
-        
+
         // Issue KYC/AML claims to test users
         claimUtils.issueAllClaims(user1);
         claimUtils.issueAllClaims(user2);
-        
+
         // Default 6-month lock period without exemptions
         defaultParams = TimeLockComplianceModule.TimeLockParams({
             holdPeriod: SIX_MONTHS,
@@ -79,7 +79,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
             exemptionExpression: _emptyExpression()
         });
         module.validateParameters(abi.encode(params));
-        
+
         // 1-year lock with exemptions
         params = TimeLockComplianceModule.TimeLockParams({
             holdPeriod: ONE_YEAR,
@@ -87,7 +87,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
             exemptionExpression: _secondarySaleApprovalExpression()
         });
         module.validateParameters(abi.encode(params));
-        
+
         // Minimum 1-second lock
         params = TimeLockComplianceModule.TimeLockParams({
             holdPeriod: 1,
@@ -95,7 +95,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
             exemptionExpression: _emptyExpression()
         });
         module.validateParameters(abi.encode(params));
-        
+
         // Maximum 10-year lock
         params = TimeLockComplianceModule.TimeLockParams({
             holdPeriod: TEN_YEARS,
@@ -107,7 +107,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
 
     function test_TimeLock_RevertWhen_EmptyParameters() public {
         bytes memory emptyParams = "";
-        
+
         vm.expectRevert(
             abi.encodeWithSelector(
                 ISMARTComplianceModule.InvalidParameters.selector,
@@ -123,7 +123,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
             allowExemptions: false,
             exemptionExpression: _emptyExpression()
         });
-        
+
         vm.expectRevert(
             abi.encodeWithSelector(
                 ISMARTComplianceModule.InvalidParameters.selector,
@@ -139,7 +139,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
             allowExemptions: false,
             exemptionExpression: _emptyExpression()
         });
-        
+
         vm.expectRevert(
             abi.encodeWithSelector(
                 ISMARTComplianceModule.InvalidParameters.selector,
@@ -171,7 +171,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         // Create initial batch for user1
         vm.prank(address(smartToken));
         module.created(address(smartToken), user1, TEST_VALUE, defaultParamsEncoded);
-        
+
         // Try to transfer immediately (should fail)
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -180,7 +180,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
             )
         );
         module.canTransfer(address(smartToken), user1, user2, TEST_VALUE, defaultParamsEncoded);
-        
+
         // Try to transfer after 3 months (still locked)
         vm.warp(block.timestamp + 3 * ONE_MONTH);
         vm.expectRevert(
@@ -196,10 +196,10 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         // Create initial batch for user1
         vm.prank(address(smartToken));
         module.created(address(smartToken), user1, TEST_VALUE, defaultParamsEncoded);
-        
+
         // Advance time past lock period
         vm.warp(block.timestamp + SIX_MONTHS + 1);
-        
+
         // Transfer should now be allowed
         module.canTransfer(address(smartToken), user1, user2, TEST_VALUE, defaultParamsEncoded);
     }
@@ -208,10 +208,10 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         // Create initial batch for user1
         vm.prank(address(smartToken));
         module.created(address(smartToken), user1, TEST_VALUE, defaultParamsEncoded);
-        
+
         // Advance time past lock period
         vm.warp(block.timestamp + SIX_MONTHS + 1);
-        
+
         // Partial transfer should be allowed
         module.canTransfer(address(smartToken), user1, user2, TEST_VALUE / 2, defaultParamsEncoded);
     }
@@ -221,22 +221,22 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TimeLock_FIFO_MultipleBatches() public {
         uint256 startTime = 1000000;
         vm.warp(startTime);
-        
+
         // Create first batch (1000 tokens)
         vm.prank(address(smartToken));
         module.created(address(smartToken), user1, 1000, defaultParamsEncoded);
-        
+
         // Advance 3 months and create second batch (500 tokens)
         vm.warp(startTime + 3 * ONE_MONTH);
         vm.prank(address(smartToken));
         module.transferred(address(smartToken), address(0), user1, 500, defaultParamsEncoded);
-        
+
         // Advance 3 more months (first batch should be unlocked at 6 months)
         vm.warp(startTime + 6 * ONE_MONTH + 1);
-        
+
         // Should be able to transfer 1000 tokens (first batch only)
         module.canTransfer(address(smartToken), user1, user2, 1000, defaultParamsEncoded);
-        
+
         // Should fail for 1001 tokens (second batch still locked)
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -245,10 +245,10 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
             )
         );
         module.canTransfer(address(smartToken), user1, user2, 1001, defaultParamsEncoded);
-        
+
         // Advance to when both batches are unlocked
         vm.warp(startTime + 9 * ONE_MONTH + 1);
-        
+
         // Now should be able to transfer all 1500 tokens
         module.canTransfer(address(smartToken), user1, user2, 1500, defaultParamsEncoded);
     }
@@ -257,10 +257,10 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
 
     function test_TimeLock_Created_RecordsBatch() public {
         uint256 timestampBefore = block.timestamp;
-        
+
         vm.prank(address(smartToken));
         module.created(address(smartToken), user1, TEST_VALUE, defaultParamsEncoded);
-        
+
         // Check batch was recorded
         TimeLockComplianceModule.TokenBatch[] memory batches = module.getTokenBatches(address(smartToken), user1);
         assertEq(batches.length, 1);
@@ -272,22 +272,22 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         // First give user1 some tokens (simulate minting)
         vm.prank(address(smartToken));
         module.created(address(smartToken), user1, TEST_VALUE, defaultParamsEncoded);
-        
+
         // Advance time so tokens are unlocked
         vm.warp(block.timestamp + SIX_MONTHS + 1);
-        
+
         uint256 timestampBefore = block.timestamp;
-        
+
         // Now transfer from user1 to user2
         vm.prank(address(smartToken));
         module.transferred(address(smartToken), user1, user2, TEST_VALUE, defaultParamsEncoded);
-        
+
         // Check batch was recorded for recipient
         TimeLockComplianceModule.TokenBatch[] memory batches = module.getTokenBatches(address(smartToken), user2);
         assertEq(batches.length, 1);
         assertEq(batches[0].amount, TEST_VALUE);
         assertEq(batches[0].acquisitionTime, timestampBefore);
-        
+
         // Check user1's tokens were removed
         batches = module.getTokenBatches(address(smartToken), user1);
         assertEq(batches.length, 0);
@@ -295,11 +295,11 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
 
     function test_TimeLock_Transferred_FromMint() public {
         uint256 timestampBefore = block.timestamp;
-        
+
         // Transfer from address(0) simulates minting
         vm.prank(address(smartToken));
         module.transferred(address(smartToken), address(0), user2, TEST_VALUE, defaultParamsEncoded);
-        
+
         // Check batch was recorded for recipient
         TimeLockComplianceModule.TokenBatch[] memory batches = module.getTokenBatches(address(smartToken), user2);
         assertEq(batches.length, 1);
@@ -310,7 +310,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TimeLock_Transferred_IgnoresBurns() public {
         vm.prank(address(smartToken));
         module.transferred(address(smartToken), user1, address(0), TEST_VALUE, defaultParamsEncoded);
-        
+
         // Should not record batch for burn (to zero address)
         TimeLockComplianceModule.TokenBatch[] memory batches = module.getTokenBatches(address(smartToken), address(0));
         assertEq(batches.length, 0);
@@ -320,7 +320,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         // Try to call hooks from unauthorized address
         vm.expectRevert();
         module.created(address(smartToken), user1, TEST_VALUE, defaultParamsEncoded);
-        
+
         vm.expectRevert();
         module.transferred(address(smartToken), user1, user2, TEST_VALUE, defaultParamsEncoded);
     }
@@ -330,13 +330,13 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TimeLock_GetTokenBatches() public {
         // Create multiple batches
         vm.startPrank(address(smartToken));
-        
+
         module.created(address(smartToken), user1, 1000, defaultParamsEncoded);
         vm.warp(block.timestamp + 100);
         module.transferred(address(smartToken), address(0), user1, 500, defaultParamsEncoded);
-        
+
         vm.stopPrank();
-        
+
         TimeLockComplianceModule.TokenBatch[] memory batches = module.getTokenBatches(address(smartToken), user1);
         assertEq(batches.length, 2);
         assertEq(batches[0].amount, 1000);
@@ -346,12 +346,12 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TimeLock_GetTotalBalance() public {
         // Create multiple batches
         vm.startPrank(address(smartToken));
-        
+
         module.created(address(smartToken), user1, 1000, defaultParamsEncoded);
         module.transferred(address(smartToken), address(0), user1, 500, defaultParamsEncoded);
-        
+
         vm.stopPrank();
-        
+
         uint256 totalBalance = module.getTotalBalance(address(smartToken), user1);
         assertEq(totalBalance, 1500);
     }
@@ -359,21 +359,21 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TimeLock_GetAvailableBalance() public {
         uint256 startTime = 1000000;
         vm.warp(startTime);
-        
+
         // Create batches
         vm.startPrank(address(smartToken));
         module.created(address(smartToken), user1, 1000, defaultParamsEncoded);
-        
+
         vm.warp(startTime + 3 * ONE_MONTH);
         module.transferred(address(smartToken), address(0), user1, 500, defaultParamsEncoded);
         vm.stopPrank();
-        
+
         // At 6 months + 1, only first batch should be available
         vm.warp(startTime + SIX_MONTHS + 1);
         uint256 available = module.getAvailableBalance(address(smartToken), user1, defaultParamsEncoded);
         assertEq(available, 1000);
-        
-        // At 9 months + 1, both batches should be available  
+
+        // At 9 months + 1, both batches should be available
         vm.warp(startTime + 9 * ONE_MONTH + 1);
         available = module.getAvailableBalance(address(smartToken), user1, defaultParamsEncoded);
         assertEq(available, 1500);
@@ -382,20 +382,20 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TimeLock_GetRemainingLockTime() public {
         uint256 startTime = 1000000;
         vm.warp(startTime);
-        
+
         // Create batch
         vm.prank(address(smartToken));
         module.created(address(smartToken), user1, TEST_VALUE, defaultParamsEncoded);
-        
+
         // Initially should have full lock period remaining
         uint256 remaining = module.getRemainingLockTime(address(smartToken), user1, defaultParamsEncoded);
         assertEq(remaining, SIX_MONTHS);
-        
+
         // After 2 months, should have 4 months remaining
         vm.warp(startTime + 2 * ONE_MONTH);
         remaining = module.getRemainingLockTime(address(smartToken), user1, defaultParamsEncoded);
         assertEq(remaining, 4 * ONE_MONTH);
-        
+
         // After lock period, should be 0
         vm.warp(startTime + SIX_MONTHS + 1);
         remaining = module.getRemainingLockTime(address(smartToken), user1, defaultParamsEncoded);
@@ -414,23 +414,23 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         // Add module to token
         vm.startPrank(tokenIssuer);
         smartToken.addComplianceModule(address(module), defaultParamsEncoded);
-        
+
         // Mint tokens to user1 (creates first batch)
         smartToken.mint(user1, TEST_VALUE);
-        
+
         // Try to transfer immediately (should fail)
         vm.stopPrank();
         vm.prank(user1);
         vm.expectRevert();
         smartToken.transfer(user2, TEST_VALUE / 2);
-        
+
         // Advance time past lock period
         vm.warp(block.timestamp + SIX_MONTHS + 1);
-        
+
         // Transfer should now succeed
         vm.prank(user1);
         assertTrue(smartToken.transfer(user2, TEST_VALUE / 2));
-        
+
         // Verify user2 has new batch
         TimeLockComplianceModule.TokenBatch[] memory batches = module.getTokenBatches(address(smartToken), user2);
         assertEq(batches.length, 1);
@@ -440,25 +440,25 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TimeLock_Integration_FIFO_RealTransfer() public {
         vm.startPrank(tokenIssuer);
         smartToken.addComplianceModule(address(module), defaultParamsEncoded);
-        
+
         uint256 startTime = 1000000;
         vm.warp(startTime);
-        
+
         // Mint first batch (1000 tokens)
         smartToken.mint(user1, 1000);
-        
-        // Advance time and mint second batch (500 tokens)  
+
+        // Advance time and mint second batch (500 tokens)
         vm.warp(startTime + 3 * ONE_MONTH);
         smartToken.mint(user1, 500);
-        
+
         vm.stopPrank();
-        
+
         // At 6 months + 1, only first batch unlocked
         vm.warp(startTime + SIX_MONTHS + 1);
-        
+
         vm.prank(user1);
         assertTrue(smartToken.transfer(user2, 800)); // Should use from first batch
-        
+
         // Verify user1 has remaining first batch + locked second batch
         assertEq(module.getTotalBalance(address(smartToken), user1), 700);
         assertEq(module.getAvailableBalance(address(smartToken), user1, defaultParamsEncoded), 200);
@@ -469,15 +469,15 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TimeLock_EdgeCase_ExactLockExpiry() public {
         uint256 startTime = 1000000;
         vm.warp(startTime);
-        
+
         vm.prank(address(smartToken));
         module.created(address(smartToken), user1, TEST_VALUE, defaultParamsEncoded);
-        
+
         // At exact expiry time should fail
         vm.warp(startTime + SIX_MONTHS);
         vm.expectRevert();
         module.canTransfer(address(smartToken), user1, user2, TEST_VALUE, defaultParamsEncoded);
-        
+
         // One second after expiry should succeed
         vm.warp(startTime + SIX_MONTHS + 1);
         module.canTransfer(address(smartToken), user1, user2, TEST_VALUE, defaultParamsEncoded);
@@ -493,7 +493,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
 
     // ============ Exemption Tests (Placeholder) ============
 
-    function test_TimeLock_WithExemptions_Placeholder() public {
+    function test_TimeLock_WithExemptions_Placeholder() public pure {
         // TODO: Implement exemption testing once ClaimUtils supports custom topic IDs
         // For now, this test demonstrates the exemption structure
         TimeLockComplianceModule.TimeLockParams memory params = TimeLockComplianceModule.TimeLockParams({
@@ -501,7 +501,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
             allowExemptions: true,
             exemptionExpression: _secondarySaleApprovalExpression()
         });
-        
+
         // This would work if we had a way to issue the claim
         assertEq(params.allowExemptions, true);
         assertEq(params.exemptionExpression.length, 1);
