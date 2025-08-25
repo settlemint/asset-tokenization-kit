@@ -386,7 +386,7 @@ support:
     enabled: true
     image:
       repository: ghcr.io/stakater/reloader
-      tag: v1.4.6
+      tag: v1.4.7
 
   minio:
     enabled: true
