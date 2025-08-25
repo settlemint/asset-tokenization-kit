@@ -52,7 +52,7 @@
     "test": "turbo test ",
     "docker:codestudio": "bash tools/docker-codestudio.sh",
     "test:integration": "turbo test:integration ",
-    "publish": "turbo publish ",
+    "publish": "turbo publish",
     "test:e2e:ui": "bun run --cwd kit/e2e playwright test --config=playwright.ui.config.ts --project=ui-tests",
     "test:e2e:ui:debug": "bun run --cwd kit/e2e playwright test --config=playwright.ui.config.ts --ui",
     "test:e2e:api": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests",
