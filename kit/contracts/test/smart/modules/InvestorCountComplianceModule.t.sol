@@ -248,6 +248,34 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
         module.validateParameters(params);
     }
 
+    /// @dev Test: Duplicate country codes should be rejected to prevent ambiguous limits
+    function test_InvestorCount_RevertWhen_DuplicateCountryCodes() public {
+        uint16[] memory countryCodes = new uint16[](3);
+        countryCodes[0] = TestConstants.COUNTRY_CODE_US;
+        countryCodes[1] = TestConstants.COUNTRY_CODE_BE;
+        countryCodes[2] = TestConstants.COUNTRY_CODE_US; // Duplicate!
+
+        uint256[] memory countryLimits = new uint256[](3);
+        countryLimits[0] = 50;
+        countryLimits[1] = 30;
+        countryLimits[2] = 25; // Would be ambiguous with first US entry
+
+        InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
+            .InvestorCountConfig({
+            maxInvestors: 0,
+            global: false,
+            countryCodes: countryCodes,
+            countryLimits: countryLimits,
+            topicFilter: new ExpressionNode[](0)
+        });
+
+        bytes memory params = abi.encode(config);
+        vm.expectRevert(
+            abi.encodeWithSelector(ISMARTComplianceModule.InvalidParameters.selector, "Duplicate country codes are not allowed")
+        );
+        module.validateParameters(params);
+    }
+
     // ==================================================================================
     // BASIC TRANSFER TESTS
     // ==================================================================================

@@ -235,6 +235,17 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
             revert InvalidParameters("Must specify either global limit or country-specific limits");
         }
 
+        // Check for duplicate country codes
+        if (config.countryCodes.length > 1) {
+            for (uint256 i = 0; i < config.countryCodes.length - 1; i++) {
+                for (uint256 j = i + 1; j < config.countryCodes.length; j++) {
+                    if (config.countryCodes[i] == config.countryCodes[j]) {
+                        revert InvalidParameters("Duplicate country codes are not allowed");
+                    }
+                }
+            }
+        }
+
         // Validate country limit arrays match
         if (config.countryCodes.length != config.countryLimits.length) {
             revert InvalidParameters("Country codes and limits arrays must have same length");
@@ -338,17 +349,40 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
     /// @param _investor The investor address to remove
     /// @param config The compliance configuration
     function _removeInvestor(address _token, address _investor, InvestorCountConfig memory config) private {
-        // Get investor's country before removal
-        uint16 investorCountry = investorTrackers[_token].investorCountry[_investor];
-        if (investorCountry == 0 && config.global) {
-            investorCountry = globalInvestorTracker.investorCountry[_investor];
-        }
+        // Get investor's country using a helper function for clarity
+        uint16 investorCountry = _getStoredInvestorCountry(_token, _investor, config);
 
         // Update the appropriate tracker(s)
         _updateTracker(investorTrackers[_token], _investor, investorCountry, false, config);
         if (config.global) {
             _updateTracker(globalInvestorTracker, _investor, investorCountry, false, config);
         }
+    }
+
+    /// @notice Helper function to retrieve an investor's stored country code for removal
+    /// @dev Looks up country from token tracker first, then global tracker if needed
+    /// @param _token The token address
+    /// @param _investor The investor address
+    /// @param config The compliance configuration
+    /// @return The stored country code for the investor
+    function _getStoredInvestorCountry(
+        address _token,
+        address _investor,
+        InvestorCountConfig memory config
+    )
+        private
+        view
+        returns (uint16)
+    {
+        // First try to get country from token-specific tracker
+        uint16 investorCountry = investorTrackers[_token].investorCountry[_investor];
+        
+        // If not found and global tracking is enabled, check global tracker
+        if (investorCountry == 0 && config.global) {
+            investorCountry = globalInvestorTracker.investorCountry[_investor];
+        }
+        
+        return investorCountry;
     }
 
     /// @notice Updates a tracker with investor addition or removal
@@ -367,15 +401,8 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
     )
         private
     {
-        // Initialize country limits if needed
-        if (config.countryCodes.length > 0 && tracker.maxInvestorsPerCountry[_country] == 0) {
-            for (uint256 i = 0; i < config.countryCodes.length; i++) {
-                if (config.countryCodes[i] == _country) {
-                    tracker.maxInvestorsPerCountry[_country] = config.countryLimits[i];
-                    break;
-                }
-            }
-        }
+        // Initialize all country limits on first use if they haven't been set yet
+        _initializeCountryLimits(tracker, config);
 
         if (_isAddition && !tracker.investors[_investor]) {
             // Add new investor
@@ -469,6 +496,28 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
         }
 
         return 0; // No limit for this country
+    }
+
+    /// @notice Initializes country limits for a tracker if not already done
+    /// @dev Sets all country limits from config to avoid lazy initialization inconsistencies
+    /// @param tracker The storage reference to the tracker to initialize
+    /// @param config The compliance configuration containing country codes and limits
+    function _initializeCountryLimits(
+        InvestorTracker storage tracker,
+        InvestorCountConfig memory config
+    )
+        private
+    {
+        // Only initialize if we have country limits configured and they haven't been set yet
+        if (config.countryCodes.length > 0) {
+            // Check if already initialized by testing the first country code
+            if (config.countryCodes.length > 0 && tracker.maxInvestorsPerCountry[config.countryCodes[0]] == 0) {
+                // Initialize all country limits at once
+                for (uint256 i = 0; i < config.countryCodes.length; i++) {
+                    tracker.maxInvestorsPerCountry[config.countryCodes[i]] = config.countryLimits[i];
+                }
+            }
+        }
     }
 
     /// @notice Gets an investor's country code from the identity registry
