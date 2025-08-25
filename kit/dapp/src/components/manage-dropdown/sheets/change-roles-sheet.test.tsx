@@ -160,6 +160,11 @@ const mockToken = {
   pausable: { paused: false },
   capped: null,
   createdBy: { id: "0xowner" },
+  account: {
+    identity: {
+      id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+    },
+  },
   redeemable: null,
   bond: null,
   fund: null,
