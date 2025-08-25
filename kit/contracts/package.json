@@ -26,14 +26,14 @@
   "dependencies": {
     "@nomicfoundation/hardhat-ignition": "0.15.13",
     "merkletreejs": "0.5.2",
-    "viem": "2.34.0"
+    "viem": "2.35.1"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-foundry": "1.2.0",
     "@nomicfoundation/hardhat-ignition-viem": "0.15.13",
     "@nomiclabs/hardhat-solhint": "4.1.0",
     "hardhat": "2.26.3",
-    "solhint": "6.0.0",
+    "solhint": "6.0.1",
     "ts-node": "10.9.2"
   },
   "peerDependencies": {}

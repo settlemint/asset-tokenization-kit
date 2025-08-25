@@ -1,6 +1,3 @@
-import { PauseUnpauseConfirmationSheet } from "./sheets/pause-unpause-confirmation-sheet";
-import { MintSheet } from "./sheets/mint-sheet";
-import { CollateralSheet } from "./sheets/collateral-sheet";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,15 +7,32 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { ChevronDown, Pause, Play, Plus, Shield } from "lucide-react";
+import {
+  ChevronDown,
+  Pause,
+  Play,
+  Plus,
+  Shield,
+  TrendingUp,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { CollateralSheet } from "./sheets/collateral-sheet";
+import { MintSheet } from "./sheets/mint-sheet";
+import { PauseUnpauseConfirmationSheet } from "./sheets/pause-unpause-confirmation-sheet";
+import { SetYieldScheduleSheet } from "./sheets/set-yield-schedule-sheet";
 
 interface ManageAssetDropdownProps {
   asset: Token; // Keep Token type to maintain API compatibility
 }
 
-type Action = "pause" | "unpause" | "mint" | "collateral" | "viewEvents";
+type Action =
+  | "pause"
+  | "unpause"
+  | "mint"
+  | "setYieldSchedule"
+  | "collateral"
+  | "viewEvents";
 
 function isCurrentAction({
   target,
@@ -33,12 +47,10 @@ function isCurrentAction({
 export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   const { t } = useTranslation(["tokens", "common"]);
   const [openAction, setOpenAction] = useState<Action | null>(null);
-
   const isPaused = asset.pausable?.paused ?? false;
-  // Check if asset has pausable capability (handles both null and undefined)
-  const hasPausableCapability = asset.pausable != null;
-
   const actions = useMemo(() => {
+    // Check if asset has pausable capability (handles both null and undefined)
+    const hasPausableCapability = asset.pausable != null;
     const arr: Array<{
       id: string;
       label: string;
@@ -60,14 +72,29 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
     }
 
     // Mint only visible if user can mint and token is not paused
-    const canMint =
-      (asset.userPermissions?.actions?.mint ?? false) && !isPaused;
+    const canMint = asset.userPermissions?.actions?.mint && !isPaused;
     if (canMint) {
       arr.push({
         id: "mint",
         label: t("tokens:actions.mint.label"),
         icon: Plus,
         openAction: "mint",
+        disabled: false,
+      });
+    }
+
+    // Set yield schedule only visible for bond tokens without existing schedule
+    const canSetYieldSchedule =
+      asset.type === "bond" &&
+      !asset.yield?.schedule &&
+      asset.userPermissions?.actions?.setYieldSchedule &&
+      !isPaused;
+    if (canSetYieldSchedule) {
+      arr.push({
+        id: "setYieldSchedule",
+        label: t("tokens:actions.setYieldSchedule.label"),
+        icon: TrendingUp,
+        openAction: "setYieldSchedule",
         disabled: false,
       });
     }
@@ -86,10 +113,11 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
 
     return arr;
   }, [
-    isPaused,
     t,
-    hasPausableCapability,
-    asset.userPermissions?.actions?.mint,
+    asset.pausable,
+    asset.type,
+    asset.yield?.schedule,
+    asset.userPermissions?.actions,
     asset.collateral,
   ]);
 
@@ -131,25 +159,29 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {hasPausableCapability && (
-        <PauseUnpauseConfirmationSheet
-          open={isCurrentAction({
-            target: isPaused ? "unpause" : "pause",
-            current: openAction,
-          })}
-          onOpenChange={onActionOpenChange}
-          asset={asset}
-        />
-      )}
+      <PauseUnpauseConfirmationSheet
+        open={isCurrentAction({
+          target: isPaused ? "unpause" : "pause",
+          current: openAction,
+        })}
+        onOpenChange={onActionOpenChange}
+        asset={asset}
+      />
 
-      {/* Mint */}
-      {(asset.userPermissions?.actions?.mint ?? false) && !isPaused && (
-        <MintSheet
-          open={isCurrentAction({ target: "mint", current: openAction })}
-          onOpenChange={onActionOpenChange}
-          asset={asset}
-        />
-      )}
+      <MintSheet
+        open={isCurrentAction({ target: "mint", current: openAction })}
+        onOpenChange={onActionOpenChange}
+        asset={asset}
+      />
+
+      <SetYieldScheduleSheet
+        open={isCurrentAction({
+          target: "setYieldSchedule",
+          current: openAction,
+        })}
+        onOpenChange={onActionOpenChange}
+        asset={asset}
+      />
 
       {/* Collateral Management */}
       {asset.collateral != null && (

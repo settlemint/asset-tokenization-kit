@@ -545,6 +545,8 @@ type ComplianceModuleParameters @entity(immutable: false) {
   countries: [Int!]
   # Expression tree for complex rules
   expression: [ExpressionNode!] @derivedFrom(field: "parameters")
+  # Token supply limit parameters (if module type matches)
+  tokenSupplyLimit: TokenSupplyLimitParams
 }
 
 type ExpressionNode @entity(immutable: true) {
@@ -594,6 +596,24 @@ enum TokenExtension {
   REDEEMABLE
   # Yield generation features
   YIELD
+}
+
+
+type TokenSupplyLimitParams @entity(immutable: false) {
+  # Unique identifier - same as ComplianceModuleParameters.id
+  id: Bytes!
+  # Back-reference to the owning parameters entity
+  parameters: ComplianceModuleParameters!
+  # Maximum allowed supply (exact units)
+  maxSupplyExact: BigInt!
+  # Tracking period length in days
+  periodLengthDays: Int!
+  # Whether rolling window is used
+  rolling: Boolean!
+  # Whether base price conversion is used
+  useBasePrice: Boolean!
+  # Whether tracking is global across tokens
+  global: Boolean!
 }
 
 type TokenFactoryRegistry @entity(immutable: false) {
@@ -1588,3 +1608,4 @@ type TokenDistributionStats
   totalValueSegment5Exact: BigInt!
     @aggregate(fn: "last", arg: "totalValueSegment5Exact")
 }
+

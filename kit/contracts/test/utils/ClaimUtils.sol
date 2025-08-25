@@ -208,9 +208,35 @@ contract ClaimUtils is Test {
     )
         public
     {
+        // Standard ABI encoding for collateral data
         bytes memory encodedData = abi.encode(amount, expiryTimestamp);
         _issueTokenIdentityClaimInternal(
             tokenAddress_, tokenOwner_, getTopicId(ATKTopics.TOPIC_COLLATERAL), encodedData
+        );
+    }
+
+    /**
+     * @notice Issues a base price claim from the configured issuer to the token's identity.
+     * @dev The base price claim is typically added to the *token's* identity, not a client's.
+     * @param tokenAddress_ The identity contract address associated with the SMART token.
+     * @param tokenOwner_ The wallet address of the token owner.
+     * @param price The base price.
+     * @param currency The currency of the base price.
+     * @param decimals The number of decimals of the base price.
+     */
+    function issueBasePriceClaim(
+        address tokenAddress_,
+        address tokenOwner_,
+        uint256 price,
+        string memory currency,
+        uint8 decimals
+    )
+        public
+    {
+        // Standard ABI encoding for base price data
+        bytes memory encodedData = abi.encode(price, currency, decimals);
+        _issueTokenIdentityClaimInternal(
+            tokenAddress_, tokenOwner_, getTopicId(ATKTopics.TOPIC_BASE_PRICE), encodedData
         );
     }
 

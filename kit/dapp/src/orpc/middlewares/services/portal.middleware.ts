@@ -38,28 +38,16 @@ import {
   getEthereumHash as getTransactionHash,
   type EthereumHash as TransactionHash,
 } from "@atk/zod/ethereum-hash";
+import {
+  handleWalletVerificationChallenge,
+  WalletVerificationChallengeError,
+} from "@settlemint/sdk-portal";
 import type { TadaDocumentNode } from "gql.tada";
 import { getOperationAST, print } from "graphql";
 import type { Variables } from "graphql-request";
-import { createHash, randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { baseRouter } from "../../procedures/base.router";
-
-const CreateVerificationChallengeMutation = portalGraphql(`
-  mutation CreateVerificationChallenge($userWalletAddress: String!, $verificationType: WalletVerificationType!) {
-    createVerificationChallenge(
-      userWalletAddress: $userWalletAddress
-      verificationType: $verificationType
-    ) {
-      id
-      name
-      verificationType
-      challenge {
-        salt
-        secret
-      }
-    }
-  }`);
 
 const GET_TRANSACTION_QUERY = portalGraphql(`
   query GetTransaction($transactionHash: String!) {
@@ -113,34 +101,6 @@ function getOperationName<TResult, TVariables extends Variables>(
     // If parsing fails, return undefined
     return undefined;
   }
-}
-
-/**
- * Generates a challenge response for pincode verification using cryptographic hashing.
- *
- * @remarks
- * SECURITY: Implements two-phase hashing to prevent rainbow table attacks and ensure
- * verification codes cannot be reverse-engineered from network traffic. The salt
- * prevents precomputed hash attacks, while the secret adds server-side entropy.
- *
- * @param pincode - User's numerical pincode (validated elsewhere for length/format)
- * @param salt - Random salt from Portal verification challenge (prevents rainbow tables)
- * @param secret - Server-generated secret from Portal (adds entropy, prevents replay attacks)
- * @returns SHA256 hash of the salted pincode combined with secret for Portal verification
- */
-function generatePincodeResponse(
-  pincode: string,
-  salt: string,
-  secret: string
-): string {
-  // PHASE 1: Salt the pincode to prevent rainbow table attacks
-  const hashedPincode = createHash("sha256")
-    .update(`${salt}${pincode}`)
-    .digest("hex");
-  // PHASE 2: Combine with server secret to prevent replay attacks
-  return createHash("sha256")
-    .update(`${hashedPincode}_${secret}`)
-    .digest("hex");
 }
 
 /**
@@ -231,7 +191,8 @@ function createValidatedPortalClient(
       // but we enrich them here based on the user's verification type to ensure secure operations.
       // This pattern keeps verification logic centralized while making GraphQL schema flexible.
       // IMPORTANT: Create a deep copy to prevent concurrent mutations from sharing state
-      let enrichedVariables = { ...variables } as unknown as TVariables;
+      let enrichedVariables = { ...variables } as typeof variables &
+        Awaited<ReturnType<typeof handleWalletVerificationChallenge>>;
 
       if (walletVerification) {
         const { sender, code, type } = walletVerification;
@@ -255,64 +216,32 @@ function createValidatedPortalClient(
         // The challenge provides a unique ID and cryptographic parameters for secure verification
         const userWalletAddress = variables.from;
 
-        const challengeResult = await portalClient.request(
-          CreateVerificationChallengeMutation,
-          {
+        let challengeResult: Awaited<
+          ReturnType<typeof handleWalletVerificationChallenge>
+        >;
+        try {
+          challengeResult = await handleWalletVerificationChallenge({
+            portalClient,
+            portalGraphql,
             userWalletAddress,
+            verificationId,
             verificationType: type,
-          },
-          {
-            "x-request-id": requestId,
-          }
-        );
-
-        if (!challengeResult.createVerificationChallenge) {
-          throw errors.PORTAL_ERROR({
-            message: "Failed to create verification challenge",
-            data: {
-              document: print(document),
-              variables,
-              responseValidation: `${type} verification failed`,
-            },
+            code,
+            requestId,
           });
-        }
-
-        const challenge = challengeResult.createVerificationChallenge;
-        const challengeId = challenge.id;
-
-        let challengeResponse: string;
-
-        if (type === "OTP") {
-          // VERIFICATION TYPE: Time-based One-Time Password (TOTP)
-          // WHY: OTP codes are validated directly by Portal without additional hashing
-          challengeResponse = code;
-        } else if (type === "SECRET_CODES") {
-          // VERIFICATION TYPE: Backup secret codes (12-word recovery phrases)
-          // WHY: Format with dash separator to match Portal's expected format
-          challengeResponse = code.replace(/(.{5})(?=.)/, "$1-");
-        } else {
-          // VERIFICATION TYPE: PINCODE (numerical PIN with cryptographic challenge)
-          // WHY: PINCODE requires a dynamic challenge-response protocol to prevent replay attacks.
-          // Portal generates a unique salt and secret for each verification attempt.
-          if (
-            !challenge.challenge ||
-            !challenge.challenge.salt ||
-            !challenge.challenge.secret
-          ) {
+        } catch (error: unknown) {
+          if (error instanceof WalletVerificationChallengeError) {
             throw errors.PORTAL_ERROR({
-              message: "Failed to create verification challenge",
+              message: error.message,
               data: {
                 document: print(document),
                 variables,
-                responseValidation: `${type} verification failed`,
+                responseValidation: `Wallet verification challenge failed: ${error.message}`,
               },
+              cause: error,
             });
           }
-          challengeResponse = generatePincodeResponse(
-            code,
-            challenge.challenge.salt,
-            challenge.challenge.secret
-          );
+          throw error;
         }
 
         // PARAMETER ENRICHMENT: Add verification data to mutation variables
@@ -322,9 +251,8 @@ function createValidatedPortalClient(
 
         enrichedVariables = {
           ...variables,
-          challengeId, // Portal expects the challenge ID from createVerificationChallenge
-          challengeResponse,
-        } as TVariables & { challengeId: string; challengeResponse: string };
+          ...challengeResult,
+        };
       }
 
       let result: TResult;
@@ -337,7 +265,7 @@ function createValidatedPortalClient(
             vars: V,
             headers?: Record<string, string>
           ) => Promise<D>
-        )(document, enrichedVariables, {
+        )(document, enrichedVariables as unknown as TVariables, {
           "x-request-id": requestId,
         });
       } catch (error) {

@@ -20,7 +20,7 @@ describe("Compliance Modules", () => {
     );
     const response = await theGraphClient.request(query, {});
     const complianceModules = response.complianceModules;
-    expect(complianceModules.length).toBe(6);
+    expect(complianceModules.length).toBe(7);
 
     expect(complianceModules).toEqual([
       {
@@ -51,6 +51,11 @@ describe("Compliance Modules", () => {
       {
         name: "Identity Verification Module",
         typeId: "SMARTIdentityVerificationComplianceModule",
+        globalConfigs: expect.any(Array),
+      },
+      {
+        name: "Token Supply Limit Compliance Module",
+        typeId: "TokenSupplyLimitComplianceModule",
         globalConfigs: expect.any(Array),
       },
     ]);
