@@ -6,6 +6,7 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
+import { addYears } from "date-fns";
 import { from } from "dnum";
 import { describe, expect, test } from "vitest";
 
@@ -39,7 +40,7 @@ describe("Token create", () => {
 
     const tokens = await client.token.list({});
     expect(tokens.length).toBeGreaterThan(0);
-    expect(tokens.find((t) => t.name === tokenData.name)).toEqual({
+    expect(tokens.find((t) => t.id === result.id)).toEqual({
       id: expect.any(String),
       createdAt: expect.any(Date),
       ...tokenData,
@@ -79,7 +80,7 @@ describe("Token create", () => {
     expect(result.symbol).toBe(fundData.symbol);
 
     const tokens = await client.token.list({});
-    const createdFund = tokens.find((t) => t.name === fundData.name);
+    const createdFund = tokens.find((t) => t.id === result.id);
     expect(createdFund).toBeDefined();
     expect(createdFund).toMatchObject({
       id: expect.any(String),
@@ -144,7 +145,7 @@ describe("Token create", () => {
 
     // Verify the bond appears in the token list
     const tokens = await client.token.list({});
-    const createdBond = tokens.find((t) => t.name === bondData.name);
+    const createdBond = tokens.find((t) => t.id === result.id);
     expect(createdBond).toBeDefined();
     expect(createdBond).toMatchObject({
       id: expect.any(String),
@@ -152,6 +153,64 @@ describe("Token create", () => {
       name: bondData.name,
       symbol: bondData.symbol,
     });
+  }, 100_000);
+
+  test("can create a bond with different decimals than denomination asset", async () => {
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+
+    // Create a USDC-like denomination asset with 6 decimals
+    const usdcData = {
+      type: "stablecoin" as const,
+      name: `Test USDC ${Date.now()}`,
+      symbol: "TUSDC",
+      decimals: 6, // USDC-like with 6 decimals
+      initialModulePairs: [],
+    };
+
+    const usdcResult = await client.token.create({
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
+      ...usdcData,
+      countryCode: "056",
+    });
+
+    expect(usdcResult).toBeDefined();
+    expect(usdcResult.id).toBeDefined();
+
+    // Create bond with 18 decimals but denomination asset has 6 decimals
+    // Face value should be interpreted in denomination asset units (6 decimals)
+    const bondData = {
+      type: "bond" as const,
+      name: `Test Bond Different Decimals ${Date.now()}`,
+      symbol: "TBDD",
+      decimals: 18, // Bond token has 18 decimals
+      cap: "1000000000000000000000000", // 1M bonds
+      faceValue: "1000", // 1000 USDC
+      maturityDate: addYears(new Date(), 1),
+      denominationAsset: usdcResult.id,
+      initialModulePairs: [],
+    };
+
+    const result = await client.token.create({
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
+      ...bondData,
+      countryCode: "056",
+    });
+
+    expect(result).toBeDefined();
+    expect(result.id).toBeDefined();
+    expect(result.type).toBe(bondData.type);
+    expect(result.name).toBe(bondData.name);
+    expect(result.symbol).toBe(bondData.symbol);
+
+    const token = await client.token.read({ tokenAddress: result.id });
+    expect(token.bond?.faceValue).toBe("1000");
   }, 100_000);
 
   test("can create an equity token", async () => {
@@ -183,7 +242,7 @@ describe("Token create", () => {
 
     // Verify the equity appears in the token list
     const tokens = await client.token.list({});
-    const createdEquity = tokens.find((t) => t.name === equityData.name);
+    const createdEquity = tokens.find((t) => t.id === result.id);
     expect(createdEquity).toBeDefined();
     expect(createdEquity).toMatchObject({
       id: expect.any(String),
@@ -222,7 +281,7 @@ describe("Token create", () => {
 
     // Verify the deposit appears in the token list
     const tokens = await client.token.list({});
-    const createdDeposit = tokens.find((t) => t.name === depositData.name);
+    const createdDeposit = tokens.find((t) => t.id === result.id);
     expect(createdDeposit).toBeDefined();
     expect(createdDeposit).toMatchObject({
       id: expect.any(String),
