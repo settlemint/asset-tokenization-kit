@@ -4,6 +4,7 @@ import {
   ComplianceModuleParameters,
   ExpressionNode,
   InvestorCountParams,
+  TimeLockParams,
   TokenSupplyLimitParams,
 } from "../../../generated/schema";
 import { fetchTopicScheme } from "../../topic-scheme-registry/fetch/topic-scheme";
@@ -24,6 +25,10 @@ import {
   decodeInvestorCountParams,
   isInvestorCountComplianceModule,
 } from "../modules/investor-count-compliance-module";
+import {
+  decodeTimeLockParams,
+  isTimeLockComplianceModule,
+} from "../modules/time-lock-compliance-module";
 import {
   decodeTokenSupplyLimitParams,
   isTokenSupplyLimitComplianceModule,
@@ -157,6 +162,59 @@ export function updateComplianceModuleParameters(
       complianceModuleParameters.investorCount = null;
     }
   }
+  if (
+    isTimeLockComplianceModule(getEncodedTypeId(complianceModule.typeId))
+  ) {
+    const decoded = decodeTimeLockParams(encodedParams);
+    let tlp = TimeLockParams.load(complianceModuleParameters.id);
+    if (decoded !== null) {
+      if (tlp === null) {
+        tlp = new TimeLockParams(complianceModuleParameters.id);
+        tlp.parameters = complianceModuleParameters.id;
+      }
+      tlp.holdPeriod = decoded.holdPeriod;
+      tlp.allowExemptions = decoded.allowExemptions;
+      tlp.save();
+
+      // Create ExpressionNode entities for the exemption expression
+      // First clear any existing nodes for this TimeLockParams
+      clearTimeLockExpressionNodes(tlp);
+
+      // Then create new nodes
+      for (let i = 0; i < decoded.exemptionExpression.length; i++) {
+        const node = decoded.exemptionExpression[i];
+        const nodeId = tlp.id.concat(Bytes.fromI32(i));
+
+        const expressionNode = new ExpressionNode(nodeId);
+        expressionNode.timeLockParams = tlp.id;
+        expressionNode.index = i;
+
+        // Set node type based on the enum value
+        if (node.nodeType === 0) {
+          expressionNode.nodeType = "TOPIC";
+          // For TOPIC nodes, link to TopicScheme if needed
+          const topicScheme = fetchTopicScheme(node.value);
+          expressionNode.topicScheme = topicScheme.id;
+        } else if (node.nodeType === 1) {
+          expressionNode.nodeType = "AND";
+        } else if (node.nodeType === 2) {
+          expressionNode.nodeType = "OR";
+        } else if (node.nodeType === 3) {
+          expressionNode.nodeType = "NOT";
+        }
+
+        expressionNode.save();
+      }
+
+      complianceModuleParameters.timeLock = tlp.id;
+    } else {
+      // Clear if not decodable
+      if (tlp !== null) {
+        store.remove("TimeLockParams", tlp.id.toHexString());
+      }
+      complianceModuleParameters.timeLock = null;
+    }
+  }
 
   complianceModuleParameters.save();
 }
@@ -171,6 +229,28 @@ function clearInvestorCountExpressionNodes(
   let i = 0;
   while (true) {
     const nodeId = investorCountParams.id.concat(Bytes.fromI32(i));
+    const existingNode = ExpressionNode.load(nodeId);
+
+    if (existingNode !== null) {
+      store.remove("ExpressionNode", nodeId.toHexString());
+      i++;
+    } else {
+      // No more sequential nodes found - we're done
+      break;
+    }
+  }
+}
+
+function clearTimeLockExpressionNodes(
+  timeLockParams: TimeLockParams
+): void {
+  // Load and remove existing expression nodes for TimeLockParams
+  // We iterate sequentially since nodes are created with consecutive indices
+  // This is more efficient than trying to query all related nodes
+
+  let i = 0;
+  while (true) {
+    const nodeId = timeLockParams.id.concat(Bytes.fromI32(i));
     const existingNode = ExpressionNode.load(nodeId);
 
     if (existingNode !== null) {
