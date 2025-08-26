@@ -7,8 +7,11 @@ import {
   TimeLockParams,
   TokenSupplyLimitParams,
 } from "../../../generated/schema";
-import { fetchTopicScheme } from "../../topic-scheme-registry/fetch/topic-scheme";
 import { getEncodedTypeId } from "../../type-identifier/type-identifier";
+import {
+  createExpressionNodeEntities,
+  clearExpressionNodeEntities,
+} from "../shared/expression-nodes";
 import {
   decodeAddressListParams,
   isAddressListComplianceModule,
@@ -123,35 +126,15 @@ export function updateComplianceModuleParameters(
       icp.countryLimits = decoded.countryLimits;
       icp.save();
 
-      // Create ExpressionNode entities for the topic filter
-      // First clear any existing nodes for this InvestorCountParams
-      clearInvestorCountExpressionNodes(icp);
-
-      // Then create new nodes
-      for (let i = 0; i < decoded.topicFilter.length; i++) {
-        const node = decoded.topicFilter[i];
-        const nodeId = icp.id.concat(Bytes.fromI32(i));
-
-        const expressionNode = new ExpressionNode(nodeId);
-        expressionNode.investorCountParams = icp.id;
-        expressionNode.index = i;
-
-        // Set node type based on the enum value
-        if (node.nodeType === 0) {
-          expressionNode.nodeType = "TOPIC";
-          // For TOPIC nodes, link to TopicScheme if needed
-          const topicScheme = fetchTopicScheme(node.value);
-          expressionNode.topicScheme = topicScheme.id;
-        } else if (node.nodeType === 1) {
-          expressionNode.nodeType = "AND";
-        } else if (node.nodeType === 2) {
-          expressionNode.nodeType = "OR";
-        } else if (node.nodeType === 3) {
-          expressionNode.nodeType = "NOT";
+      // Create ExpressionNode entities for the topic filter using shared utility
+      clearExpressionNodeEntities(icp.id);
+      createExpressionNodeEntities(
+        icp.id,
+        decoded.topicFilter,
+        (node: ExpressionNode, baseId: Bytes) => {
+          node.investorCountParams = baseId;
         }
-
-        expressionNode.save();
-      }
+      );
 
       complianceModuleParameters.investorCount = icp.id;
     } else {
@@ -176,35 +159,15 @@ export function updateComplianceModuleParameters(
       tlp.allowExemptions = decoded.allowExemptions;
       tlp.save();
 
-      // Create ExpressionNode entities for the exemption expression
-      // First clear any existing nodes for this TimeLockParams
-      clearTimeLockExpressionNodes(tlp);
-
-      // Then create new nodes
-      for (let i = 0; i < decoded.exemptionExpression.length; i++) {
-        const node = decoded.exemptionExpression[i];
-        const nodeId = tlp.id.concat(Bytes.fromI32(i));
-
-        const expressionNode = new ExpressionNode(nodeId);
-        expressionNode.timeLockParams = tlp.id;
-        expressionNode.index = i;
-
-        // Set node type based on the enum value
-        if (node.nodeType === 0) {
-          expressionNode.nodeType = "TOPIC";
-          // For TOPIC nodes, link to TopicScheme if needed
-          const topicScheme = fetchTopicScheme(node.value);
-          expressionNode.topicScheme = topicScheme.id;
-        } else if (node.nodeType === 1) {
-          expressionNode.nodeType = "AND";
-        } else if (node.nodeType === 2) {
-          expressionNode.nodeType = "OR";
-        } else if (node.nodeType === 3) {
-          expressionNode.nodeType = "NOT";
+      // Create ExpressionNode entities for the exemption expression using shared utility
+      clearExpressionNodeEntities(tlp.id);
+      createExpressionNodeEntities(
+        tlp.id,
+        decoded.exemptionExpression,
+        (node: ExpressionNode, baseId: Bytes) => {
+          node.timeLockParams = baseId;
         }
-
-        expressionNode.save();
-      }
+      );
 
       complianceModuleParameters.timeLock = tlp.id;
     } else {
@@ -219,46 +182,3 @@ export function updateComplianceModuleParameters(
   complianceModuleParameters.save();
 }
 
-function clearInvestorCountExpressionNodes(
-  investorCountParams: InvestorCountParams
-): void {
-  // Load and remove existing expression nodes for InvestorCountParams
-  // We iterate sequentially since nodes are created with consecutive indices
-  // This is more efficient than trying to query all related nodes
-
-  let i = 0;
-  while (true) {
-    const nodeId = investorCountParams.id.concat(Bytes.fromI32(i));
-    const existingNode = ExpressionNode.load(nodeId);
-
-    if (existingNode !== null) {
-      store.remove("ExpressionNode", nodeId.toHexString());
-      i++;
-    } else {
-      // No more sequential nodes found - we're done
-      break;
-    }
-  }
-}
-
-function clearTimeLockExpressionNodes(
-  timeLockParams: TimeLockParams
-): void {
-  // Load and remove existing expression nodes for TimeLockParams
-  // We iterate sequentially since nodes are created with consecutive indices
-  // This is more efficient than trying to query all related nodes
-
-  let i = 0;
-  while (true) {
-    const nodeId = timeLockParams.id.concat(Bytes.fromI32(i));
-    const existingNode = ExpressionNode.load(nodeId);
-
-    if (existingNode !== null) {
-      store.remove("ExpressionNode", nodeId.toHexString());
-      i++;
-    } else {
-      // No more sequential nodes found - we're done
-      break;
-    }
-  }
-}
