@@ -36,7 +36,7 @@ const TokenCollateralResponseSchema = z.object({
   token: z
     .object({
       id: z.string(),
-      totalSupply: z.number(),
+      totalSupply: z.string(),
       totalSupplyExact: z.string(),
       decimals: z.number(),
       account: z.object({
