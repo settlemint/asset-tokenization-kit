@@ -62,7 +62,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
     /// @notice Returns the name of the compliance module
     /// @return The descriptive name of this module
     function name() external pure override returns (string memory) {
-        return "TimeLockComplianceModule";
+        return "TimeLock Compliance Module";
     }
 
     /// @notice Returns the type identifier of the module
@@ -94,7 +94,6 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
     /// @dev Uses FIFO (First In, First Out) logic - oldest tokens are transferred first
     /// @param _token The token contract address
     /// @param _from The sender address
-    /// @param  The recipient address (unused)
     /// @param _value The transfer amount
     /// @param _params ABI-encoded TimeLockParams struct
     function canTransfer(
@@ -144,10 +143,10 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
         // Remove tokens from sender's batches using FIFO
         if (_from != address(0)) { // Skip for minting
             TimeLockParams memory params = abi.decode(_params, (TimeLockParams));
-            
+
             // Check if sender is exempt
             bool isExempt = params.allowExemptions && _hasExemption(_token, _from, params.exemptionExpression);
-            
+
             _removeTokensFIFO(_token, _from, _value, params.holdPeriod, isExempt);
         }
 
@@ -251,7 +250,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
 
         for (uint256 readIndex = 0; readIndex < batches.length; ++readIndex) {
             TokenBatch storage batch = batches[readIndex];
-            
+
             if (remainingToRemove == 0) {
                 // Move remaining batches forward to maintain order
                 if (writeIndex != readIndex) {
@@ -283,7 +282,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
                 // Partially remove from batch
                 batch.amount -= remainingToRemove;
                 emit TokensUnlocked(_token, _user, remainingToRemove, block.timestamp);
-                
+
                 // Keep the remaining portion of this batch
                 if (writeIndex != readIndex) {
                     batches[writeIndex] = batches[readIndex];
