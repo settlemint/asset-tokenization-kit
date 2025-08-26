@@ -1,7 +1,5 @@
 import { formatValue } from "@/lib/utils/format-value";
-import type { FormatValueOptions } from "@/lib/utils/format-value/types";
 import type { CellContext, ColumnDef } from "@tanstack/react-table";
-import { flexRender } from "@tanstack/react-table";
 import { withAutoFilterFn } from "../filters/functions/auto-filter";
 
 /**
@@ -9,26 +7,19 @@ import { withAutoFilterFn } from "../filters/functions/auto-filter";
  */
 function FormattedCell<TData, TValue>({
   context,
-  children,
 }: {
   context: CellContext<TData, TValue>;
-  children?: React.ReactNode;
 }) {
   const meta = context.column.columnDef.meta;
   const value = context.getValue();
-
-  // If children are provided, use them (allows override)
-  if (children) {
-    return <>{children}</>;
-  }
 
   // Use the shared formatValue utility
   return (
     <>
       {formatValue(value, {
-        type: meta?.type as FormatValueOptions["type"],
+        type: meta?.type ?? "text",
         displayName: meta?.displayName,
-        currency: meta?.currency as FormatValueOptions["currency"],
+        currency: meta?.currency,
         emptyValue: meta?.emptyValue,
         showPrettyName: meta?.showPrettyName,
       })}
@@ -55,18 +46,8 @@ function FormattedCell<TData, TValue>({
 export function withAutoCell<TData, TValue = unknown>(
   column: ColumnDef<TData, TValue>
 ): ColumnDef<TData, TValue> {
-  // If column already has a cell renderer, wrap it with FormattedCell
-  // This allows the custom renderer to be used as override
   if (column.cell) {
-    const originalCell = column.cell;
-    return {
-      ...column,
-      cell: (context) => (
-        <FormattedCell context={context}>
-          {flexRender(originalCell, context)}
-        </FormattedCell>
-      ),
-    };
+    return column;
   }
 
   // If no cell renderer, use FormattedCell directly
@@ -84,7 +65,7 @@ export function withAutoCell<TData, TValue = unknown>(
  * ```tsx
  * const enhancedColumns = withAutoCells([
  *   { id: "name", header: "Name" },
- *   { id: "amount", header: "Amount", meta: { cellType: "currency" } }
+ *   { id: "amount", header: "Amount", meta: { type: "currency" } }
  * ]);
  * ```
  *
@@ -98,43 +79,9 @@ export function withAutoCells<TData>(
 }
 
 /**
- * Automatically sets the variant based on column type.
- * Numeric columns (number, currency) get the "numeric" variant for right alignment.
- *
- * @example
- * ```tsx
- * const column = withAutoVariant({
- *   id: "price",
- *   header: "Price",
- *   meta: { type: "currency" }
- * });
- * // Result: column.meta.variant === "numeric"
- * ```
- *
- * @param column - The column definition to enhance
- * @returns Column definition with auto-set variant
- */
-export function withAutoVariant<TData, TValue = unknown>(
-  column: ColumnDef<TData, TValue>
-): ColumnDef<TData, TValue> {
-  // If column has number or currency type, set variant to numeric
-  if (column.meta?.type === "number" || column.meta?.type === "currency") {
-    return {
-      ...column,
-      meta: {
-        ...column.meta,
-        variant: "numeric",
-      },
-    };
-  }
-
-  return column;
-}
-
-/**
  * Applies both auto cell rendering and auto filter functions to columns.
  * This is the recommended function to use for maximum automation.
- * Combines withAutoCell, withAutoFilterFn, and withAutoVariant.
+ * Combines withAutoCell and withAutoFilterFn.
  *
  * @example
  * ```tsx
@@ -147,7 +94,7 @@ export function withAutoVariant<TData, TValue = unknown>(
  *   {
  *     id: "amount",
  *     header: "Amount",
- *     meta: { type: "currency", cellType: "currency" }
+ *     meta: { type: "currency", variant: "numeric" }
  *   }
  * ]);
  * ```
@@ -158,7 +105,5 @@ export function withAutoVariant<TData, TValue = unknown>(
 export function withAutoFeatures<TData>(
   columns: ColumnDef<TData>[]
 ): ColumnDef<TData>[] {
-  return columns.map((column) =>
-    withAutoVariant(withAutoFilterFn(withAutoCell(column)))
-  );
+  return columns.map((column) => withAutoFilterFn(withAutoCell(column)));
 }

@@ -4,7 +4,7 @@ import type { FiatCurrency } from "@atk/zod/fiat-currency";
  * Type definition for value formatting options
  */
 export interface FormatValueOptions {
-  type?:
+  type:
     | "address"
     | "currency"
     | "date"
@@ -15,7 +15,8 @@ export interface FormatValueOptions {
     | "boolean"
     | "multiOption"
     | "option"
-    | "basisPoints";
+    | "basisPoints"
+    | "none";
   displayName?: string;
   currency?: { assetSymbol: string } | FiatCurrency;
 

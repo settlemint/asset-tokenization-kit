@@ -1,9 +1,9 @@
-import type { FilterFn, ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, FilterFn } from "@tanstack/react-table";
+import { dateFilterFn } from "./date-filter";
 import {
   flexibleNumberFilterFn,
   flexibleTextFilterFn,
 } from "./flexible-filter-wrappers";
-import { dateFilterFn } from "./date-filter";
 import { multiOptionFilterFn } from "./multi-option-filter";
 
 /**
@@ -98,22 +98,14 @@ export function withAutoFilterFn<TData, TValue = unknown>(
 
   // If column has meta.type, apply the appropriate filter function
   const columnType = column.meta?.type;
-  if (columnType) {
-    return {
-      ...column,
-      filterFn: getAutoFilterFn(columnType) as FilterFn<TData>,
-    };
+  if (!columnType || columnType === "none") {
+    return column;
   }
 
-  // If it's an accessor column and no type is specified, default to text filter
-  if ("accessorKey" in column || "accessorFn" in column) {
-    return {
-      ...column,
-      filterFn: flexibleTextFilterFn as FilterFn<TData>,
-    };
-  }
-
-  return column;
+  return {
+    ...column,
+    filterFn: getAutoFilterFn(columnType) as FilterFn<TData>,
+  };
 }
 
 /**
