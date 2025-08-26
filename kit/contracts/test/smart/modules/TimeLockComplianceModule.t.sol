@@ -25,17 +25,20 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     TimeLockComplianceModule.TimeLockParams defaultParams;
     bytes defaultParamsEncoded;
 
+    // Custom topic ID for testing exemptions
+    uint256 secondarySaleTopicId;
+
     // Helper function to create empty expression
     function _emptyExpression() internal pure returns (ExpressionNode[] memory) {
         return new ExpressionNode[](0);
     }
 
     // Helper function to create secondary sale approval expression
-    function _secondarySaleApprovalExpression() internal pure returns (ExpressionNode[] memory) {
+    function _secondarySaleApprovalExpression() internal view returns (ExpressionNode[] memory) {
         ExpressionNode[] memory expression = new ExpressionNode[](1);
         expression[0] = ExpressionNode({
             nodeType: ExpressionType.TOPIC,
-            value: 7 // Custom topic ID for secondary sale approval
+            value: secondarySaleTopicId // Use dynamic topic ID
         });
         return expression;
     }
@@ -48,22 +51,23 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         claimUtils.issueAllClaims(user1);
         claimUtils.issueAllClaims(user2);
 
-        // Register custom topic ID 7 for secondary sale approval testing
+        // Register custom topic for secondary sale approval testing
         vm.startPrank(platformAdmin);
-        systemUtils.topicSchemeRegistry().registerTopicScheme("Secondary Sale Approved", "string claim");
+        systemUtils.topicSchemeRegistry().registerTopicScheme("secondarySaleApproval", "string claim");
+        secondarySaleTopicId = systemUtils.getTopicId("secondarySaleApproval");
         vm.stopPrank();
 
-        // Add topic 7 to the existing claim issuer's allowed topics
-        // The claim issuer is already a trusted issuer from the base setup
-        uint256[] memory existingTopics = new uint256[](5);
-        existingTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
-        existingTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_AML);
-        existingTopics[2] = systemUtils.getTopicId(ATKTopics.TOPIC_COLLATERAL);
-        existingTopics[3] = systemUtils.getTopicId(ATKTopics.TOPIC_BASE_PRICE);
-        existingTopics[4] = 7; // Add our custom topic
-
+        // Add the claim issuer as a trusted issuer if not already added, then update topics
         vm.startPrank(platformAdmin);
-        systemUtils.trustedIssuersRegistry().updateIssuerClaimTopics(IClaimIssuer(claimIssuer), existingTopics);
+        // Add issuer with all necessary topics (existing + custom)
+        uint256[] memory allTopics = new uint256[](5);
+        allTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
+        allTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_AML);
+        allTopics[2] = systemUtils.getTopicId(ATKTopics.TOPIC_COLLATERAL);
+        allTopics[3] = systemUtils.getTopicId(ATKTopics.TOPIC_BASE_PRICE);
+        allTopics[4] = secondarySaleTopicId; // Add our custom topic
+
+        identityUtils.updateIssuerClaimTopics(claimIssuer, allTopics);
         vm.stopPrank();
 
         // Default 6-month lock period without exemptions
@@ -535,7 +539,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         module.canTransfer(address(smartToken), user1, user2, TEST_VALUE, paramsEncoded);
 
         // Issue secondary sale approval claim to user1
-        claimUtils.issueCustomClaim(user1, 7, "Secondary Sale Approved by Issuer");
+        claimUtils.issueCustomClaim(user1, secondarySaleTopicId, "Secondary Sale Approved by Issuer");
 
         // Now transfer should be allowed even during lock period (exemption applies)
         module.canTransfer(address(smartToken), user1, user2, TEST_VALUE, paramsEncoded);
@@ -553,7 +557,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         module.canTransfer(address(smartToken), user2, user1, TEST_VALUE, paramsEncoded);
 
         // Issue exemption to user2 as well
-        claimUtils.issueCustomClaim(user2, 7, "Secondary Sale Approved by Issuer");
+        claimUtils.issueCustomClaim(user2, secondarySaleTopicId, "Secondary Sale Approved by Issuer");
 
         // Now user2 should also be able to transfer
         module.canTransfer(address(smartToken), user2, user1, TEST_VALUE, paramsEncoded);
