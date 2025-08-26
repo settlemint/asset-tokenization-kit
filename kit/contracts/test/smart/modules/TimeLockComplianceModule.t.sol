@@ -8,7 +8,6 @@ import { TimeLockComplianceModule } from "../../../contracts/smart/modules/TimeL
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
 import { ExpressionNode, ExpressionType } from "../../../contracts/smart/interface/structs/ExpressionNode.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
-import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
 contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     TimeLockComplianceModule internal module;
@@ -445,7 +444,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         vm.stopPrank();
         vm.prank(user1);
         vm.expectRevert();
-        smartToken.transfer(user2, TEST_VALUE / 2);
+        assertTrue(!smartToken.transfer(user2, TEST_VALUE / 2));
 
         // Advance time past lock period
         vm.warp(block.timestamp + SIX_MONTHS + 1);
@@ -566,7 +565,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         // Test available balance for users with exemptions
         uint256 user1Available = module.getAvailableBalance(address(smartToken), user1, paramsEncoded);
         uint256 user2Available = module.getAvailableBalance(address(smartToken), user2, paramsEncoded);
-        
+
         // With exemptions, all tokens should be available
         assertEq(user1Available, TEST_VALUE);
         assertEq(user2Available, TEST_VALUE);

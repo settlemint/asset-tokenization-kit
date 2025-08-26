@@ -30,7 +30,6 @@ import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMAR
 import { TestConstants } from "../../Constants.sol";
 import { ExpressionNode, ExpressionType } from "../../../contracts/smart/interface/structs/ExpressionNode.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
-import { SMARTToken } from "../examples/SMARTToken.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { MockSMARTToken } from "../../utils/mocks/MockSMARTToken.sol";
