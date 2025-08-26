@@ -16,7 +16,7 @@ export function FormatNumber({ value, options }: FormatValueProps) {
       trailingZeros: false,
     });
 
-    return <span className="block tabular-nums">{formatted}</span>;
+    return <div className="tabular-nums">{formatted}</div>;
   }
 
   // Use safe number conversion to handle large values without precision loss
@@ -45,5 +45,5 @@ export function FormatNumber({ value, options }: FormatValueProps) {
     ...(useCompact && { maximumFractionDigits: 1 }),
   }).format(numberValue);
 
-  return <span className="block tabular-nums">{formatted}</span>;
+  return <div className="tabular-nums">{formatted}</div>;
 }

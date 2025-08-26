@@ -13,25 +13,23 @@ export function FormatCurrency({ value, options }: FormatValueProps) {
 
   if (typeof currency === "object" && "assetSymbol" in currency) {
     return (
-      <span className="block tabular-nums">
-        <div className="flex items-center gap-1">
-          <FormatNumber value={value} options={options} />
-          {currency.assetSymbol}
-        </div>
-      </span>
+      <div className="flex items-center gap-1 tabular-nums">
+        <FormatNumber value={value} options={options} />
+        {currency.assetSymbol}
+      </div>
     );
   }
 
   // Try to format with Intl.NumberFormat
   try {
     return (
-      <span className="block tabular-nums">
+      <div className="tabular-nums">
         {new Intl.NumberFormat(locale, {
           style: "currency",
           currency: currency,
           minimumFractionDigits: 2,
         }).format(currencyValue)}
-      </span>
+      </div>
     );
   } catch {
     // If currency is not recognized, format as "value currency"
@@ -41,9 +39,9 @@ export function FormatCurrency({ value, options }: FormatValueProps) {
     }).format(currencyValue);
 
     return (
-      <span className="block tabular-nums">
+      <div className="tabular-nums">
         {formatted} {currency}
-      </span>
+      </div>
     );
   }
 }
