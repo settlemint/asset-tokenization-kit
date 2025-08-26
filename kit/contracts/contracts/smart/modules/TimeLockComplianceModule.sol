@@ -96,6 +96,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
     /// @param _from The sender address
     /// @param _value The transfer amount
     /// @param _params ABI-encoded TimeLockParams struct
+    // solhint-disable-next-line use-natspec
     function canTransfer(
         address _token,
         address _from,
@@ -164,6 +165,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
     /// @param _token The token contract address
     /// @param _to The recipient address
     /// @param _value The minted amount
+    // solhint-disable-next-line use-natspec
     function created(
         address _token,
         address _to,
