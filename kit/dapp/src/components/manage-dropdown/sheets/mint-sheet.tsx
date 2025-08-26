@@ -369,7 +369,6 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                                   "tokens:actions.mint.form.amountLabel"
                                 )}
                                 endAddon={asset.symbol}
-                                decimals={asset.decimals}
                                 required
                               />
                             )}
