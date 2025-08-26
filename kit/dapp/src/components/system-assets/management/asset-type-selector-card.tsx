@@ -1,5 +1,5 @@
-import { getAssetIcon } from "@/components/onboarding/assets/asset-icons";
-import { AssetTypeCard } from "@/components/onboarding/assets/asset-type-card";
+import { getAssetIcon } from "@/components/system-assets/components/asset-icons";
+import { AssetTypeCard } from "@/components/system-assets/components/asset-type-card";
 import { TokenTypeEnum } from "@/orpc/routes/system/token-factory/routes/factory.create.schema";
 import { memo } from "react";
 

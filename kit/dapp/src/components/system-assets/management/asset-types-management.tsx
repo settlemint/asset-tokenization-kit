@@ -21,11 +21,11 @@ import { Loader2 } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { AssetTypeSelectorCard } from "./asset-type-selector-card";
+import { AssetTypeSelectorCard } from "@/components/system-assets/management/asset-type-selector-card";
 import { EnabledAssetTypes } from "./enabled-asset-types";
 
 export function AssetTypesManagement() {
-  const { t } = useTranslation(["onboarding", "common", "tokens", "navigation"]);
+  const { t } = useTranslation(["onboarding", "common", "tokens", "navigation", "errors"]);
   const queryClient = useQueryClient();
 
   const {
@@ -123,7 +123,7 @@ export function AssetTypesManagement() {
           <div className="text-center">
             <p className="text-red-600 font-medium">{t("errors.somethingWentWrong", { ns: "common" })}</p>
             <p className="text-sm text-muted-foreground mt-1">
-              Please try again later
+              {t("buttons.tryAgain", { ns: "errors" })}
             </p>
           </div>
         </CardContent>
