@@ -173,7 +173,7 @@ export function CollateralSheet({
             showAssetDetailsOnConfirm={false}
             isSubmitting={isPending}
             store={sheetStoreRef.current}
-            onSubmit={async (verification) => {
+            onSubmit={(verification) => {
               const promise = updateCollateral({
                 contract: asset.id,
                 amount: newAmount,
@@ -181,7 +181,7 @@ export function CollateralSheet({
                 walletVerification: verification,
               });
 
-              await toast.promise(promise, {
+              toast.promise(promise, {
                 loading: t("common:saving"),
                 success: t("tokens:actions.collateral.success"),
                 error: t("common:error"),

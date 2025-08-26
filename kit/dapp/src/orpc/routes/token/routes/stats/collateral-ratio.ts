@@ -3,34 +3,64 @@ import { tokenRouter } from "@/orpc/procedures/token.router";
 import { z } from "zod";
 
 /**
- * GraphQL query to fetch token collateral statistics from subgraph
- * Retrieves the latest collateral data for the token
+ * GraphQL query to fetch token collateral data from identity claims
+ * Retrieves collateral claims directly from the token's identity contract
  */
-const TOKEN_COLLATERAL_STATS_QUERY = theGraphGraphql(`
-  query TokenCollateralStats($tokenId: String!) {
-    tokenCollateralStats_collection(
-      where: { token: $tokenId }
-      interval: hour
-      orderBy: timestamp
-      orderDirection: desc
-      first: 1
-    ) {
-      collateral
-      collateralAvailable
-      collateralUsed
+const TOKEN_COLLATERAL_QUERY = theGraphGraphql(`
+  query TokenCollateral($tokenId: ID!) {
+    token(id: $tokenId) {
+      id
+      totalSupply
+      totalSupplyExact
+      decimals
+      account {
+        identity {
+          id
+          claims(where: { name: "collateral", revoked: false }) {
+            id
+            name
+            revoked
+            values {
+              key
+              value
+            }
+          }
+        }
+      }
     }
   }
 `);
 
 // Schema for the GraphQL response
-const TokenCollateralStatsResponseSchema = z.object({
-  tokenCollateralStats_collection: z.array(
-    z.object({
-      collateral: z.number(),
-      collateralAvailable: z.number(),
-      collateralUsed: z.number(),
+const TokenCollateralResponseSchema = z.object({
+  token: z
+    .object({
+      id: z.string(),
+      totalSupply: z.number(),
+      totalSupplyExact: z.string(),
+      decimals: z.number(),
+      account: z.object({
+        identity: z
+          .object({
+            id: z.string(),
+            claims: z.array(
+              z.object({
+                id: z.string(),
+                name: z.string(),
+                revoked: z.boolean(),
+                values: z.array(
+                  z.object({
+                    key: z.string(),
+                    value: z.string(),
+                  })
+                ),
+              })
+            ),
+          })
+          .nullable(),
+      }),
     })
-  ),
+    .nullable(),
 });
 
 /**
@@ -65,21 +95,21 @@ export const statsCollateralRatio =
   tokenRouter.token.statsCollateralRatio.handler(async ({ context, input }) => {
     // Token context is guaranteed by tokenRouter middleware
 
-    // Fetch latest collateral stats from TheGraph
+    // Fetch token data with collateral claims from identity
     const response = await context.theGraphClient.query(
-      TOKEN_COLLATERAL_STATS_QUERY,
+      TOKEN_COLLATERAL_QUERY,
       {
         input: {
           tokenId: input.tokenAddress.toLowerCase(),
         },
-        output: TokenCollateralStatsResponseSchema,
+        output: TokenCollateralResponseSchema,
       }
     );
 
-    const stats = response.tokenCollateralStats_collection[0];
+    const token = response.token;
 
-    // Handle case where no collateral data exists
-    if (!stats) {
+    // Handle case where token doesn't exist
+    if (!token) {
       return {
         buckets: [
           { name: "collateralAvailable", value: 0 },
@@ -90,21 +120,70 @@ export const statsCollateralRatio =
       };
     }
 
+    // Handle case where token has no identity or no collateral claims
+    if (!token.account.identity || token.account.identity.claims.length === 0) {
+      return {
+        buckets: [
+          { name: "collateralAvailable", value: 0 },
+          { name: "collateralUsed", value: 0 },
+        ],
+        totalCollateral: 0,
+        collateralRatio: 0,
+      };
+    }
+
+    // Get the latest (most recent) collateral claim
+    const collateralClaim = token.account.identity.claims[0];
+    if (!collateralClaim) {
+      return {
+        buckets: [
+          { name: "collateralAvailable", value: 0 },
+          { name: "collateralUsed", value: 0 },
+        ],
+        totalCollateral: 0,
+        collateralRatio: 0,
+      };
+    }
+
+    // Extract amount from claim values
+    const amountValue = collateralClaim.values.find((v) => v.key === "amount");
+    if (!amountValue) {
+      return {
+        buckets: [
+          { name: "collateralAvailable", value: 0 },
+          { name: "collateralUsed", value: 0 },
+        ],
+        totalCollateral: 0,
+        collateralRatio: 0,
+      };
+    }
+
+    // Parse collateral amount (from wei to human-readable)
+    const collateralAmountWei = BigInt(amountValue.value);
+    const decimals = token.decimals;
+    const divisor = BigInt(10) ** BigInt(decimals);
+    const totalCollateral = Number(collateralAmountWei / divisor);
+
+    // Parse total supply (current tokens in circulation)
+    const totalSupplyWei = BigInt(token.totalSupplyExact);
+    const collateralUsed = Number(totalSupplyWei / divisor);
+
+    // Calculate available collateral
+    const collateralAvailable = totalCollateral - collateralUsed;
+
     // Build collateral buckets
     const buckets = [
-      { name: "collateralAvailable", value: stats.collateralAvailable },
-      { name: "collateralUsed", value: stats.collateralUsed },
+      { name: "collateralAvailable", value: Math.max(0, collateralAvailable) },
+      { name: "collateralUsed", value: collateralUsed },
     ];
 
     // Calculate collateral ratio (used/total * 100)
     const collateralRatio =
-      stats.collateral > 0
-        ? (stats.collateralUsed / stats.collateral) * 100
-        : 0;
+      totalCollateral > 0 ? (collateralUsed / totalCollateral) * 100 : 0;
 
     return {
       buckets,
-      totalCollateral: stats.collateral,
+      totalCollateral,
       collateralRatio,
     };
   });

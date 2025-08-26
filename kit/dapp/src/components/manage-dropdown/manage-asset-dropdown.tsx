@@ -119,6 +119,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
     asset.yield?.schedule,
     asset.userPermissions?.actions,
     asset.collateral,
+    isPaused,
   ]);
 
   const onActionOpenChange = (open: boolean) => {
