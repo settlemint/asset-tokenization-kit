@@ -94,6 +94,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
     /// @dev Uses FIFO (First In, First Out) logic - oldest tokens are transferred first
     /// @param _token The token contract address
     /// @param _from The sender address
+    /// @param  The recipient address (unused)
     /// @param _value The transfer amount
     /// @param _params ABI-encoded TimeLockParams struct
     function canTransfer(
@@ -160,6 +161,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
     /// @param _token The token contract address
     /// @param _to The recipient address
     /// @param _value The minted amount
+    /// @param  Module parameters (unused)
     function created(
         address _token,
         address _to,
@@ -247,7 +249,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
             TokenBatch storage batch = batches[batchIndex];
             uint256 unlockTime = batch.acquisitionTime + _holdPeriod;
 
-            // This should not happen if canTransfer was called first, but adding safety check
+            // This should not happen if canTransfer was called first, but adding safety check  
             if (block.timestamp < unlockTime + 1) revert ComplianceCheckFailed("Locked tokens");
 
             if (batch.amount < remainingToRemove + 1) {
