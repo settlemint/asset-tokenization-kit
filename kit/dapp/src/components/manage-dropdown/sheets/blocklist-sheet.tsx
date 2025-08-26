@@ -44,14 +44,14 @@ export function BlocklistSheet({
       onSuccess: async () => {
         await Promise.all([
           queryClient.invalidateQueries({
-            queryKey: orpc.token.read.queryOptions({
+            queryKey: orpc.token.read.queryKey({
               input: { tokenAddress: asset.id },
-            }).queryKey,
+            }),
           }),
           queryClient.invalidateQueries({
-            queryKey: orpc.token.holders.queryOptions({
+            queryKey: orpc.token.holders.queryKey({
               input: { tokenAddress: asset.id },
-            }).queryKey,
+            }),
           }),
         ]);
       },
@@ -152,14 +152,14 @@ export function BlocklistSheet({
                 });
                 await Promise.all([
                   queryClient.invalidateQueries({
-                    queryKey: orpc.token.read.queryOptions({
+                    queryKey: orpc.token.read.queryKey({
                       input: { tokenAddress: asset.id },
-                    }).queryKey,
+                    }),
                   }),
                   queryClient.invalidateQueries({
-                    queryKey: orpc.token.holders.queryOptions({
+                    queryKey: orpc.token.holders.queryKey({
                       input: { tokenAddress: asset.id },
-                    }).queryKey,
+                    }),
                   }),
                 ]);
                 onCompleted({ address: addr, mode });

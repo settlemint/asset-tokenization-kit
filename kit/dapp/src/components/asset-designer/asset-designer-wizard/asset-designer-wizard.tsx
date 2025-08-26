@@ -57,14 +57,14 @@ export const AssetDesignerWizard = ({ onSubmit }: { onSubmit: () => void }) => {
         await Promise.all([
           // Invalidate factory list queries
           queryClient.invalidateQueries({
-            queryKey: orpc.system.factory.list.queryOptions({
+            queryKey: orpc.system.factory.list.queryKey({
               input: { hasTokens: true },
-            }).queryKey,
+            }),
           }),
           queryClient.invalidateQueries({
-            queryKey: orpc.token.list.queryOptions({
+            queryKey: orpc.token.list.queryKey({
               input: { tokenFactory },
-            }).queryKey,
+            }),
           }),
         ]);
       },
