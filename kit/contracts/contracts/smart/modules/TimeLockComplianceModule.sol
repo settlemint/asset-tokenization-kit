@@ -144,7 +144,11 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
         // Remove tokens from sender's batches using FIFO
         if (_from != address(0)) { // Skip for minting
             TimeLockParams memory params = abi.decode(_params, (TimeLockParams));
-            _removeTokensFIFO(_token, _from, _value, params.holdPeriod);
+            
+            // Check if sender is exempt
+            bool isExempt = params.allowExemptions && _hasExemption(_token, _from, params.exemptionExpression);
+            
+            _removeTokensFIFO(_token, _from, _value, params.holdPeriod, isExempt);
         }
 
         // Add new batch for recipient
@@ -161,7 +165,6 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
     /// @param _token The token contract address
     /// @param _to The recipient address
     /// @param _value The minted amount
-    /// @param  Module parameters (unused)
     function created(
         address _token,
         address _to,
@@ -240,33 +243,60 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
     /// @param _user The user address
     /// @param _amount The amount to remove
     /// @param _holdPeriod The hold period for validation
-    function _removeTokensFIFO(address _token, address _user, uint256 _amount, uint256 _holdPeriod) internal {
+    /// @param _isExempt Whether the user is exempt from time locks
+    function _removeTokensFIFO(address _token, address _user, uint256 _amount, uint256 _holdPeriod, bool _isExempt) internal {
         TokenBatch[] storage batches = tokenBatches[_token][_user];
         uint256 remainingToRemove = _amount;
-        uint256 batchIndex = 0;
+        uint256 writeIndex = 0;
 
-        while (remainingToRemove > 0 && batchIndex < batches.length) {
-            TokenBatch storage batch = batches[batchIndex];
+        for (uint256 readIndex = 0; readIndex < batches.length; ++readIndex) {
+            TokenBatch storage batch = batches[readIndex];
+            
+            if (remainingToRemove == 0) {
+                // Move remaining batches forward to maintain order
+                if (writeIndex != readIndex) {
+                    batches[writeIndex] = batches[readIndex];
+                }
+                ++writeIndex;
+                continue;
+            }
+
             uint256 unlockTime = batch.acquisitionTime + _holdPeriod;
 
-            // This should not happen if canTransfer was called first, but adding safety check  
-            if (block.timestamp < unlockTime + 1) revert ComplianceCheckFailed("Locked tokens");
+            // Skip time lock check for exempt users
+            if (!_isExempt && block.timestamp < unlockTime + 1) {
+                // This is a locked batch - preserve it
+                if (writeIndex != readIndex) {
+                    batches[writeIndex] = batches[readIndex];
+                }
+                ++writeIndex;
+                continue;
+            }
 
+            // Process unlocked batch (or any batch for exempt users)
             if (batch.amount < remainingToRemove + 1) {
                 // Remove entire batch
                 remainingToRemove -= batch.amount;
                 emit TokensUnlocked(_token, _user, batch.amount, block.timestamp);
-
-                // Remove batch by swapping with last element and popping
-                batches[batchIndex] = batches[batches.length - 1];
-                batches.pop();
-                // Don't increment batchIndex since we moved a new batch to this position
+                // Don't increment writeIndex - this batch is removed
             } else {
                 // Partially remove from batch
                 batch.amount -= remainingToRemove;
                 emit TokensUnlocked(_token, _user, remainingToRemove, block.timestamp);
+                
+                // Keep the remaining portion of this batch
+                if (writeIndex != readIndex) {
+                    batches[writeIndex] = batches[readIndex];
+                }
+                ++writeIndex;
                 remainingToRemove = 0;
             }
+        }
+
+        // Remove processed batches from the end
+        uint256 batchesToRemove = batches.length - writeIndex;
+        for (uint256 i = 0; i < batchesToRemove; ++i) {
+            batches.pop();
         }
 
         // Safety check: ensure we processed exactly what we needed
