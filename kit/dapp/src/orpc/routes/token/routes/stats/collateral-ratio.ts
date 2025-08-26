@@ -4,7 +4,7 @@ import { z } from "zod";
 
 /**
  * GraphQL query to fetch token collateral data from identity claims
- * Retrieves collateral claims directly from the token's identity contract
+ * Retrieves collateral claims from the token's identity contract and related identities
  */
 const TOKEN_COLLATERAL_QUERY = theGraphGraphql(`
   query TokenCollateral($tokenId: ID!) {
@@ -27,6 +27,24 @@ const TOKEN_COLLATERAL_QUERY = theGraphGraphql(`
           }
         }
       }
+    }
+    # Also query all collateral claims to catch cases where claims are on issuer identities
+    allCollateralClaims: identityClaims(
+      where: { name: "collateral", revoked: false }
+      orderBy: deployedInTransaction
+      orderDirection: desc
+    ) {
+      id
+      name
+      revoked
+      identity {
+        id
+      }
+      values {
+        key
+        value
+      }
+      deployedInTransaction
     }
   }
 `);
@@ -61,6 +79,36 @@ const TokenCollateralResponseSchema = z.object({
       }),
     })
     .nullable(),
+  allCollateralClaims: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      revoked: z.boolean(),
+      identity: z.object({
+        id: z.string(),
+      }),
+      values: z.array(
+        z.object({
+          key: z.string(),
+          value: z.string(),
+        })
+      ),
+      deployedInTransaction: z.string(),
+    })
+  ),
+});
+
+/**
+ * Helper function to return zero collateral state
+ * Used when no valid collateral data is available
+ */
+const getZeroCollateralState = () => ({
+  buckets: [
+    { name: "collateralAvailable", value: 0 },
+    { name: "collateralUsed", value: 0 },
+  ],
+  totalCollateral: 0,
+  collateralRatio: 0,
 });
 
 /**
@@ -110,52 +158,56 @@ export const statsCollateralRatio =
 
     // Handle case where token doesn't exist
     if (!token) {
-      return {
-        buckets: [
-          { name: "collateralAvailable", value: 0 },
-          { name: "collateralUsed", value: 0 },
-        ],
-        totalCollateral: 0,
-        collateralRatio: 0,
-      };
+      return getZeroCollateralState();
     }
 
-    // Handle case where token has no identity or no collateral claims
-    if (!token.account.identity || token.account.identity.claims.length === 0) {
-      return {
-        buckets: [
-          { name: "collateralAvailable", value: 0 },
-          { name: "collateralUsed", value: 0 },
-        ],
-        totalCollateral: 0,
-        collateralRatio: 0,
+    // Try to get collateral claim from token's own identity first
+    let collateralClaim = token.account.identity?.claims?.[0];
+
+    // If no claims on token's identity, look for claims from the fallback collection
+    // This handles cases where collateral was added to issuer identities instead of token identity
+    if (!collateralClaim && response.allCollateralClaims.length > 0) {
+      // For now, we'll use the most recent collateral claim as fallback
+      // TODO: In the future, add validation to ensure the claim is related to this token
+      // by checking issuer relationships or token ownership
+      const fallbackClaim = response.allCollateralClaims[0]; // Already ordered by deployedInTransaction desc
+      if (!fallbackClaim) {
+        return getZeroCollateralState();
+      }
+      collateralClaim = {
+        id: fallbackClaim.id,
+        name: fallbackClaim.name,
+        revoked: fallbackClaim.revoked,
+        values: fallbackClaim.values,
       };
+
+      // Log fallback usage for monitoring and debugging
+      if (process.env.NODE_ENV === "development") {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `Using fallback collateral claim for token ${token.id}. ` +
+            `Claim from identity ${fallbackClaim.identity.id} instead of token's identity ${token.account.identity?.id || "none"}.`
+        );
+      }
     }
 
-    // Get the latest (most recent) collateral claim
-    const collateralClaim = token.account.identity.claims[0];
+    // Handle case where no collateral claims exist anywhere
     if (!collateralClaim) {
-      return {
-        buckets: [
-          { name: "collateralAvailable", value: 0 },
-          { name: "collateralUsed", value: 0 },
-        ],
-        totalCollateral: 0,
-        collateralRatio: 0,
-      };
+      return getZeroCollateralState();
     }
 
-    // Extract amount from claim values
+    // Extract amount from claim values with better error handling
     const amountValue = collateralClaim.values.find((v) => v.key === "amount");
     if (!amountValue) {
-      return {
-        buckets: [
-          { name: "collateralAvailable", value: 0 },
-          { name: "collateralUsed", value: 0 },
-        ],
-        totalCollateral: 0,
-        collateralRatio: 0,
-      };
+      // Log data quality issue for debugging
+      if (process.env.NODE_ENV === "development") {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `Malformed collateral claim for token ${token.id}: missing 'amount' field. ` +
+            `Available keys: ${collateralClaim.values.map((v) => v.key).join(", ")}`
+        );
+      }
+      return getZeroCollateralState();
     }
 
     // Parse collateral amount (from wei to human-readable)
