@@ -126,7 +126,7 @@ export const createBond = async (depositToken: Asset<any>) => {
   // do some mint/burns to change the yield
   await mint(bond, owner, 10n);
   await burn(bond, owner, 1n);
-  await topupDenominationAsset(bond, depositToken, 10000n);
+  await topupDenominationAsset(bond, depositToken, 10000n * 10n ** 18n);
   // claim yield for 3 periods
   for (let i = 0; i < 3; i++) {
     const didAdvance = await advanceToNextPeriod();
