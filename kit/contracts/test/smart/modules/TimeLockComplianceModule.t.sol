@@ -81,7 +81,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     // ============ Basic Module Properties ============
 
     function test_TimeLock_InitialState() public view {
-        assertEq(module.name(), "TimeLockComplianceModule");
+        assertEq(module.name(), "TimeLock Compliance Module");
         assertEq(module.typeId(), keccak256("TimeLockComplianceModule"));
         assertEq(module.TYPE_ID(), keccak256("TimeLockComplianceModule"));
     }
