@@ -105,6 +105,6 @@
   "resolutions": {
     "ms": "2.1.3"
   },
-  "_comment_resolutions": "Force ms@2.1.3 to fix ES module compatibility issue with Graph Protocol CLI (3.0.0-canary versions break subgraph codegen)",
+  "_comment_resolutions": "Force ms@2.1.3 to fix ES module compatibility issue with Graph Protocol CLI (3.0.0-canary versions break subgraph codegen: https://github.com/vercel/ms/issues/254)",
   "packageManager": "bun@1.2.19"
 }
