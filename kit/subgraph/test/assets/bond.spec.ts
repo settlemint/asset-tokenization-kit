@@ -43,6 +43,7 @@ describe("Bonds", () => {
           faceValue: "0.000123",
           denominationAsset: {
             name: "Euro Deposits",
+            decimals: 6,
           },
         },
         yield_: {
@@ -92,6 +93,9 @@ describe("Bonds", () => {
           bond {
             faceValue
             faceValueExact
+            denominationAsset {
+              decimals
+            }
           }
         }
       }
@@ -108,8 +112,8 @@ describe("Bonds", () => {
     const euroBond = response.tokens[0];
 
     expect(euroBond.decimals).toBe(18); // Bond token decimals
-    expect(euroBond.bond.denominationAsset.decimals).toBe(6); // Denomination asset decimals
-    expect(euroBond.bond.faceValue).toBe("0.000123");
-    expect(euroBond.bond.faceValueExact).toBe("123"); // Raw value (0.000123 * 10^6 = 123)
+    expect(euroBond.bond?.denominationAsset?.decimals).toBe(6); // Denomination asset decimals
+    expect(euroBond.bond?.faceValue).toBe("0.000123");
+    expect(euroBond.bond?.faceValueExact).toBe("123"); // Raw value (0.000123 * 10^6 = 123)
   });
 });
