@@ -16,6 +16,7 @@ import IdentityAllowListModule from "./onboarding/modules/identity-allow-list-mo
 import IdentityBlockListModule from "./onboarding/modules/identity-block-list-module";
 import IdentityVerificationModule from "./onboarding/modules/identity-verification-module";
 import InvestorCountModule from "./onboarding/modules/investor-count-module";
+import TimeLockModule from "./onboarding/modules/time-lock-module";
 import TokenSupplyLimitModule from "./onboarding/modules/token-supply-limit-module";
 import ATKOnboardingSystemModule from "./onboarding/system";
 
@@ -78,6 +79,7 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
   );
   const { tokenSupplyLimitModule } = m.useModule(TokenSupplyLimitModule);
   const { investorCountModule } = m.useModule(InvestorCountModule);
+  const { timeLockModule } = m.useModule(TimeLockModule);
 
   return {
     system,
@@ -106,6 +108,7 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
     identityVerificationModule,
     tokenSupplyLimitModule,
     investorCountModule,
+    timeLockModule,
     // Addons
     fixedYieldScheduleFactory,
     xvpSettlementFactory,
