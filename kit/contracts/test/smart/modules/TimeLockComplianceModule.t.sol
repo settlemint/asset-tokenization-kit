@@ -541,13 +541,14 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         // Issue secondary sale approval claim to user1
         claimUtils.issueCustomClaim(user1, secondarySaleTopicId, "Secondary Sale Approved by Issuer");
 
-        // Now transfer should be allowed even during lock period (exemption applies)
+        // Now canTransfer should be allowed even during lock period (exemption applies)
         module.canTransfer(address(smartToken), user1, user2, TEST_VALUE, paramsEncoded);
 
-        // Test that user2 (without exemption) still cannot transfer after receiving tokens
+        // Test user2 starting with tokens via minting
         vm.prank(address(smartToken));
-        module.transferred(address(smartToken), user1, user2, TEST_VALUE, paramsEncoded);
+        module.created(address(smartToken), user2, TEST_VALUE, paramsEncoded);
 
+        // user2 without exemption cannot transfer
         vm.expectRevert(
             abi.encodeWithSelector(
                 ISMARTComplianceModule.ComplianceCheckFailed.selector,
@@ -556,10 +557,18 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         );
         module.canTransfer(address(smartToken), user2, user1, TEST_VALUE, paramsEncoded);
 
-        // Issue exemption to user2 as well
+        // Issue exemption to user2
         claimUtils.issueCustomClaim(user2, secondarySaleTopicId, "Secondary Sale Approved by Issuer");
 
-        // Now user2 should also be able to transfer
+        // Now user2 can also transfer (canTransfer passes)
         module.canTransfer(address(smartToken), user2, user1, TEST_VALUE, paramsEncoded);
+
+        // Test available balance for users with exemptions
+        uint256 user1Available = module.getAvailableBalance(address(smartToken), user1, paramsEncoded);
+        uint256 user2Available = module.getAvailableBalance(address(smartToken), user2, paramsEncoded);
+        
+        // With exemptions, all tokens should be available
+        assertEq(user1Available, TEST_VALUE);
+        assertEq(user2Available, TEST_VALUE);
     }
 }
