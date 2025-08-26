@@ -49,6 +49,7 @@ async function tryDecodeRevertReason(error: Error): Promise<never> {
     const parts = shortMessage?.split("custom error");
     if (parts && parts[1]) {
       let hexPart = parts[1];
+      // Remove whitespace, colons, and periods from the hex part
       extractedHex = hexPart.replace(/[\s:.]/g, "");
     }
 
@@ -81,7 +82,7 @@ export async function parseRevertReason(revertReason: Hex | undefined) {
   for (const abi of allAbis) {
     const decoded = decodeRevertReason(revertReason, abi);
     if (decoded) {
-      console.log(`Decoded with ABI from: ${abi.filePath}`);
+      console.log(`ABI '${abi.filePath}' should have been included`);
       return decoded;
     }
   }
@@ -101,21 +102,8 @@ function decodeRevertReason(revertReason: Hex | undefined, abi: any) {
     return new Error(
       `The contract reverted with reason: ${decoded.errorName ? `${decoded.errorName} (args: ${decoded.args ? decoded.args.join(", ") : "/"})` : JSON.stringify(decoded, undefined, 2)}`
     );
-  } catch (e) {
-    // Check if this ABI has WalletAlreadyLinked error for debugging
-    if (revertReason?.startsWith("0x0caee8d8") && abi) {
-      const hasError = abi.some?.(
-        (item: any) =>
-          item.type === "error" && item.name === "WalletAlreadyLinked"
-      );
-      if (hasError) {
-        console.log(
-          "Found WalletAlreadyLinked in ABI but failed to decode:",
-          e
-        );
-      }
-    }
-    // ignore - error likely means this ABI doesn't have the matching error selector
+  } catch {
+    // ignore
   }
 }
 
