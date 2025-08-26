@@ -79,9 +79,41 @@ export function withAutoCells<TData>(
 }
 
 /**
+ * Applies automatic variant setting based on column type.
+ * Numeric types get 'numeric' variant for right alignment.
+ *
+ * @param column - The column definition to enhance
+ * @returns Enhanced column definition with automatic variant
+ */
+function withAutoVariant<TData, TValue = unknown>(
+  column: ColumnDef<TData, TValue>
+): ColumnDef<TData, TValue> {
+  // Don't override existing variant
+  if (column.meta?.variant) {
+    return column;
+  }
+
+  const columnType = column.meta?.type;
+  const numericTypes = ["number", "currency", "percentage", "basisPoints"];
+  
+  if (columnType && numericTypes.includes(columnType)) {
+    return {
+      ...column,
+      meta: {
+        ...column.meta,
+        type: columnType, // Ensure type is defined
+        variant: "numeric",
+      },
+    };
+  }
+
+  return column;
+}
+
+/**
  * Applies both auto cell rendering and auto filter functions to columns.
  * This is the recommended function to use for maximum automation.
- * Combines withAutoCell and withAutoFilterFn.
+ * Combines withAutoCell, withAutoFilterFn, and withAutoVariant.
  *
  * @example
  * ```tsx
@@ -94,7 +126,7 @@ export function withAutoCells<TData>(
  *   {
  *     id: "amount",
  *     header: "Amount",
- *     meta: { type: "currency", variant: "numeric" }
+ *     meta: { type: "currency" } // Will automatically get variant: "numeric"
  *   }
  * ]);
  * ```
@@ -105,5 +137,7 @@ export function withAutoCells<TData>(
 export function withAutoFeatures<TData>(
   columns: ColumnDef<TData>[]
 ): ColumnDef<TData>[] {
-  return columns.map((column) => withAutoFilterFn(withAutoCell(column)));
+  return columns.map((column) => 
+    withAutoFilterFn(withAutoVariant(withAutoCell(column)))
+  );
 }

@@ -372,6 +372,7 @@ export function BurnSheet({
                                   "tokens:actions.burn.form.amountLabel"
                                 )}
                                 endAddon={asset.symbol}
+                                decimals={asset.decimals}
                                 required
                                 description={(() => {
                                   const addr = form.getFieldValue(

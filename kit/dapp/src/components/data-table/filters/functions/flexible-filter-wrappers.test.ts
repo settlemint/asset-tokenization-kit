@@ -169,7 +169,7 @@ describe("flexible-filter-wrappers", () => {
         const complexFilter: FilterValue<"number", TestData> = {
           operator,
           values: [10, 20],
-          columnMeta: {},
+          columnMeta: { type: "number" },
         };
 
         flexibleNumberFilterFn(mockRow, "testColumn", complexFilter);
@@ -312,7 +312,7 @@ describe("flexible-filter-wrappers", () => {
         const complexFilter: FilterValue<"text", TestData> = {
           operator,
           values: ["test"],
-          columnMeta: {},
+          columnMeta: { type: "text" },
         };
 
         flexibleTextFilterFn(mockRow, "testColumn", complexFilter);
@@ -332,7 +332,7 @@ describe("flexible-filter-wrappers", () => {
         columnMeta: {
           type: "text",
           displayName: "Test Column",
-        } as Record<string, unknown>,
+        },
       };
 
       flexibleTextFilterFn(mockRow, "testColumn", complexFilter);
@@ -348,7 +348,7 @@ describe("flexible-filter-wrappers", () => {
       const complexFilter: FilterValue<"text", TestData> = {
         operator: "contains",
         values: ["value1", "value2", "value3"],
-        columnMeta: {},
+        columnMeta: { type: "text" },
       };
 
       flexibleTextFilterFn(mockRow, "testColumn", complexFilter);
@@ -364,7 +364,7 @@ describe("flexible-filter-wrappers", () => {
       const complexFilter: FilterValue<"text", TestData> = {
         operator: "contains",
         values: [],
-        columnMeta: {},
+        columnMeta: { type: "text" },
       };
 
       flexibleTextFilterFn(mockRow, "testColumn", complexFilter);
@@ -399,7 +399,7 @@ describe("flexible-filter-wrappers", () => {
       flexibleTextFilterFn(mockRow, "col4", {
         operator: "contains",
         values: ["complex"],
-        columnMeta: {},
+        columnMeta: { type: "text" },
       });
 
       expect(numberFilterFn).toHaveBeenCalledTimes(2);

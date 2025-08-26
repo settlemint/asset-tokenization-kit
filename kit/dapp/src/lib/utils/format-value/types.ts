@@ -1,22 +1,24 @@
 import type { FiatCurrency } from "@atk/zod/fiat-currency";
 
+export type FormatType =
+  | "address"
+  | "currency"
+  | "date"
+  | "status"
+  | "percentage"
+  | "number"
+  | "text"
+  | "boolean"
+  | "multiOption"
+  | "option"
+  | "basisPoints"
+  | "none";
+
 /**
  * Type definition for value formatting options
  */
 export interface FormatValueOptions {
-  type:
-    | "address"
-    | "currency"
-    | "date"
-    | "status"
-    | "percentage"
-    | "number"
-    | "text"
-    | "boolean"
-    | "multiOption"
-    | "option"
-    | "basisPoints"
-    | "none";
+  type: FormatType;
   displayName?: string;
   currency?: { assetSymbol: string } | FiatCurrency;
 

@@ -29,8 +29,8 @@ export interface StrictColumnHelper<TData extends RowData> {
     TValue extends TAccessor extends AccessorFn<TData, infer TReturn>
       ? TReturn
       : TAccessor extends DeepKeys<TData>
-      ? DeepValue<TData, TAccessor>
-      : never
+        ? DeepValue<TData, TAccessor>
+        : never,
   >(
     accessor: TAccessor,
     column: StrictAccessorColumnDef<TData, TValue>
@@ -45,51 +45,51 @@ export interface StrictColumnHelper<TData extends RowData> {
  * Creates a strict column helper that enforces proper separation of concerns:
  * - Use `accessor` for data columns that need automatic formatting
  * - Use `display` for custom cell rendering
- * 
+ *
  * @example
  * ```tsx
  * const columnHelper = createStrictColumnHelper<MyData>();
- * 
+ *
  * // ✅ Good - accessor for data with automatic formatting
  * columnHelper.accessor("amount", {
  *   header: "Amount",
  *   meta: { type: "currency" }
  * })
- * 
+ *
  * // ✅ Good - accessor with processed value (no custom display needed)
  * columnHelper.accessor((row) => formatEventName(row.eventName), {
  *   id: "event",
- *   header: "Event Name", 
+ *   header: "Event Name",
  *   meta: { type: "text" }
  * })
- * 
+ *
  * // ✅ Good - accessor with computed value
  * columnHelper.accessor((row) => row.firstName + " " + row.lastName, {
  *   id: "fullName",
  *   header: "Full Name",
  *   meta: { type: "text" }
  * })
- * 
+ *
  * // ✅ Good - accessor with prettified text
  * columnHelper.accessor((row) => prettifyStatus(row.status), {
  *   id: "prettyStatus",
  *   header: "Status",
  *   meta: { type: "text" }
  * })
- * 
+ *
  * // ✅ Good - accessor with mathematical transformation
  * columnHelper.accessor((row) => row.valueInWei / 1e18, {
- *   id: "valueInEth", 
+ *   id: "valueInEth",
  *   header: "Value (ETH)",
  *   meta: { type: "currency", currency: { assetSymbol: "ETH" } }
  * })
- * 
+ *
  * // ❌ Type Error - cell not allowed in accessor
  * columnHelper.accessor("amount", {
  *   header: "Amount",
  *   cell: () => <CustomCell /> // This will cause a type error
  * })
- * 
+ *
  * // ✅ Good - display for custom rendering
  * columnHelper.display({
  *   id: "actions",
@@ -98,7 +98,9 @@ export interface StrictColumnHelper<TData extends RowData> {
  * })
  * ```
  */
-export function createStrictColumnHelper<TData extends RowData>(): StrictColumnHelper<TData> {
+export function createStrictColumnHelper<
+  TData extends RowData,
+>(): StrictColumnHelper<TData> {
   const baseHelper = createTanstackColumnHelper<TData>();
 
   return {
