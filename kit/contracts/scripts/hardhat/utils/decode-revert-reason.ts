@@ -1,10 +1,13 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import path, { join } from "node:path";
 import {
+  CallExecutionError,
   ContractFunctionExecutionError,
   ContractFunctionRevertedError,
   decodeErrorResult,
+  ExecutionRevertedError,
   Hex,
+  isHex,
 } from "viem";
 import { ATKContracts } from "../constants/contracts";
 
@@ -34,28 +37,58 @@ async function tryDecodeRevertReason(error: Error): Promise<never> {
       throw parsedRevertReason;
     }
     console.log("Failed to decode revert reason");
-  } else {
-    console.log("Unknown error, cannot parse revert reason", error);
   }
+
+  if (
+    error instanceof CallExecutionError &&
+    error.cause instanceof ExecutionRevertedError
+  ) {
+    const shortMessage = error.cause.shortMessage;
+    let extractedHex: string | undefined;
+
+    const parts = shortMessage?.split("custom error");
+    if (parts && parts[1]) {
+      let hexPart = parts[1];
+      extractedHex = hexPart.replace(/[\s:.]/g, "");
+    }
+
+    if (extractedHex && isHex(extractedHex)) {
+      const parsedRevertReason = await parseRevertReason(extractedHex);
+      if (parsedRevertReason) {
+        throw parsedRevertReason;
+      }
+    }
+  }
+
+  console.log("Cannot parse revert reason, unknown error", error);
   throw error;
 }
 
 export async function parseRevertReason(revertReason: Hex | undefined) {
-  for (const abi of Object.values(ATKContracts)) {
+  console.log("Attempting to decode revert reason:", revertReason);
+
+  // First try with ATKContracts
+  for (const [contractName, abi] of Object.entries(ATKContracts)) {
     const decoded = decodeRevertReason(revertReason, abi);
     if (decoded) {
+      console.log(`Decoded with ATKContract: ${contractName}`);
       return decoded;
     }
   }
 
+  // Then try with all ABIs from artifacts
   const allAbis = await getAllAbis();
   for (const abi of allAbis) {
     const decoded = decodeRevertReason(revertReason, abi);
     if (decoded) {
-      console.log(`ABI '${abi.filePath}' should have been included`);
+      console.log(`Decoded with ABI from: ${abi.filePath}`);
       return decoded;
     }
   }
+
+  console.log(
+    "Could not decode revert reason - error selector not found in any ABI"
+  );
   return null;
 }
 
@@ -66,10 +99,23 @@ function decodeRevertReason(revertReason: Hex | undefined, abi: any) {
       data: revertReason ?? "0x",
     });
     return new Error(
-      `The contract reverted with reason: ${decoded.errorName ? `${decoded.errorName} (args: ${decoded.args.join(", ") || "/"})` : JSON.stringify(decoded, undefined, 2)}`
+      `The contract reverted with reason: ${decoded.errorName ? `${decoded.errorName} (args: ${decoded.args ? decoded.args.join(", ") : "/"})` : JSON.stringify(decoded, undefined, 2)}`
     );
-  } catch {
-    // ignore
+  } catch (e) {
+    // Check if this ABI has WalletAlreadyLinked error for debugging
+    if (revertReason?.startsWith("0x0caee8d8") && abi) {
+      const hasError = abi.some?.(
+        (item: any) =>
+          item.type === "error" && item.name === "WalletAlreadyLinked"
+      );
+      if (hasError) {
+        console.log(
+          "Found WalletAlreadyLinked in ABI but failed to decode:",
+          e
+        );
+      }
+    }
+    // ignore - error likely means this ABI doesn't have the matching error selector
   }
 }
 

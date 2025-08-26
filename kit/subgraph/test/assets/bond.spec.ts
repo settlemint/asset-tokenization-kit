@@ -14,6 +14,7 @@ describe("Bonds", () => {
             faceValue
             denominationAsset {
               name
+              decimals
             }
           }
           yield_ {
