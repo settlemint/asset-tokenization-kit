@@ -1,6 +1,6 @@
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
-import { AssetTypesManagement } from "@/components/system-assets/management/asset-types-management";
+import { AssetTypesByClass } from "@/components/platform-settings/asset-types-by-class";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
@@ -33,7 +33,7 @@ function AssetTypesSettingsPage() {
         </p>
       </div>
 
-      <AssetTypesManagement />
+      <AssetTypesByClass />
     </div>
   );
 }
