@@ -44,16 +44,9 @@ async function tryDecodeRevertReason(error: Error): Promise<never> {
     error.cause instanceof ExecutionRevertedError
   ) {
     const shortMessage = error.cause.shortMessage;
-    let extractedHex: string | undefined;
+    const extractedHex = extractHexFromCustomError(shortMessage);
 
-    const parts = shortMessage?.split("custom error");
-    if (parts && parts[1]) {
-      let hexPart = parts[1];
-      // Remove whitespace, colons, and periods from the hex part
-      extractedHex = hexPart.replace(/[\s:.]/g, "");
-    }
-
-    if (extractedHex && isHex(extractedHex)) {
+    if (extractedHex) {
       const parsedRevertReason = await parseRevertReason(extractedHex);
       if (parsedRevertReason) {
         throw parsedRevertReason;
@@ -148,4 +141,28 @@ async function getAllAbis() {
   console.log(`Found ${result.length} abis in ${ARTIFACTS_DIR}`);
   allAbisCache = result;
   return result;
+}
+
+/**
+ * Extracts hex revert reason from custom error messages.
+ * Example: "Execution reverted with reason: custom error 0xe450d38c: 000..." → "0xe450d38c000..."
+ */
+function extractHexFromCustomError(shortMessage?: string): Hex | undefined {
+  if (!shortMessage) return undefined;
+
+  // Split message on "custom error" to isolate the hex portion
+  // "Execution reverted with reason: custom error 0xe450d38c: 000..." becomes ["Execution reverted with reason: ", " 0xe450d38c: 000..."]
+  const parts = shortMessage.split("custom error");
+  if (parts && parts[1]) {
+    // Take the second part which contains the hex data
+    const hexPart = parts[1]; // " 0xe450d38c: 000..."
+
+    // Clean up by removing whitespace, colons, and periods to get pure hex
+    const cleanedHex = hexPart.replace(/[\s:.]/g, ""); // "0xe450d38c000..."
+    if (isHex(cleanedHex)) {
+      return cleanedHex;
+    }
+  }
+
+  return undefined;
 }
