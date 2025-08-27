@@ -106,22 +106,24 @@ describe("safeToString", () => {
 
 describe("formatValue", () => {
   test("returns empty value for null/undefined/empty string", () => {
-    expect(formatValue(null)).toBe("");
-    expect(formatValue(undefined)).toBe("");
-    expect(formatValue("")).toBe("");
+    expect(formatValue(null, { type: "text" })).toBe("");
+    expect(formatValue(undefined, { type: "text" })).toBe("");
+    expect(formatValue("", { type: "text" })).toBe("");
   });
 
   test("uses custom empty value when provided", () => {
     const emptyValue = <span>N/A</span>;
-    expect(formatValue(null, { emptyValue })).toEqual(emptyValue);
-    expect(formatValue(undefined, { emptyValue })).toEqual(emptyValue);
-    expect(formatValue("", { emptyValue })).toEqual(emptyValue);
+    expect(formatValue(null, { type: "text", emptyValue })).toEqual(emptyValue);
+    expect(formatValue(undefined, { type: "text", emptyValue })).toEqual(
+      emptyValue
+    );
+    expect(formatValue("", { type: "text", emptyValue })).toEqual(emptyValue);
   });
 
   test("returns string representation when no type specified", () => {
-    expect(formatValue("hello")).toBe("hello");
-    expect(formatValue(42)).toBe("42");
-    expect(formatValue(true)).toBe("true");
+    expect(formatValue("hello", { type: "none" })).toBe("hello");
+    expect(formatValue(42, { type: "none" })).toBe(42);
+    expect(formatValue(true, { type: "none" })).toBe(true);
   });
 
   describe("address type", () => {

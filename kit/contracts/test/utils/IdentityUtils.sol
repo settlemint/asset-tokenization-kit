@@ -82,6 +82,13 @@ contract IdentityUtils is Test {
         return issuerIdentityAddr; // Return the created identity address
     }
 
+    function updateIssuerClaimTopics(address issuerWalletAddress_, uint256[] memory claimTopics) public {
+        address issuerIdentityAddr = getIdentity(issuerWalletAddress_);
+        vm.startPrank(_platformAdmin);
+        _trustedIssuersRegistry.updateIssuerClaimTopics(IClaimIssuer(issuerIdentityAddr), claimTopics);
+        vm.stopPrank();
+    }
+
     function recoverIdentity(address lostWallet, address newWallet, address identityAddress) public {
         vm.startPrank(_platformAdmin);
         _identityRegistry.recoverIdentity(lostWallet, newWallet, identityAddress);

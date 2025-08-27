@@ -18,7 +18,7 @@ import type { FormatValueOptions } from "./types";
  */
 export function formatValue(
   value: unknown,
-  options: FormatValueOptions = {}
+  options: FormatValueOptions
 ): React.ReactNode {
   const { type, emptyValue } = options;
 
@@ -61,6 +61,10 @@ export function formatValue(
     case "option":
     case "multiOption":
       return <FormatOption value={value} options={options} />;
+
+    case "none":
+      // Return the value as-is without formatting
+      return value as React.ReactNode;
 
     default:
       return <span>{safeToString(value)}</span>;

@@ -58,7 +58,7 @@ const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
  * // First create a yield schedule
  * const schedule = await orpc.fixedYieldSchedule.create.mutate({
  *   yieldRate: "500", // 5%
- *   paymentInterval: "86400", // Daily
+ *   paymentInterval: TimeIntervalEnum.DAILY, // Daily
  *   startTime: "1690876800",
  *   endTime: "1722499200",
  *   token: tokenAddress,

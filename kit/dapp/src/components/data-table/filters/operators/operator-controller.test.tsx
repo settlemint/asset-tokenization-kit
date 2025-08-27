@@ -643,19 +643,6 @@ describe("PropertyFilterOperatorMenu", () => {
 
       expect(container.firstChild).toBeNull();
     });
-
-    it("should return null when column has no meta type", () => {
-      const column = createMockColumn({
-        filterValue: { operator: "is", values: [], columnMeta: undefined },
-        meta: {},
-      });
-
-      const { container } = renderWithProviders(
-        <PropertyFilterOperatorMenu column={column} closeController={vi.fn()} />
-      );
-
-      expect(container.firstChild).toBeNull();
-    });
   });
 });
 

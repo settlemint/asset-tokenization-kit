@@ -53,6 +53,7 @@ export const BondFields = withForm({
               description={t("form.fields.maturityDate.description", {
                 type: t(`asset-types:types.bond.nameLowercaseSingular`),
               })}
+              minDate={new Date()}
             />
           )}
         />

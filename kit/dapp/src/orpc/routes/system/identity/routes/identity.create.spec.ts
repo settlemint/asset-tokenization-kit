@@ -1,3 +1,4 @@
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
@@ -37,13 +38,20 @@ describe("Identity create", () => {
     const client = getOrpcClient(headers);
 
     await expect(
-      client.system.identity.create({
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
+      client.system.identity.create(
+        {
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
+          },
+          wallet,
         },
-        wallet,
-      })
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
+          },
+        }
+      )
     ).rejects.toThrow("Forbidden");
   });
 

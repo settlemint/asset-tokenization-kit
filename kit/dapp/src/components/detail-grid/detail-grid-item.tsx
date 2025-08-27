@@ -31,7 +31,7 @@ export interface DetailGridItemProps extends PropsWithChildren {
   /** Optional display name used for formatting hints */
   displayName?: string;
   /** Currency code for currency type formatting */
-  currency?: string;
+  currency?: FormatValueOptions["currency"];
   /** Value to display when the value is empty/null/undefined */
   emptyValue?: React.ReactNode;
   /** Whether to show pretty name for addresses (only applies when type="address") */
@@ -69,7 +69,7 @@ export function DetailGridItem({
       ? formatValue(value, {
           type,
           displayName: displayName ?? label,
-          currency: currency as FormatValueOptions["currency"],
+          currency,
           emptyValue,
           showPrettyName,
         })

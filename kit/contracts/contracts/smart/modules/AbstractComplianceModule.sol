@@ -7,6 +7,7 @@ import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.so
 
 // Interface imports
 import { ISMARTComplianceModule } from "../interface/ISMARTComplianceModule.sol";
+import { ISMART } from "../interface/ISMART.sol";
 
 /// @title Abstract Base for ATK Compliance Modules
 /// @author SettleMint
@@ -21,6 +22,11 @@ import { ISMARTComplianceModule } from "../interface/ISMARTComplianceModule.sol"
 /// - **ERC165 Support**: It correctly reports support for the `ISMARTComplianceModule` interface.
 /// Developers should inherit from this contract to create specific compliance rule sets.
 abstract contract AbstractComplianceModule is ERC2771Context, ISMARTComplianceModule {
+    // --- Errors ---
+    /// @notice Error thrown when a hook is called by an unauthorized contract
+    /// @param caller The address that attempted the unauthorized call
+    error UnauthorizedHookCaller(address caller);
+
     // --- Constructor ---
     /// @notice Constructor for the abstract compliance module.
     /// @dev When a contract inheriting from `AbstractComplianceModule` is deployed, this constructor is called.
@@ -28,6 +34,20 @@ abstract contract AbstractComplianceModule is ERC2771Context, ISMARTComplianceMo
     /// As modules are now stateless logic units, no access control setup is needed.
     /// @param _trustedForwarder Address of the trusted forwarder for meta transactions
     constructor(address _trustedForwarder) ERC2771Context(_trustedForwarder) { }
+
+    // --- Modifiers ---
+    /// @dev Restricts hook invocations to either the `_token` itself or its configured compliance contract
+    /// obtained via `ISMART(_token).compliance()` (see `ISMART.sol`).
+    /// This ensures only the SMART token or its Compliance contract can trigger module hooks.
+    modifier onlyTokenOrCompliance(address _token) {
+        if (msg.sender != _token) {
+            address complianceAddress = address(ISMART(_token).compliance());
+            if (msg.sender != complianceAddress) {
+                revert UnauthorizedHookCaller(msg.sender);
+            }
+        }
+        _;
+    }
 
     // --- ISMARTComplianceModule State-Changing Hooks (Empty Virtual Implementations) ---
 
@@ -53,6 +73,7 @@ abstract contract AbstractComplianceModule is ERC2771Context, ISMARTComplianceMo
         external
         virtual
         override
+        onlyTokenOrCompliance(_token)
     { /* Default: Do nothing. Override in child contracts if needed. */ }
 
     /// @inheritdoc ISMARTComplianceModule
@@ -74,6 +95,7 @@ abstract contract AbstractComplianceModule is ERC2771Context, ISMARTComplianceMo
         external
         virtual
         override
+        onlyTokenOrCompliance(_token)
     { /* Default: Do nothing. Override in child contracts if needed. */ }
 
     /// @inheritdoc ISMARTComplianceModule
@@ -86,7 +108,17 @@ abstract contract AbstractComplianceModule is ERC2771Context, ISMARTComplianceMo
     /// @param _to The address that received the newly created tokens.
     /// @param _value The amount of tokens created.
     /// @param _params The parameters that were configured for this module when it was added to the `_token`.
-    function created(address _token, address _to, uint256 _value, bytes calldata _params) external virtual override { /* Default: Do nothing. Override in child contracts if needed. */ }
+    function created(
+        address _token,
+        address _to,
+        uint256 _value,
+        bytes calldata _params
+    )
+        external
+        virtual
+        override
+        onlyTokenOrCompliance(_token)
+    { /* Default: Do nothing. Override in child contracts if needed. */ }
 
     // --- ERC165 Support ---
 

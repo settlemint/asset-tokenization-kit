@@ -171,9 +171,22 @@ export function getBigDecimal(value: unknown): BigDecimal {
   return bigDecimal().parse(value);
 }
 
+/**
+ * Sanitizes a numeric string by removing formatting characters like commas
+ * @param value - The value to sanitize (string or number)
+ * @returns A sanitized string that can be parsed by dnum's from() function
+ */
+function sanitizeNumericString(value: string | number): string | number {
+  if (typeof value === "number") {
+    return value;
+  }
+  // Remove commas and any other formatting characters
+  return value.replaceAll(",", "");
+}
+
 export const bigDecimalSerializer: StandardRPCCustomJsonSerializer = {
   type: 31,
   condition: (data) => isDnum(data),
   serialize: (data: Dnum) => format(data),
-  deserialize: (data) => from(data as string | number),
+  deserialize: (data) => from(sanitizeNumericString(data as string | number)),
 };

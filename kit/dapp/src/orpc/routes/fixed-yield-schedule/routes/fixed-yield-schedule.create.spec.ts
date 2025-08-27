@@ -1,6 +1,7 @@
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import { getAnvilTimeMilliseconds } from "@/test/anvil";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
+import { TimeIntervalEnum } from "@atk/zod/time-interval";
 import {
   errorMessageForCode,
   getOrpcClient,
@@ -76,8 +77,8 @@ describe("Fixed yield schedule create", async () => {
 
   test("can create fixed yield schedule", async () => {
     const yieldScheduleData = {
-      yieldRate: "250", // 2.5%
-      paymentInterval: "86400", // Daily payments (24 hours in seconds)
+      yieldRate: 250, // 2.5%
+      paymentInterval: TimeIntervalEnum.DAILY,
       startTime: startTimestamp,
       endTime: endTimestamp,
       token: bondToken.id,
@@ -101,8 +102,8 @@ describe("Fixed yield schedule create", async () => {
     const investorClient = getOrpcClient(headers);
 
     const yieldScheduleData = {
-      yieldRate: "250",
-      paymentInterval: "86400",
+      yieldRate: 250,
+      paymentInterval: TimeIntervalEnum.DAILY,
       startTime: startTimestamp,
       endTime: endTimestamp,
       token: bondToken.id,

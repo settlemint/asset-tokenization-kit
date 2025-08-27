@@ -45,7 +45,7 @@ describe("multi-option-filter", () => {
       const filterValue: FilterValue<"multiOption", TestData> = {
         operator: "include",
         values: [["tag1", "tag2"]],
-        columnMeta: {},
+        columnMeta: { type: "multiOption" },
       };
 
       expect(__multiOptionFilterFn([], filterValue)).toBe(false);
@@ -55,7 +55,7 @@ describe("multi-option-filter", () => {
       const filterValue: FilterValue<"multiOption", TestData> = {
         operator: "include",
         values: [],
-        columnMeta: {},
+        columnMeta: { type: "multiOption" },
       };
 
       expect(__multiOptionFilterFn(["tag1"], filterValue)).toBe(true);
@@ -65,7 +65,7 @@ describe("multi-option-filter", () => {
       const filterValue: FilterValue<"multiOption", TestData> = {
         operator: "include",
         values: [[]],
-        columnMeta: {},
+        columnMeta: { type: "multiOption" },
       };
 
       expect(__multiOptionFilterFn(["tag1"], filterValue)).toBe(true);
@@ -75,7 +75,7 @@ describe("multi-option-filter", () => {
       const filterValue: FilterValue<"multiOption", TestData> = {
         operator: "include",
         values: [null as unknown as string[]],
-        columnMeta: {},
+        columnMeta: { type: "multiOption" },
       };
 
       expect(__multiOptionFilterFn(["tag1"], filterValue)).toBe(true);
@@ -86,7 +86,7 @@ describe("multi-option-filter", () => {
         const filterValue: FilterValue<"multiOption", TestData> = {
           operator: "include",
           values: [["tag1", "tag2"]],
-          columnMeta: {},
+          columnMeta: { type: "multiOption" },
         };
 
         expect(__multiOptionFilterFn(["tag1", "tag3"], filterValue)).toBe(true);
@@ -98,7 +98,7 @@ describe("multi-option-filter", () => {
         const filterValue: FilterValue<"multiOption", TestData> = {
           operator: "include",
           values: [["tag1", "tag2"]],
-          columnMeta: {},
+          columnMeta: { type: "multiOption" },
         };
 
         expect(__multiOptionFilterFn(["tag3", "tag4"], filterValue)).toBe(
@@ -110,7 +110,7 @@ describe("multi-option-filter", () => {
         const filterValue: FilterValue<"multiOption", TestData> = {
           operator: "include any of",
           values: [["tag1", "tag2"]],
-          columnMeta: {},
+          columnMeta: { type: "multiOption" },
         };
 
         expect(__multiOptionFilterFn(["tag1", "tag3"], filterValue)).toBe(true);
@@ -125,7 +125,7 @@ describe("multi-option-filter", () => {
         const filterValue: FilterValue<"multiOption", TestData> = {
           operator: "exclude",
           values: [["tag1", "tag2"]],
-          columnMeta: {},
+          columnMeta: { type: "multiOption" },
         };
 
         expect(__multiOptionFilterFn(["tag3", "tag4"], filterValue)).toBe(true);
@@ -135,7 +135,7 @@ describe("multi-option-filter", () => {
         const filterValue: FilterValue<"multiOption", TestData> = {
           operator: "exclude",
           values: [["tag1", "tag2"]],
-          columnMeta: {},
+          columnMeta: { type: "multiOption" },
         };
 
         expect(__multiOptionFilterFn(["tag1", "tag3"], filterValue)).toBe(
@@ -150,7 +150,7 @@ describe("multi-option-filter", () => {
         const filterValue: FilterValue<"multiOption", TestData> = {
           operator: "exclude if any of",
           values: [["tag1", "tag2"]],
-          columnMeta: {},
+          columnMeta: { type: "multiOption" },
         };
 
         expect(__multiOptionFilterFn(["tag3", "tag4"], filterValue)).toBe(true);
@@ -160,7 +160,7 @@ describe("multi-option-filter", () => {
         const filterValue: FilterValue<"multiOption", TestData> = {
           operator: "exclude if any of",
           values: [["tag1", "tag2"]],
-          columnMeta: {},
+          columnMeta: { type: "multiOption" },
         };
 
         expect(__multiOptionFilterFn(["tag1", "tag3"], filterValue)).toBe(
@@ -175,7 +175,7 @@ describe("multi-option-filter", () => {
         const filterValue: FilterValue<"multiOption", TestData> = {
           operator: "include all of",
           values: [["tag1", "tag2"]],
-          columnMeta: {},
+          columnMeta: { type: "multiOption" },
         };
 
         expect(
@@ -188,7 +188,7 @@ describe("multi-option-filter", () => {
         const filterValue: FilterValue<"multiOption", TestData> = {
           operator: "include all of",
           values: [["tag1", "tag2"]],
-          columnMeta: {},
+          columnMeta: { type: "multiOption" },
         };
 
         expect(__multiOptionFilterFn(["tag1"], filterValue)).toBe(false);
@@ -206,7 +206,7 @@ describe("multi-option-filter", () => {
         const filterValue: FilterValue<"multiOption", TestData> = {
           operator: "exclude if all",
           values: [["tag1", "tag2"]],
-          columnMeta: {},
+          columnMeta: { type: "multiOption" },
         };
 
         expect(
@@ -221,7 +221,7 @@ describe("multi-option-filter", () => {
         const filterValue: FilterValue<"multiOption", TestData> = {
           operator: "exclude if all",
           values: [["tag1", "tag2"]],
-          columnMeta: {},
+          columnMeta: { type: "multiOption" },
         };
 
         expect(__multiOptionFilterFn(["tag1"], filterValue)).toBe(true);
@@ -234,7 +234,7 @@ describe("multi-option-filter", () => {
       const filterValue: FilterValue<"multiOption", TestData> = {
         operator: "include",
         values: [["tag1", "tag1", "tag2"]],
-        columnMeta: {},
+        columnMeta: { type: "multiOption" },
       };
 
       // Mock uniq to return unique values
@@ -265,7 +265,7 @@ describe("multi-option-filter", () => {
       const filterValue: FilterValue<"multiOption", TestData> = {
         operator: "include",
         values: [["tag1"]],
-        columnMeta: {},
+        columnMeta: { type: "multiOption" },
       };
 
       const result = multiOptionFilterFn(mockRow, "testColumn", filterValue);
@@ -297,7 +297,7 @@ describe("multi-option-filter", () => {
       const filterValue: FilterValue<"multiOption", TestData> = {
         operator: "include",
         values: [["tag1"]],
-        columnMeta: {},
+        columnMeta: { type: "multiOption" },
       };
 
       (isStringArray as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
@@ -321,7 +321,7 @@ describe("multi-option-filter", () => {
       const filterValue: FilterValue<"multiOption", TestData> = {
         operator: "include",
         values: [["tag1"]],
-        columnMeta: {},
+        columnMeta: { type: "multiOption" },
       };
 
       (isStringArray as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
@@ -350,6 +350,7 @@ describe("multi-option-filter", () => {
         operator: "include",
         values: [["transformed-item1"]],
         columnMeta: {
+          type: "multiOption",
           transformOptionFn: mockTransformFn,
         },
       };
@@ -376,7 +377,7 @@ describe("multi-option-filter", () => {
       const filterValue: FilterValue<"multiOption", TestData> = {
         operator: "include",
         values: [["tag1"]],
-        columnMeta: {},
+        columnMeta: { type: "multiOption" },
       };
 
       (isStringArray as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
@@ -407,6 +408,7 @@ describe("multi-option-filter", () => {
         operator: "include",
         values: [["transformed-item1"]],
         columnMeta: {
+          type: "multiOption",
           transformOptionFn: mockTransformFn,
         },
       };
@@ -438,6 +440,7 @@ describe("multi-option-filter", () => {
         operator: "include",
         values: [["transformed-item1"]],
         columnMeta: {
+          type: "multiOption",
           transformOptionFn: mockTransformFn,
         },
       };

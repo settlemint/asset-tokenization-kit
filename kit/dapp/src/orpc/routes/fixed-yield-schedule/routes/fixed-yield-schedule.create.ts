@@ -5,6 +5,7 @@ import { systemRouter } from "@/orpc/procedures/system.router";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { AddonFactoryTypeIdEnum } from "@atk/zod/addon-types";
 import { ethereumAddress, getEthereumAddress } from "@atk/zod/ethereum-address";
+import { timeIntervalToSeconds } from "@atk/zod/time-interval";
 import { z } from "zod";
 
 /**
@@ -84,7 +85,7 @@ const GET_YIELD_SCHEDULE_ADDRESS_QUERY = theGraphGraphql(`
  * // Create a new fixed yield schedule
  * const result = await orpc.fixedYieldSchedule.create.mutate({
  *   yieldRate: "500", // 5% in basis points
- *   paymentInterval: "86400", // Daily payments
+ *   paymentInterval: TimeIntervalEnum.DAILY, // Daily payments
  *   startTime: "1690876800", // Start timestamp
  *   endTime: "1722499200", // End timestamp
  *   token: "0x1234567890abcdef1234567890abcdef12345678",
@@ -153,10 +154,10 @@ export const create = systemRouter.fixedYieldSchedule.create
       {
         address: yieldScheduleAddon.id,
         from: sender.wallet,
-        endTime: endTime.toString(),
-        interval: paymentInterval.toString(),
+        endTime: Math.floor(endTime.getTime() / 1000).toString(),
+        interval: timeIntervalToSeconds(paymentInterval).toString(),
         rate: yieldRate.toString(),
-        startTime: startTime.toString(),
+        startTime: Math.floor(startTime.getTime() / 1000).toString(),
         token: token,
         country: countryCode,
       },

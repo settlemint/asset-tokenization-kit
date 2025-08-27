@@ -5,16 +5,16 @@ import {
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
+import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { BlocklistSheet } from "@/components/manage-dropdown/sheets/blocklist-sheet";
 import { Button } from "@/components/ui/button";
-import { Web3Address } from "@/components/web3/web3-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { useQuery } from "@tanstack/react-query";
-import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -22,7 +22,7 @@ type BlocklistRow = {
   id: string;
 };
 
-const columnHelper = createColumnHelper<BlocklistRow>();
+const columnHelper = createStrictColumnHelper<BlocklistRow>();
 
 export function TokenBlocklistTable({ token }: { token: Token }) {
   const { t } = useTranslation(["tokens", "common", "form"]);
@@ -57,20 +57,12 @@ export function TokenBlocklistTable({ token }: { token: Token }) {
       withAutoFeatures([
         columnHelper.accessor("id", {
           header: t("tokens:blocklist.columns.address"),
-          cell: ({ getValue }) => (
-            <Web3Address
-              address={getEthereumAddress(getValue())}
-              copyToClipboard
-              size="tiny"
-              showFullAddress={false}
-            />
-          ),
           meta: {
             displayName: t("tokens:blocklist.columns.address"),
             type: "address",
           },
         }) as unknown as ColumnDef<BlocklistRow>,
-        {
+        columnHelper.display({
           id: "actions",
           header: "",
           cell: ({ row }) => (
@@ -84,8 +76,8 @@ export function TokenBlocklistTable({ token }: { token: Token }) {
               }}
             />
           ),
-          meta: { type: "text", enableCsvExport: false },
-        } as ColumnDef<BlocklistRow>,
+          meta: { type: "none", enableCsvExport: false },
+        }),
       ]),
     [t, canManageBlocklist]
   );

@@ -1,8 +1,7 @@
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
-import { getEthereumAddress } from "@atk/zod/ethereum-address";
-import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { Shield } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -12,11 +11,11 @@ import {
   ActionsCell,
 } from "@/components/data-table/cells/actions-cell";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
+import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { ChangeRolesSheet } from "@/components/manage-dropdown/sheets/change-roles-sheet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Web3Address } from "@/components/web3/web3-address";
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { getAccessControlEntries } from "@/orpc/helpers/access-control-helpers";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
@@ -26,7 +25,7 @@ type PermissionRow = {
   roles: AccessControlRoles[];
 };
 
-const columnHelper = createColumnHelper<PermissionRow>();
+const columnHelper = createStrictColumnHelper<PermissionRow>();
 
 function toLabel(role: string) {
   // Convert camelCase/pascalCase to spaced Title Case for display
@@ -64,23 +63,16 @@ export function TokenPermissionsTable({ token }: { token: Token }) {
       withAutoFeatures([
         columnHelper.accessor("id", {
           header: t("tokens:permissions.columns.address"),
-          cell: ({ getValue }) => (
-            <Web3Address
-              address={getEthereumAddress(getValue())}
-              copyToClipboard
-              size="tiny"
-              showFullAddress={false}
-            />
-          ),
           meta: {
             displayName: t("tokens:permissions.columns.address"),
             type: "address",
           },
         }) as unknown as ColumnDef<PermissionRow>,
-        columnHelper.accessor("roles", {
+        columnHelper.display({
+          id: "roles",
           header: t("tokens:permissions.columns.roles"),
-          cell: ({ getValue }) => {
-            const roles = getValue();
+          cell: ({ row }) => {
+            const roles = row.original.roles;
             if (!roles?.length) return <span>-</span>;
             return (
               <div className="flex flex-wrap gap-1">
@@ -100,8 +92,8 @@ export function TokenPermissionsTable({ token }: { token: Token }) {
             displayName: t("tokens:permissions.columns.roles"),
             type: "text",
           },
-        }) as unknown as ColumnDef<PermissionRow>,
-        {
+        }),
+        columnHelper.display({
           id: "actions",
           header: "",
           cell: ({ row }) => (
@@ -114,8 +106,8 @@ export function TokenPermissionsTable({ token }: { token: Token }) {
               }}
             />
           ),
-          meta: { type: "text", enableCsvExport: false },
-        } as ColumnDef<PermissionRow>,
+          meta: { type: "none", enableCsvExport: false },
+        }),
       ]),
     [t, token]
   );

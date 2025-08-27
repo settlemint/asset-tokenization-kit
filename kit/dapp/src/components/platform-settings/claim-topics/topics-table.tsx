@@ -1,18 +1,19 @@
 import { DataTable } from "@/components/data-table/data-table";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
+import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { Badge } from "@/components/ui/badge";
 import { orpc } from "@/orpc/orpc-client";
 import type { TopicScheme } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { Edit, FileText, Settings, Shield } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EditTopicDialog } from "./edit-topic-dialog";
 import { TopicActionsMenu } from "./topic-actions-menu";
 
-const columnHelper = createColumnHelper<TopicScheme>();
+const columnHelper = createStrictColumnHelper<TopicScheme>();
 
 /**
  * Helper function to determine if a topic is a system topic
@@ -57,86 +58,79 @@ export function TopicsTable() {
       withAutoFeatures([
         columnHelper.accessor("name", {
           header: t("claimTopics.table.columns.name"),
-          cell: ({ getValue }) => {
-            const name = getValue();
-            return <span className="font-medium">{name}</span>;
-          },
           meta: {
             displayName: t("claimTopics.table.columns.name"),
             type: "text",
             icon: FileText,
           },
         }),
-        columnHelper.accessor("topicId", {
-          header: t("claimTopics.table.columns.id"),
-          cell: ({ getValue }) => {
-            const topicId = getValue();
+        columnHelper.accessor(
+          (row) => {
+            const topicId = row.topicId;
             const truncatedId =
               topicId.length > 10
                 ? `${topicId.slice(0, 6)}…${topicId.slice(-4)}`
                 : topicId;
-            return (
-              <span className="font-mono text-xs" title={topicId}>
-                {truncatedId}
-              </span>
-            );
+            return truncatedId;
           },
-          meta: {
-            displayName: t("claimTopics.table.columns.id"),
-            type: "text",
-          },
-        }),
-        columnHelper.accessor(
-          (row) => (isSystemTopic(row) ? "system" : "custom"),
           {
-            id: "source",
-            header: t("claimTopics.table.columns.source"),
-            cell: ({ getValue }) => {
-              const source = getValue();
-              const isSystem = source === "system";
-
-              return (
-                <Badge
-                  variant={isSystem ? "secondary" : "outline"}
-                  className="gap-1"
-                >
-                  {isSystem ? (
-                    <>
-                      <Shield className="h-3 w-3" />
-                      {t("claimTopics.table.source.system")}
-                    </>
-                  ) : (
-                    <>
-                      <Edit className="h-3 w-3" />
-                      {t("claimTopics.table.source.custom")}
-                    </>
-                  )}
-                </Badge>
-              );
-            },
+            header: t("claimTopics.table.columns.id"),
             meta: {
-              displayName: t("claimTopics.table.columns.source"),
-              type: "option",
-              icon: Settings,
-              options: [
-                {
-                  value: "system",
-                  label: t("claimTopics.table.source.system"),
-                  icon: Shield,
-                },
-                {
-                  value: "custom",
-                  label: t("claimTopics.table.source.custom"),
-                  icon: Edit,
-                },
-              ],
+              displayName: t("claimTopics.table.columns.id"),
+              type: "text",
             },
           }
         ),
+
+        columnHelper.display({
+          id: "source",
+          header: t("claimTopics.table.columns.source"),
+          cell: ({ row }) => {
+            const source = isSystemTopic(row.original) ? "system" : "custom";
+            const isSystem = source === "system";
+
+            return (
+              <Badge
+                variant={isSystem ? "secondary" : "outline"}
+                className="gap-1"
+              >
+                {isSystem ? (
+                  <>
+                    <Shield className="h-3 w-3" />
+                    {t("claimTopics.table.source.system")}
+                  </>
+                ) : (
+                  <>
+                    <Edit className="h-3 w-3" />
+                    {t("claimTopics.table.source.custom")}
+                  </>
+                )}
+              </Badge>
+            );
+          },
+          meta: {
+            displayName: t("claimTopics.table.columns.source"),
+            type: "option",
+            icon: Settings,
+            options: [
+              {
+                value: "system",
+                label: t("claimTopics.table.source.system"),
+                icon: Shield,
+              },
+              {
+                value: "custom",
+                label: t("claimTopics.table.source.custom"),
+                icon: Edit,
+              },
+            ],
+          },
+        }),
         columnHelper.display({
           id: "actions",
           header: t("claimTopics.table.columns.actions"),
           meta: {
+            type: "none",
             enableCsvExport: false,
           },
           cell: ({ row }) => {

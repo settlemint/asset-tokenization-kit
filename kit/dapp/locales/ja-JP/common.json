@@ -36,5 +36,12 @@
   "unknown": "不明",
   "save": "保存",
   "add": "付与",
-  "none": "なし"
+  "none": "なし",
+  "timeInterval": {
+    "DAILY": "毎日",
+    "WEEKLY": "毎週",
+    "MONTHLY": "毎月",
+    "QUARTERLY": "四半期",
+    "YEARLY": "年次"
+  }
 }

@@ -21,7 +21,7 @@ type FixedYieldScheduleCreateInput = Parameters<
  * ```typescript
  * const yieldSchedule = await createFixedYieldSchedule(adminClient, {
  *   yieldRate: "500", // 5% in basis points
- *   paymentInterval: "86400", // Daily payments
+ *   paymentInterval: TimeIntervalEnum.DAILY, // Daily payments
  *   startTime: startTimestamp,
  *   endTime: endTimestamp,
  *   token: tokenAddress,

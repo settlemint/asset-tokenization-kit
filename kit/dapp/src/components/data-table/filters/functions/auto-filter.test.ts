@@ -32,44 +32,56 @@ vi.mock("./multi-option-filter", () => ({
   multiOptionFilterFn: vi.fn().mockImplementation(() => true),
 }));
 
+vi.mock("./option-filter", () => ({
+  optionFilterFn: vi.fn().mockImplementation(() => true),
+}));
+
 import {
   flexibleNumberFilterFn,
   flexibleTextFilterFn,
 } from "./flexible-filter-wrappers";
 import { dateFilterFn } from "./date-filter";
 import { multiOptionFilterFn } from "./multi-option-filter";
+import { optionFilterFn } from "./option-filter";
 
 describe("auto-filter", () => {
   describe("getAutoFilterFn", () => {
     it("should return text filter for text-based types", () => {
       expect(getAutoFilterFn("text")).toBe(flexibleTextFilterFn);
       expect(getAutoFilterFn("address")).toBe(flexibleTextFilterFn);
-      expect(getAutoFilterFn("email")).toBe(flexibleTextFilterFn);
-      expect(getAutoFilterFn("url")).toBe(flexibleTextFilterFn);
     });
 
     it("should return number filter for number-based types", () => {
       expect(getAutoFilterFn("number")).toBe(flexibleNumberFilterFn);
       expect(getAutoFilterFn("currency")).toBe(flexibleNumberFilterFn);
       expect(getAutoFilterFn("percentage")).toBe(flexibleNumberFilterFn);
-      expect(getAutoFilterFn("decimals")).toBe(flexibleNumberFilterFn);
+      expect(getAutoFilterFn("basisPoints")).toBe(flexibleNumberFilterFn);
     });
 
     it("should return date filter for date-based types", () => {
       expect(getAutoFilterFn("date")).toBe(dateFilterFn);
-      expect(getAutoFilterFn("datetime")).toBe(dateFilterFn);
     });
 
     it("should return multi-option filter for multi-select types", () => {
-      expect(getAutoFilterFn("multiSelect")).toBe(multiOptionFilterFn);
-      expect(getAutoFilterFn("status")).toBe(multiOptionFilterFn);
-      expect(getAutoFilterFn("tags")).toBe(multiOptionFilterFn);
-      expect(getAutoFilterFn("badge")).toBe(multiOptionFilterFn);
+      expect(getAutoFilterFn("multiOption")).toBe(multiOptionFilterFn);
+    });
+
+    it("should return option filter for option and status types", () => {
+      expect(getAutoFilterFn("option")).toBe(optionFilterFn);
+      expect(getAutoFilterFn("status")).toBe(optionFilterFn);
+    });
+
+    it("should return text filter for text-like types", () => {
+      expect(getAutoFilterFn("boolean")).toBe(flexibleTextFilterFn);
+      expect(getAutoFilterFn("none")).toBe(flexibleTextFilterFn);
     });
 
     it("should return text filter as fallback for unknown types", () => {
+      // @ts-expect-error Testing fallback behavior with invalid type
       expect(getAutoFilterFn("unknown")).toBe(flexibleTextFilterFn);
+      // @ts-expect-error Testing fallback behavior with invalid type
       expect(getAutoFilterFn("custom")).toBe(flexibleTextFilterFn);
+      // @ts-expect-error Testing fallback behavior with invalid type
       expect(getAutoFilterFn("nonexistent")).toBe(flexibleTextFilterFn);
     });
 
@@ -79,6 +91,7 @@ describe("auto-filter", () => {
     });
 
     it("should handle empty string type", () => {
+      // @ts-expect-error Testing fallback behavior with invalid type
       expect(getAutoFilterFn("")).toBe(flexibleTextFilterFn);
     });
   });
@@ -109,11 +122,18 @@ describe("auto-filter", () => {
     });
 
     it("should apply filter function based on meta.type", () => {
-      const testCases = [
+      const testCases: Array<{
+        type: "text" | "number" | "date" | "multiOption" | "basisPoints" | "option" | "boolean" | "status";
+        expectedFn: unknown;
+      }> = [
         { type: "text", expectedFn: flexibleTextFilterFn },
         { type: "number", expectedFn: flexibleNumberFilterFn },
         { type: "date", expectedFn: dateFilterFn },
-        { type: "multiSelect", expectedFn: multiOptionFilterFn },
+        { type: "multiOption", expectedFn: multiOptionFilterFn },
+        { type: "basisPoints", expectedFn: flexibleNumberFilterFn },
+        { type: "option", expectedFn: optionFilterFn },
+        { type: "status", expectedFn: optionFilterFn },
+        { type: "boolean", expectedFn: flexibleTextFilterFn },
       ];
 
       testCases.forEach(({ type, expectedFn }) => {
@@ -123,32 +143,36 @@ describe("auto-filter", () => {
         };
 
         const result = withAutoFilterFn(column);
-        expect(result.filterFn).toBe(expectedFn);
+        expect(result.filterFn).toEqual(expectedFn);
       });
     });
 
-    it("should apply text filter to accessor columns without type", () => {
-      const accessorKeyColumn: ColumnDef<TestData> = {
-        accessorKey: "test",
-      };
-
-      const accessorFnColumn: ColumnDef<TestData> = {
-        id: "test",
-        accessorFn: (row) => (row as unknown as Record<string, unknown>).test,
-      };
-
-      expect(withAutoFilterFn(accessorKeyColumn).filterFn).toBe(
-        flexibleTextFilterFn
-      );
-      expect(withAutoFilterFn(accessorFnColumn).filterFn).toBe(
-        flexibleTextFilterFn
-      );
-    });
 
     it("should not modify column without accessor or type", () => {
       const column: ColumnDef<TestData> = {
         id: "test",
         header: "Test",
+      };
+
+      const result = withAutoFilterFn(column);
+      expect(result).toBe(column);
+      expect(result.filterFn).toBeUndefined();
+    });
+
+    it("should not modify column with type 'none'", () => {
+      const column: ColumnDef<TestData> = {
+        accessorKey: "test",
+        meta: { type: "none" },
+      };
+
+      const result = withAutoFilterFn(column);
+      expect(result).toBe(column);
+      expect(result.filterFn).toBeUndefined();
+    });
+
+    it("should not modify column when no meta object is present", () => {
+      const column: ColumnDef<TestData> = {
+        accessorKey: "test",
       };
 
       const result = withAutoFilterFn(column);
@@ -165,7 +189,7 @@ describe("auto-filter", () => {
         meta: {
           type: "number",
           displayName: "Test Display",
-        } as Record<string, unknown>,
+        },
       };
 
       const result = withAutoFilterFn(column);
@@ -187,24 +211,18 @@ describe("auto-filter", () => {
       expect(result.filterFn).toBe(flexibleNumberFilterFn);
     });
 
-    it("should handle meta object without type", () => {
+    it("should handle column with additional meta properties", () => {
       const column: ColumnDef<TestData> = {
         accessorKey: "test",
-        meta: { displayName: "Test" },
+        meta: { 
+          displayName: "Test Column",
+          type: "text"
+        },
       };
 
       const result = withAutoFilterFn(column);
       expect(result.filterFn).toBe(flexibleTextFilterFn);
-    });
-
-    it("should handle column with empty meta type", () => {
-      const column: ColumnDef<TestData> = {
-        accessorKey: "test",
-        meta: { type: "" },
-      };
-
-      const result = withAutoFilterFn(column);
-      expect(result.filterFn).toBe(flexibleTextFilterFn);
+      expect(result.meta?.displayName).toBe("Test Column");
     });
   });
 
@@ -214,16 +232,16 @@ describe("auto-filter", () => {
         { accessorKey: "name", meta: { type: "text" } },
         { accessorKey: "age", meta: { type: "number" } },
         { accessorKey: "joinDate", meta: { type: "date" } },
-        { accessorKey: "status", meta: { type: "multiSelect" } },
+        { accessorKey: "status", meta: { type: "multiOption" } },
       ];
 
       const result = withAutoFilterFns(columns);
 
       expect(result).toHaveLength(4);
-      expect(result[0]?.filterFn).toBe(flexibleTextFilterFn);
-      expect(result[1]?.filterFn).toBe(flexibleNumberFilterFn);
-      expect(result[2]?.filterFn).toBe(dateFilterFn);
-      expect(result[3]?.filterFn).toBe(multiOptionFilterFn);
+      expect(result[0]?.filterFn).toEqual(flexibleTextFilterFn);
+      expect(result[1]?.filterFn).toEqual(flexibleNumberFilterFn);
+      expect(result[2]?.filterFn).toEqual(dateFilterFn);
+      expect(result[3]?.filterFn).toEqual(multiOptionFilterFn);
     });
 
     it("should handle empty array", () => {
@@ -238,15 +256,17 @@ describe("auto-filter", () => {
         { accessorKey: "age", filterFn: customFilterFn }, // Has custom filter
         { id: "actions" }, // No accessor or type
         { accessorKey: "email", enableColumnFilter: false }, // Filter disabled
+        { accessorKey: "status", meta: { type: "none" } }, // Type none - should not get filter
       ];
 
       const result = withAutoFilterFns(columns);
 
-      expect(result).toHaveLength(4);
+      expect(result).toHaveLength(5);
       expect(result[0]?.filterFn).toBe(flexibleTextFilterFn);
       expect(result[1]?.filterFn).toBe(customFilterFn);
       expect(result[2]?.filterFn).toBeUndefined();
       expect(result[3]?.filterFn).toBeUndefined();
+      expect(result[4]?.filterFn).toBeUndefined(); // none type should not get filter
     });
 
     it("should preserve original array structure", () => {
@@ -254,12 +274,12 @@ describe("auto-filter", () => {
         {
           accessorKey: "test1",
           header: "Test 1",
-          meta: { type: "text" } as Record<string, unknown>,
+          meta: { type: "text" },
         },
         {
           accessorKey: "test2",
           header: "Test 2",
-          meta: { type: "number" } as Record<string, unknown>,
+          meta: { type: "number" },
         },
       ];
 

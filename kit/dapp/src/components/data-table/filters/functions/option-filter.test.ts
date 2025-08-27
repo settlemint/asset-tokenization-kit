@@ -27,7 +27,7 @@ describe("option-filter", () => {
       const filterValue: FilterValue<"option", TestData> = {
         operator: "is",
         values: [],
-        columnMeta: {},
+        columnMeta: { type: "option" },
       };
 
       expect(__optionFilterFn("test", filterValue)).toBe(true);
@@ -37,7 +37,7 @@ describe("option-filter", () => {
       const filterValue: FilterValue<"option", TestData> = {
         operator: "is",
         values: [null as unknown as string],
-        columnMeta: {},
+        columnMeta: { type: "option" },
       };
 
       expect(__optionFilterFn("test", filterValue)).toBe(false);
@@ -48,7 +48,7 @@ describe("option-filter", () => {
         const filterValue: FilterValue<"option", TestData> = {
           operator: "is",
           values: ["test"],
-          columnMeta: {},
+          columnMeta: { type: "option" },
         };
 
         expect(__optionFilterFn("test", filterValue)).toBe(true);
@@ -58,7 +58,7 @@ describe("option-filter", () => {
         const filterValue: FilterValue<"option", TestData> = {
           operator: "is",
           values: ["other"],
-          columnMeta: {},
+          columnMeta: { type: "option" },
         };
 
         expect(__optionFilterFn("test", filterValue)).toBe(false);
@@ -68,7 +68,7 @@ describe("option-filter", () => {
         const filterValue: FilterValue<"option", TestData> = {
           operator: "is",
           values: ["TEST"],
-          columnMeta: {},
+          columnMeta: { type: "option" },
         };
 
         expect(__optionFilterFn("test", filterValue)).toBe(true);
@@ -80,7 +80,7 @@ describe("option-filter", () => {
         const filterValue: FilterValue<"option", TestData> = {
           operator: "is not",
           values: ["test"],
-          columnMeta: {},
+          columnMeta: { type: "option" },
         };
 
         expect(__optionFilterFn("test", filterValue)).toBe(false);
@@ -90,7 +90,7 @@ describe("option-filter", () => {
         const filterValue: FilterValue<"option", TestData> = {
           operator: "is not",
           values: ["other"],
-          columnMeta: {},
+          columnMeta: { type: "option" },
         };
 
         expect(__optionFilterFn("test", filterValue)).toBe(true);
@@ -101,7 +101,7 @@ describe("option-filter", () => {
       const filterValue: FilterValue<"option", TestData> = {
         operator: "is",
         values: [""],
-        columnMeta: {},
+        columnMeta: { type: "option" },
       };
 
       expect(__optionFilterFn("", filterValue)).toBe(true);
@@ -112,7 +112,7 @@ describe("option-filter", () => {
       const filterValue: FilterValue<"option", TestData> = {
         operator: "is",
         values: ["@#$%^&*()"],
-        columnMeta: {},
+        columnMeta: { type: "option" },
       };
 
       expect(__optionFilterFn("@#$%^&*()", filterValue)).toBe(true);
@@ -123,7 +123,7 @@ describe("option-filter", () => {
       const filterValue: FilterValue<"option", TestData> = {
         operator: "is",
         values: ["café"],
-        columnMeta: {},
+        columnMeta: { type: "option" },
       };
 
       expect(__optionFilterFn("café", filterValue)).toBe(true);
@@ -144,7 +144,7 @@ describe("option-filter", () => {
       const filterValue: FilterValue<"option", TestData> = {
         operator: "is",
         values: ["test"],
-        columnMeta: {},
+        columnMeta: { type: "option" },
       };
 
       const result = optionFilterFn(mockRow, "testColumn", filterValue);
@@ -176,7 +176,7 @@ describe("option-filter", () => {
       const filterValue: FilterValue<"option", TestData> = {
         operator: "is",
         values: ["test"],
-        columnMeta: {},
+        columnMeta: { type: "option" },
       };
 
       (isColumnOption as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
@@ -200,7 +200,7 @@ describe("option-filter", () => {
       const filterValue: FilterValue<"option", TestData> = {
         operator: "is",
         values: ["test"],
-        columnMeta: {},
+        columnMeta: { type: "option" },
       };
 
       (isColumnOption as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
@@ -228,6 +228,7 @@ describe("option-filter", () => {
         operator: "is",
         values: ["transformed-test"],
         columnMeta: {
+          type: "option",
           transformOptionFn: mockTransformFn,
         },
       };
@@ -250,7 +251,7 @@ describe("option-filter", () => {
       const filterValue: FilterValue<"option", TestData> = {
         operator: "is",
         values: ["test"],
-        columnMeta: {},
+        columnMeta: { type: "option" },
       };
 
       (isColumnOption as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
@@ -272,6 +273,7 @@ describe("option-filter", () => {
         operator: "is",
         values: ["test"],
         columnMeta: {
+          type: "option",
           transformOptionFn: mockTransformFn,
         },
       };
@@ -294,7 +296,7 @@ describe("option-filter", () => {
       const filterValue: FilterValue<"option", TestData> = {
         operator: "is not",
         values: ["other"],
-        columnMeta: {},
+        columnMeta: { type: "option" },
       };
 
       (isColumnOption as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
@@ -314,7 +316,7 @@ describe("option-filter", () => {
       const filterValue: FilterValue<"option", TestData> = {
         operator: "is",
         values: [null as unknown as string], // Falsy filter value
-        columnMeta: {},
+        columnMeta: { type: "option" },
       };
 
       const result = optionFilterFn(mockRow, "testColumn", filterValue);

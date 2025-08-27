@@ -9,6 +9,7 @@ import { StepSubmitButton } from "@/components/form/multi-step/step-submit-butto
 import { NumberField } from "@/components/form/number-field";
 import { RadioField } from "@/components/form/radio-field";
 import { SelectField } from "@/components/form/select-field";
+import { SelectTimeIntervalField } from "@/components/form/select-time-interval-field";
 import { TextField } from "@/components/form/text-field";
 import { TextAreaField } from "@/components/form/textarea-field";
 import { VerificationButton } from "@/components/form/verification-button";
@@ -22,6 +23,7 @@ export const { useAppForm, withForm } = createFormHook({
     NumberField,
     RadioField,
     SelectField,
+    SelectTimeIntervalField,
     TextAreaField,
     TextField,
     BigIntField,

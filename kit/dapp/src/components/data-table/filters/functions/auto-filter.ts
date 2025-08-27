@@ -1,9 +1,11 @@
-import type { FilterFn, ColumnDef } from "@tanstack/react-table";
+import { optionFilterFn } from "@/components/data-table/filters/functions/option-filter";
+import type { FormatType } from "@/lib/utils/format-value/types";
+import type { ColumnDef, FilterFn } from "@tanstack/react-table";
+import { dateFilterFn } from "./date-filter";
 import {
   flexibleNumberFilterFn,
   flexibleTextFilterFn,
 } from "./flexible-filter-wrappers";
-import { dateFilterFn } from "./date-filter";
 import { multiOptionFilterFn } from "./multi-option-filter";
 
 /**
@@ -20,28 +22,30 @@ import { multiOptionFilterFn } from "./multi-option-filter";
  * // - multiSelect, status, tags, badge → multiOptionFilterFn
  * ```
  */
-const filterFnMap: Record<string, FilterFn<unknown>> = {
+const filterFnMap: Record<FormatType, FilterFn<unknown>> = {
   // Text-based filters
   text: flexibleTextFilterFn,
   address: flexibleTextFilterFn,
-  email: flexibleTextFilterFn,
-  url: flexibleTextFilterFn,
 
   // Number-based filters
   number: flexibleNumberFilterFn,
   currency: flexibleNumberFilterFn,
   percentage: flexibleNumberFilterFn,
-  decimals: flexibleNumberFilterFn,
+  basisPoints: flexibleNumberFilterFn,
 
   // Date-based filters
   date: dateFilterFn,
-  datetime: dateFilterFn,
 
   // Multi-select filters
-  multiSelect: multiOptionFilterFn,
-  status: multiOptionFilterFn,
-  tags: multiOptionFilterFn,
-  badge: multiOptionFilterFn,
+  multiOption: multiOptionFilterFn,
+  option: optionFilterFn,
+  status: optionFilterFn,
+
+  // Boolean filters
+  boolean: flexibleTextFilterFn,
+
+  // Special types
+  none: flexibleTextFilterFn,
 };
 
 /**
@@ -58,9 +62,9 @@ const filterFnMap: Record<string, FilterFn<unknown>> = {
  * const filterFn = getAutoFilterFn(); // Returns flexibleTextFilterFn (no type provided)
  * ```
  */
-export function getAutoFilterFn(type?: string): FilterFn<unknown> {
+export function getAutoFilterFn(type?: FormatType): FilterFn<unknown> {
   if (!type) return flexibleTextFilterFn;
-  return filterFnMap[type] ?? flexibleTextFilterFn;
+  return filterFnMap[type] || flexibleTextFilterFn;
 }
 
 /**
@@ -98,22 +102,14 @@ export function withAutoFilterFn<TData, TValue = unknown>(
 
   // If column has meta.type, apply the appropriate filter function
   const columnType = column.meta?.type;
-  if (columnType) {
-    return {
-      ...column,
-      filterFn: getAutoFilterFn(columnType) as FilterFn<TData>,
-    };
+  if (!columnType || columnType === "none") {
+    return column;
   }
 
-  // If it's an accessor column and no type is specified, default to text filter
-  if ("accessorKey" in column || "accessorFn" in column) {
-    return {
-      ...column,
-      filterFn: flexibleTextFilterFn as FilterFn<TData>,
-    };
-  }
-
-  return column;
+  return {
+    ...column,
+    filterFn: getAutoFilterFn(columnType) as FilterFn<TData>,
+  };
 }
 
 /**
@@ -122,17 +118,6 @@ export function withAutoFilterFn<TData, TValue = unknown>(
  *
  * @param columns - Array of column definitions to enhance
  * @returns Array of column definitions with appropriate filter functions applied
- *
- * @example
- * ```ts
- * const columns: ColumnDef<User>[] = [
- *   { accessorKey: 'name', meta: { type: 'text' } },
- *   { accessorKey: 'age', meta: { type: 'number' } },
- *   { accessorKey: 'joinDate', meta: { type: 'date' } }
- * ];
- * const enhancedColumns = withAutoFilterFns(columns);
- * // Each column now has the appropriate filter function
- * ```
  */
 export function withAutoFilterFns<TData>(
   columns: ColumnDef<TData>[]

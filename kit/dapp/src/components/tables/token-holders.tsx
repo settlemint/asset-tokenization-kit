@@ -7,19 +7,17 @@ import { DataTable } from "@/components/data-table/data-table";
 import { useBulkActions } from "@/components/data-table/data-table-bulk-actions";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
+import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { BurnSheet } from "@/components/manage-dropdown/sheets/burn-sheet";
 import { Badge } from "@/components/ui/badge";
-import { Web3Address } from "@/components/web3/web3-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenBalance } from "@/orpc/routes/token/routes/token.holders.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import type { Dnum } from "dnum";
-import { format } from "dnum";
 import {
   AlertCircle,
   CircleCheck,
@@ -37,7 +35,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-const columnHelper = createColumnHelper<TokenBalance>();
+const columnHelper = createStrictColumnHelper<TokenBalance>();
 
 /**
  * Initial sorting configuration for the holders table
@@ -199,17 +197,6 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
         createSelectionColumn<TokenBalance>(),
         columnHelper.accessor("account.id", {
           header: t("tokens:holders.columns.address"),
-          cell: ({ row }) => {
-            const address = row.original.account.id;
-            return (
-              <Web3Address
-                address={getEthereumAddress(address)}
-                copyToClipboard
-                size="small"
-                showFullAddress={false}
-              />
-            );
-          },
           meta: {
             displayName: t("tokens:holders.columns.address"),
             type: "address",
@@ -218,68 +205,36 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
         }),
         columnHelper.accessor("value", {
           header: t("tokens:holders.columns.totalBalance"),
-          cell: ({ getValue }) => {
-            const value = getValue();
-            return (
-              <span className="font-medium">
-                {format(value, {
-                  compact: true,
-                  digits: 2,
-                })}{" "}
-                {token.symbol}
-              </span>
-            );
-          },
           meta: {
             displayName: t("tokens:holders.columns.totalBalance"),
-            type: "number",
+            type: "currency",
             icon: Wallet,
+            currency: { assetSymbol: token.symbol },
           },
         }),
         columnHelper.accessor("available", {
           header: t("tokens:holders.columns.available"),
-          cell: ({ getValue }) => {
-            const available = getValue();
-            return (
-              <span>
-                {format(available, {
-                  compact: true,
-                  digits: 2,
-                })}{" "}
-                {token.symbol}
-              </span>
-            );
-          },
           meta: {
             displayName: t("tokens:holders.columns.available"),
-            type: "number",
+            type: "currency",
             icon: Coins,
+            currency: { assetSymbol: token.symbol },
           },
         }),
         columnHelper.accessor("frozen", {
           header: t("tokens:holders.columns.frozen"),
-          cell: ({ getValue }) => {
-            const frozen = getValue();
-            return (
-              <span className="text-muted-foreground">
-                {format(frozen, {
-                  compact: true,
-                  digits: 2,
-                })}{" "}
-                {token.symbol}
-              </span>
-            );
-          },
           meta: {
             displayName: t("tokens:holders.columns.frozen"),
-            type: "number",
+            type: "currency",
+            currency: { assetSymbol: token.symbol },
             icon: Lock,
           },
         }),
-        columnHelper.accessor("isFrozen", {
+        columnHelper.display({
+          id: "isFrozen",
           header: t("tokens:holders.columns.status"),
-          cell: ({ getValue }) => {
-            const isFrozen = getValue();
+          cell: ({ row }) => {
+            const isFrozen = row.original.isFrozen;
             return isFrozen ? (
               <Badge variant="destructive" className="gap-1">
                 <Lock className="h-3 w-3" />
@@ -313,6 +268,7 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
           id: "actions",
           header: t("tokens:holders.columns.actions"),
           meta: {
+            type: "none",
             enableCsvExport: false, // Disable CSV export for actions column
           },
           cell: ({ row }) => <ActionsCell actions={createRowActions(row)} />,

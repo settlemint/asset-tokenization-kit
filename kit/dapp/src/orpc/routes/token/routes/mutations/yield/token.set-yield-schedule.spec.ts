@@ -1,5 +1,6 @@
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import { getAnvilTimeMilliseconds } from "@/test/anvil";
+import { TimeIntervalEnum } from "@atk/zod/time-interval";
 import { createFixedYieldSchedule } from "@test/fixtures/fixed-yield-schedule";
 import {
   errorMessageForCode,
@@ -78,8 +79,8 @@ describe("Token set yield schedule", async () => {
     expect(bondToken.type).toBe(bondData.type);
 
     yieldSchedule = await createFixedYieldSchedule(adminClient, {
-      yieldRate: "50", // 0.5%
-      paymentInterval: "43200", // 12 hours in seconds
+      yieldRate: 50, // 0.5%
+      paymentInterval: TimeIntervalEnum.DAILY,
       startTime: startTimestamp,
       endTime: endTimestamp,
       token: bondToken.id,

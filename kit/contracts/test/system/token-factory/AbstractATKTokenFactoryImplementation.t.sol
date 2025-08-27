@@ -29,7 +29,7 @@ contract MockProxy {
 }
 
 contract MockContractWithIdentity is IContractWithIdentity {
-    function onchainID() external view returns (address) {
+    function onchainID() external pure returns (address) {
         return address(0);
     }
 

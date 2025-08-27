@@ -96,6 +96,9 @@ const ABI_PATHS = {
   addressBlockList: `${ARTIFACTS_DIR}/contracts/smart/modules/AddressBlockListComplianceModule.sol/AddressBlockListComplianceModule.json`,
   identityBlockList: `${ARTIFACTS_DIR}/contracts/smart/modules/IdentityBlockListComplianceModule.sol/IdentityBlockListComplianceModule.json`,
   identityAllowList: `${ARTIFACTS_DIR}/contracts/smart/modules/IdentityAllowListComplianceModule.sol/IdentityAllowListComplianceModule.json`,
+  tokenSupplyLimit: `${ARTIFACTS_DIR}/contracts/smart/modules/TokenSupplyLimitComplianceModule.sol/TokenSupplyLimitComplianceModule.json`,
+  investorCount: `${ARTIFACTS_DIR}/contracts/smart/modules/InvestorCountComplianceModule.sol/InvestorCountComplianceModule.json`,
+  timeLock: `${ARTIFACTS_DIR}/contracts/smart/modules/TimeLockComplianceModule.sol/TimeLockComplianceModule.json`,
   // addons
   fixedYieldScheduleFactory: `${ARTIFACTS_DIR}/contracts/addons/yield/IATKFixedYieldScheduleFactory.sol/IATKFixedYieldScheduleFactory.json`,
   fixedYieldSchedule: `${ARTIFACTS_DIR}/contracts/addons/yield/ATKFixedYieldScheduleUpgradeable.sol/ATKFixedYieldScheduleUpgradeable.json`,
@@ -145,6 +148,9 @@ const AVAILABLE_ABIS = {
     "addressBlockList",
     "identityBlockList",
     "identityAllowList",
+    "tokenSupplyLimit",
+    "investorCount",
+    "timeLock",
   ],
   addons: [
     "fixedYieldScheduleFactory",

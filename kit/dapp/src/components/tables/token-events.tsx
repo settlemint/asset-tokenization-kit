@@ -6,6 +6,7 @@ import { createSelectionColumn } from "@/components/data-table/columns/selection
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
+import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -16,7 +17,6 @@ import {
 } from "@/components/ui/sheet";
 import { Web3Address } from "@/components/web3/web3-address";
 import { Web3TransactionHash } from "@/components/web3/web3-transaction-hash";
-import { formatDate } from "@/lib/utils/date";
 import { formatEventName } from "@/lib/utils/format-event-name";
 import { formatValue } from "@/lib/utils/format-value";
 import { orpc } from "@/orpc/orpc-client";
@@ -29,7 +29,7 @@ import {
 import { isEthereumHash } from "@atk/zod/ethereum-hash";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import {
   Calendar,
   Copy,
@@ -43,7 +43,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-const columnHelper = createColumnHelper<TokenEvent>();
+const columnHelper = createStrictColumnHelper<TokenEvent>();
 
 /**
  * Initial sorting configuration for the events table
@@ -315,20 +315,6 @@ export function TokenEventsTable({ token }: TokenEventsTableProps) {
         createSelectionColumn<TokenEvent>(),
         columnHelper.accessor("blockTimestamp", {
           header: t("tokens:events.columns.timestamp"),
-          cell: ({ getValue }) => {
-            const timestamp = getValue();
-            try {
-              return (
-                <span className="text-nowrap">{formatDate(timestamp)}</span>
-              );
-            } catch {
-              return (
-                <span className="text-nowrap text-muted-foreground">
-                  Invalid date
-                </span>
-              );
-            }
-          },
           meta: {
             displayName: t("tokens:events.columns.timestamp"),
             type: "date",
@@ -337,43 +323,23 @@ export function TokenEventsTable({ token }: TokenEventsTableProps) {
         }),
         columnHelper.accessor("txIndex", {
           header: t("tokens:events.columns.txIndex"),
-          cell: ({ getValue }) => {
-            const txIndex = getValue();
-            return <span className="text-nowrap">{txIndex}</span>;
-          },
           meta: {
             displayName: t("tokens:events.columns.txIndex"),
             type: "number",
             icon: Hash,
           },
         }),
-        columnHelper.accessor("eventName", {
+        columnHelper.accessor((row) => formatEventName(row.eventName), {
           header: t("tokens:events.columns.event"),
-          cell: ({ getValue }) => {
-            const eventName = getValue();
-            return (
-              <span className="font-medium">{formatEventName(eventName)}</span>
-            );
-          },
           meta: {
             displayName: t("tokens:events.columns.event"),
             type: "text",
             icon: Zap,
           },
         }),
-        columnHelper.accessor("sender.id", {
+        columnHelper.accessor((row) => row.sender.id, {
+          id: "sender",
           header: t("tokens:events.columns.sender"),
-          cell: ({ getValue }) => {
-            const address = getValue();
-            return (
-              <Web3Address
-                address={getEthereumAddress(address)}
-                copyToClipboard={false}
-                size="tiny"
-                showFullAddress={false}
-              />
-            );
-          },
           meta: {
             displayName: t("tokens:events.columns.sender"),
             type: "address",
@@ -383,6 +349,10 @@ export function TokenEventsTable({ token }: TokenEventsTableProps) {
         columnHelper.display({
           id: "actions",
           cell: ({ row }) => <ActionsCell actions={createRowActions(row)} />,
+          meta: {
+            type: "none",
+            enableCsvExport: false,
+          },
           enableSorting: false,
           enableHiding: false,
         }),

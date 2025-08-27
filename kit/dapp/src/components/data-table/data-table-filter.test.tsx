@@ -321,7 +321,7 @@ describe("DataTableFilter", () => {
         id: "name",
         columnDef: {
           header: "Name",
-          meta: { displayName: "Name" },
+          meta: { displayName: "Name", type: "text" },
         },
       });
       (mockColumn.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
@@ -347,14 +347,14 @@ describe("DataTableFilter", () => {
         id: "name",
         columnDef: {
           header: "Name",
-          meta: { displayName: "Name" },
+          meta: { displayName: "Name", type: "text" },
         },
       });
       const mockColumn2 = createMockColumn({
         id: "email",
         columnDef: {
           header: "Email",
-          meta: { displayName: "Email" },
+          meta: { displayName: "Email", type: "text" },
         },
       });
       (mockColumn1.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
@@ -383,14 +383,14 @@ describe("DataTableFilter", () => {
         id: "name",
         columnDef: {
           header: "Name",
-          meta: { displayName: "Name" },
+          meta: { displayName: "Name", type: "text" },
         },
       });
       const mockColumn2 = createMockColumn({
         id: "email",
         columnDef: {
           header: "Email Address",
-          meta: { displayName: "Email Address" },
+          meta: { displayName: "Email Address", type: "text" },
         },
       });
       (mockColumn1.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
@@ -450,7 +450,7 @@ describe("DataTableFilter", () => {
         id: "name",
         columnDef: {
           header: "Name",
-          meta: { displayName: "Name" },
+          meta: { displayName: "Name", type: "text" },
         },
       });
       (mockColumn.getCanFilter as ReturnType<typeof vi.fn>).mockReturnValue(
@@ -705,7 +705,10 @@ describe("DataTableFilter", () => {
     });
 
     it("should handle different filter types correctly", () => {
-      const types: Record<string, string> = {
+      const types: Record<
+        string,
+        "text" | "number" | "date" | "option" | "multiOption"
+      > = {
         name: "text",
         age: "number",
         date: "date",
@@ -714,12 +717,12 @@ describe("DataTableFilter", () => {
       };
 
       const columns: Record<string, ReturnType<typeof createMockColumn>> = {};
-      Object.entries(types).forEach(([id, type]) => {
+      Object.entries(types).forEach(([id, columnType]) => {
         columns[id] = createMockColumn({
           id,
           columnDef: {
             header: id,
-            meta: { type, displayName: id },
+            meta: { type: columnType, displayName: id },
           },
         });
       });

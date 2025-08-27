@@ -72,7 +72,7 @@ A Helm chart for Graph Node
 | podDisruptionBudget.enabled | bool | `false` |  |
 | podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |
 | postgresReadinessCheck.enabled | bool | `true` | Enable PostgreSQL readiness check init container |
-| postgresReadinessCheck.image | string | `"docker.io/postgres:17.6"` | Docker image for PostgreSQL readiness check |
+| postgresReadinessCheck.image | string | `"docker.io/postgres:17.6-alpine"` | Docker image for PostgreSQL readiness check |
 | postgresReadinessCheck.initialWaitTime | int | `2` | Initial wait time between retries (doubles with exponential backoff) |
 | postgresReadinessCheck.maxRetries | int | `30` | Maximum number of connection retries |
 | postgresReadinessCheck.maxWaitTime | int | `30` | Maximum wait time between retries |

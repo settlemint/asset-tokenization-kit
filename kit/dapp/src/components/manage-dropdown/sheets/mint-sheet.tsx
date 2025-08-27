@@ -76,9 +76,16 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
       onSuccess: async () => {
         // PERFORMANCE: Refresh token data to show updated supply and balances
         await qc.invalidateQueries({
-          queryKey: orpc.token.read.queryOptions({
+          queryKey: orpc.token.read.queryKey({
             input: { tokenAddress: asset.id },
-          }).queryKey,
+          }),
+        });
+
+        // PERFORMANCE: Refresh holders data to show updated balances
+        await qc.invalidateQueries({
+          queryKey: orpc.token.holders.queryKey({
+            input: { tokenAddress: asset.id },
+          }),
         });
       },
     })

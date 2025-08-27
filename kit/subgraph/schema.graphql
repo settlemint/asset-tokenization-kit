@@ -545,13 +545,23 @@ type ComplianceModuleParameters @entity(immutable: false) {
   countries: [Int!]
   # Expression tree for complex rules
   expression: [ExpressionNode!] @derivedFrom(field: "parameters")
+  # Token supply limit parameters (if module type matches)
+  tokenSupplyLimit: TokenSupplyLimitParams
+  # Investor count limit parameters (if module type matches)
+  investorCount: InvestorCountParams
+  # Time lock parameters (if module type matches)
+  timeLock: TimeLockParams
 }
 
 type ExpressionNode @entity(immutable: true) {
   # Unique identifier for this node
   id: Bytes!
-  # Parameters this node belongs to
-  parameters: ComplianceModuleParameters!
+  # Parameters this node belongs to (for IdentityVerification module)
+  parameters: ComplianceModuleParameters
+  # InvestorCount params this node belongs to (for InvestorCount module)
+  investorCountParams: InvestorCountParams
+  # TimeLock params this node belongs to (for TimeLock module)
+  timeLockParams: TimeLockParams
   # Type of logical operation
   nodeType: ExpressionNodeType!
   # Position in the expression tree
@@ -594,6 +604,54 @@ enum TokenExtension {
   REDEEMABLE
   # Yield generation features
   YIELD
+}
+
+
+type TokenSupplyLimitParams @entity(immutable: false) {
+  # Unique identifier - same as ComplianceModuleParameters.id
+  id: Bytes!
+  # Back-reference to the owning parameters entity
+  parameters: ComplianceModuleParameters!
+  # Maximum allowed supply (exact units)
+  maxSupplyExact: BigInt!
+  # Tracking period length in days
+  periodLengthDays: Int!
+  # Whether rolling window is used
+  rolling: Boolean!
+  # Whether base price conversion is used
+  useBasePrice: Boolean!
+  # Whether tracking is global across tokens
+  global: Boolean!
+}
+
+type InvestorCountParams @entity(immutable: false) {
+  # Unique identifier - same as ComplianceModuleParameters.id
+  id: Bytes!
+  # Back-reference to the owning parameters entity
+  parameters: ComplianceModuleParameters!
+  # Maximum total investors across all countries (0 = no global limit)
+  maxInvestors: BigInt!
+  # Whether to track globally across all tokens for this issuer
+  global: Boolean!
+  # Array of ISO country codes for country-specific limits
+  countryCodes: [Int!]!
+  # Array of corresponding investor limits per country
+  countryLimits: [BigInt!]!
+  # Topic filter expression nodes for complex compliance rules
+  topicFilter: [ExpressionNode!] @derivedFrom(field: "investorCountParams")
+}
+
+type TimeLockParams @entity(immutable: false) {
+  # Unique identifier - same as ComplianceModuleParameters.id
+  id: Bytes!
+  # Back-reference to the owning parameters entity
+  parameters: ComplianceModuleParameters!
+  # Minimum hold period in seconds before tokens can be transferred
+  holdPeriod: BigInt!
+  # Whether exemptions through claims are allowed
+  allowExemptions: Boolean!
+  # Exemption expression nodes for complex exemption rules
+  exemptionExpression: [ExpressionNode!] @derivedFrom(field: "timeLockParams")
 }
 
 type TokenFactoryRegistry @entity(immutable: false) {
@@ -1588,3 +1646,4 @@ type TokenDistributionStats
   totalValueSegment5Exact: BigInt!
     @aggregate(fn: "last", arg: "totalValueSegment5Exact")
 }
+

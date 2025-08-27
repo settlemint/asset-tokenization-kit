@@ -1,6 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ManageAssetDropdown } from "./manage-asset-dropdown";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 
@@ -10,6 +11,18 @@ vi.mock("react-i18next", () => ({
     t: (key: string) => key,
   }),
   initReactI18next: { type: "3rdParty", init: () => {} },
+}));
+
+// Mock ORPC client
+vi.mock("@/orpc/orpc-client", () => ({
+  orpc: {
+    token: {
+      mint: { mutationOptions: vi.fn(() => ({})) },
+      read: { queryOptions: vi.fn(() => ({ queryKey: ["token", "read"] })) },
+      pause: { mutationOptions: vi.fn(() => ({})) },
+      unpause: { mutationOptions: vi.fn(() => ({})) },
+    },
+  },
 }));
 
 vi.mock("./sheets/pause-unpause-confirmation-sheet", () => ({
@@ -40,6 +53,38 @@ vi.mock("./sheets/pause-unpause-confirmation-sheet", () => ({
   ),
 }));
 
+vi.mock("./sheets/mint-sheet", () => ({
+  MintSheet: ({
+    open,
+    onOpenChange: _onOpenChange,
+    asset,
+  }: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    asset: Token;
+  }) => (
+    <div data-testid="mint-sheet" data-open={open} data-asset-id={asset.id} />
+  ),
+}));
+
+vi.mock("./sheets/set-yield-schedule-sheet", () => ({
+  SetYieldScheduleSheet: ({
+    open,
+    onOpenChange: _onOpenChange,
+    asset,
+  }: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    asset: Token;
+  }) => (
+    <div
+      data-testid="set-yield-schedule-sheet"
+      data-open={open}
+      data-asset-id={asset.id}
+    />
+  ),
+}));
+
 const createMockToken = (overrides?: Partial<Token>): Token =>
   ({
     id: "0x1234567890123456789012345678901234567890" as `0x${string}`,
@@ -66,15 +111,30 @@ const createMockToken = (overrides?: Partial<Token>): Token =>
 
 describe("ManageAssetDropdown", () => {
   const user = userEvent.setup();
+  let queryClient: QueryClient;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
+    });
   });
+
+  const renderWithProviders = (component: React.ReactElement) => {
+    return render(
+      <QueryClientProvider client={queryClient}>
+        {component}
+      </QueryClientProvider>
+    );
+  };
 
   describe("Rendering", () => {
     it("renders the manage button with correct text", () => {
       const asset = createMockToken();
-      render(<ManageAssetDropdown asset={asset} />);
+      renderWithProviders(<ManageAssetDropdown asset={asset} />);
 
       const button = screen.getByRole("button", { name: /tokens:manage/i });
       expect(button).toBeInTheDocument();
@@ -83,7 +143,7 @@ describe("ManageAssetDropdown", () => {
 
     it("renders the chevron icon", () => {
       const asset = createMockToken();
-      render(<ManageAssetDropdown asset={asset} />);
+      renderWithProviders(<ManageAssetDropdown asset={asset} />);
 
       const button = screen.getByRole("button", { name: /tokens:manage/i });
       const chevron = button.querySelector("svg");
@@ -95,7 +155,7 @@ describe("ManageAssetDropdown", () => {
   describe("Dropdown Menu", () => {
     it("opens dropdown menu when button is clicked", async () => {
       const asset = createMockToken();
-      render(<ManageAssetDropdown asset={asset} />);
+      renderWithProviders(<ManageAssetDropdown asset={asset} />);
 
       const button = screen.getByRole("button", { name: /tokens:manage/i });
       await user.click(button);
@@ -111,7 +171,7 @@ describe("ManageAssetDropdown", () => {
 
     it("shows pause action when asset is not paused", async () => {
       const asset = createMockToken({ pausable: { paused: false } });
-      render(<ManageAssetDropdown asset={asset} />);
+      renderWithProviders(<ManageAssetDropdown asset={asset} />);
 
       const button = screen.getByRole("button", { name: /tokens:manage/i });
       await user.click(button);
@@ -122,7 +182,7 @@ describe("ManageAssetDropdown", () => {
 
     it("shows unpause action when asset is paused", async () => {
       const asset = createMockToken({ pausable: { paused: true } });
-      render(<ManageAssetDropdown asset={asset} />);
+      renderWithProviders(<ManageAssetDropdown asset={asset} />);
 
       const button = screen.getByRole("button", { name: /tokens:manage/i });
       await user.click(button);
@@ -133,7 +193,7 @@ describe("ManageAssetDropdown", () => {
 
     it("shows view events action as disabled", async () => {
       const asset = createMockToken();
-      render(<ManageAssetDropdown asset={asset} />);
+      renderWithProviders(<ManageAssetDropdown asset={asset} />);
 
       const button = screen.getByRole("button", { name: /tokens:manage/i });
       await user.click(button);
@@ -150,7 +210,7 @@ describe("ManageAssetDropdown", () => {
   describe("Pause/Unpause Sheet", () => {
     it("opens pause sheet when pause action is clicked", async () => {
       const asset = createMockToken({ pausable: { paused: false } });
-      render(<ManageAssetDropdown asset={asset} />);
+      renderWithProviders(<ManageAssetDropdown asset={asset} />);
 
       // Open dropdown
       const button = screen.getByRole("button", { name: /tokens:manage/i });
@@ -168,7 +228,7 @@ describe("ManageAssetDropdown", () => {
 
     it("opens unpause sheet when unpause action is clicked", async () => {
       const asset = createMockToken({ pausable: { paused: true } });
-      render(<ManageAssetDropdown asset={asset} />);
+      renderWithProviders(<ManageAssetDropdown asset={asset} />);
 
       // Open dropdown
       const button = screen.getByRole("button", { name: /tokens:manage/i });
@@ -186,7 +246,7 @@ describe("ManageAssetDropdown", () => {
 
     it("closes sheet when onOpenChange is called with false", async () => {
       const asset = createMockToken({ pausable: { paused: false } });
-      render(<ManageAssetDropdown asset={asset} />);
+      renderWithProviders(<ManageAssetDropdown asset={asset} />);
 
       // Open dropdown and click pause
       const button = screen.getByRole("button", { name: /tokens:manage/i });
@@ -210,7 +270,7 @@ describe("ManageAssetDropdown", () => {
   describe("Asset State Handling", () => {
     it("correctly handles asset without pausable capability (undefined)", async () => {
       const asset = createMockToken({ pausable: undefined });
-      render(<ManageAssetDropdown asset={asset} />);
+      renderWithProviders(<ManageAssetDropdown asset={asset} />);
 
       const button = screen.getByRole("button", { name: /tokens:manage/i });
       expect(button).toBeInTheDocument();
@@ -234,7 +294,7 @@ describe("ManageAssetDropdown", () => {
 
     it("correctly handles asset without pausable capability (null)", async () => {
       const asset = createMockToken({ pausable: null as unknown as undefined });
-      render(<ManageAssetDropdown asset={asset} />);
+      renderWithProviders(<ManageAssetDropdown asset={asset} />);
 
       const button = screen.getByRole("button", { name: /tokens:manage/i });
       expect(button).toBeInTheDocument();
@@ -258,11 +318,17 @@ describe("ManageAssetDropdown", () => {
 
     it("updates actions when asset state changes", () => {
       const asset = createMockToken({ pausable: { paused: false } });
-      const { rerender } = render(<ManageAssetDropdown asset={asset} />);
+      const { rerender } = renderWithProviders(
+        <ManageAssetDropdown asset={asset} />
+      );
 
       // Update asset to paused state
       const pausedAsset = createMockToken({ pausable: { paused: true } });
-      rerender(<ManageAssetDropdown asset={pausedAsset} />);
+      rerender(
+        <QueryClientProvider client={queryClient}>
+          <ManageAssetDropdown asset={pausedAsset} />
+        </QueryClientProvider>
+      );
 
       // Actions should be updated (verified by opening dropdown)
       const button = screen.getByRole("button", { name: /tokens:manage/i });

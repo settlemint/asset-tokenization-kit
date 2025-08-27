@@ -140,8 +140,10 @@ contract IdentityAllowListComplianceModuleTest is AbstractComplianceModuleTest {
         bytes memory params = abi.encode(new address[](0));
 
         // These functions should not revert for stateless modules
+        vm.startPrank(address(smartToken));
         module.transferred(address(smartToken), tokenIssuer, user1, 100, params);
         module.created(address(smartToken), user1, 100, params);
         module.destroyed(address(smartToken), user1, 100, params);
+        vm.stopPrank();
     }
 }

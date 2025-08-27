@@ -88,6 +88,18 @@ export class TypeIds {
       name: "SMARTIdentityVerificationComplianceModule",
       id: getTypeId("SMARTIdentityVerificationComplianceModule"),
     },
+    {
+      name: "TokenSupplyLimitComplianceModule",
+      id: getTypeId("TokenSupplyLimitComplianceModule"),
+    },
+    {
+      name: "InvestorCountComplianceModule",
+      id: getTypeId("InvestorCountComplianceModule"),
+    },
+    {
+      name: "TimeLockComplianceModule",
+      id: getTypeId("TimeLockComplianceModule"),
+    },
   ];
 }
 

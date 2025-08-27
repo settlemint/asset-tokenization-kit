@@ -1,7 +1,8 @@
+import { FormatValueOptions } from "@/lib/utils/format-value/types";
 import type { RowData } from "@tanstack/react-table";
 import type { LucideIcon } from "lucide-react";
-import type { ColumnDataType, ColumnOption, ElementType } from "./column-types";
 import type { BulkActionGroup } from "../../types/bulk-actions";
+import type { ColumnOption, ElementType } from "./column-types";
 
 /**
  * Module augmentation for @tanstack/react-table to add custom column metadata
@@ -32,25 +33,13 @@ declare module "@tanstack/react-table" {
    * ```
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface ColumnMeta<TData extends RowData, TValue> {
-    /**
-     * Custom display name for the column header
-     * @remarks If not provided, the column ID will be used as fallback
-     */
-    displayName?: string;
-
+  interface ColumnMeta<TData extends RowData, TValue>
+    extends FormatValueOptions {
     /**
      * Icon to display in the column header
      * @remarks Can be either a Lucide icon or a custom React component that accepts className prop
      */
     icon?: LucideIcon | React.ComponentType<{ className?: string }>;
-
-    /**
-     * Data type of the column for appropriate formatting and filtering
-     * @remarks Can be a predefined ColumnDataType or any string for custom types
-     * Common types include: 'text', 'number', 'date', 'currency', 'option', 'multiOption'
-     */
-    type?: ColumnDataType | (string & {});
 
     /**
      * Predefined options for select/multiselect column types
@@ -109,27 +98,6 @@ declare module "@tanstack/react-table" {
      * @example "/items/{id}" where {id} is replaced with the row's ID value
      */
     detailUrl?: string;
-
-    /**
-     * ISO 4217 currency code for currency formatting
-     * @remarks Only applicable when column type is 'currency'
-     * @example "USD", "EUR", "GBP", "JPY"
-     */
-    currency?: string;
-
-    /**
-     * Value to display when the cell value is empty/null/undefined
-     * @remarks Can be a string, number, or React component
-     * @example "-", "N/A", <span className="text-muted-foreground">No data</span>
-     */
-    emptyValue?: React.ReactNode;
-
-    /**
-     * Whether to show pretty name for addresses (only applies when type="address")
-     * @remarks When true, will display the ENS name or other readable identifier if available
-     * @defaultValue true
-     */
-    showPrettyName?: boolean;
   }
 }
 
