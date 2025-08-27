@@ -167,6 +167,11 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
 
         Config memory config = abi.decode(_params, (Config));
 
+        // Check for exemptions first (if enabled) - check the wallet address, not identity
+        if (config.allowExemptions && _qualifiesForExemption(_token, _to, config.exemptionExpression)) {
+            return; // Transfer allowed due to exemption
+        }
+
         // Get identities for from and to addresses
         address fromIdentity = _getIdentityAddress(_token, _from);
         address toIdentity = _getIdentityAddress(_token, _to);
@@ -174,11 +179,6 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
         // If either party doesn't have an identity, block the transfer
         if (fromIdentity == address(0) || toIdentity == address(0)) {
             revert IdentitiesRequired();
-        }
-
-        // Check for exemptions first (if enabled)
-        if (config.allowExemptions && _qualifiesForExemption(_token, toIdentity, config.exemptionExpression)) {
-            return; // Transfer allowed due to exemption
         }
 
         // Check if there's a valid approval for this transfer
@@ -450,15 +450,15 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
         return address(identityRegistry.identity(_wallet));
     }
 
-    /// @notice Checks if an identity qualifies for transfer exemption
-    /// @dev Uses the identity registry to evaluate the exemption expression
+    /// @notice Checks if a wallet qualifies for transfer exemption
+    /// @dev Uses the identity registry to evaluate the exemption expression against the wallet
     /// @param _token The token address (used to get identity registry)
-    /// @param _identity The identity address to check
+    /// @param _wallet The wallet address to check
     /// @param exemptionExpression The ExpressionNode array defining exemption requirements
-    /// @return True if the identity qualifies for exemption
+    /// @return True if the wallet qualifies for exemption
     function _qualifiesForExemption(
         address _token,
-        address _identity,
+        address _wallet,
         ExpressionNode[] memory exemptionExpression
     )
         private
@@ -474,19 +474,13 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
         ISMART smartToken = ISMART(_token);
         ISMARTIdentityRegistry identityRegistry = ISMARTIdentityRegistry(smartToken.identityRegistry());
 
-        // Check if the identity exists in the registry
-        // Note: For identity addresses, we need to check if they are registered
-        // This is a simplified check - in practice, you might need different logic
-        // to verify identity contract validity
+        // Check if the wallet is in the registry and has the required claims
+        if (!identityRegistry.contains(_wallet)) {
+            return false;
+        }
 
-        // Use the identity registry to evaluate the exemption expression
-        // Since we're checking an identity contract (not a wallet), we need to find
-        // a wallet associated with this identity to use the isVerified function
-        // This is a limitation of the current interface design
-
-        // For now, we'll assume identity contracts can be directly checked
-        // This may need adjustment based on the actual identity registry implementation
-        try identityRegistry.isVerified(_identity, exemptionExpression) returns (bool result) {
+        // Use the identity registry to evaluate the exemption expression against the wallet
+        try identityRegistry.isVerified(_wallet, exemptionExpression) returns (bool result) {
             return result;
         } catch {
             return false;

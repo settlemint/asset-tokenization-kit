@@ -39,11 +39,17 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
     address internal approverIdentity1;
     address internal approverIdentity2;
     address internal nonApproverIdentity;
+    address internal approver1Wallet;
+    address internal approver2Wallet;
+    address internal nonApproverWallet;
     uint256 internal transferAmount = 1000e18;
 
     // Additional test users
     address internal user4;
     address internal user5;
+
+    // Custom topic ID for testing QII exemptions
+    uint256 internal qiiTopicId;
 
     // Mock token for testing lifecycle hooks without real token operations
     MockSMARTToken internal mockToken;
@@ -57,7 +63,7 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
         address approverIdentity,
         uint256 expiry
     );
-    
+
     event TransferApprovalConsumed(
         address indexed token,
         address indexed fromIdentity,
@@ -65,7 +71,7 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
         uint256 value,
         address approverIdentity
     );
-    
+
     event TransferApprovalRevoked(
         address indexed token,
         address indexed fromIdentity,
@@ -94,11 +100,30 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
         claimUtils.issueAllClaims(user4);
         claimUtils.issueAllClaims(user5);
 
-        // Create approver identities and get their identity contract addresses
-        address approver1Wallet = makeAddr("approver1Wallet");
-        address approver2Wallet = makeAddr("approver2Wallet");
-        address nonApproverWallet = makeAddr("nonApproverWallet");
+        // Create QII topic scheme and register with claim issuer
+        vm.startPrank(platformAdmin);
+        systemUtils.topicSchemeRegistry().registerTopicScheme("TOPIC_QII", "string claim");
+        qiiTopicId = systemUtils.getTopicId("TOPIC_QII");
+        vm.stopPrank();
 
+        // Add issuer with all necessary topics (existing + custom)
+        vm.startPrank(platformAdmin);
+        uint256[] memory allTopics = new uint256[](5);
+        allTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
+        allTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_AML);
+        allTopics[2] = systemUtils.getTopicId(ATKTopics.TOPIC_COLLATERAL);
+        allTopics[3] = systemUtils.getTopicId(ATKTopics.TOPIC_BASE_PRICE);
+        allTopics[4] = qiiTopicId; // Add our custom topic
+
+        identityUtils.updateIssuerClaimTopics(claimIssuer, allTopics);
+        vm.stopPrank();
+
+        // Create approver wallet addresses - these will be used to call approveTransfer
+        approver1Wallet = makeAddr("approver1Wallet");
+        approver2Wallet = makeAddr("approver2Wallet");
+        nonApproverWallet = makeAddr("nonApproverWallet");
+
+        // Create identities for approver wallets
         identityUtils.createClientIdentity(approver1Wallet, TestConstants.COUNTRY_CODE_US);
         identityUtils.createClientIdentity(approver2Wallet, TestConstants.COUNTRY_CODE_BE);
         identityUtils.createClientIdentity(nonApproverWallet, TestConstants.COUNTRY_CODE_JP);
@@ -108,14 +133,13 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
         claimUtils.issueAllClaims(approver2Wallet);
         claimUtils.issueAllClaims(nonApproverWallet);
 
-        // Get the identity contract addresses
+        // Get the identity contract addresses (these are the approval authorities)
         approverIdentity1 = address(systemUtils.identityRegistry().identity(approver1Wallet));
         approverIdentity2 = address(systemUtils.identityRegistry().identity(approver2Wallet));
         nonApproverIdentity = address(systemUtils.identityRegistry().identity(nonApproverWallet));
 
         // Issue special QII claim to user4 for exemption testing
-        uint256 qiiTopic = systemUtils.topicSchemeRegistry().getTopicId("TOPIC_QII");
-        claimUtils.issueClaim(user4, qiiTopic, bytes("qualified_institutional_investor"));
+        claimUtils.issueCustomClaim(user4, qiiTopicId, "Qualified Institutional Investor");
 
         // Create mock token for direct testing
         mockToken = new MockSMARTToken(
@@ -158,7 +182,7 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
         });
 
         bytes memory params = abi.encode(config);
-        
+
         // Should not revert for valid parameters
         module.validateParameters(params);
     }
@@ -174,7 +198,7 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
         });
 
         bytes memory params = abi.encode(config);
-        
+
         vm.expectRevert(
             abi.encodeWithSelector(
                 ISMARTComplianceModule.InvalidParameters.selector,
@@ -199,7 +223,7 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
         });
 
         bytes memory params = abi.encode(config);
-        
+
         vm.expectRevert(
             abi.encodeWithSelector(
                 ISMARTComplianceModule.InvalidParameters.selector,
@@ -220,7 +244,7 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
         });
 
         bytes memory params = abi.encode(config);
-        
+
         vm.expectRevert(
             abi.encodeWithSelector(
                 ISMARTComplianceModule.InvalidParameters.selector,
@@ -241,7 +265,7 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
         });
 
         bytes memory params = abi.encode(config);
-        
+
         vm.expectRevert(
             abi.encodeWithSelector(
                 ISMARTComplianceModule.InvalidParameters.selector,
@@ -278,14 +302,14 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
         // 2. Approver pre-approves the transfer (identity-to-identity)
         // Note: We need to mock the token's compliance modules list for _getModuleParameters
         _mockTokenComplianceModules(config);
-        
-        vm.prank(_getWalletForIdentity(approverIdentity1));
+
+        vm.prank(approver1Wallet);
         vm.expectEmit(true, true, true, true);
         emit TransferApproved(address(mockToken), user1Identity, user2Identity, transferAmount, approverIdentity1, block.timestamp + 1 days);
         module.approveTransfer(address(mockToken), user1Identity, user2Identity, transferAmount);
 
         // 3. Check that approval is recorded
-        TransferApprovalComplianceModule.ApprovalRecord memory record = 
+        TransferApprovalComplianceModule.ApprovalRecord memory record =
             module.getApproval(address(mockToken), user1Identity, user2Identity, transferAmount);
         assertTrue(record.expiry > 0);
         assertFalse(record.used);
@@ -319,19 +343,20 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
         _mockTokenComplianceModules(config);
 
         // Pre-approve the transfer
-        vm.prank(_getWalletForIdentity(approverIdentity1));
+        vm.prank(approver1Wallet);
         module.approveTransfer(address(mockToken), user1Identity, user2Identity, transferAmount);
 
         // Transfer should be allowed initially
         module.canTransfer(address(mockToken), user1, user2, transferAmount, params);
 
-        // Simulate the transfer completion by calling transferred hook
+        // Simulate the transfer completion by calling transferred hook from the token
         vm.expectEmit(true, true, true, true);
         emit TransferApprovalConsumed(address(mockToken), user1Identity, user2Identity, transferAmount, approverIdentity1);
+        vm.prank(address(mockToken));
         module.transferred(address(mockToken), user1, user2, transferAmount, params);
 
         // Check that approval is now marked as used
-        TransferApprovalComplianceModule.ApprovalRecord memory record = 
+        TransferApprovalComplianceModule.ApprovalRecord memory record =
             module.getApproval(address(mockToken), user1Identity, user2Identity, transferAmount);
         assertTrue(record.used);
 
@@ -377,7 +402,7 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
         _mockTokenComplianceModules(config);
 
         // Pre-approve the transfer
-        vm.prank(_getWalletForIdentity(approverIdentity1));
+        vm.prank(approver1Wallet);
         module.approveTransfer(address(mockToken), user1Identity, user2Identity, transferAmount);
 
         // Transfer should be allowed initially
@@ -455,7 +480,7 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
         ExpressionNode[] memory expression = new ExpressionNode[](1);
         expression[0] = ExpressionNode(
             ExpressionType.TOPIC,
-            systemUtils.topicSchemeRegistry().getTopicId("TOPIC_QII")
+            qiiTopicId // Use the topic ID created in setUp
         );
         return expression;
     }
@@ -468,7 +493,7 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
             module: address(module),
             params: abi.encode(config)
         });
-        
+
         // Mock the complianceModules() call
         vm.mockCall(
             address(mockToken),
@@ -477,10 +502,4 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
         );
     }
 
-    /// @dev Helper function to get wallet address for an identity contract
-    /// This is a simplified approach - in practice you'd need to look up the wallet
-    function _getWalletForIdentity(address identityAddress) internal pure returns (address) {
-        // For testing purposes, we'll derive a wallet address from the identity address
-        return address(uint160(uint256(keccak256(abi.encode(identityAddress, "wallet")))));
-    }
 }
