@@ -502,4 +502,127 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
         );
     }
 
+    /// @dev Test: Approval revocation by authorized approver
+    function test_TransferApproval_RevokeApproval() public {
+        address user1Identity = address(systemUtils.identityRegistry().identity(user1));
+        address user2Identity = address(systemUtils.identityRegistry().identity(user2));
+
+        TransferApprovalComplianceModule.Config memory config = TransferApprovalComplianceModule.Config({
+            approvalAuthorities: _createApprovalAuthorities(approverIdentity1),
+            allowExemptions: false,
+            exemptionExpression: new ExpressionNode[](0),
+            approvalExpiry: 1 days,
+            oneTimeUse: false
+        });
+
+        bytes memory params = abi.encode(config);
+        _mockTokenComplianceModules(config);
+
+        // 1. Pre-approve the transfer
+        vm.prank(approver1Wallet);
+        module.approveTransfer(address(mockToken), user1Identity, user2Identity, transferAmount);
+
+        // 2. Verify approval exists
+        TransferApprovalComplianceModule.ApprovalRecord memory record =
+            module.getApproval(address(mockToken), user1Identity, user2Identity, transferAmount);
+        assertTrue(record.expiry > 0);
+        assertFalse(record.used);
+
+        // 3. Transfer should be allowed
+        module.canTransfer(address(mockToken), user1, user2, transferAmount, params);
+
+        // 4. Revoke the approval
+        vm.prank(approver1Wallet);
+        vm.expectEmit(true, true, true, true);
+        emit TransferApprovalRevoked(address(mockToken), user1Identity, user2Identity, transferAmount, approverIdentity1);
+        module.revokeApproval(address(mockToken), user1Identity, user2Identity, transferAmount);
+
+        // 5. Verify approval is cleared
+        record = module.getApproval(address(mockToken), user1Identity, user2Identity, transferAmount);
+        assertEq(record.expiry, 0);
+        assertFalse(record.used);
+        assertEq(record.approverIdentity, address(0));
+
+        // 6. Transfer should now be blocked
+        vm.expectRevert(TransferApprovalComplianceModule.ApprovalRequired.selector);
+        module.canTransfer(address(mockToken), user1, user2, transferAmount, params);
+    }
+
+    /// @dev Test: Revocation by wrong approver should fail
+    function test_TransferApproval_RevokeApproval_WrongApprover() public {
+        address user1Identity = address(systemUtils.identityRegistry().identity(user1));
+        address user2Identity = address(systemUtils.identityRegistry().identity(user2));
+
+        // Config with two approval authorities
+        address[] memory authorities = new address[](2);
+        authorities[0] = approverIdentity1;
+        authorities[1] = approverIdentity2;
+
+        TransferApprovalComplianceModule.Config memory config = TransferApprovalComplianceModule.Config({
+            approvalAuthorities: authorities,
+            allowExemptions: false,
+            exemptionExpression: new ExpressionNode[](0),
+            approvalExpiry: 1 days,
+            oneTimeUse: false
+        });
+
+        _mockTokenComplianceModules(config);
+
+        // 1. Pre-approve the transfer with approver1
+        vm.prank(approver1Wallet);
+        module.approveTransfer(address(mockToken), user1Identity, user2Identity, transferAmount);
+
+        // 2. Try to revoke with approver2 (different approver than who granted it)
+        vm.prank(approver2Wallet);
+        vm.expectRevert(TransferApprovalComplianceModule.NoApprovalToRevoke.selector);
+        module.revokeApproval(address(mockToken), user1Identity, user2Identity, transferAmount);
+    }
+
+    /// @dev Test: Revoking non-existent approval should fail
+    function test_TransferApproval_RevokeApproval_NoApproval() public {
+        address user1Identity = address(systemUtils.identityRegistry().identity(user1));
+        address user2Identity = address(systemUtils.identityRegistry().identity(user2));
+
+        TransferApprovalComplianceModule.Config memory config = TransferApprovalComplianceModule.Config({
+            approvalAuthorities: _createApprovalAuthorities(approverIdentity1),
+            allowExemptions: false,
+            exemptionExpression: new ExpressionNode[](0),
+            approvalExpiry: 1 days,
+            oneTimeUse: false
+        });
+
+        _mockTokenComplianceModules(config);
+
+        // Try to revoke non-existent approval
+        vm.prank(approver1Wallet);
+        vm.expectRevert(TransferApprovalComplianceModule.NoApprovalToRevoke.selector);
+        module.revokeApproval(address(mockToken), user1Identity, user2Identity, transferAmount);
+    }
+
+    /// @dev Test: Approver without identity cannot revoke
+    function test_TransferApproval_RevokeApproval_ApproverNoIdentity() public {
+        address user1Identity = address(systemUtils.identityRegistry().identity(user1));
+        address user2Identity = address(systemUtils.identityRegistry().identity(user2));
+        address unauthorizedWallet = vm.addr(9999); // Not in identity registry
+
+        TransferApprovalComplianceModule.Config memory config = TransferApprovalComplianceModule.Config({
+            approvalAuthorities: _createApprovalAuthorities(approverIdentity1),
+            allowExemptions: false,
+            exemptionExpression: new ExpressionNode[](0),
+            approvalExpiry: 1 days,
+            oneTimeUse: false
+        });
+
+        _mockTokenComplianceModules(config);
+
+        // 1. Pre-approve the transfer
+        vm.prank(approver1Wallet);
+        module.approveTransfer(address(mockToken), user1Identity, user2Identity, transferAmount);
+
+        // 2. Try to revoke with wallet that has no identity
+        vm.prank(unauthorizedWallet);
+        vm.expectRevert(TransferApprovalComplianceModule.CallerMustHaveIdentity.selector);
+        module.revokeApproval(address(mockToken), user1Identity, user2Identity, transferAmount);
+    }
+
 }

@@ -80,9 +80,6 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
     mapping(address => mapping(address => mapping(address => mapping(uint256 => ApprovalRecord))))
         private approvals;
 
-    /// @notice Tracks nonces for each identity to prevent replay attacks
-    /// @dev Maps from identity address to current nonce value
-    mapping(address => uint256) private nonces;
 
     // --- Events ---
 
@@ -405,13 +402,6 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
         return approvals[_token][_fromIdentity][_toIdentity][_value];
     }
 
-    /// @notice Returns the current nonce for an identity address
-    /// @dev Nonces can be used to prevent replay attacks in approval mechanisms
-    /// @param _identity The identity address to check
-    /// @return The current nonce value
-    function getNonce(address _identity) external view returns (uint256) {
-        return nonces[_identity];
-    }
 
     // --- Internal Functions ---
 

@@ -42,6 +42,11 @@ export class DecodedTransferApprovalParams {
 export function decodeTransferApprovalParams(
   data: Bytes
 ): DecodedTransferApprovalParams | null {
+  // Validate input data is not empty
+  if (data.length == 0) {
+    return null;
+  }
+
   // ABI decode the entire struct at once using ethereum.decode
   const decoded = ethereum.decode(
     "(address[],bool,(uint8,uint256)[],uint256,bool)",
@@ -53,28 +58,53 @@ export function decodeTransferApprovalParams(
   }
 
   const tuple = decoded.toTuple();
-  if (tuple.length < 5) {
+  // Validate exact tuple length to catch ABI changes
+  if (tuple.length != 5) {
     return null;
   }
 
-  // Extract approvalAuthorities (address[])
-  const approvalAuthoritiesArray = tuple[0].toArray();
+  // Extract approvalAuthorities (address[]) with type validation
+  const approvalAuthoritiesValue = tuple[0];
+  if (approvalAuthoritiesValue.kind != ethereum.ValueKind.ARRAY) {
+    return null;
+  }
+  const approvalAuthoritiesArray = approvalAuthoritiesValue.toArray();
   const approvalAuthorities = new Array<Bytes>();
   for (let i = 0; i < approvalAuthoritiesArray.length; i++) {
-    approvalAuthorities.push(approvalAuthoritiesArray[i].toAddress());
+    const addressValue = approvalAuthoritiesArray[i];
+    if (addressValue.kind != ethereum.ValueKind.ADDRESS) {
+      return null;
+    }
+    approvalAuthorities.push(addressValue.toAddress());
   }
 
-  // Extract allowExemptions (bool)
-  const allowExemptions = tuple[1].toBoolean();
+  // Extract allowExemptions (bool) with type validation
+  const allowExemptionsValue = tuple[1];
+  if (allowExemptionsValue.kind != ethereum.ValueKind.BOOL) {
+    return null;
+  }
+  const allowExemptions = allowExemptionsValue.toBoolean();
 
   // Extract exemptionExpression (ExpressionNode[]) using shared utility
-  const exemptionExpression = decodeExpressionNodeArray(tuple[2]);
+  const exemptionExpressionValue = tuple[2];
+  if (exemptionExpressionValue.kind != ethereum.ValueKind.ARRAY) {
+    return null;
+  }
+  const exemptionExpression = decodeExpressionNodeArray(exemptionExpressionValue);
 
-  // Extract approvalExpiry (uint256)
-  const approvalExpiry = tuple[3].toBigInt();
+  // Extract approvalExpiry (uint256) with type validation
+  const approvalExpiryValue = tuple[3];
+  if (approvalExpiryValue.kind != ethereum.ValueKind.UINT) {
+    return null;
+  }
+  const approvalExpiry = approvalExpiryValue.toBigInt();
 
-  // Extract oneTimeUse (bool)
-  const oneTimeUse = tuple[4].toBoolean();
+  // Extract oneTimeUse (bool) with type validation
+  const oneTimeUseValue = tuple[4];
+  if (oneTimeUseValue.kind != ethereum.ValueKind.BOOL) {
+    return null;
+  }
+  const oneTimeUse = oneTimeUseValue.toBoolean();
 
   return new DecodedTransferApprovalParams(
     approvalAuthorities,
