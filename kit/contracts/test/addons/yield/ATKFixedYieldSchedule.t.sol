@@ -80,7 +80,7 @@ contract ATKFixedYieldScheduleTest is Test {
         endDate = block.timestamp + END_DATE_OFFSET;
 
         // Deploy denomination token
-        denominationToken = new MockedERC20Token("Denomination", "DNMTN", 18);
+        denominationToken = new MockedERC20Token("Denomination", "DNMTN", 6);
 
         // Deploy mock SMART token
         atkToken = new MockATKToken("ATK Token", "ATK", 18, address(denominationToken));
