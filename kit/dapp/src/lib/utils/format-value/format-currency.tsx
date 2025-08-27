@@ -1,3 +1,4 @@
+import { FormatNumber } from "@/lib/utils/format-value/format-number";
 import { FormatValueProps } from "@/lib/utils/format-value/types";
 import { useTranslation } from "react-i18next";
 import { safeToNumber } from "./safe-to-number";
@@ -11,27 +12,24 @@ export function FormatCurrency({ value, options }: FormatValueProps) {
   const currencyValue = safeToNumber(value);
 
   if (typeof currency === "object" && "assetSymbol" in currency) {
-    const formatted = new Intl.NumberFormat(locale, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(currencyValue);
     return (
-      <span className="block tabular-nums">
-        {formatted} {currency.assetSymbol}
-      </span>
+      <div className="flex items-center gap-1 tabular-nums">
+        <FormatNumber value={value} options={options} />
+        {currency.assetSymbol}
+      </div>
     );
   }
 
   // Try to format with Intl.NumberFormat
   try {
     return (
-      <span className="block tabular-nums">
+      <div className="tabular-nums">
         {new Intl.NumberFormat(locale, {
           style: "currency",
           currency: currency,
           minimumFractionDigits: 2,
         }).format(currencyValue)}
-      </span>
+      </div>
     );
   } catch {
     // If currency is not recognized, format as "value currency"
@@ -41,9 +39,9 @@ export function FormatCurrency({ value, options }: FormatValueProps) {
     }).format(currencyValue);
 
     return (
-      <span className="block tabular-nums">
+      <div className="tabular-nums">
         {formatted} {currency}
-      </span>
+      </div>
     );
   }
 }

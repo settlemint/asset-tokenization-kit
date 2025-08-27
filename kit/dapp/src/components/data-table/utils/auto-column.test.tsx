@@ -3,15 +3,10 @@
  */
 import type { CellContext, ColumnDef } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
+import { renderWithProviders } from "@test/helpers/test-utils";
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { renderWithProviders } from "@test/helpers/test-utils";
-import {
-  withAutoCell,
-  withAutoCells,
-  withAutoFeatures,
-  withAutoVariant,
-} from "./auto-column";
+import { withAutoCell, withAutoCells, withAutoFeatures } from "./auto-column";
 
 // Mock formatValue
 vi.mock("@/lib/utils/format-value", () => ({
@@ -163,6 +158,7 @@ describe("withAutoCell", () => {
         accessorKey: "missing" as keyof TestData,
         header: "Missing",
         meta: {
+          type: "text",
           emptyValue: "N/A",
         },
       });
@@ -212,8 +208,7 @@ describe("withAutoCell", () => {
           row: expect.objectContaining({
             original: testData,
           }),
-        }),
-        undefined
+        })
       );
     });
   });
@@ -271,57 +266,6 @@ describe("withAutoCells", () => {
     expect(result).toHaveLength(2);
     expect(result[0]?.cell).toBeDefined();
     expect(result[1]?.cell).toBeDefined();
-  });
-});
-
-describe("withAutoVariant", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it("should set numeric variant for number columns", () => {
-    const column: ColumnDef<TestData> = {
-      id: "amount",
-      accessorKey: "amount",
-      header: "Amount",
-      meta: {
-        type: "number",
-      },
-    };
-
-    const result = withAutoVariant(column);
-
-    expect(result.meta?.variant).toBe("numeric");
-  });
-
-  it("should set numeric variant for currency columns", () => {
-    const column: ColumnDef<TestData> = {
-      id: "price",
-      accessorKey: "price",
-      header: "Price",
-      meta: {
-        type: "currency",
-      },
-    };
-
-    const result = withAutoVariant(column);
-
-    expect(result.meta?.variant).toBe("numeric");
-  });
-
-  it("should not set variant for text columns", () => {
-    const column: ColumnDef<TestData> = {
-      id: "name",
-      accessorKey: "name",
-      header: "Name",
-      meta: {
-        type: "text",
-      },
-    };
-
-    const result = withAutoVariant(column);
-
-    expect(result.meta?.variant).toBeUndefined();
   });
 });
 

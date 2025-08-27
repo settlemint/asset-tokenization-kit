@@ -17,8 +17,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { VerificationButton } from "@/components/verification-dialog/verification-button";
 import { client, orpc } from "@/orpc/orpc-client";
-import type { TopicScheme } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
+import type { TopicScheme } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, Edit, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";

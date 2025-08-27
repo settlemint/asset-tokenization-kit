@@ -66,11 +66,11 @@ export function KycForm({ onComplete }: KycFormProps) {
           // Account query updates blockchain-related data, user query updates profile
           await Promise.all([
             queryClient.invalidateQueries({
-              queryKey: orpc.account.me.queryOptions().queryKey,
+              queryKey: orpc.account.me.queryKey(),
               refetchType: "all",
             }),
             queryClient.invalidateQueries({
-              queryKey: orpc.user.me.queryOptions().queryKey,
+              queryKey: orpc.user.me.queryKey(),
               refetchType: "all",
             }),
           ]);
@@ -85,7 +85,7 @@ export function KycForm({ onComplete }: KycFormProps) {
         // PERFORMANCE: Update UI components that depend on user KYC status
         // Sidebar and dropdown show different options based on KYC completion
         await queryClient.invalidateQueries({
-          queryKey: orpc.user.me.queryOptions().queryKey,
+          queryKey: orpc.user.me.queryKey(),
           refetchType: "all",
         });
         await onComplete();
