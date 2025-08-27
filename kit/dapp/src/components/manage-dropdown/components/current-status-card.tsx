@@ -8,7 +8,7 @@ interface CurrentStatusCardProps {
   currentSupply: Dnum;
   utilization: number;
   symbol: string;
-  t: (key: string, options?: any) => string;
+  t: any;
 }
 
 /**

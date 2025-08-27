@@ -182,7 +182,9 @@ export function updateComplianceModuleParameters(
     }
   }
   if (
-    isTransferApprovalComplianceModule(getEncodedTypeId(complianceModule.typeId))
+    isTransferApprovalComplianceModule(
+      getEncodedTypeId(complianceModule.typeId)
+    )
   ) {
     const decoded = decodeTransferApprovalParams(encodedParams);
     let tap = TransferApprovalParams.load(complianceModuleParameters.id);
