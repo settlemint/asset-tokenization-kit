@@ -25,6 +25,8 @@ import {
   identityRegistryStorageAbi,
   identityVerificationAbi,
   investorCountAbi,
+  timeLockAbi,
+  transferApprovalAbi,
   ismartAbi,
   ismartBurnableAbi,
   ismartCappedAbi,
@@ -97,6 +99,8 @@ export const ATKContracts = {
   identityVerificationModule: identityVerificationAbi,
   tokenSupplyLimitModule: tokenSupplyLimitAbi,
   investorCountModule: investorCountAbi,
+  timeLockModule: timeLockAbi,
+  transferApprovalModule: transferApprovalAbi,
   // addons
   fixedYieldScheduleFactory: fixedYieldScheduleFactoryAbi,
   fixedYieldSchedule: fixedYieldScheduleAbi,

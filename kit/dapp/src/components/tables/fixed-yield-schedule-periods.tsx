@@ -1,15 +1,14 @@
 import { DataTable } from "@/components/data-table/data-table";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
+import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { Progress } from "@/components/ui/progress";
-import { formatDate } from "@/lib/utils/date";
-import { FormatStatus } from "@/lib/utils/format-value/format-status";
 import type { FixedYieldSchedulePeriod } from "@atk/zod/fixed-yield-schedule";
-import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import type { Dnum } from "dnum";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-const columnHelper = createColumnHelper<FixedYieldSchedulePeriod>();
+const columnHelper = createStrictColumnHelper<FixedYieldSchedulePeriod>();
 
 /**
  * Calculate progress percentage from claimed and total yield amounts
@@ -106,10 +105,6 @@ export function FixedYieldSchedulePeriodsTable({
       withAutoFeatures([
         columnHelper.accessor("startDate", {
           header: t("tokens:yield.periodsTable.columns.startDate"),
-          cell: (cellProps) => {
-            const timestamp = cellProps.getValue();
-            return formatDate(timestamp);
-          },
           meta: {
             displayName: t("tokens:yield.periodsTable.columns.startDate"),
             type: "date",
@@ -117,30 +112,28 @@ export function FixedYieldSchedulePeriodsTable({
         }),
         columnHelper.accessor("endDate", {
           header: t("tokens:yield.periodsTable.columns.endDate"),
-          cell: (cellProps) => {
-            const timestamp = cellProps.getValue();
-            return formatDate(timestamp);
-          },
           meta: {
             displayName: t("tokens:yield.periodsTable.columns.endDate"),
             type: "date",
           },
         }),
-        columnHelper.display({
-          id: "claimedTotal",
-          header: t("tokens:yield.periodsTable.columns.claimedTotal"),
-          cell: ({ row }) => {
+        columnHelper.accessor(
+          (row) => {
             return formatClaimedTotal(
-              row.original.totalClaimed,
-              row.original.totalYield,
+              row.totalClaimed,
+              row.totalYield,
               assetSymbol
             );
           },
-          meta: {
-            displayName: t("tokens:yield.periodsTable.columns.claimedTotal"),
-            type: "text",
-          },
-        }),
+          {
+            id: "claimedTotal",
+            header: t("tokens:yield.periodsTable.columns.claimedTotal"),
+            meta: {
+              displayName: t("tokens:yield.periodsTable.columns.claimedTotal"),
+              type: "text",
+            },
+          }
+        ),
         columnHelper.display({
           id: "progress",
           header: t("tokens:yield.periodsTable.columns.progress"),
@@ -160,7 +153,7 @@ export function FixedYieldSchedulePeriodsTable({
           },
           meta: {
             displayName: t("tokens:yield.periodsTable.columns.progress"),
-            type: "progress",
+            type: "none",
           },
         }),
         columnHelper.display({
@@ -171,16 +164,11 @@ export function FixedYieldSchedulePeriodsTable({
               row.original.startDate,
               row.original.endDate
             );
-            return (
-              <FormatStatus
-                value={t(`tokens:yield.periodsTable.status.${status}`)}
-                options={{ type: "status" }}
-              />
-            );
+            return t(`tokens:yield.periodsTable.status.${status}`);
           },
           meta: {
             displayName: t("tokens:yield.periodsTable.columns.status"),
-            type: "badge",
+            type: "none",
           },
         }),
       ] as ColumnDef<FixedYieldSchedulePeriod>[]),

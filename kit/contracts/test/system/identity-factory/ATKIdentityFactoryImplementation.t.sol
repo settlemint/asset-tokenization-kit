@@ -64,7 +64,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
             address(accessManager)
         );
 
@@ -130,7 +130,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
             address(accessManager)
         );
 
@@ -163,7 +163,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
             address(accessManager)
         );
 
@@ -202,7 +202,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
             address(accessManager)
         );
         SMARTToken token2 = new SMARTToken(
@@ -214,7 +214,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
             address(accessManager)
         );
 
@@ -292,7 +292,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
             address(accessManager)
         );
 
@@ -336,7 +336,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
             address(accessManager)
         );
 
@@ -371,7 +371,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
             address(accessManager)
         );
 
@@ -384,7 +384,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
             address(accessManager)
         );
 

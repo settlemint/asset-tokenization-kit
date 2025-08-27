@@ -59,7 +59,7 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
         ISMARTTopicSchemeRegistry topicSchemeRegistry =
             ISMARTTopicSchemeRegistry(IATKSystem(_systemAddress).topicSchemeRegistry());
 
-        _collateralClaimTopicId = topicSchemeRegistry.getTopicId(ATKTopics.TOPIC_COLLATERAL);
+        _collateralClaimTopicId = topicSchemeRegistry.getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL);
     }
 
     /// @notice Creates a new ATK Stable Coin.

@@ -96,6 +96,14 @@ export class TypeIds {
       name: "InvestorCountComplianceModule",
       id: getTypeId("InvestorCountComplianceModule"),
     },
+    {
+      name: "TimeLockComplianceModule",
+      id: getTypeId("TimeLockComplianceModule"),
+    },
+    {
+      name: "TransferApprovalComplianceModule",
+      id: getTypeId("TransferApprovalComplianceModule"),
+    },
   ];
 }
 

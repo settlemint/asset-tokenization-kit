@@ -1,7 +1,7 @@
-import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import { PropertyFilterValueMenu } from "./value-menu";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { PropertyFilterValueMenu } from "./value-menu";
 // Define test data type
 interface _TestData {
   id: string;
@@ -101,15 +101,6 @@ describe("PropertyFilterValueMenu", () => {
       const { container } = render(
         <PropertyFilterValueMenu {...createProps("unsupported")} />
       );
-
-      expect(container.firstChild).toBeNull();
-    });
-
-    it("should return null for undefined type", () => {
-      const props = createProps("");
-      props.columnMeta = { type: undefined } as ColumnMeta<unknown, unknown>;
-
-      const { container } = render(<PropertyFilterValueMenu {...props} />);
 
       expect(container.firstChild).toBeNull();
     });

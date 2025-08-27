@@ -81,9 +81,9 @@ contract ATKIdentityRegistryImplementationTest is Test {
         );
 
         // Get topic IDs
-        kycTopicId = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
-        amlTopicId = systemUtils.getTopicId(ATKTopics.TOPIC_AML);
-        collateralTopicId = systemUtils.getTopicId(ATKTopics.TOPIC_COLLATERAL);
+        kycTopicId = systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_KYC);
+        amlTopicId = systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_AML);
+        collateralTopicId = systemUtils.getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL);
 
         vm.startPrank(admin);
 

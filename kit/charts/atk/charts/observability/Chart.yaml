@@ -23,11 +23,11 @@ dependencies:
     repository: https://kubernetes-sigs.github.io/metrics-server/
     condition: metrics-server.enabled
   - name: kube-state-metrics
-    version: 6.1.4
+    version: 6.1.5
     repository: https://prometheus-community.github.io/helm-charts
     condition: kube-state-metrics.enabled
   - name: grafana
-    version: 9.3.5
+    version: 9.3.6
     repository: https://grafana.github.io/helm-charts
     condition: grafana.enabled
   - name: loki

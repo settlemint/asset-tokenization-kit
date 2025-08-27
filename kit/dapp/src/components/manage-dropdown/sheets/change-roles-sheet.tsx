@@ -43,9 +43,9 @@ export function ChangeRolesSheet({
     orpc.token.grantRole.mutationOptions({
       onSuccess: async () => {
         await queryClient.invalidateQueries({
-          queryKey: orpc.token.read.queryOptions({
+          queryKey: orpc.token.read.queryKey({
             input: { tokenAddress: asset.id },
-          }).queryKey,
+          }),
         });
       },
     })
@@ -54,9 +54,9 @@ export function ChangeRolesSheet({
     orpc.token.revokeRole.mutationOptions({
       onSuccess: async () => {
         await queryClient.invalidateQueries({
-          queryKey: orpc.token.read.queryOptions({
+          queryKey: orpc.token.read.queryKey({
             input: { tokenAddress: asset.id },
-          }).queryKey,
+          }),
         });
       },
     })
@@ -337,9 +337,9 @@ export function ChangeRolesSheet({
                   });
                 }
                 await queryClient.invalidateQueries({
-                  queryKey: orpc.token.read.queryOptions({
+                  queryKey: orpc.token.read.queryKey({
                     input: { tokenAddress: asset.id },
-                  }).queryKey,
+                  }),
                 });
               })();
 

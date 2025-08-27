@@ -30,7 +30,6 @@ import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMAR
 import { TestConstants } from "../../Constants.sol";
 import { ExpressionNode, ExpressionType } from "../../../contracts/smart/interface/structs/ExpressionNode.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
-import { SMARTToken } from "../examples/SMARTToken.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { MockSMARTToken } from "../../utils/mocks/MockSMARTToken.sol";
@@ -85,7 +84,7 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
             address(accessManager)
         );
     }
@@ -471,7 +470,7 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
         // Create topic filter requiring KYC
         ExpressionNode[] memory topicFilter = new ExpressionNode[](1);
         topicFilter[0] =
-            ExpressionNode({ nodeType: ExpressionType.TOPIC, value: systemUtils.getTopicId(ATKTopics.TOPIC_KYC) });
+            ExpressionNode({ nodeType: ExpressionType.TOPIC, value: systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_KYC) });
 
         InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
             .InvestorCountConfig({
@@ -499,13 +498,13 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
         // Create expression: (KYC AND AML) OR COLLATERAL
         ExpressionNode[] memory topicFilter = new ExpressionNode[](5);
         topicFilter[0] =
-            ExpressionNode({ nodeType: ExpressionType.TOPIC, value: systemUtils.getTopicId(ATKTopics.TOPIC_KYC) });
+            ExpressionNode({ nodeType: ExpressionType.TOPIC, value: systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_KYC) });
         topicFilter[1] =
-            ExpressionNode({ nodeType: ExpressionType.TOPIC, value: systemUtils.getTopicId(ATKTopics.TOPIC_AML) });
+            ExpressionNode({ nodeType: ExpressionType.TOPIC, value: systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_AML) });
         topicFilter[2] = ExpressionNode({ nodeType: ExpressionType.AND, value: 0 });
         topicFilter[3] = ExpressionNode({
             nodeType: ExpressionType.TOPIC,
-            value: systemUtils.getTopicId(ATKTopics.TOPIC_COLLATERAL)
+            value: systemUtils.getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL)
         });
         topicFilter[4] = ExpressionNode({ nodeType: ExpressionType.OR, value: 0 });
 
@@ -639,7 +638,7 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
             address(accessManager)
         );
 
