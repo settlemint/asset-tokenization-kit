@@ -254,6 +254,10 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
             }
         }
 
+        // Convert token yield amount to denomination asset amount
+        uint256 tokenDecimals = IERC20Metadata(address(_token)).decimals();
+        totalYieldAccrued = totalYieldAccrued / (10 ** tokenDecimals);
+
         // The total unclaimed yield is the total accrued minus what has already been claimed by all users.
         // Ensure no underflow if `_totalClaimed` were to somehow exceed `totalYieldAccrued` (should not happen in
         // normal operation).
@@ -275,7 +279,11 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         uint256 basis = _token.yieldBasisPerUnit(address(0));
 
         // Calculate yield for one full period based on current supply and rate.
-        return (totalSupply * basis * _rate) / RATE_BASIS_POINTS;
+        uint256 tokenYieldAmount = (totalSupply * basis * _rate) / RATE_BASIS_POINTS;
+
+        // Convert token yield amount to denomination asset amount
+        uint256 tokenDecimals = IERC20Metadata(address(_token)).decimals();
+        return tokenYieldAmount / (10 ** tokenDecimals);
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -331,7 +339,12 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
                 currentPeriodAmount = (tokenBalance * basis * _rate * timeInPeriod) / (_interval * RATE_BASIS_POINTS);
             }
         }
-        return completePeriodAmount + currentPeriodAmount;
+
+        uint256 totalTokenAmount = completePeriodAmount + currentPeriodAmount;
+
+        // Convert token yield amount to denomination asset amount
+        uint256 tokenDecimals = IERC20Metadata(address(_token)).decimals();
+        return totalTokenAmount / (10 ** tokenDecimals);
     }
 
     /// @notice Calculates the total accrued yield for the message sender (`_msgSender()`), including any pro-rata share
@@ -384,13 +397,13 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         if (totalAmountToClaim == 0) revert NoYieldAvailable(); // No yield accrued in the
             // claimable periods.
 
-        // State updates *before* external call (transfer).
-        _lastClaimedPeriod[sender] = lastPeriod; // Update the last period claimed by the user.
-        _totalClaimed += totalAmountToClaim; // Increment total yield claimed in the contract.
-
         // Convert token yield amount to denomination asset amount
         uint256 tokenDecimals = IERC20Metadata(address(_token)).decimals();
         uint256 denominationAssetAmount = totalAmountToClaim / (10 ** tokenDecimals);
+
+        // State updates *before* external call (transfer).
+        _lastClaimedPeriod[sender] = lastPeriod; // Update the last period claimed by the user.
+        _totalClaimed += denominationAssetAmount; // Increment total yield claimed in the contract.
 
         // Perform the transfer of the denomination asset to the claimant.
         _denominationAsset.safeTransfer(sender, denominationAssetAmount);
