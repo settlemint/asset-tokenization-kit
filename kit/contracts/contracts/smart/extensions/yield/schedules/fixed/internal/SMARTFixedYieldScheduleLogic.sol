@@ -246,21 +246,17 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
             // This is crucial for accuracy if the total supply changes over time.
             uint256 historicalTotalSupply = _token.totalSupplyAt(periodEndTimestamp);
             if (historicalTotalSupply > 0) {
-                // Calculate yield for this period: (Supply * Rate) / Denominator
-                totalYieldAccrued += (historicalTotalSupply * _rate) / RATE_BASIS_POINTS;
+                totalYieldAccrued += _calculateYieldFromAmount(historicalTotalSupply, address(0));
             }
         }
 
-        // Convert token yield amount to denomination asset amount (using global basis)
-        uint256 totalYieldAccruedInDenominationAsset = _convertTokenYieldToDenominationAsset(totalYieldAccrued, address(0));
-
         // The total unclaimed yield is the total accrued minus what has already been claimed by all users.
-        // Ensure no underflow if `_totalClaimed` were to somehow exceed `totalYieldAccruedInDenominationAsset` (should not happen in
+        // Ensure no underflow if `_totalClaimed` were to somehow exceed `totalYieldAccrued` (should not happen in
         // normal operation).
-        if (totalYieldAccruedInDenominationAsset < _totalClaimed || totalYieldAccruedInDenominationAsset == _totalClaimed) {
+        if (totalYieldAccrued < _totalClaimed || totalYieldAccrued == _totalClaimed) {
             return 0;
         }
-        return totalYieldAccruedInDenominationAsset - _totalClaimed;
+        return totalYieldAccrued - _totalClaimed;
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -273,10 +269,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         uint256 totalSupply = IERC20(address(_token)).totalSupply();
 
         // Calculate yield for one full period based on current supply and rate.
-        uint256 tokenYieldAmount = (totalSupply * _rate) / RATE_BASIS_POINTS;
-
-        // Convert token yield amount to denomination asset amount (using global basis)
-        return _convertTokenYieldToDenominationAsset(tokenYieldAmount, address(0));
+        return _calculateYieldFromAmount(totalSupply, address(0));
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -302,7 +295,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
                 // Fetch the holder's balance as it was at the end of that specific period.
                 uint256 balance = _token.balanceOfAt(holder, _periodEndTimestamps[period - 1]);
                 if (balance > 0) {
-                    completePeriodAmount += (balance * _rate) / RATE_BASIS_POINTS;
+                    completePeriodAmount += _calculateYieldFromAmount(balance, holder);
                 }
             }
         }
@@ -325,16 +318,13 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
                 // Time elapsed within the current, ongoing period.
                 uint256 timeInPeriod = block.timestamp - periodStart;
 
-                // Pro-rata yield for the current period: (Balance * Rate * TimeInPeriod) / (TotalIntervalTime *
-                // Denominator)
-                currentPeriodAmount = (tokenBalance * _rate * timeInPeriod) / (_interval * RATE_BASIS_POINTS);
+                // Pro-rata yield for the current period: (Balance * TimeInPeriod) / (TotalIntervalTime)
+                currentPeriodAmount = _calculateYieldFromAmount((tokenBalance * timeInPeriod) / _interval, holder);
             }
         }
 
-        uint256 totalTokenAmount = completePeriodAmount + currentPeriodAmount;
-
-        // Convert token yield amount to denomination asset amount (using holder-specific basis)
-        return _convertTokenYieldToDenominationAsset(totalTokenAmount, holder);
+        uint256 totalAmount = completePeriodAmount + currentPeriodAmount;
+        return totalAmount;
     }
 
     /// @notice Calculates the total accrued yield for the message sender (`_msgSender()`), including any pro-rata share
@@ -368,7 +358,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
             // aderyn-fp-next-line(reentrancy-state-change)
             uint256 balance = _token.balanceOfAt(sender, _periodEndTimestamps[period - 1]);
             if (balance > 0) {
-                uint256 periodYield = (balance * _rate) / RATE_BASIS_POINTS;
+                uint256 periodYield = _calculateYieldFromAmount(balance, sender);
                 totalAmountToClaim += periodYield;
                 periodAmounts[period - fromPeriod] = periodYield; // Store amount for this specific period.
             }
@@ -376,7 +366,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
             // This is crucial for accuracy if the total supply changes over time.
             uint256 historicalTotalSupply = _token.totalSupplyAt(_periodEndTimestamps[period - 1]);
             if (historicalTotalSupply > 0) {
-                uint256 totalPeriodYield = (historicalTotalSupply * _rate) / RATE_BASIS_POINTS;
+                uint256 totalPeriodYield = _calculateYieldFromAmount(historicalTotalSupply, address(0));
                 periodYields[period - fromPeriod] = totalPeriodYield; // Store amount for this specific period.
             }
             // If balance is 0 for a period, its corresponding entry in periodAmounts remains 0.
@@ -384,16 +374,12 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
 
         if (totalAmountToClaim == 0) revert NoYieldAvailable(); // No yield accrued in the
             // claimable periods.
-
-        // Convert token yield amount to denomination asset amount (using holder-specific basis)
-        uint256 denominationAssetAmount = _convertTokenYieldToDenominationAsset(totalAmountToClaim, sender);
-
         // State updates *before* external call (transfer).
         _lastClaimedPeriod[sender] = lastPeriod; // Update the last period claimed by the user.
-        _totalClaimed += denominationAssetAmount; // Increment total yield claimed in the contract.
+        _totalClaimed += totalAmountToClaim; // Increment total yield claimed in the contract.
 
         // Perform the transfer of the denomination asset to the claimant.
-        _denominationAsset.safeTransfer(sender, denominationAssetAmount);
+        _denominationAsset.safeTransfer(sender, totalAmountToClaim);
 
         // Calculate the remaining total unclaimed yield in the contract for the event.
         uint256 remainingUnclaimed = totalUnclaimedYield();
@@ -468,14 +454,16 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
     }
 
     /// @notice Converts token yield amount to denomination asset amount
-    /// @param tokenYieldAmount The amount in token units to convert
+    /// @param tokenAmount The amount in token units to convert
     /// @param holder The holder address for holder-specific basis (use address(0) for global basis)
     /// @return The equivalent amount in denomination asset units
-    function _convertTokenYieldToDenominationAsset(uint256 tokenYieldAmount, address holder) private view returns (uint256) {
+    function _calculateYieldFromAmount(uint256 tokenAmount, address holder) private view returns (uint256) {
         uint256 basis = _token.yieldBasisPerUnit(holder);
         uint256 tokenDecimals = IERC20Metadata(address(_token)).decimals();
+        uint256 tokenYield = (tokenAmount * basis * _rate) / RATE_BASIS_POINTS;
+        uint256 yieldAmountInDenominationAsset = tokenYield / (10 ** tokenDecimals);
 
-        return (tokenYieldAmount * basis) / (10 ** tokenDecimals);
+        return yieldAmountInDenominationAsset;
     }
 
     /// @notice Returns the Unix timestamp (seconds since epoch) when the yield schedule starts.
