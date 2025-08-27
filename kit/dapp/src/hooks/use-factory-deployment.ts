@@ -30,8 +30,7 @@ export function useFactoryDeployment(systemAddress?: string | null) {
       toast.promise(createFactories(parsedValues), {
         loading: t("assets.deploying-toast"),
         success: t("assets.deployed"),
-        error: (error: Error) =>
-          `${t("assets.failed-toast")}${error.message}`,
+        error: (error: Error) => `${t("assets.failed-toast")}${error.message}`,
       });
     },
   });

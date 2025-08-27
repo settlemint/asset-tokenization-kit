@@ -1,6 +1,6 @@
-import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
-import { AssetTypesByClass } from "@/components/platform-settings/asset-types-by-class";
+import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
+import { AssetTypesByClass } from "@/components/platform-settings/asset-types/asset-types-by-class";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 

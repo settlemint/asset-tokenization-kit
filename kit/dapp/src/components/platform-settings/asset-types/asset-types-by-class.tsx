@@ -9,7 +9,6 @@ import { InfoAlert } from "@/components/ui/info-alert";
 import { useAppForm } from "@/hooks/use-app-form";
 import { useAssetClass } from "@/hooks/use-asset-class";
 import { useAssetTypesData } from "@/hooks/use-asset-types-data";
-import { createFactoryInput } from "@/lib/factories/factory-helpers";
 import { orpc } from "@/orpc/orpc-client";
 import {
   type FactoryCreateInput,
@@ -100,7 +99,11 @@ export function AssetTypesByClass() {
 
   const createFactory = useCallback(
     (assetType: (typeof TokenTypeEnum.options)[number]): SingleFactory => {
-      return createFactoryInput(assetType, t);
+      // Create factory input with localized name
+      return {
+        type: assetType,
+        name: t(`types.${assetType}.name`, { ns: "asset-types" }),
+      };
     },
     [t]
   );
@@ -119,7 +122,6 @@ export function AssetTypesByClass() {
     },
     [hasSystemManagerRole, createFactory, form]
   );
-
 
   if (isLoading) {
     return (
