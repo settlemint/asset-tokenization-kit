@@ -255,16 +255,15 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         }
 
         // Convert token yield amount to denomination asset amount
-        uint256 tokenDecimals = IERC20Metadata(address(_token)).decimals();
-        totalYieldAccrued = totalYieldAccrued / (10 ** tokenDecimals);
+        uint256 totalYieldAccruedInDenominationAsset = _convertTokenYieldToDenominationAsset(totalYieldAccrued);
 
         // The total unclaimed yield is the total accrued minus what has already been claimed by all users.
-        // Ensure no underflow if `_totalClaimed` were to somehow exceed `totalYieldAccrued` (should not happen in
+        // Ensure no underflow if `_totalClaimed` were to somehow exceed `totalYieldAccruedInDenominationAsset` (should not happen in
         // normal operation).
-        if (totalYieldAccrued < _totalClaimed || totalYieldAccrued == _totalClaimed) {
+        if (totalYieldAccruedInDenominationAsset < _totalClaimed || totalYieldAccruedInDenominationAsset == _totalClaimed) {
             return 0;
         }
-        return totalYieldAccrued - _totalClaimed;
+        return totalYieldAccruedInDenominationAsset - _totalClaimed;
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -282,8 +281,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         uint256 tokenYieldAmount = (totalSupply * basis * _rate) / RATE_BASIS_POINTS;
 
         // Convert token yield amount to denomination asset amount
-        uint256 tokenDecimals = IERC20Metadata(address(_token)).decimals();
-        return tokenYieldAmount / (10 ** tokenDecimals);
+        return _convertTokenYieldToDenominationAsset(tokenYieldAmount);
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -343,8 +341,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         uint256 totalTokenAmount = completePeriodAmount + currentPeriodAmount;
 
         // Convert token yield amount to denomination asset amount
-        uint256 tokenDecimals = IERC20Metadata(address(_token)).decimals();
-        return totalTokenAmount / (10 ** tokenDecimals);
+        return _convertTokenYieldToDenominationAsset(totalTokenAmount);
     }
 
     /// @notice Calculates the total accrued yield for the message sender (`_msgSender()`), including any pro-rata share
@@ -398,8 +395,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
             // claimable periods.
 
         // Convert token yield amount to denomination asset amount
-        uint256 tokenDecimals = IERC20Metadata(address(_token)).decimals();
-        uint256 denominationAssetAmount = totalAmountToClaim / (10 ** tokenDecimals);
+        uint256 denominationAssetAmount = _convertTokenYieldToDenominationAsset(totalAmountToClaim);
 
         // State updates *before* external call (transfer).
         _lastClaimedPeriod[sender] = lastPeriod; // Update the last period claimed by the user.
@@ -478,6 +474,14 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
     /// @inheritdoc ISMARTFixedYieldSchedule
     function denominationAsset() external view override returns (IERC20) {
         return _denominationAsset;
+    }
+
+    /// @notice Converts token yield amount to denomination asset amount
+    /// @param tokenYieldAmount The amount in token units to convert
+    /// @return The equivalent amount in denomination asset units
+    function _convertTokenYieldToDenominationAsset(uint256 tokenYieldAmount) private view returns (uint256) {
+        uint256 tokenDecimals = IERC20Metadata(address(_token)).decimals();
+        return tokenYieldAmount / (10 ** tokenDecimals);
     }
 
     /// @notice Returns the Unix timestamp (seconds since epoch) when the yield schedule starts.
