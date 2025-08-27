@@ -211,7 +211,7 @@ contract ClaimUtils is Test {
         // Standard ABI encoding for collateral data
         bytes memory encodedData = abi.encode(amount, expiryTimestamp);
         _issueTokenIdentityClaimInternal(
-            tokenAddress_, tokenOwner_, getTopicId(ATKTopics.TOPIC_COLLATERAL), encodedData
+            tokenAddress_, tokenOwner_, getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL), encodedData
         );
     }
 
@@ -236,7 +236,7 @@ contract ClaimUtils is Test {
         // Standard ABI encoding for base price data
         bytes memory encodedData = abi.encode(price, currency, decimals);
         _issueTokenIdentityClaimInternal(
-            tokenAddress_, tokenOwner_, getTopicId(ATKTopics.TOPIC_BASE_PRICE), encodedData
+            tokenAddress_, tokenOwner_, getTopicId(ATKTopics.TOPIC_ASSET_BASE_PRICE), encodedData
         );
     }
 
@@ -245,8 +245,8 @@ contract ClaimUtils is Test {
      * @param clientWalletAddress_ The wallet address of the client receiving the claim.
      */
     function issueKYCClaim(address clientWalletAddress_) public {
-        // Use CLAIM_TOPIC_KYC from the constants library
-        issueInvestorClaim(clientWalletAddress_, ATKTopics.TOPIC_KYC, "Verified KYC by Issuer");
+        // Use CLAIM_TOPIC_INVESTOR_KYC from the constants library
+        issueInvestorClaim(clientWalletAddress_, ATKTopics.TOPIC_INVESTOR_KYC, "Verified KYC by Issuer");
     }
 
     /**
@@ -254,8 +254,8 @@ contract ClaimUtils is Test {
      * @param clientWalletAddress_ The wallet address of the client receiving the claim.
      */
     function issueAMLClaim(address clientWalletAddress_) public {
-        // Use CLAIM_TOPIC_AML from the constants library
-        issueInvestorClaim(clientWalletAddress_, ATKTopics.TOPIC_AML, "Verified AML by Issuer");
+        // Use CLAIM_TOPIC_INVESTOR_AML from the constants library
+        issueInvestorClaim(clientWalletAddress_, ATKTopics.TOPIC_INVESTOR_AML, "Verified AML by Issuer");
     }
 
     /**

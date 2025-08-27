@@ -99,6 +99,7 @@ const ABI_PATHS = {
   tokenSupplyLimit: `${ARTIFACTS_DIR}/contracts/smart/modules/TokenSupplyLimitComplianceModule.sol/TokenSupplyLimitComplianceModule.json`,
   investorCount: `${ARTIFACTS_DIR}/contracts/smart/modules/InvestorCountComplianceModule.sol/InvestorCountComplianceModule.json`,
   timeLock: `${ARTIFACTS_DIR}/contracts/smart/modules/TimeLockComplianceModule.sol/TimeLockComplianceModule.json`,
+  transferApproval: `${ARTIFACTS_DIR}/contracts/smart/modules/TransferApprovalComplianceModule.sol/TransferApprovalComplianceModule.json`,
   // addons
   fixedYieldScheduleFactory: `${ARTIFACTS_DIR}/contracts/addons/yield/IATKFixedYieldScheduleFactory.sol/IATKFixedYieldScheduleFactory.json`,
   fixedYieldSchedule: `${ARTIFACTS_DIR}/contracts/addons/yield/ATKFixedYieldScheduleUpgradeable.sol/ATKFixedYieldScheduleUpgradeable.json`,
@@ -151,6 +152,7 @@ const AVAILABLE_ABIS = {
     "tokenSupplyLimit",
     "investorCount",
     "timeLock",
+    "transferApproval",
   ],
   addons: [
     "fixedYieldScheduleFactory",
