@@ -334,7 +334,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | support.redis.resources.requests.memory | string | `"128Mi"` |  |
 | support.reloader.enabled | bool | `true` |  |
 | support.reloader.image.repository | string | `"ghcr.io/stakater/reloader"` |  |
-| support.reloader.image.tag | string | `"v1.4.7"` |  |
+| support.reloader.image.tag | string | `"v1.4.6"` |  |
 | txsigner.config.derivationPath | string | `"m/44'/60'/0'/0/0"` |  |
 | txsigner.config.mnemonic | string | `"gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"` |  |
 | txsigner.enabled | bool | `true` |  |

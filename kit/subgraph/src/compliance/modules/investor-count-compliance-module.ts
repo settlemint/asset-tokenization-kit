@@ -1,8 +1,8 @@
 import { BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
 import { getEncodedTypeId } from "../../type-identifier/type-identifier";
-import {
-  DecodedExpressionNode,
-  decodeExpressionNodeArray,
+import { 
+  DecodedExpressionNode, 
+  decodeExpressionNodeArray 
 } from "../shared/expression-nodes";
 
 export function isInvestorCountComplianceModule(typeId: Bytes): boolean {

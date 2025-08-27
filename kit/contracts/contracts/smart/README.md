@@ -352,28 +352,19 @@ Orchestrates compliance checks as an engine based on token configuration:
 
 ### Compliance Modules
 
-The SMART protocol provides a flexible, extensible compliance module system with
-both default modules and support for custom implementations. The system supports
-country restrictions, identity verification with logical expressions, transfer
-limits, time-based restrictions, and more.
+The SMART protocol provides a flexible, extensible compliance module system with both default modules and support for custom implementations. The system supports country restrictions, identity verification with logical expressions, transfer limits, time-based restrictions, and more.
 
-**📖 For detailed documentation of all compliance modules, see:
-[`modules/README.md`](modules/README.md)**
+**📖 For detailed documentation of all compliance modules, see: [`modules/README.md`](modules/README.md)**
 
 Key highlights:
-
-- **Advanced Identity Verification**: Complex logical expressions beyond simple
-  AND-only requirements
+- **Advanced Identity Verification**: Complex logical expressions beyond simple AND-only requirements
 - **Flexible Configuration**: Global infrastructure with per-token parameters
-- **Modular Architecture**: Mix and match modules based on regulatory
-  requirements
+- **Modular Architecture**: Mix and match modules based on regulatory requirements
 - **Extensible Framework**: Create custom modules for specific compliance needs
 
 Available module categories:
-
 - **Country-based**: Allow/block lists for jurisdictions
-- **Identity-based**: Verification, allow/block lists for identities and
-  addresses
+- **Identity-based**: Verification, allow/block lists for identities and addresses  
 - **Transfer & Supply**: Token supply limits, investor count restrictions
 - **Time-based**: Lock-up periods, holding requirements
 

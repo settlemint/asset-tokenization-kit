@@ -273,7 +273,13 @@ contract ClaimUtils is Test {
      * @param topicId The numeric topic ID for the claim.
      * @param claimDataString The string data for the claim.
      */
-    function issueCustomClaim(address clientWalletAddress_, uint256 topicId, string memory claimDataString) public {
+    function issueCustomClaim(
+        address clientWalletAddress_,
+        uint256 topicId,
+        string memory claimDataString
+    )
+        public
+    {
         bytes memory encodedData = abi.encode(claimDataString);
         _issueInvestorIdentityClaimInternal(clientWalletAddress_, topicId, encodedData);
     }

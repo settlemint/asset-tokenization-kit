@@ -57,7 +57,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
 
     /// @notice Initialize the TimeLockComplianceModule
     /// @param _trustedForwarder Address of the trusted forwarder for meta transactions
-    constructor(address _trustedForwarder) AbstractComplianceModule(_trustedForwarder) { }
+    constructor(address _trustedForwarder) AbstractComplianceModule(_trustedForwarder) {}
 
     /// @notice Returns the name of the compliance module
     /// @return The descriptive name of this module
@@ -85,8 +85,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
         }
 
         // Maximum reasonable hold period: 10 years (to prevent configuration errors)
-        if (params.holdPeriod > 315_360_000) {
-            // 10 years in seconds
+        if (params.holdPeriod > 315360000) { // 10 years in seconds
             revert InvalidParameters("Hold period too long (max 10 years)");
         }
     }
@@ -101,14 +100,10 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
     function canTransfer(
         address _token,
         address _from,
-        address, /*_to*/
+        address /*_to*/,
         uint256 _value,
         bytes calldata _params
-    )
-        external
-        view
-        override
-    {
+    ) external view override {
         // Allow minting (from zero address)
         if (_from == address(0)) {
             return;
@@ -140,19 +135,14 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
         address _to,
         uint256 _value,
         bytes calldata _params
-    )
-        external
-        override
-        onlyTokenOrCompliance(_token)
-    {
+    ) external override onlyTokenOrCompliance(_token) {
         // Don't record acquisition for burns (to zero address)
         if (_to == address(0)) {
             return;
         }
 
         // Remove tokens from sender's batches using FIFO
-        if (_from != address(0)) {
-            // Skip for minting
+        if (_from != address(0)) { // Skip for minting
             TimeLockParams memory params = abi.decode(_params, (TimeLockParams));
 
             // Check if sender is exempt
@@ -162,7 +152,10 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
         }
 
         // Add new batch for recipient
-        tokenBatches[_token][_to].push(TokenBatch({ amount: _value, acquisitionTime: block.timestamp }));
+        tokenBatches[_token][_to].push(TokenBatch({
+            amount: _value,
+            acquisitionTime: block.timestamp
+        }));
 
         emit AcquisitionRecorded(_token, _to, _value, block.timestamp);
     }
@@ -178,13 +171,12 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
         address _to,
         uint256 _value,
         bytes calldata /*_params*/
-    )
-        external
-        override
-        onlyTokenOrCompliance(_token)
-    {
+    ) external override onlyTokenOrCompliance(_token) {
         // Add new batch for minted tokens
-        tokenBatches[_token][_to].push(TokenBatch({ amount: _value, acquisitionTime: block.timestamp }));
+        tokenBatches[_token][_to].push(TokenBatch({
+            amount: _value,
+            acquisitionTime: block.timestamp
+        }));
 
         emit AcquisitionRecorded(_token, _to, _value, block.timestamp);
     }
@@ -194,15 +186,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
     /// @param _user The user address to check
     /// @param _expression The expression to evaluate for exemption
     /// @return True if user satisfies the exemption expression, false otherwise
-    function _hasExemption(
-        address _token,
-        address _user,
-        ExpressionNode[] memory _expression
-    )
-        internal
-        view
-        returns (bool)
-    {
+    function _hasExemption(address _token, address _user, ExpressionNode[] memory _expression) internal view returns (bool) {
         // If no expression provided, no exemption
         if (_expression.length == 0) {
             return false;
@@ -223,6 +207,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
         }
     }
 
+
     /// @notice Checks if we can remove the specified amount of tokens using FIFO logic
     /// @dev Gas-optimized: stops as soon as we have enough unlocked tokens
     /// @param _token The token contract address
@@ -230,16 +215,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
     /// @param _amount The amount we want to remove
     /// @param _holdPeriod The hold period in seconds
     /// @return canRemove True if we have enough unlocked tokens
-    function _canRemoveTokensFIFO(
-        address _token,
-        address _user,
-        uint256 _amount,
-        uint256 _holdPeriod
-    )
-        internal
-        view
-        returns (bool)
-    {
+    function _canRemoveTokensFIFO(address _token, address _user, uint256 _amount, uint256 _holdPeriod) internal view returns (bool) {
         TokenBatch[] storage batches = tokenBatches[_token][_user];
         uint256 availableTokens = 0;
 
@@ -269,15 +245,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
     /// @param _amount The amount to remove
     /// @param _holdPeriod The hold period for validation
     /// @param _isExempt Whether the user is exempt from time locks
-    function _removeTokensFIFO(
-        address _token,
-        address _user,
-        uint256 _amount,
-        uint256 _holdPeriod,
-        bool _isExempt
-    )
-        internal
-    {
+    function _removeTokensFIFO(address _token, address _user, uint256 _amount, uint256 _holdPeriod, bool _isExempt) internal {
         TokenBatch[] storage batches = tokenBatches[_token][_user];
         uint256 remainingToRemove = _amount;
         uint256 writeIndex = 0;
@@ -364,15 +332,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
     /// @param _user The user address
     /// @param _params ABI-encoded TimeLockParams struct
     /// @return The amount of unlocked tokens
-    function getAvailableBalance(
-        address _token,
-        address _user,
-        bytes calldata _params
-    )
-        external
-        view
-        returns (uint256)
-    {
+    function getAvailableBalance(address _token, address _user, bytes calldata _params) external view returns (uint256) {
         TimeLockParams memory params = abi.decode(_params, (TimeLockParams));
 
         // Check for exemption if enabled
@@ -414,11 +374,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
         address _token,
         address _user,
         bytes calldata _params
-    )
-        external
-        view
-        returns (uint256)
-    {
+    ) external view returns (uint256) {
         TimeLockParams memory params = abi.decode(_params, (TimeLockParams));
 
         // Check for exemption if enabled

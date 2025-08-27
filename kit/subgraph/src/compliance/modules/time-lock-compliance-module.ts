@@ -1,8 +1,8 @@
 import { BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
 import { getEncodedTypeId } from "../../type-identifier/type-identifier";
-import {
-  DecodedExpressionNode,
-  decodeExpressionNodeArray,
+import { 
+  DecodedExpressionNode, 
+  decodeExpressionNodeArray 
 } from "../shared/expression-nodes";
 
 export function isTimeLockComplianceModule(typeId: Bytes): boolean {
@@ -35,7 +35,10 @@ export function decodeTimeLockParams(
   data: Bytes
 ): DecodedTimeLockParams | null {
   // ABI decode the entire struct at once using ethereum.decode
-  const decoded = ethereum.decode("(uint256,bool,(uint8,uint256)[])", data);
+  const decoded = ethereum.decode(
+    "(uint256,bool,(uint8,uint256)[])",
+    data
+  );
 
   if (decoded === null) {
     return null;
