@@ -1,6 +1,3 @@
-import { AssetExtensionsList } from "@/components/asset-extensions/asset-extensions-list";
-import { getAssetIcon } from "@/components/onboarding/assets/asset-icons";
-import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -19,70 +16,18 @@ import {
   type SingleFactory,
   TokenTypeEnum,
 } from "@/orpc/routes/system/token-factory/routes/factory.create.schema";
-import { AssetExtensionEnum } from "@atk/zod/asset-extensions";
 import { getAssetTypeFromFactoryTypeId } from "@atk/zod/asset-types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
-// Helper function to get asset class from asset type
-function getAssetClassFromAssetType(
-  assetType: (typeof TokenTypeEnum.options)[number]
-) {
-  const mapping = {
-    bond: "fixedIncome" as const,
-    equity: "flexibleIncome" as const,
-    fund: "flexibleIncome" as const,
-    stablecoin: "cashEquivalent" as const,
-    deposit: "cashEquivalent" as const,
-  };
-  return mapping[assetType];
-}
-
-// Default extensions for each asset type (what they would have when enabled)
-function getDefaultExtensions(
-  assetType: (typeof TokenTypeEnum.options)[number]
-) {
-  const extensionsMap = {
-    bond: [
-      AssetExtensionEnum.ACCESS_MANAGED,
-      AssetExtensionEnum.BOND,
-      AssetExtensionEnum.CAPPED,
-      AssetExtensionEnum.CUSTODIAN,
-      AssetExtensionEnum.REDEEMABLE,
-      AssetExtensionEnum.YIELD,
-    ],
-    equity: [
-      AssetExtensionEnum.ACCESS_MANAGED,
-      AssetExtensionEnum.CAPPED,
-      AssetExtensionEnum.CUSTODIAN,
-      AssetExtensionEnum.YIELD,
-    ],
-    fund: [
-      AssetExtensionEnum.ACCESS_MANAGED,
-      AssetExtensionEnum.FUND,
-      AssetExtensionEnum.CAPPED,
-      AssetExtensionEnum.CUSTODIAN,
-      AssetExtensionEnum.REDEEMABLE,
-      AssetExtensionEnum.YIELD,
-    ],
-    stablecoin: [
-      AssetExtensionEnum.ACCESS_MANAGED,
-      AssetExtensionEnum.CAPPED,
-      AssetExtensionEnum.CUSTODIAN,
-    ],
-    deposit: [
-      AssetExtensionEnum.ACCESS_MANAGED,
-      AssetExtensionEnum.CAPPED,
-      AssetExtensionEnum.CUSTODIAN,
-      AssetExtensionEnum.REDEEMABLE,
-      AssetExtensionEnum.YIELD,
-    ],
-  };
-  return extensionsMap[assetType] || [];
-}
+import { AssetTypeActions } from "./asset-type-actions";
+import { AssetTypeCard } from "./asset-type-card";
+import {
+  getAssetClassFromAssetType,
+  getDefaultExtensions,
+} from "./asset-types-constants";
 
 export function AssetTypesByClass() {
   const { t } = useTranslation([
@@ -233,7 +178,6 @@ export function AssetTypesByClass() {
                 <div className="grid gap-4 md:grid-cols-2">
                   {classAssetTypes.map((assetType) => {
                     const isDeployed = deployedAssetTypes.has(assetType);
-                    const Icon = getAssetIcon(assetType);
 
                     // Get factory data with extensions from all deployed factories
                     const allFactories = [
@@ -246,88 +190,28 @@ export function AssetTypesByClass() {
                         getAssetTypeFromFactoryTypeId(f.typeId) === assetType
                     );
 
+                    const extensions =
+                      factory?.tokenExtensions ||
+                      getDefaultExtensions(assetType);
+
                     return (
-                      <div
+                      <AssetTypeCard
                         key={assetType}
-                        className="flex items-start justify-between p-4 rounded-lg border bg-background"
+                        assetType={assetType}
+                        extensions={extensions}
                       >
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-3">
-                            <Icon className="h-5 w-5 text-muted-foreground" />
-                            <div>
-                              <h4 className="text-base font-medium">
-                                {t(`types.${assetType}.name`, {
-                                  ns: "asset-types",
-                                })}
-                              </h4>
-                              <p className="text-sm text-muted-foreground mt-1">
-                                {t(`types.${assetType}.description`, {
-                                  ns: "asset-types",
-                                })}
-                              </p>
-                            </div>
-                          </div>
-                          <AssetExtensionsList
-                            extensions={
-                              factory?.tokenExtensions ||
-                              getDefaultExtensions(assetType)
-                            }
-                            className="mt-3"
-                          />
-                        </div>
-                        <div className="ml-4 flex items-start">
-                          {isDeployed ? (
-                            <Badge
-                              variant="outline"
-                              className="flex items-center gap-1 h-9 px-3 text-sm"
-                            >
-                              <CheckCircle2 className="h-3 w-3" />
-                              {t("settings.assetTypes.enabled", {
-                                ns: "navigation",
-                              })}
-                            </Badge>
-                          ) : (
-                            hasSystemManagerRole && (
-                              <form.VerificationButton
-                                onSubmit={() => {
-                                  handleEnableAssetType(assetType);
-                                }}
-                                disabled={isDeploying}
-                                walletVerification={{
-                                  title: t(
-                                    "settings.assetTypes.confirmEnableTitle",
-                                    {
-                                      ns: "navigation",
-                                      assetType: t(`types.${assetType}.name`, {
-                                        ns: "asset-types",
-                                      }),
-                                    }
-                                  ),
-                                  description: t(
-                                    "settings.assetTypes.confirmEnableDescription",
-                                    { ns: "navigation" }
-                                  ),
-                                  setField: (verification) => {
-                                    form.setFieldValue(
-                                      "walletVerification",
-                                      verification
-                                    );
-                                  },
-                                }}
-                              >
-                                {isDeploying &&
-                                deployingAssetType === assetType ? (
-                                  <Loader2 className="h-3 w-3 animate-spin" />
-                                ) : (
-                                  t("settings.assetTypes.enable", {
-                                    ns: "navigation",
-                                  })
-                                )}
-                              </form.VerificationButton>
-                            )
-                          )}
-                        </div>
-                      </div>
+                        <AssetTypeActions
+                          assetType={assetType}
+                          isDeployed={isDeployed}
+                          hasSystemManagerRole={hasSystemManagerRole}
+                          isDeploying={isDeploying}
+                          isDeployingThisType={
+                            isDeploying && deployingAssetType === assetType
+                          }
+                          onEnable={handleEnableAssetType}
+                          form={form}
+                        />
+                      </AssetTypeCard>
                     );
                   })}
                 </div>
