@@ -50,14 +50,12 @@ library ATKTopics {
     string public constant TOPIC_CONTRACT_IDENTITY = "contractIdentity";
 
     // ---------------------------------------------------------------------
-    // Aggregated arrays (kept in stable order)
+    // Aggregated arrays
     // ---------------------------------------------------------------------
 
     /// @notice Get all topic names for registry registration
     /// @return _names Array of topic names for batchRegisterTopicSchemes
-    /// @dev The order here is kept stable for backward compatibility with existing
-    ///      deployments and any enumeration that depends on registration order.
-    ///      Do not change the literal topic strings, as topic IDs derive from their values.
+    /// @dev Do not change the literal topic strings, as topic IDs derive from their values.
     function names() internal pure returns (string[] memory _names) {
         _names = new string[](8);
         // Investor-level
