@@ -48,6 +48,7 @@ vi.mock("@/orpc/orpc-client", () => ({
       },
       read: {
         queryOptions: vi.fn(() => ({ queryKey: ["token", "read"] })),
+        queryKey: vi.fn(() => ["token", "read"]),
       },
     },
   },
