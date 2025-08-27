@@ -37,12 +37,46 @@ const publicClient = createPublicClient({
 });
 
 /**
- * Query collateral directly from the smart contract
+ * Query collateral directly from the smart contract to get real-time collateral data.
+ *
+ * @remarks
+ * WHY DIRECT CONTRACT QUERIES: TheGraph indexing can lag behind blockchain state,
+ * causing stale collateral data during rapid updates. Direct contract calls ensure
+ * UI always shows the most current collateral amount for mint/burn operations.
+ *
+ * PERFORMANCE TRADEOFF: Additional contract call adds ~100ms latency but prevents
+ * users from seeing incorrect collateral ratios that could lead to failed transactions.
+ *
+ * TOKEN TYPE FILTERING: Only stablecoins implement the ISMARTCollateral interface.
+ * Querying non-collateral tokens would cause contract reverts, so we filter by type
+ * to avoid unnecessary network calls and error noise in logs.
+ *
+ * @param tokenAddress - Contract address to query for collateral data
+ * @param tokenType - Token type to determine if collateral querying is applicable
+ * @returns Collateral data with validity check, or zero values for non-stablecoin types
  */
-async function queryContractCollateral(tokenAddress: `0x${string}`) {
-  try {
-    logger.info(`🔍 Querying collateral for token: ${tokenAddress}`);
+async function queryContractCollateral(
+  tokenAddress: `0x${string}`,
+  tokenType?: string
+) {
+  // INTERFACE CONSTRAINT: Only stablecoins implement ISMARTCollateral interface
+  // WHY: Other token types (bonds, equities) don't have collateral backing mechanism
+  if (tokenType !== "stablecoin") {
+    logger.debug(
+      `⏭️ Skipping collateral query for ${tokenType} token: ${tokenAddress}`
+    );
+    return {
+      amount: from(0),
+      issuer: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+      expiryTimestamp: 0,
+      hasValidClaim: false,
+    };
+  }
 
+  try {
+    logger.info(`🔍 Querying collateral for stablecoin token: ${tokenAddress}`);
+
+    // DIRECT CONTRACT CALL: Bypass TheGraph to get most current collateral state
     const result = await publicClient.readContract({
       address: tokenAddress,
       abi: COLLATERAL_ABI,
@@ -59,17 +93,21 @@ async function queryContractCollateral(tokenAddress: `0x${string}`) {
       currentTime: Math.floor(Date.now() / 1000),
     });
 
+    // CONSISTENT TIMESTAMP HANDLING: Use BigInt for comparison to match contract precision
     const currentTime = BigInt(Math.floor(Date.now() / 1000));
 
     return {
-      amount: from(amount.toString(), 18), // Convert to Dnum with 18 decimals
+      amount: from(amount.toString(), 18), // PRECISION: Convert to Dnum with 18 decimals for consistent math
       issuer,
       expiryTimestamp: Number(expiryTimestamp),
+      // VALIDITY CHECK: Claim must have amount > 0 AND not be expired
       hasValidClaim: amount > 0n && expiryTimestamp > currentTime,
     };
   } catch (error) {
+    // GRACEFUL DEGRADATION: Return safe defaults instead of throwing to prevent
+    // token middleware from failing when collateral contracts have issues
     logger.warn(
-      `❌ Failed to query collateral from contract ${tokenAddress}:`,
+      `❌ Failed to query collateral from stablecoin contract ${tokenAddress}:`,
       error
     );
     return {
@@ -77,6 +115,7 @@ async function queryContractCollateral(tokenAddress: `0x${string}`) {
       issuer: "0x0000000000000000000000000000000000000000" as `0x${string}`,
       expiryTimestamp: 0,
       hasValidClaim: false,
+      // ERROR CONTEXT: Preserve error for debugging without breaking token operations
       error: error instanceof Error ? error.message : "Unknown error",
     };
   }
@@ -195,25 +234,32 @@ export const tokenMiddleware = baseRouter.middleware(
 
     const token = result.token;
 
-    // Query real-time collateral data directly from contract
-    const contractCollateral = await queryContractCollateral(tokenAddress);
+    // REAL-TIME COLLATERAL DATA: Query contract directly to ensure fresh data for UI
+    // WHY: TheGraph can have indexing delays during rapid collateral updates
+    const contractCollateral = await queryContractCollateral(
+      tokenAddress,
+      token.type
+    );
 
     const userRoles = mapUserRoles(auth.user.wallet, token.accessControl);
 
     const tokenContext = TokenSchema.parse({
       ...token,
-      // Override collateral data with real-time contract data
+      // DATA FRESHNESS: Override indexed collateral with real-time contract data
+      // TRADEOFF: Small latency increase for guaranteed data accuracy
       collateral: token.collateral
         ? {
             ...token.collateral,
+            // AMOUNT OVERRIDE: Use fresh contract amount for accurate supply calculations
             collateral: contractCollateral.amount,
+            // EXPIRY PREFERENCE: Use contract expiry if available, fall back to indexed data
             expiryTimestamp:
               contractCollateral.expiryTimestamp > 0
                 ? contractCollateral.expiryTimestamp
                 : token.collateral.expiryTimestamp,
           }
         : null,
-      // Add contract collateral details for debugging
+      // DEBUGGING CONTEXT: Include raw contract response for troubleshooting
       contractCollateral,
       userPermissions: {
         roles: userRoles,
