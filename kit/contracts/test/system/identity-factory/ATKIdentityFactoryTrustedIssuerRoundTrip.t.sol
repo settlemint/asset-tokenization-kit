@@ -113,8 +113,8 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
         topicSchemeRegistry = systemUtils.topicSchemeRegistry();
 
         // Get topic IDs
-        kycTopicId = topicSchemeRegistry.getTopicId(ATKTopics.TOPIC_KYC);
-        amlTopicId = topicSchemeRegistry.getTopicId(ATKTopics.TOPIC_AML);
+        kycTopicId = topicSchemeRegistry.getTopicId(ATKTopics.TOPIC_INVESTOR_KYC);
+        amlTopicId = topicSchemeRegistry.getTopicId(ATKTopics.TOPIC_INVESTOR_AML);
 
         // Deploy ClaimUtils for testing
         claimUtils = new ClaimUtils(

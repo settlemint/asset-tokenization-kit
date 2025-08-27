@@ -60,10 +60,10 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         vm.startPrank(platformAdmin);
         // Add issuer with all necessary topics (existing + custom)
         uint256[] memory allTopics = new uint256[](5);
-        allTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
-        allTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_AML);
-        allTopics[2] = systemUtils.getTopicId(ATKTopics.TOPIC_COLLATERAL);
-        allTopics[3] = systemUtils.getTopicId(ATKTopics.TOPIC_BASE_PRICE);
+        allTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_KYC);
+        allTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_AML);
+        allTopics[2] = systemUtils.getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL);
+        allTopics[3] = systemUtils.getTopicId(ATKTopics.TOPIC_ASSET_BASE_PRICE);
         allTopics[4] = secondarySaleTopicId; // Add our custom topic
 
         identityUtils.updateIssuerClaimTopics(claimIssuer, allTopics);

@@ -26,7 +26,7 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
     uint256 private constant MAX_PERIOD_LENGTH = 730;
 
     /// @notice Precomputed topic ID for the base price claim to avoid an external registry call
-    uint256 private constant BASE_PRICE_TOPIC_ID = uint256(keccak256(abi.encodePacked(ATKTopics.TOPIC_BASE_PRICE)));
+    uint256 private constant BASE_PRICE_TOPIC_ID = uint256(keccak256(abi.encodePacked(ATKTopics.TOPIC_ASSET_BASE_PRICE)));
 
     /// @notice Unique type identifier for this compliance module
     /// @dev Used by the compliance system to identify and manage module instances

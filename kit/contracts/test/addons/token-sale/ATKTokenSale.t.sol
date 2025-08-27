@@ -109,7 +109,7 @@ contract ATKTokenSaleTest is Test {
 
         // Setup required claim topics for KYC/AML
         uint256[] memory requiredClaimTopics = new uint256[](1);
-        requiredClaimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
+        requiredClaimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_KYC);
 
         // Setup compliance modules (empty for this test)
         SMARTComplianceModuleParamPair[] memory modulePairs = new SMARTComplianceModuleParamPair[](0);
@@ -125,7 +125,7 @@ contract ATKTokenSaleTest is Test {
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             modulePairs,
-            systemUtils.getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            systemUtils.getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
             address(accessManager)
         );
 
@@ -184,8 +184,8 @@ contract ATKTokenSaleTest is Test {
     function _setupBuyerIdentities() internal {
         // Setup claim issuer first
         uint256[] memory claimTopics = new uint256[](2);
-        claimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
-        claimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_AML);
+        claimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_KYC);
+        claimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_AML);
         identityUtils.createIssuerIdentity(claimIssuer, claimTopics);
 
         // Create identities for eligible buyers with country code (e.g., Belgium = 56)
