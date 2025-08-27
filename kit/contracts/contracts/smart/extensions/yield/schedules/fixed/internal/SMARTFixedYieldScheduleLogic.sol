@@ -323,8 +323,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
             }
         }
 
-        uint256 totalAmount = completePeriodAmount + currentPeriodAmount;
-        return totalAmount;
+        return completePeriodAmount + currentPeriodAmount;
     }
 
     /// @notice Calculates the total accrued yield for the message sender (`_msgSender()`), including any pro-rata share
