@@ -196,13 +196,14 @@ expressions:
 - **Multiple Limit Types**: Lifetime, fixed period, or rolling period caps
 - **Currency Conversion**: Support for base currency limits using on-chain price
   claims
-- **Regulatory Compliance**: Essential for jurisdictions like MiCA (�8M limit)
+- **Regulatory Compliance**: Essential for jurisdictions like MiCA (EUR 8M
+  limit)
 - **Flexible Configuration**: Token-amount or currency-equivalent limits
 
 **Use Cases**:
 
-- MiCA compliance (�8M issuance limit)
-- SEC Regulation CF ($5M limit)
+- MiCA compliance (EUR 8M issuance limit)
+- SEC Regulation CF (USD 5M limit)
 - Private placement caps
 - Crowdfunding limits
 
@@ -268,15 +269,20 @@ struct InvestorCountConfig {
 
 #### TransferApprovalComplianceModule
 
-**Purpose**: Enforce pre-approved, identity-bound transfers by requiring explicit on-chain authorization before transfers execute
+**Purpose**: Enforce pre-approved, identity-bound transfers by requiring
+explicit on-chain authorization before transfers execute
 
 **Key Features**:
 
-- **Identity-Bound Approvals**: Approvals are bound to identity contracts, not wallet addresses
-- **One-Time Use**: Each approval can be configured for single-use (regulatory compliance)
+- **Identity-Bound Approvals**: Approvals are bound to identity contracts, not
+  wallet addresses
+- **One-Time Use**: Each approval can be configured for single-use (regulatory
+  compliance)
 - **Approval Expiry**: Time-limited approvals prevent indefinite authorizations
-- **Exemption Support**: Specific identities (e.g., QII investors) can bypass approval requirements
-- **Authority Model**: Configurable list of identity addresses that can grant approvals
+- **Exemption Support**: Specific identities (e.g., QII investors) can bypass
+  approval requirements
+- **Authority Model**: Configurable list of identity addresses that can grant
+  approvals
 
 **Use Cases**:
 
@@ -292,16 +298,16 @@ struct InvestorCountConfig {
 struct Config {
     /// @notice Identity addresses allowed to grant approvals for this token
     address[] approvalAuthorities;
-    
+
     /// @notice Whether exemptions based on identity claims are allowed
     bool allowExemptions;
-    
+
     /// @notice Expression defining exemption logic (e.g., [TOPIC_QII])
     ExpressionNode[] exemptionExpression;
-    
+
     /// @notice Default expiry for approvals in seconds
     uint256 approvalExpiry;
-    
+
     /// @notice Whether approvals are single-use (one-time execution)
     bool oneTimeUse;  // set to true for regulatory compliance
 }
@@ -309,12 +315,18 @@ struct Config {
 
 **Workflow**:
 
-1. **Configuration**: Set up approval authorities (identity addresses) and exemption rules
-2. **Transfer Attempt**: User initiates a transfer requiring approval → **❌ FAILS** (no approval exists)
-3. **Pre-Approval**: Authority identity calls `approveTransfer()` with exact transfer parameters
-4. **Transfer Retry**: User retries the same transfer → **✅ SUCCEEDS** (approval now exists)
-5. **One-Time Consumption**: If configured, approval is marked as used after successful transfer
-6. **Subsequent Attempts**: Same transfer parameters → **❌ FAIL** (approval consumed, if one-time use)
+1. **Configuration**: Set up approval authorities (identity addresses) and
+   exemption rules
+2. **Transfer Attempt**: User initiates a transfer requiring approval → **❌
+   FAILS** (no approval exists)
+3. **Pre-Approval**: Authority identity calls `approveTransfer()` with exact
+   transfer parameters
+4. **Transfer Retry**: User retries the same transfer → **✅ SUCCEEDS**
+   (approval now exists)
+5. **One-Time Consumption**: If configured, approval is marked as used after
+   successful transfer
+6. **Subsequent Attempts**: Same transfer parameters → **❌ FAIL** (approval
+   consumed, if one-time use)
 
 **Example Integration (Japan FSA Compliance)**:
 
@@ -335,7 +347,8 @@ Config memory config = Config({
 
 - **Identity Binding**: Prevents circumvention through wallet changes
 - **One-Time Approvals**: Ensures full control and auditability of each transfer
-- **Exemption Logic**: Captures legal allowances (QII buyers) without weakening compliance
+- **Exemption Logic**: Captures legal allowances (QII buyers) without weakening
+  compliance
 - **Authority Control**: Module-level configuration of who can approve transfers
 
 ### Time-Based Modules
