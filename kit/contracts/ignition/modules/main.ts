@@ -19,6 +19,7 @@ import IdentityVerificationModule from "./predeployed/modules/identity-verificat
 import InvestorCountModule from "./predeployed/modules/investor-count-module";
 import TimeLockModule from "./predeployed/modules/time-lock-module";
 import TokenSupplyLimitModule from "./predeployed/modules/token-supply-limit-module";
+import TransferApprovalModule from "./predeployed/modules/transfer-approval-module";
 import SystemFactoryModule from "./predeployed/system-factory";
 
 /**
@@ -65,6 +66,7 @@ const ATKModule = buildModule("ATKModule", (m) => {
   const { tokenSupplyLimitModule } = m.useModule(TokenSupplyLimitModule);
   const { investorCountModule } = m.useModule(InvestorCountModule);
   const { timeLockModule } = m.useModule(TimeLockModule);
+  const { transferApprovalModule } = m.useModule(TransferApprovalModule);
 
   return {
     systemFactory,
@@ -95,6 +97,7 @@ const ATKModule = buildModule("ATKModule", (m) => {
     tokenSupplyLimitModule,
     investorCountModule,
     timeLockModule,
+    transferApprovalModule,
   };
 });
 
