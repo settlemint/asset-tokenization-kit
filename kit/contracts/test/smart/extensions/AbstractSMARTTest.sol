@@ -92,8 +92,8 @@ abstract contract AbstractSMARTTest is Test {
 
         // --- Initialize Test Data FIRST ---
         requiredClaimTopics = new uint256[](2);
-        requiredClaimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
-        requiredClaimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_AML);
+        requiredClaimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_KYC);
+        requiredClaimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_AML);
 
         // --- Setup Identities AFTER requiredClaimTopics is initialized ---
         _setupIdentities();
@@ -146,9 +146,9 @@ abstract contract AbstractSMARTTest is Test {
         identityUtils.createClientIdentity(tokenIssuer, TestConstants.COUNTRY_CODE_BE);
         // Issue claims to the token issuer as well (assuming they need verification)
         uint256[] memory claimTopics = new uint256[](3);
-        claimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
-        claimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_AML);
-        claimTopics[2] = systemUtils.getTopicId(ATKTopics.TOPIC_COLLATERAL);
+        claimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_KYC);
+        claimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_AML);
+        claimTopics[2] = systemUtils.getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL);
         // Use claimIssuer address directly, createIssuerIdentity handles creating the on-chain identity
         vm.label(claimIssuer, "Claim Issuer");
         address claimIssuerIdentity = identityUtils.createIssuerIdentity(claimIssuer, claimTopics);

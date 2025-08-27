@@ -55,8 +55,8 @@ abstract contract AbstractATKAssetTest is Test {
 
         // Initialize the claim issuer and topic schemes
         uint256[] memory claimTopics = new uint256[](2);
-        claimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
-        claimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_COLLATERAL);
+        claimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_KYC);
+        claimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL);
 
         // Use claimIssuer address directly, createIssuerIdentity handles creating the on-chain identity
         vm.label(claimIssuer, "Claim Issuer");
@@ -79,7 +79,7 @@ abstract contract AbstractATKAssetTest is Test {
         vm.label(_wallet, _label);
         address identity = identityUtils.createClientIdentity(_wallet, TestConstants.COUNTRY_CODE_BE);
         vm.label(identity, string.concat(_label, " Identity"));
-        claimUtils.issueInvestorClaim(_wallet, ATKTopics.TOPIC_KYC, "Verified KYC by Issuer");
+        claimUtils.issueInvestorClaim(_wallet, ATKTopics.TOPIC_INVESTOR_KYC, "Verified KYC by Issuer");
     }
 
     function _setUpIdentities(string[] memory _labels, address[] memory _wallets) internal {

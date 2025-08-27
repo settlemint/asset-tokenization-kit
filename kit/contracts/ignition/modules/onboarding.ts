@@ -18,6 +18,7 @@ import IdentityVerificationModule from "./onboarding/modules/identity-verificati
 import InvestorCountModule from "./onboarding/modules/investor-count-module";
 import TimeLockModule from "./onboarding/modules/time-lock-module";
 import TokenSupplyLimitModule from "./onboarding/modules/token-supply-limit-module";
+import TransferApprovalModule from "./onboarding/modules/transfer-approval-module";
 import ATKOnboardingSystemModule from "./onboarding/system";
 
 /**
@@ -80,6 +81,7 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
   const { tokenSupplyLimitModule } = m.useModule(TokenSupplyLimitModule);
   const { investorCountModule } = m.useModule(InvestorCountModule);
   const { timeLockModule } = m.useModule(TimeLockModule);
+  const { transferApprovalModule } = m.useModule(TransferApprovalModule);
 
   return {
     system,
@@ -109,6 +111,7 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
     tokenSupplyLimitModule,
     investorCountModule,
     timeLockModule,
+    transferApprovalModule,
     // Addons
     fixedYieldScheduleFactory,
     xvpSettlementFactory,

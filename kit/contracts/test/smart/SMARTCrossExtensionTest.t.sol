@@ -175,8 +175,8 @@ contract SMARTCrossExtensionTest is Test {
 
         // Deploy token with all extensions (SMARTToken includes all major extensions)
         uint256[] memory requiredClaimTopics = new uint256[](2);
-        requiredClaimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
-        requiredClaimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_AML);
+        requiredClaimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_KYC);
+        requiredClaimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_AML);
 
         SMARTComplianceModuleParamPair[] memory modulePairs = new SMARTComplianceModuleParamPair[](0);
 
@@ -190,7 +190,7 @@ contract SMARTCrossExtensionTest is Test {
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             modulePairs,
-            systemUtils.getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            systemUtils.getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
             address(accessManager)
         );
 
@@ -219,9 +219,9 @@ contract SMARTCrossExtensionTest is Test {
     function _setupTestIdentities() private {
         // Create issuer identity and register as trusted issuer
         uint256[] memory claimTopics = new uint256[](3);
-        claimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
-        claimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_AML);
-        claimTopics[2] = systemUtils.getTopicId(ATKTopics.TOPIC_COLLATERAL);
+        claimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_KYC);
+        claimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_AML);
+        claimTopics[2] = systemUtils.getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL);
 
         identityUtils.createIssuerIdentity(claimIssuer, claimTopics);
 

@@ -81,10 +81,10 @@ abstract contract AbstractComplianceModuleTest is Test {
 
         // Issue claims to the token issuer as well (assuming they need verification)
         uint256[] memory claimTopics = new uint256[](4);
-        claimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
-        claimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_AML);
-        claimTopics[2] = systemUtils.getTopicId(ATKTopics.TOPIC_COLLATERAL);
-        claimTopics[3] = systemUtils.getTopicId(ATKTopics.TOPIC_BASE_PRICE);
+        claimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_KYC);
+        claimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_AML);
+        claimTopics[2] = systemUtils.getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL);
+        claimTopics[3] = systemUtils.getTopicId(ATKTopics.TOPIC_ASSET_BASE_PRICE);
         // Use claimIssuer address directly, createIssuerIdentity handles creating the on-chain identity
         vm.label(claimIssuer, "Claim Issuer");
         address claimIssuerIdentity = identityUtils.createIssuerIdentity(claimIssuer, claimTopics);
@@ -113,7 +113,7 @@ abstract contract AbstractComplianceModuleTest is Test {
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
             address(accessManager)
         );
 

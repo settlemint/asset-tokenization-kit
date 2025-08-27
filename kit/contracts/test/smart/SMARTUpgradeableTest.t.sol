@@ -40,7 +40,7 @@ contract SMARTUpgradeableTest is
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             modulePairs,
-            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
             address(accessManager)
         );
 
