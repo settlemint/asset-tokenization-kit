@@ -22,7 +22,7 @@ import { SMARTComplianceModuleParamPair } from "../interface/structs/SMARTCompli
 contract TransferApprovalComplianceModule is AbstractComplianceModule {
     /// @notice Unique type identifier for this compliance module
     /// @dev Used by the compliance system to identify and manage module instances
-    bytes32 public constant override typeId = keccak256("TransferApprovalComplianceModule");
+    bytes32 public constant TYPE_ID = keccak256("TransferApprovalComplianceModule");
 
     // --- Custom Errors ---
 
@@ -57,12 +57,12 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
         address[] approvalAuthorities;
         /// @notice Whether exemptions based on identity claims are allowed
         bool allowExemptions;
+        /// @notice Whether approvals are single-use (one-time execution)
+        bool oneTimeUse; // set to true for regulatory compliance
         /// @notice Expression defining exemption logic (e.g., [TOPIC_QII])
         ExpressionNode[] exemptionExpression;
         /// @notice Default expiry for approvals in seconds
         uint256 approvalExpiry;
-        /// @notice Whether approvals are single-use (one-time execution)
-        bool oneTimeUse; // set to true for regulatory compliance
     }
 
     /// @notice Approval record for identity-bound transfer authorizations
@@ -133,6 +133,12 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
     /// @dev Sets up the module with meta-transaction support via trusted forwarder
     /// @param _trustedForwarder Address of the trusted forwarder for meta transactions (can be zero address if not used)
     constructor(address _trustedForwarder) AbstractComplianceModule(_trustedForwarder) { }
+
+    /// @notice Returns the unique type identifier for this compliance module
+    /// @return The type identifier used to distinguish this module from others
+    function typeId() external pure override returns (bytes32) {
+        return TYPE_ID;
+    }
 
     // --- Functions ---
 
@@ -414,7 +420,7 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
         SMARTComplianceModuleParamPair[] memory modules = smartToken.complianceModules();
 
         // Find this module in the list and return its parameters
-        for (uint256 i = 0; i < modules.length; i++) {
+        for (uint256 i = 0; i < modules.length; ++i) {
             if (modules[i].module == address(this)) {
                 return modules[i].params;
             }
