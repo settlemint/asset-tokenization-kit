@@ -187,7 +187,6 @@ export function CollateralSheet({
                 currentSupply={currentSupply}
                 utilization={collateralUtilization}
                 symbol={asset.symbol}
-                t={t}
               />
 
               {/* New Collateral Form */}
