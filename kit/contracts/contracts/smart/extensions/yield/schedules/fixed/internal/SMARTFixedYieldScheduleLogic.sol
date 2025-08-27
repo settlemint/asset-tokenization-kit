@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
@@ -387,8 +388,12 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         _lastClaimedPeriod[sender] = lastPeriod; // Update the last period claimed by the user.
         _totalClaimed += totalAmountToClaim; // Increment total yield claimed in the contract.
 
+        // Convert token yield amount to denomination asset amount
+        uint256 tokenDecimals = IERC20Metadata(address(_token)).decimals();
+        uint256 denominationAssetAmount = totalAmountToClaim / (10 ** tokenDecimals);
+
         // Perform the transfer of the denomination asset to the claimant.
-        _denominationAsset.safeTransfer(sender, totalAmountToClaim);
+        _denominationAsset.safeTransfer(sender, denominationAssetAmount);
 
         // Calculate the remaining total unclaimed yield in the contract for the event.
         uint256 remainingUnclaimed = totalUnclaimedYield();

@@ -258,7 +258,7 @@ contract ATKFixedYieldScheduleTest is Test {
 
         uint256 balanceAfterFirstClaim = denominationToken.balanceOf(user1);
         uint256 firstClaimAmount = balanceAfterFirstClaim - initialBalance;
-        uint256 expectedFirstClaim = (1000e18 * 1000 * 500) / 10_000; // 50e18
+        uint256 expectedFirstClaim = ((1000e18 * 1000 * 500) / 10_000) / (10 ** atkToken.decimals()); // 50e18
         assertEq(firstClaimAmount, expectedFirstClaim);
 
         // Move to after second period and claim again
@@ -394,6 +394,9 @@ contract ATKFixedYieldScheduleTest is Test {
                 expectedClaimAmount += (balance * basis * 500) / 10_000; // rate = 500, RATE_BASIS_POINTS = 10000
             }
         }
+
+        // Convert to denomination asset amount by dividing by token decimals
+        expectedClaimAmount = expectedClaimAmount / (10 ** atkToken.decimals());
 
         vm.prank(user1);
         yieldSchedule.claimYield();
