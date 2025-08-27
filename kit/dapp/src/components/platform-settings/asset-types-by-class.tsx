@@ -9,6 +9,7 @@ import { InfoAlert } from "@/components/ui/info-alert";
 import { useAppForm } from "@/hooks/use-app-form";
 import { useAssetClass } from "@/hooks/use-asset-class";
 import { useAssetTypesData } from "@/hooks/use-asset-types-data";
+import { createFactoryInput } from "@/lib/factories/factory-helpers";
 import { orpc } from "@/orpc/orpc-client";
 import {
   type FactoryCreateInput,
@@ -99,10 +100,7 @@ export function AssetTypesByClass() {
 
   const createFactory = useCallback(
     (assetType: (typeof TokenTypeEnum.options)[number]): SingleFactory => {
-      return {
-        type: assetType,
-        name: t(`types.${assetType}.name` as const, { ns: "asset-types" }),
-      };
+      return createFactoryInput(assetType, t);
     },
     [t]
   );
@@ -122,10 +120,6 @@ export function AssetTypesByClass() {
     [hasSystemManagerRole, createFactory, form]
   );
 
-  // Reset deploying state when verification is cancelled
-  const handleVerificationCancel = useCallback(() => {
-    setDeployingAssetType(null);
-  }, []);
 
   if (isLoading) {
     return (

@@ -6,21 +6,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { InfoAlert } from "@/components/ui/info-alert";
-import { useAppForm } from "@/hooks/use-app-form";
 import { useAssetTypesData } from "@/hooks/use-asset-types-data";
-import { orpc } from "@/orpc/orpc-client";
-import {
-  type FactoryCreateInput,
-  FactoryCreateSchema,
-  type SingleFactory,
-  TokenTypeEnum,
-} from "@/orpc/routes/system/token-factory/routes/factory.create.schema";
+import { useFactoryDeployment } from "@/hooks/use-factory-deployment";
+import { createFactoryInput } from "@/lib/factories/factory-helpers";
+import { TokenTypeEnum } from "@/orpc/routes/system/token-factory/routes/factory.create.schema";
 import { useStore } from "@tanstack/react-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 import { AssetTypeSelectorCard } from "@/components/system-assets/management/asset-type-selector-card";
 import { EnabledAssetTypes } from "./enabled-asset-types";
 
@@ -31,8 +24,8 @@ export function AssetTypesManagement() {
     "tokens",
     "navigation",
     "errors",
+    "asset-types",
   ]);
-  const queryClient = useQueryClient();
 
   const {
     systemDetails,
@@ -42,40 +35,8 @@ export function AssetTypesManagement() {
     isError,
   } = useAssetTypesData();
 
-  const form = useAppForm({
-    defaultValues: {
-      factories: [] as FactoryCreateInput["factories"],
-      walletVerification: {
-        secretVerificationCode: "",
-        verificationType: "PINCODE" as const,
-      },
-    } as FactoryCreateInput,
-    onSubmit: ({ value }) => {
-      if (!systemDetails?.tokenFactoryRegistry) {
-        toast.error(t("assets.no-system"));
-        return;
-      }
-      const parsedValues = FactoryCreateSchema.parse(value);
-
-      toast.promise(createFactories(parsedValues), {
-        loading: t("assets.deploying-toast"),
-        success: t("assets.deployed"),
-        error: (error: Error) => `${t("assets.failed-toast")}${error.message}`,
-      });
-    },
-  });
-
-  const { mutateAsync: createFactories, isPending: isDeploying } = useMutation(
-    orpc.system.factory.create.mutationOptions({
-      onSuccess: async () => {
-        // Refetch system data
-        await queryClient.invalidateQueries({
-          queryKey: orpc.system.read.key(),
-        });
-        // Clear selection
-        form.setFieldValue("factories", []);
-      },
-    })
+  const { form, isDeploying } = useFactoryDeployment(
+    systemDetails?.tokenFactoryRegistry
   );
 
   // Get selected factories from form state
@@ -95,10 +56,7 @@ export function AssetTypesManagement() {
         (f) => f.type === assetType
       );
 
-      const factory: SingleFactory = {
-        type: assetType,
-        name: t(`asset-types.${assetType}`, { ns: "tokens" }),
-      };
+      const factory = createFactoryInput(assetType, t);
 
       if (checked && existingFactoryIndex === -1) {
         form.setFieldValue("factories", [...currentFactories, factory]);
@@ -164,8 +122,7 @@ export function AssetTypesManagement() {
               {availableAssets.map((assetType) => {
                 const isDeployed = deployedAssetTypes.has(assetType);
                 const isSelected = selectedFactories.some(
-                  (f: (typeof selectedFactories)[number]) =>
-                    f.type === assetType
+                  (f: typeof selectedFactories[number]) => f.type === assetType
                 );
 
                 return (
@@ -222,7 +179,7 @@ export function AssetTypesManagement() {
         </Card>
 
         {/* Show enabled asset types in a separate section */}
-        {systemDetails?.tokenFactories?.length > 0 && (
+        {systemDetails?.tokenFactories && systemDetails.tokenFactories.length > 0 && (
           <EnabledAssetTypes tokenFactories={systemDetails.tokenFactories} />
         )}
       </div>
