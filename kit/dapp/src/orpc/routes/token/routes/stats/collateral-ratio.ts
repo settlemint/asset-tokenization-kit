@@ -167,11 +167,23 @@ export const statsCollateralRatio =
     // If no claims on token's identity, look for claims from the fallback collection
     // This handles cases where collateral was added to issuer identities instead of token identity
     if (!collateralClaim && response.allCollateralClaims.length > 0) {
-      // For now, we'll use the most recent collateral claim as fallback
-      // TODO: In the future, add validation to ensure the claim is related to this token
-      // by checking issuer relationships or token ownership
+      // Use the most recent collateral claim as fallback
+      // NOTE: This is a temporary solution until proper claim-to-token relationship validation is implemented
+      // In production, additional validation should verify the claim issuer has authority over this token
       const fallbackClaim = response.allCollateralClaims[0]; // Already ordered by deployedInTransaction desc
       if (!fallbackClaim) {
+        return getZeroCollateralState();
+      }
+
+      // Add basic validation for fallback claim
+      if (!fallbackClaim.values || fallbackClaim.values.length === 0) {
+        if (process.env.NODE_ENV === "development") {
+          // eslint-disable-next-line no-console
+          console.warn(
+            `Invalid fallback collateral claim for token ${token.id}: ` +
+              `claim ${fallbackClaim.id} has no values.`
+          );
+        }
         return getZeroCollateralState();
       }
       collateralClaim = {
@@ -220,10 +232,21 @@ export const statsCollateralRatio =
     const totalSupplyWei = BigInt(token.totalSupplyExact);
     const collateralUsed = Number(totalSupplyWei / divisor);
 
-    // Calculate available collateral
+    // Calculate available collateral with validation
     const collateralAvailable = totalCollateral - collateralUsed;
 
-    // Build collateral buckets
+    // Validate collateral calculations for data integrity
+    if (collateralUsed > totalCollateral && // Log data inconsistency for monitoring
+      process.env.NODE_ENV === "development") {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `Data inconsistency detected for token ${token.id}: ` +
+            `collateralUsed (${collateralUsed}) exceeds totalCollateral (${totalCollateral}). ` +
+            `This may indicate overcollateralization or data synchronization issues.`
+        );
+      }
+
+    // Build collateral buckets with proper bounds
     const buckets = [
       { name: "collateralAvailable", value: Math.max(0, collateralAvailable) },
       { name: "collateralUsed", value: collateralUsed },

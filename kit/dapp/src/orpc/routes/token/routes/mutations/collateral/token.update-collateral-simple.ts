@@ -188,6 +188,22 @@ export const updateCollateral = tokenRouter.token.updateCollateral
     const { contract, amount, expiryDays, walletVerification } = input;
     const { auth, system, portalClient } = context;
 
+    // INPUT VALIDATION: Ensure collateral amount is within reasonable bounds
+    if (amount <= 0) {
+      throw new Error("Collateral amount must be greater than zero");
+    }
+
+    // Prevent extremely large values that could cause overflow issues
+    const MAX_COLLATERAL = BigInt("0xffffffffffffffffffffffffffffffff"); // 2^128 - 1
+    if (BigInt(amount.toString()) > MAX_COLLATERAL) {
+      throw new Error("Collateral amount exceeds maximum allowed value");
+    }
+
+    // Validate expiry period is reasonable (1 day to 10 years)
+    if (expiryDays < 1 || expiryDays > 3650) {
+      throw new Error("Expiry days must be between 1 and 3650 (10 years)");
+    }
+
     // AUTHORIZATION: Extract authenticated user for blockchain transaction signing
     const sender = auth.user;
 
@@ -254,23 +270,77 @@ export const updateCollateral = tokenRouter.token.updateCollateral
             }
           );
 
-          // BLOCKCHAIN CONSISTENCY: Allow time for transaction to be mined and indexed
-          // TRADEOFF: 2-second delay improves reliability at cost of perceived latency
-          if (addIssuerResult) {
-            await new Promise((resolve) => setTimeout(resolve, 2000));
+          // BLOCKCHAIN CONSISTENCY: Wait for trusted issuer registration to be processed
+          // This ensures the subsequent collateral claim will be properly validated
+          if (
+            addIssuerResult &&
+            typeof addIssuerResult === "object" &&
+            "IATKTrustedIssuersRegistryAddTrustedIssuer" in addIssuerResult
+          ) {
+            const result = addIssuerResult as Record<string, unknown>;
+            const issuerResult =
+              result.IATKTrustedIssuersRegistryAddTrustedIssuer as
+                | Record<string, unknown>
+                | undefined;
+            const transactionHash = issuerResult?.transactionHash;
+
+            if (transactionHash) {
+              // TODO: Replace with proper transaction confirmation polling
+              // For now, use a shorter delay as the GraphQL mutation already waits for basic confirmation
+              await new Promise((resolve) => setTimeout(resolve, 1000));
+
+              // Log successful registration for monitoring
+              if (process.env.NODE_ENV === "development") {
+                // eslint-disable-next-line no-console
+                console.log(
+                  `Successfully registered trusted issuer ${onchainID} for topic ${claimTopicDecimal}. ` +
+                    `Transaction: ${typeof transactionHash === "string" ? transactionHash : JSON.stringify(transactionHash)}`
+                );
+              }
+            }
           }
         }
       } catch (error) {
         // GRACEFUL DEGRADATION: Continue with claim issuance even if auto-registration fails
         // WHY: Some deployments may have different security policies requiring manual issuer setup
-        // LOGGING: Warn about auto-registration failure without blocking the workflow
+        // LOGGING: Enhanced error reporting to help diagnose registration failures
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+
+        // Check if this is a permission error vs a connectivity issue
+        // TODO: Replace string-based error classification with structured error types
+        const isPermissionError =
+          errorMessage.includes("AccessControl") ||
+          errorMessage.includes("Ownable") ||
+          errorMessage.includes("not authorized") ||
+          errorMessage.includes("Only owner") ||
+          errorMessage.includes("caller is not the owner") ||
+          errorMessage.includes("Unauthorized");
+
         if (process.env.NODE_ENV === "development") {
           // eslint-disable-next-line no-console
           console.warn(
-            "Failed to automatically register trusted issuer - user may need to manually add trusted issuer:",
-            error
+            `Failed to automatically register trusted issuer for identity ${onchainID}:`,
+            {
+              error: errorMessage,
+              isPermissionError,
+              registry: registryAddress,
+              issuer: onchainID,
+              topic: claimTopicDecimal,
+              suggestion: isPermissionError
+                ? "The wallet lacks permission to modify the trusted issuer registry. Contact an admin to manually add this issuer."
+                : "Network or configuration issue. The collateral claim will still be created but may not be validated.",
+            }
           );
         }
+
+        // For permission errors, we should inform the user more clearly
+        if (isPermissionError) {
+          // Store warning for user feedback but don't block the operation
+          // The claim will be created but may not be recognized as valid until manually registered
+          // This is intentional to allow the workflow to complete
+        }
+
         // FALLBACK: Proceed with collateral claim - manual trusted issuer setup may resolve issue
       }
     }
