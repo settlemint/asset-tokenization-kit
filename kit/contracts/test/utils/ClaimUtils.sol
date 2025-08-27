@@ -268,6 +268,39 @@ contract ClaimUtils is Test {
     }
 
     /**
+     * @notice Issues a custom claim with a numeric topic ID and string data.
+     * @param clientWalletAddress_ The wallet address of the client receiving the claim.
+     * @param topicId The numeric topic ID for the claim.
+     * @param claimDataString The string data for the claim.
+     */
+    function issueCustomClaim(
+        address clientWalletAddress_,
+        uint256 topicId,
+        string memory claimDataString
+    )
+        public
+    {
+        bytes memory encodedData = abi.encode(claimDataString);
+        _issueInvestorIdentityClaimInternal(clientWalletAddress_, topicId, encodedData);
+    }
+
+    /**
+     * @notice Public wrapper for issuing investor identity claims with custom topic IDs.
+     * @param clientWalletAddress_ The wallet address of the client receiving the claim.
+     * @param claimTopic The numeric topic ID of the claim.
+     * @param claimData The ABI encoded data for the claim.
+     */
+    function issueInvestorIdentityClaim(
+        address clientWalletAddress_,
+        uint256 claimTopic,
+        bytes memory claimData
+    )
+        public
+    {
+        _issueInvestorIdentityClaimInternal(clientWalletAddress_, claimTopic, claimData);
+    }
+
+    /**
      * @notice Returns the identity contract address of the claim issuer.
      * @return The address of the claim issuer's identity contract.
      */

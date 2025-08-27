@@ -62,9 +62,9 @@ export function AssetTypeSelection() {
           await Promise.all([
             queryClient.invalidateQueries({ queryKey: orpc.system.read.key() }),
             queryClient.invalidateQueries({
-              queryKey: orpc.system.read.queryOptions({
+              queryKey: orpc.system.read.queryKey({
                 input: { id: "default" },
-              }).queryKey,
+              }),
               refetchType: "all",
             }),
           ]);

@@ -352,126 +352,21 @@ Orchestrates compliance checks as an engine based on token configuration:
 
 ### Compliance Modules
 
-The SMART protocol provides a flexible, extensible compliance module system. You
-can use the provided modules or create custom ones for specific requirements.
+The SMART protocol provides a flexible, extensible compliance module system with both default modules and support for custom implementations. The system supports country restrictions, identity verification with logical expressions, transfer limits, time-based restrictions, and more.
 
-#### Module Configuration
+**📖 For detailed documentation of all compliance modules, see: [`modules/README.md`](modules/README.md)**
 
-- **Global Configuration** (applies to all tokens):
-  - Module deployment and availability
-  - Trusted issuers registry
-  - Topic scheme registry
-  - Infrastructure settings
+Key highlights:
+- **Advanced Identity Verification**: Complex logical expressions beyond simple AND-only requirements
+- **Flexible Configuration**: Global infrastructure with per-token parameters
+- **Modular Architecture**: Mix and match modules based on regulatory requirements
+- **Extensible Framework**: Create custom modules for specific compliance needs
 
-- **Token-Specific Configuration** (per token):
-  - Which modules to use
-  - Module parameters (countries, limits, topics, etc.)
-  - Compliance rules specific to token type
-  - Business logic parameters
-
-#### Default Compliance Modules
-
-```mermaid
-graph LR
-    Base[ISMARTComplianceModule] --> Country[Country Modules]
-    Base --> Identity[Identity Modules]
-    Base --> Transfer[Transfer Modules]
-    Base --> Time[Time Modules]
-
-    Country --> CA[Country Allow List]
-    Country --> CB[Country Block List]
-
-    Identity --> IA[Identity Allow List]
-    Identity --> IV[Identity Verification]
-    Identity --> AB[Address Block List]
-
-    Transfer --> TL[Transfer Limits]
-    Transfer --> HL[Holder Limits]
-
-    Time --> TR[Time Restrictions]
-    Time --> LP[Lock Periods]
-
-    style Base fill:#f9f,stroke:#333,stroke-width:2px
-```
-
-1. **Country-based Restrictions**
-   - `CountryAllowListComplianceModule`: Only allow specific countries
-   - `CountryBlockListComplianceModule`: Block specific countries
-
-2. **Identity-based Restrictions**
-   - `IdentityAllowListComplianceModule`: Whitelist specific identities
-   - `AddressBlockListComplianceModule`: Blacklist specific addresses
-   - `SMARTIdentityVerificationComplianceModule`: **Advanced logical identity
-     verification**
-
-#### Advanced Identity Verification with Logical Expressions
-
-**Major Innovation**: Unlike ERC-3643's simple AND-only claim requirements,
-SMART Protocol supports **complex logical expressions** for identity
-verification, enabling sophisticated compliance rules that reflect real-world
-requirements.
-
-```mermaid
-graph LR
-    subgraph "ERC-3643 (Limited)"
-        ERC[Required Topics: KYC + AML + ACCREDITED]
-        ERC --> Simple[ALL topics required]
-    end
-
-    subgraph "SMART Protocol (Advanced)"
-        SMART[Expression: CONTRACT OR KYC AND AML]
-        SMART --> Contract[Contracts: Only CONTRACT claim]
-        SMART --> Individual[Individuals: KYC + AML claims]
-    end
-
-    style ERC fill:#ffcccc,stroke:#333,stroke-width:2px
-    style SMART fill:#ccffcc,stroke:#333,stroke-width:2px
-```
-
-**Expression Examples**:
-
-```typescript
-// Simple requirement (like ERC-3643)
-"KYC AND AML";
-
-// Smart contracts bypass individual verification
-"CONTRACT OR (KYC AND AML)";
-
-// Accredited investors have different requirements
-"ACCREDITED OR (KYC AND AML AND JURISDICTION)";
-
-// Complex institutional rules
-"(INSTITUTION AND REGULATORY_APPROVAL) OR (INDIVIDUAL AND KYC AND AML)";
-
-// Flexible jurisdiction handling
-"CONTRACT OR (KYC AND (US_ACCREDITED OR EU_QUALIFIED OR UK_SOPHISTICATED))";
-```
-
-**Benefits**:
-
-- ✅ **Flexible Entity Types**: Different rules for contracts, institutions, and
-  individuals
-- ✅ **Regulatory Efficiency**: Accredited investors can have streamlined
-  requirements
-- ✅ **DeFi Compatibility**: Smart contracts can interact without individual KYC
-- ✅ **Jurisdiction Flexibility**: Support multiple regulatory frameworks
-  simultaneously
-- ✅ **Future-Proof**: Easy to adapt to new regulatory requirements
-
-**Note**: The compliance module system is fully extensible. You can implement
-custom modules by following the `ISMARTComplianceModule` interface to address
-specific regulatory or business requirements. Some examples of custom modules
-are:
-
-1. **Transfer Restrictions**
-   - Maximum transfer amounts
-   - Daily/weekly/monthly limits
-   - Minimum holding periods
-
-2. **Holder Restrictions**
-   - Maximum number of token holders
-   - Minimum/maximum balance requirements
-   - Accredited investor requirements
+Available module categories:
+- **Country-based**: Allow/block lists for jurisdictions
+- **Identity-based**: Verification, allow/block lists for identities and addresses  
+- **Transfer & Supply**: Token supply limits, investor count restrictions
+- **Time-based**: Lock-up periods, holding requirements
 
 ## 🔐 Identity Layer
 

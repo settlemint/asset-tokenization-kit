@@ -549,6 +549,8 @@ type ComplianceModuleParameters @entity(immutable: false) {
   tokenSupplyLimit: TokenSupplyLimitParams
   # Investor count limit parameters (if module type matches)
   investorCount: InvestorCountParams
+  # Time lock parameters (if module type matches)
+  timeLock: TimeLockParams
 }
 
 type ExpressionNode @entity(immutable: true) {
@@ -558,6 +560,8 @@ type ExpressionNode @entity(immutable: true) {
   parameters: ComplianceModuleParameters
   # InvestorCount params this node belongs to (for InvestorCount module)
   investorCountParams: InvestorCountParams
+  # TimeLock params this node belongs to (for TimeLock module)
+  timeLockParams: TimeLockParams
   # Type of logical operation
   nodeType: ExpressionNodeType!
   # Position in the expression tree
@@ -635,6 +639,19 @@ type InvestorCountParams @entity(immutable: false) {
   countryLimits: [BigInt!]!
   # Topic filter expression nodes for complex compliance rules
   topicFilter: [ExpressionNode!] @derivedFrom(field: "investorCountParams")
+}
+
+type TimeLockParams @entity(immutable: false) {
+  # Unique identifier - same as ComplianceModuleParameters.id
+  id: Bytes!
+  # Back-reference to the owning parameters entity
+  parameters: ComplianceModuleParameters!
+  # Minimum hold period in seconds before tokens can be transferred
+  holdPeriod: BigInt!
+  # Whether exemptions through claims are allowed
+  allowExemptions: Boolean!
+  # Exemption expression nodes for complex exemption rules
+  exemptionExpression: [ExpressionNode!] @derivedFrom(field: "timeLockParams")
 }
 
 type TokenFactoryRegistry @entity(immutable: false) {

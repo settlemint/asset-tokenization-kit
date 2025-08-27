@@ -60,16 +60,16 @@ export function SetYieldScheduleSheet({
       onSuccess: async (tokenResult) => {
         // Refresh token data to show updated yield schedule
         await qc.invalidateQueries({
-          queryKey: orpc.token.read.queryOptions({
+          queryKey: orpc.token.read.queryKey({
             input: { tokenAddress: asset.id },
-          }).queryKey,
+          }),
         });
 
         // Also invalidate any yield schedule queries to ensure they refetch
         await qc.invalidateQueries({
-          queryKey: orpc.fixedYieldSchedule.read.queryOptions({
+          queryKey: orpc.fixedYieldSchedule.read.queryKey({
             input: { id: tokenResult.yield?.schedule?.id ?? "" },
-          }).queryKey,
+          }),
         });
       },
     })

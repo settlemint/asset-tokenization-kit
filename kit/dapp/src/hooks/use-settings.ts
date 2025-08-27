@@ -39,7 +39,7 @@ export function useSettings(
       onSuccess: () => {
         // Invalidate the specific setting query
         void queryClient.invalidateQueries({
-          queryKey: orpc.settings.read.key({
+          queryKey: orpc.settings.read.queryKey({
             input: { key },
           }),
           refetchType: "all",

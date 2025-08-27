@@ -20,50 +20,57 @@ describe("Compliance Modules", () => {
     );
     const response = await theGraphClient.request(query, {});
     const complianceModules = response.complianceModules;
-    expect(complianceModules.length).toBe(8);
+    expect(complianceModules.length).toBe(9);
 
-    expect(complianceModules).toEqual([
-      {
-        name: "Address BlockList Compliance Module",
-        typeId: "AddressBlockListComplianceModule",
-        globalConfigs: expect.any(Array),
-      },
-      {
-        name: "Country AllowList Compliance Module",
-        typeId: "CountryAllowListComplianceModule",
-        globalConfigs: expect.any(Array),
-      },
-      {
-        name: "Country BlockList Compliance Module",
-        typeId: "CountryBlockListComplianceModule",
-        globalConfigs: expect.any(Array),
-      },
-      {
-        name: "Identity AllowList Compliance Module",
-        typeId: "IdentityAllowListComplianceModule",
-        globalConfigs: expect.any(Array),
-      },
-      {
-        name: "Identity BlockList Compliance Module",
-        typeId: "IdentityBlockListComplianceModule",
-        globalConfigs: expect.any(Array),
-      },
-      {
-        name: "Identity Verification Module",
-        typeId: "SMARTIdentityVerificationComplianceModule",
-        globalConfigs: expect.any(Array),
-      },
-      {
-        name: "Investor Count Compliance Module",
-        typeId: "InvestorCountComplianceModule",
-        globalConfigs: expect.any(Array),
-      },
-      {
-        name: "Token Supply Limit Compliance Module",
-        typeId: "TokenSupplyLimitComplianceModule",
-        globalConfigs: expect.any(Array),
-      },
-    ]);
+    expect(complianceModules).toEqual(
+      expect.arrayContaining([
+        {
+          name: "Address BlockList Compliance Module",
+          typeId: "AddressBlockListComplianceModule",
+          globalConfigs: expect.any(Array),
+        },
+        {
+          name: "Country AllowList Compliance Module",
+          typeId: "CountryAllowListComplianceModule",
+          globalConfigs: expect.any(Array),
+        },
+        {
+          name: "Country BlockList Compliance Module",
+          typeId: "CountryBlockListComplianceModule",
+          globalConfigs: expect.any(Array),
+        },
+        {
+          name: "Identity AllowList Compliance Module",
+          typeId: "IdentityAllowListComplianceModule",
+          globalConfigs: expect.any(Array),
+        },
+        {
+          name: "Identity BlockList Compliance Module",
+          typeId: "IdentityBlockListComplianceModule",
+          globalConfigs: expect.any(Array),
+        },
+        {
+          name: "Identity Verification Module",
+          typeId: "SMARTIdentityVerificationComplianceModule",
+          globalConfigs: expect.any(Array),
+        },
+        {
+          name: "Investor Count Compliance Module",
+          typeId: "InvestorCountComplianceModule",
+          globalConfigs: expect.any(Array),
+        },
+        {
+          name: "Token Supply Limit Compliance Module",
+          typeId: "TokenSupplyLimitComplianceModule",
+          globalConfigs: expect.any(Array),
+        },
+        {
+          name: "TimeLock Compliance Module",
+          typeId: "TimeLockComplianceModule",
+          globalConfigs: expect.any(Array),
+        },
+      ])
+    );
   });
 
   it("should receive the list of blocked countries through global compliance configs", async () => {

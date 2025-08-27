@@ -7,17 +7,17 @@ import { DataTable } from "@/components/data-table/data-table";
 import { useBulkActions } from "@/components/data-table/data-table-bulk-actions";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
+import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
-import { formatDate } from "@/lib/utils/date";
+import { formatValue } from "@/lib/utils/format-value";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
-import { format } from "dnum";
+import type { ColumnDef } from "@tanstack/react-table";
 import {
   Coins,
   Copy,
@@ -40,7 +40,7 @@ const logger = createLogger();
  */
 type Token = TokenList[number];
 
-const columnHelper = createColumnHelper<Token>();
+const columnHelper = createStrictColumnHelper<Token>();
 
 /**
  * Initial sorting configuration for the deposits table
@@ -230,35 +230,36 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
             max: 18,
           },
         }),
-        columnHelper.accessor("totalSupply", {
+        columnHelper.display({
+          id: "totalSupply",
           header: t("columns.totalSupply"),
-          cell: (cellProps) => {
-            return format(cellProps.getValue());
+          cell: ({ row }) => {
+            return formatValue(row.original.totalSupply, {
+              type: "currency",
+              currency: { assetSymbol: row.original.symbol },
+            });
           },
           meta: {
             displayName: t("columns.totalSupply"),
-            type: "number",
+            type: "none",
             icon: Coins,
           },
         }),
-        columnHelper.accessor("pausable.paused", {
+        columnHelper.display({
+          id: "paused",
           header: t("columns.paused"),
-          cell: (cellProps) => {
-            const paused = cellProps.getValue();
+          cell: ({ row }) => {
+            const paused = row.original.pausable.paused;
             return <TokenStatusBadge paused={paused} />;
           },
           meta: {
             displayName: t("columns.paused"),
-            type: "badge",
+            type: "none",
             icon: PauseCircle,
           },
         }),
         columnHelper.accessor("createdAt", {
           header: t("columns.createdAt"),
-          cell: (cellProps) => {
-            const timestamp = cellProps.getValue();
-            return formatDate(timestamp);
-          },
           meta: {
             displayName: t("columns.createdAt"),
             type: "date",
@@ -268,6 +269,7 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
           id: "actions",
           header: t("columns.actions"),
           meta: {
+            type: "none",
             enableCsvExport: false, // Disable CSV export for actions column
           },
           cell: ({ row }) => <ActionsCell actions={createRowActions(row)} />,

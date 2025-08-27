@@ -12,7 +12,6 @@ export function FormatPercentage({ value }: FormatValueProps) {
     // Format Dnum with locale-aware formatting
     const formatted = formatDnum(value, {
       locale,
-      digits: 2,
       trailingZeros: false,
     });
 
