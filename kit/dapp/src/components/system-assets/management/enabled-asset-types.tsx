@@ -28,7 +28,9 @@ export const EnabledAssetTypes = memo(function EnabledAssetTypes({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("settings.assetTypes.enabledTitle", { ns: "navigation" })}</CardTitle>
+        <CardTitle>
+          {t("settings.assetTypes.enabledTitle", { ns: "navigation" })}
+        </CardTitle>
         <CardDescription>
           {t("settings.assetTypes.enabledDescription", { ns: "navigation" })}
         </CardDescription>
@@ -53,7 +55,9 @@ export const EnabledAssetTypes = memo(function EnabledAssetTypes({
                       {t(`asset-types.${assetType}`, { ns: "tokens" })}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {t(`assets.descriptions.${assetType}`, { ns: "onboarding" })}
+                      {t(`assets.descriptions.${assetType}`, {
+                        ns: "onboarding",
+                      })}
                     </p>
                   </div>
                 </div>

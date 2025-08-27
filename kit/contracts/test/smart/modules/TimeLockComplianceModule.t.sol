@@ -14,7 +14,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
 
     // Test constants
     uint256 constant TEST_VALUE = 1000;
-    uint256 constant ONE_DAY = 86400;
+    uint256 constant ONE_DAY = 86_400;
     uint256 constant ONE_MONTH = 30 * ONE_DAY;
     uint256 constant SIX_MONTHS = 6 * ONE_MONTH;
     uint256 constant ONE_YEAR = 365 * ONE_DAY;
@@ -38,7 +38,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         expression[0] = ExpressionNode({
             nodeType: ExpressionType.TOPIC,
             value: secondarySaleTopicId // Use dynamic topic ID
-        });
+         });
         return expression;
     }
 
@@ -131,10 +131,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         bytes memory emptyParams = "";
 
         vm.expectRevert(
-            abi.encodeWithSelector(
-                ISMARTComplianceModule.InvalidParameters.selector,
-                "Parameters cannot be empty"
-            )
+            abi.encodeWithSelector(ISMARTComplianceModule.InvalidParameters.selector, "Parameters cannot be empty")
         );
         module.validateParameters(emptyParams);
     }
@@ -148,8 +145,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
 
         vm.expectRevert(
             abi.encodeWithSelector(
-                ISMARTComplianceModule.InvalidParameters.selector,
-                "Hold period must be greater than zero"
+                ISMARTComplianceModule.InvalidParameters.selector, "Hold period must be greater than zero"
             )
         );
         module.validateParameters(abi.encode(params));
@@ -164,8 +160,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
 
         vm.expectRevert(
             abi.encodeWithSelector(
-                ISMARTComplianceModule.InvalidParameters.selector,
-                "Hold period too long (max 10 years)"
+                ISMARTComplianceModule.InvalidParameters.selector, "Hold period too long (max 10 years)"
             )
         );
         module.validateParameters(abi.encode(params));
@@ -182,8 +177,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         // Try to transfer without any tokens held
         vm.expectRevert(
             abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector,
-                "Insufficient unlocked tokens available"
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Insufficient unlocked tokens available"
             )
         );
         module.canTransfer(address(smartToken), user1, user2, TEST_VALUE, defaultParamsEncoded);
@@ -197,8 +191,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         // Try to transfer immediately (should fail)
         vm.expectRevert(
             abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector,
-                "Insufficient unlocked tokens available"
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Insufficient unlocked tokens available"
             )
         );
         module.canTransfer(address(smartToken), user1, user2, TEST_VALUE, defaultParamsEncoded);
@@ -207,8 +200,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         vm.warp(block.timestamp + 3 * ONE_MONTH);
         vm.expectRevert(
             abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector,
-                "Insufficient unlocked tokens available"
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Insufficient unlocked tokens available"
             )
         );
         module.canTransfer(address(smartToken), user1, user2, TEST_VALUE, defaultParamsEncoded);
@@ -241,7 +233,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     // ============ FIFO Logic Tests ============
 
     function test_TimeLock_FIFO_MultipleBatches() public {
-        uint256 startTime = 1000000;
+        uint256 startTime = 1_000_000;
         vm.warp(startTime);
 
         // Create first batch (1000 tokens)
@@ -262,8 +254,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         // Should fail for 1001 tokens (second batch still locked)
         vm.expectRevert(
             abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector,
-                "Insufficient unlocked tokens available"
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Insufficient unlocked tokens available"
             )
         );
         module.canTransfer(address(smartToken), user1, user2, 1001, defaultParamsEncoded);
@@ -379,7 +370,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TimeLock_GetAvailableBalance() public {
-        uint256 startTime = 1000000;
+        uint256 startTime = 1_000_000;
         vm.warp(startTime);
 
         // Create batches
@@ -402,7 +393,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TimeLock_GetRemainingLockTime() public {
-        uint256 startTime = 1000000;
+        uint256 startTime = 1_000_000;
         vm.warp(startTime);
 
         // Create batch
@@ -463,7 +454,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         vm.startPrank(tokenIssuer);
         smartToken.addComplianceModule(address(module), defaultParamsEncoded);
 
-        uint256 startTime = 1000000;
+        uint256 startTime = 1_000_000;
         vm.warp(startTime);
 
         // Mint first batch (1000 tokens)
@@ -489,7 +480,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     // ============ Edge Cases ============
 
     function test_TimeLock_EdgeCase_ExactLockExpiry() public {
-        uint256 startTime = 1000000;
+        uint256 startTime = 1_000_000;
         vm.warp(startTime);
 
         vm.prank(address(smartToken));
@@ -531,8 +522,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         // Without exemption, transfer should fail immediately
         vm.expectRevert(
             abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector,
-                "Insufficient unlocked tokens available"
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Insufficient unlocked tokens available"
             )
         );
         module.canTransfer(address(smartToken), user1, user2, TEST_VALUE, paramsEncoded);
@@ -550,8 +540,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         // user2 without exemption cannot transfer
         vm.expectRevert(
             abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector,
-                "Insufficient unlocked tokens available"
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Insufficient unlocked tokens available"
             )
         );
         module.canTransfer(address(smartToken), user2, user1, TEST_VALUE, paramsEncoded);

@@ -25,7 +25,13 @@ import { AssetTypeSelectorCard } from "@/components/system-assets/management/ass
 import { EnabledAssetTypes } from "./enabled-asset-types";
 
 export function AssetTypesManagement() {
-  const { t } = useTranslation(["onboarding", "common", "tokens", "navigation", "errors"]);
+  const { t } = useTranslation([
+    "onboarding",
+    "common",
+    "tokens",
+    "navigation",
+    "errors",
+  ]);
   const queryClient = useQueryClient();
 
   const {
@@ -50,7 +56,7 @@ export function AssetTypesManagement() {
         return;
       }
       const parsedValues = FactoryCreateSchema.parse(value);
-      
+
       toast.promise(createFactories(parsedValues), {
         loading: t("assets.deploying-toast"),
         success: t("assets.deployed"),
@@ -80,31 +86,31 @@ export function AssetTypesManagement() {
 
   const availableAssets = TokenTypeEnum.options;
 
-  const handleToggleFactory = useCallback((
-    assetType: typeof availableAssets[number],
-    checked: boolean
-  ) => {
-    const currentFactories = form.getFieldValue("factories") ?? [];
-    
-    // Prevent duplicate asset types in factories array
-    const existingFactoryIndex = currentFactories.findIndex(
-      (f) => f.type === assetType
-    );
-    
-    const factory: SingleFactory = {
-      type: assetType,
-      name: t(`asset-types.${assetType}`, { ns: "tokens" }),
-    };
+  const handleToggleFactory = useCallback(
+    (assetType: (typeof availableAssets)[number], checked: boolean) => {
+      const currentFactories = form.getFieldValue("factories") ?? [];
 
-    if (checked && existingFactoryIndex === -1) {
-      form.setFieldValue("factories", [...currentFactories, factory]);
-    } else if (!checked && existingFactoryIndex !== -1) {
-      form.setFieldValue(
-        "factories",
-        currentFactories.filter((f) => f.type !== assetType)
+      // Prevent duplicate asset types in factories array
+      const existingFactoryIndex = currentFactories.findIndex(
+        (f) => f.type === assetType
       );
-    }
-  }, [form, t]);
+
+      const factory: SingleFactory = {
+        type: assetType,
+        name: t(`asset-types.${assetType}`, { ns: "tokens" }),
+      };
+
+      if (checked && existingFactoryIndex === -1) {
+        form.setFieldValue("factories", [...currentFactories, factory]);
+      } else if (!checked && existingFactoryIndex !== -1) {
+        form.setFieldValue(
+          "factories",
+          currentFactories.filter((f) => f.type !== assetType)
+        );
+      }
+    },
+    [form, t]
+  );
 
   if (isLoading) {
     return (
@@ -121,7 +127,9 @@ export function AssetTypesManagement() {
       <Card>
         <CardContent className="flex h-32 items-center justify-center">
           <div className="text-center">
-            <p className="text-red-600 font-medium">{t("errors.somethingWentWrong", { ns: "common" })}</p>
+            <p className="text-red-600 font-medium">
+              {t("generic.title", { ns: "errors" })}
+            </p>
             <p className="text-sm text-muted-foreground mt-1">
               {t("buttons.tryAgain", { ns: "errors" })}
             </p>
@@ -156,7 +164,8 @@ export function AssetTypesManagement() {
               {availableAssets.map((assetType) => {
                 const isDeployed = deployedAssetTypes.has(assetType);
                 const isSelected = selectedFactories.some(
-                  (f: typeof selectedFactories[number]) => f.type === assetType
+                  (f: (typeof selectedFactories)[number]) =>
+                    f.type === assetType
                 );
 
                 return (
@@ -204,14 +213,16 @@ export function AssetTypesManagement() {
 
             {!hasUndeployedAssets && (
               <div className="text-center py-8 text-muted-foreground">
-                <p>{t("settings.assetTypes.allEnabled", { ns: "navigation" })}</p>
+                <p>
+                  {t("settings.assetTypes.allEnabled", { ns: "navigation" })}
+                </p>
               </div>
             )}
           </CardContent>
         </Card>
 
         {/* Show enabled asset types in a separate section */}
-        {!!systemDetails?.tokenFactories?.length && (
+        {systemDetails?.tokenFactories?.length > 0 && (
           <EnabledAssetTypes tokenFactories={systemDetails.tokenFactories} />
         )}
       </div>

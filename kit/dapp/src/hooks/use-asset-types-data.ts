@@ -8,17 +8,27 @@ import { useMemo } from "react";
 
 export function useAssetTypesData() {
   // Fetch system details to see which asset types are deployed
-  const { data: systemDetails, isLoading, isError: systemError } = useQuery(
+  const {
+    data: systemDetails,
+    isLoading,
+    isError: systemError,
+  } = useQuery(
     orpc.system.read.queryOptions({
       input: { id: "default" },
     })
   );
 
   // Get current user data with roles
-  const { data: user, isError: userError } = useQuery(orpc.user.me.queryOptions());
+  const {
+    data: user,
+    isLoading: isUserLoading,
+    isError: userError,
+  } = useQuery(orpc.user.me.queryOptions());
 
   // Check if user has system manager role for enabling asset types
-  const hasSystemManagerRole = !!user?.userSystemPermissions?.roles?.systemManager;
+  // Only set to true if user data is loaded and user has the role
+  const hasSystemManagerRole =
+    !isUserLoading && !!user?.userSystemPermissions?.roles?.systemManager;
 
   // Create a set of already deployed asset types for easy lookup
   const deployedAssetTypes = useMemo(
@@ -36,7 +46,7 @@ export function useAssetTypesData() {
     user,
     hasSystemManagerRole,
     deployedAssetTypes,
-    isLoading,
+    isLoading: isLoading || isUserLoading,
     isError: systemError || userError,
   };
 }

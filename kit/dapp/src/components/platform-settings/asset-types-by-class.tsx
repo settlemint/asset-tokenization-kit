@@ -19,7 +19,7 @@ import {
 import { getAssetTypeFromFactoryTypeId } from "@atk/zod/asset-types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { AssetTypeActions } from "./asset-type-actions";
@@ -97,21 +97,35 @@ export function AssetTypesByClass() {
     null
   );
 
-  const handleEnableAssetType = (
-    assetType: (typeof TokenTypeEnum.options)[number]
-  ) => {
-    if (!hasSystemManagerRole) return;
+  const createFactory = useCallback(
+    (assetType: (typeof TokenTypeEnum.options)[number]): SingleFactory => {
+      return {
+        type: assetType,
+        name: t(`types.${assetType}.name` as const, { ns: "asset-types" }),
+      };
+    },
+    [t]
+  );
 
-    const factory: SingleFactory = {
-      type: assetType,
-      name: t(`types.${assetType}.name` as const, { ns: "asset-types" }),
-    };
+  const handleEnableAssetType = useCallback(
+    (assetType: (typeof TokenTypeEnum.options)[number]) => {
+      if (!hasSystemManagerRole) return;
 
-    form.setFieldValue("factories", [factory]);
-    setDeployingAssetType(assetType);
-    // Trigger submission which will show the verification dialog
-    void form.handleSubmit();
-  };
+      const factory = createFactory(assetType);
+      form.setFieldValue("factories", [factory]);
+      setDeployingAssetType(assetType);
+      // Use setTimeout to ensure form state is updated before submission
+      setTimeout(() => {
+        void form.handleSubmit();
+      }, 0);
+    },
+    [hasSystemManagerRole, createFactory, form]
+  );
+
+  // Reset deploying state when verification is cancelled
+  const handleVerificationCancel = useCallback(() => {
+    setDeployingAssetType(null);
+  }, []);
 
   if (isLoading) {
     return (
@@ -129,7 +143,7 @@ export function AssetTypesByClass() {
         <CardContent className="flex h-32 items-center justify-center">
           <div className="text-center">
             <p className="text-red-600 font-medium">
-              {t("errors.somethingWentWrong", { ns: "common" })}
+              {t("generic.title", { ns: "errors" })}
             </p>
             <p className="text-sm text-muted-foreground mt-1">
               {t("buttons.tryAgain", { ns: "errors" })}

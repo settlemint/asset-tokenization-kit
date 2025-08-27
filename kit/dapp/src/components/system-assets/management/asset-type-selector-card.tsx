@@ -9,7 +9,10 @@ interface AssetTypeSelectorCardProps {
   isDeployed: boolean;
   isDeploying: boolean;
   hasSystemManagerRole: boolean;
-  onToggle: (assetType: (typeof TokenTypeEnum.options)[number], checked: boolean) => void;
+  onToggle: (
+    assetType: (typeof TokenTypeEnum.options)[number],
+    checked: boolean
+  ) => void;
 }
 
 export const AssetTypeSelectorCard = memo(function AssetTypeSelectorCard({

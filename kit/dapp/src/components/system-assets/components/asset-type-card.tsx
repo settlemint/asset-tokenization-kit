@@ -31,7 +31,9 @@ export const AssetTypeCard = memo(
         icon={icon}
         isChecked={isChecked}
         isDisabled={isDisabled}
-        disabledLabel={disabledLabel ?? (isDisabled ? t("assets.deployed-label") : undefined)}
+        disabledLabel={
+          disabledLabel ?? (isDisabled ? t("assets.deployed-label") : undefined)
+        }
         onToggle={onToggle}
       />
     );
