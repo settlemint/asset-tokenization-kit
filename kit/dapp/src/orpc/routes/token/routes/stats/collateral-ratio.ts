@@ -236,15 +236,17 @@ export const statsCollateralRatio =
     const collateralAvailable = totalCollateral - collateralUsed;
 
     // Validate collateral calculations for data integrity
-    if (collateralUsed > totalCollateral && // Log data inconsistency for monitoring
-      process.env.NODE_ENV === "development") {
-        // eslint-disable-next-line no-console
-        console.warn(
-          `Data inconsistency detected for token ${token.id}: ` +
-            `collateralUsed (${collateralUsed}) exceeds totalCollateral (${totalCollateral}). ` +
-            `This may indicate overcollateralization or data synchronization issues.`
-        );
-      }
+    if (
+      collateralUsed > totalCollateral && // Log data inconsistency for monitoring
+      process.env.NODE_ENV === "development"
+    ) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `Data inconsistency detected for token ${token.id}: ` +
+          `collateralUsed (${collateralUsed}) exceeds totalCollateral (${totalCollateral}). ` +
+          `This may indicate overcollateralization or data synchronization issues.`
+      );
+    }
 
     // Build collateral buckets with proper bounds
     const buckets = [

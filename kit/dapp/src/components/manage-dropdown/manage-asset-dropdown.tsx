@@ -101,13 +101,15 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
 
     // Collateral management
     const hasCollateralCapability = asset.collateral != null;
+    const hasCollateralPermission =
+      asset.userPermissions?.actions?.updateCollateral === true;
     if (hasCollateralCapability) {
       arr.push({
         id: "collateral",
         label: t("tokens:actions.collateral.label"),
         icon: Shield,
         openAction: "collateral",
-        disabled: false,
+        disabled: !hasCollateralPermission,
       });
     }
 

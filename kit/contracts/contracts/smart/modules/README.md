@@ -195,12 +195,12 @@ expressions:
 - **Multiple Limit Types**: Lifetime, fixed period, or rolling period caps
 - **Currency Conversion**: Support for base currency limits using on-chain price
   claims
-- **Regulatory Compliance**: Essential for jurisdictions like MiCA (�8M limit)
+- **Regulatory Compliance**: Essential for jurisdictions like MiCA (€8M limit)
 - **Flexible Configuration**: Token-amount or currency-equivalent limits
 
 **Use Cases**:
 
-- MiCA compliance (�8M issuance limit)
+- MiCA compliance (€8M issuance limit)
 - SEC Regulation CF ($5M limit)
 - Private placement caps
 - Crowdfunding limits

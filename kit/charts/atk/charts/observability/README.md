@@ -19,7 +19,7 @@ A Helm chart for the observability components
 | https://grafana.github.io/helm-charts | loki | 6.37.0 |
 | https://grafana.github.io/helm-charts | tempo | 1.23.3 |
 | https://kubernetes-sigs.github.io/metrics-server/ | metrics-server | 3.13.0 |
-| https://prometheus-community.github.io/helm-charts | kube-state-metrics | 6.1.4 |
+| https://prometheus-community.github.io/helm-charts | kube-state-metrics | 6.1.5 |
 | https://prometheus-community.github.io/helm-charts | prometheus-node-exporter | 4.47.3 |
 | https://victoriametrics.github.io/helm-charts/ | victoria-metrics-single | 0.24.3 |
 

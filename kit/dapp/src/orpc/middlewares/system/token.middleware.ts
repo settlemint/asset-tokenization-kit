@@ -59,12 +59,13 @@ async function queryContractCollateral(tokenAddress: `0x${string}`) {
       currentTime: Math.floor(Date.now() / 1000),
     });
 
+    const currentTime = BigInt(Math.floor(Date.now() / 1000));
+
     return {
       amount: from(amount.toString(), 18), // Convert to Dnum with 18 decimals
       issuer,
       expiryTimestamp: Number(expiryTimestamp),
-      hasValidClaim:
-        amount > 0n && expiryTimestamp > BigInt(Math.floor(Date.now() / 1000)),
+      hasValidClaim: amount > 0n && expiryTimestamp > currentTime,
     };
   } catch (error) {
     logger.warn(

@@ -177,8 +177,65 @@ export const updateCollateral = tokenRouter.token.updateCollateral
       // RETURN UPDATED TOKEN DATA: Return the token context which will be refreshed by the middleware
       return tokenData;
     } catch (error) {
+      // Enhanced error handling with more actionable information
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
+      // Classify error types to provide specific guidance
+      let userFriendlyMessage = "Failed to update collateral claim";
+      let troubleshootingSteps: string[] = [];
+
+      if (
+        errorMessage.includes("insufficient funds") ||
+        errorMessage.includes("balance")
+      ) {
+        userFriendlyMessage = "Insufficient funds to complete the transaction";
+        troubleshootingSteps = [
+          "Ensure your wallet has sufficient balance for gas fees",
+          "Check that you have the required tokens for the transaction",
+        ];
+      } else if (
+        errorMessage.includes("AccessControl") ||
+        errorMessage.includes("Ownable")
+      ) {
+        userFriendlyMessage =
+          "Access denied: insufficient permissions to update collateral";
+        troubleshootingSteps = [
+          "Verify you are registered as a trusted issuer for this token",
+          "Contact the token administrator to grant collateral management permissions",
+          "Ensure your identity is properly configured for claim issuance",
+        ];
+      } else if (
+        errorMessage.includes("revert") ||
+        errorMessage.includes("execution reverted")
+      ) {
+        userFriendlyMessage = "Transaction failed during execution";
+        troubleshootingSteps = [
+          "Check that the collateral amount is greater than current token supply",
+          "Verify that the token's identity contract is properly configured",
+          "Ensure the claim topic is supported by the identity contract",
+        ];
+      } else if (
+        errorMessage.includes("network") ||
+        errorMessage.includes("timeout")
+      ) {
+        userFriendlyMessage =
+          "Network connectivity issue preventing the transaction";
+        troubleshootingSteps = [
+          "Check your internet connection",
+          "Verify the blockchain network is operational",
+          "Try again after a few moments",
+        ];
+      } else if (errorMessage.includes("nonce")) {
+        userFriendlyMessage = "Transaction nonce conflict";
+        troubleshootingSteps = [
+          "Wait for pending transactions to complete",
+          "Reset your wallet's transaction queue if necessary",
+        ];
+      }
+
       throw errors.PORTAL_ERROR({
-        message: "Failed to update collateral claim",
+        message: userFriendlyMessage,
         data: {
           document: COLLATERAL_CLAIM_MUTATION,
           variables: {
@@ -189,6 +246,16 @@ export const updateCollateral = tokenRouter.token.updateCollateral
             issuer: onchainID,
             data: "encoded_claim_data",
             uri: "",
+            // Additional debugging context in variables
+            debug: {
+              originalError: errorMessage,
+              troubleshooting: troubleshootingSteps,
+              tokenAddress: contract,
+              identityContract: onchainID,
+              walletAddress: auth.user.wallet,
+              collateralAmount: amount.toString(),
+              expiryDays,
+            },
           },
           stack: error instanceof Error ? error.stack : undefined,
         },

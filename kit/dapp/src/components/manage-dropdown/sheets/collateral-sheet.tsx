@@ -1,15 +1,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppForm } from "@/hooks/use-app-form";
+import { useCollateralValues } from "@/hooks/use-collateral-values";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, from, greaterThan, subtract } from "dnum";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { ActionFormSheet } from "../core/action-form-sheet";
 import { createActionFormStore } from "../core/action-form-sheet.store";
-import { AlertCircle, TrendingUp } from "lucide-react";
+import { CurrentStatusCard } from "../components/current-status-card";
+import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface CollateralSheetProps {
@@ -60,24 +62,13 @@ export function CollateralSheet({
     }
   }, [open, form]);
 
-  const tokenDecimals = asset.decimals;
-
-  // Current collateral status
-  const currentCollateral = useMemo(() => {
-    return asset.collateral?.collateral ?? from(0, tokenDecimals);
-  }, [asset.collateral, tokenDecimals]);
-
-  const currentSupply = asset.totalSupply;
-
-  // Calculate how much collateral is currently being used
-  const collateralUtilization = useMemo(() => {
-    if (!greaterThan(currentCollateral, from(0, tokenDecimals))) {
-      return 0;
-    }
-    const utilization =
-      (Number(currentSupply[0]) / Number(currentCollateral[0])) * 100;
-    return Math.min(100, Math.round(utilization));
-  }, [currentCollateral, currentSupply, tokenDecimals]);
+  // Extract collateral business logic into custom hook
+  const {
+    currentCollateral,
+    currentSupply,
+    utilization: collateralUtilization,
+    decimals: tokenDecimals,
+  } = useCollateralValues(asset);
 
   const handleClose = () => {
     form.reset();
@@ -191,47 +182,13 @@ export function CollateralSheet({
             }}
           >
             <div className="space-y-4">
-              {/* Current Status Card */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4" />
-                    {t("tokens:actions.collateral.currentStatus")}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      {t("tokens:actions.collateral.currentCollateral")}
-                    </span>
-                    <span className="font-medium">
-                      {format(currentCollateral)} {asset.symbol}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      {t("tokens:details.currentSupply")}
-                    </span>
-                    <span className="font-medium">
-                      {format(currentSupply)} {asset.symbol}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      {t("tokens:actions.collateral.utilization")}
-                    </span>
-                    <span className="font-medium">
-                      {collateralUtilization}%
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-blue-600 h-2 rounded-full transition-all"
-                      style={{ width: `${collateralUtilization}%` }}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
+              <CurrentStatusCard
+                currentCollateral={currentCollateral}
+                currentSupply={currentSupply}
+                utilization={collateralUtilization}
+                symbol={asset.symbol}
+                t={t}
+              />
 
               {/* New Collateral Form */}
               <Card>
