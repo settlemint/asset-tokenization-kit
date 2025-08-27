@@ -7,7 +7,7 @@ import {
   signInWithUser,
 } from "@test/fixtures/user";
 import { addYears } from "date-fns";
-import { from } from "dnum";
+import { equal as dnumEqual, from as dnumFrom } from "dnum";
 import { describe, expect, test } from "vitest";
 
 describe("Token create", () => {
@@ -47,7 +47,7 @@ describe("Token create", () => {
       pausable: {
         paused: true,
       },
-      totalSupply: from("0"),
+      totalSupply: dnumFrom("0"),
     });
   }, 100_000);
 
@@ -210,7 +210,9 @@ describe("Token create", () => {
     expect(result.symbol).toBe(bondData.symbol);
 
     const token = await client.token.read({ tokenAddress: result.id });
-    expect(token.bond?.faceValue).toBe("1000");
+    expect(
+      token.bond?.faceValue && dnumEqual(dnumFrom("1000"), token.bond.faceValue)
+    ).toBe(true);
   }, 100_000);
 
   test("can create an equity token", async () => {

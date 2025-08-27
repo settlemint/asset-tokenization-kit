@@ -5,6 +5,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import { ISMARTFixedYieldSchedule } from "../ISMARTFixedYieldSchedule.sol";
 import { ISMARTYield } from "../../../ISMARTYield.sol";
@@ -459,8 +460,12 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
     function _calculateYieldFromAmount(uint256 tokenAmount, address holder) private view returns (uint256) {
         uint256 basis = _token.yieldBasisPerUnit(holder);
         uint256 tokenDecimals = IERC20Metadata(address(_token)).decimals();
-        uint256 tokenYield = (tokenAmount * basis * _rate) / RATE_BASIS_POINTS;
-        uint256 yieldAmountInDenominationAsset = tokenYield / (10 ** tokenDecimals);
+
+        // Use Math.mulDiv for precise multiplication and division
+        // First multiply tokenAmount by basis and rate, then divide by (RATE_BASIS_POINTS * 10^tokenDecimals)
+        // This maintains precision for small amounts and high decimal tokens
+        uint256 yieldAmountInDenominationAsset =
+            Math.mulDiv(tokenAmount * basis, _rate, RATE_BASIS_POINTS * (10 ** tokenDecimals));
 
         return yieldAmountInDenominationAsset;
     }

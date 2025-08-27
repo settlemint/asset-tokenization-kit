@@ -122,7 +122,8 @@ abstract contract SMARTYieldIntegrationTest is SMARTYieldBaseTest {
         // Calculate expected yield for clientBE (for one complete period)
         uint256 balance = token.balanceOf(clientBE);
         uint256 tokenDecimals = token.decimals();
-        uint256 expectedYield = ((balance * DEFAULT_YIELD_BASIS * YIELD_RATE) / 10_000) / (10 ** tokenDecimals); // YIELD_RATE is in basis points
+        uint256 expectedYield = ((balance * DEFAULT_YIELD_BASIS * YIELD_RATE) / 10_000) / (10 ** tokenDecimals); // YIELD_RATE
+            // is in basis points
         uint256 calculatedYield = schedule.calculateAccruedYield(clientBE);
 
         // Allow for small rounding differences due to pro-rata calculation (1 second of extra yield)

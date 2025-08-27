@@ -262,7 +262,8 @@ contract ATKFixedYieldScheduleTest is Test {
 
         uint256 balanceAfterFirstClaim = denominationToken.balanceOf(user1);
         uint256 firstClaimAmount = balanceAfterFirstClaim - initialBalance;
-        uint256 expectedFirstClaim = ((1000e18 * 1000 * 500) / 10_000) / (10 ** atkToken.decimals()); // Convert from token units to denomination asset units
+        uint256 expectedFirstClaim = ((1000e18 * 1000 * 500) / 10_000) / (10 ** atkToken.decimals()); // Convert from
+            // token units to denomination asset units
         assertEq(firstClaimAmount, expectedFirstClaim);
 
         // Move to after second period and claim again
