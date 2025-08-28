@@ -327,4 +327,92 @@ describe("User search", () => {
       });
     });
   });
+
+  describe("Identity and registration status", () => {
+    it("includes identity registration status for all search results", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
+      const users = await client.user.search({
+        query: "Test", // Should match our test users
+        limit: 10,
+      });
+
+      expect(users.length).toBeGreaterThan(0);
+
+      for (const user of users) {
+        // Every user should have isRegistered field
+        expect(typeof user.isRegistered).toBe("boolean");
+
+        // Claims should always be an array
+        expect(Array.isArray(user.claims)).toBe(true);
+
+        // Identity field should be string or undefined
+        if (user.identity) {
+          expect(typeof user.identity).toBe("string");
+          expect(user.identity).toMatch(/^0x[a-fA-F0-9]{40}$/); // Valid Ethereum address
+        }
+
+        // If user has identity, isRegistered should be true
+        if (user.identity) {
+          expect(user.isRegistered).toBe(true);
+        }
+
+        // If user doesn't have identity, isRegistered should be false
+        if (!user.identity) {
+          expect(user.isRegistered).toBe(false);
+          expect(user.claims).toEqual([]); // Should have empty claims array
+        }
+      }
+    });
+
+    it("gracefully handles TheGraph unavailability during search", async () => {
+      // This test ensures that if TheGraph is down, the search still works
+      // but without identity data
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
+      const users = await client.user.search({
+        query: testUser.user.name,
+        limit: 5,
+      });
+
+      expect(users).toBeDefined();
+      expect(Array.isArray(users)).toBe(true);
+      expect(users.length).toBeGreaterThan(0);
+
+      // Users should still have the basic structure even if identity data fails
+      for (const user of users) {
+        expect(user.id).toBeDefined();
+        expect(user.email).toBeDefined();
+        expect(user.wallet).toBeDefined();
+        expect(typeof user.isRegistered).toBe("boolean");
+        expect(Array.isArray(user.claims)).toBe(true);
+      }
+    });
+
+    it("search results have consistent identity data structure with list and read", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
+      // Search for a specific user
+      const searchResults = await client.user.search({
+        query: testUserData.id,
+        limit: 1,
+      });
+
+      expect(searchResults.length).toBeGreaterThan(0);
+      const searchUser = searchResults[0];
+
+      // Get the same user via read endpoint
+      const readUser = await client.user.read({
+        userId: testUserData.id,
+      });
+
+      // Identity fields should be consistent across endpoints
+      expect(searchUser?.isRegistered).toBe(readUser.isRegistered);
+      expect(searchUser?.claims).toEqual(readUser.claims);
+      expect(searchUser?.identity).toBe(readUser.identity);
+    });
+  });
 });

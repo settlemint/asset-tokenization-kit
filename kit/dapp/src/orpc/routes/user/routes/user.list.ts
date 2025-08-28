@@ -1,10 +1,50 @@
 import { kycProfiles, user } from "@/lib/db/schema";
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
+import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { getUserRole } from "@atk/zod/user-roles";
 import { type AnyColumn, asc, desc, eq } from "drizzle-orm";
+import { z } from "zod";
+
+// GraphQL query to fetch multiple accounts by wallet addresses
+const READ_ACCOUNTS_QUERY = theGraphGraphql(`
+  query ReadAccountsQuery($walletAddresses: [Bytes!]!) {
+    accounts(where: { id_in: $walletAddresses }) {
+      id
+      country
+      identity {
+        id
+        claims {
+          name
+        }
+      }
+    }
+  }
+`);
+
+// Response schema for accounts query
+const AccountsResponseSchema = z.object({
+  accounts: z.array(
+    z.object({
+      id: z.string(),
+      country: z.number().nullable().optional(),
+      identity: z
+        .object({
+          id: z.string(),
+          claims: z.array(
+            z.object({
+              name: z.string(),
+            })
+          ),
+        })
+        .nullable()
+        .optional(),
+    })
+  ),
+});
 
 /**
  * User listing route handler.
@@ -52,6 +92,7 @@ export const list = authRouter.user.list
     offChainPermissionsMiddleware({ requiredPermissions: { user: ["list"] } })
   )
   .use(databaseMiddleware)
+  .use(theGraphMiddleware)
   .handler(async ({ context, input }) => {
     const { limit, offset, orderDirection, orderBy } = input;
 
@@ -78,11 +119,39 @@ export const list = authRouter.user.list
       .limit(limit ?? 1000)
       .offset(offset);
 
-    // Transform results to include human-readable roles and onboarding state
+    // Extract wallet addresses for TheGraph query, filtering out null values
+    const walletAddresses = result
+      .map(({ user }) => user.wallet)
+      .filter((wallet): wallet is `0x${string}` => wallet !== null)
+      .map((wallet) => wallet as string); // Convert to string for GraphQL
+
+    // Fetch identity data from TheGraph if we have wallet addresses
+    let accountsData: z.infer<typeof AccountsResponseSchema> = { accounts: [] };
+    if (walletAddresses.length > 0) {
+      accountsData = await context.theGraphClient.query(READ_ACCOUNTS_QUERY, {
+        input: { walletAddresses },
+        output: AccountsResponseSchema,
+      });
+    }
+
+    // Create a map for quick account lookups
+    const accountsMap = new Map(
+      accountsData.accounts.map((account) => [
+        account.id.toLowerCase(),
+        account,
+      ])
+    );
+
+    // Transform results to include human-readable roles, onboarding state, and identity data
     return result.map(({ user, kyc }) => {
       if (!user.wallet) {
         throw new Error(`User ${user.id} has no wallet`);
       }
+
+      // Look up account data for this user
+      const account = accountsMap.get(user.wallet.toLowerCase());
+      const identity = account?.identity;
+
       return {
         id: user.id,
         name:
@@ -94,6 +163,9 @@ export const list = authRouter.user.list
         wallet: user.wallet,
         firstName: kyc?.firstName,
         lastName: kyc?.lastName,
+        identity: identity?.id,
+        claims: identity?.claims.map((claim) => claim.name) ?? [],
+        isRegistered: !!identity,
       } as User;
     });
   });

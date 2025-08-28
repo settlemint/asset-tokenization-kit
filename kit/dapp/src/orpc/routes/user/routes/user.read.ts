@@ -1,10 +1,50 @@
 import { kycProfiles, user } from "@/lib/db/schema";
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
+import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { getUserRole } from "@atk/zod/user-roles";
 import { eq } from "drizzle-orm";
+import { z } from "zod";
+
+// GraphQL query to fetch single account by wallet address
+const READ_ACCOUNT_QUERY = theGraphGraphql(`
+  query ReadAccountQuery($walletAddress: ID!) {
+    account(id: $walletAddress) {
+      id
+      country
+      identity {
+        id
+        claims {
+          name
+        }
+      }
+    }
+  }
+`);
+
+// Response schema for account query
+const AccountResponseSchema = z.object({
+  account: z
+    .object({
+      id: z.string(),
+      country: z.number().nullable().optional(),
+      identity: z
+        .object({
+          id: z.string(),
+          claims: z.array(
+            z.object({
+              name: z.string(),
+            })
+          ),
+        })
+        .nullable()
+        .optional(),
+    })
+    .nullable(),
+});
 
 /**
  * User read route handler.
@@ -50,6 +90,7 @@ export const read = authRouter.user.read
     offChainPermissionsMiddleware({ requiredPermissions: { user: ["list"] } })
   )
   .use(databaseMiddleware)
+  .use(theGraphMiddleware)
   .handler(async ({ context, input, errors }) => {
     // Build the query condition based on input type
     // TypeScript now properly narrows the union type
@@ -100,7 +141,17 @@ export const read = authRouter.user.read
       });
     }
 
-    // Transform result to include human-readable role
+    // Fetch identity data from TheGraph for this specific user
+    let accountData: z.infer<typeof AccountResponseSchema> = { account: null };
+    accountData = await context.theGraphClient.query(READ_ACCOUNT_QUERY, {
+      input: { walletAddress: userData.wallet },
+      output: AccountResponseSchema,
+    });
+
+    const account = accountData.account;
+    const identity = account?.identity;
+
+    // Transform result to include human-readable role and identity data
     return {
       id: userData.id,
       name:
@@ -112,5 +163,8 @@ export const read = authRouter.user.read
       wallet: userData.wallet,
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,
+      identity: identity?.id,
+      claims: identity?.claims.map((claim) => claim.name) ?? [],
+      isRegistered: !!identity,
     } as User;
   });
