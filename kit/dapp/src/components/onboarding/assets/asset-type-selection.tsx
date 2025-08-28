@@ -1,6 +1,6 @@
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
-import { getAssetIcon } from "@/components/onboarding/assets/asset-icons";
-import { AssetTypeCard } from "@/components/onboarding/assets/asset-type-card";
+import { getAssetIcon } from "@/components/system-assets/components/asset-icons";
+import { AssetTypeCard } from "@/components/system-assets/components/asset-type-card";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { InfoAlert } from "@/components/ui/info-alert";
@@ -26,10 +26,10 @@ import { toast } from "sonner";
 export function AssetTypeSelection() {
   const { refreshUserState, completeStepAndNavigate } =
     useOnboardingNavigation();
-  const { t } = useTranslation(["onboarding", "common", "tokens"]);
+  const { t } = useTranslation(["onboarding", "common", "tokens", "errors"]);
   const queryClient = useQueryClient();
 
-  const { data: systemDetails } = useQuery(
+  const { data: systemDetails, isError: systemError } = useQuery(
     orpc.system.read.queryOptions({
       input: { id: "default" },
     })
@@ -105,6 +105,25 @@ export function AssetTypeSelection() {
     );
   };
   const factories = useStore(form.store, (state) => state.values.factories);
+
+  if (systemError) {
+    return (
+      <FormStepLayout
+        title={t("assets.title")}
+        description={t("errors.somethingWentWrong", { ns: "common" })}
+        fullWidth={true}
+      >
+        <div className="text-center py-12">
+          <p className="text-red-600 font-medium mb-2">
+            {t("errors.somethingWentWrong", { ns: "common" })}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {t("buttons.tryAgain", { ns: "errors" })}
+          </p>
+        </div>
+      </FormStepLayout>
+    );
+  }
 
   return (
     <form.AppForm>

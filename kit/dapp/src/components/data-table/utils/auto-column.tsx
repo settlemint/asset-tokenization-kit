@@ -95,7 +95,7 @@ function withAutoVariant<TData, TValue = unknown>(
 
   const columnType = column.meta?.type;
   const numericTypes = ["number", "currency", "percentage", "basisPoints"];
-  
+
   if (columnType && numericTypes.includes(columnType)) {
     return {
       ...column,
@@ -137,7 +137,7 @@ function withAutoVariant<TData, TValue = unknown>(
 export function withAutoFeatures<TData>(
   columns: ColumnDef<TData>[]
 ): ColumnDef<TData>[] {
-  return columns.map((column) => 
+  return columns.map((column) =>
     withAutoFilterFn(withAutoVariant(withAutoCell(column)))
   );
 }

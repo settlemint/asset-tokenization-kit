@@ -123,7 +123,15 @@ describe("auto-filter", () => {
 
     it("should apply filter function based on meta.type", () => {
       const testCases: Array<{
-        type: "text" | "number" | "date" | "multiOption" | "basisPoints" | "option" | "boolean" | "status";
+        type:
+          | "text"
+          | "number"
+          | "date"
+          | "multiOption"
+          | "basisPoints"
+          | "option"
+          | "boolean"
+          | "status";
         expectedFn: unknown;
       }> = [
         { type: "text", expectedFn: flexibleTextFilterFn },
@@ -146,7 +154,6 @@ describe("auto-filter", () => {
         expect(result.filterFn).toEqual(expectedFn);
       });
     });
-
 
     it("should not modify column without accessor or type", () => {
       const column: ColumnDef<TestData> = {
@@ -214,9 +221,9 @@ describe("auto-filter", () => {
     it("should handle column with additional meta properties", () => {
       const column: ColumnDef<TestData> = {
         accessorKey: "test",
-        meta: { 
+        meta: {
           displayName: "Test Column",
-          type: "text"
+          type: "text",
         },
       };
 
