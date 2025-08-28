@@ -38,6 +38,7 @@ const SYSTEM_TOPIC_NAMES = new Set([
   "assetClassification",
   "basePrice",
   "contractIdentity",
+  "assetIssuer",
 ]);
 
 const isSystemTopic = (topic: TopicScheme): boolean => {
