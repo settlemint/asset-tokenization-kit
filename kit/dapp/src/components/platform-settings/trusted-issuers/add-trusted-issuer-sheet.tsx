@@ -146,7 +146,7 @@ export function AddTrustedIssuerSheet({
           </SheetDescription>
         </SheetHeader>
 
-        <div className="mt-6">
+        <div className="mt-6 px-6">
           <form.AppForm>
             <div className="space-y-6">
               <div className="space-y-2">
@@ -158,7 +158,7 @@ export function AddTrustedIssuerSheet({
                   value={selectedUser?.id}
                   onValueChange={handleUserSelect}
                 >
-                  <SelectTrigger id="user-select">
+                  <SelectTrigger id="user-select" className="w-full">
                     <SelectValue
                       placeholder={t(
                         "trustedIssuers.add.fields.selectUser.placeholder"
