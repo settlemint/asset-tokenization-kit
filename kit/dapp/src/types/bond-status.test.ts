@@ -280,6 +280,11 @@ describe("bond-status types", () => {
         createdBy: {
           id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
         },
+        account: {
+          identity: {
+            id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          },
+        },
         redeemable: null,
         bond: {
           faceValue: from(1000),
@@ -377,6 +382,11 @@ describe("bond-status types", () => {
         createdBy: {
           id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
         },
+        account: {
+          identity: {
+            id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          },
+        },
         redeemable: null,
         bond: {
           faceValue: from(1000),
@@ -472,6 +482,11 @@ describe("bond-status types", () => {
         capped: null,
         createdBy: {
           id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+        },
+        account: {
+          identity: {
+            id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          },
         },
         redeemable: null,
         bond: {
@@ -570,6 +585,11 @@ describe("bond-status types", () => {
         capped: null,
         createdBy: {
           id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+        },
+        account: {
+          identity: {
+            id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          },
         },
         redeemable: null,
         bond: {

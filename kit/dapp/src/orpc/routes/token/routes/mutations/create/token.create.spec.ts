@@ -43,6 +43,11 @@ describe("Token create", () => {
       id: expect.any(String),
       createdAt: expect.any(Date),
       ...tokenData,
+      account: {
+        identity: {
+          id: expect.any(String),
+        },
+      },
       pausable: {
         paused: true,
       },

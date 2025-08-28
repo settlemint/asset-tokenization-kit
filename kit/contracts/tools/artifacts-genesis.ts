@@ -119,7 +119,8 @@ const CONTRACT_ADDRESSES = {
     "0x5e771e1417100000000000000000000000020106",
   InvestorCountComplianceModule: "0x5e771e1417100000000000000000000000020107",
   TimeLockComplianceModule: "0x5e771e1417100000000000000000000000020108",
-  TransferApprovalComplianceModule: "0x5e771e1417100000000000000000000000020109",
+  TransferApprovalComplianceModule:
+    "0x5e771e1417100000000000000000000000020109",
 
   // Addon factory implementations
   ATKFixedYieldScheduleFactoryImplementation:

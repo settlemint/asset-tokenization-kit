@@ -856,7 +856,7 @@ describe("portal.middleware", () => {
         ).rejects.toThrow();
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
-          message: "GraphQL ErrorMutation failed",
+          message: `GraphQL ErrorMutation failed: ${clientError.message}`,
           data: expect.objectContaining({
             document: print(ERROR_MUTATION),
             variables: {
@@ -886,7 +886,7 @@ describe("portal.middleware", () => {
         ).rejects.toThrow();
 
         expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
-          message: "GraphQL NetworkError failed",
+          message: "GraphQL NetworkError failed: Network timeout",
           data: expect.any(Object),
           cause: networkError,
         });
@@ -1510,7 +1510,7 @@ describe("portal.middleware", () => {
       ).rejects.toThrow();
 
       expect(mockErrors.PORTAL_ERROR).toHaveBeenCalledWith({
-        message: "GraphQL CreateTokenWithMetadata failed",
+        message: "GraphQL CreateTokenWithMetadata failed: Test error",
         data: expect.any(Object),
         cause: expect.any(Error),
       });

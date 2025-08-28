@@ -90,6 +90,7 @@ describe("Token permissions", () => {
         setYieldSchedule: false,
         transfer: true,
         unpause: false,
+        updateCollateral: false,
       },
     });
   });
@@ -156,6 +157,7 @@ describe("Token permissions", () => {
         setYieldSchedule: false,
         transfer: true,
         unpause: false,
+        updateCollateral: false,
       },
     });
   });
