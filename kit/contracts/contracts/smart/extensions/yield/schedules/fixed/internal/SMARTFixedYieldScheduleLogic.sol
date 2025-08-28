@@ -93,6 +93,10 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
     /// @dev This helps in tracking the overall distribution progress and can be used with `totalUnclaimedYield`.
     uint256 private _totalClaimed;
 
+    /// @notice Cached decimals of the yield token to avoid repeated external calls.
+    /// @dev Set once during initialization to optimize gas usage in yield calculations.
+    uint8 private _tokenDecimals;
+
     /// @notice Internal function to initialize all mutable state and configuration
     /// @dev Internal function to initialize all mutable state and configuration.
     /// @param tokenAddress_ Address of the `ISMARTYield` token.
@@ -131,6 +135,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         _endDate = endDate_;
         _rate = rate_;
         _interval = interval_;
+        _tokenDecimals = IERC20Metadata(tokenAddress_).decimals();
 
         // Calculate and cache all period end timestamps.
         uint256 totalPeriods = ((_endDate - _startDate) / _interval) + 1;
@@ -459,7 +464,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
     /// @return The equivalent amount in denomination asset units
     function _calculateYieldFromAmount(uint256 tokenAmount, address holder) private view returns (uint256) {
         uint256 basis = _token.yieldBasisPerUnit(holder);
-        uint256 tokenDecimals = IERC20Metadata(address(_token)).decimals();
+        uint256 tokenDecimals = _tokenDecimals;
 
         // Use Math.mulDiv for precise multiplication and division
         // First multiply tokenAmount by basis and rate, then divide by (RATE_BASIS_POINTS * 10^tokenDecimals)
