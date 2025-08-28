@@ -233,9 +233,9 @@ describe("complianceParams", () => {
       const validParams = {
         typeId: "SMARTIdentityVerificationComplianceModule" as const,
         values: [
-          { nodeType: 0, value: getTopicId("kyc") }, // TOPIC node with real KYC topic ID
+          { nodeType: 0, value: getTopicId("knowYourCustomer") }, // TOPIC node with real KYC topic ID
           "(",
-          { nodeType: 0, value: getTopicId("aml") }, // TOPIC node with real AML topic ID
+          { nodeType: 0, value: getTopicId("antiMoneyLaundering") }, // TOPIC node with real AML topic ID
           { nodeType: 0, value: getTopicId("collateral") }, // TOPIC node with real collateral topic ID
           { nodeType: 1, value: 0n }, // AND node
           ")",
@@ -248,7 +248,7 @@ describe("complianceParams", () => {
       expect(result.values).toHaveLength(6);
       expect(result.values[0]).toEqual({
         nodeType: 0,
-        value: getTopicId("kyc"),
+        value: getTopicId("knowYourCustomer"),
       });
     });
 
@@ -830,8 +830,8 @@ describe("Individual value validators", () => {
       const values = [
         { nodeType: 0, value: getTopicId("basePrice") }, // TOPIC node with basePrice topic ID
         "(",
-        { nodeType: 0, value: getTopicId("kyc") }, // TOPIC node with KYC topic ID
-        { nodeType: 0, value: getTopicId("aml") }, // TOPIC node with AML topic ID
+        { nodeType: 0, value: getTopicId("knowYourCustomer") }, // TOPIC node with KYC topic ID
+        { nodeType: 0, value: getTopicId("antiMoneyLaundering") }, // TOPIC node with AML topic ID
         { nodeType: 2, value: 0n }, // OR node
         ")",
         { nodeType: 1, value: 0n }, // AND node
