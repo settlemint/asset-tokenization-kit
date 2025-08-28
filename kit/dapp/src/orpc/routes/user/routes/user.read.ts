@@ -1,13 +1,19 @@
 import { kycProfiles, user } from "@/lib/db/schema";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
+import {
+  filterClaimsForUser,
+  identityPermissionsMiddleware,
+} from "@/orpc/middlewares/auth/identity-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
+import { userClaimsMiddleware } from "@/orpc/middlewares/system/user-claims.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { getUserRole } from "@atk/zod/user-roles";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
+import { UserReadInputSchema } from "./user.read.schema";
 
 // GraphQL query to fetch single account by wallet address
 const READ_ACCOUNT_QUERY = theGraphGraphql(`
@@ -86,11 +92,16 @@ const AccountResponseSchema = z.object({
  * - User roles are transformed from internal codes to display names
  */
 export const read = authRouter.user.read
+  .use(systemMiddleware)
+  .use(theGraphMiddleware)
+  .use(userClaimsMiddleware)
   .use(
-    offChainPermissionsMiddleware({ requiredPermissions: { user: ["list"] } })
+    identityPermissionsMiddleware<typeof UserReadInputSchema>({
+      getTargetUserId: ({ input }) =>
+        "userId" in input ? input.userId : undefined,
+    })
   )
   .use(databaseMiddleware)
-  .use(theGraphMiddleware)
   .handler(async ({ context, input, errors }) => {
     // Build the query condition based on input type
     // TypeScript now properly narrows the union type
@@ -151,6 +162,15 @@ export const read = authRouter.user.read
     const account = accountData.account;
     const identity = account?.identity;
 
+    // Get all claims for this user
+    const allClaims = identity?.claims.map((claim) => claim.name) ?? [];
+
+    // Filter claims based on user's permissions
+    const filteredClaims = filterClaimsForUser(
+      allClaims,
+      context.identityPermissions
+    );
+
     // Transform result to include human-readable role and identity data
     return {
       id: userData.id,
@@ -164,7 +184,7 @@ export const read = authRouter.user.read
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,
       identity: identity?.id,
-      claims: identity?.claims.map((claim) => claim.name) ?? [],
+      claims: filteredClaims,
       isRegistered: !!identity,
     } as User;
   });

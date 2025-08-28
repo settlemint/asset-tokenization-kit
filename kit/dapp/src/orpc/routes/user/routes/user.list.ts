@@ -1,8 +1,10 @@
 import { kycProfiles, user } from "@/lib/db/schema";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
+import { identityPermissionsMiddleware, filterClaimsForUser } from "@/orpc/middlewares/auth/identity-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
+import { userClaimsMiddleware } from "@/orpc/middlewares/system/user-claims.middleware";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { getUserRole } from "@atk/zod/user-roles";
@@ -88,11 +90,13 @@ const AccountsResponseSchema = z.object({
  * - User roles are transformed from internal codes to display names
  */
 export const list = authRouter.user.list
-  .use(
-    offChainPermissionsMiddleware({ requiredPermissions: { user: ["list"] } })
-  )
-  .use(databaseMiddleware)
+  .use(systemMiddleware)
   .use(theGraphMiddleware)
+  .use(userClaimsMiddleware)
+  .use(identityPermissionsMiddleware({
+    getTargetUserId: () => undefined, // List operation doesn't target specific user
+  }))
+  .use(databaseMiddleware)
   .handler(async ({ context, input }) => {
     const { limit, offset, orderDirection, orderBy } = input;
 
@@ -152,6 +156,12 @@ export const list = authRouter.user.list
       const account = accountsMap.get(user.wallet.toLowerCase());
       const identity = account?.identity;
 
+      // Get all claims for this user
+      const allClaims = identity?.claims.map((claim) => claim.name) ?? [];
+      
+      // Filter claims based on user's permissions
+      const filteredClaims = filterClaimsForUser(allClaims, context.identityPermissions);
+
       return {
         id: user.id,
         name:
@@ -164,7 +174,7 @@ export const list = authRouter.user.list
         firstName: kyc?.firstName,
         lastName: kyc?.lastName,
         identity: identity?.id,
-        claims: identity?.claims.map((claim) => claim.name) ?? [],
+        claims: filteredClaims,
         isRegistered: !!identity,
       } as User;
     });
