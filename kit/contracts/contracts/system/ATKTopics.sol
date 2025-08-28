@@ -112,7 +112,7 @@ library ATKTopics {
     /// @return _names Array of topic names for batchRegisterTopicSchemes
     /// @dev The order here mirrors signatures() and is kept stable for backward compatibility.
     function names() internal pure returns (string[] memory _names) {
-        _names = new string[](19);
+        _names = new string[](18);
 
         // Investor-level
         _names[0] = TOPIC_INVESTOR_KYC;
@@ -145,7 +145,7 @@ library ATKTopics {
     /// @return _signatures Array of topic signatures for batchRegisterTopicSchemes
     /// @dev Standard ABI signatures - matches order in names()
     function signatures() internal pure returns (string[] memory _signatures) {
-        _signatures = new string[](19);
+        _signatures = new string[](18);
 
         // Investor-level
         _signatures[0] = "string claim"; // kyc
