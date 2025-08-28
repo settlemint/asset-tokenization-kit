@@ -119,6 +119,7 @@ const CONTRACT_ADDRESSES = {
     "0x5e771e1417100000000000000000000000020106",
   InvestorCountComplianceModule: "0x5e771e1417100000000000000000000000020107",
   TimeLockComplianceModule: "0x5e771e1417100000000000000000000000020108",
+  TransferApprovalComplianceModule: "0x5e771e1417100000000000000000000000020109",
 
   // Addon factory implementations
   ATKFixedYieldScheduleFactoryImplementation:
@@ -209,6 +210,8 @@ const CONTRACT_FILES = {
     "contracts/smart/modules/InvestorCountComplianceModule.sol",
   TimeLockComplianceModule:
     "contracts/smart/modules/TimeLockComplianceModule.sol",
+  TransferApprovalComplianceModule:
+    "contracts/smart/modules/TransferApprovalComplianceModule.sol",
 
   // Addon factory implementations
   ATKFixedYieldScheduleFactoryImplementation:

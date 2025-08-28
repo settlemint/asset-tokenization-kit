@@ -539,7 +539,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 address(systemUtils.identityRegistry()),
                 address(systemUtils.compliance()),
                 new SMARTComplianceModuleParamPair[](0),
-                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
                 address(accessManager)
             )
         );
@@ -585,7 +585,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 address(systemUtils.identityRegistry()),
                 address(systemUtils.compliance()),
                 new SMARTComplianceModuleParamPair[](0),
-                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
                 address(accessManager)
             )
         );
@@ -643,7 +643,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 address(systemUtils.identityRegistry()),
                 address(systemUtils.compliance()),
                 new SMARTComplianceModuleParamPair[](0),
-                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
                 address(accessManager)
             )
         );
@@ -701,7 +701,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 address(systemUtils.identityRegistry()),
                 address(systemUtils.compliance()),
                 new SMARTComplianceModuleParamPair[](0),
-                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
                 address(accessManager)
             )
         );
@@ -758,7 +758,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 address(systemUtils.identityRegistry()),
                 address(systemUtils.compliance()),
                 new SMARTComplianceModuleParamPair[](0),
-                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
                 address(accessManager)
             )
         );
@@ -969,7 +969,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 address(systemUtils.identityRegistry()),
                 address(systemUtils.compliance()),
                 new SMARTComplianceModuleParamPair[](0),
-                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
                 address(accessManager)
             )
         );
@@ -1265,7 +1265,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 address(systemUtils.identityRegistry()),
                 address(systemUtils.compliance()),
                 new SMARTComplianceModuleParamPair[](0),
-                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
                 address(accessManager)
             )
         );
@@ -1303,7 +1303,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 address(systemUtils.identityRegistry()),
                 address(systemUtils.compliance()),
                 new SMARTComplianceModuleParamPair[](0),
-                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
                 address(accessManager)
             )
         );
@@ -1318,7 +1318,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 address(systemUtils.identityRegistry()),
                 address(systemUtils.compliance()),
                 new SMARTComplianceModuleParamPair[](0),
-                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
                 address(accessManager)
             )
         );
@@ -1371,7 +1371,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 address(systemUtils.identityRegistry()),
                 address(systemUtils.compliance()),
                 new SMARTComplianceModuleParamPair[](0),
-                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
                 address(accessManager)
             )
         );
@@ -1386,7 +1386,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 address(systemUtils.identityRegistry()),
                 address(systemUtils.compliance()),
                 new SMARTComplianceModuleParamPair[](0),
-                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
                 address(accessManager)
             )
         );
@@ -1443,7 +1443,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 address(systemUtils.identityRegistry()),
                 address(systemUtils.compliance()),
                 new SMARTComplianceModuleParamPair[](0),
-                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
                 address(accessManager)
             )
         );
@@ -1485,7 +1485,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 address(systemUtils.identityRegistry()),
                 address(systemUtils.compliance()),
                 new SMARTComplianceModuleParamPair[](0),
-                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
                 address(accessManager)
             )
         );
@@ -1535,7 +1535,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 address(systemUtils.identityRegistry()),
                 address(systemUtils.compliance()),
                 new SMARTComplianceModuleParamPair[](0),
-                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
                 address(accessManager)
             )
         );
@@ -1549,7 +1549,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 address(systemUtils.identityRegistry()),
                 address(systemUtils.compliance()),
                 new SMARTComplianceModuleParamPair[](0),
-                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
                 address(accessManager)
             )
         );
@@ -1613,7 +1613,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 address(systemUtils.identityRegistry()),
                 address(systemUtils.compliance()),
                 new SMARTComplianceModuleParamPair[](0),
-                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
                 address(accessManager)
             )
         );
@@ -1660,7 +1660,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 address(systemUtils.identityRegistry()),
                 address(systemUtils.compliance()),
                 new SMARTComplianceModuleParamPair[](0),
-                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
                 address(accessManager)
             )
         );
@@ -1676,7 +1676,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 address(systemUtils.identityRegistry()),
                 address(systemUtils.compliance()),
                 new SMARTComplianceModuleParamPair[](0),
-                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
                 address(accessManager)
             )
         );
@@ -1741,7 +1741,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 address(systemUtils.identityRegistry()),
                 address(systemUtils.compliance()),
                 new SMARTComplianceModuleParamPair[](0),
-                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
                 address(accessManager)
             )
         );
@@ -1755,7 +1755,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 address(systemUtils.identityRegistry()),
                 address(systemUtils.compliance()),
                 new SMARTComplianceModuleParamPair[](0),
-                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
                 address(accessManager)
             )
         );
@@ -1824,7 +1824,7 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
                 address(systemUtils.identityRegistry()),
                 address(systemUtils.compliance()),
                 new SMARTComplianceModuleParamPair[](0),
-                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
+                systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL),
                 address(accessManager)
             )
         );

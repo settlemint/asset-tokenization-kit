@@ -6,6 +6,7 @@ import {
   InvestorCountParams,
   TimeLockParams,
   TokenSupplyLimitParams,
+  TransferApprovalParams,
 } from "../../../generated/schema";
 import { getEncodedTypeId } from "../../type-identifier/type-identifier";
 import {
@@ -36,6 +37,10 @@ import {
   decodeTokenSupplyLimitParams,
   isTokenSupplyLimitComplianceModule,
 } from "../modules/token-supply-limit-compliance-module";
+import {
+  decodeTransferApprovalParams,
+  isTransferApprovalComplianceModule,
+} from "../modules/transfer-approval-compliance-module";
 
 export function fetchComplianceModuleParameters(
   configId: Bytes
@@ -176,6 +181,41 @@ export function updateComplianceModuleParameters(
         store.remove("TimeLockParams", tlp.id.toHexString());
       }
       complianceModuleParameters.timeLock = null;
+    }
+  }
+  if (
+    isTransferApprovalComplianceModule(getEncodedTypeId(complianceModule.typeId))
+  ) {
+    const decoded = decodeTransferApprovalParams(encodedParams);
+    let tap = TransferApprovalParams.load(complianceModuleParameters.id);
+    if (decoded !== null) {
+      if (tap === null) {
+        tap = new TransferApprovalParams(complianceModuleParameters.id);
+        tap.parameters = complianceModuleParameters.id;
+      }
+      tap.approvalAuthorities = decoded.approvalAuthorities;
+      tap.allowExemptions = decoded.allowExemptions;
+      tap.approvalExpiry = decoded.approvalExpiry;
+      tap.oneTimeUse = decoded.oneTimeUse;
+      tap.save();
+
+      // Create ExpressionNode entities for the exemption expression using shared utility
+      clearExpressionNodeEntities(tap.id);
+      createExpressionNodeEntities(
+        tap.id,
+        decoded.exemptionExpression,
+        (node: ExpressionNode, baseId: Bytes) => {
+          node.transferApprovalParams = baseId;
+        }
+      );
+
+      complianceModuleParameters.transferApproval = tap.id;
+    } else {
+      // Clear if not decodable
+      if (tap !== null) {
+        store.remove("TransferApprovalParams", tap.id.toHexString());
+      }
+      complianceModuleParameters.transferApproval = null;
     }
   }
 
