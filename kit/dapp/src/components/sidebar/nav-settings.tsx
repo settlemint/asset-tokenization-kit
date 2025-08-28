@@ -44,7 +44,7 @@ export function NavSettings() {
 
   const settingsItems = [
     {
-      name: t("settings.assetTypes"),
+      name: t("settings.assetTypes.title"),
       icon: FileText,
       path: "/admin/platform-settings/asset-types",
     },
