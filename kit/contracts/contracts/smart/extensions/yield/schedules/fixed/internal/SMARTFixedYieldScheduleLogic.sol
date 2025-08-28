@@ -245,6 +245,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         uint256 totalYieldAccrued = 0;
 
         // Iterate through each completed period to calculate the yield that should have been generated in that period.
+        uint256 globalBasis = _token.yieldBasisPerUnit(address(0));
         for (uint256 period = 1; period < lastPeriod || period == lastPeriod; ++period) {
             uint256 periodEndTimestamp = _periodEndTimestamps[period - 1]; // Get end time of the current iterated
                 // period.
@@ -252,7 +253,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
             // This is crucial for accuracy if the total supply changes over time.
             uint256 historicalTotalSupply = _token.totalSupplyAt(periodEndTimestamp);
             if (historicalTotalSupply > 0) {
-                totalYieldAccrued += _calculateYieldFromAmount(historicalTotalSupply, address(0));
+                totalYieldAccrued += _calculateYieldFromAmount(historicalTotalSupply, globalBasis);
             }
         }
 
@@ -275,7 +276,8 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         uint256 totalSupply = IERC20(address(_token)).totalSupply();
 
         // Calculate yield for one full period based on current supply and rate.
-        return _calculateYieldFromAmount(totalSupply, address(0));
+        uint256 globalBasis = _token.yieldBasisPerUnit(address(0));
+        return _calculateYieldFromAmount(totalSupply, globalBasis);
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -297,11 +299,12 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         // Calculate yield for all fully completed periods that haven't been claimed by this holder.
         if (fromPeriod < lastCompleted || fromPeriod == lastCompleted) {
             // Check if there are any completed periods to sum up.
+            uint256 holderBasis = _token.yieldBasisPerUnit(holder);
             for (uint256 period = fromPeriod; period < lastCompleted || period == lastCompleted; ++period) {
                 // Fetch the holder's balance as it was at the end of that specific period.
                 uint256 balance = _token.balanceOfAt(holder, _periodEndTimestamps[period - 1]);
                 if (balance > 0) {
-                    completePeriodAmount += _calculateYieldFromAmount(balance, holder);
+                    completePeriodAmount += _calculateYieldFromAmount(balance, holderBasis);
                 }
             }
         }
@@ -325,7 +328,10 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
                 uint256 timeInPeriod = block.timestamp - periodStart;
 
                 // Pro-rata yield for the current period: (Balance * TimeInPeriod) / (TotalIntervalTime)
-                currentPeriodAmount = _calculateYieldFromAmount((tokenBalance * timeInPeriod) / _interval, holder);
+                uint256 holderBasis = _token.yieldBasisPerUnit(holder);
+                // Use mulDiv for precise calculation of pro-rated token amount
+                uint256 proRatedTokenAmount = Math.mulDiv(tokenBalance, timeInPeriod, _interval);
+                currentPeriodAmount = _calculateYieldFromAmount(proRatedTokenAmount, holderBasis);
             }
         }
 
@@ -358,12 +364,14 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         uint256[] memory periodYields = new uint256[](lastPeriod - fromPeriod + 1);
 
         // Calculate yield for each unclaimed, completed period.
+        uint256 senderBasis = _token.yieldBasisPerUnit(sender);
+        uint256 globalBasis = _token.yieldBasisPerUnit(address(0));
         for (uint256 period = fromPeriod; period < lastPeriod || period == lastPeriod; ++period) {
             // Fetch holder's balance at the end of the specific period.
             // aderyn-fp-next-line(reentrancy-state-change)
             uint256 balance = _token.balanceOfAt(sender, _periodEndTimestamps[period - 1]);
             if (balance > 0) {
-                uint256 periodYield = _calculateYieldFromAmount(balance, sender);
+                uint256 periodYield = _calculateYieldFromAmount(balance, senderBasis);
                 totalAmountToClaim += periodYield;
                 periodAmounts[period - fromPeriod] = periodYield; // Store amount for this specific period.
             }
@@ -371,7 +379,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
             // This is crucial for accuracy if the total supply changes over time.
             uint256 historicalTotalSupply = _token.totalSupplyAt(_periodEndTimestamps[period - 1]);
             if (historicalTotalSupply > 0) {
-                uint256 totalPeriodYield = _calculateYieldFromAmount(historicalTotalSupply, address(0));
+                uint256 totalPeriodYield = _calculateYieldFromAmount(historicalTotalSupply, globalBasis);
                 periodYields[period - fromPeriod] = totalPeriodYield; // Store amount for this specific period.
             }
             // If balance is 0 for a period, its corresponding entry in periodAmounts remains 0.
@@ -460,17 +468,25 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
 
     /// @notice Converts token yield amount to denomination asset amount
     /// @param tokenAmount The amount in token units to convert
-    /// @param holder The holder address for holder-specific basis (use address(0) for global basis)
+    /// @param basis The yield basis per unit for calculation
     /// @return The equivalent amount in denomination asset units
-    function _calculateYieldFromAmount(uint256 tokenAmount, address holder) private view returns (uint256) {
-        uint256 basis = _token.yieldBasisPerUnit(holder);
+    function _calculateYieldFromAmount(uint256 tokenAmount, uint256 basis) private view returns (uint256) {
         uint256 tokenDecimals = _tokenDecimals;
 
-        // Use Math.mulDiv for precise multiplication and division
-        // First multiply tokenAmount by basis and rate, then divide by (RATE_BASIS_POINTS * 10^tokenDecimals)
-        // This maintains precision for small amounts and high decimal tokens
-        uint256 yieldAmountInDenominationAsset =
-            Math.mulDiv(tokenAmount * basis, _rate, RATE_BASIS_POINTS * (10 ** tokenDecimals));
+        // Step 1: Convert token amount to denomination asset notional value
+        // tokenAmount is in token base units, basis is denom base units per 1 whole token
+        uint256 notionalInDenom = Math.mulDiv(
+            tokenAmount,                  // token base units
+            basis,                         // denom base units per 1 whole token
+            10 ** uint256(tokenDecimals)  // convert token base units to whole tokens
+        );
+
+        // Step 2: Calculate the yield amount based on the notional value
+        uint256 yieldAmountInDenominationAsset = Math.mulDiv(
+            notionalInDenom,  // denom base units
+            _rate,
+            RATE_BASIS_POINTS
+        );
 
         return yieldAmountInDenominationAsset;
     }
