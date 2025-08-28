@@ -21,8 +21,18 @@ const columnHelper = createStrictColumnHelper<TopicScheme>();
  * These are defined in contracts/system/ATKTopics.sol
  */
 const SYSTEM_TOPIC_NAMES = new Set([
-  "kyc",
-  "aml",
+  "knowYourCustomer",
+  "antiMoneyLaundering",
+  "qualifiedInstitutionalInvestor",
+  "professionalInvestor",
+  "accreditedInvestor",
+  "accreditedInvestorVerified",
+  "regulationS",
+  "issuerProspectusFiled",
+  "issuerProspectusExempt",
+  "issuerLicensed",
+  "issuerReportingCompliant",
+  "issuerJurisdiction",
   "collateral",
   "isin",
   "assetClassification",
