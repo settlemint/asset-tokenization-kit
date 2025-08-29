@@ -1,0 +1,12 @@
+$ vite build --logLevel=error
+Generated route tree in 548ms
+✗ Build failed in 1m 7s
+error during build:
+[vite:css-post] The service was stopped: write EPIPE
+    at /Users/pmualaba/Development/settlemint/asset-tokenization-kit/node_modules/esbuild/lib/main.js:718:38
+    at responseCallbacks.<computed> (/Users/pmualaba/Development/settlemint/asset-tokenization-kit/node_modules/esbuild/lib/main.js:603:9)
+    at afterClose (/Users/pmualaba/Development/settlemint/asset-tokenization-kit/node_modules/esbuild/lib/main.js:594:28)
+    at /Users/pmualaba/Development/settlemint/asset-tokenization-kit/node_modules/esbuild/lib/main.js:1986:18
+    at onwriteError (node:internal/streams/writable:605:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:92:21)
+error: script "build" exited with code 1

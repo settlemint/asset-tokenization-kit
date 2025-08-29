@@ -89,7 +89,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | blockscout.blockscout-stack.blockscout.resources | object | `{}` |  |
 | blockscout.blockscout-stack.frontend.image.pullPolicy | string | `"IfNotPresent"` |  |
 | blockscout.blockscout-stack.frontend.image.repository | string | `"ghcr.io/blockscout/frontend"` |  |
-| blockscout.blockscout-stack.frontend.image.tag | string | `"v2.2.1"` |  |
+| blockscout.blockscout-stack.frontend.image.tag | string | `"v2.3.0"` |  |
 | blockscout.blockscout-stack.frontend.ingress.hostname | string | `"explorer.k8s.orb.local"` |  |
 | blockscout.blockscout-stack.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
 | blockscout.blockscout-stack.podAnnotations."prometheus.io/port" | string | `"4000"` |  |

@@ -2,7 +2,7 @@ import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { AddTopicDialog } from "@/components/platform-settings/claim-topics/add-topic-dialog";
 import { TopicsTable } from "@/components/platform-settings/claim-topics/topics-table";
-import { AddTrustedIssuerDialog } from "@/components/platform-settings/trusted-issuers/add-trusted-issuer-dialog";
+import { AddTrustedIssuerSheet } from "@/components/platform-settings/trusted-issuers/add-trusted-issuer-sheet";
 import { TrustedIssuersTable } from "@/components/platform-settings/trusted-issuers/trusted-issuers-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,7 +39,7 @@ function ClaimTopicsIssuersPage() {
   const { t } = useTranslation("claim-topics-issuers");
   const { t: tNav } = useTranslation("navigation");
   const [showAddTopicDialog, setShowAddTopicDialog] = useState(false);
-  const [showAddIssuerDialog, setShowAddIssuerDialog] = useState(false);
+  const [showAddIssuerSheet, setShowAddIssuerSheet] = useState(false);
 
   // Get current user data with roles
   const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
@@ -90,16 +90,14 @@ function ClaimTopicsIssuersPage() {
                   {t("trustedIssuers.description")}
                 </CardDescription>
               </div>
-              {user?.userSystemPermissions?.roles?.claimPolicyManager && (
-                <Button
-                  onClick={() => {
-                    setShowAddIssuerDialog(true);
-                  }}
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  {t("trustedIssuers.addButton")}
-                </Button>
-              )}
+              <Button
+                onClick={() => {
+                  setShowAddIssuerSheet(true);
+                }}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                {t("trustedIssuers.addButton")}
+              </Button>
             </div>
           </CardHeader>
           <CardContent>
@@ -112,9 +110,9 @@ function ClaimTopicsIssuersPage() {
         open={showAddTopicDialog}
         onOpenChange={setShowAddTopicDialog}
       />
-      <AddTrustedIssuerDialog
-        open={showAddIssuerDialog}
-        onOpenChange={setShowAddIssuerDialog}
+      <AddTrustedIssuerSheet
+        open={showAddIssuerSheet}
+        onOpenChange={setShowAddIssuerSheet}
       />
     </div>
   );
