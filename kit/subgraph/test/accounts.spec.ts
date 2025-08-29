@@ -28,7 +28,10 @@ describe("Accounts", () => {
     expect(accountsWithClaims.length).toBe(CREATED_ACCOUNTS - 1);
     for (const account of accountsWithClaims) {
       const claims = account.identity?.claims.map((claim) => claim.name);
-      expect(claims?.sort()).toEqual(["aml", "kyc"]);
+      expect(claims?.sort()).toEqual([
+        "antiMoneyLaundering",
+        "knowYourCustomer",
+      ]);
     }
 
     // One account (malicious) should have a revoked aml claim

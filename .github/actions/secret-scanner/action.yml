@@ -37,7 +37,7 @@ runs:
         find . -type f -maxdepth 2 -not -path "*/node_modules/*" -not -path "*/.git/*" 2>/dev/null | head -5 || true
 
     - name: Setup Trivy
-      uses: aquasecurity/setup-trivy@v0.2.3
+      uses: aquasecurity/setup-trivy@v0.2.4
 
     - name: Secret Scanning (Trivy)
       shell: bash

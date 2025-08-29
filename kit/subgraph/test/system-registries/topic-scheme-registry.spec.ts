@@ -169,7 +169,12 @@ describe("Topic scheme registry", () => {
   });
 
   it("should contain expected system topic schemes", async () => {
-    const expectedSystemTopics = ["kyc", "aml", "collateral", "isin"];
+    const expectedSystemTopics = [
+      "knowYourCustomer",
+      "antiMoneyLaundering",
+      "collateral",
+      "isin",
+    ];
 
     const topicSchemesResponse = (await theGraphClient.request(
       theGraphGraphql(

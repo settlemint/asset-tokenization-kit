@@ -2,12 +2,24 @@
   "expressionBuilder": {
     "title": "Expression Builder",
     "topics": {
-      "kyc": "KYC",
-      "aml": "AML",
+      "knowYourCustomer": "Know Your Customer",
+      "antiMoneyLaundering": "Anti-Money Laundering",
+      "qualifiedInstitutionalInvestor": "Qualified Institutional Investor",
+      "professionalInvestor": "Professional Investor",
+      "accreditedInvestor": "Accredited Investor",
+      "accreditedInvestorVerified": "Accredited Investor Verified",
+      "regulationS": "Regulation S",
+      "issuerProspectusFiled": "Prospectus Filed",
+      "issuerProspectusExempt": "Prospectus Exempt",
+      "issuerLicensed": "Issuer Licensed",
+      "issuerReportingCompliant": "Issuer Reporting Compliant",
+      "issuerJurisdiction": "Issuer Jurisdiction",
       "collateral": "Collateral",
       "isin": "ISIN",
       "assetClassification": "Asset Classification",
-      "basePrice": "Base Price"
+      "basePrice": "Base Price",
+      "assetIssuer": "Asset Issuer",
+      "contractIdentity": "Contract Identity"
     },
     "topicInput": {
       "selectPlaceholder": "Select a topic",

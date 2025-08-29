@@ -81,12 +81,14 @@ describe("Token Compliance Modules", () => {
         // Node 0: KYC topic
         expect(expressionNodes[0].nodeType).toBe("TOPIC");
         expect(expressionNodes[0].index).toBe(0);
-        expect(expressionNodes[0].topicScheme?.name).toBe("kyc");
+        expect(expressionNodes[0].topicScheme?.name).toBe("knowYourCustomer");
 
         // Node 1: AML topic
         expect(expressionNodes[1].nodeType).toBe("TOPIC");
         expect(expressionNodes[1].index).toBe(1);
-        expect(expressionNodes[1].topicScheme?.name).toBe("aml");
+        expect(expressionNodes[1].topicScheme?.name).toBe(
+          "antiMoneyLaundering"
+        );
 
         // Node 2: AND operation
         expect(expressionNodes[2].nodeType).toBe("AND");
