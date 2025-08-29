@@ -1,10 +1,56 @@
 import { kycProfiles, user } from "@/lib/db/schema";
-import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import {
+  filterClaimsForUser,
+  identityPermissionsMiddleware,
+} from "@/orpc/middlewares/auth/identity-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
+import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
+import { userClaimsMiddleware } from "@/orpc/middlewares/system/user-claims.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { getUserRole } from "@atk/zod/user-roles";
 import { eq } from "drizzle-orm";
+import { z } from "zod";
+import { UserReadInputSchema } from "./user.read.schema";
+
+// GraphQL query to fetch single account by wallet address
+const READ_ACCOUNT_QUERY = theGraphGraphql(`
+  query ReadAccountQuery($walletAddress: ID!) {
+    account(id: $walletAddress) {
+      id
+      country
+      identity {
+        id
+        claims {
+          name
+        }
+      }
+    }
+  }
+`);
+
+// Response schema for account query
+const AccountResponseSchema = z.object({
+  account: z
+    .object({
+      id: z.string(),
+      country: z.number().nullable().optional(),
+      identity: z
+        .object({
+          id: z.string(),
+          claims: z.array(
+            z.object({
+              name: z.string(),
+            })
+          ),
+        })
+        .nullable()
+        .optional(),
+    })
+    .nullable(),
+});
 
 /**
  * User read route handler.
@@ -46,8 +92,14 @@ import { eq } from "drizzle-orm";
  * - User roles are transformed from internal codes to display names
  */
 export const read = authRouter.user.read
+  .use(systemMiddleware)
+  .use(theGraphMiddleware)
+  .use(userClaimsMiddleware)
   .use(
-    offChainPermissionsMiddleware({ requiredPermissions: { user: ["list"] } })
+    identityPermissionsMiddleware<typeof UserReadInputSchema>({
+      getTargetUserId: ({ input }) =>
+        "userId" in input ? input.userId : undefined,
+    })
   )
   .use(databaseMiddleware)
   .handler(async ({ context, input, errors }) => {
@@ -100,7 +152,26 @@ export const read = authRouter.user.read
       });
     }
 
-    // Transform result to include human-readable role
+    // Fetch identity data from TheGraph for this specific user
+    let accountData: z.infer<typeof AccountResponseSchema> = { account: null };
+    accountData = await context.theGraphClient.query(READ_ACCOUNT_QUERY, {
+      input: { walletAddress: userData.wallet },
+      output: AccountResponseSchema,
+    });
+
+    const account = accountData.account;
+    const identity = account?.identity;
+
+    // Get all claims for this user
+    const allClaims = identity?.claims.map((claim) => claim.name) ?? [];
+
+    // Filter claims based on user's permissions
+    const filteredClaims = filterClaimsForUser(
+      allClaims,
+      context.identityPermissions
+    );
+
+    // Transform result to include human-readable role and identity data
     return {
       id: userData.id,
       name:
@@ -112,5 +183,8 @@ export const read = authRouter.user.read
       wallet: userData.wallet,
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,
+      identity: identity?.id,
+      claims: filteredClaims,
+      isRegistered: !!identity,
     } as User;
   });

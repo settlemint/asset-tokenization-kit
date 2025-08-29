@@ -103,12 +103,14 @@ export const me = authRouter.user.me
         },
         { context }
       ).catch(() => "false"), // Default to false if not set
-      call(readAccount, {}, { context }).catch((error: unknown) => {
-        if (error instanceof ORPCError && error.status === 404) {
-          return null;
+      call(readAccount, { wallet: authUser.wallet }, { context }).catch(
+        (error: unknown) => {
+          if (error instanceof ORPCError && error.status === 404) {
+            return null;
+          }
+          throw error;
         }
-        throw error;
-      }),
+      ),
     ]);
 
     const { kyc } = userQueryResult ?? {};
@@ -130,6 +132,9 @@ export const me = authRouter.user.me
       wallet: authUser.wallet,
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,
+      identity: account?.identity,
+      claims: account?.claims ?? [],
+      isRegistered: !!account?.identity,
       verificationTypes: [
         ...(authUser.pincodeEnabled ? [VerificationTypeEnum.pincode] : []),
         ...(authUser.twoFactorEnabled ? [VerificationTypeEnum.otp] : []),
