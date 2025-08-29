@@ -11,8 +11,18 @@ import {
 describe("Identity permissions middleware", () => {
   describe("computeIdentityPermissions", () => {
     const mockUser: SessionUser = {
+      id: "test-user-id",
+      name: "Test User",
+      email: "test@example.com",
+      emailVerified: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
       wallet: "0x1234567890123456789012345678901234567890",
       role: "admin",
+      pincodeEnabled: false,
+      twoFactorEnabled: false,
+      secretCodesConfirmed: false,
+      banned: false,
     };
 
     const createMockAccessControl = (
