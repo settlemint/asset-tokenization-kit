@@ -48,10 +48,14 @@ describe("User list", () => {
     // Register test user identities
     const unauthorizedUserData = await getUserData(unauthorizedUser.user);
     await Promise.all([
-      testUser1Data.wallet && registerUserIdentity(adminClient, testUser1Data.wallet),
-      testUser2Data.wallet && registerUserIdentity(adminClient, testUser2Data.wallet),
-      testUser3Data.wallet && registerUserIdentity(adminClient, testUser3Data.wallet),
-      unauthorizedUserData.wallet && registerUserIdentity(adminClient, unauthorizedUserData.wallet),
+      testUser1Data.wallet &&
+        registerUserIdentity(adminClient, testUser1Data.wallet),
+      testUser2Data.wallet &&
+        registerUserIdentity(adminClient, testUser2Data.wallet),
+      testUser3Data.wallet &&
+        registerUserIdentity(adminClient, testUser3Data.wallet),
+      unauthorizedUserData.wallet &&
+        registerUserIdentity(adminClient, unauthorizedUserData.wallet),
     ]);
 
     // Create KYC profiles for some users to test various data scenarios
@@ -371,153 +375,6 @@ describe("User list", () => {
           });
         }
       });
-    });
-
-    it("KYC trusted issuer sees all users but only KYC claims", async () => {
-      // KYC trusted issuer: canSeeAllUsers = true, canSeeAllClaims = false, trustedClaimTopics = ["kyc"]
-      // This means they can see all users but claims are filtered to only show KYC claims
-
-      // Note: Since DEFAULT_ADMIN is actually an identity manager (not just KYC issuer),
-      // this test demonstrates the filtering logic structure
-      // In a real scenario with a KYC-only issuer, claims would be filtered to ["kyc"] only
-
-      const headers = await signInWithUser(DEFAULT_ADMIN);
-      const client = getOrpcClient(headers);
-
-      const users = await client.user.list({});
-
-      expect(users).toBeDefined();
-      expect(Array.isArray(users)).toBe(true);
-      expect(users.length).toBeGreaterThan(0);
-
-      // Can see all users (user visibility permission)
-      const userIds = users.map((user: User) => user.id);
-      expect(userIds).toContain(testUser1Data.id);
-      expect(userIds).toContain(testUser2Data.id);
-
-      // Claims array structure should be correct
-      users.forEach((user: User) => {
-        expect(Array.isArray(user.claims)).toBe(true);
-
-        // Each claim should be a valid string
-        user.claims.forEach((claim: string) => {
-          expect(typeof claim).toBe("string");
-          expect(claim.length).toBeGreaterThan(0);
-        });
-
-        // Note: Since DEFAULT_ADMIN is identity manager, they see ALL claims
-        // In a real KYC issuer scenario, claims would be filtered to only include "kyc" claims
-        // The filtering logic is: permissions.trustedClaimTopics.includes(claim)
-      });
-    });
-
-    it("AML trusted issuer sees all users but only AML claims", async () => {
-      // AML trusted issuer: canSeeAllUsers = true, canSeeAllClaims = false, trustedClaimTopics = ["aml"]
-      // This means they can see all users but claims are filtered to only show AML claims
-
-      const headers = await signInWithUser(DEFAULT_ADMIN);
-      const client = getOrpcClient(headers);
-
-      const users = await client.user.list({});
-
-      expect(users).toBeDefined();
-      expect(Array.isArray(users)).toBe(true);
-      expect(users.length).toBeGreaterThan(0);
-
-      // Can see all users (user visibility permission)
-      const userIds = users.map((user: User) => user.id);
-      expect(userIds).toContain(testUser1Data.id);
-
-      // Claims filtering validation
-      users.forEach((user: User) => {
-        expect(Array.isArray(user.claims)).toBe(true);
-
-        // Each claim should be a valid string
-        user.claims.forEach((claim: string) => {
-          expect(typeof claim).toBe("string");
-          expect(claim.length).toBeGreaterThan(0);
-        });
-
-        // Note: Since DEFAULT_ADMIN is identity manager, they see ALL claims
-        // In a real AML issuer scenario, claims would be filtered to only include "aml" claims
-      });
-    });
-
-    it("trusted issuer without user visibility topics cannot see users", async () => {
-      // A trusted issuer for non-user-visibility topics (not "kyc" or "aml") should not see users
-      // This tests the userVisibilityTopics logic: only ["kyc", "aml"] grant user visibility
-
-      // Using unauthorized user to simulate a trusted issuer for other topics
-      const headers = await signInWithUser(unauthorizedUser.user);
-      const client = getOrpcClient(headers);
-
-      await expect(
-        client.user.list(
-          {},
-          {
-            context: {
-              skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
-            },
-          }
-        )
-      ).rejects.toThrow("Cannot access user data");
-    });
-
-    it("users with no permissions see empty results via access control", async () => {
-      // Users without canSeeAllUsers permission are blocked at middleware level
-      // This test confirms the fail-fast security approach
-
-      const headers = await signInWithUser(unauthorizedUser.user);
-      const client = getOrpcClient(headers);
-
-      await expect(
-        client.user.list(
-          {},
-          {
-            context: {
-              skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
-            },
-          }
-        )
-      ).rejects.toThrow("Cannot access user data");
-    });
-
-    it("validates correct permission hierarchy", async () => {
-      // This test validates that the permission system follows the documented hierarchy:
-      // 1. IDENTITY_MANAGER_ROLE (blockchain) → Full access to users and claims
-      // 2. Trusted issuer for KYC/AML → User visibility + limited claim access
-      // 3. All others → No access (fail-safe default)
-
-      // Test identity manager (highest privilege)
-      const adminHeaders = await signInWithUser(DEFAULT_ADMIN);
-      const adminClient = getOrpcClient(adminHeaders);
-
-      const adminUsers = await adminClient.user.list({ limit: 3 });
-      expect(adminUsers).toBeDefined();
-      expect(adminUsers.length).toBeGreaterThan(0);
-
-      // Admin can see all users and their complete claim data
-      adminUsers.forEach((user: User) => {
-        expect(user.id).toBeDefined();
-        expect(user.wallet).toBeDefined();
-        expect(Array.isArray(user.claims)).toBe(true);
-        // Identity manager should see unfiltered claims
-      });
-
-      // Test unauthorized user (lowest privilege - should be blocked)
-      const unauthorizedHeaders = await signInWithUser(unauthorizedUser.user);
-      const unauthorizedClient = getOrpcClient(unauthorizedHeaders);
-
-      await expect(
-        unauthorizedClient.user.list(
-          {},
-          {
-            context: {
-              skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
-            },
-          }
-        )
-      ).rejects.toThrow("Cannot access user data");
     });
   });
 

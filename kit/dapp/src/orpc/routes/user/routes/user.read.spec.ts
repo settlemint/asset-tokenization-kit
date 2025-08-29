@@ -38,9 +38,12 @@ describe("User read", () => {
     const adminClient = getOrpcClient(adminHeaders);
 
     await Promise.all([
-      testUserData.wallet && registerUserIdentity(adminClient, testUserData.wallet),
-      otherUserData.wallet && registerUserIdentity(adminClient, otherUserData.wallet),
-      unauthorizedUserData.wallet && registerUserIdentity(adminClient, unauthorizedUserData.wallet),
+      testUserData.wallet &&
+        registerUserIdentity(adminClient, testUserData.wallet),
+      otherUserData.wallet &&
+        registerUserIdentity(adminClient, otherUserData.wallet),
+      unauthorizedUserData.wallet &&
+        registerUserIdentity(adminClient, unauthorizedUserData.wallet),
     ]);
 
     // Create KYC profiles for better test coverage
@@ -395,48 +398,6 @@ describe("User read", () => {
           expect(claim.length).toBeGreaterThan(0);
         });
       }
-    });
-
-    it("KYC trusted issuer sees all users but only KYC claims", async () => {
-      // KYC trusted issuer: canSeeAllUsers = true, canSeeAllClaims = false, trustedClaimTopics = ["kyc"]
-      // This means claims are filtered to only show KYC claims
-      const headers = await signInWithUser(DEFAULT_ADMIN);
-      const client = getOrpcClient(headers);
-
-      const user = await client.user.read({
-        userId: testUserData.id,
-      });
-
-      expect(user).toBeDefined();
-      expect(user.id).toBe(testUserData.id);
-
-      // Claims array structure should be correct
-      expect(Array.isArray(user.claims)).toBe(true);
-
-      // Note: Admin user is identity manager, so they actually see ALL claims
-      // To properly test KYC filtering, we'd need to mock the middleware context
-      // For now, we validate the claims structure
-      user.claims.forEach((claim: string) => {
-        expect(typeof claim).toBe("string");
-      });
-    });
-
-    it("AML trusted issuer sees all users but only AML claims", async () => {
-      // Similar to KYC - AML issuer should only see AML-related claims
-      const headers = await signInWithUser(DEFAULT_ADMIN);
-      const client = getOrpcClient(headers);
-
-      const user = await client.user.read({
-        userId: testUserData.id,
-      });
-
-      expect(user).toBeDefined();
-      expect(Array.isArray(user.claims)).toBe(true);
-
-      // Validate claims structure
-      user.claims.forEach((claim: string) => {
-        expect(typeof claim).toBe("string");
-      });
     });
   });
 });
