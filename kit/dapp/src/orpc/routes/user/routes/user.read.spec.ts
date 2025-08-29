@@ -1,13 +1,41 @@
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
-import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
+import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
   DEFAULT_ADMIN,
+  DEFAULT_PINCODE,
   getUserData,
   signInWithUser,
 } from "@test/fixtures/user";
 import { randomUUID } from "node:crypto";
 import { beforeAll, describe, expect, it } from "vitest";
+
+// Helper function to register user identity
+async function registerUserIdentity(adminClient: ReturnType<typeof getOrpcClient>, wallet: string) {
+  try {
+    await adminClient.system.identity.create({
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
+      wallet,
+    });
+
+    await adminClient.system.identity.register({
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
+      wallet,
+      country: "BE",
+    });
+  } catch (error: any) {
+    // Ignore if identity already exists
+    if (!error?.message?.includes("IdentityAlreadyRegistered")) {
+      throw error;
+    }
+  }
+}
 
 describe("User read", () => {
   let testUser: Awaited<ReturnType<typeof createTestUser>>;
@@ -30,6 +58,16 @@ describe("User read", () => {
       getUserData(testUser.user),
       getUserData(otherUser.user),
       getUserData(unauthorizedUser.user),
+    ]);
+
+    // Register identities for all test users using admin client
+    const adminHeaders = await signInWithUser(DEFAULT_ADMIN);
+    const adminClient = getOrpcClient(adminHeaders);
+
+    await Promise.all([
+      testUserData.wallet && registerUserIdentity(adminClient, testUserData.wallet),
+      otherUserData.wallet && registerUserIdentity(adminClient, otherUserData.wallet),
+      unauthorizedUserData.wallet && registerUserIdentity(adminClient, unauthorizedUserData.wallet),
     ]);
 
     // Create KYC profiles for better test coverage
@@ -141,7 +179,7 @@ describe("User read", () => {
             },
           }
         )
-      ).rejects.toThrow(errorMessageForCode(CUSTOM_ERROR_CODES.FORBIDDEN));
+      ).rejects.toThrow(`Cannot access user data for user ${testUserData.id}`);
     });
 
     it("regular user without 'user:list' permission cannot read other users by wallet", async () => {
@@ -358,7 +396,7 @@ describe("User read", () => {
             },
           }
         )
-      ).rejects.toThrow(errorMessageForCode(CUSTOM_ERROR_CODES.FORBIDDEN));
+      ).rejects.toThrow(`Cannot access user data for user ${testUserData.id}`);
     });
 
     it("identity manager can see all users and all claims unfiltered", async () => {
@@ -379,7 +417,7 @@ describe("User read", () => {
 
       // If the user has an identity with claims, identity manager should see them all
       if (user.identity && user.claims.length > 0) {
-        user.claims.forEach((claim) => {
+        user.claims.forEach((claim: string) => {
           expect(typeof claim).toBe("string");
           expect(claim.length).toBeGreaterThan(0);
         });
@@ -405,7 +443,7 @@ describe("User read", () => {
       // Note: Admin user is identity manager, so they actually see ALL claims
       // To properly test KYC filtering, we'd need to mock the middleware context
       // For now, we validate the claims structure
-      user.claims.forEach((claim) => {
+      user.claims.forEach((claim: string) => {
         expect(typeof claim).toBe("string");
       });
     });
@@ -423,7 +461,7 @@ describe("User read", () => {
       expect(Array.isArray(user.claims)).toBe(true);
 
       // Validate claims structure
-      user.claims.forEach((claim) => {
+      user.claims.forEach((claim: string) => {
         expect(typeof claim).toBe("string");
       });
     });
