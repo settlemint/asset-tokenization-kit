@@ -469,8 +469,10 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
     function test_InvestorCount_TopicFilter_SingleTopic() public {
         // Create topic filter requiring KYC
         ExpressionNode[] memory topicFilter = new ExpressionNode[](1);
-        topicFilter[0] =
-            ExpressionNode({ nodeType: ExpressionType.TOPIC, value: systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_KYC) });
+        topicFilter[0] = ExpressionNode({
+            nodeType: ExpressionType.TOPIC,
+            value: systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_KYC)
+        });
 
         InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
             .InvestorCountConfig({
@@ -497,10 +499,14 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
     function test_InvestorCount_TopicFilter_ComplexExpression() public {
         // Create expression: (KYC AND AML) OR COLLATERAL
         ExpressionNode[] memory topicFilter = new ExpressionNode[](5);
-        topicFilter[0] =
-            ExpressionNode({ nodeType: ExpressionType.TOPIC, value: systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_KYC) });
-        topicFilter[1] =
-            ExpressionNode({ nodeType: ExpressionType.TOPIC, value: systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_AML) });
+        topicFilter[0] = ExpressionNode({
+            nodeType: ExpressionType.TOPIC,
+            value: systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_KYC)
+        });
+        topicFilter[1] = ExpressionNode({
+            nodeType: ExpressionType.TOPIC,
+            value: systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_AML)
+        });
         topicFilter[2] = ExpressionNode({ nodeType: ExpressionType.AND, value: 0 });
         topicFilter[3] = ExpressionNode({
             nodeType: ExpressionType.TOPIC,

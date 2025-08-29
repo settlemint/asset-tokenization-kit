@@ -1,8 +1,8 @@
 import { BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
 import { getEncodedTypeId } from "../../type-identifier/type-identifier";
-import { 
-  DecodedExpressionNode, 
-  decodeExpressionNodeArray 
+import {
+  DecodedExpressionNode,
+  decodeExpressionNodeArray,
 } from "../shared/expression-nodes";
 
 export function isTransferApprovalComplianceModule(typeId: Bytes): boolean {
@@ -97,7 +97,9 @@ export function decodeTransferApprovalParams(
   if (exemptionExpressionValue.kind != ethereum.ValueKind.ARRAY) {
     return null;
   }
-  const exemptionExpression = decodeExpressionNodeArray(exemptionExpressionValue);
+  const exemptionExpression = decodeExpressionNodeArray(
+    exemptionExpressionValue
+  );
 
   // Extract approvalExpiry (uint256) with type validation
   const approvalExpiryValue = tuple[4];

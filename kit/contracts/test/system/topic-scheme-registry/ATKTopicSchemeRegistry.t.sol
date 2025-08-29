@@ -79,8 +79,8 @@ contract ATKTopicSchemeRegistryTest is Test {
         assertEq(topicSchemeRegistry.getAllTopicIds().length, initialTopicSchemeCount);
 
         // Verify the default topic schemes exist
-        assertTrue(topicSchemeRegistry.hasTopicSchemeByName("kyc"));
-        assertTrue(topicSchemeRegistry.hasTopicSchemeByName("aml"));
+        assertTrue(topicSchemeRegistry.hasTopicSchemeByName("knowYourCustomer"));
+        assertTrue(topicSchemeRegistry.hasTopicSchemeByName("antiMoneyLaundering"));
         assertTrue(topicSchemeRegistry.hasTopicSchemeByName("collateral"));
         assertTrue(topicSchemeRegistry.hasTopicSchemeByName("isin"));
     }

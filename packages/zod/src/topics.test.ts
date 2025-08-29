@@ -17,11 +17,11 @@ describe("atkTopic", () => {
     });
 
     it("should accept ATKTopicEnum.kyc", () => {
-      expect(validator.parse(ATKTopicEnum.kyc)).toBe("kyc");
+      expect(validator.parse(ATKTopicEnum.kyc)).toBe("knowYourCustomer");
     });
 
     it("should accept ATKTopicEnum.aml", () => {
-      expect(validator.parse(ATKTopicEnum.aml)).toBe("aml");
+      expect(validator.parse(ATKTopicEnum.aml)).toBe("antiMoneyLaundering");
     });
 
     it("should accept ATKTopicEnum.collateral", () => {
@@ -61,10 +61,10 @@ describe("atkTopic", () => {
 
   describe("safeParse", () => {
     it("should return success for valid topics", () => {
-      const result = validator.safeParse("kyc");
+      const result = validator.safeParse("knowYourCustomer");
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data).toBe("kyc");
+        expect(result.data).toBe("knowYourCustomer");
       }
     });
 
@@ -80,8 +80,8 @@ describe("atkTopic", () => {
 
 describe("ATKTopicEnum", () => {
   it("should have correct constant values", () => {
-    expect(ATKTopicEnum.kyc).toBe("kyc");
-    expect(ATKTopicEnum.aml).toBe("aml");
+    expect(ATKTopicEnum.kyc).toBe("knowYourCustomer");
+    expect(ATKTopicEnum.aml).toBe("antiMoneyLaundering");
     expect(ATKTopicEnum.collateral).toBe("collateral");
     expect(ATKTopicEnum.isin).toBe("isin");
     expect(ATKTopicEnum.assetClassification).toBe("assetClassification");
@@ -97,11 +97,30 @@ describe("ATKTopicEnum", () => {
 
 describe("atkTopics", () => {
   it("should contain all expected topics", () => {
-    expect(atkTopics).toEqual(["kyc", "aml", "collateral", "isin", "assetClassification", "basePrice"]);
+    expect(atkTopics).toEqual([
+      "knowYourCustomer",
+      "antiMoneyLaundering",
+      "qualifiedInstitutionalInvestor",
+      "professionalInvestor",
+      "accreditedInvestor",
+      "accreditedInvestorVerified",
+      "regulationS",
+      "issuerProspectusFiled",
+      "issuerProspectusExempt",
+      "issuerLicensed",
+      "issuerReportingCompliant",
+      "issuerJurisdiction",
+      "collateral",
+      "isin",
+      "assetClassification",
+      "basePrice",
+      "assetIssuer",
+      "contractIdentity",
+    ]);
   });
 
   it("should have consistent length and structure", () => {
-    expect(atkTopics.length).toBe(6);
+    expect(atkTopics.length).toBe(18);
     expect(Array.isArray(atkTopics)).toBe(true);
     expect(atkTopics.every((topic) => typeof topic === "string")).toBe(true);
   });
@@ -201,7 +220,7 @@ describe("getTopicNameFromId", () => {
   });
 
   it("should handle all ATKTopicEnum values", () => {
-    Object.values(ATKTopicEnum).forEach((topic) => {
+    (Object.values(ATKTopicEnum)).forEach((topic) => {
       const id = getTopicId(topic);
       const retrievedTopic = getTopicNameFromId(id);
       expect(retrievedTopic).toBe(topic);
@@ -242,15 +261,14 @@ describe("topic ID generation consistency", () => {
   });
 
   it("should use cache on second call to getTopicNameFromId", () => {
-    // Clear caches first by creating new topic
-    const testTopic = "UserSettingsIdentityKYC" as ATKTopic;
+    const testTopic: ATKTopic = ATKTopicEnum.contractIdentity;
 
     // First call - will not use cache
     const id = getTopicId(testTopic);
     const firstCall = getTopicNameFromId(id);
     expect(firstCall).toBe(testTopic);
 
-    // Second call - should use cache (line 117 will be hit)
+    // Second call - should use cache
     const secondCall = getTopicNameFromId(id);
     expect(secondCall).toBe(testTopic);
   });

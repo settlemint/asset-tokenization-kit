@@ -77,9 +77,7 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
 
     /// @notice Stores approval records for specific transfer requests
     /// @dev Maps from (token, fromIdentity, toIdentity, value) to approval record
-    mapping(address => mapping(address => mapping(address => mapping(uint256 => ApprovalRecord))))
-        private approvals;
-
+    mapping(address => mapping(address => mapping(address => mapping(uint256 => ApprovalRecord)))) private approvals;
 
     // --- Events ---
 
@@ -131,7 +129,8 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
 
     /// @notice Initializes the TransferApprovalComplianceModule
     /// @dev Sets up the module with meta-transaction support via trusted forwarder
-    /// @param _trustedForwarder Address of the trusted forwarder for meta transactions (can be zero address if not used)
+    /// @param _trustedForwarder Address of the trusted forwarder for meta transactions (can be zero address if not
+    /// used)
     constructor(address _trustedForwarder) AbstractComplianceModule(_trustedForwarder) { }
 
     /// @notice Returns the unique type identifier for this compliance module
@@ -253,8 +252,6 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
         }
     }
 
-
-
     /// @notice Returns the human-readable name of this compliance module
     /// @dev Used for display purposes in compliance management interfaces
     /// @return The descriptive name of the compliance module
@@ -311,14 +308,7 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
     /// @param _toIdentity The identity address to which tokens will be transferred
     /// @param _value The amount of tokens to approve for transfer
     /// @custom:throws ComplianceCheckFailed when the caller is not an authorized approval authority
-    function approveTransfer(
-        address _token,
-        address _fromIdentity,
-        address _toIdentity,
-        uint256 _value
-    )
-        external
-    {
+    function approveTransfer(address _token, address _fromIdentity, address _toIdentity, uint256 _value) external {
         // Get the module configuration from the token
         bytes memory params = _getModuleParameters(_token);
         Config memory config = abi.decode(params, (Config));
@@ -346,11 +336,8 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
         uint256 expiry = block.timestamp + config.approvalExpiry;
 
         // Store the approval
-        approvals[_token][_fromIdentity][_toIdentity][_value] = ApprovalRecord({
-            expiry: expiry,
-            used: false,
-            approverIdentity: callerIdentity
-        });
+        approvals[_token][_fromIdentity][_toIdentity][_value] =
+            ApprovalRecord({ expiry: expiry, used: false, approverIdentity: callerIdentity });
 
         emit TransferApproved(_token, _fromIdentity, _toIdentity, _value, callerIdentity, expiry);
     }
@@ -361,14 +348,7 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
     /// @param _fromIdentity The identity address from which tokens were to be transferred
     /// @param _toIdentity The identity address to which tokens were to be transferred
     /// @param _value The amount of tokens for which to revoke approval
-    function revokeApproval(
-        address _token,
-        address _fromIdentity,
-        address _toIdentity,
-        uint256 _value
-    )
-        external
-    {
+    function revokeApproval(address _token, address _fromIdentity, address _toIdentity, uint256 _value) external {
         // Get the caller's identity address
         address callerIdentity = _getIdentityAddress(_token, _msgSender());
         if (callerIdentity == address(0)) {
@@ -407,7 +387,6 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
     {
         return approvals[_token][_fromIdentity][_toIdentity][_value];
     }
-
 
     // --- Internal Functions ---
 

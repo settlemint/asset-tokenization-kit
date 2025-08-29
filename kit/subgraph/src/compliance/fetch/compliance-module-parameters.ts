@@ -150,9 +150,7 @@ export function updateComplianceModuleParameters(
       complianceModuleParameters.investorCount = null;
     }
   }
-  if (
-    isTimeLockComplianceModule(getEncodedTypeId(complianceModule.typeId))
-  ) {
+  if (isTimeLockComplianceModule(getEncodedTypeId(complianceModule.typeId))) {
     const decoded = decodeTimeLockParams(encodedParams);
     let tlp = TimeLockParams.load(complianceModuleParameters.id);
     if (decoded !== null) {
@@ -184,7 +182,9 @@ export function updateComplianceModuleParameters(
     }
   }
   if (
-    isTransferApprovalComplianceModule(getEncodedTypeId(complianceModule.typeId))
+    isTransferApprovalComplianceModule(
+      getEncodedTypeId(complianceModule.typeId)
+    )
   ) {
     const decoded = decodeTransferApprovalParams(encodedParams);
     let tap = TransferApprovalParams.load(complianceModuleParameters.id);
@@ -221,4 +221,3 @@ export function updateComplianceModuleParameters(
 
   complianceModuleParameters.save();
 }
-

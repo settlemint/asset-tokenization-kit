@@ -14,7 +14,7 @@ import { z } from "zod";
  * These constants must match the topic names defined in contracts/system/ATKTopics.sol
  * Topic IDs are dynamically generated during system bootstrap using keccak256(abi.encodePacked(name))
  */
-export const atkTopics = ["kyc", "aml", "collateral", "isin", "assetClassification", "basePrice"] as const;
+export const atkTopics = ["knowYourCustomer", "antiMoneyLaundering", "qualifiedInstitutionalInvestor", "professionalInvestor", "accreditedInvestor", "accreditedInvestorVerified", "regulationS", "issuerProspectusFiled", "issuerProspectusExempt", "issuerLicensed", "issuerReportingCompliant", "issuerJurisdiction", "collateral", "isin", "assetClassification", "basePrice", "assetIssuer", "contractIdentity"] as const;
 
 /**
  * Enum-like object for dot notation access to ATK topic identifiers.
@@ -38,12 +38,24 @@ export const atkTopics = ["kyc", "aml", "collateral", "isin", "assetClassificati
  * ```
  */
 export const ATKTopicEnum = {
-  kyc: "kyc",
-  aml: "aml",
+  kyc: "knowYourCustomer",
+  aml: "antiMoneyLaundering",
+  qii: "qualifiedInstitutionalInvestor",
+  professionalInvestor: "professionalInvestor",
+  accreditedInvestor: "accreditedInvestor",
+  accreditedInvestorVerified: "accreditedInvestorVerified",
+  regS: "regulationS",
+  issuerProspectusFiled: "issuerProspectusFiled",
+  issuerProspectusExempt: "issuerProspectusExempt",
+  issuerLicensed: "issuerLicensed",
+  issuerReportingCompliant: "issuerReportingCompliant",
+  issuerJurisdiction: "issuerJurisdiction",
   collateral: "collateral",
   isin: "isin",
   assetClassification: "assetClassification",
   basePrice: "basePrice",
+  assetIssuer: "assetIssuer",
+  contractIdentity: "contractIdentity",
 } as const;
 
 /**
@@ -103,14 +115,12 @@ export const getTopicNameFromId = (topicId: bigint): ATKTopic => {
   }
 
   // Check if it's a known ATKTopic
-  for (const [key, value] of Object.entries(ATKTopicEnum)) {
+  for (const value of Object.values(ATKTopicEnum)) {
     if (getTopicId(value) === topicId) {
-      const topic = key as ATKTopic;
+      idToTopicNameCache.set(topicId, value);
+      topicNameToIdCache.set(value, topicId);
 
-      idToTopicNameCache.set(topicId, topic);
-      topicNameToIdCache.set(topic, topicId);
-
-      return topic;
+      return value;
     }
   }
 

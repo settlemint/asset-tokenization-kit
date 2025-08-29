@@ -20,7 +20,17 @@
   "platformSettings": "Platform Settings",
   "userManagement": "User Management",
   "settings": {
-    "assetTypes": "Asset Types",
+    "assetTypes": {
+      "title": "Asset Types",
+      "description": "Configure and enable different types of assets available on the platform. Once enabled, asset types cannot be disabled.",
+      "allEnabled": "All available asset types have been enabled.",
+      "enabledTitle": "Enabled Asset Types",
+      "enabledDescription": "These asset types are currently active and available for use on the platform.",
+      "enable": "Enable",
+      "enabled": "Enabled",
+      "confirmEnableTitle": "Enable {{assetType}}?",
+      "confirmEnableDescription": "This action cannot be undone. Once enabled, this asset type will be permanently available on the platform."
+    },
     "compliance": "Compliance",
     "addons": "Addons",
     "claimTopicsIssuers": "Claim Topics & Issuers",

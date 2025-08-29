@@ -201,8 +201,7 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
 
         vm.expectRevert(
             abi.encodeWithSelector(
-                ISMARTComplianceModule.InvalidParameters.selector,
-                "Must specify at least one approval authority"
+                ISMARTComplianceModule.InvalidParameters.selector, "Must specify at least one approval authority"
             )
         );
         module.validateParameters(params);
@@ -226,8 +225,7 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
 
         vm.expectRevert(
             abi.encodeWithSelector(
-                ISMARTComplianceModule.InvalidParameters.selector,
-                "Approval authorities cannot be zero address"
+                ISMARTComplianceModule.InvalidParameters.selector, "Approval authorities cannot be zero address"
             )
         );
         module.validateParameters(params);
@@ -247,8 +245,7 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
 
         vm.expectRevert(
             abi.encodeWithSelector(
-                ISMARTComplianceModule.InvalidParameters.selector,
-                "Approval expiry must be greater than zero"
+                ISMARTComplianceModule.InvalidParameters.selector, "Approval expiry must be greater than zero"
             )
         );
         module.validateParameters(params);
@@ -268,8 +265,7 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
 
         vm.expectRevert(
             abi.encodeWithSelector(
-                ISMARTComplianceModule.InvalidParameters.selector,
-                "Approval expiry cannot exceed 365 days"
+                ISMARTComplianceModule.InvalidParameters.selector, "Approval expiry cannot exceed 365 days"
             )
         );
         module.validateParameters(params);
@@ -305,7 +301,14 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
 
         vm.prank(approver1Wallet);
         vm.expectEmit(true, true, true, true);
-        emit TransferApproved(address(mockToken), user1Identity, user2Identity, transferAmount, approverIdentity1, block.timestamp + 1 days);
+        emit TransferApproved(
+            address(mockToken),
+            user1Identity,
+            user2Identity,
+            transferAmount,
+            approverIdentity1,
+            block.timestamp + 1 days
+        );
         module.approveTransfer(address(mockToken), user1Identity, user2Identity, transferAmount);
 
         // 3. Check that approval is recorded
@@ -351,7 +354,9 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
 
         // Simulate the transfer completion by calling transferred hook from the token
         vm.expectEmit(true, true, true, true);
-        emit TransferApprovalConsumed(address(mockToken), user1Identity, user2Identity, transferAmount, approverIdentity1);
+        emit TransferApprovalConsumed(
+            address(mockToken), user1Identity, user2Identity, transferAmount, approverIdentity1
+        );
         vm.prank(address(mockToken));
         module.transferred(address(mockToken), user1, user2, transferAmount, params);
 
@@ -489,17 +494,10 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
     /// This is needed because the contract tries to fetch parameters via _getModuleParameters
     function _mockTokenComplianceModules(TransferApprovalComplianceModule.Config memory config) internal {
         SMARTComplianceModuleParamPair[] memory modules = new SMARTComplianceModuleParamPair[](1);
-        modules[0] = SMARTComplianceModuleParamPair({
-            module: address(module),
-            params: abi.encode(config)
-        });
+        modules[0] = SMARTComplianceModuleParamPair({ module: address(module), params: abi.encode(config) });
 
         // Mock the complianceModules() call
-        vm.mockCall(
-            address(mockToken),
-            abi.encodeWithSignature("complianceModules()"),
-            abi.encode(modules)
-        );
+        vm.mockCall(address(mockToken), abi.encodeWithSignature("complianceModules()"), abi.encode(modules));
     }
 
     /// @dev Test: Approval revocation by authorized approver
@@ -534,7 +532,9 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
         // 4. Revoke the approval
         vm.prank(approver1Wallet);
         vm.expectEmit(true, true, true, true);
-        emit TransferApprovalRevoked(address(mockToken), user1Identity, user2Identity, transferAmount, approverIdentity1);
+        emit TransferApprovalRevoked(
+            address(mockToken), user1Identity, user2Identity, transferAmount, approverIdentity1
+        );
         module.revokeApproval(address(mockToken), user1Identity, user2Identity, transferAmount);
 
         // 5. Verify approval is cleared
@@ -624,5 +624,4 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
         vm.expectRevert(TransferApprovalComplianceModule.CallerMustHaveIdentity.selector);
         module.revokeApproval(address(mockToken), user1Identity, user2Identity, transferAmount);
     }
-
 }
