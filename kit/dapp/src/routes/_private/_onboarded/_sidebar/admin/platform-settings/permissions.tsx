@@ -1,6 +1,7 @@
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { GrantRoleForm } from "@/components/platform-settings/role-management/grant-role-form";
+import { ViewUserRoles } from "@/components/platform-settings/role-management/view-user-roles";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -62,6 +63,7 @@ function PermissionsPage() {
         {user?.role === "admin" && (
           <>
             <GrantRoleForm />
+            <ViewUserRoles />
 
             {/* Future sections can be added here */}
             <div className="text-sm text-muted-foreground mt-8">
