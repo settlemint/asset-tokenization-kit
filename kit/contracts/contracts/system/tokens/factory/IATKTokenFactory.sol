@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
+import { IATKSystemAccessManaged } from "../../access-manager/IATKSystemAccessManaged.sol";
 
 /// @title IATKTokenFactory Interface
 /// @author SettleMint

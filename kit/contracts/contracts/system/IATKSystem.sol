@@ -134,6 +134,8 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @param complianceModuleRegistryImplementation_ The address of the compliance module registry module
     /// implementation.
     /// @param addonRegistryImplementation_ The address of the addon registry module implementation.
+    /// @param trustedIssuersMetaRegistryImplementation_ The address of the trusted issuers meta registry module
+    /// implementation.
     function initialize(
         address initialAdmin_,
         address accessManager_,
@@ -148,7 +150,8 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
         address tokenAccessManagerImplementation_, // Expected to be ISMARTTokenAccessManager compliant
         address tokenFactoryRegistryImplementation_,
         address complianceModuleRegistryImplementation_,
-        address addonRegistryImplementation_
+        address addonRegistryImplementation_,
+        address trustedIssuersMetaRegistryImplementation_
     )
         external;
 
@@ -198,6 +201,14 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @return trustedIssuersRegistryProxyAddress The blockchain address of the trusted issuers registry module's
     /// proxy.
     function trustedIssuersRegistry() external view returns (address trustedIssuersRegistryProxyAddress);
+
+    /// @notice Retrieves the smart contract address of the proxy for the trusted issuers meta registry module.
+    /// @dev This function returns the stable, unchanging address of the trusted issuers meta registry's proxy contract.
+    /// The meta registry manages both global and contract-specific trusted issuers registries, providing a 
+    /// registry-of-registries pattern for efficient trusted issuer management across the system.
+    /// @return trustedIssuersMetaRegistryProxyAddress The blockchain address of the trusted issuers meta registry
+    /// module's proxy.
+    function trustedIssuersMetaRegistry() external view returns (address trustedIssuersMetaRegistryProxyAddress);
 
     /// @notice Retrieves the smart contract address of the proxy for the identity factory module.
     /// @dev This function returns the stable, unchanging address of the identity factory's proxy contract.

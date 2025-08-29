@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { AbstractATKSystemProxy } from "../AbstractATKSystemProxy.sol";
-import { IATKSystem } from "../IATKSystem.sol";
+import { AbstractATKSystemProxy } from "../../AbstractATKSystemProxy.sol";
+import { IATKSystem } from "../../IATKSystem.sol";
 import { ATKTokenAccessManagerImplementation } from "./ATKTokenAccessManagerImplementation.sol";
-import { TokenAccessManagerImplementationNotSet } from "../ATKSystemErrors.sol";
+import { TokenAccessManagerImplementationNotSet } from "../../ATKSystemErrors.sol";
 
 /// @title ATK Token Access Manager Proxy Contract
 /// @author SettleMint

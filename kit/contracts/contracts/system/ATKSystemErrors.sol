@@ -45,6 +45,11 @@ error IdentityRegistryStorageImplementationNotSet();
 /// zero or has not been configured in the `SMARTSystem`.
 error TrustedIssuersRegistryImplementationNotSet();
 
+/// @notice Error indicating that the trusted issuers meta registry implementation address has not been set.
+/// @dev This error is thrown if an operation requires the trusted issuers meta registry, but its logic contract address is
+/// zero or has not been configured in the `SMARTSystem`.
+error TrustedIssuersMetaRegistryImplementationNotSet();
+
 /// @notice Error indicating that the topic scheme registry implementation address has not been set.
 /// @dev This error is thrown if an operation requires the topic scheme registry, but its logic contract address is
 /// zero or has not been configured in the `SMARTSystem`.

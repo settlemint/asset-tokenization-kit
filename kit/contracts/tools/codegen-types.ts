@@ -75,7 +75,7 @@ const ABI_PATHS = {
   stablecoin: `${ARTIFACTS_DIR}/contracts/assets/stable-coin/IATKStableCoin.sol/IATKStableCoin.json`,
   bond: `${ARTIFACTS_DIR}/contracts/assets/bond/IATKBond.sol/IATKBond.json`,
   // registries
-  tokenFactoryRegistry: `${ARTIFACTS_DIR}/contracts/system/token-factory/IATKTokenFactoryRegistry.sol/IATKTokenFactoryRegistry.json`,
+  tokenFactoryRegistry: `${ARTIFACTS_DIR}/contracts/system/tokens/factory/IATKTokenFactoryRegistry.sol/IATKTokenFactoryRegistry.json`,
   complianceModuleRegistry: `${ARTIFACTS_DIR}/contracts/system/compliance/IATKComplianceModuleRegistry.sol/IATKComplianceModuleRegistry.json`,
   systemAddonRegistry: `${ARTIFACTS_DIR}/contracts/system/addons/IATKSystemAddonRegistry.sol/IATKSystemAddonRegistry.json`,
   // Open Zeppelin

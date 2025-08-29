@@ -43,7 +43,7 @@ import { IATKTypedImplementationRegistry } from "./IATKTypedImplementationRegist
 import { IATKIdentityFactory } from "./identity-factory/IATKIdentityFactory.sol";
 import { ISMARTTokenAccessManager } from "../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { IATKComplianceModuleRegistry } from "./compliance/IATKComplianceModuleRegistry.sol";
-import { IATKTokenFactoryRegistry } from "./token-factory/IATKTokenFactoryRegistry.sol";
+import { IATKTokenFactoryRegistry } from "./tokens/factory/IATKTokenFactoryRegistry.sol";
 import { IATKIdentityRegistry } from "./identity-registry/IATKIdentityRegistry.sol";
 import { IATKTrustedIssuersRegistry } from "./trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
 import { IATKTopicSchemeRegistry } from "./topic-scheme-registry/IATKTopicSchemeRegistry.sol";

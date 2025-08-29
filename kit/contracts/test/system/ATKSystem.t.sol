@@ -52,13 +52,13 @@ import { ATKIdentityImplementation } from
 import { ATKContractIdentityImplementation } from
     "../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
 import { ATKTokenAccessManagerImplementation } from
-    "../../contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol";
+    "../../contracts/system/tokens/access/ATKTokenAccessManagerImplementation.sol";
 import { ATKSystemAccessManagerImplementation } from
     "../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
 import { ATKTopicSchemeRegistryImplementation } from
     "../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
 import { ATKTokenFactoryRegistryImplementation } from
-    "../../contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol";
+    "../../contracts/system/tokens/factory/ATKTokenFactoryRegistryImplementation.sol";
 import { ATKSystemAddonRegistryImplementation } from
     "../../contracts/system/addons/ATKSystemAddonRegistryImplementation.sol";
 import { ATKComplianceModuleRegistryImplementation } from

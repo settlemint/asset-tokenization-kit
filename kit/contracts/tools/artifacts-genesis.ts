@@ -158,11 +158,11 @@ const CONTRACT_FILES = {
   ATKTopicSchemeRegistryImplementation:
     "contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol",
   ATKTokenAccessManagerImplementation:
-    "contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol",
+    "contracts/system/tokens/access/ATKTokenAccessManagerImplementation.sol",
   ATKSystemAccessManagerImplementation:
     "contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol",
   ATKTokenFactoryRegistryImplementation:
-    "contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol",
+    "contracts/system/tokens/factory/ATKTokenFactoryRegistryImplementation.sol",
   ATKComplianceModuleRegistryImplementation:
     "contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol",
   ATKSystemAddonRegistryImplementation:

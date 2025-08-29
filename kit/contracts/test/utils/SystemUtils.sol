@@ -27,20 +27,20 @@ import { ATKIdentityImplementation } from
 import { ATKContractIdentityImplementation } from
     "../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
 import { ATKTokenAccessManagerImplementation } from
-    "../../contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol";
+    "../../contracts/system/tokens/access/ATKTokenAccessManagerImplementation.sol";
 import { ATKSystemAccessManagerImplementation } from
     "../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
 import { ATKTopicSchemeRegistryImplementation } from
     "../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
 import { ATKTokenFactoryRegistryImplementation } from
-    "../../contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol";
+    "../../contracts/system/tokens/factory/ATKTokenFactoryRegistryImplementation.sol";
 import { ATKComplianceModuleRegistryImplementation } from
     "../../contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol";
 import { ATKSystemAddonRegistryImplementation } from
     "../../contracts/system/addons/ATKSystemAddonRegistryImplementation.sol";
 
 // Proxies
-import { ATKTokenAccessManagerProxy } from "../../contracts/system/access-manager/ATKTokenAccessManagerProxy.sol";
+import { ATKTokenAccessManagerProxy } from "../../contracts/system/tokens/access/ATKTokenAccessManagerProxy.sol";
 
 // Interfaces
 import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
@@ -53,7 +53,7 @@ import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/acces
 import { ISMARTTopicSchemeRegistry } from "../../contracts/smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { IATKComplianceModuleRegistry } from "../../contracts/system/compliance/IATKComplianceModuleRegistry.sol";
 import { IATKSystemAddonRegistry } from "../../contracts/system/addons/IATKSystemAddonRegistry.sol";
-import { IATKTokenFactoryRegistry } from "../../contracts/system/token-factory/IATKTokenFactoryRegistry.sol";
+import { IATKTokenFactoryRegistry } from "../../contracts/system/tokens/factory/IATKTokenFactoryRegistry.sol";
 import { IATKSystemAccessManager } from "../../contracts/system/access-manager/IATKSystemAccessManager.sol";
 
 // Compliance Modules
