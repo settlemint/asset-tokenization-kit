@@ -6,6 +6,7 @@ import {
 } from "../../../../generated/schema";
 import { FixedYieldSchedule as FixedYieldScheduleContract } from "../../../../generated/templates/FixedYieldSchedule/FixedYieldSchedule";
 import { setBigNumber } from "../../../utils/bignumber";
+import { getTokenDecimals } from "../../../utils/token-decimals";
 import { fetchYield } from "../../yield/fetch/yield";
 import { fetchFixedYieldSchedule } from "../fetch/fixed-yield-schedule";
 import { fetchFixedYieldSchedulePeriod } from "../fetch/fixed-yield-schedule-period";
@@ -22,6 +23,10 @@ export function updateYield(token: Token): void {
   }
   const fixedYieldScheduleAddress = Address.fromBytes(yield_.schedule!);
   const fixedYieldSchedule = fetchFixedYieldSchedule(fixedYieldScheduleAddress);
+  const denominationAssetAddress = Address.fromBytes(
+    fixedYieldSchedule.denominationAsset
+  );
+  const denominationAssetDecimals = getTokenDecimals(denominationAssetAddress);
   if (!fixedYieldSchedule.nextPeriod) {
     // There is no next period, the schedule has ended
     return;
@@ -83,7 +88,7 @@ export function updateYield(token: Token): void {
     fixedYieldNextPeriod,
     "totalYield",
     nextPeriodYield.value,
-    token.decimals
+    denominationAssetDecimals
   );
   fixedYieldSchedule.nextPeriod = fixedYieldNextPeriod.id;
   fixedYieldNextPeriod.save();
@@ -98,13 +103,13 @@ export function updateYield(token: Token): void {
     fixedYieldSchedule,
     "totalUnclaimedYield",
     unclaimedYield.value,
-    token.decimals
+    denominationAssetDecimals
   );
   setBigNumber(
     fixedYieldSchedule,
     "totalYield",
     fixedYieldSchedule.totalYieldExact.plus(nextPeriodYield.value),
-    token.decimals
+    denominationAssetDecimals
   );
 
   fixedYieldSchedule.save();

@@ -14,6 +14,7 @@ describe("Bonds", () => {
             faceValue
             denominationAsset {
               name
+              decimals
             }
           }
           yield_ {
@@ -42,6 +43,7 @@ describe("Bonds", () => {
           faceValue: "0.000123",
           denominationAsset: {
             name: "Euro Deposits",
+            decimals: 6,
           },
         },
         yield_: {
@@ -80,5 +82,38 @@ describe("Bonds", () => {
         ).toBeTruthy();
       }
     }
+  });
+
+  it("should correctly calculate face value using denomination asset decimals", async () => {
+    const query = theGraphGraphql(
+      `query($where: Token_filter) {
+        tokens(where: $where) {
+          name
+          decimals
+          bond {
+            faceValue
+            faceValueExact
+            denominationAsset {
+              decimals
+            }
+          }
+        }
+      }
+    `
+    );
+    const response = await theGraphClient.request(query, {
+      where: {
+        bond_not: null,
+        name: "Euro Bonds",
+      },
+    });
+
+    expect(response.tokens.length).toBe(1);
+    const euroBond = response.tokens[0];
+
+    expect(euroBond.decimals).toBe(18); // Bond token decimals
+    expect(euroBond.bond?.denominationAsset?.decimals).toBe(6); // Denomination asset decimals
+    expect(euroBond.bond?.faceValue).toBe("0.000123");
+    expect(euroBond.bond?.faceValueExact).toBe("123"); // Raw value (0.000123 * 10^6 = 123)
   });
 });

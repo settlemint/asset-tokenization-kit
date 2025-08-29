@@ -37,7 +37,7 @@ export const createBond = async (depositToken: Asset<any>) => {
   const bond = new Asset<"bondFactory">(
     "Euro Bonds",
     "EURB",
-    6,
+    18,
     "DE000BAY0017",
     bondFactory
   );

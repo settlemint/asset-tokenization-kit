@@ -12,7 +12,7 @@ contract SMARTYieldStandardTest is SMARTYieldTest {
     function _setupToken() internal override {
         // Deploy yield payment token first if not already deployed
         if (yieldPaymentToken == address(0)) {
-            yieldPaymentToken = address(new MockERC20("Yield Token", "YIELD"));
+            yieldPaymentToken = address(new MockERC20("Yield Token", "YIELD", 6));
         }
 
         // 1. Create the yield token contract

@@ -20,7 +20,7 @@ abstract contract SMARTYieldBaseTest is AbstractSMARTTest, SMARTYieldHelpers {
 
         // Deploy yield payment token (using a simple ERC20 mock for testing)
         if (yieldPaymentToken == address(0)) {
-            yieldPaymentToken = address(new MockERC20("Yield Token", "YIELD"));
+            yieldPaymentToken = address(new MockERC20("Yield Token", "YIELD", 6));
         }
 
         // Deploy yield schedule factory
