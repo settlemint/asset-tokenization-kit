@@ -22,7 +22,7 @@ import { ATKSystemAccessManaged } from "../../access-manager/ATKSystemAccessMana
 import { IATKSystemAccessManaged } from "../../access-manager/IATKSystemAccessManaged.sol";
 import { ATKTopics } from "../../ATKTopics.sol";
 import { IATKTopicSchemeRegistry } from "../../topic-scheme-registry/IATKTopicSchemeRegistry.sol";
-import { TokenTrustedIssuersRegistry } from "../../trusted-issuers-registry/TokenTrustedIssuersRegistry.sol";
+import { TokenTrustedIssuersRegistry } from "../trusted-issuers-registry/TokenTrustedIssuersRegistry.sol";
 import { IATKTrustedIssuersMetaRegistry } from "../../trusted-issuers-registry/IATKTrustedIssuersMetaRegistry.sol";
 
 /// @title ATKTokenFactory - Contract for managing token registries with role-based access control
@@ -400,9 +400,9 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @param tokenAddress The address of the token contract
     function _deployAndRegisterTokenTrustedIssuersRegistry(address tokenAddress) internal {
         // Deploy TokenTrustedIssuersRegistry for this specific token
-        // Use address(0) as the trusted forwarder (same as meta registry constructor pattern)
+        // Use the same trusted forwarder as the factory for consistent meta-transaction support
         TokenTrustedIssuersRegistry tokenRegistry = new TokenTrustedIssuersRegistry(
-            address(0), // No trusted forwarder for token registries
+            trustedForwarder(), // Use factory's trusted forwarder for token registries
             tokenAddress
         );
 

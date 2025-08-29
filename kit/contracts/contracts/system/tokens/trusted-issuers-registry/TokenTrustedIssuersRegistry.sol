@@ -2,9 +2,8 @@
 pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
-import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
-import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
+import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
+import { ERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // OnchainID imports
@@ -34,9 +33,8 @@ import { ATKAssetRoles } from "../../../assets/ATKAssetRoles.sol";
 ///      - Event logging for all registry modifications
 ///      - Meta-transaction support via ERC2771
 contract TokenTrustedIssuersRegistry is
-    Initializable,
-    ERC165Upgradeable,
-    ERC2771ContextUpgradeable,
+    ERC165,
+    ERC2771Context,
     IERC3643TrustedIssuersRegistry
 {
     // --- Storage Variables ---
@@ -112,23 +110,12 @@ contract TokenTrustedIssuersRegistry is
     // --- Constructor ---
 
     /// @notice Constructor for the TokenTrustedIssuersRegistry
-    /// @dev Disables initializers to prevent direct initialization on the implementation
+    /// @dev Initializes the registry with the associated token contract
     /// @param trustedForwarder The address of the trusted forwarder for meta-transactions
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor(address trustedForwarder) ERC2771ContextUpgradeable(trustedForwarder) {
-        _disableInitializers();
-    }
-
-    // --- Initializer ---
-
-    /// @notice Initializes the TokenTrustedIssuersRegistry contract
-    /// @dev This function acts as the constructor for the upgradeable contract and can only be called once
     /// @param token The address of the IATKToken that this registry is associated with
-    function initialize(address token) public initializer {
+    constructor(address trustedForwarder, address token) ERC2771Context(trustedForwarder) {
         if (token == address(0)) revert InvalidTokenAddress();
-
         _token = IATKToken(token);
-        __ERC165_init_unchained();
     }
 
     // --- Access Control Modifier ---
@@ -332,7 +319,7 @@ contract TokenTrustedIssuersRegistry is
     /// @notice Provides the actual sender of a transaction, supporting meta-transactions via ERC2771
     /// @return The address of the original transaction sender
     function _msgSender() internal view virtual override returns (address) {
-        return ERC2771ContextUpgradeable._msgSender();
+        return ERC2771Context._msgSender();
     }
 
     /// @inheritdoc IERC165
@@ -340,7 +327,7 @@ contract TokenTrustedIssuersRegistry is
         public
         view
         virtual
-        override(ERC165Upgradeable, IERC165)
+        override(ERC165, IERC165)
         returns (bool)
     {
         return interfaceId == type(IERC3643TrustedIssuersRegistry).interfaceId

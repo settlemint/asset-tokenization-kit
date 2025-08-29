@@ -18,6 +18,7 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { ATKAssetRoles } from "../ATKAssetRoles.sol";
 
 // Interface imports
+import { IATKToken } from "../../system/tokens/IATKToken.sol";
 import { IATKFund } from "./IATKFund.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IContractWithIdentity } from "../../system/identity-factory/IContractWithIdentity.sol";
@@ -128,11 +129,11 @@ contract ATKFundImplementation is
     }
 
     // --- IContractWithIdentity Implementation ---
-    // Note: onchainID() is inherited from ISMART via SMARTUpgradeable, but we need to explicitly override due to
+    // Note: onchainID() is inherited from IATKToken via SMARTUpgradeable, but we need to explicitly override due to
     // multiple inheritance
 
     /// @inheritdoc IContractWithIdentity
-    function onchainID() public view override(_SMARTLogic, ISMART, IContractWithIdentity) returns (address) {
+    function onchainID() public view override(_SMARTLogic, IATKToken, IContractWithIdentity) returns (address) {
         return super.onchainID();
     }
 
@@ -169,7 +170,7 @@ contract ATKFundImplementation is
         return fee;
     }
 
-    // --- ISMART Implementation ---
+    // --- IATKToken Implementation ---
 
     /// @notice Sets the OnchainID contract address for the fund token
     /// @dev Only callable by addresses with GOVERNANCE_ROLE

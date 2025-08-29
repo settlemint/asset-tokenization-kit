@@ -454,7 +454,7 @@ contract ATKSystemImplementation is
             IATKIdentityRegistry.initialize.selector,
             _accessManager,
             localIdentityRegistryStorageProxy,
-            localTrustedIssuersRegistryProxy,
+            localTrustedIssuersMetaRegistryProxy,
             localTopicSchemeRegistryProxy
         );
         address localIdentityRegistryProxy =

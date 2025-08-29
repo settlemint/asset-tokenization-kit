@@ -14,6 +14,7 @@ import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/Co
 import { ATKAssetRoles } from "../ATKAssetRoles.sol";
 
 // Interface imports
+import { IATKToken } from "../../system/tokens/IATKToken.sol";
 import { IATKStableCoin } from "./IATKStableCoin.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IContractWithIdentity } from "../../system/identity-factory/IContractWithIdentity.sol";
@@ -95,11 +96,11 @@ contract ATKStableCoinImplementation is
     }
 
     // --- IContractWithIdentity Implementation ---
-    // Note: onchainID() is inherited from ISMART via SMARTUpgradeable, but we need to explicitly override due to
+    // Note: onchainID() is inherited from IATKToken via SMARTUpgradeable, but we need to explicitly override due to
     // multiple inheritance
 
     /// @inheritdoc IContractWithIdentity
-    function onchainID() public view override(_SMARTLogic, ISMART, IContractWithIdentity) returns (address) {
+    function onchainID() public view override(_SMARTLogic, IATKToken, IContractWithIdentity) returns (address) {
         return super.onchainID();
     }
 

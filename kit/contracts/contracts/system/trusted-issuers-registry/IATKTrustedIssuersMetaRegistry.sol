@@ -45,6 +45,10 @@ interface IATKTrustedIssuersMetaRegistry is IERC165 {
         address newRegistry
     );
 
+    /// @notice Initializes the registry with an initial admin and registrars.
+    /// @param accessManager The address of the access manager
+    function initialize(address accessManager) external;
+
     // --- Registry Management Functions ---
 
     /// @notice Sets or updates the global trusted issuers registry
