@@ -22,6 +22,8 @@ import { ATKSystemAccessManaged } from "../../access-manager/ATKSystemAccessMana
 import { IATKSystemAccessManaged } from "../../access-manager/IATKSystemAccessManaged.sol";
 import { ATKTopics } from "../../ATKTopics.sol";
 import { IATKTopicSchemeRegistry } from "../../topic-scheme-registry/IATKTopicSchemeRegistry.sol";
+import { TokenTrustedIssuersRegistry } from "../../trusted-issuers-registry/TokenTrustedIssuersRegistry.sol";
+import { IATKTrustedIssuersMetaRegistry } from "../../trusted-issuers-registry/IATKTrustedIssuersMetaRegistry.sol";
 
 /// @title ATKTokenFactory - Contract for managing token registries with role-based access control
 /// @author SettleMint
@@ -130,6 +132,12 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @return The compliance contract.
     function _compliance() internal view returns (ISMARTCompliance) {
         return ISMARTCompliance(IATKSystem(_systemAddress).compliance());
+    }
+
+    /// @notice Returns the trusted issuers meta registry contract.
+    /// @return The trusted issuers meta registry contract.
+    function _trustedIssuersMetaRegistry() internal view returns (IATKTrustedIssuersMetaRegistry) {
+        return IATKTrustedIssuersMetaRegistry(IATKSystem(_systemAddress).trustedIssuersMetaRegistry());
     }
 
     /// @notice Calculates the salt for CREATE2 deployment.
@@ -302,6 +310,9 @@ abstract contract AbstractATKTokenFactoryImplementation is
         // Set the onchain ID on the token contract
         ISMART(deployedAddress).setOnchainID(deployedTokenIdentityAddress);
 
+        // Deploy and register TokenTrustedIssuersRegistry for this token
+        _deployAndRegisterTokenTrustedIssuersRegistry(deployedAddress);
+
         bytes32[] memory roles = new bytes32[](2);
         roles[0] = ATKAssetRoles.GOVERNANCE_ROLE;
         roles[1] = ATKRoles.DEFAULT_ADMIN_ROLE;
@@ -381,6 +392,23 @@ abstract contract AbstractATKTokenFactoryImplementation is
         emit ContractIdentityRegistered(_msgSender(), contractAddress, description);
 
         return contractIdentity;
+    }
+
+    /// @notice Deploys a TokenTrustedIssuersRegistry for a token and registers it with the meta registry
+    /// @dev This function creates a token-specific trusted issuers registry and registers it
+    ///      with the system's meta registry, enabling token-specific trusted issuer management
+    /// @param tokenAddress The address of the token contract
+    function _deployAndRegisterTokenTrustedIssuersRegistry(address tokenAddress) internal {
+        // Deploy TokenTrustedIssuersRegistry for this specific token
+        // Use address(0) as the trusted forwarder (same as meta registry constructor pattern)
+        TokenTrustedIssuersRegistry tokenRegistry = new TokenTrustedIssuersRegistry(
+            address(0), // No trusted forwarder for token registries
+            tokenAddress
+        );
+
+        // Register the token-specific registry with the meta registry
+        IATKTrustedIssuersMetaRegistry metaRegistry = _trustedIssuersMetaRegistry();
+        metaRegistry.setRegistryForContract(tokenAddress, address(tokenRegistry));
     }
 
     // --- ERC165 Overrides ---
