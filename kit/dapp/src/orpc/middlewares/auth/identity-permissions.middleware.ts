@@ -1,24 +1,32 @@
 /**
  * Identity permissions middleware for blockchain-based access control in tokenization platform.
  *
- * This middleware implements a security-first approach to user and claim data access,
- * integrating blockchain roles (identity manager) with off-chain trusted issuer status.
- * The design prioritizes fail-safe defaults where undefined permissions mean no access.
+ * IMPORTANT: This middleware implements UI/UX access control, not true data security.
+ * Claims are stored on-chain for public verifiability - anyone can query the blockchain
+ * or TheGraph directly to access all claims data. This middleware controls what gets
+ * displayed in the application interface based on user roles, providing:
+ * - Clean, role-appropriate user interfaces without information overload
+ * - Workflow separation between identity managers and trusted issuers  
+ * - Prevention of accidental data exposure through UI bugs or misconfigurations
+ * - Fail-fast validation to block unauthorized access to admin interfaces
  *
- * Security Model:
- * - IDENTITY_MANAGER_ROLE (blockchain): Full access to all users and claims
- * - Trusted issuer for KYC/AML: Can see all users, limited to their claim topics
- * - All other users: No access (secure default)
+ * Security Model (Application Interface Control):
+ * - IDENTITY_MANAGER_ROLE (blockchain): Full access to all users and claims in UI
+ * - Trusted issuer for KYC/AML: Can see all users, limited to their claim topics in UI
+ * - All other users: No access to user management interfaces (secure default)
  *
  * Business Rules:
- * - Identity managers need full visibility for compliance and user management
- * - KYC/AML issuers need user visibility to perform identity verification
- * - Claim topic access is strictly scoped to prevent data leakage
+ * - Identity managers need full UI visibility for compliance and user management
+ * - KYC/AML issuers need user visibility to perform identity verification workflows
+ * - Claim topic filtering provides focused UX without showing irrelevant data
  * - Combined roles: blockchain roles take precedence (identity manager wins)
  *
- * The middleware uses separate boolean flags (canSeeAllUsers, canSeeAllClaims) rather
- * than relying solely on trustedClaimTopics to ensure explicit security boundaries
- * and prevent accidental access through empty arrays or undefined states.
+ * Architecture Notes:
+ * - Uses fail-fast permission checks before expensive database/TheGraph operations
+ * - Fetches all available data from public sources (blockchain/TheGraph) for performance
+ * - Applies role-based filtering only at the presentation layer for UI clarity
+ * - Separates boolean flags (canSeeAllUsers, canSeeAllClaims) from topic arrays 
+ *   to ensure explicit security boundaries and prevent logic errors
  */
 
 import type { AccessControl } from "@/lib/fragments/the-graph/access-control-fragment";

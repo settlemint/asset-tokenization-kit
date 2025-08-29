@@ -3,39 +3,12 @@ import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
   DEFAULT_ADMIN,
-  DEFAULT_PINCODE,
   getUserData,
+  registerUserIdentity,
   signInWithUser,
 } from "@test/fixtures/user";
 import { randomUUID } from "node:crypto";
 import { beforeAll, describe, expect, it } from "vitest";
-
-// Helper function to register user identity
-async function registerUserIdentity(adminClient: ReturnType<typeof getOrpcClient>, wallet: string) {
-  try {
-    await adminClient.system.identity.create({
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
-      },
-      wallet,
-    });
-
-    await adminClient.system.identity.register({
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
-      },
-      wallet,
-      country: "BE",
-    });
-  } catch (error: any) {
-    // Ignore if identity already exists
-    if (!error?.message?.includes("IdentityAlreadyRegistered")) {
-      throw error;
-    }
-  }
-}
 
 describe("User read", () => {
   let testUser: Awaited<ReturnType<typeof createTestUser>>;
