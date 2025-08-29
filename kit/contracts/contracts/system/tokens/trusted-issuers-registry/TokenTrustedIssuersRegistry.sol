@@ -11,13 +11,13 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
 // Interface imports
-import { IERC3643TrustedIssuersRegistry } from "../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
+import { IERC3643TrustedIssuersRegistry } from "../../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 
 // Token interface
-import { IATKToken } from "../tokens/IATKToken.sol";
+import { IATKToken } from "../IATKToken.sol";
 
 // Asset roles
-import { ATKAssetRoles } from "../../assets/ATKAssetRoles.sol";
+import { ATKAssetRoles } from "../../../assets/ATKAssetRoles.sol";
 
 /// @title Token Trusted Issuers Registry
 /// @author SettleMint
