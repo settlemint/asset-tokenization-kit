@@ -1,3 +1,4 @@
+import type { Context } from "@/orpc/context/context";
 import { bondCreateHandler } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/bond.create";
 import { depositCreateHandler } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/deposit.create";
 import { equityCreateHandler } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/equity.create";
@@ -13,7 +14,8 @@ export const tokenCreateHandlerMap: Record<
   AssetType,
   (
     input: TokenCreateInput,
-    context: TokenCreateContext
+    context: TokenCreateContext,
+    requestContext: Context
   ) => Promise<EthereumHash>
 > = {
   [AssetTypeEnum.deposit]: depositCreateHandler,

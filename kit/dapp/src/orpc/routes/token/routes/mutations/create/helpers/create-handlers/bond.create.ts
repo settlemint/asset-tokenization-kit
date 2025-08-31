@@ -26,10 +26,13 @@
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
+import type { Context } from "@/orpc/context/context";
 import type { TokenCreateContext } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create";
 import { createToken } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create";
 import type { TokenCreateInput } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
+import { read } from "@/orpc/routes/token/routes/token.read";
 import { AssetTypeEnum } from "@atk/zod/asset-types";
+import { call } from "@orpc/server";
 import { parseUnits } from "viem";
 
 const CREATE_BOND_MUTATION = portalGraphql(`
@@ -74,13 +77,26 @@ const CREATE_BOND_MUTATION = portalGraphql(`
 
 export const bondCreateHandler = async (
   input: TokenCreateInput,
-  context: TokenCreateContext
+  context: TokenCreateContext,
+  requestContext: Context
 ) => {
   if (input.type !== AssetTypeEnum.bond) {
     throw new Error("Invalid token type");
   }
 
   const cap = parseUnits(input.cap.toString(), input.decimals).toString();
+  const denominationAsset = await call(
+    read,
+    {
+      tokenAddress: input.denominationAsset,
+    },
+    { context: requestContext }
+  );
+  const denominationAssetDecimals = denominationAsset.decimals;
+  const faceValue = parseUnits(
+    input.faceValue.toString(),
+    denominationAssetDecimals
+  ).toString();
 
   // DELEGATION PATTERN: createToken base handler manages verification flow
   // WHY: Consistent verification handling across all token types while allowing
@@ -97,7 +113,7 @@ export const bondCreateHandler = async (
         decimals: input.decimals,
         countryCode: input.countryCode,
         cap,
-        faceValue: input.faceValue.toString(),
+        faceValue,
         maturityDate: input.maturityDate,
         denominationAsset: input.denominationAsset,
         initialModulePairs: input.initialModulePairs.map((pair) => ({

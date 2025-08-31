@@ -1,10 +1,13 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import path, { join } from "node:path";
 import {
+  CallExecutionError,
   ContractFunctionExecutionError,
   ContractFunctionRevertedError,
   decodeErrorResult,
+  ExecutionRevertedError,
   Hex,
+  isHex,
 } from "viem";
 import { ATKContracts } from "../constants/contracts";
 
@@ -34,20 +37,40 @@ async function tryDecodeRevertReason(error: Error): Promise<never> {
       throw parsedRevertReason;
     }
     console.log("Failed to decode revert reason");
-  } else {
-    console.log("Unknown error, cannot parse revert reason", error);
   }
+
+  if (
+    error instanceof CallExecutionError &&
+    error.cause instanceof ExecutionRevertedError
+  ) {
+    const shortMessage = error.cause.shortMessage;
+    const extractedHex = extractHexFromCustomError(shortMessage);
+
+    if (extractedHex) {
+      const parsedRevertReason = await parseRevertReason(extractedHex);
+      if (parsedRevertReason) {
+        throw parsedRevertReason;
+      }
+    }
+  }
+
+  console.log("Cannot parse revert reason, unknown error", error);
   throw error;
 }
 
 export async function parseRevertReason(revertReason: Hex | undefined) {
-  for (const abi of Object.values(ATKContracts)) {
+  console.log("Attempting to decode revert reason:", revertReason);
+
+  // First try with ATKContracts
+  for (const [contractName, abi] of Object.entries(ATKContracts)) {
     const decoded = decodeRevertReason(revertReason, abi);
     if (decoded) {
+      console.log(`Decoded with ATKContract: ${contractName}`);
       return decoded;
     }
   }
 
+  // Then try with all ABIs from artifacts
   const allAbis = await getAllAbis();
   for (const abi of allAbis) {
     const decoded = decodeRevertReason(revertReason, abi);
@@ -56,6 +79,10 @@ export async function parseRevertReason(revertReason: Hex | undefined) {
       return decoded;
     }
   }
+
+  console.log(
+    "Could not decode revert reason - error selector not found in any ABI"
+  );
   return null;
 }
 
@@ -66,7 +93,7 @@ function decodeRevertReason(revertReason: Hex | undefined, abi: any) {
       data: revertReason ?? "0x",
     });
     return new Error(
-      `The contract reverted with reason: ${decoded.errorName ? `${decoded.errorName} (args: ${decoded.args.join(", ") || "/"})` : JSON.stringify(decoded, undefined, 2)}`
+      `The contract reverted with reason: ${decoded.errorName ? `${decoded.errorName} (args: ${decoded.args ? decoded.args.join(", ") : "/"})` : JSON.stringify(decoded, undefined, 2)}`
     );
   } catch {
     // ignore
@@ -114,4 +141,28 @@ async function getAllAbis() {
   console.log(`Found ${result.length} abis in ${ARTIFACTS_DIR}`);
   allAbisCache = result;
   return result;
+}
+
+/**
+ * Extracts hex revert reason from custom error messages.
+ * Example: "Execution reverted with reason: custom error 0xe450d38c: 000..." → "0xe450d38c000..."
+ */
+function extractHexFromCustomError(shortMessage?: string): Hex | undefined {
+  if (!shortMessage) return undefined;
+
+  // Split message on "custom error" to isolate the hex portion
+  // "Execution reverted with reason: custom error 0xe450d38c: 000..." becomes ["Execution reverted with reason: ", " 0xe450d38c: 000..."]
+  const parts = shortMessage.split("custom error");
+  if (parts && parts[1]) {
+    // Take the second part which contains the hex data
+    const hexPart = parts[1]; // " 0xe450d38c: 000..."
+
+    // Clean up by removing whitespace, colons, and periods to get pure hex
+    const cleanedHex = hexPart.replace(/[\s:.]/g, ""); // "0xe450d38c000..."
+    if (isHex(cleanedHex)) {
+      return cleanedHex;
+    }
+  }
+
+  return undefined;
 }

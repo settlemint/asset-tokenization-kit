@@ -37,7 +37,7 @@ besu-network:
     node:
       image:
         repository: docker.io/hyperledger/besu
-        tag: "25.7.0"
+        tag: "25.8.0"
         pullPolicy: IfNotPresent
     tessera:
       image:
@@ -378,7 +378,7 @@ support:
       resources: {}
       image:
         repository: registry.k8s.io/ingress-nginx/controller
-        tag: "v1.13.1"
+        tag: "v1.13.2"
         digest: ""
 
   # https://github.com/stakater/Reloader/tree/master/deployments/kubernetes/chart/reloader
@@ -505,7 +505,7 @@ observability:
       image:
         # -- The Docker registry and image for the k8s sidecar
         repository: docker.io/kiwigrid/k8s-sidecar
-        tag: 1.30.9
+        tag: 1.30.10
     gateway:
       image:
         registry: docker.io
@@ -542,7 +542,7 @@ observability:
       image:
         registry: docker.io
         repository: kiwigrid/k8s-sidecar
-        tag: "1.30.9"
+        tag: "1.30.10"
     ingress:
       hosts:
         - grafana.k8s.orb.local

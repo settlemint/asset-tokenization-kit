@@ -121,12 +121,13 @@ abstract contract SMARTYieldIntegrationTest is SMARTYieldBaseTest {
 
         // Calculate expected yield for clientBE (for one complete period)
         uint256 balance = token.balanceOf(clientBE);
-        uint256 expectedYield = (balance * DEFAULT_YIELD_BASIS * YIELD_RATE) / 10_000; // YIELD_RATE is in basis points
-
+        uint256 tokenDecimals = token.decimals();
+        uint256 expectedYield = ((balance * DEFAULT_YIELD_BASIS * YIELD_RATE) / 10_000) / (10 ** tokenDecimals); // YIELD_RATE
+            // is in basis points
         uint256 calculatedYield = schedule.calculateAccruedYield(clientBE);
 
         // Allow for small rounding differences due to pro-rata calculation (1 second of extra yield)
-        assertApproxEqAbs(calculatedYield, expectedYield, 1e18, "Calculated yield should match expected yield");
+        assertApproxEqAbs(calculatedYield, expectedYield, 1e6, "Calculated yield should match expected yield");
     }
 
     function test_Yield_ZeroBalanceYieldCalculation() public {
@@ -177,7 +178,7 @@ abstract contract SMARTYieldIntegrationTest is SMARTYieldBaseTest {
 
         // Calculate expected yield for one complete period (not including pro-rata)
         uint256 balance = token.balanceOf(clientBE);
-        uint256 expectedYield = (balance * DEFAULT_YIELD_BASIS * YIELD_RATE) / 10_000;
+        uint256 expectedYield = ((balance * DEFAULT_YIELD_BASIS * YIELD_RATE) / 10_000) / (10 ** token.decimals());
 
         // Claim yield
         vm.prank(clientBE);
@@ -215,7 +216,7 @@ abstract contract SMARTYieldIntegrationTest is SMARTYieldBaseTest {
 
         // Calculate expected yield for two complete periods (not including pro-rata)
         uint256 balance = token.balanceOf(clientBE);
-        uint256 expectedYield = (balance * DEFAULT_YIELD_BASIS * YIELD_RATE * 2) / 10_000; // 2 periods
+        uint256 expectedYield = ((balance * DEFAULT_YIELD_BASIS * YIELD_RATE * 2) / 10_000) / (10 ** token.decimals());
 
         // Claim yield
         vm.prank(clientBE);
