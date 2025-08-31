@@ -127,15 +127,28 @@
     "add": {
       "title": "Add trusted issuer",
       "description": "Add a new trusted issuer who can verify identity claims.",
+      "selectUserDescription": "Select an existing user from the system to assign as a trusted issuer. They will be granted the necessary roles and added to the trusted issuers registry.",
       "fields": {
+        "selectUser": {
+          "label": "Select user",
+          "placeholder": "Choose a user...",
+          "description": "Select a user from the existing users in the system"
+        },
         "issuerAddress": {
           "label": "Issuer identity address",
           "description": "The Ethereum address of the trusted issuer identity contract"
         },
         "claimTopics": {
           "label": "Claim topics",
-          "description": "Select the topics this issuer can verify. At least one topic must be selected."
+          "description": "Select the topics this issuer can verify. At least one topic must be selected.",
+          "placeholder": "Select topics...",
+          "empty": "No topics available"
         }
+      },
+      "selectedUser": {
+        "name": "Name",
+        "email": "Email",
+        "wallet": "Wallet"
       },
       "verification": {
         "title": "Confirm issuer addition",
