@@ -41,7 +41,7 @@ describe("Tokens", () => {
         name: "Euro Bonds",
         type: "bond",
         totalSupply: "117",
-        totalSupplyExact: "117000000",
+        totalSupplyExact: "117000000000000000000",
         extensions: [
           "ACCESS_MANAGED",
           "BURNABLE",

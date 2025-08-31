@@ -80,7 +80,7 @@ contract ATKFixedYieldScheduleTest is Test {
         endDate = block.timestamp + END_DATE_OFFSET;
 
         // Deploy denomination token
-        denominationToken = new MockedERC20Token("Denomination", "DNMTN", 18);
+        denominationToken = new MockedERC20Token("Denomination", "DNMTN", 6);
 
         // Deploy mock SMART token
         atkToken = new MockATKToken("ATK Token", "ATK", 18, address(denominationToken));
@@ -188,8 +188,10 @@ contract ATKFixedYieldScheduleTest is Test {
         uint256 currentPeriodYieldUser1 = (1000e18 * 1000 * 500 * timeInCurrentPeriod) / (INTERVAL * 10_000);
         uint256 currentPeriodYieldUser2 = (500e18 * 1000 * 500 * timeInCurrentPeriod) / (INTERVAL * 10_000);
 
-        uint256 expectedYieldUser1 = completedPeriodYieldUser1 + currentPeriodYieldUser1;
-        uint256 expectedYieldUser2 = completedPeriodYieldUser2 + currentPeriodYieldUser2;
+        // Convert to denomination asset amounts (divide by token decimals)
+        uint256 tokenDecimals = atkToken.decimals();
+        uint256 expectedYieldUser1 = (completedPeriodYieldUser1 + currentPeriodYieldUser1) / (10 ** tokenDecimals);
+        uint256 expectedYieldUser2 = (completedPeriodYieldUser2 + currentPeriodYieldUser2) / (10 ** tokenDecimals);
 
         uint256 yieldForUser1 = yieldSchedule.calculateAccruedYield(user1);
         uint256 yieldForUser2 = yieldSchedule.calculateAccruedYield(user2);
@@ -225,8 +227,10 @@ contract ATKFixedYieldScheduleTest is Test {
         uint256 currentYieldUser1 = (1000e18 * 2000 * 500 * timeInCurrentPeriod) / (INTERVAL * 10_000);
         uint256 currentYieldUser2 = (500e18 * 500 * 500 * timeInCurrentPeriod) / (INTERVAL * 10_000);
 
-        uint256 expectedYieldUser1 = completedYieldUser1 + currentYieldUser1;
-        uint256 expectedYieldUser2 = completedYieldUser2 + currentYieldUser2;
+        // Convert to denomination asset amounts (divide by token decimals)
+        uint256 tokenDecimals = atkToken.decimals();
+        uint256 expectedYieldUser1 = (completedYieldUser1 + currentYieldUser1) / (10 ** tokenDecimals);
+        uint256 expectedYieldUser2 = (completedYieldUser2 + currentYieldUser2) / (10 ** tokenDecimals);
 
         uint256 yieldUser1 = yieldSchedule.calculateAccruedYield(user1);
         uint256 yieldUser2 = yieldSchedule.calculateAccruedYield(user2);
@@ -258,7 +262,8 @@ contract ATKFixedYieldScheduleTest is Test {
 
         uint256 balanceAfterFirstClaim = denominationToken.balanceOf(user1);
         uint256 firstClaimAmount = balanceAfterFirstClaim - initialBalance;
-        uint256 expectedFirstClaim = (1000e18 * 1000 * 500) / 10_000; // 50e18
+        uint256 expectedFirstClaim = ((1000e18 * 1000 * 500) / 10_000) / (10 ** atkToken.decimals()); // Convert from
+            // token units to denomination asset units
         assertEq(firstClaimAmount, expectedFirstClaim);
 
         // Move to after second period and claim again
@@ -312,9 +317,10 @@ contract ATKFixedYieldScheduleTest is Test {
         assertTrue(actualYieldUser1 > actualYieldUser2 * 3);
 
         // Verify that the yield calculation is working as expected by checking components
-        // At minimum, both should have earned yield from 2 completed periods
-        uint256 minExpectedUser1 = 50e18 + 100e18; // Period 1 + Period 2 completed yields
-        uint256 minExpectedUser2 = 25e18 + 12.5e18; // Period 1 + Period 2 completed yields
+        // At minimum, both should have earned yield from 2 completed periods (converted to denomination asset units)
+        uint256 tokenDecimals = atkToken.decimals();
+        uint256 minExpectedUser1 = (50e18 + 100e18) / (10 ** tokenDecimals); // Period 1 + Period 2 completed yields
+        uint256 minExpectedUser2 = (25e18 + 12.5e18) / (10 ** tokenDecimals); // Period 1 + Period 2 completed yields
 
         assertTrue(actualYieldUser1 >= minExpectedUser1);
         assertTrue(actualYieldUser2 >= minExpectedUser2);
@@ -394,6 +400,9 @@ contract ATKFixedYieldScheduleTest is Test {
                 expectedClaimAmount += (balance * basis * 500) / 10_000; // rate = 500, RATE_BASIS_POINTS = 10000
             }
         }
+
+        // Convert to denomination asset amount by dividing by token decimals
+        expectedClaimAmount = expectedClaimAmount / (10 ** atkToken.decimals());
 
         vm.prank(user1);
         yieldSchedule.claimYield();
