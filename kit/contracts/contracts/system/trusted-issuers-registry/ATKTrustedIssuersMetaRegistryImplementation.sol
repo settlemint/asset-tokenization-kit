@@ -12,8 +12,7 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
 // Interface imports
 import { ISMARTTrustedIssuersRegistry } from "../../smart/interface/ISMARTTrustedIssuersRegistry.sol";
-import { ISMARTTrustedIssuersMetaRegistry } from "../../smart/interface/ISMARTTrustedIssuersMetaRegistry.sol";
-import { ISMARTTrustedIssuersRegistry } from "../../smart/interface/ISMARTTrustedIssuersRegistry.sol";
+import { IERC3643TrustedIssuersRegistry } from "../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 import { IATKTrustedIssuersMetaRegistry } from "./IATKTrustedIssuersMetaRegistry.sol";
 import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
 
@@ -26,12 +25,13 @@ import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged
 
 /// @title ATK Trusted Issuers Meta Registry Implementation
 /// @author SettleMint
-/// @notice Implementation contract for the registry-of-registries pattern that manages both
-///         global and contract-specific trusted issuers registries.
-/// @dev This contract serves as a meta-registry that:
+/// @notice Implementation contract for the registry-of-registries pattern that extends subject-aware
+///         trusted issuers registry functionality for managing both global and contract-specific trusted issuers.
+/// @dev This contract serves as a subject-aware meta-registry that:
+///      - Extends ISMARTTrustedIssuersRegistry with subject-aware functionality
 ///      - Stores a global trusted issuers registry for system-wide issuers
 ///      - Maps contract addresses to their specific trusted issuers registries
-///      - Provides aggregated query functions for efficient trusted issuer validation
+///      - Provides aggregated subject-aware query functions for efficient validation
 ///      - Enables lightweight token implementations by centralizing registry management
 ///
 ///      Access Control:
@@ -43,7 +43,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
     ATKSystemAccessManaged,
-    ISMARTTrustedIssuersMetaRegistry,
+    ISMARTTrustedIssuersRegistry,
     IATKTrustedIssuersMetaRegistry
 {
     // --- Storage Variables ---
@@ -87,19 +87,15 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     function initialize(address accessManager) public initializer {
         __ATKSystemAccessManaged_init(accessManager);
         __ERC165_init_unchained();
-
-        // Register supported interfaces
-        _registerInterface(type(ISMARTTrustedIssuersMetaRegistry).interfaceId);
-        _registerInterface(type(IATKTrustedIssuersMetaRegistry).interfaceId);
-        _registerInterface(type(IATKSystemAccessManaged).interfaceId);
     }
 
     // --- Registry Management Functions ---
 
-    /// @inheritdoc IATKTrustedIssuersMetaRegistry
+    /// @notice Sets the global trusted issuers registry
+    /// @dev Part of the meta-registry pattern - manages the global registry that applies to all contracts
+    /// @param registry The address of the global trusted issuers registry (can be address(0) to remove)
     function setGlobalRegistry(address registry)
         external
-        override
         onlySystemRoles3(
             ATKPeopleRoles.SYSTEM_MANAGER_ROLE,
             ATKSystemRoles.SYSTEM_MODULE_ROLE,
@@ -110,13 +106,15 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         address oldRegistry = address(_globalRegistry);
         _globalRegistry = ISMARTTrustedIssuersRegistry(registry);
 
-        emit GlobalRegistrySet(oldRegistry, registry);
+        emit GlobalRegistrySet(_msgSender(), oldRegistry, registry);
     }
 
-    /// @inheritdoc ISMARTTrustedIssuersMetaRegistry
-    function setRegistryForContext(address contractAddress, address registry)
+    /// @notice Sets a contract-specific trusted issuers registry
+    /// @dev Part of the meta-registry pattern - manages contract-specific registries
+    /// @param contractAddress The contract address to set the registry for
+    /// @param registry The address of the trusted issuers registry for this contract (can be address(0) to remove)
+    function setRegistryForContract(address contractAddress, address registry)
         external
-        override
         onlySystemRoles3(
             ATKPeopleRoles.SYSTEM_MANAGER_ROLE,
             ATKSystemRoles.SYSTEM_MODULE_ROLE,
@@ -129,82 +127,60 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         address oldRegistry = address(_contractRegistries[contractAddress]);
         _contractRegistries[contractAddress] = ISMARTTrustedIssuersRegistry(registry);
 
-        emit ContextRegistrySet(contractAddress, oldRegistry, registry);
+        emit ContractRegistrySet(_msgSender(), contractAddress, oldRegistry, registry);
     }
 
-    /// @inheritdoc ISMARTTrustedIssuersMetaRegistry
-    function removeRegistryForContext(address contractAddress)
+    /// @notice Removes a contract-specific trusted issuers registry
+    /// @dev Convenience function that delegates to setRegistryForContract with address(0)
+    /// @param contractAddress The contract address to remove the registry for
+    function removeRegistryForContract(address contractAddress)
         external
-        override
         onlySystemRoles3(
             ATKPeopleRoles.SYSTEM_MANAGER_ROLE,
             ATKSystemRoles.SYSTEM_MODULE_ROLE,
             ATKSystemRoles.TOKEN_FACTORY_REGISTRY_MODULE_ROLE
         )
     {
-        // Delegate to setRegistryForContext with address(0) to remove the registry
-        this.setRegistryForContext(contractAddress, address(0));
+        // Delegate to setRegistryForContract with address(0) to remove the registry
+        this.setRegistryForContract(contractAddress, address(0));
     }
 
     // --- Registry Getters ---
 
-    /// @inheritdoc ISMARTTrustedIssuersMetaRegistry
-    function getGlobalRegistry() external view override returns (ISMARTTrustedIssuersRegistry) {
+    /// @notice Gets the global trusted issuers registry
+    /// @return The global trusted issuers registry address
+    function getGlobalRegistry() external view returns (ISMARTTrustedIssuersRegistry) {
         return _globalRegistry;
     }
 
-    /// @inheritdoc ISMARTTrustedIssuersMetaRegistry
-    function getRegistryForContext(address contractAddress)
+    /// @notice Gets the contract-specific trusted issuers registry
+    /// @param contractAddress The contract address to get the registry for
+    /// @return The contract-specific trusted issuers registry address
+    function getRegistryForContract(address contractAddress)
         external
         view
-        override
         returns (ISMARTTrustedIssuersRegistry)
     {
         return _contractRegistries[contractAddress];
     }
 
-    // --- Aggregated Query Functions ---
+    // --- ISMARTTrustedIssuersRegistry Implementation ---
 
-    /// @inheritdoc ISMARTTrustedIssuersMetaRegistry
-    function isTrustedIssuerForContext(address contractAddress, address issuer)
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    /// @notice Returns trusted issuers for a given subject and claim topic
+    /// @dev Meta-registry implementation that checks both contract-specific and global registries.
+    ///      For subject = address(0), only global registry is checked.
+    ///      For other subjects (identity contracts), both registries are checked and merged.
+    function getTrustedIssuersForClaimTopic(address subject, uint256 claimTopic)
         external
         view
         override
-        returns (bool)
+        returns (IClaimIssuer[] memory)
     {
-        // If context is address(0), only check global registry (global-only verification)
-        if (contractAddress == address(0)) {
+        // If subject is address(0), only return global registry issuers (global-only verification)
+        if (subject == address(0)) {
             if (address(_globalRegistry) != address(0)) {
-                return _globalRegistry.isTrustedIssuer(issuer);
-            }
-            return false;
-        }
-
-        // First check contract-specific registry
-        ISMARTTrustedIssuersRegistry contractRegistry = _contractRegistries[contractAddress];
-        if (address(contractRegistry) != address(0)) {
-            if (contractRegistry.isTrustedIssuer(issuer)) {
-                return true;
-            }
-        }
-
-        // Then check global registry
-        if (address(_globalRegistry) != address(0)) {
-            return _globalRegistry.isTrustedIssuer(issuer);
-        }
-
-        return false;
-    }
-
-    /// @inheritdoc ISMARTTrustedIssuersMetaRegistry
-    function getTrustedIssuersForContext(
-        address contractAddress,
-        uint256 claimTopic
-    ) external view override returns (IClaimIssuer[] memory) {
-        // If context is address(0), only return global registry issuers (global-only verification)
-        if (contractAddress == address(0)) {
-            if (address(_globalRegistry) != address(0)) {
-                return _globalRegistry.getTrustedIssuersForClaimTopic(claimTopic);
+                return _globalRegistry.getTrustedIssuersForClaimTopic(subject, claimTopic);
             }
             return new IClaimIssuer[](0);
         }
@@ -212,49 +188,93 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         IClaimIssuer[] memory contractIssuers;
         IClaimIssuer[] memory globalIssuers;
 
-        // Get issuers from contract-specific registry
-        ISMARTTrustedIssuersRegistry contractRegistry = _contractRegistries[contractAddress];
+        // Get issuers from contract-specific registry (using subject as the contract address)
+        ISMARTTrustedIssuersRegistry contractRegistry = _contractRegistries[subject];
         if (address(contractRegistry) != address(0)) {
-            contractIssuers = contractRegistry.getTrustedIssuersForClaimTopic(claimTopic);
+            contractIssuers = contractRegistry.getTrustedIssuersForClaimTopic(subject, claimTopic);
         }
 
         // Get issuers from global registry
         if (address(_globalRegistry) != address(0)) {
-            globalIssuers = _globalRegistry.getTrustedIssuersForClaimTopic(claimTopic);
+            globalIssuers = _globalRegistry.getTrustedIssuersForClaimTopic(subject, claimTopic);
         }
 
         // Merge arrays and remove duplicates
         return _mergeIssuerArrays(contractIssuers, globalIssuers);
     }
 
-    /// @inheritdoc ISMARTTrustedIssuersMetaRegistry
-    function hasClaimTopicForContext(
-        address contractAddress,
-        address issuer,
-        uint256 claimTopic
-    ) external view override returns (bool) {
-        // If context is address(0), only check global registry (global-only verification)
-        if (contractAddress == address(0)) {
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    /// @notice Checks if an issuer is trusted for a given subject
+    /// @dev Meta-registry implementation that checks both contract-specific and global registries.
+    ///      For subject = address(0), only global registry is checked.
+    ///      For other subjects, both registries are checked.
+    function isTrustedIssuer(address subject, address _issuer) external view override returns (bool) {
+        // If subject is address(0), only check global registry (global-only verification)
+        if (subject == address(0)) {
             if (address(_globalRegistry) != address(0)) {
-                return _globalRegistry.hasClaimTopic(issuer, claimTopic);
+                return _globalRegistry.isTrustedIssuer(subject, _issuer);
             }
             return false;
         }
 
-        // First check contract-specific registry
-        ISMARTTrustedIssuersRegistry contractRegistry = _contractRegistries[contractAddress];
+        // First check contract-specific registry (using subject as the contract address)
+        ISMARTTrustedIssuersRegistry contractRegistry = _contractRegistries[subject];
         if (address(contractRegistry) != address(0)) {
-            if (contractRegistry.hasClaimTopic(issuer, claimTopic)) {
+            if (contractRegistry.isTrustedIssuer(subject, _issuer)) {
                 return true;
             }
         }
 
         // Then check global registry
         if (address(_globalRegistry) != address(0)) {
-            return _globalRegistry.hasClaimTopic(issuer, claimTopic);
+            return _globalRegistry.isTrustedIssuer(subject, _issuer);
         }
 
         return false;
+    }
+
+    // --- ERC-3643 Trusted Issuers Registry Functions ---
+    // Note: These are not implemented as the meta-registry is meant to be queried through
+    // subject-aware functions. The abstract ISMARTTrustedIssuersRegistry provides default
+    // implementations that call the subject-aware versions with address(0).
+
+    /// @notice Error triggered when trying to use modification functions on meta-registry
+    error MetaRegistryNotModifiable();
+
+    /// @notice Error triggered when trying to use aggregation functions on meta-registry
+    error MetaRegistryCannotProvideCompleteAnswer();
+
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
+    function addTrustedIssuer(IClaimIssuer _trustedIssuer, uint256[] calldata _claimTopics) external override {
+        revert MetaRegistryNotModifiable();
+    }
+
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
+    function removeTrustedIssuer(IClaimIssuer _trustedIssuer) external override {
+        revert MetaRegistryNotModifiable();
+    }
+
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
+    function updateIssuerClaimTopics(IClaimIssuer _trustedIssuer, uint256[] calldata _claimTopics) external override {
+        revert MetaRegistryNotModifiable();
+    }
+
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
+    function getTrustedIssuers() external view override returns (IClaimIssuer[] memory) {
+        // Cannot provide complete answer across all registries
+        revert MetaRegistryCannotProvideCompleteAnswer();
+    }
+
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
+    function getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer) external view override returns (uint256[] memory) {
+        // Cannot provide complete answer across all registries
+        revert MetaRegistryCannotProvideCompleteAnswer();
+    }
+
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
+    function hasClaimTopic(address _issuer, uint256 _claimTopic) external view override returns (bool) {
+        // Cannot provide complete answer across all registries
+        revert MetaRegistryCannotProvideCompleteAnswer();
     }
 
     // --- Internal Helper Functions ---
@@ -337,7 +357,8 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         override(ERC165Upgradeable, IERC165)
         returns (bool)
     {
-        return interfaceId == type(ISMARTTrustedIssuersMetaRegistry).interfaceId
+        return interfaceId == type(ISMARTTrustedIssuersRegistry).interfaceId
+            || interfaceId == type(IERC3643TrustedIssuersRegistry).interfaceId
             || interfaceId == type(IATKTrustedIssuersMetaRegistry).interfaceId
             || interfaceId == type(IATKSystemAccessManaged).interfaceId
             || super.supportsInterface(interfaceId);
