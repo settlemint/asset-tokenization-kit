@@ -9,7 +9,6 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
 // ISMARTinterface
 import { ISMARTTrustedIssuersRegistry } from "../../smart/interface/ISMARTTrustedIssuersRegistry.sol";
-import { ISMARTTrustedIssuersMetaRegistry } from "../../smart/interface/ISMARTTrustedIssuersMetaRegistry.sol";
 
 /// @title IATKTrustedIssuersMetaRegistry - Registry-of-Registries Interface
 /// @author SettleMint
@@ -21,7 +20,7 @@ import { ISMARTTrustedIssuersMetaRegistry } from "../../smart/interface/ISMARTTr
 ///      - Maps contract addresses to their specific trusted issuers registries
 ///      - Provides aggregated query functions that check both global and contract-specific registries
 ///      - Enables efficient trusted issuer management without bloating token runtime size
-interface IATKTrustedIssuersMetaRegistry is IERC165, ISMARTTrustedIssuersMetaRegistry {
+interface IATKTrustedIssuersMetaRegistry is IERC165, ISMARTTrustedIssuersRegistry {
     // --- Events ---
 
     /// @notice Emitted when the global registry is set or updated

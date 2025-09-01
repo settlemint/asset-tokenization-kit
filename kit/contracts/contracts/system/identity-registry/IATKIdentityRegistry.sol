@@ -25,20 +25,7 @@ interface IATKIdentityRegistry is ISMARTIdentityRegistry, IATKSystemAccessManage
     )
         external;
 
-    /// @notice Context-aware verification of an investor's identity using logical expressions
-    /// @dev This function evaluates logical expressions (claim topic requirements) using both
-    ///      global and context-specific trusted issuers. It provides token-specific or contract-specific
-    ///      identity verification capabilities while maintaining backward compatibility.
-    /// @param _userAddress The investor's wallet address to verify
-    /// @param context The context (usually a token contract address) for which to verify claims
-    /// @param expression An array of ExpressionNode structs representing a postfix logical expression
-    /// @return True if the investor's identity satisfies the logical expression for the given context
-    function isVerifiedForContext(
-        address _userAddress,
-        address context,
-        ExpressionNode[] calldata expression
-    )
-        external
-        view
-        returns (bool);
+    // Note: isVerifiedForContext has been removed as it's no longer needed.
+    // The isVerified function in ISMARTIdentityRegistry now handles both simple claim topic verification
+    // and the subject-aware trusted issuer queries automatically.
 }
