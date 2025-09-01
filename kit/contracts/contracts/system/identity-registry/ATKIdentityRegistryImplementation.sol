@@ -13,11 +13,9 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
 // Interface imports
 import { ISMARTIdentityRegistry } from "../../smart/interface/ISMARTIdentityRegistry.sol";
-
 import { ISMARTIdentityRegistryStorage } from "./../../smart/interface/ISMARTIdentityRegistryStorage.sol";
-import { IERC3643TrustedIssuersRegistry } from "./../../smart/interface/ISMARTTrustedIssuersRegistry.sol";
-import { ISMARTTrustedIssuersMetaRegistry } from "../../smart/interface/ISMARTTrustedIssuersMetaRegistry.sol";
-import { IATKTrustedIssuersMetaRegistry } from "../trusted-issuers-registry/IATKTrustedIssuersMetaRegistry.sol";
+import { ISMARTTrustedIssuersRegistry } from "./../../smart/interface/ISMARTTrustedIssuersRegistry.sol";
+import { IContextAwareTrustedIssuersRegistry } from "../../smart/interface/IContextAwareTrustedIssuersRegistry.sol";
 import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { IATKIdentityRegistry } from "./IATKIdentityRegistry.sol";
 import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
@@ -56,12 +54,11 @@ contract ATKIdentityRegistryImplementation is
     /// such as the mapping from user addresses to their identity contracts and investor country codes.
     /// This separation of logic and storage enhances upgradeability and modularity.
     ISMARTIdentityRegistryStorage private _identityStorage;
-    /// @notice Stores the contract address of the `ISMARTTrustedIssuersMetaRegistry` instance.
-    /// @dev This meta registry provides access to both global and contract-specific trusted issuers
-    /// registries. The `isVerified` function uses this meta registry to check the validity of claims
-    /// by querying the global trusted issuers registry, while `isVerifiedForContext` enables
-    /// context-specific verification using both global and context-specific registries.
-    ISMARTTrustedIssuersMetaRegistry private _trustedIssuersMetaRegistry;
+    /// @notice Stores the contract address of the trusted issuers registry instance.
+    /// @dev This registry manages both global and context-specific trusted issuers. The contract
+    /// automatically detects if the registry supports IContextAwareTrustedIssuersRegistry via ERC165
+    /// and uses context-aware functions when available, falling back to global functions otherwise.
+    ISMARTTrustedIssuersRegistry private _trustedIssuersRegistry;
     /// @notice Stores the contract address of the `ISMARTTopicSchemeRegistry` instance.
     /// @dev This external contract maintains the valid topic schemes and their signatures.
     /// The `isVerified` function uses this registry to validate that claim topics are registered before checking
@@ -509,8 +506,8 @@ contract ATKIdentityRegistryImplementation is
         override
         returns (bool)
     {
-        // Delegate to isVerifiedForContext with address(0) as context for global-only verification
-        return this.isVerifiedForContext(_userAddress, address(0), expression);
+        // Delegate to isVerifiedForContext with bytes32(0) as context for global-only verification
+        return this.isVerifiedForContext(_userAddress, bytes32(0), expression);
     }
 
     /// @inheritdoc ISMARTIdentityRegistry
@@ -525,7 +522,7 @@ contract ATKIdentityRegistryImplementation is
     /// @return True if the investor's identity satisfies the logical expression for the given context, false otherwise.
     function isVerifiedForContext(
         address _userAddress,
-        address context,
+        bytes32 context,
         ExpressionNode[] calldata expression
     )
         external
@@ -659,7 +656,7 @@ contract ATKIdentityRegistryImplementation is
     /// @return True if the user has a valid claim for the topic from either global or context-specific trusted issuers.
     function _verifyClaimTopicForContext(
         address _userAddress,
-        address context,
+        bytes32 context,
         uint256 claimTopic
     )
         internal
@@ -685,30 +682,28 @@ contract ATKIdentityRegistryImplementation is
             return false; // No claims for this topic
         }
 
-        // First check global registry
-        ISMARTTrustedIssuersRegistry globalRegistry = _trustedIssuersMetaRegistry.getGlobalRegistry();
-        IClaimIssuer[] memory globalTrustedIssuers = globalRegistry.getTrustedIssuersForClaimTopic(claimTopic);
+        // Check if the trusted issuers registry supports context-aware functionality
+        bool supportsContextAware = _trustedIssuersRegistry.supportsInterface(
+            type(IContextAwareTrustedIssuersRegistry).interfaceId
+        );
 
-        // Then check context-specific registry if available (skip if context is address(0))
-        ISMARTTrustedIssuersRegistry contextRegistry;
-        IClaimIssuer[] memory contextTrustedIssuers;
-        bool hasContextRegistry = false;
+        IClaimIssuer[] memory trustedIssuers;
 
-        if (context != address(0)) {
-            contextRegistry = _trustedIssuersMetaRegistry.getRegistryForContext(context);
-            hasContextRegistry = address(contextRegistry) != address(0);
+        if (supportsContextAware && context != bytes32(0)) {
+            // Use context-aware functionality
+            IContextAwareTrustedIssuersRegistry contextAwareRegistry = 
+                IContextAwareTrustedIssuersRegistry(address(_trustedIssuersRegistry));
+            trustedIssuers = contextAwareRegistry.getTrustedIssuersForClaimTopic(context, claimTopic);
+        } else {
+            // Fallback to global functionality
+            trustedIssuers = _trustedIssuersRegistry.getTrustedIssuersForClaimTopic(claimTopic);
         }
 
-        if (hasContextRegistry) {
-            contextTrustedIssuers = contextRegistry.getTrustedIssuersForClaimTopic(claimTopic);
+        if (trustedIssuers.length == 0) {
+            return false; // No trusted issuers for this topic
         }
 
-        // If no trusted issuers in either registry, return false
-        if (globalTrustedIssuers.length == 0 && (!hasContextRegistry || contextTrustedIssuers.length == 0)) {
-            return false;
-        }
-
-        // Check each claim against both lists of trusted issuers
+        // Check each claim against the list of trusted issuers
         for (uint256 i = 0; i < claimIds.length;) {
             // Get claim details
             (uint256 foundClaimTopic,, address issuer, bytes memory sig, bytes memory data,) =
@@ -716,33 +711,17 @@ contract ATKIdentityRegistryImplementation is
 
             // Verify the claim topic matches (should always be true due to getClaimIdsByTopic)
             if (foundClaimTopic == claimTopic) {
-                // First check global trusted issuers
-                for (uint256 j = 0; j < globalTrustedIssuers.length;) {
-                    if (address(globalTrustedIssuers[j]) == issuer) {
+                // Check if the issuer is trusted for this topic
+                for (uint256 j = 0; j < trustedIssuers.length;) {
+                    if (address(trustedIssuers[j]) == issuer) {
                         // Verify the claim is valid with the trusted issuer
-                        if (globalTrustedIssuers[j].isClaimValid(identityToVerify, claimTopic, sig, data)) {
-                            return true; // Found valid claim from global trusted issuer
+                        if (trustedIssuers[j].isClaimValid(identityToVerify, claimTopic, sig, data)) {
+                            return true; // Found valid claim from trusted issuer
                         }
                         break; // Found the issuer, no need to check others for this claim
                     }
                     unchecked {
                         ++j;
-                    }
-                }
-
-                // Then check context-specific trusted issuers if available
-                if (hasContextRegistry) {
-                    for (uint256 j = 0; j < contextTrustedIssuers.length;) {
-                        if (address(contextTrustedIssuers[j]) == issuer) {
-                            // Verify the claim is valid with the trusted issuer
-                            if (contextTrustedIssuers[j].isClaimValid(identityToVerify, claimTopic, sig, data)) {
-                                return true; // Found valid claim from context-specific trusted issuer
-                            }
-                            break; // Found the issuer, no need to check others for this claim
-                        }
-                        unchecked {
-                            ++j;
-                        }
                     }
                 }
             }
@@ -791,27 +770,18 @@ contract ATKIdentityRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTIdentityRegistry
-    /// @notice Returns the address of the global trusted issuers registry contract.
-    /// @dev This allows external contracts or UIs to discover the location of the global trusted issuers list.
-    /// For backward compatibility, this returns the global registry from the meta registry.
-    /// @return The address of the global `IERC3643TrustedIssuersRegistry` contract.
-    function issuersRegistry() external view override returns (IERC3643TrustedIssuersRegistry) {
-        // Cast to maintain backward compatibility with ERC3643 interface
-        return IERC3643TrustedIssuersRegistry(address(_trustedIssuersMetaRegistry.getGlobalRegistry()));
+    /// @notice Returns the address of the trusted issuers registry contract.
+    /// @dev This allows external contracts or UIs to discover the location of the trusted issuers registry.
+    /// @return The address of the `ISMARTTrustedIssuersRegistry` contract.
+    function issuersRegistry() external view override returns (ISMARTTrustedIssuersRegistry) {
+        return _trustedIssuersRegistry;
     }
 
-    /// @notice Returns the SMART-compatible global trusted issuers registry contract.
-    /// @dev This allows access to the global registry using the SMART interface.
-    /// @return The address of the global `ISMARTTrustedIssuersRegistry` contract.
+    /// @notice Returns the trusted issuers registry contract.
+    /// @dev This allows access to the trusted issuers registry using the SMART interface.
+    /// @return The address of the `ISMARTTrustedIssuersRegistry` contract.
     function smartIssuersRegistry() external view returns (ISMARTTrustedIssuersRegistry) {
-        return _trustedIssuersMetaRegistry.getGlobalRegistry();
-    }
-
-    /// @notice Returns the address of the trusted issuers meta registry contract.
-    /// @dev This allows external contracts or UIs to access the full meta registry functionality.
-    /// @return The address of the `ISMARTTrustedIssuersMetaRegistry` contract.
-    function trustedIssuersMetaRegistry() external view returns (ISMARTTrustedIssuersMetaRegistry) {
-        return _trustedIssuersMetaRegistry;
+        return _trustedIssuersRegistry;
     }
 
     /// @inheritdoc ISMARTIdentityRegistry

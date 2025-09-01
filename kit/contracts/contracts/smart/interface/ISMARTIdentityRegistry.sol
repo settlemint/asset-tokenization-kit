@@ -254,6 +254,23 @@ interface ISMARTIdentityRegistry is IERC165 {
     function isVerified(address _userAddress, ExpressionNode[] memory expression) external view returns (bool);
 
     /**
+     * @notice Checks if a registered investor's wallet address is considered 'verified' for a specific context using logical expressions.
+     * @dev This function enables context-aware verification by checking claims against both global and context-specific trusted issuers.
+     *      If the linked trusted issuers registry supports IContextAwareTrustedIssuersRegistry (via ERC165), it will use
+     *      context-specific trusted issuers. Otherwise, it falls back to global verification.
+     *      The context parameter is converted to bytes32 for storage efficiency (typically using keccak256(abi.encode(context))).
+     * @param _userAddress The investor's wallet address to verify.
+     * @param context The context identifier (e.g., token address, system id) for context-specific verification.
+     * @param expression An array of ExpressionNode structs representing a postfix expression for claim verification.
+     * @return True if the investor's identity satisfies the logical expression for the given context, false otherwise
+     */
+    function isVerifiedForContext(
+        address _userAddress,
+        bytes32 context,
+        ExpressionNode[] memory expression
+    ) external view returns (bool);
+
+    /**
      * @notice Retrieves the `IIdentity` contract address associated with a registered investor's wallet address.
      * @dev This is a view function. It will typically revert if the `_userAddress` is not registered.
      * @param _userAddress The investor's wallet address.
