@@ -65,6 +65,12 @@ interface ISMARTTrustedIssuersMetaRegistry is IERC165 {
     ///                 Pass address(0) to remove the context-specific registry
     function setRegistryForContext(address context, address registry) external;
 
+    /// @notice Removes the trusted issuers registry for a specific context
+    /// @dev This is a convenience function that calls setRegistryForContext with address(0).
+    ///      Should emit ContextRegistrySet event with newRegistry as address(0).
+    /// @param context The address of the context to remove the registry for
+    function removeRegistryForContext(address context) external;
+
     // --- Registry Query Functions ---
 
     /// @notice Returns the global trusted issuers registry

@@ -132,6 +132,20 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         emit ContextRegistrySet(contractAddress, oldRegistry, registry);
     }
 
+    /// @inheritdoc ISMARTTrustedIssuersMetaRegistry
+    function removeRegistryForContext(address contractAddress)
+        external
+        override
+        onlySystemRoles3(
+            ATKPeopleRoles.SYSTEM_MANAGER_ROLE,
+            ATKSystemRoles.SYSTEM_MODULE_ROLE,
+            ATKSystemRoles.TOKEN_FACTORY_REGISTRY_MODULE_ROLE
+        )
+    {
+        // Delegate to setRegistryForContext with address(0) to remove the registry
+        this.setRegistryForContext(contractAddress, address(0));
+    }
+
     // --- Registry Getters ---
 
     /// @inheritdoc ISMARTTrustedIssuersMetaRegistry

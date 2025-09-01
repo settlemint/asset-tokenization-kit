@@ -693,7 +693,7 @@ contract ATKIdentityRegistryImplementation is
         ISMARTTrustedIssuersRegistry contextRegistry;
         IClaimIssuer[] memory contextTrustedIssuers;
         bool hasContextRegistry = false;
-        
+
         if (context != address(0)) {
             contextRegistry = _trustedIssuersMetaRegistry.getRegistryForContext(context);
             hasContextRegistry = address(contextRegistry) != address(0);

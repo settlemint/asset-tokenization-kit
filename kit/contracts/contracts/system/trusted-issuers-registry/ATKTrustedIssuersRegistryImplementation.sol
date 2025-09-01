@@ -16,6 +16,7 @@ import { ISMARTTrustedIssuersRegistry } from "../../smart/interface/ISMARTTruste
 import { IATKTrustedIssuersRegistry } from "./IATKTrustedIssuersRegistry.sol";
 import { IClaimAuthorizer } from "../../onchainid/extensions/IClaimAuthorizer.sol";
 import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
+import { IERC3643TrustedIssuersRegistry } from "../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 
 // Constants
 import { ATKPeopleRoles } from "../ATKPeopleRoles.sol";
@@ -52,7 +53,6 @@ contract ATKTrustedIssuersRegistryImplementation is
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
     ATKSystemAccessManaged,
-    ISMARTTrustedIssuersRegistry,
     IATKTrustedIssuersRegistry,
     IClaimAuthorizer
 {
@@ -231,7 +231,7 @@ contract ATKTrustedIssuersRegistryImplementation is
 
     // --- Issuer Management Functions (REGISTRAR_ROLE required) ---
 
-    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
     /// @notice Adds a new trusted issuer to the registry with a specified list of claim topics they are authorized for.
     /// @dev This function can only be called by an address holding the `REGISTRAR_ROLE`.
     /// It performs several validation checks:
@@ -280,7 +280,7 @@ contract ATKTrustedIssuersRegistryImplementation is
         emit TrustedIssuerAdded(_msgSender(), issuerAddress, _claimTopics);
     }
 
-    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
     /// @notice Removes an existing trusted issuer from the registry. This revokes their trusted status for all
     /// previously associated claim topics.
     /// @dev This function can only be called by an address holding the `REGISTRAR_ROLE`.
@@ -324,7 +324,7 @@ contract ATKTrustedIssuersRegistryImplementation is
         emit TrustedIssuerRemoved(_msgSender(), issuerAddress);
     }
 
-    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
     /// @notice Updates the list of claim topics for an existing trusted issuer.
     /// @dev This function can only be called by an address holding the `REGISTRAR_ROLE`.
     /// It first checks if the issuer exists and if the new list of claim topics is not empty.
@@ -393,7 +393,7 @@ contract ATKTrustedIssuersRegistryImplementation is
 
     // --- View Functions ---
 
-    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
     /// @notice Returns an array of all currently registered and active trusted issuer contract addresses.
     /// @dev This function iterates through the `_issuerAddresses` array and casts each `address` to an
     /// `IClaimIssuer` type for the return array. This is useful for clients wanting to get a complete list of
@@ -412,7 +412,7 @@ contract ATKTrustedIssuersRegistryImplementation is
         return issuers;
     }
 
-    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
     /// @notice Retrieves the list of claim topics for which a specific trusted issuer is authorized.
     /// @dev It first checks if the provided `_trustedIssuer` address actually exists as a registered issuer using the
     /// `exists` flag in the `_trustedIssuers` mapping. If not, it reverts.
@@ -433,7 +433,7 @@ contract ATKTrustedIssuersRegistryImplementation is
         return _trustedIssuers[address(_trustedIssuer)].claimTopics;
     }
 
-    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
     /// @notice Retrieves an array of all issuer contract addresses that are trusted for a specific claim topic.
     /// @dev This function directly accesses the `_issuersByClaimTopic` mapping using the given `claimTopic` as a key.
     /// It then converts the stored array of `address` types into an array of `IClaimIssuer` interface types.
@@ -459,7 +459,7 @@ contract ATKTrustedIssuersRegistryImplementation is
         return issuers;
     }
 
-    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
     /// @notice Checks if a specific issuer is trusted for a specific claim topic.
     /// @dev This function uses the `_claimTopicIssuerIndex` mapping for an efficient O(1) lookup.
     /// If `_claimTopicIssuerIndex[_claimTopic][_issuer]` is greater than 0, it means the issuer is present in the
@@ -473,7 +473,7 @@ contract ATKTrustedIssuersRegistryImplementation is
         return _claimTopicIssuerIndex[_claimTopic][_issuer] > 0;
     }
 
-    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
     /// @notice Checks if a given address is registered as a trusted issuer in the registry.
     /// @dev This function performs a direct lookup in the `_trustedIssuers` mapping and checks the `exists` flag
     /// of the `TrustedIssuer` struct associated with the `_issuer` address.
