@@ -3,7 +3,7 @@ pragma solidity ^0.8.28;
 
 import { _SMARTExtension } from "../../common/_SMARTExtension.sol";
 import { ISMARTIdentityRegistry } from "../../../interface/ISMARTIdentityRegistry.sol";
-import { IERC3643TrustedIssuersRegistry } from "../../../interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
+import { ISMARTTrustedIssuersRegistry } from "../../../interface/ISMARTTrustedIssuersRegistry.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { ISMARTCollateral } from "../ISMARTCollateral.sol";
@@ -83,7 +83,7 @@ abstract contract _SMARTCollateralLogic is _SMARTExtension, ISMARTCollateral {
         // Obtain necessary registry and identity contract instances.
         // Assumes `this.identityRegistry()` and `this.onchainID()` are provided by the inheriting core SMART contract.
         ISMARTIdentityRegistry identityRegistry_ = this.identityRegistry();
-        IERC3643TrustedIssuersRegistry issuersRegistry = identityRegistry_.issuersRegistry();
+        ISMARTTrustedIssuersRegistry issuersRegistry = identityRegistry_.issuersRegistry();
         IIdentity tokenID = IIdentity(this.onchainID()); // The token contract's own identity
 
         // Get all issuers trusted for the specific collateral proof topic.

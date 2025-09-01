@@ -4,8 +4,8 @@ pragma solidity ^0.8.28;
 import { Test } from "forge-std/Test.sol";
 import { ATKTrustedIssuersRegistryImplementation } from
     "../../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersRegistryImplementation.sol";
-import { IERC3643TrustedIssuersRegistry } from
-    "../../../contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
+import { ISMARTTrustedIssuersRegistry } from
+    "../../../contracts/smart/interface/ISMARTTrustedIssuersRegistry.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
@@ -391,7 +391,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
     function test_SupportsInterface() public view {
         // Test ERC165 support
         assertTrue(implementation.supportsInterface(type(IERC165).interfaceId));
-        assertTrue(implementation.supportsInterface(type(IERC3643TrustedIssuersRegistry).interfaceId));
+        assertTrue(implementation.supportsInterface(type(ISMARTTrustedIssuersRegistry).interfaceId));
         assertTrue(implementation.supportsInterface(type(IATKSystemAccessManaged).interfaceId));
 
         // Test unsupported interface

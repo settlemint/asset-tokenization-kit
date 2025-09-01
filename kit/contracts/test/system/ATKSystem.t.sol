@@ -14,8 +14,8 @@ import { SystemUtils } from "../utils/SystemUtils.sol";
 // Import required interfaces
 import { ISMARTCompliance } from "../../contracts/smart/interface/ISMARTCompliance.sol";
 import { IATKIdentityFactory } from "../../contracts/system/identity-factory/IATKIdentityFactory.sol";
-import { IERC3643TrustedIssuersRegistry } from
-    "../../contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
+import { ISMARTTrustedIssuersRegistry } from
+    "../../contracts/smart/interface/ISMARTTrustedIssuersRegistry.sol";
 import { ISMARTIdentityRegistryStorage } from "../../contracts/smart/interface/ISMARTIdentityRegistryStorage.sol";
 import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 import { ISMARTTopicSchemeRegistry } from "../../contracts/smart/interface/ISMARTTopicSchemeRegistry.sol";
@@ -536,8 +536,8 @@ contract ATKSystemTest is Test {
         ISMARTIdentityRegistry identityRegistry = ISMARTIdentityRegistry(atkSystem.identityRegistry());
         ISMARTIdentityRegistryStorage identityStorage =
             ISMARTIdentityRegistryStorage(atkSystem.identityRegistryStorage());
-        IERC3643TrustedIssuersRegistry trustedIssuers =
-            IERC3643TrustedIssuersRegistry(atkSystem.trustedIssuersRegistry());
+        ISMARTTrustedIssuersRegistry trustedIssuers =
+            ISMARTTrustedIssuersRegistry(atkSystem.trustedIssuersRegistry());
         ISMARTTopicSchemeRegistry topicSchemeRegistry = ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry());
         IATKIdentityFactory identityFactory = IATKIdentityFactory(atkSystem.identityFactory());
 
@@ -553,7 +553,7 @@ contract ATKSystemTest is Test {
         assertTrue(IERC165(address(compliance)).supportsInterface(type(ISMARTCompliance).interfaceId));
         assertTrue(IERC165(address(identityRegistry)).supportsInterface(type(ISMARTIdentityRegistry).interfaceId));
         assertTrue(IERC165(address(identityStorage)).supportsInterface(type(ISMARTIdentityRegistryStorage).interfaceId));
-        assertTrue(IERC165(address(trustedIssuers)).supportsInterface(type(IERC3643TrustedIssuersRegistry).interfaceId));
+        assertTrue(IERC165(address(trustedIssuers)).supportsInterface(type(ISMARTTrustedIssuersRegistry).interfaceId));
         assertTrue(IERC165(address(topicSchemeRegistry)).supportsInterface(type(ISMARTTopicSchemeRegistry).interfaceId));
         assertTrue(IERC165(address(identityFactory)).supportsInterface(type(IATKIdentityFactory).interfaceId));
     }
@@ -796,11 +796,11 @@ contract ATKSystemTest is Test {
 
         // Check if issuer identity is trusted for the TOPIC_ISSUER
         bool isTrusted =
-            IERC3643TrustedIssuersRegistry(atkSystem.trustedIssuersRegistry()).isTrustedIssuer(organisationIdentity);
+            ISMARTTrustedIssuersRegistry(atkSystem.trustedIssuersRegistry()).isTrustedIssuer(organisationIdentity);
         assertTrue(isTrusted, "Issuer identity should be registered as trusted issuer");
 
         // Check if it's trusted specifically for TOPIC_ISSUER topic
-        bool isTrustedForTopic = IERC3643TrustedIssuersRegistry(atkSystem.trustedIssuersRegistry()).hasClaimTopic(
+        bool isTrustedForTopic = ISMARTTrustedIssuersRegistry(atkSystem.trustedIssuersRegistry()).hasClaimTopic(
             organisationIdentity, topicId
         );
         assertTrue(isTrustedForTopic, "Issuer identity should be trusted for TOPIC_ISSUER topic");

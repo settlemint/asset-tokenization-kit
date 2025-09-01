@@ -8,8 +8,8 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
 import { IATKIdentityFactory } from "../../../contracts/system/identity-factory/IATKIdentityFactory.sol";
-import { IERC3643TrustedIssuersRegistry } from
-    "../../../contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
+import { ISMARTTrustedIssuersRegistry } from
+    "../../../contracts/smart/interface/ISMARTTrustedIssuersRegistry.sol";
 import { ISMARTTopicSchemeRegistry } from "../../../contracts/smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
 import { IATKIdentity } from "../../../contracts/system/identity-factory/identities/IATKIdentity.sol";
@@ -64,7 +64,7 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
 
     // System contracts
     IATKIdentityFactory public identityFactory;
-    IERC3643TrustedIssuersRegistry public trustedIssuersRegistry;
+    ISMARTTrustedIssuersRegistry public trustedIssuersRegistry;
     ISMARTTopicSchemeRegistry public topicSchemeRegistry;
 
     // Test addresses and keys

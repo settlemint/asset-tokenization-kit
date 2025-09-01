@@ -278,7 +278,7 @@ contract ATKSystemImplementation is
         // Validate and set the trusted issuers registry implementation address.
         if (trustedIssuersRegistryImplementation_ == address(0)) revert TrustedIssuersRegistryImplementationNotSet();
         _checkInterface(trustedIssuersRegistryImplementation_, _TRUSTED_ISSUERS_REGISTRY_ID); // Ensure it
-            // supports IERC3643TrustedIssuersRegistry
+            // supports ISMARTTrustedIssuersRegistry
         _implementations[TRUSTED_ISSUERS_REGISTRY] = trustedIssuersRegistryImplementation_;
         emit TrustedIssuersRegistryImplementationUpdated(initialAdmin_, trustedIssuersRegistryImplementation_);
 
@@ -631,7 +631,7 @@ contract ATKSystemImplementation is
 
     /// @notice Sets (updates) the address of the trusted issuers registry module's implementation (logic) contract.
     /// @dev Only callable by an address with the `DEFAULT_ADMIN_ROLE`.
-    /// Reverts if `implementation` is zero or doesn't support `IERC3643TrustedIssuersRegistry`.
+    /// Reverts if `implementation` is zero or doesn't support `ISMARTTrustedIssuersRegistry`.
     /// Emits a `TrustedIssuersRegistryImplementationUpdated` event.
     /// @param implementation_ The new address for the trusted issuers registry logic contract.
     function setTrustedIssuersRegistryImplementation(address implementation_)

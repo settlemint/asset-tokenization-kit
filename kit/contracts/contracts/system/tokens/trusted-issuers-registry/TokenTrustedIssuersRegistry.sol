@@ -10,7 +10,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
 // Interface imports
-import { IERC3643TrustedIssuersRegistry } from "../../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
+import { ISMARTTrustedIssuersRegistry } from "../../../smart/interface/ISMARTTrustedIssuersRegistry.sol";
 
 // Token interface
 import { IATKToken } from "../IATKToken.sol";
@@ -22,7 +22,7 @@ import { ATKAssetRoles } from "../../../assets/ATKAssetRoles.sol";
 /// @author SettleMint
 /// @notice ERC-3643 compliant trusted issuers registry that is scoped to a specific token contract.
 ///         Access control is delegated to the token's governance system via the GOVERNANCE_ROLE.
-/// @dev This contract implements the IERC3643TrustedIssuersRegistry interface but differs from the
+/// @dev This contract implements the ISMARTTrustedIssuersRegistry interface but differs from the
 ///      system-wide registry by having token-specific access control. Only accounts with the
 ///      GOVERNANCE_ROLE on the associated token contract can manage trusted issuers.
 ///
@@ -35,7 +35,7 @@ import { ATKAssetRoles } from "../../../assets/ATKAssetRoles.sol";
 contract TokenTrustedIssuersRegistry is
     ERC165,
     ERC2771Context,
-    IERC3643TrustedIssuersRegistry
+    ISMARTTrustedIssuersRegistry
 {
     // --- Storage Variables ---
 
@@ -129,9 +129,9 @@ contract TokenTrustedIssuersRegistry is
         _;
     }
 
-    // --- IERC3643TrustedIssuersRegistry Implementation ---
+    // --- ISMARTTrustedIssuersRegistry Implementation ---
 
-    /// @inheritdoc IERC3643TrustedIssuersRegistry
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
     function addTrustedIssuer(
         IClaimIssuer _trustedIssuer,
         uint256[] calldata _claimTopics
@@ -155,7 +155,7 @@ contract TokenTrustedIssuersRegistry is
         emit TrustedIssuerAdded(_msgSender(), issuerAddress, _claimTopics);
     }
 
-    /// @inheritdoc IERC3643TrustedIssuersRegistry
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
     function removeTrustedIssuer(IClaimIssuer _trustedIssuer) external override onlyTokenGovernance {
         address issuerAddress = address(_trustedIssuer);
         if (!_trustedIssuers[issuerAddress].exists) revert IssuerDoesNotExist(issuerAddress);
@@ -178,7 +178,7 @@ contract TokenTrustedIssuersRegistry is
         emit TrustedIssuerRemoved(_msgSender(), issuerAddress);
     }
 
-    /// @inheritdoc IERC3643TrustedIssuersRegistry
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
     function updateIssuerClaimTopics(
         IClaimIssuer _trustedIssuer,
         uint256[] calldata _newClaimTopics
@@ -209,7 +209,7 @@ contract TokenTrustedIssuersRegistry is
         emit ClaimTopicsUpdated(_msgSender(), issuerAddress, _newClaimTopics);
     }
 
-    /// @inheritdoc IERC3643TrustedIssuersRegistry
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
     function getTrustedIssuers() external view override returns (IClaimIssuer[] memory) {
         IClaimIssuer[] memory issuers = new IClaimIssuer[](_issuerAddresses.length);
         uint256 issuerAddressesLength = _issuerAddresses.length;
@@ -220,7 +220,7 @@ contract TokenTrustedIssuersRegistry is
         return issuers;
     }
 
-    /// @inheritdoc IERC3643TrustedIssuersRegistry
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
     function getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer)
         external
         view
@@ -232,7 +232,7 @@ contract TokenTrustedIssuersRegistry is
         return _trustedIssuers[issuerAddress].claimTopics;
     }
 
-    /// @inheritdoc IERC3643TrustedIssuersRegistry
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
     function getTrustedIssuersForClaimTopic(uint256 claimTopic)
         external
         view
@@ -249,12 +249,12 @@ contract TokenTrustedIssuersRegistry is
         return issuers;
     }
 
-    /// @inheritdoc IERC3643TrustedIssuersRegistry
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
     function hasClaimTopic(address _issuer, uint256 _claimTopic) external view override returns (bool) {
         return _claimTopicIssuerIndex[_claimTopic][_issuer] > 0;
     }
 
-    /// @inheritdoc IERC3643TrustedIssuersRegistry
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
     function isTrustedIssuer(address _issuer) external view override returns (bool) {
         return _trustedIssuers[_issuer].exists;
     }
@@ -330,7 +330,7 @@ contract TokenTrustedIssuersRegistry is
         override(ERC165, IERC165)
         returns (bool)
     {
-        return interfaceId == type(IERC3643TrustedIssuersRegistry).interfaceId
+        return interfaceId == type(ISMARTTrustedIssuersRegistry).interfaceId
             || super.supportsInterface(interfaceId);
     }
 }

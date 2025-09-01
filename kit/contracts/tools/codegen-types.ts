@@ -55,7 +55,7 @@ const ABI_PATHS = {
   compliance: `${ARTIFACTS_DIR}/contracts/system/compliance/IATKCompliance.sol/IATKCompliance.json`,
   identityRegistry: `${ARTIFACTS_DIR}/contracts/smart/interface/ISMARTIdentityRegistry.sol/ISMARTIdentityRegistry.json`,
   identityRegistryStorage: `${ARTIFACTS_DIR}/contracts/smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol/IERC3643IdentityRegistryStorage.json`,
-  trustedIssuersRegistry: `${ARTIFACTS_DIR}/contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol/IERC3643TrustedIssuersRegistry.json`,
+  trustedIssuersRegistry: `${ARTIFACTS_DIR}/contracts/smart/interface/ISMARTTrustedIssuersRegistry.sol/ISMARTTrustedIssuersRegistry.json`,
   topicSchemeRegistry: `${ARTIFACTS_DIR}/contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol/ATKTopicSchemeRegistryImplementation.json`,
   identityFactory: `${ARTIFACTS_DIR}/contracts/system/identity-factory/IATKIdentityFactory.sol/IATKIdentityFactory.json`,
   bondFactory: `${ARTIFACTS_DIR}/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json`,
