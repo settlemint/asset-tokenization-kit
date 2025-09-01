@@ -26,19 +26,18 @@ import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged
 
 /// @title ATK Trusted Issuers Registry Implementation
 /// @author SettleMint
-/// @notice Context-aware trusted issuers registry implementation that extends ERC-3643 compatibility.
-///         Manages both global trusted issuers (ERC-3643 standard) and subject-specific trusted issuers.
+/// @notice Standard trusted issuers registry implementation with ERC-3643 compatibility and subject-aware interface support.
+///         This is a simple trusted issuers registry that ignores subject parameters for standard registry behavior.
 /// @dev This registry implements the ISMARTTrustedIssuersRegistry interface which extends IERC3643TrustedIssuersRegistry.
 ///      It provides:
 ///      - Full ERC-3643 compatibility for existing integrations
-///      - Subject-aware functionality for context-specific trusted issuers
-///      - Union queries that merge global + subject-specific issuers
-///      - address(0) subject means global-only queries (ERC-3643 behavior)
+///      - Subject-aware interface compatibility (ignores subject parameters)
+///      - Standard trusted issuer management (add, remove, update, query)
 ///
 ///      Key features:
 ///      - **ERC-3643 Compliant:** Implements all standard ERC-3643 trusted issuer functions
-///      - **Subject-Aware:** Supports subject-specific trusted issuer overrides
-///      - **Union Queries:** Automatically merges global and subject-specific issuers
+///      - **Subject-Aware Compatible:** Implements subject-aware interface by ignoring subject parameters
+///      - **Standard Registry:** Simple trusted issuer storage and retrieval
 ///      - **Backward Compatible:** Existing ERC-3643 integrations work unchanged
 ///      - **Upgradeable:** Uses UUPS pattern for logic updates
 ///      - **Access Controlled:** Role-based permissions for registry management
@@ -101,13 +100,6 @@ contract ATKTrustedIssuersRegistryImplementation is
     /// the swap-and-pop technique.
     mapping(uint256 claimTopic => mapping(address issuer => uint256 indexPlusOne)) private _claimTopicIssuerIndex;
 
-    // --- Subject-Aware Storage Variables ---
-
-    /// @notice Subject-specific trusted issuers by subject and claim topic
-    /// @dev Maps subject addresses to claim topics to arrays of subject-specific trusted issuers.
-    ///      These issuers are merged with global issuers (stored in legacy _issuersByClaimTopic) for subject-aware queries.
-    ///      Structure: subject -> claimTopic -> [trusted issuers]
-    mapping(address subject => mapping(uint256 claimTopic => IClaimIssuer[] issuers)) private _subjectTrustedIssuers;
 
     // --- Errors ---
     /// @notice Error triggered if an attempt is made to add or interact with an issuer using a zero address.
@@ -182,6 +174,7 @@ contract ATKTrustedIssuersRegistryImplementation is
     /// them.
     event ClaimTopicsUpdated(address indexed sender, address indexed _issuer, uint256[] _claimTopics);
 
+
     // --- Constructor --- (Disable direct construction for upgradeable contract)
     /// @notice Constructor for the `ATKTrustedIssuersRegistryImplementation`.
     /// @dev This constructor is part of the UUPS (Universal Upgradeable Proxy Standard) pattern.
@@ -219,25 +212,6 @@ contract ATKTrustedIssuersRegistryImplementation is
     function initialize(address accessManager) public initializer {
         __ATKSystemAccessManaged_init(accessManager);
         __ERC165_init_unchained();
-
-        // Register supported interfaces
-        _registerInterface(type(IERC3643TrustedIssuersRegistry).interfaceId);
-        _registerInterface(type(ISMARTTrustedIssuersRegistry).interfaceId);
-        _registerInterface(type(IATKTrustedIssuersRegistry).interfaceId);
-        _registerInterface(type(IClaimAuthorizer).interfaceId);
-        _registerInterface(type(IATKSystemAccessManaged).interfaceId);
-    }
-
-    // --- Internal Helper Functions ---
-
-    /// @notice Returns the roles that can perform claim policy management operations
-    /// @dev Implements the pattern from the ticket: MANAGER_ROLE + [SYSTEM_ROLES]
-    /// @return roles Array of roles that can manage trusted issuers and claim policies
-    function _getClaimPolicyManagementRoles() internal pure returns (bytes32[] memory roles) {
-        roles = new bytes32[](3);
-        roles[0] = ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE; // Primary claim policy manager
-        roles[1] = ATKPeopleRoles.SYSTEM_MANAGER_ROLE; // System manager
-        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE; // System module role
     }
 
     // --- Issuer Management Functions (REGISTRAR_ROLE required) ---
@@ -424,43 +398,6 @@ contract ATKTrustedIssuersRegistryImplementation is
     }
 
     /// @inheritdoc IERC3643TrustedIssuersRegistry
-    /// @notice Retrieves the list of claim topics for which a specific trusted issuer is authorized.
-    /// @dev It first checks if the provided `_trustedIssuer` address actually exists as a registered issuer using the
-    /// `exists` flag in the `_trustedIssuers` mapping. If not, it reverts.
-    /// If the issuer exists, it returns the `claimTopics` array stored in their `TrustedIssuer` struct.
-    /// @param _trustedIssuer The `IClaimIssuer` contract address of the issuer whose authorized claim topics are being
-    /// queried.
-    /// @return An array of `uint256` values, where each value is a claim topic the issuer is trusted for.
-    /// Returns an empty array if the issuer is trusted for no topics (though `addTrustedIssuer` and
-    /// `updateIssuerClaimTopics` prevent setting an empty list initially).
-    /// @dev Reverts with `IssuerDoesNotExist(address(_trustedIssuer))` if the issuer is not found in the registry.
-    function getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer)
-        external
-        view
-        override
-        returns (uint256[] memory)
-    {
-        if (!_trustedIssuers[address(_trustedIssuer)].exists) revert IssuerDoesNotExist(address(_trustedIssuer));
-        return _trustedIssuers[address(_trustedIssuer)].claimTopics;
-    }
-
-    /// @inheritdoc IERC3643TrustedIssuersRegistry
-    /// @notice Retrieves an array of all issuer contract addresses that are trusted for a specific claim topic.
-    /// @dev This is the ERC-3643 standard function that returns global trusted issuers only.
-    ///      Implemented as a wrapper that calls the subject-aware version with address(0).
-    /// @param claimTopic The `uint256` identifier of the claim topic being queried.
-    /// @return An array of `IClaimIssuer` interface types for globally trusted issuers.
-    function getTrustedIssuersForClaimTopic(uint256 claimTopic)
-        external
-        view
-        override
-        returns (IClaimIssuer[] memory)
-    {
-        // ERC-3643 standard: return only global trusted issuers (subject = address(0))
-        return this.getTrustedIssuersForClaimTopic(address(0), claimTopic);
-    }
-
-    /// @inheritdoc IERC3643TrustedIssuersRegistry
     /// @notice Checks if a specific issuer is trusted for a specific claim topic.
     /// @dev This function uses the `_claimTopicIssuerIndex` mapping for an efficient O(1) lookup.
     /// @param _issuer The address of the issuer contract to check.
@@ -477,6 +414,18 @@ contract ATKTrustedIssuersRegistryImplementation is
     /// @param _issuer The address to check for trusted issuer status.
     /// @return `true` if the `_issuer` address is found in the registry, `false` otherwise.
     function isTrustedIssuer(address _issuer) external view override returns (bool) {
+        return _trustedIssuers[_issuer].exists;
+    }
+
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    /// @notice Checks if a given address is a trusted issuer
+    /// @dev This implementation ignores the subject parameter and checks if the issuer exists in the registry.
+    ///      This maintains compatibility with the subject-aware interface while providing standard registry behavior.
+    /// @param subject The subject address (ignored in this implementation)
+    /// @param _issuer The address to check for trusted issuer status
+    /// @return `true` if the `_issuer` is trusted, `false` otherwise
+    function isTrustedIssuer(address subject, address _issuer) external view override returns (bool) {
+        // Ignore subject parameter - this is a standard trusted issuers registry
         return _trustedIssuers[_issuer].exists;
     }
 
@@ -505,97 +454,42 @@ contract ATKTrustedIssuersRegistryImplementation is
         return this.hasClaimTopic(issuer, topic);
     }
 
-    // --- Subject-Aware SMART Interface Implementation ---
+    // --- ISMARTTrustedIssuersRegistry Subject-Aware Interface Implementation ---
+    // Note: This implementation ignores the subject parameter to provide standard registry behavior
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
+    /// @notice Returns the list of trusted issuers for a given claim topic
+    /// @dev This implementation ignores the subject parameter and returns all trusted issuers for the claim topic.
+    ///      This maintains compatibility with the subject-aware interface while providing standard registry behavior.
+    /// @param subject The subject address (ignored in this implementation)
+    /// @param claimTopic The claim topic to get trusted issuers for
+    /// @return Array of trusted issuers for the specified claim topic
     function getTrustedIssuersForClaimTopic(address subject, uint256 claimTopic)
         external
         view
         override
         returns (IClaimIssuer[] memory)
     {
-        if (subject == address(0)) {
-            // Return only global trusted issuers (ERC-3643 behavior)
-            address[] storage issuerAddrs = _issuersByClaimTopic[claimTopic];
-            IClaimIssuer[] memory issuers = new IClaimIssuer[](issuerAddrs.length);
-            for (uint256 i = 0; i < issuerAddrs.length; i++) {
-                issuers[i] = IClaimIssuer(issuerAddrs[i]);
-            }
-            return issuers;
+        // Ignore subject parameter - this is a standard trusted issuers registry
+        // Return all trusted issuers for the claim topic
+        address[] storage issuerAddrs = _issuersByClaimTopic[claimTopic];
+        IClaimIssuer[] memory issuers = new IClaimIssuer[](issuerAddrs.length);
+        for (uint256 i = 0; i < issuerAddrs.length; i++) {
+            issuers[i] = IClaimIssuer(issuerAddrs[i]);
         }
-        
-        // Get global trusted issuers
-        address[] storage globalIssuerAddrs = _issuersByClaimTopic[claimTopic];
-        
-        // Get subject-specific trusted issuers
-        IClaimIssuer[] storage subjectIssuers = _subjectTrustedIssuers[subject][claimTopic];
-        
-        // Create result array with maximum possible size
-        IClaimIssuer[] memory result = new IClaimIssuer[](globalIssuerAddrs.length + subjectIssuers.length);
-        uint256 resultIndex = 0;
-        
-        // Add all global issuers (converted from address to IClaimIssuer)
-        for (uint256 i = 0; i < globalIssuerAddrs.length; i++) {
-            result[resultIndex] = IClaimIssuer(globalIssuerAddrs[i]);
-            resultIndex++;
-        }
-        
-        // Add subject-specific issuers, checking for duplicates
-        for (uint256 i = 0; i < subjectIssuers.length; i++) {
-            bool isDuplicate = false;
-            address subjectIssuerAddr = address(subjectIssuers[i]);
-            
-            // Check if this issuer is already in the global list
-            for (uint256 j = 0; j < globalIssuerAddrs.length; j++) {
-                if (globalIssuerAddrs[j] == subjectIssuerAddr) {
-                    isDuplicate = true;
-                    break;
-                }
-            }
-            
-            if (!isDuplicate) {
-                result[resultIndex] = subjectIssuers[i];
-                resultIndex++;
-            }
-        }
-        
-        // Resize array to actual size
-        assembly {
-            mstore(result, resultIndex)
-        }
-        
-        return result;
+        return issuers;
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function setTrustedIssuersForSubject(
-        address subject,
-        uint256 claimTopic,
-        IClaimIssuer[] calldata issuers
-    ) external override onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE) {
-        // Clear existing subject-specific issuers
-        delete _subjectTrustedIssuers[subject][claimTopic];
-        
-        // Set new subject-specific issuers
-        for (uint256 i = 0; i < issuers.length; i++) {
-            _subjectTrustedIssuers[subject][claimTopic].push(issuers[i]);
-        }
-        
-        emit SubjectTrustedIssuersUpdated(subject, claimTopic, issuers);
-    }
-
-    /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function removeTrustedIssuersForSubject(address subject, uint256 claimTopic)
-        external
-        override
-        onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
-    {
-        // Clear subject-specific issuers
-        delete _subjectTrustedIssuers[subject][claimTopic];
-        
-        // Emit event with empty array
-        IClaimIssuer[] memory emptyIssuers = new IClaimIssuer[](0);
-        emit SubjectTrustedIssuersUpdated(subject, claimTopic, emptyIssuers);
+    /// @notice Checks if a given address is a trusted issuer
+    /// @dev This implementation ignores the subject parameter and checks if the issuer exists in the registry.
+    ///      This maintains compatibility with the subject-aware interface while providing standard registry behavior.
+    /// @param subject The subject address (ignored in this implementation)
+    /// @param _issuer The address to check for trusted issuer status
+    /// @return `true` if the `_issuer` is trusted, `false` otherwise
+    function isTrustedIssuer(address subject, address _issuer) external view override returns (bool) {
+        // Ignore subject parameter - this is a standard trusted issuers registry
+        return _trustedIssuers[_issuer].exists;
     }
 
     // --- Internal Helper Functions ---
@@ -738,7 +632,7 @@ contract ATKTrustedIssuersRegistryImplementation is
         return interfaceId == type(IERC3643TrustedIssuersRegistry).interfaceId
             || interfaceId == type(ISMARTTrustedIssuersRegistry).interfaceId
             || interfaceId == type(IATKTrustedIssuersRegistry).interfaceId
-            || interfaceId == type(IClaimAuthorizer).interfaceId 
+            || interfaceId == type(IClaimAuthorizer).interfaceId
             || interfaceId == type(IATKSystemAccessManaged).interfaceId
             || super.supportsInterface(interfaceId);
     }
