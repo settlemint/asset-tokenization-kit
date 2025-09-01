@@ -35,7 +35,7 @@ import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged
 /// identities
 /// and their associated data, adhering to the ERC-3643 standard for tokenized assets.
 /// @dev This implementation relies on separate contracts for storing identity data (`ISMARTIdentityRegistryStorage`)
-/// and for managing trusted claim issuers (`IERC3643TrustedIssuersRegistry`).
+/// and for managing trusted claim issuers (`ISMARTTrustedIssuersRegistry`).
 /// It uses OpenZeppelin's `AccessControlUpgradeable` for role-based access control,
 /// `ERC2771ContextUpgradeable` for meta-transaction support (allowing transactions to be relayed by a trusted
 /// forwarder),
@@ -54,9 +54,8 @@ contract ATKIdentityRegistryImplementation is
     /// This separation of logic and storage enhances upgradeability and modularity.
     ISMARTIdentityRegistryStorage private _identityStorage;
     /// @notice Stores the contract address of the trusted issuers registry instance.
-    /// @dev This registry manages both global and context-specific trusted issuers. The contract
-    /// automatically detects if the registry supports IContextAwareTrustedIssuersRegistry via ERC165
-    /// and uses context-aware functions when available, falling back to global functions otherwise.
+    /// @dev This registry manages trusted issuers with subject-aware functionality. 
+    /// The registry queries use identity contract addresses as subjects for subject-aware trusted issuer verification.
     ISMARTTrustedIssuersRegistry private _trustedIssuersRegistry;
     /// @notice Stores the contract address of the `ISMARTTopicSchemeRegistry` instance.
     /// @dev This external contract maintains the valid topic schemes and their signatures.
@@ -159,14 +158,14 @@ contract ATKIdentityRegistryImplementation is
     /// @param accessManager The address of the access manager
     /// @param identityStorage_ The address of the deployed `ISMARTIdentityRegistryStorage` contract.
     /// This contract will be used to store all identity data.
-    /// @param trustedIssuersMetaRegistry_ The address of the deployed `IATKTrustedIssuersMetaRegistry` contract.
-    /// This meta registry will be used to verify claims against both global and contract-specific trusted issuers.
+    /// @param trustedIssuersRegistry_ The address of the deployed `ISMARTTrustedIssuersRegistry` contract.
+    /// This registry will be used to verify claims using subject-aware trusted issuer queries.
     /// @param topicSchemeRegistry_ The address of the deployed `ISMARTTopicSchemeRegistry` contract.
     /// This contract will be used to validate claim topics against registered schemes.
     function initialize(
         address accessManager,
         address identityStorage_,
-        address trustedIssuersMetaRegistry_,
+        address trustedIssuersRegistry_,
         address topicSchemeRegistry_
     )
         public
@@ -180,10 +179,10 @@ contract ATKIdentityRegistryImplementation is
         _identityStorage = ISMARTIdentityRegistryStorage(identityStorage_);
         emit IdentityStorageSet(_msgSender(), address(_identityStorage)); // Use _msgSender() for ERC2771 compatibility
 
-        // Validate and set the trusted issuers meta registry contract address.
-        if (trustedIssuersMetaRegistry_ == address(0)) revert InvalidRegistryAddress();
-        _trustedIssuersMetaRegistry = ISMARTTrustedIssuersMetaRegistry(trustedIssuersMetaRegistry_);
-        emit TrustedIssuersRegistrySet(_msgSender(), address(_trustedIssuersMetaRegistry)); // Use _msgSender()
+        // Validate and set the trusted issuers registry contract address.
+        if (trustedIssuersRegistry_ == address(0)) revert InvalidRegistryAddress();
+        _trustedIssuersRegistry = ISMARTTrustedIssuersRegistry(trustedIssuersRegistry_);
+        emit TrustedIssuersRegistrySet(_msgSender(), address(_trustedIssuersRegistry)); // Use _msgSender()
 
         // Validate and set the topic scheme registry contract address.
         if (topicSchemeRegistry_ == address(0)) revert InvalidTopicSchemeRegistryAddress();
@@ -214,19 +213,19 @@ contract ATKIdentityRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTIdentityRegistry
-    /// @notice Updates the address of the trusted issuers meta registry contract.
+    /// @notice Updates the address of the trusted issuers registry contract.
     /// @dev This function can only be called by an address holding the `REGISTRY_MANAGER_ROLE`.
-    /// It performs a check to ensure the new `trustedIssuersMetaRegistry_` address is not the zero address.
+    /// It performs a check to ensure the new `trustedIssuersRegistry_` address is not the zero address.
     /// Emits a `TrustedIssuersRegistrySet` event upon successful update.
-    /// @param trustedIssuersMetaRegistry_ The new address for the `ISMARTTrustedIssuersMetaRegistry` contract.
-    function setTrustedIssuersRegistry(address trustedIssuersMetaRegistry_)
+    /// @param trustedIssuersRegistry_ The new address for the `ISMARTTrustedIssuersRegistry` contract.
+    function setTrustedIssuersRegistry(address trustedIssuersRegistry_)
         external
         override
         onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
-        if (trustedIssuersMetaRegistry_ == address(0)) revert InvalidRegistryAddress();
-        _trustedIssuersMetaRegistry = ISMARTTrustedIssuersMetaRegistry(trustedIssuersMetaRegistry_);
-        emit TrustedIssuersRegistrySet(_msgSender(), address(_trustedIssuersMetaRegistry));
+        if (trustedIssuersRegistry_ == address(0)) revert InvalidRegistryAddress();
+        _trustedIssuersRegistry = ISMARTTrustedIssuersRegistry(trustedIssuersRegistry_);
+        emit TrustedIssuersRegistrySet(_msgSender(), address(_trustedIssuersRegistry));
     }
 
     /// @inheritdoc ISMARTIdentityRegistry
@@ -668,13 +667,6 @@ contract ATKIdentityRegistryImplementation is
 
         return stack[0];
     }
-
-    // Note: isVerifiedForContext has been removed as it's no longer needed.
-    // The isVerified functions now handle subject-aware trusted issuer queries automatically.
-
-
-    // Note: _verifyClaimTopicForContext has been removed as it's no longer needed.
-    // The isVerified(address subject, uint256 claimTopic) function now handles all verification logic.
 
     /// @inheritdoc ISMARTIdentityRegistry
     /// @notice Retrieves the `IIdentity` contract address associated with a given user address.
