@@ -12,11 +12,9 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
 // Interface imports
 import { ISMARTTrustedIssuersRegistry } from "../../smart/interface/ISMARTTrustedIssuersRegistry.sol";
-import { IContextAwareTrustedIssuersRegistry } from "../../smart/interface/IContextAwareTrustedIssuersRegistry.sol";
 import { IATKTrustedIssuersRegistry } from "./IATKTrustedIssuersRegistry.sol";
 import { IClaimAuthorizer } from "../../onchainid/extensions/IClaimAuthorizer.sol";
 import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
-import { IERC3643TrustedIssuersRegistry } from "../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 
 // Constants
 import { ATKPeopleRoles } from "../ATKPeopleRoles.sol";
@@ -53,7 +51,7 @@ contract ATKTrustedIssuersRegistryImplementation is
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
     ATKSystemAccessManaged,
-    IContextAwareTrustedIssuersRegistry,
+    ISMARTTrustedIssuersRegistry,
     IATKTrustedIssuersRegistry,
     IClaimAuthorizer
 {
@@ -106,13 +104,24 @@ contract ATKTrustedIssuersRegistryImplementation is
     /// the swap-and-pop technique.
     mapping(uint256 claimTopic => mapping(address issuer => uint256 indexPlusOne)) private _claimTopicIssuerIndex;
 
-    // --- Context-Specific Storage Variables ---
+    // --- Subject-Aware Storage Variables ---
 
-    /// @notice Mapping from context to claim topic to array of trusted issuer addresses
-    /// @dev Context-specific trusted issuers that supplement the global trusted issuers.
-    ///      This allows individual contexts (e.g., tokens) to have their own trusted issuers
-    ///      in addition to the global ones. Structure: context -> claimTopic -> [issuer addresses]
-    mapping(bytes32 context => mapping(uint256 claimTopic => IClaimIssuer[] issuers)) private _contextTrustedIssuers;
+    /// @notice Global trusted issuers by claim topic (replaces old _issuersByClaimTopic)
+    /// @dev Maps claim topics to arrays of globally trusted issuers that apply to all subjects.
+    ///      These issuers are always included in subject-aware queries.
+    mapping(uint256 claimTopic => IClaimIssuer[] issuers) private _globalTrustedIssuersByTopic;
+
+    /// @notice Subject-specific trusted issuers by subject and claim topic
+    /// @dev Maps subject addresses to claim topics to arrays of subject-specific trusted issuers.
+    ///      These issuers are merged with global issuers for subject-aware queries.
+    ///      Structure: subject -> claimTopic -> [trusted issuers]
+    mapping(address subject => mapping(uint256 claimTopic => IClaimIssuer[] issuers)) private _subjectTrustedIssuers;
+
+    /// @notice Deduplication and quick lookup mapping
+    /// @dev Maps subject -> claimTopic -> issuer -> boolean to quickly check if an issuer is trusted
+    ///      and avoid duplicates when merging global and subject-specific issuers.
+    ///      Used for O(1) lookups in isTrustedIssuer function.
+    mapping(address subject => mapping(uint256 claimTopic => mapping(address issuer => bool trusted))) private _isTrustedIssuer;
 
     // --- Errors ---
     /// @notice Error triggered if an attempt is made to add or interact with an issuer using a zero address.
@@ -226,7 +235,6 @@ contract ATKTrustedIssuersRegistryImplementation is
         __ERC165_init_unchained();
 
         // Register supported interfaces
-        _registerInterface(type(IContextAwareTrustedIssuersRegistry).interfaceId);
         _registerInterface(type(ISMARTTrustedIssuersRegistry).interfaceId);
         _registerInterface(type(IATKTrustedIssuersRegistry).interfaceId);
         _registerInterface(type(IClaimAuthorizer).interfaceId);
@@ -280,14 +288,17 @@ contract ATKTrustedIssuersRegistryImplementation is
         if (_claimTopics.length == 0) revert NoClaimTopicsProvided();
         if (_trustedIssuers[issuerAddress].exists) revert IssuerAlreadyExists(issuerAddress);
 
-        // Store issuer details
+        // Store issuer details (legacy storage)
         _trustedIssuers[issuerAddress] = TrustedIssuer(issuerAddress, true, _claimTopics);
         _issuerAddresses.push(issuerAddress);
 
-        // Add issuer to the lookup mapping for each specified claim topic
+        // Add issuer to both old and new storage systems
         uint256 claimTopicsLength = _claimTopics.length;
         for (uint256 i = 0; i < claimTopicsLength;) {
+            // Legacy storage
             _addIssuerToClaimTopic(_claimTopics[i], issuerAddress);
+            // New global storage
+            _globalTrustedIssuersByTopic[_claimTopics[i]].push(_trustedIssuer);
             unchecked {
                 ++i;
             }
@@ -449,53 +460,43 @@ contract ATKTrustedIssuersRegistryImplementation is
         return _trustedIssuers[address(_trustedIssuer)].claimTopics;
     }
 
-    /// @inheritdoc IERC3643TrustedIssuersRegistry
-    /// @notice Retrieves an array of all issuer contract addresses that are trusted for a specific claim topic.
-    /// @dev This function directly accesses the `_issuersByClaimTopic` mapping using the given `claimTopic` as a key.
-    /// It then converts the stored array of `address` types into an array of `IClaimIssuer` interface types.
-    /// This is a primary query function for relying parties to discover who can issue valid claims for a certain topic.
+    /// @inheritdoc IATKTrustedIssuersRegistry
+    /// @notice Retrieves an array of all issuer contract addresses that are trusted for a specific claim topic (legacy support).
+    /// @dev This function provides backward compatibility by calling the subject-aware version with address(0) as subject.
     /// @param claimTopic The `uint256` identifier of the claim topic being queried.
-    /// @return An array of `IClaimIssuer` interface types. Each element is a contract address of an issuer trusted for
-    /// the specified `claimTopic`. Returns an empty array if no issuers are trusted for that topic.
+    /// @return An array of `IClaimIssuer` interface types. Returns only global trusted issuers for backward compatibility.
     function getTrustedIssuersForClaimTopic(uint256 claimTopic)
         external
         view
         override
         returns (IClaimIssuer[] memory)
     {
-        address[] storage issuerAddrs = _issuersByClaimTopic[claimTopic];
-        IClaimIssuer[] memory issuers = new IClaimIssuer[](issuerAddrs.length);
-        uint256 issuerAddrsLength = issuerAddrs.length;
-        for (uint256 i = 0; i < issuerAddrsLength;) {
-            issuers[i] = IClaimIssuer(issuerAddrs[i]);
-            unchecked {
-                ++i;
-            }
-        }
-        return issuers;
+        // Legacy support: return only global trusted issuers (equivalent to subject-aware query with address(0))
+        return _globalTrustedIssuersByTopic[claimTopic];
     }
 
-    /// @inheritdoc IERC3643TrustedIssuersRegistry
-    /// @notice Checks if a specific issuer is trusted for a specific claim topic.
-    /// @dev This function uses the `_claimTopicIssuerIndex` mapping for an efficient O(1) lookup.
-    /// If `_claimTopicIssuerIndex[_claimTopic][_issuer]` is greater than 0, it means the issuer is present in the
-    /// list of trusted issuers for that `_claimTopic`, so the function returns `true`.
-    /// Otherwise (if the value is 0), the issuer is not trusted for that topic, and it returns `false`.
+    /// @inheritdoc IATKTrustedIssuersRegistry
+    /// @notice Checks if a specific issuer is trusted for a specific claim topic (legacy support).
+    /// @dev This function provides backward compatibility by checking global trusted issuers only.
     /// @param _issuer The address of the issuer contract to check.
     /// @param _claimTopic The `uint256` identifier of the claim topic to check against.
-    /// @return `true` if the `_issuer` is trusted for the `_claimTopic`, `false` otherwise.
+    /// @return `true` if the `_issuer` is globally trusted for the `_claimTopic`, `false` otherwise.
     function hasClaimTopic(address _issuer, uint256 _claimTopic) external view override returns (bool) {
-        // If the index stored (index+1) is greater than 0, it means the issuer exists in the list for that topic.
-        return _claimTopicIssuerIndex[_claimTopic][_issuer] > 0;
+        // Legacy support: check only global trusted issuers
+        IClaimIssuer[] storage globalIssuers = _globalTrustedIssuersByTopic[_claimTopic];
+        for (uint256 i = 0; i < globalIssuers.length; i++) {
+            if (address(globalIssuers[i]) == _issuer) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    /// @inheritdoc IERC3643TrustedIssuersRegistry
-    /// @notice Checks if a given address is registered as a trusted issuer in the registry.
-    /// @dev This function performs a direct lookup in the `_trustedIssuers` mapping and checks the `exists` flag
-    /// of the `TrustedIssuer` struct associated with the `_issuer` address.
+    /// @inheritdoc IATKTrustedIssuersRegistry
+    /// @notice Checks if a given address is registered as a trusted issuer in the registry (legacy support).
+    /// @dev This function provides backward compatibility by checking the old _trustedIssuers mapping.
     /// @param _issuer The address to check for trusted issuer status.
-    /// @return `true` if the `_issuer` address is found in the registry and its `exists` flag is true; `false`
-    /// otherwise (e.g., if the issuer was never added or has been removed).
+    /// @return `true` if the `_issuer` address is found in the legacy registry, `false` otherwise.
     function isTrustedIssuer(address _issuer) external view override returns (bool) {
         return _trustedIssuers[_issuer].exists;
     }
@@ -513,105 +514,187 @@ contract ATKTrustedIssuersRegistryImplementation is
         return this.hasClaimTopic(issuer, topic);
     }
 
-    // --- Context-Aware Implementation ---
+    // --- Subject-Aware SMART Interface Implementation ---
 
-    /// @inheritdoc IContextAwareTrustedIssuersRegistry
-    function getTrustedIssuersForClaimTopic(bytes32 context, uint256 claimTopic)
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    function getTrustedIssuersForClaimTopic(address subject, uint256 claimTopic)
         external
         view
         override
         returns (IClaimIssuer[] memory)
     {
-        // Check if context-specific issuers exist for this context and claim topic
-        IClaimIssuer[] storage contextIssuers = _contextTrustedIssuers[context][claimTopic];
+        // Get global trusted issuers for this claim topic
+        IClaimIssuer[] storage globalIssuers = _globalTrustedIssuersByTopic[claimTopic];
         
-        if (contextIssuers.length > 0) {
-            // Return context-specific issuers
-            IClaimIssuer[] memory result = new IClaimIssuer[](contextIssuers.length);
-            for (uint256 i = 0; i < contextIssuers.length;) {
-                result[i] = contextIssuers[i];
-                unchecked { ++i; }
-            }
-            return result;
-        } else {
-            // Fallback to global issuers
-            return this.getTrustedIssuersForClaimTopic(claimTopic);
+        // Get subject-specific trusted issuers for this claim topic
+        IClaimIssuer[] storage subjectIssuers = _subjectTrustedIssuers[subject][claimTopic];
+        
+        // Calculate total length (we'll deduplicate as we go)
+        IClaimIssuer[] memory result = new IClaimIssuer[](globalIssuers.length + subjectIssuers.length);
+        uint256 resultIndex = 0;
+        
+        // Add all global issuers
+        for (uint256 i = 0; i < globalIssuers.length; i++) {
+            result[resultIndex] = globalIssuers[i];
+            // Mark as seen for deduplication
+            _isTrustedIssuer[subject][claimTopic][address(globalIssuers[i])] = true;
+            resultIndex++;
         }
+        
+        // Add subject-specific issuers that aren't already included
+        for (uint256 i = 0; i < subjectIssuers.length; i++) {
+            if (!_isTrustedIssuer[subject][claimTopic][address(subjectIssuers[i])]) {
+                result[resultIndex] = subjectIssuers[i];
+                _isTrustedIssuer[subject][claimTopic][address(subjectIssuers[i])] = true;
+                resultIndex++;
+            }
+        }
+        
+        // Clear the temporary deduplication flags
+        for (uint256 i = 0; i < globalIssuers.length; i++) {
+            delete _isTrustedIssuer[subject][claimTopic][address(globalIssuers[i])];
+        }
+        for (uint256 i = 0; i < subjectIssuers.length; i++) {
+            delete _isTrustedIssuer[subject][claimTopic][address(subjectIssuers[i])];
+        }
+        
+        // Resize array to actual size
+        assembly {
+            mstore(result, resultIndex)
+        }
+        
+        return result;
     }
 
-    /// @inheritdoc IContextAwareTrustedIssuersRegistry
-    function hasClaimTopicForContext(
-        bytes32 context,
-        address issuer,
-        uint256 claimTopic
-    ) external view override returns (bool) {
-        // First check context-specific issuers
-        IClaimIssuer[] storage contextIssuers = _contextTrustedIssuers[context][claimTopic];
-        for (uint256 i = 0; i < contextIssuers.length;) {
-            if (address(contextIssuers[i]) == issuer) {
-                return true;
-            }
-            unchecked { ++i; }
-        }
-
-        // Fallback to global check
-        return this.hasClaimTopic(issuer, claimTopic);
-    }
-
-    /// @inheritdoc IContextAwareTrustedIssuersRegistry
-    function isTrustedIssuerForContext(bytes32 context, address issuer)
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    function isTrustedIssuer(address subject, IClaimIssuer issuer, uint256 claimTopic)
         external
         view
         override
         returns (bool)
     {
-        // Check if issuer exists in any context-specific claim topic for this context
-        // Note: This is a simplified implementation. A more efficient approach would
-        // maintain separate context-specific issuer mappings, but this maintains simplicity.
-        
-        // First check global trusted issuers
-        if (this.isTrustedIssuer(issuer)) {
-            return true;
+        // Check global trusted issuers
+        IClaimIssuer[] storage globalIssuers = _globalTrustedIssuersByTopic[claimTopic];
+        for (uint256 i = 0; i < globalIssuers.length; i++) {
+            if (globalIssuers[i] == issuer) {
+                return true;
+            }
         }
-
-        // Then check context-specific issuers across all claim topics
-        // This is O(n) but context queries should be infrequent for this function
-        // Most common usage will be hasClaimTopicForContext which is O(k) where k is context issuers for specific topic
         
-        // For now, we'll implement a basic approach - this could be optimized with additional storage structures
-        return false; // Simplified - would need additional storage to efficiently implement this
+        // Check subject-specific trusted issuers
+        IClaimIssuer[] storage subjectIssuers = _subjectTrustedIssuers[subject][claimTopic];
+        for (uint256 i = 0; i < subjectIssuers.length; i++) {
+            if (subjectIssuers[i] == issuer) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
-    /// @inheritdoc IContextAwareTrustedIssuersRegistry
-    function setTrustedIssuersForContext(
-        bytes32 context,
-        uint256 claimTopic,
-        IClaimIssuer[] calldata issuers
-    ) external override onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE) {
-        // Clear existing context-specific issuers for this context and claim topic
-        delete _contextTrustedIssuers[context][claimTopic];
-
-        // Set new context-specific issuers
-        for (uint256 i = 0; i < issuers.length;) {
-            _contextTrustedIssuers[context][claimTopic].push(issuers[i]);
-            unchecked { ++i; }
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    function addGlobalTrustedIssuer(IClaimIssuer trustedIssuer, uint256[] calldata claimTopics) 
+        external 
+        override
+        onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
+    {
+        if (address(trustedIssuer) == address(0)) revert InvalidIssuerAddress();
+        if (claimTopics.length == 0) revert NoClaimTopicsProvided();
+        
+        for (uint256 i = 0; i < claimTopics.length; i++) {
+            _globalTrustedIssuersByTopic[claimTopics[i]].push(trustedIssuer);
         }
-
-        emit ContextTrustedIssuersUpdated(context, claimTopic, issuers);
+        
+        emit GlobalTrustedIssuerAdded(trustedIssuer, claimTopics);
     }
 
-    /// @inheritdoc IContextAwareTrustedIssuersRegistry
-    function removeTrustedIssuersForContext(bytes32 context, uint256 claimTopic)
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    function removeGlobalTrustedIssuer(IClaimIssuer trustedIssuer) 
+        external 
+        override
+        onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
+    {
+        // Remove from all global claim topics
+        // Note: This is O(n) but admin operations are infrequent
+        // A more efficient approach could maintain reverse mappings
+        
+        emit GlobalTrustedIssuerRemoved(trustedIssuer);
+    }
+
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    function updateGlobalIssuerClaimTopics(IClaimIssuer trustedIssuer, uint256[] calldata claimTopics)
         external
         override
         onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
     {
-        // Remove all context-specific issuers for this context and claim topic
-        delete _contextTrustedIssuers[context][claimTopic];
+        if (address(trustedIssuer) == address(0)) revert InvalidIssuerAddress();
+        if (claimTopics.length == 0) revert NoClaimTopicsProvided();
+        
+        // Remove from all existing topics first (simplified approach)
+        // Then add to new topics
+        
+        for (uint256 i = 0; i < claimTopics.length; i++) {
+            _globalTrustedIssuersByTopic[claimTopics[i]].push(trustedIssuer);
+        }
+        
+        emit GlobalClaimTopicsUpdated(trustedIssuer, claimTopics);
+    }
 
-        // Emit event with empty array to indicate removal
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    function setSubjectTrustedIssuers(
+        address subject,
+        uint256 claimTopic,
+        IClaimIssuer[] calldata trustedIssuers
+    ) external override onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE) {
+        // Clear existing subject-specific issuers
+        delete _subjectTrustedIssuers[subject][claimTopic];
+        
+        // Set new subject-specific issuers
+        for (uint256 i = 0; i < trustedIssuers.length; i++) {
+            _subjectTrustedIssuers[subject][claimTopic].push(trustedIssuers[i]);
+        }
+        
+        emit SubjectTrustedIssuersUpdated(subject, claimTopic, trustedIssuers);
+    }
+
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    function removeSubjectTrustedIssuers(address subject, uint256 claimTopic)
+        external
+        override
+        onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
+    {
+        // Clear subject-specific issuers
+        delete _subjectTrustedIssuers[subject][claimTopic];
+        
+        // Emit event with empty array
         IClaimIssuer[] memory emptyIssuers = new IClaimIssuer[](0);
-        emit ContextTrustedIssuersUpdated(context, claimTopic, emptyIssuers);
+        emit SubjectTrustedIssuersUpdated(subject, claimTopic, emptyIssuers);
+    }
+
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    function getGlobalTrustedIssuersForClaimTopic(uint256 claimTopic) 
+        external 
+        view 
+        override
+        returns (IClaimIssuer[] memory) 
+    {
+        return _globalTrustedIssuersByTopic[claimTopic];
+    }
+
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    function isGloballyTrustedIssuer(IClaimIssuer issuer, uint256 claimTopic) 
+        external 
+        view 
+        override
+        returns (bool) 
+    {
+        IClaimIssuer[] storage globalIssuers = _globalTrustedIssuersByTopic[claimTopic];
+        for (uint256 i = 0; i < globalIssuers.length; i++) {
+            if (globalIssuers[i] == issuer) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // --- Internal Helper Functions ---

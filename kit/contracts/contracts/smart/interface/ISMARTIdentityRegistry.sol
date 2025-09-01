@@ -241,34 +241,20 @@ interface ISMARTIdentityRegistry is IERC165 {
     function contains(address _userAddress) external view returns (bool);
 
     /**
-     * @notice Checks if a registered investor's wallet address is considered 'verified' using logical expressions.
-     * @dev Verification is determined by evaluating a postfix (Reverse Polish Notation) expression that can combine
-     *      claim topics using logical operations (AND, OR, NOT).
-     *      This allows for flexible compliance rules like "(KYC AND AML) OR (VAULT AND WHITELISTED)".
-     *      Each TOPIC node in the expression is verified against the investor's claims using the same validation
-     *      logic as the array-based isVerified function.
-     * @param _userAddress The investor's wallet address to verify.
-     * @param expression An array of ExpressionNode structs representing a postfix expression for claim verification.
-     * @return True if the investor's identity satisfies the logical expression, false otherwise
+     * @notice Verifies if a subject is valid for a specific claim topic.
+     * @dev This function checks if the subject (user) has valid claims for the specified topic
+     *      from trusted issuers. The trusted issuers registry is queried with the subject parameter
+     *      to get both global and subject-specific trusted issuers automatically.
+     *      
+     *      Verification process:
+     *      1. Get all trusted issuers for the subject and claim topic (merged global + subject-specific)
+     *      2. Check if subject has valid claims from any of those trusted issuers
+     *      3. Validate claim signatures and data integrity
+     * @param subject The address to verify (user wallet address)
+     * @param claimTopic The claim topic identifier to verify for
+     * @return True if the subject has valid claims for the topic from trusted issuers, false otherwise
      */
-    function isVerified(address _userAddress, ExpressionNode[] memory expression) external view returns (bool);
-
-    /**
-     * @notice Checks if a registered investor's wallet address is considered 'verified' for a specific context using logical expressions.
-     * @dev This function enables context-aware verification by checking claims against both global and context-specific trusted issuers.
-     *      If the linked trusted issuers registry supports IContextAwareTrustedIssuersRegistry (via ERC165), it will use
-     *      context-specific trusted issuers. Otherwise, it falls back to global verification.
-     *      The context parameter is converted to bytes32 for storage efficiency (typically using keccak256(abi.encode(context))).
-     * @param _userAddress The investor's wallet address to verify.
-     * @param context The context identifier (e.g., token address, system id) for context-specific verification.
-     * @param expression An array of ExpressionNode structs representing a postfix expression for claim verification.
-     * @return True if the investor's identity satisfies the logical expression for the given context, false otherwise
-     */
-    function isVerifiedForContext(
-        address _userAddress,
-        bytes32 context,
-        ExpressionNode[] memory expression
-    ) external view returns (bool);
+    function isVerified(address subject, uint256 claimTopic) external view returns (bool);
 
     /**
      * @notice Retrieves the `IIdentity` contract address associated with a registered investor's wallet address.

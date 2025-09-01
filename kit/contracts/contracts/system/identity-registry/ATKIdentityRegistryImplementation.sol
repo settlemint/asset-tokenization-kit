@@ -15,7 +15,6 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { ISMARTIdentityRegistry } from "../../smart/interface/ISMARTIdentityRegistry.sol";
 import { ISMARTIdentityRegistryStorage } from "./../../smart/interface/ISMARTIdentityRegistryStorage.sol";
 import { ISMARTTrustedIssuersRegistry } from "./../../smart/interface/ISMARTTrustedIssuersRegistry.sol";
-import { IContextAwareTrustedIssuersRegistry } from "../../smart/interface/IContextAwareTrustedIssuersRegistry.sol";
 import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { IATKIdentityRegistry } from "./IATKIdentityRegistry.sol";
 import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
@@ -489,6 +488,75 @@ contract ATKIdentityRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTIdentityRegistry
+    /// @notice Checks if a subject is valid for a specific claim topic using subject-aware trusted issuers.
+    /// @dev This function checks if the subject has valid claims for the specified topic from trusted issuers.
+    ///      The trusted issuers registry is queried with the subject parameter to get both global 
+    ///      and subject-specific trusted issuers automatically merged.
+    /// @param subject The address to verify (user wallet address)
+    /// @param claimTopic The claim topic identifier to verify for
+    /// @return True if the subject has valid claims for the topic from trusted issuers, false otherwise
+    function isVerified(address subject, uint256 claimTopic) external view override returns (bool) {
+        // Check if the wallet is globally marked as lost first.
+        if (_identityStorage.isWalletMarkedAsLost(subject)) {
+            return false;
+        }
+
+        // Early checks
+        if (!this.contains(subject)) {
+            return false;
+        }
+
+        // Skip zero topics (invalid)
+        if (claimTopic == 0) {
+            return false;
+        }
+
+        // Verify the topic is registered in the topic scheme registry
+        if (!_topicSchemeRegistry.hasTopicScheme(claimTopic)) {
+            return false;
+        }
+
+        // Get the identity contract for the user
+        IIdentity identityToVerify = _identityStorage.storedIdentity(subject);
+
+        // Get all claim IDs for this topic
+        bytes32[] memory claimIds = identityToVerify.getClaimIdsByTopic(claimTopic);
+        if (claimIds.length == 0) {
+            return false; // No claims for this topic
+        }
+
+        // Get trusted issuers using subject-aware functionality
+        IClaimIssuer[] memory trustedIssuers = _trustedIssuersRegistry.getTrustedIssuersForClaimTopic(subject, claimTopic);
+        
+        if (trustedIssuers.length == 0) {
+            return false; // No trusted issuers for this topic
+        }
+
+        // Check each claim against the list of trusted issuers
+        for (uint256 i = 0; i < claimIds.length; i++) {
+            // Get claim details
+            (uint256 foundClaimTopic,, address issuer, bytes memory sig, bytes memory data,) =
+                identityToVerify.getClaim(claimIds[i]);
+
+            // Verify the claim topic matches
+            if (foundClaimTopic == claimTopic) {
+                // Check if the issuer is trusted for this topic
+                for (uint256 j = 0; j < trustedIssuers.length; j++) {
+                    if (address(trustedIssuers[j]) == issuer) {
+                        // Verify the claim is valid with the trusted issuer
+                        if (trustedIssuers[j].isClaimValid(identityToVerify, claimTopic, sig, data)) {
+                            return true; // Found valid claim from trusted issuer
+                        }
+                        break; // Found the issuer, no need to check others for this claim
+                    }
+                }
+            }
+        }
+
+        return false; // No valid claim found from trusted issuers
+    }
+
+    /// @inheritdoc ISMARTIdentityRegistry
     /// @notice Checks if a registered investor's wallet address is considered 'verified' using logical expressions.
     /// @dev This function evaluates a postfix (Reverse Polish Notation) expression using a stack-based algorithm.
     ///      The expression can combine claim topics using AND, OR, and NOT operations for flexible compliance rules.
@@ -682,22 +750,9 @@ contract ATKIdentityRegistryImplementation is
             return false; // No claims for this topic
         }
 
-        // Check if the trusted issuers registry supports context-aware functionality
-        bool supportsContextAware = _trustedIssuersRegistry.supportsInterface(
-            type(IContextAwareTrustedIssuersRegistry).interfaceId
-        );
-
-        IClaimIssuer[] memory trustedIssuers;
-
-        if (supportsContextAware && context != bytes32(0)) {
-            // Use context-aware functionality
-            IContextAwareTrustedIssuersRegistry contextAwareRegistry = 
-                IContextAwareTrustedIssuersRegistry(address(_trustedIssuersRegistry));
-            trustedIssuers = contextAwareRegistry.getTrustedIssuersForClaimTopic(context, claimTopic);
-        } else {
-            // Fallback to global functionality
-            trustedIssuers = _trustedIssuersRegistry.getTrustedIssuersForClaimTopic(claimTopic);
-        }
+        // Use subject-aware functionality - convert context to subject address
+        address subject = address(uint160(uint256(context)));
+        IClaimIssuer[] memory trustedIssuers = _trustedIssuersRegistry.getTrustedIssuersForClaimTopic(subject, claimTopic);
 
         if (trustedIssuers.length == 0) {
             return false; // No trusted issuers for this topic
