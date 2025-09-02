@@ -13,5 +13,32 @@
         "success": "KYC profile has been successfully updated"
       }
     }
+  },
+  "management": {
+    "table": {
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "wallet": "Wallet",
+        "role": "Role",
+        "status": "Status",
+        "created": "Created",
+        "actions": "Actions"
+      },
+      "status": {
+        "registered": "Registered",
+        "pending": "Pending",
+        "notConnected": "Not Connected"
+      },
+      "actions": {
+        "viewDetails": "View Details",
+        "menu": "Actions menu",
+        "openMenu": "Open actions menu"
+      },
+      "search": {
+        "placeholder": "Search by name, email, or wallet..."
+      },
+      "noWallet": "No wallet"
+    }
   }
 }

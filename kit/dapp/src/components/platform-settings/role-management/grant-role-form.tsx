@@ -73,18 +73,16 @@ export function GrantRoleForm() {
 
   // Fetch available users
   const { data: users = [] } = useQuery({
-    queryKey: orpc.user.list.queryKey({
+    queryKey: orpc.user.search.queryKey({
       input: {
-        offset: 0,
-        orderBy: "createdAt",
-        orderDirection: "desc",
+        query: "",
+        limit: 1000,
       },
     }),
     queryFn: () =>
-      client.user.list({
-        offset: 0,
-        orderBy: "createdAt",
-        orderDirection: "desc",
+      client.user.search({
+        query: "", // Empty query to get all users
+        limit: 1000,
       }),
   });
 
