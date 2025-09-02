@@ -108,11 +108,23 @@ export const read = authRouter.user.read
 
     const { user: userData, kyc } = userResult;
 
-    // Validate user has wallet
+    // Handle users without wallets gracefully
     if (!userData.wallet) {
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: `User ${userData.id} has no wallet`,
-      });
+      return {
+        id: userData.id,
+        name:
+          kyc?.firstName && kyc.lastName
+            ? `${kyc.firstName} ${kyc.lastName}`
+            : userData.name,
+        email: userData.email,
+        role: getUserRole(userData.role),
+        wallet: userData.wallet, // null
+        firstName: kyc?.firstName,
+        lastName: kyc?.lastName,
+        identity: undefined,
+        claims: [],
+        isRegistered: false,
+      } as User;
     }
 
     // Fetch identity data from TheGraph for this specific user

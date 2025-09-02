@@ -174,8 +174,24 @@ export const list = authRouter.user.list
     // Transform results to include human-readable roles, onboarding state, and identity data
     return result.map((row: QueryResultRow) => {
       const { user: u, kyc } = row;
+
+      // Handle users without wallets gracefully
       if (!u.wallet) {
-        throw new Error(`User ${u.id} has no wallet`);
+        return {
+          id: u.id,
+          name:
+            kyc?.firstName && kyc.lastName
+              ? `${kyc.firstName} ${kyc.lastName}`
+              : u.name,
+          email: u.email,
+          role: getUserRole(u.role),
+          wallet: u.wallet, // null
+          firstName: kyc?.firstName,
+          lastName: kyc?.lastName,
+          identity: undefined,
+          claims: [],
+          isRegistered: false,
+        } as User;
       }
 
       // Look up account data for this user
