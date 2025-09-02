@@ -3,6 +3,7 @@ import { getOrpcClient } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
   DEFAULT_ADMIN,
+  DEFAULT_INVESTOR,
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
@@ -162,5 +163,140 @@ describe("Token read", () => {
     expect(token2.name).toBe(token3.name);
     expect(token1.symbol).toBe(token2.symbol);
     expect(token2.symbol).toBe(token3.symbol);
+  });
+
+  it("admin has all permissions", async () => {
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+    const tokenInfo = await client.token.read({
+      tokenAddress: testToken.id,
+    });
+    // TODO: should be updated after https://linear.app/settlemint/issue/ENG-3488/subgraphapi-acces-management
+    expect(tokenInfo.userPermissions).toEqual({
+      roles: {
+        addonManager: false,
+        addonModule: false,
+        addonRegistryModule: false,
+        admin: true,
+        auditor: false,
+        burner: false,
+        capManagement: false,
+        claimPolicyManager: false,
+        complianceAdmin: false,
+        complianceManager: false,
+        custodian: false,
+        emergency: false,
+        forcedTransfer: false,
+        freezer: false,
+        fundsManager: false,
+        globalListManager: false,
+        governance: false,
+        identityManager: false,
+        identityRegistryModule: false,
+        minter: false,
+        organisationIdentityManager: false,
+        pauser: false,
+        recovery: false,
+        saleAdmin: false,
+        signer: false,
+        supplyManagement: false,
+        systemManager: false,
+        systemModule: false,
+        tokenAdmin: false,
+        tokenFactoryModule: false,
+        tokenFactoryRegistryModule: false,
+        tokenManager: false,
+        verificationAdmin: false,
+      },
+      isAllowed: true,
+      actions: {
+        burn: false,
+        create: false,
+        grantRole: true,
+        mint: false,
+        pause: false,
+        addComplianceModule: false,
+        approve: true,
+        forcedRecover: false,
+        freezeAddress: false,
+        recoverERC20: false,
+        recoverTokens: false,
+        redeem: false,
+        removeComplianceModule: false,
+        revokeRole: true,
+        setCap: false,
+        setYieldSchedule: false,
+        transfer: true,
+        unpause: false,
+        updateCollateral: false,
+      },
+    });
+  });
+
+  it("investor has limited permissions", async () => {
+    const headers = await signInWithUser(DEFAULT_INVESTOR);
+    const client = getOrpcClient(headers);
+    const tokenInfo = await client.token.read({
+      tokenAddress: testToken.id,
+    });
+    expect(tokenInfo.userPermissions).toEqual({
+      roles: {
+        addonManager: false,
+        addonModule: false,
+        addonRegistryModule: false,
+        admin: false,
+        auditor: false,
+        burner: false,
+        capManagement: false,
+        claimPolicyManager: false,
+        complianceAdmin: false,
+        complianceManager: false,
+        custodian: false,
+        emergency: false,
+        forcedTransfer: false,
+        freezer: false,
+        fundsManager: false,
+        globalListManager: false,
+        governance: false,
+        identityManager: false,
+        identityRegistryModule: false,
+        minter: false,
+        organisationIdentityManager: false,
+        pauser: false,
+        recovery: false,
+        saleAdmin: false,
+        signer: false,
+        supplyManagement: false,
+        systemManager: false,
+        systemModule: false,
+        tokenAdmin: false,
+        tokenFactoryModule: false,
+        tokenFactoryRegistryModule: false,
+        tokenManager: false,
+        verificationAdmin: false,
+      },
+      isAllowed: true,
+      actions: {
+        burn: false,
+        create: false,
+        grantRole: false,
+        mint: false,
+        pause: false,
+        addComplianceModule: false,
+        approve: true,
+        forcedRecover: false,
+        freezeAddress: false,
+        recoverERC20: false,
+        recoverTokens: false,
+        redeem: false,
+        removeComplianceModule: false,
+        revokeRole: false,
+        setCap: false,
+        setYieldSchedule: false,
+        transfer: true,
+        unpause: false,
+        updateCollateral: false,
+      },
+    });
   });
 });

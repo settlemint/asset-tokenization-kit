@@ -60,6 +60,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
     }> = [];
 
     if (hasPausableCapability) {
+      const canUnpause = asset.userPermissions?.actions?.unpause ?? true;
       arr.push({
         id: isPaused ? "unpause" : "pause",
         label: isPaused
@@ -67,7 +68,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
           : t("tokens:actions.pause.label"),
         icon: isPaused ? Play : Pause,
         openAction: isPaused ? "unpause" : "pause",
-        disabled: false,
+        disabled: !canUnpause,
       });
     }
 

@@ -36,6 +36,7 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { print } from "graphql";
 import { encodeAbiParameters, encodePacked, keccak256 } from "viem";
 
 const COLLATERAL_CLAIM_MUTATION = portalGraphql(`
@@ -131,37 +132,40 @@ export const updateCollateral = tokenRouter.token.updateCollateral
       });
     }
 
+    // COLLATERAL TOPIC: Use standardized claim topic for collateral
+    const COLLATERAL_TOPIC = BigInt(
+      keccak256(encodePacked(["string"], ["collateral"]))
+    );
+
+    // Add decimals to the amount
+    const amountExact = amount * 10n ** BigInt(tokenData.decimals);
+    // ENCODE CLAIM DATA: Create ABI-encoded data containing amount and expiryTimestamp
+    // Note: Field names must match what the subgraph expects
+    const claimData = encodeAbiParameters(
+      [
+        { type: "uint256", name: "amount" },
+        { type: "uint256", name: "expiryTimestamp" },
+      ],
+      [amountExact, expiryTimestamp]
+    );
+
     try {
-      // COLLATERAL TOPIC: Use standardized claim topic for collateral
-      const COLLATERAL_TOPIC = "0x" + "1".padStart(64, "0"); // ATK uses topic ID 1 for collateral claims
-
-      // ENCODE CLAIM DATA: Create ABI-encoded data containing amount and expiryTimestamp
-      // Note: Field names must match what the subgraph expects
-      const claimData = encodeAbiParameters(
-        [
-          { type: "uint256", name: "amount" },
-          { type: "uint256", name: "expiryTimestamp" },
-        ],
-        [amount, expiryTimestamp]
-      );
-
       // USER-ISSUED CLAIM SIGNATURE: Create signature for user-issued claim
       // The user issues the claim to the identity contract
       const messageHash = keccak256(
         encodePacked(
           ["address", "uint256", "bytes"],
-          [onchainID, BigInt(COLLATERAL_TOPIC), claimData]
+          [onchainID, COLLATERAL_TOPIC, claimData]
         )
       );
-
       // ISSUE CLAIM: Add collateral claim to token's identity contract
       await context.portalClient.mutate(
         COLLATERAL_CLAIM_MUTATION,
         {
           address: onchainID,
           from: sender.wallet,
-          topic: COLLATERAL_TOPIC,
-          scheme: "3", // CONTRACT signature scheme for self-issued claims
+          topic: COLLATERAL_TOPIC.toString(),
+          scheme: "1", // ECDSA
           issuer: onchainID, // Self-issued claim by the identity contract
           signature: messageHash, // Placeholder - should be proper signature
           data: claimData,
@@ -237,14 +241,14 @@ export const updateCollateral = tokenRouter.token.updateCollateral
       throw errors.PORTAL_ERROR({
         message: userFriendlyMessage,
         data: {
-          document: COLLATERAL_CLAIM_MUTATION,
+          document: print(COLLATERAL_CLAIM_MUTATION),
           variables: {
             address: onchainID,
             from: auth.user.wallet,
-            topic: "0x" + "1".padStart(64, "0"),
+            topic: COLLATERAL_TOPIC,
             scheme: "3",
             issuer: onchainID,
-            data: "encoded_claim_data",
+            data: claimData,
             uri: "",
             // Additional debugging context in variables
             debug: {
@@ -252,8 +256,7 @@ export const updateCollateral = tokenRouter.token.updateCollateral
               troubleshooting: troubleshootingSteps,
               tokenAddress: contract,
               identityContract: onchainID,
-              walletAddress: auth.user.wallet,
-              collateralAmount: amount.toString(),
+              collateralAmount: amountExact.toString(),
               expiryDays,
             },
           },
