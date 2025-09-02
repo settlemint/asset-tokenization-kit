@@ -1,5 +1,4 @@
 import { kycProfiles, user } from "@/lib/db/schema";
-import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import {
   filterClaimsForUser,
   identityPermissionsMiddleware,
@@ -9,48 +8,12 @@ import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middle
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { userClaimsMiddleware } from "@/orpc/middlewares/system/user-claims.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { getUserRole } from "@atk/zod/user-roles";
+import { call, ORPCError } from "@orpc/server";
 import { eq } from "drizzle-orm";
-import { z } from "zod";
 import { UserReadInputSchema } from "./user.read.schema";
-
-// GraphQL query to fetch single account by wallet address
-const READ_ACCOUNT_QUERY = theGraphGraphql(`
-  query ReadAccountQuery($walletAddress: ID!) {
-    account(id: $walletAddress) {
-      id
-      country
-      identity {
-        id
-        claims {
-          name
-        }
-      }
-    }
-  }
-`);
-
-// Response schema for account query
-const AccountResponseSchema = z.object({
-  account: z
-    .object({
-      id: z.string(),
-      country: z.number().nullable().optional(),
-      identity: z
-        .object({
-          id: z.string(),
-          claims: z.array(
-            z.object({
-              name: z.string(),
-            })
-          ),
-        })
-        .nullable()
-        .optional(),
-    })
-    .nullable(),
-});
 
 /**
  * User read route handler.
@@ -153,17 +116,21 @@ export const read = authRouter.user.read
     }
 
     // Fetch identity data from TheGraph for this specific user
-    let accountData: z.infer<typeof AccountResponseSchema> = { account: null };
-    accountData = await context.theGraphClient.query(READ_ACCOUNT_QUERY, {
-      input: { walletAddress: userData.wallet },
-      output: AccountResponseSchema,
+    const accountData = await call(
+      readAccount,
+      { wallet: userData.wallet },
+      { context }
+    ).catch((error: unknown) => {
+      if (error instanceof ORPCError && error.status === 404) {
+        return null;
+      }
+      throw error;
     });
 
-    const account = accountData.account;
-    const identity = account?.identity;
+    const identity = accountData?.identity;
 
     // Get all claims for this user
-    const allClaims = identity?.claims.map((claim) => claim.name) ?? [];
+    const allClaims = accountData?.claims ?? [];
 
     // Filter claims based on user's permissions
     const filteredClaims = filterClaimsForUser(
@@ -183,7 +150,7 @@ export const read = authRouter.user.read
       wallet: userData.wallet,
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,
-      identity: identity?.id,
+      identity: identity,
       claims: filteredClaims,
       isRegistered: !!identity,
     } as User;
