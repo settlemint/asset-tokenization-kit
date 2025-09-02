@@ -83,9 +83,13 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     /// @dev This function acts as the constructor for the upgradeable contract and can only be called once.
     ///      Initializes all parent contracts and sets up access management.
     /// @param accessManager The address of the access manager for role-based permissions
-    function initialize(address accessManager) public initializer {
+    /// @param globalRegistry The address of the global trusted issuers registry
+    function initialize(address accessManager, address globalRegistry) public initializer {
         __ATKSystemAccessManaged_init(accessManager);
         __ERC165_init_unchained();
+        _globalRegistry = ISMARTTrustedIssuersRegistry(globalRegistry);
+
+        emit GlobalRegistrySet(_msgSender(), address(0), globalRegistry);
     }
 
     // --- Registry Management Functions ---

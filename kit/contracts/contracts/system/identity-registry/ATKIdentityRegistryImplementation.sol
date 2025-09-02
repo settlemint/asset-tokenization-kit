@@ -13,8 +13,8 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
 // Interface imports
 import { ISMARTIdentityRegistry } from "../../smart/interface/ISMARTIdentityRegistry.sol";
+import { ISMARTTrustedIssuersRegistry } from "../../smart/interface/ISMARTTrustedIssuersRegistry.sol";
 import { ISMARTIdentityRegistryStorage } from "./../../smart/interface/ISMARTIdentityRegistryStorage.sol";
-import { ISMARTTrustedIssuersRegistry } from "./../../smart/interface/ISMARTTrustedIssuersRegistry.sol";
 import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { IATKIdentityRegistry } from "./IATKIdentityRegistry.sol";
 import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
@@ -53,9 +53,10 @@ contract ATKIdentityRegistryImplementation is
     /// such as the mapping from user addresses to their identity contracts and investor country codes.
     /// This separation of logic and storage enhances upgradeability and modularity.
     ISMARTIdentityRegistryStorage private _identityStorage;
-    /// @notice Stores the contract address of the trusted issuers registry instance.
-    /// @dev This registry manages trusted issuers with subject-aware functionality. 
-    /// The registry queries use identity contract addresses as subjects for subject-aware trusted issuer verification.
+    /// @notice Stores the contract address of the `ISMARTTrustedIssuersRegistry` instance.
+    /// @dev This external contract maintains a list of trusted entities (claim issuers) that are authorized
+    /// to issue verifiable claims about identities (e.g., KYC/AML status).
+    /// The `isVerified` function uses this registry to check the validity of claims.
     ISMARTTrustedIssuersRegistry private _trustedIssuersRegistry;
     /// @notice Stores the contract address of the `ISMARTTopicSchemeRegistry` instance.
     /// @dev This external contract maintains the valid topic schemes and their signatures.
@@ -159,7 +160,7 @@ contract ATKIdentityRegistryImplementation is
     /// @param identityStorage_ The address of the deployed `ISMARTIdentityRegistryStorage` contract.
     /// This contract will be used to store all identity data.
     /// @param trustedIssuersRegistry_ The address of the deployed `ISMARTTrustedIssuersRegistry` contract.
-    /// This registry will be used to verify claims using subject-aware trusted issuer queries.
+    /// This contract will be used to verify claims against trusted issuers.
     /// @param topicSchemeRegistry_ The address of the deployed `ISMARTTopicSchemeRegistry` contract.
     /// This contract will be used to validate claim topics against registered schemes.
     function initialize(
@@ -487,80 +488,11 @@ contract ATKIdentityRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTIdentityRegistry
-    /// @notice Checks if a subject is valid for a specific claim topic using subject-aware trusted issuers.
-    /// @dev This function checks if the subject has valid claims for the specified topic from trusted issuers.
-    ///      The trusted issuers registry is queried with the subject parameter to get both global
-    ///      and subject-specific trusted issuers automatically merged.
-    /// @param subject The address to verify (user wallet address)
-    /// @param claimTopic The claim topic identifier to verify for
-    /// @return True if the subject has valid claims for the topic from trusted issuers, false otherwise
-    function isVerified(address subject, uint256 claimTopic) external view override returns (bool) {
-        // Check if the wallet is globally marked as lost first.
-        if (_identityStorage.isWalletMarkedAsLost(subject)) {
-            return false;
-        }
-
-        // Early checks
-        if (!this.contains(subject)) {
-            return false;
-        }
-
-        // Skip zero topics (invalid)
-        if (claimTopic == 0) {
-            return false;
-        }
-
-        // Verify the topic is registered in the topic scheme registry
-        if (!_topicSchemeRegistry.hasTopicScheme(claimTopic)) {
-            return false;
-        }
-
-        // Get the identity contract for the user
-        IIdentity identityToVerify = _identityStorage.storedIdentity(subject);
-
-        // Get all claim IDs for this topic
-        bytes32[] memory claimIds = identityToVerify.getClaimIdsByTopic(claimTopic);
-        if (claimIds.length == 0) {
-            return false; // No claims for this topic
-        }
-
-        // Get trusted issuers using subject-aware functionality - pass the subject's identity contract address
-        address subjectIdentity = address(_identityStorage.storedIdentity(subject));
-        IClaimIssuer[] memory trustedIssuers = _trustedIssuersRegistry.getTrustedIssuersForClaimTopic(subjectIdentity, claimTopic);
-
-        if (trustedIssuers.length == 0) {
-            return false; // No trusted issuers for this topic
-        }
-
-        // Check each claim against the list of trusted issuers
-        for (uint256 i = 0; i < claimIds.length; i++) {
-            // Get claim details
-            (uint256 foundClaimTopic,, address issuer, bytes memory sig, bytes memory data,) =
-                identityToVerify.getClaim(claimIds[i]);
-
-            // Verify the claim topic matches
-            if (foundClaimTopic == claimTopic) {
-                // Check if the issuer is trusted for this topic
-                for (uint256 j = 0; j < trustedIssuers.length; j++) {
-                    if (address(trustedIssuers[j]) == issuer) {
-                        // Verify the claim is valid with the trusted issuer
-                        if (trustedIssuers[j].isClaimValid(identityToVerify, claimTopic, sig, data)) {
-                            return true; // Found valid claim from trusted issuer
-                        }
-                        break; // Found the issuer, no need to check others for this claim
-                    }
-                }
-            }
-        }
-
-        return false; // No valid claim found from trusted issuers
-    }
-
-    /// @inheritdoc ISMARTIdentityRegistry
     /// @notice Checks if a registered investor's wallet address is considered 'verified' using logical expressions.
     /// @dev This function evaluates a postfix (Reverse Polish Notation) expression using a stack-based algorithm.
     ///      The expression can combine claim topics using AND, OR, and NOT operations for flexible compliance rules.
-    ///      Each TOPIC node is verified using the subject-aware trusted issuer functionality.
+    ///      Each TOPIC node is verified using the same logic as the array-based isVerified function.
+    ///      Includes local caching to avoid redundant verification of the same topics within a single expression.
     /// @param _userAddress The investor's wallet address to verify.
     /// @param expression An array of ExpressionNode structs representing a postfix expression.
     /// @return True if the investor's identity satisfies the logical expression, false otherwise.
@@ -588,57 +520,66 @@ contract ATKIdentityRegistryImplementation is
             return true;
         }
 
-        // Evaluate the expression using stack-based RPN algorithm
         // Local cache for topic verification results within this function call
+        // Using parallel arrays since local mappings are not allowed in Solidity
         uint256[] memory cachedTopics = new uint256[](expression.length);
         bool[] memory cachedResults = new bool[](expression.length);
         uint256 cacheSize = 0;
 
-        // Stack for expression evaluation (max depth = expression length)
+        // Stack for evaluation - maximum size needed is expression length
         bool[] memory stack = new bool[](expression.length);
         uint256 stackIndex = 0;
 
-        for (uint256 i = 0; i < expression.length; i++) {
+        // Process each node in the postfix expression
+        for (uint256 i = 0; i < expression.length;) {
             ExpressionNode memory node = expression[i];
 
             if (node.nodeType == ExpressionType.TOPIC) {
-                uint256 claimTopic = node.value;
-                bool result = false;
+                bool hasClaim;
 
-                // Check cache first
-                bool cached = false;
-                for (uint256 j = 0; j < cacheSize; j++) {
-                    if (cachedTopics[j] == claimTopic) {
-                        result = cachedResults[j];
-                        cached = true;
+                // Check if we've already verified this topic
+                bool topicFoundInCache = false;
+                for (uint256 j = 0; j < cacheSize;) {
+                    if (cachedTopics[j] == node.value) {
+                        hasClaim = cachedResults[j];
+                        topicFoundInCache = true;
                         break;
+                    }
+                    unchecked {
+                        ++j;
                     }
                 }
 
-                if (!cached) {
-                    // Verify the topic using subject-aware functionality
-                    result = this.isVerified(_userAddress, claimTopic);
-
-                    // Cache the result
-                    cachedTopics[cacheSize] = claimTopic;
-                    cachedResults[cacheSize] = result;
-                    cacheSize++;
+                if (!topicFoundInCache) {
+                    // Verify the claim topic using existing logic and cache the result
+                    hasClaim = _verifyClaimTopic(_userAddress, node.value);
+                    cachedTopics[cacheSize] = node.value;
+                    cachedResults[cacheSize] = hasClaim;
+                    unchecked {
+                        ++cacheSize;
+                    }
                 }
 
-                // Push result to stack
-                if (stackIndex >= expression.length) {
+                // Push result onto stack
+                if (stackIndex > stack.length - 1) {
                     revert ExpressionStackOverflow();
                 }
-                stack[stackIndex] = result;
-                stackIndex++;
+                stack[stackIndex] = hasClaim;
+                unchecked {
+                    ++stackIndex;
+                }
             } else if (node.nodeType == ExpressionType.NOT) {
                 // NOT requires one operand
-                if (stackIndex == 0) {
+                if (stackIndex < 1) {
                     revert NotOperationRequiresOneOperand();
                 }
-                stackIndex--;
+                unchecked {
+                    --stackIndex;
+                }
                 stack[stackIndex] = !stack[stackIndex];
-                stackIndex++;
+                unchecked {
+                    ++stackIndex;
+                }
             } else if (node.nodeType == ExpressionType.AND || node.nodeType == ExpressionType.OR) {
                 // AND/OR require two operands
                 if (stackIndex < 2) {
@@ -646,17 +587,27 @@ contract ATKIdentityRegistryImplementation is
                 }
 
                 // Pop two operands
-                stackIndex--;
+                unchecked {
+                    --stackIndex;
+                }
                 bool operandB = stack[stackIndex];
-                stackIndex--;
+                unchecked {
+                    --stackIndex;
+                }
                 bool operandA = stack[stackIndex];
 
                 // Perform operation and push result
                 bool result = (node.nodeType == ExpressionType.AND) ? (operandA && operandB) : (operandA || operandB);
                 stack[stackIndex] = result;
-                stackIndex++;
+                unchecked {
+                    ++stackIndex;
+                }
             } else {
                 revert UnknownExpressionType();
+            }
+
+            unchecked {
+                ++i;
             }
         }
 
@@ -666,6 +617,70 @@ contract ATKIdentityRegistryImplementation is
         }
 
         return stack[0];
+    }
+
+    /// @notice Internal helper function to verify a single claim topic for a user.
+    /// @dev Internal helper function to verify a single claim topic for a user.
+    ///      This encapsulates the claim verification logic used in both isVerified implementations.
+    ///      Optimized to use getClaimIdsByTopic for efficient claim retrieval.
+    /// @param _userAddress The user's address to verify claims for.
+    /// @param claimTopic The claim topic ID to verify.
+    /// @return True if the user has a valid claim for the topic from a trusted issuer.
+    function _verifyClaimTopic(address _userAddress, uint256 claimTopic) internal view returns (bool) {
+        // Skip zero topics (invalid)
+        if (claimTopic == 0) {
+            return false;
+        }
+
+        // Verify the topic is registered in the topic scheme registry
+        if (!_topicSchemeRegistry.hasTopicScheme(claimTopic)) {
+            return false;
+        }
+
+        // Get the identity contract for the user
+        IIdentity identityToVerify = _identityStorage.storedIdentity(_userAddress);
+
+        // Get all claim IDs for this topic at once (more efficient than per-issuer lookups)
+        bytes32[] memory claimIds = identityToVerify.getClaimIdsByTopic(claimTopic);
+        if (claimIds.length == 0) {
+            return false; // No claims for this topic
+        }
+
+        // Get trusted issuers for this topic
+        IClaimIssuer[] memory trustedIssuers = _trustedIssuersRegistry.getTrustedIssuersForClaimTopic(_userAddress, claimTopic);
+        if (trustedIssuers.length == 0) {
+            return false; // No trusted issuers for this topic
+        }
+
+        // Check each claim against the list of trusted issuers
+        for (uint256 i = 0; i < claimIds.length;) {
+            // Get claim details
+            (uint256 foundClaimTopic,, address issuer, bytes memory sig, bytes memory data,) =
+                identityToVerify.getClaim(claimIds[i]);
+
+            // Verify the claim topic matches (should always be true due to getClaimIdsByTopic)
+            if (foundClaimTopic == claimTopic) {
+                // Check if the issuer is trusted for this topic
+                for (uint256 j = 0; j < trustedIssuers.length;) {
+                    if (address(trustedIssuers[j]) == issuer) {
+                        // Verify the claim is valid with the trusted issuer
+                        if (trustedIssuers[j].isClaimValid(identityToVerify, claimTopic, sig, data)) {
+                            return true; // Found valid claim from trusted issuer
+                        }
+                        break; // Found the issuer, no need to check others for this claim
+                    }
+                    unchecked {
+                        ++j;
+                    }
+                }
+            }
+
+            unchecked {
+                ++i;
+            }
+        }
+
+        return false; // No valid claim found from trusted issuers
     }
 
     /// @inheritdoc ISMARTIdentityRegistry
@@ -704,17 +719,10 @@ contract ATKIdentityRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTIdentityRegistry
-    /// @notice Returns the address of the trusted issuers registry contract.
-    /// @dev This allows external contracts or UIs to discover the location of the trusted issuers registry.
+    /// @notice Returns the address of the currently configured trusted issuers registry contract.
+    /// @dev This allows external contracts or UIs to discover the location of the trusted issuers list.
     /// @return The address of the `ISMARTTrustedIssuersRegistry` contract.
     function issuersRegistry() external view override returns (ISMARTTrustedIssuersRegistry) {
-        return _trustedIssuersRegistry;
-    }
-
-    /// @notice Returns the trusted issuers registry contract.
-    /// @dev This allows access to the trusted issuers registry using the SMART interface.
-    /// @return The address of the `ISMARTTrustedIssuersRegistry` contract.
-    function smartIssuersRegistry() external view returns (ISMARTTrustedIssuersRegistry) {
         return _trustedIssuersRegistry;
     }
 

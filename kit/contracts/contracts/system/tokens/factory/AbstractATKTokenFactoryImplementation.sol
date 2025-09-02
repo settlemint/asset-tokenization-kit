@@ -311,7 +311,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
         ISMART(deployedAddress).setOnchainID(deployedTokenIdentityAddress);
 
         // Deploy and register TokenTrustedIssuersRegistry for this token
-        _deployAndRegisterTokenTrustedIssuersRegistry(deployedAddress);
+        _deployAndRegisterTokenTrustedIssuersRegistry(deployedAddress, deployedTokenIdentityAddress);
 
         bytes32[] memory roles = new bytes32[](2);
         roles[0] = ATKAssetRoles.GOVERNANCE_ROLE;
@@ -398,7 +398,8 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @dev This function creates a token-specific trusted issuers registry and registers it
     ///      with the system's meta registry, enabling token-specific trusted issuer management
     /// @param tokenAddress The address of the token contract
-    function _deployAndRegisterTokenTrustedIssuersRegistry(address tokenAddress) internal {
+    /// @param tokenIdentityAddress The address of the token identity contract
+    function _deployAndRegisterTokenTrustedIssuersRegistry(address tokenAddress, address tokenIdentityAddress) internal {
         // Deploy TokenTrustedIssuersRegistry for this specific token
         // Use the same trusted forwarder as the factory for consistent meta-transaction support
         TokenTrustedIssuersRegistry tokenRegistry = new TokenTrustedIssuersRegistry(
@@ -408,7 +409,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
 
         // Register the token-specific registry with the meta registry
         IATKTrustedIssuersMetaRegistry metaRegistry = _trustedIssuersMetaRegistry();
-        metaRegistry.setRegistryForContract(tokenAddress, address(tokenRegistry));
+        metaRegistry.setRegistryForContract(tokenIdentityAddress, address(tokenRegistry));
     }
 
     // --- ERC165 Overrides ---

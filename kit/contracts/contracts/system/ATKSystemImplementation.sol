@@ -437,6 +437,12 @@ contract ATKSystemImplementation is
             new ATKTypedImplementationProxy(address(this), IDENTITY_REGISTRY_STORAGE, identityRegistryStorageData)
         );
 
+        // Deploy the ATKTopicSchemeRegistryProxy, linking it to this ATKSystem and using the system access manager.
+        bytes memory topicSchemeRegistryData =
+            abi.encodeWithSelector(IATKTopicSchemeRegistry.initialize.selector, _accessManager);
+        address localTopicSchemeRegistryProxy =
+            address(new ATKTypedImplementationProxy(address(this), TOPIC_SCHEME_REGISTRY, topicSchemeRegistryData));
+
         // Deploy the ATKTrustedIssuersRegistryProxy, linking it to this ATKSystem and setting an initial admin.
         bytes memory trustedIssuersRegistryData =
             abi.encodeWithSelector(IATKTrustedIssuersRegistry.initialize.selector, _accessManager);
@@ -444,11 +450,12 @@ contract ATKSystemImplementation is
             new ATKTypedImplementationProxy(address(this), TRUSTED_ISSUERS_REGISTRY, trustedIssuersRegistryData)
         );
 
-        // Deploy the ATKTopicSchemeRegistryProxy, linking it to this ATKSystem and using the system access manager.
-        bytes memory topicSchemeRegistryData =
-            abi.encodeWithSelector(IATKTopicSchemeRegistry.initialize.selector, _accessManager);
-        address localTopicSchemeRegistryProxy =
-            address(new ATKTypedImplementationProxy(address(this), TOPIC_SCHEME_REGISTRY, topicSchemeRegistryData));
+        // Deploy the ATKTrustedIssuersMetaRegistryProxy
+        bytes memory trustedIssuersMetaRegistryData =
+            abi.encodeWithSelector(IATKTrustedIssuersMetaRegistry.initialize.selector, _accessManager, localTrustedIssuersRegistryProxy);
+        address localTrustedIssuersMetaRegistryProxy = address(
+            new ATKTypedImplementationProxy(address(this), TRUSTED_ISSUERS_META_REGISTRY, trustedIssuersMetaRegistryData)
+        );
 
         bytes memory identityRegistryData = abi.encodeWithSelector(
             IATKIdentityRegistry.initialize.selector,
@@ -459,13 +466,6 @@ contract ATKSystemImplementation is
         );
         address localIdentityRegistryProxy =
             address(new ATKTypedImplementationProxy(address(this), IDENTITY_REGISTRY, identityRegistryData));
-
-        // Deploy the ATKTrustedIssuersMetaRegistryProxy
-        bytes memory trustedIssuersMetaRegistryData =
-            abi.encodeWithSelector(IATKTrustedIssuersMetaRegistry.initialize.selector, _accessManager);
-        address localTrustedIssuersMetaRegistryProxy = address(
-            new ATKTypedImplementationProxy(address(this), TRUSTED_ISSUERS_META_REGISTRY, trustedIssuersMetaRegistryData)
-        );
 
         // Deploy the ATKIdentityFactoryProxy, linking it to this ATKSystem and setting an initial admin.
         bytes memory identityFactoryData =
@@ -521,12 +521,6 @@ contract ATKSystemImplementation is
         IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).batchRegisterTopicSchemes(
             ATKTopics.names(), ATKTopics.signatures()
         );
-
-        // Set the global trusted issuers registry in the meta registry
-        IATKTrustedIssuersMetaRegistry(localTrustedIssuersMetaRegistryProxy).setGlobalRegistry(
-            localTrustedIssuersRegistryProxy
-        );
-
 
         // Create identity for the identity factory itself so it can be a trusted issuer
         // This solves the chicken-and-egg problem of the factory needing an identity to issue claims

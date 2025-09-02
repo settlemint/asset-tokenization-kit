@@ -47,6 +47,36 @@ interface IATKTrustedIssuersMetaRegistry is IERC165, ISMARTTrustedIssuersRegistr
 
     /// @notice Initializes the registry with an initial admin and registrars.
     /// @param accessManager The address of the access manager
-    function initialize(address accessManager) external;
+    /// @param globalRegistry The address of the global trusted issuers registry
+    function initialize(address accessManager, address globalRegistry) external;
+
+    // --- Registry Management Functions ---
+
+    /// @notice Sets the global trusted issuers registry
+    /// @dev Part of the meta-registry pattern - manages the global registry that applies to all contracts
+    /// @param registry The address of the global trusted issuers registry (can be address(0) to remove)
+    function setGlobalRegistry(address registry) external;
+
+    /// @notice Sets a contract-specific trusted issuers registry
+    /// @dev Part of the meta-registry pattern - manages contract-specific registries
+    /// @param contractAddress The contract address to set the registry for
+    /// @param registry The address of the trusted issuers registry for this contract (can be address(0) to remove)
+    function setRegistryForContract(address contractAddress, address registry) external;
+
+    /// @notice Removes a contract-specific trusted issuers registry
+    /// @dev Convenience function that delegates to setRegistryForContract with address(0)
+    /// @param contractAddress The contract address to remove the registry for
+    function removeRegistryForContract(address contractAddress) external;
+
+    // --- Registry Getters ---
+
+    /// @notice Gets the global trusted issuers registry
+    /// @return The global trusted issuers registry address
+    function getGlobalRegistry() external view returns (ISMARTTrustedIssuersRegistry);
+
+    /// @notice Gets the contract-specific trusted issuers registry
+    /// @param contractAddress The contract address to get the registry for
+    /// @return The contract-specific trusted issuers registry address
+    function getRegistryForContract(address contractAddress) external view returns (ISMARTTrustedIssuersRegistry);
 
 }

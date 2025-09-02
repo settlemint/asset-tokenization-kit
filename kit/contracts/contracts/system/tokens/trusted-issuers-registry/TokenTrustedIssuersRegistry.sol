@@ -11,7 +11,7 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
 // Interface imports
 import { ISMARTTrustedIssuersRegistry } from "../../../smart/interface/ISMARTTrustedIssuersRegistry.sol";
-import { IERC3643TrustedIssuersRegistry } from "@onchainid/contracts/interface/IERC3643TrustedIssuersRegistry.sol";
+import { IERC3643TrustedIssuersRegistry } from "../../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 
 // Token interface
 import { IATKToken } from "../IATKToken.sol";
@@ -86,6 +86,9 @@ contract TokenTrustedIssuersRegistry is
     /// @notice Error triggered when an address is not found in a list during removal
     error AddressNotFoundInList(address addr);
 
+    /// @notice Error triggered when an invalid subject is provided (must be address(0) or this token's onchainID)
+    error InvalidSubjectAddress();
+
     /// @notice Error triggered when caller lacks the required GOVERNANCE_ROLE
     error AccessControlUnauthorizedAccount(address account, bytes32 neededRole);
 
@@ -113,10 +116,10 @@ contract TokenTrustedIssuersRegistry is
     /// @notice Constructor for the TokenTrustedIssuersRegistry
     /// @dev Initializes the registry with the associated token contract
     /// @param trustedForwarder The address of the trusted forwarder for meta-transactions
-    /// @param token The address of the IATKToken that this registry is associated with
-    constructor(address trustedForwarder, address token) ERC2771Context(trustedForwarder) {
-        if (token == address(0)) revert InvalidTokenAddress();
-        _token = IATKToken(token);
+    /// @param token_ The address of the IATKToken that this registry is associated with
+    constructor(address trustedForwarder, address token_) ERC2771Context(trustedForwarder) {
+        if (token_ == address(0)) revert InvalidTokenAddress();
+        _token = IATKToken(token_);
     }
 
     // --- Access Control Modifier ---
@@ -132,7 +135,7 @@ contract TokenTrustedIssuersRegistry is
 
     // --- ISMARTTrustedIssuersRegistry Implementation ---
 
-    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
     function addTrustedIssuer(
         IClaimIssuer _trustedIssuer,
         uint256[] calldata _claimTopics
@@ -156,7 +159,7 @@ contract TokenTrustedIssuersRegistry is
         emit TrustedIssuerAdded(_msgSender(), issuerAddress, _claimTopics);
     }
 
-    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
     function removeTrustedIssuer(IClaimIssuer _trustedIssuer) external override onlyTokenGovernance {
         address issuerAddress = address(_trustedIssuer);
         if (!_trustedIssuers[issuerAddress].exists) revert IssuerDoesNotExist(issuerAddress);
@@ -179,7 +182,7 @@ contract TokenTrustedIssuersRegistry is
         emit TrustedIssuerRemoved(_msgSender(), issuerAddress);
     }
 
-    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
     function updateIssuerClaimTopics(
         IClaimIssuer _trustedIssuer,
         uint256[] calldata _newClaimTopics
@@ -210,7 +213,7 @@ contract TokenTrustedIssuersRegistry is
         emit ClaimTopicsUpdated(_msgSender(), issuerAddress, _newClaimTopics);
     }
 
-    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
     function getTrustedIssuers() external view override returns (IClaimIssuer[] memory) {
         IClaimIssuer[] memory issuers = new IClaimIssuer[](_issuerAddresses.length);
         uint256 issuerAddressesLength = _issuerAddresses.length;
@@ -221,7 +224,7 @@ contract TokenTrustedIssuersRegistry is
         return issuers;
     }
 
-    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
     function getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer)
         external
         view
@@ -240,7 +243,7 @@ contract TokenTrustedIssuersRegistry is
         override
         returns (IClaimIssuer[] memory)
     {
-        return _getTrustedIssuersForClaimTopic(address(0), claimTopic);
+        return _getTrustedIssuersForClaimTopic(_token.onchainID(), claimTopic);
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
@@ -254,7 +257,7 @@ contract TokenTrustedIssuersRegistry is
     }
 
 
-    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
     function hasClaimTopic(address _issuer, uint256 _claimTopic) external view override returns (bool) {
         return _claimTopicIssuerIndex[_claimTopic][_issuer] > 0;
     }
@@ -266,6 +269,7 @@ contract TokenTrustedIssuersRegistry is
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
     function isTrustedIssuer(address subject, address _issuer) external view override returns (bool) {
+        if (subject != _token.onchainID()) revert InvalidSubjectAddress();
         return _trustedIssuers[_issuer].exists;
     }
 
@@ -284,7 +288,7 @@ contract TokenTrustedIssuersRegistry is
         view
         returns (IClaimIssuer[] memory)
     {
-        if (subject != ISMART(token).onchainID()) revert InvalidSubjectAddress();
+        if (subject != _token.onchainID()) revert InvalidSubjectAddress();
         address[] storage issuerAddrs = _issuersByClaimTopic[claimTopic];
         IClaimIssuer[] memory issuers = new IClaimIssuer[](issuerAddrs.length);
         uint256 issuerAddrsLength = issuerAddrs.length;

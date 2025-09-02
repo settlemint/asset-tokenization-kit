@@ -444,10 +444,9 @@ contract ATKTrustedIssuersRegistryImplementation is
     ///      For other subjects, returns global issuers merged with subject-specific issuers.
     ///      This ensures that subjects always have access to at least the global trusted issuers
     ///      plus any additional subject-specific ones.
-    /// @param subject The subject identifier (address(0) for global only, or specific address for subject-aware)
     /// @param claimTopic The claim topic to filter trusted issuers for
     /// @return Array of IClaimIssuer contracts trusted for this subject + topic (deduplicated union)
-    function getTrustedIssuersForClaimTopic(address subject, uint256 claimTopic)
+    function getTrustedIssuersForClaimTopic(address, uint256 claimTopic)
         external
         view
         override
@@ -508,6 +507,14 @@ contract ATKTrustedIssuersRegistryImplementation is
 
     // --- Internal Helper Functions ---
 
+    /// @notice Returns the list of trusted issuers for a given claim topic
+    /// @dev This function returns the list of issuers that are trusted for the given claim topic.
+    ///      For subject = address(0), returns only global trusted issuers (same as ERC-3643 function).
+    ///      For other subjects, returns global issuers merged with subject-specific issuers.
+    ///      This ensures that subjects always have access to at least the global trusted issuers
+    ///      plus any additional subject-specific ones.
+    /// @param claimTopic The claim topic to filter trusted issuers for
+    /// @return Array of IClaimIssuer contracts trusted for this subject + topic (deduplicated union)
     function _getTrustedIssuersForClaimTopic(uint256 claimTopic)
         internal
         view
