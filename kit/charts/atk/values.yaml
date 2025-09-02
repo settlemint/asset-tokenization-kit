@@ -213,7 +213,7 @@ blockscout:
         hostname: explorer.k8s.orb.local
       image:
         repository: ghcr.io/blockscout/frontend
-        tag: "v2.3.0"
+        tag: "v2.3.1"
         pullPolicy: IfNotPresent
 
 graph-node:
