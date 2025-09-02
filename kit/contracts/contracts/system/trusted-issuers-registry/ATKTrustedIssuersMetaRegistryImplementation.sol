@@ -36,7 +36,7 @@ import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged
 ///
 ///      Access Control:
 ///      - SYSTEM_MANAGER_ROLE: Can set global registry and manage system-level registries
-///      - TOKEN_FACTORY_REGISTRY_MODULE_ROLE: Can register contract-specific registries (for token creation)
+///      - TOKEN_FACTORY_MODULE_ROLE: Can register contract-specific registries (for token creation)
 ///      - SYSTEM_MODULE_ROLE: Can set registries during system bootstrap
 contract ATKTrustedIssuersMetaRegistryImplementation is
     Initializable,
@@ -102,7 +102,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         onlySystemRoles3(
             ATKPeopleRoles.SYSTEM_MANAGER_ROLE,
             ATKSystemRoles.SYSTEM_MODULE_ROLE,
-            ATKSystemRoles.TOKEN_FACTORY_REGISTRY_MODULE_ROLE
+            ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE
         )
     {
         // registry can be address(0) to remove the global registry
@@ -121,7 +121,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         onlySystemRoles3(
             ATKPeopleRoles.SYSTEM_MANAGER_ROLE,
             ATKSystemRoles.SYSTEM_MODULE_ROLE,
-            ATKSystemRoles.TOKEN_FACTORY_REGISTRY_MODULE_ROLE
+            ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE
         )
     {
         if (contractAddress == address(0)) revert InvalidContractAddress();
@@ -141,7 +141,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         onlySystemRoles3(
             ATKPeopleRoles.SYSTEM_MANAGER_ROLE,
             ATKSystemRoles.SYSTEM_MODULE_ROLE,
-            ATKSystemRoles.TOKEN_FACTORY_REGISTRY_MODULE_ROLE
+            ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE
         )
     {
         // Delegate to setRegistryForContract with address(0) to remove the registry
