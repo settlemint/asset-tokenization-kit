@@ -457,7 +457,7 @@ observability:
       registry: registry.k8s.io
       repository: kube-state-metrics/kube-state-metrics
       # If unset use v + .Charts.appVersion
-      tag: "v2.16.0"
+      tag: "v2.17.0"
 
   # https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metrics-single/values.yaml
   victoria-metrics-single:
