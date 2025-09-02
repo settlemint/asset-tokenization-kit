@@ -128,6 +128,8 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// logic contract.
     /// @param trustedIssuersRegistryImplementation_ The default address for the trusted issuers registry module's logic
     /// contract.
+    /// @param trustedIssuersMetaRegistryImplementation_ The default address for the trusted issuers meta registry
+    /// module's logic contract.
     /// @param topicSchemeRegistryImplementation_ The default address for the topic scheme registry module's logic
     /// contract.
     /// @param identityFactoryImplementation_ The default address for the identity factory module's logic contract.
@@ -143,8 +145,6 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// @param addonRegistryImplementation_ The default address for the addon registry module's logic contract.
     /// @param systemAccessManagerImplementation_ The default address for the system access manager module's logic
     /// contract.
-    /// @param trustedIssuersMetaRegistryImplementation_ The default address for the trusted issuers meta registry
-    /// module's logic contract.
     /// @param forwarder_ The address of the trusted forwarder contract to be used for meta-transactions (ERC2771).
     constructor(
         address atkSystemImplementation_,
@@ -152,6 +152,7 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         address identityRegistryImplementation_,
         address identityRegistryStorageImplementation_,
         address trustedIssuersRegistryImplementation_,
+        address trustedIssuersMetaRegistryImplementation_,
         address topicSchemeRegistryImplementation_,
         address identityFactoryImplementation_,
         address identityImplementation_,
@@ -161,7 +162,6 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         address complianceModuleRegistryImplementation_,
         address addonRegistryImplementation_,
         address systemAccessManagerImplementation_,
-        address trustedIssuersMetaRegistryImplementation_,
         address forwarder_
     )
         ERC2771Context(forwarder_) // Initializes ERC2771 support with the provided forwarder address.
@@ -328,6 +328,12 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// @return The address of the default trusted issuers registry implementation
     function defaultTrustedIssuersRegistryImplementation() external view returns (address) {
         return DEFAULT_TRUSTED_ISSUERS_REGISTRY_IMPLEMENTATION;
+    }
+
+    /// @notice Returns the default trusted issuers meta registry implementation address
+    /// @return The address of the default trusted issuers meta registry implementation
+    function defaultTrustedIssuersMetaRegistryImplementation() external view returns (address) {
+        return DEFAULT_TRUSTED_ISSUERS_META_REGISTRY_IMPLEMENTATION;
     }
 
     /// @notice Returns the default topic scheme registry implementation address

@@ -125,6 +125,8 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @param identityRegistryStorageImplementation_ The address of the identity registry storage module
     /// implementation.
     /// @param trustedIssuersRegistryImplementation_ The address of the trusted issuers registry module implementation.
+    /// @param trustedIssuersMetaRegistryImplementation_ The address of the trusted issuers meta registry module
+    /// implementation.
     /// @param topicSchemeRegistryImplementation_ The address of the topic scheme registry module implementation.
     /// @param identityFactoryImplementation_ The address of the identity factory module implementation.
     /// @param identityImplementation_ The address of the standard identity module implementation.
@@ -134,8 +136,7 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @param complianceModuleRegistryImplementation_ The address of the compliance module registry module
     /// implementation.
     /// @param addonRegistryImplementation_ The address of the addon registry module implementation.
-    /// @param trustedIssuersMetaRegistryImplementation_ The address of the trusted issuers meta registry module
-    /// implementation.
+
     function initialize(
         address initialAdmin_,
         address accessManager_,
@@ -143,6 +144,7 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
         address identityRegistryImplementation_,
         address identityRegistryStorageImplementation_,
         address trustedIssuersRegistryImplementation_,
+        address trustedIssuersMetaRegistryImplementation_,
         address topicSchemeRegistryImplementation_,
         address identityFactoryImplementation_,
         address identityImplementation_, // Expected to be IERC734/IIdentity compliant
@@ -150,8 +152,7 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
         address tokenAccessManagerImplementation_, // Expected to be ISMARTTokenAccessManager compliant
         address tokenFactoryRegistryImplementation_,
         address complianceModuleRegistryImplementation_,
-        address addonRegistryImplementation_,
-        address trustedIssuersMetaRegistryImplementation_
+        address addonRegistryImplementation_
     )
         external;
 
@@ -204,7 +205,7 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
 
     /// @notice Retrieves the smart contract address of the proxy for the trusted issuers meta registry module.
     /// @dev This function returns the stable, unchanging address of the trusted issuers meta registry's proxy contract.
-    /// The meta registry manages both global and contract-specific trusted issuers registries, providing a 
+    /// The meta registry manages both global and contract-specific trusted issuers registries, providing a
     /// registry-of-registries pattern for efficient trusted issuer management across the system.
     /// @return trustedIssuersMetaRegistryProxyAddress The blockchain address of the trusted issuers meta registry
     /// module's proxy.

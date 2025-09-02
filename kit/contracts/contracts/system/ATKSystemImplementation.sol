@@ -216,6 +216,8 @@ contract ATKSystemImplementation is
     /// logic contract.
     /// @param trustedIssuersRegistryImplementation_ The initial address of the trusted issuers registry module's logic
     /// contract.
+    /// @param trustedIssuersMetaRegistryImplementation_ The initial address of the trusted issuers meta registry module's
+    /// logic contract.
     /// @param topicSchemeRegistryImplementation_ The initial address of the topic scheme registry module's logic
     /// contract.
     /// @param identityFactoryImplementation_ The initial address of the identity factory module's logic contract.
@@ -238,6 +240,7 @@ contract ATKSystemImplementation is
         address identityRegistryImplementation_,
         address identityRegistryStorageImplementation_,
         address trustedIssuersRegistryImplementation_,
+        address trustedIssuersMetaRegistryImplementation_,
         address topicSchemeRegistryImplementation_,
         address identityFactoryImplementation_,
         address identityImplementation_, // Expected to be IERC734/IIdentity compliant
@@ -245,8 +248,7 @@ contract ATKSystemImplementation is
         address tokenAccessManagerImplementation_, // Expected to be ISMARTTokenAccessManager compliant
         address tokenFactoryRegistryImplementation_,
         address complianceModuleRegistryImplementation_,
-        address addonRegistryImplementation_,
-        address trustedIssuersMetaRegistryImplementation_
+        address addonRegistryImplementation_
     )
         public
         initializer

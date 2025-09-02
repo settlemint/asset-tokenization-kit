@@ -38,6 +38,8 @@ import { ATKComplianceModuleRegistryImplementation } from
     "../../contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol";
 import { ATKSystemAddonRegistryImplementation } from
     "../../contracts/system/addons/ATKSystemAddonRegistryImplementation.sol";
+import { ATKTrustedIssuersMetaRegistryImplementation } from
+    "../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersMetaRegistryImplementation.sol";
 
 // Proxies
 import { ATKTokenAccessManagerProxy } from "../../contracts/system/tokens/access/ATKTokenAccessManagerProxy.sol";
@@ -55,6 +57,7 @@ import { IATKComplianceModuleRegistry } from "../../contracts/system/compliance/
 import { IATKSystemAddonRegistry } from "../../contracts/system/addons/IATKSystemAddonRegistry.sol";
 import { IATKTokenFactoryRegistry } from "../../contracts/system/tokens/factory/IATKTokenFactoryRegistry.sol";
 import { IATKSystemAccessManager } from "../../contracts/system/access-manager/IATKSystemAccessManager.sol";
+import { IATKTrustedIssuersMetaRegistry } from "../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersMetaRegistry.sol";
 
 // Compliance Modules
 import { CountryAllowListComplianceModule } from "../../contracts/smart/modules/CountryAllowListComplianceModule.sol";
@@ -71,6 +74,7 @@ contract SystemUtils is Test {
     // Core Contract Instances (now holding proxy addresses)
     ISMARTIdentityRegistryStorage public identityRegistryStorage; // Proxy
     ISMARTTrustedIssuersRegistry public trustedIssuersRegistry; // Proxy
+    IATKTrustedIssuersMetaRegistry public trustedIssuersMetaRegistry; // Proxy
     ISMARTIdentityRegistry public identityRegistry; // Proxy
     ISMARTCompliance public compliance; // Proxy
     IATKIdentityFactory public identityFactory; // Proxy
@@ -114,6 +118,8 @@ contract SystemUtils is Test {
 
         ATKSystemAccessManagerImplementation systemAccessManagerImpl =
             new ATKSystemAccessManagerImplementation(forwarder);
+        ATKTrustedIssuersMetaRegistryImplementation trustedIssuersMetaRegistryImpl =
+            new ATKTrustedIssuersMetaRegistryImplementation(forwarder);
 
         systemFactory = new ATKSystemFactory(
             address(systemImplementation),
@@ -121,6 +127,7 @@ contract SystemUtils is Test {
             address(registryImpl),
             address(storageImpl),
             address(issuersImpl),
+            address(trustedIssuersMetaRegistryImpl),
             address(topicSchemeRegistryImpl),
             address(factoryImpl),
             address(identityImpl),
