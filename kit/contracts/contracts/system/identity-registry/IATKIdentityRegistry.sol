@@ -3,7 +3,6 @@ pragma solidity ^0.8.28;
 
 import { ISMARTIdentityRegistry } from "../../smart/interface/ISMARTIdentityRegistry.sol";
 import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
-import { ExpressionNode } from "../../smart/interface/structs/ExpressionNode.sol";
 
 /// @title IATKIdentityRegistry
 /// @author SettleMint

@@ -18,7 +18,6 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { ATKAssetRoles } from "../ATKAssetRoles.sol";
 
 // Interface imports
-import { IATKToken } from "../../system/tokens/IATKToken.sol";
 import { IATKFund } from "./IATKFund.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IContractWithIdentity } from "../../system/identity-factory/IContractWithIdentity.sol";

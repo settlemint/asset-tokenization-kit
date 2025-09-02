@@ -19,7 +19,6 @@ import { ATKAssetRoles } from "../ATKAssetRoles.sol";
 import { IATKBond } from "./IATKBond.sol";
 import { IContractWithIdentity } from "../../system/identity-factory/IContractWithIdentity.sol";
 import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.sol";
-import { IATKToken } from "../../system/tokens/IATKToken.sol";
 import { ISMART } from "../../smart/interface/ISMART.sol";
 import { _SMARTLogic } from "../../smart/extensions/core/internal/_SMARTLogic.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";

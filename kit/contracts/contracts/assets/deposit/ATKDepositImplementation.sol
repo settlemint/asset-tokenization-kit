@@ -16,7 +16,6 @@ import { ATKAssetRoles } from "../ATKAssetRoles.sol";
 // Interface imports
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IATKDeposit } from "./IATKDeposit.sol";
-import { IATKToken } from "../../system/tokens/IATKToken.sol";
 import { IContractWithIdentity } from "../../system/identity-factory/IContractWithIdentity.sol";
 import { ISMART } from "../../smart/interface/ISMART.sol";
 import { _SMARTLogic } from "../../smart/extensions/core/internal/_SMARTLogic.sol";

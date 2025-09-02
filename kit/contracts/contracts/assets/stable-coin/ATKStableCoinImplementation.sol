@@ -14,7 +14,6 @@ import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/Co
 import { ATKAssetRoles } from "../ATKAssetRoles.sol";
 
 // Interface imports
-import { IATKToken } from "../../system/tokens/IATKToken.sol";
 import { IATKStableCoin } from "./IATKStableCoin.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IContractWithIdentity } from "../../system/identity-factory/IContractWithIdentity.sol";

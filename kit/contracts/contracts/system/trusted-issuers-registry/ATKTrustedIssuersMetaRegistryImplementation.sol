@@ -237,34 +237,34 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     error MetaRegistryCannotProvideCompleteAnswer();
 
     /// @inheritdoc IERC3643TrustedIssuersRegistry
-    function addTrustedIssuer(IClaimIssuer _trustedIssuer, uint256[] calldata _claimTopics) external override {
+    function addTrustedIssuer(IClaimIssuer, uint256[] calldata) external pure override {
         revert MetaRegistryNotModifiable();
     }
 
     /// @inheritdoc IERC3643TrustedIssuersRegistry
-    function removeTrustedIssuer(IClaimIssuer _trustedIssuer) external override {
+    function removeTrustedIssuer(IClaimIssuer) external pure override {
         revert MetaRegistryNotModifiable();
     }
 
     /// @inheritdoc IERC3643TrustedIssuersRegistry
-    function updateIssuerClaimTopics(IClaimIssuer _trustedIssuer, uint256[] calldata _claimTopics) external override {
+    function updateIssuerClaimTopics(IClaimIssuer, uint256[] calldata) external pure override {
         revert MetaRegistryNotModifiable();
     }
 
     /// @inheritdoc IERC3643TrustedIssuersRegistry
-    function getTrustedIssuers() external view override returns (IClaimIssuer[] memory) {
+    function getTrustedIssuers() external pure override returns (IClaimIssuer[] memory) {
         // Cannot provide complete answer across all registries
         revert MetaRegistryCannotProvideCompleteAnswer();
     }
 
     /// @inheritdoc IERC3643TrustedIssuersRegistry
-    function getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer) external view override returns (uint256[] memory) {
+    function getTrustedIssuerClaimTopics(IClaimIssuer) external pure override returns (uint256[] memory) {
         // Cannot provide complete answer across all registries
         revert MetaRegistryCannotProvideCompleteAnswer();
     }
 
     /// @inheritdoc IERC3643TrustedIssuersRegistry
-    function hasClaimTopic(address _issuer, uint256 _claimTopic) external view override returns (bool) {
+    function hasClaimTopic(address, uint256) external pure override returns (bool) {
         // Cannot provide complete answer across all registries
         revert MetaRegistryCannotProvideCompleteAnswer();
     }
