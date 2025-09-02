@@ -22,7 +22,7 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 ///      - Subject-specific issuers supplement (don't replace) global issuers
 ///      - Efficient O(1) lookups for both global and subject-specific queries
 ///      - ERC165 support for interface detection and fallback behavior
-contract ISMARTTrustedIssuersRegistry is IERC3643TrustedIssuersRegistry {
+interface ISMARTTrustedIssuersRegistry is IERC3643TrustedIssuersRegistry {
     // --- Subject-Aware Functions ---
 
     /// @notice Returns the list of trusted issuers for a given claim topic and subject
@@ -39,14 +39,14 @@ contract ISMARTTrustedIssuersRegistry is IERC3643TrustedIssuersRegistry {
         view
         returns (IClaimIssuer[] memory);
 
+    /// @notice Checks if a given issuer is trusted for a specific subject and claim topic
+    /// @dev This function checks if the issuer is trusted for the given subject and claim topic.
+    ///      For subject = address(0), returns only global trusted issuers (same as ERC-3643 function).
+    ///      For other subjects, returns global issuers merged with subject-specific issuers.
+    ///      This ensures that subjects always have access to at least the global trusted issuers
+    ///      plus any additional subject-specific ones.
+    /// @param subject The subject identifier (address(0) for global only, or specific address for subject-aware)
+    /// @param _issuer The issuer address to check
+    /// @return True if the issuer is trusted for the given subject and claim topic, false otherwise
     function isTrustedIssuer(address subject, address _issuer) external view returns (bool);
-
-    function getTrustedIssuersForClaimTopic(uint256 claimTopic) external view override returns (IClaimIssuer[] memory) {
-        return getTrustedIssuersForClaimTopic(address(0), claimTopic);
-    }
-
-    function isTrustedIssuer(address _issuer) external view override returns (bool) {
-        return isTrustedIssuer(address(0), _issuer);
-    }
-
 }

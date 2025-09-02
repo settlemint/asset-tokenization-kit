@@ -2,8 +2,8 @@
 pragma solidity ^0.8.28;
 
 // SMART interfaces
-import { ISMART } from "../../../smart/interface/ISMART.sol";
-import { ISMARTTokenAccessManaged } from "../../../smart/extensions/access-managed/ISMARTTokenAccessManaged.sol";
+import { ISMART } from "../../smart/interface/ISMART.sol";
+import { ISMARTTokenAccessManaged } from "../../smart/extensions/access-managed/ISMARTTokenAccessManaged.sol";
 
 /// @title IATKToken - Unified ATK Token Interface
 /// @author SettleMint

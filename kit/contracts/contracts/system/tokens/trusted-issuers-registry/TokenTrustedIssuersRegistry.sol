@@ -11,6 +11,7 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
 // Interface imports
 import { ISMARTTrustedIssuersRegistry } from "../../../smart/interface/ISMARTTrustedIssuersRegistry.sol";
+import { IERC3643TrustedIssuersRegistry } from "@onchainid/contracts/interface/IERC3643TrustedIssuersRegistry.sol";
 
 // Token interface
 import { IATKToken } from "../IATKToken.sol";
@@ -232,30 +233,39 @@ contract TokenTrustedIssuersRegistry is
         return _trustedIssuers[issuerAddress].claimTopics;
     }
 
-    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
     function getTrustedIssuersForClaimTopic(uint256 claimTopic)
         external
         view
         override
         returns (IClaimIssuer[] memory)
     {
-        address[] storage issuerAddrs = _issuersByClaimTopic[claimTopic];
-        IClaimIssuer[] memory issuers = new IClaimIssuer[](issuerAddrs.length);
-        uint256 issuerAddrsLength = issuerAddrs.length;
-        for (uint256 i = 0; i < issuerAddrsLength;) {
-            issuers[i] = IClaimIssuer(issuerAddrs[i]);
-            unchecked { ++i; }
-        }
-        return issuers;
+        return _getTrustedIssuersForClaimTopic(address(0), claimTopic);
     }
+
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    function getTrustedIssuersForClaimTopic(address subject, uint256 claimTopic)
+        external
+        view
+        override
+        returns (IClaimIssuer[] memory)
+    {
+        return _getTrustedIssuersForClaimTopic(subject, claimTopic);
+    }
+
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
     function hasClaimTopic(address _issuer, uint256 _claimTopic) external view override returns (bool) {
         return _claimTopicIssuerIndex[_claimTopic][_issuer] > 0;
     }
 
-    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    /// @inheritdoc IERC3643TrustedIssuersRegistry
     function isTrustedIssuer(address _issuer) external view override returns (bool) {
+        return _trustedIssuers[_issuer].exists;
+    }
+
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    function isTrustedIssuer(address subject, address _issuer) external view override returns (bool) {
         return _trustedIssuers[_issuer].exists;
     }
 
@@ -268,6 +278,22 @@ contract TokenTrustedIssuersRegistry is
     }
 
     // --- Internal Helper Functions ---
+
+    function _getTrustedIssuersForClaimTopic(address subject, uint256 claimTopic)
+        internal
+        view
+        returns (IClaimIssuer[] memory)
+    {
+        if (subject != ISMART(token).onchainID()) revert InvalidSubjectAddress();
+        address[] storage issuerAddrs = _issuersByClaimTopic[claimTopic];
+        IClaimIssuer[] memory issuers = new IClaimIssuer[](issuerAddrs.length);
+        uint256 issuerAddrsLength = issuerAddrs.length;
+        for (uint256 i = 0; i < issuerAddrsLength;) {
+            issuers[i] = IClaimIssuer(issuerAddrs[i]);
+            unchecked { ++i; }
+        }
+        return issuers;
+    }
 
     /// @notice Adds an issuer to the list for a specific claim topic
     /// @param claimTopic The claim topic to add the issuer to
