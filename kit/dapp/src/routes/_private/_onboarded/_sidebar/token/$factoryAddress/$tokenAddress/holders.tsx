@@ -1,7 +1,9 @@
 import { createDataTableSearchParams } from "@/components/data-table/utils/data-table-url-state";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { TokenHoldersTable } from "@/components/tables/token-holders";
+import { orpc } from "@/orpc/orpc-client";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 
 /**
@@ -52,9 +54,14 @@ export const Route = createFileRoute(
  * @returns Data table component for token holders
  */
 function RouteComponent() {
-  const { asset } = useLoaderData({
+  const { asset: loaderAsset } = useLoaderData({
     from: "/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress",
   });
+  // Keep data fresh so UI reacts to invalidations after mutations
+  const { data: queriedAsset } = useQuery(
+    orpc.token.read.queryOptions({ input: { tokenAddress: loaderAsset.id } })
+  );
+  const asset = queriedAsset ?? loaderAsset;
 
   return <TokenHoldersTable token={asset} />;
 }
