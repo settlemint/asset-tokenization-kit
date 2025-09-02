@@ -82,9 +82,6 @@ export const search = authRouter.user.search
 
     // Transform results to include human-readable roles
     return result.map(({ user, kyc }) => {
-      if (!user.wallet) {
-        throw new Error(`User ${user.id} has no wallet`);
-      }
       return {
         id: user.id,
         name:
@@ -96,6 +93,15 @@ export const search = authRouter.user.search
         wallet: user.wallet,
         firstName: kyc?.firstName,
         lastName: kyc?.lastName,
+        // Identity fields - returning default values for now
+        // TODO: To fetch actual identity data, restore TheGraph integration:
+        // 1. Add theGraphMiddleware to the middleware chain
+        // 2. Query TheGraph for accounts with READ_ACCOUNTS_QUERY
+        // 3. Map identity data from TheGraph response to these fields
+        // See user.list.ts or user.read.ts for implementation reference
+        identity: undefined,
+        claims: [],
+        isRegistered: false,
       } as User;
     });
   });
