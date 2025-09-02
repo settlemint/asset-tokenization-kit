@@ -111,8 +111,8 @@
       "title": "Deploy system"
     },
     "system-settings": {
-      "description": "Set up system parameters and settings",
-      "title": "Configure system"
+      "description": "Set up platform preferences and settings",
+      "title": "Configure platform"
     },
     "wallet": {
       "description": "View your blockchain wallet",
@@ -169,7 +169,7 @@
     "admin-capability-admins": "Invite additional admins",
     "admin-capability-compliance": "Manage compliance and identity modules",
     "contracts-live-message": "The smart contracts powering your platform are now live on the blockchain.",
-    "configure-system": "Configure system"
+    "configure-platform": "Configure platform"
   },
   "system-addons": {
     "addon-deployment": {

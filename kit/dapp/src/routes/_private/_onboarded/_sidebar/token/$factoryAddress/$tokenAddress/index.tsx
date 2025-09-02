@@ -8,9 +8,8 @@ import { AssetSupplyChangesAreaChart } from "@/components/stats/charts/asset-sup
 import { AssetTotalSupplyAreaChart } from "@/components/stats/charts/asset-total-supply-area-chart";
 import { AssetTotalVolumeAreaChart } from "@/components/stats/charts/asset-total-volume-area-chart";
 import { AssetWalletDistributionChart } from "@/components/stats/charts/asset-wallet-distribution-chart";
-import { orpc } from "@/orpc/orpc-client";
-import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, useLoaderData } from "@tanstack/react-router";
+import { useTokenLoaderQuery } from "@/hooks/use-token-loader-query";
+import { createFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -90,19 +89,8 @@ export const Route = createFileRoute(
  */
 
 function RouteComponent() {
-  const { asset: loaderAsset } = useLoaderData({
-    from: "/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress",
-  });
+  const { asset } = useTokenLoaderQuery();
   const { t } = useTranslation(["tokens", "assets", "common", "stats"]);
-
-  // Subscribe to live asset so UI reacts to invalidations from actions
-  const { data: queriedAsset } = useQuery(
-    orpc.token.read.queryOptions({
-      input: { tokenAddress: loaderAsset.id },
-    })
-  );
-
-  const asset = queriedAsset ?? loaderAsset;
 
   return (
     <>

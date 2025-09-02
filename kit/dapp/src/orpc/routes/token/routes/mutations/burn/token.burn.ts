@@ -29,6 +29,7 @@ import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permiss
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { call } from "@orpc/server";
+import { parseUnits } from "viem";
 import { read } from "../../token.read";
 
 const TOKEN_SINGLE_BURN_MUTATION = portalGraphql(`
@@ -89,7 +90,8 @@ export const burn = tokenRouter.token.burn
 
   .handler(async ({ input, context, errors }) => {
     const { contract, walletVerification, addresses, amounts } = input;
-    const { auth } = context;
+    const { auth, token } = context;
+    const tokenDecimals = token.decimals;
 
     // OPERATION STRATEGY: Determine batch vs single operation to optimize gas costs
     const isBatch = addresses.length > 1;
@@ -114,7 +116,9 @@ export const burn = tokenRouter.token.burn
           address: contract,
           from: sender.wallet,
           userAddresses: addresses,
-          amounts: amounts.map((a) => a.toString()),
+          amounts: amounts.map((a) =>
+            parseUnits(a.toString(), tokenDecimals).toString()
+          ),
         },
         {
           // VERIFICATION DELEGATION: Portal middleware handles verification enrichment
@@ -142,7 +146,7 @@ export const burn = tokenRouter.token.burn
           address: contract,
           from: sender.wallet,
           userAddress,
-          amount: amount.toString(),
+          amount: parseUnits(amount.toString(), tokenDecimals).toString(),
         },
         {
           // SAME VERIFICATION PATTERN: Middleware enrichment works for all mutation types
