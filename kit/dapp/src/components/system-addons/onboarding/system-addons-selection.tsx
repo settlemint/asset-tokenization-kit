@@ -157,6 +157,7 @@ export function SystemAddonsSelection() {
                   await refreshUserState();
                   void navigate({ to: "/onboarding" });
                 }}
+                disabled={isAddonsCreating}
               >
                 {t("common:actions.skip")}
               </Button>
