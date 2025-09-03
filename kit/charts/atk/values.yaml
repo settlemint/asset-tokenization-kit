@@ -469,7 +469,7 @@ observability:
       image:
         registry: docker.io
         repository: victoriametrics/victoria-metrics
-        tag: "v1.125.0"
+        tag: "v1.125.1"
 
   # https://github.com/grafana/loki/blob/main/production/helm/loki/values.yaml
   loki:
