@@ -63,8 +63,8 @@ describe("normalizeDecimalInput", () => {
     expect(normalizeDecimalInput(" 1,234.56 ", "en-US")).toBe(" 1234.56 ");
 
     // Only decimal separator
-    expect(normalizeDecimalInput(".", "en-US")).toBe(".");
-    expect(normalizeDecimalInput(",", "de-DE")).toBe(".");
+    expect(normalizeDecimalInput(".", "en-US")).toBe("");
+    expect(normalizeDecimalInput(",", "de-DE")).toBe("");
 
     // Large numbers
     expect(normalizeDecimalInput("1,000,000,000.99", "en-US")).toBe(
@@ -93,5 +93,37 @@ describe("normalizeDecimalInput", () => {
     expect(normalizeDecimalInput("1e10", "en-US")).toBe("1e10");
     expect(normalizeDecimalInput("1.23e-4", "en-US")).toBe("1.23e-4");
     expect(normalizeDecimalInput("1,23e-4", "de-DE")).toBe("1.23e-4");
+  });
+
+  test("removes trailing decimal points for all locales", () => {
+    // en-US format - uses period as decimal separator
+    expect(normalizeDecimalInput("1234.", "en-US")).toBe("1234");
+    expect(normalizeDecimalInput("0.", "en-US")).toBe("0");
+    expect(normalizeDecimalInput("1,000.", "en-US")).toBe("1000");
+    expect(normalizeDecimalInput("-1234.", "en-US")).toBe("-1234");
+    expect(normalizeDecimalInput("+1234.", "en-US")).toBe("+1234");
+
+    // de-DE format - uses comma as decimal separator
+    expect(normalizeDecimalInput("1234,", "de-DE")).toBe("1234");
+    expect(normalizeDecimalInput("0,", "de-DE")).toBe("0");
+    expect(normalizeDecimalInput("1.000,", "de-DE")).toBe("1000");
+    expect(normalizeDecimalInput("-1234,", "de-DE")).toBe("-1234");
+    expect(normalizeDecimalInput("+1234,", "de-DE")).toBe("+1234");
+
+    // ar-SA format - uses Arabic decimal separator
+    expect(normalizeDecimalInput("١٢٣٤٫", "ar-SA")).toBe("1234");
+    expect(normalizeDecimalInput("٠٫", "ar-SA")).toBe("0");
+    expect(normalizeDecimalInput("١٬٠٠٠٫", "ar-SA")).toBe("1000");
+    expect(normalizeDecimalInput("-١٢٣٤٫", "ar-SA")).toBe("-1234");
+
+    // ja-JP format - typically same as en-US
+    expect(normalizeDecimalInput("1234.", "ja-JP")).toBe("1234");
+    expect(normalizeDecimalInput("0.", "ja-JP")).toBe("0");
+    expect(normalizeDecimalInput("1,000.", "ja-JP")).toBe("1000");
+
+    // Edge case - just a decimal separator should remain as is for user experience
+    expect(normalizeDecimalInput(".", "en-US")).toBe("");
+    expect(normalizeDecimalInput(",", "de-DE")).toBe("");
+    expect(normalizeDecimalInput("٫", "ar-SA")).toBe("");
   });
 });
