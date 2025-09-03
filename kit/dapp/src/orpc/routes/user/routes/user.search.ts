@@ -1,7 +1,9 @@
 import { kycProfiles, user } from "@/lib/db/schema";
+import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { roles } from "@atk/zod/access-control-roles";
 import { getUserRole } from "@atk/zod/user-roles";
 import { desc, eq, ilike, or } from "drizzle-orm";
 
@@ -76,6 +78,14 @@ type QueryResultRow = {
  * - **UI Optimized**: Perfect for Select, Autocomplete, and search components
  */
 export const search = authRouter.user.search
+  .use(
+    blockchainPermissionsMiddleware({
+      requiredRoles: { any: [...roles] }, // at least one blockchain role is required to search for users
+      getAccessControl: ({ context }) => {
+        return context.system?.systemAccessManager?.accessControl;
+      },
+    })
+  )
   .use(
     offChainPermissionsMiddleware({ requiredPermissions: { user: ["list"] } })
   )
