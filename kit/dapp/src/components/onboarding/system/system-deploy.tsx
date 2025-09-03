@@ -56,6 +56,7 @@ export function SystemDeploy() {
             onClick={() => {
               void navigate({ to: "/onboarding" });
             }}
+            disabled={isCreatingSystem}
           >
             {t("common:actions.skip")}
           </Button>
