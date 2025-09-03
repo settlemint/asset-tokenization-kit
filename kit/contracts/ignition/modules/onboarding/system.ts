@@ -87,7 +87,7 @@ const ATKOnboardingSystemModule = buildModule(
     );
 
     const trustedIssuersRegistry = m.contractAt(
-      "ATKTrustedIssuersRegistryImplementation",
+      "ATKSystemTrustedIssuersRegistryImplementation",
       trustedIssuersRegistryAddress,
       { id: "trustedIssuersRegistry" }
     );

@@ -7,7 +7,7 @@ import {
     ComplianceImplementationNotSet,
     IdentityRegistryImplementationNotSet,
     IdentityRegistryStorageImplementationNotSet,
-    TrustedIssuersRegistryImplementationNotSet,
+    SystemTrustedIssuersRegistryImplementationNotSet,
     TrustedIssuersMetaRegistryImplementationNotSet,
     IdentityFactoryImplementationNotSet,
     IdentityImplementationNotSet,
@@ -66,7 +66,11 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// @notice The default contract address for the trusted issuers registry module's logic (implementation).
     /// @dev This address will be passed to newly created `ATKSystem` instances as the initial trusted issuers
     /// registry implementation.
-    address public immutable DEFAULT_TRUSTED_ISSUERS_REGISTRY_IMPLEMENTATION;
+    address public immutable DEFAULT_SYSTEM_TRUSTED_ISSUERS_REGISTRY_IMPLEMENTATION;
+    /// @notice The default contract address for the trusted issuers meta registry module's logic.
+    /// @dev This address will be passed to newly created `ATKSystem` instances as the initial trusted issuers
+    /// meta registry implementation.
+    address public immutable DEFAULT_TRUSTED_ISSUERS_META_REGISTRY_IMPLEMENTATION;
     /// @notice The default contract address for the topic scheme registry module's logic (implementation).
     /// @dev This address will be passed to newly created `ATKSystem` instances as the initial topic scheme
     /// registry implementation.
@@ -103,10 +107,7 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// @dev This address will be passed to newly created `ATKSystem` instances as the initial token factory
     /// registry implementation.
     address public immutable DEFAULT_TOKEN_FACTORY_REGISTRY_IMPLEMENTATION;
-    /// @notice The default contract address for the trusted issuers meta registry module's logic.
-    /// @dev This address will be passed to newly created `ATKSystem` instances as the initial trusted issuers
-    /// meta registry implementation.
-    address public immutable DEFAULT_TRUSTED_ISSUERS_META_REGISTRY_IMPLEMENTATION;
+
 
     /// @notice An array storing the addresses of all `ATKSystem` instances that have been created by this factory.
     /// @dev This allows for easy tracking and retrieval of deployed systems.
@@ -126,7 +127,7 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// @param identityRegistryImplementation_ The default address for the identity registry module's logic contract.
     /// @param identityRegistryStorageImplementation_ The default address for the identity registry storage module's
     /// logic contract.
-    /// @param trustedIssuersRegistryImplementation_ The default address for the trusted issuers registry module's logic
+    /// @param systemTrustedIssuersRegistryImplementation_ The default address for the system trusted issuers registry module's logic
     /// contract.
     /// @param trustedIssuersMetaRegistryImplementation_ The default address for the trusted issuers meta registry
     /// module's logic contract.
@@ -151,7 +152,7 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         address complianceImplementation_,
         address identityRegistryImplementation_,
         address identityRegistryStorageImplementation_,
-        address trustedIssuersRegistryImplementation_,
+        address systemTrustedIssuersRegistryImplementation_,
         address trustedIssuersMetaRegistryImplementation_,
         address topicSchemeRegistryImplementation_,
         address identityFactoryImplementation_,
@@ -172,7 +173,7 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         if (complianceImplementation_ == address(0)) revert ComplianceImplementationNotSet();
         if (identityRegistryImplementation_ == address(0)) revert IdentityRegistryImplementationNotSet();
         if (identityRegistryStorageImplementation_ == address(0)) revert IdentityRegistryStorageImplementationNotSet();
-        if (trustedIssuersRegistryImplementation_ == address(0)) revert TrustedIssuersRegistryImplementationNotSet();
+        if (systemTrustedIssuersRegistryImplementation_ == address(0)) revert SystemTrustedIssuersRegistryImplementationNotSet();
         if (topicSchemeRegistryImplementation_ == address(0)) revert TopicSchemeRegistryImplementationNotSet();
         if (identityFactoryImplementation_ == address(0)) revert IdentityFactoryImplementationNotSet();
         if (identityImplementation_ == address(0)) revert IdentityImplementationNotSet();
@@ -195,7 +196,7 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         DEFAULT_COMPLIANCE_IMPLEMENTATION = complianceImplementation_;
         DEFAULT_IDENTITY_REGISTRY_IMPLEMENTATION = identityRegistryImplementation_;
         DEFAULT_IDENTITY_REGISTRY_STORAGE_IMPLEMENTATION = identityRegistryStorageImplementation_;
-        DEFAULT_TRUSTED_ISSUERS_REGISTRY_IMPLEMENTATION = trustedIssuersRegistryImplementation_;
+        DEFAULT_SYSTEM_TRUSTED_ISSUERS_REGISTRY_IMPLEMENTATION = systemTrustedIssuersRegistryImplementation_;
         DEFAULT_TOPIC_SCHEME_REGISTRY_IMPLEMENTATION = topicSchemeRegistryImplementation_;
         DEFAULT_IDENTITY_FACTORY_IMPLEMENTATION = identityFactoryImplementation_;
         DEFAULT_IDENTITY_IMPLEMENTATION = identityImplementation_;
@@ -246,7 +247,7 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
             DEFAULT_COMPLIANCE_IMPLEMENTATION,
             DEFAULT_IDENTITY_REGISTRY_IMPLEMENTATION,
             DEFAULT_IDENTITY_REGISTRY_STORAGE_IMPLEMENTATION,
-            DEFAULT_TRUSTED_ISSUERS_REGISTRY_IMPLEMENTATION,
+            DEFAULT_SYSTEM_TRUSTED_ISSUERS_REGISTRY_IMPLEMENTATION,
             DEFAULT_TRUSTED_ISSUERS_META_REGISTRY_IMPLEMENTATION,
             DEFAULT_TOPIC_SCHEME_REGISTRY_IMPLEMENTATION,
             DEFAULT_IDENTITY_FACTORY_IMPLEMENTATION,
@@ -326,8 +327,8 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
 
     /// @notice Returns the default trusted issuers registry implementation address
     /// @return The address of the default trusted issuers registry implementation
-    function defaultTrustedIssuersRegistryImplementation() external view returns (address) {
-        return DEFAULT_TRUSTED_ISSUERS_REGISTRY_IMPLEMENTATION;
+    function defaultSystemTrustedIssuersRegistryImplementation() external view returns (address) {
+        return DEFAULT_SYSTEM_TRUSTED_ISSUERS_REGISTRY_IMPLEMENTATION;
     }
 
     /// @notice Returns the default trusted issuers meta registry implementation address

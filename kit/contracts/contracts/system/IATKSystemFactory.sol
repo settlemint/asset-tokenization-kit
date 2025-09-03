@@ -39,7 +39,7 @@ interface IATKSystemFactory {
     /// @dev This address will be passed to newly created `ATKSystem` instances as the initial trusted issuers
     /// registry implementation.
     /// @return address The default trusted issuers registry implementation address.
-    function defaultTrustedIssuersRegistryImplementation() external view returns (address);
+    function defaultSystemTrustedIssuersRegistryImplementation() external view returns (address);
 
     /// @notice The default contract address for the trusted issuers meta registry module's logic (implementation).
     /// @dev This address will be passed to newly created `ATKSystem` instances as the initial trusted issuers meta

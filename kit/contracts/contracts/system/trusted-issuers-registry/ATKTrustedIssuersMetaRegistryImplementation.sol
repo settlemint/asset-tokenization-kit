@@ -26,16 +26,16 @@ import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged
 /// @title ATK Trusted Issuers Meta Registry Implementation
 /// @author SettleMint
 /// @notice Implementation contract for the registry-of-registries pattern that extends subject-aware
-///         trusted issuers registry functionality for managing both global and contract-specific trusted issuers.
+///         trusted issuers registry functionality for managing both system and contract-specific trusted issuers.
 /// @dev This contract serves as a subject-aware meta-registry that:
 ///      - Extends ISMARTTrustedIssuersRegistry with subject-aware functionality
-///      - Stores a global trusted issuers registry for system-wide issuers
+///      - Stores a system trusted issuers registry for system-wide issuers
 ///      - Maps contract addresses to their specific trusted issuers registries
 ///      - Provides aggregated subject-aware query functions for efficient validation
 ///      - Enables lightweight token implementations by centralizing registry management
 ///
 ///      Access Control:
-///      - SYSTEM_MANAGER_ROLE: Can set global registry and manage system-level registries
+///      - SYSTEM_MANAGER_ROLE: Can set system registry and manage system-level registries
 ///      - TOKEN_FACTORY_MODULE_ROLE: Can register contract-specific registries (for token creation)
 ///      - SYSTEM_MODULE_ROLE: Can set registries during system bootstrap
 contract ATKTrustedIssuersMetaRegistryImplementation is
@@ -47,10 +47,10 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
 {
     // --- Storage Variables ---
 
-    /// @notice The global trusted issuers registry that applies system-wide
+    /// @notice The system trusted issuers registry that applies system-wide
     /// @dev This registry provides trusted issuers for all contracts unless overridden
-    ///      by contract-specific registries. Can be address(0) if no global registry is set.
-    ISMARTTrustedIssuersRegistry private _globalRegistry;
+    ///      by contract-specific registries. Can be address(0) if no system registry is set.
+    ISMARTTrustedIssuersRegistry private _systemRegistry;
 
     /// @notice Mapping from contract addresses to their specific trusted issuers registries
     /// @dev Allows individual contracts (typically tokens) to have dedicated registries.
@@ -58,6 +58,9 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     mapping(address => ISMARTTrustedIssuersRegistry registry) private _contractRegistries;
 
     // --- Errors ---
+
+        /// @notice Error triggered when trying to use aggregation functions on meta-registry
+    error MetaRegistryCannotProvideCompleteAnswer();
 
     /// @notice Error triggered when attempting to set a registry to an invalid address
     /// @param registry The invalid registry address
@@ -83,21 +86,21 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     /// @dev This function acts as the constructor for the upgradeable contract and can only be called once.
     ///      Initializes all parent contracts and sets up access management.
     /// @param accessManager The address of the access manager for role-based permissions
-    /// @param globalRegistry The address of the global trusted issuers registry
-    function initialize(address accessManager, address globalRegistry) public initializer {
+    /// @param systemRegistry The address of the system trusted issuers registry
+    function initialize(address accessManager, address systemRegistry) public initializer {
         __ATKSystemAccessManaged_init(accessManager);
         __ERC165_init_unchained();
-        _globalRegistry = ISMARTTrustedIssuersRegistry(globalRegistry);
+        _systemRegistry = ISMARTTrustedIssuersRegistry(systemRegistry);
 
-        emit GlobalRegistrySet(_msgSender(), address(0), globalRegistry);
+        emit SystemRegistrySet(_msgSender(), address(0), systemRegistry);
     }
 
     // --- Registry Management Functions ---
 
-    /// @notice Sets the global trusted issuers registry
-    /// @dev Part of the meta-registry pattern - manages the global registry that applies to all contracts
-    /// @param registry The address of the global trusted issuers registry (can be address(0) to remove)
-    function setGlobalRegistry(address registry)
+    /// @notice Sets the system trusted issuers registry
+    /// @dev Part of the meta-registry pattern - manages the system registry that applies to all contracts
+    /// @param registry The address of the system trusted issuers registry (can be address(0) to remove)
+    function setSystemRegistry(address registry)
         external
         onlySystemRoles3(
             ATKPeopleRoles.SYSTEM_MANAGER_ROLE,
@@ -105,11 +108,11 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
             ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE
         )
     {
-        // registry can be address(0) to remove the global registry
-        address oldRegistry = address(_globalRegistry);
-        _globalRegistry = ISMARTTrustedIssuersRegistry(registry);
+        // registry can be address(0) to remove the system registry
+        address oldRegistry = address(_systemRegistry);
+        _systemRegistry = ISMARTTrustedIssuersRegistry(registry);
 
-        emit GlobalRegistrySet(_msgSender(), oldRegistry, registry);
+        emit SystemRegistrySet(_msgSender(), oldRegistry, registry);
     }
 
     /// @notice Sets a contract-specific trusted issuers registry
@@ -150,10 +153,10 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
 
     // --- Registry Getters ---
 
-    /// @notice Gets the global trusted issuers registry
-    /// @return The global trusted issuers registry address
-    function getGlobalRegistry() external view returns (ISMARTTrustedIssuersRegistry) {
-        return _globalRegistry;
+    /// @notice Gets the system trusted issuers registry
+    /// @return The system trusted issuers registry address
+    function getSystemRegistry() external view returns (ISMARTTrustedIssuersRegistry) {
+        return _systemRegistry;
     }
 
     /// @notice Gets the contract-specific trusted issuers registry
@@ -169,13 +172,12 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
 
     // --- ISMARTTrustedIssuersRegistry Implementation ---
 
-    /// @inheritdoc IATKTrustedIssuersMetaRegistry
-    function getTrustedIssuers(address _subject) external view override returns (IClaimIssuer[] memory) {
-        // Meta-registry cannot provide complete answer across all registries
-        revert MetaRegistryCannotProvideCompleteAnswer();
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    function getTrustedIssuers(address _subject) external view returns (IClaimIssuer[] memory) {
+        return _getTrustedIssuers(_subject);
     }
 
-    /// @inheritdoc IATKTrustedIssuersMetaRegistry
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
     function getTrustedIssuersForClaimTopic(address _subject, uint256 claimTopic)
         external
         view
@@ -186,33 +188,57 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     }
 
 
-    /// @inheritdoc IATKTrustedIssuersMetaRegistry
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
     function isTrustedIssuer(address _subject, address _issuer) external view override returns (bool) {
         return _isTrustedIssuer(_subject, _issuer);
     }
 
-    /// @inheritdoc IATKTrustedIssuersMetaRegistry
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
     function hasClaimTopic(address _subject, address _issuer, uint256 _claimTopic) external view override returns (bool) {
         return _hasClaimTopic(_subject, _issuer, _claimTopic);
     }
 
-    /// @notice Error triggered when trying to use aggregation functions on meta-registry
-    error MetaRegistryCannotProvideCompleteAnswer();
-
     // --- Internal Helper Functions ---
 
+    function _getTrustedIssuers(address _subject) internal view returns (IClaimIssuer[] memory) {
+        // If subject is address(0), only return system registry issuers (system-only verification)
+        if (_subject == address(0)) {
+            if (address(_systemRegistry) != address(0)) {
+                return _systemRegistry.getTrustedIssuers(_subject);
+            }
+            return new IClaimIssuer[](0);
+        }
+
+        IClaimIssuer[] memory contractIssuers;
+        IClaimIssuer[] memory systemIssuers;
+
+        // Get issuers from contract-specific registry (using subject as the contract address)
+        ISMARTTrustedIssuersRegistry contractRegistry = _contractRegistries[_subject];
+        if (address(contractRegistry) != address(0)) {
+            contractIssuers = contractRegistry.getTrustedIssuers(_subject);
+        }
+
+        // Get issuers from system registry
+        if (address(_systemRegistry) != address(0)) {
+            systemIssuers = _systemRegistry.getTrustedIssuers(_subject);
+        }
+
+        // Merge arrays and remove duplicates
+        return _mergeIssuerArrays(contractIssuers, systemIssuers);
+    }
+
     /// @notice Checks if an issuer is trusted for a given subject
-    /// @dev Meta-registry implementation that checks both contract-specific and global registries.
-    ///      For subject = address(0), only global registry is checked.
+    /// @dev Meta-registry implementation that checks both contract-specific and system registries.
+    ///      For subject = address(0), only system registry is checked.
     ///      For other subjects, both registries are checked.
     /// @param subject The subject address to check
     /// @param _issuer The issuer address to check
     /// @return True if the issuer is trusted for the given subject, false otherwise
     function _isTrustedIssuer(address subject, address _issuer) internal view returns (bool) {
-        // If subject is address(0), only check global registry (global-only verification)
+        // If subject is address(0), only check system registry (system-only verification)
         if (subject == address(0)) {
-            if (address(_globalRegistry) != address(0)) {
-                return _globalRegistry.isTrustedIssuer(subject, _issuer);
+            if (address(_systemRegistry) != address(0)) {
+                return _systemRegistry.isTrustedIssuer(subject, _issuer);
             }
             return false;
         }
@@ -225,9 +251,9 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
             }
         }
 
-        // Then check global registry
-        if (address(_globalRegistry) != address(0)) {
-            return _globalRegistry.isTrustedIssuer(subject, _issuer);
+        // Then check system registry
+        if (address(_systemRegistry) != address(0)) {
+            return _systemRegistry.isTrustedIssuer(subject, _issuer);
         }
 
         return false;
@@ -239,10 +265,10 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     /// @param _claimTopic The claim topic to check
     /// @return True if the issuer is trusted for the given subject and claim topic, false otherwise
     function _hasClaimTopic(address subject, address _issuer, uint256 _claimTopic) internal view returns (bool) {
-        // If subject is address(0), only check global registry (global-only verification)
+        // If subject is address(0), only check system registry (system-only verification)
         if (subject == address(0)) {
-            if (address(_globalRegistry) != address(0)) {
-                return _globalRegistry.hasClaimTopic(subject, _issuer, _claimTopic);
+            if (address(_systemRegistry) != address(0)) {
+                return _systemRegistry.hasClaimTopic(subject, _issuer, _claimTopic);
             }
             return false;
         }
@@ -255,9 +281,9 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
             }
         }
 
-        // Then check global registry
-        if (address(_globalRegistry) != address(0)) {
-            return _globalRegistry.hasClaimTopic(subject, _issuer, _claimTopic);
+        // Then check system registry
+        if (address(_systemRegistry) != address(0)) {
+            return _systemRegistry.hasClaimTopic(subject, _issuer, _claimTopic);
         }
 
         return false;
@@ -267,24 +293,24 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     /// @param subject The subject address to check
     /// @param claimTopic The claim topic to check
     /// @return Array of trusted issuers for the given subject and claim topic
-    /// @dev Meta-registry implementation that checks both contract-specific and global registries.
-    ///      For subject = address(0), only global registry is checked.
+    /// @dev Meta-registry implementation that checks both contract-specific and system registries.
+    ///      For subject = address(0), only system registry is checked.
     ///      For other subjects (identity contracts), both registries are checked and merged.
     function _getTrustedIssuersForClaimTopic(address subject, uint256 claimTopic)
         internal
         view
         returns (IClaimIssuer[] memory)
     {
-        // If subject is address(0), only return global registry issuers (global-only verification)
+        // If subject is address(0), only return system registry issuers (system-only verification)
         if (subject == address(0)) {
-            if (address(_globalRegistry) != address(0)) {
-                return _globalRegistry.getTrustedIssuersForClaimTopic(subject, claimTopic);
+            if (address(_systemRegistry) != address(0)) {
+                return _systemRegistry.getTrustedIssuersForClaimTopic(subject, claimTopic);
             }
             return new IClaimIssuer[](0);
         }
 
         IClaimIssuer[] memory contractIssuers;
-        IClaimIssuer[] memory globalIssuers;
+        IClaimIssuer[] memory systemIssuers;
 
         // Get issuers from contract-specific registry (using subject as the contract address)
         ISMARTTrustedIssuersRegistry contractRegistry = _contractRegistries[subject];
@@ -292,13 +318,13 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
             contractIssuers = contractRegistry.getTrustedIssuersForClaimTopic(subject, claimTopic);
         }
 
-        // Get issuers from global registry
-        if (address(_globalRegistry) != address(0)) {
-            globalIssuers = _globalRegistry.getTrustedIssuersForClaimTopic(subject, claimTopic);
+        // Get issuers from system registry
+        if (address(_systemRegistry) != address(0)) {
+            systemIssuers = _systemRegistry.getTrustedIssuersForClaimTopic(subject, claimTopic);
         }
 
         // Merge arrays and remove duplicates
-        return _mergeIssuerArrays(contractIssuers, globalIssuers);
+        return _mergeIssuerArrays(contractIssuers, systemIssuers);
     }
 
     /// @notice Merges two arrays of IClaimIssuer addresses and removes duplicates

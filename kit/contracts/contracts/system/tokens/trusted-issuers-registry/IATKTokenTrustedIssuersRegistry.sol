@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 // OnchainID imports
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
-// Interface imports  
+// Interface imports
 import { IATKTrustedIssuersRegistry } from "../../trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
 import { IATKToken } from "../IATKToken.sol";
 
@@ -15,7 +15,7 @@ import { IATKToken } from "../IATKToken.sol";
 ///      Token registries validate that the subject parameter matches the token's onchainID
 ///      and provide token-specific access control via GOVERNANCE_ROLE.
 interface IATKTokenTrustedIssuersRegistry is IATKTrustedIssuersRegistry {
-    
+
     // --- Token-Specific Modification Functions ---
 
     /// @notice Adds a new trusted issuer to the registry with a specified list of claim topics they are authorized for

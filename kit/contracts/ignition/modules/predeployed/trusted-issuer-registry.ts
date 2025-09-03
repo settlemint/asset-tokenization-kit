@@ -7,7 +7,7 @@ const TrustedIssuerRegistryModule = buildModule(
     const { forwarder } = m.useModule(ForwarderModule);
 
     const trustedIssuerRegistry = m.contract(
-      "ATKTrustedIssuersRegistryImplementation",
+      "ATKSystemTrustedIssuersRegistryImplementation",
       [forwarder]
     );
 

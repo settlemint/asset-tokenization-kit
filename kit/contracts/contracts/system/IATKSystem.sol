@@ -91,7 +91,8 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @param complianceProxy The address of the deployed ATKComplianceProxy contract.
     /// @param identityRegistryProxy The address of the deployed ATKIdentityRegistryProxy contract.
     /// @param identityRegistryStorageProxy The address of the deployed ATKIdentityRegistryStorageProxy contract.
-    /// @param trustedIssuersRegistryProxy The address of the deployed ATKTrustedIssuersRegistryProxy contract.
+    /// @param systemTrustedIssuersRegistryProxy The address of the deployed ATKSystemTrustedIssuersRegistryProxy contract.
+    /// @param trustedIssuersMetaRegistryProxy The address of the deployed ATKTrustedIssuersMetaRegistryProxy contract.
     /// @param topicSchemeRegistryProxy The address of the deployed ATKTopicSchemeRegistryProxy contract.
     /// @param identityFactoryProxy The address of the deployed ATKIdentityFactoryProxy contract.
     /// @param tokenFactoryRegistryProxy The address of the deployed ATKTokenFactoryRegistryProxy contract.
@@ -103,7 +104,8 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
         address indexed complianceProxy,
         address indexed identityRegistryProxy,
         address identityRegistryStorageProxy,
-        address trustedIssuersRegistryProxy,
+        address systemTrustedIssuersRegistryProxy,
+        address trustedIssuersMetaRegistryProxy,
         address topicSchemeRegistryProxy,
         address identityFactoryProxy,
         address tokenFactoryRegistryProxy,
@@ -199,9 +201,9 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// To interact with the trusted issuers registry (e.g., to check if an issuer is trusted or to add/remove
     /// issuers, depending on its features), you should use this proxy address. It will forward calls to the
     /// current logic implementation.
-    /// @return trustedIssuersRegistryProxyAddress The blockchain address of the trusted issuers registry module's
+    /// @return systemTrustedIssuersRegistryProxyAddress The blockchain address of the system trusted issuers registry module's
     /// proxy.
-    function trustedIssuersRegistry() external view returns (address trustedIssuersRegistryProxyAddress);
+    function systemTrustedIssuersRegistry() external view returns (address systemTrustedIssuersRegistryProxyAddress);
 
     /// @notice Retrieves the smart contract address of the proxy for the trusted issuers meta registry module.
     /// @dev This function returns the stable, unchanging address of the trusted issuers meta registry's proxy contract.

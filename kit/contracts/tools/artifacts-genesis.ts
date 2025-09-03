@@ -61,7 +61,7 @@ const CONTRACT_ADDRESSES = {
     "0x5e771e1417100000000000000000000000020002",
   ATKIdentityRegistryStorageImplementation:
     "0x5e771e1417100000000000000000000000020003",
-  ATKTrustedIssuersRegistryImplementation:
+  ATKSystemTrustedIssuersRegistryImplementation:
     "0x5e771e1417100000000000000000000000020004",
   ATKIdentityFactoryImplementation:
     "0x5e771e1417100000000000000000000000020005",
@@ -147,8 +147,8 @@ const CONTRACT_FILES = {
     "contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol",
   ATKIdentityRegistryStorageImplementation:
     "contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol",
-  ATKTrustedIssuersRegistryImplementation:
-    "contracts/system/trusted-issuers-registry/ATKTrustedIssuersRegistryImplementation.sol",
+  ATKSystemTrustedIssuersRegistryImplementation:
+    "contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol",
   ATKIdentityFactoryImplementation:
     "contracts/system/identity-factory/ATKIdentityFactoryImplementation.sol",
   ATKIdentityImplementation:
@@ -507,7 +507,7 @@ class ContractDeployer {
           CONTRACT_ADDRESSES.ATKComplianceImplementation,
           CONTRACT_ADDRESSES.ATKIdentityRegistryImplementation,
           CONTRACT_ADDRESSES.ATKIdentityRegistryStorageImplementation,
-          CONTRACT_ADDRESSES.ATKTrustedIssuersRegistryImplementation,
+          CONTRACT_ADDRESSES.ATKSystemTrustedIssuersRegistryImplementation,
           CONTRACT_ADDRESSES.ATKTopicSchemeRegistryImplementation,
           CONTRACT_ADDRESSES.ATKIdentityFactoryImplementation,
           CONTRACT_ADDRESSES.ATKIdentityImplementation,

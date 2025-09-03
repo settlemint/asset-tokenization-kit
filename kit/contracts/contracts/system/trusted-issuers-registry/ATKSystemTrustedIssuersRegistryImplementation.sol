@@ -257,14 +257,14 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
 
     // --- Subject-Aware Functions (ISMARTTrustedIssuersRegistry implementation) ---
 
-    /// @inheritdoc IATKSystemTrustedIssuersRegistry
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
     function getTrustedIssuers(address _subject) external view override returns (IClaimIssuer[] memory) {
         // System registry ignores subject parameter - returns all system issuers
         return this.getTrustedIssuers();
     }
 
-    /// @inheritdoc IATKSystemTrustedIssuersRegistry
-    function getTrustedIssuersForClaimTopic(address _subject, uint256 claimTopic)
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    function getTrustedIssuersForClaimTopic(address, uint256 claimTopic)
         external
         view
         override
@@ -274,14 +274,14 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
         return this.getTrustedIssuersForClaimTopic(claimTopic);
     }
 
-    /// @inheritdoc IATKSystemTrustedIssuersRegistry
-    function isTrustedIssuer(address _subject, address _issuer) external view override returns (bool) {
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    function isTrustedIssuer(address, address _issuer) external view override returns (bool) {
         // System registry ignores subject parameter - checks system issuer status
         return this.isTrustedIssuer(_issuer);
     }
 
-    /// @inheritdoc IATKSystemTrustedIssuersRegistry
-    function hasClaimTopic(address _subject, address _issuer, uint256 _claimTopic) external view override returns (bool) {
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    function hasClaimTopic(address, address _issuer, uint256 _claimTopic) external view override returns (bool) {
         // System registry ignores subject parameter - checks system claim topic status
         return this.hasClaimTopic(_issuer, _claimTopic);
     }
@@ -365,7 +365,7 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
         return interfaceId == type(IATKSystemTrustedIssuersRegistry).interfaceId
             || interfaceId == type(IATKTrustedIssuersRegistry).interfaceId
             || interfaceId == type(ISMARTTrustedIssuersRegistry).interfaceId
-            || interfaceId == type(IClaimAuthorizer).interfaceId 
+            || interfaceId == type(IClaimAuthorizer).interfaceId
             || interfaceId == type(IATKSystemAccessManaged).interfaceId
             || super.supportsInterface(interfaceId);
     }

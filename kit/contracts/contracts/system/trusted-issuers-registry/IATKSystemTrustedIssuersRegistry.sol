@@ -14,7 +14,7 @@ import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManag
 /// @dev Extends the base IATKTrustedIssuersRegistry to provide system-specific functionality.
 ///      The system registry operates on system-wide issuers without subject parameters.
 interface IATKSystemTrustedIssuersRegistry is IATKTrustedIssuersRegistry, IATKSystemAccessManaged {
-    
+
     // --- System Registry Modification Functions ---
     // These functions are system-specific convenience functions that internally use address(0) as subject
 
