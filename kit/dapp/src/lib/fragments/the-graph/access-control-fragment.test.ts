@@ -89,7 +89,7 @@ describe("AccessControlFragment", () => {
             return "";
           });
 
-        expect(fieldNames).toHaveLength(34);
+        expect(fieldNames).toHaveLength(expectedRoles.length);
         expectedRoles.forEach((role) => {
           expect(fieldNames).toContain(role);
         });
