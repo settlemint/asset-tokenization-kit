@@ -1,8 +1,11 @@
-import type { SessionUser } from "@/lib/auth";
 import type { AccessControl } from "@/lib/fragments/the-graph/access-control-fragment";
+import type { SessionUser } from "@/lib/auth/index";
 import { describe, expect, it } from "vitest";
 import {
-  canAccessUser,
+  canReadUserData,
+  canWriteUserData,
+  canReadClaims,
+  canWriteClaims,
   computeIdentityPermissions,
   filterClaimsForUser,
   type IdentityPermissions,
@@ -10,20 +13,11 @@ import {
 
 describe("Identity permissions middleware", () => {
   describe("computeIdentityPermissions", () => {
-    const mockUser: SessionUser = {
-      id: "test-user-id",
-      name: "Test User",
-      email: "test@example.com",
-      emailVerified: false,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+    // Only include fields required by computeIdentityPermissions function
+    const mockUser = {
       wallet: "0x1234567890123456789012345678901234567890",
       role: "admin",
-      pincodeEnabled: false,
-      twoFactorEnabled: false,
-      secretCodesConfirmed: false,
-      banned: false,
-    };
+    } as Pick<SessionUser, "wallet" | "role">;
 
     const createMockAccessControl = (
       identityManagers: string[] = []
@@ -72,69 +66,89 @@ describe("Identity permissions middleware", () => {
       const accessControl = createMockAccessControl([
         "0x1234567890123456789012345678901234567890",
       ]);
-      const userClaimTopics = ["kyc", "aml"];
+      const userTrustedIssuerTopics = ["kyc", "aml"];
 
       const permissions = computeIdentityPermissions(
-        mockUser,
+        mockUser as SessionUser,
         accessControl,
-        userClaimTopics
+        userTrustedIssuerTopics
       );
 
       expect(permissions).toEqual({
-        trustedClaimTopics: [], // Empty array means "all" for identity managers (canSeeAllClaims = true)
-        canSeeAllUsers: true,
-        canSeeAllClaims: true,
+        claims: {
+          read: ["*"], // Can read all claim topics
+          write: ["kyc", "aml"], // Can write topics they're trusted issuer for
+        },
+        userData: {
+          read: true,
+          write: true,
+        },
       });
     });
 
     it("grants user visibility and filtered claims to KYC trusted issuers", () => {
       const accessControl = createMockAccessControl(); // Not an identity manager
-      const userClaimTopics = ["kyc"];
+      const userTrustedIssuerTopics = ["kyc"];
 
       const permissions = computeIdentityPermissions(
-        mockUser,
+        mockUser as SessionUser,
         accessControl,
-        userClaimTopics
+        userTrustedIssuerTopics
       );
 
       expect(permissions).toEqual({
-        trustedClaimTopics: ["kyc"], // Only KYC claims
-        canSeeAllUsers: true, // Can see users for KYC workflow
-        canSeeAllClaims: false, // Cannot see all claims
+        claims: {
+          read: ["kyc"], // Can only read KYC claims
+          write: ["kyc"], // Can only write KYC claims
+        },
+        userData: {
+          read: true, // Can read user data for KYC workflow
+          write: false, // Cannot modify user data
+        },
       });
     });
 
     it("grants user visibility and filtered claims to AML trusted issuers", () => {
       const accessControl = createMockAccessControl();
-      const userClaimTopics = ["aml"];
+      const userTrustedIssuerTopics = ["aml"];
 
       const permissions = computeIdentityPermissions(
-        mockUser,
+        mockUser as SessionUser,
         accessControl,
-        userClaimTopics
+        userTrustedIssuerTopics
       );
 
       expect(permissions).toEqual({
-        trustedClaimTopics: ["aml"],
-        canSeeAllUsers: true, // Can see users for AML workflow
-        canSeeAllClaims: false,
+        claims: {
+          read: ["aml"], // Can only read AML claims
+          write: ["aml"], // Can only write AML claims
+        },
+        userData: {
+          read: true, // Can read user data for AML workflow
+          write: false, // Cannot modify user data
+        },
       });
     });
 
     it("denies access to regular users", () => {
       const accessControl = createMockAccessControl();
-      const userClaimTopics: string[] = [];
+      const userTrustedIssuerTopics: string[] = [];
 
       const permissions = computeIdentityPermissions(
-        mockUser,
+        mockUser as SessionUser,
         accessControl,
-        userClaimTopics
+        userTrustedIssuerTopics
       );
 
       expect(permissions).toEqual({
-        trustedClaimTopics: [],
-        canSeeAllUsers: false,
-        canSeeAllClaims: false,
+        claims: {
+          read: [], // Cannot read any claims
+          write: [], // Cannot write any claims
+        },
+        userData: {
+          read: false, // Cannot read user data
+          write: false, // Cannot write user data
+        },
       });
     });
 
@@ -142,56 +156,191 @@ describe("Identity permissions middleware", () => {
       const accessControl = createMockAccessControl([
         "0x1234567890123456789012345678901234567890",
       ]); // IS identity manager
-      const userClaimTopics = ["kyc", "aml"]; // AND trusted issuer
+      const userTrustedIssuerTopics = ["kyc", "aml"]; // AND trusted issuer
 
       const permissions = computeIdentityPermissions(
-        mockUser,
+        mockUser as SessionUser,
         accessControl,
-        userClaimTopics
+        userTrustedIssuerTopics
       );
 
       // Identity manager wins - gets full access
       expect(permissions).toEqual({
-        trustedClaimTopics: [], // Empty means "all" for identity managers
-        canSeeAllUsers: true,
-        canSeeAllClaims: true, // Identity manager overrides issuer restrictions
+        claims: {
+          read: ["*"], // Can read all claims
+          write: ["kyc", "aml"], // Can write topics they're trusted issuer for
+        },
+        userData: {
+          read: true,
+          write: true, // Identity manager has full write access
+        },
       });
     });
 
     it("handles undefined access control gracefully", () => {
-      const permissions = computeIdentityPermissions(mockUser, undefined, [
+      const permissions = computeIdentityPermissions(mockUser as SessionUser, undefined, [
         "kyc",
       ]);
 
       expect(permissions).toEqual({
-        trustedClaimTopics: ["kyc"],
-        canSeeAllUsers: true, // Still gets user visibility for KYC
-        canSeeAllClaims: false,
+        claims: {
+          read: ["kyc"], // Can read KYC claims
+          write: ["kyc"], // Can write KYC claims
+        },
+        userData: {
+          read: true, // Still gets user visibility for KYC
+          write: false, // Cannot modify user data without identity manager role
+        },
       });
     });
   });
 
-  describe("canAccessUser", () => {
-    it("allows access for users with canSeeAllUsers permission", () => {
+  describe("canReadUserData", () => {
+    it("allows read access for users with userData.read permission", () => {
       const permissions: IdentityPermissions = {
-        trustedClaimTopics: ["kyc"],
-        canSeeAllUsers: true,
-        canSeeAllClaims: false,
+        claims: {
+          read: ["kyc"],
+          write: ["kyc"],
+        },
+        userData: {
+          read: true,
+          write: false,
+        },
       };
 
-      expect(canAccessUser(permissions, "user123")).toBe(true);
-      expect(canAccessUser(permissions, undefined)).toBe(true); // List operation
+      expect(canReadUserData(permissions, "user123")).toBe(true);
+      expect(canReadUserData(permissions, undefined)).toBe(true); // List operation
     });
 
-    it("denies access for users without canSeeAllUsers permission", () => {
+    it("denies read access for users without userData.read permission", () => {
       const permissions: IdentityPermissions = {
-        trustedClaimTopics: [],
-        canSeeAllUsers: false,
-        canSeeAllClaims: false,
+        claims: {
+          read: [],
+          write: [],
+        },
+        userData: {
+          read: false,
+          write: false,
+        },
       };
 
-      expect(canAccessUser(permissions, "user123")).toBe(false);
-      expect(canAccessUser(permissions, undefined)).toBe(false); // List operation
+      expect(canReadUserData(permissions, "user123")).toBe(false);
+      expect(canReadUserData(permissions, undefined)).toBe(false); // List operation
+    });
+  });
+
+  describe("canWriteUserData", () => {
+    it("allows write access for users with userData.write permission", () => {
+      const permissions: IdentityPermissions = {
+        claims: {
+          read: ["*"],
+          write: [],
+        },
+        userData: {
+          read: true,
+          write: true,
+        },
+      };
+
+      expect(canWriteUserData(permissions)).toBe(true);
+    });
+
+    it("denies write access for users without userData.write permission", () => {
+      const permissions: IdentityPermissions = {
+        claims: {
+          read: ["kyc"],
+          write: ["kyc"],
+        },
+        userData: {
+          read: true,
+          write: false,
+        },
+      };
+
+      expect(canWriteUserData(permissions)).toBe(false);
+    });
+  });
+
+  describe("canReadClaims", () => {
+    it("allows reading all topics with wildcard permission", () => {
+      const permissions: IdentityPermissions = {
+        claims: {
+          read: ["*"],
+          write: [],
+        },
+        userData: {
+          read: true,
+          write: true,
+        },
+      };
+
+      expect(canReadClaims(["kyc", "aml", "any-topic"], permissions)).toBe(true);
+    });
+
+    it("allows reading specific permitted topics", () => {
+      const permissions: IdentityPermissions = {
+        claims: {
+          read: ["kyc", "aml"],
+          write: ["kyc"],
+        },
+        userData: {
+          read: true,
+          write: false,
+        },
+      };
+
+      expect(canReadClaims(["kyc"], permissions)).toBe(true);
+      expect(canReadClaims(["kyc", "aml"], permissions)).toBe(true);
+    });
+
+    it("denies reading unpermitted topics", () => {
+      const permissions: IdentityPermissions = {
+        claims: {
+          read: ["kyc"],
+          write: ["kyc"],
+        },
+        userData: {
+          read: true,
+          write: false,
+        },
+      };
+
+      expect(canReadClaims(["aml"], permissions)).toBe(false);
+      expect(canReadClaims(["kyc", "aml"], permissions)).toBe(false);
+    });
+  });
+
+  describe("canWriteClaims", () => {
+    it("allows writing permitted topics", () => {
+      const permissions: IdentityPermissions = {
+        claims: {
+          read: ["kyc", "aml"],
+          write: ["kyc", "aml"],
+        },
+        userData: {
+          read: true,
+          write: false,
+        },
+      };
+
+      expect(canWriteClaims(["kyc"], permissions)).toBe(true);
+      expect(canWriteClaims(["kyc", "aml"], permissions)).toBe(true);
+    });
+
+    it("denies writing unpermitted topics", () => {
+      const permissions: IdentityPermissions = {
+        claims: {
+          read: ["*"],
+          write: ["kyc"],
+        },
+        userData: {
+          read: true,
+          write: true,
+        },
+      };
+
+      expect(canWriteClaims(["aml"], permissions)).toBe(false);
+      expect(canWriteClaims(["kyc", "aml"], permissions)).toBe(false);
     });
   });
 
@@ -200,9 +349,14 @@ describe("Identity permissions middleware", () => {
 
     it("returns all claims for identity managers", () => {
       const permissions: IdentityPermissions = {
-        trustedClaimTopics: [], // Empty for identity managers
-        canSeeAllUsers: true,
-        canSeeAllClaims: true, // Identity manager privilege
+        claims: {
+          read: ["*"], // Can read all claims
+          write: [],
+        },
+        userData: {
+          read: true,
+          write: true,
+        },
       };
 
       const filteredClaims = filterClaimsForUser(allClaims, permissions);
@@ -213,9 +367,14 @@ describe("Identity permissions middleware", () => {
 
     it("returns only KYC claims for KYC trusted issuers", () => {
       const permissions: IdentityPermissions = {
-        trustedClaimTopics: ["kyc"],
-        canSeeAllUsers: true,
-        canSeeAllClaims: false,
+        claims: {
+          read: ["kyc"],
+          write: ["kyc"],
+        },
+        userData: {
+          read: true,
+          write: false,
+        },
       };
 
       const filteredClaims = filterClaimsForUser(allClaims, permissions);
@@ -226,9 +385,14 @@ describe("Identity permissions middleware", () => {
 
     it("returns only AML claims for AML trusted issuers", () => {
       const permissions: IdentityPermissions = {
-        trustedClaimTopics: ["aml"],
-        canSeeAllUsers: true,
-        canSeeAllClaims: false,
+        claims: {
+          read: ["aml"],
+          write: ["aml"],
+        },
+        userData: {
+          read: true,
+          write: false,
+        },
       };
 
       const filteredClaims = filterClaimsForUser(allClaims, permissions);
@@ -239,9 +403,14 @@ describe("Identity permissions middleware", () => {
 
     it("returns multiple claims for multi-topic trusted issuers", () => {
       const permissions: IdentityPermissions = {
-        trustedClaimTopics: ["kyc", "aml"],
-        canSeeAllUsers: true,
-        canSeeAllClaims: false,
+        claims: {
+          read: ["kyc", "aml"],
+          write: ["kyc", "aml"],
+        },
+        userData: {
+          read: true,
+          write: false,
+        },
       };
 
       const filteredClaims = filterClaimsForUser(allClaims, permissions);
@@ -252,9 +421,14 @@ describe("Identity permissions middleware", () => {
 
     it("returns empty array for non-privileged users", () => {
       const permissions: IdentityPermissions = {
-        trustedClaimTopics: [],
-        canSeeAllUsers: false,
-        canSeeAllClaims: false,
+        claims: {
+          read: [],
+          write: [],
+        },
+        userData: {
+          read: false,
+          write: false,
+        },
       };
 
       const filteredClaims = filterClaimsForUser(allClaims, permissions);
@@ -265,9 +439,14 @@ describe("Identity permissions middleware", () => {
 
     it("handles claims not in trusted topics", () => {
       const permissions: IdentityPermissions = {
-        trustedClaimTopics: ["nonexistent"],
-        canSeeAllUsers: true,
-        canSeeAllClaims: false,
+        claims: {
+          read: ["nonexistent"],
+          write: ["nonexistent"],
+        },
+        userData: {
+          read: true,
+          write: false,
+        },
       };
 
       const filteredClaims = filterClaimsForUser(allClaims, permissions);
@@ -278,9 +457,14 @@ describe("Identity permissions middleware", () => {
 
     it("preserves claim order for filtered results", () => {
       const permissions: IdentityPermissions = {
-        trustedClaimTopics: ["sanctions", "kyc"], // Different order
-        canSeeAllUsers: true,
-        canSeeAllClaims: false,
+        claims: {
+          read: ["sanctions", "kyc"], // Different order
+          write: ["sanctions", "kyc"],
+        },
+        userData: {
+          read: true,
+          write: false,
+        },
       };
 
       const filteredClaims = filterClaimsForUser(allClaims, permissions);
@@ -291,9 +475,14 @@ describe("Identity permissions middleware", () => {
 
     it("handles empty claims array", () => {
       const permissions: IdentityPermissions = {
-        trustedClaimTopics: ["kyc"],
-        canSeeAllUsers: true,
-        canSeeAllClaims: false,
+        claims: {
+          read: ["kyc"],
+          write: ["kyc"],
+        },
+        userData: {
+          read: true,
+          write: false,
+        },
       };
 
       const filteredClaims = filterClaimsForUser([], permissions);
