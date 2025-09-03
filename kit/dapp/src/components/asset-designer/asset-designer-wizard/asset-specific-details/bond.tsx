@@ -1,12 +1,11 @@
 import { AddressSelectOrInputToggle } from "@/components/address/address-select-or-input-toggle";
 import type { AssetDesignerFormInputData } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
 import { isRequiredField } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
-import { FieldSkeleton } from "@/components/form/field-skeleton";
 import { withForm } from "@/hooks/use-app-form";
 import type { KeysOfUnion } from "@/lib/utils/union";
 import { orpc } from "@/orpc/orpc-client";
-import { useQuery } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { Address } from "viem";
 
@@ -25,21 +24,47 @@ export const BondFields = withForm({
     const values = useStore(form.store, (state) => ({
       type: state.values.type,
       decimals: state.values.decimals,
+      symbol: state.values.symbol,
       denominationAsset:
         state.values.type === "bond"
           ? state.values.denominationAsset
           : undefined,
     }));
-    const { type, decimals, denominationAsset } = values;
+    const { type, decimals, symbol, denominationAsset } = values;
+    const [denominationAssetDetails, setDenominationAssetDetails] = useState<
+      { decimals: number; symbol: string } | undefined
+    >(undefined);
 
-    // Fetch denomination asset details when an address is selected
-    const denominationAssetQuery = useQuery({
-      ...orpc.token.read.queryOptions({
-        input: { tokenAddress: denominationAsset as Address },
-      }),
-      enabled: !!denominationAsset && type === "bond",
+    const fetchDenominationAssetDecimals = useCallback(
+      async ({ value }: { value: string }) => {
+        if (!value || type !== "bond") return;
+
+        try {
+          const result = await orpc.token.read.call({
+            tokenAddress: value as Address,
+          });
+
+          setDenominationAssetDetails(result);
+
+          return undefined; // no error
+        } catch {
+          return {
+            message: t("form.errors.denominationAssetFetch"),
+            code: "DENOMINATION_ASSET_FETCH_FAILED",
+          };
+        }
+      },
+      [type, t]
+    );
+
+    // Initialize the denomination asset decimals when denomination asset is set
+    useState(() => {
+      if (denominationAsset) {
+        void fetchDenominationAssetDecimals({
+          value: denominationAsset as Address,
+        });
+      }
     });
-    const denominationAssetDecimals = denominationAssetQuery.data?.decimals;
 
     return (
       <>
@@ -52,6 +77,7 @@ export const BondFields = withForm({
               description={t("form.fields.cap.description", {
                 type: t(`asset-types:types.bond.nameLowercasePlural`),
               })}
+              endAddon={symbol}
               decimals={
                 typeof decimals === "number"
                   ? decimals
@@ -81,6 +107,9 @@ export const BondFields = withForm({
               {mode === "select" && (
                 <form.AppField
                   name="denominationAsset"
+                  validators={{
+                    onChangeAsync: fetchDenominationAssetDecimals,
+                  }}
                   children={(field) => (
                     <field.AddressSelectField
                       scope="asset"
@@ -101,6 +130,9 @@ export const BondFields = withForm({
               {mode === "manual" && (
                 <form.AppField
                   name="denominationAsset"
+                  validators={{
+                    onChangeAsync: fetchDenominationAssetDecimals,
+                  }}
                   children={(field) => (
                     <field.AddressInputField
                       label={t("form.fields.denominationAsset.label")}
@@ -121,48 +153,22 @@ export const BondFields = withForm({
           )}
         />
 
-        <form.Subscribe
-          selector={(state) => ({
-            denominationAsset:
-              state.values.type === "bond"
-                ? state.values.denominationAsset
-                : undefined,
-          })}
-        >
-          {({ denominationAsset }) => {
-            if (!denominationAsset || denominationAssetQuery.isError)
-              return null;
-            if (
-              denominationAssetQuery.isLoading ||
-              !denominationAssetDecimals
-            ) {
-              return (
-                <FieldSkeleton
-                  label={t("form.fields.faceValue.label")}
-                  required={isRequiredField("faceValue")}
-                  description={t("form.fields.faceValue.description", {
-                    type: t(`asset-types:types.bond.nameLowercaseSingular`),
-                  })}
-                />
-              );
-            }
-            return (
-              <form.AppField
-                name="faceValue"
-                children={(field) => (
-                  <field.DnumField
-                    label={t("form.fields.faceValue.label")}
-                    required={isRequiredField("faceValue")}
-                    description={t("form.fields.faceValue.description", {
-                      type: t(`asset-types:types.bond.nameLowercaseSingular`),
-                    })}
-                    decimals={denominationAssetDecimals}
-                  />
-                )}
+        {denominationAssetDetails && (
+          <form.AppField
+            name="faceValue"
+            children={(field) => (
+              <field.DnumField
+                label={t("form.fields.faceValue.label")}
+                required={isRequiredField("faceValue")}
+                description={t("form.fields.faceValue.description", {
+                  type: t(`asset-types:types.bond.nameLowercaseSingular`),
+                })}
+                decimals={denominationAssetDetails.decimals}
+                endAddon={denominationAssetDetails.symbol}
               />
-            );
-          }}
-        </form.Subscribe>
+            )}
+          />
+        )}
       </>
     );
   },
