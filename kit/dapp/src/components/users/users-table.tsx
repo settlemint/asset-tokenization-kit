@@ -1,18 +1,20 @@
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import type { ColumnDef } from "@tanstack/react-table";
+import { useRouter } from "@tanstack/react-router";
+import { formatDistanceToNow, isToday, isYesterday, format } from "date-fns";
+import { Users } from "lucide-react";
+
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { Badge } from "@/components/ui/badge";
+import { Web3Address } from "@/components/web3/web3-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import type { ColumnDef } from "@tanstack/react-table";
-import { useRouter } from "@tanstack/react-router";
-import { Users } from "lucide-react";
-import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import { Web3Address } from "@/components/web3/web3-address";
 
 const columnHelper = createStrictColumnHelper<User>();
 
@@ -187,29 +189,25 @@ export function UsersTable() {
               return <span className="text-sm text-muted-foreground">Never</span>;
             }
             
-            // Format the date for display with relative time
-            const now = new Date();
-            const diffInMs = now.getTime() - loginDate.getTime();
-            const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-            
-            if (diffInDays === 0) {
+            // Format the date for display with relative time using date-fns for better timezone handling
+            if (isToday(loginDate)) {
               return <span className="text-sm">Today</span>;
-            } else if (diffInDays === 1) {
+            } else if (isYesterday(loginDate)) {
               return <span className="text-sm">Yesterday</span>;
-            } else if (diffInDays < 7) {
-              return <span className="text-sm">{diffInDays} days ago</span>;
             } else {
-              const formattedDate = loginDate.toLocaleDateString(undefined, {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-              });
-              return <span className="text-sm">{formattedDate}</span>;
+              const relativeTime = formatDistanceToNow(loginDate, { addSuffix: true });
+              // For dates older than a week, show formatted date instead of relative time
+              const daysDiff = Math.floor((Date.now() - loginDate.getTime()) / (1000 * 60 * 60 * 24));
+              if (daysDiff > 7) {
+                const formattedDate = format(loginDate, 'MMM d, yyyy');
+                return <span className="text-sm">{formattedDate}</span>;
+              }
+              return <span className="text-sm">{relativeTime}</span>;
             }
           },
           meta: {
             displayName: t("management.table.columns.lastActive"),
-            type: "date",
+            type: "none",
           },
         }),
       ] as ColumnDef<User>[]),
@@ -248,8 +246,8 @@ export function UsersTable() {
         }}
         initialSorting={[
           {
-            id: "user",
-            desc: false,
+            id: "createdAt",
+            desc: true,
           },
         ]}
         customEmptyState={{
