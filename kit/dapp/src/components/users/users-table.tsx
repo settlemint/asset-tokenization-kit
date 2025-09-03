@@ -7,10 +7,9 @@ import { orpc } from "@/orpc/orpc-client";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Calendar, Hash, Mail, Shield, User as UserIcon } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { UserActionsMenu } from "./user-actions-menu";
+import { Web3Address } from "@/components/web3/web3-address";
 
 const columnHelper = createStrictColumnHelper<User>();
 
@@ -72,96 +71,53 @@ export function UsersTable() {
     () =>
       withAutoFeatures([
         columnHelper.display({
-          id: "name",
+          id: "user",
           header: t("management.table.columns.name"),
-          cell: ({ row }) => {
+          cell: ({ row }: { row: { original: User } }) => {
             const user = row.original;
             const displayName = user.firstName && user.lastName
               ? `${user.firstName} ${user.lastName}`
               : user.name;
             
+            if (!user.wallet) {
+              return (
+                <span className="font-medium">{displayName}</span>
+              );
+            }
+            
             return (
               <div className="flex items-center gap-2">
-                <UserIcon className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">{displayName}</span>
+                <Web3Address
+                  address={user.wallet}
+                  size="small"
+                  showPrettyName={true}
+                  showBadge={true}
+                  copyToClipboard={true}
+                />
               </div>
             );
           },
           meta: {
             displayName: t("management.table.columns.name"),
             type: "text",
-            icon: UserIcon,
           },
         }),
         columnHelper.display({
           id: "email",
           header: t("management.table.columns.email"),
-          cell: ({ row }) => {
+          cell: ({ row }: { row: { original: User } }) => {
             const email = row.original.email;
-            return (
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">{email}</span>
-              </div>
-            );
+            return <span className="text-sm">{email}</span>;
           },
           meta: {
             displayName: t("management.table.columns.email"),
             type: "text",
-            icon: Mail,
-          },
-        }),
-        columnHelper.display({
-          id: "wallet",
-          header: t("management.table.columns.wallet"),
-          cell: ({ row }) => {
-            const wallet = row.original.wallet;
-            if (!wallet) {
-              return (
-                <span className="text-muted-foreground text-sm">
-                  {t("management.table.noWallet")}
-                </span>
-              );
-            }
-            
-            // Shorten wallet address for display
-            const shortened = `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
-            
-            return (
-              <div className="flex items-center gap-2">
-                <Hash className="h-4 w-4 text-muted-foreground" />
-                <code className="text-xs">{shortened}</code>
-              </div>
-            );
-          },
-          meta: {
-            displayName: t("management.table.columns.wallet"),
-            type: "address",
-            icon: Hash,
-          },
-        }),
-        columnHelper.display({
-          id: "role",
-          header: t("management.table.columns.role"),
-          cell: ({ row }) => {
-            const role = row.original.role;
-            return (
-              <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4 text-muted-foreground" />
-                <span className="capitalize">{role}</span>
-              </div>
-            );
-          },
-          meta: {
-            displayName: t("management.table.columns.role"),
-            type: "text",
-            icon: Shield,
           },
         }),
         columnHelper.display({
           id: "status",
           header: t("management.table.columns.status"),
-          cell: ({ row }) => {
+          cell: ({ row }: { row: { original: User } }) => {
             return <UserStatusBadge user={row.original} />;
           },
           meta: {
@@ -172,42 +128,73 @@ export function UsersTable() {
         columnHelper.display({
           id: "created",
           header: t("management.table.columns.created"),
-          cell: () => {
-            // Note: Created date would need to be added to the User type from the API
-            // For now, showing a placeholder
-            return (
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">-</span>
-              </div>
-            );
+          cell: ({ row }: { row: { original: User } }) => {
+            const userData = row.original;
+            const createdAt = userData.createdAt;
+            
+            if (!createdAt) {
+              return <span className="text-sm text-muted-foreground">-</span>;
+            }
+            
+            // Format the date for display
+            const date = new Date(createdAt);
+            // Check if the date is valid
+            if (isNaN(date.getTime())) {
+              return <span className="text-sm text-muted-foreground">-</span>;
+            }
+            
+            const formattedDate = date.toLocaleDateString(undefined, {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            });
+            
+            return <span className="text-sm">{formattedDate}</span>;
           },
           meta: {
             displayName: t("management.table.columns.created"),
             type: "date",
-            icon: Calendar,
           },
         }),
         columnHelper.display({
-          id: "actions",
-          header: t("management.table.columns.actions"),
-          meta: {
-            type: "none",
-            enableCsvExport: false,
-          },
-          cell: ({ row }) => {
-            const user = row.original;
+          id: "lastActive",
+          header: t("management.table.columns.lastActive"),
+          cell: ({ row }: { row: { original: User } }) => {
+            const userData = row.original;
+            const lastLoginAt = userData.lastLoginAt;
             
-            // Check if current user has permission to manage users
-            const hasUserManagementPermission = 
-              currentUser?.role === "admin" || 
-              currentUser?.role === "issuer";
-
-            if (!hasUserManagementPermission) {
-              return null;
+            if (!lastLoginAt) {
+              return <span className="text-sm text-muted-foreground">Never</span>;
             }
-
-            return <UserActionsMenu user={user} />;
+            
+            const loginDate = new Date(lastLoginAt);
+            if (isNaN(loginDate.getTime())) {
+              return <span className="text-sm text-muted-foreground">Never</span>;
+            }
+            
+            // Format the date for display with relative time
+            const now = new Date();
+            const diffInMs = now.getTime() - loginDate.getTime();
+            const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+            
+            if (diffInDays === 0) {
+              return <span className="text-sm">Today</span>;
+            } else if (diffInDays === 1) {
+              return <span className="text-sm">Yesterday</span>;
+            } else if (diffInDays < 7) {
+              return <span className="text-sm">{diffInDays} days ago</span>;
+            } else {
+              const formattedDate = loginDate.toLocaleDateString(undefined, {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+              });
+              return <span className="text-sm">{formattedDate}</span>;
+            }
+          },
+          meta: {
+            displayName: t("management.table.columns.lastActive"),
+            type: "date",
           },
         }),
       ] as ColumnDef<User>[]),
@@ -240,7 +227,7 @@ export function UsersTable() {
         }}
         initialSorting={[
           {
-            id: "name",
+            id: "user",
             desc: false,
           },
         ]}

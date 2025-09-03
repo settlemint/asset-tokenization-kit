@@ -23,6 +23,7 @@
         "role": "Role",
         "status": "Status",
         "created": "Created",
+        "lastActive": "Last Active",
         "actions": "Actions"
       },
       "status": {
