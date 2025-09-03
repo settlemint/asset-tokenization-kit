@@ -4,8 +4,8 @@ pragma solidity ^0.8.28;
 import { Test } from "forge-std/Test.sol";
 import { ATKIdentityImplementation } from
     "../../../../contracts/system/identity-factory/identities/ATKIdentityImplementation.sol";
-import { ATKTrustedIssuersRegistryImplementation } from
-    "../../../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersRegistryImplementation.sol";
+import { ATKSystemTrustedIssuersRegistryImplementation } from
+    "../../../../contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol";
 import { ATKSystemAccessManagerImplementation } from
     "../../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
 import { IClaimAuthorizer } from "../../../../contracts/onchainid/extensions/IClaimAuthorizer.sol";
@@ -33,9 +33,9 @@ contract ClaimAuthorizationSystemTest is Test {
     ERC1967Proxy identityProxy;
     ATKIdentityImplementation identity;
 
-    ATKTrustedIssuersRegistryImplementation trustedIssuersRegistryLogic;
+    ATKSystemTrustedIssuersRegistryImplementation trustedIssuersRegistryLogic;
     ERC1967Proxy trustedIssuersRegistryProxy;
-    ATKTrustedIssuersRegistryImplementation trustedIssuersRegistry;
+    ATKSystemTrustedIssuersRegistryImplementation trustedIssuersRegistry;
 
     ATKSystemAccessManagerImplementation systemAccessManagerLogic;
     ERC1967Proxy systemAccessManagerProxy;
@@ -73,12 +73,12 @@ contract ClaimAuthorizationSystemTest is Test {
         systemAccessManager = ATKSystemAccessManagerImplementation(address(systemAccessManagerProxy));
 
         // Deploy trusted issuers registry
-        trustedIssuersRegistryLogic = new ATKTrustedIssuersRegistryImplementation(address(0));
+        trustedIssuersRegistryLogic = new ATKSystemTrustedIssuersRegistryImplementation(address(0));
         trustedIssuersRegistryProxy = new ERC1967Proxy(
             address(trustedIssuersRegistryLogic),
             abi.encodeWithSelector(trustedIssuersRegistryLogic.initialize.selector, address(systemAccessManager))
         );
-        trustedIssuersRegistry = ATKTrustedIssuersRegistryImplementation(address(trustedIssuersRegistryProxy));
+        trustedIssuersRegistry = ATKSystemTrustedIssuersRegistryImplementation(address(trustedIssuersRegistryProxy));
 
         // Configure trusted issuers registry with system access manager
         vm.prank(admin);

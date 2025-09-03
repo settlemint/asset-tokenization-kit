@@ -2,8 +2,8 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { ATKTrustedIssuersRegistryImplementation } from
-    "../../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersRegistryImplementation.sol";
+import { ATKSystemTrustedIssuersRegistryImplementation } from
+    "../../../contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol";
 import { ISMARTTrustedIssuersRegistry } from
     "../../../contracts/smart/interface/ISMARTTrustedIssuersRegistry.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
@@ -13,8 +13,8 @@ import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
 import { ATKRoles } from "../../../contracts/system/ATKRoles.sol";
 import { ATKSystemAccessManagerImplementation } from
     "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
-import { IATKTrustedIssuersRegistry } from
-    "../../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
+import { IATKSystemTrustedIssuersRegistry } from
+    "../../../contracts/system/trusted-issuers-registry/IATKSystemTrustedIssuersRegistry.sol";
 import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
 
 // Mock claim issuer for testing
@@ -25,9 +25,9 @@ contract MockClaimIssuer {
     }
 }
 
-contract ATKTrustedIssuersRegistryImplementationTest is Test {
-    ATKTrustedIssuersRegistryImplementation public implementation;
-    IATKTrustedIssuersRegistry public registry;
+contract ATKSystemTrustedIssuersRegistryImplementationTest is Test {
+    ATKSystemTrustedIssuersRegistryImplementation public implementation;
+    IATKSystemTrustedIssuersRegistry public registry;
     ATKSystemAccessManagerImplementation public systemAccessManager;
 
     // Test addresses
@@ -71,12 +71,12 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         systemAccessManager.grantRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager);
 
         // Deploy trusted issuers registry implementation
-        implementation = new ATKTrustedIssuersRegistryImplementation(forwarder);
+        implementation = new ATKSystemTrustedIssuersRegistryImplementation(forwarder);
 
         // Deploy proxy with initialization data
         bytes memory initData = abi.encodeWithSelector(implementation.initialize.selector, address(systemAccessManager));
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
-        registry = IATKTrustedIssuersRegistry(address(proxy));
+        registry = IATKSystemTrustedIssuersRegistry(address(proxy));
     }
 
     function test_InitializeSuccess() public view {
@@ -95,7 +95,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
 
     function test_CannotInitializeTwice() public {
         vm.expectRevert();
-        ATKTrustedIssuersRegistryImplementation(address(registry)).initialize(address(systemAccessManager));
+        ATKSystemTrustedIssuersRegistryImplementation(address(registry)).initialize(address(systemAccessManager));
     }
 
     function test_AddTrustedIssuerSuccess() public {
@@ -141,7 +141,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         topics[0] = KYC_TOPIC;
 
         vm.prank(claimPolicyManager);
-        vm.expectRevert(ATKTrustedIssuersRegistryImplementation.InvalidIssuerAddress.selector);
+        vm.expectRevert(ATKSystemTrustedIssuersRegistryImplementation.InvalidIssuerAddress.selector);
         registry.addTrustedIssuer(IClaimIssuer(address(0)), topics);
     }
 
@@ -149,7 +149,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         uint256[] memory topics = new uint256[](0);
 
         vm.prank(claimPolicyManager);
-        vm.expectRevert(ATKTrustedIssuersRegistryImplementation.NoClaimTopicsProvided.selector);
+        vm.expectRevert(ATKSystemTrustedIssuersRegistryImplementation.NoClaimTopicsProvided.selector);
         registry.addTrustedIssuer(IClaimIssuer(address(issuer1)), topics);
     }
 
@@ -165,7 +165,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         vm.prank(claimPolicyManager);
         vm.expectRevert(
             abi.encodeWithSelector(
-                ATKTrustedIssuersRegistryImplementation.IssuerAlreadyExists.selector, address(issuer1)
+                ATKSystemTrustedIssuersRegistryImplementation.IssuerAlreadyExists.selector, address(issuer1)
             )
         );
         registry.addTrustedIssuer(IClaimIssuer(address(issuer1)), topics);
@@ -215,7 +215,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         vm.prank(claimPolicyManager);
         vm.expectRevert(
             abi.encodeWithSelector(
-                ATKTrustedIssuersRegistryImplementation.IssuerDoesNotExist.selector, address(issuer1)
+                ATKSystemTrustedIssuersRegistryImplementation.IssuerDoesNotExist.selector, address(issuer1)
             )
         );
         registry.removeTrustedIssuer(IClaimIssuer(address(issuer1)));
@@ -276,7 +276,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         vm.prank(claimPolicyManager);
         vm.expectRevert(
             abi.encodeWithSelector(
-                ATKTrustedIssuersRegistryImplementation.IssuerDoesNotExist.selector, address(issuer1)
+                ATKSystemTrustedIssuersRegistryImplementation.IssuerDoesNotExist.selector, address(issuer1)
             )
         );
         registry.updateIssuerClaimTopics(IClaimIssuer(address(issuer1)), newTopics);
@@ -294,7 +294,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         uint256[] memory newTopics = new uint256[](0);
 
         vm.prank(claimPolicyManager);
-        vm.expectRevert(ATKTrustedIssuersRegistryImplementation.NoClaimTopicsProvided.selector);
+        vm.expectRevert(ATKSystemTrustedIssuersRegistryImplementation.NoClaimTopicsProvided.selector);
         registry.updateIssuerClaimTopics(IClaimIssuer(address(issuer1)), newTopics);
     }
 
@@ -341,7 +341,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
     function test_GetTrustedIssuerClaimTopicsDoesNotExist() public {
         vm.expectRevert(
             abi.encodeWithSelector(
-                ATKTrustedIssuersRegistryImplementation.IssuerDoesNotExist.selector, address(issuer1)
+                ATKSystemTrustedIssuersRegistryImplementation.IssuerDoesNotExist.selector, address(issuer1)
             )
         );
         registry.getTrustedIssuerClaimTopics(IClaimIssuer(address(issuer1)));

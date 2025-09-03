@@ -970,7 +970,7 @@ templates:
         - Event
       abis:
         - name: TrustedIssuersRegistry
-          file: ../contracts/.generated/out/ATKTrustedIssuersRegistryImplementation.sol/ATKTrustedIssuersRegistryImplementation.json
+          file: ../contracts/.generated/out/ATKSystemTrustedIssuersRegistryImplementation.sol/ATKSystemTrustedIssuersRegistryImplementation.json
       eventHandlers:
         - event: ClaimTopicsUpdated(indexed address,indexed address,uint256[])
           handler: handleClaimTopicsUpdated

@@ -258,7 +258,7 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
     // --- Subject-Aware Functions (ISMARTTrustedIssuersRegistry implementation) ---
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function getTrustedIssuers(address _subject) external view override returns (IClaimIssuer[] memory) {
+    function getTrustedIssuers(address) external view override returns (IClaimIssuer[] memory) {
         // System registry ignores subject parameter - returns all system issuers
         return this.getTrustedIssuers();
     }

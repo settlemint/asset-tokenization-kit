@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-// OnchainID imports
-import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
-
 // Interface imports
 import { ISMARTTrustedIssuersRegistry } from "../../smart/interface/ISMARTTrustedIssuersRegistry.sol";
 

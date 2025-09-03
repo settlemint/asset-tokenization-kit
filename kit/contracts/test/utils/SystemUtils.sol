@@ -14,8 +14,8 @@ import { ATKPeopleRoles } from "../../contracts/system/ATKPeopleRoles.sol";
 // Implementations
 import { ATKIdentityRegistryStorageImplementation } from
     "../../contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol";
-import { ATKTrustedIssuersRegistryImplementation } from
-    "../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersRegistryImplementation.sol";
+import { ATKSystemTrustedIssuersRegistryImplementation } from
+    "../../contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol";
 import { ATKIdentityRegistryImplementation } from
     "../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
 import { ATKComplianceImplementation } from "../../contracts/system/compliance/ATKComplianceImplementation.sol";
@@ -100,7 +100,7 @@ contract SystemUtils is Test {
         ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
 
         ATKIdentityRegistryStorageImplementation storageImpl = new ATKIdentityRegistryStorageImplementation(forwarder);
-        ATKTrustedIssuersRegistryImplementation issuersImpl = new ATKTrustedIssuersRegistryImplementation(forwarder);
+        ATKSystemTrustedIssuersRegistryImplementation issuersImpl = new ATKSystemTrustedIssuersRegistryImplementation(forwarder);
         ATKComplianceImplementation complianceImpl = new ATKComplianceImplementation(forwarder);
         ATKIdentityRegistryImplementation registryImpl = new ATKIdentityRegistryImplementation(forwarder);
         ATKIdentityFactoryImplementation factoryImpl = new ATKIdentityFactoryImplementation(forwarder);

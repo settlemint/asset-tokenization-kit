@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-// OpenZeppelin imports
-import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-
 // Interface imports
 import { IATKTrustedIssuersRegistry } from "./IATKTrustedIssuersRegistry.sol";
 import { ISMARTTrustedIssuersRegistry } from "../../smart/interface/ISMARTTrustedIssuersRegistry.sol";
