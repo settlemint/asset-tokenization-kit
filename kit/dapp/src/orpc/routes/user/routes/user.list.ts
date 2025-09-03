@@ -64,8 +64,27 @@ type QueryResultRow = {
  * User listing route handler.
  *
  * Retrieves a paginated list of users from the database with support for
- * flexible sorting and pagination. This endpoint is used for user management
- * interfaces, admin dashboards, and user directories.
+ * flexible sorting and pagination. This endpoint provides complete user data
+ * including blockchain identity information for administrative interfaces.
+ *
+ * **Key Differences from user.search:**
+ * - ✅ **Complete user data** including blockchain identity (identity, claims, isRegistered)
+ * - ✅ Full pagination support (offset/limit with large datasets)
+ * - ✅ Flexible sorting by any user table column
+ * - ✅ No search query required (can list all users)
+ * - ❌ Slower response (includes TheGraph blockchain data)
+ * - ❌ Not optimized for UI components (larger payload)
+ *
+ * **Use Cases:**
+ * - Administrative user management dashboards
+ * - Complete user directory browsing
+ * - Identity verification workflows
+ * - User data export/reporting
+ *
+ * **When to use user.search instead:**
+ * - User selection dropdowns/autocomplete
+ * - Quick user lookup for forms
+ * - UI components that don't need identity data
  *
  * Authentication: Required (uses authenticated router)
  * Permissions: Requires "list" permission on users resource
@@ -73,33 +92,38 @@ type QueryResultRow = {
  *
  * @param input - List parameters including pagination and sorting
  * @param context - Request context with database connection and authenticated user
- * @returns Promise<User[]> - Array of user objects with roles mapped to display names
+ * @returns Promise<User[]> - Array of complete user objects including identity data
  * @throws UNAUTHORIZED - If user is not authenticated
  * @throws FORBIDDEN - If user lacks required list permissions
  * @throws INTERNAL_SERVER_ERROR - If database query fails
  *
  * @example
  * ```typescript
- * // Get all users with default pagination
+ * // ✅ Good: Get all users for admin dashboard
  * const users = await orpc.user.list.query({});
+ * // Returns: Full user data including identity, claims, isRegistered
  *
- * // Get users sorted by email, descending
+ * // ✅ Good: Get users for identity verification
  * const usersByEmail = await orpc.user.list.query({
  *   orderBy: 'email',
  *   orderDirection: 'desc'
  * });
  *
- * // Get second page of users (20 per page)
+ * // ✅ Good: Paginated user browsing
  * const page2 = await orpc.user.list.query({
  *   offset: 20,
  *   limit: 20
  * });
+ *
+ * // ❌ Bad: Don't use for dropdown/select components
+ * // Use user.search instead for better performance
  * ```
  *
  * @remarks
- * - The orderBy parameter accepts any valid user table column
- * - If an invalid orderBy column is specified, defaults to createdAt
- * - User roles are transformed from internal codes to display names
+ * - **Complete Data**: Includes blockchain identity fields (identity, claims, isRegistered)
+ * - **Flexible Sorting**: Supports any valid user table column
+ * - **Large Datasets**: Handles pagination for thousands of users
+ * - **Performance**: Slower than user.search due to TheGraph integration
  */
 export const list = authRouter.user.list
   .use(systemMiddleware)

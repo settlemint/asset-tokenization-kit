@@ -1,13 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import MultipleSelector from "@/components/ui/multiselect";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import {
   Sheet,
   SheetContent,
@@ -31,6 +25,7 @@ import {
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { Search } from "lucide-react";
 
 interface AddTrustedIssuerSheetProps {
   open: boolean;
@@ -48,23 +43,22 @@ export function AddTrustedIssuerSheet({
   const queryClient = useQueryClient();
   const { t } = useTranslation("claim-topics-issuers");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch available users
+  // Search users with debounced query
   const { data: users = [] } = useQuery({
-    queryKey: orpc.user.list.queryKey({
+    queryKey: orpc.user.search.queryKey({
       input: {
-        offset: 0,
-        orderBy: "createdAt",
-        orderDirection: "desc",
+        query: searchQuery,
+        limit: 20,
       },
     }),
     queryFn: () =>
-      client.user.list({
-        offset: 0,
-        orderBy: "createdAt",
-        orderDirection: "desc",
+      client.user.search({
+        query: searchQuery,
+        limit: 20,
       }),
-    enabled: open,
+    enabled: open && searchQuery.length >= 2, // Only search when sheet is open and query is at least 2 characters
   });
 
   // Fetch available topics for selection
@@ -84,6 +78,7 @@ export function AddTrustedIssuerSheet({
       onOpenChange(false);
       form.reset();
       setSelectedUser(null);
+      setSearchQuery("");
     },
     onError: (error) => {
       toast.error(
@@ -111,6 +106,7 @@ export function AddTrustedIssuerSheet({
   const handleClose = () => {
     form.reset();
     setSelectedUser(null);
+    setSearchQuery("");
     onOpenChange(false);
   };
 
@@ -123,6 +119,7 @@ export function AddTrustedIssuerSheet({
     if (user) {
       setSelectedUser(user);
       form.setFieldValue("issuerAddress", user.wallet as `0x${string}`);
+      setSearchQuery(""); // Clear search after selection
     }
   };
 
@@ -150,34 +147,69 @@ export function AddTrustedIssuerSheet({
           <form.AppForm>
             <div className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="user-select">
+                <Label htmlFor="user-search">
                   {t("trustedIssuers.add.fields.selectUser.label")}
                   <span className="text-destructive ml-1">*</span>
                 </Label>
-                <Select
-                  value={selectedUser?.id}
-                  onValueChange={handleUserSelect}
-                >
-                  <SelectTrigger id="user-select" className="w-full">
-                    <SelectValue
-                      placeholder={t(
-                        "trustedIssuers.add.fields.selectUser.placeholder"
-                      )}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {users.map((user) => (
-                      <SelectItem key={user.id} value={user.id}>
-                        <div className="flex flex-col">
-                          <span className="font-medium">{user.name}</span>
-                          <span className="text-xs text-muted-foreground">
-                            {user.email} • {user.role}
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {!selectedUser ? (
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="user-search"
+                        placeholder={t(
+                          "trustedIssuers.add.fields.selectUser.placeholder"
+                        )}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                    {searchQuery.length >= 2 && users.length > 0 && (
+                      <div className="border rounded-md max-h-40 overflow-y-auto">
+                        {users.map((user) => (
+                          <div
+                            key={user.id}
+                            className="p-3 hover:bg-muted cursor-pointer border-b last:border-b-0"
+                            onClick={() => handleUserSelect(user.id)}
+                          >
+                            <div className="flex flex-col">
+                              <span className="font-medium">{user.name}</span>
+                              <span className="text-xs text-muted-foreground">
+                                {user.email} • {user.role}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {searchQuery.length >= 2 && users.length === 0 && (
+                      <p className="text-sm text-muted-foreground p-2">
+                        No users found matching "{searchQuery}"
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between p-3 border rounded-md bg-muted/50">
+                    <div className="flex flex-col">
+                      <span className="font-medium">{selectedUser.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {selectedUser.email} • {selectedUser.role}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedUser(null);
+                        setSearchQuery("");
+                        form.setFieldValue("issuerAddress", "0x" as `0x${string}`);
+                      }}
+                      className="text-xs text-primary hover:underline"
+                    >
+                      Change User
+                    </button>
+                  </div>
+                )}
                 <p className="text-xs text-muted-foreground">
                   {t("trustedIssuers.add.fields.selectUser.description")}
                 </p>

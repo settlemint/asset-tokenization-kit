@@ -1,12 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { client, orpc } from "@/orpc/orpc-client";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { useQuery } from "@tanstack/react-query";
@@ -18,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Eye, Shield, User as UserIcon } from "lucide-react";
+import { Eye, Shield, User as UserIcon, Search } from "lucide-react";
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 
 // Role descriptions for display
@@ -78,22 +72,22 @@ const ROLE_DESCRIPTIONS: Record<
  */
 export function ViewUserRoles() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch available users
+  // Search users with debounced query
   const { data: users = [] } = useQuery({
-    queryKey: orpc.user.list.queryKey({
+    queryKey: orpc.user.search.queryKey({
       input: {
-        offset: 0,
-        orderBy: "createdAt",
-        orderDirection: "desc",
+        query: searchQuery,
+        limit: 20,
       },
     }),
     queryFn: () =>
-      client.user.list({
-        offset: 0,
-        orderBy: "createdAt",
-        orderDirection: "desc",
+      client.user.search({
+        query: searchQuery,
+        limit: 20,
       }),
+    enabled: searchQuery.length >= 2, // Only search when query is at least 2 characters
   });
 
   // Get system roles data
@@ -125,7 +119,10 @@ export function ViewUserRoles() {
 
   const handleUserSelect = (userId: string) => {
     const user = users.find((u) => u.id === userId);
-    setSelectedUser(user || null);
+    if (user) {
+      setSelectedUser(user);
+      setSearchQuery(""); // Clear search after selection
+    }
   };
 
   return (
@@ -141,34 +138,70 @@ export function ViewUserRoles() {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          {/* User Selection */}
+          {/* User Search and Selection */}
           <div className="space-y-2">
-            <Label htmlFor="view-user-select">
-              Select User
+            <Label htmlFor="view-user-search">
+              Search User
               <span className="text-destructive ml-1">*</span>
             </Label>
-            <Select value={selectedUser?.id} onValueChange={handleUserSelect}>
-              <SelectTrigger id="view-user-select" className="w-full">
-                <SelectValue placeholder="Choose a user to view roles" />
-              </SelectTrigger>
-              <SelectContent>
-                {users.map((user) => (
-                  <SelectItem key={user.id} value={user.id}>
-                    <div className="flex flex-col">
-                      <span className="font-medium">
-                        {user.name}
-                        {user.id === users[0]?.id && " (You)"}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {user.email} • {user.role}
-                      </span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {!selectedUser ? (
+              <div className="space-y-2">
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="view-user-search"
+                    placeholder="Search by name, email, or wallet address..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                {searchQuery.length >= 2 && users.length > 0 && (
+                  <div className="border rounded-md max-h-40 overflow-y-auto">
+                    {users.map((user) => (
+                      <div
+                        key={user.id}
+                        className="p-3 hover:bg-muted cursor-pointer border-b last:border-b-0"
+                        onClick={() => handleUserSelect(user.id)}
+                      >
+                        <div className="flex flex-col">
+                          <span className="font-medium">{user.name}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {user.email} • {user.role}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {searchQuery.length >= 2 && users.length === 0 && (
+                  <p className="text-sm text-muted-foreground p-2">
+                    No users found matching "{searchQuery}"
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center justify-between p-3 border rounded-md bg-muted/50">
+                <div className="flex flex-col">
+                  <span className="font-medium">{selectedUser.name}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {selectedUser.email} • {selectedUser.role}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedUser(null);
+                    setSearchQuery("");
+                  }}
+                  className="text-xs text-primary hover:underline"
+                >
+                  Change User
+                </button>
+              </div>
+            )}
             <p className="text-xs text-muted-foreground">
-              Select a user to view their blockchain role assignments
+              Search for a user to view their blockchain role assignments (minimum 2 characters)
             </p>
           </div>
 

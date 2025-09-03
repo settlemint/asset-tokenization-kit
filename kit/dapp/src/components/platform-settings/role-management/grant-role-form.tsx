@@ -6,13 +6,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { useAppForm } from "@/hooks/use-app-form";
 import { client, orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import {
   Card,
@@ -21,7 +22,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Shield } from "lucide-react";
+import { Shield, Search } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 // Available roles that can be granted
@@ -70,22 +71,22 @@ export function GrantRoleForm() {
   const queryClient = useQueryClient();
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [selectedRole, setSelectedRole] = useState<AccessControlRoles | "">("");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch available users
+  // Search users with debounced query
   const { data: users = [] } = useQuery({
-    queryKey: orpc.user.list.queryKey({
+    queryKey: orpc.user.search.queryKey({
       input: {
-        offset: 0,
-        orderBy: "createdAt",
-        orderDirection: "desc",
+        query: searchQuery,
+        limit: 20,
       },
     }),
     queryFn: () =>
-      client.user.list({
-        offset: 0,
-        orderBy: "createdAt",
-        orderDirection: "desc",
+      client.user.search({
+        query: searchQuery,
+        limit: 20,
       }),
+    enabled: searchQuery.length >= 2, // Only search when query is at least 2 characters
   });
 
   // Grant role mutation
@@ -137,6 +138,7 @@ export function GrantRoleForm() {
     if (user) {
       setSelectedUser(user);
       form.setFieldValue("address", user.wallet as `0x${string}`);
+      setSearchQuery(""); // Clear search after selection
     }
   };
 
@@ -173,34 +175,71 @@ export function GrantRoleForm() {
 
         <form.AppForm>
           <div className="space-y-6">
-            {/* User Selection */}
+            {/* User Search and Selection */}
             <div className="space-y-2">
-              <Label htmlFor="user-select">
-                Select User
+              <Label htmlFor="user-search">
+                Search User
                 <span className="text-destructive ml-1">*</span>
               </Label>
-              <Select value={selectedUser?.id} onValueChange={handleUserSelect}>
-                <SelectTrigger id="user-select" className="w-full">
-                  <SelectValue placeholder="Choose a user to grant role" />
-                </SelectTrigger>
-                <SelectContent>
-                  {users.map((user) => (
-                    <SelectItem key={user.id} value={user.id}>
-                      <div className="flex flex-col">
-                        <span className="font-medium">
-                          {user.name}
-                          {user.id === users[0]?.id && " (You)"}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {user.email} • {user.role}
-                        </span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {!selectedUser ? (
+                <div className="space-y-2">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="user-search"
+                      placeholder="Search by name, email, or wallet address..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                  {searchQuery.length >= 2 && users.length > 0 && (
+                    <div className="border rounded-md max-h-40 overflow-y-auto">
+                      {users.map((user) => (
+                        <div
+                          key={user.id}
+                          className="p-3 hover:bg-muted cursor-pointer border-b last:border-b-0"
+                          onClick={() => handleUserSelect(user.id)}
+                        >
+                          <div className="flex flex-col">
+                            <span className="font-medium">{user.name}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {user.email} • {user.role}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {searchQuery.length >= 2 && users.length === 0 && (
+                    <p className="text-sm text-muted-foreground p-2">
+                      No users found matching "{searchQuery}"
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center justify-between p-3 border rounded-md bg-muted/50">
+                  <div className="flex flex-col">
+                    <span className="font-medium">{selectedUser.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {selectedUser.email} • {selectedUser.role}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedUser(null);
+                      setSearchQuery("");
+                      form.setFieldValue("address", "" as `0x${string}`);
+                    }}
+                    className="text-xs text-primary hover:underline"
+                  >
+                    Change User
+                  </button>
+                </div>
+              )}
               <p className="text-xs text-muted-foreground">
-                Select the user who should receive the new role
+                Search for the user who should receive the new role (minimum 2 characters)
               </p>
             </div>
 

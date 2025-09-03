@@ -23,22 +23,15 @@ export function useSearchAddresses({
   const shouldSearchUsers = scope === "user" || scope === "all";
   const shouldSearchAssets = scope === "asset" || scope === "all";
 
-  // Query for users - search when there's a term, list first 5 when empty
+  // Query for users - use search API for all queries
   const { data: users = [], isLoading: isLoadingUsers } = useQuery(
-    searchTerm.length > 0
-      ? orpc.user.search.queryOptions({
-          enabled: shouldSearchUsers,
-          input: {
-            query: searchTerm,
-            limit: 10,
-          },
-        })
-      : orpc.user.list.queryOptions({
-          enabled: shouldSearchUsers,
-          input: {
-            limit: 5,
-          },
-        })
+    orpc.user.search.queryOptions({
+      enabled: shouldSearchUsers && searchTerm.length >= 2,
+      input: {
+        query: searchTerm,
+        limit: searchTerm.length > 0 ? 10 : 5,
+      },
+    })
   );
 
   // Query for assets - search when there's a term, list first 5 when empty
