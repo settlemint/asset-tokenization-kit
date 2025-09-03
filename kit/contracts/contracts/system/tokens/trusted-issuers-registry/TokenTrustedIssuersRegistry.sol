@@ -10,8 +10,9 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
 // Interface imports
+import { IATKTokenTrustedIssuersRegistry } from "./IATKTokenTrustedIssuersRegistry.sol";
+import { IATKTrustedIssuersRegistry } from "../../trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
 import { ISMARTTrustedIssuersRegistry } from "../../../smart/interface/ISMARTTrustedIssuersRegistry.sol";
-import { IERC3643TrustedIssuersRegistry } from "../../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 
 // Token interface
 import { IATKToken } from "../IATKToken.sol";
@@ -21,22 +22,22 @@ import { ATKAssetRoles } from "../../../assets/ATKAssetRoles.sol";
 
 /// @title Token Trusted Issuers Registry
 /// @author SettleMint
-/// @notice ERC-3643 compliant trusted issuers registry that is scoped to a specific token contract.
+/// @notice Subject-aware trusted issuers registry that is scoped to a specific token contract.
 ///         Access control is delegated to the token's governance system via the GOVERNANCE_ROLE.
-/// @dev This contract implements the ISMARTTrustedIssuersRegistry interface but differs from the
-///      system-wide registry by having token-specific access control. Only accounts with the
-///      GOVERNANCE_ROLE on the associated token contract can manage trusted issuers.
+/// @dev This contract implements the ISMARTTrustedIssuersRegistry interface with token-specific
+///      access control and subject validation. Only accounts with the GOVERNANCE_ROLE on the
+///      associated token contract can manage trusted issuers.
 ///
 ///      Key features:
-///      - Full ERC-3643 compliance for trusted issuer management
+///      - Subject-aware trusted issuer management (validates subject is token's onchainID)
 ///      - Token-specific access control via GOVERNANCE_ROLE
 ///      - Efficient O(1) lookups for issuer validation
-///      - Event logging for all registry modifications
+///      - Subject-aware event logging for all registry modifications
 ///      - Meta-transaction support via ERC2771
 contract TokenTrustedIssuersRegistry is
     ERC165,
     ERC2771Context,
-    ISMARTTrustedIssuersRegistry
+    IATKTokenTrustedIssuersRegistry
 {
     // --- Storage Variables ---
 
@@ -92,24 +93,7 @@ contract TokenTrustedIssuersRegistry is
     /// @notice Error triggered when caller lacks the required GOVERNANCE_ROLE
     error AccessControlUnauthorizedAccount(address account, bytes32 neededRole);
 
-    // --- Events ---
-
-    /// @notice Emitted when a new trusted issuer is added to the registry
-    /// @param sender The address that performed the addition
-    /// @param _issuer The address of the added trusted issuer
-    /// @param _claimTopics The claim topics the issuer is trusted for
-    event TrustedIssuerAdded(address indexed sender, address indexed _issuer, uint256[] _claimTopics);
-
-    /// @notice Emitted when a trusted issuer is removed from the registry
-    /// @param sender The address that performed the removal
-    /// @param _issuer The address of the removed trusted issuer
-    event TrustedIssuerRemoved(address indexed sender, address indexed _issuer);
-
-    /// @notice Emitted when an issuer's claim topics are updated
-    /// @param sender The address that performed the update
-    /// @param _issuer The address of the issuer whose topics were updated
-    /// @param _claimTopics The new claim topics for the issuer
-    event ClaimTopicsUpdated(address indexed sender, address indexed _issuer, uint256[] _claimTopics);
+    // --- Events are defined in IATKTrustedIssuersRegistryWithSubject ---
 
     // --- Constructor ---
 
@@ -133,13 +117,19 @@ contract TokenTrustedIssuersRegistry is
         _;
     }
 
-    // --- ISMARTTrustedIssuersRegistry Implementation ---
+    // --- Subject-Aware Implementation Functions ---
 
-    /// @inheritdoc IERC3643TrustedIssuersRegistry
-    function addTrustedIssuer(
+    /// @inheritdoc IATKTokenTrustedIssuersRegistry
+    function addTrustedIssuerForSubject(
+        address subject,
         IClaimIssuer _trustedIssuer,
         uint256[] calldata _claimTopics
-    ) external override onlyTokenGovernance {
+    )
+        external
+        override
+        onlyTokenGovernance
+    {
+        if (subject != _token.onchainID()) revert InvalidSubjectAddress();
         address issuerAddress = address(_trustedIssuer);
         if (issuerAddress == address(0)) revert InvalidIssuerAddress();
         if (_claimTopics.length == 0) revert NoClaimTopicsProvided();
@@ -156,11 +146,16 @@ contract TokenTrustedIssuersRegistry is
             unchecked { ++i; }
         }
 
-        emit TrustedIssuerAdded(_msgSender(), issuerAddress, _claimTopics);
+        emit TrustedIssuerAddedForSubject(_msgSender(), subject, issuerAddress, _claimTopics);
     }
 
-    /// @inheritdoc IERC3643TrustedIssuersRegistry
-    function removeTrustedIssuer(IClaimIssuer _trustedIssuer) external override onlyTokenGovernance {
+    /// @inheritdoc IATKTokenTrustedIssuersRegistry
+    function removeTrustedIssuerForSubject(address subject, IClaimIssuer _trustedIssuer)
+        external
+        override
+        onlyTokenGovernance
+    {
+        if (subject != _token.onchainID()) revert InvalidSubjectAddress();
         address issuerAddress = address(_trustedIssuer);
         if (!_trustedIssuers[issuerAddress].exists) revert IssuerDoesNotExist(issuerAddress);
 
@@ -179,14 +174,20 @@ contract TokenTrustedIssuersRegistry is
         // Delete the issuer's record
         delete _trustedIssuers[issuerAddress];
 
-        emit TrustedIssuerRemoved(_msgSender(), issuerAddress);
+        emit TrustedIssuerRemovedForSubject(_msgSender(), subject, issuerAddress);
     }
 
-    /// @inheritdoc IERC3643TrustedIssuersRegistry
-    function updateIssuerClaimTopics(
+    /// @inheritdoc IATKTokenTrustedIssuersRegistry
+    function updateIssuerClaimTopicsForSubject(
+        address subject,
         IClaimIssuer _trustedIssuer,
         uint256[] calldata _newClaimTopics
-    ) external override onlyTokenGovernance {
+    )
+        external
+        override
+        onlyTokenGovernance
+    {
+        if (subject != _token.onchainID()) revert InvalidSubjectAddress();
         address issuerAddress = address(_trustedIssuer);
         if (!_trustedIssuers[issuerAddress].exists) revert IssuerDoesNotExist(issuerAddress);
         if (_newClaimTopics.length == 0) revert NoClaimTopicsProvided();
@@ -210,11 +211,27 @@ contract TokenTrustedIssuersRegistry is
         // Update the stored claim topics
         _trustedIssuers[issuerAddress].claimTopics = _newClaimTopics;
 
-        emit ClaimTopicsUpdated(_msgSender(), issuerAddress, _newClaimTopics);
+        emit ClaimTopicsUpdatedForSubject(_msgSender(), subject, issuerAddress, _newClaimTopics);
     }
 
-    /// @inheritdoc IERC3643TrustedIssuersRegistry
-    function getTrustedIssuers() external view override returns (IClaimIssuer[] memory) {
+    /// @inheritdoc IATKTokenTrustedIssuersRegistry
+    function getTrustedIssuerClaimTopicsForSubject(address subject, IClaimIssuer _trustedIssuer)
+        external
+        view
+        override
+        returns (uint256[] memory)
+    {
+        if (subject != _token.onchainID()) revert InvalidSubjectAddress();
+        address issuerAddress = address(_trustedIssuer);
+        if (!_trustedIssuers[issuerAddress].exists) revert IssuerDoesNotExist(issuerAddress);
+        return _trustedIssuers[issuerAddress].claimTopics;
+    }
+
+    // --- ISMARTTrustedIssuersRegistry Implementation ---
+
+    /// @inheritdoc IATKTokenTrustedIssuersRegistry
+    function getTrustedIssuers(address _subject) external view override returns (IClaimIssuer[] memory) {
+        if (_subject != _token.onchainID()) revert InvalidSubjectAddress();
         IClaimIssuer[] memory issuers = new IClaimIssuer[](_issuerAddresses.length);
         uint256 issuerAddressesLength = _issuerAddresses.length;
         for (uint256 i = 0; i < issuerAddressesLength;) {
@@ -224,53 +241,29 @@ contract TokenTrustedIssuersRegistry is
         return issuers;
     }
 
-    /// @inheritdoc IERC3643TrustedIssuersRegistry
-    function getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer)
-        external
-        view
-        override
-        returns (uint256[] memory)
-    {
-        address issuerAddress = address(_trustedIssuer);
-        if (!_trustedIssuers[issuerAddress].exists) revert IssuerDoesNotExist(issuerAddress);
-        return _trustedIssuers[issuerAddress].claimTopics;
-    }
-
-    /// @inheritdoc IERC3643TrustedIssuersRegistry
-    function getTrustedIssuersForClaimTopic(uint256 claimTopic)
+    /// @inheritdoc IATKTokenTrustedIssuersRegistry
+    function getTrustedIssuersForClaimTopic(address _subject, uint256 claimTopic)
         external
         view
         override
         returns (IClaimIssuer[] memory)
     {
-        return _getTrustedIssuersForClaimTopic(_token.onchainID(), claimTopic);
-    }
-
-    /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function getTrustedIssuersForClaimTopic(address subject, uint256 claimTopic)
-        external
-        view
-        override
-        returns (IClaimIssuer[] memory)
-    {
-        return _getTrustedIssuersForClaimTopic(subject, claimTopic);
+        return _getTrustedIssuersForClaimTopic(_subject, claimTopic);
     }
 
 
-    /// @inheritdoc IERC3643TrustedIssuersRegistry
-    function hasClaimTopic(address _issuer, uint256 _claimTopic) external view override returns (bool) {
+
+
+    /// @inheritdoc IATKTokenTrustedIssuersRegistry
+    function isTrustedIssuer(address _subject, address _issuer) external view override returns (bool) {
+        if (_subject != _token.onchainID()) revert InvalidSubjectAddress();
+        return _trustedIssuers[_issuer].exists;
+    }
+
+    /// @inheritdoc IATKTokenTrustedIssuersRegistry
+    function hasClaimTopic(address _subject, address _issuer, uint256 _claimTopic) external view override returns (bool) {
+        if (_subject != _token.onchainID()) revert InvalidSubjectAddress();
         return _claimTopicIssuerIndex[_claimTopic][_issuer] > 0;
-    }
-
-    /// @inheritdoc IERC3643TrustedIssuersRegistry
-    function isTrustedIssuer(address _issuer) external view override returns (bool) {
-        return _trustedIssuers[_issuer].exists;
-    }
-
-    /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function isTrustedIssuer(address subject, address _issuer) external view override returns (bool) {
-        if (subject != _token.onchainID()) revert InvalidSubjectAddress();
-        return _trustedIssuers[_issuer].exists;
     }
 
     // --- Getters ---
@@ -360,7 +353,9 @@ contract TokenTrustedIssuersRegistry is
         override(ERC165, IERC165)
         returns (bool)
     {
-        return interfaceId == type(ISMARTTrustedIssuersRegistry).interfaceId
+        return interfaceId == type(IATKTokenTrustedIssuersRegistry).interfaceId
+            || interfaceId == type(IATKTrustedIssuersRegistry).interfaceId
+            || interfaceId == type(ISMARTTrustedIssuersRegistry).interfaceId
             || super.supportsInterface(interfaceId);
     }
 }

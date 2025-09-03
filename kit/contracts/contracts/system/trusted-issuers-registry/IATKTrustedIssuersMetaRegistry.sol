@@ -4,8 +4,8 @@ pragma solidity ^0.8.28;
 // OpenZeppelin imports
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-// ISMARTinterface
-import { ISMARTTrustedIssuersRegistry } from "../../smart/interface/ISMARTTrustedIssuersRegistry.sol";
+// Interface imports
+import { IATKTrustedIssuersRegistry } from "./IATKTrustedIssuersRegistry.sol";
 
 /// @title IATKTrustedIssuersMetaRegistry - Registry-of-Registries Interface
 /// @author SettleMint
@@ -17,7 +17,7 @@ import { ISMARTTrustedIssuersRegistry } from "../../smart/interface/ISMARTTruste
 ///      - Maps contract addresses to their specific trusted issuers registries
 ///      - Provides aggregated query functions that check both global and contract-specific registries
 ///      - Enables efficient trusted issuer management without bloating token runtime size
-interface IATKTrustedIssuersMetaRegistry is IERC165, ISMARTTrustedIssuersRegistry {
+interface IATKTrustedIssuersMetaRegistry is IATKTrustedIssuersRegistry {
     // --- Events ---
 
     /// @notice Emitted when the global registry is set or updated
