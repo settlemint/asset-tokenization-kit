@@ -30,6 +30,7 @@ export function mapUserRoles(
     burner: false,
     capManagement: false,
     claimPolicyManager: false,
+    claimIssuer: false,
     complianceAdmin: false,
     complianceManager: false,
     custodian: false,
