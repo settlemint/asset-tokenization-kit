@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { normalizeDecimalInput } from "@/lib/utils/normalize-decimal-input";
 import type { Dnum } from "dnum";
 import { format, from } from "dnum";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   errorClassNames,
@@ -30,7 +30,7 @@ export function DnumField({
   description?: string;
   required?: boolean;
   decimals: number;
-  placeholder?: string;
+  placeholder?: Dnum;
 }) {
   const field = useFieldContext<Dnum | undefined>();
   const [displayValue, setDisplayValue] = useState("");
@@ -119,6 +119,13 @@ export function DnumField({
     []
   );
 
+  const localizedPlaceholder = useMemo(() => {
+    const dnumPlaceholder = placeholder ?? from(10_500.25, decimals);
+    return format(dnumPlaceholder, {
+      locale: language,
+    });
+  }, [placeholder, decimals, language]);
+
   return (
     <FieldLayout>
       <FieldLabel htmlFor={field.name} label={label} required={required} />
@@ -131,7 +138,7 @@ export function DnumField({
             value={displayValue}
             type="text"
             inputMode="decimal"
-            placeholder={placeholder}
+            placeholder={localizedPlaceholder}
             onChange={handleChange}
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
