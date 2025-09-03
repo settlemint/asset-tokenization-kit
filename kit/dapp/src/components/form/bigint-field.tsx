@@ -27,23 +27,28 @@ export function BigIntField({
   // The `Field` infers type based on usage - could be number or string
   const field = useFieldContext<bigint | undefined>();
 
+  const handleChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      try {
+        field.handleChange(BigInt(e.target.value));
+      } catch {
+        field.handleChange(undefined);
+      }
+    },
+    [field]
+  );
+
   const renderInput = React.useCallback(
     ({ className }: { className?: string }) => (
       <Input
         id={field.name}
         value={field.state.value?.toString()}
         type="text"
-        onChange={(e) => {
-          try {
-            field.handleChange(BigInt(e.target.value));
-          } catch {
-            field.handleChange(undefined);
-          }
-        }}
+        onChange={handleChange}
         className={cn(className, errorClassNames(field.state.meta))}
       />
     ),
-    [field]
+    [field.name, field.state.value, field.state.meta, handleChange]
   );
 
   return (

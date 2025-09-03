@@ -27,6 +27,13 @@ export function NumberField({
   // The `Field` infers type based on usage - could be number or string
   const field = useFieldContext<number>();
 
+  const handleChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      field.handleChange(e.target.valueAsNumber);
+    },
+    [field]
+  );
+
   const renderInput = React.useCallback(
     ({ className }: { className?: string }) => {
       return (
@@ -35,14 +42,12 @@ export function NumberField({
           value={field.state.value}
           type="number"
           inputMode="decimal"
-          onChange={(e) => {
-            field.handleChange(e.target.valueAsNumber);
-          }}
+          onChange={handleChange}
           className={cn(className, errorClassNames(field.state.meta))}
         />
       );
     },
-    [field]
+    [field.name, field.state.value, field.state.meta, handleChange]
   );
 
   return (
