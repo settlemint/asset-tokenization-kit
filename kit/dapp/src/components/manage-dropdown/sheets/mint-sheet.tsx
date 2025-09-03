@@ -15,6 +15,7 @@ import {
   greaterThan,
   lessThanOrEqual,
   subtract,
+  type Dnum,
 } from "dnum";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -173,13 +174,14 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
         // AGGREGATION: Extract all amounts from dynamic form fields
         const amounts = entries.map(
           (e) =>
-            (form.getFieldValue(`amount_${e.id}`) as bigint | undefined) ?? 0n
+            (form.getFieldValue(`amount_${e.id}`) as Dnum | undefined) ??
+            from(0n, tokenDecimals)
         );
 
         // CALCULATION: Sum total mint amount using high-precision arithmetic
-        const totalRequested = from(
-          amounts.reduce((acc, a) => acc + a, 0n),
-          tokenDecimals
+        const totalRequested = amounts.reduce(
+          (acc, amount) => add(acc, amount, tokenDecimals),
+          from(0n, tokenDecimals)
         );
 
         // VALIDATION: Ensure each row has valid address and positive amount
@@ -190,9 +192,15 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
               | EthereumAddress
               | "";
             const amt = form.getFieldValue(`amount_${e.id}`) as
-              | bigint
+              | Dnum
               | undefined;
-            return Boolean(addr) && (amt ?? 0n) > 0n;
+            return (
+              Boolean(addr) &&
+              greaterThan(
+                amt ?? from(0n, tokenDecimals),
+                from(0n, tokenDecimals)
+              )
+            );
           });
 
         // CONSTRAINT: Check if total request respects overall minting limits
@@ -211,14 +219,15 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
         );
         const confirmAmounts = entries.map(
           (e) =>
-            (form.getFieldValue(`amount_${e.id}`) as bigint | undefined) ?? 0n
+            (form.getFieldValue(`amount_${e.id}`) as Dnum | undefined) ??
+            from(0n, tokenDecimals)
         );
-        const totalMint = from(
-          confirmAmounts.reduce((acc, a) => acc + a, 0n),
-          tokenDecimals
+        const totalMint = confirmAmounts.reduce(
+          (acc, amount) => add(acc, amount, tokenDecimals),
+          from(0n, tokenDecimals)
         );
         // PROJECTION: Show user the new total supply after minting
-        const newTotalSupply = add(asset.totalSupply, totalMint);
+        const newTotalSupply = add(asset.totalSupply, totalMint, tokenDecimals);
 
         const confirmView = (
           <Card>
@@ -271,7 +280,8 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                         )}
                       </span>
                       <span className="font-medium">
-                        {confirmAmounts[i]?.toString()} {asset.symbol}
+                        {format(confirmAmounts[i] ?? from(0n, tokenDecimals))}{" "}
+                        {asset.symbol}
                       </span>
                     </div>
                   ))}
@@ -301,11 +311,10 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
               );
               const amounts = entries.map(
                 (e) =>
-                  (form.getFieldValue(`amount_${e.id}`) as
-                    | bigint
-                    | undefined) ?? 0n
+                  (form.getFieldValue(`amount_${e.id}`) as Dnum | undefined) ??
+                  from(0n, tokenDecimals)
               );
-
+              console.log("amounts", amounts);
               const promise = mint({
                 contract: asset.id,
                 recipients,
@@ -364,11 +373,12 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                         <div>
                           <form.AppField name={`amount_${entry.id}`}>
                             {(field) => (
-                              <field.BigIntField
+                              <field.DnumField
                                 label={t(
                                   "tokens:actions.mint.form.amountLabel"
                                 )}
                                 endAddon={asset.symbol}
+                                decimals={asset.decimals}
                                 required
                               />
                             )}
@@ -389,7 +399,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                                 );
                                 form.setFieldValue(
                                   `amount_${entry.id}`,
-                                  undefined as unknown as bigint
+                                  undefined as unknown as Dnum
                                 );
                                 setEntries((prev) =>
                                   prev.filter((e) => e.id !== entry.id)
