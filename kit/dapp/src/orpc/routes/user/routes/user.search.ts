@@ -2,6 +2,8 @@ import { kycProfiles, user } from "@/lib/db/schema";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
+import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { roles } from "@atk/zod/access-control-roles";
 import { getUserRole } from "@atk/zod/user-roles";
@@ -78,6 +80,8 @@ type QueryResultRow = {
  * - **UI Optimized**: Perfect for Select, Autocomplete, and search components
  */
 export const search = authRouter.user.search
+  .use(systemMiddleware)
+  .use(theGraphMiddleware)
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: { any: [...roles] }, // at least one blockchain role is required to search for users

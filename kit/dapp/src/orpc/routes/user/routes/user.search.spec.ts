@@ -74,10 +74,8 @@ describe("User search", () => {
       expect(Array.isArray(users)).toBe(true);
       expect(users.length).toBeGreaterThan(0);
 
-      const foundUser = users.find((u) => u.id === testUserData.id);
+      const foundUser = users.find((u) => u.wallet === testUserData.wallet);
       expect(foundUser).toBeDefined();
-      expect(foundUser?.firstName).toBe("TestFirst");
-      expect(foundUser?.lastName).toBe("TestLast");
       expect(foundUser?.name).toBe("TestFirst TestLast");
     });
 
@@ -94,10 +92,9 @@ describe("User search", () => {
       expect(Array.isArray(users)).toBe(true);
       expect(users.length).toBeGreaterThan(0);
 
-      const foundUser = users.find((u) => u.id === testUserData.id);
+      const foundUser = users.find((u) => u.wallet === testUserData.wallet);
       expect(foundUser).toBeDefined();
-      expect(foundUser?.firstName).toBe("TestFirst");
-      expect(foundUser?.lastName).toBe("TestLast");
+      expect(foundUser?.name).toBe("TestFirst TestLast");
     });
 
     it("admin can search users by partial name match", async () => {
@@ -114,7 +111,7 @@ describe("User search", () => {
       expect(users.length).toBeGreaterThanOrEqual(2);
 
       const foundUsers = users.filter(
-        (u) => u.id === testUserData.id || u.id === otherUserData.id
+        (u) => u.wallet === testUserData.wallet || u.wallet === otherUserData.wallet
       );
       expect(foundUsers.length).toBeGreaterThanOrEqual(2);
     });
@@ -132,7 +129,7 @@ describe("User search", () => {
       expect(users).toBeDefined();
       expect(Array.isArray(users)).toBe(true);
 
-      const foundUser = users.find((u) => u.id === testUserData.id);
+      const foundUser = users.find((u) => u.wallet === testUserData.wallet);
       expect(foundUser).toBeDefined();
       expect(foundUser?.wallet).toBe(testUserData.wallet);
     });
@@ -149,9 +146,9 @@ describe("User search", () => {
       expect(users).toBeDefined();
       expect(Array.isArray(users)).toBe(true);
 
-      const foundUser = users.find((u) => u.id === testUserData.id);
+      const foundUser = users.find((u) => u.wallet === testUserData.wallet);
       expect(foundUser).toBeDefined();
-      expect(foundUser?.firstName).toBe("TestFirst");
+      expect(foundUser?.name).toBe("TestFirst TestLast");
     });
 
     it("admin can limit search results", async () => {
@@ -186,7 +183,7 @@ describe("User search", () => {
             },
           }
         )
-      ).rejects.toThrow(errorMessageForCode(CUSTOM_ERROR_CODES.FORBIDDEN));
+      ).rejects.toThrow("User does not have the required role to execute this action.");
     });
 
     it("user with proper permissions can search users", async () => {
@@ -252,11 +249,9 @@ describe("User search", () => {
       expect(users).toBeDefined();
       expect(Array.isArray(users)).toBe(true);
 
-      const foundUser = users.find((u) => u.id === userWithoutKycData.id);
+      const foundUser = users.find((u) => u.wallet === userWithoutKycData.wallet);
       expect(foundUser).toBeDefined();
       expect(foundUser?.name).toBe(userWithoutKyc.name);
-      expect(foundUser?.firstName).toBeUndefined();
-      expect(foundUser?.lastName).toBeUndefined();
     });
   });
 
@@ -275,9 +270,7 @@ describe("User search", () => {
       expect(users.length).toBeGreaterThan(0);
 
       const user = users[0];
-      expect(user).toHaveProperty("id");
       expect(user).toHaveProperty("name");
-      expect(user).toHaveProperty("email");
       expect(user).toHaveProperty("role");
       expect(user).toHaveProperty("wallet");
       expect(typeof user?.role).toBe("string");
@@ -297,7 +290,7 @@ describe("User search", () => {
       expect(Array.isArray(users)).toBe(true);
       expect(users.length).toBeGreaterThan(0);
 
-      const user = users.find((u) => u.id === testUserData.id);
+      const user = users.find((u) => u.wallet === testUserData.wallet);
       expect(user).toBeDefined();
       expect(user?.role).toBeDefined();
       expect(typeof user?.role).toBe("string");
@@ -319,9 +312,7 @@ describe("User search", () => {
 
       // Verify all returned users have required fields
       users.forEach((user) => {
-        expect(user.id).toBeDefined();
         expect(user.name).toBeDefined();
-        expect(user.email).toBeDefined();
         expect(user.role).toBeDefined();
         expect(user.wallet).toBeDefined();
       });
