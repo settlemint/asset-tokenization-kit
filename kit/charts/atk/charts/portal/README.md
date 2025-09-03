@@ -117,13 +117,13 @@ The following table lists the configurable parameters of the Portal chart and th
 | global.imageRegistry | string | `""` | Global Docker image registry |
 | global.labels | object | `{}` | Global labels to add to all objects |
 | global.storageClass | string | `""` | Global StorageClass for Persistent Volume(s) |
-| image | object | `{"digest":"","pullPolicy":"IfNotPresent","pullSecrets":[],"registry":"ghcr.io","repository":"settlemint/btp-scs-portal","tag":"8.6.5"}` | Portal image |
+| image | object | `{"digest":"","pullPolicy":"IfNotPresent","pullSecrets":[],"registry":"ghcr.io","repository":"settlemint/btp-scs-portal","tag":"8.6.6"}` | Portal image |
 | image.digest | string | `""` | Portal image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag |
 | image.pullPolicy | string | `"IfNotPresent"` | Portal image pull policy |
 | image.pullSecrets | list | `[]` | Portal image pull secrets |
 | image.registry | string | `"ghcr.io"` | Portal image registry |
 | image.repository | string | `"settlemint/btp-scs-portal"` | Portal image repository |
-| image.tag | string | `"8.6.5"` | Portal image tag (immutable tags are recommended) |
+| image.tag | string | `"8.6.6"` | Portal image tag (immutable tags are recommended) |
 | ingress | object | `{"annotations":{},"apiVersion":"","enabled":true,"extraHosts":[],"extraPaths":[],"extraRules":[],"extraTls":[],"graphqlPath":"/graphql","hostname":"portal.k8s.orb.local","ingressClassName":"atk-nginx","path":"/","pathType":"ImplementationSpecific","secrets":[],"selfSigned":false,"tls":false}` | Ingress parameters |
 | ingress.annotations | object | `{}` | Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations. |
 | ingress.apiVersion | string | `""` | Force Ingress API version (automatically detected if not set) |

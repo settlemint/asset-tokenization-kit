@@ -1,8 +1,9 @@
 import { createDataTableSearchParams } from "@/components/data-table/utils/data-table-url-state";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { TokenEventsTable } from "@/components/tables/token-events";
+import { useTokenLoaderQuery } from "@/hooks/use-token-loader-query";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
-import { createFileRoute, useLoaderData } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 /**
  * Route configuration for token events page
@@ -54,9 +55,6 @@ export const Route = createFileRoute(
  * @returns Data table component for token events
  */
 function RouteComponent() {
-  const { asset } = useLoaderData({
-    from: "/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress",
-  });
-
+  const { asset } = useTokenLoaderQuery();
   return <TokenEventsTable token={asset} />;
 }

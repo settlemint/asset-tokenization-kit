@@ -6,7 +6,7 @@
  * or TheGraph directly to access all claims data. This middleware controls what gets
  * displayed in the application interface based on user roles, providing:
  * - Clean, role-appropriate user interfaces without information overload
- * - Workflow separation between identity managers and trusted issuers  
+ * - Workflow separation between identity managers and trusted issuers
  * - Prevention of accidental data exposure through UI bugs or misconfigurations
  * - Fail-fast validation to block unauthorized access to admin interfaces
  *
@@ -25,7 +25,7 @@
  * - Uses fail-fast permission checks before expensive database/TheGraph operations
  * - Fetches all available data from public sources (blockchain/TheGraph) for performance
  * - Applies role-based filtering only at the presentation layer for UI clarity
- * - Separates boolean flags (canSeeAllUsers, canSeeAllClaims) from topic arrays 
+ * - Separates boolean flags (canSeeAllUsers, canSeeAllClaims) from topic arrays
  *   to ensure explicit security boundaries and prevent logic errors
  */
 
@@ -38,62 +38,92 @@ import type { z } from "zod";
 /**
  * Identity permissions computed for a user based on blockchain roles and trusted issuer status.
  *
- * This interface uses explicit boolean flags rather than implicit logic to ensure
- * clear security boundaries. The design prevents accidental access through undefined
- * or empty states by making permissions explicitly opt-in.
+ * This interface uses explicit read/write permissions with structured access control
+ * to ensure clear security boundaries. The design separates claims access from user
+ * data access, and distinguishes between read and write operations.
  *
  * @example
  * ```typescript
- * // Identity manager - can see everything
+ * // Identity manager - full access
  * const identityManagerPerms: IdentityPermissions = {
- *   trustedClaimTopics: [], // Empty means "all topics" when canSeeAllClaims is true
- *   canSeeAllUsers: true,
- *   canSeeAllClaims: true
+ *   claims: {
+ *     read: ["*"], // Can read all claim topics
+ *     write: ["kyc", "aml"] // Can write specific claim topics they're trusted issuer for
+ *   },
+ *   userData: {
+ *     read: true, // Can read user profile data
+ *     write: true // Can modify user profile data
+ *   }
  * };
  *
- * // KYC issuer - limited access
- * const kycIssuerPerms: IdentityPermissions = {
- *   trustedClaimTopics: ["kyc"],
- *   canSeeAllUsers: true, // Needs to see users to issue KYC claims
- *   canSeeAllClaims: false // Can only see KYC claims
+ * // Claim issuer - limited access
+ * const claimIssuerPerms: IdentityPermissions = {
+ *   claims: {
+ *     read: ["kyc"], // Can only read KYC claims
+ *     write: ["kyc"] // Can only write KYC claims
+ *   },
+ *   userData: {
+ *     read: true, // Can read user data (needed for identity verification)
+ *     write: false // Cannot modify user profile data
+ *   }
  * };
  *
  * // Regular user - no access
  * const regularUserPerms: IdentityPermissions = {
- *   trustedClaimTopics: [],
- *   canSeeAllUsers: false,
- *   canSeeAllClaims: false
+ *   claims: {
+ *     read: [], // Cannot read any claims
+ *     write: [] // Cannot write any claims
+ *   },
+ *   userData: {
+ *     read: false, // Cannot read user data
+ *     write: false // Cannot write user data
+ *   }
  * };
  * ```
  */
 export interface IdentityPermissions {
   /**
-   * Claim topics this user is a trusted issuer for.
-   *
-   * When canSeeAllClaims is true, this array is empty (identity manager scenario).
-   * When canSeeAllClaims is false, this contains the specific topics the user can access.
-   * Empty array with canSeeAllClaims=false means no claim access.
+   * Claims access permissions separated by read/write operations.
    */
-  trustedClaimTopics: string[];
+  claims: {
+    /**
+     * Claim topics this user can read.
+     * 
+     * - ["*"]: Can read all claim topics (identity manager)
+     * - ["kyc", "aml"]: Can read specific topics (trusted issuer)
+     * - []: Cannot read any claims (secure default)
+     */
+    read: string[];
+
+    /**
+     * Claim topics this user can write/issue claims for.
+     * 
+     * Contains the specific topics the user is a trusted issuer for.
+     * Empty array means no claim writing permissions.
+     */
+    write: string[];
+  };
 
   /**
-   * Whether user can see all users in the system.
-   *
-   * True for identity managers and KYC/AML issuers who need user visibility
-   * to perform their roles. False for regular users (secure default).
+   * User data access permissions separated by read/write operations.
    */
-  canSeeAllUsers: boolean;
+  userData: {
+    /**
+     * Whether user can read user profile data.
+     * 
+     * True for identity managers and claim issuers who need user visibility
+     * to perform identity verification workflows.
+     */
+    read: boolean;
 
-  /**
-   * Whether user can see all claims regardless of topic.
-   *
-   * Intentionally separate from trustedClaimTopics for fail-safe security:
-   * - true: Identity manager with unrestricted access
-   * - false: Limited to specific topics or no access (secure default)
-   *
-   * This prevents security bugs where empty arrays might be misinterpreted.
-   */
-  canSeeAllClaims: boolean;
+    /**
+     * Whether user can write/modify user profile data.
+     * 
+     * True only for identity managers who have administrative privileges.
+     * Claim issuers can read user data but cannot modify it.
+     */
+    write: boolean;
+  };
 }
 
 /**
@@ -101,17 +131,17 @@ export interface IdentityPermissions {
  *
  * This function implements the core business logic for access control, prioritizing
  * blockchain-based identity manager roles over off-chain trusted issuer designations.
- * The hierarchy ensures that on-chain roles (which are harder to revoke) take precedence.
+ * The hierarchy ensures that on-chain roles take precedence.
  *
  * Permission Hierarchy:
- * 1. IDENTITY_MANAGER_ROLE (blockchain) → Full access to users and claims
- * 2. Trusted issuer for KYC/AML → User visibility + limited claim access
+ * 1. IDENTITY_MANAGER_ROLE (blockchain) → Full access to users and all claims
+ * 2. CLAIM_ISSUER_ROLE + trusted issuer → User visibility + topic-specific claim access
  * 3. All others → No access (fail-safe default)
  *
  * @param user - The authenticated user from the session context
  * @param accessControl - Blockchain access control state from TheGraph indexer
- * @param userClaimTopics - Claim topics the user is designated as trusted issuer for
- * @returns Complete identity permissions with explicit access flags
+ * @param userTrustedIssuerTopics - Claim topics the user is designated as trusted issuer for
+ * @returns Complete identity permissions with explicit read/write access flags
  *
  * @example
  * ```typescript
@@ -121,117 +151,135 @@ export interface IdentityPermissions {
  *   { identityManagers: [user.wallet] },
  *   ["kyc", "aml"]
  * );
- * // Returns: { trustedClaimTopics: [], canSeeAllUsers: true, canSeeAllClaims: true }
+ * // Returns: { 
+ * //   claims: { read: ["*"], write: ["kyc", "aml"] },
+ * //   userData: { read: true, write: true }
+ * // }
  *
  * // KYC issuer without identity manager role
  * const permissions = computeIdentityPermissions(
  *   user,
- *   { identityManagers: [] },
+ *   { claimIssuers: [user.wallet] },
  *   ["kyc"]
  * );
- * // Returns: { trustedClaimTopics: ["kyc"], canSeeAllUsers: true, canSeeAllClaims: false }
+ * // Returns: { 
+ * //   claims: { read: ["kyc"], write: ["kyc"] },
+ * //   userData: { read: true, write: false }
+ * // }
  * ```
  */
 export function computeIdentityPermissions(
   user: NonNullable<Context["auth"]>["user"],
   accessControl: AccessControl | undefined,
-  userClaimTopics: string[]
+  userTrustedIssuerTopics: string[]
 ): IdentityPermissions {
-  // Check if user has blockchain identity manager role (highest privilege)
+  // Check blockchain roles
   const isIdentityManager = hasRole(
     user.wallet,
     "identityManager",
     accessControl
   );
+  
+  // Check if user is a trusted issuer for any claims
+  // This serves as a temporary stand-in for the claimIssuer blockchain role
+  // When the blockchain role is implemented, this can be replaced with:
+  // const isClaimIssuer = hasRole(user.wallet, "claimIssuer", accessControl);
+  const isClaimIssuer = userTrustedIssuerTopics.length > 0;
 
-  // Define claim topics that grant user visibility for identity verification workflows
-  // KYC/AML issuers need to see user data to perform identity verification
-  // TODO: Make this configurable rather than hardcoded - consider moving to environment config
-  const userVisibilityTopics = new Set(["kyc", "aml"]);
-  const hasUserVisibilityTopic = userClaimTopics.some((topic) =>
-    userVisibilityTopics.has(topic.toLowerCase())
-  );
+  // Identity managers have full access
+  if (isIdentityManager) {
+    return {
+      claims: {
+        read: ["*"], // Can read all claim topics
+        write: userTrustedIssuerTopics, // Can write topics they're trusted issuer for
+      },
+      userData: {
+        read: true, // Can read user data
+        write: true, // Can modify user data
+      },
+    };
+  }
 
-  // Determine user visibility: identity managers OR trusted issuers for identity verification
-  // This separation allows KYC/AML workflow without requiring full admin privileges
-  const canSeeAllUsers = isIdentityManager || hasUserVisibilityTopic;
+  // Claim issuers have limited access
+  if (isClaimIssuer) {
+    return {
+      claims: {
+        read: userTrustedIssuerTopics, // Can only read topics they're trusted issuer for
+        write: userTrustedIssuerTopics, // Can only write topics they're trusted issuer for
+      },
+      userData: {
+        read: true, // Can read user data (needed for identity verification)
+        write: false, // Cannot modify user data
+      },
+    };
+  }
 
-  // Only identity managers can see all claims - trusted issuers are topic-limited
-  // This prevents privilege escalation where a KYC issuer gains access to unrelated claims
-  const canSeeAllClaims = isIdentityManager;
-
-  // Compute claim topic access: identity managers get empty array (meaning "all"),
-  // trusted issuers get their specific topics, everyone else gets empty (meaning "none")
-  const trustedClaimTopics = canSeeAllClaims ? [] : userClaimTopics;
-
+  // Default: no access for regular users
   return {
-    trustedClaimTopics,
-    canSeeAllUsers,
-    canSeeAllClaims,
+    claims: {
+      read: [], // Cannot read any claims
+      write: [], // Cannot write any claims
+    },
+    userData: {
+      read: false, // Cannot read user data
+      write: false, // Cannot write user data
+    },
   };
 }
 
 /**
- * Determines if a user can access another user's data based on computed permissions.
+ * Determines if a user can read user data based on computed permissions.
  *
- * This function centralizes user access logic and handles both individual user access
- * and list operations consistently. It currently uses the same permissions for both,
- * but provides a clear extension point for more granular access control.
+ * This function centralizes user data read access logic for both individual user access
+ * and list operations. It provides a clear extension point for more granular access control.
  *
  * Access Logic:
- * - List operations (targetUserId undefined): Requires canSeeAllUsers permission
- * - Individual user access: Currently also uses canSeeAllUsers (could add self-access)
+ * - List operations (targetUserId undefined): Requires userData.read permission
+ * - Individual user access: Currently also uses userData.read (could add self-access)
  * - Future enhancement: Could allow users to access their own data regardless of permissions
  *
  * @param permissions - User's computed identity permissions
- * @param targetUserId - ID of user being accessed, or undefined for list operations
- * @returns true if access should be granted, false for denial (secure default)
- *
- * @example
- * ```typescript
- * // List all users - requires broad permission
- * const canList = canAccessUser(permissions, undefined);
- *
- * // Access specific user - same requirement for now
- * const canAccess = canAccessUser(permissions, "user123");
- *
- * // Both return true only if permissions.canSeeAllUsers is true
- * ```
+ * @param targetUserId - ID of user being accessed, or undefined for list operations (reserved for future use)
+ * @returns true if read access should be granted, false for denial (secure default)
  */
-export function canAccessUser(
+export function canReadUserData(
   permissions: IdentityPermissions,
-  targetUserId: string | undefined
+  targetUserId?: string | undefined
 ): boolean {
-  // List operations (targetUserId undefined) require broad user visibility
-  // This prevents unauthorized enumeration of users in the system
-  if (!targetUserId) {
-    return permissions.canSeeAllUsers;
-  }
-
-  // Individual user access uses the same permission for consistency
+  // Both list operations and individual access use the same read permission
+  // The targetUserId parameter is reserved for future granular access control
   // Future consideration: allow users to access their own data with additional check:
-  // return permissions.canSeeAllUsers || targetUserId === currentUser.id;
-  return permissions.canSeeAllUsers;
+  // return permissions.userData.read || targetUserId === currentUser.id;
+  return permissions.userData.read;
 }
 
 /**
- * Filters claim data based on user's topic-specific permissions and access level.
+ * Determines if a user can write/modify user data based on computed permissions.
+ *
+ * @param permissions - User's computed identity permissions
+ * @returns true if write access should be granted, false for denial (secure default)
+ */
+export function canWriteUserData(
+  permissions: IdentityPermissions
+): boolean {
+  return permissions.userData.write;
+}
+
+/**
+ * Filters claim data based on user's read permissions for claim topics.
  *
  * This function implements the claim filtering logic that respects both identity manager
- * privileges and trusted issuer limitations. It uses a three-tier access model to ensure
- * claims are only visible to authorized parties.
+ * privileges and trusted issuer limitations. It uses the new structured permission model
+ * to determine which claims a user can read.
  *
  * Filtering Logic:
- * 1. Identity managers: See all claims (no filtering)
- * 2. Trusted issuers: See only claims for their designated topics
- * 3. Others: See no claims (secure default)
- *
- * The function assumes claims are provided as topic identifiers, not full claim objects,
- * allowing for flexible claim data structures while maintaining consistent access control.
+ * 1. ["*"] permission: See all claims (identity manager)
+ * 2. Specific topics: See only claims for authorized topics (trusted issuer)
+ * 3. Empty array: See no claims (secure default)
  *
  * @param claims - Array of claim topic identifiers to filter
  * @param permissions - User's computed identity permissions
- * @returns Filtered array of claims the user is authorized to access
+ * @returns Filtered array of claims the user is authorized to read
  *
  * @example
  * ```typescript
@@ -239,25 +287,22 @@ export function canAccessUser(
  *
  * // Identity manager sees everything
  * const managerClaims = filterClaimsForUser(allClaims, {
- *   canSeeAllClaims: true,
- *   trustedClaimTopics: [],
- *   canSeeAllUsers: true
+ *   claims: { read: ["*"], write: ["kyc"] },
+ *   userData: { read: true, write: true }
  * });
  * // Returns: ["kyc", "aml", "accredited", "sanctions"]
  *
  * // KYC issuer sees only KYC claims
  * const kycClaims = filterClaimsForUser(allClaims, {
- *   canSeeAllClaims: false,
- *   trustedClaimTopics: ["kyc"],
- *   canSeeAllUsers: true
+ *   claims: { read: ["kyc"], write: ["kyc"] },
+ *   userData: { read: true, write: false }
  * });
  * // Returns: ["kyc"]
  *
  * // Regular user sees nothing
  * const userClaims = filterClaimsForUser(allClaims, {
- *   canSeeAllClaims: false,
- *   trustedClaimTopics: [],
- *   canSeeAllUsers: false
+ *   claims: { read: [], write: [] },
+ *   userData: { read: false, write: false }
  * });
  * // Returns: []
  * ```
@@ -266,22 +311,55 @@ export function filterClaimsForUser(
   claims: string[],
   permissions: IdentityPermissions
 ): string[] {
-  // Identity managers with unrestricted access see all claims
-  if (permissions.canSeeAllClaims) {
+  // Check if user has universal read access (identity manager)
+  if (permissions.claims.read.includes("*")) {
     return claims;
   }
 
-  // Trusted issuers see only claims for topics they're authorized to issue
-  // This prevents topic privilege escalation attacks
-  if (permissions.trustedClaimTopics.length > 0) {
+  // Filter claims to only those the user can read
+  if (permissions.claims.read.length > 0) {
     return claims.filter((claim) =>
-      permissions.trustedClaimTopics.includes(claim)
+      permissions.claims.read.includes(claim)
     );
   }
 
-  // Secure default: users with no specific permissions see no claims
-  // This fail-safe prevents accidental data exposure through configuration errors
+  // Secure default: users with no read permissions see no claims
   return [];
+}
+
+/**
+ * Determines if a user can read specific claim topics based on permissions.
+ *
+ * @param topics - Array of claim topics to check access for
+ * @param permissions - User's computed identity permissions
+ * @returns true if user can read all the specified topics
+ */
+export function canReadClaims(
+  topics: string[],
+  permissions: IdentityPermissions
+): boolean {
+  // Universal read access (identity manager)
+  if (permissions.claims.read.includes("*")) {
+    return true;
+  }
+
+  // Check if user can read all requested topics
+  return topics.every(topic => permissions.claims.read.includes(topic));
+}
+
+/**
+ * Determines if a user can write/issue specific claim topics based on permissions.
+ *
+ * @param topics - Array of claim topics to check write access for
+ * @param permissions - User's computed identity permissions
+ * @returns true if user can write all the specified topics
+ */
+export function canWriteClaims(
+  topics: string[],
+  permissions: IdentityPermissions
+): boolean {
+  // Check if user can write all requested topics
+  return topics.every(topic => permissions.claims.write.includes(topic));
 }
 
 /**
@@ -297,7 +375,7 @@ export function filterClaimsForUser(
  * - Fail-fast: Validates access before route execution, not during data processing
  * - Context extension: Adds identityPermissions to context for route handlers to use
  * - Target-aware: Uses configurable function to extract target user from request input
- * - Integration: Expects userClaimTopics to be set by upstream userClaimsMiddleware
+ * - Integration: Expects userTrustedIssuerTopics to be set by upstream trustedIssuerMiddleware
  *
  * Security Features:
  * - Authentication required: Rejects unauthenticated requests immediately
@@ -365,27 +443,23 @@ export const identityPermissionsMiddleware = <InputSchema extends z.ZodType>({
       input: input as z.infer<InputSchema>,
     });
 
-    // Retrieve user's claim topics from context (set by upstream userClaimsMiddleware)
-    // Falls back to empty array if not set, ensuring safe defaults
-    const userClaimTopics = context.userClaimTopics ?? [];
-
     // Compute comprehensive identity permissions combining blockchain and off-chain roles
     const identityPermissions = computeIdentityPermissions(
       auth.user,
       system.systemAccessManager?.accessControl,
-      userClaimTopics
+      context.userTrustedIssuerTopics ?? []
     );
 
     // Fail fast validation: reject access before expensive route operations
     // This prevents unauthorized users from triggering database queries or other side effects
-    if (!canAccessUser(identityPermissions, targetUserId)) {
+    if (!canReadUserData(identityPermissions, targetUserId)) {
       throw errors.FORBIDDEN({
         message: targetUserId
           ? `Cannot access user data for user ${targetUserId}`
           : "Cannot access user data",
         data: {
           requiredPermissions:
-            "User must be admin, identity manager, or trusted issuer",
+            "User must have userData.read permission (identity manager or claim issuer role)",
         },
       });
     }
