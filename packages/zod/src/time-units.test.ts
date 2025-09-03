@@ -115,7 +115,14 @@ describe("isTimeUnit", () => {
     const value: unknown = "days";
     if (isTimeUnit(value)) {
       // TypeScript should recognize value as TimeUnit here
-      const validUnit: "seconds" | "minutes" | "hours" | "days" | "weeks" | "months" | "years" = value;
+      const validUnit:
+        | "seconds"
+        | "minutes"
+        | "hours"
+        | "days"
+        | "weeks"
+        | "months"
+        | "years" = value;
       expect(validUnit).toBe("days");
     }
   });

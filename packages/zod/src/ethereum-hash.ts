@@ -45,7 +45,10 @@ export const ethereumHash = z
   .describe("A valid Ethereum hash (66 characters, starting with 0x)")
   .min(66, "Ethereum hash must be exactly 66 characters long")
   .max(66, "Ethereum hash must be exactly 66 characters long")
-  .regex(/^0x[a-fA-F0-9]{64}$/, "Ethereum hash must start with '0x' followed by 64 hexadecimal characters")
+  .regex(
+    /^0x[a-fA-F0-9]{64}$/,
+    "Ethereum hash must start with '0x' followed by 64 hexadecimal characters"
+  )
   .refine(isHash, {
     message: "Invalid Ethereum hash format",
   })

@@ -1,5 +1,10 @@
 import { describe, expect, it } from "bun:test";
-import { getTimestamp, isTimestamp, timestamp, timestampSerializer } from "./timestamp";
+import {
+  getTimestamp,
+  isTimestamp,
+  timestamp,
+  timestampSerializer,
+} from "./timestamp";
 
 describe("timestamp", () => {
   const validator = timestamp();
@@ -29,7 +34,12 @@ describe("timestamp", () => {
     });
 
     it("should accept various ISO formats", () => {
-      const formats = ["2023-04-01T12:00:00.000Z", "2023-04-01T12:00:00+00:00", "2023-04-01T12:00:00", "2023-04-01"];
+      const formats = [
+        "2023-04-01T12:00:00.000Z",
+        "2023-04-01T12:00:00+00:00",
+        "2023-04-01T12:00:00",
+        "2023-04-01",
+      ];
 
       formats.forEach((format) => {
         const result = validator.parse(format);
@@ -38,9 +48,15 @@ describe("timestamp", () => {
     });
 
     it("should reject invalid date strings", () => {
-      expect(() => validator.parse("not-a-date")).toThrow("Invalid date string format");
-      expect(() => validator.parse("2023-13-01")).toThrow("Invalid date string format");
-      expect(() => validator.parse("2023-04-32")).toThrow("Invalid date string format");
+      expect(() => validator.parse("not-a-date")).toThrow(
+        "Invalid date string format"
+      );
+      expect(() => validator.parse("2023-13-01")).toThrow(
+        "Invalid date string format"
+      );
+      expect(() => validator.parse("2023-04-32")).toThrow(
+        "Invalid date string format"
+      );
     });
   });
 
@@ -112,7 +128,9 @@ describe("timestamp", () => {
     it("should handle negative numeric string timestamps", () => {
       // Negative numeric strings don't match the /^\d+$/ pattern, so they're handled as regular date strings
       // "-1680350400" is invalid and throws
-      expect(() => validator.parse("-1680350400")).toThrow("Invalid date string format");
+      expect(() => validator.parse("-1680350400")).toThrow(
+        "Invalid date string format"
+      );
 
       // However, "-1" is interpreted by JavaScript Date as year 2001 (weird but true)
       const result = validator.parse("-1");
@@ -131,7 +149,9 @@ describe("timestamp", () => {
     });
 
     it("should reject mixed content strings", () => {
-      expect(() => validator.parse("123abc")).toThrow("Invalid date string format");
+      expect(() => validator.parse("123abc")).toThrow(
+        "Invalid date string format"
+      );
       expect(() => validator.parse("2023-04-01T12:00:00Z123")).toThrow();
     });
 
@@ -250,8 +270,12 @@ describe("getTimestamp", () => {
   });
 
   it("should throw for invalid timestamps", () => {
-    expect(() => getTimestamp("not-a-date")).toThrow("Invalid date string format");
-    expect(() => getTimestamp("2023-13-01")).toThrow("Invalid date string format");
+    expect(() => getTimestamp("not-a-date")).toThrow(
+      "Invalid date string format"
+    );
+    expect(() => getTimestamp("2023-13-01")).toThrow(
+      "Invalid date string format"
+    );
     expect(() => getTimestamp(-1)).toThrow("Timestamp cannot be negative");
     expect(() => getTimestamp(null)).toThrow();
     expect(() => getTimestamp(undefined)).toThrow();
@@ -261,14 +285,18 @@ describe("getTimestamp", () => {
 
   it("should throw for timestamps out of valid range", () => {
     const afterYear9999 = new Date(253_402_300_800_000);
-    expect(() => getTimestamp(afterYear9999)).toThrow("Timestamp is out of valid range");
+    expect(() => getTimestamp(afterYear9999)).toThrow(
+      "Timestamp is out of valid range"
+    );
   });
 
   it("should be useful in functions requiring Date type", () => {
     const calculateAge = (birthdate: unknown) => {
       const birth = getTimestamp(birthdate);
       const now = new Date();
-      return Math.floor((now.getTime() - birth.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+      return Math.floor(
+        (now.getTime() - birth.getTime()) / (365.25 * 24 * 60 * 60 * 1000)
+      );
     };
 
     const birthdate = "1990-01-01";
@@ -309,7 +337,9 @@ describe("timestampSerializer", () => {
     const serialized = timestampSerializer.serialize(originalDate);
     const deserialized = timestampSerializer.deserialize(serialized);
     expect((deserialized as Date).getTime()).toBe(originalDate.getTime());
-    expect((deserialized as Date).toISOString()).toBe(originalDate.toISOString());
+    expect((deserialized as Date).toISOString()).toBe(
+      originalDate.toISOString()
+    );
   });
 
   it("should preserve timezone information in UTC", () => {

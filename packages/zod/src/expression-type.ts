@@ -60,7 +60,8 @@ export const ExpressionTypeEnum = {
  * });
  * ```
  */
-export const expressionType = () => z.literal(expressionTypes).describe("Expression type identifier");
+export const expressionType = () =>
+  z.literal(expressionTypes).describe("Expression type identifier");
 
 /**
  * Type representing a validated expression type.

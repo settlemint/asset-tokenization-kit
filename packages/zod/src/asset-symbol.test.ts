@@ -1,9 +1,9 @@
 /**
  * @fileoverview Test suite for asset symbol validation (ticker symbols)
- * 
+ *
  * This test suite validates financial asset ticker symbols with strict formatting rules
  * to ensure compatibility with trading platforms and financial data providers.
- * 
+ *
  * Test Strategy:
  * - Format Validation: Uppercase A-Z and numbers 0-9 only (no special characters)
  * - Length Constraints: 1-12 characters (standard ticker length limits)
@@ -11,13 +11,18 @@
  * - Type Safety: Branded string type prevents mixing with regular strings
  * - Edge Cases: Single characters, maximum length, special character rejection
  * - Internationalization: Explicitly reject Unicode/emoji to maintain compatibility
- * 
+ *
  * STANDARD: Follows exchange ticker symbol conventions (NYSE, NASDAQ, etc.)
  * SECURITY: Strict character validation prevents injection and display issues
  */
 
 import { describe, expect, it } from "bun:test";
-import { type AssetSymbol, assetSymbol, getAssetSymbol, isAssetSymbol } from "./asset-symbol";
+import {
+  type AssetSymbol,
+  assetSymbol,
+  getAssetSymbol,
+  isAssetSymbol,
+} from "./asset-symbol";
 
 describe("assetSymbol", () => {
   const validator = assetSymbol();
@@ -43,7 +48,9 @@ describe("assetSymbol", () => {
     });
 
     it("should accept maximum length symbols", () => {
-      expect(validator.parse("VERYLONGSYMB")).toBe("VERYLONGSYMB" as AssetSymbol); // 12 chars
+      expect(validator.parse("VERYLONGSYMB")).toBe(
+        "VERYLONGSYMB" as AssetSymbol
+      ); // 12 chars
     });
   });
 
@@ -53,7 +60,9 @@ describe("assetSymbol", () => {
     });
 
     it("should reject symbols longer than 12 characters", () => {
-      expect(() => validator.parse("VERYLONGSYMBOL")).toThrow("Asset symbol must not exceed 12 characters");
+      expect(() => validator.parse("VERYLONGSYMBOL")).toThrow(
+        "Asset symbol must not exceed 12 characters"
+      );
     });
 
     it("should reject lowercase letters", () => {
@@ -291,8 +300,12 @@ describe("getAssetSymbol", () => {
     });
 
     it("should throw for symbols longer than 12 characters", () => {
-      expect(() => getAssetSymbol("VERYLONGSYMBOL")).toThrow("Asset symbol must not exceed 12 characters");
-      expect(() => getAssetSymbol("ABCDEFGHIJKLMN")).toThrow("Asset symbol must not exceed 12 characters");
+      expect(() => getAssetSymbol("VERYLONGSYMBOL")).toThrow(
+        "Asset symbol must not exceed 12 characters"
+      );
+      expect(() => getAssetSymbol("ABCDEFGHIJKLMN")).toThrow(
+        "Asset symbol must not exceed 12 characters"
+      );
     });
 
     it("should throw for lowercase letters", () => {
@@ -403,23 +416,28 @@ describe("getAssetSymbol", () => {
       try {
         getAssetSymbol("");
       } catch (error) {
-        expect((error as Error & { issues: Array<{ message: string }> }).issues[0]?.message).toBe(
-          "Asset symbol is required"
-        );
+        expect(
+          (error as Error & { issues: Array<{ message: string }> }).issues[0]
+            ?.message
+        ).toBe("Asset symbol is required");
       }
 
       try {
         getAssetSymbol("VERYLONGSYMBOL");
       } catch (error) {
-        expect((error as Error & { issues: Array<{ message: string }> }).issues[0]?.message).toBe(
-          "Asset symbol must not exceed 12 characters"
-        );
+        expect(
+          (error as Error & { issues: Array<{ message: string }> }).issues[0]
+            ?.message
+        ).toBe("Asset symbol must not exceed 12 characters");
       }
 
       try {
         getAssetSymbol("btc");
       } catch (error) {
-        expect((error as Error & { issues: Array<{ message: string }> }).issues[0]?.message).toBe(
+        expect(
+          (error as Error & { issues: Array<{ message: string }> }).issues[0]
+            ?.message
+        ).toBe(
           "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
         );
       }

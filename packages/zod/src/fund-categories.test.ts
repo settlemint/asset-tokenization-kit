@@ -11,9 +11,12 @@ describe("fundCategory", () => {
   const validator = fundCategory();
 
   describe("valid fund categories", () => {
-    test.each([...fundCategories].map((c) => [c]))("should accept '%s'", (category) => {
-      expect(validator.parse(category)).toBe(category);
-    });
+    test.each([...fundCategories].map((c) => [c]))(
+      "should accept '%s'",
+      (category) => {
+        expect(validator.parse(category)).toBe(category);
+      }
+    );
   });
 
   describe("invalid fund categories", () => {
@@ -79,9 +82,12 @@ describe("fundCategory", () => {
 
 describe("isFundCategory", () => {
   describe("valid fund categories", () => {
-    test.each([...fundCategories])("should return true for '%s'", (category) => {
-      expect(isFundCategory(category)).toBe(true);
-    });
+    test.each([...fundCategories])(
+      "should return true for '%s'",
+      (category) => {
+        expect(isFundCategory(category)).toBe(true);
+      }
+    );
   });
 
   describe("invalid fund categories", () => {
@@ -128,9 +134,12 @@ describe("isFundCategory", () => {
 
 describe("getFundCategory", () => {
   describe("valid fund categories", () => {
-    test.each([...fundCategories])("should return '%s' when valid", (category) => {
-      expect(getFundCategory(category)).toBe(category);
-    });
+    test.each([...fundCategories])(
+      "should return '%s' when valid",
+      (category) => {
+        expect(getFundCategory(category)).toBe(category);
+      }
+    );
   });
 
   describe("invalid fund categories", () => {

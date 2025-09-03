@@ -23,7 +23,11 @@ export const expression = z.array(expressionNode);
 
 export type Expression = z.infer<typeof expression>;
 
-export const expressionNodeWithGroups = z.union([expressionNode, z.literal("(" as const), z.literal(")" as const)]);
+export const expressionNodeWithGroups = z.union([
+  expressionNode,
+  z.literal("(" as const),
+  z.literal(")" as const),
+]);
 
 export type ExpressionNodeWithGroups = z.infer<typeof expressionNodeWithGroups>;
 
@@ -189,7 +193,9 @@ export function validateExpressionSyntax(nodes: ExpressionNode[]): boolean {
  * ]); // false - missing closing parenthesis
  * ```
  */
-export function validateExpressionWithGroups(nodes: ExpressionWithGroups): boolean {
+export function validateExpressionWithGroups(
+  nodes: ExpressionWithGroups
+): boolean {
   if (nodes.length === 0) {
     return false;
   }
@@ -230,7 +236,9 @@ export function validateExpressionWithGroups(nodes: ExpressionWithGroups): boole
  * @param nodes - Infix expression with grouping
  * @returns Postfix expression array or null if invalid
  */
-export function convertInfixToPostfix(nodes: ExpressionWithGroups): ExpressionNode[] | null {
+export function convertInfixToPostfix(
+  nodes: ExpressionWithGroups
+): ExpressionNode[] | null {
   const output: ExpressionNode[] = [];
   const operatorStack: (ExpressionNode | "(")[] = [];
 
@@ -274,7 +282,11 @@ export function convertInfixToPostfix(nodes: ExpressionWithGroups): ExpressionNo
         const currentPrecedence = getPrecedence(node.nodeType);
 
         // Pop operators with higher or equal precedence
-        while (operatorStack.length > 0 && operatorStack.at(-1) !== "(" && typeof operatorStack.at(-1) === "object") {
+        while (
+          operatorStack.length > 0 &&
+          operatorStack.at(-1) !== "(" &&
+          typeof operatorStack.at(-1) === "object"
+        ) {
           const topOp = operatorStack.at(-1) as ExpressionNode;
           const topPrecedence = getPrecedence(topOp.nodeType);
 
@@ -311,7 +323,9 @@ export function convertInfixToPostfix(nodes: ExpressionWithGroups): ExpressionNo
  * @param postfixNodes - Postfix expression array
  * @returns Infix expression with groups or empty array if invalid
  */
-export function convertPostfixToInfix(postfixNodes: ExpressionNode[]): ExpressionWithGroups {
+export function convertPostfixToInfix(
+  postfixNodes: ExpressionNode[]
+): ExpressionWithGroups {
   if (postfixNodes.length === 0) {
     return [];
   }

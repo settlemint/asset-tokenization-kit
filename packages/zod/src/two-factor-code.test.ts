@@ -1,5 +1,9 @@
 import { describe, expect, it } from "bun:test";
-import { getTwoFactorCode, isTwoFactorCode, twoFactorCode } from "./two-factor-code";
+import {
+  getTwoFactorCode,
+  isTwoFactorCode,
+  twoFactorCode,
+} from "./two-factor-code";
 
 describe("twoFactorCode", () => {
   const validator = twoFactorCode();
@@ -27,24 +31,48 @@ describe("twoFactorCode", () => {
 
   describe("invalid 2FA codes", () => {
     it("should reject codes with wrong length", () => {
-      expect(() => validator.parse("12345")).toThrow("Two-factor code must be exactly 6 digits");
-      expect(() => validator.parse("1234567")).toThrow("Two-factor code must be exactly 6 digits");
-      expect(() => validator.parse("")).toThrow("Two-factor code must be exactly 6 digits");
-      expect(() => validator.parse("1")).toThrow("Two-factor code must be exactly 6 digits");
+      expect(() => validator.parse("12345")).toThrow(
+        "Two-factor code must be exactly 6 digits"
+      );
+      expect(() => validator.parse("1234567")).toThrow(
+        "Two-factor code must be exactly 6 digits"
+      );
+      expect(() => validator.parse("")).toThrow(
+        "Two-factor code must be exactly 6 digits"
+      );
+      expect(() => validator.parse("1")).toThrow(
+        "Two-factor code must be exactly 6 digits"
+      );
     });
 
     it("should reject non-numeric characters", () => {
-      expect(() => validator.parse("12345a")).toThrow("Two-factor code must contain only numeric digits (0-9)");
-      expect(() => validator.parse("a23456")).toThrow("Two-factor code must contain only numeric digits (0-9)");
-      expect(() => validator.parse("12-456")).toThrow("Two-factor code must contain only numeric digits (0-9)");
-      expect(() => validator.parse("12 456")).toThrow("Two-factor code must contain only numeric digits (0-9)");
+      expect(() => validator.parse("12345a")).toThrow(
+        "Two-factor code must contain only numeric digits (0-9)"
+      );
+      expect(() => validator.parse("a23456")).toThrow(
+        "Two-factor code must contain only numeric digits (0-9)"
+      );
+      expect(() => validator.parse("12-456")).toThrow(
+        "Two-factor code must contain only numeric digits (0-9)"
+      );
+      expect(() => validator.parse("12 456")).toThrow(
+        "Two-factor code must contain only numeric digits (0-9)"
+      );
     });
 
     it("should reject special characters", () => {
-      expect(() => validator.parse("!23456")).toThrow("Two-factor code must contain only numeric digits (0-9)");
-      expect(() => validator.parse("12345$")).toThrow("Two-factor code must contain only numeric digits (0-9)");
-      expect(() => validator.parse("12#456")).toThrow("Two-factor code must contain only numeric digits (0-9)");
-      expect(() => validator.parse("12.456")).toThrow("Two-factor code must contain only numeric digits (0-9)");
+      expect(() => validator.parse("!23456")).toThrow(
+        "Two-factor code must contain only numeric digits (0-9)"
+      );
+      expect(() => validator.parse("12345$")).toThrow(
+        "Two-factor code must contain only numeric digits (0-9)"
+      );
+      expect(() => validator.parse("12#456")).toThrow(
+        "Two-factor code must contain only numeric digits (0-9)"
+      );
+      expect(() => validator.parse("12.456")).toThrow(
+        "Two-factor code must contain only numeric digits (0-9)"
+      );
     });
 
     it("should reject non-string types", () => {
@@ -101,7 +129,9 @@ describe("twoFactorCode", () => {
       const result = validator.safeParse("12345");
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0]?.message).toBe("Two-factor code must be exactly 6 digits");
+        expect(result.error.issues[0]?.message).toBe(
+          "Two-factor code must be exactly 6 digits"
+        );
       }
     });
   });
@@ -144,8 +174,12 @@ describe("getTwoFactorCode helper", () => {
   });
 
   it("should throw for invalid 2FA codes", () => {
-    expect(() => getTwoFactorCode("12345")).toThrow("Two-factor code must be exactly 6 digits");
-    expect(() => getTwoFactorCode("1234567")).toThrow("Two-factor code must be exactly 6 digits");
+    expect(() => getTwoFactorCode("12345")).toThrow(
+      "Two-factor code must be exactly 6 digits"
+    );
+    expect(() => getTwoFactorCode("1234567")).toThrow(
+      "Two-factor code must be exactly 6 digits"
+    );
     expect(() => getTwoFactorCode("abc123")).toThrow();
     expect(() => getTwoFactorCode("123 456")).toThrow();
     expect(() => getTwoFactorCode(null)).toThrow();
