@@ -10,6 +10,7 @@ const tokenManagerRole = keccak256(toBytes("TOKEN_MANAGER_ROLE"));
 const complianceManagerRole = keccak256(toBytes("COMPLIANCE_MANAGER_ROLE"));
 const addonManagerRole = keccak256(toBytes("ADDON_MANAGER_ROLE"));
 const claimPolicyManagerRole = keccak256(toBytes("CLAIM_POLICY_MANAGER_ROLE"));
+const claimIssuerRole = keccak256(toBytes("CLAIM_ISSUER_ROLE"));
 const auditorRole = keccak256(toBytes("AUDITOR_ROLE"));
 const organisationIdentityManagerRole = keccak256(
   toBytes("ORGANISATION_IDENTITY_MANAGER_ROLE")
@@ -44,6 +45,7 @@ export const ATKRoles = {
     complianceManagerRole,
     addonManagerRole,
     claimPolicyManagerRole,
+    claimIssuerRole,
     auditorRole,
     organisationIdentityManagerRole,
   },

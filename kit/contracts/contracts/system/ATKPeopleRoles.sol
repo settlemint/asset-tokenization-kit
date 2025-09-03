@@ -37,6 +37,15 @@ library ATKPeopleRoles {
     /// @dev Can manage claims for the organisation identity, including organisation-level KYC, AML, licenses, etc.
     bytes32 public constant ORGANISATION_IDENTITY_MANAGER_ROLE = keccak256("ORGANISATION_IDENTITY_MANAGER_ROLE");
 
+    /// @notice Role identifier for addresses that can issue claims on identities
+    /// @dev This role grants permission to create and attach claims to identity contracts.
+    ///      Possessing this role does **not** automatically make the address a trusted issuer.
+    ///      Trust is determined separately via the Trusted Issuers Registry, which decides
+    ///      whether claims from a given issuer are considered valid in verification contexts.
+    ///      Commonly assigned to institutions, auditors, or service providers responsible
+    ///      for generating attestations such as KYC, AML, or collateral proofs.
+    bytes32 public constant CLAIM_ISSUER_ROLE = keccak256("CLAIM_ISSUER_ROLE");
+
     /// @notice Role identifier for addresses that can audit the system
     /// @dev View-only role for permissions, identities, audit logs, system state
     bytes32 public constant AUDITOR_ROLE = keccak256("AUDITOR_ROLE");
