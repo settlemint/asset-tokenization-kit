@@ -7,6 +7,8 @@ import { orpc } from "@/orpc/orpc-client";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
+import { useRouter } from "@tanstack/react-router";
+import { Users } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Web3Address } from "@/components/web3/web3-address";
@@ -47,7 +49,11 @@ function UserStatusBadge({ user }: { user: User }) {
  * Shows user information, registration status, and actions for each user
  */
 export function UsersTable() {
+  const router = useRouter();
   const { t } = useTranslation("user");
+
+  // Get the current route's path pattern from the matched route
+  const routePath = router.state.matches.at(-1)?.pathname;
 
   // Fetch users data using ORPC with pagination support
   const { data: users } = useSuspenseQuery(
@@ -60,6 +66,7 @@ export function UsersTable() {
       },
     })
   );
+
 
   // Get current user data to check permissions
   const { data: currentUser } = useSuspenseQuery(orpc.user.me.queryOptions());
@@ -210,6 +217,7 @@ export function UsersTable() {
         urlState={{
           enabled: true,
           enableUrlPersistence: true,
+          routePath,
           defaultPageSize: 10,
           enableGlobalFilter: true,
           enableRowSelection: false,
@@ -231,6 +239,11 @@ export function UsersTable() {
             desc: false,
           },
         ]}
+        customEmptyState={{
+          title: "No users found",
+          description: "No users have been registered yet.",
+          icon: Users,
+        }}
       />
     </ComponentErrorBoundary>
   );
