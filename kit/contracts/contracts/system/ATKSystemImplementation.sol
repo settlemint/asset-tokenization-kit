@@ -537,7 +537,7 @@ contract ATKSystemImplementation is
         uint256[] memory identityFactoryClaimTopics = new uint256[](1);
         identityFactoryClaimTopics[0] =
             IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).getTopicId(ATKTopics.TOPIC_CONTRACT_IDENTITY);
-        IATKTrustedIssuersRegistry(localSystemTrustedIssuersRegistryProxy).addTrustedIssuer(
+        IATKSystemTrustedIssuersRegistry(localSystemTrustedIssuersRegistryProxy).addTrustedIssuer(
             IClaimIssuer(identityFactoryIdentity), identityFactoryClaimTopics
         );
 
@@ -553,7 +553,7 @@ contract ATKSystemImplementation is
         uint256[] memory issuerClaimTopics = new uint256[](1);
         issuerClaimTopics[0] =
             IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
-        IATKTrustedIssuersRegistry(localSystemTrustedIssuersRegistryProxy).addTrustedIssuer(
+        IATKSystemTrustedIssuersRegistry(localSystemTrustedIssuersRegistryProxy).addTrustedIssuer(
             IClaimIssuer(localOrganisationIdentity), issuerClaimTopics
         );
 
@@ -827,13 +827,7 @@ contract ATKSystemImplementation is
 
     /// @notice Gets the address of the trusted issuers registry module's proxy contract.
     /// @return The address of the trusted issuers registry proxy contract.
-    function systemTrustedIssuersRegistry() public view returns (address) {
-        return _systemTrustedIssuersRegistryProxy;
-    }
-
-    /// @notice Gets the address of the trusted issuers meta registry module's proxy contract.
-    /// @return The address of the trusted issuers meta registry proxy contract.
-    function trustedIssuersMetaRegistry() public view returns (address) {
+    function trustedIssuersRegistry() public view returns (address) {
         return _trustedIssuersMetaRegistryProxy;
     }
 

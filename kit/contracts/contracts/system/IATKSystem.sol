@@ -34,7 +34,7 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @notice Emitted when the implementation (logic contract) for the trusted issuers registry module is updated.
     /// @param sender The address that called the `updateTrustedIssuersRegistryImplementation` function.
     /// @param newImplementation The address of the new trusted issuers registry module implementation contract.
-    event TrustedIssuersRegistryImplementationUpdated(address indexed sender, address indexed newImplementation);
+    event SystemTrustedIssuersRegistryImplementationUpdated(address indexed sender, address indexed newImplementation);
     /// @notice Emitted when the implementation (logic contract) for the topic scheme registry module is updated.
     /// @param sender The address that called the `updateTopicSchemeRegistryImplementation` function.
     /// @param newImplementation The address of the new topic scheme registry module implementation contract.
@@ -196,22 +196,13 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// proxy contract.
     function identityRegistryStorage() external view returns (address identityRegistryStorageProxyAddress);
 
-    /// @notice Retrieves the smart contract address of the proxy for the trusted issuers registry module.
-    /// @dev This function returns the stable, unchanging address of the trusted issuers registry's proxy contract.
-    /// To interact with the trusted issuers registry (e.g., to check if an issuer is trusted or to add/remove
-    /// issuers, depending on its features), you should use this proxy address. It will forward calls to the
-    /// current logic implementation.
-    /// @return systemTrustedIssuersRegistryProxyAddress The blockchain address of the system trusted issuers registry module's
-    /// proxy.
-    function systemTrustedIssuersRegistry() external view returns (address systemTrustedIssuersRegistryProxyAddress);
-
     /// @notice Retrieves the smart contract address of the proxy for the trusted issuers meta registry module.
     /// @dev This function returns the stable, unchanging address of the trusted issuers meta registry's proxy contract.
     /// The meta registry manages both global and contract-specific trusted issuers registries, providing a
     /// registry-of-registries pattern for efficient trusted issuer management across the system.
-    /// @return trustedIssuersMetaRegistryProxyAddress The blockchain address of the trusted issuers meta registry
+    /// @return trustedIssuersRegistry The blockchain address of the trusted issuers meta registry
     /// module's proxy.
-    function trustedIssuersMetaRegistry() external view returns (address trustedIssuersMetaRegistryProxyAddress);
+    function trustedIssuersRegistry() external view returns (address trustedIssuersRegistry);
 
     /// @notice Retrieves the smart contract address of the proxy for the identity factory module.
     /// @dev This function returns the stable, unchanging address of the identity factory's proxy contract.

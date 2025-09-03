@@ -87,7 +87,7 @@ abstract contract _SMARTCollateralLogic is _SMARTExtension, ISMARTCollateral {
         IIdentity tokenID = IIdentity(this.onchainID()); // The token contract's own identity
 
         // Get all issuers trusted for the specific collateral proof topic.
-        IClaimIssuer[] memory trustedIssuers = issuersRegistry.getTrustedIssuersForClaimTopic(collateralProofTopic);
+        IClaimIssuer[] memory trustedIssuers = issuersRegistry.getTrustedIssuersForClaimTopic(address(tokenID), collateralProofTopic);
 
         // If there are no trusted issuers for this topic, no claim can be valid.
         if (trustedIssuers.length == 0) {

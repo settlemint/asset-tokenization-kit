@@ -24,6 +24,7 @@ import { ATKTopics } from "../../ATKTopics.sol";
 import { IATKTopicSchemeRegistry } from "../../topic-scheme-registry/IATKTopicSchemeRegistry.sol";
 import { TokenTrustedIssuersRegistry } from "../trusted-issuers-registry/TokenTrustedIssuersRegistry.sol";
 import { IATKTrustedIssuersMetaRegistry } from "../../trusted-issuers-registry/IATKTrustedIssuersMetaRegistry.sol";
+import { IATKTrustedIssuersRegistry } from "../../trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
 
 /// @title ATKTokenFactory - Contract for managing token registries with role-based access control
 /// @author SettleMint
@@ -136,8 +137,8 @@ abstract contract AbstractATKTokenFactoryImplementation is
 
     /// @notice Returns the trusted issuers meta registry contract.
     /// @return The trusted issuers meta registry contract.
-    function _trustedIssuersMetaRegistry() internal view returns (IATKTrustedIssuersMetaRegistry) {
-        return IATKTrustedIssuersMetaRegistry(IATKSystem(_systemAddress).trustedIssuersMetaRegistry());
+    function _trustedIssuersRegistry() internal view returns (IATKTrustedIssuersRegistry) {
+        return IATKTrustedIssuersRegistry(IATKSystem(_systemAddress).trustedIssuersRegistry());
     }
 
     /// @notice Calculates the salt for CREATE2 deployment.
@@ -400,16 +401,20 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @param tokenAddress The address of the token contract
     /// @param tokenIdentityAddress The address of the token identity contract
     function _deployAndRegisterTokenTrustedIssuersRegistry(address tokenAddress, address tokenIdentityAddress) internal {
-        // Deploy TokenTrustedIssuersRegistry for this specific token
-        // Use the same trusted forwarder as the factory for consistent meta-transaction support
-        TokenTrustedIssuersRegistry tokenRegistry = new TokenTrustedIssuersRegistry(
-            trustedForwarder(), // Use factory's trusted forwarder for token registries
-            tokenAddress
-        );
-
         // Register the token-specific registry with the meta registry
-        IATKTrustedIssuersMetaRegistry metaRegistry = _trustedIssuersMetaRegistry();
-        metaRegistry.setRegistryForContract(tokenIdentityAddress, address(tokenRegistry));
+        IATKTrustedIssuersRegistry registry = _trustedIssuersRegistry();
+
+        if (IERC165(address(registry)).supportsInterface(type(IATKTrustedIssuersMetaRegistry).interfaceId)) {
+            IATKTrustedIssuersMetaRegistry metaRegistry = IATKTrustedIssuersMetaRegistry(address(registry));
+            // Deploy TokenTrustedIssuersRegistry for this specific token
+            // Use the same trusted forwarder as the factory for consistent meta-transaction support
+            TokenTrustedIssuersRegistry tokenRegistry = new TokenTrustedIssuersRegistry(
+                trustedForwarder(), // Use factory's trusted forwarder for token registries
+                tokenAddress
+            );
+
+            metaRegistry.setRegistryForContract(tokenIdentityAddress, address(tokenRegistry));
+        }
     }
 
     // --- ERC165 Overrides ---
