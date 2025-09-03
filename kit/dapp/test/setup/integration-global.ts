@@ -8,6 +8,7 @@ import {
   createAndRegisterUserIdentities,
   setDefaultSystemSettings,
   setupDefaultIssuerRoles,
+  setupTrustedClaimIssuers,
 } from "../fixtures/system-bootstrap";
 import {
   DEFAULT_ADMIN,
@@ -39,6 +40,7 @@ export async function setup() {
       bootstrapTokenFactories(orpClient, system),
       bootstrapAddons(orpClient),
       setupDefaultIssuerRoles(orpClient),
+      setupTrustedClaimIssuers(orpClient),
       setDefaultSystemSettings(orpClient),
       createAndRegisterUserIdentities(orpClient),
     ]);

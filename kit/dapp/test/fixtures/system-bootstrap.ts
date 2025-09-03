@@ -218,6 +218,58 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
   }
 }
 
+export async function setupTrustedClaimIssuers(orpClient: OrpcClient) {
+  const adminAccount = await orpClient.account.me({});
+  // First grant the claim policy manager role to the admin so it can add trusted issuers
+  await orpClient.system.accessManager.grantRole({
+    walletVerification: {
+      secretVerificationCode: DEFAULT_PINCODE,
+      verificationType: "PINCODE",
+    },
+    address: adminAccount?.id ?? "",
+    role: "claimPolicyManager",
+  });
+  // Make admin a trusted issuer of all topics
+  await orpClient.system.trustedIssuers.create({
+    walletVerification: {
+      secretVerificationCode: DEFAULT_PINCODE,
+      verificationType: "PINCODE",
+    },
+    issuerAddress: adminAccount?.identity ?? "",
+    claimTopicIds: [
+      "kyc",
+      "aml",
+      "collateral",
+      "assetClassification",
+      "basePrice",
+      "isin",
+      "issuerProspectusFiled",
+      "issuerProspectusExempt",
+      "issuerLicensed",
+      "issuerReportingCompliant",
+      "issuerJurisdiction",
+      "contractIdentity",
+      "assetIssuer",
+      "professionalInvestor",
+      "accreditedInvestor",
+      "accreditedInvestorVerified",
+      "regulationS",
+      "qii",
+    ],
+  });
+  const issuerOrpcClient = getOrpcClient(await signInWithUser(DEFAULT_ISSUER));
+  const issuerAccount = await issuerOrpcClient.account.me({});
+  // Make issuer a trusted issuer of asset related topics
+  await orpClient.system.trustedIssuers.create({
+    walletVerification: {
+      secretVerificationCode: DEFAULT_PINCODE,
+      verificationType: "PINCODE",
+    },
+    issuerAddress: issuerAccount?.identity ?? "",
+    claimTopicIds: ["collateral", "assetClassification", "basePrice", "isin"],
+  });
+}
+
 export async function setDefaultSystemSettings(orpClient: OrpcClient) {
   const settings = await orpClient.settings.list({});
   if (settings.find((s) => s.key === "BASE_CURRENCY")) {
