@@ -1,4 +1,5 @@
 import { DataTable } from "@/components/data-table/data-table";
+import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
@@ -68,8 +69,6 @@ export function UsersTable() {
   );
 
 
-  // Get current user data to check permissions
-  const { data: currentUser } = useSuspenseQuery(orpc.user.me.queryOptions());
 
   /**
    * Defines the column configuration for the users table
@@ -77,8 +76,22 @@ export function UsersTable() {
   const columns = useMemo(
     () =>
       withAutoFeatures([
+        columnHelper.accessor("name", {
+          header: t("management.table.columns.name"),
+          meta: {
+            displayName: t("management.table.columns.name"),
+            type: "text",
+          },
+        }),
+        columnHelper.accessor("email", {
+          header: t("management.table.columns.email"),
+          meta: {
+            displayName: t("management.table.columns.email"),
+            type: "text",
+          },
+        }),
         columnHelper.display({
-          id: "user",
+          id: "userDisplay",
           header: t("management.table.columns.name"),
           cell: ({ row }: { row: { original: User } }) => {
             const user = row.original;
@@ -106,19 +119,7 @@ export function UsersTable() {
           },
           meta: {
             displayName: t("management.table.columns.name"),
-            type: "text",
-          },
-        }),
-        columnHelper.display({
-          id: "email",
-          header: t("management.table.columns.email"),
-          cell: ({ row }: { row: { original: User } }) => {
-            const email = row.original.email;
-            return <span className="text-sm">{email}</span>;
-          },
-          meta: {
-            displayName: t("management.table.columns.email"),
-            type: "text",
+            type: "none",
           },
         }),
         columnHelper.display({
@@ -130,6 +131,13 @@ export function UsersTable() {
           meta: {
             displayName: t("management.table.columns.status"),
             type: "text",
+          },
+        }),
+        columnHelper.accessor("createdAt", {
+          header: t("management.table.columns.created"),
+          meta: {
+            displayName: t("management.table.columns.created"),
+            type: "date",
           },
         }),
         columnHelper.display({
@@ -146,7 +154,7 @@ export function UsersTable() {
             // Format the date for display
             const date = new Date(createdAt);
             // Check if the date is valid
-            if (isNaN(date.getTime())) {
+            if (Number.isNaN(date.getTime())) {
               return <span className="text-sm text-muted-foreground">-</span>;
             }
             
@@ -160,7 +168,7 @@ export function UsersTable() {
           },
           meta: {
             displayName: t("management.table.columns.created"),
-            type: "date",
+            type: "none",
           },
         }),
         columnHelper.display({
@@ -175,7 +183,7 @@ export function UsersTable() {
             }
             
             const loginDate = new Date(lastLoginAt);
-            if (isNaN(loginDate.getTime())) {
+            if (Number.isNaN(loginDate.getTime())) {
               return <span className="text-sm text-muted-foreground">Never</span>;
             }
             
@@ -205,7 +213,7 @@ export function UsersTable() {
           },
         }),
       ] as ColumnDef<User>[]),
-    [t, currentUser]
+    [t]
   );
 
   return (
@@ -223,8 +231,13 @@ export function UsersTable() {
           enableRowSelection: false,
           debounceMs: 300,
         }}
+        initialColumnVisibility={{
+          name: false,
+          email: false,
+          createdAt: false,
+        }}
         advancedToolbar={{
-          enableGlobalSearch: true,
+          enableGlobalSearch: false,
           enableFilters: true,
           enableExport: true,
           enableViewOptions: true,
