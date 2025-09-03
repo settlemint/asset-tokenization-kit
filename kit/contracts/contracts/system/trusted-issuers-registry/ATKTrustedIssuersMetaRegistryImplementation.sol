@@ -50,12 +50,12 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     /// @notice The system trusted issuers registry that applies system-wide
     /// @dev This registry provides trusted issuers for all contracts unless overridden
     ///      by contract-specific registries. Can be address(0) if no system registry is set.
-    ISMARTTrustedIssuersRegistry private _systemRegistry;
+    IATKTrustedIssuersRegistry private _systemRegistry;
 
     /// @notice Mapping from contract addresses to their specific trusted issuers registries
     /// @dev Allows individual contracts (typically tokens) to have dedicated registries.
     ///      If a contract address maps to address(0), no specific registry is set.
-    mapping(address => ISMARTTrustedIssuersRegistry registry) private _contractRegistries;
+    mapping(address => IATKTrustedIssuersRegistry registry) private _contractRegistries;
 
     // --- Errors ---
 
@@ -90,7 +90,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     function initialize(address accessManager, address systemRegistry) public initializer {
         __ATKSystemAccessManaged_init(accessManager);
         __ERC165_init_unchained();
-        _systemRegistry = ISMARTTrustedIssuersRegistry(systemRegistry);
+        _systemRegistry = IATKTrustedIssuersRegistry(systemRegistry);
 
         emit SystemRegistrySet(_msgSender(), address(0), systemRegistry);
     }
@@ -110,7 +110,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     {
         // registry can be address(0) to remove the system registry
         address oldRegistry = address(_systemRegistry);
-        _systemRegistry = ISMARTTrustedIssuersRegistry(registry);
+        _systemRegistry = IATKTrustedIssuersRegistry(registry);
 
         emit SystemRegistrySet(_msgSender(), oldRegistry, registry);
     }
@@ -131,7 +131,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         // registry can be address(0) to remove the contract-specific registry
 
         address oldRegistry = address(_contractRegistries[contractAddress]);
-        _contractRegistries[contractAddress] = ISMARTTrustedIssuersRegistry(registry);
+        _contractRegistries[contractAddress] = IATKTrustedIssuersRegistry(registry);
 
         emit ContractRegistrySet(_msgSender(), contractAddress, oldRegistry, registry);
     }
@@ -155,7 +155,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
 
     /// @notice Gets the system trusted issuers registry
     /// @return The system trusted issuers registry address
-    function getSystemRegistry() external view returns (ISMARTTrustedIssuersRegistry) {
+    function getSystemRegistry() external view returns (IATKTrustedIssuersRegistry) {
         return _systemRegistry;
     }
 
@@ -165,9 +165,38 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     function getRegistryForContract(address contractAddress)
         external
         view
-        returns (ISMARTTrustedIssuersRegistry)
+        returns (IATKTrustedIssuersRegistry)
     {
         return _contractRegistries[contractAddress];
+    }
+
+    // --- IATKTrustedIssuersRegistry Implementation ---
+
+    /// @inheritdoc IATKTrustedIssuersRegistry
+    function addTrustedIssuer(IClaimIssuer _trustedIssuer, uint256[] calldata _claimTopics)
+        external
+        override
+        onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
+    {
+        this.getSystemRegistry().addTrustedIssuer(_trustedIssuer, _claimTopics);
+    }
+
+    /// @inheritdoc IATKTrustedIssuersRegistry
+    function removeTrustedIssuer(IClaimIssuer _trustedIssuer)
+        external
+        override
+        onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
+    {
+        this.getSystemRegistry().removeTrustedIssuer(_trustedIssuer);
+    }
+
+    /// @inheritdoc IATKTrustedIssuersRegistry
+    function updateIssuerClaimTopics(IClaimIssuer _trustedIssuer, uint256[] calldata _newClaimTopics)
+        external
+        override
+        onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
+    {
+        this.getSystemRegistry().updateIssuerClaimTopics(_trustedIssuer, _newClaimTopics);
     }
 
     // --- ISMARTTrustedIssuersRegistry Implementation ---

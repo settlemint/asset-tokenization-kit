@@ -67,11 +67,11 @@ interface IATKTrustedIssuersMetaRegistry is IATKTrustedIssuersRegistry {
 
     /// @notice Gets the system trusted issuers registry
     /// @return The system trusted issuers registry address
-    function getSystemRegistry() external view returns (ISMARTTrustedIssuersRegistry);
+    function getSystemRegistry() external view returns (IATKTrustedIssuersRegistry);
 
     /// @notice Gets the contract-specific trusted issuers registry
     /// @param contractAddress The contract address to get the registry for
     /// @return The contract-specific trusted issuers registry address
-    function getRegistryForContract(address contractAddress) external view returns (ISMARTTrustedIssuersRegistry);
+    function getRegistryForContract(address contractAddress) external view returns (IATKTrustedIssuersRegistry);
 
 }

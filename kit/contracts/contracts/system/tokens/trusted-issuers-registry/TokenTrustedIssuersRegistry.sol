@@ -126,7 +126,7 @@ contract TokenTrustedIssuersRegistry is
 
     // --- Token-Specific Modification Functions ---
 
-    /// @inheritdoc IATKTokenTrustedIssuersRegistry
+    /// @inheritdoc IATKTrustedIssuersRegistry
     function addTrustedIssuer(IClaimIssuer _trustedIssuer, uint256[] calldata _claimTopics)
         external
         override
@@ -148,10 +148,10 @@ contract TokenTrustedIssuersRegistry is
             unchecked { ++i; }
         }
 
-        emit TrustedIssuerAddedForSubject(_msgSender(), _token.onchainID(), issuerAddress, _claimTopics);
+        emit TrustedIssuerAdded(_msgSender(), _trustedIssuer, _token.onchainID(), _claimTopics);
     }
 
-    /// @inheritdoc IATKTokenTrustedIssuersRegistry
+    /// @inheritdoc IATKTrustedIssuersRegistry
     function removeTrustedIssuer(IClaimIssuer _trustedIssuer)
         external
         override
@@ -175,10 +175,10 @@ contract TokenTrustedIssuersRegistry is
         // Delete the issuer's record
         delete _trustedIssuers[issuerAddress];
 
-        emit TrustedIssuerRemovedForSubject(_msgSender(), _token.onchainID(), issuerAddress);
+        emit TrustedIssuerRemoved(_msgSender(), _trustedIssuer, _token.onchainID());
     }
 
-    /// @inheritdoc IATKTokenTrustedIssuersRegistry
+    /// @inheritdoc IATKTrustedIssuersRegistry
     function updateIssuerClaimTopics(IClaimIssuer _trustedIssuer, uint256[] calldata _newClaimTopics)
         external
         override
@@ -207,7 +207,7 @@ contract TokenTrustedIssuersRegistry is
         // Update the stored claim topics
         _trustedIssuers[issuerAddress].claimTopics = _newClaimTopics;
 
-        emit ClaimTopicsUpdatedForSubject(_msgSender(), _token.onchainID(), issuerAddress, _newClaimTopics);
+        emit ClaimTopicsUpdated(_msgSender(), _trustedIssuer, _token.onchainID(), _newClaimTopics);
     }
 
     // --- ISMARTTrustedIssuersRegistry Implementation ---

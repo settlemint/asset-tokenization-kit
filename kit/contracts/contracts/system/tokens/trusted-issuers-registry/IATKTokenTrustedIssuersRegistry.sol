@@ -16,25 +16,6 @@ import { IATKToken } from "../IATKToken.sol";
 ///      and provide token-specific access control via GOVERNANCE_ROLE.
 interface IATKTokenTrustedIssuersRegistry is IATKTrustedIssuersRegistry {
 
-    // --- Token-Specific Modification Functions ---
-
-    /// @notice Adds a new trusted issuer to the token registry with a specified list of claim topics
-    /// @dev Token-specific implementation where subject is always the token's onchainID
-    /// @param trustedIssuer The ClaimIssuer contract address of the trusted claim issuer
-    /// @param claimTopics The set of claim topics that the trusted issuer is allowed to emit
-    function addTrustedIssuer(IClaimIssuer trustedIssuer, uint256[] calldata claimTopics) external;
-
-    /// @notice Removes an existing trusted issuer from the token registry
-    /// @dev Token-specific implementation where subject is always the token's onchainID
-    /// @param trustedIssuer The claim issuer to remove
-    function removeTrustedIssuer(IClaimIssuer trustedIssuer) external;
-
-    /// @notice Updates the list of claim topics for an existing trusted issuer in the token registry
-    /// @dev Token-specific implementation where subject is always the token's onchainID
-    /// @param trustedIssuer The claim issuer to update
-    /// @param newClaimTopics The new set of claim topics that the trusted issuer is allowed to emit
-    function updateIssuerClaimTopics(IClaimIssuer trustedIssuer, uint256[] calldata newClaimTopics) external;
-
     // --- Token-Specific Getters ---
 
     /// @notice Returns the token contract that this registry is associated with

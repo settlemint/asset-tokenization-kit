@@ -31,4 +31,9 @@ library ATKSystemRoles {
     /// @notice Role identifier for addresses that can manage the addon module
     /// @dev Will be able to add add-on instance contracts etc. to the allow list of compliance
     bytes32 public constant ADDON_FACTORY_MODULE_ROLE = keccak256("ADDON_FACTORY_MODULE_ROLE");
+
+    /// @notice Role identifier for addresses that can manage the trusted issuers meta registry module
+    /// @dev Will be able to add trusted issuers to the registry
+    bytes32 public constant TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE = keccak256("TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE");
+
 }

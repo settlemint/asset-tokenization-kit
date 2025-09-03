@@ -118,11 +118,11 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
 
     // --- System Registry Functions (no subject parameters) ---
 
-    /// @inheritdoc IATKSystemTrustedIssuersRegistry
+    /// @inheritdoc IATKTrustedIssuersRegistry
     function addTrustedIssuer(IClaimIssuer _trustedIssuer, uint256[] calldata _claimTopics)
         external
         override
-        onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
+        onlySystemRoles3(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE, ATKSystemRoles.TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE)
     {
         address issuerAddress = address(_trustedIssuer);
         if (issuerAddress == address(0)) revert InvalidIssuerAddress();
@@ -141,14 +141,14 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
         }
 
         // Emit subject-aware event with address(0) as subject for system registry
-        emit TrustedIssuerAddedForSubject(_msgSender(), address(0), issuerAddress, _claimTopics);
+        emit TrustedIssuerAdded(_msgSender(), _trustedIssuer, address(0), _claimTopics);
     }
 
-    /// @inheritdoc IATKSystemTrustedIssuersRegistry
+    /// @inheritdoc IATKTrustedIssuersRegistry
     function removeTrustedIssuer(IClaimIssuer _trustedIssuer)
         external
         override
-        onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
+        onlySystemRoles3(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE, ATKSystemRoles.TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE)
     {
         address issuerAddress = address(_trustedIssuer);
         if (!_trustedIssuers[issuerAddress].exists) revert IssuerDoesNotExist(issuerAddress);
@@ -169,14 +169,14 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
         delete _trustedIssuers[issuerAddress];
 
         // Emit subject-aware event with address(0) as subject for system registry
-        emit TrustedIssuerRemovedForSubject(_msgSender(), address(0), issuerAddress);
+        emit TrustedIssuerRemoved(_msgSender(), _trustedIssuer, address(0));
     }
 
-    /// @inheritdoc IATKSystemTrustedIssuersRegistry
+    /// @inheritdoc IATKTrustedIssuersRegistry
     function updateIssuerClaimTopics(IClaimIssuer _trustedIssuer, uint256[] calldata _newClaimTopics)
         external
         override
-        onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
+        onlySystemRoles3(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE, ATKSystemRoles.TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE)
     {
         address issuerAddress = address(_trustedIssuer);
         if (!_trustedIssuers[issuerAddress].exists) revert IssuerDoesNotExist(issuerAddress);
@@ -202,11 +202,14 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
         _trustedIssuers[issuerAddress].claimTopics = _newClaimTopics;
 
         // Emit subject-aware event with address(0) as subject for system registry
-        emit ClaimTopicsUpdatedForSubject(_msgSender(), address(0), issuerAddress, _newClaimTopics);
+        emit ClaimTopicsUpdated(_msgSender(), _trustedIssuer, address(0), _newClaimTopics);
     }
 
-    /// @inheritdoc IATKSystemTrustedIssuersRegistry
-    function getTrustedIssuers() external view override returns (IClaimIssuer[] memory) {
+
+    // --- System Registry Functions (no subject parameters) ---
+
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    function getTrustedIssuers(address) external view override returns (IClaimIssuer[] memory) {
         IClaimIssuer[] memory issuers = new IClaimIssuer[](_issuerAddresses.length);
         uint256 issuerAddressesLength = _issuerAddresses.length;
         for (uint256 i = 0; i < issuerAddressesLength;) {
@@ -216,20 +219,8 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
         return issuers;
     }
 
-    /// @inheritdoc IATKSystemTrustedIssuersRegistry
-    function getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer)
-        external
-        view
-        override
-        returns (uint256[] memory)
-    {
-        address issuerAddress = address(_trustedIssuer);
-        if (!_trustedIssuers[issuerAddress].exists) revert IssuerDoesNotExist(issuerAddress);
-        return _trustedIssuers[issuerAddress].claimTopics;
-    }
-
-    /// @inheritdoc IATKSystemTrustedIssuersRegistry
-    function getTrustedIssuersForClaimTopic(uint256 claimTopic)
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    function getTrustedIssuersForClaimTopic(address, uint256 claimTopic)
         external
         view
         override
@@ -245,52 +236,21 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
         return issuers;
     }
 
-    /// @inheritdoc IATKSystemTrustedIssuersRegistry
-    function isTrustedIssuer(address _issuer) external view override returns (bool) {
-        return _trustedIssuers[_issuer].exists;
-    }
-
-    /// @inheritdoc IATKSystemTrustedIssuersRegistry
-    function hasClaimTopic(address _issuer, uint256 _claimTopic) external view override returns (bool) {
-        return _claimTopicIssuerIndex[_claimTopic][_issuer] > 0;
-    }
-
-    // --- Subject-Aware Functions (ISMARTTrustedIssuersRegistry implementation) ---
-
-    /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function getTrustedIssuers(address) external view override returns (IClaimIssuer[] memory) {
-        // System registry ignores subject parameter - returns all system issuers
-        return this.getTrustedIssuers();
-    }
-
-    /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function getTrustedIssuersForClaimTopic(address, uint256 claimTopic)
-        external
-        view
-        override
-        returns (IClaimIssuer[] memory)
-    {
-        // System registry ignores subject parameter - returns all system issuers for the topic
-        return this.getTrustedIssuersForClaimTopic(claimTopic);
-    }
-
     /// @inheritdoc ISMARTTrustedIssuersRegistry
     function isTrustedIssuer(address, address _issuer) external view override returns (bool) {
-        // System registry ignores subject parameter - checks system issuer status
-        return this.isTrustedIssuer(_issuer);
+        return _trustedIssuers[_issuer].exists;
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
     function hasClaimTopic(address, address _issuer, uint256 _claimTopic) external view override returns (bool) {
-        // System registry ignores subject parameter - checks system claim topic status
-        return this.hasClaimTopic(_issuer, _claimTopic);
+        return _claimTopicIssuerIndex[_claimTopic][_issuer] > 0;
     }
 
     // --- IClaimAuthorizer Implementation ---
 
     /// @inheritdoc IClaimAuthorizer
     function isAuthorizedToAddClaim(address issuer, uint256 topic) external view override returns (bool) {
-        return this.hasClaimTopic(issuer, topic);
+        return this.hasClaimTopic(address(0), issuer, topic);
     }
 
     // --- Internal Helper Functions ---
