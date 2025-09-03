@@ -1,13 +1,14 @@
 import { kycProfiles, user } from "@/lib/db/schema";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import {
   filterClaimsForUser,
   identityPermissionsMiddleware,
 } from "@/orpc/middlewares/auth/identity-permissions.middleware";
+import { trustedIssuerMiddleware } from "@/orpc/middlewares/auth/trusted-issuer.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { userClaimsMiddleware } from "@/orpc/middlewares/system/user-claims.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { getUserRole } from "@atk/zod/user-roles";
@@ -128,7 +129,15 @@ type QueryResultRow = {
 export const list = authRouter.user.list
   .use(systemMiddleware)
   .use(theGraphMiddleware)
-  .use(userClaimsMiddleware)
+  .use(
+    blockchainPermissionsMiddleware({
+      requiredRoles: { any: ["identityManager"] },
+      getAccessControl: ({ context }) => {
+        return context.system?.systemAccessManager?.accessControl;
+      },
+    })
+  )
+  .use(trustedIssuerMiddleware)
   .use(
     identityPermissionsMiddleware({
       getTargetUserId: () => undefined, // List operation doesn't target specific user

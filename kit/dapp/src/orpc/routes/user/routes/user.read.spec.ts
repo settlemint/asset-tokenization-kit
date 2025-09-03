@@ -155,7 +155,7 @@ describe("User read", () => {
             },
           }
         )
-      ).rejects.toThrow(`Cannot access user data for user ${testUserData.id}`);
+      ).rejects.toThrow("User does not have the required role to execute this action.");
     });
 
     it("regular user without 'user:list' permission cannot read other users by wallet", async () => {
@@ -372,7 +372,7 @@ describe("User read", () => {
             },
           }
         )
-      ).rejects.toThrow(`Cannot access user data for user ${testUserData.id}`);
+      ).rejects.toThrow("User does not have the required role to execute this action.");
     });
 
     it("identity manager can see all users and all claims unfiltered", async () => {
