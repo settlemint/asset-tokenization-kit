@@ -11,6 +11,7 @@ export const roles = [
   "burner",
   "capManagement",
   "claimPolicyManager",
+  "claimIssuer",
   "complianceAdmin",
   "complianceManager",
   "custodian",
@@ -99,6 +100,7 @@ export const accessControlSchema = () =>
     claimPolicyManager: accountArray().describe(
       "Accounts with claim policy manager role"
     ),
+    claimIssuer: accountArray().describe("Accounts with claim issuer role"),
     complianceAdmin: accountArray().describe(
       "Accounts with compliance admin role"
     ),

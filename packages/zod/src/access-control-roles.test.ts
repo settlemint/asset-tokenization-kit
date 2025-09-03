@@ -33,6 +33,7 @@ describe("accessControlRoles", () => {
         burner: false,
         capManagement: false,
         claimPolicyManager: false,
+        claimIssuer: false,
         complianceAdmin: false,
         complianceManager: false,
         custodian: false,
@@ -76,6 +77,7 @@ describe("accessControlRoles", () => {
         burner: true,
         capManagement: false,
         claimPolicyManager: true,
+        claimIssuer: true,
         complianceAdmin: false,
         complianceManager: true,
         custodian: false,
@@ -129,6 +131,7 @@ describe("accessControlRoles", () => {
       expect(result.burner).toBe(false);
       expect(result.capManagement).toBe(false);
       expect(result.claimPolicyManager).toBe(false);
+      expect(result.claimIssuer).toBe(false);
       expect(result.complianceAdmin).toBe(false);
       expect(result.complianceManager).toBe(false);
       expect(result.custodian).toBe(false);
@@ -257,6 +260,7 @@ describe("accessControlRoles", () => {
         "burner",
         "capManagement",
         "claimPolicyManager",
+        "claimIssuer",
         "complianceAdmin",
         "complianceManager",
         "custodian",
