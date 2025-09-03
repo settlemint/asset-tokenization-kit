@@ -33,11 +33,13 @@
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
+import { ClaimTopic, createClaim } from "@/orpc/helpers/create-claim";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
+import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { print } from "graphql";
-import { encodeAbiParameters, encodePacked, keccak256 } from "viem";
+import { call } from "@orpc/server";
+import { getAddress } from "viem";
 
 const COLLATERAL_CLAIM_MUTATION = portalGraphql(`
   mutation AddCollateralClaim(
@@ -98,9 +100,8 @@ const COLLATERAL_CLAIM_MUTATION = portalGraphql(`
 export const updateCollateral = tokenRouter.token.updateCollateral
   .use(
     tokenPermissionMiddleware({
-      // TODO: Define appropriate permissions for collateral management
-      // This should likely be issuer-level permissions or specific collateral roles
-      requiredRoles: TOKEN_PERMISSIONS.updateCollateral, // Use specific collateral permission
+      requiredRoles: TOKEN_PERMISSIONS.updateCollateral,
+      requiredExtensions: ["COLLATERAL"],
     })
   )
   .handler(async ({ input, context, errors }) => {
@@ -132,136 +133,55 @@ export const updateCollateral = tokenRouter.token.updateCollateral
       });
     }
 
-    // COLLATERAL TOPIC: Use standardized claim topic for collateral
-    const COLLATERAL_TOPIC = BigInt(
-      keccak256(encodePacked(["string"], ["collateral"]))
-    );
-
     // Add decimals to the amount
     const amountExact = amount * 10n ** BigInt(tokenData.decimals);
-    // ENCODE CLAIM DATA: Create ABI-encoded data containing amount and expiryTimestamp
-    // Note: Field names must match what the subgraph expects
-    const claimData = encodeAbiParameters(
-      [
-        { type: "uint256", name: "amount" },
-        { type: "uint256", name: "expiryTimestamp" },
-      ],
-      [amountExact, expiryTimestamp]
-    );
 
-    try {
-      // USER-ISSUED CLAIM SIGNATURE: Create signature for user-issued claim
-      // The user issues the claim to the identity contract
-      const messageHash = keccak256(
-        encodePacked(
-          ["address", "uint256", "bytes"],
-          [onchainID, COLLATERAL_TOPIC, claimData]
-        )
-      );
-      // ISSUE CLAIM: Add collateral claim to token's identity contract
-      await context.portalClient.mutate(
-        COLLATERAL_CLAIM_MUTATION,
-        {
-          address: onchainID,
-          from: sender.wallet,
-          topic: COLLATERAL_TOPIC.toString(),
-          scheme: "1", // ECDSA
-          issuer: onchainID, // Self-issued claim by the identity contract
-          signature: messageHash, // Placeholder - should be proper signature
-          data: claimData,
-          uri: "", // Empty URI as not required for collateral claims
-        },
-        {
-          sender,
-          code: walletVerification.secretVerificationCode,
-          type: walletVerification.verificationType,
-        }
-      );
-
-      // RETURN UPDATED TOKEN DATA: Return the token context which will be refreshed by the middleware
-      return tokenData;
-    } catch (error) {
-      // Enhanced error handling with more actionable information
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-
-      // Classify error types to provide specific guidance
-      let userFriendlyMessage = "Failed to update collateral claim";
-      let troubleshootingSteps: string[] = [];
-
-      if (
-        errorMessage.includes("insufficient funds") ||
-        errorMessage.includes("balance")
-      ) {
-        userFriendlyMessage = "Insufficient funds to complete the transaction";
-        troubleshootingSteps = [
-          "Ensure your wallet has sufficient balance for gas fees",
-          "Check that you have the required tokens for the transaction",
-        ];
-      } else if (
-        errorMessage.includes("AccessControl") ||
-        errorMessage.includes("Ownable")
-      ) {
-        userFriendlyMessage =
-          "Access denied: insufficient permissions to update collateral";
-        troubleshootingSteps = [
-          "Verify you are registered as a trusted issuer for this token",
-          "Contact the token administrator to grant collateral management permissions",
-          "Ensure your identity is properly configured for claim issuance",
-        ];
-      } else if (
-        errorMessage.includes("revert") ||
-        errorMessage.includes("execution reverted")
-      ) {
-        userFriendlyMessage = "Transaction failed during execution";
-        troubleshootingSteps = [
-          "Check that the collateral amount is greater than current token supply",
-          "Verify that the token's identity contract is properly configured",
-          "Ensure the claim topic is supported by the identity contract",
-        ];
-      } else if (
-        errorMessage.includes("network") ||
-        errorMessage.includes("timeout")
-      ) {
-        userFriendlyMessage =
-          "Network connectivity issue preventing the transaction";
-        troubleshootingSteps = [
-          "Check your internet connection",
-          "Verify the blockchain network is operational",
-          "Try again after a few moments",
-        ];
-      } else if (errorMessage.includes("nonce")) {
-        userFriendlyMessage = "Transaction nonce conflict";
-        troubleshootingSteps = [
-          "Wait for pending transactions to complete",
-          "Reset your wallet's transaction queue if necessary",
-        ];
-      }
-
-      throw errors.PORTAL_ERROR({
-        message: userFriendlyMessage,
+    const account = await call(readAccount, {}, { context });
+    if (!account?.identity) {
+      throw errors.INPUT_VALIDATION_FAILED({
+        message: "Account does not have an associated identity contract",
         data: {
-          document: print(COLLATERAL_CLAIM_MUTATION),
-          variables: {
-            address: onchainID,
-            from: auth.user.wallet,
-            topic: COLLATERAL_TOPIC,
-            scheme: "3",
-            issuer: onchainID,
-            data: claimData,
-            uri: "",
-            // Additional debugging context in variables
-            debug: {
-              originalError: errorMessage,
-              troubleshooting: troubleshootingSteps,
-              tokenAddress: contract,
-              identityContract: onchainID,
-              collateralAmount: amountExact.toString(),
-              expiryDays,
-            },
-          },
-          stack: error instanceof Error ? error.stack : undefined,
+          errors: [
+            `Account at address ${context.auth.user.wallet} does not have an associated identity contract`,
+          ],
         },
       });
     }
+
+    // USER-ISSUED CLAIM SIGNATURE: Create signature for user-issued claim
+    // The user issues the claim to the identity contract
+    const { signature, topicId, claimData } = await createClaim({
+      user: sender,
+      walletVerification,
+      identity: onchainID,
+      claim: {
+        topic: ClaimTopic.collateral,
+        data: {
+          amount: amountExact,
+          expiryTimestamp,
+        },
+      },
+    });
+    // ISSUE CLAIM: Add collateral claim to token's identity contract
+    await context.portalClient.mutate(
+      COLLATERAL_CLAIM_MUTATION,
+      {
+        address: onchainID,
+        from: sender.wallet,
+        topic: topicId.toString(),
+        scheme: "1", // ECDSA
+        issuer: getAddress(account.identity),
+        signature,
+        data: claimData,
+        uri: "", // Empty URI as not required for collateral claims
+      },
+      {
+        sender,
+        code: walletVerification.secretVerificationCode,
+        type: walletVerification.verificationType,
+      }
+    );
+
+    // RETURN UPDATED TOKEN DATA: Return the token context which will be refreshed by the middleware
+    return tokenData;
   });
