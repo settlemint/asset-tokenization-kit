@@ -41,7 +41,7 @@ export function DeploymentDetails() {
             void completeStepAndNavigate(OnboardingStep.systemSettings)
           }
         >
-          {t("system.configure-system")}
+          {t("system.configure-platform")}
         </Button>
       }
     >

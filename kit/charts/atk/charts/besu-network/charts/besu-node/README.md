@@ -89,7 +89,7 @@ Besu nodes for a POA network
 | node.besu.http.allowlist[0] | string | `"*"` |  |
 | node.besu.image.pullPolicy | string | `"IfNotPresent"` |  |
 | node.besu.image.repository | string | `"docker.io/hyperledger/besu"` |  |
-| node.besu.image.tag | string | `"25.7.0"` |  |
+| node.besu.image.tag | string | `"25.8.0"` |  |
 | node.besu.keysPath | string | `"/keys"` |  |
 | node.besu.logging | string | `"INFO"` |  |
 | node.besu.metrics.enabled | bool | `true` |  |

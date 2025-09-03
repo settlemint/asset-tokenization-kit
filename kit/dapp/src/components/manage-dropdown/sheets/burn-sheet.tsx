@@ -3,13 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Web3Address } from "@/components/web3/web3-address";
 import { useAppForm } from "@/hooks/use-app-form";
+import { FormatCurrency } from "@/lib/utils/format-value/format-currency";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { Dnum } from "dnum";
-import { format, from, lessThanOrEqual, subtract } from "dnum";
+import { add, Dnum, format, from, lessThanOrEqual, subtract } from "dnum";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -366,65 +366,116 @@ export function BurnSheet({
                         </div>
                         <div>
                           <form.AppField name={`burn_amount_${entry.id}`}>
-                            {(field) => (
-                              <field.BigIntField
-                                label={t(
-                                  "tokens:actions.burn.form.amountLabel"
-                                )}
-                                endAddon={asset.symbol}
-                                required
-                                description={(() => {
-                                  const addr = form.getFieldValue(
-                                    `burn_address_${entry.id}`
+                            {(field) => {
+                              const footer = () => {
+                                const addr = form.getFieldValue(
+                                  `burn_address_${entry.id}`
+                                ) as EthereumAddress | "";
+                                if (!addr) return undefined;
+
+                                const lowerAddr = addr.toLowerCase();
+                                const holderBalance =
+                                  holdersData?.token?.balances?.find(
+                                    (b) =>
+                                      b.account?.id.toLowerCase() === lowerAddr
+                                  );
+
+                                if (!holderBalance) return undefined;
+
+                                // Calculate how much is already allocated to this address in other entries
+                                let allocatedAmount = from(0, tokenDecimals);
+                                entries.forEach((otherEntry) => {
+                                  if (otherEntry.id === entry.id) return;
+                                  const otherAddr = form.getFieldValue(
+                                    `burn_address_${otherEntry.id}`
                                   ) as EthereumAddress | "";
-                                  if (!addr) return undefined;
-
-                                  const lowerAddr = addr.toLowerCase();
-                                  const holderBalance =
-                                    holdersData?.token?.balances?.find(
-                                      (b) =>
-                                        b.account?.id.toLowerCase() ===
-                                        lowerAddr
+                                  const otherAmt =
+                                    (form.getFieldValue(
+                                      `burn_amount_${otherEntry.id}`
+                                    ) as bigint | undefined) ?? 0n;
+                                  if (otherAddr?.toLowerCase() === lowerAddr) {
+                                    allocatedAmount = add(
+                                      allocatedAmount,
+                                      from(otherAmt, tokenDecimals),
+                                      tokenDecimals
                                     );
-
-                                  if (!holderBalance) return undefined;
-
-                                  // Calculate how much is already allocated to this address in other entries
-                                  let allocatedAmount = 0n;
-                                  entries.forEach((otherEntry) => {
-                                    if (otherEntry.id === entry.id) return;
-                                    const otherAddr = form.getFieldValue(
-                                      `burn_address_${otherEntry.id}`
-                                    ) as EthereumAddress | "";
-                                    const otherAmt =
-                                      (form.getFieldValue(
-                                        `burn_amount_${otherEntry.id}`
-                                      ) as bigint | undefined) ?? 0n;
-                                    if (
-                                      otherAddr?.toLowerCase() === lowerAddr
-                                    ) {
-                                      allocatedAmount += otherAmt;
-                                    }
-                                  });
-
-                                  const availableForThisEntry =
-                                    holderBalance.available[0] -
-                                    allocatedAmount;
-                                  const isDuplicate =
-                                    (addressEntryCount.get(lowerAddr) ?? 0) > 1;
-
-                                  if (availableForThisEntry <= 0n) {
-                                    return "No balance left for this address";
                                   }
+                                });
 
-                                  return isDuplicate
-                                    ? `Available: ${availableForThisEntry.toString()} (Total balance: ${holderBalance.available[0].toString()})`
-                                    : t("tokens:actions.burn.form.max", {
-                                        max: availableForThisEntry.toString(),
-                                      });
-                                })()}
-                              />
-                            )}
+                                const availableHolderBalance =
+                                  holderBalance.available;
+                                const availableForThisEntry = subtract(
+                                  availableHolderBalance,
+                                  allocatedAmount,
+                                  tokenDecimals
+                                );
+                                const isDuplicate =
+                                  (addressEntryCount.get(lowerAddr) ?? 0) > 1;
+
+                                if (
+                                  lessThanOrEqual(
+                                    availableForThisEntry,
+                                    from(0, tokenDecimals)
+                                  )
+                                ) {
+                                  return "No balance left for this address";
+                                }
+
+                                return isDuplicate ? (
+                                  <div className="flex items-center gap-1">
+                                    Available:
+                                    <FormatCurrency
+                                      value={availableForThisEntry}
+                                      options={{
+                                        currency: {
+                                          assetSymbol: asset.symbol,
+                                        },
+                                        type: "currency",
+                                      }}
+                                    />
+                                    Total balance:
+                                    <FormatCurrency
+                                      value={availableHolderBalance}
+                                      options={{
+                                        currency: {
+                                          assetSymbol: asset.symbol,
+                                        },
+                                        type: "currency",
+                                      }}
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center gap-1">
+                                    Max:
+                                    <FormatCurrency
+                                      value={availableForThisEntry}
+                                      options={{
+                                        currency: {
+                                          assetSymbol: asset.symbol,
+                                        },
+                                        type: "currency",
+                                      }}
+                                    />
+                                  </div>
+                                );
+                              };
+
+                              const description = footer();
+                              return (
+                                <>
+                                  <field.BigIntField
+                                    label={t(
+                                      "tokens:actions.burn.form.amountLabel"
+                                    )}
+                                    endAddon={asset.symbol}
+                                    required
+                                  />
+                                  <div className="text-xs text-muted-foreground ml-2 mt-2">
+                                    {description}
+                                  </div>
+                                </>
+                              );
+                            }}
                           </form.AppField>
                         </div>
                         {entries.length > 1 && (

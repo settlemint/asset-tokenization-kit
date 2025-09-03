@@ -4,9 +4,10 @@ import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary"
 import { SetYieldScheduleSheet } from "@/components/manage-dropdown/sheets/set-yield-schedule-sheet";
 import { FixedYieldSchedulePeriodsTable } from "@/components/tables/fixed-yield-schedule-periods";
 import { Button } from "@/components/ui/button";
+import { useTokenLoaderQuery } from "@/hooks/use-token-loader-query";
 import { orpc } from "@/orpc/orpc-client";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, useLoaderData } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Calendar } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -42,19 +43,7 @@ export const Route = createFileRoute(
  * - Empty state for tokens without yield schedules
  */
 function RouteComponent() {
-  const { tokenAddress } = Route.useParams();
-  const { asset: loaderAsset } = useLoaderData({
-    from: "/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress",
-  });
-
-  // Subscribe to live asset updates so UI reacts to invalidations from actions
-  const { data: queriedAsset } = useQuery(
-    orpc.token.read.queryOptions({
-      input: { tokenAddress },
-    })
-  );
-
-  const asset = queriedAsset ?? loaderAsset;
+  const { asset } = useTokenLoaderQuery();
 
   const { t } = useTranslation(["tokens", "common"]);
   const [isYieldScheduleSheetOpen, setIsYieldScheduleSheetOpen] =

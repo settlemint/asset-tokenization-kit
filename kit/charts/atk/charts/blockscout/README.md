@@ -14,7 +14,7 @@ A Helm chart for the blockscout components
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://blockscout.github.io/helm-charts | blockscout-stack | 3.3.0 |
+| https://blockscout.github.io/helm-charts | blockscout-stack | 3.4.0 |
 
 ## Values
 
@@ -79,7 +79,7 @@ A Helm chart for the blockscout components
 | blockscout-stack.frontend.env.NEXT_PUBLIC_SEO_ENHANCED_DATA_ENABLED | string | `"true"` |  |
 | blockscout-stack.frontend.env.NEXT_PUBLIC_TRANSACTION_INTERPRETATION_PROVIDER | string | `"blockscout"` |  |
 | blockscout-stack.frontend.image.repository | string | `"ghcr.io/blockscout/frontend"` |  |
-| blockscout-stack.frontend.image.tag | string | `"v2.3.0"` |  |
+| blockscout-stack.frontend.image.tag | string | `"v2.3.1"` |  |
 | blockscout-stack.frontend.ingress.className | string | `"atk-nginx"` |  |
 | blockscout-stack.frontend.ingress.enabled | bool | `true` |  |
 | blockscout-stack.frontend.ingress.hostname | string | `"explorer.k8s.orb.local"` |  |
