@@ -22,26 +22,24 @@ export const BondFields = withForm({
   props: {},
   render: function Render({ form }) {
     const { t } = useTranslation(["asset-designer", "asset-types"]);
-    const values = useStore(form.store, (state) => state.values);
-    const decimals = values.decimals;
-
-    // For type safety, we need to check if denominationAsset exists on values
-    const denominationAsset =
-      values.type === "bond" ? values.denominationAsset : undefined;
+    const values = useStore(form.store, (state) => ({
+      type: state.values.type,
+      decimals: state.values.decimals,
+      denominationAsset:
+        state.values.type === "bond"
+          ? state.values.denominationAsset
+          : undefined,
+    }));
+    const { type, decimals, denominationAsset } = values;
 
     // Fetch denomination asset details when an address is selected
     const denominationAssetQuery = useQuery({
       ...orpc.token.read.queryOptions({
         input: { tokenAddress: denominationAsset as Address },
       }),
-      enabled: !!denominationAsset && values.type === "bond",
+      enabled: !!denominationAsset && type === "bond",
     });
     const denominationAssetDecimals = denominationAssetQuery.data?.decimals;
-
-    // Type guard to ensure we're dealing with a bond
-    if (values.type !== "bond") {
-      return <></>;
-    }
 
     return (
       <>
