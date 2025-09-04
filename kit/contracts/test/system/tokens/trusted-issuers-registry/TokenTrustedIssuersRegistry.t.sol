@@ -12,7 +12,6 @@ import { IATKTokenTrustedIssuersRegistry } from
     "../../../../contracts/system/tokens/trusted-issuers-registry/IATKTokenTrustedIssuersRegistry.sol";
 import { IATKTrustedIssuersRegistry } from
     "../../../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
-import { IATKToken } from "../../../../contracts/system/tokens/IATKToken.sol";
 import { ATKAssetRoles } from "../../../../contracts/assets/ATKAssetRoles.sol";
 import { IClaimAuthorizer } from "../../../../contracts/onchainid/extensions/IClaimAuthorizer.sol";
 

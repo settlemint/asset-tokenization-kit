@@ -13,7 +13,6 @@ import {
   TokenAccessManagerImplementationUpdated,
   TokenFactoryRegistryImplementationUpdated,
   TopicSchemeRegistryImplementationUpdated,
-  TrustedIssuersRegistryImplementationUpdated,
 } from "../../generated/templates/System/System";
 import { fetchCompliance } from "../compliance/fetch/compliance";
 import { fetchComplianceModuleRegistry } from "../compliance/fetch/compliance-module-registry";
@@ -160,10 +159,16 @@ export function handleContractIdentityImplementationUpdated(
   fetchEvent(event, "ContractIdentityImplementationUpdated");
 }
 
-export function handleTrustedIssuersRegistryImplementationUpdated(
-  event: TrustedIssuersRegistryImplementationUpdated
+export function handleSystemTrustedIssuersRegistryImplementationUpdated(
+  event: SystemTrustedIssuersRegistryImplementationUpdated
 ): void {
-  fetchEvent(event, "TrustedIssuersRegistryImplementationUpdated");
+  fetchEvent(event, "SystemTrustedIssuersRegistryImplementationUpdated");
+}
+
+export function handleTrustedIssuersMetaRegistryImplementationUpdated(
+  event: TrustedIssuersMetaRegistryImplementationUpdated
+): void {
+  fetchEvent(event, "TrustedIssuersMetaRegistryImplementationUpdated");
 }
 
 export function handleTopicSchemeRegistryImplementationUpdated(
