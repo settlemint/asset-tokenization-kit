@@ -1,11 +1,11 @@
-import type { AccessControl } from "@/lib/fragments/the-graph/access-control-fragment";
 import type { SessionUser } from "@/lib/auth/index";
+import type { AccessControl } from "@/lib/fragments/the-graph/access-control-fragment";
 import { describe, expect, it } from "vitest";
 import {
-  canReadUserData,
-  canWriteUserData,
   canReadClaims,
+  canReadUserData,
   canWriteClaims,
+  canWriteUserData,
   computeIdentityPermissions,
   filterClaimsForUser,
   type IdentityPermissions,
@@ -60,6 +60,7 @@ describe("Identity permissions middleware", () => {
       tokenFactoryRegistryModule: [],
       tokenManager: [],
       verificationAdmin: [],
+      claimIssuer: [],
     });
 
     it("grants full permissions to identity managers", () => {
@@ -178,9 +179,11 @@ describe("Identity permissions middleware", () => {
     });
 
     it("handles undefined access control gracefully", () => {
-      const permissions = computeIdentityPermissions(mockUser as SessionUser, undefined, [
-        "kyc",
-      ]);
+      const permissions = computeIdentityPermissions(
+        mockUser as SessionUser,
+        undefined,
+        ["kyc"]
+      );
 
       expect(permissions).toEqual({
         claims: {
@@ -274,7 +277,9 @@ describe("Identity permissions middleware", () => {
         },
       };
 
-      expect(canReadClaims(["kyc", "aml", "any-topic"], permissions)).toBe(true);
+      expect(canReadClaims(["kyc", "aml", "any-topic"], permissions)).toBe(
+        true
+      );
     });
 
     it("allows reading specific permitted topics", () => {
