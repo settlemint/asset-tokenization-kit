@@ -165,14 +165,13 @@ describe("Token read", () => {
     expect(token2.symbol).toBe(token3.symbol);
   });
 
-  it("admin has all permissions", async () => {
+  it("admin has all permissions to execute token actions", async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
     const tokenInfo = await client.token.read({
       tokenAddress: testToken.id,
     });
-    // TODO: should be updated after https://linear.app/settlemint/issue/ENG-3488/subgraphapi-acces-management
-    expect(tokenInfo.userPermissions).toEqual({
+    const expectedPermissions: typeof tokenInfo.userPermissions = {
       roles: {
         addonManager: false,
         addonModule: false,
@@ -185,13 +184,13 @@ describe("Token read", () => {
         claimIssuer: false,
         complianceAdmin: false,
         complianceManager: false,
-        custodian: false,
-        emergency: false,
+        custodian: true,
+        emergency: true,
         forcedTransfer: false,
         freezer: false,
         fundsManager: false,
         globalListManager: false,
-        governance: false,
+        governance: true,
         identityManager: false,
         identityRegistryModule: false,
         minter: false,
@@ -200,47 +199,48 @@ describe("Token read", () => {
         recovery: false,
         saleAdmin: false,
         signer: false,
-        supplyManagement: false,
+        supplyManagement: true,
         systemManager: false,
         systemModule: false,
         tokenAdmin: false,
         tokenFactoryModule: false,
         tokenFactoryRegistryModule: false,
-        tokenManager: false,
+        tokenManager: true,
         verificationAdmin: false,
       },
       isAllowed: true,
       actions: {
-        burn: false,
-        create: false,
+        burn: true,
+        create: true,
         grantRole: true,
-        mint: false,
-        pause: false,
-        addComplianceModule: false,
+        mint: true,
+        pause: true,
+        addComplianceModule: true,
         approve: true,
-        forcedRecover: false,
-        freezeAddress: false,
-        recoverERC20: false,
-        recoverTokens: false,
-        redeem: false,
-        removeComplianceModule: false,
+        forcedRecover: true,
+        freezeAddress: true,
+        recoverERC20: true,
+        recoverTokens: true,
+        redeem: true,
+        removeComplianceModule: true,
         revokeRole: true,
-        setCap: false,
-        setYieldSchedule: false,
+        setCap: true,
+        setYieldSchedule: true,
         transfer: true,
-        unpause: false,
-        updateCollateral: false,
+        unpause: true,
+        updateCollateral: true,
       },
-    });
+    };
+    expect(tokenInfo.userPermissions).toEqual(expectedPermissions);
   });
 
-  it("investor has limited permissions", async () => {
+  it("investor has limited permissions to execute token actions", async () => {
     const headers = await signInWithUser(DEFAULT_INVESTOR);
     const client = getOrpcClient(headers);
     const tokenInfo = await client.token.read({
       tokenAddress: testToken.id,
     });
-    expect(tokenInfo.userPermissions).toEqual({
+    const expectedPermissions: typeof tokenInfo.userPermissions = {
       roles: {
         addonManager: false,
         addonModule: false,
@@ -299,6 +299,7 @@ describe("Token read", () => {
         unpause: false,
         updateCollateral: false,
       },
-    });
+    };
+    expect(tokenInfo.userPermissions).toEqual(expectedPermissions);
   });
 });
