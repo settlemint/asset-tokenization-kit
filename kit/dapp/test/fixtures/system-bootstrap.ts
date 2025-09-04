@@ -346,12 +346,7 @@ export async function createAndRegisterUserIdentities(orpcClient: OrpcClient) {
 
 function extractRequiredRoles(permissions: Record<string, RoleRequirement>) {
   return Object.entries(permissions).reduce((acc, [, requiredRoles]) => {
-    const roles =
-      typeof requiredRoles === "string"
-        ? [requiredRoles]
-        : "any" in requiredRoles
-          ? requiredRoles.any
-          : requiredRoles.all;
+    const roles = getRoles([requiredRoles]);
     roles.forEach((role) => {
       if (!acc.includes(role)) {
         acc.push(role);
@@ -359,4 +354,22 @@ function extractRequiredRoles(permissions: Record<string, RoleRequirement>) {
     });
     return acc;
   }, [] as AccessControlRoles[]);
+}
+
+function getRoles(requirements: RoleRequirement[], depth = 0) {
+  const roles: AccessControlRoles[] = [];
+  if (depth > 10) {
+    return [];
+  }
+  for (const requirement of requirements) {
+    if (typeof requirement === "string") {
+      roles.push(requirement);
+    } else if ("any" in requirement) {
+      roles.push(...getRoles(requirement.any, depth + 1));
+    } else if ("all" in requirement) {
+      roles.push(...getRoles(requirement.all, depth + 1));
+    }
+  }
+
+  return roles;
 }
