@@ -2,6 +2,9 @@ import { TokenFixedYieldScheduleFragment } from "@/lib/fragments/the-graph/fixed
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { FixedYieldScheduleSchema } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.read.schema";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { bigDecimal } from "@atk/zod/src/bigdecimal";
+import { from } from "dnum";
 import { z } from "zod";
 
 /**
@@ -22,9 +25,15 @@ import { z } from "zod";
  */
 const READ_FIXED_YIELD_SCHEDULE_QUERY = theGraphGraphql(
   `
-  query ReadFixedYieldScheduleQuery($id: ID!) {
+  query ReadFixedYieldScheduleQuery($id: ID!, $account: String!) {
     tokenFixedYieldSchedule(id: $id) {
       ...TokenFixedYieldScheduleFragment
+      denominationAsset {
+        id
+        balance: balances(where: {account: $account}) {
+          available
+        }
+      }
     }
   }
 `,
@@ -73,9 +82,24 @@ export const read = authRouter.fixedYieldSchedule.read.handler(
       {
         input: {
           id: input.id,
+          account: input.id,
         },
         output: z.object({
-          tokenFixedYieldSchedule: FixedYieldScheduleSchema.nullable(),
+          tokenFixedYieldSchedule: FixedYieldScheduleSchema.extend({
+            denominationAsset: z.object({
+              id: ethereumAddress,
+              balance: z
+                .array(
+                  z.object({
+                    available: bigDecimal().describe(
+                      "Available balance of the denomination asset"
+                    ),
+                  })
+                )
+                .describe("Array of balance objects for the denomination asset")
+                .transform((val) => val?.[0]?.available ?? from(0)),
+            }),
+          }).nullable(),
         }),
       }
     );

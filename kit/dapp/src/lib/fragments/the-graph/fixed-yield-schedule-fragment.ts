@@ -56,9 +56,6 @@ export const TokenFixedYieldScheduleFragment = theGraphGraphql(
     endDate
     rate
     interval
-    denominationAsset {
-      id
-    }
     totalClaimed
     totalUnclaimedYield
     totalYield
