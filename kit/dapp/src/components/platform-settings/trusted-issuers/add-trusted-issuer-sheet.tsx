@@ -101,17 +101,27 @@ export function AddTrustedIssuerSheet({
       } as UserVerification,
     },
     onSubmit: async ({ value }) => {
-      const trustedIssuerAccount = await client.account.read({
-        wallet: value.issuerAddress,
-      });
-      if (!trustedIssuerAccount.identity) {
-        throw new Error("Trusted issuer account not found");
+      try {
+        const trustedIssuerAccount = await client.account.read({
+          wallet: value.issuerAddress,
+        });
+        if (!trustedIssuerAccount.identity) {
+          throw new Error("Trusted issuer account not found");
+        }
+        createMutation.mutate({
+          issuerAddress: trustedIssuerAccount.identity,
+          claimTopicIds: value.claimTopicIds,
+          walletVerification: value.walletVerification,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : "unknown error";
+        toast.error(
+          t("trustedIssuers.toast.addError", {
+            error: errorMessage,
+          })
+        );
       }
-      createMutation.mutate({
-        issuerAddress: trustedIssuerAccount.identity,
-        claimTopicIds: value.claimTopicIds,
-        walletVerification: value.walletVerification,
-      });
     },
   });
 
