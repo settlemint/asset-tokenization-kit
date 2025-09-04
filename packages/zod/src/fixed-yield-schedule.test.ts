@@ -71,6 +71,7 @@ describe("fixedYieldSchedule", () => {
       totalYield: "15000.75",
       denominationAsset: {
         id: "0x1111111111111111111111111111111111111111",
+        balance: "1000000.0",
       },
       currentPeriod: {
         id: "0x2222222222222222222222222222222222222222",
@@ -125,7 +126,10 @@ describe("fixedYieldSchedule", () => {
       totalClaimed: "3000",
       totalUnclaimedYield: "1500",
       totalYield: "4500",
-      denominationAsset: { id: "0x5555555555555555555555555555555555555555" },
+      denominationAsset: {
+        id: "0x5555555555555555555555555555555555555555",
+        balance: "2500.75",
+      },
       currentPeriod: null,
       nextPeriod: period1,
       periods: [period1],
@@ -150,7 +154,10 @@ describe("fixedYieldSchedule", () => {
       totalClaimed: "0",
       totalUnclaimedYield: "0.000000000000000001", // Very small decimal
       totalYield: "999999999999999999999999999999.999999999", // Very large decimal
-      denominationAsset: { id: "0x2222222222222222222222222222222222222222" },
+      denominationAsset: {
+        id: "0x2222222222222222222222222222222222222222",
+        balance: "0.000000000000000001",
+      },
       currentPeriod: null,
       nextPeriod: null,
       periods: [],
@@ -184,7 +191,10 @@ describe("fixedYieldSchedule", () => {
         totalClaimed: "0",
         totalUnclaimedYield: "0",
         totalYield: "0",
-        denominationAsset: { id: "0x1111111111111111111111111111111111111111" },
+        denominationAsset: {
+          id: "0x1111111111111111111111111111111111111111",
+          balance: "500.0",
+        },
         currentPeriod: null,
         nextPeriod: null,
         periods: [],
@@ -222,7 +232,10 @@ describe("fixedYieldSchedule", () => {
       totalClaimed: "0",
       totalUnclaimedYield: "0",
       totalYield: "0",
-      denominationAsset: { id: "0x1111111111111111111111111111111111111111" },
+      denominationAsset: {
+        id: "0x1111111111111111111111111111111111111111",
+        balance: "10000.0",
+      },
       currentPeriod: null,
       nextPeriod: null,
       periods: [],
@@ -245,7 +258,10 @@ describe("fixedYieldSchedule", () => {
       totalClaimed: "1.23e10", // Scientific notation
       totalUnclaimedYield: "0.000000000000000001", // Very small
       totalYield: "12345678901234567890123456789.123456789", // Very large with decimals
-      denominationAsset: { id: "0x1111111111111111111111111111111111111111" },
+      denominationAsset: {
+        id: "0x1111111111111111111111111111111111111111",
+        balance: "50000000000.0",
+      },
       currentPeriod: null,
       nextPeriod: null,
       periods: [],
