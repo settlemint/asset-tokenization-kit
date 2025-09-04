@@ -52,7 +52,7 @@
     "globals": "16.3.0",
     "gql.tada": "1.8.13",
     "happy-dom": "18.0.1",
-    "knip": "5.63.0",
+    "knip": "5.63.1",
     "languine": "3.1.4",
     "minimatch": "10.0.3",
     "subgraph": "workspace:*",
