@@ -48,21 +48,20 @@ type AssertValidContract =
  *
  * The SystemContractValidation type above ensures these mappings stay valid during refactoring.
  */
-export const SYSTEM_PERMISSIONS: Record<string, RoleRequirement> & {
-  tokenFactoryCreate: RoleRequirement;
-  addonCreate: RoleRequirement;
-  grantRole: RoleRequirement;
-  revokeRole: RoleRequirement;
-  complianceModuleCreate: RoleRequirement;
-  identityRegister: RoleRequirement;
-} = {
+export const SYSTEM_PERMISSIONS = {
   tokenFactoryCreate: { any: ["systemManager"] },
   addonCreate: { any: ["addonManager", "systemManager"] },
   grantRole: { any: ["admin"] },
   revokeRole: { any: ["admin"] },
   complianceModuleCreate: { any: ["complianceManager", "systemManager"] },
   identityRegister: { any: ["identityManager", "systemManager"] },
-};
+  trustedIssuerCreate: { any: ["claimPolicyManager", "systemModule"] },
+  trustedIssuerUpdate: { any: ["claimPolicyManager", "systemModule"] },
+  trustedIssuerDelete: { any: ["claimPolicyManager", "systemModule"] },
+  topicCreate: { any: ["claimPolicyManager", "systemModule"] },
+  topicUpdate: { any: ["claimPolicyManager", "systemModule"] },
+  topicDelete: { any: ["claimPolicyManager", "systemModule"] },
+} as const satisfies Record<string, RoleRequirement>;
 
 // Use the validation type to ensure it's not stripped
 export type _SystemContractIsValid = AssertValidContract;

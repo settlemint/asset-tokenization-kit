@@ -59,12 +59,12 @@ export const accessControlRoles = z.object(
 export const accessControlRole = z.enum(roles);
 
 export const assetAccessControlRoles: AccessControlRoles[] = [
-  "governance",
-  "supplyManagement",
   "custodian",
   "emergency",
+  "governance",
+  "supplyManagement",
+  "tokenManager",
 ];
-
 export const assetAccessControlRole = z.enum(assetAccessControlRoles);
 
 /**

@@ -66,6 +66,24 @@ const userPermissionsSchema = z.object({
           identityRegister: z
             .boolean()
             .describe("Whether the user can register identities"),
+          trustedIssuerCreate: z
+            .boolean()
+            .describe("Whether the user can create trusted issuers"),
+          trustedIssuerUpdate: z
+            .boolean()
+            .describe("Whether the user can update trusted issuers"),
+          trustedIssuerDelete: z
+            .boolean()
+            .describe("Whether the user can delete trusted issuers"),
+          topicCreate: z
+            .boolean()
+            .describe("Whether the user can create topics"),
+          topicUpdate: z
+            .boolean()
+            .describe("Whether the user can update topics"),
+          topicDelete: z
+            .boolean()
+            .describe("Whether the user can delete topics"),
         };
         return actionsSchema;
       })()
