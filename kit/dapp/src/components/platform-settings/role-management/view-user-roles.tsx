@@ -1,10 +1,4 @@
 import { Badge } from "@/components/ui/badge";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { client, orpc } from "@/orpc/orpc-client";
-import type { UserSearchResult } from "@/orpc/routes/user/routes/user.search.schema";
-import { useQuery } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -12,8 +6,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Eye, Shield, User as UserIcon, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
+import { client, orpc } from "@/orpc/orpc-client";
+import type { UserSearchResult } from "@/orpc/routes/user/routes/user.search.schema";
+import { useQuery } from "@tanstack/react-query";
+import { Eye, Search, Shield, User as UserIcon } from "lucide-react";
+import { useMemo, useState } from "react";
 
 // Role descriptions for display
 const ROLE_DESCRIPTIONS: Record<
@@ -71,7 +71,9 @@ const ROLE_DESCRIPTIONS: Record<
  * Displays current role assignments from the AccessControl contract
  */
 export function ViewUserRoles() {
-  const [selectedUser, setSelectedUser] = useState<UserSearchResult | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserSearchResult | null>(
+    null
+  );
   const [searchQuery, setSearchQuery] = useState("");
 
   // Search users with debounced query
@@ -144,48 +146,15 @@ export function ViewUserRoles() {
               Search User
               <span className="text-destructive ml-1">*</span>
             </Label>
-            {!selectedUser ? (
-              <div className="space-y-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="view-user-search"
-                    placeholder="Search by name, email, or wallet address..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-                {searchQuery.length >= 2 && users.length > 0 && (
-                  <div className="border rounded-md max-h-40 overflow-y-auto">
-                    {users.map((user) => (
-                      <div
-                        key={user.wallet || user.name}
-                        className="p-3 hover:bg-muted cursor-pointer border-b last:border-b-0"
-                        onClick={() => handleUserSelect(user.wallet)}
-                      >
-                        <div className="flex flex-col">
-                          <span className="font-medium">{user.name}</span>
-                          <span className="text-xs text-muted-foreground">
-                            {user.wallet ? `${user.wallet.slice(0, 6)}...${user.wallet.slice(-4)}` : "No wallet"} • {user.role}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {searchQuery.length >= 2 && users.length === 0 && (
-                  <p className="text-sm text-muted-foreground p-2">
-                    No users found matching "{searchQuery}"
-                  </p>
-                )}
-              </div>
-            ) : (
+            {selectedUser ? (
               <div className="flex items-center justify-between p-3 border rounded-md bg-muted/50">
                 <div className="flex flex-col">
                   <span className="font-medium">{selectedUser.name}</span>
                   <span className="text-xs text-muted-foreground">
-                    {selectedUser.wallet ? `${selectedUser.wallet.slice(0, 6)}...${selectedUser.wallet.slice(-4)}` : "No wallet"} • {selectedUser.role}
+                    {selectedUser.wallet
+                      ? `${selectedUser.wallet.slice(0, 6)}...${selectedUser.wallet.slice(-4)}`
+                      : "No wallet"}{" "}
+                    • {selectedUser.role}
                   </span>
                 </div>
                 <button
@@ -199,9 +168,53 @@ export function ViewUserRoles() {
                   Change User
                 </button>
               </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="view-user-search"
+                    placeholder="Search by name, email, or wallet address..."
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                    }}
+                    className="pl-10"
+                  />
+                </div>
+                {searchQuery.length >= 2 && users.length > 0 && (
+                  <div className="border rounded-md max-h-40 overflow-y-auto">
+                    {users.map((user) => (
+                      <div
+                        key={user.wallet || user.name}
+                        className="p-3 hover:bg-muted cursor-pointer border-b last:border-b-0"
+                        onClick={() => {
+                          handleUserSelect(user.wallet);
+                        }}
+                      >
+                        <div className="flex flex-col">
+                          <span className="font-medium">{user.name}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {user.wallet
+                              ? `${user.wallet.slice(0, 6)}...${user.wallet.slice(-4)}`
+                              : "No wallet"}{" "}
+                            • {user.role}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {searchQuery.length >= 2 && users.length === 0 && (
+                  <p className="text-sm text-muted-foreground p-2">
+                    No users found matching "{searchQuery}"
+                  </p>
+                )}
+              </div>
             )}
             <p className="text-xs text-muted-foreground">
-              Search for a user to view their blockchain role assignments (minimum 2 characters)
+              Search for a user to view their blockchain role assignments
+              (minimum 2 characters)
             </p>
           </div>
 
