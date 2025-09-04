@@ -43,14 +43,18 @@ describe("Fixed yield schedule top up", async () => {
       initialModulePairs: [],
     };
 
-    stablecoinToken = await createToken(adminClient, {
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
+    stablecoinToken = await createToken(
+      adminClient,
+      {
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+        ...stablecoinData,
+        countryCode: "056",
       },
-      ...stablecoinData,
-      countryCode: "056",
-    });
+      ["supplyManagement"]
+    );
 
     // Create bond token
     const bondData = {
@@ -65,14 +69,18 @@ describe("Fixed yield schedule top up", async () => {
       denominationAsset: stablecoinToken.id,
     };
 
-    bondToken = await createToken(adminClient, {
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
+    bondToken = await createToken(
+      adminClient,
+      {
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+        ...bondData,
+        countryCode: "056",
       },
-      ...bondData,
-      countryCode: "056",
-    });
+      ["governance"]
+    );
 
     // Create a fixed yield schedule
     const yieldScheduleData = {
@@ -95,11 +103,8 @@ describe("Fixed yield schedule top up", async () => {
     expect(yieldScheduleAddress).toBeDefined();
     expect(yieldScheduleAddress).toBe(getEthereumAddress(yieldScheduleAddress));
 
-    const adminUser = await adminClient.user.search({
-      query: DEFAULT_ADMIN.name,
-      limit: 1,
-    });
-    const adminWalletAddress = adminUser[0]?.wallet;
+    const adminUser = await adminClient.user.me();
+    const adminWalletAddress = adminUser?.wallet;
 
     if (!adminWalletAddress) {
       throw new Error("Admin wallet address not found");
