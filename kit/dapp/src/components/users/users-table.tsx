@@ -1,10 +1,10 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "@tanstack/react-router";
 import { formatDistanceToNow, isToday, isYesterday, format } from "date-fns";
-import { Users } from "lucide-react";
+import { Users, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
@@ -12,6 +12,7 @@ import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Web3Address } from "@/components/web3/web3-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
@@ -49,7 +50,7 @@ function UserStatusBadge({ user }: { user: User }) {
 
 /**
  * Users table component for displaying and managing platform users
- * Shows user information, registration status, and actions for each user
+ * Shows user information, registration status, and actions for each user with chunked loading
  */
 export function UsersTable() {
   const router = useRouter();
@@ -58,17 +59,26 @@ export function UsersTable() {
   // Get the current route's path pattern from the matched route
   const routePath = router.state.matches.at(-1)?.pathname;
 
-  // Fetch users data using ORPC with pagination support
-  const { data: users } = useSuspenseQuery(
+  // Pagination state for chunked loading
+  const [currentPage, setCurrentPage] = useState(0);
+  const pageSize = 50; // Load 50 users per chunk for better performance
+  const offset = currentPage * pageSize;
+
+  // Fetch users data using ORPC with pagination
+  const { data: users = [], isLoading, error, isFetching } = useQuery(
     orpc.user.list.queryOptions({
       input: {
-        limit: 1000, // Will be handled by DataTable's pagination
-        offset: 0,
+        limit: pageSize,
+        offset,
         orderBy: "createdAt",
         orderDirection: "desc",
       },
     })
   );
+
+  // Check if there might be more pages (if we got a full page)
+  const hasNextPage = users.length === pageSize;
+  const hasPrevPage = currentPage > 0;
 
 
 
@@ -214,48 +224,93 @@ export function UsersTable() {
     [t]
   );
 
+  // Handle loading and error states
+  if (error) {
+    return (
+      <ComponentErrorBoundary componentName="Users Table">
+        <div className="flex items-center justify-center p-8">
+          <p className="text-muted-foreground">Failed to load users. Please try again.</p>
+        </div>
+      </ComponentErrorBoundary>
+    );
+  }
+
   return (
     <ComponentErrorBoundary componentName="Users Table">
-      <DataTable
-        name="users"
-        data={users}
-        columns={columns}
-        urlState={{
-          enabled: true,
-          enableUrlPersistence: true,
-          routePath,
-          defaultPageSize: 10,
-          enableGlobalFilter: true,
-          enableRowSelection: false,
-          debounceMs: 300,
-        }}
-        initialColumnVisibility={{
-          name: false,
-          email: false,
-          createdAt: false,
-        }}
-        advancedToolbar={{
-          enableGlobalSearch: false,
-          enableFilters: true,
-          enableExport: true,
-          enableViewOptions: true,
-          placeholder: t("management.table.search.placeholder"),
-        }}
-        pagination={{
-          enablePagination: true,
-        }}
-        initialSorting={[
-          {
-            id: "createdAt",
-            desc: true,
-          },
-        ]}
-        customEmptyState={{
-          title: "No users found",
-          description: "No users have been registered yet.",
-          icon: Users,
-        }}
-      />
+      <div className="space-y-4">
+        {/* Custom pagination controls */}
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-muted-foreground">
+            {isFetching ? "Loading..." : `Showing ${users.length} users (Page ${currentPage + 1})`}
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setCurrentPage(currentPage - 1);
+              }}
+              disabled={!hasPrevPage || isFetching}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setCurrentPage(currentPage + 1);
+              }}
+              disabled={!hasNextPage || isFetching}
+            >
+              Next
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        <DataTable
+          name="users"
+          data={users}
+          columns={columns}
+          isLoading={isLoading}
+          urlState={{
+            enabled: true,
+            enableUrlPersistence: true,
+            routePath,
+            defaultPageSize: pageSize, // Use our page size but disable DataTable pagination
+            enableGlobalFilter: true,
+            enableRowSelection: false,
+            debounceMs: 300,
+          }}
+          initialColumnVisibility={{
+            name: false,
+            email: false,
+            createdAt: false,
+          }}
+          advancedToolbar={{
+            enableGlobalSearch: false,
+            enableFilters: true, // Keep client-side filters for the current chunk
+            enableExport: true,
+            enableViewOptions: true,
+            placeholder: t("management.table.search.placeholder"),
+          }}
+          pagination={{
+            enablePagination: false, // Disable DataTable's pagination, use our custom controls
+          }}
+          initialSorting={[
+            {
+              id: "createdAt",
+              desc: true,
+            },
+          ]}
+          customEmptyState={{
+            title: "No users found",
+            description: isLoading ? "Loading users..." : "No users have been registered yet.",
+            icon: Users,
+          }}
+        />
+      </div>
     </ComponentErrorBoundary>
   );
 }
