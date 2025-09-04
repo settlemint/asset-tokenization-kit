@@ -165,7 +165,6 @@ function Web3AddressComponent({
         <Web3Avatar
           address={address}
           size={size}
-          email={user?.email}
           name={user?.name ?? token?.name ?? account?.contractName}
           className="mr-2"
         />
@@ -179,7 +178,6 @@ function Web3AddressComponent({
       <Web3Avatar
         address={address}
         size={size}
-        email={user?.email}
         name={user?.name ?? token?.name ?? account?.contractName}
         className="mr-2"
       />

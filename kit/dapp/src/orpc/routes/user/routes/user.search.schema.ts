@@ -3,11 +3,19 @@
  *
  * This schema defines the input parameters for searching users across
  * multiple fields (firstName, lastName, name, wallet) with a single query string.
- * Similar to token search functionality, it provides flexible search
- * capabilities for user management interfaces.
+ *
+ * **Important**: This endpoint returns lightweight user data optimized for UI components.
+ * It deliberately excludes blockchain identity data (identity, claims, isRegistered)
+ * for better performance and cleaner UI integration.
+ *
+ * **Use user.list instead when you need:**
+ * - Complete user data with identity information
+ * - Pagination support for large datasets
+ * - Administrative user management features
  */
 
-import { UserSchema } from "@/orpc/routes/user/routes/user.me.schema";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { userRoles } from "@atk/zod/user-roles";
 import { z } from "zod";
 
 /**
@@ -40,12 +48,39 @@ export const UserSearchInputSchema = z.object({
 });
 
 /**
+ * Search-specific user schema with minimal fields for UI components.
+ * 
+ * This is a dedicated schema that only includes the essential fields needed
+ * for user search results. This approach is safer than using .omit() because:
+ * - It won't accidentally expose new fields added to UserSchema
+ * - It's explicit about what data is returned
+ * - It's optimized for performance with minimal data transfer
+ *
+ * **Included Fields:**
+ * - `name`: User's display name (from KYC if available, otherwise from auth)
+ * - `wallet`: User's Ethereum wallet address for identification
+ * - `role`: User's role for display and filtering
+ */
+export const UserSearchResultSchema = z.object({
+  name: z.string().describe("User's display name"),
+  wallet: ethereumAddress.nullable().describe("User's Ethereum wallet address"),
+  role: userRoles().describe("User's role for access control"),
+});
+
+/**
  * Output schema for user search results.
  *
- * Returns an array of user objects matching the search criteria.
- * Uses the same User schema as the list endpoint for consistency.
+ * Returns an array of lightweight user objects optimized for:
+ * - Dropdown/select components
+ * - Autocomplete interfaces  
+ * - User picker forms
+ * - Quick lookup scenarios
+ *
+ * **Missing Identity Data**: Use `user.list` or `user.read` when you need
+ * complete user information including blockchain identity details.
  */
-export const UserSearchOutputSchema = UserSchema.array();
+export const UserSearchOutputSchema = UserSearchResultSchema.array();
 
 export type UserSearchInput = z.infer<typeof UserSearchInputSchema>;
+export type UserSearchResult = z.infer<typeof UserSearchResultSchema>;
 export type UserSearchOutput = z.infer<typeof UserSearchOutputSchema>;

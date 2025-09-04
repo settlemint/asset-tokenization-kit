@@ -274,3 +274,47 @@ export async function createTestUser(name = "test") {
   const session = await setupUser(user);
   return { session, user };
 }
+
+// Helper function to register user identity
+export async function registerUserIdentity(
+  adminClient: ReturnType<typeof getOrpcClient>,
+  wallet: string
+) {
+  // Check if identity already exists
+  try {
+    const account = await adminClient.account.read(
+      { wallet },
+      {
+        context: {
+          skipLoggingFor: ["NOT_FOUND"],
+        },
+      }
+    );
+    if (account?.identity) {
+      console.log(`Identity already exists for wallet ${wallet}`);
+      return;
+    }
+  } catch {
+    // Account doesn't exist yet, which is expected for new wallets
+    // We can proceed to create the identity
+  }
+
+  // Create identity
+  await adminClient.system.identity.create({
+    walletVerification: {
+      secretVerificationCode: DEFAULT_PINCODE,
+      verificationType: "PINCODE",
+    },
+    wallet,
+  });
+
+  // Register identity
+  await adminClient.system.identity.register({
+    walletVerification: {
+      secretVerificationCode: DEFAULT_PINCODE,
+      verificationType: "PINCODE",
+    },
+    wallet,
+    country: "BE",
+  });
+}

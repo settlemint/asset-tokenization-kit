@@ -1,3 +1,12 @@
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -7,22 +16,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAppForm } from "@/hooks/use-app-form";
+import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { client, orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
-import type { User } from "@/orpc/routes/user/routes/user.me.schema";
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
+import type { UserSearchResult } from "@/orpc/routes/user/routes/user.search.schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Search, Shield } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Shield } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 // Available roles that can be granted
 const AVAILABLE_ROLES: Array<{
@@ -68,24 +69,26 @@ const AVAILABLE_ROLES: Array<{
  */
 export function GrantRoleForm() {
   const queryClient = useQueryClient();
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserSearchResult | null>(
+    null
+  );
   const [selectedRole, setSelectedRole] = useState<AccessControlRoles | "">("");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch available users
+  // Search users with debounced query
   const { data: users = [] } = useQuery({
-    queryKey: orpc.user.list.queryKey({
+    queryKey: orpc.user.search.queryKey({
       input: {
-        offset: 0,
-        orderBy: "createdAt",
-        orderDirection: "desc",
+        query: searchQuery,
+        limit: 20,
       },
     }),
     queryFn: () =>
-      client.user.list({
-        offset: 0,
-        orderBy: "createdAt",
-        orderDirection: "desc",
+      client.user.search({
+        query: searchQuery,
+        limit: 20,
       }),
+    enabled: searchQuery.length >= 2, // Only search when query is at least 2 characters
   });
 
   // Grant role mutation
@@ -132,11 +135,12 @@ export function GrantRoleForm() {
     },
   });
 
-  const handleUserSelect = (userId: string) => {
-    const user = users.find((u) => u.id === userId);
-    if (user) {
+  const handleUserSelect = (userWallet: string | null) => {
+    const user = users.find((u) => u.wallet === userWallet);
+    if (user && user.wallet) {
       setSelectedUser(user);
-      form.setFieldValue("address", user.wallet as `0x${string}`);
+      form.setFieldValue("address", user.wallet);
+      setSearchQuery(""); // Clear search after selection
     }
   };
 
@@ -173,34 +177,82 @@ export function GrantRoleForm() {
 
         <form.AppForm>
           <div className="space-y-6">
-            {/* User Selection */}
+            {/* User Search and Selection */}
             <div className="space-y-2">
-              <Label htmlFor="user-select">
-                Select User
+              <Label htmlFor="user-search">
+                Search User
                 <span className="text-destructive ml-1">*</span>
               </Label>
-              <Select value={selectedUser?.id} onValueChange={handleUserSelect}>
-                <SelectTrigger id="user-select" className="w-full">
-                  <SelectValue placeholder="Choose a user to grant role" />
-                </SelectTrigger>
-                <SelectContent>
-                  {users.map((user) => (
-                    <SelectItem key={user.id} value={user.id}>
-                      <div className="flex flex-col">
-                        <span className="font-medium">
-                          {user.name}
-                          {user.id === users[0]?.id && " (You)"}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {user.email} • {user.role}
-                        </span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {selectedUser === null ? (
+                <div className="space-y-2">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="user-search"
+                      placeholder="Search by name, email, or wallet address..."
+                      value={searchQuery}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                      }}
+                      className="pl-10"
+                    />
+                  </div>
+                  {searchQuery.length >= 2 && users.length > 0 && (
+                    <div className="border rounded-md max-h-40 overflow-y-auto">
+                      {users.map((user) => (
+                        <div
+                          key={user.wallet || user.name}
+                          className="p-3 hover:bg-muted cursor-pointer border-b last:border-b-0"
+                          onClick={() => {
+                            handleUserSelect(user.wallet);
+                          }}
+                        >
+                          <div className="flex flex-col">
+                            <span className="font-medium">{user.name}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {user.wallet
+                                ? `${user.wallet.slice(0, 6)}...${user.wallet.slice(-4)}`
+                                : "No wallet"}{" "}
+                              • {user.role}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {searchQuery.length >= 2 && users.length === 0 && (
+                    <p className="text-sm text-muted-foreground p-2">
+                      No users found matching "{searchQuery}"
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center justify-between p-3 border rounded-md bg-muted/50">
+                  <div className="flex flex-col">
+                    <span className="font-medium">{selectedUser.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {selectedUser.wallet
+                        ? `${selectedUser.wallet.slice(0, 6)}...${selectedUser.wallet.slice(-4)}`
+                        : "No wallet"}{" "}
+                      • {selectedUser.role}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedUser(null);
+                      setSearchQuery("");
+                      form.setFieldValue("address", "" as `0x${string}`);
+                    }}
+                    className="text-xs text-primary hover:underline"
+                  >
+                    Change User
+                  </button>
+                </div>
+              )}
               <p className="text-xs text-muted-foreground">
-                Select the user who should receive the new role
+                Search for the user who should receive the new role (minimum 2
+                characters)
               </p>
             </div>
 
@@ -239,10 +291,6 @@ export function GrantRoleForm() {
                   <div className="flex justify-between">
                     <span className="text-sm font-medium">Name</span>
                     <span className="text-sm">{selectedUser.name}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium">Email</span>
-                    <span className="text-sm">{selectedUser.email}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm font-medium">Wallet</span>
