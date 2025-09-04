@@ -26,7 +26,6 @@ import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Search } from "lucide-react";
 
 interface AddTrustedIssuerSheetProps {
   open: boolean;
