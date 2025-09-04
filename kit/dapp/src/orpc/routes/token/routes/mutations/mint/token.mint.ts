@@ -232,7 +232,6 @@ export const mint = tokenRouter.token.mint
       const [to] = recipients;
       const [amount] = amounts;
 
-
       // PARAMETER VALIDATION: Ensure required values are present
       // WHY: TypeScript can't guarantee array elements exist at runtime
       // Explicit validation prevents undefined parameter errors

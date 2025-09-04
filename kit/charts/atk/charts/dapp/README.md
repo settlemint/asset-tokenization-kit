@@ -49,7 +49,7 @@ A Helm chart for the ATK DApp frontend
 | initContainer.tcpCheck.enabled | bool | `true` |  |
 | initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
-| initContainer.tcpCheck.image.tag | string | `"v7.7.9"` |  |
+| initContainer.tcpCheck.image.tag | string | `"v7.7.10"` |  |
 | initContainer.tcpCheck.timeout | int | `5` |  |
 | job.enabled | bool | `true` |  |
 | job.image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -63,7 +63,7 @@ A Helm chart for the ATK DApp frontend
 | job.initContainer.hasuraCheck.endpoint | string | `"hasura.atk.svc.cluster.local:8080"` |  |
 | job.initContainer.hasuraCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | job.initContainer.hasuraCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
-| job.initContainer.hasuraCheck.image.tag | string | `"v7.7.9"` |  |
+| job.initContainer.hasuraCheck.image.tag | string | `"v7.7.10"` |  |
 | job.initContainer.hasuraCheck.timeout | int | `5` |  |
 | job.podAnnotations | object | `{}` |  |
 | job.podSecurityContext | object | `{}` |  |
