@@ -1,10 +1,10 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "@tanstack/react-router";
 import { formatDistanceToNow, isToday, isYesterday, format } from "date-fns";
-import { Users, ChevronLeft, ChevronRight } from "lucide-react";
+import { Users } from "lucide-react";
 
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
@@ -12,7 +12,6 @@ import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Web3Address } from "@/components/web3/web3-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
@@ -59,26 +58,17 @@ export function UsersTable() {
   // Get the current route's path pattern from the matched route
   const routePath = router.state.matches.at(-1)?.pathname;
 
-  // Pagination state for chunked loading
-  const [currentPage, setCurrentPage] = useState(0);
-  const pageSize = 50; // Load 50 users per chunk for better performance
-  const offset = currentPage * pageSize;
-
-  // Fetch users data using ORPC with pagination
-  const { data: users = [], isLoading, error, isFetching } = useQuery(
+  // Fetch users data using ORPC
+  const { data: users = [], isLoading, error } = useQuery(
     orpc.user.list.queryOptions({
       input: {
-        limit: pageSize,
-        offset,
+        limit: 1000, // Fetch all users, let DataTable handle pagination
+        offset: 0,
         orderBy: "createdAt",
         orderDirection: "desc",
       },
     })
   );
-
-  // Check if there might be more pages (if we got a full page)
-  const hasNextPage = users.length === pageSize;
-  const hasPrevPage = currentPage > 0;
 
 
 
@@ -145,38 +135,26 @@ export function UsersTable() {
             type: "text",
           },
         }),
-        columnHelper.accessor("createdAt", {
-          header: t("management.table.columns.created"),
-          meta: {
-            displayName: t("management.table.columns.created"),
-            type: "date",
-          },
-        }),
         columnHelper.display({
           id: "created",
           header: t("management.table.columns.created"),
           cell: ({ row }: { row: { original: User } }) => {
-            const userData = row.original;
-            const createdAt = userData.createdAt;
+            const createdAt = row.original.createdAt;
             
             if (!createdAt) {
               return <span className="text-sm text-muted-foreground">-</span>;
             }
             
-            // Format the date for display
             const date = new Date(createdAt);
-            // Check if the date is valid
             if (Number.isNaN(date.getTime())) {
               return <span className="text-sm text-muted-foreground">-</span>;
             }
             
-            const formattedDate = date.toLocaleDateString(undefined, {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-            });
-            
-            return <span className="text-sm">{formattedDate}</span>;
+            return (
+              <span className="text-sm">
+                {format(date, 'MMM d, yyyy')}
+              </span>
+            );
           },
           meta: {
             displayName: t("management.table.columns.created"),
@@ -187,8 +165,7 @@ export function UsersTable() {
           id: "lastActive",
           header: t("management.table.columns.lastActive"),
           cell: ({ row }: { row: { original: User } }) => {
-            const userData = row.original;
-            const lastLoginAt = userData.lastLoginAt;
+            const lastLoginAt = row.original.lastLoginAt;
             
             if (!lastLoginAt) {
               return <span className="text-sm text-muted-foreground">Never</span>;
@@ -199,20 +176,25 @@ export function UsersTable() {
               return <span className="text-sm text-muted-foreground">Never</span>;
             }
             
-            // Format the date for display with relative time using date-fns for better timezone handling
+            // Format with relative time for recent dates
             if (isToday(loginDate)) {
               return <span className="text-sm">Today</span>;
             } else if (isYesterday(loginDate)) {
               return <span className="text-sm">Yesterday</span>;
             } else {
-              const relativeTime = formatDistanceToNow(loginDate, { addSuffix: true });
-              // For dates older than a week, show formatted date instead of relative time
               const daysDiff = Math.floor((Date.now() - loginDate.getTime()) / (1000 * 60 * 60 * 24));
               if (daysDiff > 7) {
-                const formattedDate = format(loginDate, 'MMM d, yyyy');
-                return <span className="text-sm">{formattedDate}</span>;
+                return (
+                  <span className="text-sm">
+                    {format(loginDate, 'MMM d, yyyy')}
+                  </span>
+                );
               }
-              return <span className="text-sm">{relativeTime}</span>;
+              return (
+                <span className="text-sm">
+                  {formatDistanceToNow(loginDate, { addSuffix: true })}
+                </span>
+              );
             }
           },
           meta: {
@@ -237,39 +219,7 @@ export function UsersTable() {
 
   return (
     <ComponentErrorBoundary componentName="Users Table">
-      <div className="space-y-4">
-        {/* Custom pagination controls */}
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">
-            {isFetching ? "Loading..." : `Showing ${users.length} users (Page ${currentPage + 1})`}
-          </div>
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setCurrentPage(currentPage - 1);
-              }}
-              disabled={!hasPrevPage || isFetching}
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setCurrentPage(currentPage + 1);
-              }}
-              disabled={!hasNextPage || isFetching}
-            >
-              Next
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
-        <DataTable
+      <DataTable
           name="users"
           data={users}
           columns={columns}
@@ -278,7 +228,7 @@ export function UsersTable() {
             enabled: true,
             enableUrlPersistence: true,
             routePath,
-            defaultPageSize: pageSize, // Use our page size but disable DataTable pagination
+            defaultPageSize: 20,
             enableGlobalFilter: true,
             enableRowSelection: false,
             debounceMs: 300,
@@ -286,7 +236,6 @@ export function UsersTable() {
           initialColumnVisibility={{
             name: false,
             email: false,
-            createdAt: false,
           }}
           advancedToolbar={{
             enableGlobalSearch: false,
@@ -296,7 +245,7 @@ export function UsersTable() {
             placeholder: t("management.table.search.placeholder"),
           }}
           pagination={{
-            enablePagination: false, // Disable DataTable's pagination, use our custom controls
+            enablePagination: true,
           }}
           initialSorting={[
             {
@@ -310,7 +259,6 @@ export function UsersTable() {
             icon: Users,
           }}
         />
-      </div>
     </ComponentErrorBoundary>
   );
 }
