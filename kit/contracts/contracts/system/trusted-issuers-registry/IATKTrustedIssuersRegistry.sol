@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 // Interface imports
 import { ISMARTTrustedIssuersRegistry } from "../../smart/interface/ISMARTTrustedIssuersRegistry.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
+import { IClaimAuthorizer } from "../../onchainid/extensions/IClaimAuthorizer.sol";
 
 /// @title IATKTrustedIssuersRegistry - ATK Base Trusted Issuers Registry Interface
 /// @author SettleMint
@@ -11,7 +12,7 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 /// @dev This interface extends ISMARTTrustedIssuersRegistry and defines shared events that all ATK registries
 ///      emit for consistent graph indexing. Each implementation provides its own specific setter functions
 ///      with appropriate access control and validation logic.
-interface IATKTrustedIssuersRegistry is ISMARTTrustedIssuersRegistry {
+interface IATKTrustedIssuersRegistry is ISMARTTrustedIssuersRegistry, IClaimAuthorizer {
     // --- Events ---
 
     /// @notice Emitted when a trusted issuer is added in the registry

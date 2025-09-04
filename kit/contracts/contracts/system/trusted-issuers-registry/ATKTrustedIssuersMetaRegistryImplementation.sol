@@ -15,6 +15,7 @@ import { ISMARTTrustedIssuersRegistry } from "../../smart/interface/ISMARTTruste
 import { IATKTrustedIssuersRegistry } from "./IATKTrustedIssuersRegistry.sol";
 import { IATKTrustedIssuersMetaRegistry } from "./IATKTrustedIssuersMetaRegistry.sol";
 import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
+import { IClaimAuthorizer } from "../../onchainid/extensions/IClaimAuthorizer.sol";
 
 // Constants
 import { ATKPeopleRoles } from "../ATKPeopleRoles.sol";
@@ -230,6 +231,13 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     /// @inheritdoc ISMARTTrustedIssuersRegistry
     function getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer, address _subject) external view override returns (uint256[] memory) {
         return _getTrustedIssuerClaimTopics(_trustedIssuer, _subject);
+    }
+
+    // --- IClaimAuthorizer Implementation ---
+
+    /// @inheritdoc IClaimAuthorizer
+    function isAuthorizedToAddClaim(address issuer, uint256 topic, address subject) external view override returns (bool) {
+        return this.hasClaimTopic(issuer, topic, subject);
     }
 
     // --- Internal Helper Functions ---

@@ -47,8 +47,7 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
     ATKSystemAccessManaged,
-    IATKSystemTrustedIssuersRegistry,
-    IClaimAuthorizer
+    IATKSystemTrustedIssuersRegistry
 {
     // --- Storage Variables ---
 
@@ -254,8 +253,8 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
     // --- IClaimAuthorizer Implementation ---
 
     /// @inheritdoc IClaimAuthorizer
-    function isAuthorizedToAddClaim(address issuer, uint256 topic) external view override returns (bool) {
-        return this.hasClaimTopic(issuer, topic, address(0));
+    function isAuthorizedToAddClaim(address issuer, uint256 topic, address subject) external view override returns (bool) {
+        return this.hasClaimTopic(issuer, topic, subject);
     }
 
     // --- Internal Helper Functions ---

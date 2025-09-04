@@ -302,10 +302,10 @@ contract ClaimAuthorizationSystemTest is Test {
         trustedIssuersRegistry.addTrustedIssuer(IClaimIssuer(address(mockIssuer)), topics);
 
         // Test authorization
-        assertTrue(trustedIssuersRegistry.isAuthorizedToAddClaim(address(mockIssuer), TEST_CLAIM_TOPIC));
-        assertTrue(trustedIssuersRegistry.isAuthorizedToAddClaim(address(mockIssuer), 42));
-        assertFalse(trustedIssuersRegistry.isAuthorizedToAddClaim(address(mockIssuer), 999));
-        assertFalse(trustedIssuersRegistry.isAuthorizedToAddClaim(user, TEST_CLAIM_TOPIC));
+        assertTrue(trustedIssuersRegistry.isAuthorizedToAddClaim(address(mockIssuer), TEST_CLAIM_TOPIC, address(0)));
+        assertTrue(trustedIssuersRegistry.isAuthorizedToAddClaim(address(mockIssuer), 42, address(0)));
+        assertFalse(trustedIssuersRegistry.isAuthorizedToAddClaim(address(mockIssuer), 999, address(0)));
+        assertFalse(trustedIssuersRegistry.isAuthorizedToAddClaim(user, TEST_CLAIM_TOPIC, address(0)));
     }
 
     function test_TrustedIssuersRegistry_SupportsIClaimAuthorization() public view {
@@ -393,7 +393,7 @@ contract MockAuthorizationContract is IClaimAuthorizer {
         _authorizations[issuer][topic] = authorized;
     }
 
-    function isAuthorizedToAddClaim(address issuer, uint256 topic) external view returns (bool) {
+    function isAuthorizedToAddClaim(address issuer, uint256 topic, address) external view returns (bool) {
         return _authorizations[issuer][topic];
     }
 
@@ -403,7 +403,7 @@ contract MockAuthorizationContract is IClaimAuthorizer {
 }
 
 contract MockFailingAuthContract is IClaimAuthorizer {
-    function isAuthorizedToAddClaim(address, uint256) external pure returns (bool) {
+    function isAuthorizedToAddClaim(address, uint256, address) external pure returns (bool) {
         revert("Authorization failed");
     }
 

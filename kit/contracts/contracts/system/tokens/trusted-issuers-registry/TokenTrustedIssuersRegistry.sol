@@ -13,6 +13,7 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IATKTokenTrustedIssuersRegistry } from "./IATKTokenTrustedIssuersRegistry.sol";
 import { IATKTrustedIssuersRegistry } from "../../trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
 import { ISMARTTrustedIssuersRegistry } from "../../../smart/interface/ISMARTTrustedIssuersRegistry.sol";
+import { IClaimAuthorizer } from "../../../onchainid/extensions/IClaimAuthorizer.sol";
 
 // Token interface
 import { IATKToken } from "../IATKToken.sol";
@@ -250,6 +251,13 @@ contract TokenTrustedIssuersRegistry is
     function getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer, address _subject) external view override returns (uint256[] memory) {
         if (_subject != _token.onchainID()) revert InvalidSubjectAddress();
         return _trustedIssuers[address(_trustedIssuer)].claimTopics;
+    }
+
+    // --- IClaimAuthorizer Implementation ---
+
+    /// @inheritdoc IClaimAuthorizer
+    function isAuthorizedToAddClaim(address issuer, uint256 topic, address subject) external view override returns (bool) {
+        return this.hasClaimTopic(issuer, topic, subject);
     }
 
     // --- Internal Helper Functions ---
