@@ -28,6 +28,9 @@ const TRUSTED_ISSUERS_QUERY = theGraphGraphql(
         name
         signature
       }
+      account {
+        id
+      }
     }
   }
 `,
