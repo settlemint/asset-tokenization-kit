@@ -92,6 +92,9 @@ export const fixedYieldSchedule = () =>
     totalYield: bigDecimal().describe("Total yield generated"),
     denominationAsset: z.object({
       id: ethereumAddress.describe("Denomination asset contract address"),
+      balance: bigDecimal().describe(
+        "Available balance of the denomination asset"
+      ),
     }),
     currentPeriod: fixedYieldSchedulePeriod()
       .nullable()

@@ -1,5 +1,6 @@
 import { fixedYieldScheduleCreateContract } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.create.contract";
 import { fixedYieldScheduleReadContract } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.read.contract";
+import { fixedYieldScheduleTopUpContract } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.top-up.contract";
 
 /**
  * ORPC contract definition for fixed yield schedule API endpoints.
@@ -40,4 +41,15 @@ export const fixedYieldScheduleContract = {
    * @see {@link ./routes/fixed-yield-schedule.read.contract} - Contract implementation
    */
   read: fixedYieldScheduleReadContract,
+
+  /**
+   * Top up denomination asset in a fixed yield schedule.
+   *
+   * Adds denomination assets to an existing fixed yield schedule contract
+   * to ensure sufficient funds are available for yield payments.
+   * Returns the transaction hash of the top up operation.
+   *
+   * @see {@link ./routes/fixed-yield-schedule.top-up.contract} - Contract implementation
+   */
+  topUp: fixedYieldScheduleTopUpContract,
 };
