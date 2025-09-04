@@ -8,13 +8,7 @@ type TokenInput = Parameters<OrpcClient["token"]["create"]>[0];
 export async function createToken(
   orpClient: OrpcClient,
   input: TokenInput,
-  rolesToGrant: AccessControlRoles[] = [
-    "governance",
-    "custodian",
-    "supplyManagement",
-    "emergency",
-    "tokenManager",
-  ]
+  rolesToGrant: AccessControlRoles[] = []
 ) {
   // Truncate the base name to ensure total length with UUID doesn't exceed 50 chars
   // UUID is 36 chars + 1 space = 37 chars, so max base name is 13 chars

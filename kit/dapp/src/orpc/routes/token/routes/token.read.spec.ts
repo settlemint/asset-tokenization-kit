@@ -18,17 +18,27 @@ describe("Token read", () => {
     const client = getOrpcClient(headers);
 
     // Create a test token to read
-    testToken = await createToken(client, {
-      name: "Test Read Token",
-      symbol: "TRT",
-      decimals: 18,
-      type: "stablecoin",
-      countryCode: "056",
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
+    testToken = await createToken(
+      client,
+      {
+        name: "Test Read Token",
+        symbol: "TRT",
+        decimals: 18,
+        type: "stablecoin",
+        countryCode: "056",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
       },
-    });
+      [
+        "custodian",
+        "governance",
+        "supplyManagement",
+        "emergency",
+        "tokenManager",
+      ]
+    );
   });
 
   it("can read token details", async () => {

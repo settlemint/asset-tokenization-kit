@@ -26,14 +26,18 @@ describe("Token update collateral", () => {
       initialModulePairs: [],
     };
 
-    stablecoinToken = await createToken(adminClient, {
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
+    stablecoinToken = await createToken(
+      adminClient,
+      {
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+        ...stablecoinData,
+        countryCode: "056",
       },
-      ...stablecoinData,
-      countryCode: "056",
-    });
+      ["governance"]
+    );
   });
 
   test("trusted claim issuers can update collateral", async () => {
