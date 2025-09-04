@@ -128,7 +128,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | dapp.initContainer.tcpCheck.enabled | bool | `true` |  |
 | dapp.initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | dapp.initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
-| dapp.initContainer.tcpCheck.image.tag | string | `"v7.7.9"` |  |
+| dapp.initContainer.tcpCheck.image.tag | string | `"v7.7.10"` |  |
 | dapp.initContainer.tcpCheck.timeout | int | `0` |  |
 | dapp.podLabels."app.kubernetes.io/component" | string | `"dapp"` |  |
 | dapp.podLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
@@ -181,7 +181,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | erpc.ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
 | erpc.initContainers.waitforit.image.pullPolicy | string | `"IfNotPresent"` |  |
 | erpc.initContainers.waitforit.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
-| erpc.initContainers.waitforit.image.tag | string | `"v7.7.9"` |  |
+| erpc.initContainers.waitforit.image.tag | string | `"v7.7.10"` |  |
 | erpc.podAnnotations."prometheus.io/port" | string | `"4001"` |  |
 | erpc.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
 | erpc.podLabels."app.kubernetes.io/component" | string | `"erpc"` |  |
@@ -277,7 +277,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.tempo.tempoQuery.tag | string | `"2.8.1"` |  |
 | observability.victoria-metrics-single.server.image.registry | string | `"docker.io"` |  |
 | observability.victoria-metrics-single.server.image.repository | string | `"victoriametrics/victoria-metrics"` |  |
-| observability.victoria-metrics-single.server.image.tag | string | `"v1.125.0"` |  |
+| observability.victoria-metrics-single.server.image.tag | string | `"v1.125.1"` |  |
 | observability.victoria-metrics-single.server.persistentVolume.size | string | `"10Gi"` |  |
 | observability.victoria-metrics-single.server.persistentVolume.storageClass | string | `""` |  |
 | observability.victoria-metrics-single.server.resources | object | `{}` |  |
@@ -285,7 +285,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | portal.image.pullPolicy | string | `"IfNotPresent"` |  |
 | portal.image.registry | string | `"ghcr.io"` |  |
 | portal.image.repository | string | `"settlemint/btp-scs-portal"` |  |
-| portal.image.tag | string | `"8.6.6"` |  |
+| portal.image.tag | string | `"8.6.7"` |  |
 | portal.initContainers[0].command[0] | string | `"/bin/sh"` |  |
 | portal.initContainers[0].command[1] | string | `"-c"` |  |
 | portal.initContainers[0].command[2] | string | `"set -e\necho \"Waiting for PostgreSQL to be ready...\"\n\n# Add random delay to prevent all nodes from connecting simultaneously\nRANDOM_DELAY=$((RANDOM % 30 + 5))\necho \"Adding random delay of ${RANDOM_DELAY} seconds to stagger connections...\"\nsleep $RANDOM_DELAY\n\n# Function to test PostgreSQL connection\ntest_postgres() {\n  pg_isready -h postgresql -p 5432 -U portal && \\\n  psql -h postgresql -p 5432 -U portal -d portal -c \"SELECT 1;\" > /dev/null 2>&1\n}\n\n# Wait with exponential backoff\nRETRY_COUNT=0\nMAX_RETRIES=30\nWAIT_TIME=2\n\nwhile [ $RETRY_COUNT -lt $MAX_RETRIES ]; do\n  if test_postgres; then\n    echo \"PostgreSQL is ready!\"\n    exit 0\n  fi\n\n  RETRY_COUNT=$((RETRY_COUNT + 1))\n  echo \"PostgreSQL not ready (attempt $RETRY_COUNT/$MAX_RETRIES). Waiting ${WAIT_TIME}s...\"\n  sleep $WAIT_TIME\n\n  # Exponential backoff with max of 30 seconds\n  WAIT_TIME=$((WAIT_TIME * 2))\n  if [ $WAIT_TIME -gt 30 ]; then\n    WAIT_TIME=30\n  fi\ndone\n\necho \"PostgreSQL failed to become ready after $MAX_RETRIES attempts\"\nexit 1\n"` |  |
@@ -341,7 +341,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | txsigner.image.pullPolicy | string | `"IfNotPresent"` |  |
 | txsigner.image.registry | string | `"ghcr.io"` |  |
 | txsigner.image.repository | string | `"settlemint/btp-signer"` |  |
-| txsigner.image.tag | string | `"7.15.8"` |  |
+| txsigner.image.tag | string | `"7.15.10"` |  |
 | txsigner.postgresql | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
 | txsigner.replicaCount | int | `1` |  |
 | txsigner.resources | object | `{}` |  |
