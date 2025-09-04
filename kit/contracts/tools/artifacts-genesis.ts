@@ -510,6 +510,7 @@ class ContractDeployer {
           CONTRACT_ADDRESSES.ATKIdentityRegistryImplementation,
           CONTRACT_ADDRESSES.ATKIdentityRegistryStorageImplementation,
           CONTRACT_ADDRESSES.ATKSystemTrustedIssuersRegistryImplementation,
+          CONTRACT_ADDRESSES.ATKTrustedIssuersMetaRegistryImplementation,
           CONTRACT_ADDRESSES.ATKTopicSchemeRegistryImplementation,
           CONTRACT_ADDRESSES.ATKIdentityFactoryImplementation,
           CONTRACT_ADDRESSES.ATKIdentityImplementation,
