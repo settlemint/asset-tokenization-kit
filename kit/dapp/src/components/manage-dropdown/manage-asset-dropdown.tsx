@@ -60,7 +60,8 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
     }> = [];
 
     if (hasPausableCapability) {
-      const canUnpause = asset.userPermissions?.actions?.unpause ?? true;
+      const canUnpause = asset.userPermissions?.actions?.unpause ?? false;
+      const canPause = asset.userPermissions?.actions?.pause ?? false;
       arr.push({
         id: isPaused ? "unpause" : "pause",
         label: isPaused
@@ -68,7 +69,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
           : t("tokens:actions.pause.label"),
         icon: isPaused ? Play : Pause,
         openAction: isPaused ? "unpause" : "pause",
-        disabled: !canUnpause,
+        disabled: isPaused ? !canUnpause : !canPause,
       });
     }
 
