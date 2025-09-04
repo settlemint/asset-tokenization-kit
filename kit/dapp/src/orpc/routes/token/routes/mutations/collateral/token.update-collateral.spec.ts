@@ -6,6 +6,7 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
+import { from } from "dnum";
 import { beforeAll, describe, expect, test } from "vitest";
 
 describe("Token update collateral", () => {
@@ -19,7 +20,7 @@ describe("Token update collateral", () => {
     // First create a stablecoin to use as denomination asset
     const stablecoinData = {
       type: "stablecoin" as const,
-      name: `Test Denomination Stablecoin ${Date.now()}`,
+      name: `Test Collateral Stablecoin ${Date.now()}`,
       symbol: "TSDC",
       decimals: 18,
       initialModulePairs: [],
@@ -39,6 +40,10 @@ describe("Token update collateral", () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
 
+    const thirtyDaysFromNow = new Date();
+    thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+    thirtyDaysFromNow.setMilliseconds(0);
+
     const result = await client.token.updateCollateral({
       contract: stablecoinToken.id,
       walletVerification: {
@@ -54,6 +59,10 @@ describe("Token update collateral", () => {
     expect(result.type).toBe(stablecoinToken.type);
     expect(result.name).toBe(stablecoinToken.name);
     expect(result.symbol).toBe(stablecoinToken.symbol);
+    expect(result.collateral?.collateral).toEqual(from(1_000_000));
+    expect(
+      result.collateral?.expiryTimestamp?.getTime()
+    ).toBeGreaterThanOrEqual(thirtyDaysFromNow.getTime());
   });
 
   test("cannot update collateral if not a trusted claim issuer", async () => {

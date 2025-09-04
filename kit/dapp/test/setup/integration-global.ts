@@ -7,6 +7,7 @@ import {
   bootstrapTokenFactories,
   createAndRegisterUserIdentities,
   setDefaultSystemSettings,
+  setupDefaultAdminRoles,
   setupDefaultIssuerRoles,
   setupTrustedClaimIssuers,
 } from "../fixtures/system-bootstrap";
@@ -39,8 +40,11 @@ export async function setup() {
     await Promise.all([
       bootstrapTokenFactories(orpClient, system),
       bootstrapAddons(orpClient),
+      (async () => {
+        await setupDefaultAdminRoles(orpClient);
+        await setupTrustedClaimIssuers(orpClient);
+      })(),
       setupDefaultIssuerRoles(orpClient),
-      setupTrustedClaimIssuers(orpClient),
       setDefaultSystemSettings(orpClient),
       createAndRegisterUserIdentities(orpClient),
     ]);

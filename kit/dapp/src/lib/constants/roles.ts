@@ -168,6 +168,8 @@ export const ALL_ROLES = [
   SALE_ADMIN_ROLE,
   SIGNER_ROLE,
   GLOBAL_LIST_MANAGER_ROLE,
+  CLAIM_ISSUER_ROLE,
+  ORGANISATION_IDENTITY_MANAGER_ROLE,
 ];
 
 // Helper function to get role by name

@@ -12,7 +12,7 @@ type AccessControlRoles = (typeof roles)[number];
  * - AND logic: { all: ["admin", "tokenManager"] }
  * - Complex: { all: ["admin", { any: ["tokenManager", "systemManager"] }] }
  */
-export type RoleRequirement = AccessControlRoles | { any: RoleRequirement[] } | { all: RoleRequirement[] };
+export type RoleRequirement = AccessControlRoles | { any: AccessControlRoles[] } | { all: AccessControlRoles[] };
 
 /**
  * Type guard to check if a role requirement is a single role
@@ -24,14 +24,14 @@ export function isSingleRole(req: RoleRequirement): req is AccessControlRoles {
 /**
  * Type guard to check if a role requirement is an "any" (OR) requirement
  */
-export function isAnyRoleRequirement(req: RoleRequirement): req is { any: RoleRequirement[] } {
+export function isAnyRoleRequirement(req: RoleRequirement): req is { any: AccessControlRoles[] } {
   return typeof req === "object" && "any" in req;
 }
 
 /**
  * Type guard to check if a role requirement is an "all" (AND) requirement
  */
-export function isAllRoleRequirement(req: RoleRequirement): req is { all: RoleRequirement[] } {
+export function isAllRoleRequirement(req: RoleRequirement): req is { all: AccessControlRoles[] } {
   return typeof req === "object" && "all" in req;
 }
 
@@ -67,10 +67,10 @@ const RoleRequirementSchema: z.ZodType<RoleRequirement> = z.lazy(() =>
   z.union([
     z.string() as z.ZodType<AccessControlRoles>,
     z.object({
-      any: z.array(RoleRequirementSchema),
+      any: z.array(z.string() as z.ZodType<AccessControlRoles>),
     }),
     z.object({
-      all: z.array(RoleRequirementSchema),
+      all: z.array(z.string() as z.ZodType<AccessControlRoles>),
     }),
   ])
 );

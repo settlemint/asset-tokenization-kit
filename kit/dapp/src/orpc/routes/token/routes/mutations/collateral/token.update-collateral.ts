@@ -40,6 +40,7 @@ import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { call } from "@orpc/server";
 import { getAddress } from "viem";
+import { read } from "../../token.read";
 
 const COLLATERAL_CLAIM_MUTATION = portalGraphql(`
   mutation AddCollateralClaim(
@@ -182,6 +183,6 @@ export const updateCollateral = tokenRouter.token.updateCollateral
       }
     );
 
-    // RETURN UPDATED TOKEN DATA: Return the token context which will be refreshed by the middleware
-    return tokenData;
+    // RETURN UPDATED TOKEN DATA: Return the token context
+    return await call(read, { tokenAddress: contract }, { context });
   });
