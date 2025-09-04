@@ -207,24 +207,29 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function getTrustedIssuersForClaimTopic(address _subject, uint256 claimTopic)
+    function getTrustedIssuersForClaimTopic(uint256 claimTopic, address _subject)
         external
         view
         override
         returns (IClaimIssuer[] memory)
     {
-        return _getTrustedIssuersForClaimTopic(_subject, claimTopic);
+        return _getTrustedIssuersForClaimTopic(claimTopic, _subject);
     }
 
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function isTrustedIssuer(address _subject, address _issuer) external view override returns (bool) {
-        return _isTrustedIssuer(_subject, _issuer);
+    function isTrustedIssuer(address _issuer, address _subject) external view override returns (bool) {
+        return _isTrustedIssuer(_issuer, _subject);
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function hasClaimTopic(address _subject, address _issuer, uint256 _claimTopic) external view override returns (bool) {
-        return _hasClaimTopic(_subject, _issuer, _claimTopic);
+    function hasClaimTopic(address _issuer, uint256 _claimTopic, address _subject) external view override returns (bool) {
+        return _hasClaimTopic( _issuer, _claimTopic, _subject);
+    }
+
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    function getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer, address _subject) external view override returns (uint256[] memory) {
+        return _getTrustedIssuerClaimTopics(_trustedIssuer, _subject);
     }
 
     // --- Internal Helper Functions ---
@@ -260,14 +265,14 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     /// @dev Meta-registry implementation that checks both contract-specific and system registries.
     ///      For subject = address(0), only system registry is checked.
     ///      For other subjects, both registries are checked.
-    /// @param subject The subject address to check
     /// @param _issuer The issuer address to check
+    /// @param subject The subject address to check
     /// @return True if the issuer is trusted for the given subject, false otherwise
-    function _isTrustedIssuer(address subject, address _issuer) internal view returns (bool) {
+    function _isTrustedIssuer(address _issuer, address subject) internal view returns (bool) {
         // If subject is address(0), only check system registry (system-only verification)
         if (subject == address(0)) {
             if (address(_systemRegistry) != address(0)) {
-                return _systemRegistry.isTrustedIssuer(subject, _issuer);
+                return _systemRegistry.isTrustedIssuer(_issuer, subject);
             }
             return false;
         }
@@ -275,7 +280,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         // First check contract-specific registry (using subject as the contract address)
         ISMARTTrustedIssuersRegistry contractRegistry = _contractRegistries[subject];
         if (address(contractRegistry) != address(0)) {
-            if (contractRegistry.isTrustedIssuer(subject, _issuer)) {
+            if (contractRegistry.isTrustedIssuer(_issuer, subject)) {
                 return true;
             }
         }
@@ -289,15 +294,15 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     }
 
     /// @notice Checks if an issuer is trusted for a given subject and claim topic
-    /// @param subject The subject address to check
     /// @param _issuer The issuer address to check
+    /// @param subject The subject address to check
     /// @param _claimTopic The claim topic to check
     /// @return True if the issuer is trusted for the given subject and claim topic, false otherwise
-    function _hasClaimTopic(address subject, address _issuer, uint256 _claimTopic) internal view returns (bool) {
+    function _hasClaimTopic(address _issuer, uint256 _claimTopic, address subject) internal view returns (bool) {
         // If subject is address(0), only check system registry (system-only verification)
         if (subject == address(0)) {
             if (address(_systemRegistry) != address(0)) {
-                return _systemRegistry.hasClaimTopic(subject, _issuer, _claimTopic);
+                return _systemRegistry.hasClaimTopic(_issuer, _claimTopic, subject);
             }
             return false;
         }
@@ -305,27 +310,27 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         // First check contract-specific registry (using subject as the contract address)
         ISMARTTrustedIssuersRegistry contractRegistry = _contractRegistries[subject];
         if (address(contractRegistry) != address(0)) {
-            if (contractRegistry.hasClaimTopic(subject, _issuer, _claimTopic)) {
+            if (contractRegistry.hasClaimTopic(_issuer, _claimTopic, subject)) {
                 return true;
             }
         }
 
         // Then check system registry
         if (address(_systemRegistry) != address(0)) {
-            return _systemRegistry.hasClaimTopic(subject, _issuer, _claimTopic);
+            return _systemRegistry.hasClaimTopic(_issuer, _claimTopic, subject);
         }
 
         return false;
     }
 
     /// @notice Returns trusted issuers for a given subject and claim topic
-    /// @param subject The subject address to check
     /// @param claimTopic The claim topic to check
+    /// @param subject The subject address to check
     /// @return Array of trusted issuers for the given subject and claim topic
     /// @dev Meta-registry implementation that checks both contract-specific and system registries.
     ///      For subject = address(0), only system registry is checked.
     ///      For other subjects (identity contracts), both registries are checked and merged.
-    function _getTrustedIssuersForClaimTopic(address subject, uint256 claimTopic)
+    function _getTrustedIssuersForClaimTopic(uint256 claimTopic, address subject)
         internal
         view
         returns (IClaimIssuer[] memory)
@@ -333,7 +338,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         // If subject is address(0), only return system registry issuers (system-only verification)
         if (subject == address(0)) {
             if (address(_systemRegistry) != address(0)) {
-                return _systemRegistry.getTrustedIssuersForClaimTopic(subject, claimTopic);
+                return _systemRegistry.getTrustedIssuersForClaimTopic(claimTopic, subject);
             }
             return new IClaimIssuer[](0);
         }
@@ -344,16 +349,89 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         // Get issuers from contract-specific registry (using subject as the contract address)
         ISMARTTrustedIssuersRegistry contractRegistry = _contractRegistries[subject];
         if (address(contractRegistry) != address(0)) {
-            contractIssuers = contractRegistry.getTrustedIssuersForClaimTopic(subject, claimTopic);
+            contractIssuers = contractRegistry.getTrustedIssuersForClaimTopic(claimTopic, subject);
         }
 
         // Get issuers from system registry
         if (address(_systemRegistry) != address(0)) {
-            systemIssuers = _systemRegistry.getTrustedIssuersForClaimTopic(subject, claimTopic);
+            systemIssuers = _systemRegistry.getTrustedIssuersForClaimTopic(claimTopic, subject);
         }
 
         // Merge arrays and remove duplicates
         return _mergeIssuerArrays(contractIssuers, systemIssuers);
+    }
+
+    function _getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer, address _subject) internal view returns (uint256[] memory) {
+        if (_subject == address(0)) {
+            if (address(_systemRegistry) != address(0)) {
+                return _systemRegistry.getTrustedIssuerClaimTopics(_trustedIssuer, _subject);
+            }
+            return new uint256[](0);
+        }
+
+        uint256[] memory contractTopics;
+        uint256[] memory systemTopics;
+
+        ISMARTTrustedIssuersRegistry contractRegistry = _contractRegistries[_subject];
+        if (address(contractRegistry) != address(0)) {
+            contractTopics = contractRegistry.getTrustedIssuerClaimTopics(_trustedIssuer, _subject);
+        }
+
+        if (address(_systemRegistry) != address(0)) {
+            systemTopics = _systemRegistry.getTrustedIssuerClaimTopics(_trustedIssuer, _subject);
+        }
+
+        return _mergeUint256Arrays(contractTopics, systemTopics);
+    }
+
+    /// @notice Merges two arrays of uint256 and removes duplicates
+    /// @dev Uses an O(n²) algorithm similar to _mergeIssuerArrays, suitable for small arrays
+    /// @param array1 First array of uint256 values
+    /// @param array2 Second array of uint256 values
+    /// @return merged Array containing unique values from both input arrays
+    function _mergeUint256Arrays(
+        uint256[] memory array1,
+        uint256[] memory array2
+    ) internal pure returns (uint256[] memory merged) {
+        uint256 array1Length = array1.length;
+        uint256 array2Length = array2.length;
+
+        if (array1Length == 0) return array2;
+        if (array2Length == 0) return array1;
+
+        uint256[] memory temp = new uint256[](array1Length + array2Length);
+        uint256 mergedLength = 0;
+
+        for (uint256 i = 0; i < array1Length;) {
+            temp[mergedLength] = array1[i];
+            mergedLength++;
+            unchecked { ++i; }
+        }
+
+        for (uint256 i = 0; i < array2Length;) {
+            bool isDuplicate = false;
+            for (uint256 j = 0; j < mergedLength;) {
+                if (temp[j] == array2[i]) {
+                    isDuplicate = true;
+                    break;
+                }
+                unchecked { ++j; }
+            }
+
+            if (!isDuplicate) {
+                temp[mergedLength] = array2[i];
+                mergedLength++;
+            }
+            unchecked { ++i; }
+        }
+
+        merged = new uint256[](mergedLength);
+        for (uint256 i = 0; i < mergedLength;) {
+            merged[i] = temp[i];
+            unchecked { ++i; }
+        }
+
+        return merged;
     }
 
     /// @notice Merges two arrays of IClaimIssuer addresses and removes duplicates

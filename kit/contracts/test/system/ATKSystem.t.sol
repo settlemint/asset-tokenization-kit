@@ -796,12 +796,12 @@ contract ATKSystemTest is Test {
 
         // Check if issuer identity is trusted for the TOPIC_ISSUER
         bool isTrusted =
-            ISMARTTrustedIssuersRegistry(atkSystem.trustedIssuersRegistry()).isTrustedIssuer(address(0), organisationIdentity);
+            ISMARTTrustedIssuersRegistry(atkSystem.trustedIssuersRegistry()).isTrustedIssuer(organisationIdentity, address(0));
         assertTrue(isTrusted, "Issuer identity should be registered as trusted issuer");
 
         // Check if it's trusted specifically for TOPIC_ISSUER topic
-        bool isTrustedForTopic = ISMARTTrustedIssuersRegistry(atkSystem.trustedIssuersRegistry()).hasClaimTopic(address(0),
-            organisationIdentity, topicId
+        bool isTrustedForTopic = ISMARTTrustedIssuersRegistry(atkSystem.trustedIssuersRegistry()).hasClaimTopic(
+            organisationIdentity, topicId, address(0)
         );
         assertTrue(isTrustedForTopic, "Issuer identity should be trusted for TOPIC_ISSUER topic");
     }

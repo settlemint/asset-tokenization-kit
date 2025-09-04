@@ -89,7 +89,7 @@ contract ATKSystemTrustedIssuersRegistryImplementationTest is Test {
         assertTrue(systemAccessManager.hasRole(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager));
 
         // Verify initial state
-        IClaimIssuer[] memory issuers = registry.getTrustedIssuers();
+        IClaimIssuer[] memory issuers = registry.getTrustedIssuers(address(0));
         assertEq(issuers.length, 0);
     }
 
@@ -110,19 +110,19 @@ contract ATKSystemTrustedIssuersRegistryImplementationTest is Test {
         registry.addTrustedIssuer(IClaimIssuer(address(issuer1)), topics);
 
         // Verify issuer was added
-        assertTrue(registry.isTrustedIssuer(address(issuer1)));
-        assertTrue(registry.hasClaimTopic(address(issuer1), KYC_TOPIC));
-        assertTrue(registry.hasClaimTopic(address(issuer1), AML_TOPIC));
-        assertFalse(registry.hasClaimTopic(address(issuer1), ACCREDITATION_TOPIC));
+        assertTrue(registry.isTrustedIssuer(address(issuer1), address(0)));
+        assertTrue(registry.hasClaimTopic(address(issuer1), KYC_TOPIC, address(0)));
+        assertTrue(registry.hasClaimTopic(address(issuer1), AML_TOPIC, address(0)));
+        assertFalse(registry.hasClaimTopic(address(issuer1), ACCREDITATION_TOPIC, address(0)));
 
         // Verify topics
-        uint256[] memory issuerTopics = registry.getTrustedIssuerClaimTopics(IClaimIssuer(address(issuer1)));
+        uint256[] memory issuerTopics = registry.getTrustedIssuerClaimTopics(IClaimIssuer(address(issuer1)), address(0));
         assertEq(issuerTopics.length, 2);
         assertEq(issuerTopics[0], KYC_TOPIC);
         assertEq(issuerTopics[1], AML_TOPIC);
 
         // Verify in global list
-        IClaimIssuer[] memory allIssuers = registry.getTrustedIssuers();
+        IClaimIssuer[] memory allIssuers = registry.getTrustedIssuers(address(0));
         assertEq(allIssuers.length, 1);
         assertEq(address(allIssuers[0]), address(issuer1));
     }
@@ -188,12 +188,12 @@ contract ATKSystemTrustedIssuersRegistryImplementationTest is Test {
         registry.removeTrustedIssuer(IClaimIssuer(address(issuer1)));
 
         // Verify issuer was removed
-        assertFalse(registry.isTrustedIssuer(address(issuer1)));
-        assertFalse(registry.hasClaimTopic(address(issuer1), KYC_TOPIC));
-        assertFalse(registry.hasClaimTopic(address(issuer1), AML_TOPIC));
+        assertFalse(registry.isTrustedIssuer(address(issuer1), address(0)));
+        assertFalse(registry.hasClaimTopic(address(issuer1), KYC_TOPIC, address(0)));
+        assertFalse(registry.hasClaimTopic(address(issuer1), AML_TOPIC, address(0)));
 
         // Verify removed from global list
-        IClaimIssuer[] memory allIssuers = registry.getTrustedIssuers();
+        IClaimIssuer[] memory allIssuers = registry.getTrustedIssuers(address(0));
         assertEq(allIssuers.length, 0);
     }
 
@@ -242,11 +242,11 @@ contract ATKSystemTrustedIssuersRegistryImplementationTest is Test {
         registry.updateIssuerClaimTopics(IClaimIssuer(address(issuer1)), newTopics);
 
         // Verify updated topics
-        assertFalse(registry.hasClaimTopic(address(issuer1), KYC_TOPIC));
-        assertTrue(registry.hasClaimTopic(address(issuer1), AML_TOPIC));
-        assertTrue(registry.hasClaimTopic(address(issuer1), ACCREDITATION_TOPIC));
+        assertFalse(registry.hasClaimTopic(address(issuer1), KYC_TOPIC, address(0)));
+        assertTrue(registry.hasClaimTopic(address(issuer1), AML_TOPIC, address(0)));
+        assertTrue(registry.hasClaimTopic(address(issuer1), ACCREDITATION_TOPIC, address(0)));
 
-        uint256[] memory issuerTopics = registry.getTrustedIssuerClaimTopics(IClaimIssuer(address(issuer1)));
+        uint256[] memory issuerTopics = registry.getTrustedIssuerClaimTopics(IClaimIssuer(address(issuer1)), address(0));
         assertEq(issuerTopics.length, 2);
         assertEq(issuerTopics[0], AML_TOPIC);
         assertEq(issuerTopics[1], ACCREDITATION_TOPIC);
@@ -318,23 +318,23 @@ contract ATKSystemTrustedIssuersRegistryImplementationTest is Test {
         registry.addTrustedIssuer(IClaimIssuer(address(issuer3)), topics3);
 
         // Check KYC topic (should have issuer1 and issuer2)
-        IClaimIssuer[] memory kycIssuers = registry.getTrustedIssuersForClaimTopic(KYC_TOPIC);
+        IClaimIssuer[] memory kycIssuers = registry.getTrustedIssuersForClaimTopic(KYC_TOPIC, address(0));
         assertEq(kycIssuers.length, 2);
         assertTrue(address(kycIssuers[0]) == address(issuer1) || address(kycIssuers[1]) == address(issuer1));
         assertTrue(address(kycIssuers[0]) == address(issuer2) || address(kycIssuers[1]) == address(issuer2));
 
         // Check AML topic (should have only issuer1)
-        IClaimIssuer[] memory amlIssuers = registry.getTrustedIssuersForClaimTopic(AML_TOPIC);
+        IClaimIssuer[] memory amlIssuers = registry.getTrustedIssuersForClaimTopic(AML_TOPIC, address(0));
         assertEq(amlIssuers.length, 1);
         assertEq(address(amlIssuers[0]), address(issuer1));
 
         // Check accreditation topic (should have only issuer3)
-        IClaimIssuer[] memory accreditationIssuers = registry.getTrustedIssuersForClaimTopic(ACCREDITATION_TOPIC);
+        IClaimIssuer[] memory accreditationIssuers = registry.getTrustedIssuersForClaimTopic(ACCREDITATION_TOPIC, address(0));
         assertEq(accreditationIssuers.length, 1);
         assertEq(address(accreditationIssuers[0]), address(issuer3));
 
         // Check non-existent topic
-        IClaimIssuer[] memory unknownIssuers = registry.getTrustedIssuersForClaimTopic(999);
+        IClaimIssuer[] memory unknownIssuers = registry.getTrustedIssuersForClaimTopic(999, address(0));
         assertEq(unknownIssuers.length, 0);
     }
 
@@ -344,7 +344,7 @@ contract ATKSystemTrustedIssuersRegistryImplementationTest is Test {
                 ATKSystemTrustedIssuersRegistryImplementation.IssuerDoesNotExist.selector, address(issuer1)
             )
         );
-        registry.getTrustedIssuerClaimTopics(IClaimIssuer(address(issuer1)));
+        registry.getTrustedIssuerClaimTopics(IClaimIssuer(address(issuer1)), address(0));
     }
 
     function test_MultipleIssuersManagement() public {
@@ -367,12 +367,12 @@ contract ATKSystemTrustedIssuersRegistryImplementationTest is Test {
         registry.addTrustedIssuer(IClaimIssuer(address(issuer3)), topics3);
 
         // Verify all are trusted
-        assertTrue(registry.isTrustedIssuer(address(issuer1)));
-        assertTrue(registry.isTrustedIssuer(address(issuer2)));
-        assertTrue(registry.isTrustedIssuer(address(issuer3)));
+        assertTrue(registry.isTrustedIssuer(address(issuer1), address(0)));
+        assertTrue(registry.isTrustedIssuer(address(issuer2), address(0)));
+        assertTrue(registry.isTrustedIssuer(address(issuer3), address(0)));
 
         // Verify total count
-        IClaimIssuer[] memory allIssuers = registry.getTrustedIssuers();
+        IClaimIssuer[] memory allIssuers = registry.getTrustedIssuers(address(0));
         assertEq(allIssuers.length, 3);
 
         // Remove middle issuer
@@ -380,11 +380,11 @@ contract ATKSystemTrustedIssuersRegistryImplementationTest is Test {
         registry.removeTrustedIssuer(IClaimIssuer(address(issuer2)));
 
         // Verify updated state
-        assertTrue(registry.isTrustedIssuer(address(issuer1)));
-        assertFalse(registry.isTrustedIssuer(address(issuer2)));
-        assertTrue(registry.isTrustedIssuer(address(issuer3)));
+        assertTrue(registry.isTrustedIssuer(address(issuer1), address(0)));
+        assertFalse(registry.isTrustedIssuer(address(issuer2), address(0)));
+        assertTrue(registry.isTrustedIssuer(address(issuer3), address(0)));
 
-        allIssuers = registry.getTrustedIssuers();
+        allIssuers = registry.getTrustedIssuers(address(0));
         assertEq(allIssuers.length, 2);
     }
 
@@ -424,7 +424,7 @@ contract ATKSystemTrustedIssuersRegistryImplementationTest is Test {
         registry.addTrustedIssuer(IClaimIssuer(address(issuer3)), topics);
 
         // Verify all are present
-        IClaimIssuer[] memory kycIssuers = registry.getTrustedIssuersForClaimTopic(KYC_TOPIC);
+        IClaimIssuer[] memory kycIssuers = registry.getTrustedIssuersForClaimTopic(KYC_TOPIC, address(0));
         assertEq(kycIssuers.length, 3);
 
         // Remove the middle one (should trigger swap-and-pop)
@@ -432,11 +432,11 @@ contract ATKSystemTrustedIssuersRegistryImplementationTest is Test {
         registry.removeTrustedIssuer(IClaimIssuer(address(issuer2)));
 
         // Verify state after removal
-        kycIssuers = registry.getTrustedIssuersForClaimTopic(KYC_TOPIC);
+        kycIssuers = registry.getTrustedIssuersForClaimTopic(KYC_TOPIC, address(0));
         assertEq(kycIssuers.length, 2);
-        assertFalse(registry.hasClaimTopic(address(issuer2), KYC_TOPIC));
-        assertTrue(registry.hasClaimTopic(address(issuer1), KYC_TOPIC));
-        assertTrue(registry.hasClaimTopic(address(issuer3), KYC_TOPIC));
+        assertFalse(registry.hasClaimTopic(address(issuer2), KYC_TOPIC, address(0)));
+        assertTrue(registry.hasClaimTopic(address(issuer1), KYC_TOPIC, address(0)));
+        assertTrue(registry.hasClaimTopic(address(issuer3), KYC_TOPIC, address(0)));
     }
 
     function test_FuzzAddRemoveIssuers(uint8 numIssuers, uint256 topic) public {
@@ -456,24 +456,24 @@ contract ATKSystemTrustedIssuersRegistryImplementationTest is Test {
         for (uint8 i = 0; i < numIssuers; i++) {
             vm.prank(claimPolicyManager);
             registry.addTrustedIssuer(IClaimIssuer(issuers[i]), topics);
-            assertTrue(registry.isTrustedIssuer(issuers[i]));
-            assertTrue(registry.hasClaimTopic(issuers[i], topic));
+            assertTrue(registry.isTrustedIssuer(issuers[i], address(0)));
+            assertTrue(registry.hasClaimTopic(issuers[i], topic, address(0)));
         }
 
         // Verify count
-        IClaimIssuer[] memory topicIssuers = registry.getTrustedIssuersForClaimTopic(topic);
+        IClaimIssuer[] memory topicIssuers = registry.getTrustedIssuersForClaimTopic(topic, address(0));
         assertEq(topicIssuers.length, numIssuers);
 
         // Remove all issuers
         for (uint8 i = 0; i < numIssuers; i++) {
             vm.prank(claimPolicyManager);
             registry.removeTrustedIssuer(IClaimIssuer(issuers[i]));
-            assertFalse(registry.isTrustedIssuer(issuers[i]));
-            assertFalse(registry.hasClaimTopic(issuers[i], topic));
+            assertFalse(registry.isTrustedIssuer(issuers[i], address(0)));
+            assertFalse(registry.hasClaimTopic(issuers[i], topic, address(0)));
         }
 
         // Verify empty
-        topicIssuers = registry.getTrustedIssuersForClaimTopic(topic);
+        topicIssuers = registry.getTrustedIssuersForClaimTopic(topic, address(0));
         assertEq(topicIssuers.length, 0);
     }
 }

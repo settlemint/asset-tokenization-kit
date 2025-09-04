@@ -32,7 +32,7 @@ interface ISMARTTrustedIssuersRegistry is IERC165 {
     /// @param _subject The subject identifier (address(0) for global only, or specific subject address)
     /// @param claimTopic The claim topic to filter trusted issuers
     /// @return Array of IClaimIssuer contracts trusted for this subject + claim topic (deduplicated)
-    function getTrustedIssuersForClaimTopic(address _subject, uint256 claimTopic)
+    function getTrustedIssuersForClaimTopic(uint256 claimTopic, address _subject)
         external
         view
         returns (IClaimIssuer[] memory);
@@ -40,17 +40,25 @@ interface ISMARTTrustedIssuersRegistry is IERC165 {
     /// @notice Checks if a given issuer is trusted for a specific subject
     /// @dev For `_subject = address(0)` checks global only.
     ///      For other subjects, checks global + subject-specific union.
-    /// @param _subject The subject identifier (address(0) for global only, or specific subject address)
     /// @param _issuer The issuer address to check
+    /// @param _subject The subject identifier (address(0) for global only, or specific subject address)
     /// @return True if issuer is trusted for this subject
-    function isTrustedIssuer(address _subject, address _issuer) external view returns (bool);
+    function isTrustedIssuer(address _issuer, address _subject) external view returns (bool);
 
     /// @notice Checks if the trusted claim issuer is allowed to emit a certain claim topic
     /// @dev For `_subject = address(0)` checks global only.
     ///      For other subjects, checks global + subject-specific union.
-    /// @param _subject The subject identifier (address(0) for global only, or specific subject address)
     /// @param _issuer The address of the trusted issuer
     /// @param _claimTopic The claim topic to check
+    /// @param _subject The subject identifier (address(0) for global only, or specific subject address)
     /// @return True if issuer is trusted for this subject and claim topic
-    function hasClaimTopic(address _subject, address _issuer, uint256 _claimTopic) external view returns (bool);
+    function hasClaimTopic(address _issuer, uint256 _claimTopic, address _subject) external view returns (bool);
+
+    /// @notice Gets all the claim topic of trusted claim issuer
+    /// @dev Function for getting all the claim topic of trusted claim issuer
+    ///  Requires the provided ClaimIssuer contract to be registered in the trusted issuers registry.
+    /// @param _trustedIssuer the trusted issuer concerned.
+    /// @param _subject The subject identifier (address(0) for global only, or specific subject address)
+    /// @return The set of claim topics that the trusted issuer is allowed to emit
+    function getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer, address _subject) external view returns (uint256[] memory);
 }

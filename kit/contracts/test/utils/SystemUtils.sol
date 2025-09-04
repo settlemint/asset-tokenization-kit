@@ -40,6 +40,8 @@ import { ATKSystemAddonRegistryImplementation } from
     "../../contracts/system/addons/ATKSystemAddonRegistryImplementation.sol";
 import { ATKTrustedIssuersMetaRegistryImplementation } from
     "../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersMetaRegistryImplementation.sol";
+import { IATKTrustedIssuersRegistry } from
+    "../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
 
 // Proxies
 import { ATKTokenAccessManagerProxy } from "../../contracts/system/tokens/access/ATKTokenAccessManagerProxy.sol";
@@ -48,8 +50,6 @@ import { ATKTokenAccessManagerProxy } from "../../contracts/system/tokens/access
 import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 import { IATKIdentityFactory } from "../../contracts/system/identity-factory/IATKIdentityFactory.sol";
 import { ISMARTCompliance } from "../../contracts/smart/interface/ISMARTCompliance.sol";
-import { ISMARTTrustedIssuersRegistry } from
-    "../../contracts/smart/interface/ISMARTTrustedIssuersRegistry.sol";
 import { ISMARTIdentityRegistryStorage } from "../../contracts/smart/interface/ISMARTIdentityRegistryStorage.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { ISMARTTopicSchemeRegistry } from "../../contracts/smart/interface/ISMARTTopicSchemeRegistry.sol";
@@ -73,7 +73,7 @@ contract SystemUtils is Test {
 
     // Core Contract Instances (now holding proxy addresses)
     ISMARTIdentityRegistryStorage public identityRegistryStorage; // Proxy
-    ISMARTTrustedIssuersRegistry public trustedIssuersRegistry; // Proxy
+    IATKTrustedIssuersRegistry public trustedIssuersRegistry; // Proxy
     IATKTrustedIssuersMetaRegistry public trustedIssuersMetaRegistry; // Proxy
     ISMARTIdentityRegistry public identityRegistry; // Proxy
     ISMARTCompliance public compliance; // Proxy
@@ -158,7 +158,7 @@ contract SystemUtils is Test {
         vm.label(address(identityRegistry), "Identity Registry");
         identityRegistryStorage = ISMARTIdentityRegistryStorage(system.identityRegistryStorage());
         vm.label(address(identityRegistryStorage), "Identity Registry Storage");
-        trustedIssuersRegistry = ISMARTTrustedIssuersRegistry(system.trustedIssuersRegistry());
+        trustedIssuersRegistry = IATKTrustedIssuersRegistry(system.trustedIssuersRegistry());
         vm.label(address(trustedIssuersRegistry), "Trusted Issuers Registry");
         topicSchemeRegistry = ISMARTTopicSchemeRegistry(system.topicSchemeRegistry());
         vm.label(address(topicSchemeRegistry), "Topic Scheme Registry");

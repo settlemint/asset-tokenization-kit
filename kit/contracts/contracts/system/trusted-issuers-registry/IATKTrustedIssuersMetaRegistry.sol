@@ -3,7 +3,6 @@ pragma solidity ^0.8.28;
 
 // Interface imports
 import { IATKTrustedIssuersRegistry } from "./IATKTrustedIssuersRegistry.sol";
-import { ISMARTTrustedIssuersRegistry } from "../../smart/interface/ISMARTTrustedIssuersRegistry.sol";
 
 /// @title IATKTrustedIssuersMetaRegistry - Registry-of-Registries Interface
 /// @author SettleMint

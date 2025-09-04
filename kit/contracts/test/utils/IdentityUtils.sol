@@ -6,20 +6,20 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 import { IATKIdentityFactory } from "../../contracts/system/identity-factory/IATKIdentityFactory.sol";
-import { ISMARTTrustedIssuersRegistry } from
-    "../../contracts/smart/interface/ISMARTTrustedIssuersRegistry.sol";
+import { IATKTrustedIssuersRegistry } from
+    "../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
 
 contract IdentityUtils is Test {
     address internal _platformAdmin;
     IATKIdentityFactory internal _identityFactory;
     ISMARTIdentityRegistry internal _identityRegistry;
-    ISMARTTrustedIssuersRegistry internal _trustedIssuersRegistry;
+    IATKTrustedIssuersRegistry internal _trustedIssuersRegistry;
 
     constructor(
         address platformAdmin_,
         IATKIdentityFactory identityFactory_,
         ISMARTIdentityRegistry identityRegistry_,
-        ISMARTTrustedIssuersRegistry trustedIssuersRegistry_
+        IATKTrustedIssuersRegistry trustedIssuersRegistry_
     ) {
         _platformAdmin = platformAdmin_;
         _identityFactory = identityFactory_;

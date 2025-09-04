@@ -225,30 +225,36 @@ contract TokenTrustedIssuersRegistry is
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function getTrustedIssuersForClaimTopic(address _subject, uint256 claimTopic)
+    function getTrustedIssuersForClaimTopic(uint256 claimTopic, address _subject)
         external
         view
         override
         returns (IClaimIssuer[] memory)
     {
-        return _getTrustedIssuersForClaimTopic(_subject, claimTopic);
+        return _getTrustedIssuersForClaimTopic(claimTopic, _subject);
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function isTrustedIssuer(address _subject, address _issuer) external view override returns (bool) {
+    function isTrustedIssuer( address _issuer, address _subject) external view override returns (bool) {
         if (_subject != _token.onchainID()) revert InvalidSubjectAddress();
         return _trustedIssuers[_issuer].exists;
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function hasClaimTopic(address _subject, address _issuer, uint256 _claimTopic) external view override returns (bool) {
+    function hasClaimTopic(address _issuer, uint256 _claimTopic, address _subject) external view override returns (bool) {
         if (_subject != _token.onchainID()) revert InvalidSubjectAddress();
         return _claimTopicIssuerIndex[_claimTopic][_issuer] > 0;
     }
 
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    function getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer, address _subject) external view override returns (uint256[] memory) {
+        if (_subject != _token.onchainID()) revert InvalidSubjectAddress();
+        return _trustedIssuers[address(_trustedIssuer)].claimTopics;
+    }
+
     // --- Internal Helper Functions ---
 
-    function _getTrustedIssuersForClaimTopic(address subject, uint256 claimTopic)
+    function _getTrustedIssuersForClaimTopic(uint256 claimTopic, address subject)
         internal
         view
         returns (IClaimIssuer[] memory)

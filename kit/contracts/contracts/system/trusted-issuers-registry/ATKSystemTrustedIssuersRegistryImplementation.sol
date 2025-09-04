@@ -220,7 +220,7 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function getTrustedIssuersForClaimTopic(address, uint256 claimTopic)
+    function getTrustedIssuersForClaimTopic(uint256 claimTopic, address)
         external
         view
         override
@@ -237,20 +237,25 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function isTrustedIssuer(address, address _issuer) external view override returns (bool) {
+    function isTrustedIssuer(address _issuer, address) external view override returns (bool) {
         return _trustedIssuers[_issuer].exists;
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function hasClaimTopic(address, address _issuer, uint256 _claimTopic) external view override returns (bool) {
+    function hasClaimTopic(address _issuer, uint256 _claimTopic, address) external view override returns (bool) {
         return _claimTopicIssuerIndex[_claimTopic][_issuer] > 0;
+    }
+
+    /// @inheritdoc ISMARTTrustedIssuersRegistry
+    function getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer, address) external view override returns (uint256[] memory) {
+        return _trustedIssuers[address(_trustedIssuer)].claimTopics;
     }
 
     // --- IClaimAuthorizer Implementation ---
 
     /// @inheritdoc IClaimAuthorizer
     function isAuthorizedToAddClaim(address issuer, uint256 topic) external view override returns (bool) {
-        return this.hasClaimTopic(address(0), issuer, topic);
+        return this.hasClaimTopic(issuer, topic, address(0));
     }
 
     // --- Internal Helper Functions ---
