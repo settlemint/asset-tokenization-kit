@@ -22,7 +22,18 @@ import {
 describe("isoCountryCode validator", () => {
   describe("validation", () => {
     it("should accept valid ISO 3166-1 alpha-2 codes", () => {
-      const validCodes = ["US", "GB", "DE", "FR", "JP", "CN", "BR", "IN", "AU", "CA"];
+      const validCodes = [
+        "US",
+        "GB",
+        "DE",
+        "FR",
+        "JP",
+        "CN",
+        "BR",
+        "IN",
+        "AU",
+        "CA",
+      ];
 
       for (const code of validCodes) {
         expect(() => isoCountryCode.parse(code)).not.toThrow();
@@ -187,7 +198,9 @@ describe("isoCountryCode validator", () => {
       }
 
       // This would cause a TypeScript error if the type wasn't cast
-      expect(() => getCountryName("US", "invalid" as SupportedLocale)).not.toThrow();
+      expect(() =>
+        getCountryName("US", "invalid" as SupportedLocale)
+      ).not.toThrow();
     });
   });
 
@@ -341,7 +354,9 @@ describe("isoCountryCode validator", () => {
     });
 
     it("should return all supported locales with correct translations", async () => {
-      const { getCountries, SUPPORTED_LOCALES } = await import("./iso-country-code");
+      const { getCountries, SUPPORTED_LOCALES } = await import(
+        "./iso-country-code"
+      );
 
       for (const locale of SUPPORTED_LOCALES) {
         const countries = getCountries(locale);
@@ -361,7 +376,9 @@ describe("isoCountryCode validator", () => {
     });
 
     it("should return consistent country codes across locales", async () => {
-      const { getCountries, SUPPORTED_LOCALES } = await import("./iso-country-code");
+      const { getCountries, SUPPORTED_LOCALES } = await import(
+        "./iso-country-code"
+      );
 
       const englishCountries = getCountries("en");
       const countryCodes = Object.keys(englishCountries);
@@ -463,9 +480,15 @@ describe("isoCountryCode validator", () => {
       const arCountries = getNumericCountries("ar");
 
       // All should have the same numeric codes
-      expect(Object.keys(enCountries).sort()).toEqual(Object.keys(deCountries).sort());
-      expect(Object.keys(enCountries).sort()).toEqual(Object.keys(jaCountries).sort());
-      expect(Object.keys(enCountries).sort()).toEqual(Object.keys(arCountries).sort());
+      expect(Object.keys(enCountries).sort()).toEqual(
+        Object.keys(deCountries).sort()
+      );
+      expect(Object.keys(enCountries).sort()).toEqual(
+        Object.keys(jaCountries).sort()
+      );
+      expect(Object.keys(enCountries).sort()).toEqual(
+        Object.keys(arCountries).sort()
+      );
     });
 
     it("should handle cases where getName returns null or undefined", () => {

@@ -9,7 +9,15 @@ import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { add, Dnum, format, from, lessThanOrEqual, subtract } from "dnum";
+import {
+  add,
+  type Dnum,
+  format,
+  from,
+  greaterThan,
+  lessThanOrEqual,
+  subtract,
+} from "dnum";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -113,7 +121,7 @@ export function BurnSheet({
     <form.Subscribe selector={(s) => s}>
       {() => {
         // Aggregate amounts by address to properly validate duplicate addresses
-        const addressAmounts = new Map<string, bigint>();
+        const addressAmounts = new Map<string, Dnum>();
         const addressEntryCount = new Map<string, number>();
 
         entries.forEach((e) => {
@@ -121,13 +129,13 @@ export function BurnSheet({
             | EthereumAddress
             | "";
           const amt =
-            (form.getFieldValue(`burn_amount_${e.id}`) as bigint | undefined) ??
-            0n;
-          if (addr && amt > 0n) {
+            (form.getFieldValue(`burn_amount_${e.id}`) as Dnum | undefined) ??
+            from(0n, tokenDecimals);
+          if (addr && greaterThan(amt, from(0n, tokenDecimals))) {
             const lowerAddr = addr.toLowerCase();
             addressAmounts.set(
               lowerAddr,
-              (addressAmounts.get(lowerAddr) ?? 0n) + amt
+              add(addressAmounts.get(lowerAddr) ?? from(0n, tokenDecimals), amt)
             );
             addressEntryCount.set(
               lowerAddr,
@@ -144,9 +152,15 @@ export function BurnSheet({
               | EthereumAddress
               | "";
             const amt = form.getFieldValue(`burn_amount_${e.id}`) as
-              | bigint
+              | Dnum
               | undefined;
-            return Boolean(addr) && (amt ?? 0n) > 0n;
+            return (
+              Boolean(addr) &&
+              greaterThan(
+                amt ?? from(0n, tokenDecimals),
+                from(0n, tokenDecimals)
+              )
+            );
           });
 
         // Validate that aggregated amounts don't exceed available balances
@@ -156,27 +170,25 @@ export function BurnSheet({
               (b) => b.account?.id.toLowerCase() === addr
             );
             if (!holderBalance) return true; // If we don't have balance data, allow it
-            return lessThanOrEqual(
-              from(totalAmt, tokenDecimals),
-              holderBalance.available
-            );
+            return lessThanOrEqual(totalAmt, holderBalance.available);
           }
         );
 
         const canContinue = () => hasValidEntries && withinBalanceLimits;
 
-        const totalBurn = from(
-          entries
-            .map(
-              (e) =>
-                (form.getFieldValue(`burn_amount_${e.id}`) as
-                  | bigint
-                  | undefined) ?? 0n
-            )
-            .reduce((acc, a) => acc + a, 0n),
+        const totalBurn = entries
+          .map(
+            (e) =>
+              (form.getFieldValue(`burn_amount_${e.id}`) as Dnum | undefined) ??
+              from(0n, tokenDecimals)
+          )
+          .reduce((acc, amount) => add(acc, amount), from(0n, tokenDecimals));
+
+        const newTotalSupply = subtract(
+          asset.totalSupply,
+          totalBurn,
           tokenDecimals
         );
-        const newTotalSupply = subtract(asset.totalSupply, totalBurn);
 
         const confirmView = (
           <Card>
@@ -217,8 +229,8 @@ export function BurnSheet({
                     ) as EthereumAddress | null;
                     const amt =
                       (form.getFieldValue(`burn_amount_${e.id}`) as
-                        | bigint
-                        | undefined) ?? 0n;
+                        | Dnum
+                        | undefined) ?? from(0n, tokenDecimals);
                     return (
                       <div
                         key={e.id}
@@ -237,7 +249,7 @@ export function BurnSheet({
                           )}
                         </span>
                         <span className="font-medium">
-                          {amt.toString()} {asset.symbol}
+                          {format(amt)} {asset.symbol}
                         </span>
                       </div>
                     );
@@ -269,8 +281,8 @@ export function BurnSheet({
               const amounts = entries.map(
                 (e) =>
                   (form.getFieldValue(`burn_amount_${e.id}`) as
-                    | bigint
-                    | undefined) ?? 0n
+                    | Dnum
+                    | undefined) ?? from(0n, tokenDecimals)
               );
 
               const promise = burn({
@@ -302,14 +314,19 @@ export function BurnSheet({
                           ) as EthereumAddress | "";
                           const amt =
                             (form.getFieldValue(`burn_amount_${entry.id}`) as
-                              | bigint
-                              | undefined) ?? 0n;
+                              | Dnum
+                              | undefined) ?? from(0n, tokenDecimals);
 
-                          if (!addr || amt === 0n) return null;
+                          if (
+                            !addr ||
+                            !greaterThan(amt, from(0n, tokenDecimals))
+                          )
+                            return null;
 
                           const lowerAddr = addr.toLowerCase();
                           const totalForAddress =
-                            addressAmounts.get(lowerAddr) ?? 0n;
+                            addressAmounts.get(lowerAddr) ??
+                            from(0n, tokenDecimals);
                           const holderBalance =
                             holdersData?.token?.balances?.find(
                               (b) => b.account?.id.toLowerCase() === lowerAddr
@@ -317,11 +334,14 @@ export function BurnSheet({
 
                           if (
                             holderBalance &&
-                            totalForAddress > holderBalance.available[0]
+                            greaterThan(
+                              totalForAddress,
+                              holderBalance.available
+                            )
                           ) {
                             return (
                               <div className="text-destructive text-xs mb-2 p-2 bg-destructive/10 rounded">
-                                {`Total burn amount (${totalForAddress.toString()}) exceeds available balance (${holderBalance.available[0].toString()})`}
+                                {`Total burn amount (${format(totalForAddress)}) exceeds available balance (${format(holderBalance.available)})`}
                               </div>
                             );
                           }
@@ -383,7 +403,7 @@ export function BurnSheet({
                                 if (!holderBalance) return undefined;
 
                                 // Calculate how much is already allocated to this address in other entries
-                                let allocatedAmount = from(0, tokenDecimals);
+                                let allocatedAmount = from(0n, tokenDecimals);
                                 entries.forEach((otherEntry) => {
                                   if (otherEntry.id === entry.id) return;
                                   const otherAddr = form.getFieldValue(
@@ -392,12 +412,12 @@ export function BurnSheet({
                                   const otherAmt =
                                     (form.getFieldValue(
                                       `burn_amount_${otherEntry.id}`
-                                    ) as bigint | undefined) ?? 0n;
+                                    ) as Dnum | undefined) ??
+                                    from(0n, tokenDecimals);
                                   if (otherAddr?.toLowerCase() === lowerAddr) {
                                     allocatedAmount = add(
                                       allocatedAmount,
-                                      from(otherAmt, tokenDecimals),
-                                      tokenDecimals
+                                      otherAmt
                                     );
                                   }
                                 });
@@ -406,8 +426,7 @@ export function BurnSheet({
                                   holderBalance.available;
                                 const availableForThisEntry = subtract(
                                   availableHolderBalance,
-                                  allocatedAmount,
-                                  tokenDecimals
+                                  allocatedAmount
                                 );
                                 const isDuplicate =
                                   (addressEntryCount.get(lowerAddr) ?? 0) > 1;
@@ -415,7 +434,7 @@ export function BurnSheet({
                                 if (
                                   lessThanOrEqual(
                                     availableForThisEntry,
-                                    from(0, tokenDecimals)
+                                    from(0n, tokenDecimals)
                                   )
                                 ) {
                                   return "No balance left for this address";
@@ -463,11 +482,12 @@ export function BurnSheet({
                               const description = footer();
                               return (
                                 <>
-                                  <field.BigIntField
+                                  <field.DnumField
                                     label={t(
                                       "tokens:actions.burn.form.amountLabel"
                                     )}
                                     endAddon={asset.symbol}
+                                    decimals={asset.decimals}
                                     required
                                   />
                                   <div className="text-xs text-muted-foreground ml-2 mt-2">
@@ -493,7 +513,7 @@ export function BurnSheet({
                                 );
                                 form.setFieldValue(
                                   `burn_amount_${entry.id}`,
-                                  undefined as unknown as bigint
+                                  undefined as unknown as Dnum
                                 );
                                 setEntries((prev) =>
                                   prev.filter((e) => e.id !== entry.id)

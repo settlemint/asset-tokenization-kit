@@ -1,9 +1,9 @@
 /**
  * @fileoverview Test suite for Ethereum address validation and checksum handling
- * 
+ *
  * This test suite validates Ethereum address format and EIP-55 checksum validation,
  * ensuring proper address handling for blockchain transactions and wallet interactions.
- * 
+ *
  * Test Strategy:
  * - Format Validation: 0x prefix + 40 hexadecimal characters (42 total)
  * - Checksum Validation: EIP-55 mixed case checksum verification
@@ -11,7 +11,7 @@
  * - Edge Cases: Zero address, all-uppercase, defensive programming scenarios
  * - Type Safety: Branded type system preventing primitive obsession
  * - Error Handling: Specific error messages for different validation failures
- * 
+ *
  * SECURITY: Invalid addresses could result in irreversible loss of funds
  * STANDARD: EIP-55 checksum prevents typos and ensures address integrity
  */
@@ -63,21 +63,29 @@ describe("ethereumAddress", () => {
     it("should reject an address without 0x prefix", () => {
       // SECURITY: Prevent confusion with other hex formats (Bitcoin, etc.)
       // STANDARD: Ethereum addresses must start with 0x prefix
-      expect(() => ethereumAddress.parse("71c7656ec7ab88b098defb751b7401b5f6d8976f")).toThrow();
+      expect(() =>
+        ethereumAddress.parse("71c7656ec7ab88b098defb751b7401b5f6d8976f")
+      ).toThrow();
     });
 
     it("should reject an address that is too short", () => {
       // SECURITY: Short addresses are invalid and could cause funds loss
-      expect(() => ethereumAddress.parse("0x71c7656ec7ab88b098defb751b7401b5f6d8976")).toThrow();
+      expect(() =>
+        ethereumAddress.parse("0x71c7656ec7ab88b098defb751b7401b5f6d8976")
+      ).toThrow();
     });
 
     it("should reject an address that is too long", () => {
       // SECURITY: Extra characters could indicate malformed or malicious input
-      expect(() => ethereumAddress.parse("0x71c7656ec7ab88b098defb751b7401b5f6d8976ff")).toThrow();
+      expect(() =>
+        ethereumAddress.parse("0x71c7656ec7ab88b098defb751b7401b5f6d8976ff")
+      ).toThrow();
     });
 
     it("should reject an address with invalid characters", () => {
-      expect(() => ethereumAddress.parse("0x71c7656ec7ab88b098defb751b7401b5f6d8976g")).toThrow();
+      expect(() =>
+        ethereumAddress.parse("0x71c7656ec7ab88b098defb751b7401b5f6d8976g")
+      ).toThrow();
     });
 
     it("should reject non-string values", () => {
@@ -91,7 +99,9 @@ describe("ethereumAddress", () => {
     it("should reject an invalid checksummed address", () => {
       // SECURITY: Incorrect checksum indicates typo or potential attack
       // WHY: EIP-55 checksum validation prevents accidental fund loss
-      expect(() => ethereumAddress.parse("0x71c7656ec7ab88b098defb751b7401b5f6d8976F")).toThrow();
+      expect(() =>
+        ethereumAddress.parse("0x71c7656ec7ab88b098defb751b7401b5f6d8976F")
+      ).toThrow();
     });
 
     it("should provide specific error message for length validation", () => {
@@ -101,9 +111,10 @@ describe("ethereumAddress", () => {
         ethereumAddress.parse("0x123");
       } catch (error) {
         if (error instanceof Error && "issues" in error) {
-          expect((error as Error & { issues: Array<{ message: string }> }).issues[0]?.message).toBe(
-            "Ethereum address must be at least 42 characters long"
-          );
+          expect(
+            (error as Error & { issues: Array<{ message: string }> }).issues[0]
+              ?.message
+          ).toBe("Ethereum address must be at least 42 characters long");
         }
       }
 
@@ -112,9 +123,10 @@ describe("ethereumAddress", () => {
         ethereumAddress.parse("0x71c7656ec7ab88b098defb751b7401b5f6d8976fff");
       } catch (error) {
         if (error instanceof Error && "issues" in error) {
-          expect((error as Error & { issues: Array<{ message: string }> }).issues[0]?.message).toBe(
-            "Ethereum address must be at most 42 characters long"
-          );
+          expect(
+            (error as Error & { issues: Array<{ message: string }> }).issues[0]
+              ?.message
+          ).toBe("Ethereum address must be at most 42 characters long");
         }
       }
     });
@@ -125,7 +137,10 @@ describe("ethereumAddress", () => {
         ethereumAddress.parse("invalid-no-prefix-42-characters-long-here!");
       } catch (error) {
         if (error instanceof Error && "issues" in error) {
-          expect((error as Error & { issues: Array<{ message: string }> }).issues[0]?.message).toBe(
+          expect(
+            (error as Error & { issues: Array<{ message: string }> }).issues[0]
+              ?.message
+          ).toBe(
             "Ethereum address must start with 0x followed by 40 hexadecimal characters"
           );
         }
@@ -139,9 +154,10 @@ describe("ethereumAddress", () => {
         ethereumAddress.parse("0x71c7656ec7ab88b098defb751b7401b5f6d8976F");
       } catch (error) {
         if (error instanceof Error && "issues" in error) {
-          expect((error as Error & { issues: Array<{ message: string }> }).issues[0]?.message).toBe(
-            "Invalid Ethereum address format or checksum"
-          );
+          expect(
+            (error as Error & { issues: Array<{ message: string }> }).issues[0]
+              ?.message
+          ).toBe("Invalid Ethereum address format or checksum");
         }
       }
     });
@@ -149,7 +165,9 @@ describe("ethereumAddress", () => {
 
   describe("type safety", () => {
     it("should have the correct type", () => {
-      const result = ethereumAddress.parse("0x71c7656ec7ab88b098defb751b7401b5f6d8976f");
+      const result = ethereumAddress.parse(
+        "0x71c7656ec7ab88b098defb751b7401b5f6d8976f"
+      );
       // TypeScript should recognize this as EthereumAddress type
       expect(typeof result).toBe("string");
     });
@@ -180,9 +198,18 @@ describe("ethereumAddress", () => {
   describe("schema validation behavior", () => {
     it("should validate addresses correctly", () => {
       // Valid addresses
-      expect(ethereumAddress.safeParse("0x71c7656ec7ab88b098defb751b7401b5f6d8976f").success).toBe(true);
-      expect(ethereumAddress.safeParse("0x71C7656EC7ab88b098defB751B7401B5f6d8976F").success).toBe(true);
-      expect(ethereumAddress.safeParse("0x0000000000000000000000000000000000000000").success).toBe(true);
+      expect(
+        ethereumAddress.safeParse("0x71c7656ec7ab88b098defb751b7401b5f6d8976f")
+          .success
+      ).toBe(true);
+      expect(
+        ethereumAddress.safeParse("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
+          .success
+      ).toBe(true);
+      expect(
+        ethereumAddress.safeParse("0x0000000000000000000000000000000000000000")
+          .success
+      ).toBe(true);
 
       // Invalid addresses
       expect(ethereumAddress.safeParse("0xinvalid").success).toBe(false);
@@ -222,7 +249,7 @@ describe("ethereumAddress", () => {
 
       validAddresses.forEach((address) => {
         const result = ethereumAddress.parse(address);
-        
+
         // INVARIANTS: All results must satisfy address format requirements
         expect(result).toBeDefined();
         expect(typeof result).toBe("string");
@@ -278,14 +305,18 @@ describe("ethereumAddress", () => {
       // Test that all uppercase addresses get properly checksummed
       const upperCaseAddress = "0x71c7656ec7ab88b098defb751b7401b5f6d8976f";
       const result = ethereumAddress.parse(upperCaseAddress);
-      expect(result).toBe("0x71C7656EC7ab88b098defB751B7401B5f6d8976F" as EthereumAddress);
+      expect(result).toBe(
+        "0x71C7656EC7ab88b098defB751B7401B5f6d8976F" as EthereumAddress
+      );
     });
 
     it("should handle already checksummed or lowercase addresses gracefully", () => {
       // This test checks that lowercase and checksummed addresses are handled correctly
       const lowercaseAddress = "0x71c7656ec7ab88b098defb751b7401b5f6d8976f";
       const result = ethereumAddress.parse(lowercaseAddress);
-      expect(result).toBe("0x71C7656EC7ab88b098defB751B7401B5f6d8976F" as EthereumAddress);
+      expect(result).toBe(
+        "0x71C7656EC7ab88b098defB751B7401B5f6d8976F" as EthereumAddress
+      );
     });
 
     it("should handle edge case where getAddress might fail but isAddress succeeds", () => {
@@ -396,20 +427,36 @@ describe("ethereumAddress", () => {
   describe("isEthereumAddress", () => {
     it("should return true for valid ethereum addresses", () => {
       // WHY: Type guard function for runtime type checking in application logic
-      expect(isEthereumAddress("0x71c7656ec7ab88b098defb751b7401b5f6d8976f")).toBe(true);
-      expect(isEthereumAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")).toBe(true);
-      expect(isEthereumAddress("0x0000000000000000000000000000000000000000")).toBe(true);
-      expect(isEthereumAddress("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed")).toBe(true);
+      expect(
+        isEthereumAddress("0x71c7656ec7ab88b098defb751b7401b5f6d8976f")
+      ).toBe(true);
+      expect(
+        isEthereumAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
+      ).toBe(true);
+      expect(
+        isEthereumAddress("0x0000000000000000000000000000000000000000")
+      ).toBe(true);
+      expect(
+        isEthereumAddress("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed")
+      ).toBe(true);
     });
 
     it("should return false for invalid ethereum addresses", () => {
       // Invalid formats
       expect(isEthereumAddress("0xinvalid")).toBe(false);
       expect(isEthereumAddress("not-an-address")).toBe(false);
-      expect(isEthereumAddress("71c7656ec7ab88b098defb751b7401b5f6d8976f")).toBe(false); // missing 0x
-      expect(isEthereumAddress("0x71c7656ec7ab88b098defb751b7401b5f6d8976")).toBe(false); // too short
-      expect(isEthereumAddress("0x71c7656ec7ab88b098defb751b7401b5f6d8976ff")).toBe(false); // too long
-      expect(isEthereumAddress("0x71c7656ec7ab88b098defb751b7401b5f6d8976g")).toBe(false); // invalid character
+      expect(
+        isEthereumAddress("71c7656ec7ab88b098defb751b7401b5f6d8976f")
+      ).toBe(false); // missing 0x
+      expect(
+        isEthereumAddress("0x71c7656ec7ab88b098defb751b7401b5f6d8976")
+      ).toBe(false); // too short
+      expect(
+        isEthereumAddress("0x71c7656ec7ab88b098defb751b7401b5f6d8976ff")
+      ).toBe(false); // too long
+      expect(
+        isEthereumAddress("0x71c7656ec7ab88b098defb751b7401b5f6d8976g")
+      ).toBe(false); // invalid character
 
       // Invalid types
       expect(isEthereumAddress(123_456)).toBe(false);
@@ -423,13 +470,16 @@ describe("ethereumAddress", () => {
       expect(isEthereumAddress(BigInt(123))).toBe(false);
 
       // Invalid checksummed address
-      expect(isEthereumAddress("0x71c7656ec7ab88b098defb751b7401b5f6d8976F")).toBe(false); // incorrect checksum
+      expect(
+        isEthereumAddress("0x71c7656ec7ab88b098defb751b7401b5f6d8976F")
+      ).toBe(false); // incorrect checksum
     });
 
     it("should act as a type guard", () => {
       // WHY: Type guard enables safe type narrowing in TypeScript
       // TYPE_SAFETY: Prevents runtime errors from invalid address usage
-      const maybeAddress: unknown = "0x71c7656ec7ab88b098defb751b7401b5f6d8976f";
+      const maybeAddress: unknown =
+        "0x71c7656ec7ab88b098defb751b7401b5f6d8976f";
       if (isEthereumAddress(maybeAddress)) {
         // TYPESCRIPT: Type system now knows maybeAddress is EthereumAddress
         const address: EthereumAddress = maybeAddress;
@@ -442,31 +492,39 @@ describe("ethereumAddress", () => {
   describe("getEthereumAddress", () => {
     it("should return checksummed address for valid inputs", () => {
       // WHY: Convenience function that throws on invalid input (vs safeParse)
-      expect(getEthereumAddress("0x71c7656ec7ab88b098defb751b7401b5f6d8976f")).toBe(
-        "0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
-      );
+      expect(
+        getEthereumAddress("0x71c7656ec7ab88b098defb751b7401b5f6d8976f")
+      ).toBe("0x71C7656EC7ab88b098defB751B7401B5f6d8976F");
 
-      expect(getEthereumAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")).toBe(
-        "0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
-      );
+      expect(
+        getEthereumAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
+      ).toBe("0x71C7656EC7ab88b098defB751B7401B5f6d8976F");
 
-      expect(getEthereumAddress("0x0000000000000000000000000000000000000000")).toBe(
-        "0x0000000000000000000000000000000000000000"
-      );
+      expect(
+        getEthereumAddress("0x0000000000000000000000000000000000000000")
+      ).toBe("0x0000000000000000000000000000000000000000");
 
-      expect(getEthereumAddress("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed")).toBe(
-        "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"
-      );
+      expect(
+        getEthereumAddress("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed")
+      ).toBe("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed");
     });
 
     it("should throw for invalid inputs", () => {
       // Invalid formats
       expect(() => getEthereumAddress("0xinvalid")).toThrow();
       expect(() => getEthereumAddress("not-an-address")).toThrow();
-      expect(() => getEthereumAddress("71c7656ec7ab88b098defb751b7401b5f6d8976f")).toThrow(); // missing 0x
-      expect(() => getEthereumAddress("0x71c7656ec7ab88b098defb751b7401b5f6d8976")).toThrow(); // too short
-      expect(() => getEthereumAddress("0x71c7656ec7ab88b098defb751b7401b5f6d8976ff")).toThrow(); // too long
-      expect(() => getEthereumAddress("0x71c7656ec7ab88b098defb751b7401b5f6d8976g")).toThrow(); // invalid character
+      expect(() =>
+        getEthereumAddress("71c7656ec7ab88b098defb751b7401b5f6d8976f")
+      ).toThrow(); // missing 0x
+      expect(() =>
+        getEthereumAddress("0x71c7656ec7ab88b098defb751b7401b5f6d8976")
+      ).toThrow(); // too short
+      expect(() =>
+        getEthereumAddress("0x71c7656ec7ab88b098defb751b7401b5f6d8976ff")
+      ).toThrow(); // too long
+      expect(() =>
+        getEthereumAddress("0x71c7656ec7ab88b098defb751b7401b5f6d8976g")
+      ).toThrow(); // invalid character
 
       // Invalid types
       expect(() => getEthereumAddress(123_456)).toThrow();
@@ -480,7 +538,9 @@ describe("ethereumAddress", () => {
       expect(() => getEthereumAddress(BigInt(123))).toThrow();
 
       // Invalid checksummed address
-      expect(() => getEthereumAddress("0x71c7656ec7ab88b098defb751b7401b5f6d8976F")).toThrow(); // incorrect checksum
+      expect(() =>
+        getEthereumAddress("0x71c7656ec7ab88b098defb751b7401b5f6d8976F")
+      ).toThrow(); // incorrect checksum
     });
 
     it("should throw ZodError with correct error messages", () => {
@@ -489,9 +549,10 @@ describe("ethereumAddress", () => {
         getEthereumAddress("0x123");
       } catch (error) {
         if (error instanceof Error && "issues" in error) {
-          expect((error as Error & { issues: Array<{ message: string }> }).issues[0]?.message).toContain(
-            "42 characters long"
-          );
+          expect(
+            (error as Error & { issues: Array<{ message: string }> }).issues[0]
+              ?.message
+          ).toContain("42 characters long");
         }
       }
 
@@ -500,9 +561,10 @@ describe("ethereumAddress", () => {
         getEthereumAddress("invalid-no-prefix-42-characters-long-here!");
       } catch (error) {
         if (error instanceof Error && "issues" in error) {
-          expect((error as Error & { issues: Array<{ message: string }> }).issues[0]?.message).toContain(
-            "must start with 0x"
-          );
+          expect(
+            (error as Error & { issues: Array<{ message: string }> }).issues[0]
+              ?.message
+          ).toContain("must start with 0x");
         }
       }
 
@@ -511,9 +573,10 @@ describe("ethereumAddress", () => {
         getEthereumAddress("0x71c7656ec7ab88b098defb751b7401b5f6d8976F");
       } catch (error) {
         if (error instanceof Error && "issues" in error) {
-          expect((error as Error & { issues: Array<{ message: string }> }).issues[0]?.message).toContain(
-            "Invalid Ethereum address format or checksum"
-          );
+          expect(
+            (error as Error & { issues: Array<{ message: string }> }).issues[0]
+              ?.message
+          ).toContain("Invalid Ethereum address format or checksum");
         }
       }
     });

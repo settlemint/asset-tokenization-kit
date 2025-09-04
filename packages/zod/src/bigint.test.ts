@@ -1,6 +1,11 @@
 import { describe, expect, it } from "bun:test";
 import { z } from "zod";
-import { apiBigInt, bigIntSerializer, getApiBigInt, isApiBigInt } from "./bigint";
+import {
+  apiBigInt,
+  bigIntSerializer,
+  getApiBigInt,
+  isApiBigInt,
+} from "./bigint";
 
 describe("apiBigInt", () => {
   const validator = apiBigInt;
@@ -12,7 +17,9 @@ describe("apiBigInt", () => {
 
     it("should parse a very large number string", () => {
       const largeNum = "123456789012345678901234567890";
-      expect(validator.parse(largeNum)).toBe(123_456_789_012_345_678_901_234_567_890n);
+      expect(validator.parse(largeNum)).toBe(
+        123_456_789_012_345_678_901_234_567_890n
+      );
     });
 
     it("should parse zero", () => {
@@ -21,7 +28,9 @@ describe("apiBigInt", () => {
 
     it("should parse negative numbers", () => {
       expect(validator.parse("-123")).toBe(-123n);
-      expect(validator.parse("-999999999999999999999")).toBe(-999_999_999_999_999_999_999n);
+      expect(validator.parse("-999999999999999999999")).toBe(
+        -999_999_999_999_999_999_999n
+      );
     });
 
     it("should handle decimal strings by truncating", () => {
@@ -68,17 +77,21 @@ describe("apiBigInt", () => {
       expect(validator.parse("1.5e18")).toBe(1_500_000_000_000_000_000n);
 
       // Test with even larger numbers that exceed JavaScript's Number precision
-      expect(validator.parse("1e30")).toBe(1_000_000_000_000_000_000_000_000_000_000n);
-      expect(validator.parse("5.5e25")).toBe(55_000_000_000_000_000_000_000_000n);
+      expect(validator.parse("1e30")).toBe(
+        1_000_000_000_000_000_000_000_000_000_000n
+      );
+      expect(validator.parse("5.5e25")).toBe(
+        55_000_000_000_000_000_000_000_000n
+      );
     });
 
     it("should handle dnum array format [bigint, number]", () => {
-      // dnum uses [bigint, number] format where the second number is the decimal exponent
-      // Note: dnum's floor() doesn't support negative exponents, so those fall through
+      // dnum uses [bigint, number] format where the first number is the bigint value and the second number is the decimal exponent
       expect(validator.parse([123n, 0])).toBe(123n); // 123 * 10^0 = 123
       expect(validator.parse([-456n, 0])).toBe(-456n); // -456 * 10^0 = -456
+      expect(validator.parse([123_000n, 3])).toBe(123_000n); // 123 * 10^3 = 123000
 
-      // Arrays with negative exponents fail dnum processing and are rejected by z.coerce.bigint()
+      // Arrays with negative exponents fail dnum processing and are rejected
       expect(() => validator.parse([456n, -1])).toThrow(); // dnum can't handle negative exponents
       expect(() => validator.parse([123n, -2])).toThrow(); // dnum can't handle negative exponents
     });
@@ -98,7 +111,9 @@ describe("apiBigInt", () => {
 
     it("should handle multiple decimal points by truncating at first decimal", () => {
       // Our preprocess function now rejects multiple decimal points
-      expect(() => validator.parse("123.456.789")).toThrow("Invalid BigInt format: multiple decimal points");
+      expect(() => validator.parse("123.456.789")).toThrow(
+        "Invalid BigInt format: multiple decimal points"
+      );
     });
 
     it("should reject null and undefined", () => {
@@ -127,9 +142,6 @@ describe("apiBigInt", () => {
       expect(() => validator.parse([123n, 2, 3])).toThrow(); // Too many elements
       expect(() => validator.parse([null, 2])).toThrow(); // First element null
       expect(() => validator.parse([123n, null])).toThrow(); // Second element null
-
-      // Test dnum arrays with positive exponents that return 0
-      expect(validator.parse([123n, 3])).toBe(0n); // Positive exponent currently returns "0" -> 0n (seems like a dnum bug)
     });
 
     it("should handle other types by passing to z.coerce.bigint()", () => {
@@ -147,7 +159,9 @@ describe("apiBigInt", () => {
 
     it("should reject multiple decimal points", () => {
       // Our preprocess function now rejects multiple decimal points
-      expect(() => validator.parse("123.456.789")).toThrow("Invalid BigInt format: multiple decimal points");
+      expect(() => validator.parse("123.456.789")).toThrow(
+        "Invalid BigInt format: multiple decimal points"
+      );
       expect(validator.safeParse("123.456.789").success).toBe(false);
     });
   });
@@ -225,13 +239,17 @@ describe("bigIntSerializer", () => {
     expect(bigIntSerializer.serialize(123n)).toBe("123");
     expect(bigIntSerializer.serialize(-456n)).toBe("-456");
     expect(bigIntSerializer.serialize(0n)).toBe("0");
-    expect(bigIntSerializer.serialize(999_999_999_999_999_999_999n)).toBe("999999999999999999999");
+    expect(bigIntSerializer.serialize(999_999_999_999_999_999_999n)).toBe(
+      "999999999999999999999"
+    );
   });
 
   it("should deserialize string to bigint", () => {
     expect(bigIntSerializer.deserialize("123")).toBe(123n);
     expect(bigIntSerializer.deserialize("-456")).toBe(-456n);
     expect(bigIntSerializer.deserialize("0")).toBe(0n);
-    expect(bigIntSerializer.deserialize("999999999999999999999")).toBe(999_999_999_999_999_999_999n);
+    expect(bigIntSerializer.deserialize("999999999999999999999")).toBe(
+      999_999_999_999_999_999_999n
+    );
   });
 });

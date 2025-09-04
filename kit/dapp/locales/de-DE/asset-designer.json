@@ -26,6 +26,9 @@
       "leave": "Verlassen"
     },
     "description": "Konfigurieren Sie Ihr {{type}}, indem Sie die grundlegenden Informationen unten bereitstellen.",
+    "errors": {
+      "denominationAssetFetch": "Wir können diesen Token nicht laden. Versuchen Sie einen anderen zu wählen oder warten Sie einen Moment."
+    },
     "fields": {
       "cap": {
         "description": "Die maximale Anzahl von Token, die ausgegeben werden können",

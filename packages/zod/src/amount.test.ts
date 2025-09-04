@@ -1,9 +1,9 @@
 /**
  * @fileoverview Test suite for financial amount validation
- * 
+ *
  * This test suite validates monetary amount handling with configurable constraints,
  * ensuring safe financial calculations and proper boundary enforcement.
- * 
+ *
  * Test Strategy:
  * - Range Validation: Enforces min/max bounds to prevent invalid transactions
  * - Decimal Precision: Configurable decimal places for different asset types
@@ -11,7 +11,7 @@
  * - Edge Cases: Scientific notation, boundary values, floating-point precision
  * - Type Safety: Branded number type prevents primitive obsession
  * - Financial Safety: Rejects negative amounts, infinity, NaN
- * 
+ *
  * CRITICAL: Financial amounts must be validated to prevent monetary loss
  * PRECISION: Uses native numbers - for high precision use BigDecimal validator
  */
@@ -100,8 +100,12 @@ describe("amount", () => {
     it("should reject values above maximum", () => {
       // SECURITY: Prevent extraordinarily large transactions that might be errors
       // RISK_MANAGEMENT: Daily/per-transaction limits
-      expect(() => validator.parse(1000.01)).toThrow("Amount must not exceed 1000");
-      expect(() => validator.parse(10_000)).toThrow("Amount must not exceed 1000");
+      expect(() => validator.parse(1000.01)).toThrow(
+        "Amount must not exceed 1000"
+      );
+      expect(() => validator.parse(10_000)).toThrow(
+        "Amount must not exceed 1000"
+      );
     });
   });
 
@@ -117,7 +121,9 @@ describe("amount", () => {
 
     it("should reject values below decimal-based minimum", () => {
       // WHY: Amounts smaller than smallest unit are invalid (e.g., 0.5 cents)
-      expect(() => validator.parse(0.009)).toThrow("Amount must be at least 0.01");
+      expect(() => validator.parse(0.009)).toThrow(
+        "Amount must be at least 0.01"
+      );
       expect(() => validator.parse(0)).toThrow("Amount must be at least 0.01");
     });
 
@@ -151,7 +157,9 @@ describe("amount", () => {
       const result = validator.safeParse(5);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0]?.message).toBe("Amount must be at least 10");
+        expect(result.error.issues[0]?.message).toBe(
+          "Amount must be at least 10"
+        );
       }
     });
   });
@@ -230,31 +238,47 @@ describe("amount", () => {
 
     it("should respect options when parsing", () => {
       // With min option
-      expect(() => getAmount(5, { min: 10 })).toThrow("Amount must be at least 10");
+      expect(() => getAmount(5, { min: 10 })).toThrow(
+        "Amount must be at least 10"
+      );
       expect(getAmount(10, { min: 10 })).toBe(10);
       expect(getAmount(15, { min: 10 })).toBe(15);
 
       // With max option
-      expect(() => getAmount(100, { max: 50 })).toThrow("Amount must not exceed 50");
+      expect(() => getAmount(100, { max: 50 })).toThrow(
+        "Amount must not exceed 50"
+      );
       expect(getAmount(50, { max: 50 })).toBe(50);
       expect(getAmount(25, { max: 50 })).toBe(25);
 
       // With decimals option
-      expect(() => getAmount(0, { decimals: 2 })).toThrow("Amount must be at least 0.01");
-      expect(() => getAmount(0.009, { decimals: 2 })).toThrow("Amount must be at least 0.01");
+      expect(() => getAmount(0, { decimals: 2 })).toThrow(
+        "Amount must be at least 0.01"
+      );
+      expect(() => getAmount(0.009, { decimals: 2 })).toThrow(
+        "Amount must be at least 0.01"
+      );
       expect(getAmount(0.01, { decimals: 2 })).toBe(0.01);
       expect(getAmount(10.99, { decimals: 2 })).toBe(10.99);
 
       // With combined options
-      expect(() => getAmount(5, { min: 10, max: 100 })).toThrow("Amount must be at least 10");
+      expect(() => getAmount(5, { min: 10, max: 100 })).toThrow(
+        "Amount must be at least 10"
+      );
       expect(getAmount(50, { min: 10, max: 100 })).toBe(50);
-      expect(() => getAmount(150, { min: 10, max: 100 })).toThrow("Amount must not exceed 100");
+      expect(() => getAmount(150, { min: 10, max: 100 })).toThrow(
+        "Amount must not exceed 100"
+      );
     });
 
     it("should handle string inputs with options", () => {
-      expect(() => getAmount("5", { min: 10 })).toThrow("Amount must be at least 10");
+      expect(() => getAmount("5", { min: 10 })).toThrow(
+        "Amount must be at least 10"
+      );
       expect(getAmount("10", { min: 10 })).toBe(10);
-      expect(() => getAmount("100.5", { max: 50 })).toThrow("Amount must not exceed 50");
+      expect(() => getAmount("100.5", { max: 50 })).toThrow(
+        "Amount must not exceed 50"
+      );
       expect(getAmount("25.75", { max: 50 })).toBe(25.75);
     });
   });
@@ -263,7 +287,9 @@ describe("amount", () => {
     it("should handle decimal precision edge cases", () => {
       const validator = amount({ decimals: 6 });
       expect(validator.parse(0.000_001)).toBe(0.000_001);
-      expect(() => validator.parse(0.000_000_9)).toThrow("Amount must be at least 0.000001");
+      expect(() => validator.parse(0.000_000_9)).toThrow(
+        "Amount must be at least 0.000001"
+      );
     });
 
     it("should handle min taking precedence over decimals", () => {
@@ -275,14 +301,18 @@ describe("amount", () => {
 
     it("should handle max as Number.MAX_SAFE_INTEGER by default", () => {
       const validator = amount();
-      expect(validator.parse(Number.MAX_SAFE_INTEGER)).toBe(Number.MAX_SAFE_INTEGER);
+      expect(validator.parse(Number.MAX_SAFE_INTEGER)).toBe(
+        Number.MAX_SAFE_INTEGER
+      );
       expect(() => validator.parse(Number.MAX_SAFE_INTEGER + 1)).toThrow();
     });
 
     it("should handle very small decimals", () => {
       const validator = amount({ decimals: 10 });
       expect(validator.parse(0.000_000_000_1)).toBe(0.000_000_000_1);
-      expect(() => validator.parse(0.000_000_000_09)).toThrow("Amount must be at least 1e-10");
+      expect(() => validator.parse(0.000_000_000_09)).toThrow(
+        "Amount must be at least 1e-10"
+      );
     });
 
     it("should handle zero decimals", () => {
@@ -315,13 +345,19 @@ describe("amount", () => {
     it("should handle the schema description", () => {
       // WHY: Dynamic descriptions help with API documentation and debugging
       const validator1 = amount();
-      expect(validator1.description).toBe("A positive numerical amount between 0 and 9007199254740991");
+      expect(validator1.description).toBe(
+        "A positive numerical amount between 0 and 9007199254740991"
+      );
 
       const validator2 = amount({ min: 10, max: 100 });
-      expect(validator2.description).toBe("A positive numerical amount between 10 and 100");
+      expect(validator2.description).toBe(
+        "A positive numerical amount between 10 and 100"
+      );
 
       const validator3 = amount({ decimals: 2 });
-      expect(validator3.description).toBe("A positive numerical amount between 0.01 and 9007199254740991");
+      expect(validator3.description).toBe(
+        "A positive numerical amount between 0.01 and 9007199254740991"
+      );
     });
   });
 
@@ -347,7 +383,9 @@ describe("amount", () => {
       );
       // "12.34.56" is parsed as 12.34 by parseFloat, so it passes validation
       expect(validator.parse("12.34.56")).toBe(12.34);
-      expect(() => validator.parse("$100")).toThrow("Invalid amount format. Please provide a valid numeric string");
+      expect(() => validator.parse("$100")).toThrow(
+        "Invalid amount format. Please provide a valid numeric string"
+      );
     });
   });
 
@@ -366,9 +404,9 @@ describe("amount", () => {
         validator.parse(5);
       } catch (error) {
         if (error instanceof Error && "issues" in error) {
-          expect((error as { issues: Array<{ message: string }> }).issues[0]?.message).toBe(
-            "Amount must be at least 10"
-          );
+          expect(
+            (error as { issues: Array<{ message: string }> }).issues[0]?.message
+          ).toBe("Amount must be at least 10");
         }
       }
 
@@ -377,9 +415,9 @@ describe("amount", () => {
         validator.parse(150);
       } catch (error) {
         if (error instanceof Error && "issues" in error) {
-          expect((error as { issues: Array<{ message: string }> }).issues[0]?.message).toBe(
-            "Amount must not exceed 100"
-          );
+          expect(
+            (error as { issues: Array<{ message: string }> }).issues[0]?.message
+          ).toBe("Amount must not exceed 100");
         }
       }
     });

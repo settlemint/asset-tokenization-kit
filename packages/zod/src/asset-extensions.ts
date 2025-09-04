@@ -87,7 +87,8 @@ export const assetExtensions = Object.values(AssetExtensionEnum);
  * });
  * ```
  */
-export const assetExtension = () => z.enum(assetExtensions).describe("Token extension capability");
+export const assetExtension = () =>
+  z.enum(assetExtensions).describe("Token extension capability");
 
 /**
  * Creates an array validator for multiple asset extensions.
@@ -100,7 +101,8 @@ export const assetExtension = () => z.enum(assetExtensions).describe("Token exte
  * schema.parse(["INVALID"]); // Invalid - unknown extension
  * ```
  */
-export const assetExtensionArray = () => z.array(assetExtension()).describe("List of asset extensions");
+export const assetExtensionArray = () =>
+  z.array(assetExtension()).describe("List of asset extensions");
 
 /**
  * Creates a set validator for unique asset extensions.
@@ -114,7 +116,8 @@ export const assetExtensionArray = () => z.array(assetExtension()).describe("Lis
  * schema.parse(new Set()); // Valid - empty set is allowed
  * ```
  */
-export const assetExtensionSet = () => z.set(assetExtension()).describe("Set of unique asset extensions");
+export const assetExtensionSet = () =>
+  z.set(assetExtension()).describe("Set of unique asset extensions");
 
 /**
  * Creates an asset extension validator with an optional default value.
@@ -128,8 +131,9 @@ export const assetExtensionSet = () => z.set(assetExtension()).describe("Set of 
  * schema.parse("BURNABLE"); // Returns "BURNABLE"
  * ```
  */
-export const assetExtensionWithDefault = (defaultValue: AssetExtension = assetExtension().parse("BURNABLE")) =>
-  assetExtension().default(defaultValue);
+export const assetExtensionWithDefault = (
+  defaultValue: AssetExtension = assetExtension().parse("BURNABLE")
+) => assetExtension().default(defaultValue);
 
 /**
  * Creates a record validator for asset extension to value mappings.
@@ -185,7 +189,9 @@ export type AssetExtension = z.infer<ReturnType<typeof assetExtension>>;
 /**
  * Type representing an array of validated asset extensions.
  */
-export type AssetExtensionArray = z.infer<ReturnType<typeof assetExtensionArray>>;
+export type AssetExtensionArray = z.infer<
+  ReturnType<typeof assetExtensionArray>
+>;
 
 /**
  * Type representing a set of unique validated asset extensions.
@@ -239,7 +245,9 @@ export function getAssetExtension(value: unknown): AssetExtension {
  * }
  * ```
  */
-export function isAssetExtensionArray(value: unknown): value is AssetExtensionArray {
+export function isAssetExtensionArray(
+  value: unknown
+): value is AssetExtensionArray {
   return assetExtensionArray().safeParse(value).success;
 }
 
@@ -270,7 +278,9 @@ export function getAssetExtensionArray(value: unknown): AssetExtensionArray {
  * }
  * ```
  */
-export function isAssetExtensionSet(value: unknown): value is AssetExtensionSet {
+export function isAssetExtensionSet(
+  value: unknown
+): value is AssetExtensionSet {
   return assetExtensionSet().safeParse(value).success;
 }
 

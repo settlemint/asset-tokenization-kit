@@ -56,7 +56,11 @@ export interface AmountOptions {
  * minAmount.parse(5); // Invalid
  * ```
  */
-export const amount = ({ max = Number.MAX_SAFE_INTEGER, min, decimals }: AmountOptions = {}) => {
+export const amount = ({
+  max = Number.MAX_SAFE_INTEGER,
+  min,
+  decimals,
+}: AmountOptions = {}) => {
   // Calculate the minimum value based on provided options
   // Priority: explicit min > decimals-based min > 0
   const minimum =
@@ -79,7 +83,8 @@ export const amount = ({ max = Number.MAX_SAFE_INTEGER, min, decimals }: AmountO
       if (Number.isNaN(parsed)) {
         ctx.addIssue({
           code: "custom",
-          message: "Invalid amount format. Please provide a valid numeric string",
+          message:
+            "Invalid amount format. Please provide a valid numeric string",
         });
         return z.NEVER;
       }
@@ -91,7 +96,9 @@ export const amount = ({ max = Number.MAX_SAFE_INTEGER, min, decimals }: AmountO
     .refine((value) => value <= max, {
       message: `Amount must not exceed ${String(max)}`,
     })
-    .describe(`A positive numerical amount between ${String(minimum)} and ${String(max)}`);
+    .describe(
+      `A positive numerical amount between ${String(minimum)} and ${String(max)}`
+    );
 };
 
 /**
@@ -119,7 +126,10 @@ export type Amount = z.infer<ReturnType<typeof amount>>;
  * isAmount(0, { allowZero: true }); // true
  * ```
  */
-export function isAmount(value: unknown, options?: AmountOptions): value is Amount {
+export function isAmount(
+  value: unknown,
+  options?: AmountOptions
+): value is Amount {
   // Use safeParse to validate without throwing errors
   return amount(options).safeParse(value).success;
 }

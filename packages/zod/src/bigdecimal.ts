@@ -7,7 +7,7 @@
  * @module BigDecimalValidation
  */
 import type { StandardRPCCustomJsonSerializer } from "@orpc/client/standard";
-import { type Dnum, format, from, isDnum } from "dnum";
+import { type Dnum, from, fromJSON, isDnum, toJSON } from "dnum";
 import { z } from "zod";
 
 /**
@@ -98,7 +98,8 @@ export const bigDecimal = () =>
         if (upper === "NAN" || upper === "INFINITY" || upper === "-INFINITY") {
           ctx.addIssue({
             code: "custom",
-            message: "Invalid value. NaN, Infinity, and -Infinity are not allowed",
+            message:
+              "Invalid value. NaN, Infinity, and -Infinity are not allowed",
           });
           return z.NEVER;
         }
@@ -110,7 +111,8 @@ export const bigDecimal = () =>
       } catch {
         ctx.addIssue({
           code: "custom",
-          message: "Invalid decimal format. Please provide a valid numeric string",
+          message:
+            "Invalid decimal format. Please provide a valid numeric string",
         });
         return z.NEVER;
       }
@@ -171,22 +173,9 @@ export function getBigDecimal(value: unknown): BigDecimal {
   return bigDecimal().parse(value);
 }
 
-/**
- * Sanitizes a numeric string by removing formatting characters like commas
- * @param value - The value to sanitize (string or number)
- * @returns A sanitized string that can be parsed by dnum's from() function
- */
-function sanitizeNumericString(value: string | number): string | number {
-  if (typeof value === "number") {
-    return value;
-  }
-  // Remove commas and any other formatting characters
-  return value.replaceAll(",", "");
-}
-
 export const bigDecimalSerializer: StandardRPCCustomJsonSerializer = {
   type: 31,
   condition: (data) => isDnum(data),
-  serialize: (data: Dnum) => format(data),
-  deserialize: (data) => from(sanitizeNumericString(data as string | number)),
+  serialize: (data: Dnum) => toJSON(data),
+  deserialize: (data) => fromJSON(data as string),
 };

@@ -68,7 +68,10 @@ export const assetSymbol = () =>
     .string()
     .min(1, "Asset symbol is required")
     .max(12, "Asset symbol must not exceed 12 characters")
-    .regex(/^[A-Z0-9]+$/, "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)")
+    .regex(
+      /^[A-Z0-9]+$/,
+      "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
+    )
     .describe("Trading symbol for the asset");
 
 // Note: Global registry functionality removed as it's not available in Zod v4
