@@ -161,7 +161,7 @@ describe("Fixed yield schedule top up", async () => {
 
     expect(readResult).toBeDefined();
     expect(readResult.denominationAsset.balance).toBeDefined();
-    expect(readResult.denominationAsset.balance).toBe(from(60, 18));
+    expect(readResult.denominationAsset.balance).toBe(from(10));
   }, 100_000);
 
   test("regular users can top up", async () => {
@@ -179,5 +179,13 @@ describe("Fixed yield schedule top up", async () => {
     expect(result).toBeDefined();
     expect(result.transactionHash).toBeDefined();
     expect(result.transactionHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
-  });
+
+    const readResult = await investorClient.fixedYieldSchedule.read({
+      id: yieldScheduleAddress,
+    });
+
+    expect(readResult).toBeDefined();
+    expect(readResult.denominationAsset.balance).toBeDefined();
+    expect(readResult.denominationAsset.balance).toBe(from(20));
+  }, 100_000);
 });
