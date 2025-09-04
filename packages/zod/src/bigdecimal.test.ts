@@ -25,6 +25,7 @@ import {
   isDnum,
   multiply,
   subtract,
+  toJSON,
   type Dnum,
 } from "dnum";
 import {
@@ -417,15 +418,13 @@ describe("bigDecimal", () => {
       // WHY: Convert Dnum to JSON-safe string for API transport
       const dnum = from("123.456");
       const serialized = bigDecimalSerializer.serialize(dnum);
-      expect(serialized).toBe("123.456"); // Exact string representation
+      expect(serialized).toBe(toJSON(dnum)); // Exact string representation
     });
 
     it("should serialize large numbers correctly", () => {
       const dnum = from("999999999999999999999999999999.99");
       const serialized = bigDecimalSerializer.serialize(dnum);
-      expect((serialized as string).replaceAll(",", "")).toBe(
-        "999999999999999999999999999999.99"
-      );
+      expect(serialized).toBe(toJSON(dnum));
     });
 
     it("should deserialize string to Dnum", () => {

@@ -314,7 +314,6 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                   (form.getFieldValue(`amount_${e.id}`) as Dnum | undefined) ??
                   from(0n, tokenDecimals)
               );
-              console.log("amounts", amounts);
               const promise = mint({
                 contract: asset.id,
                 recipients,

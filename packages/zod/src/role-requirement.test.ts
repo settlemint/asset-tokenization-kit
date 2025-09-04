@@ -207,9 +207,12 @@ describe("role-requirement", () => {
         // Create an invalid requirement that doesn't match any of the expected types
         const invalidRequirement = { invalid: "structure" };
         // TypeScript will complain here, but we're testing runtime behavior
-         
+
         expect(
-          satisfiesRoleRequirement(userRoles, invalidRequirement as unknown as RoleRequirement)
+          satisfiesRoleRequirement(
+            userRoles,
+            invalidRequirement as unknown as RoleRequirement
+          )
         ).toBe(false);
       });
     });

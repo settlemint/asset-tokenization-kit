@@ -109,13 +109,13 @@ The command removes all the Kubernetes components associated with the chart and 
 | global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array |
 | global.imageRegistry | string | `""` | Global Docker image registry |
 | global.storageClass | string | `""` | Global StorageClass for Persistent Volume(s) |
-| image | object | `{"digest":"","pullPolicy":"IfNotPresent","pullSecrets":[],"registry":"ghcr.io","repository":"erpc/erpc","tag":"0.0.54"}` | eRPC image |
+| image | object | `{"digest":"","pullPolicy":"IfNotPresent","pullSecrets":[],"registry":"ghcr.io","repository":"erpc/erpc","tag":"0.0.55"}` | eRPC image |
 | image.digest | string | `""` | eRPC image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag |
 | image.pullPolicy | string | `"IfNotPresent"` | eRPC image pull policy |
 | image.pullSecrets | list | `[]` | eRPC image pull secrets |
 | image.registry | string | `"ghcr.io"` | eRPC image registry |
 | image.repository | string | `"erpc/erpc"` | eRPC image repository |
-| image.tag | string | `"0.0.54"` | eRPC image tag (immutable tags are recommended) |
+| image.tag | string | `"0.0.55"` | eRPC image tag (immutable tags are recommended) |
 | ingress | object | `{"annotations":{},"apiVersion":"","enabled":true,"extraHosts":[],"extraPaths":[],"extraRules":[],"extraTls":[],"hostname":"besu.k8s.orb.local","ingressClassName":"atk-nginx","path":"/","pathType":"ImplementationSpecific","secrets":[],"selfSigned":false,"tls":false}` | Ingress parameters |
 | ingress.annotations | object | `{}` | Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations. |
 | ingress.apiVersion | string | `""` | Force Ingress API version (automatically detected if not set) |
