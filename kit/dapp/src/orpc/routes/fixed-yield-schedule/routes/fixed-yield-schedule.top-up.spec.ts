@@ -1,12 +1,7 @@
-import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import { getAnvilTimeMilliseconds } from "@/test/anvil";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { TimeIntervalEnum } from "@atk/zod/time-interval";
-import {
-  errorMessageForCode,
-  getOrpcClient,
-  type OrpcClient,
-} from "@test/fixtures/orpc-client";
+import { getOrpcClient, type OrpcClient } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
   DEFAULT_ADMIN,
@@ -18,9 +13,10 @@ import { from } from "dnum";
 import { beforeAll, describe, expect, test } from "vitest";
 
 describe("Fixed yield schedule top up", async () => {
-  let stablecoinToken: Awaited<ReturnType<typeof createToken>>;
+  let depositToken: Awaited<ReturnType<typeof createToken>>;
   let bondToken: Awaited<ReturnType<typeof createToken>>;
   let adminClient: OrpcClient;
+  let investorClient: OrpcClient;
   let yieldScheduleAddress: string;
 
   const anvilTime = await getAnvilTimeMilliseconds();
@@ -34,26 +30,29 @@ describe("Fixed yield schedule top up", async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     adminClient = getOrpcClient(headers);
 
+    const investorHeaders = await signInWithUser(DEFAULT_INVESTOR);
+    investorClient = getOrpcClient(investorHeaders);
+
     // Create stablecoin token for denomination asset
-    const stablecoinData = {
-      type: "stablecoin" as const,
-      name: `Test Denomination Stablecoin ${Date.now()}`,
-      symbol: "TSDC",
+    const deposit = {
+      type: "deposit" as const,
+      name: `Test Denomination Deposit ${Date.now()}`,
+      symbol: "TDP",
       decimals: 18,
       initialModulePairs: [],
     };
 
-    stablecoinToken = await createToken(
+    depositToken = await createToken(
       adminClient,
       {
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
         },
-        ...stablecoinData,
+        ...deposit,
         countryCode: "056",
       },
-      ["supplyManagement"]
+      { grantRole: ["supplyManagement", "emergency"], unpause: true }
     );
 
     // Create bond token
@@ -66,7 +65,7 @@ describe("Fixed yield schedule top up", async () => {
       faceValue: "1000",
       maturityDate: new Date("2025-12-31"),
       initialModulePairs: [],
-      denominationAsset: stablecoinToken.id,
+      denominationAsset: depositToken.id,
     };
 
     bondToken = await createToken(
@@ -79,7 +78,7 @@ describe("Fixed yield schedule top up", async () => {
         ...bondData,
         countryCode: "056",
       },
-      ["governance"]
+      { grantRole: "governance" }
     );
 
     // Create a fixed yield schedule
@@ -112,9 +111,27 @@ describe("Fixed yield schedule top up", async () => {
 
     // Mint 50 denomination asset tokens to the admin for testing top-up
     await adminClient.token.mint({
-      contract: stablecoinToken.id,
+      contract: depositToken.id,
       recipients: [adminWalletAddress],
       amounts: [from(50, 18)], // 50 tokens with 18 decimals
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
+    });
+
+    const investorUser = await investorClient.user.me();
+    const investorWalletAddress = investorUser?.wallet;
+
+    if (!investorWalletAddress) {
+      throw new Error("Investor wallet address not found");
+    }
+
+    // Mint 100 denomination asset tokens to the investor for testing top-up
+    await adminClient.token.mint({
+      contract: depositToken.id,
+      recipients: [investorWalletAddress],
+      amounts: [from(100, 18)], // 100 tokens with 18 decimals
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
@@ -137,29 +154,30 @@ describe("Fixed yield schedule top up", async () => {
     expect(result).toBeDefined();
     expect(result.transactionHash).toBeDefined();
     expect(result.transactionHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
+
+    const readResult = await adminClient.fixedYieldSchedule.read({
+      id: yieldScheduleAddress,
+    });
+
+    expect(readResult).toBeDefined();
+    expect(readResult.denominationAsset.balance).toBeDefined();
+    expect(readResult.denominationAsset.balance).toBe(from(60, 18));
   }, 100_000);
 
-  test("regular users cannot top up without proper permissions", async () => {
-    const headers = await signInWithUser(DEFAULT_INVESTOR);
-    const investorClient = getOrpcClient(headers);
-
+  test("regular users can top up", async () => {
     const topUpData = {
       contract: yieldScheduleAddress,
-      amount: "1000000000000000000",
+      amount: from(10, 18), // 10 tokens with 18 decimals
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE" as const,
       },
     };
 
-    await expect(
-      investorClient.fixedYieldSchedule.topUp(topUpData, {
-        context: {
-          skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
-        },
-      })
-    ).rejects.toThrow(
-      errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
-    );
+    const result = await investorClient.fixedYieldSchedule.topUp(topUpData);
+
+    expect(result).toBeDefined();
+    expect(result.transactionHash).toBeDefined();
+    expect(result.transactionHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
   });
 });

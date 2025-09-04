@@ -31,13 +31,15 @@ describe("Token read", () => {
           verificationType: "PINCODE",
         },
       },
-      [
-        "custodian",
-        "governance",
-        "supplyManagement",
-        "emergency",
-        "tokenManager",
-      ]
+      {
+        grantRole: [
+          "custodian",
+          "governance",
+          "supplyManagement",
+          "emergency",
+          "tokenManager",
+        ],
+      }
     );
   });
 

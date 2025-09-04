@@ -36,7 +36,7 @@ describe("Token update collateral", () => {
         ...stablecoinData,
         countryCode: "056",
       },
-      ["governance"]
+      { grantRole: "governance" }
     );
   });
 

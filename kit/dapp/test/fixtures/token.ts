@@ -1,14 +1,19 @@
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
+import { AccessControlRole } from "@atk/zod/src/access-control-roles";
 import { DEFAULT_PINCODE } from "@test/fixtures/user";
 import { randomUUID } from "node:crypto";
 import { OrpcClient } from "./orpc-client";
 
 type TokenInput = Parameters<OrpcClient["token"]["create"]>[0];
 
+type TokenActions = {
+  grantRole?: AccessControlRole | AccessControlRole[];
+  unpause?: boolean;
+};
+
 export async function createToken(
   orpClient: OrpcClient,
   input: TokenInput,
-  rolesToGrant: AccessControlRoles[] = []
+  actions: TokenActions = {}
 ) {
   // Truncate the base name to ensure total length with UUID doesn't exceed 50 chars
   // UUID is 36 chars + 1 space = 37 chars, so max base name is 13 chars
@@ -27,7 +32,17 @@ export async function createToken(
     throw new Error("Token not deployed");
   }
 
-  if (rolesToGrant.length > 0) {
+  let rolesToGrant: AccessControlRole[] = actions.grantRole
+    ? Array.isArray(actions.grantRole)
+      ? actions.grantRole
+      : [actions.grantRole]
+    : [];
+
+  if (actions.unpause) {
+    rolesToGrant = Array.from(new Set([...rolesToGrant, "emergency"]));
+  }
+
+  if (actions.grantRole) {
     const me = await orpClient.user.me({});
     await orpClient.token.grantRole({
       walletVerification: {
@@ -37,6 +52,16 @@ export async function createToken(
       contract: result.id,
       address: me.wallet ?? "",
       roles: rolesToGrant,
+    });
+  }
+
+  if (actions.unpause) {
+    await orpClient.token.unpause({
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
+      contract: result.id,
     });
   }
 
