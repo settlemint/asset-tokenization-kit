@@ -33,7 +33,7 @@ runs:
   steps:
     - name: Get PR reviews
       id: check_approval
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       env:
         LOG_LEVEL: ${{ inputs.log_level }}
       with:
@@ -49,7 +49,7 @@ runs:
 
     - name: Determine QA status
       id: qa_status
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       env:
         LOG_LEVEL: ${{ inputs.log_level }}
       with:
