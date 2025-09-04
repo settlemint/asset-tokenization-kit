@@ -16,6 +16,7 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { systemRouter } from "@/orpc/procedures/system.router";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import {
   TrustedIssuerDeleteOutputSchema,
   type TrustedIssuerDeleteOutput,
@@ -62,7 +63,7 @@ const REMOVE_TRUSTED_ISSUER_MUTATION = portalGraphql(`
 export const trustedIssuerDelete = systemRouter.system.trustedIssuers.delete
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: { any: ["claimPolicyManager", "systemModule"] },
+      requiredRoles: SYSTEM_PERMISSIONS.trustedIssuerDelete,
       getAccessControl: ({ context }) => {
         const systemData = context.system;
         return systemData?.systemAccessManager?.accessControl;

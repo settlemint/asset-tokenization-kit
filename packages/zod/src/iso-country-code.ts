@@ -30,28 +30,38 @@ export type SupportedLocale = "en" | "ar" | "de" | "ja";
 /**
  * Array of supported locale codes.
  */
-export const SUPPORTED_LOCALES: readonly SupportedLocale[] = ["en", "ar", "de", "ja"] as const;
+export const SUPPORTED_LOCALES: readonly SupportedLocale[] = [
+  "en",
+  "ar",
+  "de",
+  "ja",
+] as const;
 
 /**
  * Array of all valid ISO 3166-1 alpha-2 country codes.
  * Generated from the i18n-iso-countries library.
  */
-const validCountryCodes = Object.keys(getAlpha2Codes()) as [string, ...string[]];
+const validCountryCodes = Object.keys(getAlpha2Codes()) as [
+  string,
+  ...string[],
+];
 
 /**
  * Array of all valid ISO 3166-1 numeric country codes as strings.
  * Generated from the i18n-iso-countries library.
  */
-const validNumericCountryCodes = Object.keys(countries.getNumericCodes()) as [string, ...string[]];
+const validNumericCountryCodes = Object.keys(countries.getNumericCodes()) as [
+  string,
+  ...string[],
+];
 
 /**
  * Array of all valid ISO 3166-1 numeric country codes as numbers.
  * Generated from the i18n-iso-countries library.
  */
-const validNumericCountryCodesAsNumbers = validNumericCountryCodes.map((code) => Number.parseInt(code, 10)) as [
-  number,
-  ...number[],
-];
+const validNumericCountryCodesAsNumbers = validNumericCountryCodes.map((code) =>
+  Number.parseInt(code, 10)
+) as [number, ...number[]];
 
 /**
  * Zod schema for ISO 3166-1 alpha-2 country codes.
@@ -71,7 +81,9 @@ const validNumericCountryCodesAsNumbers = validNumericCountryCodes.map((code) =>
  * isoCountryCode.parse("us");  // ✗ Lowercase
  * ```
  */
-export const isoCountryCode = z.enum(validCountryCodes).describe("ISO 3166-1 alpha-2 country code");
+export const isoCountryCode = z
+  .enum(validCountryCodes)
+  .describe("ISO 3166-1 alpha-2 country code");
 
 /**
  * Zod schema for ISO 3166-1 numeric country codes.
@@ -124,7 +136,10 @@ export type ISOCountryCodeNumeric = z.infer<typeof isoCountryCodeNumeric>;
  * getCountryName("JP", "ja"); // "日本"
  * ```
  */
-export function getCountryName(code: string, locale: SupportedLocale = "en"): string | undefined {
+export function getCountryName(
+  code: string,
+  locale: SupportedLocale = "en"
+): string | undefined {
   // All supported locales are pre-registered at module initialization
   return getName(code, locale);
 }
@@ -161,7 +176,10 @@ export function getCountries(locale: SupportedLocale = "en") {
   return countries.getNames(locale);
 }
 
-export function getNumericCodeByName(name: string, locale: SupportedLocale = "en") {
+export function getNumericCodeByName(
+  name: string,
+  locale: SupportedLocale = "en"
+) {
   const alpha2Code = countries.getAlpha2Code(name, locale);
   if (!alpha2Code) {
     return undefined;
@@ -200,7 +218,9 @@ export function getNumericCountries(locale: SupportedLocale = "en") {
  */
 export function getCountriesSorted(locale: SupportedLocale = "en") {
   const countries = getCountries(locale);
-  return Object.entries(countries).sort(([, nameA], [, nameB]) => nameA.localeCompare(nameB));
+  return Object.entries(countries).sort(([, nameA], [, nameB]) =>
+    nameA.localeCompare(nameB)
+  );
 }
 
 /**
@@ -216,5 +236,7 @@ export function getCountriesSorted(locale: SupportedLocale = "en") {
  */
 export function getNumericCountriesSorted(locale: SupportedLocale = "en") {
   const numericCountries = getNumericCountries(locale);
-  return Object.entries(numericCountries).sort(([, nameA], [, nameB]) => nameA.localeCompare(nameB));
+  return Object.entries(numericCountries).sort(([, nameA], [, nameB]) =>
+    nameA.localeCompare(nameB)
+  );
 }

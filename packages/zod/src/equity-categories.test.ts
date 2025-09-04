@@ -12,9 +12,12 @@ describe("equityCategory", () => {
   const validator = equityCategory();
 
   describe("valid equity categories", () => {
-    test.each([...equityCategories].map((c) => [c]))("should accept '%s'", (category) => {
-      expect(validator.parse(category)).toBe(category);
-    });
+    test.each([...equityCategories].map((c) => [c]))(
+      "should accept '%s'",
+      (category) => {
+        expect(validator.parse(category)).toBe(category);
+      }
+    );
   });
 
   describe("invalid equity categories", () => {
@@ -88,9 +91,12 @@ describe("equityCategory", () => {
 
 describe("isEquityCategory", () => {
   describe("valid categories", () => {
-    test.each([...equityCategories])("should return true for '%s'", (category) => {
-      expect(isEquityCategory(category)).toBe(true);
-    });
+    test.each([...equityCategories])(
+      "should return true for '%s'",
+      (category) => {
+        expect(isEquityCategory(category)).toBe(true);
+      }
+    );
   });
 
   describe("invalid categories", () => {
@@ -139,9 +145,12 @@ describe("isEquityCategory", () => {
 
 describe("getEquityCategory", () => {
   describe("valid categories", () => {
-    test.each([...equityCategories])("should return '%s' when parsing '%s'", (category) => {
-      expect(getEquityCategory(category)).toBe(category);
-    });
+    test.each([...equityCategories])(
+      "should return '%s' when parsing '%s'",
+      (category) => {
+        expect(getEquityCategory(category)).toBe(category);
+      }
+    );
   });
 
   describe("invalid categories", () => {
@@ -209,7 +218,11 @@ describe("EquityCategory type", () => {
     type ActualType = EquityCategory;
 
     // This will cause a compile error if types don't match
-    const typeTest: ExpectedType extends ActualType ? (ActualType extends ExpectedType ? true : false) : false = true;
+    const typeTest: ExpectedType extends ActualType
+      ? ActualType extends ExpectedType
+        ? true
+        : false
+      : false = true;
     expect(typeTest).toBe(true);
   });
 });
@@ -229,6 +242,10 @@ describe("equityCategories constant", () => {
     // TypeScript's 'as const' makes it readonly at compile time
     // Runtime check: ensure it's an array with expected values
     expect(Array.isArray(equityCategories)).toBe(true);
-    expect([...equityCategories]).toEqual(["common", "preferred", "restricted"]);
+    expect([...equityCategories]).toEqual([
+      "common",
+      "preferred",
+      "restricted",
+    ]);
   });
 });

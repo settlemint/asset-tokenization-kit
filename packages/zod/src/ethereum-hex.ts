@@ -32,7 +32,8 @@ export const ethereumHex = z
   .describe("A valid Ethereum hex string (starting with 0x)")
   .min(2, "Hex string must be at least 2 characters long (0x)")
   .refine(isHex, {
-    message: "Invalid hex format - must start with '0x' followed by hexadecimal characters",
+    message:
+      "Invalid hex format - must start with '0x' followed by hexadecimal characters",
   })
   .transform((value): Hex => {
     return value as Hex;

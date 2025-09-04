@@ -37,7 +37,8 @@ export const equityClasses = ["A", "B", "C"] as const;
  * schema.parse("Common"); // Throws ZodError - use categories for this
  * ```
  */
-export const equityClass = () => z.enum(equityClasses).describe("Class of equity shares");
+export const equityClass = () =>
+  z.enum(equityClasses).describe("Class of equity shares");
 
 /**
  * Type representing a validated equity share class.

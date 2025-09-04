@@ -34,7 +34,8 @@ export const fundClasses = ["institutional", "retail", "accredited"] as const;
  * schema.parse("premium"); // Throws ZodError
  * ```
  */
-export const fundClass = () => z.enum(fundClasses).describe("Class of fund shares");
+export const fundClass = () =>
+  z.enum(fundClasses).describe("Class of fund shares");
 
 /**
  * Type representing a validated fund share class.

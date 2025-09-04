@@ -25,18 +25,30 @@ describe("duration", () => {
 
   describe("invalid durations", () => {
     it("should reject zero", () => {
-      expect(() => validator.parse(0)).toThrow("Duration must be greater than zero");
+      expect(() => validator.parse(0)).toThrow(
+        "Duration must be greater than zero"
+      );
     });
 
     it("should reject negative numbers", () => {
-      expect(() => validator.parse(-1)).toThrow("Duration must be greater than zero");
-      expect(() => validator.parse(-1000)).toThrow("Duration must be greater than zero");
+      expect(() => validator.parse(-1)).toThrow(
+        "Duration must be greater than zero"
+      );
+      expect(() => validator.parse(-1000)).toThrow(
+        "Duration must be greater than zero"
+      );
     });
 
     it("should reject non-integer values", () => {
-      expect(() => validator.parse(1.5)).toThrow("Duration must be a whole number of milliseconds");
-      expect(() => validator.parse(1000.1)).toThrow("Duration must be a whole number of milliseconds");
-      expect(() => validator.parse(999.999)).toThrow("Duration must be a whole number of milliseconds");
+      expect(() => validator.parse(1.5)).toThrow(
+        "Duration must be a whole number of milliseconds"
+      );
+      expect(() => validator.parse(1000.1)).toThrow(
+        "Duration must be a whole number of milliseconds"
+      );
+      expect(() => validator.parse(999.999)).toThrow(
+        "Duration must be a whole number of milliseconds"
+      );
     });
 
     it("should reject non-numeric types", () => {
@@ -144,32 +156,60 @@ describe("duration", () => {
     });
 
     it("should throw for zero", () => {
-      expect(() => getDuration(0)).toThrow("Duration must be greater than zero");
+      expect(() => getDuration(0)).toThrow(
+        "Duration must be greater than zero"
+      );
     });
 
     it("should throw for negative numbers", () => {
-      expect(() => getDuration(-1)).toThrow("Duration must be greater than zero");
-      expect(() => getDuration(-1000)).toThrow("Duration must be greater than zero");
+      expect(() => getDuration(-1)).toThrow(
+        "Duration must be greater than zero"
+      );
+      expect(() => getDuration(-1000)).toThrow(
+        "Duration must be greater than zero"
+      );
     });
 
     it("should throw for non-integer values", () => {
-      expect(() => getDuration(1.5)).toThrow("Duration must be a whole number of milliseconds");
-      expect(() => getDuration(1000.1)).toThrow("Duration must be a whole number of milliseconds");
+      expect(() => getDuration(1.5)).toThrow(
+        "Duration must be a whole number of milliseconds"
+      );
+      expect(() => getDuration(1000.1)).toThrow(
+        "Duration must be a whole number of milliseconds"
+      );
     });
 
     it("should throw for non-numeric types", () => {
-      expect(() => getDuration("1000")).toThrow("Invalid input: expected number, received string");
-      expect(() => getDuration(null)).toThrow("Invalid input: expected number, received null");
-      expect(() => getDuration(undefined)).toThrow("Invalid input: expected number, received undefined");
-      expect(() => getDuration({})).toThrow("Invalid input: expected number, received object");
-      expect(() => getDuration([])).toThrow("Invalid input: expected number, received array");
-      expect(() => getDuration(true)).toThrow("Invalid input: expected number, received boolean");
+      expect(() => getDuration("1000")).toThrow(
+        "Invalid input: expected number, received string"
+      );
+      expect(() => getDuration(null)).toThrow(
+        "Invalid input: expected number, received null"
+      );
+      expect(() => getDuration(undefined)).toThrow(
+        "Invalid input: expected number, received undefined"
+      );
+      expect(() => getDuration({})).toThrow(
+        "Invalid input: expected number, received object"
+      );
+      expect(() => getDuration([])).toThrow(
+        "Invalid input: expected number, received array"
+      );
+      expect(() => getDuration(true)).toThrow(
+        "Invalid input: expected number, received boolean"
+      );
     });
 
     it("should throw for special numeric values", () => {
-      expect(() => getDuration(Number.NaN)).toThrow("Invalid input: expected number, received NaN");
-      expect(() => getDuration(Infinity)).toThrow("Invalid input: expected number, received number");
-      expect(() => getDuration(-Infinity)).toThrow("Invalid input: expected number, received number");
+      expect(() => getDuration(Number.NaN)).toThrow(
+        "Invalid input: expected number, received NaN"
+      );
+      expect(() => getDuration(Infinity)).toThrow(
+        "Invalid input: expected number, received number"
+      );
+      expect(() => getDuration(-Infinity)).toThrow(
+        "Invalid input: expected number, received number"
+      );
     });
 
     it("should handle edge cases", () => {

@@ -27,7 +27,12 @@ export const addonTypes = ["airdrops", "yield", "xvp"] as const;
  * - `custody`: Addons for custody solutions (vaults)
  * - `income`: Addons for income generation (yield, dividends)
  */
-export const addonCategories = ["distribution", "exchange", "custody", "income"] as const;
+export const addonCategories = [
+  "distribution",
+  "exchange",
+  "custody",
+  "income",
+] as const;
 
 /**
  * Enum of valid addon factory typeId values for direct access.
@@ -95,7 +100,8 @@ export const addonFactoryTypeIds = [
  * });
  * ```
  */
-export const addonType = () => z.enum(addonTypes).describe("Type of system addon");
+export const addonType = () =>
+  z.enum(addonTypes).describe("Type of system addon");
 
 /**
  * Creates a Zod schema that validates an addon category.
@@ -113,7 +119,8 @@ export const addonType = () => z.enum(addonTypes).describe("Type of system addon
  * schema.parse("invalid"); // Throws ZodError
  * ```
  */
-export const addonCategory = () => z.enum(addonCategories).describe("Category of system addon");
+export const addonCategory = () =>
+  z.enum(addonCategories).describe("Category of system addon");
 
 /**
  * Creates a Zod schema that validates an addon factory typeId.
@@ -138,7 +145,8 @@ export const addonCategory = () => z.enum(addonCategories).describe("Category of
  * });
  * ```
  */
-export const addonFactoryTypeId = () => z.enum(addonFactoryTypeIds).describe("Addon factory typeId identifier");
+export const addonFactoryTypeId = () =>
+  z.enum(addonFactoryTypeIds).describe("Addon factory typeId identifier");
 
 // Export types
 /**
@@ -170,9 +178,15 @@ export type AddonFactoryTypeId = z.infer<ReturnType<typeof addonFactoryTypeId>>;
  * // Returns ["ATKPushAirdropFactory", "ATKVestingAirdropFactory", "ATKTimeBoundAirdropFactory"]
  * ```
  */
-export function getFactoryTypeIdsFromAddonType(addonType: AddonType): AddonFactoryTypeId[] {
+export function getFactoryTypeIdsFromAddonType(
+  addonType: AddonType
+): AddonFactoryTypeId[] {
   const mapping: Record<AddonType, AddonFactoryTypeId[]> = {
-    airdrops: ["ATKPushAirdropFactory", "ATKVestingAirdropFactory", "ATKTimeBoundAirdropFactory"],
+    airdrops: [
+      "ATKPushAirdropFactory",
+      "ATKVestingAirdropFactory",
+      "ATKTimeBoundAirdropFactory",
+    ],
     yield: ["ATKFixedYieldScheduleFactory"],
     xvp: ["ATKXvPSettlementFactory"],
   };
@@ -190,7 +204,9 @@ export function getFactoryTypeIdsFromAddonType(addonType: AddonType): AddonFacto
  * const income = getAddonCategoryFromFactoryTypeId("ATKFixedYieldScheduleFactory"); // Returns "income"
  * ```
  */
-export function getAddonCategoryFromFactoryTypeId(factoryTypeId: AddonFactoryTypeId): AddonCategory {
+export function getAddonCategoryFromFactoryTypeId(
+  factoryTypeId: AddonFactoryTypeId
+): AddonCategory {
   const mapping: Record<AddonFactoryTypeId, AddonCategory> = {
     ATKPushAirdropFactory: "distribution",
     ATKVestingAirdropFactory: "distribution",

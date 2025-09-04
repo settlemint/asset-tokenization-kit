@@ -30,25 +30,51 @@ describe("PINCODE", () => {
 
   describe("invalid pincodes", () => {
     test("should reject PIN codes with wrong length", () => {
-      expect(() => validator.parse("12345")).toThrow("PIN code must be exactly 6 digits");
-      expect(() => validator.parse("1234567")).toThrow("PIN code must be exactly 6 digits");
-      expect(() => validator.parse("")).toThrow("PIN code must be exactly 6 digits");
-      expect(() => validator.parse("1")).toThrow("PIN code must be exactly 6 digits");
+      expect(() => validator.parse("12345")).toThrow(
+        "PIN code must be exactly 6 digits"
+      );
+      expect(() => validator.parse("1234567")).toThrow(
+        "PIN code must be exactly 6 digits"
+      );
+      expect(() => validator.parse("")).toThrow(
+        "PIN code must be exactly 6 digits"
+      );
+      expect(() => validator.parse("1")).toThrow(
+        "PIN code must be exactly 6 digits"
+      );
     });
 
     test("should reject non-numeric characters", () => {
-      expect(() => validator.parse("12345a")).toThrow("PIN code must contain only numeric digits (0-9)");
-      expect(() => validator.parse("a23456")).toThrow("PIN code must contain only numeric digits (0-9)");
-      expect(() => validator.parse("12-456")).toThrow("PIN code must contain only numeric digits (0-9)");
-      expect(() => validator.parse("12 456")).toThrow("PIN code must contain only numeric digits (0-9)");
-      expect(() => validator.parse("12.456")).toThrow("PIN code must contain only numeric digits (0-9)");
+      expect(() => validator.parse("12345a")).toThrow(
+        "PIN code must contain only numeric digits (0-9)"
+      );
+      expect(() => validator.parse("a23456")).toThrow(
+        "PIN code must contain only numeric digits (0-9)"
+      );
+      expect(() => validator.parse("12-456")).toThrow(
+        "PIN code must contain only numeric digits (0-9)"
+      );
+      expect(() => validator.parse("12 456")).toThrow(
+        "PIN code must contain only numeric digits (0-9)"
+      );
+      expect(() => validator.parse("12.456")).toThrow(
+        "PIN code must contain only numeric digits (0-9)"
+      );
     });
 
     test("should reject special characters", () => {
-      expect(() => validator.parse("!23456")).toThrow("PIN code must contain only numeric digits (0-9)");
-      expect(() => validator.parse("12345$")).toThrow("PIN code must contain only numeric digits (0-9)");
-      expect(() => validator.parse("12#456")).toThrow("PIN code must contain only numeric digits (0-9)");
-      expect(() => validator.parse("@#$%^&")).toThrow("PIN code must contain only numeric digits (0-9)");
+      expect(() => validator.parse("!23456")).toThrow(
+        "PIN code must contain only numeric digits (0-9)"
+      );
+      expect(() => validator.parse("12345$")).toThrow(
+        "PIN code must contain only numeric digits (0-9)"
+      );
+      expect(() => validator.parse("12#456")).toThrow(
+        "PIN code must contain only numeric digits (0-9)"
+      );
+      expect(() => validator.parse("@#$%^&")).toThrow(
+        "PIN code must contain only numeric digits (0-9)"
+      );
     });
 
     test("should reject non-string types", () => {
@@ -141,8 +167,12 @@ describe("getPincode helper", () => {
   });
 
   test("should throw for invalid PIN codes", () => {
-    expect(() => getPincode("12345")).toThrow("PIN code must be exactly 6 digits");
-    expect(() => getPincode("1234567")).toThrow("PIN code must be exactly 6 digits");
+    expect(() => getPincode("12345")).toThrow(
+      "PIN code must be exactly 6 digits"
+    );
+    expect(() => getPincode("1234567")).toThrow(
+      "PIN code must be exactly 6 digits"
+    );
     expect(() => getPincode("abc123")).toThrow();
     expect(() => getPincode("123 456")).toThrow();
     expect(() => getPincode(null)).toThrow();
@@ -222,7 +252,9 @@ describe("error message validation", () => {
     const result = pincode().safeParse("12345");
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0]?.message).toBe("PIN code must be exactly 6 digits");
+      expect(result.error.issues[0]?.message).toBe(
+        "PIN code must be exactly 6 digits"
+      );
       expect(result.error.issues[0]?.code).toBe("too_small");
     }
   });
@@ -231,7 +263,9 @@ describe("error message validation", () => {
     const result = pincode().safeParse("12345a");
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0]?.message).toBe("PIN code must contain only numeric digits (0-9)");
+      expect(result.error.issues[0]?.message).toBe(
+        "PIN code must contain only numeric digits (0-9)"
+      );
       expect(result.error.issues[0]?.code).toBe("invalid_format");
     }
   });
@@ -241,7 +275,9 @@ describe("error message validation", () => {
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.issues[0]?.code).toBe("invalid_type");
-      expect((result.error.issues[0] as { expected?: string })?.expected).toBe("string");
+      expect((result.error.issues[0] as { expected?: string })?.expected).toBe(
+        "string"
+      );
       // Type checking only includes the error code
     }
   });
@@ -250,7 +286,9 @@ describe("error message validation", () => {
     const result = pincode().safeParse("1234567");
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0]?.message).toBe("PIN code must be exactly 6 digits");
+      expect(result.error.issues[0]?.message).toBe(
+        "PIN code must be exactly 6 digits"
+      );
       expect(result.error.issues[0]?.code).toBe("too_big");
     }
   });
@@ -338,7 +376,9 @@ describe("parsing behavior consistency", () => {
     expect(result.success).toBe(false);
     if (!result.success) {
       // Should fail on regex, not length
-      expect(result.error.issues[0]?.message).toBe("PIN code must contain only numeric digits (0-9)");
+      expect(result.error.issues[0]?.message).toBe(
+        "PIN code must contain only numeric digits (0-9)"
+      );
     }
   });
 });
