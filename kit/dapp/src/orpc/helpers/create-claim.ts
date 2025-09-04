@@ -12,6 +12,9 @@ import {
   parseAbiParameters,
 } from "viem";
 
+/**
+ * GraphQL mutation for signing a message with a wallet.
+ */
 const SIGN_MESSAGE_MUTATION = portalGraphql(`
   mutation SignMessage($address: String!, $data: String!, $challengeId: String!, $challengeResponse: String!) {
     walletSignMessage(userWalletAddress: $address, data: $data, challengeId: $challengeId, challengeResponse: $challengeResponse) {
@@ -20,6 +23,9 @@ const SIGN_MESSAGE_MUTATION = portalGraphql(`
   }
 `);
 
+/**
+ * Input parameters for creating a claim.
+ */
 export interface CreateClaimInput {
   /**
    * Wallet address of the issuer of the claim
@@ -39,6 +45,9 @@ export interface CreateClaimInput {
   claim: ClaimInfo;
 }
 
+/**
+ * Enum of supported claim topics.
+ */
 export enum ClaimTopic {
   // Investor-level
   kyc = "knowYourCustomer",
@@ -67,6 +76,9 @@ export enum ClaimTopic {
   contractIdentity = "contractIdentity",
 }
 
+/**
+ * Union type for all supported claim info types.
+ */
 export type ClaimInfo =
   | AssetClassificationClaim
   | AssetIssuerClaim
@@ -81,6 +93,9 @@ export type ClaimInfo =
   | IssuerProspectusFiledClaim
   | IssuerReportingCompliantClaim;
 
+/**
+ * Asset classification claim structure.
+ */
 export interface AssetClassificationClaim {
   topic: ClaimTopic.assetClassification;
   data: {
@@ -89,6 +104,9 @@ export interface AssetClassificationClaim {
   };
 }
 
+/**
+ * Asset issuer claim structure.
+ */
 export interface AssetIssuerClaim {
   topic: ClaimTopic.assetIssuer;
   data: {
@@ -96,6 +114,9 @@ export interface AssetIssuerClaim {
   };
 }
 
+/**
+ * Base price claim structure.
+ */
 export interface BasePriceClaim {
   topic: ClaimTopic.basePrice;
   data: {
@@ -105,6 +126,9 @@ export interface BasePriceClaim {
   };
 }
 
+/**
+ * Collateral claim structure.
+ */
 export interface CollateralClaim {
   topic: ClaimTopic.collateral;
   data: {
@@ -113,6 +137,9 @@ export interface CollateralClaim {
   };
 }
 
+/**
+ * Contract identity claim structure.
+ */
 export interface ContractIdentityClaim {
   topic: ClaimTopic.contractIdentity;
   data: {
@@ -120,6 +147,9 @@ export interface ContractIdentityClaim {
   };
 }
 
+/**
+ * Generic claim structure for investor-level topics.
+ */
 export interface GenericClaim {
   topic:
     | ClaimTopic.kyc
@@ -134,6 +164,9 @@ export interface GenericClaim {
   };
 }
 
+/**
+ * ISIN claim structure.
+ */
 export interface IsinClaim {
   topic: ClaimTopic.isin;
   data: {
@@ -141,6 +174,9 @@ export interface IsinClaim {
   };
 }
 
+/**
+ * Issuer jurisdiction claim structure.
+ */
 export interface IssuerJurisdictionClaim {
   topic: ClaimTopic.issuerJurisdiction;
   data: {
@@ -148,6 +184,9 @@ export interface IssuerJurisdictionClaim {
   };
 }
 
+/**
+ * Issuer licensed claim structure.
+ */
 export interface IssuerLicensedClaim {
   topic: ClaimTopic.issuerLicensed;
   data: {
@@ -158,6 +197,9 @@ export interface IssuerLicensedClaim {
   };
 }
 
+/**
+ * Issuer prospectus exempt claim structure.
+ */
 export interface IssuerProspectusExemptClaim {
   topic: ClaimTopic.issuerProspectusExempt;
   data: {
@@ -165,6 +207,9 @@ export interface IssuerProspectusExemptClaim {
   };
 }
 
+/**
+ * Issuer prospectus filed claim structure.
+ */
 export interface IssuerProspectusFiledClaim {
   topic: ClaimTopic.issuerProspectusFiled;
   data: {
@@ -172,6 +217,9 @@ export interface IssuerProspectusFiledClaim {
   };
 }
 
+/**
+ * Issuer reporting compliant claim structure.
+ */
 export interface IssuerReportingCompliantClaim {
   topic: ClaimTopic.issuerReportingCompliant;
   data: {
@@ -180,6 +228,13 @@ export interface IssuerReportingCompliantClaim {
   };
 }
 
+/**
+ * Generates a signed claim for a user and identity.
+ *
+ * @param params - The claim creation parameters, including user, wallet verification, identity address, and claim details.
+ * @returns An object containing the encoded claim data, signature, and topic ID.
+ * @throws {Error} If verification ID is not found or signature is invalid.
+ */
 export async function createClaim({
   user,
   walletVerification,
@@ -230,6 +285,13 @@ export async function createClaim({
   };
 }
 
+/**
+ * Encodes claim data into ABI-encoded bytes based on the claim topic.
+ *
+ * @param claim - The claim information to encode.
+ * @returns The ABI-encoded claim data as a byte string.
+ * @throws {Error} If the claim topic is invalid or unsupported.
+ */
 function encodeClaimData(claim: ClaimInfo) {
   if (
     claim.topic === ClaimTopic.accreditedInvestor ||
