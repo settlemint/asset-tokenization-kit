@@ -127,7 +127,7 @@ export const topUp = systemRouter.fixedYieldSchedule.topUp.handler(
 
     if (!scheduleData.tokenFixedYieldSchedule) {
       throw errors.NOT_FOUND({
-        message: "Fixed yield schedule not found",
+        message: "Fixed yield schedule not found.",
       });
     }
 
