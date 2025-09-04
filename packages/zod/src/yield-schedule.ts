@@ -39,13 +39,19 @@ import { timestamp } from "./timestamp";
  */
 export const fixedYieldSchedulePeriod = () =>
   z.object({
-    id: ethereumHex.describe("Unique identifier for the yield period (composite hex ID from subgraph)"),
+    id: ethereumHex.describe(
+      "Unique identifier for the yield period (composite hex ID from subgraph)"
+    ),
     startDate: timestamp().describe("Unix timestamp when period starts"),
     endDate: timestamp().describe("Unix timestamp when period ends"),
     totalClaimed: bigDecimal().describe("Total yield claimed in this period"),
-    totalUnclaimedYield: bigDecimal().describe("Total unclaimed yield in this period"),
+    totalUnclaimedYield: bigDecimal().describe(
+      "Total unclaimed yield in this period"
+    ),
     totalYield: bigDecimal().describe("Total yield generated in this period"),
-    deployedInTransaction: ethereumHash.describe("Transaction hash where this period was created"),
+    deployedInTransaction: ethereumHash.describe(
+      "Transaction hash where this period was created"
+    ),
   });
 
 /**
@@ -105,10 +111,18 @@ export const fixedYieldSchedule = () =>
       symbol: z.string().describe("Denomination asset symbol"),
       decimals: z.number().describe("Denomination asset decimals"),
     }),
-    currentPeriod: fixedYieldSchedulePeriod().nullable().describe("Current active yield period"),
-    nextPeriod: fixedYieldSchedulePeriod().nullable().describe("Next scheduled yield period"),
-    periods: z.array(fixedYieldSchedulePeriod()).describe("Array of all yield periods"),
-    deployedInTransaction: ethereumHash.describe("Transaction hash where schedule was deployed"),
+    currentPeriod: fixedYieldSchedulePeriod()
+      .nullable()
+      .describe("Current active yield period"),
+    nextPeriod: fixedYieldSchedulePeriod()
+      .nullable()
+      .describe("Next scheduled yield period"),
+    periods: z
+      .array(fixedYieldSchedulePeriod())
+      .describe("Array of all yield periods"),
+    deployedInTransaction: ethereumHash.describe(
+      "Transaction hash where schedule was deployed"
+    ),
   });
 
 // Export types
@@ -116,7 +130,9 @@ export const fixedYieldSchedule = () =>
  * Type representing a validated asset fixed yield schedule period.
  * Ensures type safety and proper data structure.
  */
-export type FixedYieldSchedulePeriod = z.infer<ReturnType<typeof fixedYieldSchedulePeriod>>;
+export type FixedYieldSchedulePeriod = z.infer<
+  ReturnType<typeof fixedYieldSchedulePeriod>
+>;
 
 /**
  * Type representing a validated asset fixed yield schedule.

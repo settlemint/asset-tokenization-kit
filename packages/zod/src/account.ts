@@ -32,7 +32,11 @@ import { ethereumAddress } from "./ethereum-address";
 export const account = () =>
   z.object({
     id: ethereumAddress,
-    isContract: z.boolean().describe("Whether this address is a smart contract (true) or EOA (false)"),
+    isContract: z
+      .boolean()
+      .describe(
+        "Whether this address is a smart contract (true) or EOA (false)"
+      ),
   });
 
 /**
@@ -55,4 +59,3 @@ export type Account = z.infer<ReturnType<typeof account>>;
  */
 export const accountArray = () =>
   z.array(account()).describe("Array of Account entities");
-

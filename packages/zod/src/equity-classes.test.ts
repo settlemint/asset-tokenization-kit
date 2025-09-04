@@ -12,9 +12,12 @@ describe("equity-classes", () => {
     const validator = equityClass();
 
     describe("valid equity classes", () => {
-      test.each([...equityClasses].map((c) => [c]))("should accept '%s'", (cls) => {
-        expect(validator.parse(cls)).toBe(cls);
-      });
+      test.each([...equityClasses].map((c) => [c]))(
+        "should accept '%s'",
+        (cls) => {
+          expect(validator.parse(cls)).toBe(cls);
+        }
+      );
     });
 
     describe("invalid equity classes", () => {
@@ -129,9 +132,12 @@ describe("equity-classes", () => {
 
   describe("getEquityClass", () => {
     describe("valid values", () => {
-      test.each([...equityClasses])("should return '%s' for valid input", (cls) => {
-        expect(getEquityClass(cls)).toBe(cls);
-      });
+      test.each([...equityClasses])(
+        "should return '%s' for valid input",
+        (cls) => {
+          expect(getEquityClass(cls)).toBe(cls);
+        }
+      );
     });
 
     describe("invalid values", () => {

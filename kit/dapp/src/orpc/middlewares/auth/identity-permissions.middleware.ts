@@ -244,7 +244,7 @@ export function computeIdentityPermissions(
  */
 export function canReadUserData(
   permissions: IdentityPermissions,
-  targetUserId?: string | undefined
+  _targetUserId?: string | undefined
 ): boolean {
   // Both list operations and individual access use the same read permission
   // The targetUserId parameter is reserved for future granular access control

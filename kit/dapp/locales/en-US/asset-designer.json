@@ -29,6 +29,9 @@
       "leave": "Leave"
     },
     "description": "Configure your {{type}} by providing the basic information below.",
+    "errors": {
+      "denominationAssetFetch": "We can't load this token. Try selecting a different one or wait a moment."
+    },
     "fields": {
       "cap": {
         "description": "The maximum number of {{type}} that can be issued",

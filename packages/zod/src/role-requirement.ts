@@ -12,7 +12,10 @@ type AccessControlRoles = (typeof roles)[number];
  * - AND logic: { all: ["admin", "tokenManager"] }
  * - Complex: { all: ["admin", { any: ["tokenManager", "systemManager"] }] }
  */
-export type RoleRequirement = AccessControlRoles | { any: RoleRequirement[] } | { all: RoleRequirement[] };
+export type RoleRequirement =
+  | AccessControlRoles
+  | { any: RoleRequirement[] }
+  | { all: RoleRequirement[] };
 
 /**
  * Type guard to check if a role requirement is a single role
@@ -24,21 +27,28 @@ export function isSingleRole(req: RoleRequirement): req is AccessControlRoles {
 /**
  * Type guard to check if a role requirement is an "any" (OR) requirement
  */
-export function isAnyRoleRequirement(req: RoleRequirement): req is { any: RoleRequirement[] } {
+export function isAnyRoleRequirement(
+  req: RoleRequirement
+): req is { any: RoleRequirement[] } {
   return typeof req === "object" && "any" in req;
 }
 
 /**
  * Type guard to check if a role requirement is an "all" (AND) requirement
  */
-export function isAllRoleRequirement(req: RoleRequirement): req is { all: RoleRequirement[] } {
+export function isAllRoleRequirement(
+  req: RoleRequirement
+): req is { all: RoleRequirement[] } {
   return typeof req === "object" && "all" in req;
 }
 
 /**
  * Check if a user with given roles satisfies the role requirement
  */
-export function satisfiesRoleRequirement(userRoles: AccessControlRoles[], requirement: RoleRequirement): boolean {
+export function satisfiesRoleRequirement(
+  userRoles: AccessControlRoles[],
+  requirement: RoleRequirement
+): boolean {
   if (isSingleRole(requirement)) {
     return userRoles.includes(requirement);
   }
@@ -49,12 +59,16 @@ export function satisfiesRoleRequirement(userRoles: AccessControlRoles[], requir
     if (requirement.any.length === 0) {
       return true;
     }
-    return requirement.any.some((req) => satisfiesRoleRequirement(userRoles, req));
+    return requirement.any.some((req) =>
+      satisfiesRoleRequirement(userRoles, req)
+    );
   }
 
   if (isAllRoleRequirement(requirement)) {
     // AND logic - all must be satisfied
-    return requirement.all.every((req) => satisfiesRoleRequirement(userRoles, req));
+    return requirement.all.every((req) =>
+      satisfiesRoleRequirement(userRoles, req)
+    );
   }
 
   return false;

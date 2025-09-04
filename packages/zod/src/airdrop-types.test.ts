@@ -1,5 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { airdropType, airdropTypes, getAirdropType, isAirdropType } from "./airdrop-types";
+import {
+  airdropType,
+  airdropTypes,
+  getAirdropType,
+  isAirdropType,
+} from "./airdrop-types";
 
 describe("airdropType", () => {
   const validator = airdropType();

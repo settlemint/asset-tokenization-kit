@@ -1,5 +1,8 @@
 import type { Hex, TransactionReceipt } from "viem";
-import { parseRevertReason, withDecodedRevertReason } from "./decode-revert-reason";
+import {
+  parseRevertReason,
+  withDecodedRevertReason,
+} from "./decode-revert-reason";
 import { getPublicClient } from "./public-client";
 import { getViemChain } from "./viem-chain";
 
@@ -454,8 +457,12 @@ async function _analyzeSimulationError(simulationError: any): Promise<void> {
   console.log(`    Cause: ${simulationError?.cause || "No cause"}`);
 
   // Check if the error was already decoded by withDecodedRevertReason
-  if (simulationError?.message?.includes("The contract reverted with reason:")) {
-    console.log(`  🎯 Revert reason already decoded: ${simulationError.message}`);
+  if (
+    simulationError?.message?.includes("The contract reverted with reason:")
+  ) {
+    console.log(
+      `  🎯 Revert reason already decoded: ${simulationError.message}`
+    );
     throw simulationError;
   }
 

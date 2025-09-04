@@ -18,18 +18,22 @@ describe("env", () => {
   it("should create env with all required server variables", () => {
     // Set up all required environment variables
     process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT = "https://example.com/rpc";
+    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT =
+      "https://example.com/rpc";
     process.env.SKIP_ENV_VALIDATION = "";
 
     const { env } = require("../src/env");
 
     expect(env.SETTLEMINT_HASURA_ADMIN_SECRET).toBe("test-secret");
-    expect(env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT).toBe("https://example.com/rpc");
+    expect(env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT).toBe(
+      "https://example.com/rpc"
+    );
   });
 
   it("should use default values when optional variables are not provided", () => {
     process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT = "https://example.com/rpc";
+    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT =
+      "https://example.com/rpc";
     process.env.SKIP_ENV_VALIDATION = "";
 
     const { env } = require("../src/env");
@@ -45,7 +49,8 @@ describe("env", () => {
   it("should use VITE_APP_URL for APP_URL when provided", () => {
     process.env.VITE_APP_URL = "https://app.example.com";
     process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT = "https://example.com/rpc";
+    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT =
+      "https://example.com/rpc";
     process.env.SKIP_ENV_VALIDATION = "";
 
     const { env } = require("../src/env");
@@ -57,7 +62,8 @@ describe("env", () => {
   it("should use BETTER_AUTH_URL for APP_URL when VITE_APP_URL is not provided", () => {
     process.env.BETTER_AUTH_URL = "https://auth.example.com";
     process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT = "https://example.com/rpc";
+    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT =
+      "https://example.com/rpc";
     process.env.SKIP_ENV_VALIDATION = "";
 
     const { env } = require("../src/env");
@@ -69,7 +75,8 @@ describe("env", () => {
   it("should use NEXTAUTH_URL for APP_URL when VITE_APP_URL and BETTER_AUTH_URL are not provided", () => {
     process.env.NEXTAUTH_URL = "https://nextauth.example.com";
     process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT = "https://example.com/rpc";
+    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT =
+      "https://example.com/rpc";
     process.env.SKIP_ENV_VALIDATION = "";
 
     const { env } = require("../src/env");
@@ -81,7 +88,8 @@ describe("env", () => {
   it("should validate HD private key format", () => {
     process.env.SETTLEMINT_HD_PRIVATE_KEY = "valid-key-123";
     process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT = "https://example.com/rpc";
+    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT =
+      "https://example.com/rpc";
     process.env.SKIP_ENV_VALIDATION = "";
 
     const { env } = require("../src/env");
@@ -93,7 +101,8 @@ describe("env", () => {
     process.env.SETTLEMINT_LOG_LEVEL = "debug";
     process.env.VITE_SETTLEMINT_LOG_LEVEL = "error";
     process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT = "https://example.com/rpc";
+    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT =
+      "https://example.com/rpc";
     process.env.SKIP_ENV_VALIDATION = "";
 
     const { env } = require("../src/env");
@@ -105,7 +114,8 @@ describe("env", () => {
   it("should handle DISABLE_MIGRATIONS_ON_STARTUP as boolean", () => {
     process.env.DISABLE_MIGRATIONS_ON_STARTUP = "true";
     process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT = "https://example.com/rpc";
+    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT =
+      "https://example.com/rpc";
     process.env.SKIP_ENV_VALIDATION = "";
 
     const { env } = require("../src/env");
@@ -116,7 +126,8 @@ describe("env", () => {
   it("should handle SETTLEMINT_INSTANCE when provided", () => {
     process.env.SETTLEMINT_INSTANCE = "test-instance";
     process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT = "https://example.com/rpc";
+    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT =
+      "https://example.com/rpc";
     process.env.SKIP_ENV_VALIDATION = "";
 
     const { env } = require("../src/env");
@@ -127,7 +138,8 @@ describe("env", () => {
   it("should handle VITE_EXPLORER_URL when provided", () => {
     process.env.VITE_EXPLORER_URL = "https://explorer.example.com";
     process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT = "https://example.com/rpc";
+    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT =
+      "https://example.com/rpc";
     process.env.SKIP_ENV_VALIDATION = "";
 
     const { env } = require("../src/env");
@@ -149,7 +161,8 @@ describe("env", () => {
     process.env.SETTLEMINT_INSTANCE = "";
     process.env.VITE_EXPLORER_URL = "";
     process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT = "https://example.com/rpc";
+    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT =
+      "https://example.com/rpc";
     process.env.SKIP_ENV_VALIDATION = "";
 
     const { env } = require("../src/env");
@@ -160,12 +173,13 @@ describe("env", () => {
 
   it("should handle all valid log levels", () => {
     const logLevels = ["debug", "info", "warn", "error"];
-    
+
     for (const level of logLevels) {
       process.env.SETTLEMINT_LOG_LEVEL = level;
       process.env.VITE_SETTLEMINT_LOG_LEVEL = level;
       process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-      process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT = "https://example.com/rpc";
+      process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT =
+        "https://example.com/rpc";
       process.env.SKIP_ENV_VALIDATION = "";
 
       delete require.cache[require.resolve("../src/env")];
@@ -181,7 +195,8 @@ describe("env", () => {
     // Test "true" string -> true boolean
     process.env.DISABLE_MIGRATIONS_ON_STARTUP = "true";
     process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT = "https://example.com/rpc";
+    process.env.SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT =
+      "https://example.com/rpc";
     process.env.SKIP_ENV_VALIDATION = "";
 
     delete require.cache[require.resolve("../src/env")];

@@ -66,6 +66,24 @@ const userPermissionsSchema = z.object({
           identityRegister: z
             .boolean()
             .describe("Whether the user can register identities"),
+          trustedIssuerCreate: z
+            .boolean()
+            .describe("Whether the user can create trusted issuers"),
+          trustedIssuerUpdate: z
+            .boolean()
+            .describe("Whether the user can update trusted issuers"),
+          trustedIssuerDelete: z
+            .boolean()
+            .describe("Whether the user can delete trusted issuers"),
+          topicCreate: z
+            .boolean()
+            .describe("Whether the user can create topics"),
+          topicUpdate: z
+            .boolean()
+            .describe("Whether the user can update topics"),
+          topicDelete: z
+            .boolean()
+            .describe("Whether the user can delete topics"),
         };
         return actionsSchema;
       })()
@@ -135,18 +153,6 @@ export const UserSchema = z.object({
    * Computed field based on identity presence.
    */
   isRegistered: z.boolean().describe("Whether user has on-chain identity"),
-
-  /**
-   * User account creation timestamp.
-   * When the user first registered on the platform.
-   */
-  createdAt: z.date().optional().describe("User account creation date"),
-
-  /**
-   * User's last login timestamp.
-   * When the user last authenticated with the platform.
-   */
-  lastLoginAt: z.date().nullable().optional().describe("User's last login date"),
 });
 
 /**

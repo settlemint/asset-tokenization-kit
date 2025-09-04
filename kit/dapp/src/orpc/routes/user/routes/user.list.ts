@@ -131,7 +131,7 @@ export const list = authRouter.user.list
   .use(theGraphMiddleware)
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: { any: ["identityManager"] },
+      requiredRoles: { any: ["identityManager", "claimIssuer"] },
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },
@@ -224,8 +224,6 @@ export const list = authRouter.user.list
           identity: undefined,
           claims: [],
           isRegistered: false,
-          createdAt: u.createdAt,
-          lastLoginAt: u.lastLoginAt,
         } as User;
       }
 
@@ -257,8 +255,6 @@ export const list = authRouter.user.list
         identity: identity?.id,
         claims: filteredClaims,
         isRegistered: !!identity,
-        createdAt: u.createdAt,
-        lastLoginAt: u.lastLoginAt,
       } as User;
     });
   });

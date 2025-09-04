@@ -51,6 +51,7 @@ describe("AccessControlFragment", () => {
           "burner",
           "capManagement",
           "claimPolicyManager",
+          "claimIssuer",
           "complianceAdmin",
           "complianceManager",
           "custodian",
@@ -88,7 +89,7 @@ describe("AccessControlFragment", () => {
             return "";
           });
 
-        expect(fieldNames).toHaveLength(34);
+        expect(fieldNames).toHaveLength(expectedRoles.length + 1);
         expectedRoles.forEach((role) => {
           expect(fieldNames).toContain(role);
         });
@@ -153,6 +154,7 @@ describe("AccessControlFragment", () => {
         "burner",
         "capManagement",
         "claimPolicyManager",
+        "claimIssuer",
         "complianceAdmin",
         "complianceManager",
         "custodian",

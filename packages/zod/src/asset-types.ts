@@ -18,9 +18,19 @@ import { z } from "zod";
  * - `stablecoin`: Cryptocurrency with stable value
  * - `deposit`: Bank deposit certificates or similar instruments
  */
-export const assetTypes = ["bond", "equity", "fund", "stablecoin", "deposit"] as const;
+export const assetTypes = [
+  "bond",
+  "equity",
+  "fund",
+  "stablecoin",
+  "deposit",
+] as const;
 
-export const assetClasses = ["fixedIncome", "flexibleIncome", "cashEquivalent"] as const;
+export const assetClasses = [
+  "fixedIncome",
+  "flexibleIncome",
+  "cashEquivalent",
+] as const;
 
 /**
  * Enum-like object for dot notation access to asset types.
@@ -120,9 +130,11 @@ export const AssetFactoryTypeIdEnum = {
  * });
  * ```
  */
-export const assetType = () => z.enum(assetTypes).describe("Type of financial asset");
+export const assetType = () =>
+  z.enum(assetTypes).describe("Type of financial asset");
 
-export const assetClass = () => z.enum(assetClasses).describe("Class of financial asset");
+export const assetClass = () =>
+  z.enum(assetClasses).describe("Class of financial asset");
 
 /**
  * Creates a Zod schema that validates an asset factory typeId.
@@ -146,7 +158,8 @@ export const assetClass = () => z.enum(assetClasses).describe("Class of financia
  * });
  * ```
  */
-export const assetFactoryTypeId = () => z.enum(assetFactoryTypeIds).describe("Asset factory typeId identifier");
+export const assetFactoryTypeId = () =>
+  z.enum(assetFactoryTypeIds).describe("Asset factory typeId identifier");
 
 /**
  * Creates an array validator for multiple asset types.
@@ -161,7 +174,10 @@ export const assetFactoryTypeId = () => z.enum(assetFactoryTypeIds).describe("As
  * ```
  */
 export const assetTypeArray = () =>
-  z.array(assetType()).min(1, "At least one asset type must be selected").describe("List of asset types");
+  z
+    .array(assetType())
+    .min(1, "At least one asset type must be selected")
+    .describe("List of asset types");
 
 /**
  * Creates an array validator for multiple asset factory typeIds.
@@ -194,7 +210,10 @@ export const assetFactoryTypeIdArray = () =>
  * ```
  */
 export const assetTypeSet = () =>
-  z.set(assetType()).min(1, "At least one asset type must be selected").describe("Set of unique asset types");
+  z
+    .set(assetType())
+    .min(1, "At least one asset type must be selected")
+    .describe("Set of unique asset types");
 
 /**
  * Creates a set validator for unique asset factory typeIds.
@@ -226,8 +245,9 @@ export const assetFactoryTypeIdSet = () =>
  * schema.parse("fund"); // Returns "fund"
  * ```
  */
-export const assetTypeWithDefault = (defaultValue: AssetType = assetType().parse("bond")) =>
-  assetType().default(defaultValue);
+export const assetTypeWithDefault = (
+  defaultValue: AssetType = assetType().parse("bond")
+) => assetType().default(defaultValue);
 
 /**
  * Creates an asset factory typeId validator with an optional default value.
@@ -242,7 +262,9 @@ export const assetTypeWithDefault = (defaultValue: AssetType = assetType().parse
  * ```
  */
 export const assetFactoryTypeIdWithDefault = (
-  defaultValue: AssetFactoryTypeId = assetFactoryTypeId().parse("ATKBondFactory")
+  defaultValue: AssetFactoryTypeId = assetFactoryTypeId().parse(
+    "ATKBondFactory"
+  )
 ) => assetFactoryTypeId().default(defaultValue);
 
 /**
@@ -336,7 +358,9 @@ export type AssetTypeArray = z.infer<ReturnType<typeof assetTypeArray>>;
 /**
  * Type representing an array of validated asset factory typeIds.
  */
-export type AssetFactoryTypeIdArray = z.infer<ReturnType<typeof assetFactoryTypeIdArray>>;
+export type AssetFactoryTypeIdArray = z.infer<
+  ReturnType<typeof assetFactoryTypeIdArray>
+>;
 
 /**
  * Type representing a set of unique validated asset types.
@@ -346,7 +370,9 @@ export type AssetTypeSet = z.infer<ReturnType<typeof assetTypeSet>>;
 /**
  * Type representing a set of unique validated asset factory typeIds.
  */
-export type AssetFactoryTypeIdSet = z.infer<ReturnType<typeof assetFactoryTypeIdSet>>;
+export type AssetFactoryTypeIdSet = z.infer<
+  ReturnType<typeof assetFactoryTypeIdSet>
+>;
 
 /**
  * Type guard to check if a value is a valid asset type.
@@ -378,7 +404,9 @@ export function isAssetType(value: unknown): value is AssetType {
  * }
  * ```
  */
-export function isAssetFactoryTypeId(value: unknown): value is AssetFactoryTypeId {
+export function isAssetFactoryTypeId(
+  value: unknown
+): value is AssetFactoryTypeId {
   return assetFactoryTypeId().safeParse(value).success;
 }
 
@@ -446,7 +474,9 @@ export function isAssetTypeArray(value: unknown): value is AssetTypeArray {
  * }
  * ```
  */
-export function isAssetFactoryTypeIdArray(value: unknown): value is AssetFactoryTypeIdArray {
+export function isAssetFactoryTypeIdArray(
+  value: unknown
+): value is AssetFactoryTypeIdArray {
   return assetFactoryTypeIdArray().safeParse(value).success;
 }
 
@@ -476,7 +506,9 @@ export function getAssetTypeArray(value: unknown): AssetTypeArray {
  * const empty = getAssetFactoryTypeIdArray([]); // Throws Error - empty array
  * ```
  */
-export function getAssetFactoryTypeIdArray(value: unknown): AssetFactoryTypeIdArray {
+export function getAssetFactoryTypeIdArray(
+  value: unknown
+): AssetFactoryTypeIdArray {
   return assetFactoryTypeIdArray().parse(value);
 }
 
@@ -508,7 +540,9 @@ export function isAssetTypeSet(value: unknown): value is AssetTypeSet {
  * }
  * ```
  */
-export function isAssetFactoryTypeIdSet(value: unknown): value is AssetFactoryTypeIdSet {
+export function isAssetFactoryTypeIdSet(
+  value: unknown
+): value is AssetFactoryTypeIdSet {
   return assetFactoryTypeIdSet().safeParse(value).success;
 }
 
@@ -538,7 +572,9 @@ export function getAssetTypeSet(value: unknown): AssetTypeSet {
  * const empty = getAssetFactoryTypeIdSet(new Set()); // Throws Error - empty set
  * ```
  */
-export function getAssetFactoryTypeIdSet(value: unknown): AssetFactoryTypeIdSet {
+export function getAssetFactoryTypeIdSet(
+  value: unknown
+): AssetFactoryTypeIdSet {
   return assetFactoryTypeIdSet().parse(value);
 }
 
@@ -552,7 +588,9 @@ export function getAssetFactoryTypeIdSet(value: unknown): AssetFactoryTypeIdSet 
  * const stablecoinFactory = getFactoryTypeIdFromAssetType("stablecoin"); // Returns "ATKStableCoinFactory"
  * ```
  */
-export function getFactoryTypeIdFromAssetType(assetType: AssetType): AssetFactoryTypeId {
+export function getFactoryTypeIdFromAssetType(
+  assetType: AssetType
+): AssetFactoryTypeId {
   const mapping: Record<AssetType, AssetFactoryTypeId> = {
     bond: "ATKBondFactory",
     equity: "ATKEquityFactory",
@@ -574,7 +612,9 @@ export function getFactoryTypeIdFromAssetType(assetType: AssetType): AssetFactor
  * const stablecoinType = getAssetTypeFromFactoryTypeId("ATKStableCoinFactory"); // Returns "stablecoin"
  * ```
  */
-export function getAssetTypeFromFactoryTypeId(factoryTypeId: AssetFactoryTypeId): AssetType {
+export function getAssetTypeFromFactoryTypeId(
+  factoryTypeId: AssetFactoryTypeId
+): AssetType {
   const mapping: Record<AssetFactoryTypeId, AssetType> = {
     ATKBondFactory: "bond",
     ATKEquityFactory: "equity",
@@ -586,7 +626,9 @@ export function getAssetTypeFromFactoryTypeId(factoryTypeId: AssetFactoryTypeId)
   return mapping[factoryTypeId];
 }
 
-export function getAssetClassFromFactoryTypeId(factoryTypeId: AssetFactoryTypeId): AssetClass {
+export function getAssetClassFromFactoryTypeId(
+  factoryTypeId: AssetFactoryTypeId
+): AssetClass {
   const mapping: Record<AssetFactoryTypeId, AssetClass> = {
     ATKBondFactory: "fixedIncome",
     ATKEquityFactory: "flexibleIncome",

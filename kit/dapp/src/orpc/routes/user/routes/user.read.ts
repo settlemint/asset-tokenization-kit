@@ -60,7 +60,7 @@ export const read = authRouter.user.read
   .use(theGraphMiddleware)
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: { any: ["identityManager"] },
+      requiredRoles: { any: ["identityManager", "claimIssuer"] },
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },

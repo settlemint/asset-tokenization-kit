@@ -50,11 +50,11 @@ export const AccountSchema = z.object({
 export const AccountResponseSchema = z.object({
   account: z
     .object({
-      id: z.string(),
+      id: ethereumAddress,
       country: z.number().nullable().optional(),
       identity: z
         .object({
-          id: z.string(),
+          id: ethereumAddress,
           claims: z.array(
             z.object({
               name: z.string(),

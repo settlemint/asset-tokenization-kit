@@ -19,7 +19,14 @@ import { z } from "zod";
  * - `auditor`: Read-only access for audit and reporting
  * - `investor`: Standard user role for token holders
  */
-export const roleNames = ["admin", "issuer", "manager", "compliance", "auditor", "investor"] as const;
+export const roleNames = [
+  "admin",
+  "issuer",
+  "manager",
+  "compliance",
+  "auditor",
+  "investor",
+] as const;
 
 /**
  * Creates a Zod schema that validates system roles.
@@ -61,7 +68,8 @@ export const roles = () => z.enum(roleNames).describe("System role");
  * });
  * ```
  */
-export const roleMap = () => z.record(z.string(), roles()).describe("Mapping of addresses to roles");
+export const roleMap = () =>
+  z.record(z.string(), roles()).describe("Mapping of addresses to roles");
 
 /**
  * Type representing a validated system role.

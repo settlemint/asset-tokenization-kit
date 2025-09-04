@@ -1,13 +1,21 @@
 import { describe, expect, it } from "bun:test";
-import { getUserRole, isUserRole, userRoleNames, userRoles } from "./user-roles";
+import {
+  getUserRole,
+  isUserRole,
+  userRoleNames,
+  userRoles,
+} from "./user-roles";
 
 describe("userRoles", () => {
   const validator = userRoles();
 
   describe("valid user roles", () => {
-    it.each(userRoleNames.map((role) => [role]))("should accept '%s'", (role) => {
-      expect(validator.parse(role) as string).toBe(role);
-    });
+    it.each(userRoleNames.map((role) => [role]))(
+      "should accept '%s'",
+      (role) => {
+        expect(validator.parse(role) as string).toBe(role);
+      }
+    );
 
     it("should accept all defined roles", () => {
       expect(validator.parse("admin") as string).toBe("admin");

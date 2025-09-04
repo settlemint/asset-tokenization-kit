@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import MultipleSelector from "@/components/ui/multiselect";
-import { Input } from "@/components/ui/input";
 import {
   Sheet,
   SheetContent,
@@ -15,13 +15,14 @@ import { client, orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { TopicListOutput } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
 import type { TrustedIssuerCreateInput } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.create.schema";
-import type { User } from "@/orpc/routes/user/routes/user.me.schema";
+import type { UserSearchResult } from "@/orpc/routes/user/routes/user.search.schema";
 import {
   useMutation,
   useQuery,
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
+import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -42,7 +43,9 @@ export function AddTrustedIssuerSheet({
 }: AddTrustedIssuerSheetProps) {
   const queryClient = useQueryClient();
   const { t } = useTranslation("claim-topics-issuers");
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserSearchResult | null>(
+    null
+  );
   const [searchQuery, setSearchQuery] = useState("");
 
   // Search users with debounced query
@@ -114,11 +117,11 @@ export function AddTrustedIssuerSheet({
     void form.handleSubmit();
   };
 
-  const handleUserSelect = (userId: string) => {
-    const user = users.find((u) => u.id === userId);
-    if (user) {
+  const handleUserSelect = (userWallet: string | null) => {
+    const user = users.find((u) => u.wallet === userWallet);
+    if (user && user.wallet) {
       setSelectedUser(user);
-      form.setFieldValue("issuerAddress", user.wallet as `0x${string}`);
+      form.setFieldValue("issuerAddress", user.wallet);
       setSearchQuery(""); // Clear search after selection
     }
   };
@@ -151,7 +154,33 @@ export function AddTrustedIssuerSheet({
                   {t("trustedIssuers.add.fields.selectUser.label")}
                   <span className="text-destructive ml-1">*</span>
                 </Label>
-                {!selectedUser ? (
+                {selectedUser ? (
+                  <div className="flex items-center justify-between p-3 border rounded-md bg-muted/50">
+                    <div className="flex flex-col">
+                      <span className="font-medium">{selectedUser.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {selectedUser.wallet
+                          ? `${selectedUser.wallet.slice(0, 6)}...${selectedUser.wallet.slice(-4)}`
+                          : "No wallet"}{" "}
+                        • {selectedUser.role}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedUser(null);
+                        setSearchQuery("");
+                        form.setFieldValue(
+                          "issuerAddress",
+                          "0x" as `0x${string}`
+                        );
+                      }}
+                      className="text-xs text-primary hover:underline"
+                    >
+                      Change User
+                    </button>
+                  </div>
+                ) : (
                   <div className="space-y-2">
                     <div className="relative">
                       <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -161,7 +190,9 @@ export function AddTrustedIssuerSheet({
                           "trustedIssuers.add.fields.selectUser.placeholder"
                         )}
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={(e) => {
+                          setSearchQuery(e.target.value);
+                        }}
                         className="pl-10"
                       />
                     </div>
@@ -169,14 +200,19 @@ export function AddTrustedIssuerSheet({
                       <div className="border rounded-md max-h-40 overflow-y-auto">
                         {users.map((user) => (
                           <div
-                            key={user.id}
+                            key={user.wallet || user.name}
                             className="p-3 hover:bg-muted cursor-pointer border-b last:border-b-0"
-                            onClick={() => handleUserSelect(user.id)}
+                            onClick={() => {
+                              handleUserSelect(user.wallet);
+                            }}
                           >
                             <div className="flex flex-col">
                               <span className="font-medium">{user.name}</span>
                               <span className="text-xs text-muted-foreground">
-                                {user.email} • {user.role}
+                                {user.wallet
+                                  ? `${user.wallet.slice(0, 6)}...${user.wallet.slice(-4)}`
+                                  : "No wallet"}{" "}
+                                • {user.role}
                               </span>
                             </div>
                           </div>
@@ -188,26 +224,6 @@ export function AddTrustedIssuerSheet({
                         No users found matching "{searchQuery}"
                       </p>
                     )}
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between p-3 border rounded-md bg-muted/50">
-                    <div className="flex flex-col">
-                      <span className="font-medium">{selectedUser.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {selectedUser.email} • {selectedUser.role}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedUser(null);
-                        setSearchQuery("");
-                        form.setFieldValue("issuerAddress", "0x" as `0x${string}`);
-                      }}
-                      className="text-xs text-primary hover:underline"
-                    >
-                      Change User
-                    </button>
                   </div>
                 )}
                 <p className="text-xs text-muted-foreground">
@@ -224,12 +240,6 @@ export function AddTrustedIssuerSheet({
                           {t("trustedIssuers.add.selectedUser.name")}
                         </span>
                         <span className="text-sm">{selectedUser.name}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm font-medium">
-                          {t("trustedIssuers.add.selectedUser.email")}
-                        </span>
-                        <span className="text-sm">{selectedUser.email}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm font-medium">

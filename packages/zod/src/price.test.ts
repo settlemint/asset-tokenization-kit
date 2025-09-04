@@ -12,9 +12,15 @@ describe("price", () => {
       expect(() => validator.parse(Number.NaN)).toThrow();
 
       // Verify string representations are also rejected
-      expect(() => validator.parse("Infinity")).toThrow("Invalid price format. Please provide a valid numeric string");
-      expect(() => validator.parse("-Infinity")).toThrow("Invalid price format. Please provide a valid numeric string");
-      expect(() => validator.parse("NaN")).toThrow("Invalid price format. Please provide a valid numeric string");
+      expect(() => validator.parse("Infinity")).toThrow(
+        "Invalid price format. Please provide a valid numeric string"
+      );
+      expect(() => validator.parse("-Infinity")).toThrow(
+        "Invalid price format. Please provide a valid numeric string"
+      );
+      expect(() => validator.parse("NaN")).toThrow(
+        "Invalid price format. Please provide a valid numeric string"
+      );
     });
   });
 
@@ -59,54 +65,94 @@ describe("price", () => {
     });
 
     test("should reject invalid numeric strings", () => {
-      expect(() => validator.parse("abc")).toThrow("Invalid price format. Please provide a valid numeric string");
-      expect(() => validator.parse("")).toThrow("Invalid price format. Please provide a valid numeric string");
+      expect(() => validator.parse("abc")).toThrow(
+        "Invalid price format. Please provide a valid numeric string"
+      );
+      expect(() => validator.parse("")).toThrow(
+        "Invalid price format. Please provide a valid numeric string"
+      );
       expect(() => validator.parse("not a number")).toThrow(
         "Invalid price format. Please provide a valid numeric string"
       );
       // "12.34.56" parses to 12.34, which is valid
       expect(validator.parse("12.34.56")).toBe(12.34);
-      expect(() => validator.parse("$100")).toThrow("Invalid price format. Please provide a valid numeric string");
+      expect(() => validator.parse("$100")).toThrow(
+        "Invalid price format. Please provide a valid numeric string"
+      );
     });
 
     test("should reject strings that parse to non-finite numbers", () => {
-      expect(() => validator.parse("Infinity")).toThrow("Invalid price format. Please provide a valid numeric string");
-      expect(() => validator.parse("-Infinity")).toThrow("Invalid price format. Please provide a valid numeric string");
-      expect(() => validator.parse("NaN")).toThrow("Invalid price format. Please provide a valid numeric string");
+      expect(() => validator.parse("Infinity")).toThrow(
+        "Invalid price format. Please provide a valid numeric string"
+      );
+      expect(() => validator.parse("-Infinity")).toThrow(
+        "Invalid price format. Please provide a valid numeric string"
+      );
+      expect(() => validator.parse("NaN")).toThrow(
+        "Invalid price format. Please provide a valid numeric string"
+      );
     });
 
     test("should reject negative numeric strings", () => {
-      expect(() => validator.parse("-100")).toThrow("Price must be greater than zero");
-      expect(() => validator.parse("-0.01")).toThrow("Price must be greater than zero");
+      expect(() => validator.parse("-100")).toThrow(
+        "Price must be greater than zero"
+      );
+      expect(() => validator.parse("-0.01")).toThrow(
+        "Price must be greater than zero"
+      );
     });
 
     test("should reject zero as string", () => {
-      expect(() => validator.parse("0")).toThrow("Price must be greater than zero");
-      expect(() => validator.parse("0.0")).toThrow("Price must be greater than zero");
-      expect(() => validator.parse("0.0000")).toThrow("Price must be greater than zero");
+      expect(() => validator.parse("0")).toThrow(
+        "Price must be greater than zero"
+      );
+      expect(() => validator.parse("0.0")).toThrow(
+        "Price must be greater than zero"
+      );
+      expect(() => validator.parse("0.0000")).toThrow(
+        "Price must be greater than zero"
+      );
     });
 
     test("should reject strings with more than 4 decimal places", () => {
-      expect(() => validator.parse("1.12345")).toThrow("Price cannot have more than 4 decimal places");
-      expect(() => validator.parse("0.00001")).toThrow("Price cannot have more than 4 decimal places");
+      expect(() => validator.parse("1.12345")).toThrow(
+        "Price cannot have more than 4 decimal places"
+      );
+      expect(() => validator.parse("0.00001")).toThrow(
+        "Price cannot have more than 4 decimal places"
+      );
     });
   });
 
   describe("invalid prices", () => {
     test("should reject zero", () => {
-      expect(() => validator.parse(0)).toThrow("Price must be greater than zero");
+      expect(() => validator.parse(0)).toThrow(
+        "Price must be greater than zero"
+      );
     });
 
     test("should reject negative prices", () => {
-      expect(() => validator.parse(-1)).toThrow("Price must be greater than zero");
-      expect(() => validator.parse(-0.01)).toThrow("Price must be greater than zero");
-      expect(() => validator.parse(-999.99)).toThrow("Price must be greater than zero");
+      expect(() => validator.parse(-1)).toThrow(
+        "Price must be greater than zero"
+      );
+      expect(() => validator.parse(-0.01)).toThrow(
+        "Price must be greater than zero"
+      );
+      expect(() => validator.parse(-999.99)).toThrow(
+        "Price must be greater than zero"
+      );
     });
 
     test("should reject prices with more than 4 decimal places", () => {
-      expect(() => validator.parse(1.123_45)).toThrow("Price cannot have more than 4 decimal places");
-      expect(() => validator.parse(0.000_01)).toThrow("Price cannot have more than 4 decimal places");
-      expect(() => validator.parse(99.999_99)).toThrow("Price cannot have more than 4 decimal places");
+      expect(() => validator.parse(1.123_45)).toThrow(
+        "Price cannot have more than 4 decimal places"
+      );
+      expect(() => validator.parse(0.000_01)).toThrow(
+        "Price cannot have more than 4 decimal places"
+      );
+      expect(() => validator.parse(99.999_99)).toThrow(
+        "Price cannot have more than 4 decimal places"
+      );
     });
 
     test("should reject non-finite numbers", () => {
@@ -146,14 +192,20 @@ describe("price", () => {
     });
 
     test("should reject scientific notation resulting in too many decimals", () => {
-      expect(() => validator.parse(1e-5)).toThrow("Price cannot have more than 4 decimal places");
-      expect(() => validator.parse("1e-5")).toThrow("Price cannot have more than 4 decimal places");
+      expect(() => validator.parse(1e-5)).toThrow(
+        "Price cannot have more than 4 decimal places"
+      );
+      expect(() => validator.parse("1e-5")).toThrow(
+        "Price cannot have more than 4 decimal places"
+      );
     });
 
     test("should handle float precision edge cases", () => {
       // JavaScript float precision can cause issues
       // 0.1 + 0.2 = 0.30000000000000004 in JavaScript (more than 4 decimals)
-      expect(() => validator.parse(0.1 + 0.2)).toThrow("Price cannot have more than 4 decimal places");
+      expect(() => validator.parse(0.1 + 0.2)).toThrow(
+        "Price cannot have more than 4 decimal places"
+      );
 
       // String representation avoids precision issues
       expect(validator.parse("0.3")).toBe(0.3);
@@ -163,12 +215,18 @@ describe("price", () => {
       expect(validator.parse(0.2)).toBe(0.2);
 
       // Rounded values work fine
-      expect(validator.parse(Math.round((0.1 + 0.2) * 10_000) / 10_000)).toBe(0.3);
+      expect(validator.parse(Math.round((0.1 + 0.2) * 10_000) / 10_000)).toBe(
+        0.3
+      );
     });
 
     test("should handle maximum safe integer", () => {
-      expect(validator.parse(Number.MAX_SAFE_INTEGER)).toBe(Number.MAX_SAFE_INTEGER);
-      expect(validator.parse(Number.MAX_SAFE_INTEGER.toString())).toBe(Number.MAX_SAFE_INTEGER);
+      expect(validator.parse(Number.MAX_SAFE_INTEGER)).toBe(
+        Number.MAX_SAFE_INTEGER
+      );
+      expect(validator.parse(Number.MAX_SAFE_INTEGER.toString())).toBe(
+        Number.MAX_SAFE_INTEGER
+      );
     });
 
     test("should handle special number values from calculations", () => {
@@ -220,7 +278,9 @@ describe("price", () => {
       const result = validator.safeParse(0);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0]?.message).toBe("Price must be greater than zero");
+        expect(result.error.issues[0]?.message).toBe(
+          "Price must be greater than zero"
+        );
       }
     });
   });
@@ -309,9 +369,15 @@ describe("getPrice", () => {
   });
 
   test("should throw for invalid string formats", () => {
-    expect(() => getPrice("abc")).toThrow("Invalid price format. Please provide a valid numeric string");
-    expect(() => getPrice("")).toThrow("Invalid price format. Please provide a valid numeric string");
-    expect(() => getPrice("not a number")).toThrow("Invalid price format. Please provide a valid numeric string");
+    expect(() => getPrice("abc")).toThrow(
+      "Invalid price format. Please provide a valid numeric string"
+    );
+    expect(() => getPrice("")).toThrow(
+      "Invalid price format. Please provide a valid numeric string"
+    );
+    expect(() => getPrice("not a number")).toThrow(
+      "Invalid price format. Please provide a valid numeric string"
+    );
   });
 
   test("should throw for non-numeric types", () => {
@@ -324,9 +390,15 @@ describe("getPrice", () => {
   });
 
   test("should throw for prices with too many decimal places", () => {
-    expect(() => getPrice(1.123_45)).toThrow("Price cannot have more than 4 decimal places");
-    expect(() => getPrice("1.12345")).toThrow("Price cannot have more than 4 decimal places");
-    expect(() => getPrice(0.000_01)).toThrow("Price cannot have more than 4 decimal places");
+    expect(() => getPrice(1.123_45)).toThrow(
+      "Price cannot have more than 4 decimal places"
+    );
+    expect(() => getPrice("1.12345")).toThrow(
+      "Price cannot have more than 4 decimal places"
+    );
+    expect(() => getPrice(0.000_01)).toThrow(
+      "Price cannot have more than 4 decimal places"
+    );
   });
 
   test("should be useful in functions requiring Price type", () => {
@@ -336,6 +408,8 @@ describe("getPrice", () => {
     };
 
     expect(calculateTotal(10.5, 3)).toBe(31.5);
-    expect(() => calculateTotal(-10, 3)).toThrow("Price must be greater than zero");
+    expect(() => calculateTotal(-10, 3)).toThrow(
+      "Price must be greater than zero"
+    );
   });
 });

@@ -1,9 +1,9 @@
 /**
  * @fileoverview Test suite for decimal places validation
- * 
+ *
  * This test suite validates decimal precision settings for digital assets,
  * ensuring proper handling of divisibility for different token/currency types.
- * 
+ *
  * Test Strategy:
  * - Range Validation: 0-18 decimal places (standard for EVM tokens)
  * - Common Values: Test standard decimals (2 for USD, 6 for USDC, 18 for ETH)
@@ -11,7 +11,7 @@
  * - Integer Constraint: Ensure only whole number decimal places
  * - Type Safety: Branded number type for decimal-specific operations
  * - Asset Context: Different asset types require different decimal precision
- * 
+ *
  * STANDARD: ERC-20 tokens typically use 0-18 decimals (18 is most common)
  * FINANCIAL: Fiat currencies typically use 2 decimals, crypto varies widely
  */
@@ -51,32 +51,60 @@ describe("decimals", () => {
     });
 
     it("should reject strings with decimal points", () => {
-      expect(() => validator.parse("2.5")).toThrow("Decimals must be a whole number (integer)");
-      expect(() => validator.parse("6.0")).toThrow("Decimals must be a whole number (integer)");
-      expect(() => validator.parse("17.99")).toThrow("Decimals must be a whole number (integer)");
+      expect(() => validator.parse("2.5")).toThrow(
+        "Decimals must be a whole number (integer)"
+      );
+      expect(() => validator.parse("6.0")).toThrow(
+        "Decimals must be a whole number (integer)"
+      );
+      expect(() => validator.parse("17.99")).toThrow(
+        "Decimals must be a whole number (integer)"
+      );
     });
 
     it("should reject strings with scientific notation", () => {
-      expect(() => validator.parse("1e2")).toThrow("Decimals must be a whole number (integer)");
-      expect(() => validator.parse("2e1")).toThrow("Decimals must be a whole number (integer)");
-      expect(() => validator.parse("1.5e1")).toThrow("Decimals must be a whole number (integer)");
+      expect(() => validator.parse("1e2")).toThrow(
+        "Decimals must be a whole number (integer)"
+      );
+      expect(() => validator.parse("2e1")).toThrow(
+        "Decimals must be a whole number (integer)"
+      );
+      expect(() => validator.parse("1.5e1")).toThrow(
+        "Decimals must be a whole number (integer)"
+      );
     });
 
     it("should reject non-numeric strings", () => {
-      expect(() => validator.parse("abc")).toThrow("Decimals must be a whole number (integer)");
-      expect(() => validator.parse("")).toThrow("Decimals must be a whole number (integer)");
-      expect(() => validator.parse(" ")).toThrow("Decimals must be a whole number (integer)");
-      expect(() => validator.parse("one")).toThrow("Decimals must be a whole number (integer)");
+      expect(() => validator.parse("abc")).toThrow(
+        "Decimals must be a whole number (integer)"
+      );
+      expect(() => validator.parse("")).toThrow(
+        "Decimals must be a whole number (integer)"
+      );
+      expect(() => validator.parse(" ")).toThrow(
+        "Decimals must be a whole number (integer)"
+      );
+      expect(() => validator.parse("one")).toThrow(
+        "Decimals must be a whole number (integer)"
+      );
     });
 
     it("should reject strings that would overflow", () => {
-      expect(() => validator.parse("19")).toThrow("Decimals cannot exceed 18 (ERC20 standard maximum)");
-      expect(() => validator.parse("100")).toThrow("Decimals cannot exceed 18 (ERC20 standard maximum)");
+      expect(() => validator.parse("19")).toThrow(
+        "Decimals cannot exceed 18 (ERC20 standard maximum)"
+      );
+      expect(() => validator.parse("100")).toThrow(
+        "Decimals cannot exceed 18 (ERC20 standard maximum)"
+      );
     });
 
     it("should reject negative numeric strings", () => {
-      expect(() => validator.parse("-1")).toThrow("Decimals cannot be negative");
-      expect(() => validator.parse("-10")).toThrow("Decimals cannot be negative");
+      expect(() => validator.parse("-1")).toThrow(
+        "Decimals cannot be negative"
+      );
+      expect(() => validator.parse("-10")).toThrow(
+        "Decimals cannot be negative"
+      );
     });
   });
 
@@ -87,15 +115,27 @@ describe("decimals", () => {
     });
 
     it("should reject values greater than 18", () => {
-      expect(() => validator.parse(19)).toThrow("Decimals cannot exceed 18 (ERC20 standard maximum)");
-      expect(() => validator.parse(20)).toThrow("Decimals cannot exceed 18 (ERC20 standard maximum)");
-      expect(() => validator.parse(100)).toThrow("Decimals cannot exceed 18 (ERC20 standard maximum)");
+      expect(() => validator.parse(19)).toThrow(
+        "Decimals cannot exceed 18 (ERC20 standard maximum)"
+      );
+      expect(() => validator.parse(20)).toThrow(
+        "Decimals cannot exceed 18 (ERC20 standard maximum)"
+      );
+      expect(() => validator.parse(100)).toThrow(
+        "Decimals cannot exceed 18 (ERC20 standard maximum)"
+      );
     });
 
     it("should reject non-integer values", () => {
-      expect(() => validator.parse(2.5)).toThrow("Decimals must be a whole number (integer)");
-      expect(() => validator.parse(6.1)).toThrow("Decimals must be a whole number (integer)");
-      expect(() => validator.parse(17.99)).toThrow("Decimals must be a whole number (integer)");
+      expect(() => validator.parse(2.5)).toThrow(
+        "Decimals must be a whole number (integer)"
+      );
+      expect(() => validator.parse(6.1)).toThrow(
+        "Decimals must be a whole number (integer)"
+      );
+      expect(() => validator.parse(17.99)).toThrow(
+        "Decimals must be a whole number (integer)"
+      );
     });
 
     it("should reject invalid types", () => {
@@ -187,11 +227,21 @@ describe("getDecimals", () => {
 
   test("should throw for invalid decimals", () => {
     expect(() => getDecimals(-1)).toThrow("Decimals cannot be negative");
-    expect(() => getDecimals(19)).toThrow("Decimals cannot exceed 18 (ERC20 standard maximum)");
-    expect(() => getDecimals(2.5)).toThrow("Decimals must be a whole number (integer)");
-    expect(() => getDecimals("abc")).toThrow("Decimals must be a whole number (integer)");
-    expect(() => getDecimals("2.5")).toThrow("Decimals must be a whole number (integer)");
-    expect(() => getDecimals("1e2")).toThrow("Decimals must be a whole number (integer)");
+    expect(() => getDecimals(19)).toThrow(
+      "Decimals cannot exceed 18 (ERC20 standard maximum)"
+    );
+    expect(() => getDecimals(2.5)).toThrow(
+      "Decimals must be a whole number (integer)"
+    );
+    expect(() => getDecimals("abc")).toThrow(
+      "Decimals must be a whole number (integer)"
+    );
+    expect(() => getDecimals("2.5")).toThrow(
+      "Decimals must be a whole number (integer)"
+    );
+    expect(() => getDecimals("1e2")).toThrow(
+      "Decimals must be a whole number (integer)"
+    );
     expect(() => getDecimals(null)).toThrow();
     expect(() => getDecimals(undefined)).toThrow();
     expect(() => getDecimals({})).toThrow();

@@ -1,18 +1,25 @@
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppForm } from "@/hooks/use-app-form";
 import { useCollateralValues } from "@/hooks/use-collateral-values";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { format, from, greaterThan, subtract } from "dnum";
+import {
+  Dnum,
+  format,
+  from,
+  greaterThan,
+  greaterThanOrEqual,
+  subtract,
+} from "dnum";
+import { AlertCircle } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { CurrentStatusCard } from "../components/current-status-card";
 import { ActionFormSheet } from "../core/action-form-sheet";
 import { createActionFormStore } from "../core/action-form-sheet.store";
-import { CurrentStatusCard } from "../components/current-status-card";
-import { AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface CollateralSheetProps {
   open: boolean;
@@ -80,15 +87,18 @@ export function CollateralSheet({
     <form.Subscribe selector={(s) => s}>
       {() => {
         const newAmount =
-          (form.getFieldValue("collateralAmount") as bigint | undefined) ?? 0n;
+          (form.getFieldValue("collateralAmount") as Dnum | undefined) ??
+          from(0n, tokenDecimals);
         const expiryDays =
           (form.getFieldValue("expiryDays") as number | undefined) ?? 90;
 
         const newCollateral = from(newAmount, tokenDecimals);
-        const isValidAmount = greaterThan(newCollateral, currentSupply);
+        const isValidAmount = greaterThanOrEqual(newCollateral, currentSupply);
 
         const canContinue = () =>
-          newAmount > 0n && isValidAmount && expiryDays > 0;
+          greaterThan(newAmount, from(0n, tokenDecimals)) &&
+          isValidAmount &&
+          expiryDays > 0;
 
         const expiryDate = new Date();
         expiryDate.setDate(expiryDate.getDate() + expiryDays);
@@ -107,7 +117,8 @@ export function CollateralSheet({
                     {t("tokens:actions.collateral.current")}
                   </div>
                   <div className="text-sm font-medium">
-                    {format(currentCollateral)} {asset.symbol}
+                    {format(from(currentCollateral, tokenDecimals))}{" "}
+                    {asset.symbol}
                   </div>
                 </div>
                 <span className="text-muted-foreground">→</span>
@@ -116,7 +127,7 @@ export function CollateralSheet({
                     {t("tokens:actions.collateral.new")}
                   </div>
                   <div className="text-sm font-medium">
-                    {format(newCollateral)} {asset.symbol}
+                    {format(from(newCollateral, tokenDecimals))} {asset.symbol}
                   </div>
                 </div>
               </div>
@@ -135,7 +146,12 @@ export function CollateralSheet({
                     {t("tokens:actions.collateral.availableForMinting")}
                   </span>
                   <span className="font-medium">
-                    {format(subtract(newCollateral, currentSupply))}{" "}
+                    {format(
+                      from(
+                        subtract(newCollateral, currentSupply),
+                        tokenDecimals
+                      )
+                    )}{" "}
                     {asset.symbol}
                   </span>
                 </div>
@@ -195,7 +211,7 @@ export function CollateralSheet({
                   <div className="space-y-4">
                     <form.AppField name="collateralAmount">
                       {(field) => (
-                        <field.BigIntField
+                        <field.DnumField
                           label={t(
                             "tokens:actions.collateral.form.amountLabel"
                           )}
@@ -203,6 +219,7 @@ export function CollateralSheet({
                             "tokens:actions.collateral.form.amountDescription"
                           )}
                           endAddon={asset.symbol}
+                          decimals={asset.decimals}
                           required
                         />
                       )}
@@ -223,7 +240,7 @@ export function CollateralSheet({
                       )}
                     </form.AppField>
 
-                    {!isValidAmount && newAmount > 0n && (
+                    {!isValidAmount && (
                       <Alert variant="destructive">
                         <AlertCircle className="h-4 w-4" />
                         <AlertDescription>
