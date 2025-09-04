@@ -26,6 +26,9 @@
       "leave": "離れる"
     },
     "description": "{{type}}の基本情報を以下に提供して構成します。",
+    "errors": {
+      "denominationAssetFetch": "このトークンを読み込めません。別のトークンを選択するか、少しお待ちください。"
+    },
     "fields": {
       "cap": {
         "description": "発行できるトークンの最大数",

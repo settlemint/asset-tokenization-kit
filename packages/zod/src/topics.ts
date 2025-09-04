@@ -14,7 +14,26 @@ import { z } from "zod";
  * These constants must match the topic names defined in contracts/system/ATKTopics.sol
  * Topic IDs are dynamically generated during system bootstrap using keccak256(abi.encodePacked(name))
  */
-export const atkTopics = ["knowYourCustomer", "antiMoneyLaundering", "qualifiedInstitutionalInvestor", "professionalInvestor", "accreditedInvestor", "accreditedInvestorVerified", "regulationS", "issuerProspectusFiled", "issuerProspectusExempt", "issuerLicensed", "issuerReportingCompliant", "issuerJurisdiction", "collateral", "isin", "assetClassification", "basePrice", "assetIssuer", "contractIdentity"] as const;
+export const atkTopics = [
+  "knowYourCustomer",
+  "antiMoneyLaundering",
+  "qualifiedInstitutionalInvestor",
+  "professionalInvestor",
+  "accreditedInvestor",
+  "accreditedInvestorVerified",
+  "regulationS",
+  "issuerProspectusFiled",
+  "issuerProspectusExempt",
+  "issuerLicensed",
+  "issuerReportingCompliant",
+  "issuerJurisdiction",
+  "collateral",
+  "isin",
+  "assetClassification",
+  "basePrice",
+  "assetIssuer",
+  "contractIdentity",
+] as const;
 
 /**
  * Enum-like object for dot notation access to ATK topic identifiers.

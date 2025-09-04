@@ -476,14 +476,14 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         // Step 1: Convert token amount to denomination asset notional value
         // tokenAmount is in token base units, basis is denom base units per 1 whole token
         uint256 notionalInDenom = Math.mulDiv(
-            tokenAmount,                  // token base units
-            basis,                         // denom base units per 1 whole token
-            10 ** uint256(tokenDecimals)  // convert token base units to whole tokens
+            tokenAmount, // token base units
+            basis, // denom base units per 1 whole token
+            10 ** uint256(tokenDecimals) // convert token base units to whole tokens
         );
 
         // Step 2: Calculate the yield amount based on the notional value
         uint256 yieldAmountInDenominationAsset = Math.mulDiv(
-            notionalInDenom,  // denom base units
+            notionalInDenom, // denom base units
             _rate,
             RATE_BASIS_POINTS
         );

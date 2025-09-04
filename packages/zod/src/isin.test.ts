@@ -1,9 +1,9 @@
 /**
  * @fileoverview Test suite for ISIN (International Securities Identification Number) validation
- * 
+ *
  * This test suite validates ISIN codes - 12-character alphanumeric securities identifiers
  * used globally to uniquely identify financial instruments (stocks, bonds, derivatives).
- * 
+ *
  * Test Strategy:
  * - Format Validation: 2-letter country + 9 alphanumeric + 1 check digit
  * - Check Digit Validation: Luhn algorithm verification for data integrity
@@ -11,7 +11,7 @@
  * - Real-world Examples: Test with actual ISINs from major companies
  * - Error Cases: Invalid format, wrong check digits, invalid countries
  * - Type Safety: Branded string type prevents mixing with regular strings
- * 
+ *
  * STANDARD: ISO 6166 international standard for securities identification
  * SECURITY: Check digit prevents typos that could reference wrong securities
  */
@@ -100,13 +100,21 @@ describe("isin", () => {
 
   describe("invalid ISINs", () => {
     test("should reject ISINs with wrong length", () => {
-      expect(() => validator.parse("US037833100")).toThrow("ISIN must be exactly 12 characters long");
-      expect(() => validator.parse("US03783310055")).toThrow("ISIN must be exactly 12 characters long");
-      expect(() => validator.parse("")).toThrow("ISIN must be exactly 12 characters long");
+      expect(() => validator.parse("US037833100")).toThrow(
+        "ISIN must be exactly 12 characters long"
+      );
+      expect(() => validator.parse("US03783310055")).toThrow(
+        "ISIN must be exactly 12 characters long"
+      );
+      expect(() => validator.parse("")).toThrow(
+        "ISIN must be exactly 12 characters long"
+      );
     });
 
     test("should reject ISINs with invalid checksum", () => {
-      expect(() => validator.parse("US0378331006")).toThrow("Invalid ISIN checksum");
+      expect(() => validator.parse("US0378331006")).toThrow(
+        "Invalid ISIN checksum"
+      );
     });
 
     test("should reject ISINs with invalid country code", () => {
@@ -248,10 +256,16 @@ describe("getISIN", () => {
   });
 
   test("should throw for invalid ISINs", () => {
-    expect(() => getISIN("US037833100")).toThrow("ISIN must be exactly 12 characters long");
+    expect(() => getISIN("US037833100")).toThrow(
+      "ISIN must be exactly 12 characters long"
+    );
     expect(() => getISIN("US0378331006")).toThrow("Invalid ISIN checksum");
-    expect(() => getISIN("1S0378331005")).toThrow("ISIN must follow the format");
-    expect(() => getISIN("US037833100A")).toThrow("ISIN must follow the format");
+    expect(() => getISIN("1S0378331005")).toThrow(
+      "ISIN must follow the format"
+    );
+    expect(() => getISIN("US037833100A")).toThrow(
+      "ISIN must follow the format"
+    );
   });
 
   test("should throw for non-string types", () => {
@@ -264,13 +278,21 @@ describe("getISIN", () => {
   });
 
   test("should throw for empty strings", () => {
-    expect(() => getISIN("")).toThrow("ISIN must be exactly 12 characters long");
+    expect(() => getISIN("")).toThrow(
+      "ISIN must be exactly 12 characters long"
+    );
   });
 
   test("should throw for strings with special characters", () => {
-    expect(() => getISIN("US037833100$")).toThrow("ISIN must follow the format");
-    expect(() => getISIN("US037833100-")).toThrow("ISIN must follow the format");
-    expect(() => getISIN("US037833100 ")).toThrow("ISIN must follow the format");
+    expect(() => getISIN("US037833100$")).toThrow(
+      "ISIN must follow the format"
+    );
+    expect(() => getISIN("US037833100-")).toThrow(
+      "ISIN must follow the format"
+    );
+    expect(() => getISIN("US037833100 ")).toThrow(
+      "ISIN must follow the format"
+    );
   });
 });
 
@@ -321,7 +343,9 @@ describe("validateIsinChecksum edge cases", () => {
 
   test("should handle mixed case in NSIN portion", () => {
     // Mixed case should be transformed to uppercase, but check digit must be numeric
-    expect(() => isin().parse("us037833100a")).toThrow("ISIN must follow the format");
+    expect(() => isin().parse("us037833100a")).toThrow(
+      "ISIN must follow the format"
+    );
   });
 
   test("should validate various check digits correctly", () => {

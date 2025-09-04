@@ -18,9 +18,10 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
+import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 // No need to import SYSTEM_PERMISSIONS - using direct role requirements
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import {
   TopicCreateOutputSchema,
   type TopicCreateOutput,
@@ -71,7 +72,7 @@ export const topicCreate = onboardedRouter.system.claimTopics.topicCreate
   .use(systemMiddleware)
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: { any: ["claimPolicyManager", "systemManager"] },
+      requiredRoles: SYSTEM_PERMISSIONS.topicCreate,
       getAccessControl: ({ context }) => {
         const systemData = context.system;
         return systemData?.systemAccessManager?.accessControl;

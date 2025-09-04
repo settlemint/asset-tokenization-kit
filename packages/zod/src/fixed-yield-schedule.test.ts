@@ -1,7 +1,9 @@
 import { describe, expect, it } from "bun:test";
 import { format, from } from "dnum";
-import { fixedYieldSchedule, fixedYieldSchedulePeriod } from "./fixed-yield-schedule";
-
+import {
+  fixedYieldSchedule,
+  fixedYieldSchedulePeriod,
+} from "./fixed-yield-schedule";
 
 describe("fixedYieldSchedulePeriod", () => {
   const validator = fixedYieldSchedulePeriod();
@@ -34,7 +36,9 @@ describe("fixedYieldSchedulePeriod", () => {
 
     const result = validator.parse(validPeriod);
     expect(result.totalClaimed).toEqual(validPeriod.totalClaimed);
-    expect(format(result.totalYield, { digits: 30 }).replaceAll(',', "")).toBe("999999999999999999999999999999.99");
+    expect(format(result.totalYield, { digits: 30 }).replaceAll(",", "")).toBe(
+      "999999999999999999999999999999.99"
+    );
   });
 
   it("should reject invalid data", () => {
@@ -86,16 +90,20 @@ describe("fixedYieldSchedule", () => {
     expect(result.id.toLowerCase()).toBe(validSchedule.id.toLowerCase());
     expect(result.startDate).toBeInstanceOf(Date);
     expect(result.rate).toBe("500");
-    expect(result.denominationAsset.id.toLowerCase()).toBe(validSchedule.denominationAsset.id.toLowerCase());
+    expect(result.denominationAsset.id.toLowerCase()).toBe(
+      validSchedule.denominationAsset.id.toLowerCase()
+    );
 
     // Check Dnum parsing
-    expect(format(result.totalClaimed).replaceAll(',', "")).toBe("10000.5");
-    expect(format(result.totalYield).replaceAll(',', "")).toBe("15000.75");
+    expect(format(result.totalClaimed).replaceAll(",", "")).toBe("10000.5");
+    expect(format(result.totalYield).replaceAll(",", "")).toBe("15000.75");
 
     // Check nullable fields
     expect(result.nextPeriod).toBeNull();
     expect(result.currentPeriod).not.toBeNull();
-    expect(result.currentPeriod?.id).toBe(validSchedule.currentPeriod.id as `0x${string}`);
+    expect(result.currentPeriod?.id).toBe(
+      validSchedule.currentPeriod.id as `0x${string}`
+    );
   });
 
   it("should accept schedule with multiple periods and different asset types", () => {
@@ -126,7 +134,9 @@ describe("fixedYieldSchedule", () => {
     const result = validator.parse(schedule);
     expect(result.periods).toHaveLength(1);
     expect(result.nextPeriod?.id).toBe(period1.id as `0x${string}`);
-    expect(result.denominationAsset.id.toLowerCase()).toBe("0x5555555555555555555555555555555555555555");
+    expect(result.denominationAsset.id.toLowerCase()).toBe(
+      "0x5555555555555555555555555555555555555555"
+    );
   });
 
   it("should handle edge cases correctly", () => {
@@ -150,7 +160,7 @@ describe("fixedYieldSchedule", () => {
     expect(result.rate).toBe("0");
     expect(result.interval).toBe("1");
     expect(format(result.totalClaimed)).toBe("0");
-    expect(format(result.totalYield, { digits: 30 }).replaceAll(',', "")).toBe(
+    expect(format(result.totalYield, { digits: 30 }).replaceAll(",", "")).toBe(
       "999999999999999999999999999999.999999999"
     );
   });
@@ -242,9 +252,9 @@ describe("fixedYieldSchedule", () => {
     };
 
     const result = validator.parse(schedule);
-    expect(format(result.totalClaimed).replaceAll(',', "")).toBe("12300000000");
+    expect(format(result.totalClaimed).replaceAll(",", "")).toBe("12300000000");
     expect(format(result.totalUnclaimedYield)).toBe("0.000000000000000001");
-    expect(format(result.totalYield, { digits: 30 }).replaceAll(',', "")).toBe(
+    expect(format(result.totalYield, { digits: 30 }).replaceAll(",", "")).toBe(
       "12345678901234567890123456789.123456789"
     );
   });

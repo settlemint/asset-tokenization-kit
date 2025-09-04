@@ -126,8 +126,8 @@ describe("Token create", () => {
       name: `Test Bond ${Date.now()}`,
       symbol: "TSTB",
       decimals: 18,
-      cap: "1000000",
-      faceValue: "1000",
+      cap: dnumFrom("1000000", 18),
+      faceValue: dnumFrom("1000", 18), // 1000 stablecoin scaled to 18 decimals
       maturityDate: new Date("2025-12-31"),
       denominationAsset: stablecoinResult.id,
       initialModulePairs: [],
@@ -186,14 +186,16 @@ describe("Token create", () => {
     expect(usdcResult.id).toBeDefined();
 
     // Create bond with 18 decimals but denomination asset has 6 decimals
-    // Face value should be interpreted in denomination asset units (6 decimals)
+    // Face value should be scaled according to denomination asset decimals
+    const faceValue = dnumFrom("1000", 6);
+    const cap = dnumFrom("1000000", 18);
     const bondData = {
       type: "bond" as const,
       name: `Test Bond Different Decimals ${Date.now()}`,
       symbol: "TBDD",
       decimals: 18, // Bond token has 18 decimals
-      cap: "1000000000000000000000000", // 1M bonds
-      faceValue: "1000", // 1000 USDC
+      cap: cap,
+      faceValue: faceValue,
       maturityDate: addYears(new Date(), 1),
       denominationAsset: usdcResult.id,
       initialModulePairs: [],
@@ -216,7 +218,7 @@ describe("Token create", () => {
 
     const token = await client.token.read({ tokenAddress: result.id });
     expect(
-      token.bond?.faceValue && dnumEqual(dnumFrom("1000"), token.bond.faceValue)
+      token.bond?.faceValue && dnumEqual(faceValue, token.bond.faceValue)
     ).toBe(true);
   }, 100_000);
 

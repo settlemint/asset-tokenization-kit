@@ -33,7 +33,9 @@ describe("atkTopic", () => {
     });
 
     it("should accept ATKTopicEnum.assetClassification", () => {
-      expect(validator.parse(ATKTopicEnum.assetClassification)).toBe("assetClassification");
+      expect(validator.parse(ATKTopicEnum.assetClassification)).toBe(
+        "assetClassification"
+      );
     });
 
     it("should accept ATKTopicEnum.basePrice", () => {
@@ -208,7 +210,9 @@ describe("getTopicNameFromId", () => {
 
   it("should throw error for unknown IDs", () => {
     const unknownId = 999_999_999_999_999_999n;
-    expect(() => getTopicNameFromId(unknownId)).toThrow(`Topic name for ID ${unknownId} not found`);
+    expect(() => getTopicNameFromId(unknownId)).toThrow(
+      `Topic name for ID ${unknownId} not found`
+    );
   });
 
   it("should be inverse of getTopicId", () => {
@@ -220,7 +224,7 @@ describe("getTopicNameFromId", () => {
   });
 
   it("should handle all ATKTopicEnum values", () => {
-    (Object.values(ATKTopicEnum)).forEach((topic) => {
+    Object.values(ATKTopicEnum).forEach((topic) => {
       const id = getTopicId(topic);
       const retrievedTopic = getTopicNameFromId(id);
       expect(retrievedTopic).toBe(topic);

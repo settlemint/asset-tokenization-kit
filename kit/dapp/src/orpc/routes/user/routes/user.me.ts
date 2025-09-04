@@ -226,13 +226,19 @@ async function getSystemInfo(
 
 function getSystemPermissions(userRoles: ReturnType<typeof mapUserRoles>) {
   // Initialize all actions as false, allowing TypeScript to infer the precise type
-  const initialActions = {
+  const initialActions: Record<keyof typeof SYSTEM_PERMISSIONS, boolean> = {
     tokenFactoryCreate: false,
     addonCreate: false,
     grantRole: false,
     revokeRole: false,
     complianceModuleCreate: false,
     identityRegister: false,
+    trustedIssuerCreate: false,
+    trustedIssuerUpdate: false,
+    trustedIssuerDelete: false,
+    topicCreate: false,
+    topicUpdate: false,
+    topicDelete: false,
   };
 
   const userRoleList = Object.entries(userRoles)

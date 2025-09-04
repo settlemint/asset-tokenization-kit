@@ -1,9 +1,9 @@
 /**
  * @fileoverview Test suite for basis points validation and conversion
- * 
+ *
  * This test suite validates basis points (bps) - a unit of measure for interest rates,
  * fees, and other financial percentages where 1 basis point = 0.01% = 0.0001.
- * 
+ *
  * Test Strategy:
  * - Range Validation: 0-10000 bps (0-100%) with integer constraint
  * - Financial Precision: Integer-only to prevent fractional basis points
@@ -11,7 +11,7 @@
  * - Type Safety: Branded number type for type-safe financial calculations
  * - Edge Cases: Boundary values (0, 10000), negative rejection
  * - Business Logic: Common fee structures (250 bps = 2.5%)
- * 
+ *
  * FINANCIAL: Standard unit in finance - 250 bps = 2.5% management fee
  * PRECISION: Integer constraint prevents impossible fractional basis points
  */
@@ -41,23 +41,37 @@ describe("basisPoints", () => {
     it("should reject negative values", () => {
       // FINANCIAL: Negative basis points don't represent valid fees/rates
       // WHY: Fees and interest rates are non-negative by definition
-      expect(() => validator.parse(-1)).toThrow("Basis points cannot be negative");
-      expect(() => validator.parse(-100)).toThrow("Basis points cannot be negative");
+      expect(() => validator.parse(-1)).toThrow(
+        "Basis points cannot be negative"
+      );
+      expect(() => validator.parse(-100)).toThrow(
+        "Basis points cannot be negative"
+      );
     });
 
     it("should reject values above 10000", () => {
       // LOGICAL: 10000 bps = 100%, cannot exceed total amount
       // FINANCIAL: Fees/rates above 100% are economically nonsensical
-      expect(() => validator.parse(10_001)).toThrow("Basis points cannot exceed 10000 (100%)");
-      expect(() => validator.parse(20_000)).toThrow("Basis points cannot exceed 10000 (100%)");
+      expect(() => validator.parse(10_001)).toThrow(
+        "Basis points cannot exceed 10000 (100%)"
+      );
+      expect(() => validator.parse(20_000)).toThrow(
+        "Basis points cannot exceed 10000 (100%)"
+      );
     });
 
     it("should reject non-integer values", () => {
       // STANDARD: Basis points are always integers by financial convention
       // WHY: 0.5 basis points is not a standard unit in finance
-      expect(() => validator.parse(100.5)).toThrow("Basis points must be an integer");
-      expect(() => validator.parse(0.1)).toThrow("Basis points must be an integer");
-      expect(() => validator.parse(999.99)).toThrow("Basis points must be an integer");
+      expect(() => validator.parse(100.5)).toThrow(
+        "Basis points must be an integer"
+      );
+      expect(() => validator.parse(0.1)).toThrow(
+        "Basis points must be an integer"
+      );
+      expect(() => validator.parse(999.99)).toThrow(
+        "Basis points must be an integer"
+      );
     });
 
     it("should reject non-numeric types", () => {

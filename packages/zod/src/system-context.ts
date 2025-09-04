@@ -14,7 +14,6 @@ import { assetFactoryTypeId } from "./asset-types";
 import { complianceTypeId } from "./compliance";
 import { ethereumAddress } from "./ethereum-address";
 
-
 /**
  * Schema for token factory entries
  */
@@ -80,7 +79,9 @@ export const systemContextSchema = () =>
   z.object({
     system: z.object({
       id: ethereumAddress.describe("System address"),
-      deployedInTransaction: z.string().describe("Transaction hash where system was deployed"),
+      deployedInTransaction: z
+        .string()
+        .describe("Transaction hash where system was deployed"),
       tokenFactoryRegistry: z.object({
         id: ethereumAddress.describe("Token factory registry address"),
         tokenFactories: z
@@ -101,7 +102,9 @@ export const systemContextSchema = () =>
       }),
       systemAccessManager: z.object({
         id: ethereumAddress.describe("System access manager address"),
-        accessControl: accessControlSchema().describe("Access control configuration"),
+        accessControl: accessControlSchema().describe(
+          "Access control configuration"
+        ),
       }),
       identityFactory: z.object({
         id: ethereumAddress.describe("Identity factory address"),

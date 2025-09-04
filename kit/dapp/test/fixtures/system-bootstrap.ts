@@ -1,6 +1,11 @@
+import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { isContractAddress } from "@/test/anvil";
+import type { RoleRequirement } from "@atk/zod/role-requirement";
 import { ORPCError } from "@orpc/server";
 import { retryWhenFailed } from "@settlemint/sdk-utils";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { DEFAULT_INVESTOR } from "@test/fixtures/user";
 import { getOrpcClient, type OrpcClient } from "./orpc-client";
 import {
@@ -9,6 +14,14 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "./user";
+
+const TOKEN_MANAGEMENT_REQUIRED_ROLES = extractRequiredRoles(
+  TOKEN_PERMISSIONS
+).filter((role) => role !== "admin");
+const SYSTEM_MANAGEMENT_REQUIRED_ROLES =
+  extractRequiredRoles(SYSTEM_PERMISSIONS);
+
+const logger = createLogger({ level: "info" });
 
 export async function bootstrapSystem(orpClient: OrpcClient) {
   const systems = await orpClient.system.list({});
@@ -52,7 +65,7 @@ export async function bootstrapSystem(orpClient: OrpcClient) {
   // System.create now grants all necessary roles including:
   // - DEFAULT_ADMIN_ROLE and SYSTEM_MANAGER_ROLE (granted by smart contract)
   // - TOKEN_MANAGER_ROLE, IDENTITY_MANAGER_ROLE, COMPLIANCE_MANAGER_ROLE, ADDON_MANAGER_ROLE (granted by API)
-  console.log("✓ System created with all necessary roles granted");
+  logger.info("✓ System created with all necessary roles granted");
 
   // The create method already returns a fully initialized system
   if (!system.tokenFactoryRegistry) {
@@ -74,7 +87,7 @@ export async function bootstrapTokenFactories(
   }
 ) {
   if (!system.tokenFactoryRegistry) {
-    console.log("System registries not yet initialized:", {
+    logger.info("System registries not yet initialized:", {
       identityRegistry: system.identityRegistry,
       tokenFactoryRegistry: system.tokenFactoryRegistry,
       compliance: system.compliance,
@@ -101,7 +114,7 @@ export async function bootstrapTokenFactories(
   );
 
   if (nonExistingFactories.length === 0) {
-    console.log("All token factories already exist");
+    logger.info("All token factories already exist");
     return;
   }
 
@@ -128,7 +141,7 @@ export async function bootstrapTokenFactories(
       `Token factories attempted: ${nonExistingFactories.length}, succeeded: ${successfulCreations}`
     );
   }
-  console.log("Token factories created", {
+  logger.info("Token factories created", {
     created: result.tokenFactories.map((f) => {
       return {
         typeId: f.typeId,
@@ -150,11 +163,11 @@ export async function bootstrapTokenFactories(
     const { id: address, typeId, name } = factory;
     const isContract = await isContractAddress(address);
     if (!isContract) {
-      console.log(
+      logger.info(
         `Token factory ${name} (${typeId}) at ${address} is not a contract`
       );
     } else {
-      console.log(
+      logger.info(
         `Token factory ${name} (${typeId}) at ${address} is a contract`
       );
     }
@@ -164,7 +177,7 @@ export async function bootstrapTokenFactories(
 export async function bootstrapAddons(orpClient: OrpcClient) {
   const addons = await orpClient.system.addon.list({});
   if (addons.length > 0) {
-    console.log("Addons already exist");
+    logger.info("Addons already exist");
     return;
   }
 
@@ -194,19 +207,12 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
   const issuerOrpcClient = getOrpcClient(await signInWithUser(DEFAULT_ISSUER));
   const issuerMe = await issuerOrpcClient.user.me({});
 
-  const rolesToGrant = [
-    ...(!issuerMe.userSystemPermissions.roles.tokenManager
-      ? ["tokenManager" as const]
-      : []),
-    ...(!issuerMe.userSystemPermissions.roles.complianceManager
-      ? ["complianceManager" as const]
-      : []),
-    ...(!issuerMe.userSystemPermissions.roles.identityManager
-      ? ["identityManager" as const]
-      : []),
-  ];
+  const rolesToGrant = TOKEN_MANAGEMENT_REQUIRED_ROLES.filter(
+    (role) => issuerMe.userSystemPermissions.roles[role] !== true
+  );
 
   if (rolesToGrant.length > 0) {
+    logger.info("Granting roles to issuer", { roles: rolesToGrant });
     await orpClient.system.accessManager.grantRole({
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
@@ -218,10 +224,74 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
   }
 }
 
+export async function setupDefaultAdminRoles(orpClient: OrpcClient) {
+  const adminMe = await orpClient.user.me({});
+
+  const allRoles = Array.from(
+    new Set([
+      ...SYSTEM_MANAGEMENT_REQUIRED_ROLES,
+      ...TOKEN_MANAGEMENT_REQUIRED_ROLES,
+    ])
+  );
+  const rolesToGrant = allRoles.filter(
+    (role) => adminMe.userSystemPermissions.roles[role] !== true
+  );
+
+  if (rolesToGrant.length > 0) {
+    logger.info("Granting roles to admin", { roles: rolesToGrant });
+    await orpClient.system.accessManager.grantRole({
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
+      address: adminMe.wallet ?? "",
+      role: rolesToGrant,
+    });
+  }
+}
+
+export async function setupTrustedClaimIssuers(orpClient: OrpcClient) {
+  const topics = await orpClient.system.claimTopics.topicList({});
+  const trustedIssuers = await orpClient.system.trustedIssuers.list({});
+  const adminAccount = await orpClient.account.me({});
+  if (!trustedIssuers.some((t) => t.id === adminAccount?.identity)) {
+    logger.info("Making admin a trusted issuer of all topics");
+    // Make admin a trusted issuer of all topics
+    await orpClient.system.trustedIssuers.create({
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
+      issuerAddress: adminAccount?.identity ?? "",
+      claimTopicIds: topics.map((t) => t.topicId),
+    });
+  }
+  const issuerOrpcClient = getOrpcClient(await signInWithUser(DEFAULT_ISSUER));
+  const issuerAccount = await issuerOrpcClient.account.me({});
+  if (!trustedIssuers.some((t) => t.id === issuerAccount?.identity)) {
+    logger.info("Making issuer a trusted issuer of asset related topics");
+    // Make issuer a trusted issuer of asset related topics
+    await orpClient.system.trustedIssuers.create({
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
+      issuerAddress: issuerAccount?.identity ?? "",
+      claimTopicIds: topics
+        .filter((topic) =>
+          ["collateral", "assetClassification", "basePrice", "isin"].includes(
+            topic.name
+          )
+        )
+        .map((t) => t.topicId),
+    });
+  }
+}
+
 export async function setDefaultSystemSettings(orpClient: OrpcClient) {
   const settings = await orpClient.settings.list({});
   if (settings.find((s) => s.key === "BASE_CURRENCY")) {
-    console.log("Base currency already set");
+    logger.info("Base currency already set");
     return;
   }
   await orpClient.settings.upsert({
@@ -278,4 +348,34 @@ export async function createAndRegisterUserIdentities(orpcClient: OrpcClient) {
       }
     })
   );
+}
+
+function extractRequiredRoles(permissions: Record<string, RoleRequirement>) {
+  return Object.entries(permissions).reduce((acc, [, requiredRoles]) => {
+    const roles = getRoles([requiredRoles]);
+    roles.forEach((role) => {
+      if (!acc.includes(role)) {
+        acc.push(role);
+      }
+    });
+    return acc;
+  }, [] as AccessControlRoles[]);
+}
+
+function getRoles(requirements: RoleRequirement[], depth = 0) {
+  const roles: AccessControlRoles[] = [];
+  if (depth > 10) {
+    return [];
+  }
+  for (const requirement of requirements) {
+    if (typeof requirement === "string") {
+      roles.push(requirement);
+    } else if ("any" in requirement) {
+      roles.push(...getRoles(requirement.any, depth + 1));
+    } else if ("all" in requirement) {
+      roles.push(...getRoles(requirement.all, depth + 1));
+    }
+  }
+
+  return roles;
 }

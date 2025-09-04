@@ -20,7 +20,8 @@ export const airdropTypes = ["whitelist", "merkle", "claim"] as const;
  * const invalid = schema.parse("invalid"); // Throws ZodError
  * ```
  */
-export const airdropType = () => z.enum(airdropTypes).describe("Type of airdrop mechanism");
+export const airdropType = () =>
+  z.enum(airdropTypes).describe("Type of airdrop mechanism");
 
 /**
  * Type representing valid airdrop mechanisms.

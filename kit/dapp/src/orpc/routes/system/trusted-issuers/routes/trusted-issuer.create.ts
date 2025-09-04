@@ -17,6 +17,7 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { systemRouter } from "@/orpc/procedures/system.router";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import {
   TrustedIssuerCreateOutputSchema,
   type TrustedIssuerCreateOutput,
@@ -66,7 +67,7 @@ const CREATE_TRUSTED_ISSUER_MUTATION = portalGraphql(`
 export const trustedIssuerCreate = systemRouter.system.trustedIssuers.create
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: { any: ["claimPolicyManager", "systemModule"] },
+      requiredRoles: SYSTEM_PERMISSIONS.trustedIssuerCreate,
       getAccessControl: ({ context }) => {
         const systemData = context.system;
         return systemData?.systemAccessManager?.accessControl;

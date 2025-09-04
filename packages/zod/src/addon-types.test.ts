@@ -171,7 +171,11 @@ describe("addonFactoryTypeId", () => {
 describe("getFactoryTypeIdsFromAddonType", () => {
   it("should return correct factory typeIds for airdrops", () => {
     const result = getFactoryTypeIdsFromAddonType("airdrops");
-    expect(result).toEqual(["ATKPushAirdropFactory", "ATKVestingAirdropFactory", "ATKTimeBoundAirdropFactory"]);
+    expect(result).toEqual([
+      "ATKPushAirdropFactory",
+      "ATKVestingAirdropFactory",
+      "ATKTimeBoundAirdropFactory",
+    ]);
   });
 
   it("should return correct factory typeIds for yield", () => {
@@ -187,21 +191,33 @@ describe("getFactoryTypeIdsFromAddonType", () => {
 
 describe("getAddonCategoryFromFactoryTypeId", () => {
   it("should return distribution for airdrop factories", () => {
-    expect(getAddonCategoryFromFactoryTypeId("ATKPushAirdropFactory")).toBe("distribution");
-    expect(getAddonCategoryFromFactoryTypeId("ATKVestingAirdropFactory")).toBe("distribution");
-    expect(getAddonCategoryFromFactoryTypeId("ATKTimeBoundAirdropFactory")).toBe("distribution");
+    expect(getAddonCategoryFromFactoryTypeId("ATKPushAirdropFactory")).toBe(
+      "distribution"
+    );
+    expect(getAddonCategoryFromFactoryTypeId("ATKVestingAirdropFactory")).toBe(
+      "distribution"
+    );
+    expect(
+      getAddonCategoryFromFactoryTypeId("ATKTimeBoundAirdropFactory")
+    ).toBe("distribution");
   });
 
   it("should return income for yield factory", () => {
-    expect(getAddonCategoryFromFactoryTypeId("ATKFixedYieldScheduleFactory")).toBe("income");
+    expect(
+      getAddonCategoryFromFactoryTypeId("ATKFixedYieldScheduleFactory")
+    ).toBe("income");
   });
 
   it("should return exchange for XvP factory", () => {
-    expect(getAddonCategoryFromFactoryTypeId("ATKXvPSettlementFactory")).toBe("exchange");
+    expect(getAddonCategoryFromFactoryTypeId("ATKXvPSettlementFactory")).toBe(
+      "exchange"
+    );
   });
 
   it("should return custody for vault factory", () => {
-    expect(getAddonCategoryFromFactoryTypeId("ATKVaultFactory")).toBe("custody");
+    expect(getAddonCategoryFromFactoryTypeId("ATKVaultFactory")).toBe(
+      "custody"
+    );
   });
 
   it("should return distribution for unknown", () => {
@@ -216,7 +232,12 @@ describe("constants", () => {
   });
 
   it("should export addonCategories as const tuple", () => {
-    expect(addonCategories).toEqual(["distribution", "exchange", "custody", "income"]);
+    expect(addonCategories).toEqual([
+      "distribution",
+      "exchange",
+      "custody",
+      "income",
+    ]);
     expect(addonCategories.length).toBe(4);
   });
 

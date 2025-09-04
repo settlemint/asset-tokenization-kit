@@ -272,14 +272,6 @@ function createValidatedPortalClient(
         const errorMessage =
           error instanceof Error ? error.message : String(error);
 
-        // Log the actual error for debugging
-        // eslint-disable-next-line no-console
-        console.error(`[Portal Middleware] GraphQL ${operation} error:`, {
-          errorMessage,
-          error,
-          variables: enrichedVariables,
-        });
-
         throw errors.PORTAL_ERROR({
           message:
             mapPortalErrorMessage(errorMessage) ??
