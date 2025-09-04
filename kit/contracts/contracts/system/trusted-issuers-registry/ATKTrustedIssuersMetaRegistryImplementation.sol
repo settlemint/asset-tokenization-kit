@@ -128,14 +128,10 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
             ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE
         )
     {
-        if (contractAddress == address(0)) revert InvalidContractAddress();
-        // registry can be address(0) to remove the contract-specific registry
-
-        address oldRegistry = address(_contractRegistries[contractAddress]);
-        _contractRegistries[contractAddress] = IATKTrustedIssuersRegistry(registry);
-
-        emit ContractRegistrySet(_msgSender(), contractAddress, oldRegistry, registry);
+        _setRegistryForContract(contractAddress, registry);
     }
+
+
 
     /// @notice Removes a contract-specific trusted issuers registry
     /// @dev Convenience function that delegates to setRegistryForContract with address(0)
@@ -148,8 +144,8 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
             ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE
         )
     {
-        // Delegate to setRegistryForContract with address(0) to remove the registry
-        this.setRegistryForContract(contractAddress, address(0));
+        // Delegate to internal setter with address(0) to remove the registry
+        _setRegistryForContract(contractAddress, address(0));
     }
 
     // --- Registry Getters ---
@@ -241,6 +237,19 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     }
 
     // --- Internal Helper Functions ---
+
+    /// @notice Internal setter for contract-specific trusted issuers registry used by add/remove
+    /// @param contractAddress The contract address to set the registry for
+    /// @param registry The address of the trusted issuers registry for this contract (can be address(0) to remove)
+    function _setRegistryForContract(address contractAddress, address registry) private {
+        if (contractAddress == address(0)) revert InvalidContractAddress();
+        // registry can be address(0) to remove the contract-specific registry
+
+        address oldRegistry = address(_contractRegistries[contractAddress]);
+        _contractRegistries[contractAddress] = IATKTrustedIssuersRegistry(registry);
+
+        emit ContractRegistrySet(_msgSender(), contractAddress, oldRegistry, registry);
+    }
 
     function _getTrustedIssuers(address _subject) internal view returns (IClaimIssuer[] memory) {
         // If subject is address(0), only return system registry issuers (system-only verification)
