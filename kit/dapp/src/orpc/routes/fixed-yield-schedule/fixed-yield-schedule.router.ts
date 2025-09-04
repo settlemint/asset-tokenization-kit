@@ -1,5 +1,6 @@
 import { create } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.create";
 import { read } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.read";
+import { topUp } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.top-up";
 
 /**
  * Fixed yield schedule router configuration.
@@ -45,6 +46,17 @@ const routes = {
    * @see {@link ./routes/fixed-yield-schedule.read} - Implementation details
    */
   read,
+
+  /**
+   * Top up denomination asset in a fixed yield schedule.
+   *
+   * Adds denomination assets to an existing fixed yield schedule contract
+   * to ensure sufficient funds are available for yield payments.
+   * Returns the transaction hash of the top up operation.
+   *
+   * @see {@link ./routes/fixed-yield-schedule.top-up} - Implementation details
+   */
+  topUp,
 };
 
 export default routes;

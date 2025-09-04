@@ -1,8 +1,7 @@
 /**
  * @vitest-environment node
  */
-import type { Dnum } from "dnum";
-import { toNumber } from "dnum";
+import { isDnum, toNumber } from "dnum";
 import { expect } from "vitest";
 
 /**
@@ -15,19 +14,6 @@ export const TEST_CONSTANTS = {
   MIN_DAYS: 1,
   DEFAULT_TIMEOUT: 30000,
 } as const;
-
-/**
- * Validate that a value is a proper Dnum structure
- * Dnum is a tuple: [value: bigint, decimals: number]
- */
-export function isDnum(value: unknown): value is Dnum {
-  return (
-    Array.isArray(value) &&
-    value.length === 2 &&
-    typeof value[0] === "bigint" &&
-    typeof value[1] === "number"
-  );
-}
 
 /**
  * Assert that a value is a valid Dnum and optionally check its numeric value
