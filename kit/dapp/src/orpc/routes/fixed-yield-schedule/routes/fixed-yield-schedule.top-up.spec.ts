@@ -9,7 +9,7 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
-import { from } from "dnum";
+import { eq, from } from "dnum";
 import { beforeAll, describe, expect, test } from "vitest";
 
 describe("Fixed yield schedule top up", async () => {
@@ -161,7 +161,7 @@ describe("Fixed yield schedule top up", async () => {
 
     expect(readResult).toBeDefined();
     expect(readResult.denominationAsset.balance).toBeDefined();
-    expect(readResult.denominationAsset.balance).toBe(from(10));
+    expect(eq(readResult.denominationAsset.balance, from(10))).toBe(true);
   }, 100_000);
 
   test("regular users can top up", async () => {
@@ -186,6 +186,6 @@ describe("Fixed yield schedule top up", async () => {
 
     expect(readResult).toBeDefined();
     expect(readResult.denominationAsset.balance).toBeDefined();
-    expect(readResult.denominationAsset.balance).toBe(from(20));
+    expect(eq(readResult.denominationAsset.balance, from(20))).toBe(true);
   }, 100_000);
 });
