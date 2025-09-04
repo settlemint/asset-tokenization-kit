@@ -131,7 +131,7 @@ export const list = authRouter.user.list
   .use(theGraphMiddleware)
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: { any: ["identityManager"] },
+      requiredRoles: { any: ["identityManager", "claimIssuer"] },
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },
