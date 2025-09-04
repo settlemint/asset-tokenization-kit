@@ -30,7 +30,7 @@
   "devDependencies": {
     "contracts": "workspace:*",
     "subgraph": "workspace:*",
-    "@settlemint/sdk-utils": "2.6.1"
+    "@settlemint/sdk-utils": "2.6.2"
   },
   "peerDependencies": {}
 }
