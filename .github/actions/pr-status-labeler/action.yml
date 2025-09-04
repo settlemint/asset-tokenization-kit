@@ -32,7 +32,7 @@ runs:
   using: "composite"
   steps:
     - name: Check and create labels if needed
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       env:
         LOG_LEVEL: ${{ inputs.log_level }}
       with:
@@ -41,7 +41,7 @@ runs:
           await ensureStatusLabelsExist({ github, context });
 
     - name: Update PR status label efficiently
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       env:
         LOG_LEVEL: ${{ inputs.log_level }}
       with:
