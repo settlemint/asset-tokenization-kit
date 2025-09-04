@@ -140,7 +140,7 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
         }
 
         // Emit subject-aware event with address(0) as subject for system registry
-        emit TrustedIssuerAdded(_msgSender(), _trustedIssuer, address(0), _claimTopics);
+        emit TrustedIssuerAdded(_msgSender(), _trustedIssuer, _claimTopics, address(0));
     }
 
     /// @inheritdoc IATKTrustedIssuersRegistry
@@ -201,7 +201,7 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
         _trustedIssuers[issuerAddress].claimTopics = _newClaimTopics;
 
         // Emit subject-aware event with address(0) as subject for system registry
-        emit ClaimTopicsUpdated(_msgSender(), _trustedIssuer, address(0), _newClaimTopics);
+        emit ClaimTopicsUpdated(_msgSender(), _trustedIssuer, _newClaimTopics, address(0));
     }
 
 
@@ -247,6 +247,9 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
     function getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer, address) external view override returns (uint256[] memory) {
+        address issuerAddress = address(_trustedIssuer);
+        if (!_trustedIssuers[issuerAddress].exists) revert IssuerDoesNotExist(issuerAddress);
+
         return _trustedIssuers[address(_trustedIssuer)].claimTopics;
     }
 

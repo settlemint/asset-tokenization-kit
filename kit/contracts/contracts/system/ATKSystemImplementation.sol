@@ -648,6 +648,21 @@ contract ATKSystemImplementation is
         emit SystemTrustedIssuersRegistryImplementationUpdated(_msgSender(), implementation_);
     }
 
+    /// @notice Sets (updates) the address of the trusted issuers meta registry module's implementation (logic) contract.
+    /// @dev Only callable by an address with the `DEFAULT_ADMIN_ROLE`.
+    /// Reverts if `implementation` is zero or doesn't support `IATKTrustedIssuersMetaRegistry`.
+    /// Emits a `TrustedIssuersMetaRegistryImplementationUpdated` event.
+    /// @param implementation_ The new address for the trusted issuers meta registry logic contract.
+    function setTrustedIssuersMetaRegistryImplementation(address implementation_)
+        public
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
+    {
+        if (implementation_ == address(0)) revert TrustedIssuersMetaRegistryImplementationNotSet();
+        _checkInterface(implementation_, _TRUSTED_ISSUERS_META_REGISTRY_ID);
+        _implementations[TRUSTED_ISSUERS_META_REGISTRY] = implementation_;
+        emit TrustedIssuersMetaRegistryImplementationUpdated(_msgSender(), implementation_);
+    }
+
     /// @notice Sets (updates) the address of the topic scheme registry module's implementation (logic) contract.
     /// @dev Only callable by an address with the `DEFAULT_ADMIN_ROLE`.
     /// Reverts if `implementation` is zero or doesn't support `ISMARTTopicSchemeRegistry`.

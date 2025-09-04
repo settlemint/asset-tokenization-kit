@@ -35,6 +35,10 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @param sender The address that called the `updateTrustedIssuersRegistryImplementation` function.
     /// @param newImplementation The address of the new trusted issuers registry module implementation contract.
     event SystemTrustedIssuersRegistryImplementationUpdated(address indexed sender, address indexed newImplementation);
+    /// @notice Emitted when the implementation (logic contract) for the trusted issuers meta registry module is updated.
+    /// @param sender The address that called the `updateTrustedIssuersMetaRegistryImplementation` function.
+    /// @param newImplementation The address of the new trusted issuers meta registry module implementation contract.
+    event TrustedIssuersMetaRegistryImplementationUpdated(address indexed sender, address indexed newImplementation);
     /// @notice Emitted when the implementation (logic contract) for the topic scheme registry module is updated.
     /// @param sender The address that called the `updateTopicSchemeRegistryImplementation` function.
     /// @param newImplementation The address of the new topic scheme registry module implementation contract.
@@ -48,7 +52,6 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @param sender The address that called the `updateIdentityImplementation` function.
     /// @param newImplementation The address of the new standard identity module implementation contract.
     event IdentityImplementationUpdated(address indexed sender, address indexed newImplementation);
-
     /// @notice Emitted when the implementation (logic contract) for the contract identity module is updated.
     /// @dev Contract identity contracts are identities associated with any contract implementing IContractWithIdentity.
     /// @param sender The address that called the `updateContractIdentityImplementation` function.

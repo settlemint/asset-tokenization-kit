@@ -18,10 +18,10 @@ interface IATKTrustedIssuersRegistry is ISMARTTrustedIssuersRegistry, IClaimAuth
     /// @notice Emitted when a trusted issuer is added in the registry
     /// @dev This event is emitted when a trusted issuer is added in the registry.
     /// @param _sender is the address of the sender of the transaction.
-    /// @param _subject is the address of the subject of the trusted issuer.
     /// @param _trustedIssuer is the address of the trusted issuer's ClaimIssuer contract.
     /// @param _claimTopics is the set of claims that the trusted issuer is allowed to emit.
-    event TrustedIssuerAdded(address indexed _sender, IClaimIssuer indexed _trustedIssuer,  address indexed _subject,  uint256[] _claimTopics);
+    /// @param _subject is the address of the subject of the trusted issuer.
+    event TrustedIssuerAdded(address indexed _sender, IClaimIssuer indexed _trustedIssuer,  uint256[] _claimTopics,  address indexed _subject);
 
     /// @notice Emitted when a trusted issuer is removed from the registry
     /// @dev This event is emitted when a trusted issuer is removed from the registry.
@@ -34,9 +34,9 @@ interface IATKTrustedIssuersRegistry is ISMARTTrustedIssuersRegistry, IClaimAuth
     /// @dev This event is emitted when the set of claim topics is changed for a given trusted issuer.
     /// @param _sender is the address of the sender of the transaction.
     /// @param _trustedIssuer is the address of the trusted issuer's ClaimIssuer contract.
-    /// @param _subject is the address of the subject of the trusted issuer.
     /// @param _claimTopics is the set of claims that the trusted issuer is allowed to emit.
-    event ClaimTopicsUpdated(address indexed _sender, IClaimIssuer indexed _trustedIssuer,  address indexed _subject, uint256[] _claimTopics);
+    /// @param _subject is the address of the subject of the trusted issuer.
+    event ClaimTopicsUpdated(address indexed _sender, IClaimIssuer indexed _trustedIssuer, uint256[] _claimTopics, address indexed _subject);
 
     // --- Functions ---
 

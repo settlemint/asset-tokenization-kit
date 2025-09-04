@@ -16,6 +16,7 @@ import { ATKSystemAccessManagerImplementation } from
 import { IATKSystemTrustedIssuersRegistry } from
     "../../../contracts/system/trusted-issuers-registry/IATKSystemTrustedIssuersRegistry.sol";
 import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
+import { IATKTrustedIssuersRegistry } from "../../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
 
 // Mock claim issuer for testing
 contract MockClaimIssuer {
@@ -46,10 +47,6 @@ contract ATKSystemTrustedIssuersRegistryImplementationTest is Test {
     uint256 constant AML_TOPIC = 2;
     uint256 constant ACCREDITATION_TOPIC = 3;
 
-    // Events
-    event TrustedIssuerAdded(address indexed sender, address indexed _issuer, uint256[] _claimTopics);
-    event TrustedIssuerRemoved(address indexed sender, address indexed _issuer);
-    event ClaimTopicsUpdated(address indexed sender, address indexed _issuer, uint256[] _claimTopics);
 
     function setUp() public {
         // Deploy mock issuers
@@ -105,8 +102,7 @@ contract ATKSystemTrustedIssuersRegistryImplementationTest is Test {
 
         vm.prank(claimPolicyManager);
         vm.expectEmit(true, true, false, false);
-        emit TrustedIssuerAdded(claimPolicyManager, address(issuer1), topics);
-
+        emit IATKTrustedIssuersRegistry.TrustedIssuerAdded(claimPolicyManager, IClaimIssuer(address(issuer1)), topics, address(0));
         registry.addTrustedIssuer(IClaimIssuer(address(issuer1)), topics);
 
         // Verify issuer was added
@@ -183,7 +179,7 @@ contract ATKSystemTrustedIssuersRegistryImplementationTest is Test {
         // Remove issuer
         vm.prank(claimPolicyManager);
         vm.expectEmit(true, true, false, false);
-        emit TrustedIssuerRemoved(claimPolicyManager, address(issuer1));
+        emit IATKTrustedIssuersRegistry.TrustedIssuerRemoved(claimPolicyManager, IClaimIssuer(address(issuer1)), address(0));
 
         registry.removeTrustedIssuer(IClaimIssuer(address(issuer1)));
 
@@ -237,7 +233,7 @@ contract ATKSystemTrustedIssuersRegistryImplementationTest is Test {
 
         vm.prank(claimPolicyManager);
         vm.expectEmit(true, true, false, false);
-        emit ClaimTopicsUpdated(claimPolicyManager, address(issuer1), newTopics);
+        emit IATKTrustedIssuersRegistry.ClaimTopicsUpdated(claimPolicyManager, IClaimIssuer(address(issuer1)), newTopics, address(0));
 
         registry.updateIssuerClaimTopics(IClaimIssuer(address(issuer1)), newTopics);
 

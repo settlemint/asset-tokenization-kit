@@ -149,7 +149,7 @@ contract TokenTrustedIssuersRegistry is
             unchecked { ++i; }
         }
 
-        emit TrustedIssuerAdded(_msgSender(), _trustedIssuer, _token.onchainID(), _claimTopics);
+        emit TrustedIssuerAdded(_msgSender(), _trustedIssuer, _claimTopics, _token.onchainID());
     }
 
     /// @inheritdoc IATKTrustedIssuersRegistry
@@ -208,7 +208,7 @@ contract TokenTrustedIssuersRegistry is
         // Update the stored claim topics
         _trustedIssuers[issuerAddress].claimTopics = _newClaimTopics;
 
-        emit ClaimTopicsUpdated(_msgSender(), _trustedIssuer, _token.onchainID(), _newClaimTopics);
+        emit ClaimTopicsUpdated(_msgSender(), _trustedIssuer, _newClaimTopics, _token.onchainID());
     }
 
     // --- ISMARTTrustedIssuersRegistry Implementation ---
