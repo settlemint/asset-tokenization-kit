@@ -33,20 +33,12 @@ export function DnumField({
   placeholder?: Dnum;
 }) {
   const field = useFieldContext<Dnum | undefined>();
-  const [displayValue, setDisplayValue] = useState("");
+  const [displayValue, setDisplayValue] = useState(() =>
+    field.state.value ? format(field.state.value, { locale: language }) : ""
+  );
   const inputRef = useRef<HTMLInputElement>(null);
   const { i18n } = useTranslation();
   const { language } = i18n;
-
-  // Initialize display value from field value
-  useState(() => {
-    if (field.state.value) {
-      const formatted = format(field.state.value, {
-        locale: language,
-      });
-      setDisplayValue(formatted);
-    }
-  });
 
   const validateAndConvert = useCallback(
     (value: string): Dnum | undefined => {
