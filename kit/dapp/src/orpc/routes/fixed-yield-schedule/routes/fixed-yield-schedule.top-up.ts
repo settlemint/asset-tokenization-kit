@@ -113,23 +113,15 @@ export const topUp = systemRouter.fixedYieldSchedule.topUp.handler(
       {
         input: { id: contract.toLowerCase() },
         output: z.object({
-          tokenFixedYieldSchedule: z
-            .object({
+          tokenFixedYieldSchedule: z.object({
+            id: ethereumAddress,
+            denominationAsset: z.object({
               id: ethereumAddress,
-              denominationAsset: z.object({
-                id: ethereumAddress,
-              }),
-            })
-            .nullable(),
+            }),
+          }),
         }),
       }
     );
-
-    if (!scheduleData.tokenFixedYieldSchedule?.denominationAsset) {
-      throw errors.NOT_FOUND({
-        message: "Fixed yield schedule or denomination asset not found.",
-      });
-    }
 
     const denominationAsset =
       scheduleData.tokenFixedYieldSchedule.denominationAsset.id;
@@ -162,13 +154,6 @@ export const topUp = systemRouter.fixedYieldSchedule.topUp.handler(
         type: walletVerification.verificationType,
       }
     );
-
-    if (!transactionHash) {
-      throw errors.INTERNAL_SERVER_ERROR({
-        message:
-          "Failed to top up denomination asset. No transaction hash returned.",
-      });
-    }
 
     return {
       transactionHash,

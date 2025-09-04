@@ -32,17 +32,19 @@ export async function createToken(
     throw new Error("Token not deployed");
   }
 
-  let rolesToGrant: AccessControlRole[] = actions.grantRole
-    ? Array.isArray(actions.grantRole)
-      ? actions.grantRole
-      : [actions.grantRole]
+  const { grantRole, unpause } = actions;
+
+  let rolesToGrant: AccessControlRole[] = grantRole
+    ? Array.isArray(grantRole)
+      ? grantRole
+      : [grantRole]
     : [];
 
-  if (actions.unpause) {
+  if (unpause) {
     rolesToGrant = Array.from(new Set([...rolesToGrant, "emergency"]));
   }
 
-  if (actions.grantRole) {
+  if (rolesToGrant.length > 0) {
     const me = await orpClient.user.me({});
     await orpClient.token.grantRole({
       walletVerification: {
@@ -55,7 +57,7 @@ export async function createToken(
     });
   }
 
-  if (actions.unpause) {
+  if (unpause) {
     await orpClient.token.unpause({
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
