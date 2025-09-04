@@ -1,18 +1,18 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 import ForwarderModule from "./forwarder";
 
-const TrustedIssuerRegistryModule = buildModule(
+const SystemTrustedIssuerRegistryModule = buildModule(
   "TrustedIssuerRegistryModule",
   (m) => {
     const { forwarder } = m.useModule(ForwarderModule);
 
-    const trustedIssuerRegistry = m.contract(
+    const systemTrustedIssuerRegistry = m.contract(
       "ATKSystemTrustedIssuersRegistryImplementation",
       [forwarder]
     );
 
-    return { trustedIssuerRegistry };
+    return { systemTrustedIssuerRegistry };
   }
 );
 
-export default TrustedIssuerRegistryModule;
+export default SystemTrustedIssuerRegistryModule;

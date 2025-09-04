@@ -79,17 +79,30 @@ const ATKOnboardingSystemModule = buildModule(
       { id: "identityRegistryStorage" }
     );
 
-    const trustedIssuersRegistryAddress = m.readEventArgument(
+    const systemTrustedIssuersRegistryAddress = m.readEventArgument(
       bootstrap,
       "Bootstrapped",
-      "trustedIssuersRegistryProxy",
-      { id: "trustedIssuersRegistryAddress" }
+      "systemTrustedIssuersRegistryProxy",
+      { id: "systemTrustedIssuersRegistryAddress" }
     );
 
-    const trustedIssuersRegistry = m.contractAt(
+    const systemTrustedIssuersRegistry = m.contractAt(
       "ATKSystemTrustedIssuersRegistryImplementation",
-      trustedIssuersRegistryAddress,
-      { id: "trustedIssuersRegistry" }
+      systemTrustedIssuersRegistryAddress,
+      { id: "systemTrustedIssuersRegistry" }
+    );
+
+    const trustedIssuersMetaRegistryAddress = m.readEventArgument(
+      bootstrap,
+      "Bootstrapped",
+      "trustedIssuersMetaRegistryProxy",
+      { id: "trustedIssuersMetaRegistryAddress" }
+    );
+
+    const trustedIssuersMetaRegistry = m.contractAt(
+      "ATKTrustedIssuersMetaRegistryImplementation",
+      trustedIssuersMetaRegistryAddress,
+      { id: "trustedIssuersMetaRegistry" }
     );
 
     const topicSchemeRegistryAddress = m.readEventArgument(
@@ -162,7 +175,8 @@ const ATKOnboardingSystemModule = buildModule(
       compliance,
       identityRegistry,
       identityRegistryStorage,
-      trustedIssuersRegistry,
+      systemTrustedIssuersRegistry,
+      trustedIssuersMetaRegistry,
       topicSchemeRegistry,
       identityFactory,
       tokenFactoryRegistry,

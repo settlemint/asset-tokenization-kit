@@ -72,18 +72,18 @@ const CONTRACT_ADDRESSES = {
     "0x5e771e1417100000000000000000000000020008",
   ATKTokenAccessManagerImplementation:
     "0x5e771e1417100000000000000000000000020009",
-
-  // System access manager implementation
   ATKSystemAccessManagerImplementation:
-    "0x5e771e141710000000000000000000000002000a",
+    "0x5e771e1417100000000000000000000000020010",
+  ATKTrustedIssuersMetaRegistryImplementation:
+    "0x5e771e1417100000000000000000000000020011",
 
   // Registry implementations
   ATKTokenFactoryRegistryImplementation:
-    "0x5e771e1417100000000000000000000000020010",
+    "0x5e771e1417100000000000000000000000020050",
   ATKComplianceModuleRegistryImplementation:
-    "0x5e771e1417100000000000000000000000020011",
+    "0x5e771e1417100000000000000000000000020051",
   ATKSystemAddonRegistryImplementation:
-    "0x5e771e1417100000000000000000000000020012",
+    "0x5e771e1417100000000000000000000000020052",
 
   // System
   ATKSystemImplementation: "0x5e771e1417100000000000000000000000020087",
@@ -167,6 +167,8 @@ const CONTRACT_FILES = {
     "contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol",
   ATKSystemAddonRegistryImplementation:
     "contracts/system/addons/ATKSystemAddonRegistryImplementation.sol",
+  ATKTrustedIssuersMetaRegistryImplementation:
+    "contracts/system/trusted-issuers-registry/ATKTrustedIssuersMetaRegistryImplementation.sol",
 
   // System
   ATKSystemImplementation: "contracts/system/ATKSystemImplementation.sol",
