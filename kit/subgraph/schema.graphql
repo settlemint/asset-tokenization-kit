@@ -484,7 +484,7 @@ type TrustedIssuersRegistry @entity(immutable: false) {
 }
 
 type TrustedIssuer @entity(immutable: false) {
-  # Unique identifier - issuer address
+  # Unique identifier - issuer identity address
   id: Bytes!
   # Transaction hash where this was added
   deployedInTransaction: Bytes!
@@ -492,6 +492,8 @@ type TrustedIssuer @entity(immutable: false) {
   registry: TrustedIssuersRegistry!
   # Topics this issuer can verify
   claimTopics: [TopicScheme!]!
+  # Account associated with this trusted issuer identity
+  account: Account
 }
 
 type ComplianceModuleRegistry @entity(immutable: false) {

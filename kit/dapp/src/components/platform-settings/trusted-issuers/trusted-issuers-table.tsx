@@ -8,6 +8,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { formatValue } from "@/lib/utils/format-value";
 import { orpc } from "@/orpc/orpc-client";
 import type { TrustedIssuer } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.list.schema";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -44,12 +45,22 @@ export function TrustedIssuersTable() {
   const columns = useMemo(
     () =>
       withAutoFeatures([
-        columnHelper.accessor("id", {
+        columnHelper.display({
           header: t("trustedIssuers.table.columns.issuerIdentity"),
           meta: {
             displayName: t("trustedIssuers.table.columns.issuerIdentity"),
             type: "address",
             icon: Hash,
+          },
+          cell: ({ row }) => {
+            const formatted = formatValue(
+              row.original.account?.id ?? row.original.id,
+              {
+                type: "address",
+                displayName: t("trustedIssuers.table.columns.issuerIdentity"),
+              }
+            );
+            return formatted;
           },
         }),
         columnHelper.display({

@@ -100,8 +100,18 @@ export function AddTrustedIssuerSheet({
         verificationType: "PINCODE" as const,
       } as UserVerification,
     },
-    onSubmit: ({ value }) => {
-      createMutation.mutate(value as TrustedIssuerCreateInput);
+    onSubmit: async ({ value }) => {
+      const trustedIssuerAccount = await client.account.read({
+        wallet: value.issuerAddress,
+      });
+      if (!trustedIssuerAccount.identity) {
+        throw new Error("Trusted issuer account not found");
+      }
+      createMutation.mutate({
+        issuerAddress: trustedIssuerAccount.identity,
+        claimTopicIds: value.claimTopicIds,
+        walletVerification: value.walletVerification,
+      });
     },
   });
 

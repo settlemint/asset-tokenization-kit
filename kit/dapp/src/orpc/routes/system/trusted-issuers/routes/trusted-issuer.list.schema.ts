@@ -16,6 +16,11 @@ export const TrustedIssuerTopicSchema = z.object({
  */
 export const TrustedIssuerSchema = z.object({
   id: ethereumAddress.describe("Issuer identity address"),
+  account: z
+    .object({
+      id: ethereumAddress.describe("Issuer wallet address"),
+    })
+    .optional(),
   claimTopics: z
     .array(TrustedIssuerTopicSchema)
     .describe("Topics this issuer can verify"),
