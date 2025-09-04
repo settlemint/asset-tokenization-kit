@@ -15,7 +15,9 @@ import {
   signInWithUser,
 } from "./user";
 
-const TOKEN_MANAGEMENT_REQUIRED_ROLES = extractRequiredRoles(TOKEN_PERMISSIONS);
+const TOKEN_MANAGEMENT_REQUIRED_ROLES = extractRequiredRoles(
+  TOKEN_PERMISSIONS
+).filter((role) => role !== "admin");
 const SYSTEM_MANAGEMENT_REQUIRED_ROLES =
   extractRequiredRoles(SYSTEM_PERMISSIONS);
 
@@ -224,12 +226,16 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
 
 export async function setupDefaultAdminRoles(orpClient: OrpcClient) {
   const adminMe = await orpClient.user.me({});
-  const rolesToGrant = Array.from(
+
+  const allRoles = Array.from(
     new Set([
       ...SYSTEM_MANAGEMENT_REQUIRED_ROLES,
       ...TOKEN_MANAGEMENT_REQUIRED_ROLES,
     ])
-  ).filter((role) => adminMe.userSystemPermissions.roles[role] !== true);
+  );
+  const rolesToGrant = allRoles.filter(
+    (role) => adminMe.userSystemPermissions.roles[role] !== true
+  );
 
   if (rolesToGrant.length > 0) {
     logger.info("Granting roles to admin", { roles: rolesToGrant });
