@@ -113,15 +113,23 @@ export const topUp = systemRouter.fixedYieldSchedule.topUp.handler(
       {
         input: { id: contract.toLowerCase() },
         output: z.object({
-          tokenFixedYieldSchedule: z.object({
-            id: ethereumAddress,
-            denominationAsset: z.object({
+          tokenFixedYieldSchedule: z
+            .object({
               id: ethereumAddress,
-            }),
-          }),
+              denominationAsset: z.object({
+                id: ethereumAddress,
+              }),
+            })
+            .nullable(),
         }),
       }
     );
+
+    if (!scheduleData.tokenFixedYieldSchedule) {
+      throw errors.NOT_FOUND({
+        message: "Fixed yield schedule not found",
+      });
+    }
 
     const denominationAsset =
       scheduleData.tokenFixedYieldSchedule.denominationAsset.id;
