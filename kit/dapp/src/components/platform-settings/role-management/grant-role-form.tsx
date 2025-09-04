@@ -10,10 +10,10 @@ import { Input } from "@/components/ui/input";
 import { useAppForm } from "@/hooks/use-app-form";
 import { client, orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
-import type { User } from "@/orpc/routes/user/routes/user.me.schema";
+import type { UserSearchResult } from "@/orpc/routes/user/routes/user.search.schema";
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import {
   Card,
@@ -69,7 +69,7 @@ const AVAILABLE_ROLES: Array<{
  */
 export function GrantRoleForm() {
   const queryClient = useQueryClient();
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserSearchResult | null>(null);
   const [selectedRole, setSelectedRole] = useState<AccessControlRoles | "">("");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -133,9 +133,9 @@ export function GrantRoleForm() {
     },
   });
 
-  const handleUserSelect = (userId: string) => {
-    const user = users.find((u) => u.id === userId);
-    if (user) {
+  const handleUserSelect = (userWallet: string | null) => {
+    const user = users.find((u) => u.wallet === userWallet);
+    if (user && user.wallet) {
       setSelectedUser(user);
       form.setFieldValue("address", user.wallet as `0x${string}`);
       setSearchQuery(""); // Clear search after selection
@@ -197,14 +197,14 @@ export function GrantRoleForm() {
                     <div className="border rounded-md max-h-40 overflow-y-auto">
                       {users.map((user) => (
                         <div
-                          key={user.id}
+                          key={user.wallet || user.name}
                           className="p-3 hover:bg-muted cursor-pointer border-b last:border-b-0"
-                          onClick={() => handleUserSelect(user.id)}
+                          onClick={() => handleUserSelect(user.wallet)}
                         >
                           <div className="flex flex-col">
                             <span className="font-medium">{user.name}</span>
                             <span className="text-xs text-muted-foreground">
-                              {user.email} • {user.role}
+                              {user.wallet ? `${user.wallet.slice(0, 6)}...${user.wallet.slice(-4)}` : "No wallet"} • {user.role}
                             </span>
                           </div>
                         </div>
@@ -222,7 +222,7 @@ export function GrantRoleForm() {
                   <div className="flex flex-col">
                     <span className="font-medium">{selectedUser.name}</span>
                     <span className="text-xs text-muted-foreground">
-                      {selectedUser.email} • {selectedUser.role}
+                      {selectedUser.wallet ? `${selectedUser.wallet.slice(0, 6)}...${selectedUser.wallet.slice(-4)}` : "No wallet"} • {selectedUser.role}
                     </span>
                   </div>
                   <button
@@ -278,10 +278,6 @@ export function GrantRoleForm() {
                   <div className="flex justify-between">
                     <span className="text-sm font-medium">Name</span>
                     <span className="text-sm">{selectedUser.name}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium">Email</span>
-                    <span className="text-sm">{selectedUser.email}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm font-medium">Wallet</span>

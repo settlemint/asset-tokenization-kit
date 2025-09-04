@@ -15,7 +15,7 @@ import { client, orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { TopicListOutput } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
 import type { TrustedIssuerCreateInput } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.create.schema";
-import type { User } from "@/orpc/routes/user/routes/user.me.schema";
+import type { UserSearchResult } from "@/orpc/routes/user/routes/user.search.schema";
 import {
   useMutation,
   useQuery,
@@ -42,7 +42,7 @@ export function AddTrustedIssuerSheet({
 }: AddTrustedIssuerSheetProps) {
   const queryClient = useQueryClient();
   const { t } = useTranslation("claim-topics-issuers");
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserSearchResult | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Search users with debounced query
@@ -114,9 +114,9 @@ export function AddTrustedIssuerSheet({
     void form.handleSubmit();
   };
 
-  const handleUserSelect = (userId: string) => {
-    const user = users.find((u) => u.id === userId);
-    if (user) {
+  const handleUserSelect = (userWallet: string | null) => {
+    const user = users.find((u) => u.wallet === userWallet);
+    if (user && user.wallet) {
       setSelectedUser(user);
       form.setFieldValue("issuerAddress", user.wallet as `0x${string}`);
       setSearchQuery(""); // Clear search after selection
@@ -169,14 +169,14 @@ export function AddTrustedIssuerSheet({
                       <div className="border rounded-md max-h-40 overflow-y-auto">
                         {users.map((user) => (
                           <div
-                            key={user.id}
+                            key={user.wallet || user.name}
                             className="p-3 hover:bg-muted cursor-pointer border-b last:border-b-0"
-                            onClick={() => handleUserSelect(user.id)}
+                            onClick={() => handleUserSelect(user.wallet)}
                           >
                             <div className="flex flex-col">
                               <span className="font-medium">{user.name}</span>
                               <span className="text-xs text-muted-foreground">
-                                {user.email} • {user.role}
+                                {user.wallet ? `${user.wallet.slice(0, 6)}...${user.wallet.slice(-4)}` : "No wallet"} • {user.role}
                               </span>
                             </div>
                           </div>
@@ -194,7 +194,7 @@ export function AddTrustedIssuerSheet({
                     <div className="flex flex-col">
                       <span className="font-medium">{selectedUser.name}</span>
                       <span className="text-xs text-muted-foreground">
-                        {selectedUser.email} • {selectedUser.role}
+                        {selectedUser.wallet ? `${selectedUser.wallet.slice(0, 6)}...${selectedUser.wallet.slice(-4)}` : "No wallet"} • {selectedUser.role}
                       </span>
                     </div>
                     <button
@@ -224,12 +224,6 @@ export function AddTrustedIssuerSheet({
                           {t("trustedIssuers.add.selectedUser.name")}
                         </span>
                         <span className="text-sm">{selectedUser.name}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm font-medium">
-                          {t("trustedIssuers.add.selectedUser.email")}
-                        </span>
-                        <span className="text-sm">{selectedUser.email}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm font-medium">
