@@ -12,7 +12,7 @@ import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { getUserRole } from "@atk/zod/user-roles";
-import { type AnyColumn, asc, desc, eq } from "drizzle-orm";
+import { type AnyColumn, asc, count, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 
 // GraphQL query to fetch multiple accounts by wallet addresses
@@ -155,6 +155,13 @@ export const list = authRouter.user.list
       (user[orderBy as keyof typeof user] as AnyColumn | undefined) ??
       user.createdAt;
 
+    // Get total count first
+    const totalResult = await context.db
+      .select({ count: count() })
+      .from(user);
+    
+    const total = totalResult[0]?.count ?? 0;
+
     // Execute paginated query with sorting and KYC data
     const result = await context.db
       .select({
@@ -205,7 +212,7 @@ export const list = authRouter.user.list
     );
 
     // Transform results to include human-readable roles, onboarding state, and identity data
-    return result.map((row: QueryResultRow) => {
+    const items = result.map((row: QueryResultRow) => {
       const { user: u, kyc } = row;
 
       // Handle users without wallets gracefully
@@ -261,4 +268,12 @@ export const list = authRouter.user.list
         lastLoginAt: u.lastLoginAt,
       } as User;
     });
+
+    // Return paginated response format
+    return {
+      items,
+      total,
+      limit,
+      offset,
+    };
   });

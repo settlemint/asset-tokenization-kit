@@ -44,7 +44,7 @@ export function useUsersWithIdentities(
   );
 
   return {
-    users: query.data ?? [],
+    users: query.data?.items ?? [],
     isLoading: query.isLoading,
     error: query.error as Error | null,
   };

@@ -1,8 +1,7 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
-import { useRouter } from "@tanstack/react-router";
 import { formatDistanceToNow, isToday, isYesterday, format } from "date-fns";
 import { Users } from "lucide-react";
 
@@ -52,23 +51,29 @@ function UserStatusBadge({ user }: { user: User }) {
  * Shows user information, registration status, and actions for each user with chunked loading
  */
 export function UsersTable() {
-  const router = useRouter();
   const { t } = useTranslation("user");
 
-  // Get the current route's path pattern from the matched route
-  const routePath = router.state.matches.at(-1)?.pathname;
+  // Use local pagination state for server-side pagination
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 20,
+  });
 
-  // Fetch users data using ORPC
-  const { data: users = [], isLoading, error } = useQuery(
+  // Fetch users data using ORPC with server-side pagination
+  const { data, isLoading, error } = useQuery(
     orpc.user.list.queryOptions({
       input: {
-        limit: 1000, // Fetch all users, let DataTable handle pagination
-        offset: 0,
+        limit: pagination.pageSize,
+        offset: pagination.pageIndex * pagination.pageSize,
         orderBy: "createdAt",
         orderDirection: "desc",
       },
     })
   );
+
+  // Extract users and total from the paginated response  
+  const users = data?.items ?? [];
+  const totalCount = data?.total ?? 0;
 
 
 
@@ -92,10 +97,27 @@ export function UsersTable() {
             type: "text",
           },
         }),
+        columnHelper.accessor(
+          (row: User) => {
+            const displayName = row.firstName && row.lastName
+              ? `${row.firstName} ${row.lastName}`
+              : row.name;
+            return displayName;
+          },
+          {
+            id: "userDisplayText",
+            header: t("management.table.columns.name"),
+            meta: {
+              displayName: t("management.table.columns.name"),
+              type: "text",
+            },
+            filterFn: "includesString",
+          }
+        ),
         columnHelper.display({
           id: "userDisplay",
           header: t("management.table.columns.name"),
-          cell: ({ row }: { row: { original: User } }) => {
+          cell: ({ row }) => {
             const user = row.original;
             const displayName = user.firstName && user.lastName
               ? `${user.firstName} ${user.lastName}`
@@ -124,21 +146,46 @@ export function UsersTable() {
             type: "none",
           },
         }),
+        columnHelper.accessor(
+          (row: User) => {
+            if (row.isRegistered) return "registered";
+            if (row.wallet) return "pending";
+            return "notConnected";
+          },
+          {
+            id: "statusText",
+            header: t("management.table.columns.status"),
+            meta: {
+              displayName: t("management.table.columns.status"),
+              type: "text",
+            },
+            filterFn: "equals",
+          }
+        ),
         columnHelper.display({
           id: "status",
           header: t("management.table.columns.status"),
-          cell: ({ row }: { row: { original: User } }) => {
+          cell: ({ row }) => {
             return <UserStatusBadge user={row.original} />;
           },
           meta: {
             displayName: t("management.table.columns.status"),
+            type: "none",
+          },
+        }),
+        columnHelper.accessor("createdAt", {
+          id: "createdAt",
+          header: t("management.table.columns.created"),
+          meta: {
+            displayName: t("management.table.columns.created"),
             type: "text",
           },
+          filterFn: "includesString",
         }),
         columnHelper.display({
           id: "created",
           header: t("management.table.columns.created"),
-          cell: ({ row }: { row: { original: User } }) => {
+          cell: ({ row }) => {
             const createdAt = row.original.createdAt;
             
             if (!createdAt) {
@@ -161,10 +208,19 @@ export function UsersTable() {
             type: "none",
           },
         }),
+        columnHelper.accessor("lastLoginAt", {
+          id: "lastLoginAt",
+          header: t("management.table.columns.lastActive"),
+          meta: {
+            displayName: t("management.table.columns.lastActive"),
+            type: "text",
+          },
+          filterFn: "includesString",
+        }),
         columnHelper.display({
           id: "lastActive",
           header: t("management.table.columns.lastActive"),
-          cell: ({ row }: { row: { original: User } }) => {
+          cell: ({ row }) => {
             const lastLoginAt = row.original.lastLoginAt;
             
             if (!lastLoginAt) {
@@ -224,22 +280,28 @@ export function UsersTable() {
           data={users}
           columns={columns}
           isLoading={isLoading}
-          urlState={{
+          serverSidePagination={{
             enabled: true,
-            enableUrlPersistence: true,
-            routePath,
-            defaultPageSize: 20,
-            enableGlobalFilter: true,
-            enableRowSelection: false,
-            debounceMs: 300,
+            totalCount,
+          }}
+          externalState={{
+            pagination,
+            onPaginationChange: setPagination,
+          }}
+          urlState={{
+            enabled: false, // Disable URL state since we're managing it manually
           }}
           initialColumnVisibility={{
             name: false,
             email: false,
+            userDisplayText: false, // Hide the text-only version, show the display version
+            statusText: false, // Hide the text-only version, show the display version  
+            createdAt: false, // Hide the text-only version, show the display version
+            lastLoginAt: false, // Hide the text-only version, show the display version
           }}
           advancedToolbar={{
             enableGlobalSearch: false,
-            enableFilters: true, // Keep client-side filters for the current chunk
+            enableFilters: true, // Re-enable filters now that columns are properly accessible
             enableExport: true,
             enableViewOptions: true,
             placeholder: t("management.table.search.placeholder"),
@@ -247,6 +309,7 @@ export function UsersTable() {
           pagination={{
             enablePagination: true,
           }}
+          initialPageSize={20}
           initialSorting={[
             {
               id: "createdAt",
