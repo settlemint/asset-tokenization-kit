@@ -113,7 +113,7 @@ erpc:
     waitforit:
       image:
         repository: ghcr.io/settlemint/btp-waitforit
-        tag: "v7.7.9"
+        tag: "v7.7.10"
         pullPolicy: IfNotPresent
   # Test container
   test:
@@ -469,7 +469,7 @@ observability:
       image:
         registry: docker.io
         repository: victoriametrics/victoria-metrics
-        tag: "v1.125.0"
+        tag: "v1.125.1"
 
   # https://github.com/grafana/loki/blob/main/production/helm/loki/values.yaml
   loki:
@@ -626,7 +626,7 @@ dapp:
       timeout: 0  # Timeout in seconds for each dependency check
       image:
         repository: ghcr.io/settlemint/btp-waitforit
-        tag: v7.7.9
+        tag: v7.7.10
         pullPolicy: IfNotPresent
       dependencies:
         # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies

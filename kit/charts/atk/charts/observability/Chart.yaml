@@ -11,7 +11,7 @@ maintainers:
     url: https://settlemint.com
 dependencies:
   - name: victoria-metrics-single
-    version: 0.24.4
+    version: 0.24.5
     repository: https://victoriametrics.github.io/helm-charts/
     condition: victoria-metrics-single.enabled
   - name: alloy
@@ -23,7 +23,7 @@ dependencies:
     repository: https://kubernetes-sigs.github.io/metrics-server/
     condition: metrics-server.enabled
   - name: kube-state-metrics
-    version: 6.2.0
+    version: 6.3.0
     repository: https://prometheus-community.github.io/helm-charts
     condition: kube-state-metrics.enabled
   - name: grafana
