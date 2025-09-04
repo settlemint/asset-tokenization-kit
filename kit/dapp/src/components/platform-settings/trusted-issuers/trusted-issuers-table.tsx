@@ -44,7 +44,7 @@ export function TrustedIssuersTable() {
   const columns = useMemo(
     () =>
       withAutoFeatures([
-        columnHelper.accessor("id", {
+        columnHelper.accessor((row) => row.account?.id ?? row.id, {
           header: t("trustedIssuers.table.columns.issuerIdentity"),
           meta: {
             displayName: t("trustedIssuers.table.columns.issuerIdentity"),
