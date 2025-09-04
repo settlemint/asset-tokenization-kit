@@ -10,9 +10,11 @@ import {
   IdentityRegistryImplementationUpdated,
   IdentityRegistryStorageImplementationUpdated,
   SystemAddonRegistryImplementationUpdated,
+  SystemTrustedIssuersRegistryImplementationUpdated,
   TokenAccessManagerImplementationUpdated,
   TokenFactoryRegistryImplementationUpdated,
   TopicSchemeRegistryImplementationUpdated,
+  TrustedIssuersMetaRegistryImplementationUpdated,
 } from "../../generated/templates/System/System";
 import { fetchCompliance } from "../compliance/fetch/compliance";
 import { fetchComplianceModuleRegistry } from "../compliance/fetch/compliance-module-registry";
@@ -49,7 +51,7 @@ export function handleBootstrapped(event: Bootstrapped): void {
   identityRegistryStorage.save();
 
   const trustedIssuersRegistry = fetchTrustedIssuersRegistry(
-    event.params.trustedIssuersRegistryProxy
+    event.params.systemTrustedIssuersRegistryProxy
   );
   if (trustedIssuersRegistry.deployedInTransaction.equals(Bytes.empty())) {
     trustedIssuersRegistry.deployedInTransaction = event.transaction.hash;
