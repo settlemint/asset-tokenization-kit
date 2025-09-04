@@ -48,13 +48,15 @@ describe("Token update collateral", () => {
     thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
     thirtyDaysFromNow.setMilliseconds(0);
 
+    const amountExact =
+      BigInt(1_000_000) * 10n ** BigInt(stablecoinToken.decimals);
     const result = await client.token.updateCollateral({
       contract: stablecoinToken.id,
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
       },
-      amount: "1000000",
+      amount: amountExact.toString(),
       expiryDays: 30,
     });
 

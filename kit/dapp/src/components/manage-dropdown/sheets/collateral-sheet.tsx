@@ -1,3 +1,4 @@
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppForm } from "@/hooks/use-app-form";
 import { useCollateralValues } from "@/hooks/use-collateral-values";
@@ -5,14 +6,13 @@ import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, from, greaterThan, subtract } from "dnum";
+import { AlertCircle } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { CurrentStatusCard } from "../components/current-status-card";
 import { ActionFormSheet } from "../core/action-form-sheet";
 import { createActionFormStore } from "../core/action-form-sheet.store";
-import { CurrentStatusCard } from "../components/current-status-card";
-import { AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface CollateralSheetProps {
   open: boolean;
@@ -165,9 +165,10 @@ export function CollateralSheet({
             isSubmitting={isPending}
             store={sheetStoreRef.current}
             onSubmit={(verification) => {
+              const amountExact = newAmount * 10n ** BigInt(tokenDecimals);
               const promise = updateCollateral({
                 contract: asset.id,
-                amount: newAmount,
+                amount: amountExact,
                 expiryDays,
                 walletVerification: verification,
               });

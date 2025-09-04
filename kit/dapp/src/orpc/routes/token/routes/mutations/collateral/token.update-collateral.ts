@@ -134,9 +134,6 @@ export const updateCollateral = tokenRouter.token.updateCollateral
       });
     }
 
-    // Add decimals to the amount
-    const amountExact = amount * 10n ** BigInt(tokenData.decimals);
-
     const account = await call(readAccount, {}, { context });
     if (!account?.identity) {
       throw errors.INPUT_VALIDATION_FAILED({
@@ -158,7 +155,7 @@ export const updateCollateral = tokenRouter.token.updateCollateral
       claim: {
         topic: ClaimTopic.collateral,
         data: {
-          amount: amountExact,
+          amount: amount,
           expiryTimestamp,
         },
       },

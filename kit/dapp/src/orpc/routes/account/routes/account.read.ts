@@ -4,7 +4,6 @@ import { authRouter } from "@/orpc/procedures/auth.router";
 import {
   AccountReadSchema,
   AccountResponseSchema,
-  AccountSchema,
 } from "@/orpc/routes/account/routes/account.read.schema";
 import countries from "i18n-iso-countries";
 
@@ -56,12 +55,12 @@ export const read = authRouter.account.read
 
     // Return the account with basic information only
     // TypeScript ensures the return type matches AccountReadOutput interface
-    return AccountSchema.parse({
+    return {
       id: result.account.id,
       country: result.account.country
         ? countries.numericToAlpha2(result.account.country)
         : undefined,
       identity: result.account.identity?.id,
       claims: result.account.identity?.claims.map((claim) => claim.name) ?? [],
-    });
+    };
   });
