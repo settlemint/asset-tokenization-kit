@@ -342,6 +342,7 @@ contract TokenTrustedIssuersRegistry is
         return interfaceId == type(IATKTokenTrustedIssuersRegistry).interfaceId
             || interfaceId == type(IATKTrustedIssuersRegistry).interfaceId
             || interfaceId == type(ISMARTTrustedIssuersRegistry).interfaceId
+            || interfaceId == type(IClaimAuthorizer).interfaceId
             || super.supportsInterface(interfaceId);
     }
 }

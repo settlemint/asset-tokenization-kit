@@ -522,6 +522,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     {
         return interfaceId == type(IATKTrustedIssuersMetaRegistry).interfaceId
             || interfaceId == type(IATKTrustedIssuersRegistry).interfaceId
+            || interfaceId == type(IClaimAuthorizer).interfaceId
             || interfaceId == type(ISMARTTrustedIssuersRegistry).interfaceId
             || interfaceId == type(IATKSystemAccessManaged).interfaceId
             || super.supportsInterface(interfaceId);

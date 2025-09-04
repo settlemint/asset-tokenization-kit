@@ -512,6 +512,10 @@ contract ATKSystemImplementation is
             ATKSystemRoles.ADDON_FACTORY_REGISTRY_MODULE_ROLE, localAddonRegistryProxy
         );
 
+        IATKSystemAccessManager(_accessManager).grantRole(
+            ATKSystemRoles.TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE, localTrustedIssuersMetaRegistryProxy
+        );
+
         // --- Interactions (Part 3: Call methods on newly created proxies to link them) ---
         // After all proxy state variables are set, perform any necessary interactions between the new proxies.
 
