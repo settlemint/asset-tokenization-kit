@@ -1,5 +1,13 @@
 import { describe, expect, it } from "bun:test";
-import { getRole, getRoleMap, isRole, isRoleMap, roleMap, roleNames, roles } from "./roles";
+import {
+  getRole,
+  getRoleMap,
+  isRole,
+  isRoleMap,
+  roleMap,
+  roleNames,
+  roles,
+} from "./roles";
 
 describe("roles", () => {
   const validator = roles();
@@ -179,7 +187,13 @@ describe("isRole", () => {
     const value: unknown = "issuer";
     if (isRole(value)) {
       // TypeScript should recognize value as Role here
-      const validRole: "admin" | "issuer" | "manager" | "compliance" | "auditor" | "investor" = value;
+      const validRole:
+        | "admin"
+        | "issuer"
+        | "manager"
+        | "compliance"
+        | "auditor"
+        | "investor" = value;
       expect(validRole).toBe("issuer");
     }
   });

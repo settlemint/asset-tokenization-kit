@@ -36,7 +36,8 @@ export const fundCategories = ["mutual", "hedge", "etf", "index"] as const;
  * schema.parse("reit"); // Throws ZodError
  * ```
  */
-export const fundCategory = () => z.enum(fundCategories).describe("Category of investment fund");
+export const fundCategory = () =>
+  z.enum(fundCategories).describe("Category of investment fund");
 
 /**
  * Type representing a validated fund category.

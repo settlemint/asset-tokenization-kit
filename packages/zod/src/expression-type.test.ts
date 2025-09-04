@@ -1,5 +1,9 @@
 import { describe, expect, it } from "bun:test";
-import { ExpressionTypeEnum, expressionType, expressionTypes } from "./expression-type";
+import {
+  ExpressionTypeEnum,
+  expressionType,
+  expressionTypes,
+} from "./expression-type";
 
 describe("expressionType", () => {
   const validator = expressionType();
@@ -78,7 +82,12 @@ describe("ExpressionTypeEnum", () => {
 
   it("should have consistent type structure", () => {
     expect(typeof ExpressionTypeEnum).toBe("object");
-    expect(Object.keys(ExpressionTypeEnum)).toEqual(["TOPIC", "AND", "OR", "NOT"]);
+    expect(Object.keys(ExpressionTypeEnum)).toEqual([
+      "TOPIC",
+      "AND",
+      "OR",
+      "NOT",
+    ]);
   });
 });
 

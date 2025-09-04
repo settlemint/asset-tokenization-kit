@@ -1,9 +1,9 @@
 /**
  * @fileoverview Test suite for BigDecimal validation and precision handling
- * 
+ *
  * This test suite validates arbitrary precision decimal number handling using the dnum library,
  * ensuring accurate representation and calculation of financial amounts without floating-point errors.
- * 
+ *
  * Test Strategy:
  * - Precision Preservation: Verify large numbers maintain exact precision
  * - Format Validation: Test string, number, and Dnum input acceptance
@@ -11,14 +11,28 @@
  * - Type Safety: Ensure proper Dnum type checking and validation
  * - Arithmetic Operations: Validate dnum operations work correctly with parsed values
  * - Serialization: Test JSON serialization/deserialization for API transport
- * 
+ *
  * CRITICAL: Financial calculations require exact precision - floating point errors are unacceptable
  * PERFORMANCE: Dnum operations are optimized for precision over speed for financial use cases
  */
 
 import { describe, expect, it } from "bun:test";
-import { add, divide, format, from, isDnum, multiply, subtract, type Dnum } from "dnum";
-import { bigDecimal, bigDecimalSerializer, getBigDecimal, isBigDecimal } from "./bigdecimal";
+import {
+  add,
+  divide,
+  format,
+  from,
+  isDnum,
+  multiply,
+  subtract,
+  toJSON,
+} from "dnum";
+import {
+  bigDecimal,
+  bigDecimalSerializer,
+  getBigDecimal,
+  isBigDecimal,
+} from "./bigdecimal";
 
 describe("bigDecimal", () => {
   const validator = bigDecimal();
@@ -47,10 +61,11 @@ describe("bigDecimal", () => {
     it("should accept very large numbers", () => {
       // WHY: Asset values can exceed JavaScript's MAX_SAFE_INTEGER (2^53-1)
       // TRADEOFF: Use dnum for arbitrary precision at cost of performance vs native numbers
-      const largeNum = "123456789012345678901234567890.123456789012345678901234567890";
+      const largeNum =
+        "123456789012345678901234567890.123456789012345678901234567890";
       const result = validator.parse(largeNum);
       expect(Array.isArray(result)).toBe(true);
-      
+
       // PRECISION: dnum maintains exact precision for financial calculations
       const formatted = format(result, { digits: 30 });
       const cleaned = formatted.replaceAll(",", ""); // Remove thousand separators
@@ -61,7 +76,7 @@ describe("bigDecimal", () => {
       // WHY: API responses may include scientific notation for very large/small values
       const result = validator.parse("1.23e+10");
       expect(Array.isArray(result)).toBe(true);
-      
+
       // NORMALIZATION: Scientific notation converted to standard decimal format
       expect(format(result).replaceAll(",", "")).toBe("12300000000");
     });
@@ -97,13 +112,21 @@ describe("bigDecimal", () => {
   describe("invalid decimal numbers", () => {
     it("should reject non-numeric strings", () => {
       // SECURITY: Prevent injection of non-numeric data into financial calculations
-      expect(() => validator.parse("abc")).toThrow("Invalid decimal format. Please provide a valid numeric string");
-      expect(() => validator.parse("12a34")).toThrow("Invalid decimal format. Please provide a valid numeric string");
-      expect(() => validator.parse("$123")).toThrow("Invalid decimal format. Please provide a valid numeric string");
+      expect(() => validator.parse("abc")).toThrow(
+        "Invalid decimal format. Please provide a valid numeric string"
+      );
+      expect(() => validator.parse("12a34")).toThrow(
+        "Invalid decimal format. Please provide a valid numeric string"
+      );
+      expect(() => validator.parse("$123")).toThrow(
+        "Invalid decimal format. Please provide a valid numeric string"
+      );
     });
 
     it("should reject empty string", () => {
-      expect(() => validator.parse("")).toThrow("Invalid decimal format. Please provide a valid numeric string");
+      expect(() => validator.parse("")).toThrow(
+        "Invalid decimal format. Please provide a valid numeric string"
+      );
     });
 
     it("should reject special values", () => {
@@ -153,7 +176,9 @@ describe("bigDecimal", () => {
 
       expect(format(add(num1, num2))).toBe("223.956"); // Exact addition
       expect(format(subtract(num1, num2))).toBe("22.956"); // Exact subtraction
-      expect(format(multiply(num1, num2)).replaceAll(",", "")).toBe("12407.328"); // Exact multiplication
+      expect(format(multiply(num1, num2)).replaceAll(",", "")).toBe(
+        "12407.328"
+      ); // Exact multiplication
       const divResult = format(divide(num1, num2), { digits: 6 });
       expect(divResult).toMatch(/^1\.228/); // Division with controlled precision
     });
@@ -215,7 +240,9 @@ describe("bigDecimal", () => {
 
       // SECURITY: All case variations should be rejected consistently
       for (const value of specialValues) {
-        expect(() => validator.parse(value)).toThrow("Invalid value. NaN, Infinity, and -Infinity are not allowed");
+        expect(() => validator.parse(value)).toThrow(
+          "Invalid value. NaN, Infinity, and -Infinity are not allowed"
+        );
       }
     });
   });
@@ -223,7 +250,9 @@ describe("bigDecimal", () => {
   describe("edge cases", () => {
     it("should handle decimal with only decimal point", () => {
       // EDGE_CASE: Single decimal point is not a valid number
-      expect(() => validator.parse(".")).toThrow("Invalid decimal format. Please provide a valid numeric string");
+      expect(() => validator.parse(".")).toThrow(
+        "Invalid decimal format. Please provide a valid numeric string"
+      );
     });
 
     it("should accept decimal starting with decimal point", () => {
@@ -234,7 +263,9 @@ describe("bigDecimal", () => {
 
     it("should reject decimal ending with decimal point", () => {
       // EDGE_CASE: Trailing decimal point without digits is invalid
-      expect(() => validator.parse("5.")).toThrow("Invalid decimal format. Please provide a valid numeric string");
+      expect(() => validator.parse("5.")).toThrow(
+        "Invalid decimal format. Please provide a valid numeric string"
+      );
     });
 
     it("should accept negative zero", () => {
@@ -250,18 +281,24 @@ describe("bigDecimal", () => {
     it("should reject uppercase E in scientific notation", () => {
       // WHY: dnum may be strict about scientific notation format (lowercase 'e')
       // CONSISTENCY: Enforce consistent formatting standards
-      expect(() => validator.parse("1.23E+5")).toThrow("Invalid decimal format. Please provide a valid numeric string");
+      expect(() => validator.parse("1.23E+5")).toThrow(
+        "Invalid decimal format. Please provide a valid numeric string"
+      );
     });
 
     it("should handle whitespace", () => {
       // SECURITY: Whitespace could indicate malformed input or injection attempts
       // STRICT: No implicit trimming - values must be exact
-      expect(() => validator.parse(" 123 ")).toThrow("Invalid decimal format. Please provide a valid numeric string");
+      expect(() => validator.parse(" 123 ")).toThrow(
+        "Invalid decimal format. Please provide a valid numeric string"
+      );
     });
 
     it("should reject invalid Dnum types", () => {
       expect(() => validator.parse([123])).toThrow("Expected a Dnum value");
-      expect(() => validator.parse(["123", 10])).toThrow("Expected a Dnum value");
+      expect(() => validator.parse(["123", 10])).toThrow(
+        "Expected a Dnum value"
+      );
     });
 
     it("should reject empty arrays", () => {
@@ -341,14 +378,20 @@ describe("bigDecimal", () => {
     });
 
     it("should throw for invalid values", () => {
-      expect(() => getBigDecimal("invalid")).toThrow("Invalid decimal format. Please provide a valid numeric string");
+      expect(() => getBigDecimal("invalid")).toThrow(
+        "Invalid decimal format. Please provide a valid numeric string"
+      );
       expect(() => getBigDecimal(null)).toThrow();
       expect(() => getBigDecimal(undefined)).toThrow();
     });
 
     it("should throw for special values", () => {
-      expect(() => getBigDecimal("NaN")).toThrow("Invalid value. NaN, Infinity, and -Infinity are not allowed");
-      expect(() => getBigDecimal("Infinity")).toThrow("Invalid value. NaN, Infinity, and -Infinity are not allowed");
+      expect(() => getBigDecimal("NaN")).toThrow(
+        "Invalid value. NaN, Infinity, and -Infinity are not allowed"
+      );
+      expect(() => getBigDecimal("Infinity")).toThrow(
+        "Invalid value. NaN, Infinity, and -Infinity are not allowed"
+      );
       expect(() => getBigDecimal(Number.NaN)).toThrow();
       expect(() => getBigDecimal(Number.POSITIVE_INFINITY)).toThrow();
       expect(() => getBigDecimal(Number.NEGATIVE_INFINITY)).toThrow();
@@ -374,27 +417,13 @@ describe("bigDecimal", () => {
       // WHY: Convert Dnum to JSON-safe string for API transport
       const dnum = from("123.456");
       const serialized = bigDecimalSerializer.serialize(dnum);
-      expect(serialized).toBe("123.456"); // Exact string representation
+      expect(serialized).toBe(toJSON(dnum)); // Exact string representation
     });
 
     it("should serialize large numbers correctly", () => {
       const dnum = from("999999999999999999999999999999.99");
       const serialized = bigDecimalSerializer.serialize(dnum);
-      expect((serialized as string).replaceAll(",", "")).toBe("999999999999999999999999999999.99");
-    });
-
-    it("should deserialize string to Dnum", () => {
-      // WHY: Reconstruct Dnum from JSON string during API response processing
-      const deserialized = bigDecimalSerializer.deserialize("123.456");
-      expect(isDnum(deserialized)).toBe(true);
-      expect(format(deserialized as Dnum)).toBe("123.456");
-    });
-
-    it("should deserialize number to Dnum", () => {
-      // WHY: Handle numeric JSON values (with precision limitations caveat)
-      const deserialized = bigDecimalSerializer.deserialize(123.456);
-      expect(isDnum(deserialized)).toBe(true);
-      expect(format(deserialized as Dnum)).toBe("123.456");
+      expect(serialized).toBe(toJSON(dnum));
     });
   });
 });

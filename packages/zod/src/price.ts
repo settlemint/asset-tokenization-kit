@@ -61,7 +61,8 @@ export const price = () =>
       if (!Number.isFinite(parsed)) {
         ctx.addIssue({
           code: "custom",
-          message: "Invalid price format. Please provide a valid numeric string",
+          message:
+            "Invalid price format. Please provide a valid numeric string",
         });
         return z.NEVER;
       }

@@ -5,6 +5,7 @@ import { MintSheet } from "./mint-sheet";
 import { useAppForm } from "@/hooks/use-app-form";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import { from } from "dnum";
 
 // i18n mock
 vi.mock("react-i18next", () => ({
@@ -79,7 +80,7 @@ vi.mock("@/hooks/use-app-form", () => ({
         AddressInputField: (
           props: React.InputHTMLAttributes<HTMLInputElement>
         ) => React.ReactElement;
-        BigIntField: (
+        DnumField: (
           props: React.InputHTMLAttributes<HTMLInputElement>
         ) => React.ReactElement;
       }) => React.ReactNode;
@@ -92,9 +93,7 @@ vi.mock("@/hooks/use-app-form", () => ({
           AddressInputField: (props) => (
             <input data-testid="address-input" {...props} />
           ),
-          BigIntField: (props) => (
-            <input data-testid="bigint-input" {...props} />
-          ),
+          DnumField: (props) => <input data-testid="dnum-input" {...props} />,
         })}
       </div>
     ),
@@ -152,7 +151,7 @@ describe("MintSheet", () => {
           AddressInputField: (
             props: React.InputHTMLAttributes<HTMLInputElement>
           ) => React.ReactElement;
-          BigIntField: (
+          DnumField: (
             props: React.InputHTMLAttributes<HTMLInputElement>
           ) => React.ReactElement;
         }) => React.ReactNode;
@@ -165,9 +164,7 @@ describe("MintSheet", () => {
             AddressInputField: (props) => (
               <input data-testid="address-input" {...props} />
             ),
-            BigIntField: (props) => (
-              <input data-testid="bigint-input" {...props} />
-            ),
+            DnumField: (props) => <input data-testid="dnum-input" {...props} />,
           })}
         </div>
       ),
@@ -207,7 +204,7 @@ describe("MintSheet", () => {
 
     const addr = screen.getByTestId("address-select");
     await user.type(addr, "0x1111111111111111111111111111111111111111");
-    const amt = screen.getByTestId("bigint-input");
+    const amt = screen.getByTestId("dnum-input");
     await user.type(amt, "60"); // exceeds collateral 50
 
     expect(continueBtn).toBeDisabled();
@@ -235,7 +232,7 @@ describe("MintSheet", () => {
           AddressInputField: (
             props: React.InputHTMLAttributes<HTMLInputElement>
           ) => React.ReactElement;
-          BigIntField: (
+          DnumField: (
             props: React.InputHTMLAttributes<HTMLInputElement>
           ) => React.ReactElement;
         }) => React.ReactNode;
@@ -248,9 +245,7 @@ describe("MintSheet", () => {
             AddressInputField: (props) => (
               <input data-testid="address-input" {...props} />
             ),
-            BigIntField: (props) => (
-              <input data-testid="bigint-input" {...props} />
-            ),
+            DnumField: (props) => <input data-testid="dnum-input" {...props} />,
           })}
         </div>
       ),
@@ -258,7 +253,7 @@ describe("MintSheet", () => {
       getFieldValue: vi.fn((name: string) =>
         name.startsWith("recipient_")
           ? "0x1111111111111111111111111111111111111111"
-          : 10n
+          : from(10n, 18)
       ),
     } as unknown as ReturnType<typeof useAppForm>);
 
@@ -267,7 +262,7 @@ describe("MintSheet", () => {
     );
     const addr = screen.getByTestId("address-select");
     await user.type(addr, "0x1111111111111111111111111111111111111111");
-    const amt = screen.getByTestId("bigint-input");
+    const amt = screen.getByTestId("dnum-input");
     await user.type(amt, "10");
 
     await user.click(screen.getByTestId("submit-button"));

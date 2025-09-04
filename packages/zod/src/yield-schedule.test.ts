@@ -2,7 +2,6 @@ import { describe, expect, it } from "bun:test";
 import { format, from } from "dnum";
 import { fixedYieldSchedule, fixedYieldSchedulePeriod } from "./yield-schedule";
 
-
 describe("fixedYieldSchedulePeriod", () => {
   const validator = fixedYieldSchedulePeriod();
 
@@ -14,7 +13,8 @@ describe("fixedYieldSchedulePeriod", () => {
       totalClaimed: "1000.5",
       totalUnclaimedYield: "500.25",
       totalYield: "1500.75",
-      deployedInTransaction: "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      deployedInTransaction:
+        "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
     };
 
     const result = validator.parse(validPeriod);
@@ -31,12 +31,15 @@ describe("fixedYieldSchedulePeriod", () => {
       totalClaimed: from("999999999999999999999999999999.99"),
       totalUnclaimedYield: from("0"),
       totalYield: from("999999999999999999999999999999.99"),
-      deployedInTransaction: "0x2222222222222222222222222222222222222222222222222222222222222222",
+      deployedInTransaction:
+        "0x2222222222222222222222222222222222222222222222222222222222222222",
     };
 
     const result = validator.parse(validPeriod);
     expect(result.totalClaimed).toEqual(validPeriod.totalClaimed);
-    expect(format(result.totalYield, { digits: 30 }).replaceAll(',', "")).toBe("999999999999999999999999999999.99");
+    expect(format(result.totalYield, { digits: 30 }).replaceAll(",", "")).toBe(
+      "999999999999999999999999999999.99"
+    );
   });
 
   it("should reject invalid data", () => {
@@ -92,11 +95,13 @@ describe("fixedYieldSchedule", () => {
         totalClaimed: "1000",
         totalUnclaimedYield: "500",
         totalYield: "1500",
-        deployedInTransaction: "0x3333333333333333333333333333333333333333333333333333333333333333",
+        deployedInTransaction:
+          "0x3333333333333333333333333333333333333333333333333333333333333333",
       },
       nextPeriod: null,
       periods: [],
-      deployedInTransaction: "0x4444444444444444444444444444444444444444444444444444444444444444",
+      deployedInTransaction:
+        "0x4444444444444444444444444444444444444444444444444444444444444444",
     };
 
     const result = validator.parse(validSchedule);
@@ -109,13 +114,15 @@ describe("fixedYieldSchedule", () => {
     expect(result.denominationAsset.decimals).toBe(6);
 
     // Check Dnum parsing
-    expect(format(result.totalClaimed).replaceAll(',', "")).toBe("10000.5");
-    expect(format(result.totalYield).replaceAll(',', "")).toBe("15000.75");
+    expect(format(result.totalClaimed).replaceAll(",", "")).toBe("10000.5");
+    expect(format(result.totalYield).replaceAll(",", "")).toBe("15000.75");
 
     // Check nullable fields
     expect(result.nextPeriod).toBeNull();
     expect(result.currentPeriod).not.toBeNull();
-    expect(result.currentPeriod?.id).toBe(validSchedule.currentPeriod.id as `0x${string}`);
+    expect(result.currentPeriod?.id).toBe(
+      validSchedule.currentPeriod.id as `0x${string}`
+    );
   });
 
   it("should accept schedule with multiple periods and different asset types", () => {
@@ -126,14 +133,21 @@ describe("fixedYieldSchedule", () => {
       totalClaimed: "1000",
       totalUnclaimedYield: "500",
       totalYield: "1500",
-      deployedInTransaction: "0xbbbb222222222222222222222222222222222222222222222222222222222222",
+      deployedInTransaction:
+        "0xbbbb222222222222222222222222222222222222222222222222222222222222",
     };
 
     const schedule = {
       id: "0x1234567890abcdef1234567890abcdef12345678",
       createdAt: new Date(),
-      createdBy: { id: "0xabcd1234567890abcdef1234567890abcdef1234", isContract: false },
-      account: { id: "0x9876543210fedcba9876543210fedcba98765432", isContract: true },
+      createdBy: {
+        id: "0xabcd1234567890abcdef1234567890abcdef1234",
+        isContract: false,
+      },
+      account: {
+        id: "0x9876543210fedcba9876543210fedcba98765432",
+        isContract: true,
+      },
       asset: { id: "0xfedcba9876543210fedcba9876543210fedcba98" },
       startDate: new Date("2023-01-01"),
       endDate: new Date("2024-01-01"),
@@ -142,11 +156,16 @@ describe("fixedYieldSchedule", () => {
       totalClaimed: "3000",
       totalUnclaimedYield: "1500",
       totalYield: "4500",
-      denominationAsset: { id: "0x5555555555555555555555555555555555555555", symbol: "WETH", decimals: 18 },
+      denominationAsset: {
+        id: "0x5555555555555555555555555555555555555555",
+        symbol: "WETH",
+        decimals: 18,
+      },
       currentPeriod: null,
       nextPeriod: period1,
       periods: [period1],
-      deployedInTransaction: "0x6666666666666666666666666666666666666666666666666666666666666666",
+      deployedInTransaction:
+        "0x6666666666666666666666666666666666666666666666666666666666666666",
     };
 
     const result = validator.parse(schedule);
@@ -161,8 +180,14 @@ describe("fixedYieldSchedule", () => {
     const minimalSchedule = {
       id: "0x0000000000000000000000000000000000000000",
       createdAt: new Date(0), // Unix epoch
-      createdBy: { id: "0x0000000000000000000000000000000000000000", isContract: true },
-      account: { id: "0xffffffffffffffffffffffffffffffffffffffff", isContract: false },
+      createdBy: {
+        id: "0x0000000000000000000000000000000000000000",
+        isContract: true,
+      },
+      account: {
+        id: "0xffffffffffffffffffffffffffffffffffffffff",
+        isContract: false,
+      },
       asset: { id: "0x1111111111111111111111111111111111111111" },
       startDate: new Date(0),
       endDate: new Date("2038-01-19T03:14:07Z"), // Unix timestamp limit
@@ -171,18 +196,23 @@ describe("fixedYieldSchedule", () => {
       totalClaimed: "0",
       totalUnclaimedYield: "0.000000000000000001", // Very small decimal
       totalYield: "999999999999999999999999999999.999999999", // Very large decimal
-      denominationAsset: { id: "0x2222222222222222222222222222222222222222", symbol: "USDT", decimals: 6 },
+      denominationAsset: {
+        id: "0x2222222222222222222222222222222222222222",
+        symbol: "USDT",
+        decimals: 6,
+      },
       currentPeriod: null,
       nextPeriod: null,
       periods: [],
-      deployedInTransaction: "0x0000000000000000000000000000000000000000000000000000000000000000",
+      deployedInTransaction:
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
     };
 
     const result = validator.parse(minimalSchedule);
     expect(result.rate).toBe("0");
     expect(result.interval).toBe("1");
     expect(format(result.totalClaimed)).toBe("0");
-    expect(format(result.totalYield, { digits: 30 }).replaceAll(',', "")).toBe(
+    expect(format(result.totalYield, { digits: 30 }).replaceAll(",", "")).toBe(
       "999999999999999999999999999999.999999999"
     );
   });
@@ -200,8 +230,14 @@ describe("fixedYieldSchedule", () => {
       validator.parse({
         id: "0x1234567890abcdef1234567890abcdef12345678",
         createdAt: new Date(),
-        createdBy: { id: "0x1234567890abcdef1234567890abcdef12345678", isContract: false },
-        account: { id: "0x9876543210fedcba9876543210fedcba98765432", isContract: true },
+        createdBy: {
+          id: "0x1234567890abcdef1234567890abcdef12345678",
+          isContract: false,
+        },
+        account: {
+          id: "0x9876543210fedcba9876543210fedcba98765432",
+          isContract: true,
+        },
         asset: { id: "0xfedcba9876543210fedcba9876543210fedcba98" },
         startDate: new Date(),
         endDate: new Date(),
@@ -210,11 +246,16 @@ describe("fixedYieldSchedule", () => {
         totalClaimed: "0",
         totalUnclaimedYield: "0",
         totalYield: "0",
-        denominationAsset: { id: "0x1111111111111111111111111111111111111111", symbol: "USDC", decimals: 6 },
+        denominationAsset: {
+          id: "0x1111111111111111111111111111111111111111",
+          symbol: "USDC",
+          decimals: 6,
+        },
         currentPeriod: null,
         nextPeriod: null,
         periods: [],
-        deployedInTransaction: "0x4444444444444444444444444444444444444444444444444444444444444444",
+        deployedInTransaction:
+          "0x4444444444444444444444444444444444444444444444444444444444444444",
       })
     ).toThrow();
 
@@ -223,8 +264,14 @@ describe("fixedYieldSchedule", () => {
       validator.parse({
         id: "0x1234567890abcdef1234567890abcdef12345678",
         createdAt: new Date(),
-        createdBy: { id: "0x1234567890abcdef1234567890abcdef12345678", isContract: false },
-        account: { id: "0x9876543210fedcba9876543210fedcba98765432", isContract: true },
+        createdBy: {
+          id: "0x1234567890abcdef1234567890abcdef12345678",
+          isContract: false,
+        },
+        account: {
+          id: "0x9876543210fedcba9876543210fedcba98765432",
+          isContract: true,
+        },
         asset: { id: "0xfedcba9876543210fedcba9876543210fedcba98" },
         startDate: new Date(),
         endDate: new Date(),
@@ -241,7 +288,8 @@ describe("fixedYieldSchedule", () => {
         currentPeriod: null,
         nextPeriod: null,
         periods: [],
-        deployedInTransaction: "0x4444444444444444444444444444444444444444444444444444444444444444",
+        deployedInTransaction:
+          "0x4444444444444444444444444444444444444444444444444444444444444444",
       })
     ).toThrow();
   });
@@ -250,8 +298,14 @@ describe("fixedYieldSchedule", () => {
     const validData = {
       id: "0x1234567890abcdef1234567890abcdef12345678",
       createdAt: new Date(),
-      createdBy: { id: "0xabcd1234567890abcdef1234567890abcdef1234", isContract: false },
-      account: { id: "0x9876543210fedcba9876543210fedcba98765432", isContract: true },
+      createdBy: {
+        id: "0xabcd1234567890abcdef1234567890abcdef1234",
+        isContract: false,
+      },
+      account: {
+        id: "0x9876543210fedcba9876543210fedcba98765432",
+        isContract: true,
+      },
       asset: { id: "0xfedcba9876543210fedcba9876543210fedcba98" },
       startDate: new Date(),
       endDate: new Date(Date.now() + 86_400_000),
@@ -260,11 +314,16 @@ describe("fixedYieldSchedule", () => {
       totalClaimed: "0",
       totalUnclaimedYield: "0",
       totalYield: "0",
-      denominationAsset: { id: "0x1111111111111111111111111111111111111111", symbol: "USDC", decimals: 6 },
+      denominationAsset: {
+        id: "0x1111111111111111111111111111111111111111",
+        symbol: "USDC",
+        decimals: 6,
+      },
       currentPeriod: null,
       nextPeriod: null,
       periods: [],
-      deployedInTransaction: "0x4444444444444444444444444444444444444444444444444444444444444444",
+      deployedInTransaction:
+        "0x4444444444444444444444444444444444444444444444444444444444444444",
     };
 
     const validResult = validator.safeParse(validData);
@@ -278,8 +337,14 @@ describe("fixedYieldSchedule", () => {
     const schedule = {
       id: "0x1234567890abcdef1234567890abcdef12345678",
       createdAt: new Date(),
-      createdBy: { id: "0xabcd1234567890abcdef1234567890abcdef1234", isContract: false },
-      account: { id: "0x9876543210fedcba9876543210fedcba98765432", isContract: true },
+      createdBy: {
+        id: "0xabcd1234567890abcdef1234567890abcdef1234",
+        isContract: false,
+      },
+      account: {
+        id: "0x9876543210fedcba9876543210fedcba98765432",
+        isContract: true,
+      },
       asset: { id: "0xfedcba9876543210fedcba9876543210fedcba98" },
       startDate: new Date(),
       endDate: new Date(Date.now() + 86_400_000),
@@ -288,17 +353,22 @@ describe("fixedYieldSchedule", () => {
       totalClaimed: "1.23e10", // Scientific notation
       totalUnclaimedYield: "0.000000000000000001", // Very small
       totalYield: "12345678901234567890123456789.123456789", // Very large with decimals
-      denominationAsset: { id: "0x1111111111111111111111111111111111111111", symbol: "DAI", decimals: 18 },
+      denominationAsset: {
+        id: "0x1111111111111111111111111111111111111111",
+        symbol: "DAI",
+        decimals: 18,
+      },
       currentPeriod: null,
       nextPeriod: null,
       periods: [],
-      deployedInTransaction: "0x4444444444444444444444444444444444444444444444444444444444444444",
+      deployedInTransaction:
+        "0x4444444444444444444444444444444444444444444444444444444444444444",
     };
 
     const result = validator.parse(schedule);
-    expect(format(result.totalClaimed).replaceAll(',', "")).toBe("12300000000");
+    expect(format(result.totalClaimed).replaceAll(",", "")).toBe("12300000000");
     expect(format(result.totalUnclaimedYield)).toBe("0.000000000000000001");
-    expect(format(result.totalYield, { digits: 30 }).replaceAll(',', "")).toBe(
+    expect(format(result.totalYield, { digits: 30 }).replaceAll(",", "")).toBe(
       "12345678901234567890123456789.123456789"
     );
   });

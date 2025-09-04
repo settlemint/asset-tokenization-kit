@@ -1,5 +1,11 @@
 import { describe, expect, test } from "bun:test";
-import { type FundClass, fundClass, fundClasses, getFundClass, isFundClass } from "./fund-classes";
+import {
+  type FundClass,
+  fundClass,
+  fundClasses,
+  getFundClass,
+  isFundClass,
+} from "./fund-classes";
 
 describe("fundClass", () => {
   const validator = fundClass();
@@ -87,10 +93,12 @@ describe("isFundClass", () => {
       ["Retail", "capitalized variant"],
       ["  retail  ", "string with spaces"],
       ["retail\n", "string with newline"],
-     
-    ])("should return false for invalid value %s - %s", (value, _description) => {
-      expect(isFundClass(value)).toBe(false);
-    });
+    ])(
+      "should return false for invalid value %s - %s",
+      (value, _description) => {
+        expect(isFundClass(value)).toBe(false);
+      }
+    );
   });
 
   describe("type narrowing", () => {
@@ -143,7 +151,6 @@ describe("getFundClass", () => {
       ["Retail", "Invalid option"],
       ["  retail  ", "Invalid option"],
       ["retail\n", "Invalid option"],
-     
     ])("should throw for invalid value %s - %s", (value, _expectedError) => {
       expect(() => getFundClass(value)).toThrow();
       try {
@@ -176,7 +183,11 @@ describe("getFundClass", () => {
     });
 
     test("should throw for edge case values", () => {
-      const edgeCases = [Object.create(null), { toString: () => "retail" }, { valueOf: () => "retail" }];
+      const edgeCases = [
+        Object.create(null),
+        { toString: () => "retail" },
+        { valueOf: () => "retail" },
+      ];
 
       edgeCases.forEach((value) => {
         expect(() => getFundClass(value)).toThrow();

@@ -24,21 +24,31 @@ describe("secretCode", () => {
 
     it("should accept codes with special characters", () => {
       expect(validator.parse("!@#$%^&*()")).toBe("!@#$%^&*()");
-      expect(validator.parse(String.raw`{}[]|\:;"'<>,.?/`)).toBe(String.raw`{}[]|\:;"'<>,.?/`);
+      expect(validator.parse(String.raw`{}[]|\:;"'<>,.?/`)).toBe(
+        String.raw`{}[]|\:;"'<>,.?/`
+      );
       expect(validator.parse("emoji🔑code")).toBe("emoji🔑code");
     });
   });
 
   describe("invalid secret codes", () => {
     it("should reject codes shorter than 8 characters", () => {
-      expect(() => validator.parse("1234567")).toThrow("Secret code must be at least 8 characters long");
-      expect(() => validator.parse("short")).toThrow("Secret code must be at least 8 characters long");
-      expect(() => validator.parse("")).toThrow("Secret code must be at least 8 characters long");
+      expect(() => validator.parse("1234567")).toThrow(
+        "Secret code must be at least 8 characters long"
+      );
+      expect(() => validator.parse("short")).toThrow(
+        "Secret code must be at least 8 characters long"
+      );
+      expect(() => validator.parse("")).toThrow(
+        "Secret code must be at least 8 characters long"
+      );
     });
 
     it("should reject codes longer than 64 characters", () => {
       const tooLong = "a".repeat(65);
-      expect(() => validator.parse(tooLong)).toThrow("Secret code must not exceed 64 characters");
+      expect(() => validator.parse(tooLong)).toThrow(
+        "Secret code must not exceed 64 characters"
+      );
     });
 
     it("should reject non-string types", () => {
@@ -122,9 +132,15 @@ describe("getSecretCode", () => {
   });
 
   it("should throw for invalid secret codes", () => {
-    expect(() => getSecretCode("1234567")).toThrow("Secret code must be at least 8 characters long");
-    expect(() => getSecretCode("")).toThrow("Secret code must be at least 8 characters long");
-    expect(() => getSecretCode("a".repeat(65))).toThrow("Secret code must not exceed 64 characters");
+    expect(() => getSecretCode("1234567")).toThrow(
+      "Secret code must be at least 8 characters long"
+    );
+    expect(() => getSecretCode("")).toThrow(
+      "Secret code must be at least 8 characters long"
+    );
+    expect(() => getSecretCode("a".repeat(65))).toThrow(
+      "Secret code must not exceed 64 characters"
+    );
   });
 
   it("should throw for non-string types", () => {

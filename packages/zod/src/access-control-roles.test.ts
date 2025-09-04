@@ -246,7 +246,8 @@ describe("accessControlRoles", () => {
       if (!("shape" in accessControlRoles)) {
         throw new Error("Expected accessControlRoles to be a ZodObject");
       }
-      const schemaShape = (accessControlRoles as z.ZodObject<z.ZodRawShape>).shape;
+      const schemaShape = (accessControlRoles as z.ZodObject<z.ZodRawShape>)
+        .shape;
       const schemaKeys = Object.keys(schemaShape);
 
       // REFERENCE: Complete list of all system roles (must match source exactly)
@@ -294,7 +295,9 @@ describe("accessControlRoles", () => {
       });
 
       // VERIFICATION: Enum schema also has all roles for single role validation
-      expect(Object.keys(accessControlRole.enum)).toHaveLength(expectedRoles.length);
+      expect(Object.keys(accessControlRole.enum)).toHaveLength(
+        expectedRoles.length
+      );
     });
   });
 });

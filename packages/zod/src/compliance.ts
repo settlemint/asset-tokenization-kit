@@ -60,7 +60,8 @@ export const ComplianceTypeIdEnum = {
   CountryBlockListComplianceModule: "CountryBlockListComplianceModule",
   IdentityAllowListComplianceModule: "IdentityAllowListComplianceModule",
   IdentityBlockListComplianceModule: "IdentityBlockListComplianceModule",
-  SMARTIdentityVerificationComplianceModule: "SMARTIdentityVerificationComplianceModule",
+  SMARTIdentityVerificationComplianceModule:
+    "SMARTIdentityVerificationComplianceModule",
 } as const;
 
 /**
@@ -85,17 +86,27 @@ export const ComplianceTypeIdEnum = {
  * });
  * ```
  */
-export const complianceTypeId = () => z.enum(complianceTypeIds).describe("Compliance module typeId identifier");
+export const complianceTypeId = () =>
+  z.enum(complianceTypeIds).describe("Compliance module typeId identifier");
 
 export const countryAllowListValues = () =>
-  z.array(isoCountryCodeNumeric).describe("Array of ISO country codes to allow");
+  z
+    .array(isoCountryCodeNumeric)
+    .describe("Array of ISO country codes to allow");
 export const countryBlockListValues = () =>
-  z.array(isoCountryCodeNumeric).describe("Array of ISO country codes to block");
-export const addressBlockListValues = () => z.array(ethereumAddress).describe("Array of Ethereum addresses to block");
+  z
+    .array(isoCountryCodeNumeric)
+    .describe("Array of ISO country codes to block");
+export const addressBlockListValues = () =>
+  z.array(ethereumAddress).describe("Array of Ethereum addresses to block");
 export const identityAllowListValues = () =>
-  z.array(ethereumAddress).describe("Array of identity contract addresses to allow");
+  z
+    .array(ethereumAddress)
+    .describe("Array of identity contract addresses to allow");
 export const identityBlockListValues = () =>
-  z.array(ethereumAddress).describe("Array of identity contract addresses to block");
+  z
+    .array(ethereumAddress)
+    .describe("Array of identity contract addresses to block");
 
 export const smartIdentityVerificationValues = () =>
   z.array(expressionNodeWithGroups).describe("Array of expression nodes");
@@ -191,7 +202,8 @@ export const complianceParams = () =>
  * ]);
  * ```
  */
-export const complianceModulePair = () => complianceParams().describe("Compliance module pair with typeId and params");
+export const complianceModulePair = () =>
+  complianceParams().describe("Compliance module pair with typeId and params");
 
 /**
  * Creates an array validator for multiple compliance module pairs.
@@ -208,7 +220,10 @@ export const complianceModulePair = () => complianceParams().describe("Complianc
  * ```
  */
 export const complianceModulePairArray = () =>
-  z.array(complianceModulePair()).default([]).describe("Array of compliance module pairs for token initialization");
+  z
+    .array(complianceModulePair())
+    .default([])
+    .describe("Array of compliance module pairs for token initialization");
 
 // Export types
 /**
@@ -227,10 +242,14 @@ export type ComplianceParams = z.infer<ReturnType<typeof complianceParams>>;
  * Type representing a compliance module pair with typeId and params.
  * Used for token initialization and configuration.
  */
-export type ComplianceModulePairInput = z.input<ReturnType<typeof complianceModulePair>>;
+export type ComplianceModulePairInput = z.input<
+  ReturnType<typeof complianceModulePair>
+>;
 
 /**
  * Type representing an array of compliance module pairs.
  * Used for the 'initialModulePairs' field in token creation schemas.
  */
-export type ComplianceModulePairInputArray = z.input<ReturnType<typeof complianceModulePairArray>>;
+export type ComplianceModulePairInputArray = z.input<
+  ReturnType<typeof complianceModulePairArray>
+>;

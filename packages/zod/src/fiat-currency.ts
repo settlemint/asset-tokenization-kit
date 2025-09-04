@@ -37,14 +37,27 @@ export const allFiatCurrencies = getValidFiatCurrencies();
  * Supported fiat currency codes for the platform.
  * A curated subset of major global currencies.
  */
-export const fiatCurrencies = ["USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD", "AED", "SGD", "SAR"] as const;
+export const fiatCurrencies = [
+  "USD",
+  "EUR",
+  "GBP",
+  "JPY",
+  "CHF",
+  "CAD",
+  "AUD",
+  "AED",
+  "SGD",
+  "SAR",
+] as const;
 
 /**
  * Get currency metadata from ISO 4217 data.
  * @param code - Currency code
  * @returns Currency metadata or undefined
  */
-export function getCurrencyMetadata(code: string): { name: string; decimals: number } | undefined {
+export function getCurrencyMetadata(
+  code: string
+): { name: string; decimals: number } | undefined {
   const currency = cc.code(code);
   if (!currency) return undefined;
 
@@ -84,7 +97,8 @@ export const fiatCurrencyMetadata = Object.fromEntries(
  * schema.parse("CNY");  // Throws - not in supported list
  * ```
  */
-export const fiatCurrency = () => z.enum(fiatCurrencies).describe("Fiat currency code (ISO 4217)");
+export const fiatCurrency = () =>
+  z.enum(fiatCurrencies).describe("Fiat currency code (ISO 4217)");
 
 /**
  * Type representing a validated fiat currency code.

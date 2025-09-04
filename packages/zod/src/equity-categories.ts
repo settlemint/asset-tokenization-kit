@@ -33,7 +33,8 @@ export const equityCategories = ["common", "preferred", "restricted"] as const;
  * schema.parse("convertible"); // Throws ZodError
  * ```
  */
-export const equityCategory = () => z.enum(equityCategories).describe("Category of equity");
+export const equityCategory = () =>
+  z.enum(equityCategories).describe("Category of equity");
 
 /**
  * Type representing a validated equity category.

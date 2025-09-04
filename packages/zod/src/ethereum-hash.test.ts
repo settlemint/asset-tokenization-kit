@@ -2,16 +2,25 @@ import { describe, expect, test } from "bun:test";
 import { ethereumHash, getEthereumHash, isEthereumHash } from "./ethereum-hash";
 
 describe("Ethereum Hash Validation", () => {
-  const validHash = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
-  const validUpperHash = "0x1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF";
-  const validMixedHash = "0x1234567890AbCdEf1234567890aBcDeF1234567890AbCdEf1234567890aBcDeF";
-  const zeroHash = "0x0000000000000000000000000000000000000000000000000000000000000000";
-  const maxHash = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+  const validHash =
+    "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
+  const validUpperHash =
+    "0x1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF";
+  const validMixedHash =
+    "0x1234567890AbCdEf1234567890aBcDeF1234567890AbCdEf1234567890aBcDeF";
+  const zeroHash =
+    "0x0000000000000000000000000000000000000000000000000000000000000000";
+  const maxHash =
+    "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 
-  const invalidNoPrefix = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
-  const invalidShort = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcd";
-  const invalidLong = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdefff";
-  const invalidChars = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdeg";
+  const invalidNoPrefix =
+    "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
+  const invalidShort =
+    "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcd";
+  const invalidLong =
+    "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdefff";
+  const invalidChars =
+    "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdeg";
 
   describe("ethereumHash Zod schema", () => {
     describe("valid hashes", () => {
@@ -41,7 +50,9 @@ describe("Ethereum Hash Validation", () => {
         const result = ethereumHash.safeParse(invalidNoPrefix);
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error.issues[0]?.message).toBe("Ethereum hash must be exactly 66 characters long");
+          expect(result.error.issues[0]?.message).toBe(
+            "Ethereum hash must be exactly 66 characters long"
+          );
         }
       });
 
@@ -49,13 +60,17 @@ describe("Ethereum Hash Validation", () => {
         const shortResult = ethereumHash.safeParse(invalidShort);
         expect(shortResult.success).toBe(false);
         if (!shortResult.success) {
-          expect(shortResult.error.issues[0]?.message).toBe("Ethereum hash must be exactly 66 characters long");
+          expect(shortResult.error.issues[0]?.message).toBe(
+            "Ethereum hash must be exactly 66 characters long"
+          );
         }
 
         const longResult = ethereumHash.safeParse(invalidLong);
         expect(longResult.success).toBe(false);
         if (!longResult.success) {
-          expect(longResult.error.issues[0]?.message).toBe("Ethereum hash must be exactly 66 characters long");
+          expect(longResult.error.issues[0]?.message).toBe(
+            "Ethereum hash must be exactly 66 characters long"
+          );
         }
       });
 
@@ -80,7 +95,9 @@ describe("Ethereum Hash Validation", () => {
         const result = ethereumHash.safeParse("");
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error.issues[0]?.message).toBe("Ethereum hash must be exactly 66 characters long");
+          expect(result.error.issues[0]?.message).toBe(
+            "Ethereum hash must be exactly 66 characters long"
+          );
         }
       });
 
@@ -88,7 +105,9 @@ describe("Ethereum Hash Validation", () => {
         const result = ethereumHash.safeParse("0x");
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error.issues[0]?.message).toBe("Ethereum hash must be exactly 66 characters long");
+          expect(result.error.issues[0]?.message).toBe(
+            "Ethereum hash must be exactly 66 characters long"
+          );
         }
       });
 
@@ -104,7 +123,8 @@ describe("Ethereum Hash Validation", () => {
         // This tests the refine step - a hash that passes regex but fails isHash
         // In practice, this is hard to construct since viem's isHash is quite permissive
         // but we can test the error message format
-        const hashWithCorrectFormat = "0x0000000000000000000000000000000000000000000000000000000000000000";
+        const hashWithCorrectFormat =
+          "0x0000000000000000000000000000000000000000000000000000000000000000";
         const result = ethereumHash.safeParse(hashWithCorrectFormat);
         // This should actually pass, so let's verify it does
         expect(result.success).toBe(true);
@@ -123,14 +143,18 @@ describe("Ethereum Hash Validation", () => {
         const shortResult = ethereumHash.safeParse("0x123");
         expect(shortResult.success).toBe(false);
         if (!shortResult.success) {
-          expect(shortResult.error.issues[0]?.message).toBe("Ethereum hash must be exactly 66 characters long");
+          expect(shortResult.error.issues[0]?.message).toBe(
+            "Ethereum hash must be exactly 66 characters long"
+          );
         }
 
         // Test max length error (should be same message)
         const longResult = ethereumHash.safeParse(`0x${"a".repeat(65)}`);
         expect(longResult.success).toBe(false);
         if (!longResult.success) {
-          expect(longResult.error.issues[0]?.message).toBe("Ethereum hash must be exactly 66 characters long");
+          expect(longResult.error.issues[0]?.message).toBe(
+            "Ethereum hash must be exactly 66 characters long"
+          );
         }
 
         // Test regex error

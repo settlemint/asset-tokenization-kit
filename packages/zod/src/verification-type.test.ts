@@ -10,9 +10,12 @@ describe("verificationType", () => {
   const validator = verificationType;
 
   describe("valid verification types", () => {
-    it.each(verificationTypes.map((type) => [type]))("should accept '%s'", (type) => {
-      expect(validator.parse(type)).toBe(type);
-    });
+    it.each(verificationTypes.map((type) => [type]))(
+      "should accept '%s'",
+      (type) => {
+        expect(validator.parse(type)).toBe(type);
+      }
+    );
 
     it("should accept all defined verification types", () => {
       expect(validator.parse("OTP")).toBe("OTP");

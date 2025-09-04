@@ -110,7 +110,8 @@ export const timestamp = () =>
         return time >= 0 && time <= 253_402_300_799_999;
       },
       {
-        message: "Timestamp is out of valid range (must be between 1970 and 9999)",
+        message:
+          "Timestamp is out of valid range (must be between 1970 and 9999)",
       }
     );
 
