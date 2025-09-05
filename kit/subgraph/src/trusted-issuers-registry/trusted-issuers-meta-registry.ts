@@ -1,21 +1,43 @@
+import { Address } from "@graphprotocol/graph-ts";
 import {
-  SubjectRegistrySet as SubjectRegistrySetEvent,
+  ContractRegistrySet as ContractRegistrySetEvent,
   SystemRegistrySet as SystemRegistrySetEvent,
-} from "../../generated/TrustedIssuersMetaRegistry/TrustedIssuersMetaRegistry";
+} from "../../generated/templates/TrustedIssuersMetaRegistry/TrustedIssuersMetaRegistry";
 import { fetchEvent } from "../event/fetch/event";
+import {
+  fetchSubjectRegistryMapping,
+  removeSubjectRegistryMapping,
+} from "./fetch/subject-registry-mapping";
 import { fetchTrustedIssuersRegistry } from "./fetch/trusted-issuers-registry";
 
 export function handleSystemRegistrySet(event: SystemRegistrySetEvent): void {
   fetchEvent(event, "SystemRegistrySet");
 
-  const trustedIssuerRegistry = fetchTrustedIssuersRegistry(event.address);
-  trustedIssuerRegistry.systemRegistry = event.params.newRegistry;
-  trustedIssuerRegistry.save();
+  const metaRegistry = fetchTrustedIssuersRegistry(event.address);
+  metaRegistry.systemRegistry = event.params.newRegistry;
+  metaRegistry.deployedInTransaction = event.transaction.hash;
+  metaRegistry.save();
 }
 
-export function handleSubjectRegistrySet(event: SubjectRegistrySetEvent): void {
+export function handleSubjectRegistrySet(
+  event: ContractRegistrySetEvent
+): void {
   fetchEvent(event, "SubjectRegistrySet");
 
-  // Subject registry mapping is a separate entity derived via relationships.
-  // If additional indexing is needed, implement mapping creation here.
+  const metaRegistryAddress = event.address;
+  const subjectAddress = event.params.contractAddress;
+  const registryAddress = event.params.newRegistry;
+
+  if (registryAddress.equals(Address.zero())) {
+    removeSubjectRegistryMapping(metaRegistryAddress, subjectAddress);
+    return;
+  }
+
+  const mapping = fetchSubjectRegistryMapping(
+    metaRegistryAddress,
+    subjectAddress
+  );
+  mapping.registry = registryAddress;
+  mapping.deployedInTransaction = event.transaction.hash;
+  mapping.save();
 }

@@ -495,11 +495,11 @@ type SubjectRegistryMapping @entity(immutable: false) {
   # Composite key: metaRegistry address + subject address
   id: Bytes!
   # Meta registry this mapping belongs to
-  metaRegistry: TrustedIssuersMetaRegistry!
+  metaRegistry: TrustedIssuersRegistry!
   # Subject address this registry is for
   subject: Account!
   # The trusted issuers registry for this subject
-  registry: TokenTrustedIssuersRegistry!
+  registry: TrustedIssuersRegistry!
   # Transaction hash where this mapping was set
   deployedInTransaction: Bytes!
 }
