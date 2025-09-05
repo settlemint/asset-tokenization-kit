@@ -8,9 +8,7 @@
  */
 
 import { z } from "zod";
-import { assetSymbol } from "./asset-symbol";
 import { bigDecimal } from "./bigdecimal";
-import { decimals } from "./decimals";
 import { ethereumAddress } from "./ethereum-address";
 import { ethereumHex } from "./ethereum-hex";
 import { timestamp } from "./timestamp";
@@ -94,11 +92,6 @@ export const fixedYieldSchedule = () =>
     totalYield: bigDecimal().describe("Total yield generated"),
     denominationAsset: z.object({
       id: ethereumAddress.describe("Denomination asset contract address"),
-      symbol: assetSymbol().describe("Denomination asset symbol"),
-      decimals: decimals().describe("Denomination asset decimals"),
-      balance: bigDecimal().describe(
-        "Available balance of the denomination asset"
-      ),
     }),
     currentPeriod: fixedYieldSchedulePeriod()
       .nullable()

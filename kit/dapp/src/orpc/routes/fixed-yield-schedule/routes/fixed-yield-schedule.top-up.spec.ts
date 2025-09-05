@@ -160,8 +160,18 @@ describe("Fixed yield schedule top up", async () => {
     });
 
     expect(readResult).toBeDefined();
-    expect(readResult.denominationAsset.balance).toBeDefined();
-    expect(eq(readResult.denominationAsset.balance, from(10))).toBe(true);
+
+    const denominationAsset = await adminClient.token.holders({
+      tokenAddress: depositToken.id,
+    });
+    const yieldBalance = denominationAsset.token?.balances.find(
+      (holder) => holder.account.id === yieldScheduleAddress
+    );
+
+    expect(yieldBalance).toBeDefined();
+    expect(
+      yieldBalance?.available && eq(yieldBalance.available, from(10))
+    ).toBe(true);
   }, 100_000);
 
   test("regular users can top up", async () => {
@@ -185,7 +195,15 @@ describe("Fixed yield schedule top up", async () => {
     });
 
     expect(readResult).toBeDefined();
-    expect(readResult.denominationAsset.balance).toBeDefined();
-    expect(eq(readResult.denominationAsset.balance, from(20))).toBe(true);
+    const denominationAsset = await investorClient.token.holders({
+      tokenAddress: depositToken.id,
+    });
+    const yieldBalance = denominationAsset.token?.balances.find(
+      (holder) => holder.account.id === yieldScheduleAddress
+    );
+    expect(yieldBalance).toBeDefined();
+    expect(
+      yieldBalance?.available && eq(yieldBalance.available, from(20))
+    ).toBe(true);
   }, 100_000);
 });

@@ -102,9 +102,6 @@ describe("Fixed yield schedule read", async () => {
     expect(result.totalYield).toBeDefined();
     expect(result.denominationAsset).toBeDefined();
     expect(result.denominationAsset.id).toBeDefined();
-    expect(result.denominationAsset.balance).toBeDefined();
-    expect(result.denominationAsset.symbol).toBeDefined();
-    expect(result.denominationAsset.decimals).toBeDefined();
     expect(result.periods).toBeDefined();
     expect(Array.isArray(result.periods)).toBe(true);
   }, 30_000);
@@ -147,9 +144,6 @@ describe("Fixed yield schedule read", async () => {
     // Verify denomination asset structure
     expect(result.denominationAsset).toHaveProperty("id");
     expect(typeof result.denominationAsset.id).toBe("string");
-    expect(result.denominationAsset.balance).toBeDefined();
-    expect(result.denominationAsset.symbol).toBeDefined();
-    expect(result.denominationAsset.decimals).toBeDefined();
 
     // Verify periods array structure
     expect(Array.isArray(result.periods)).toBe(true);
