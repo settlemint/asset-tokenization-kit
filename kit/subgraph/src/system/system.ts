@@ -1,4 +1,5 @@
 import { Bytes } from "@graphprotocol/graph-ts";
+import { TrustedIssuersMetaRegistry as TrustedIssuersMetaRegistryTemplate } from "../../generated/templates";
 
 import {
   Bootstrapped,
@@ -58,6 +59,19 @@ export function handleBootstrapped(event: Bootstrapped): void {
   }
   trustedIssuersRegistry.save();
 
+  // Create the Trusted Issuers Meta Registry entity and instantiate its template
+  const trustedIssuersMetaRegistry = fetchTrustedIssuersRegistry(
+    event.params.trustedIssuersMetaRegistryProxy
+  );
+  if (trustedIssuersMetaRegistry.deployedInTransaction.equals(Bytes.empty())) {
+    trustedIssuersMetaRegistry.deployedInTransaction = event.transaction.hash;
+  }
+  trustedIssuersMetaRegistry.systemRegistry = trustedIssuersRegistry.id;
+  trustedIssuersMetaRegistry.save();
+  TrustedIssuersMetaRegistryTemplate.create(
+    event.params.trustedIssuersMetaRegistryProxy
+  );
+
   const identityFactory = fetchIdentityFactory(
     event.params.identityFactoryProxy
   );
@@ -111,6 +125,7 @@ export function handleBootstrapped(event: Bootstrapped): void {
   system.identityRegistryStorage = identityRegistryStorage.id;
   system.trustedIssuersRegistry = trustedIssuersRegistry.id;
   system.identityFactory = identityFactory.id;
+  // Note: System currently has no separate field for the meta registry; it is indexed as a TrustedIssuersRegistry entity
   system.topicSchemeRegistry = topicSchemeRegistry.id;
   system.tokenFactoryRegistry = tokenFactoryRegistry.id;
   system.complianceModuleRegistry = complianceModuleRegistry.id;

@@ -37,7 +37,7 @@ export function handleSubjectRegistrySet(
     metaRegistryAddress,
     subjectAddress
   );
-  mapping.registry = registryAddress;
+  mapping.registry = fetchTrustedIssuersRegistry(registryAddress).id;
   mapping.deployedInTransaction = event.transaction.hash;
   mapping.save();
 }

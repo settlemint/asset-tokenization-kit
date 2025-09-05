@@ -485,7 +485,7 @@ type TrustedIssuersRegistry @entity(immutable: false) {
   # Token this registry belongs to
   token: Token
   # System-wide registry reference
-  systemRegistry: SystemTrustedIssuersRegistry
+  systemRegistry: TrustedIssuersRegistry
   # Subject-specific registry mappings
   subjectRegistries: [SubjectRegistryMapping!]! @derivedFrom(field: "metaRegistry")
 }
