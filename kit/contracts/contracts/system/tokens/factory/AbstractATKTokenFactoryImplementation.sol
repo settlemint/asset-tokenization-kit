@@ -60,6 +60,18 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @dev This address points to the contract that holds the core logic for token operations.
     address internal _tokenImplementation;
 
+    /// @notice Emitted when a token-specific `TokenTrustedIssuersRegistry` is created and registered
+    /// @param sender The caller initiating the registry creation
+    /// @param registry The deployed registry address
+    /// @param token The token contract address
+    /// @param tokenIdentity The onchain identity address of the token
+    event TokenTrustedIssuersRegistryCreated(
+        address indexed sender,
+        address indexed registry,
+        address indexed token,
+        address tokenIdentity
+    );
+
     /// @notice Constructor for the token factory implementation.
     /// @param forwarder The address of the trusted forwarder for meta-transactions (ERC2771).
     constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) {
@@ -413,7 +425,14 @@ abstract contract AbstractATKTokenFactoryImplementation is
                 tokenAddress
             );
 
-            metaRegistry.setRegistryForContract(tokenIdentityAddress, address(tokenRegistry));
+            emit TokenTrustedIssuersRegistryCreated(
+                _msgSender(),
+                address(tokenRegistry),
+                tokenAddress,
+                tokenIdentityAddress
+            );
+
+            metaRegistry.setRegistryForSubject(tokenIdentityAddress, address(tokenRegistry));
         }
     }
 

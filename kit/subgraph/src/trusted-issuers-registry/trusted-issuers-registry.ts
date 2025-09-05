@@ -1,4 +1,4 @@
-import { Bytes, store } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   ClaimTopicsUpdated as ClaimTopicsUpdatedEvent,
   TrustedIssuerAdded as TrustedIssuerAddedEvent,
@@ -29,6 +29,8 @@ export function handleTrustedIssuerAdded(event: TrustedIssuerAddedEvent): void {
   trustedIssuer.claimTopics = event.params._claimTopics.map<Bytes>(
     (topic) => fetchTopicScheme(topic).id
   );
+  trustedIssuer.addedAt = event.block.timestamp;
+  trustedIssuer.revokedAt = BigInt.zero();
   trustedIssuer.save();
 }
 
@@ -38,5 +40,6 @@ export function handleTrustedIssuerRemoved(
   fetchEvent(event, "TrustedIssuerRemoved");
 
   const trustedIssuer = fetchTrustedIssuer(event.params._issuer);
-  store.remove("TrustedIssuer", trustedIssuer.id.toHexString());
+  trustedIssuer.revokedAt = event.block.timestamp;
+  trustedIssuer.save();
 }

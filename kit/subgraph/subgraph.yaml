@@ -127,6 +127,9 @@ templates:
         - event: TokenAssetCreated(indexed address,indexed address,indexed
             address,bytes4[],address)
           handler: handleTokenAssetCreated
+        - event: TokenTrustedIssuersRegistryCreated(indexed address,indexed address,indexed
+            address,indexed address)
+          handler: handleTokenTrustedIssuersRegistryCreated
         - event: TokenImplementationUpdated(indexed address,indexed address,indexed
             address)
           handler: handleTokenImplementationUpdated
@@ -972,8 +975,8 @@ templates:
         - Address
         - Event
       abis:
-        - name: SystemTrustedIssuersRegistry
-          file: ../contracts/.generated/out/IATKSystemTrustedIssuersRegistry.sol/IATKSystemTrustedIssuersRegistry.json
+        - name: TrustedIssuersRegistry
+          file: ../contracts/.generated/out/IATKTrustedIssuersRegistry.sol/IATKTrustedIssuersRegistry.json
       eventHandlers:
         - event: ClaimTopicsUpdated(indexed address,indexed address,uint256[],indexed
             address)
@@ -983,7 +986,7 @@ templates:
           handler: handleTrustedIssuerAdded
         - event: TrustedIssuerRemoved(indexed address,indexed address,indexed address)
           handler: handleTrustedIssuerRemoved
-      file: ./src/trusted-issuers-registry/system-trusted-issuers-registry.ts
+      file: ./src/trusted-issuers-registry/trusted-issuers-registry.ts
   - kind: ethereum
     name: TrustedIssuersMetaRegistry
     network: settlemint
@@ -1000,14 +1003,11 @@ templates:
         - name: TrustedIssuersMetaRegistry
           file: ../contracts/.generated/out/IATKTrustedIssuersMetaRegistry.sol/IATKTrustedIssuersMetaRegistry.json
       eventHandlers:
-        - event: ClaimTopicsUpdated(indexed address,indexed address,uint256[],indexed
+        - event: SystemRegistrySet(indexed address,indexed address,indexed address)
+          handler: handleSystemRegistrySet
+        - event: SubjectRegistrySet(indexed address,indexed address,indexed address,indexed
             address)
-          handler: handleClaimTopicsUpdated
-        - event: TrustedIssuerAdded(indexed address,indexed address,uint256[],indexed
-            address)
-          handler: handleTrustedIssuerAdded
-        - event: TrustedIssuerRemoved(indexed address,indexed address,indexed address)
-          handler: handleTrustedIssuerRemoved
+          handler: handleSubjectRegistrySet
       file: ./src/trusted-issuers-registry/trusted-issuers-meta-registry.ts
   - kind: ethereum
     name: TokenTrustedIssuersRegistry
@@ -1022,8 +1022,8 @@ templates:
         - Address
         - Event
       abis:
-        - name: TokenTrustedIssuersRegistry
-          file: ../contracts/.generated/out/IATKTokenTrustedIssuersRegistry.sol/IATKTokenTrustedIssuersRegistry.json
+        - name: TrustedIssuersRegistry
+          file: ../contracts/.generated/out/IATKTrustedIssuersRegistry.sol/IATKTrustedIssuersRegistry.json
       eventHandlers:
         - event: ClaimTopicsUpdated(indexed address,indexed address,uint256[],indexed
             address)
@@ -1033,7 +1033,7 @@ templates:
           handler: handleTrustedIssuerAdded
         - event: TrustedIssuerRemoved(indexed address,indexed address,indexed address)
           handler: handleTrustedIssuerRemoved
-      file: ./src/token-trusted-issuers-registry/token-trusted-issuers-registry.ts
+      file: ./src/trusted-issuers-registry/trusted-issuers-registry.ts
   - kind: ethereum
     name: IdentityRegistryStorage
     network: settlemint

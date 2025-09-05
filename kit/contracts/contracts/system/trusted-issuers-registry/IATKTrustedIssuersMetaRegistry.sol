@@ -27,14 +27,14 @@ interface IATKTrustedIssuersMetaRegistry is IATKTrustedIssuersRegistry {
         address indexed newRegistry
     );
 
-    /// @notice Emitted when a contract-specific registry is set or updated
+    /// @notice Emitted when a subject-specific registry is set or updated
     /// @param sender The address that initiated the change
-    /// @param contractAddress The contract address for which the registry is being set
-    /// @param oldRegistry The address of the previous registry for this contract (address(0) if none)
-    /// @param newRegistry The address of the new registry for this contract
-    event ContractRegistrySet(
+    /// @param subject The subject address for which the registry is being set
+    /// @param oldRegistry The address of the previous registry for this subject (address(0) if none)
+    /// @param newRegistry The address of the new registry for this subject
+    event SubjectRegistrySet(
         address indexed sender,
-        address indexed contractAddress,
+        address indexed subject,
         address indexed oldRegistry,
         address newRegistry
     );
@@ -51,16 +51,16 @@ interface IATKTrustedIssuersMetaRegistry is IATKTrustedIssuersRegistry {
     /// @param registry The address of the system trusted issuers registry (can be address(0) to remove)
     function setSystemRegistry(address registry) external;
 
-    /// @notice Sets a contract-specific trusted issuers registry
-    /// @dev Part of the meta-registry pattern - manages contract-specific registries
-    /// @param contractAddress The contract address to set the registry for
-    /// @param registry The address of the trusted issuers registry for this contract (can be address(0) to remove)
-    function setRegistryForContract(address contractAddress, address registry) external;
+    /// @notice Sets a subject-specific trusted issuers registry
+    /// @dev Part of the meta-registry pattern - manages subject-specific registries
+    /// @param subject The subject address to set the registry for
+    /// @param registry The address of the trusted issuers registry for this subject (can be address(0) to remove)
+    function setRegistryForSubject(address subject, address registry) external;
 
-    /// @notice Removes a contract-specific trusted issuers registry
-    /// @dev Convenience function that delegates to setRegistryForContract with address(0)
-    /// @param contractAddress The contract address to remove the registry for
-    function removeRegistryForContract(address contractAddress) external;
+    /// @notice Removes a subject-specific trusted issuers registry
+    /// @dev Convenience function that delegates to setRegistryForSubject with address(0)
+    /// @param subject The subject address to remove the registry for
+    function removeRegistryForSubject(address subject) external;
 
     // --- Registry Getters ---
 
@@ -68,9 +68,9 @@ interface IATKTrustedIssuersMetaRegistry is IATKTrustedIssuersRegistry {
     /// @return The system trusted issuers registry address
     function getSystemRegistry() external view returns (IATKTrustedIssuersRegistry);
 
-    /// @notice Gets the contract-specific trusted issuers registry
-    /// @param contractAddress The contract address to get the registry for
-    /// @return The contract-specific trusted issuers registry address
-    function getRegistryForContract(address contractAddress) external view returns (IATKTrustedIssuersRegistry);
+    /// @notice Gets the subject-specific trusted issuers registry
+    /// @param subject The subject address to get the registry for
+    /// @return The subject-specific trusted issuers registry address
+    function getRegistryForSubject(address subject) external view returns (IATKTrustedIssuersRegistry);
 
 }

@@ -1,42 +1,21 @@
-import { Bytes, store } from "@graphprotocol/graph-ts";
 import {
-  ClaimTopicsUpdated as ClaimTopicsUpdatedEvent,
-  TrustedIssuerAdded as TrustedIssuerAddedEvent,
-  TrustedIssuerRemoved as TrustedIssuerRemovedEvent,
-} from "../../generated/templates/TrustedIssuersRegistry/TrustedIssuersRegistry";
+  SubjectRegistrySet as SubjectRegistrySetEvent,
+  SystemRegistrySet as SystemRegistrySetEvent,
+} from "../../generated/TrustedIssuersMetaRegistry/TrustedIssuersMetaRegistry";
 import { fetchEvent } from "../event/fetch/event";
-import { fetchTopicScheme } from "../topic-scheme-registry/fetch/topic-scheme";
-import { fetchTrustedIssuer } from "./fetch/trusted-issuer";
 import { fetchTrustedIssuersRegistry } from "./fetch/trusted-issuers-registry";
 
-export function handleClaimTopicsUpdated(event: ClaimTopicsUpdatedEvent): void {
-  fetchEvent(event, "ClaimTopicsUpdated");
-
-  const trustedIssuer = fetchTrustedIssuer(event.params._issuer);
-  trustedIssuer.claimTopics = event.params._claimTopics.map<Bytes>(
-    (topic) => fetchTopicScheme(topic).id
-  );
-  trustedIssuer.save();
-}
-
-export function handleTrustedIssuerAdded(event: TrustedIssuerAddedEvent): void {
-  fetchEvent(event, "TrustedIssuerAdded");
+export function handleSystemRegistrySet(event: SystemRegistrySetEvent): void {
+  fetchEvent(event, "SystemRegistrySet");
 
   const trustedIssuerRegistry = fetchTrustedIssuersRegistry(event.address);
-  const trustedIssuer = fetchTrustedIssuer(event.params._issuer);
-  trustedIssuer.registry = trustedIssuerRegistry.id;
-  trustedIssuer.deployedInTransaction = event.transaction.hash;
-  trustedIssuer.claimTopics = event.params._claimTopics.map<Bytes>(
-    (topic) => fetchTopicScheme(topic).id
-  );
-  trustedIssuer.save();
+  trustedIssuerRegistry.systemRegistry = event.params.newRegistry;
+  trustedIssuerRegistry.save();
 }
 
-export function handleTrustedIssuerRemoved(
-  event: TrustedIssuerRemovedEvent
-): void {
-  fetchEvent(event, "TrustedIssuerRemoved");
+export function handleSubjectRegistrySet(event: SubjectRegistrySetEvent): void {
+  fetchEvent(event, "SubjectRegistrySet");
 
-  const trustedIssuer = fetchTrustedIssuer(event.params._issuer);
-  store.remove("TrustedIssuer", trustedIssuer.id.toHexString());
+  // Subject registry mapping is a separate entity derived via relationships.
+  // If additional indexing is needed, implement mapping creation here.
 }

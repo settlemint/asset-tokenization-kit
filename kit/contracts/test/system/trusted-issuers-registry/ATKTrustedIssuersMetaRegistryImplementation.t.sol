@@ -155,59 +155,59 @@ contract ATKTrustedIssuersMetaRegistryImplementationTest is Test {
     function test_SetRegistryForContractSuccess() public {
         vm.prank(systemManager);
         vm.expectEmit(true, true, true, true);
-        emit IATKTrustedIssuersMetaRegistry.ContractRegistrySet(
+        emit IATKTrustedIssuersMetaRegistry.SubjectRegistrySet(
             systemManager, contract1, address(0), address(contractRegistry)
         );
-        metaRegistry.setRegistryForContract(contract1, address(contractRegistry));
+        metaRegistry.setRegistryForSubject(contract1, address(contractRegistry));
 
         // Verify contract registry is set
-        assertEq(address(metaRegistry.getRegistryForContract(contract1)), address(contractRegistry));
+        assertEq(address(metaRegistry.getRegistryForSubject(contract1)), address(contractRegistry));
     }
 
     function test_SetRegistryForContractRequiresAuthorization() public {
         vm.prank(user1);
         vm.expectRevert();
-        metaRegistry.setRegistryForContract(contract1, address(contractRegistry));
+        metaRegistry.setRegistryForSubject(contract1, address(contractRegistry));
     }
 
     function test_SetRegistryForContractInvalidAddress() public {
         vm.prank(systemManager);
         vm.expectRevert(ATKTrustedIssuersMetaRegistryImplementation.InvalidContractAddress.selector);
-        metaRegistry.setRegistryForContract(address(0), address(contractRegistry));
+        metaRegistry.setRegistryForSubject(address(0), address(contractRegistry));
     }
 
     function test_SetRegistryForContractToZero() public {
         // First set a registry
         vm.prank(systemManager);
-        metaRegistry.setRegistryForContract(contract1, address(contractRegistry));
+        metaRegistry.setRegistryForSubject(contract1, address(contractRegistry));
 
         // Then clear it
         vm.prank(systemManager);
         vm.expectEmit(true, true, true, true);
-        emit IATKTrustedIssuersMetaRegistry.ContractRegistrySet(
+        emit IATKTrustedIssuersMetaRegistry.SubjectRegistrySet(
             systemManager, contract1, address(contractRegistry), address(0)
         );
-        metaRegistry.setRegistryForContract(contract1, address(0));
+        metaRegistry.setRegistryForSubject(contract1, address(0));
 
         // Verify contract registry is cleared
-        assertEq(address(metaRegistry.getRegistryForContract(contract1)), address(0));
+        assertEq(address(metaRegistry.getRegistryForSubject(contract1)), address(0));
     }
 
     function test_RemoveRegistryForContractSuccess() public {
         // First set a registry
         vm.prank(systemManager);
-        metaRegistry.setRegistryForContract(contract1, address(contractRegistry));
+        metaRegistry.setRegistryForSubject(contract1, address(contractRegistry));
 
         // Remove it
         vm.prank(systemManager);
         vm.expectEmit(true, true, true, true);
-        emit IATKTrustedIssuersMetaRegistry.ContractRegistrySet(
+        emit IATKTrustedIssuersMetaRegistry.SubjectRegistrySet(
             systemManager, contract1, address(contractRegistry), address(0)
         );
-        metaRegistry.removeRegistryForContract(contract1);
+        metaRegistry.removeRegistryForSubject(contract1);
 
         // Verify contract registry is cleared
-        assertEq(address(metaRegistry.getRegistryForContract(contract1)), address(0));
+        assertEq(address(metaRegistry.getRegistryForSubject(contract1)), address(0));
     }
 
     function test_AddTrustedIssuerDelegatesToSystemRegistry() public {
@@ -274,7 +274,7 @@ contract ATKTrustedIssuersMetaRegistryImplementationTest is Test {
     function test_GetTrustedIssuersWithContractRegistry() public {
         // Set up contract registry
         vm.prank(systemManager);
-        metaRegistry.setRegistryForContract(contract1, address(contractRegistry));
+        metaRegistry.setRegistryForSubject(contract1, address(contractRegistry));
 
         // Add different issuers to each registry
         uint256[] memory topics1 = new uint256[](1);
@@ -295,7 +295,7 @@ contract ATKTrustedIssuersMetaRegistryImplementationTest is Test {
     function test_GetTrustedIssuersWithDuplicates() public {
         // Set up contract registry
         vm.prank(systemManager);
-        metaRegistry.setRegistryForContract(contract1, address(contractRegistry));
+        metaRegistry.setRegistryForSubject(contract1, address(contractRegistry));
 
         // Add same issuer to both registries
         uint256[] memory topics = new uint256[](1);
@@ -328,7 +328,7 @@ contract ATKTrustedIssuersMetaRegistryImplementationTest is Test {
     function test_IsTrustedIssuerWithContractRegistry() public {
         // Set up contract registry
         vm.prank(systemManager);
-        metaRegistry.setRegistryForContract(contract1, address(contractRegistry));
+        metaRegistry.setRegistryForSubject(contract1, address(contractRegistry));
 
         // Add issuer to contract registry only
         uint256[] memory topics = new uint256[](1);
@@ -358,7 +358,7 @@ contract ATKTrustedIssuersMetaRegistryImplementationTest is Test {
     function test_HasClaimTopicWithContractRegistry() public {
         // Set up contract registry
         vm.prank(systemManager);
-        metaRegistry.setRegistryForContract(contract1, address(contractRegistry));
+        metaRegistry.setRegistryForSubject(contract1, address(contractRegistry));
 
         // Add issuer to contract registry with specific topic
         uint256[] memory topics = new uint256[](1);
@@ -393,7 +393,7 @@ contract ATKTrustedIssuersMetaRegistryImplementationTest is Test {
     function test_GetTrustedIssuersForClaimTopicWithMerging() public {
         // Set up contract registry
         vm.prank(systemManager);
-        metaRegistry.setRegistryForContract(contract1, address(contractRegistry));
+        metaRegistry.setRegistryForSubject(contract1, address(contractRegistry));
 
         // Add issuers to different registries for same topic
         uint256[] memory topics = new uint256[](1);
@@ -428,7 +428,7 @@ contract ATKTrustedIssuersMetaRegistryImplementationTest is Test {
     function test_GetTrustedIssuerClaimTopicsWithMerging() public {
         // Set up contract registry
         vm.prank(systemManager);
-        metaRegistry.setRegistryForContract(contract1, address(contractRegistry));
+        metaRegistry.setRegistryForSubject(contract1, address(contractRegistry));
 
         // Add same issuer to both registries with different topics
         uint256[] memory systemTopics = new uint256[](1);
@@ -486,7 +486,7 @@ contract ATKTrustedIssuersMetaRegistryImplementationTest is Test {
     function test_MultipleContractRegistries() public {
         // Set up multiple contract registries
         vm.prank(systemManager);
-        metaRegistry.setRegistryForContract(contract1, address(contractRegistry));
+        metaRegistry.setRegistryForSubject(contract1, address(contractRegistry));
 
         // Create another contract registry
         ATKSystemTrustedIssuersRegistryImplementation contractRegistry2Impl =
@@ -498,7 +498,7 @@ contract ATKTrustedIssuersMetaRegistryImplementationTest is Test {
             ATKSystemTrustedIssuersRegistryImplementation(address(contractRegistry2Proxy));
 
         vm.prank(systemManager);
-        metaRegistry.setRegistryForContract(contract2, address(contractRegistry2));
+        metaRegistry.setRegistryForSubject(contract2, address(contractRegistry2));
 
         // Add different issuers to each
         uint256[] memory topics = new uint256[](1);

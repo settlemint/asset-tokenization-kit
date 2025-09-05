@@ -53,10 +53,10 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     ///      by contract-specific registries. Can be address(0) if no system registry is set.
     IATKTrustedIssuersRegistry private _systemRegistry;
 
-    /// @notice Mapping from contract addresses to their specific trusted issuers registries
-    /// @dev Allows individual contracts (typically tokens) to have dedicated registries.
-    ///      If a contract address maps to address(0), no specific registry is set.
-    mapping(address => IATKTrustedIssuersRegistry registry) private _contractRegistries;
+    /// @notice Mapping from subject addresses to their specific trusted issuers registries
+    /// @dev Allows individual contracts (typically tokens) or other subjects to have dedicated registries.
+    ///      If a subject address maps to address(0), no specific registry is set.
+    mapping(address => IATKTrustedIssuersRegistry) private _subjectRegistries;
 
     // --- Errors ---
 
@@ -116,11 +116,11 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         emit SystemRegistrySet(_msgSender(), oldRegistry, registry);
     }
 
-    /// @notice Sets a contract-specific trusted issuers registry
-    /// @dev Part of the meta-registry pattern - manages contract-specific registries
-    /// @param contractAddress The contract address to set the registry for
-    /// @param registry The address of the trusted issuers registry for this contract (can be address(0) to remove)
-    function setRegistryForContract(address contractAddress, address registry)
+    /// @notice Sets a subject-specific trusted issuers registry
+    /// @dev Part of the meta-registry pattern - manages subject-specific registries
+    /// @param subject The subject address to set the registry for
+    /// @param registry The address of the trusted issuers registry for this subject (can be address(0) to remove)
+    function setRegistryForSubject(address subject, address registry)
         external
         onlySystemRoles3(
             ATKPeopleRoles.SYSTEM_MANAGER_ROLE,
@@ -128,15 +128,15 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
             ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE
         )
     {
-        _setRegistryForContract(contractAddress, registry);
+        _setRegistryForSubject(subject, registry);
     }
 
 
 
-    /// @notice Removes a contract-specific trusted issuers registry
-    /// @dev Convenience function that delegates to setRegistryForContract with address(0)
-    /// @param contractAddress The contract address to remove the registry for
-    function removeRegistryForContract(address contractAddress)
+    /// @notice Removes a subject-specific trusted issuers registry
+    /// @dev Convenience function that delegates to setRegistryForSubject with address(0)
+    /// @param subject The subject address to remove the registry for
+    function removeRegistryForSubject(address subject)
         external
         onlySystemRoles3(
             ATKPeopleRoles.SYSTEM_MANAGER_ROLE,
@@ -145,7 +145,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         )
     {
         // Delegate to internal setter with address(0) to remove the registry
-        _setRegistryForContract(contractAddress, address(0));
+        _setRegistryForSubject(subject, address(0));
     }
 
     // --- Registry Getters ---
@@ -156,15 +156,15 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         return _systemRegistry;
     }
 
-    /// @notice Gets the contract-specific trusted issuers registry
-    /// @param contractAddress The contract address to get the registry for
-    /// @return The contract-specific trusted issuers registry address
-    function getRegistryForContract(address contractAddress)
+    /// @notice Gets the subject-specific trusted issuers registry
+    /// @param subject The subject address to get the registry for
+    /// @return The subject-specific trusted issuers registry address
+    function getRegistryForSubject(address subject)
         external
         view
         returns (IATKTrustedIssuersRegistry)
     {
-        return _contractRegistries[contractAddress];
+        return _subjectRegistries[subject];
     }
 
     // --- IATKTrustedIssuersRegistry Implementation ---
@@ -238,17 +238,17 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
 
     // --- Internal Helper Functions ---
 
-    /// @notice Internal setter for contract-specific trusted issuers registry used by add/remove
-    /// @param contractAddress The contract address to set the registry for
-    /// @param registry The address of the trusted issuers registry for this contract (can be address(0) to remove)
-    function _setRegistryForContract(address contractAddress, address registry) private {
-        if (contractAddress == address(0)) revert InvalidContractAddress();
-        // registry can be address(0) to remove the contract-specific registry
+    /// @notice Internal setter for subject-specific trusted issuers registry used by add/remove
+    /// @param subject The subject address to set the registry for
+    /// @param registry The address of the trusted issuers registry for this subject (can be address(0) to remove)
+    function _setRegistryForSubject(address subject, address registry) private {
+        if (subject == address(0)) revert InvalidContractAddress();
+        // registry can be address(0) to remove the subject-specific registry
 
-        address oldRegistry = address(_contractRegistries[contractAddress]);
-        _contractRegistries[contractAddress] = IATKTrustedIssuersRegistry(registry);
+        address oldRegistry = address(_subjectRegistries[subject]);
+        _subjectRegistries[subject] = IATKTrustedIssuersRegistry(registry);
 
-        emit ContractRegistrySet(_msgSender(), contractAddress, oldRegistry, registry);
+        emit SubjectRegistrySet(_msgSender(), subject, oldRegistry, registry);
     }
 
     function _getTrustedIssuers(address _subject) internal view returns (IClaimIssuer[] memory) {
@@ -264,7 +264,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         IClaimIssuer[] memory systemIssuers;
 
         // Get issuers from contract-specific registry (using subject as the contract address)
-        ISMARTTrustedIssuersRegistry contractRegistry = _contractRegistries[_subject];
+        ISMARTTrustedIssuersRegistry contractRegistry = _subjectRegistries[_subject];
         if (address(contractRegistry) != address(0)) {
             contractIssuers = contractRegistry.getTrustedIssuers(_subject);
         }
@@ -295,7 +295,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         }
 
         // First check contract-specific registry (using subject as the contract address)
-        ISMARTTrustedIssuersRegistry contractRegistry = _contractRegistries[subject];
+        ISMARTTrustedIssuersRegistry contractRegistry = _subjectRegistries[subject];
         if (address(contractRegistry) != address(0)) {
             if (contractRegistry.isTrustedIssuer(_issuer, subject)) {
                 return true;
@@ -325,7 +325,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         }
 
         // First check contract-specific registry (using subject as the contract address)
-        ISMARTTrustedIssuersRegistry contractRegistry = _contractRegistries[subject];
+        ISMARTTrustedIssuersRegistry contractRegistry = _subjectRegistries[subject];
         if (address(contractRegistry) != address(0)) {
             if (contractRegistry.hasClaimTopic(_issuer, _claimTopic, subject)) {
                 return true;
@@ -364,7 +364,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         IClaimIssuer[] memory systemIssuers;
 
         // Get issuers from contract-specific registry (using subject as the contract address)
-        ISMARTTrustedIssuersRegistry contractRegistry = _contractRegistries[subject];
+        ISMARTTrustedIssuersRegistry contractRegistry = _subjectRegistries[subject];
         if (address(contractRegistry) != address(0)) {
             contractIssuers = contractRegistry.getTrustedIssuersForClaimTopic(claimTopic, subject);
         }
@@ -389,7 +389,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         uint256[] memory contractTopics;
         uint256[] memory systemTopics;
 
-        ISMARTTrustedIssuersRegistry contractRegistry = _contractRegistries[_subject];
+        ISMARTTrustedIssuersRegistry contractRegistry = _subjectRegistries[_subject];
         if (address(contractRegistry) != address(0)) {
             contractTopics = contractRegistry.getTrustedIssuerClaimTopics(_trustedIssuer, _subject);
         }
