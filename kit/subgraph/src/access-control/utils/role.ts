@@ -49,6 +49,10 @@ export const Roles = [
   new RoleConfig("ADDON_MANAGER_ROLE", "addonManager"),
   new RoleConfig("CLAIM_POLICY_MANAGER_ROLE", "claimPolicyManager"),
   new RoleConfig("AUDITOR_ROLE", "auditor"),
+  new RoleConfig(
+    "ORGANISATION_IDENTITY_MANAGER_ROLE",
+    "organisationIdentityManager"
+  ),
 
   // --- System Roles (ATKSystemRoles) ---
   new RoleConfig("SYSTEM_MODULE_ROLE", "systemModule"),
@@ -61,8 +65,8 @@ export const Roles = [
   new RoleConfig("ADDON_FACTORY_REGISTRY_MODULE_ROLE", "addonRegistryModule"),
   new RoleConfig("ADDON_FACTORY_MODULE_ROLE", "addonModule"),
   new RoleConfig(
-    "ORGANISATION_IDENTITY_MANAGER_ROLE",
-    "organisationIdentityManager"
+    "TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE",
+    "trustedIssuersMetaRegistryModule"
   ),
 
   // --- Asset Roles (ATKAssetRoles) ---

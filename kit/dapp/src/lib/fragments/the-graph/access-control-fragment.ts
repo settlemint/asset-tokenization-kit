@@ -57,6 +57,7 @@ export const AccessControlFragment = theGraphGraphql(`
     tokenFactoryModule { id isContract }
     tokenFactoryRegistryModule { id isContract }
     tokenManager { id isContract }
+    trustedIssuersMetaRegistryModule { id isContract }
     verificationAdmin { id isContract }
   }
 `);

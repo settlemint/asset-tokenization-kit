@@ -28,6 +28,9 @@ const addonFactoryRegistryModuleRole = keccak256(
   toBytes("ADDON_FACTORY_REGISTRY_MODULE_ROLE")
 );
 const addonFactoryModuleRole = keccak256(toBytes("ADDON_FACTORY_MODULE_ROLE"));
+const trustedIssuersMetaRegistryModuleRole = keccak256(
+  toBytes("TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE")
+);
 
 // Asset Roles (from ATKAssetRoles.sol)
 const governanceRole = keccak256(toBytes("GOVERNANCE_ROLE"));

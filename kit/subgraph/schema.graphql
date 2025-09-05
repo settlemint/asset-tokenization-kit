@@ -108,6 +108,8 @@ type AccessControl @entity(immutable: false) {
   addonRegistryModule: [Account!]!
   # Individual addon module contracts
   addonModule: [Account!]!
+  # Trusted issuers meta registry module contracts
+  trustedIssuersMetaRegistryModule: [Account!]!
 
   # Asset Roles (ATKAssetRoles) - Token-specific permissions
   # Governance operations (voting, proposals)

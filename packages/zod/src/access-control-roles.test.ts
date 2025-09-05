@@ -1,16 +1,16 @@
 /**
  * @fileoverview Test suite for access control role validation schemas
- * 
+ *
  * This test suite validates the access control system's role validation logic,
  * ensuring secure and consistent role assignment across the tokenization platform.
- * 
+ *
  * Test Strategy:
  * - Role Enumeration: Verify all 41 roles are properly defined and accessible
  * - Object Schema: Test role object validation with boolean flags per role
  * - Default Behavior: Ensure undefined roles default to false (security-by-default)
  * - Type Safety: Validate that only known roles are accepted
  * - Edge Cases: Handle malformed inputs, extra properties, and type coercion
- * 
+ *
  * SECURITY: Role validation is critical - false positives could grant unauthorized access
  * PERFORMANCE: Schema uses computed object shape for O(1) role lookup efficiency
  */
@@ -57,6 +57,7 @@ describe("accessControlRoles", () => {
         tokenFactoryModule: false,
         tokenFactoryRegistryModule: false,
         tokenManager: false,
+        trustedIssuersMetaRegistryModule: false,
         verificationAdmin: false,
       };
 
@@ -100,6 +101,7 @@ describe("accessControlRoles", () => {
         tokenFactoryModule: false,
         tokenFactoryRegistryModule: true,
         tokenManager: false,
+        trustedIssuersMetaRegistryModule: false,
         verificationAdmin: true,
       };
 
@@ -152,6 +154,7 @@ describe("accessControlRoles", () => {
       expect(result.tokenAdmin).toBe(false);
       expect(result.tokenFactoryModule).toBe(false);
       expect(result.tokenFactoryRegistryModule).toBe(false);
+      expect(result.trustedIssuersMetaRegistryModule).toBe(false);
       expect(result.verificationAdmin).toBe(false);
     });
 
@@ -280,6 +283,7 @@ describe("accessControlRoles", () => {
         "tokenFactoryModule",
         "tokenFactoryRegistryModule",
         "tokenManager",
+        "trustedIssuersMetaRegistryModule",
         "verificationAdmin",
       ];
 
