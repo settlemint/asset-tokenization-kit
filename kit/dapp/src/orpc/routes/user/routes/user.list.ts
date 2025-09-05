@@ -156,10 +156,8 @@ export const list = authRouter.user.list
       user.createdAt;
 
     // Get total count first
-    const totalResult = await context.db
-      .select({ count: count() })
-      .from(user);
-    
+    const totalResult = await context.db.select({ count: count() }).from(user);
+
     const total = totalResult[0]?.count ?? 0;
 
     // Execute paginated query with sorting and KYC data
@@ -232,7 +230,7 @@ export const list = authRouter.user.list
           claims: [],
           isRegistered: false,
           createdAt: u.createdAt?.toISOString(),
-          lastLoginAt: u.lastLoginAt?.toISOString(),
+          lastLoginAt: u.lastLoginAt ? u.lastLoginAt.toISOString() : null,
         } as User;
       }
 
@@ -265,7 +263,7 @@ export const list = authRouter.user.list
         claims: filteredClaims,
         isRegistered: !!identity,
         createdAt: u.createdAt?.toISOString(),
-        lastLoginAt: u.lastLoginAt?.toISOString(),
+        lastLoginAt: u.lastLoginAt ? u.lastLoginAt.toISOString() : null,
       } as User;
     });
 
