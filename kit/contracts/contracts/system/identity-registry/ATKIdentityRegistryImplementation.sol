@@ -648,7 +648,7 @@ contract ATKIdentityRegistryImplementation is
 
         // Get trusted issuers for this topic
         IClaimIssuer[] memory trustedIssuers =
-            _trustedIssuersRegistry.getTrustedIssuersForClaimTopic(claimTopic, _userAddress);
+            _trustedIssuersRegistry.getTrustedIssuersForClaimTopic(claimTopic, address(identityToVerify));
         if (trustedIssuers.length == 0) {
             return false; // No trusted issuers for this topic
         }
