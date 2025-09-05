@@ -118,10 +118,17 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
     // --- System Registry Functions (no subject parameters) ---
 
     /// @inheritdoc IATKTrustedIssuersRegistry
-    function addTrustedIssuer(IClaimIssuer _trustedIssuer, uint256[] calldata _claimTopics)
+    function addTrustedIssuer(
+        IClaimIssuer _trustedIssuer,
+        uint256[] calldata _claimTopics
+    )
         external
         override
-        onlySystemRoles3(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE, ATKSystemRoles.TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE)
+        onlySystemRoles3(
+            ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE,
+            ATKSystemRoles.SYSTEM_MODULE_ROLE,
+            ATKSystemRoles.TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE
+        )
     {
         address issuerAddress = address(_trustedIssuer);
         if (issuerAddress == address(0)) revert InvalidIssuerAddress();
@@ -136,7 +143,9 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
         uint256 claimTopicsLength = _claimTopics.length;
         for (uint256 i = 0; i < claimTopicsLength;) {
             _addIssuerToClaimTopic(_claimTopics[i], issuerAddress);
-            unchecked { ++i; }
+            unchecked {
+                ++i;
+            }
         }
 
         // Emit subject-aware event with address(0) as subject for system registry
@@ -147,7 +156,11 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
     function removeTrustedIssuer(IClaimIssuer _trustedIssuer)
         external
         override
-        onlySystemRoles3(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE, ATKSystemRoles.TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE)
+        onlySystemRoles3(
+            ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE,
+            ATKSystemRoles.SYSTEM_MODULE_ROLE,
+            ATKSystemRoles.TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE
+        )
     {
         address issuerAddress = address(_trustedIssuer);
         if (!_trustedIssuers[issuerAddress].exists) revert IssuerDoesNotExist(issuerAddress);
@@ -161,7 +174,9 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
         uint256 topicsToRemoveLength = topicsToRemove.length;
         for (uint256 i = 0; i < topicsToRemoveLength;) {
             _removeIssuerFromClaimTopic(topicsToRemove[i], issuerAddress);
-            unchecked { ++i; }
+            unchecked {
+                ++i;
+            }
         }
 
         // Delete the issuer's record
@@ -172,10 +187,17 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
     }
 
     /// @inheritdoc IATKTrustedIssuersRegistry
-    function updateIssuerClaimTopics(IClaimIssuer _trustedIssuer, uint256[] calldata _newClaimTopics)
+    function updateIssuerClaimTopics(
+        IClaimIssuer _trustedIssuer,
+        uint256[] calldata _newClaimTopics
+    )
         external
         override
-        onlySystemRoles3(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE, ATKSystemRoles.TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE)
+        onlySystemRoles3(
+            ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE,
+            ATKSystemRoles.SYSTEM_MODULE_ROLE,
+            ATKSystemRoles.TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE
+        )
     {
         address issuerAddress = address(_trustedIssuer);
         if (!_trustedIssuers[issuerAddress].exists) revert IssuerDoesNotExist(issuerAddress);
@@ -187,14 +209,18 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
         uint256 currentClaimTopicsLength = currentClaimTopics.length;
         for (uint256 i = 0; i < currentClaimTopicsLength;) {
             _removeIssuerFromClaimTopic(currentClaimTopics[i], issuerAddress);
-            unchecked { ++i; }
+            unchecked {
+                ++i;
+            }
         }
 
         // Add issuer to all new claim topic mappings
         uint256 newClaimTopicsLength = _newClaimTopics.length;
         for (uint256 i = 0; i < newClaimTopicsLength;) {
             _addIssuerToClaimTopic(_newClaimTopics[i], issuerAddress);
-            unchecked { ++i; }
+            unchecked {
+                ++i;
+            }
         }
 
         // Update stored claim topics
@@ -204,7 +230,6 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
         emit ClaimTopicsUpdated(_msgSender(), _trustedIssuer, _newClaimTopics, address(0));
     }
 
-
     // --- System Registry Functions (no subject parameters) ---
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
@@ -213,13 +238,18 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
         uint256 issuerAddressesLength = _issuerAddresses.length;
         for (uint256 i = 0; i < issuerAddressesLength;) {
             issuers[i] = IClaimIssuer(_issuerAddresses[i]);
-            unchecked { ++i; }
+            unchecked {
+                ++i;
+            }
         }
         return issuers;
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function getTrustedIssuersForClaimTopic(uint256 claimTopic, address)
+    function getTrustedIssuersForClaimTopic(
+        uint256 claimTopic,
+        address
+    )
         external
         view
         override
@@ -230,7 +260,9 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
         uint256 issuerAddrsLength = issuerAddrs.length;
         for (uint256 i = 0; i < issuerAddrsLength;) {
             issuers[i] = IClaimIssuer(issuerAddrs[i]);
-            unchecked { ++i; }
+            unchecked {
+                ++i;
+            }
         }
         return issuers;
     }
@@ -246,7 +278,15 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer, address) external view override returns (uint256[] memory) {
+    function getTrustedIssuerClaimTopics(
+        IClaimIssuer _trustedIssuer,
+        address
+    )
+        external
+        view
+        override
+        returns (uint256[] memory)
+    {
         address issuerAddress = address(_trustedIssuer);
         if (!_trustedIssuers[issuerAddress].exists) revert IssuerDoesNotExist(issuerAddress);
 
@@ -256,7 +296,16 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
     // --- IClaimAuthorizer Implementation ---
 
     /// @inheritdoc IClaimAuthorizer
-    function isAuthorizedToAddClaim(address issuer, uint256 topic, address subject) external view override returns (bool) {
+    function isAuthorizedToAddClaim(
+        address issuer,
+        uint256 topic,
+        address subject
+    )
+        external
+        view
+        override
+        returns (bool)
+    {
         return this.hasClaimTopic(issuer, topic, subject);
     }
 
@@ -302,7 +351,9 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
                 list.pop();
                 return;
             }
-            unchecked { ++i; }
+            unchecked {
+                ++i;
+            }
         }
         revert AddressNotFoundInList(addrToRemove);
     }
@@ -332,8 +383,7 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
         return interfaceId == type(IATKSystemTrustedIssuersRegistry).interfaceId
             || interfaceId == type(IATKTrustedIssuersRegistry).interfaceId
             || interfaceId == type(ISMARTTrustedIssuersRegistry).interfaceId
-            || interfaceId == type(IClaimAuthorizer).interfaceId
-            || interfaceId == type(IATKSystemAccessManaged).interfaceId
+            || interfaceId == type(IClaimAuthorizer).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId
             || super.supportsInterface(interfaceId);
     }
 }

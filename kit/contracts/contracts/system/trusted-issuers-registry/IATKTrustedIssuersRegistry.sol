@@ -21,14 +21,16 @@ interface IATKTrustedIssuersRegistry is ISMARTTrustedIssuersRegistry, IClaimAuth
     /// @param _trustedIssuer is the address of the trusted issuer's ClaimIssuer contract.
     /// @param _claimTopics is the set of claims that the trusted issuer is allowed to emit.
     /// @param _subject is the address of the subject of the trusted issuer.
-    event TrustedIssuerAdded(address indexed _sender, IClaimIssuer indexed _trustedIssuer,  uint256[] _claimTopics,  address indexed _subject);
+    event TrustedIssuerAdded(
+        address indexed _sender, IClaimIssuer indexed _trustedIssuer, uint256[] _claimTopics, address indexed _subject
+    );
 
     /// @notice Emitted when a trusted issuer is removed from the registry
     /// @dev This event is emitted when a trusted issuer is removed from the registry.
     /// @param _sender is the address of the sender of the transaction.
     /// @param _trustedIssuer is the address of the trusted issuer's ClaimIssuer contract.
     /// @param _subject is the address of the subject of the trusted issuer.
-    event TrustedIssuerRemoved(address indexed _sender, IClaimIssuer indexed _trustedIssuer,  address indexed _subject);
+    event TrustedIssuerRemoved(address indexed _sender, IClaimIssuer indexed _trustedIssuer, address indexed _subject);
 
     /// @notice Emitted when the set of claim topics is changed for a given trusted issuer
     /// @dev This event is emitted when the set of claim topics is changed for a given trusted issuer.
@@ -36,7 +38,9 @@ interface IATKTrustedIssuersRegistry is ISMARTTrustedIssuersRegistry, IClaimAuth
     /// @param _trustedIssuer is the address of the trusted issuer's ClaimIssuer contract.
     /// @param _claimTopics is the set of claims that the trusted issuer is allowed to emit.
     /// @param _subject is the address of the subject of the trusted issuer.
-    event ClaimTopicsUpdated(address indexed _sender, IClaimIssuer indexed _trustedIssuer, uint256[] _claimTopics, address indexed _subject);
+    event ClaimTopicsUpdated(
+        address indexed _sender, IClaimIssuer indexed _trustedIssuer, uint256[] _claimTopics, address indexed _subject
+    );
 
     // --- Functions ---
 

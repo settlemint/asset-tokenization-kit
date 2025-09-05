@@ -4,8 +4,7 @@ pragma solidity ^0.8.28;
 import { Test } from "forge-std/Test.sol";
 import { ATKSystemTrustedIssuersRegistryImplementation } from
     "../../../contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol";
-import { ISMARTTrustedIssuersRegistry } from
-    "../../../contracts/smart/interface/ISMARTTrustedIssuersRegistry.sol";
+import { ISMARTTrustedIssuersRegistry } from "../../../contracts/smart/interface/ISMARTTrustedIssuersRegistry.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
@@ -16,7 +15,8 @@ import { ATKSystemAccessManagerImplementation } from
 import { IATKSystemTrustedIssuersRegistry } from
     "../../../contracts/system/trusted-issuers-registry/IATKSystemTrustedIssuersRegistry.sol";
 import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
-import { IATKTrustedIssuersRegistry } from "../../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
+import { IATKTrustedIssuersRegistry } from
+    "../../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
 
 // Mock claim issuer for testing
 contract MockClaimIssuer {
@@ -46,7 +46,6 @@ contract ATKSystemTrustedIssuersRegistryImplementationTest is Test {
     uint256 constant KYC_TOPIC = 1;
     uint256 constant AML_TOPIC = 2;
     uint256 constant ACCREDITATION_TOPIC = 3;
-
 
     function setUp() public {
         // Deploy mock issuers
@@ -102,7 +101,9 @@ contract ATKSystemTrustedIssuersRegistryImplementationTest is Test {
 
         vm.prank(claimPolicyManager);
         vm.expectEmit(true, true, false, false);
-        emit IATKTrustedIssuersRegistry.TrustedIssuerAdded(claimPolicyManager, IClaimIssuer(address(issuer1)), topics, address(0));
+        emit IATKTrustedIssuersRegistry.TrustedIssuerAdded(
+            claimPolicyManager, IClaimIssuer(address(issuer1)), topics, address(0)
+        );
         registry.addTrustedIssuer(IClaimIssuer(address(issuer1)), topics);
 
         // Verify issuer was added
@@ -179,7 +180,9 @@ contract ATKSystemTrustedIssuersRegistryImplementationTest is Test {
         // Remove issuer
         vm.prank(claimPolicyManager);
         vm.expectEmit(true, true, false, false);
-        emit IATKTrustedIssuersRegistry.TrustedIssuerRemoved(claimPolicyManager, IClaimIssuer(address(issuer1)), address(0));
+        emit IATKTrustedIssuersRegistry.TrustedIssuerRemoved(
+            claimPolicyManager, IClaimIssuer(address(issuer1)), address(0)
+        );
 
         registry.removeTrustedIssuer(IClaimIssuer(address(issuer1)));
 
@@ -233,7 +236,9 @@ contract ATKSystemTrustedIssuersRegistryImplementationTest is Test {
 
         vm.prank(claimPolicyManager);
         vm.expectEmit(true, true, false, false);
-        emit IATKTrustedIssuersRegistry.ClaimTopicsUpdated(claimPolicyManager, IClaimIssuer(address(issuer1)), newTopics, address(0));
+        emit IATKTrustedIssuersRegistry.ClaimTopicsUpdated(
+            claimPolicyManager, IClaimIssuer(address(issuer1)), newTopics, address(0)
+        );
 
         registry.updateIssuerClaimTopics(IClaimIssuer(address(issuer1)), newTopics);
 
@@ -325,7 +330,8 @@ contract ATKSystemTrustedIssuersRegistryImplementationTest is Test {
         assertEq(address(amlIssuers[0]), address(issuer1));
 
         // Check accreditation topic (should have only issuer3)
-        IClaimIssuer[] memory accreditationIssuers = registry.getTrustedIssuersForClaimTopic(ACCREDITATION_TOPIC, address(0));
+        IClaimIssuer[] memory accreditationIssuers =
+            registry.getTrustedIssuersForClaimTopic(ACCREDITATION_TOPIC, address(0));
         assertEq(accreditationIssuers.length, 1);
         assertEq(address(accreditationIssuers[0]), address(issuer3));
 

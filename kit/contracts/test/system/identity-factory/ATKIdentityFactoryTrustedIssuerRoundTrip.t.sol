@@ -169,10 +169,12 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
 
         // Verify the issuer is registered for both topics
         assertTrue(
-            trustedIssuersRegistry.hasClaimTopic(issuerIdentityAddr, kycTopicId, address(0)), "Issuer not registered for KYC topic"
+            trustedIssuersRegistry.hasClaimTopic(issuerIdentityAddr, kycTopicId, address(0)),
+            "Issuer not registered for KYC topic"
         );
         assertTrue(
-            trustedIssuersRegistry.hasClaimTopic(issuerIdentityAddr, amlTopicId, address(0)), "Issuer not registered for AML topic"
+            trustedIssuersRegistry.hasClaimTopic(issuerIdentityAddr, amlTopicId, address(0)),
+            "Issuer not registered for AML topic"
         );
 
         // Step 3: The trusted issuers registry is already set as a ClaimAuthorizer during identity creation
@@ -517,10 +519,12 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
 
         // Verify the issuer is registered for both topics
         assertTrue(
-            trustedIssuersRegistry.hasClaimTopic(issuerIdentityAddr, kycTopicId, address(0)), "Issuer not registered for KYC topic"
+            trustedIssuersRegistry.hasClaimTopic(issuerIdentityAddr, kycTopicId, address(0)),
+            "Issuer not registered for KYC topic"
         );
         assertTrue(
-            trustedIssuersRegistry.hasClaimTopic(issuerIdentityAddr, amlTopicId, address(0)), "Issuer not registered for AML topic"
+            trustedIssuersRegistry.hasClaimTopic(issuerIdentityAddr, amlTopicId, address(0)),
+            "Issuer not registered for AML topic"
         );
 
         // Step 3: Create and sign claims as the issuer

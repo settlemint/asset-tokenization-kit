@@ -88,7 +88,7 @@ export interface IdentityPermissions {
   claims: {
     /**
      * Claim topics this user can read.
-     * 
+     *
      * - ["*"]: Can read all claim topics (identity manager)
      * - ["kyc", "aml"]: Can read specific topics (trusted issuer)
      * - []: Cannot read any claims (secure default)
@@ -97,7 +97,7 @@ export interface IdentityPermissions {
 
     /**
      * Claim topics this user can write/issue claims for.
-     * 
+     *
      * Contains the specific topics the user is a trusted issuer for.
      * Empty array means no claim writing permissions.
      */
@@ -110,7 +110,7 @@ export interface IdentityPermissions {
   userData: {
     /**
      * Whether user can read user profile data.
-     * 
+     *
      * True for identity managers and claim issuers who need user visibility
      * to perform identity verification workflows.
      */
@@ -118,7 +118,7 @@ export interface IdentityPermissions {
 
     /**
      * Whether user can write/modify user profile data.
-     * 
+     *
      * True only for identity managers who have administrative privileges.
      * Claim issuers can read user data but cannot modify it.
      */
@@ -151,7 +151,7 @@ export interface IdentityPermissions {
  *   { identityManagers: [user.wallet] },
  *   ["kyc", "aml"]
  * );
- * // Returns: { 
+ * // Returns: {
  * //   claims: { read: ["*"], write: ["kyc", "aml"] },
  * //   userData: { read: true, write: true }
  * // }
@@ -162,7 +162,7 @@ export interface IdentityPermissions {
  *   { claimIssuers: [user.wallet] },
  *   ["kyc"]
  * );
- * // Returns: { 
+ * // Returns: {
  * //   claims: { read: ["kyc"], write: ["kyc"] },
  * //   userData: { read: true, write: false }
  * // }
@@ -179,7 +179,7 @@ export function computeIdentityPermissions(
     "identityManager",
     accessControl
   );
-  
+
   // Check if user is a trusted issuer for any claims
   // This serves as a temporary stand-in for the claimIssuer blockchain role
   // When the blockchain role is implemented, this can be replaced with:
@@ -259,9 +259,7 @@ export function canReadUserData(
  * @param permissions - User's computed identity permissions
  * @returns true if write access should be granted, false for denial (secure default)
  */
-export function canWriteUserData(
-  permissions: IdentityPermissions
-): boolean {
+export function canWriteUserData(permissions: IdentityPermissions): boolean {
   return permissions.userData.write;
 }
 
@@ -318,9 +316,7 @@ export function filterClaimsForUser(
 
   // Filter claims to only those the user can read
   if (permissions.claims.read.length > 0) {
-    return claims.filter((claim) =>
-      permissions.claims.read.includes(claim)
-    );
+    return claims.filter((claim) => permissions.claims.read.includes(claim));
   }
 
   // Secure default: users with no read permissions see no claims
@@ -344,7 +340,7 @@ export function canReadClaims(
   }
 
   // Check if user can read all requested topics
-  return topics.every(topic => permissions.claims.read.includes(topic));
+  return topics.every((topic) => permissions.claims.read.includes(topic));
 }
 
 /**
@@ -359,7 +355,7 @@ export function canWriteClaims(
   permissions: IdentityPermissions
 ): boolean {
   // Check if user can write all requested topics
-  return topics.every(topic => permissions.claims.write.includes(topic));
+  return topics.every((topic) => permissions.claims.write.includes(topic));
 }
 
 /**

@@ -460,7 +460,8 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
         }
 
         ISMARTTrustedIssuersRegistry issuersRegistry = registry.issuersRegistry();
-        IClaimIssuer[] memory trustedIssuers = issuersRegistry.getTrustedIssuersForClaimTopic(BASE_PRICE_TOPIC_ID, address(tokenIdentity));
+        IClaimIssuer[] memory trustedIssuers =
+            issuersRegistry.getTrustedIssuersForClaimTopic(BASE_PRICE_TOPIC_ID, address(tokenIdentity));
 
         // Check each claim against the list of trusted issuers
         for (uint256 i = 0; i < claimIds.length;) {

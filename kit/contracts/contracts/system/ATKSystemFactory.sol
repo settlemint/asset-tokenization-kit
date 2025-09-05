@@ -108,7 +108,6 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// registry implementation.
     address public immutable DEFAULT_TOKEN_FACTORY_REGISTRY_IMPLEMENTATION;
 
-
     /// @notice An array storing the addresses of all `ATKSystem` instances that have been created by this factory.
     /// @dev This allows for easy tracking and retrieval of deployed systems.
     address[] public atkSystems;
@@ -127,7 +126,8 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// @param identityRegistryImplementation_ The default address for the identity registry module's logic contract.
     /// @param identityRegistryStorageImplementation_ The default address for the identity registry storage module's
     /// logic contract.
-    /// @param systemTrustedIssuersRegistryImplementation_ The default address for the system trusted issuers registry module's logic
+    /// @param systemTrustedIssuersRegistryImplementation_ The default address for the system trusted issuers registry
+    /// module's logic
     /// contract.
     /// @param trustedIssuersMetaRegistryImplementation_ The default address for the trusted issuers meta registry
     /// module's logic contract.
@@ -173,7 +173,9 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         if (complianceImplementation_ == address(0)) revert ComplianceImplementationNotSet();
         if (identityRegistryImplementation_ == address(0)) revert IdentityRegistryImplementationNotSet();
         if (identityRegistryStorageImplementation_ == address(0)) revert IdentityRegistryStorageImplementationNotSet();
-        if (systemTrustedIssuersRegistryImplementation_ == address(0)) revert SystemTrustedIssuersRegistryImplementationNotSet();
+        if (systemTrustedIssuersRegistryImplementation_ == address(0)) {
+            revert SystemTrustedIssuersRegistryImplementationNotSet();
+        }
         if (topicSchemeRegistryImplementation_ == address(0)) revert TopicSchemeRegistryImplementationNotSet();
         if (identityFactoryImplementation_ == address(0)) revert IdentityFactoryImplementationNotSet();
         if (identityImplementation_ == address(0)) revert IdentityImplementationNotSet();

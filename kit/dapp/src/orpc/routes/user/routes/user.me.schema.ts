@@ -139,7 +139,9 @@ export const UserSchema = z.object({
    * User's on-chain identity address.
    * Only present if the user has registered an identity on-chain.
    */
-  identity: ethereumAddress.optional().describe("User's on-chain identity address"),
+  identity: ethereumAddress
+    .optional()
+    .describe("User's on-chain identity address"),
 
   /**
    * User's on-chain identity claims.

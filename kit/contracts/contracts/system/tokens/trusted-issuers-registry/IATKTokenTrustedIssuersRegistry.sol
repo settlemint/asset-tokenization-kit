@@ -12,7 +12,6 @@ import { IATKToken } from "../IATKToken.sol";
 ///      Token registries validate that the subject parameter matches the token's onchainID
 ///      and provide token-specific access control via GOVERNANCE_ROLE.
 interface IATKTokenTrustedIssuersRegistry is IATKTrustedIssuersRegistry {
-
     // --- Token-Specific Getters ---
 
     /// @notice Returns the token contract that this registry is associated with

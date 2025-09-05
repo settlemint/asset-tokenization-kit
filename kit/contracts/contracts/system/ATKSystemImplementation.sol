@@ -169,7 +169,6 @@ contract ATKSystemImplementation is
     /// @dev Stores the address of the organisation identity contract.
     address private _organisationIdentity;
 
-
     // --- Internal Helper for Interface Check ---
     /// @notice Internal helper function to check if a given contract address supports a specific interface
     /// @dev Internal helper function to check if a given contract address (`implAddress`)
@@ -215,9 +214,11 @@ contract ATKSystemImplementation is
     /// @param identityRegistryImplementation_ The initial address of the identity registry module's logic contract.
     /// @param identityRegistryStorageImplementation_ The initial address of the identity registry storage module's
     /// logic contract.
-    /// @param systemTrustedIssuersRegistryImplementation_ The initial address of the system trusted issuers registry module's logic
+    /// @param systemTrustedIssuersRegistryImplementation_ The initial address of the system trusted issuers registry
+    /// module's logic
     /// contract.
-    /// @param trustedIssuersMetaRegistryImplementation_ The initial address of the trusted issuers meta registry module's
+    /// @param trustedIssuersMetaRegistryImplementation_ The initial address of the trusted issuers meta registry
+    /// module's
     /// logic contract.
     /// @param topicSchemeRegistryImplementation_ The initial address of the topic scheme registry module's logic
     /// contract.
@@ -279,11 +280,15 @@ contract ATKSystemImplementation is
         emit IdentityRegistryStorageImplementationUpdated(initialAdmin_, identityRegistryStorageImplementation_);
 
         // Validate and set the trusted issuers registry implementation address.
-        if (systemTrustedIssuersRegistryImplementation_ == address(0)) revert SystemTrustedIssuersRegistryImplementationNotSet();
+        if (systemTrustedIssuersRegistryImplementation_ == address(0)) {
+            revert SystemTrustedIssuersRegistryImplementationNotSet();
+        }
         _checkInterface(systemTrustedIssuersRegistryImplementation_, _SYSTEM_TRUSTED_ISSUERS_REGISTRY_ID); // Ensure it
             // supports ISMARTTrustedIssuersRegistry
         _implementations[SYSTEM_TRUSTED_ISSUERS_REGISTRY] = systemTrustedIssuersRegistryImplementation_;
-        emit SystemTrustedIssuersRegistryImplementationUpdated(initialAdmin_, systemTrustedIssuersRegistryImplementation_);
+        emit SystemTrustedIssuersRegistryImplementationUpdated(
+            initialAdmin_, systemTrustedIssuersRegistryImplementation_
+        );
 
         // Validate and set the trusted issuers meta registry implementation address.
         if (trustedIssuersMetaRegistryImplementation_ == address(0)) {
@@ -350,7 +355,6 @@ contract ATKSystemImplementation is
             // ISMARTTokenFactoryRegistry
         _implementations[TOKEN_FACTORY_REGISTRY] = tokenFactoryRegistryImplementation_;
         emit TokenFactoryRegistryImplementationUpdated(initialAdmin_, tokenFactoryRegistryImplementation_);
-
     }
 
     /// @notice Authorizes an upgrade to a new implementation contract
@@ -394,7 +398,7 @@ contract ATKSystemImplementation is
         if (_implementations[SYSTEM_TRUSTED_ISSUERS_REGISTRY] == address(0)) {
             revert SystemTrustedIssuersRegistryImplementationNotSet();
         }
-         if (_implementations[TRUSTED_ISSUERS_META_REGISTRY] == address(0)) {
+        if (_implementations[TRUSTED_ISSUERS_META_REGISTRY] == address(0)) {
             revert TrustedIssuersMetaRegistryImplementationNotSet();
         }
         if (_implementations[TOPIC_SCHEME_REGISTRY] == address(0)) revert TopicSchemeRegistryImplementationNotSet();
@@ -404,7 +408,6 @@ contract ATKSystemImplementation is
         }
         if (_implementations[ADDON_REGISTRY] == address(0)) revert AddonRegistryImplementationNotSet();
         if (_implementations[TOKEN_FACTORY_REGISTRY] == address(0)) revert TokenFactoryRegistryImplementationNotSet();
-
 
         // --- Interactions (Part 1: Create proxy instances and store their addresses in local variables) ---
         // This follows the Checks-Effects-Interactions pattern where possible.
@@ -452,14 +455,19 @@ contract ATKSystemImplementation is
         bytes memory systemTrustedIssuersRegistryData =
             abi.encodeWithSelector(IATKSystemTrustedIssuersRegistry.initialize.selector, _accessManager);
         address localSystemTrustedIssuersRegistryProxy = address(
-            new ATKTypedImplementationProxy(address(this), SYSTEM_TRUSTED_ISSUERS_REGISTRY, systemTrustedIssuersRegistryData)
+            new ATKTypedImplementationProxy(
+                address(this), SYSTEM_TRUSTED_ISSUERS_REGISTRY, systemTrustedIssuersRegistryData
+            )
         );
 
         // Deploy the ATKTrustedIssuersMetaRegistryProxy
-        bytes memory trustedIssuersMetaRegistryData =
-            abi.encodeWithSelector(IATKTrustedIssuersMetaRegistry.initialize.selector, _accessManager, localSystemTrustedIssuersRegistryProxy);
+        bytes memory trustedIssuersMetaRegistryData = abi.encodeWithSelector(
+            IATKTrustedIssuersMetaRegistry.initialize.selector, _accessManager, localSystemTrustedIssuersRegistryProxy
+        );
         address localTrustedIssuersMetaRegistryProxy = address(
-            new ATKTypedImplementationProxy(address(this), TRUSTED_ISSUERS_META_REGISTRY, trustedIssuersMetaRegistryData)
+            new ATKTypedImplementationProxy(
+                address(this), TRUSTED_ISSUERS_META_REGISTRY, trustedIssuersMetaRegistryData
+            )
         );
 
         bytes memory identityRegistryData = abi.encodeWithSelector(
@@ -648,7 +656,8 @@ contract ATKSystemImplementation is
         emit SystemTrustedIssuersRegistryImplementationUpdated(_msgSender(), implementation_);
     }
 
-    /// @notice Sets (updates) the address of the trusted issuers meta registry module's implementation (logic) contract.
+    /// @notice Sets (updates) the address of the trusted issuers meta registry module's implementation (logic)
+    /// contract.
     /// @dev Only callable by an address with the `DEFAULT_ADMIN_ROLE`.
     /// Reverts if `implementation` is zero or doesn't support `IATKTrustedIssuersMetaRegistry`.
     /// Emits a `TrustedIssuersMetaRegistryImplementationUpdated` event.

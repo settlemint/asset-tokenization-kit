@@ -400,7 +400,12 @@ abstract contract AbstractATKTokenFactoryImplementation is
     ///      with the system's meta registry, enabling token-specific trusted issuer management
     /// @param tokenAddress The address of the token contract
     /// @param tokenIdentityAddress The address of the token identity contract
-    function _deployAndRegisterTokenTrustedIssuersRegistry(address tokenAddress, address tokenIdentityAddress) internal {
+    function _deployAndRegisterTokenTrustedIssuersRegistry(
+        address tokenAddress,
+        address tokenIdentityAddress
+    )
+        internal
+    {
         // Register the token-specific registry with the meta registry
         IATKTrustedIssuersRegistry registry = _trustedIssuersRegistry();
 
@@ -414,10 +419,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
             );
 
             emit TokenTrustedIssuersRegistryCreated(
-                _msgSender(),
-                address(tokenRegistry),
-                tokenAddress,
-                tokenIdentityAddress
+                _msgSender(), address(tokenRegistry), tokenAddress, tokenIdentityAddress
             );
 
             metaRegistry.setRegistryForSubject(tokenIdentityAddress, address(tokenRegistry));

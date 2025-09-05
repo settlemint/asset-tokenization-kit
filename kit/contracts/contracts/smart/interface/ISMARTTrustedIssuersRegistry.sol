@@ -18,7 +18,6 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 ///         or other claims to have different trusted issuers on a per-subject basis.
 ///      4. `_subject = address(0)` is treated as global-only, preserving compatibility with ERC-3643 concepts.
 interface ISMARTTrustedIssuersRegistry is IERC165 {
-
     /// @notice Returns all trusted claim issuers for a specific subject
     /// @dev For `_subject = address(0)` returns global trusted issuers only.
     ///      For other subjects, it returns the union of global + subject-specific trusted issuers.
@@ -32,7 +31,10 @@ interface ISMARTTrustedIssuersRegistry is IERC165 {
     /// @param _subject The subject identifier (address(0) for global only, or specific subject address)
     /// @param claimTopic The claim topic to filter trusted issuers
     /// @return Array of IClaimIssuer contracts trusted for this subject + claim topic (deduplicated)
-    function getTrustedIssuersForClaimTopic(uint256 claimTopic, address _subject)
+    function getTrustedIssuersForClaimTopic(
+        uint256 claimTopic,
+        address _subject
+    )
         external
         view
         returns (IClaimIssuer[] memory);
@@ -60,5 +62,11 @@ interface ISMARTTrustedIssuersRegistry is IERC165 {
     /// @param _trustedIssuer the trusted issuer concerned.
     /// @param _subject The subject identifier (address(0) for global only, or specific subject address)
     /// @return The set of claim topics that the trusted issuer is allowed to emit
-    function getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer, address _subject) external view returns (uint256[] memory);
+    function getTrustedIssuerClaimTopics(
+        IClaimIssuer _trustedIssuer,
+        address _subject
+    )
+        external
+        view
+        returns (uint256[] memory);
 }

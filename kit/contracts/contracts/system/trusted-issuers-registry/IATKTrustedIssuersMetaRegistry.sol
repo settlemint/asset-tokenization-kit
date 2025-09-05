@@ -21,11 +21,7 @@ interface IATKTrustedIssuersMetaRegistry is IATKTrustedIssuersRegistry {
     /// @param sender The address that initiated the change
     /// @param oldRegistry The address of the previous system registry (address(0) if none)
     /// @param newRegistry The address of the new system registry
-    event SystemRegistrySet(
-        address indexed sender,
-        address indexed oldRegistry,
-        address indexed newRegistry
-    );
+    event SystemRegistrySet(address indexed sender, address indexed oldRegistry, address indexed newRegistry);
 
     /// @notice Emitted when a subject-specific registry is set or updated
     /// @param sender The address that initiated the change
@@ -33,10 +29,7 @@ interface IATKTrustedIssuersMetaRegistry is IATKTrustedIssuersRegistry {
     /// @param oldRegistry The address of the previous registry for this subject (address(0) if none)
     /// @param newRegistry The address of the new registry for this subject
     event SubjectRegistrySet(
-        address indexed sender,
-        address indexed subject,
-        address indexed oldRegistry,
-        address newRegistry
+        address indexed sender, address indexed subject, address indexed oldRegistry, address newRegistry
     );
 
     /// @notice Initializes the registry with an initial admin and registrars.
@@ -72,5 +65,4 @@ interface IATKTrustedIssuersMetaRegistry is IATKTrustedIssuersRegistry {
     /// @param subject The subject address to get the registry for
     /// @return The subject-specific trusted issuers registry address
     function getRegistryForSubject(address subject) external view returns (IATKTrustedIssuersRegistry);
-
 }

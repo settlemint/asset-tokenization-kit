@@ -35,7 +35,8 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @param sender The address that called the `updateTrustedIssuersRegistryImplementation` function.
     /// @param newImplementation The address of the new trusted issuers registry module implementation contract.
     event SystemTrustedIssuersRegistryImplementationUpdated(address indexed sender, address indexed newImplementation);
-    /// @notice Emitted when the implementation (logic contract) for the trusted issuers meta registry module is updated.
+    /// @notice Emitted when the implementation (logic contract) for the trusted issuers meta registry module is
+    /// updated.
     /// @param sender The address that called the `updateTrustedIssuersMetaRegistryImplementation` function.
     /// @param newImplementation The address of the new trusted issuers meta registry module implementation contract.
     event TrustedIssuersMetaRegistryImplementationUpdated(address indexed sender, address indexed newImplementation);
@@ -94,7 +95,8 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @param complianceProxy The address of the deployed ATKComplianceProxy contract.
     /// @param identityRegistryProxy The address of the deployed ATKIdentityRegistryProxy contract.
     /// @param identityRegistryStorageProxy The address of the deployed ATKIdentityRegistryStorageProxy contract.
-    /// @param systemTrustedIssuersRegistryProxy The address of the deployed ATKSystemTrustedIssuersRegistryProxy contract.
+    /// @param systemTrustedIssuersRegistryProxy The address of the deployed ATKSystemTrustedIssuersRegistryProxy
+    /// contract.
     /// @param trustedIssuersMetaRegistryProxy The address of the deployed ATKTrustedIssuersMetaRegistryProxy contract.
     /// @param topicSchemeRegistryProxy The address of the deployed ATKTopicSchemeRegistryProxy contract.
     /// @param identityFactoryProxy The address of the deployed ATKIdentityFactoryProxy contract.

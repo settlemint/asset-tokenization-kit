@@ -60,7 +60,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
 
     // --- Errors ---
 
-        /// @notice Error triggered when trying to use aggregation functions on meta-registry
+    /// @notice Error triggered when trying to use aggregation functions on meta-registry
     error MetaRegistryCannotProvideCompleteAnswer();
 
     /// @notice Error triggered when attempting to set a registry to an invalid address
@@ -120,7 +120,10 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     /// @dev Part of the meta-registry pattern - manages subject-specific registries
     /// @param subject The subject address to set the registry for
     /// @param registry The address of the trusted issuers registry for this subject (can be address(0) to remove)
-    function setRegistryForSubject(address subject, address registry)
+    function setRegistryForSubject(
+        address subject,
+        address registry
+    )
         external
         onlySystemRoles3(
             ATKPeopleRoles.SYSTEM_MANAGER_ROLE,
@@ -130,8 +133,6 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     {
         _setRegistryForSubject(subject, registry);
     }
-
-
 
     /// @notice Removes a subject-specific trusted issuers registry
     /// @dev Convenience function that delegates to setRegistryForSubject with address(0)
@@ -159,18 +160,17 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     /// @notice Gets the subject-specific trusted issuers registry
     /// @param subject The subject address to get the registry for
     /// @return The subject-specific trusted issuers registry address
-    function getRegistryForSubject(address subject)
-        external
-        view
-        returns (IATKTrustedIssuersRegistry)
-    {
+    function getRegistryForSubject(address subject) external view returns (IATKTrustedIssuersRegistry) {
         return _subjectRegistries[subject];
     }
 
     // --- IATKTrustedIssuersRegistry Implementation ---
 
     /// @inheritdoc IATKTrustedIssuersRegistry
-    function addTrustedIssuer(IClaimIssuer _trustedIssuer, uint256[] calldata _claimTopics)
+    function addTrustedIssuer(
+        IClaimIssuer _trustedIssuer,
+        uint256[] calldata _claimTopics
+    )
         external
         override
         onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
@@ -188,7 +188,10 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     }
 
     /// @inheritdoc IATKTrustedIssuersRegistry
-    function updateIssuerClaimTopics(IClaimIssuer _trustedIssuer, uint256[] calldata _newClaimTopics)
+    function updateIssuerClaimTopics(
+        IClaimIssuer _trustedIssuer,
+        uint256[] calldata _newClaimTopics
+    )
         external
         override
         onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
@@ -204,7 +207,10 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function getTrustedIssuersForClaimTopic(uint256 claimTopic, address _subject)
+    function getTrustedIssuersForClaimTopic(
+        uint256 claimTopic,
+        address _subject
+    )
         external
         view
         override
@@ -213,26 +219,51 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         return _getTrustedIssuersForClaimTopic(claimTopic, _subject);
     }
 
-
     /// @inheritdoc ISMARTTrustedIssuersRegistry
     function isTrustedIssuer(address _issuer, address _subject) external view override returns (bool) {
         return _isTrustedIssuer(_issuer, _subject);
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function hasClaimTopic(address _issuer, uint256 _claimTopic, address _subject) external view override returns (bool) {
-        return _hasClaimTopic( _issuer, _claimTopic, _subject);
+    function hasClaimTopic(
+        address _issuer,
+        uint256 _claimTopic,
+        address _subject
+    )
+        external
+        view
+        override
+        returns (bool)
+    {
+        return _hasClaimTopic(_issuer, _claimTopic, _subject);
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer, address _subject) external view override returns (uint256[] memory) {
+    function getTrustedIssuerClaimTopics(
+        IClaimIssuer _trustedIssuer,
+        address _subject
+    )
+        external
+        view
+        override
+        returns (uint256[] memory)
+    {
         return _getTrustedIssuerClaimTopics(_trustedIssuer, _subject);
     }
 
     // --- IClaimAuthorizer Implementation ---
 
     /// @inheritdoc IClaimAuthorizer
-    function isAuthorizedToAddClaim(address issuer, uint256 topic, address subject) external view override returns (bool) {
+    function isAuthorizedToAddClaim(
+        address issuer,
+        uint256 topic,
+        address subject
+    )
+        external
+        view
+        override
+        returns (bool)
+    {
         return this.hasClaimTopic(issuer, topic, subject);
     }
 
@@ -347,7 +378,10 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     /// @dev Meta-registry implementation that checks both contract-specific and system registries.
     ///      For subject = address(0), only system registry is checked.
     ///      For other subjects (identity contracts), both registries are checked and merged.
-    function _getTrustedIssuersForClaimTopic(uint256 claimTopic, address subject)
+    function _getTrustedIssuersForClaimTopic(
+        uint256 claimTopic,
+        address subject
+    )
         internal
         view
         returns (IClaimIssuer[] memory)
@@ -378,7 +412,14 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         return _mergeIssuerArrays(contractIssuers, systemIssuers);
     }
 
-    function _getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer, address _subject) internal view returns (uint256[] memory) {
+    function _getTrustedIssuerClaimTopics(
+        IClaimIssuer _trustedIssuer,
+        address _subject
+    )
+        internal
+        view
+        returns (uint256[] memory)
+    {
         if (_subject == address(0)) {
             if (address(_systemRegistry) != address(0)) {
                 return _systemRegistry.getTrustedIssuerClaimTopics(_trustedIssuer, _subject);
@@ -409,7 +450,11 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     function _mergeUint256Arrays(
         uint256[] memory array1,
         uint256[] memory array2
-    ) internal pure returns (uint256[] memory merged) {
+    )
+        internal
+        pure
+        returns (uint256[] memory merged)
+    {
         uint256 array1Length = array1.length;
         uint256 array2Length = array2.length;
 
@@ -422,7 +467,9 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         for (uint256 i = 0; i < array1Length;) {
             temp[mergedLength] = array1[i];
             mergedLength++;
-            unchecked { ++i; }
+            unchecked {
+                ++i;
+            }
         }
 
         for (uint256 i = 0; i < array2Length;) {
@@ -432,20 +479,26 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
                     isDuplicate = true;
                     break;
                 }
-                unchecked { ++j; }
+                unchecked {
+                    ++j;
+                }
             }
 
             if (!isDuplicate) {
                 temp[mergedLength] = array2[i];
                 mergedLength++;
             }
-            unchecked { ++i; }
+            unchecked {
+                ++i;
+            }
         }
 
         merged = new uint256[](mergedLength);
         for (uint256 i = 0; i < mergedLength;) {
             merged[i] = temp[i];
-            unchecked { ++i; }
+            unchecked {
+                ++i;
+            }
         }
 
         return merged;
@@ -459,7 +512,11 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     function _mergeIssuerArrays(
         IClaimIssuer[] memory array1,
         IClaimIssuer[] memory array2
-    ) internal pure returns (IClaimIssuer[] memory merged) {
+    )
+        internal
+        pure
+        returns (IClaimIssuer[] memory merged)
+    {
         uint256 array1Length = array1.length;
         uint256 array2Length = array2.length;
 
@@ -475,7 +532,9 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         for (uint256 i = 0; i < array1Length;) {
             temp[mergedLength] = array1[i];
             mergedLength++;
-            unchecked { ++i; }
+            unchecked {
+                ++i;
+            }
         }
 
         // Add issuers from array2 that are not already in the merged array
@@ -486,21 +545,27 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
                     isDuplicate = true;
                     break;
                 }
-                unchecked { ++j; }
+                unchecked {
+                    ++j;
+                }
             }
 
             if (!isDuplicate) {
                 temp[mergedLength] = array2[i];
                 mergedLength++;
             }
-            unchecked { ++i; }
+            unchecked {
+                ++i;
+            }
         }
 
         // Create final array with correct size
         merged = new IClaimIssuer[](mergedLength);
         for (uint256 i = 0; i < mergedLength;) {
             merged[i] = temp[i];
-            unchecked { ++i; }
+            unchecked {
+                ++i;
+            }
         }
 
         return merged;
@@ -533,7 +598,6 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
             || interfaceId == type(IATKTrustedIssuersRegistry).interfaceId
             || interfaceId == type(IClaimAuthorizer).interfaceId
             || interfaceId == type(ISMARTTrustedIssuersRegistry).interfaceId
-            || interfaceId == type(IATKSystemAccessManaged).interfaceId
-            || super.supportsInterface(interfaceId);
+            || interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
     }
 }

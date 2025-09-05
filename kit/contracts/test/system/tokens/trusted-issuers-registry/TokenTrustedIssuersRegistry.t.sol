@@ -4,8 +4,7 @@ pragma solidity ^0.8.28;
 import { Test } from "forge-std/Test.sol";
 import { TokenTrustedIssuersRegistry } from
     "../../../../contracts/system/tokens/trusted-issuers-registry/TokenTrustedIssuersRegistry.sol";
-import { ISMARTTrustedIssuersRegistry } from
-    "../../../../contracts/smart/interface/ISMARTTrustedIssuersRegistry.sol";
+import { ISMARTTrustedIssuersRegistry } from "../../../../contracts/smart/interface/ISMARTTrustedIssuersRegistry.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IATKTokenTrustedIssuersRegistry } from
@@ -96,7 +95,9 @@ contract TokenTrustedIssuersRegistryTest is Test {
 
         vm.prank(governance);
         vm.expectEmit(true, true, false, false);
-        emit IATKTrustedIssuersRegistry.TrustedIssuerAdded(governance, IClaimIssuer(address(issuer1)), topics, onchainID);
+        emit IATKTrustedIssuersRegistry.TrustedIssuerAdded(
+            governance, IClaimIssuer(address(issuer1)), topics, onchainID
+        );
         registry.addTrustedIssuer(IClaimIssuer(address(issuer1)), topics);
 
         // Verify issuer was added
@@ -402,7 +403,8 @@ contract TokenTrustedIssuersRegistryTest is Test {
         vm.prank(governance);
         registry.addTrustedIssuer(IClaimIssuer(address(issuer1)), topics);
 
-        uint256[] memory returnedTopics = registry.getTrustedIssuerClaimTopics(IClaimIssuer(address(issuer1)), onchainID);
+        uint256[] memory returnedTopics =
+            registry.getTrustedIssuerClaimTopics(IClaimIssuer(address(issuer1)), onchainID);
         assertEq(returnedTopics.length, 2);
         assertEq(returnedTopics[0], KYC_TOPIC);
         assertEq(returnedTopics[1], AML_TOPIC);

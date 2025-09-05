@@ -57,7 +57,8 @@ import { IATKComplianceModuleRegistry } from "../../contracts/system/compliance/
 import { IATKSystemAddonRegistry } from "../../contracts/system/addons/IATKSystemAddonRegistry.sol";
 import { IATKTokenFactoryRegistry } from "../../contracts/system/tokens/factory/IATKTokenFactoryRegistry.sol";
 import { IATKSystemAccessManager } from "../../contracts/system/access-manager/IATKSystemAccessManager.sol";
-import { IATKTrustedIssuersMetaRegistry } from "../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersMetaRegistry.sol";
+import { IATKTrustedIssuersMetaRegistry } from
+    "../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersMetaRegistry.sol";
 
 // Compliance Modules
 import { CountryAllowListComplianceModule } from "../../contracts/smart/modules/CountryAllowListComplianceModule.sol";
@@ -100,7 +101,8 @@ contract SystemUtils is Test {
         ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
 
         ATKIdentityRegistryStorageImplementation storageImpl = new ATKIdentityRegistryStorageImplementation(forwarder);
-        ATKSystemTrustedIssuersRegistryImplementation issuersImpl = new ATKSystemTrustedIssuersRegistryImplementation(forwarder);
+        ATKSystemTrustedIssuersRegistryImplementation issuersImpl =
+            new ATKSystemTrustedIssuersRegistryImplementation(forwarder);
         ATKComplianceImplementation complianceImpl = new ATKComplianceImplementation(forwarder);
         ATKIdentityRegistryImplementation registryImpl = new ATKIdentityRegistryImplementation(forwarder);
         ATKIdentityFactoryImplementation factoryImpl = new ATKIdentityFactoryImplementation(forwarder);

@@ -11,7 +11,6 @@ import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManag
 /// @dev Extends the base IATKTrustedIssuersRegistry to provide system-specific functionality.
 ///      The system registry operates on system-wide issuers without subject parameters.
 interface IATKSystemTrustedIssuersRegistry is IATKTrustedIssuersRegistry, IATKSystemAccessManaged {
-
     /// @notice Initializes the system registry with access manager
     /// @param accessManager The address of the access manager
     function initialize(address accessManager) external;

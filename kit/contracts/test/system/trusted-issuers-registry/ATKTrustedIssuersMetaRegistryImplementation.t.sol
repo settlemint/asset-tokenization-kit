@@ -6,8 +6,7 @@ import { ATKTrustedIssuersMetaRegistryImplementation } from
     "../../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersMetaRegistryImplementation.sol";
 import { ATKSystemTrustedIssuersRegistryImplementation } from
     "../../../contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol";
-import { ISMARTTrustedIssuersRegistry } from
-    "../../../contracts/smart/interface/ISMARTTrustedIssuersRegistry.sol";
+import { ISMARTTrustedIssuersRegistry } from "../../../contracts/smart/interface/ISMARTTrustedIssuersRegistry.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
@@ -17,7 +16,8 @@ import { ATKSystemAccessManagerImplementation } from
 import { IATKTrustedIssuersMetaRegistry } from
     "../../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersMetaRegistry.sol";
 import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
-import { IATKTrustedIssuersRegistry } from "../../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
+import { IATKTrustedIssuersRegistry } from
+    "../../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { IClaimAuthorizer } from "../../../contracts/onchainid/extensions/IClaimAuthorizer.sol";
 
@@ -109,7 +109,9 @@ contract ATKTrustedIssuersMetaRegistryImplementationTest is Test {
         // Verify system registry is set
         assertEq(address(metaRegistry.getSystemRegistry()), address(systemRegistry));
 
-        assertTrue(systemAccessManager.hasRole(ATKSystemRoles.TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE, address(metaRegistry)));
+        assertTrue(
+            systemAccessManager.hasRole(ATKSystemRoles.TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE, address(metaRegistry))
+        );
 
         // Verify system manager has correct role
         assertTrue(systemAccessManager.hasRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE, systemManager));
@@ -419,7 +421,8 @@ contract ATKTrustedIssuersMetaRegistryImplementationTest is Test {
         systemRegistry.addTrustedIssuer(IClaimIssuer(address(issuer1)), topics);
 
         // Query with subject = address(0) should return system topics
-        uint256[] memory returnedTopics = metaRegistry.getTrustedIssuerClaimTopics(IClaimIssuer(address(issuer1)), address(0));
+        uint256[] memory returnedTopics =
+            metaRegistry.getTrustedIssuerClaimTopics(IClaimIssuer(address(issuer1)), address(0));
         assertEq(returnedTopics.length, 2);
         assertEq(returnedTopics[0], KYC_TOPIC);
         assertEq(returnedTopics[1], AML_TOPIC);
@@ -442,7 +445,8 @@ contract ATKTrustedIssuersMetaRegistryImplementationTest is Test {
         contractRegistry.addTrustedIssuer(IClaimIssuer(address(issuer1)), contractTopics);
 
         // Query should return merged topics
-        uint256[] memory returnedTopics = metaRegistry.getTrustedIssuerClaimTopics(IClaimIssuer(address(issuer1)), contract1);
+        uint256[] memory returnedTopics =
+            metaRegistry.getTrustedIssuerClaimTopics(IClaimIssuer(address(issuer1)), contract1);
         assertEq(returnedTopics.length, 2);
     }
 
@@ -493,7 +497,8 @@ contract ATKTrustedIssuersMetaRegistryImplementationTest is Test {
             new ATKSystemTrustedIssuersRegistryImplementation(forwarder);
         bytes memory contractRegistry2InitData =
             abi.encodeWithSelector(contractRegistry2Impl.initialize.selector, address(systemAccessManager));
-        ERC1967Proxy contractRegistry2Proxy = new ERC1967Proxy(address(contractRegistry2Impl), contractRegistry2InitData);
+        ERC1967Proxy contractRegistry2Proxy =
+            new ERC1967Proxy(address(contractRegistry2Impl), contractRegistry2InitData);
         ATKSystemTrustedIssuersRegistryImplementation contractRegistry2 =
             ATKSystemTrustedIssuersRegistryImplementation(address(contractRegistry2Proxy));
 
