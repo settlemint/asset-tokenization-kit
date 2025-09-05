@@ -30,6 +30,8 @@ const READ_FIXED_YIELD_SCHEDULE_QUERY = theGraphGraphql(
       ...TokenFixedYieldScheduleFragment
       denominationAsset {
         id
+        symbol
+        decimals
         balance: balances(where: {account: $account}) {
           available
         }
