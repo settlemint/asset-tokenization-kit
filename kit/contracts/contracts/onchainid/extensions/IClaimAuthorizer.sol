@@ -15,9 +15,10 @@ interface IClaimAuthorizer is IERC165 {
     /// @notice Checks if an issuer is authorized to add a claim for a specific topic
     /// @param issuer The address of the issuer attempting to add the claim
     /// @param topic The claim topic for which authorization is being checked
+    /// @param subject The identity contract address of the subject
     /// @return True if the issuer is authorized to add claims for this topic, false otherwise
     /// @dev This function should be implemented to perform topic-specific authorization logic.
     ///      For example, a trusted issuer registry might check if the issuer is registered
     ///      and authorized for the specific claim topic.
-    function isAuthorizedToAddClaim(address issuer, uint256 topic) external view returns (bool);
+    function isAuthorizedToAddClaim(address issuer, uint256 topic, address subject) external view returns (bool);
 }

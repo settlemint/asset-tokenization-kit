@@ -3,7 +3,7 @@ pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { ATKTokenAccessManagerImplementation } from
-    "../../../contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol";
+    "../../../contracts/system/tokens/access/ATKTokenAccessManagerImplementation.sol";
 import { ISMARTTokenAccessManager } from
     "../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";

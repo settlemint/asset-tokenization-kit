@@ -9,10 +9,11 @@ import IdentityRegistryStorageModule from "./identity-registry-storage";
 import SystemModule from "./system";
 import SystemAccessManagerModule from "./system-access-manager";
 import SystemAddonRegistryModule from "./system-addon-registry";
+import SystemTrustedIssuerRegistryModule from "./system-trusted-issuer-registry";
 import TokenAccessManagerModule from "./token-access-manager";
 import TokenFactoryRegistryModule from "./token-factory-registry";
 import TopicSchemeRegistryModule from "./topic-scheme-registry";
-import TrustedIssuerRegistryModule from "./trusted-issuer-registry";
+import TrustedIssuersMetaRegistryModule from "./trusted-issuers-meta-registry";
 
 const SystemFactoryModule = buildModule("SystemFactoryModule", (m) => {
   const { forwarder } = m.useModule(ForwarderModule);
@@ -22,7 +23,12 @@ const SystemFactoryModule = buildModule("SystemFactoryModule", (m) => {
   const { identityRegistryStorage } = m.useModule(
     IdentityRegistryStorageModule
   );
-  const { trustedIssuerRegistry } = m.useModule(TrustedIssuerRegistryModule);
+  const { systemTrustedIssuerRegistry } = m.useModule(
+    SystemTrustedIssuerRegistryModule
+  );
+  const { trustedIssuersMetaRegistry } = m.useModule(
+    TrustedIssuersMetaRegistryModule
+  );
   const { topicSchemeRegistry } = m.useModule(TopicSchemeRegistryModule);
   const { identityFactory } = m.useModule(IdentityFactoryModule);
   const { identity, contractIdentity } = m.useModule(IdentityModule);
@@ -40,7 +46,8 @@ const SystemFactoryModule = buildModule("SystemFactoryModule", (m) => {
     compliance,
     identityRegistry,
     identityRegistryStorage,
-    trustedIssuerRegistry,
+    systemTrustedIssuerRegistry,
+    trustedIssuersMetaRegistry,
     topicSchemeRegistry,
     identityFactory,
     identity,

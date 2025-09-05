@@ -14,13 +14,14 @@ export const addTrustedIssuer = async (
   console.log(`[Add trusted issuer] → Starting trusted issuer setup...`);
 
   // Set up the claim issuer as a trusted issuer
-  const trustedIssuersRegistry =
-    atkDeployer.getTrustedIssuersRegistryContract();
+  const systemTrustedIssuersRegistry =
+    atkDeployer.getSystemTrustedIssuersRegistryContract();
 
-  const transactionHash = await trustedIssuersRegistry.write.addTrustedIssuer([
-    trustedIssuerIdentity,
-    claimTopics,
-  ]);
+  const transactionHash =
+    await systemTrustedIssuersRegistry.write.addTrustedIssuer([
+      trustedIssuerIdentity,
+      claimTopics,
+    ]);
 
   await waitForSuccess(transactionHash);
 

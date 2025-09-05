@@ -128,7 +128,7 @@ contract ATKFundImplementation is
     }
 
     // --- IContractWithIdentity Implementation ---
-    // Note: onchainID() is inherited from ISMART via SMARTUpgradeable, but we need to explicitly override due to
+    // Note: onchainID() is inherited from IATKToken via SMARTUpgradeable, but we need to explicitly override due to
     // multiple inheritance
 
     /// @inheritdoc IContractWithIdentity
@@ -169,7 +169,7 @@ contract ATKFundImplementation is
         return fee;
     }
 
-    // --- ISMART Implementation ---
+    // --- IATKToken Implementation ---
 
     /// @notice Sets the OnchainID contract address for the fund token
     /// @dev Only callable by addresses with GOVERNANCE_ROLE

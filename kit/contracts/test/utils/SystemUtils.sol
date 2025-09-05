@@ -14,8 +14,8 @@ import { ATKPeopleRoles } from "../../contracts/system/ATKPeopleRoles.sol";
 // Implementations
 import { ATKIdentityRegistryStorageImplementation } from
     "../../contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol";
-import { ATKTrustedIssuersRegistryImplementation } from
-    "../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersRegistryImplementation.sol";
+import { ATKSystemTrustedIssuersRegistryImplementation } from
+    "../../contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol";
 import { ATKIdentityRegistryImplementation } from
     "../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
 import { ATKComplianceImplementation } from "../../contracts/system/compliance/ATKComplianceImplementation.sol";
@@ -27,34 +27,38 @@ import { ATKIdentityImplementation } from
 import { ATKContractIdentityImplementation } from
     "../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
 import { ATKTokenAccessManagerImplementation } from
-    "../../contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol";
+    "../../contracts/system/tokens/access/ATKTokenAccessManagerImplementation.sol";
 import { ATKSystemAccessManagerImplementation } from
     "../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
 import { ATKTopicSchemeRegistryImplementation } from
     "../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
 import { ATKTokenFactoryRegistryImplementation } from
-    "../../contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol";
+    "../../contracts/system/tokens/factory/ATKTokenFactoryRegistryImplementation.sol";
 import { ATKComplianceModuleRegistryImplementation } from
     "../../contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol";
 import { ATKSystemAddonRegistryImplementation } from
     "../../contracts/system/addons/ATKSystemAddonRegistryImplementation.sol";
+import { ATKTrustedIssuersMetaRegistryImplementation } from
+    "../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersMetaRegistryImplementation.sol";
+import { IATKTrustedIssuersRegistry } from
+    "../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
 
 // Proxies
-import { ATKTokenAccessManagerProxy } from "../../contracts/system/access-manager/ATKTokenAccessManagerProxy.sol";
+import { ATKTokenAccessManagerProxy } from "../../contracts/system/tokens/access/ATKTokenAccessManagerProxy.sol";
 
 // Interfaces
 import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 import { IATKIdentityFactory } from "../../contracts/system/identity-factory/IATKIdentityFactory.sol";
 import { ISMARTCompliance } from "../../contracts/smart/interface/ISMARTCompliance.sol";
-import { IERC3643TrustedIssuersRegistry } from
-    "../../contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 import { ISMARTIdentityRegistryStorage } from "../../contracts/smart/interface/ISMARTIdentityRegistryStorage.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { ISMARTTopicSchemeRegistry } from "../../contracts/smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { IATKComplianceModuleRegistry } from "../../contracts/system/compliance/IATKComplianceModuleRegistry.sol";
 import { IATKSystemAddonRegistry } from "../../contracts/system/addons/IATKSystemAddonRegistry.sol";
-import { IATKTokenFactoryRegistry } from "../../contracts/system/token-factory/IATKTokenFactoryRegistry.sol";
+import { IATKTokenFactoryRegistry } from "../../contracts/system/tokens/factory/IATKTokenFactoryRegistry.sol";
 import { IATKSystemAccessManager } from "../../contracts/system/access-manager/IATKSystemAccessManager.sol";
+import { IATKTrustedIssuersMetaRegistry } from
+    "../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersMetaRegistry.sol";
 
 // Compliance Modules
 import { CountryAllowListComplianceModule } from "../../contracts/smart/modules/CountryAllowListComplianceModule.sol";
@@ -70,7 +74,8 @@ contract SystemUtils is Test {
 
     // Core Contract Instances (now holding proxy addresses)
     ISMARTIdentityRegistryStorage public identityRegistryStorage; // Proxy
-    IERC3643TrustedIssuersRegistry public trustedIssuersRegistry; // Proxy
+    IATKTrustedIssuersRegistry public trustedIssuersRegistry; // Proxy
+    IATKTrustedIssuersMetaRegistry public trustedIssuersMetaRegistry; // Proxy
     ISMARTIdentityRegistry public identityRegistry; // Proxy
     ISMARTCompliance public compliance; // Proxy
     IATKIdentityFactory public identityFactory; // Proxy
@@ -96,7 +101,8 @@ contract SystemUtils is Test {
         ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
 
         ATKIdentityRegistryStorageImplementation storageImpl = new ATKIdentityRegistryStorageImplementation(forwarder);
-        ATKTrustedIssuersRegistryImplementation issuersImpl = new ATKTrustedIssuersRegistryImplementation(forwarder);
+        ATKSystemTrustedIssuersRegistryImplementation issuersImpl =
+            new ATKSystemTrustedIssuersRegistryImplementation(forwarder);
         ATKComplianceImplementation complianceImpl = new ATKComplianceImplementation(forwarder);
         ATKIdentityRegistryImplementation registryImpl = new ATKIdentityRegistryImplementation(forwarder);
         ATKIdentityFactoryImplementation factoryImpl = new ATKIdentityFactoryImplementation(forwarder);
@@ -114,6 +120,8 @@ contract SystemUtils is Test {
 
         ATKSystemAccessManagerImplementation systemAccessManagerImpl =
             new ATKSystemAccessManagerImplementation(forwarder);
+        ATKTrustedIssuersMetaRegistryImplementation trustedIssuersMetaRegistryImpl =
+            new ATKTrustedIssuersMetaRegistryImplementation(forwarder);
 
         systemFactory = new ATKSystemFactory(
             address(systemImplementation),
@@ -121,6 +129,7 @@ contract SystemUtils is Test {
             address(registryImpl),
             address(storageImpl),
             address(issuersImpl),
+            address(trustedIssuersMetaRegistryImpl),
             address(topicSchemeRegistryImpl),
             address(factoryImpl),
             address(identityImpl),
@@ -151,7 +160,7 @@ contract SystemUtils is Test {
         vm.label(address(identityRegistry), "Identity Registry");
         identityRegistryStorage = ISMARTIdentityRegistryStorage(system.identityRegistryStorage());
         vm.label(address(identityRegistryStorage), "Identity Registry Storage");
-        trustedIssuersRegistry = IERC3643TrustedIssuersRegistry(system.trustedIssuersRegistry());
+        trustedIssuersRegistry = IATKTrustedIssuersRegistry(system.trustedIssuersRegistry());
         vm.label(address(trustedIssuersRegistry), "Trusted Issuers Registry");
         topicSchemeRegistry = ISMARTTopicSchemeRegistry(system.topicSchemeRegistry());
         vm.label(address(topicSchemeRegistry), "Topic Scheme Registry");

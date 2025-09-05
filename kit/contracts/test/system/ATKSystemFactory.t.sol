@@ -9,7 +9,7 @@ import {
     ComplianceImplementationNotSet,
     IdentityRegistryImplementationNotSet,
     IdentityRegistryStorageImplementationNotSet,
-    TrustedIssuersRegistryImplementationNotSet,
+    SystemTrustedIssuersRegistryImplementationNotSet,
     TopicSchemeRegistryImplementationNotSet,
     IdentityFactoryImplementationNotSet,
     IdentityImplementationNotSet,
@@ -19,15 +19,16 @@ import {
     TokenFactoryRegistryImplementationNotSet,
     AddonRegistryImplementationNotSet,
     ComplianceModuleRegistryImplementationNotSet,
-    SystemAccessManagerImplementationNotSet
+    SystemAccessManagerImplementationNotSet,
+    TrustedIssuersMetaRegistryImplementationNotSet
 } from "../../contracts/system/ATKSystemErrors.sol";
 import { IATKSystemAccessManaged } from "../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
 
 // Implementations for testing
 import { ATKIdentityRegistryStorageImplementation } from
     "../../contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol";
-import { ATKTrustedIssuersRegistryImplementation } from
-    "../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersRegistryImplementation.sol";
+import { ATKSystemTrustedIssuersRegistryImplementation } from
+    "../../contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol";
 import { ATKIdentityRegistryImplementation } from
     "../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
 import { ATKTopicSchemeRegistryImplementation } from
@@ -40,15 +41,17 @@ import { ATKIdentityImplementation } from
 import { ATKContractIdentityImplementation } from
     "../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
 import { ATKTokenAccessManagerImplementation } from
-    "../../contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol";
+    "../../contracts/system/tokens/access/ATKTokenAccessManagerImplementation.sol";
 import { ATKSystemAccessManagerImplementation } from
     "../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
 import { ATKTokenFactoryRegistryImplementation } from
-    "../../contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol";
+    "../../contracts/system/tokens/factory/ATKTokenFactoryRegistryImplementation.sol";
 import { ATKSystemAddonRegistryImplementation } from
     "../../contracts/system/addons/ATKSystemAddonRegistryImplementation.sol";
 import { ATKComplianceModuleRegistryImplementation } from
     "../../contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol";
+import { ATKTrustedIssuersMetaRegistryImplementation } from
+    "../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersMetaRegistryImplementation.sol";
 
 // Import compliance module
 import { SMARTIdentityVerificationComplianceModule } from
@@ -63,6 +66,7 @@ contract ATKSystemFactoryTest is Test {
     address public identityRegistryImpl;
     address public identityRegistryStorageImpl;
     address public trustedIssuersRegistryImpl;
+    address public trustedIssuersMetaRegistryImpl;
     address public topicSchemeRegistryImpl;
     address public identityFactoryImpl;
     address public identityImpl;
@@ -91,7 +95,8 @@ contract ATKSystemFactoryTest is Test {
         complianceImpl = address(new ATKComplianceImplementation(forwarder));
         identityRegistryImpl = address(new ATKIdentityRegistryImplementation(forwarder));
         identityRegistryStorageImpl = address(new ATKIdentityRegistryStorageImplementation(forwarder));
-        trustedIssuersRegistryImpl = address(new ATKTrustedIssuersRegistryImplementation(forwarder));
+        trustedIssuersRegistryImpl = address(new ATKSystemTrustedIssuersRegistryImplementation(forwarder));
+        trustedIssuersMetaRegistryImpl = address(new ATKTrustedIssuersMetaRegistryImplementation(forwarder));
         topicSchemeRegistryImpl = address(new ATKTopicSchemeRegistryImplementation(forwarder));
         identityFactoryImpl = address(new ATKIdentityFactoryImplementation(forwarder));
         identityImpl = address(new ATKIdentityImplementation(forwarder));
@@ -112,6 +117,7 @@ contract ATKSystemFactoryTest is Test {
             identityRegistryImpl,
             identityRegistryStorageImpl,
             trustedIssuersRegistryImpl,
+            trustedIssuersMetaRegistryImpl,
             topicSchemeRegistryImpl,
             identityFactoryImpl,
             identityImpl,
@@ -129,7 +135,8 @@ contract ATKSystemFactoryTest is Test {
         assertEq(factory.defaultComplianceImplementation(), complianceImpl);
         assertEq(factory.defaultIdentityRegistryImplementation(), identityRegistryImpl);
         assertEq(factory.defaultIdentityRegistryStorageImplementation(), identityRegistryStorageImpl);
-        assertEq(factory.defaultTrustedIssuersRegistryImplementation(), trustedIssuersRegistryImpl);
+        assertEq(factory.defaultSystemTrustedIssuersRegistryImplementation(), trustedIssuersRegistryImpl);
+        assertEq(factory.defaultTrustedIssuersMetaRegistryImplementation(), trustedIssuersMetaRegistryImpl);
         assertEq(factory.defaultTopicSchemeRegistryImplementation(), topicSchemeRegistryImpl);
         assertEq(factory.defaultIdentityFactoryImplementation(), identityFactoryImpl);
         assertEq(factory.defaultIdentityImplementation(), identityImpl);
@@ -148,6 +155,7 @@ contract ATKSystemFactoryTest is Test {
             identityRegistryImpl,
             identityRegistryStorageImpl,
             trustedIssuersRegistryImpl,
+            trustedIssuersMetaRegistryImpl,
             topicSchemeRegistryImpl,
             identityFactoryImpl,
             identityImpl,
@@ -169,6 +177,7 @@ contract ATKSystemFactoryTest is Test {
             address(0), // Zero identity registry implementation
             identityRegistryStorageImpl,
             trustedIssuersRegistryImpl,
+            trustedIssuersMetaRegistryImpl,
             topicSchemeRegistryImpl,
             identityFactoryImpl,
             identityImpl,
@@ -190,6 +199,7 @@ contract ATKSystemFactoryTest is Test {
             identityRegistryImpl,
             address(0), // Zero identity registry storage implementation
             trustedIssuersRegistryImpl,
+            trustedIssuersMetaRegistryImpl,
             topicSchemeRegistryImpl,
             identityFactoryImpl,
             identityImpl,
@@ -204,13 +214,36 @@ contract ATKSystemFactoryTest is Test {
     }
 
     function test_ConstructorWithZeroTrustedIssuersRegistryImplementation() public {
-        vm.expectRevert(TrustedIssuersRegistryImplementationNotSet.selector);
+        vm.expectRevert(SystemTrustedIssuersRegistryImplementationNotSet.selector);
         new ATKSystemFactory(
             systemImpl,
             complianceImpl,
             identityRegistryImpl,
             identityRegistryStorageImpl,
             address(0), // Zero trusted issuers registry implementation
+            trustedIssuersMetaRegistryImpl,
+            topicSchemeRegistryImpl,
+            identityFactoryImpl,
+            identityImpl,
+            contractIdentityImpl,
+            tokenAccessManagerImpl,
+            tokenFactoryRegistryImpl,
+            complianceModuleRegistryImpl,
+            addonRegistryImpl,
+            systemAccessManagerImpl,
+            forwarder
+        );
+    }
+
+    function test_ConstructorWithZeroTrustedIssuersMetaRegistryImplementation() public {
+        vm.expectRevert(TrustedIssuersMetaRegistryImplementationNotSet.selector);
+        new ATKSystemFactory(
+            systemImpl,
+            complianceImpl,
+            identityRegistryImpl,
+            identityRegistryStorageImpl,
+            trustedIssuersRegistryImpl,
+            address(0), // Zero trusted issuers meta registry implementation
             topicSchemeRegistryImpl,
             identityFactoryImpl,
             identityImpl,
@@ -232,6 +265,7 @@ contract ATKSystemFactoryTest is Test {
             identityRegistryImpl,
             identityRegistryStorageImpl,
             trustedIssuersRegistryImpl,
+            trustedIssuersMetaRegistryImpl,
             address(0), // Zero topic scheme registry implementation
             identityFactoryImpl,
             identityImpl,
@@ -253,6 +287,7 @@ contract ATKSystemFactoryTest is Test {
             identityRegistryImpl,
             identityRegistryStorageImpl,
             trustedIssuersRegistryImpl,
+            trustedIssuersMetaRegistryImpl,
             topicSchemeRegistryImpl,
             address(0), // Zero identity factory implementation
             identityImpl,
@@ -274,6 +309,7 @@ contract ATKSystemFactoryTest is Test {
             identityRegistryImpl,
             identityRegistryStorageImpl,
             trustedIssuersRegistryImpl,
+            trustedIssuersMetaRegistryImpl,
             topicSchemeRegistryImpl,
             identityFactoryImpl,
             address(0), // Zero identity implementation
@@ -295,6 +331,7 @@ contract ATKSystemFactoryTest is Test {
             identityRegistryImpl,
             identityRegistryStorageImpl,
             trustedIssuersRegistryImpl,
+            trustedIssuersMetaRegistryImpl,
             topicSchemeRegistryImpl,
             identityFactoryImpl,
             identityImpl,
@@ -316,6 +353,7 @@ contract ATKSystemFactoryTest is Test {
             identityRegistryImpl,
             identityRegistryStorageImpl,
             trustedIssuersRegistryImpl,
+            trustedIssuersMetaRegistryImpl,
             topicSchemeRegistryImpl,
             identityFactoryImpl,
             identityImpl,
@@ -337,6 +375,7 @@ contract ATKSystemFactoryTest is Test {
             identityRegistryImpl,
             identityRegistryStorageImpl,
             trustedIssuersRegistryImpl,
+            trustedIssuersMetaRegistryImpl,
             topicSchemeRegistryImpl,
             identityFactoryImpl,
             identityImpl,
@@ -358,6 +397,7 @@ contract ATKSystemFactoryTest is Test {
             identityRegistryImpl,
             identityRegistryStorageImpl,
             trustedIssuersRegistryImpl,
+            trustedIssuersMetaRegistryImpl,
             topicSchemeRegistryImpl,
             identityFactoryImpl,
             identityImpl,
@@ -379,6 +419,7 @@ contract ATKSystemFactoryTest is Test {
             identityRegistryImpl,
             identityRegistryStorageImpl,
             trustedIssuersRegistryImpl,
+            trustedIssuersMetaRegistryImpl,
             topicSchemeRegistryImpl,
             identityFactoryImpl,
             identityImpl,
@@ -400,6 +441,7 @@ contract ATKSystemFactoryTest is Test {
             identityRegistryImpl,
             identityRegistryStorageImpl,
             trustedIssuersRegistryImpl,
+            trustedIssuersMetaRegistryImpl,
             topicSchemeRegistryImpl,
             identityFactoryImpl,
             identityImpl,
@@ -421,6 +463,7 @@ contract ATKSystemFactoryTest is Test {
             identityRegistryImpl,
             identityRegistryStorageImpl,
             trustedIssuersRegistryImpl,
+            trustedIssuersMetaRegistryImpl,
             topicSchemeRegistryImpl,
             identityFactoryImpl,
             identityImpl,
@@ -535,7 +578,7 @@ contract ATKSystemFactoryTest is Test {
         assertEq(factory.defaultComplianceImplementation(), complianceImpl);
         assertEq(factory.defaultIdentityRegistryImplementation(), identityRegistryImpl);
         assertEq(factory.defaultIdentityRegistryStorageImplementation(), identityRegistryStorageImpl);
-        assertEq(factory.defaultTrustedIssuersRegistryImplementation(), trustedIssuersRegistryImpl);
+        assertEq(factory.defaultSystemTrustedIssuersRegistryImplementation(), trustedIssuersRegistryImpl);
         assertEq(factory.defaultTopicSchemeRegistryImplementation(), topicSchemeRegistryImpl);
         assertEq(factory.defaultIdentityFactoryImplementation(), identityFactoryImpl);
         assertEq(factory.defaultIdentityImplementation(), identityImpl);
@@ -553,6 +596,7 @@ contract ATKSystemFactoryTest is Test {
             identityRegistryImpl,
             identityRegistryStorageImpl,
             trustedIssuersRegistryImpl,
+            trustedIssuersMetaRegistryImpl,
             topicSchemeRegistryImpl,
             identityFactoryImpl,
             identityImpl,

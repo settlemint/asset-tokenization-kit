@@ -3,28 +3,28 @@ pragma solidity ^0.8.28;
 
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.sol";
+import { IWithTypeIdentifier } from "../../../smart/interface/IWithTypeIdentifier.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
-import { IATKSystem } from "../IATKSystem.sol";
+import { IATKSystem } from "../../IATKSystem.sol";
 import { IATKTokenFactoryRegistry } from "./IATKTokenFactoryRegistry.sol";
 import {
     InvalidTokenFactoryAddress,
     TokenFactoryTypeAlreadyRegistered,
     InvalidTokenImplementationAddress,
     InvalidTokenImplementationInterface
-} from "../ATKSystemErrors.sol";
-import { ATKPeopleRoles } from "../ATKPeopleRoles.sol";
-import { ATKSystemRoles } from "../ATKSystemRoles.sol";
-import { IATKTokenFactory } from "../token-factory/IATKTokenFactory.sol";
-import { InvalidImplementationInterface } from "../ATKSystemErrors.sol";
-import { IATKTypedImplementationRegistry } from "../IATKTypedImplementationRegistry.sol";
-import { ATKTypedImplementationProxy } from "../ATKTypedImplementationProxy.sol";
-import { ISMART } from "../../smart/interface/ISMART.sol";
-import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
-import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
+} from "../../ATKSystemErrors.sol";
+import { ATKPeopleRoles } from "../../ATKPeopleRoles.sol";
+import { ATKSystemRoles } from "../../ATKSystemRoles.sol";
+import { IATKTokenFactory } from "./IATKTokenFactory.sol";
+import { InvalidImplementationInterface } from "../../ATKSystemErrors.sol";
+import { IATKTypedImplementationRegistry } from "../../IATKTypedImplementationRegistry.sol";
+import { ATKTypedImplementationProxy } from "../../ATKTypedImplementationProxy.sol";
+import { ISMART } from "../../../smart/interface/ISMART.sol";
+import { ATKSystemAccessManaged } from "../../access-manager/ATKSystemAccessManaged.sol";
+import { IATKSystemAccessManager } from "../../access-manager/IATKSystemAccessManager.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
-import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
+import { IATKSystemAccessManaged } from "../../access-manager/IATKSystemAccessManaged.sol";
 
 /// @title ATKTokenFactoryRegistryImplementation
 /// @author SettleMint

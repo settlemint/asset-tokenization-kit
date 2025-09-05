@@ -36,6 +36,7 @@ export const roles = [
   "tokenFactoryModule",
   "tokenFactoryRegistryModule",
   "tokenManager",
+  "trustedIssuersMetaRegistryModule",
   "verificationAdmin",
 ] as const;
 
@@ -147,6 +148,9 @@ export const accessControlSchema = () =>
       "Accounts with token factory registry module role"
     ),
     tokenManager: accountArray().describe("Accounts with token manager role"),
+    trustedIssuersMetaRegistryModule: accountArray().describe(
+      "Accounts with trusted issuers meta registry module role"
+    ),
     verificationAdmin: accountArray().describe(
       "Accounts with verification admin role"
     ),

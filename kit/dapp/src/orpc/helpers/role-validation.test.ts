@@ -55,6 +55,7 @@ describe("role-validation", () => {
         tokenFactoryModule: false,
         tokenFactoryRegistryModule: false,
         tokenManager: false,
+        trustedIssuersMetaRegistryModule: false,
         verificationAdmin: false,
       });
     });
@@ -297,6 +298,7 @@ describe("role-validation", () => {
         "tokenFactoryModule",
         "tokenFactoryRegistryModule",
         "tokenManager",
+        "trustedIssuersMetaRegistryModule",
         "verificationAdmin",
       ];
 

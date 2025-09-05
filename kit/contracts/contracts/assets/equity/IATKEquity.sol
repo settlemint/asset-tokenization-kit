@@ -6,9 +6,8 @@ import { IVotes } from "@openzeppelin/contracts/governance/utils/IVotes.sol";
 
 // Interface imports
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ISMART } from "../../smart/interface/ISMART.sol";
+import { IATKToken } from "../../system/tokens/IATKToken.sol";
 
-import { ISMARTTokenAccessManaged } from "../../smart/extensions/access-managed/ISMARTTokenAccessManaged.sol";
 import { ISMARTCustodian } from "../../smart/extensions/custodian/ISMARTCustodian.sol";
 import { ISMARTPausable } from "../../smart/extensions/pausable/ISMARTPausable.sol";
 import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.sol";
@@ -20,7 +19,7 @@ import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.s
 /// functionality with governance features through the IVotes extension.
 /// @dev This interface combines ERC-3643 compliant security token standards with OpenZeppelin governance
 /// capabilities, allowing equity tokens to participate in on-chain voting and governance processes.
-interface IATKEquity is ISMART, ISMARTTokenAccessManaged, ISMARTCustodian, ISMARTPausable, ISMARTBurnable, IVotes {
+interface IATKEquity is IATKToken, ISMARTCustodian, ISMARTPausable, ISMARTBurnable, IVotes {
     /// @notice Initializes the ATK Equity token contract.
     /// @param name_ The name of the equity token.
     /// @param symbol_ The symbol of the equity token.

@@ -72,7 +72,7 @@ templates:
           file: ../contracts/.generated/artifacts/@openzeppelin/contracts/utils/introspection/IERC165.sol/IERC165.json
       eventHandlers:
         - event: Bootstrapped(indexed address,indexed address,indexed
-            address,address,address,address,address,address,address,address,address)
+            address,address,address,address,address,address,address,address,address,address)
           handler: handleBootstrapped
         - event: ComplianceImplementationUpdated(indexed address,indexed address)
           handler: handleComplianceImplementationUpdated
@@ -89,9 +89,12 @@ templates:
           handler: handleTokenAccessManagerImplementationUpdated
         - event: ContractIdentityImplementationUpdated(indexed address,indexed address)
           handler: handleContractIdentityImplementationUpdated
-        - event: TrustedIssuersRegistryImplementationUpdated(indexed address,indexed
+        - event: SystemTrustedIssuersRegistryImplementationUpdated(indexed address,indexed
             address)
-          handler: handleTrustedIssuersRegistryImplementationUpdated
+          handler: handleSystemTrustedIssuersRegistryImplementationUpdated
+        - event: TrustedIssuersMetaRegistryImplementationUpdated(indexed address,indexed
+            address)
+          handler: handleTrustedIssuersMetaRegistryImplementationUpdated
         - event: TopicSchemeRegistryImplementationUpdated(indexed address,indexed address)
           handler: handleTopicSchemeRegistryImplementationUpdated
         - event: TokenFactoryRegistryImplementationUpdated(indexed address,indexed
@@ -117,13 +120,16 @@ templates:
         - Event
       abis:
         - name: TokenFactory
-          file: ../contracts/.generated/artifacts/contracts/system/token-factory/IATKTokenFactory.sol/IATKTokenFactory.json
+          file: ../contracts/.generated/artifacts/contracts/system/tokens/factory/IATKTokenFactory.sol/IATKTokenFactory.json
         - name: Token
           file: ../contracts/.generated/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
       eventHandlers:
         - event: TokenAssetCreated(indexed address,indexed address,indexed
             address,bytes4[],address)
           handler: handleTokenAssetCreated
+        - event: TokenTrustedIssuersRegistryCreated(indexed address,indexed
+            address,indexed address,address)
+          handler: handleTokenTrustedIssuersRegistryCreated
         - event: TokenImplementationUpdated(indexed address,indexed address,indexed
             address)
           handler: handleTokenImplementationUpdated
@@ -874,7 +880,7 @@ templates:
         - Event
       abis:
         - name: TokenFactoryRegistry
-          file: ../contracts/.generated/artifacts/contracts/system/token-factory/IATKTokenFactoryRegistry.sol/IATKTokenFactoryRegistry.json
+          file: ../contracts/.generated/artifacts/contracts/system/tokens/factory/IATKTokenFactoryRegistry.sol/IATKTokenFactoryRegistry.json
         - name: IERC165
           file: ../contracts/.generated/artifacts/@openzeppelin/contracts/utils/introspection/IERC165.sol/IERC165.json
       eventHandlers:
@@ -970,15 +976,39 @@ templates:
         - Event
       abis:
         - name: TrustedIssuersRegistry
-          file: ../contracts/.generated/out/ATKTrustedIssuersRegistryImplementation.sol/ATKTrustedIssuersRegistryImplementation.json
+          file: ../contracts/.generated/out/IATKTrustedIssuersRegistry.sol/IATKTrustedIssuersRegistry.json
       eventHandlers:
-        - event: ClaimTopicsUpdated(indexed address,indexed address,uint256[])
+        - event: ClaimTopicsUpdated(indexed address,indexed address,uint256[],indexed
+            address)
           handler: handleClaimTopicsUpdated
-        - event: TrustedIssuerAdded(indexed address,indexed address,uint256[])
+        - event: TrustedIssuerAdded(indexed address,indexed address,uint256[],indexed
+            address)
           handler: handleTrustedIssuerAdded
-        - event: TrustedIssuerRemoved(indexed address,indexed address)
+        - event: TrustedIssuerRemoved(indexed address,indexed address,indexed address)
           handler: handleTrustedIssuerRemoved
       file: ./src/trusted-issuers-registry/trusted-issuers-registry.ts
+  - kind: ethereum
+    name: TrustedIssuersMetaRegistry
+    network: settlemint
+    source:
+      abi: TrustedIssuersMetaRegistry
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: TrustedIssuersMetaRegistry
+          file: ../contracts/.generated/out/IATKTrustedIssuersMetaRegistry.sol/IATKTrustedIssuersMetaRegistry.json
+      eventHandlers:
+        - event: SystemRegistrySet(indexed address,indexed address,indexed address)
+          handler: handleSystemRegistrySet
+        - event: SubjectRegistrySet(indexed address,indexed address,indexed
+            address,address)
+          handler: handleSubjectRegistrySet
+      file: ./src/trusted-issuers-registry/trusted-issuers-meta-registry.ts
   - kind: ethereum
     name: IdentityRegistryStorage
     network: settlemint

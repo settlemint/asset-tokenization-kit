@@ -3,8 +3,8 @@ pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { AbstractATKTokenFactoryImplementation } from
-    "../../../contracts/system/token-factory/AbstractATKTokenFactoryImplementation.sol";
-import { IATKTokenFactory } from "../../../contracts/system/token-factory/IATKTokenFactory.sol";
+    "../../../contracts/system/tokens/factory/AbstractATKTokenFactoryImplementation.sol";
+import { IATKTokenFactory } from "../../../contracts/system/tokens/factory/IATKTokenFactory.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";

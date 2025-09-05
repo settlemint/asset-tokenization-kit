@@ -34,7 +34,12 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @notice Emitted when the implementation (logic contract) for the trusted issuers registry module is updated.
     /// @param sender The address that called the `updateTrustedIssuersRegistryImplementation` function.
     /// @param newImplementation The address of the new trusted issuers registry module implementation contract.
-    event TrustedIssuersRegistryImplementationUpdated(address indexed sender, address indexed newImplementation);
+    event SystemTrustedIssuersRegistryImplementationUpdated(address indexed sender, address indexed newImplementation);
+    /// @notice Emitted when the implementation (logic contract) for the trusted issuers meta registry module is
+    /// updated.
+    /// @param sender The address that called the `updateTrustedIssuersMetaRegistryImplementation` function.
+    /// @param newImplementation The address of the new trusted issuers meta registry module implementation contract.
+    event TrustedIssuersMetaRegistryImplementationUpdated(address indexed sender, address indexed newImplementation);
     /// @notice Emitted when the implementation (logic contract) for the topic scheme registry module is updated.
     /// @param sender The address that called the `updateTopicSchemeRegistryImplementation` function.
     /// @param newImplementation The address of the new topic scheme registry module implementation contract.
@@ -48,7 +53,6 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @param sender The address that called the `updateIdentityImplementation` function.
     /// @param newImplementation The address of the new standard identity module implementation contract.
     event IdentityImplementationUpdated(address indexed sender, address indexed newImplementation);
-
     /// @notice Emitted when the implementation (logic contract) for the contract identity module is updated.
     /// @dev Contract identity contracts are identities associated with any contract implementing IContractWithIdentity.
     /// @param sender The address that called the `updateContractIdentityImplementation` function.
@@ -91,7 +95,9 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @param complianceProxy The address of the deployed ATKComplianceProxy contract.
     /// @param identityRegistryProxy The address of the deployed ATKIdentityRegistryProxy contract.
     /// @param identityRegistryStorageProxy The address of the deployed ATKIdentityRegistryStorageProxy contract.
-    /// @param trustedIssuersRegistryProxy The address of the deployed ATKTrustedIssuersRegistryProxy contract.
+    /// @param systemTrustedIssuersRegistryProxy The address of the deployed ATKSystemTrustedIssuersRegistryProxy
+    /// contract.
+    /// @param trustedIssuersMetaRegistryProxy The address of the deployed ATKTrustedIssuersMetaRegistryProxy contract.
     /// @param topicSchemeRegistryProxy The address of the deployed ATKTopicSchemeRegistryProxy contract.
     /// @param identityFactoryProxy The address of the deployed ATKIdentityFactoryProxy contract.
     /// @param tokenFactoryRegistryProxy The address of the deployed ATKTokenFactoryRegistryProxy contract.
@@ -103,7 +109,8 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
         address indexed complianceProxy,
         address indexed identityRegistryProxy,
         address identityRegistryStorageProxy,
-        address trustedIssuersRegistryProxy,
+        address systemTrustedIssuersRegistryProxy,
+        address trustedIssuersMetaRegistryProxy,
         address topicSchemeRegistryProxy,
         address identityFactoryProxy,
         address tokenFactoryRegistryProxy,
@@ -125,6 +132,8 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @param identityRegistryStorageImplementation_ The address of the identity registry storage module
     /// implementation.
     /// @param trustedIssuersRegistryImplementation_ The address of the trusted issuers registry module implementation.
+    /// @param trustedIssuersMetaRegistryImplementation_ The address of the trusted issuers meta registry module
+    /// implementation.
     /// @param topicSchemeRegistryImplementation_ The address of the topic scheme registry module implementation.
     /// @param identityFactoryImplementation_ The address of the identity factory module implementation.
     /// @param identityImplementation_ The address of the standard identity module implementation.
@@ -134,6 +143,7 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @param complianceModuleRegistryImplementation_ The address of the compliance module registry module
     /// implementation.
     /// @param addonRegistryImplementation_ The address of the addon registry module implementation.
+
     function initialize(
         address initialAdmin_,
         address accessManager_,
@@ -141,6 +151,7 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
         address identityRegistryImplementation_,
         address identityRegistryStorageImplementation_,
         address trustedIssuersRegistryImplementation_,
+        address trustedIssuersMetaRegistryImplementation_,
         address topicSchemeRegistryImplementation_,
         address identityFactoryImplementation_,
         address identityImplementation_, // Expected to be IERC734/IIdentity compliant
@@ -190,14 +201,13 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// proxy contract.
     function identityRegistryStorage() external view returns (address identityRegistryStorageProxyAddress);
 
-    /// @notice Retrieves the smart contract address of the proxy for the trusted issuers registry module.
-    /// @dev This function returns the stable, unchanging address of the trusted issuers registry's proxy contract.
-    /// To interact with the trusted issuers registry (e.g., to check if an issuer is trusted or to add/remove
-    /// issuers, depending on its features), you should use this proxy address. It will forward calls to the
-    /// current logic implementation.
-    /// @return trustedIssuersRegistryProxyAddress The blockchain address of the trusted issuers registry module's
-    /// proxy.
-    function trustedIssuersRegistry() external view returns (address trustedIssuersRegistryProxyAddress);
+    /// @notice Retrieves the smart contract address of the proxy for the trusted issuers meta registry module.
+    /// @dev This function returns the stable, unchanging address of the trusted issuers meta registry's proxy contract.
+    /// The meta registry manages both global and contract-specific trusted issuers registries, providing a
+    /// registry-of-registries pattern for efficient trusted issuer management across the system.
+    /// @return trustedIssuersRegistry The blockchain address of the trusted issuers meta registry
+    /// module's proxy.
+    function trustedIssuersRegistry() external view returns (address trustedIssuersRegistry);
 
     /// @notice Retrieves the smart contract address of the proxy for the identity factory module.
     /// @dev This function returns the stable, unchanging address of the identity factory's proxy contract.

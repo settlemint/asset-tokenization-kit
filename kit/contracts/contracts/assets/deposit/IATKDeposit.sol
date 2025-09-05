@@ -3,9 +3,7 @@ pragma solidity ^0.8.28;
 
 // Interface imports
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ISMART } from "../../smart/interface/ISMART.sol";
-
-import { ISMARTTokenAccessManaged } from "../../smart/extensions/access-managed/ISMARTTokenAccessManaged.sol";
+import { IATKToken } from "../../system/tokens/IATKToken.sol";
 import { ISMARTCustodian } from "../../smart/extensions/custodian/ISMARTCustodian.sol";
 import { ISMARTPausable } from "../../smart/extensions/pausable/ISMARTPausable.sol";
 import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.sol";
@@ -15,7 +13,7 @@ import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.s
 /// @notice Defines the core functionality and extensions for an ATK Deposit token
 /// @dev This interface combines SMART token functionality with access management,
 ///      collateral tracking, custodian controls, pausability, and burning capabilities
-interface IATKDeposit is ISMART, ISMARTTokenAccessManaged, ISMARTCustodian, ISMARTPausable, ISMARTBurnable {
+interface IATKDeposit is IATKToken, ISMARTCustodian, ISMARTPausable, ISMARTBurnable {
     /// @notice Initializes the ATK Deposit token contract.
     /// @param name_ The name of the deposit token.
     /// @param symbol_ The symbol of the deposit token.

@@ -14,8 +14,7 @@ import { SystemUtils } from "../utils/SystemUtils.sol";
 // Import required interfaces
 import { ISMARTCompliance } from "../../contracts/smart/interface/ISMARTCompliance.sol";
 import { IATKIdentityFactory } from "../../contracts/system/identity-factory/IATKIdentityFactory.sol";
-import { IERC3643TrustedIssuersRegistry } from
-    "../../contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
+import { ISMARTTrustedIssuersRegistry } from "../../contracts/smart/interface/ISMARTTrustedIssuersRegistry.sol";
 import { ISMARTIdentityRegistryStorage } from "../../contracts/smart/interface/ISMARTIdentityRegistryStorage.sol";
 import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 import { ISMARTTopicSchemeRegistry } from "../../contracts/smart/interface/ISMARTTopicSchemeRegistry.sol";
@@ -43,8 +42,8 @@ import { ATKIdentityRegistryImplementation } from
     "../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
 import { ATKIdentityRegistryStorageImplementation } from
     "../../contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol";
-import { ATKTrustedIssuersRegistryImplementation } from
-    "../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersRegistryImplementation.sol";
+import { ATKSystemTrustedIssuersRegistryImplementation } from
+    "../../contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol";
 import { ATKIdentityFactoryImplementation } from
     "../../contracts/system/identity-factory/ATKIdentityFactoryImplementation.sol";
 import { ATKIdentityImplementation } from
@@ -52,17 +51,19 @@ import { ATKIdentityImplementation } from
 import { ATKContractIdentityImplementation } from
     "../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
 import { ATKTokenAccessManagerImplementation } from
-    "../../contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol";
+    "../../contracts/system/tokens/access/ATKTokenAccessManagerImplementation.sol";
 import { ATKSystemAccessManagerImplementation } from
     "../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
 import { ATKTopicSchemeRegistryImplementation } from
     "../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
 import { ATKTokenFactoryRegistryImplementation } from
-    "../../contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol";
+    "../../contracts/system/tokens/factory/ATKTokenFactoryRegistryImplementation.sol";
 import { ATKSystemAddonRegistryImplementation } from
     "../../contracts/system/addons/ATKSystemAddonRegistryImplementation.sol";
 import { ATKComplianceModuleRegistryImplementation } from
     "../../contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol";
+import { ATKTrustedIssuersMetaRegistryImplementation } from
+    "../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersMetaRegistryImplementation.sol";
 
 // Import compliance module
 import { SMARTIdentityVerificationComplianceModule } from
@@ -96,7 +97,8 @@ contract ATKSystemTest is Test {
     bytes32 internal constant COMPLIANCE = keccak256("COMPLIANCE");
     bytes32 internal constant IDENTITY_REGISTRY = keccak256("IDENTITY_REGISTRY");
     bytes32 internal constant IDENTITY_REGISTRY_STORAGE = keccak256("IDENTITY_REGISTRY_STORAGE");
-    bytes32 internal constant TRUSTED_ISSUERS_REGISTRY = keccak256("TRUSTED_ISSUERS_REGISTRY");
+    bytes32 internal constant SYSTEM_TRUSTED_ISSUERS_REGISTRY = keccak256("SYSTEM_TRUSTED_ISSUERS_REGISTRY");
+    bytes32 internal constant TRUSTED_ISSUERS_META_REGISTRY = keccak256("TRUSTED_ISSUERS_META_REGISTRY");
     bytes32 internal constant TOPIC_SCHEME_REGISTRY = keccak256("TOPIC_SCHEME_REGISTRY");
     bytes32 internal constant IDENTITY_FACTORY = keccak256("IDENTITY_FACTORY");
     bytes32 internal constant TOKEN_ACCESS_MANAGER = keccak256("TOKEN_ACCESS_MANAGER");
@@ -117,7 +119,8 @@ contract ATKSystemTest is Test {
     ATKComplianceImplementation public complianceImpl;
     ATKIdentityRegistryImplementation public identityRegistryImpl;
     ATKIdentityRegistryStorageImplementation public identityRegistryStorageImpl;
-    ATKTrustedIssuersRegistryImplementation public trustedIssuersRegistryImpl;
+    ATKSystemTrustedIssuersRegistryImplementation public trustedIssuersRegistryImpl;
+    ATKTrustedIssuersMetaRegistryImplementation public trustedIssuersMetaRegistryImpl;
     ATKTopicSchemeRegistryImplementation public topicSchemeRegistryImpl;
     ATKIdentityFactoryImplementation public identityFactoryImpl;
     ATKIdentityImplementation public identityImpl;
@@ -182,11 +185,18 @@ contract ATKSystemTest is Test {
         return identityRegistryStorageImpl;
     }
 
-    function _getTrustedIssuersRegistryImpl() internal returns (ATKTrustedIssuersRegistryImplementation) {
+    function _getTrustedIssuersRegistryImpl() internal returns (ATKSystemTrustedIssuersRegistryImplementation) {
         if (address(trustedIssuersRegistryImpl) == address(0)) {
-            trustedIssuersRegistryImpl = new ATKTrustedIssuersRegistryImplementation(forwarder);
+            trustedIssuersRegistryImpl = new ATKSystemTrustedIssuersRegistryImplementation(forwarder);
         }
         return trustedIssuersRegistryImpl;
+    }
+
+    function _getTrustedIssuersMetaRegistryImpl() internal returns (ATKTrustedIssuersMetaRegistryImplementation) {
+        if (address(trustedIssuersMetaRegistryImpl) == address(0)) {
+            trustedIssuersMetaRegistryImpl = new ATKTrustedIssuersMetaRegistryImplementation(forwarder);
+        }
+        return trustedIssuersMetaRegistryImpl;
     }
 
     function _getTopicSchemeRegistryImpl() internal returns (ATKTopicSchemeRegistryImplementation) {
@@ -216,7 +226,7 @@ contract ATKSystemTest is Test {
             compliance: address(new ATKComplianceImplementation(forwarder)),
             identityRegistry: address(new ATKIdentityRegistryImplementation(forwarder)),
             identityRegistryStorage: address(new ATKIdentityRegistryStorageImplementation(forwarder)),
-            trustedIssuersRegistry: address(new ATKTrustedIssuersRegistryImplementation(forwarder)),
+            trustedIssuersRegistry: address(new ATKSystemTrustedIssuersRegistryImplementation(forwarder)),
             topicSchemeRegistry: address(new ATKTopicSchemeRegistryImplementation(forwarder)),
             identityFactory: address(new ATKIdentityFactoryImplementation(forwarder)),
             identity: address(new ATKIdentityImplementation(forwarder)),
@@ -263,7 +273,12 @@ contract ATKSystemTest is Test {
             IATKTypedImplementationRegistry(address(atkSystem)).implementation(IDENTITY_REGISTRY_STORAGE) != address(0)
         );
         assertTrue(
-            IATKTypedImplementationRegistry(address(atkSystem)).implementation(TRUSTED_ISSUERS_REGISTRY) != address(0)
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(SYSTEM_TRUSTED_ISSUERS_REGISTRY)
+                != address(0)
+        );
+        assertTrue(
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(TRUSTED_ISSUERS_META_REGISTRY)
+                != address(0)
         );
         assertTrue(
             IATKTypedImplementationRegistry(address(atkSystem)).implementation(TOPIC_SCHEME_REGISTRY) != address(0)
@@ -387,14 +402,15 @@ contract ATKSystemTest is Test {
     }
 
     function test_SetTrustedIssuersRegistryImplementation() public {
-        ATKTrustedIssuersRegistryImplementation impl = _getTrustedIssuersRegistryImpl();
+        ATKSystemTrustedIssuersRegistryImplementation impl = _getTrustedIssuersRegistryImpl();
         vm.prank(admin);
         vm.expectEmit(true, true, false, false);
-        emit IATKSystem.TrustedIssuersRegistryImplementationUpdated(admin, address(impl));
+        emit IATKSystem.SystemTrustedIssuersRegistryImplementationUpdated(admin, address(impl));
 
-        ATKSystemImplementation(address(atkSystem)).setTrustedIssuersRegistryImplementation(address(impl));
+        ATKSystemImplementation(address(atkSystem)).setSystemTrustedIssuersRegistryImplementation(address(impl));
         assertEq(
-            IATKTypedImplementationRegistry(address(atkSystem)).implementation(TRUSTED_ISSUERS_REGISTRY), address(impl)
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(SYSTEM_TRUSTED_ISSUERS_REGISTRY),
+            address(impl)
         );
     }
 
@@ -536,8 +552,7 @@ contract ATKSystemTest is Test {
         ISMARTIdentityRegistry identityRegistry = ISMARTIdentityRegistry(atkSystem.identityRegistry());
         ISMARTIdentityRegistryStorage identityStorage =
             ISMARTIdentityRegistryStorage(atkSystem.identityRegistryStorage());
-        IERC3643TrustedIssuersRegistry trustedIssuers =
-            IERC3643TrustedIssuersRegistry(atkSystem.trustedIssuersRegistry());
+        ISMARTTrustedIssuersRegistry trustedIssuers = ISMARTTrustedIssuersRegistry(atkSystem.trustedIssuersRegistry());
         ISMARTTopicSchemeRegistry topicSchemeRegistry = ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry());
         IATKIdentityFactory identityFactory = IATKIdentityFactory(atkSystem.identityFactory());
 
@@ -553,7 +568,7 @@ contract ATKSystemTest is Test {
         assertTrue(IERC165(address(compliance)).supportsInterface(type(ISMARTCompliance).interfaceId));
         assertTrue(IERC165(address(identityRegistry)).supportsInterface(type(ISMARTIdentityRegistry).interfaceId));
         assertTrue(IERC165(address(identityStorage)).supportsInterface(type(ISMARTIdentityRegistryStorage).interfaceId));
-        assertTrue(IERC165(address(trustedIssuers)).supportsInterface(type(IERC3643TrustedIssuersRegistry).interfaceId));
+        assertTrue(IERC165(address(trustedIssuers)).supportsInterface(type(ISMARTTrustedIssuersRegistry).interfaceId));
         assertTrue(IERC165(address(topicSchemeRegistry)).supportsInterface(type(ISMARTTopicSchemeRegistry).interfaceId));
         assertTrue(IERC165(address(identityFactory)).supportsInterface(type(IATKIdentityFactory).interfaceId));
     }
@@ -579,7 +594,8 @@ contract ATKSystemTest is Test {
         ATKComplianceImplementation compImpl = _getComplianceImpl();
         ATKIdentityRegistryImplementation idRegImpl = _getIdentityRegistryImpl();
         ATKIdentityRegistryStorageImplementation idRegStorageImpl = _getIdentityRegistryStorageImpl();
-        ATKTrustedIssuersRegistryImplementation trustedIssuersImpl = _getTrustedIssuersRegistryImpl();
+        ATKSystemTrustedIssuersRegistryImplementation trustedIssuersImpl = _getTrustedIssuersRegistryImpl();
+        ATKTrustedIssuersMetaRegistryImplementation trustedIssuersMetaImpl = _getTrustedIssuersMetaRegistryImpl();
         ATKTopicSchemeRegistryImplementation topicSchemeImpl = _getTopicSchemeRegistryImpl();
         ATKIdentityFactoryImplementation idFactoryImpl = _getIdentityFactoryImpl();
         ATKIdentityImplementation idImpl = _getIdentityImpl();
@@ -589,7 +605,12 @@ contract ATKSystemTest is Test {
         ATKSystemImplementation(address(atkSystem)).setComplianceImplementation(address(compImpl));
         ATKSystemImplementation(address(atkSystem)).setIdentityRegistryImplementation(address(idRegImpl));
         ATKSystemImplementation(address(atkSystem)).setIdentityRegistryStorageImplementation(address(idRegStorageImpl));
-        ATKSystemImplementation(address(atkSystem)).setTrustedIssuersRegistryImplementation(address(trustedIssuersImpl));
+        ATKSystemImplementation(address(atkSystem)).setSystemTrustedIssuersRegistryImplementation(
+            address(trustedIssuersImpl)
+        );
+        ATKSystemImplementation(address(atkSystem)).setTrustedIssuersMetaRegistryImplementation(
+            address(trustedIssuersMetaImpl)
+        );
         ATKSystemImplementation(address(atkSystem)).setTopicSchemeRegistryImplementation(address(topicSchemeImpl));
         ATKSystemImplementation(address(atkSystem)).setIdentityFactoryImplementation(address(idFactoryImpl));
         ATKSystemImplementation(address(atkSystem)).setIdentityImplementation(address(idImpl));
@@ -606,8 +627,12 @@ contract ATKSystemTest is Test {
             address(idRegStorageImpl)
         );
         assertEq(
-            IATKTypedImplementationRegistry(address(atkSystem)).implementation(TRUSTED_ISSUERS_REGISTRY),
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(SYSTEM_TRUSTED_ISSUERS_REGISTRY),
             address(trustedIssuersImpl)
+        );
+        assertEq(
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(TRUSTED_ISSUERS_META_REGISTRY),
+            address(trustedIssuersMetaImpl)
         );
         assertEq(
             IATKTypedImplementationRegistry(address(atkSystem)).implementation(TOPIC_SCHEME_REGISTRY),
@@ -674,7 +699,8 @@ contract ATKSystemTest is Test {
             IATKTypedImplementationRegistry(address(atkSystem)).implementation(IDENTITY_REGISTRY_STORAGE) != address(0)
         );
         assertTrue(
-            IATKTypedImplementationRegistry(address(atkSystem)).implementation(TRUSTED_ISSUERS_REGISTRY) != address(0)
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(SYSTEM_TRUSTED_ISSUERS_REGISTRY)
+                != address(0)
         );
         assertTrue(
             IATKTypedImplementationRegistry(address(atkSystem)).implementation(TOPIC_SCHEME_REGISTRY) != address(0)
@@ -795,13 +821,14 @@ contract ATKSystemTest is Test {
             ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
 
         // Check if issuer identity is trusted for the TOPIC_ISSUER
-        bool isTrusted =
-            IERC3643TrustedIssuersRegistry(atkSystem.trustedIssuersRegistry()).isTrustedIssuer(organisationIdentity);
+        bool isTrusted = ISMARTTrustedIssuersRegistry(atkSystem.trustedIssuersRegistry()).isTrustedIssuer(
+            organisationIdentity, address(0)
+        );
         assertTrue(isTrusted, "Issuer identity should be registered as trusted issuer");
 
         // Check if it's trusted specifically for TOPIC_ISSUER topic
-        bool isTrustedForTopic = IERC3643TrustedIssuersRegistry(atkSystem.trustedIssuersRegistry()).hasClaimTopic(
-            organisationIdentity, topicId
+        bool isTrustedForTopic = ISMARTTrustedIssuersRegistry(atkSystem.trustedIssuersRegistry()).hasClaimTopic(
+            organisationIdentity, topicId, address(0)
         );
         assertTrue(isTrustedForTopic, "Issuer identity should be trusted for TOPIC_ISSUER topic");
     }

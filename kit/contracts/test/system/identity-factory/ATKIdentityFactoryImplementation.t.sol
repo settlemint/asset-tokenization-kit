@@ -440,12 +440,12 @@ contract ATKIdentityFactoryImplementationTest is Test {
 
         // Verify the factory's identity is registered as a trusted issuer for CONTRACT_IDENTITY claims
         uint256 contractIdentityTopicId = systemUtils.getTopicId(ATKTopics.TOPIC_CONTRACT_IDENTITY);
-        bool isTrustedIssuer = systemUtils.trustedIssuersRegistry().isTrustedIssuer(factoryOnchainID);
+        bool isTrustedIssuer = systemUtils.trustedIssuersRegistry().isTrustedIssuer(factoryOnchainID, address(0));
         assertTrue(isTrustedIssuer, "Factory identity should be registered as trusted issuer");
 
         // Check if it can issue CONTRACT_IDENTITY claims specifically
         bool canIssueContractIdentity =
-            systemUtils.trustedIssuersRegistry().hasClaimTopic(factoryOnchainID, contractIdentityTopicId);
+            systemUtils.trustedIssuersRegistry().hasClaimTopic(factoryOnchainID, contractIdentityTopicId, address(0));
         assertTrue(canIssueContractIdentity, "Factory identity should be able to issue CONTRACT_IDENTITY claims");
     }
 
