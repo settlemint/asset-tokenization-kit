@@ -18,12 +18,12 @@ A Helm chart for Graph Node
 | autoscaling.maxReplicas | int | `100` |  |
 | autoscaling.minReplicas | int | `1` |  |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
-| chains | object | `{"settlemint":{"enabled":true,"provider":[{"details":{"features":["archive","traces"],"type":"web3","url":"http://erpc:4000/settlemint/evm/1337"},"label":"erpc"}],"shard":"primary"}}` | Blockchain configuration for Graph Node |
-| chains.settlemint | object | `{"enabled":true,"provider":[{"details":{"features":["archive","traces"],"type":"web3","url":"http://erpc:4000/settlemint/evm/1337"},"label":"erpc"}],"shard":"primary"}` | Ethereum Mainnet |
+| chains | object | `{"settlemint":{"enabled":true,"provider":[{"details":{"features":["archive","traces"],"type":"web3","url":"http://erpc:4000/settlemint/evm/53771311147"},"label":"erpc"}],"shard":"primary"}}` | Blockchain configuration for Graph Node |
+| chains.settlemint | object | `{"enabled":true,"provider":[{"details":{"features":["archive","traces"],"type":"web3","url":"http://erpc:4000/settlemint/evm/53771311147"},"label":"erpc"}],"shard":"primary"}` | Ethereum Mainnet |
 | chains.settlemint.enabled | bool | `true` | Enable this configuring graph-node with this chain |
 | chains.settlemint.provider[0].details.features | list | `["archive","traces"]` | Data capabilities this node has |
 | chains.settlemint.provider[0].details.type | string | `"web3"` | Type of Provider: web3 |
-| chains.settlemint.provider[0].details.url | string | `"http://erpc:4000/settlemint/evm/1337"` | URL for JSON-RPC endpoint |
+| chains.settlemint.provider[0].details.url | string | `"http://erpc:4000/settlemint/evm/53771311147"` | URL for JSON-RPC endpoint |
 | chains.settlemint.provider[0].label | string | `"erpc"` | Label for a JSON-RPC endpoint |
 | chains.settlemint.shard | string | `"primary"` | The database shard to use for this chain |
 | configTemplate | string | See default template in [values.yaml](values.yaml) | [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md) |

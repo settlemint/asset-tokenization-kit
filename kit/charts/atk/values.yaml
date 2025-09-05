@@ -141,14 +141,14 @@ erpc:
           - id: besu-node-rpc-1
             endpoint: http://besu-node-rpc-1:8545
             evm:
-              chainId: 1337
+              chainId: 53771311147
             failsafe:
               timeout:
                 duration: 30s
           - id: besu-node-validator-1
             endpoint: http://besu-node-validator-1:8545
             evm:
-              chainId: 1337
+              chainId: 53771311147
             failsafe:
               timeout:
                 duration: 30s
@@ -185,7 +185,7 @@ blockscout:
     blockscout:
       image:
         repository: ghcr.io/blockscout/blockscout
-        tag: "9.0.2"
+        tag: "9.0.1"
         pullPolicy: IfNotPresent
       # Add an extra init container to wait for PostgreSQL
       init:
@@ -593,7 +593,7 @@ dapp:
   enabled: true
   image:
     repository: ghcr.io/settlemint/asset-tokenization-kit
-    tag: "2.0.0-main71f0929ab"
+    tag: "2.0.0-main1e32acb7f"
     pullPolicy: IfNotPresent
   replicaCount: 1
   ingress:
