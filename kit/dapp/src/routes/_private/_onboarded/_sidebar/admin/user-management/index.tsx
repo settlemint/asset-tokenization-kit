@@ -6,7 +6,7 @@ import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
-  "/_private/_onboarded/_sidebar/admin/user-management"
+  "/_private/_onboarded/_sidebar/admin/user-management/"
 )({
   component: UserManagementPage,
   loader: () => {

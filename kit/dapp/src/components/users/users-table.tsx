@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Users } from "lucide-react";
+import { useRouter } from "@tanstack/react-router";
 
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
@@ -52,6 +53,7 @@ function UserStatusBadge({ user }: { user: User }) {
  */
 export function UsersTable() {
   const { t } = useTranslation("user");
+  const router = useRouter();
 
   // Use local pagination state for server-side pagination
   const [pagination, setPagination] = useState({
@@ -74,6 +76,20 @@ export function UsersTable() {
   // Extract users and total from the paginated response  
   const users = data?.items ?? [];
   const totalCount = data?.total ?? 0;
+
+  // Handle row click to navigate to user detail
+  const handleRowClick = (user: User) => {
+    void (async () => {
+      try {
+        await router.navigate({
+          to: "/admin/user-management/$userId",
+          params: { userId: user.id },
+        });
+      } catch {
+        // ignore
+      }
+    })();
+  };
 
 
 
@@ -172,7 +188,7 @@ export function UsersTable() {
           initialPageSize={20}
           initialSorting={[
             {
-              id: "createdAt",
+              id: "created",
               desc: true,
             },
           ]}
@@ -181,6 +197,7 @@ export function UsersTable() {
             description: isLoading ? "Loading users..." : "No users have been registered yet.",
             icon: Users,
           }}
+          onRowClick={handleRowClick}
         />
     </ComponentErrorBoundary>
   );
