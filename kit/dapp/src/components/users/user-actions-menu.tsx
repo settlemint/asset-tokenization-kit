@@ -5,6 +5,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 // import { useNavigate } from "@tanstack/react-router";
 import { Eye, MoreHorizontal } from "lucide-react";
@@ -47,10 +52,17 @@ export function UserActionsMenu({ user }: UserActionsMenuProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={handleViewDetails}>
-          <Eye className="mr-2 h-4 w-4" />
-          {t("management.table.actions.viewDetails")}
-        </DropdownMenuItem>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuItem onClick={handleViewDetails} disabled>
+              <Eye className="mr-2 h-4 w-4" />
+              {t("management.table.actions.viewDetails")}
+            </DropdownMenuItem>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>This feature is not yet implemented</p>
+          </TooltipContent>
+        </Tooltip>
       </DropdownMenuContent>
     </DropdownMenu>
   );

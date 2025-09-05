@@ -2,16 +2,16 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
-import { formatDistanceToNow, isToday, isYesterday, format } from "date-fns";
 import { Users } from "lucide-react";
 
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
+import { DateCell } from "@/components/data-table/cells/date-cell";
+import { UserDisplayCell } from "@/components/data-table/cells/user-display-cell";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { Badge } from "@/components/ui/badge";
-import { Web3Address } from "@/components/web3/web3-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 
@@ -83,11 +83,13 @@ export function UsersTable() {
   const columns = useMemo(
     () =>
       withAutoFeatures([
-        columnHelper.accessor("name", {
+        columnHelper.display({
+          id: "userDisplay",
           header: t("management.table.columns.name"),
+          cell: ({ row }) => <UserDisplayCell user={row.original} />,
           meta: {
             displayName: t("management.table.columns.name"),
-            type: "text",
+            type: "none",
           },
         }),
         columnHelper.accessor("email", {
@@ -97,162 +99,28 @@ export function UsersTable() {
             type: "text",
           },
         }),
-        columnHelper.accessor(
-          (row: User) => {
-            const displayName = row.firstName && row.lastName
-              ? `${row.firstName} ${row.lastName}`
-              : row.name;
-            return displayName;
-          },
-          {
-            id: "userDisplayText",
-            header: t("management.table.columns.name"),
-            meta: {
-              displayName: t("management.table.columns.name"),
-              type: "text",
-            },
-            filterFn: "includesString",
-          }
-        ),
-        columnHelper.display({
-          id: "userDisplay",
-          header: t("management.table.columns.name"),
-          cell: ({ row }) => {
-            const user = row.original;
-            const displayName = user.firstName && user.lastName
-              ? `${user.firstName} ${user.lastName}`
-              : user.name;
-            
-            if (!user.wallet) {
-              return (
-                <span className="font-medium">{displayName}</span>
-              );
-            }
-            
-            return (
-              <div className="flex items-center gap-2">
-                <Web3Address
-                  address={user.wallet}
-                  size="small"
-                  showPrettyName={true}
-                  showBadge={true}
-                  copyToClipboard={true}
-                />
-              </div>
-            );
-          },
-          meta: {
-            displayName: t("management.table.columns.name"),
-            type: "none",
-          },
-        }),
-        columnHelper.accessor(
-          (row: User) => {
-            if (row.isRegistered) return "registered";
-            if (row.wallet) return "pending";
-            return "notConnected";
-          },
-          {
-            id: "statusText",
-            header: t("management.table.columns.status"),
-            meta: {
-              displayName: t("management.table.columns.status"),
-              type: "text",
-            },
-            filterFn: "equals",
-          }
-        ),
         columnHelper.display({
           id: "status",
           header: t("management.table.columns.status"),
-          cell: ({ row }) => {
-            return <UserStatusBadge user={row.original} />;
-          },
+          cell: ({ row }) => <UserStatusBadge user={row.original} />,
           meta: {
             displayName: t("management.table.columns.status"),
             type: "none",
           },
         }),
-        columnHelper.accessor("createdAt", {
-          id: "createdAt",
-          header: t("management.table.columns.created"),
-          meta: {
-            displayName: t("management.table.columns.created"),
-            type: "text",
-          },
-          filterFn: "includesString",
-        }),
         columnHelper.display({
           id: "created",
           header: t("management.table.columns.created"),
-          cell: ({ row }) => {
-            const createdAt = row.original.createdAt;
-            
-            if (!createdAt) {
-              return <span className="text-sm text-muted-foreground">-</span>;
-            }
-            
-            const date = new Date(createdAt);
-            if (Number.isNaN(date.getTime())) {
-              return <span className="text-sm text-muted-foreground">-</span>;
-            }
-            
-            return (
-              <span className="text-sm">
-                {format(date, 'MMM d, yyyy')}
-              </span>
-            );
-          },
+          cell: ({ row }) => <DateCell value={row.original.createdAt} />,
           meta: {
             displayName: t("management.table.columns.created"),
             type: "none",
           },
         }),
-        columnHelper.accessor("lastLoginAt", {
-          id: "lastLoginAt",
-          header: t("management.table.columns.lastActive"),
-          meta: {
-            displayName: t("management.table.columns.lastActive"),
-            type: "text",
-          },
-          filterFn: "includesString",
-        }),
         columnHelper.display({
           id: "lastActive",
           header: t("management.table.columns.lastActive"),
-          cell: ({ row }) => {
-            const lastLoginAt = row.original.lastLoginAt;
-            
-            if (!lastLoginAt) {
-              return <span className="text-sm text-muted-foreground">Never</span>;
-            }
-            
-            const loginDate = new Date(lastLoginAt);
-            if (Number.isNaN(loginDate.getTime())) {
-              return <span className="text-sm text-muted-foreground">Never</span>;
-            }
-            
-            // Format with relative time for recent dates
-            if (isToday(loginDate)) {
-              return <span className="text-sm">Today</span>;
-            } else if (isYesterday(loginDate)) {
-              return <span className="text-sm">Yesterday</span>;
-            } else {
-              const daysDiff = Math.floor((Date.now() - loginDate.getTime()) / (1000 * 60 * 60 * 24));
-              if (daysDiff > 7) {
-                return (
-                  <span className="text-sm">
-                    {format(loginDate, 'MMM d, yyyy')}
-                  </span>
-                );
-              }
-              return (
-                <span className="text-sm">
-                  {formatDistanceToNow(loginDate, { addSuffix: true })}
-                </span>
-              );
-            }
-          },
+          cell: ({ row }) => <DateCell value={row.original.lastLoginAt} fallback="Never" relative />,
           meta: {
             displayName: t("management.table.columns.lastActive"),
             type: "none",
@@ -290,14 +158,6 @@ export function UsersTable() {
           }}
           urlState={{
             enabled: false, // Disable URL state since we're managing it manually
-          }}
-          initialColumnVisibility={{
-            name: false,
-            email: false,
-            userDisplayText: false, // Hide the text-only version, show the display version
-            statusText: false, // Hide the text-only version, show the display version  
-            createdAt: false, // Hide the text-only version, show the display version
-            lastLoginAt: false, // Hide the text-only version, show the display version
           }}
           advancedToolbar={{
             enableGlobalSearch: false,

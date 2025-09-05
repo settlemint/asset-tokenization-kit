@@ -231,8 +231,8 @@ export const list = authRouter.user.list
           identity: undefined,
           claims: [],
           isRegistered: false,
-          createdAt: u.createdAt,
-          lastLoginAt: u.lastLoginAt,
+          createdAt: u.createdAt?.toISOString(),
+          lastLoginAt: u.lastLoginAt?.toISOString(),
         } as User;
       }
 
@@ -264,8 +264,8 @@ export const list = authRouter.user.list
         identity: identity?.id,
         claims: filteredClaims,
         isRegistered: !!identity,
-        createdAt: u.createdAt,
-        lastLoginAt: u.lastLoginAt,
+        createdAt: u.createdAt?.toISOString(),
+        lastLoginAt: u.lastLoginAt?.toISOString(),
       } as User;
     });
 
