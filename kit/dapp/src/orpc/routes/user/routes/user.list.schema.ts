@@ -13,6 +13,21 @@ export const UserListInputSchema = ListSchema.extend({
   orderBy: ListSchema.shape.orderBy.default("createdAt"),
 });
 
-export const UserListOutputSchema = UserSchema.array();
+/**
+ * Paginated response schema for user listing.
+ * 
+ * Follows the same pattern as other paginated endpoints in the system
+ * (kyc.list, exchange-rates.list) for consistency.
+ */
+export const UserListOutputSchema = z.object({
+  /** Array of users for the current page */
+  items: UserSchema.array(),
+  /** Total number of users across all pages */
+  total: z.number(),
+  /** Current limit applied */
+  limit: z.number().optional(),
+  /** Current offset applied */
+  offset: z.number(),
+});
 
 export type UserList = z.infer<typeof UserListOutputSchema>;
