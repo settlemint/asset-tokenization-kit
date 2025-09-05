@@ -23,7 +23,7 @@ export function FormStepLayout({
 }) {
   return (
     <>
-      <div className="flex-1 overflow-y-auto h-[calc(100%-3rem)]">
+      <div className="flex-1 overflow-y-auto h-[calc(100%-4.5rem)] pr-6">
         <FormStepHeader>
           <FormStepTitle>{title}</FormStepTitle>
           <FormStepSubtitle>{description}</FormStepSubtitle>
