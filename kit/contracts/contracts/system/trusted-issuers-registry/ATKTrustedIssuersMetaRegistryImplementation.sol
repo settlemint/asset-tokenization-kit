@@ -282,6 +282,9 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         emit SubjectRegistrySet(_msgSender(), subject, oldRegistry, registry);
     }
 
+    /// @notice Internal helper to get all trusted issuers for a subject
+    /// @param _subject The subject identifier (address(0) for global only, or specific subject address)
+    /// @return Array of all IClaimIssuer contracts trusted for this subject (deduplicated)
     function _getTrustedIssuers(address _subject) internal view returns (IClaimIssuer[] memory) {
         // If subject is address(0), only return system registry issuers (system-only verification)
         if (_subject == address(0)) {
@@ -343,8 +346,8 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
 
     /// @notice Checks if an issuer is trusted for a given subject and claim topic
     /// @param _issuer The issuer address to check
-    /// @param subject The subject address to check
     /// @param _claimTopic The claim topic to check
+    /// @param subject The subject address to check
     /// @return True if the issuer is trusted for the given subject and claim topic, false otherwise
     function _hasClaimTopic(address _issuer, uint256 _claimTopic, address subject) internal view returns (bool) {
         // If subject is address(0), only check system registry (system-only verification)
@@ -412,6 +415,10 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         return _mergeIssuerArrays(contractIssuers, systemIssuers);
     }
 
+    /// @notice Internal helper to get claim topics for a trusted issuer and subject
+    /// @param _trustedIssuer The trusted issuer to get claim topics for
+    /// @param _subject The subject identifier (address(0) for global only, or specific subject address)
+    /// @return Array of claim topics the trusted issuer is authorized for
     function _getTrustedIssuerClaimTopics(
         IClaimIssuer _trustedIssuer,
         address _subject
@@ -466,7 +473,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
 
         for (uint256 i = 0; i < array1Length;) {
             temp[mergedLength] = array1[i];
-            mergedLength++;
+            ++mergedLength;
             unchecked {
                 ++i;
             }
@@ -486,7 +493,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
 
             if (!isDuplicate) {
                 temp[mergedLength] = array2[i];
-                mergedLength++;
+                ++mergedLength;
             }
             unchecked {
                 ++i;
@@ -531,7 +538,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
         // Add all issuers from array1
         for (uint256 i = 0; i < array1Length;) {
             temp[mergedLength] = array1[i];
-            mergedLength++;
+            ++mergedLength;
             unchecked {
                 ++i;
             }
@@ -552,7 +559,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
 
             if (!isDuplicate) {
                 temp[mergedLength] = array2[i];
-                mergedLength++;
+                ++mergedLength;
             }
             unchecked {
                 ++i;

@@ -234,6 +234,9 @@ contract TokenTrustedIssuersRegistry is ERC165, ERC2771Context, IATKTokenTrusted
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
+    /// @param claimTopic The claim topic to filter trusted issuers
+    /// @param _subject The subject identifier (address(0) for global only, or specific subject address)
+    /// @return Array of IClaimIssuer contracts trusted for this subject + claim topic (deduplicated)
     function getTrustedIssuersForClaimTopic(
         uint256 claimTopic,
         address _subject
@@ -299,6 +302,10 @@ contract TokenTrustedIssuersRegistry is ERC165, ERC2771Context, IATKTokenTrusted
 
     // --- Internal Helper Functions ---
 
+    /// @notice Internal helper to get trusted issuers for a specific claim topic and subject
+    /// @param claimTopic The claim topic to filter trusted issuers
+    /// @param subject The subject identifier (must be this token's onchainID)
+    /// @return Array of IClaimIssuer contracts trusted for the given claim topic
     function _getTrustedIssuersForClaimTopic(
         uint256 claimTopic,
         address subject

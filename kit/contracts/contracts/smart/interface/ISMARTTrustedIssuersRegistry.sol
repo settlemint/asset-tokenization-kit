@@ -28,8 +28,8 @@ interface ISMARTTrustedIssuersRegistry is IERC165 {
     /// @notice Returns the trusted claim issuers for a given claim topic and subject
     /// @dev Returns the union of global trusted issuers + subject-specific trusted issuers for this topic.
     ///      Ensures subjects always have access to at least the global trusted issuers.
-    /// @param _subject The subject identifier (address(0) for global only, or specific subject address)
     /// @param claimTopic The claim topic to filter trusted issuers
+    /// @param _subject The subject identifier (address(0) for global only, or specific subject address)
     /// @return Array of IClaimIssuer contracts trusted for this subject + claim topic (deduplicated)
     function getTrustedIssuersForClaimTopic(
         uint256 claimTopic,
