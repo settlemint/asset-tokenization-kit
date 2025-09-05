@@ -338,7 +338,7 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
 
         // Then check system registry
         if (address(_systemRegistry) != address(0)) {
-            return _systemRegistry.isTrustedIssuer(subject, _issuer);
+            return _systemRegistry.isTrustedIssuer(_issuer, subject);
         }
 
         return false;
