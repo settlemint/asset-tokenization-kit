@@ -80,7 +80,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | blockscout.blockscout-stack.blockscout.env.WEBAPP_URL | string | `"https://explorer.k8s.orb.local"` |  |
 | blockscout.blockscout-stack.blockscout.image.pullPolicy | string | `"IfNotPresent"` |  |
 | blockscout.blockscout-stack.blockscout.image.repository | string | `"ghcr.io/blockscout/blockscout"` |  |
-| blockscout.blockscout-stack.blockscout.image.tag | string | `"9.0.2"` |  |
+| blockscout.blockscout-stack.blockscout.image.tag | string | `"9.0.1"` |  |
 | blockscout.blockscout-stack.blockscout.ingress.hostname | string | `"explorer.k8s.orb.local"` |  |
 | blockscout.blockscout-stack.blockscout.init.args[0] | string | `"-c"` |  |
 | blockscout.blockscout-stack.blockscout.init.args[1] | string | `"echo \"Waiting for postgresql:5432...\"\nwhile ! nc -z postgresql 5432; do\n  sleep 2;\ndone;\necho \"PostgreSQL is ready!\"\n# Original command:\nbin/blockscout eval \"Elixir.Explorer.ReleaseTasks.create_and_migrate()\"\n"` |  |
@@ -98,7 +98,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | dapp.enabled | bool | `true` |  |
 | dapp.image.pullPolicy | string | `"IfNotPresent"` |  |
 | dapp.image.repository | string | `"ghcr.io/settlemint/asset-tokenization-kit"` |  |
-| dapp.image.tag | string | `"2.0.0-main71f0929ab"` |  |
+| dapp.image.tag | string | `"2.0.0-main1e32acb7f"` |  |
 | dapp.ingress.enabled | bool | `true` |  |
 | dapp.ingress.hosts[0].host | string | `"dapp.k8s.orb.local"` |  |
 | dapp.ingress.hosts[0].paths[0].path | string | `"/"` |  |
@@ -160,11 +160,11 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | erpc.config.logLevel | string | `"info"` |  |
 | erpc.config.projects[0].id | string | `"settlemint"` |  |
 | erpc.config.projects[0].upstreams[0].endpoint | string | `"http://besu-node-rpc-1:8545"` |  |
-| erpc.config.projects[0].upstreams[0].evm.chainId | int | `1337` |  |
+| erpc.config.projects[0].upstreams[0].evm.chainId | int | `53771311147` |  |
 | erpc.config.projects[0].upstreams[0].failsafe.timeout.duration | string | `"30s"` |  |
 | erpc.config.projects[0].upstreams[0].id | string | `"besu-node-rpc-1"` |  |
 | erpc.config.projects[0].upstreams[1].endpoint | string | `"http://besu-node-validator-1:8545"` |  |
-| erpc.config.projects[0].upstreams[1].evm.chainId | int | `1337` |  |
+| erpc.config.projects[0].upstreams[1].evm.chainId | int | `53771311147` |  |
 | erpc.config.projects[0].upstreams[1].failsafe.timeout.duration | string | `"30s"` |  |
 | erpc.config.projects[0].upstreams[1].id | string | `"besu-node-validator-1"` |  |
 | erpc.config.server.httpHostV4 | string | `"0.0.0.0"` |  |
@@ -252,7 +252,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.loki.gateway.image.tag | string | `"1.29-alpine"` |  |
 | observability.loki.loki.image.registry | string | `"docker.io"` | The Docker registry |
 | observability.loki.loki.image.repository | string | `"grafana/loki"` | Docker image repository |
-| observability.loki.loki.image.tag | string | `"3.5.3"` | Overrides the image tag whose default is the chart's appVersion |
+| observability.loki.loki.image.tag | string | `"3.5.4"` | Overrides the image tag whose default is the chart's appVersion |
 | observability.loki.memcached.enabled | bool | `true` | Enable the built in memcached server provided by the chart |
 | observability.loki.memcached.image.repository | string | `"docker.io/memcached"` | Memcached Docker image repository |
 | observability.loki.memcached.image.tag | string | `"1.6.39-alpine"` | Memcached Docker image tag |

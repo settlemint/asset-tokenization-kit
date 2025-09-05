@@ -198,7 +198,7 @@ chains:
           # -- Type of Provider: web3
           type: web3
           # -- URL for JSON-RPC endpoint
-          url: http://erpc:4000/settlemint/evm/1337
+          url: http://erpc:4000/settlemint/evm/53771311147
           # -- Data capabilities this node has
           features: [archive, traces]
 

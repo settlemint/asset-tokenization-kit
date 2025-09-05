@@ -18,7 +18,7 @@ A Helm chart for the ATK DApp frontend
 | fullnameOverride | string | `"dapp"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/settlemint/asset-tokenization-kit"` |  |
-| image.tag | string | `"2.0.0-main0d06815fc"` |  |
+| image.tag | string | `"2.0.0-main1e32acb7f"` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.className | string | `"atk-nginx"` |  |
 | ingress.enabled | bool | `false` |  |
