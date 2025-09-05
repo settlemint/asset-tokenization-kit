@@ -1,4 +1,4 @@
-import { Address, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { TrustedIssuer } from "../../../generated/schema";
 
 export function fetchTrustedIssuer(address: Address): TrustedIssuer {

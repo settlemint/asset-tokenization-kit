@@ -1,6 +1,6 @@
 import { Address } from "@graphprotocol/graph-ts";
 import {
-  ContractRegistrySet as ContractRegistrySetEvent,
+  SubjectRegistrySet as SubjectRegistrySetEvent,
   SystemRegistrySet as SystemRegistrySetEvent,
 } from "../../generated/templates/TrustedIssuersMetaRegistry/TrustedIssuersMetaRegistry";
 import { fetchEvent } from "../event/fetch/event";
@@ -19,13 +19,11 @@ export function handleSystemRegistrySet(event: SystemRegistrySetEvent): void {
   metaRegistry.save();
 }
 
-export function handleSubjectRegistrySet(
-  event: ContractRegistrySetEvent
-): void {
+export function handleSubjectRegistrySet(event: SubjectRegistrySetEvent): void {
   fetchEvent(event, "SubjectRegistrySet");
 
   const metaRegistryAddress = event.address;
-  const subjectAddress = event.params.contractAddress;
+  const subjectAddress = event.params.subject;
   const registryAddress = event.params.newRegistry;
 
   if (registryAddress.equals(Address.zero())) {

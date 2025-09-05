@@ -127,8 +127,8 @@ templates:
         - event: TokenAssetCreated(indexed address,indexed address,indexed
             address,bytes4[],address)
           handler: handleTokenAssetCreated
-        - event: TokenTrustedIssuersRegistryCreated(indexed address,indexed address,indexed
-            address,indexed address)
+        - event: TokenTrustedIssuersRegistryCreated(indexed address,indexed
+            address,indexed address,address)
           handler: handleTokenTrustedIssuersRegistryCreated
         - event: TokenImplementationUpdated(indexed address,indexed address,indexed
             address)
@@ -963,10 +963,10 @@ templates:
           handler: handleAddressRemovedFromBypassList
       file: ./src/compliance/compliance.ts
   - kind: ethereum
-    name: SystemTrustedIssuersRegistry
+    name: TrustedIssuersRegistry
     network: settlemint
     source:
-      abi: SystemTrustedIssuersRegistry
+      abi: TrustedIssuersRegistry
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
@@ -1005,35 +1005,10 @@ templates:
       eventHandlers:
         - event: SystemRegistrySet(indexed address,indexed address,indexed address)
           handler: handleSystemRegistrySet
-        - event: SubjectRegistrySet(indexed address,indexed address,indexed address,indexed
-            address)
+        - event: SubjectRegistrySet(indexed address,indexed address,indexed
+            address,address)
           handler: handleSubjectRegistrySet
       file: ./src/trusted-issuers-registry/trusted-issuers-meta-registry.ts
-  - kind: ethereum
-    name: TokenTrustedIssuersRegistry
-    network: settlemint
-    source:
-      abi: TokenTrustedIssuersRegistry
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - Address
-        - Event
-      abis:
-        - name: TrustedIssuersRegistry
-          file: ../contracts/.generated/out/IATKTrustedIssuersRegistry.sol/IATKTrustedIssuersRegistry.json
-      eventHandlers:
-        - event: ClaimTopicsUpdated(indexed address,indexed address,uint256[],indexed
-            address)
-          handler: handleClaimTopicsUpdated
-        - event: TrustedIssuerAdded(indexed address,indexed address,uint256[],indexed
-            address)
-          handler: handleTrustedIssuerAdded
-        - event: TrustedIssuerRemoved(indexed address,indexed address,indexed address)
-          handler: handleTrustedIssuerRemoved
-      file: ./src/trusted-issuers-registry/trusted-issuers-registry.ts
   - kind: ethereum
     name: IdentityRegistryStorage
     network: settlemint
