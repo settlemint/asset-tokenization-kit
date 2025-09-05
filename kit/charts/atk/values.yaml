@@ -480,7 +480,7 @@ observability:
         # -- Docker image repository
         repository: grafana/loki
         # -- Overrides the image tag whose default is the chart's appVersion
-        tag: 3.5.3
+        tag: 3.5.4
     singleBinary:
       persistence:
         size: 10Gi
