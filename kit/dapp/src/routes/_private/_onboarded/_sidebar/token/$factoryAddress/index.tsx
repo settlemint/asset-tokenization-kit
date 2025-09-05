@@ -162,9 +162,11 @@ function RouteComponent() {
         <h1 className="text-3xl font-bold tracking-tight">{factory.name}</h1>
       </div>
 
-      <TokensTable factoryAddress={factoryAddress} />
+      <div className="min-h-full">
+        <TokensTable factoryAddress={factoryAddress} />
 
-      <TokenFactoryRelated assetType={assetType} />
+        <TokenFactoryRelated assetType={assetType} />
+      </div>
     </div>
   );
 }
