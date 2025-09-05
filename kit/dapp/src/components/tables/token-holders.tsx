@@ -12,8 +12,8 @@ import { ComponentErrorBoundary } from "@/components/error/component-error-bound
 import { BurnSheet } from "@/components/manage-dropdown/sheets/burn-sheet";
 import { Badge } from "@/components/ui/badge";
 import { orpc } from "@/orpc/orpc-client";
-import type { TokenBalance } from "@/orpc/routes/token/routes/token.holders.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import { AssetBalance } from "@atk/zod/src/asset-balance";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -35,7 +35,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-const columnHelper = createStrictColumnHelper<TokenBalance>();
+const columnHelper = createStrictColumnHelper<AssetBalance>();
 
 /**
  * Initial sorting configuration for the holders table
@@ -99,11 +99,11 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
    * Creates action items for each row in the table
    *
    * @param {Object} row - The table row object
-   * @param {TokenBalance} row.original - The original holder data for the row
+   * @param {AssetBalance} row.original - The original holder data for the row
    * @returns {ActionItem[]} Array of action items
    */
   const createRowActions = useCallback(
-    (row: { original: TokenBalance }): ActionItem[] => [
+    (row: { original: AssetBalance }): ActionItem[] => [
       {
         label: t("tokens:holders.actions.viewProfile"),
         icon: <UserCircle className="h-4 w-4" />,
@@ -147,11 +147,11 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
   /**
    * Handles the freeze bulk action for selected holders
    *
-   * @param {TokenBalance[]} selectedHolders - Array of holders selected for freezing
+   * @param {AssetBalance[]} selectedHolders - Array of holders selected for freezing
    * @returns {void}
    */
   const handleFreeze = useCallback(
-    (selectedHolders: TokenBalance[]) => {
+    (selectedHolders: AssetBalance[]) => {
       toast.info(
         t("tokens:holders.bulkActions.freezeMessage", {
           count: selectedHolders.length,
@@ -164,11 +164,11 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
   /**
    * Handles the unfreeze bulk action for selected holders
    *
-   * @param {TokenBalance[]} selectedHolders - Array of holders selected for unfreezing
+   * @param {AssetBalance[]} selectedHolders - Array of holders selected for unfreezing
    * @returns {void}
    */
   const handleUnfreeze = useCallback(
-    (selectedHolders: TokenBalance[]) => {
+    (selectedHolders: AssetBalance[]) => {
       toast.info(
         t("tokens:holders.bulkActions.unfreezeMessage", {
           count: selectedHolders.length,
@@ -178,7 +178,7 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
     [t]
   );
 
-  const { actions, actionGroups } = useBulkActions<TokenBalance>({
+  const { actions, actionGroups } = useBulkActions<AssetBalance>({
     onArchive: handleFreeze,
     onDuplicate: handleUnfreeze,
   });
@@ -189,12 +189,12 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
    * Includes columns for value, available balance, frozen balance, and frozen status.
    * Uses withAutoFeatures to enhance columns with automatic filtering and sorting capabilities.
    *
-   * @returns {ColumnDef<TokenBalance>[]} Array of column definitions for the table
+   * @returns {ColumnDef<AssetBalance>[]} Array of column definitions for the table
    */
   const columns = useMemo(
     () =>
       withAutoFeatures([
-        createSelectionColumn<TokenBalance>(),
+        createSelectionColumn<AssetBalance>(),
         columnHelper.accessor("account.id", {
           header: t("tokens:holders.columns.address"),
           meta: {
@@ -273,7 +273,7 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
           },
           cell: ({ row }) => <ActionsCell actions={createRowActions(row)} />,
         }),
-      ] as ColumnDef<TokenBalance>[]),
+      ] as ColumnDef<AssetBalance>[]),
     [t, token.symbol, createRowActions]
   );
 
