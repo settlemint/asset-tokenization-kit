@@ -13,20 +13,26 @@ import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { Badge } from "@/components/ui/badge";
+import { getUserDisplayName } from "@/lib/utils/user-display-name";
 import { orpc } from "@/orpc/orpc-client";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
+import { toast } from "sonner";
 
 const columnHelper = createStrictColumnHelper<User>();
 
 /**
- * Status badge component for user registration status
+ * Status badge component for user registration status with accessibility support
  */
 function UserStatusBadge({ user }: { user: User }) {
   const { t } = useTranslation("user");
 
   if (user.isRegistered) {
     return (
-      <Badge variant="default" className="bg-green-500 hover:bg-green-600">
+      <Badge
+        variant="default"
+        className="bg-green-500 hover:bg-green-600"
+        aria-label={t("management.table.status.registeredAriaLabel")}
+      >
         {t("management.table.status.registered")}
       </Badge>
     );
@@ -34,14 +40,22 @@ function UserStatusBadge({ user }: { user: User }) {
 
   if (user.wallet) {
     return (
-      <Badge variant="secondary" className="bg-yellow-500 hover:bg-yellow-600 text-white">
+      <Badge
+        variant="secondary"
+        className="bg-yellow-500 hover:bg-yellow-600 text-white"
+        aria-label={t("management.table.status.pendingAriaLabel")}
+      >
         {t("management.table.status.pending")}
       </Badge>
     );
   }
 
   return (
-    <Badge variant="outline" className="text-muted-foreground">
+    <Badge
+      variant="outline"
+      className="text-muted-foreground"
+      aria-label={t("management.table.status.notConnectedAriaLabel")}
+    >
       {t("management.table.status.notConnected")}
     </Badge>
   );
@@ -73,7 +87,7 @@ export function UsersTable() {
     })
   );
 
-  // Extract users and total from the paginated response  
+  // Extract users and total from the paginated response
   const users = data?.items ?? [];
   const totalCount = data?.total ?? 0;
 
@@ -86,12 +100,10 @@ export function UsersTable() {
           params: { userId: user.id },
         });
       } catch {
-        // ignore
+        toast.error("Failed to navigate to user details");
       }
     })();
   };
-
-
 
   /**
    * Defines the column configuration for the users table
@@ -105,7 +117,14 @@ export function UsersTable() {
           cell: ({ row }) => <UserDisplayCell user={row.original} />,
           meta: {
             displayName: t("management.table.columns.name"),
-            type: "none",
+            type: "text",
+            filterFn: (row, _columnId, filterValue: string) => {
+              const user = row.original;
+              const displayName = getUserDisplayName(user);
+              return displayName
+                .toLowerCase()
+                .includes(filterValue.toLowerCase());
+            },
           },
         }),
         columnHelper.accessor("email", {
@@ -121,7 +140,26 @@ export function UsersTable() {
           cell: ({ row }) => <UserStatusBadge user={row.original} />,
           meta: {
             displayName: t("management.table.columns.status"),
-            type: "none",
+            type: "select",
+            filterOptions: [
+              {
+                label: t("management.table.status.registered"),
+                value: "registered",
+              },
+              { label: t("management.table.status.pending"), value: "pending" },
+              {
+                label: t("management.table.status.notConnected"),
+                value: "notConnected",
+              },
+            ],
+            filterFn: (row, _columnId, filterValue: string) => {
+              const user = row.original;
+              if (filterValue === "registered") return user.isRegistered;
+              if (filterValue === "pending")
+                return user.wallet && !user.isRegistered;
+              if (filterValue === "notConnected") return !user.wallet;
+              return true;
+            },
           },
         }),
         columnHelper.display({
@@ -130,16 +168,22 @@ export function UsersTable() {
           cell: ({ row }) => <DateCell value={row.original.createdAt} />,
           meta: {
             displayName: t("management.table.columns.created"),
-            type: "none",
+            type: "dateRange",
           },
         }),
         columnHelper.display({
           id: "lastActive",
           header: t("management.table.columns.lastActive"),
-          cell: ({ row }) => <DateCell value={row.original.lastLoginAt} fallback="Never" relative />,
+          cell: ({ row }) => (
+            <DateCell
+              value={row.original.lastLoginAt}
+              fallback="Never"
+              relative
+            />
+          ),
           meta: {
             displayName: t("management.table.columns.lastActive"),
-            type: "none",
+            type: "dateRange",
           },
         }),
       ] as ColumnDef<User>[]),
@@ -151,7 +195,9 @@ export function UsersTable() {
     return (
       <ComponentErrorBoundary componentName="Users Table">
         <div className="flex items-center justify-center p-8">
-          <p className="text-muted-foreground">Failed to load users. Please try again.</p>
+          <p className="text-muted-foreground">
+            Failed to load users. Please try again.
+          </p>
         </div>
       </ComponentErrorBoundary>
     );
@@ -160,45 +206,47 @@ export function UsersTable() {
   return (
     <ComponentErrorBoundary componentName="Users Table">
       <DataTable
-          name="users"
-          data={users}
-          columns={columns}
-          isLoading={isLoading}
-          serverSidePagination={{
-            enabled: true,
-            totalCount,
-          }}
-          externalState={{
-            pagination,
-            onPaginationChange: setPagination,
-          }}
-          urlState={{
-            enabled: false, // Disable URL state since we're managing it manually
-          }}
-          advancedToolbar={{
-            enableGlobalSearch: false,
-            enableFilters: true, // Re-enable filters now that columns are properly accessible
-            enableExport: true,
-            enableViewOptions: true,
-            placeholder: t("management.table.search.placeholder"),
-          }}
-          pagination={{
-            enablePagination: true,
-          }}
-          initialPageSize={20}
-          initialSorting={[
-            {
-              id: "created",
-              desc: true,
-            },
-          ]}
-          customEmptyState={{
-            title: "No users found",
-            description: isLoading ? "Loading users..." : "No users have been registered yet.",
-            icon: Users,
-          }}
-          onRowClick={handleRowClick}
-        />
+        name="users"
+        data={users}
+        columns={columns}
+        isLoading={isLoading}
+        serverSidePagination={{
+          enabled: true,
+          totalCount,
+        }}
+        externalState={{
+          pagination,
+          onPaginationChange: setPagination,
+        }}
+        urlState={{
+          enabled: false, // Disable URL state since we're managing it manually
+        }}
+        advancedToolbar={{
+          enableGlobalSearch: false,
+          enableFilters: true, // Re-enable filters now that columns are properly accessible
+          enableExport: true,
+          enableViewOptions: true,
+          placeholder: t("management.table.search.placeholder"),
+        }}
+        pagination={{
+          enablePagination: true,
+        }}
+        initialPageSize={20}
+        initialSorting={[
+          {
+            id: "created",
+            desc: true,
+          },
+        ]}
+        customEmptyState={{
+          title: "No users found",
+          description: isLoading
+            ? "Loading users..."
+            : "No users have been registered yet.",
+          icon: Users,
+        }}
+        onRowClick={handleRowClick}
+      />
     </ComponentErrorBoundary>
   );
 }

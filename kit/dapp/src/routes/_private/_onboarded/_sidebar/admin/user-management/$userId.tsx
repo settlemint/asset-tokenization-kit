@@ -1,6 +1,14 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
+import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
+import { TabNavigation } from "@/components/tab-navigation/tab-navigation";
+import { getUserTabConfiguration } from "@/components/tab-navigation/user-tab-configuration";
+import { UserStatusBadge } from "@/components/users/user-status-badge";
+import { getUserDisplayName } from "@/lib/utils/user-display-name";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
 const routeParamsSchema = z.object({
@@ -19,7 +27,7 @@ const routeParamsSchema = z.object({
  * @remarks
  * - The userId parameter must be a non-empty string
  * - User data is fetched using ORPC and cached with TanStack Query
- * - This is a parent route that renders child routes via Outlet
+ * - This is a parent route that provides shared layout and tab navigation
  * - Requires appropriate permissions to view user data
  *
  * @example
@@ -56,11 +64,61 @@ export const Route = createFileRoute(
 });
 
 /**
- * Parent route component that renders child routes
+ * Parent route component with shared layout and tab navigation
  *
  * This component provides the shared layout for all user detail pages
- * and renders child routes through the Outlet component.
+ * including header, breadcrumbs, tabs, and renders child routes through Outlet.
  */
 function RouteComponent() {
-  return <Outlet />;
+  const { user: loaderUser } = Route.useLoaderData();
+  const { userId } = Route.useParams();
+  const { t } = useTranslation(["user", "common"]);
+
+  // Subscribe to live user data so UI reacts to updates
+  const { data: queriedUser } = useQuery(
+    Route.useRouteContext().orpc.user.read.queryOptions({
+      input: { userId },
+    })
+  );
+
+  const user = queriedUser ?? loaderUser;
+
+  const displayName = getUserDisplayName(user);
+
+  // Generate tab configuration based on user data
+  // Only memoize based on properties that affect tab configuration
+  const tabConfigs = useMemo(
+    () => getUserTabConfiguration({ userId, user }),
+    [userId, user]
+  );
+
+  // Transform tab configurations to TabItemProps with translations
+  const tabs = useMemo(() => {
+    return tabConfigs.map((config) => ({
+      href: config.href,
+      name: t(`user:tabs.${config.tabKey}`),
+    }));
+  }, [tabConfigs, t]);
+
+  return (
+    <div className="space-y-6 p-6">
+      {/* Header Section */}
+      <div className="space-y-2">
+        <RouterBreadcrumb />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <h1 className="text-3xl font-bold tracking-tight">{displayName}</h1>
+            <UserStatusBadge user={user} />
+          </div>
+          {/* Future: Add ManageUserDropdown here */}
+        </div>
+      </div>
+
+      {/* Tab Navigation */}
+      <TabNavigation items={tabs} />
+
+      {/* Child Routes */}
+      <Outlet />
+    </div>
+  );
 }
