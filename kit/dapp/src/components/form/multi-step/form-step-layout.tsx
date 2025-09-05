@@ -23,13 +23,15 @@ export function FormStepLayout({
 }) {
   return (
     <>
-      <FormStepHeader>
-        <FormStepTitle>{title}</FormStepTitle>
-        <FormStepSubtitle>{description}</FormStepSubtitle>
-      </FormStepHeader>
-      <FormStepContent fullWidth={fullWidth} asGrid={asGrid}>
-        {children}
-      </FormStepContent>
+      <div className="flex-1 overflow-y-auto h-[calc(100%-3rem)]">
+        <FormStepHeader>
+          <FormStepTitle>{title}</FormStepTitle>
+          <FormStepSubtitle>{description}</FormStepSubtitle>
+        </FormStepHeader>
+        <FormStepContent fullWidth={fullWidth} asGrid={asGrid}>
+          {children}
+        </FormStepContent>
+      </div>
       {actions && <FormStepSubmit>{actions}</FormStepSubmit>}
     </>
   );
