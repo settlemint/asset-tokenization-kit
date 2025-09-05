@@ -1,5 +1,8 @@
 import type { Hex, TransactionReceipt } from "viem";
-import { parseRevertReason } from "./decode-revert-reason";
+import {
+  parseRevertReason,
+  withDecodedRevertReason,
+} from "./decode-revert-reason";
 import { getPublicClient } from "./public-client";
 import { getViemChain } from "./viem-chain";
 
@@ -382,41 +385,49 @@ async function _attemptTransactionSimulation(
     {
       name: "Previous Block",
       method: () =>
-        publicClient.call({
-          to: transaction.to,
-          data: transaction.input,
-          value: transaction.value,
-          blockNumber: receipt.blockNumber - 1n,
-        }),
+        withDecodedRevertReason(() =>
+          publicClient.call({
+            to: transaction.to,
+            data: transaction.input,
+            value: transaction.value,
+            blockNumber: receipt.blockNumber - 1n,
+          })
+        ),
     },
     {
       name: "Same Block",
       method: () =>
-        publicClient.call({
-          to: transaction.to,
-          data: transaction.input,
-          value: transaction.value,
-          blockNumber: receipt.blockNumber,
-        }),
+        withDecodedRevertReason(() =>
+          publicClient.call({
+            to: transaction.to,
+            data: transaction.input,
+            value: transaction.value,
+            blockNumber: receipt.blockNumber,
+          })
+        ),
     },
     {
       name: "Latest State",
       method: () =>
-        publicClient.call({
-          to: transaction.to,
-          data: transaction.input,
-          value: transaction.value,
-        }),
+        withDecodedRevertReason(() =>
+          publicClient.call({
+            to: transaction.to,
+            data: transaction.input,
+            value: transaction.value,
+          })
+        ),
     },
     {
       name: "With Original Gas",
       method: () =>
-        publicClient.call({
-          to: transaction.to,
-          data: transaction.input,
-          value: transaction.value,
-          gas: transaction.gas,
-        }),
+        withDecodedRevertReason(() =>
+          publicClient.call({
+            to: transaction.to,
+            data: transaction.input,
+            value: transaction.value,
+            gas: transaction.gas,
+          })
+        ),
     },
   ];
 
@@ -445,7 +456,17 @@ async function _analyzeSimulationError(simulationError: any): Promise<void> {
   console.log(`    Code: ${simulationError?.code || "No code"}`);
   console.log(`    Cause: ${simulationError?.cause || "No cause"}`);
 
-  // Try to decode the revert reason from different possible locations
+  // Check if the error was already decoded by withDecodedRevertReason
+  if (
+    simulationError?.message?.includes("The contract reverted with reason:")
+  ) {
+    console.log(
+      `  🎯 Revert reason already decoded: ${simulationError.message}`
+    );
+    throw simulationError;
+  }
+
+  // Try to decode the revert reason from different possible locations as fallback
   const possibleRevertData = [
     simulationError?.cause?.data,
     simulationError?.data,

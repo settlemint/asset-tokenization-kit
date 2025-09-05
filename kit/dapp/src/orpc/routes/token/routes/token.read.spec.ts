@@ -3,6 +3,7 @@ import { getOrpcClient } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
   DEFAULT_ADMIN,
+  DEFAULT_INVESTOR,
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
@@ -17,17 +18,29 @@ describe("Token read", () => {
     const client = getOrpcClient(headers);
 
     // Create a test token to read
-    testToken = await createToken(client, {
-      name: "Test Read Token",
-      symbol: "TRT",
-      decimals: 18,
-      type: "stablecoin",
-      countryCode: "056",
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
+    testToken = await createToken(
+      client,
+      {
+        name: "Test Read Token",
+        symbol: "TRT",
+        decimals: 18,
+        type: "stablecoin",
+        countryCode: "056",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
       },
-    });
+      {
+        grantRole: [
+          "custodian",
+          "governance",
+          "supplyManagement",
+          "emergency",
+          "tokenManager",
+        ],
+      }
+    );
   });
 
   it("can read token details", async () => {
@@ -162,5 +175,143 @@ describe("Token read", () => {
     expect(token2.name).toBe(token3.name);
     expect(token1.symbol).toBe(token2.symbol);
     expect(token2.symbol).toBe(token3.symbol);
+  });
+
+  it("admin has all permissions to execute token actions", async () => {
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+    const tokenInfo = await client.token.read({
+      tokenAddress: testToken.id,
+    });
+    const expectedPermissions: typeof tokenInfo.userPermissions = {
+      roles: {
+        addonManager: false,
+        addonModule: false,
+        addonRegistryModule: false,
+        admin: true,
+        auditor: false,
+        burner: false,
+        capManagement: false,
+        claimPolicyManager: false,
+        claimIssuer: false,
+        complianceAdmin: false,
+        complianceManager: false,
+        custodian: true,
+        emergency: true,
+        forcedTransfer: false,
+        freezer: false,
+        fundsManager: false,
+        globalListManager: false,
+        governance: true,
+        identityManager: false,
+        identityRegistryModule: false,
+        minter: false,
+        organisationIdentityManager: false,
+        pauser: false,
+        recovery: false,
+        saleAdmin: false,
+        signer: false,
+        supplyManagement: true,
+        systemManager: false,
+        systemModule: false,
+        tokenAdmin: false,
+        tokenFactoryModule: false,
+        tokenFactoryRegistryModule: false,
+        tokenManager: true,
+        verificationAdmin: false,
+      },
+      isAllowed: true,
+      actions: {
+        burn: true,
+        create: true,
+        grantRole: true,
+        mint: true,
+        pause: true,
+        addComplianceModule: true,
+        approve: true,
+        forcedRecover: true,
+        freezeAddress: true,
+        recoverERC20: true,
+        recoverTokens: true,
+        redeem: true,
+        removeComplianceModule: true,
+        revokeRole: true,
+        setCap: true,
+        setYieldSchedule: true,
+        transfer: true,
+        unpause: true,
+        updateCollateral: true,
+      },
+    };
+    expect(tokenInfo.userPermissions).toEqual(expectedPermissions);
+  });
+
+  it("investor has limited permissions to execute token actions", async () => {
+    const headers = await signInWithUser(DEFAULT_INVESTOR);
+    const client = getOrpcClient(headers);
+    const tokenInfo = await client.token.read({
+      tokenAddress: testToken.id,
+    });
+    const expectedPermissions: typeof tokenInfo.userPermissions = {
+      roles: {
+        addonManager: false,
+        addonModule: false,
+        addonRegistryModule: false,
+        admin: false,
+        auditor: false,
+        burner: false,
+        capManagement: false,
+        claimPolicyManager: false,
+        claimIssuer: false,
+        complianceAdmin: false,
+        complianceManager: false,
+        custodian: false,
+        emergency: false,
+        forcedTransfer: false,
+        freezer: false,
+        fundsManager: false,
+        globalListManager: false,
+        governance: false,
+        identityManager: false,
+        identityRegistryModule: false,
+        minter: false,
+        organisationIdentityManager: false,
+        pauser: false,
+        recovery: false,
+        saleAdmin: false,
+        signer: false,
+        supplyManagement: false,
+        systemManager: false,
+        systemModule: false,
+        tokenAdmin: false,
+        tokenFactoryModule: false,
+        tokenFactoryRegistryModule: false,
+        tokenManager: false,
+        verificationAdmin: false,
+      },
+      isAllowed: true,
+      actions: {
+        burn: false,
+        create: false,
+        grantRole: false,
+        mint: false,
+        pause: false,
+        addComplianceModule: false,
+        approve: true,
+        forcedRecover: false,
+        freezeAddress: false,
+        recoverERC20: false,
+        recoverTokens: false,
+        redeem: false,
+        removeComplianceModule: false,
+        revokeRole: false,
+        setCap: false,
+        setYieldSchedule: false,
+        transfer: true,
+        unpause: false,
+        updateCollateral: false,
+      },
+    };
+    expect(tokenInfo.userPermissions).toEqual(expectedPermissions);
   });
 });

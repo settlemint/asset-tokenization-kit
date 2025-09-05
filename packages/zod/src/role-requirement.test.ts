@@ -60,7 +60,9 @@ describe("role-requirement", () => {
       });
 
       it("should return false when user lacks the required role", () => {
-        expect(satisfiesRoleRequirement(userRoles, "systemManager")).toBe(false);
+        expect(satisfiesRoleRequirement(userRoles, "systemManager")).toBe(
+          false
+        );
         expect(satisfiesRoleRequirement(userRoles, "auditor")).toBe(false);
       });
 
@@ -99,7 +101,9 @@ describe("role-requirement", () => {
         const nestedRequirement: RoleRequirement = {
           any: ["admin", { any: ["systemManager", "auditor"] }],
         };
-        expect(satisfiesRoleRequirement(userRoles, nestedRequirement)).toBe(true);
+        expect(satisfiesRoleRequirement(userRoles, nestedRequirement)).toBe(
+          true
+        );
       });
     });
 
@@ -110,7 +114,9 @@ describe("role-requirement", () => {
             all: ["admin", "tokenManager"],
           })
         ).toBe(true);
-        expect(satisfiesRoleRequirement(userRoles, { all: ["admin"] })).toBe(true);
+        expect(satisfiesRoleRequirement(userRoles, { all: ["admin"] })).toBe(
+          true
+        );
       });
 
       it("should return false when user lacks any required role", () => {
@@ -134,7 +140,9 @@ describe("role-requirement", () => {
         const nestedRequirement: RoleRequirement = {
           all: ["admin", { all: ["tokenManager"] }],
         };
-        expect(satisfiesRoleRequirement(userRoles, nestedRequirement)).toBe(true);
+        expect(satisfiesRoleRequirement(userRoles, nestedRequirement)).toBe(
+          true
+        );
       });
     });
 
@@ -146,7 +154,9 @@ describe("role-requirement", () => {
         };
         expect(satisfiesRoleRequirement(userRoles, requirement)).toBe(true);
         expect(satisfiesRoleRequirement(["admin"], requirement)).toBe(false);
-        expect(satisfiesRoleRequirement(["admin", "systemManager"], requirement)).toBe(true);
+        expect(
+          satisfiesRoleRequirement(["admin", "systemManager"], requirement)
+        ).toBe(true);
       });
 
       it("should handle OR with nested AND", () => {
@@ -155,7 +165,9 @@ describe("role-requirement", () => {
           any: [{ all: ["admin", "tokenManager"] }, "systemManager"],
         };
         expect(satisfiesRoleRequirement(userRoles, requirement)).toBe(true);
-        expect(satisfiesRoleRequirement(["systemManager"], requirement)).toBe(true);
+        expect(satisfiesRoleRequirement(["systemManager"], requirement)).toBe(
+          true
+        );
         expect(satisfiesRoleRequirement(["admin"], requirement)).toBe(false);
       });
 
@@ -164,13 +176,28 @@ describe("role-requirement", () => {
           all: [
             "admin",
             {
-              any: [{ all: ["tokenManager", "complianceManager"] }, { all: ["systemManager", "auditor"] }],
+              any: [
+                { all: ["tokenManager", "complianceManager"] },
+                { all: ["systemManager", "auditor"] },
+              ],
             },
           ],
         };
-        expect(satisfiesRoleRequirement(["admin", "tokenManager", "complianceManager"], requirement)).toBe(true);
-        expect(satisfiesRoleRequirement(["admin", "systemManager", "auditor"], requirement)).toBe(true);
-        expect(satisfiesRoleRequirement(["admin", "tokenManager"], requirement)).toBe(false);
+        expect(
+          satisfiesRoleRequirement(
+            ["admin", "tokenManager", "complianceManager"],
+            requirement
+          )
+        ).toBe(true);
+        expect(
+          satisfiesRoleRequirement(
+            ["admin", "systemManager", "auditor"],
+            requirement
+          )
+        ).toBe(true);
+        expect(
+          satisfiesRoleRequirement(["admin", "tokenManager"], requirement)
+        ).toBe(false);
       });
     });
 
@@ -180,8 +207,13 @@ describe("role-requirement", () => {
         // Create an invalid requirement that doesn't match any of the expected types
         const invalidRequirement = { invalid: "structure" };
         // TypeScript will complain here, but we're testing runtime behavior
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        expect(satisfiesRoleRequirement(userRoles, invalidRequirement as any)).toBe(false);
+
+        expect(
+          satisfiesRoleRequirement(
+            userRoles,
+            invalidRequirement as unknown as RoleRequirement
+          )
+        ).toBe(false);
       });
     });
   });
@@ -193,27 +225,47 @@ describe("role-requirement", () => {
     });
 
     it("should parse valid 'any' requirement", () => {
-      const requirement = { any: ["admin" as AccessControlRoles, "tokenManager" as AccessControlRoles] };
+      const requirement = {
+        any: [
+          "admin" as AccessControlRoles,
+          "tokenManager" as AccessControlRoles,
+        ],
+      };
       const result = RoleRequirementSchema.parse(requirement);
       expect(result).toEqual(requirement);
     });
 
     it("should parse valid 'all' requirement", () => {
-      const requirement = { all: ["admin" as AccessControlRoles, "tokenManager" as AccessControlRoles] };
+      const requirement = {
+        all: [
+          "admin" as AccessControlRoles,
+          "tokenManager" as AccessControlRoles,
+        ],
+      };
       const result = RoleRequirementSchema.parse(requirement);
       expect(result).toEqual(requirement);
     });
 
     it("should parse nested requirements", () => {
       const requirement = {
-        all: ["admin" as AccessControlRoles, { any: ["tokenManager" as AccessControlRoles, "systemManager" as AccessControlRoles] }],
+        all: [
+          "admin" as AccessControlRoles,
+          {
+            any: [
+              "tokenManager" as AccessControlRoles,
+              "systemManager" as AccessControlRoles,
+            ],
+          },
+        ],
       };
       const result = RoleRequirementSchema.parse(requirement);
       expect(result).toEqual(requirement);
     });
 
     it("should throw on invalid structure", () => {
-      expect(() => RoleRequirementSchema.parse({ invalid: "structure" })).toThrow();
+      expect(() =>
+        RoleRequirementSchema.parse({ invalid: "structure" })
+      ).toThrow();
       expect(() => RoleRequirementSchema.parse(123)).toThrow();
       expect(() => RoleRequirementSchema.parse(null)).toThrow();
     });
@@ -226,7 +278,15 @@ describe("role-requirement", () => {
             all: [
               "tokenManager" as AccessControlRoles,
               {
-                any: ["systemManager" as AccessControlRoles, { all: ["auditor" as AccessControlRoles, "complianceManager" as AccessControlRoles] }],
+                any: [
+                  "systemManager" as AccessControlRoles,
+                  {
+                    all: [
+                      "auditor" as AccessControlRoles,
+                      "complianceManager" as AccessControlRoles,
+                    ],
+                  },
+                ],
               },
             ],
           },

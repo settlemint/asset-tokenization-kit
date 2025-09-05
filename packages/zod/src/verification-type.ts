@@ -50,7 +50,9 @@ export const VerificationType = {
  * schema.parse("biometric"); // Throws ZodError
  * ```
  */
-export const verificationType = z.enum(verificationTypes).describe("Type of verification");
+export const verificationType = z
+  .enum(verificationTypes)
+  .describe("Type of verification");
 
 /**
  * Type representing a validated verification method type.

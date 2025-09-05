@@ -33,17 +33,3 @@ export const FixedYieldScheduleReadInputSchema = z.object({
  * - Period management (current, next, and all periods)
  */
 export const FixedYieldScheduleSchema = fixedYieldSchedule();
-
-/**
- * Type representing the validated fixed yield schedule read input.
- * Ensures type safety for request parameters.
- */
-export type FixedYieldScheduleReadInput = z.input<
-  typeof FixedYieldScheduleReadInputSchema
->;
-
-/**
- * Type representing the validated fixed yield schedule response.
- * Ensures type safety for response data structure.
- */
-export type FixedYieldSchedule = z.infer<typeof FixedYieldScheduleSchema>;

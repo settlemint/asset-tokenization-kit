@@ -106,7 +106,9 @@ describe("assetTypeArray", () => {
   });
 
   test("should reject empty arrays", () => {
-    expect(() => validator.parse([])).toThrow("At least one asset type must be selected");
+    expect(() => validator.parse([])).toThrow(
+      "At least one asset type must be selected"
+    );
   });
 
   test("should reject invalid asset types in array", () => {
@@ -145,7 +147,9 @@ describe("assetTypeSet", () => {
 
   test("should reject empty sets", () => {
     const emptySet = new Set();
-    expect(() => validator.parse(emptySet)).toThrow("At least one asset type must be selected");
+    expect(() => validator.parse(emptySet)).toThrow(
+      "At least one asset type must be selected"
+    );
   });
 
   test("should reject sets with invalid values", () => {
@@ -270,7 +274,9 @@ describe("type checking", () => {
     });
 
     test("should handle safeParse", () => {
-      const result = assetTypeSet().safeParse(new Set(["stablecoin", "equity"]));
+      const result = assetTypeSet().safeParse(
+        new Set(["stablecoin", "equity"])
+      );
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.has("stablecoin")).toBe(true);
@@ -356,7 +362,9 @@ describe("AssetFactoryTypeIdEnum", () => {
     expect(AssetFactoryTypeIdEnum.ATKBondFactory).toBe("ATKBondFactory");
     expect(AssetFactoryTypeIdEnum.ATKEquityFactory).toBe("ATKEquityFactory");
     expect(AssetFactoryTypeIdEnum.ATKFundFactory).toBe("ATKFundFactory");
-    expect(AssetFactoryTypeIdEnum.ATKStableCoinFactory).toBe("ATKStableCoinFactory");
+    expect(AssetFactoryTypeIdEnum.ATKStableCoinFactory).toBe(
+      "ATKStableCoinFactory"
+    );
     expect(AssetFactoryTypeIdEnum.ATKDepositFactory).toBe("ATKDepositFactory");
   });
 
@@ -372,7 +380,11 @@ describe("assetFactoryTypeIdArray", () => {
 
   test("should accept valid arrays", () => {
     const single: AssetFactoryTypeId[] = ["ATKBondFactory"];
-    const multiple: AssetFactoryTypeId[] = ["ATKBondFactory", "ATKEquityFactory", "ATKFundFactory"];
+    const multiple: AssetFactoryTypeId[] = [
+      "ATKBondFactory",
+      "ATKEquityFactory",
+      "ATKFundFactory",
+    ];
     const all = [...assetFactoryTypeIds];
 
     expect(validator.parse(single)).toEqual(single);
@@ -381,12 +393,17 @@ describe("assetFactoryTypeIdArray", () => {
   });
 
   test("should allow duplicates", () => {
-    const duplicates: AssetFactoryTypeId[] = ["ATKBondFactory", "ATKBondFactory"];
+    const duplicates: AssetFactoryTypeId[] = [
+      "ATKBondFactory",
+      "ATKBondFactory",
+    ];
     expect(validator.parse(duplicates)).toEqual(duplicates);
   });
 
   test("should reject empty arrays", () => {
-    expect(() => validator.parse([])).toThrow("At least one factory typeId must be selected");
+    expect(() => validator.parse([])).toThrow(
+      "At least one factory typeId must be selected"
+    );
   });
 
   test("should reject invalid factory typeIds in array", () => {
@@ -419,14 +436,20 @@ describe("assetFactoryTypeIdSet", () => {
   });
 
   test("should deduplicate values", () => {
-    const testSet = new Set(["ATKBondFactory", "ATKBondFactory", "ATKEquityFactory"]);
+    const testSet = new Set([
+      "ATKBondFactory",
+      "ATKBondFactory",
+      "ATKEquityFactory",
+    ]);
     const result = validator.parse(testSet);
     expect(result.size).toBe(2);
   });
 
   test("should reject empty sets", () => {
     const emptySet = new Set();
-    expect(() => validator.parse(emptySet)).toThrow("At least one factory typeId must be selected");
+    expect(() => validator.parse(emptySet)).toThrow(
+      "At least one factory typeId must be selected"
+    );
   });
 
   test("should reject sets with invalid values", () => {
@@ -451,18 +474,24 @@ describe("assetFactoryTypeIdWithDefault", () => {
   test("should use provided default", () => {
     const defaultTypeId = assetFactoryTypeId().parse("ATKEquityFactory");
     const validator = assetFactoryTypeIdWithDefault(defaultTypeId);
-    expect(validator.parse(undefined)).toBe("ATKEquityFactory" as AssetFactoryTypeId);
+    expect(validator.parse(undefined)).toBe(
+      "ATKEquityFactory" as AssetFactoryTypeId
+    );
   });
 
   test("should use 'ATKBondFactory' as default when not specified", () => {
     const validator = assetFactoryTypeIdWithDefault();
-    expect(validator.parse(undefined)).toBe("ATKBondFactory" as AssetFactoryTypeId);
+    expect(validator.parse(undefined)).toBe(
+      "ATKBondFactory" as AssetFactoryTypeId
+    );
   });
 
   test("should accept valid values", () => {
     const defaultTypeId = assetFactoryTypeId().parse("ATKEquityFactory");
     const validator = assetFactoryTypeIdWithDefault(defaultTypeId);
-    expect(validator.parse("ATKFundFactory")).toBe("ATKFundFactory" as AssetFactoryTypeId);
+    expect(validator.parse("ATKFundFactory")).toBe(
+      "ATKFundFactory" as AssetFactoryTypeId
+    );
   });
 });
 
@@ -516,7 +545,9 @@ describe("assetFactoryTypeIdRecord", () => {
 
   test("should have proper description", () => {
     const validator = assetFactoryTypeIdRecord(z.string());
-    expect(validator.description).toBe("Mapping of asset factory typeIds to values");
+    expect(validator.description).toBe(
+      "Mapping of asset factory typeIds to values"
+    );
   });
 });
 
@@ -579,13 +610,17 @@ describe("type guard functions", () => {
   describe("isAssetFactoryTypeIdArray", () => {
     test("should return true for valid factory typeId arrays", () => {
       expect(isAssetFactoryTypeIdArray(["ATKBondFactory"])).toBe(true);
-      expect(isAssetFactoryTypeIdArray(["ATKBondFactory", "ATKEquityFactory"])).toBe(true);
+      expect(
+        isAssetFactoryTypeIdArray(["ATKBondFactory", "ATKEquityFactory"])
+      ).toBe(true);
       expect(isAssetFactoryTypeIdArray([...assetFactoryTypeIds])).toBe(true);
     });
 
     test("should return false for invalid arrays", () => {
       expect(isAssetFactoryTypeIdArray([])).toBe(false);
-      expect(isAssetFactoryTypeIdArray(["ATKBondFactory", "invalid"])).toBe(false);
+      expect(isAssetFactoryTypeIdArray(["ATKBondFactory", "invalid"])).toBe(
+        false
+      );
       expect(isAssetFactoryTypeIdArray("ATKBondFactory")).toBe(false);
       expect(isAssetFactoryTypeIdArray(123)).toBe(false);
       expect(isAssetFactoryTypeIdArray(null)).toBe(false);
@@ -611,13 +646,17 @@ describe("type guard functions", () => {
   describe("isAssetFactoryTypeIdSet", () => {
     test("should return true for valid factory typeId sets", () => {
       expect(isAssetFactoryTypeIdSet(new Set(["ATKBondFactory"]))).toBe(true);
-      expect(isAssetFactoryTypeIdSet(new Set(["ATKBondFactory", "ATKEquityFactory"]))).toBe(true);
+      expect(
+        isAssetFactoryTypeIdSet(new Set(["ATKBondFactory", "ATKEquityFactory"]))
+      ).toBe(true);
       expect(isAssetFactoryTypeIdSet(new Set(assetFactoryTypeIds))).toBe(true);
     });
 
     test("should return false for invalid sets", () => {
       expect(isAssetFactoryTypeIdSet(new Set())).toBe(false);
-      expect(isAssetFactoryTypeIdSet(new Set(["ATKBondFactory", "invalid"]))).toBe(false);
+      expect(
+        isAssetFactoryTypeIdSet(new Set(["ATKBondFactory", "invalid"]))
+      ).toBe(false);
       expect(isAssetFactoryTypeIdSet(["ATKBondFactory"])).toBe(false);
       expect(isAssetFactoryTypeIdSet("ATKBondFactory")).toBe(false);
       expect(isAssetFactoryTypeIdSet(123)).toBe(false);
@@ -647,10 +686,16 @@ describe("getter functions", () => {
   describe("getAssetFactoryTypeId", () => {
     test("should return valid factory typeIds", () => {
       expect(getAssetFactoryTypeId("ATKBondFactory")).toBe("ATKBondFactory");
-      expect(getAssetFactoryTypeId("ATKEquityFactory")).toBe("ATKEquityFactory");
+      expect(getAssetFactoryTypeId("ATKEquityFactory")).toBe(
+        "ATKEquityFactory"
+      );
       expect(getAssetFactoryTypeId("ATKFundFactory")).toBe("ATKFundFactory");
-      expect(getAssetFactoryTypeId("ATKStableCoinFactory")).toBe("ATKStableCoinFactory");
-      expect(getAssetFactoryTypeId("ATKDepositFactory")).toBe("ATKDepositFactory");
+      expect(getAssetFactoryTypeId("ATKStableCoinFactory")).toBe(
+        "ATKStableCoinFactory"
+      );
+      expect(getAssetFactoryTypeId("ATKDepositFactory")).toBe(
+        "ATKDepositFactory"
+      );
     });
 
     test("should throw for invalid factory typeIds", () => {
@@ -677,16 +722,19 @@ describe("getter functions", () => {
 
   describe("getAssetFactoryTypeIdArray", () => {
     test("should return valid factory typeId arrays", () => {
-      expect(getAssetFactoryTypeIdArray(["ATKBondFactory"])).toEqual(["ATKBondFactory"]);
-      expect(getAssetFactoryTypeIdArray(["ATKBondFactory", "ATKEquityFactory"])).toEqual([
+      expect(getAssetFactoryTypeIdArray(["ATKBondFactory"])).toEqual([
         "ATKBondFactory",
-        "ATKEquityFactory",
       ]);
+      expect(
+        getAssetFactoryTypeIdArray(["ATKBondFactory", "ATKEquityFactory"])
+      ).toEqual(["ATKBondFactory", "ATKEquityFactory"]);
     });
 
     test("should throw for invalid arrays", () => {
       expect(() => getAssetFactoryTypeIdArray([])).toThrow();
-      expect(() => getAssetFactoryTypeIdArray(["ATKBondFactory", "invalid"])).toThrow();
+      expect(() =>
+        getAssetFactoryTypeIdArray(["ATKBondFactory", "invalid"])
+      ).toThrow();
       expect(() => getAssetFactoryTypeIdArray("ATKBondFactory")).toThrow();
       expect(() => getAssetFactoryTypeIdArray(123)).toThrow();
     });
@@ -718,7 +766,9 @@ describe("getter functions", () => {
       expect(result1.has("ATKBondFactory")).toBe(true);
       expect(result1.size).toBe(1);
 
-      const result2 = getAssetFactoryTypeIdSet(new Set(["ATKBondFactory", "ATKEquityFactory"]));
+      const result2 = getAssetFactoryTypeIdSet(
+        new Set(["ATKBondFactory", "ATKEquityFactory"])
+      );
       expect(result2.has("ATKBondFactory")).toBe(true);
       expect(result2.has("ATKEquityFactory")).toBe(true);
       expect(result2.size).toBe(2);
@@ -726,7 +776,9 @@ describe("getter functions", () => {
 
     test("should throw for invalid sets", () => {
       expect(() => getAssetFactoryTypeIdSet(new Set())).toThrow();
-      expect(() => getAssetFactoryTypeIdSet(new Set(["ATKBondFactory", "invalid"]))).toThrow();
+      expect(() =>
+        getAssetFactoryTypeIdSet(new Set(["ATKBondFactory", "invalid"]))
+      ).toThrow();
       expect(() => getAssetFactoryTypeIdSet(["ATKBondFactory"])).toThrow();
       expect(() => getAssetFactoryTypeIdSet("ATKBondFactory")).toThrow();
     });
@@ -740,8 +792,12 @@ describe("utility mapping functions", () => {
       expect(getFactoryTypeIdFromAssetType("bond")).toBe("ATKBondFactory");
       expect(getFactoryTypeIdFromAssetType("equity")).toBe("ATKEquityFactory");
       expect(getFactoryTypeIdFromAssetType("fund")).toBe("ATKFundFactory");
-      expect(getFactoryTypeIdFromAssetType("stablecoin")).toBe("ATKStableCoinFactory");
-      expect(getFactoryTypeIdFromAssetType("deposit")).toBe("ATKDepositFactory");
+      expect(getFactoryTypeIdFromAssetType("stablecoin")).toBe(
+        "ATKStableCoinFactory"
+      );
+      expect(getFactoryTypeIdFromAssetType("deposit")).toBe(
+        "ATKDepositFactory"
+      );
     });
   });
 
@@ -750,18 +806,32 @@ describe("utility mapping functions", () => {
       expect(getAssetTypeFromFactoryTypeId("ATKBondFactory")).toBe("bond");
       expect(getAssetTypeFromFactoryTypeId("ATKEquityFactory")).toBe("equity");
       expect(getAssetTypeFromFactoryTypeId("ATKFundFactory")).toBe("fund");
-      expect(getAssetTypeFromFactoryTypeId("ATKStableCoinFactory")).toBe("stablecoin");
-      expect(getAssetTypeFromFactoryTypeId("ATKDepositFactory")).toBe("deposit");
+      expect(getAssetTypeFromFactoryTypeId("ATKStableCoinFactory")).toBe(
+        "stablecoin"
+      );
+      expect(getAssetTypeFromFactoryTypeId("ATKDepositFactory")).toBe(
+        "deposit"
+      );
     });
   });
 
   describe("getAssetClassFromFactoryTypeId", () => {
     test("should map factory typeIds to asset classes correctly", () => {
-      expect(getAssetClassFromFactoryTypeId("ATKBondFactory")).toBe("fixedIncome");
-      expect(getAssetClassFromFactoryTypeId("ATKEquityFactory")).toBe("flexibleIncome");
-      expect(getAssetClassFromFactoryTypeId("ATKFundFactory")).toBe("flexibleIncome");
-      expect(getAssetClassFromFactoryTypeId("ATKStableCoinFactory")).toBe("cashEquivalent");
-      expect(getAssetClassFromFactoryTypeId("ATKDepositFactory")).toBe("cashEquivalent");
+      expect(getAssetClassFromFactoryTypeId("ATKBondFactory")).toBe(
+        "fixedIncome"
+      );
+      expect(getAssetClassFromFactoryTypeId("ATKEquityFactory")).toBe(
+        "flexibleIncome"
+      );
+      expect(getAssetClassFromFactoryTypeId("ATKFundFactory")).toBe(
+        "flexibleIncome"
+      );
+      expect(getAssetClassFromFactoryTypeId("ATKStableCoinFactory")).toBe(
+        "cashEquivalent"
+      );
+      expect(getAssetClassFromFactoryTypeId("ATKDepositFactory")).toBe(
+        "cashEquivalent"
+      );
     });
   });
 });

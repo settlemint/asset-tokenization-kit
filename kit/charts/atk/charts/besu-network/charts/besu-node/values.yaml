@@ -63,7 +63,7 @@ node:
     customLabels: {}
     image:
       repository: docker.io/hyperledger/besu
-      tag: 25.7.0
+      tag: 25.8.0
       pullPolicy: IfNotPresent
     account:
       password: "password"

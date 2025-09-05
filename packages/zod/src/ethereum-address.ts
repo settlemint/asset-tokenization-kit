@@ -48,7 +48,10 @@ export const ethereumAddress = z
   .describe("A valid Ethereum address (42 characters, starting with 0x)")
   .min(42, "Ethereum address must be at least 42 characters long")
   .max(42, "Ethereum address must be at most 42 characters long")
-  .regex(/^0x[a-fA-F0-9]{40}$/, "Ethereum address must start with 0x followed by 40 hexadecimal characters")
+  .regex(
+    /^0x[a-fA-F0-9]{40}$/,
+    "Ethereum address must start with 0x followed by 40 hexadecimal characters"
+  )
   .refine(isAddress, {
     message: "Invalid Ethereum address format or checksum",
   })

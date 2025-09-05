@@ -103,12 +103,14 @@ export const me = authRouter.user.me
         },
         { context }
       ).catch(() => "false"), // Default to false if not set
-      call(readAccount, {}, { context }).catch((error: unknown) => {
-        if (error instanceof ORPCError && error.status === 404) {
-          return null;
+      call(readAccount, { wallet: authUser.wallet }, { context }).catch(
+        (error: unknown) => {
+          if (error instanceof ORPCError && error.status === 404) {
+            return null;
+          }
+          throw error;
         }
-        throw error;
-      }),
+      ),
     ]);
 
     const { kyc } = userQueryResult ?? {};
@@ -130,6 +132,9 @@ export const me = authRouter.user.me
       wallet: authUser.wallet,
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,
+      identity: account?.identity,
+      claims: account?.claims ?? [],
+      isRegistered: !!account?.identity,
       verificationTypes: [
         ...(authUser.pincodeEnabled ? [VerificationTypeEnum.pincode] : []),
         ...(authUser.twoFactorEnabled ? [VerificationTypeEnum.otp] : []),
@@ -221,13 +226,19 @@ async function getSystemInfo(
 
 function getSystemPermissions(userRoles: ReturnType<typeof mapUserRoles>) {
   // Initialize all actions as false, allowing TypeScript to infer the precise type
-  const initialActions = {
+  const initialActions: Record<keyof typeof SYSTEM_PERMISSIONS, boolean> = {
     tokenFactoryCreate: false,
     addonCreate: false,
     grantRole: false,
     revokeRole: false,
     complianceModuleCreate: false,
     identityRegister: false,
+    trustedIssuerCreate: false,
+    trustedIssuerUpdate: false,
+    trustedIssuerDelete: false,
+    topicCreate: false,
+    topicUpdate: false,
+    topicDelete: false,
   };
 
   const userRoleList = Object.entries(userRoles)

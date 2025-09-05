@@ -49,12 +49,12 @@
  */
 import { theGraphClient } from "@/lib/settlemint/the-graph";
 import type { TadaDocumentNode } from "gql.tada";
+import { print } from "graphql";
 import {
   ClientError,
   type RequestDocument,
   type Variables,
 } from "graphql-request";
-import { print } from "graphql";
 import { z } from "zod";
 import { baseRouter } from "../../procedures/base.router";
 

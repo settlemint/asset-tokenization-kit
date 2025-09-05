@@ -143,4 +143,14 @@ export interface Context {
    * @see {@link @/orpc/middlewares/system/user-claims.middleware} - User claims middleware configuration
    */
   userClaimTopics?: string[];
+
+  /**
+   * Claim topics the authenticated user is authorized to issue as a trusted issuer.
+   * Injected by trustedIssuerMiddleware for procedures that need issuer authorization.
+   * Contains topic names (e.g., ["kyc", "aml"]) that the user can verify/issue for others.
+   * Empty array if user is not a trusted issuer for any topics.
+   * @optional
+   * @see {@link @/orpc/middlewares/auth/trusted-issuer.middleware} - Trusted issuer middleware configuration
+   */
+  userTrustedIssuerTopics?: string[];
 }

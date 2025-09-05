@@ -66,6 +66,24 @@ const userPermissionsSchema = z.object({
           identityRegister: z
             .boolean()
             .describe("Whether the user can register identities"),
+          trustedIssuerCreate: z
+            .boolean()
+            .describe("Whether the user can create trusted issuers"),
+          trustedIssuerUpdate: z
+            .boolean()
+            .describe("Whether the user can update trusted issuers"),
+          trustedIssuerDelete: z
+            .boolean()
+            .describe("Whether the user can delete trusted issuers"),
+          topicCreate: z
+            .boolean()
+            .describe("Whether the user can create topics"),
+          topicUpdate: z
+            .boolean()
+            .describe("Whether the user can update topics"),
+          topicDelete: z
+            .boolean()
+            .describe("Whether the user can delete topics"),
         };
         return actionsSchema;
       })()
@@ -116,6 +134,25 @@ export const UserSchema = z.object({
    * Optional as it may not be set if KYC is not completed.
    */
   lastName: z.string().optional(),
+
+  /**
+   * User's on-chain identity address.
+   * Only present if the user has registered an identity on-chain.
+   */
+  identity: ethereumAddress.optional().describe("User's on-chain identity address"),
+
+  /**
+   * User's on-chain identity claims.
+   * Array of claim names (e.g., "KYC", "ACCREDITATION").
+   * Empty array if no identity or no claims.
+   */
+  claims: z.array(z.string()).default([]).describe("User's identity claims"),
+
+  /**
+   * Whether the user has registered an on-chain identity.
+   * Computed field based on identity presence.
+   */
+  isRegistered: z.boolean().describe("Whether user has on-chain identity"),
 });
 
 /**

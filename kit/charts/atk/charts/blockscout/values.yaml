@@ -8,7 +8,7 @@ blockscout-stack:
       blackbox:
         enabled: false
     network:
-      id: 1337
+      id: 53771311147
       name: Asset Tokenization Kit
       shortname: ATK
       currency:
@@ -23,7 +23,7 @@ blockscout-stack:
       prometheus.io/path: "/metrics"
     image:
       repository: ghcr.io/blockscout/blockscout
-      tag: "9.0.2"
+      tag: "9.0.1"
     ingress:
       enabled: true
       className: "atk-nginx"
@@ -52,15 +52,14 @@ blockscout-stack:
       IPFS_PUBLIC_GATEWAY_URL: 'https://ipfs.io/ipfs'
       API_URL: https://explorer.k8s.orb.local
       WEBAPP_URL: https://explorer.k8s.orb.local
-    envFromSecret:
       DATABASE_URL: postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable
-      ETHEREUM_JSONRPC_HTTP_URL: http://erpc:4000/settlemint/evm/1337
-      ETHEREUM_JSONRPC_TRACE_URL: http://erpc:4000/settlemint/evm/1337
+      ETHEREUM_JSONRPC_HTTP_URL: http://erpc:4000/settlemint/evm/53771311147
+      ETHEREUM_JSONRPC_TRACE_URL: http://erpc:4000/settlemint/evm/53771311147
       SECRET_KEY_BASE: atk
   frontend:
     image:
       repository: ghcr.io/blockscout/frontend
-      tag: "v2.3.0"
+      tag: "v2.3.1"
     replicaCount: 1
     env:
       NEXT_PUBLIC_IS_ACCOUNT_SUPPORTED: 'false'

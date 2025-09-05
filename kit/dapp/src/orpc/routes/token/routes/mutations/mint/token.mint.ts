@@ -42,7 +42,6 @@ import { tokenRouter } from "@/orpc/procedures/token.router";
 import { read } from "@/orpc/routes/token/routes/token.read";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { call } from "@orpc/server";
-import { parseUnits } from "viem";
 
 /**
  * GraphQL mutation for single-recipient token minting.
@@ -182,8 +181,7 @@ export const mint = tokenRouter.token.mint
     // WHY: Type-safe extraction ensures all required parameters are present
     // Recipients and amounts arrays enable both single and batch operations
     const { contract, walletVerification, recipients, amounts } = input;
-    const { auth, token } = context;
-    const tokenDecimals = token.decimals;
+    const { auth } = context;
 
     // OPERATION CLASSIFICATION: Determine optimal minting strategy
     // WHY: Single operations use different GraphQL mutations for gas efficiency
@@ -219,9 +217,7 @@ export const mint = tokenRouter.token.mint
           address: contract,
           from: sender.wallet,
           toList: recipients,
-          amounts: amounts.map((a) =>
-            parseUnits(a.toString(), tokenDecimals).toString()
-          ),
+          amounts: amounts.map((a) => a.toString()),
         },
         {
           sender: sender,
@@ -255,7 +251,7 @@ export const mint = tokenRouter.token.mint
           address: contract,
           from: sender.wallet,
           to,
-          amount: parseUnits(amount.toString(), tokenDecimals).toString(),
+          amount: amount.toString(),
         },
         {
           sender: sender,

@@ -2,6 +2,7 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { systemRouter } from "@/orpc/procedures/system.router";
+import { TrustedIssuerListOutputSchema } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.list.schema";
 import {
   TrustedIssuerListResponseSchema,
   type TrustedIssuerListOutput,
@@ -26,6 +27,9 @@ const TRUSTED_ISSUERS_QUERY = theGraphGraphql(
         topicId
         name
         signature
+      }
+      account {
+        id
       }
     }
   }
@@ -68,5 +72,5 @@ export const trustedIssuerList = systemRouter.system.trustedIssuers.list
     );
 
     // Return the validated trusted issuers
-    return trustedIssuers;
+    return TrustedIssuerListOutputSchema.parse(trustedIssuers);
   });

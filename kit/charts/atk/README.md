@@ -46,7 +46,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | besu-network.besu-node.initContainers.testConnection.image.tag | string | `"1.37"` |  |
 | besu-network.besu-node.node.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-node.node.image.repository | string | `"docker.io/hyperledger/besu"` |  |
-| besu-network.besu-node.node.image.tag | string | `"25.7.0"` |  |
+| besu-network.besu-node.node.image.tag | string | `"25.8.0"` |  |
 | besu-network.besu-node.tessera.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-node.tessera.image.repository | string | `"docker.io/quorumengineering/tessera"` |  |
 | besu-network.besu-node.tessera.image.tag | string | `"24.4"` |  |
@@ -80,7 +80,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | blockscout.blockscout-stack.blockscout.env.WEBAPP_URL | string | `"https://explorer.k8s.orb.local"` |  |
 | blockscout.blockscout-stack.blockscout.image.pullPolicy | string | `"IfNotPresent"` |  |
 | blockscout.blockscout-stack.blockscout.image.repository | string | `"ghcr.io/blockscout/blockscout"` |  |
-| blockscout.blockscout-stack.blockscout.image.tag | string | `"9.0.2"` |  |
+| blockscout.blockscout-stack.blockscout.image.tag | string | `"9.0.1"` |  |
 | blockscout.blockscout-stack.blockscout.ingress.hostname | string | `"explorer.k8s.orb.local"` |  |
 | blockscout.blockscout-stack.blockscout.init.args[0] | string | `"-c"` |  |
 | blockscout.blockscout-stack.blockscout.init.args[1] | string | `"echo \"Waiting for postgresql:5432...\"\nwhile ! nc -z postgresql 5432; do\n  sleep 2;\ndone;\necho \"PostgreSQL is ready!\"\n# Original command:\nbin/blockscout eval \"Elixir.Explorer.ReleaseTasks.create_and_migrate()\"\n"` |  |
@@ -89,7 +89,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | blockscout.blockscout-stack.blockscout.resources | object | `{}` |  |
 | blockscout.blockscout-stack.frontend.image.pullPolicy | string | `"IfNotPresent"` |  |
 | blockscout.blockscout-stack.frontend.image.repository | string | `"ghcr.io/blockscout/frontend"` |  |
-| blockscout.blockscout-stack.frontend.image.tag | string | `"v2.2.1"` |  |
+| blockscout.blockscout-stack.frontend.image.tag | string | `"v2.3.1"` |  |
 | blockscout.blockscout-stack.frontend.ingress.hostname | string | `"explorer.k8s.orb.local"` |  |
 | blockscout.blockscout-stack.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
 | blockscout.blockscout-stack.podAnnotations."prometheus.io/port" | string | `"4000"` |  |
@@ -98,7 +98,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | dapp.enabled | bool | `true` |  |
 | dapp.image.pullPolicy | string | `"IfNotPresent"` |  |
 | dapp.image.repository | string | `"ghcr.io/settlemint/asset-tokenization-kit"` |  |
-| dapp.image.tag | string | `"2.0.0-main71f0929ab"` |  |
+| dapp.image.tag | string | `"2.0.0-main1e32acb7f"` |  |
 | dapp.ingress.enabled | bool | `true` |  |
 | dapp.ingress.hosts[0].host | string | `"dapp.k8s.orb.local"` |  |
 | dapp.ingress.hosts[0].paths[0].path | string | `"/"` |  |
@@ -128,7 +128,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | dapp.initContainer.tcpCheck.enabled | bool | `true` |  |
 | dapp.initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | dapp.initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
-| dapp.initContainer.tcpCheck.image.tag | string | `"v7.7.8"` |  |
+| dapp.initContainer.tcpCheck.image.tag | string | `"v7.7.10"` |  |
 | dapp.initContainer.tcpCheck.timeout | int | `0` |  |
 | dapp.podLabels."app.kubernetes.io/component" | string | `"dapp"` |  |
 | dapp.podLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
@@ -160,11 +160,11 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | erpc.config.logLevel | string | `"info"` |  |
 | erpc.config.projects[0].id | string | `"settlemint"` |  |
 | erpc.config.projects[0].upstreams[0].endpoint | string | `"http://besu-node-rpc-1:8545"` |  |
-| erpc.config.projects[0].upstreams[0].evm.chainId | int | `1337` |  |
+| erpc.config.projects[0].upstreams[0].evm.chainId | int | `53771311147` |  |
 | erpc.config.projects[0].upstreams[0].failsafe.timeout.duration | string | `"30s"` |  |
 | erpc.config.projects[0].upstreams[0].id | string | `"besu-node-rpc-1"` |  |
 | erpc.config.projects[0].upstreams[1].endpoint | string | `"http://besu-node-validator-1:8545"` |  |
-| erpc.config.projects[0].upstreams[1].evm.chainId | int | `1337` |  |
+| erpc.config.projects[0].upstreams[1].evm.chainId | int | `53771311147` |  |
 | erpc.config.projects[0].upstreams[1].failsafe.timeout.duration | string | `"30s"` |  |
 | erpc.config.projects[0].upstreams[1].id | string | `"besu-node-validator-1"` |  |
 | erpc.config.server.httpHostV4 | string | `"0.0.0.0"` |  |
@@ -173,7 +173,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | erpc.image.pullPolicy | string | `"IfNotPresent"` |  |
 | erpc.image.registry | string | `"ghcr.io"` |  |
 | erpc.image.repository | string | `"erpc/erpc"` |  |
-| erpc.image.tag | string | `"0.0.54"` |  |
+| erpc.image.tag | string | `"0.0.55"` |  |
 | erpc.ingress.className | string | `"atk-nginx"` |  |
 | erpc.ingress.enabled | bool | `true` |  |
 | erpc.ingress.hosts[0].host | string | `"rpc.k8s.orb.local"` |  |
@@ -181,7 +181,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | erpc.ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
 | erpc.initContainers.waitforit.image.pullPolicy | string | `"IfNotPresent"` |  |
 | erpc.initContainers.waitforit.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
-| erpc.initContainers.waitforit.image.tag | string | `"v7.7.8"` |  |
+| erpc.initContainers.waitforit.image.tag | string | `"v7.7.10"` |  |
 | erpc.podAnnotations."prometheus.io/port" | string | `"4001"` |  |
 | erpc.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
 | erpc.podLabels."app.kubernetes.io/component" | string | `"erpc"` |  |
@@ -242,24 +242,24 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.grafana.ingress.hosts[0] | string | `"grafana.k8s.orb.local"` |  |
 | observability.grafana.sidecar.image.registry | string | `"docker.io"` |  |
 | observability.grafana.sidecar.image.repository | string | `"kiwigrid/k8s-sidecar"` |  |
-| observability.grafana.sidecar.image.tag | string | `"1.30.9"` |  |
+| observability.grafana.sidecar.image.tag | string | `"1.30.10"` |  |
 | observability.kube-state-metrics.image.registry | string | `"registry.k8s.io"` |  |
 | observability.kube-state-metrics.image.repository | string | `"kube-state-metrics/kube-state-metrics"` |  |
-| observability.kube-state-metrics.image.tag | string | `"v2.16.0"` |  |
+| observability.kube-state-metrics.image.tag | string | `"v2.17.0"` |  |
 | observability.kube-state-metrics.resources | object | `{}` |  |
 | observability.loki.gateway.image.registry | string | `"docker.io"` |  |
 | observability.loki.gateway.image.repository | string | `"nginxinc/nginx-unprivileged"` |  |
 | observability.loki.gateway.image.tag | string | `"1.29-alpine"` |  |
 | observability.loki.loki.image.registry | string | `"docker.io"` | The Docker registry |
 | observability.loki.loki.image.repository | string | `"grafana/loki"` | Docker image repository |
-| observability.loki.loki.image.tag | string | `"3.5.3"` | Overrides the image tag whose default is the chart's appVersion |
+| observability.loki.loki.image.tag | string | `"3.5.4"` | Overrides the image tag whose default is the chart's appVersion |
 | observability.loki.memcached.enabled | bool | `true` | Enable the built in memcached server provided by the chart |
 | observability.loki.memcached.image.repository | string | `"docker.io/memcached"` | Memcached Docker image repository |
 | observability.loki.memcached.image.tag | string | `"1.6.39-alpine"` | Memcached Docker image tag |
 | observability.loki.memcachedExporter.image.repository | string | `"docker.io/prom/memcached-exporter"` |  |
 | observability.loki.memcachedExporter.image.tag | string | `"v0.15.3"` |  |
 | observability.loki.sidecar.image.repository | string | `"docker.io/kiwigrid/k8s-sidecar"` | The Docker registry and image for the k8s sidecar |
-| observability.loki.sidecar.image.tag | string | `"1.30.9"` |  |
+| observability.loki.sidecar.image.tag | string | `"1.30.10"` |  |
 | observability.loki.singleBinary.extraEnv | object | `{}` |  |
 | observability.loki.singleBinary.persistence.size | string | `"10Gi"` |  |
 | observability.loki.singleBinary.resources | object | `{}` |  |
@@ -277,7 +277,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.tempo.tempoQuery.tag | string | `"2.8.1"` |  |
 | observability.victoria-metrics-single.server.image.registry | string | `"docker.io"` |  |
 | observability.victoria-metrics-single.server.image.repository | string | `"victoriametrics/victoria-metrics"` |  |
-| observability.victoria-metrics-single.server.image.tag | string | `"v1.124.0"` |  |
+| observability.victoria-metrics-single.server.image.tag | string | `"v1.125.1"` |  |
 | observability.victoria-metrics-single.server.persistentVolume.size | string | `"10Gi"` |  |
 | observability.victoria-metrics-single.server.persistentVolume.storageClass | string | `""` |  |
 | observability.victoria-metrics-single.server.resources | object | `{}` |  |
@@ -285,7 +285,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | portal.image.pullPolicy | string | `"IfNotPresent"` |  |
 | portal.image.registry | string | `"ghcr.io"` |  |
 | portal.image.repository | string | `"settlemint/btp-scs-portal"` |  |
-| portal.image.tag | string | `"8.6.5"` |  |
+| portal.image.tag | string | `"8.6.7"` |  |
 | portal.initContainers[0].command[0] | string | `"/bin/sh"` |  |
 | portal.initContainers[0].command[1] | string | `"-c"` |  |
 | portal.initContainers[0].command[2] | string | `"set -e\necho \"Waiting for PostgreSQL to be ready...\"\n\n# Add random delay to prevent all nodes from connecting simultaneously\nRANDOM_DELAY=$((RANDOM % 30 + 5))\necho \"Adding random delay of ${RANDOM_DELAY} seconds to stagger connections...\"\nsleep $RANDOM_DELAY\n\n# Function to test PostgreSQL connection\ntest_postgres() {\n  pg_isready -h postgresql -p 5432 -U portal && \\\n  psql -h postgresql -p 5432 -U portal -d portal -c \"SELECT 1;\" > /dev/null 2>&1\n}\n\n# Wait with exponential backoff\nRETRY_COUNT=0\nMAX_RETRIES=30\nWAIT_TIME=2\n\nwhile [ $RETRY_COUNT -lt $MAX_RETRIES ]; do\n  if test_postgres; then\n    echo \"PostgreSQL is ready!\"\n    exit 0\n  fi\n\n  RETRY_COUNT=$((RETRY_COUNT + 1))\n  echo \"PostgreSQL not ready (attempt $RETRY_COUNT/$MAX_RETRIES). Waiting ${WAIT_TIME}s...\"\n  sleep $WAIT_TIME\n\n  # Exponential backoff with max of 30 seconds\n  WAIT_TIME=$((WAIT_TIME * 2))\n  if [ $WAIT_TIME -gt 30 ]; then\n    WAIT_TIME=30\n  fi\ndone\n\necho \"PostgreSQL failed to become ready after $MAX_RETRIES attempts\"\nexit 1\n"` |  |
@@ -300,7 +300,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | support.enabled | bool | `true` |  |
 | support.ingress-nginx.controller.image.digest | string | `""` |  |
 | support.ingress-nginx.controller.image.repository | string | `"registry.k8s.io/ingress-nginx/controller"` |  |
-| support.ingress-nginx.controller.image.tag | string | `"v1.13.1"` |  |
+| support.ingress-nginx.controller.image.tag | string | `"v1.13.2"` |  |
 | support.ingress-nginx.controller.resources | object | `{}` |  |
 | support.ingress-nginx.replicaCount | int | `1` |  |
 | support.minio.enabled | bool | `true` |  |
@@ -341,7 +341,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | txsigner.image.pullPolicy | string | `"IfNotPresent"` |  |
 | txsigner.image.registry | string | `"ghcr.io"` |  |
 | txsigner.image.repository | string | `"settlemint/btp-signer"` |  |
-| txsigner.image.tag | string | `"7.15.7"` |  |
+| txsigner.image.tag | string | `"7.15.10"` |  |
 | txsigner.postgresql | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
 | txsigner.replicaCount | int | `1` |  |
 | txsigner.resources | object | `{}` |  |

@@ -94,6 +94,7 @@ export function ComplianceModules({
             </p>
           </div>
           <ComplianceModulesGrid
+            className="pb-2"
             complianceTypeIds={availableModules.map((module) => module.typeId)}
             onModuleSelect={(typeId) => {
               const module = availableModules.find((m) => m.typeId === typeId);

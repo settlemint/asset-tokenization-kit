@@ -11,6 +11,7 @@ export const roles = [
   "burner",
   "capManagement",
   "claimPolicyManager",
+  "claimIssuer",
   "complianceAdmin",
   "complianceManager",
   "custodian",
@@ -46,7 +47,9 @@ type AccessControlRoles = (typeof roles)[number];
  * Each property corresponds to a boolean indicating if the user has that role.
  * The keys must match the AccessControlRoles union type exactly.
  */
-export const accessControlRoles = z.object(Object.fromEntries(roles.map((role) => [role, z.boolean().default(false)])));
+export const accessControlRoles = z.object(
+  Object.fromEntries(roles.map((role) => [role, z.boolean().default(false)]))
+);
 
 /**
  * Zod schema for validating an access control role.
@@ -56,15 +59,16 @@ export const accessControlRoles = z.object(Object.fromEntries(roles.map((role) =
  */
 export const accessControlRole = z.enum(roles);
 
+export type AccessControlRole = z.infer<typeof accessControlRole>;
+
 export const assetAccessControlRoles: AccessControlRoles[] = [
-  "governance",
-  "supplyManagement",
   "custodian",
   "emergency",
+  "governance",
+  "supplyManagement",
+  "tokenManager",
 ];
-
 export const assetAccessControlRole = z.enum(assetAccessControlRoles);
-
 
 /**
  * Creates a Zod schema that validates the AccessControl fragment structure from TheGraph.
@@ -89,35 +93,60 @@ export const accessControlSchema = () =>
     id: ethereumAddress.describe("Access control contract address"),
     addonManager: accountArray().describe("Accounts with addon manager role"),
     addonModule: accountArray().describe("Accounts with addon module role"),
-    addonRegistryModule: accountArray().describe("Accounts with addon registry module role"),
+    addonRegistryModule: accountArray().describe(
+      "Accounts with addon registry module role"
+    ),
     admin: accountArray().describe("Accounts with admin role"),
     auditor: accountArray().describe("Accounts with auditor role"),
     burner: accountArray().describe("Accounts with burner role"),
     capManagement: accountArray().describe("Accounts with cap management role"),
-    claimPolicyManager: accountArray().describe("Accounts with claim policy manager role"),
-    complianceAdmin: accountArray().describe("Accounts with compliance admin role"),
-    complianceManager: accountArray().describe("Accounts with compliance manager role"),
+    claimPolicyManager: accountArray().describe(
+      "Accounts with claim policy manager role"
+    ),
+    claimIssuer: accountArray().describe("Accounts with claim issuer role"),
+    complianceAdmin: accountArray().describe(
+      "Accounts with compliance admin role"
+    ),
+    complianceManager: accountArray().describe(
+      "Accounts with compliance manager role"
+    ),
     custodian: accountArray().describe("Accounts with custodian role"),
     emergency: accountArray().describe("Accounts with emergency role"),
-    forcedTransfer: accountArray().describe("Accounts with forced transfer role"),
+    forcedTransfer: accountArray().describe(
+      "Accounts with forced transfer role"
+    ),
     freezer: accountArray().describe("Accounts with freezer role"),
     fundsManager: accountArray().describe("Accounts with funds manager role"),
-    globalListManager: accountArray().describe("Accounts with global list manager role"),
+    globalListManager: accountArray().describe(
+      "Accounts with global list manager role"
+    ),
     governance: accountArray().describe("Accounts with governance role"),
-    identityManager: accountArray().describe("Accounts with identity manager role"),
-    identityRegistryModule: accountArray().describe("Accounts with identity registry module role"),
+    identityManager: accountArray().describe(
+      "Accounts with identity manager role"
+    ),
+    identityRegistryModule: accountArray().describe(
+      "Accounts with identity registry module role"
+    ),
     minter: accountArray().describe("Accounts with minter role"),
-    organisationIdentityManager: accountArray().describe("Accounts with organisation identity manager role"),
+    organisationIdentityManager: accountArray().describe(
+      "Accounts with organisation identity manager role"
+    ),
     pauser: accountArray().describe("Accounts with pauser role"),
     recovery: accountArray().describe("Accounts with recovery role"),
     saleAdmin: accountArray().describe("Accounts with sale admin role"),
     signer: accountArray().describe("Accounts with signer role"),
-    supplyManagement: accountArray().describe("Accounts with supply management role"),
+    supplyManagement: accountArray().describe(
+      "Accounts with supply management role"
+    ),
     systemManager: accountArray().describe("Accounts with system manager role"),
     systemModule: accountArray().describe("Accounts with system module role"),
     tokenAdmin: accountArray().describe("Accounts with token admin role"),
-    tokenFactoryModule: accountArray().describe("Accounts with token factory module role"),
-    tokenFactoryRegistryModule: accountArray().describe("Accounts with token factory registry module role"),
+    tokenFactoryModule: accountArray().describe(
+      "Accounts with token factory module role"
+    ),
+    tokenFactoryRegistryModule: accountArray().describe(
+      "Accounts with token factory registry module role"
+    ),
     tokenManager: accountArray().describe("Accounts with token manager role"),
     trustedIssuersMetaRegistryModule: accountArray().describe("Accounts with trusted issuers meta registry module role"),
     verificationAdmin: accountArray().describe("Accounts with verification admin role"),

@@ -20,7 +20,15 @@ import { z } from "zod";
  * - `months`: Monthly periods, medium vesting
  * - `years`: Annual periods, long-term vesting
  */
-export const timeUnits = ["seconds", "minutes", "hours", "days", "weeks", "months", "years"] as const;
+export const timeUnits = [
+  "seconds",
+  "minutes",
+  "hours",
+  "days",
+  "weeks",
+  "months",
+  "years",
+] as const;
 
 /**
  * Creates a Zod schema that validates time measurement units.
@@ -39,7 +47,8 @@ export const timeUnits = ["seconds", "minutes", "hours", "days", "weeks", "month
  * schema.parse("decades"); // Throws ZodError
  * ```
  */
-export const timeUnit = () => z.enum(timeUnits).describe("Unit of time measurement");
+export const timeUnit = () =>
+  z.enum(timeUnits).describe("Unit of time measurement");
 
 /**
  * Type representing a validated time measurement unit.

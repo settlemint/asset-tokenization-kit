@@ -255,14 +255,18 @@ describe("type checking", () => {
 
   describe("assetExtensionSet", () => {
     test("should return proper type", () => {
-      const result = assetExtensionSet().parse(new Set(["BURNABLE", "PAUSABLE"]));
+      const result = assetExtensionSet().parse(
+        new Set(["BURNABLE", "PAUSABLE"])
+      );
       // Test that the type is correctly inferred
       expect(result.has("BURNABLE")).toBe(true);
       expect(result.has("PAUSABLE")).toBe(true);
     });
 
     test("should handle safeParse", () => {
-      const result = assetExtensionSet().safeParse(new Set(["CUSTODIAN", "PAUSABLE"]));
+      const result = assetExtensionSet().safeParse(
+        new Set(["CUSTODIAN", "PAUSABLE"])
+      );
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.has("CUSTODIAN")).toBe(true);
@@ -331,7 +335,9 @@ describe("getter functions", () => {
       expect(getAssetExtension("BURNABLE")).toBe("BURNABLE");
       expect(getAssetExtension("PAUSABLE")).toBe("PAUSABLE");
       expect(getAssetExtension("CUSTODIAN")).toBe("CUSTODIAN");
-      expect(getAssetExtension("HISTORICAL_BALANCES")).toBe("HISTORICAL_BALANCES");
+      expect(getAssetExtension("HISTORICAL_BALANCES")).toBe(
+        "HISTORICAL_BALANCES"
+      );
       expect(getAssetExtension("YIELD")).toBe("YIELD");
     });
 
@@ -346,7 +352,10 @@ describe("getter functions", () => {
   describe("getAssetExtensionArray", () => {
     test("should return valid asset extension arrays", () => {
       expect(getAssetExtensionArray(["BURNABLE"])).toEqual(["BURNABLE"]);
-      expect(getAssetExtensionArray(["BURNABLE", "PAUSABLE"])).toEqual(["BURNABLE", "PAUSABLE"]);
+      expect(getAssetExtensionArray(["BURNABLE", "PAUSABLE"])).toEqual([
+        "BURNABLE",
+        "PAUSABLE",
+      ]);
     });
 
     test("should throw for invalid arrays", () => {
@@ -373,7 +382,9 @@ describe("getter functions", () => {
       const emptySet = getAssetExtensionSet(new Set());
       expect(emptySet).toBeInstanceOf(Set);
       expect(emptySet.size).toBe(0);
-      expect(() => getAssetExtensionSet(new Set(["BURNABLE", "INVALID"]))).toThrow();
+      expect(() =>
+        getAssetExtensionSet(new Set(["BURNABLE", "INVALID"]))
+      ).toThrow();
       expect(() => getAssetExtensionSet(["BURNABLE"])).toThrow();
       expect(() => getAssetExtensionSet("BURNABLE")).toThrow();
     });
@@ -382,7 +393,11 @@ describe("getter functions", () => {
 
 describe("usage in practical scenarios", () => {
   test("should work with token extension checks", () => {
-    const tokenExtensions: AssetExtensionSet = new Set(["BURNABLE", "PAUSABLE", "CUSTODIAN"]);
+    const tokenExtensions: AssetExtensionSet = new Set([
+      "BURNABLE",
+      "PAUSABLE",
+      "CUSTODIAN",
+    ]);
 
     // Check if token has specific extension
     expect(tokenExtensions.has(AssetExtensionEnum.CUSTODIAN)).toBe(true);

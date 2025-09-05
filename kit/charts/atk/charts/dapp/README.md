@@ -18,7 +18,7 @@ A Helm chart for the ATK DApp frontend
 | fullnameOverride | string | `"dapp"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/settlemint/asset-tokenization-kit"` |  |
-| image.tag | string | `"2.0.0-main0d06815fc"` |  |
+| image.tag | string | `"2.0.0-main1e32acb7f"` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.className | string | `"atk-nginx"` |  |
 | ingress.enabled | bool | `false` |  |
@@ -49,7 +49,7 @@ A Helm chart for the ATK DApp frontend
 | initContainer.tcpCheck.enabled | bool | `true` |  |
 | initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
-| initContainer.tcpCheck.image.tag | string | `"v7.7.8"` |  |
+| initContainer.tcpCheck.image.tag | string | `"v7.7.10"` |  |
 | initContainer.tcpCheck.timeout | int | `5` |  |
 | job.enabled | bool | `true` |  |
 | job.image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -63,7 +63,7 @@ A Helm chart for the ATK DApp frontend
 | job.initContainer.hasuraCheck.endpoint | string | `"hasura.atk.svc.cluster.local:8080"` |  |
 | job.initContainer.hasuraCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | job.initContainer.hasuraCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
-| job.initContainer.hasuraCheck.image.tag | string | `"v7.7.8"` |  |
+| job.initContainer.hasuraCheck.image.tag | string | `"v7.7.10"` |  |
 | job.initContainer.hasuraCheck.timeout | int | `5` |  |
 | job.podAnnotations | object | `{}` |  |
 | job.podSecurityContext | object | `{}` |  |

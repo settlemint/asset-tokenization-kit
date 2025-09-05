@@ -37,7 +37,7 @@ besu-network:
     node:
       image:
         repository: docker.io/hyperledger/besu
-        tag: "25.7.0"
+        tag: "25.8.0"
         pullPolicy: IfNotPresent
     tessera:
       image:
@@ -106,14 +106,14 @@ erpc:
   image:
     registry: ghcr.io
     repository: erpc/erpc
-    tag: "0.0.54"
+    tag: "0.0.55"
     pullPolicy: IfNotPresent
   # Init containers
   initContainers:
     waitforit:
       image:
         repository: ghcr.io/settlemint/btp-waitforit
-        tag: "v7.7.8"
+        tag: "v7.7.10"
         pullPolicy: IfNotPresent
   # Test container
   test:
@@ -141,14 +141,14 @@ erpc:
           - id: besu-node-rpc-1
             endpoint: http://besu-node-rpc-1:8545
             evm:
-              chainId: 1337
+              chainId: 53771311147
             failsafe:
               timeout:
                 duration: 30s
           - id: besu-node-validator-1
             endpoint: http://besu-node-validator-1:8545
             evm:
-              chainId: 1337
+              chainId: 53771311147
             failsafe:
               timeout:
                 duration: 30s
@@ -185,7 +185,7 @@ blockscout:
     blockscout:
       image:
         repository: ghcr.io/blockscout/blockscout
-        tag: "9.0.2"
+        tag: "9.0.1"
         pullPolicy: IfNotPresent
       # Add an extra init container to wait for PostgreSQL
       init:
@@ -213,7 +213,7 @@ blockscout:
         hostname: explorer.k8s.orb.local
       image:
         repository: ghcr.io/blockscout/frontend
-        tag: "v2.3.0"
+        tag: "v2.3.1"
         pullPolicy: IfNotPresent
 
 graph-node:
@@ -311,7 +311,7 @@ portal:
   image:
     registry: ghcr.io
     repository: settlemint/btp-scs-portal
-    tag: "8.6.5"
+    tag: "8.6.7"
     pullPolicy: IfNotPresent
   podLabels:
     app.kubernetes.io/component: portal
@@ -378,7 +378,7 @@ support:
       resources: {}
       image:
         repository: registry.k8s.io/ingress-nginx/controller
-        tag: "v1.13.1"
+        tag: "v1.13.2"
         digest: ""
 
   # https://github.com/stakater/Reloader/tree/master/deployments/kubernetes/chart/reloader
@@ -457,7 +457,7 @@ observability:
       registry: registry.k8s.io
       repository: kube-state-metrics/kube-state-metrics
       # If unset use v + .Charts.appVersion
-      tag: "v2.16.0"
+      tag: "v2.17.0"
 
   # https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metrics-single/values.yaml
   victoria-metrics-single:
@@ -469,7 +469,7 @@ observability:
       image:
         registry: docker.io
         repository: victoriametrics/victoria-metrics
-        tag: "v1.124.0"
+        tag: "v1.125.1"
 
   # https://github.com/grafana/loki/blob/main/production/helm/loki/values.yaml
   loki:
@@ -480,7 +480,7 @@ observability:
         # -- Docker image repository
         repository: grafana/loki
         # -- Overrides the image tag whose default is the chart's appVersion
-        tag: 3.5.3
+        tag: 3.5.4
     singleBinary:
       persistence:
         size: 10Gi
@@ -505,7 +505,7 @@ observability:
       image:
         # -- The Docker registry and image for the k8s sidecar
         repository: docker.io/kiwigrid/k8s-sidecar
-        tag: 1.30.9
+        tag: 1.30.10
     gateway:
       image:
         registry: docker.io
@@ -542,7 +542,7 @@ observability:
       image:
         registry: docker.io
         repository: kiwigrid/k8s-sidecar
-        tag: "1.30.9"
+        tag: "1.30.10"
     ingress:
       hosts:
         - grafana.k8s.orb.local
@@ -572,7 +572,7 @@ txsigner:
   image:
     registry: ghcr.io
     repository: settlemint/btp-signer
-    tag: "7.15.7"
+    tag: "7.15.10"
     pullPolicy: IfNotPresent
   # Init container for testing
   test:
@@ -593,7 +593,7 @@ dapp:
   enabled: true
   image:
     repository: ghcr.io/settlemint/asset-tokenization-kit
-    tag: "2.0.0-main71f0929ab"
+    tag: "2.0.0-main1e32acb7f"
     pullPolicy: IfNotPresent
   replicaCount: 1
   ingress:
@@ -626,7 +626,7 @@ dapp:
       timeout: 0  # Timeout in seconds for each dependency check
       image:
         repository: ghcr.io/settlemint/btp-waitforit
-        tag: v7.7.8
+        tag: v7.7.10
         pullPolicy: IfNotPresent
       dependencies:
         # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies

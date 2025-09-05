@@ -1,9 +1,9 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ManageAssetDropdown } from "./manage-asset-dropdown";
-import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 
 // Mock dependencies
 vi.mock("react-i18next", () => ({
@@ -105,7 +105,12 @@ const createMockToken = (overrides?: Partial<Token>): Token =>
     fund: null,
     collateral: null,
     accessControl: undefined,
-    userPermissions: undefined,
+    userPermissions: {
+      actions: {
+        pause: true,
+        unpause: true,
+      },
+    },
     ...overrides,
   }) as Token;
 

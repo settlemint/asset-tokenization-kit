@@ -6,7 +6,15 @@
  * @module BigIntValidation
  */
 import type { StandardRPCCustomJsonSerializer } from "@orpc/client/standard";
-import { abs, type Dnum, floor, from, multiply, type Numberish, toString } from "dnum";
+import {
+  abs,
+  type Dnum,
+  floor,
+  from,
+  multiply,
+  type Numberish,
+  toString,
+} from "dnum";
 import { z } from "zod";
 
 /**
@@ -55,13 +63,23 @@ export const apiBigInt = z.preprocess((value, ctx) => {
     return z.NEVER;
   }
 
-  // dnum accepts string, number, bigint, or [bigint, number] (Dnum type)
-  // Check if the value is one of these types
   if (
-    typeof value === "string" ||
-    typeof value === "number" ||
-    (Array.isArray(value) && value.length === 2 && typeof value[0] === "bigint" && typeof value[1] === "number")
+    Array.isArray(value) &&
+    value.length === 2 &&
+    typeof value[0] === "bigint" &&
+    typeof value[1] === "number" &&
+    value[1] >= 0
   ) {
+    try {
+      const dnum = from(value as [bigint, number]);
+      return dnum[0];
+    } catch {
+      return z.NEVER;
+    }
+  }
+
+  // Here we want to truncate the decimal parts towards zero
+  if (typeof value === "string" || typeof value === "number") {
     try {
       // Convert to dnum (handles strings, numbers, scientific notation)
       // We've validated the type above, so we can safely cast
@@ -153,6 +171,8 @@ export function getApiBigInt(value: unknown): ApiBigInt {
 export const bigIntSerializer: StandardRPCCustomJsonSerializer = {
   type: 32,
   condition: (data) => typeof data === "bigint",
-  serialize: (data: bigint) => data.toString(),
+  serialize: (data: bigint) => {
+    return data.toString();
+  },
   deserialize: BigInt,
 };

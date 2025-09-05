@@ -52,7 +52,7 @@ runs:
   using: "composite"
   steps:
     - name: Get PR labels and send Slack notification
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       env:
         SLACK_BOT_TOKEN: ${{ inputs.slack_bot_token }}
         SLACK_CHANNEL_ID: ${{ inputs.slack_channel_id }}

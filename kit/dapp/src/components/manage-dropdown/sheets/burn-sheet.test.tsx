@@ -8,6 +8,7 @@ import {
   QueryClientProvider,
   useQuery,
 } from "@tanstack/react-query";
+import { from } from "dnum";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 
 // i18n mock
@@ -15,6 +16,9 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, options?: { defaultValue?: string }) =>
       options?.defaultValue ?? key,
+    i18n: {
+      language: "en-US",
+    },
   }),
 }));
 
@@ -97,7 +101,7 @@ vi.mock("@/hooks/use-app-form", () => ({
         AddressInputField: (
           props: React.InputHTMLAttributes<HTMLInputElement>
         ) => React.ReactElement;
-        BigIntField: (
+        DnumField: (
           props: React.InputHTMLAttributes<HTMLInputElement>
         ) => React.ReactElement;
       }) => React.ReactNode;
@@ -110,9 +114,7 @@ vi.mock("@/hooks/use-app-form", () => ({
           AddressInputField: (props) => (
             <input data-testid="address-input" {...props} />
           ),
-          BigIntField: (props) => (
-            <input data-testid="bigint-input" {...props} />
-          ),
+          DnumField: (props) => <input data-testid="dnum-input" {...props} />,
         })}
       </div>
     ),
@@ -190,7 +192,7 @@ describe("BurnSheet", () => {
           AddressInputField: (
             props: React.InputHTMLAttributes<HTMLInputElement>
           ) => React.ReactElement;
-          BigIntField: (
+          DnumField: (
             props: React.InputHTMLAttributes<HTMLInputElement>
           ) => React.ReactElement;
         }) => React.ReactNode;
@@ -203,9 +205,7 @@ describe("BurnSheet", () => {
             AddressInputField: (props) => (
               <input data-testid="address-input" {...props} />
             ),
-            BigIntField: (props) => (
-              <input data-testid="bigint-input" {...props} />
-            ),
+            DnumField: (props) => <input data-testid="dnum-input" {...props} />,
           })}
         </div>
       ),
@@ -259,7 +259,7 @@ describe("BurnSheet", () => {
           AddressInputField: (
             props: React.InputHTMLAttributes<HTMLInputElement>
           ) => React.ReactElement;
-          BigIntField: (
+          DnumField: (
             props: React.InputHTMLAttributes<HTMLInputElement>
           ) => React.ReactElement;
         }) => React.ReactNode;
@@ -272,9 +272,7 @@ describe("BurnSheet", () => {
             AddressInputField: (props) => (
               <input data-testid="address-input" {...props} />
             ),
-            BigIntField: (props) => (
-              <input data-testid="bigint-input" {...props} />
-            ),
+            DnumField: (props) => <input data-testid="dnum-input" {...props} />,
           })}
         </div>
       ),
@@ -282,7 +280,7 @@ describe("BurnSheet", () => {
       getFieldValue: vi.fn((name: string) =>
         name.startsWith("burn_address_")
           ? "0x1111111111111111111111111111111111111111"
-          : 10n
+          : from(10n, 18)
       ),
       setFieldValue: vi.fn(),
     } as unknown as ReturnType<typeof useAppForm>);
@@ -317,7 +315,7 @@ describe("BurnSheet", () => {
           AddressInputField: (
             props: React.InputHTMLAttributes<HTMLInputElement>
           ) => React.ReactElement;
-          BigIntField: (
+          DnumField: (
             props: React.InputHTMLAttributes<HTMLInputElement>
           ) => React.ReactElement;
         }) => React.ReactNode;
@@ -330,9 +328,7 @@ describe("BurnSheet", () => {
             AddressInputField: (props) => (
               <input data-testid="address-input" {...props} />
             ),
-            BigIntField: (props) => (
-              <input data-testid="bigint-input" {...props} />
-            ),
+            DnumField: (props) => <input data-testid="dnum-input" {...props} />,
           })}
         </div>
       ),
@@ -340,7 +336,7 @@ describe("BurnSheet", () => {
       getFieldValue: vi.fn((name: string) =>
         name.startsWith("burn_address_")
           ? "0x1111111111111111111111111111111111111111"
-          : 10n
+          : from(10n, 18)
       ),
       setFieldValue: vi.fn(),
     } as unknown as ReturnType<typeof useAppForm>);
@@ -356,7 +352,7 @@ describe("BurnSheet", () => {
         }}
       />
     );
-    expect(screen.getByTestId("bigint-input")).toBeInTheDocument();
+    expect(screen.getByTestId("dnum-input")).toBeInTheDocument();
   });
 
   it("submits burn mutation with batch arrays", async () => {
@@ -380,7 +376,7 @@ describe("BurnSheet", () => {
           AddressInputField: (
             props: React.InputHTMLAttributes<HTMLInputElement>
           ) => React.ReactElement;
-          BigIntField: (
+          DnumField: (
             props: React.InputHTMLAttributes<HTMLInputElement>
           ) => React.ReactElement;
         }) => React.ReactNode;
@@ -393,9 +389,7 @@ describe("BurnSheet", () => {
             AddressInputField: (props) => (
               <input data-testid="address-input" {...props} />
             ),
-            BigIntField: (props) => (
-              <input data-testid="bigint-input" {...props} />
-            ),
+            DnumField: (props) => <input data-testid="dnum-input" {...props} />,
           })}
         </div>
       ),
@@ -403,7 +397,7 @@ describe("BurnSheet", () => {
       getFieldValue: vi.fn((name: string) =>
         name.startsWith("burn_address_")
           ? "0x1111111111111111111111111111111111111111"
-          : 10n
+          : from(10n, 18)
       ),
       setFieldValue: vi.fn(),
     } as unknown as ReturnType<typeof useAppForm>);
@@ -419,7 +413,7 @@ describe("BurnSheet", () => {
         }}
       />
     );
-    const amt = screen.getByTestId("bigint-input");
+    const amt = screen.getByTestId("dnum-input");
     await user.type(amt, "10");
     await user.click(screen.getByTestId("submit-button"));
     expect(mockBurn).toHaveBeenCalled();

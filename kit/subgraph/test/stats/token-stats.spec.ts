@@ -209,8 +209,8 @@ describe("TokenStats", () => {
         totalMintedExact: "0",
         totalBurned: "0",
         totalBurnedExact: "0",
-        totalTransferred: "67.035",
-        totalTransferredExact: "67035000",
+        totalTransferred: "0.000067",
+        totalTransferredExact: "67",
       },
       {
         token: { symbol: "EURD" },
@@ -222,8 +222,8 @@ describe("TokenStats", () => {
         totalMintedExact: "0",
         totalBurned: "0",
         totalBurnedExact: "0",
-        totalTransferred: "61.5",
-        totalTransferredExact: "61500000",
+        totalTransferred: "0.000061",
+        totalTransferredExact: "61",
       },
       {
         token: { symbol: "EURD" },
@@ -235,8 +235,8 @@ describe("TokenStats", () => {
         totalMintedExact: "150000000",
         totalBurned: "0",
         totalBurnedExact: "0",
-        totalTransferred: "60.965",
-        totalTransferredExact: "60965000",
+        totalTransferred: "5.000055",
+        totalTransferredExact: "5000055",
       },
       {
         token: { symbol: "EURD" },

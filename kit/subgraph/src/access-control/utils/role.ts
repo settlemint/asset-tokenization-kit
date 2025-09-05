@@ -48,6 +48,7 @@ export const Roles = [
   new RoleConfig("COMPLIANCE_MANAGER_ROLE", "complianceManager"),
   new RoleConfig("ADDON_MANAGER_ROLE", "addonManager"),
   new RoleConfig("CLAIM_POLICY_MANAGER_ROLE", "claimPolicyManager"),
+  new RoleConfig("CLAIM_ISSUER_ROLE", "claimIssuer"),
   new RoleConfig("AUDITOR_ROLE", "auditor"),
   new RoleConfig(
     "ORGANISATION_IDENTITY_MANAGER_ROLE",

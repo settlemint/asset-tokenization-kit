@@ -50,6 +50,10 @@ export const CLAIM_POLICY_MANAGER_ROLE = new RoleConfig(
   "CLAIM_POLICY_MANAGER_ROLE",
   "claimPolicyManager"
 );
+export const CLAIM_ISSUER_ROLE = new RoleConfig(
+  "CLAIM_ISSUER_ROLE",
+  "claimIssuer"
+);
 export const AUDITOR_ROLE = new RoleConfig("AUDITOR_ROLE", "auditor");
 export const ORGANISATION_IDENTITY_MANAGER_ROLE = new RoleConfig(
   "ORGANISATION_IDENTITY_MANAGER_ROLE",
@@ -168,6 +172,8 @@ export const ALL_ROLES = [
   SALE_ADMIN_ROLE,
   SIGNER_ROLE,
   GLOBAL_LIST_MANAGER_ROLE,
+  CLAIM_ISSUER_ROLE,
+  ORGANISATION_IDENTITY_MANAGER_ROLE,
 ];
 
 // Helper function to get role by name

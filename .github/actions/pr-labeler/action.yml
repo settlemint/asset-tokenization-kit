@@ -20,7 +20,7 @@ runs:
   using: "composite"
   steps:
     - name: Ensure all labels exist
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       env:
         LOG_LEVEL: ${{ inputs.log_level }}
       with:
@@ -29,7 +29,7 @@ runs:
           await ensureLabelsExist({ github, context });
 
     - name: Analyze PR and apply labels
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       env:
         LOG_LEVEL: ${{ inputs.log_level }}
       with:

@@ -38,10 +38,18 @@ describe("verificationCode", () => {
 
   describe("invalid verification codes", () => {
     it("should reject codes with wrong length", () => {
-      expect(() => validator.parse("ABCD123")).toThrow("Verification code must be exactly 8 characters");
-      expect(() => validator.parse("ABCD12345")).toThrow("Verification code must be exactly 8 characters");
-      expect(() => validator.parse("")).toThrow("Verification code must be exactly 8 characters");
-      expect(() => validator.parse("ABC")).toThrow("Verification code must be exactly 8 characters");
+      expect(() => validator.parse("ABCD123")).toThrow(
+        "Verification code must be exactly 8 characters"
+      );
+      expect(() => validator.parse("ABCD12345")).toThrow(
+        "Verification code must be exactly 8 characters"
+      );
+      expect(() => validator.parse("")).toThrow(
+        "Verification code must be exactly 8 characters"
+      );
+      expect(() => validator.parse("ABC")).toThrow(
+        "Verification code must be exactly 8 characters"
+      );
     });
 
     it("should reject lowercase letters", () => {
@@ -120,7 +128,9 @@ describe("verificationCode", () => {
         // The string "invalid" is 7 characters, so it fails length check first
         expect(result.error.issues.length).toBeGreaterThanOrEqual(1);
         const messages = result.error.issues.map((issue) => issue.message);
-        expect(messages).toContain("Verification code must be exactly 8 characters");
+        expect(messages).toContain(
+          "Verification code must be exactly 8 characters"
+        );
       }
     });
   });
@@ -146,7 +156,9 @@ describe("verificationCode", () => {
     it("should handle extreme inputs", () => {
       // Very long string
       const longString = "A".repeat(1000);
-      expect(() => validator.parse(longString)).toThrow("Verification code must be exactly 8 characters");
+      expect(() => validator.parse(longString)).toThrow(
+        "Verification code must be exactly 8 characters"
+      );
 
       // Unicode characters
       expect(() => validator.parse("ÀÁÂÃÄÅÆÇ")).toThrow(
@@ -209,9 +221,15 @@ describe("getVerificationCode", () => {
   });
 
   test("should throw for invalid verification codes", () => {
-    expect(() => getVerificationCode("ABCD123")).toThrow("Verification code must be exactly 8 characters");
-    expect(() => getVerificationCode("ABCD12345")).toThrow("Verification code must be exactly 8 characters");
-    expect(() => getVerificationCode("")).toThrow("Verification code must be exactly 8 characters");
+    expect(() => getVerificationCode("ABCD123")).toThrow(
+      "Verification code must be exactly 8 characters"
+    );
+    expect(() => getVerificationCode("ABCD12345")).toThrow(
+      "Verification code must be exactly 8 characters"
+    );
+    expect(() => getVerificationCode("")).toThrow(
+      "Verification code must be exactly 8 characters"
+    );
   });
 
   test("should throw for invalid characters", () => {

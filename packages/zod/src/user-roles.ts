@@ -37,7 +37,8 @@ export const userRoleNames = ["admin", "investor", "issuer"] as const;
  * schema.parse("moderator"); // Throws ZodError
  * ```
  */
-export const userRoles = () => z.enum(userRoleNames).describe("User role in the system").default("investor");
+export const userRoles = () =>
+  z.enum(userRoleNames).describe("User role in the system").default("investor");
 
 /**
  * Type representing a validated user role.

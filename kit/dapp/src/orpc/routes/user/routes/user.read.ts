@@ -1,10 +1,20 @@
 import { kycProfiles, user } from "@/lib/db/schema";
-import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
+import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
+import {
+  filterClaimsForUser,
+  identityPermissionsMiddleware,
+} from "@/orpc/middlewares/auth/identity-permissions.middleware";
+import { trustedIssuerMiddleware } from "@/orpc/middlewares/auth/trusted-issuer.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
+import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { getUserRole } from "@atk/zod/user-roles";
+import { call, ORPCError } from "@orpc/server";
 import { eq } from "drizzle-orm";
+import { UserReadInputSchema } from "./user.read.schema";
 
 /**
  * User read route handler.
@@ -46,8 +56,22 @@ import { eq } from "drizzle-orm";
  * - User roles are transformed from internal codes to display names
  */
 export const read = authRouter.user.read
+  .use(systemMiddleware)
+  .use(theGraphMiddleware)
   .use(
-    offChainPermissionsMiddleware({ requiredPermissions: { user: ["list"] } })
+    blockchainPermissionsMiddleware({
+      requiredRoles: { any: ["identityManager", "claimIssuer"] },
+      getAccessControl: ({ context }) => {
+        return context.system?.systemAccessManager?.accessControl;
+      },
+    })
+  )
+  .use(trustedIssuerMiddleware)
+  .use(
+    identityPermissionsMiddleware<typeof UserReadInputSchema>({
+      getTargetUserId: ({ input }) =>
+        "userId" in input ? input.userId : undefined,
+    })
   )
   .use(databaseMiddleware)
   .handler(async ({ context, input, errors }) => {
@@ -93,14 +117,49 @@ export const read = authRouter.user.read
 
     const { user: userData, kyc } = userResult;
 
-    // Validate user has wallet
+    // Handle users without wallets gracefully
     if (!userData.wallet) {
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: `User ${userData.id} has no wallet`,
-      });
+      return {
+        id: userData.id,
+        name:
+          kyc?.firstName && kyc.lastName
+            ? `${kyc.firstName} ${kyc.lastName}`
+            : userData.name,
+        email: userData.email,
+        role: getUserRole(userData.role),
+        wallet: userData.wallet, // null
+        firstName: kyc?.firstName,
+        lastName: kyc?.lastName,
+        identity: undefined,
+        claims: [],
+        isRegistered: false,
+      } as User;
     }
 
-    // Transform result to include human-readable role
+    // Fetch identity data from TheGraph for this specific user
+    const accountData = await call(
+      readAccount,
+      { wallet: userData.wallet },
+      { context }
+    ).catch((error: unknown) => {
+      if (error instanceof ORPCError && error.status === 404) {
+        return null;
+      }
+      throw error;
+    });
+
+    const identity = accountData?.identity;
+
+    // Get all claims for this user
+    const allClaims = accountData?.claims ?? [];
+
+    // Filter claims based on user's permissions
+    const filteredClaims = filterClaimsForUser(
+      allClaims,
+      context.identityPermissions
+    );
+
+    // Transform result to include human-readable role and identity data
     return {
       id: userData.id,
       name:
@@ -112,5 +171,8 @@ export const read = authRouter.user.read
       wallet: userData.wallet,
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,
+      identity: identity,
+      claims: filteredClaims,
+      isRegistered: !!identity,
     } as User;
   });

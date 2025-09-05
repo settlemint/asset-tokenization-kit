@@ -34,6 +34,7 @@ export function CreateWallet() {
             onClick={() => {
               void navigate({ to: "/onboarding" });
             }}
+            disabled={isWalletCreating}
           >
             {t("general:cancel")}
           </Button>

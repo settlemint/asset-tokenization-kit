@@ -1,7 +1,9 @@
 import { describe, expect, it } from "bun:test";
 import { format, from } from "dnum";
-import { fixedYieldSchedule, fixedYieldSchedulePeriod } from "./fixed-yield-schedule";
-
+import {
+  fixedYieldSchedule,
+  fixedYieldSchedulePeriod,
+} from "./fixed-yield-schedule";
 
 describe("fixedYieldSchedulePeriod", () => {
   const validator = fixedYieldSchedulePeriod();
@@ -34,7 +36,9 @@ describe("fixedYieldSchedulePeriod", () => {
 
     const result = validator.parse(validPeriod);
     expect(result.totalClaimed).toEqual(validPeriod.totalClaimed);
-    expect(format(result.totalYield, { digits: 30 }).replaceAll(',', "")).toBe("999999999999999999999999999999.99");
+    expect(format(result.totalYield, { digits: 30 }).replaceAll(",", "")).toBe(
+      "999999999999999999999999999999.99"
+    );
   });
 
   it("should reject invalid data", () => {
@@ -67,6 +71,7 @@ describe("fixedYieldSchedule", () => {
       totalYield: "15000.75",
       denominationAsset: {
         id: "0x1111111111111111111111111111111111111111",
+        balance: "1000000.0",
       },
       currentPeriod: {
         id: "0x2222222222222222222222222222222222222222",
@@ -86,16 +91,20 @@ describe("fixedYieldSchedule", () => {
     expect(result.id.toLowerCase()).toBe(validSchedule.id.toLowerCase());
     expect(result.startDate).toBeInstanceOf(Date);
     expect(result.rate).toBe("500");
-    expect(result.denominationAsset.id.toLowerCase()).toBe(validSchedule.denominationAsset.id.toLowerCase());
+    expect(result.denominationAsset.id.toLowerCase()).toBe(
+      validSchedule.denominationAsset.id.toLowerCase()
+    );
 
     // Check Dnum parsing
-    expect(format(result.totalClaimed).replaceAll(',', "")).toBe("10000.5");
-    expect(format(result.totalYield).replaceAll(',', "")).toBe("15000.75");
+    expect(format(result.totalClaimed).replaceAll(",", "")).toBe("10000.5");
+    expect(format(result.totalYield).replaceAll(",", "")).toBe("15000.75");
 
     // Check nullable fields
     expect(result.nextPeriod).toBeNull();
     expect(result.currentPeriod).not.toBeNull();
-    expect(result.currentPeriod?.id).toBe(validSchedule.currentPeriod.id as `0x${string}`);
+    expect(result.currentPeriod?.id).toBe(
+      validSchedule.currentPeriod.id as `0x${string}`
+    );
   });
 
   it("should accept schedule with multiple periods and different asset types", () => {
@@ -117,7 +126,10 @@ describe("fixedYieldSchedule", () => {
       totalClaimed: "3000",
       totalUnclaimedYield: "1500",
       totalYield: "4500",
-      denominationAsset: { id: "0x5555555555555555555555555555555555555555" },
+      denominationAsset: {
+        id: "0x5555555555555555555555555555555555555555",
+        balance: "2500.75",
+      },
       currentPeriod: null,
       nextPeriod: period1,
       periods: [period1],
@@ -126,7 +138,9 @@ describe("fixedYieldSchedule", () => {
     const result = validator.parse(schedule);
     expect(result.periods).toHaveLength(1);
     expect(result.nextPeriod?.id).toBe(period1.id as `0x${string}`);
-    expect(result.denominationAsset.id.toLowerCase()).toBe("0x5555555555555555555555555555555555555555");
+    expect(result.denominationAsset.id.toLowerCase()).toBe(
+      "0x5555555555555555555555555555555555555555"
+    );
   });
 
   it("should handle edge cases correctly", () => {
@@ -140,7 +154,10 @@ describe("fixedYieldSchedule", () => {
       totalClaimed: "0",
       totalUnclaimedYield: "0.000000000000000001", // Very small decimal
       totalYield: "999999999999999999999999999999.999999999", // Very large decimal
-      denominationAsset: { id: "0x2222222222222222222222222222222222222222" },
+      denominationAsset: {
+        id: "0x2222222222222222222222222222222222222222",
+        balance: "0.000000000000000001",
+      },
       currentPeriod: null,
       nextPeriod: null,
       periods: [],
@@ -150,7 +167,7 @@ describe("fixedYieldSchedule", () => {
     expect(result.rate).toBe("0");
     expect(result.interval).toBe("1");
     expect(format(result.totalClaimed)).toBe("0");
-    expect(format(result.totalYield, { digits: 30 }).replaceAll(',', "")).toBe(
+    expect(format(result.totalYield, { digits: 30 }).replaceAll(",", "")).toBe(
       "999999999999999999999999999999.999999999"
     );
   });
@@ -174,7 +191,10 @@ describe("fixedYieldSchedule", () => {
         totalClaimed: "0",
         totalUnclaimedYield: "0",
         totalYield: "0",
-        denominationAsset: { id: "0x1111111111111111111111111111111111111111" },
+        denominationAsset: {
+          id: "0x1111111111111111111111111111111111111111",
+          balance: "500.0",
+        },
         currentPeriod: null,
         nextPeriod: null,
         periods: [],
@@ -212,7 +232,10 @@ describe("fixedYieldSchedule", () => {
       totalClaimed: "0",
       totalUnclaimedYield: "0",
       totalYield: "0",
-      denominationAsset: { id: "0x1111111111111111111111111111111111111111" },
+      denominationAsset: {
+        id: "0x1111111111111111111111111111111111111111",
+        balance: "10000.0",
+      },
       currentPeriod: null,
       nextPeriod: null,
       periods: [],
@@ -235,16 +258,19 @@ describe("fixedYieldSchedule", () => {
       totalClaimed: "1.23e10", // Scientific notation
       totalUnclaimedYield: "0.000000000000000001", // Very small
       totalYield: "12345678901234567890123456789.123456789", // Very large with decimals
-      denominationAsset: { id: "0x1111111111111111111111111111111111111111" },
+      denominationAsset: {
+        id: "0x1111111111111111111111111111111111111111",
+        balance: "50000000000.0",
+      },
       currentPeriod: null,
       nextPeriod: null,
       periods: [],
     };
 
     const result = validator.parse(schedule);
-    expect(format(result.totalClaimed).replaceAll(',', "")).toBe("12300000000");
+    expect(format(result.totalClaimed).replaceAll(",", "")).toBe("12300000000");
     expect(format(result.totalUnclaimedYield)).toBe("0.000000000000000001");
-    expect(format(result.totalYield, { digits: 30 }).replaceAll(',', "")).toBe(
+    expect(format(result.totalYield, { digits: 30 }).replaceAll(",", "")).toBe(
       "12345678901234567890123456789.123456789"
     );
   });

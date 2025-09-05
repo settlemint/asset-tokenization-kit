@@ -115,10 +115,16 @@ contract MockERC20 is IERC20 {
     uint256 private _totalSupply;
     string public name;
     string public symbol;
+    uint8 private _decimals;
 
-    constructor(string memory _name, string memory _symbol) {
+    constructor(string memory _name, string memory _symbol, uint8 _decimals_) {
         name = _name;
         symbol = _symbol;
+        _decimals = _decimals_;
+    }
+
+    function decimals() public view returns (uint8) {
+        return _decimals;
     }
 
     function totalSupply() external view override returns (uint256) {

@@ -103,7 +103,13 @@ describe("expressionNodeWithGroups", () => {
 
 describe("expressionWithGroups", () => {
   it("should accept mixed array of nodes and parentheses", () => {
-    const nodes: ("(" | ")" | { nodeType: 0 | 1 | 2 | 3; value: bigint })[] = ["(", { nodeType: 0 as const, value: 1n }, { nodeType: 0 as const, value: 2n }, { nodeType: 1 as const, value: 0n }, ")"];
+    const nodes: ("(" | ")" | { nodeType: 0 | 1 | 2 | 3; value: bigint })[] = [
+      "(",
+      { nodeType: 0 as const, value: 1n },
+      { nodeType: 0 as const, value: 2n },
+      { nodeType: 1 as const, value: 0n },
+      ")",
+    ];
     expect(expressionWithGroups.parse(nodes)).toEqual(nodes);
   });
 
@@ -403,7 +409,10 @@ describe("convertPostfixToInfix", () => {
 
 describe("expression node coverage tests", () => {
   it("should handle invalid convertInfixToPostfix with closing parenthesis only", () => {
-    const infix: ExpressionWithGroups = [")", { nodeType: ExpressionTypeEnum.TOPIC, value: 1n }];
+    const infix: ExpressionWithGroups = [
+      ")",
+      { nodeType: ExpressionTypeEnum.TOPIC, value: 1n },
+    ];
     const result = convertInfixToPostfix(infix);
     expect(result).not.toBe(null);
   });
@@ -435,7 +444,10 @@ describe("expression node coverage tests", () => {
   });
 
   it("should handle validateExpressionWithGroups with null postfix", () => {
-    const invalidGroups: ExpressionWithGroups = ["(", { nodeType: ExpressionTypeEnum.TOPIC, value: 1n }];
+    const invalidGroups: ExpressionWithGroups = [
+      "(",
+      { nodeType: ExpressionTypeEnum.TOPIC, value: 1n },
+    ];
     const result = validateExpressionWithGroups(invalidGroups);
     expect(result).toBe(false);
   });

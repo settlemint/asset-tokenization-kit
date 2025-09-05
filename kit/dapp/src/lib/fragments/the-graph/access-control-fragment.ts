@@ -33,6 +33,7 @@ export const AccessControlFragment = theGraphGraphql(`
     burner { id isContract }
     capManagement { id isContract }
     claimPolicyManager { id isContract }
+    claimIssuer { id isContract }
     complianceAdmin { id isContract }
     complianceManager { id isContract }
     custodian { id isContract }
