@@ -185,7 +185,7 @@ blockscout:
     blockscout:
       image:
         repository: ghcr.io/blockscout/blockscout
-        tag: "9.0.1"
+        tag: "9.0.2"
         pullPolicy: IfNotPresent
       # Add an extra init container to wait for PostgreSQL
       init:
