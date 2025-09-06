@@ -10,7 +10,7 @@
       "ES2023"
     ],
     "target": "es2023",
-    "module": "Preserve",
+    "module": "preserve",
     "jsx": "react-jsx",
     "allowJs": true,
     "sourceMap": true,

@@ -45,11 +45,6 @@ export default defineConfig({
     tanstackStart({
       target: "bun",
       customViteReactPlugin: true,
-      prerender: {
-        enabled: true,
-        autoSubfolderIndex: true,
-        crawlLinks: true,
-      },
     }),
     react({
       babel: {
