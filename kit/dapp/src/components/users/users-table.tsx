@@ -33,7 +33,10 @@ function UserStatusBadge({ user }: { user: User }) {
 
   if (user.wallet) {
     return (
-      <Badge variant="secondary" className="bg-yellow-500 hover:bg-yellow-600 text-white">
+      <Badge
+        variant="secondary"
+        className="bg-yellow-500 hover:bg-yellow-600 text-white"
+      >
         {t("management.table.status.pending")}
       </Badge>
     );
@@ -71,11 +74,9 @@ export function UsersTable() {
     })
   );
 
-  // Extract users and total from the paginated response  
+  // Extract users and total from the paginated response
   const users = data?.items ?? [];
   const totalCount = data?.total ?? 0;
-
-
 
   /**
    * Defines the column configuration for the users table
@@ -120,7 +121,13 @@ export function UsersTable() {
         columnHelper.display({
           id: "lastActive",
           header: t("management.table.columns.lastActive"),
-          cell: ({ row }) => <DateCell value={row.original.lastLoginAt} fallback="Never" relative />,
+          cell: ({ row }) => (
+            <DateCell
+              value={row.original.lastLoginAt}
+              fallback="Never"
+              relative
+            />
+          ),
           meta: {
             displayName: t("management.table.columns.lastActive"),
             type: "none",
@@ -135,7 +142,9 @@ export function UsersTable() {
     return (
       <ComponentErrorBoundary componentName="Users Table">
         <div className="flex items-center justify-center p-8">
-          <p className="text-muted-foreground">Failed to load users. Please try again.</p>
+          <p className="text-muted-foreground">
+            Failed to load users. Please try again.
+          </p>
         </div>
       </ComponentErrorBoundary>
     );
@@ -144,44 +153,46 @@ export function UsersTable() {
   return (
     <ComponentErrorBoundary componentName="Users Table">
       <DataTable
-          name="users"
-          data={users}
-          columns={columns}
-          isLoading={isLoading}
-          serverSidePagination={{
-            enabled: true,
-            totalCount,
-          }}
-          externalState={{
-            pagination,
-            onPaginationChange: setPagination,
-          }}
-          urlState={{
-            enabled: false, // Disable URL state since we're managing it manually
-          }}
-          advancedToolbar={{
-            enableGlobalSearch: false,
-            enableFilters: true, // Re-enable filters now that columns are properly accessible
-            enableExport: true,
-            enableViewOptions: true,
-            placeholder: t("management.table.search.placeholder"),
-          }}
-          pagination={{
-            enablePagination: true,
-          }}
-          initialPageSize={20}
-          initialSorting={[
-            {
-              id: "createdAt",
-              desc: true,
-            },
-          ]}
-          customEmptyState={{
-            title: "No users found",
-            description: isLoading ? "Loading users..." : "No users have been registered yet.",
-            icon: Users,
-          }}
-        />
+        name="users"
+        data={users}
+        columns={columns}
+        isLoading={isLoading}
+        serverSidePagination={{
+          enabled: true,
+          totalCount,
+        }}
+        externalState={{
+          pagination,
+          onPaginationChange: setPagination,
+        }}
+        urlState={{
+          enabled: false, // Disable URL state since we're managing it manually
+        }}
+        advancedToolbar={{
+          enableGlobalSearch: false,
+          enableFilters: true, // Re-enable filters now that columns are properly accessible
+          enableExport: true,
+          enableViewOptions: true,
+          placeholder: t("management.table.search.placeholder"),
+        }}
+        pagination={{
+          enablePagination: true,
+        }}
+        initialPageSize={20}
+        initialSorting={[
+          {
+            id: "createdAt",
+            desc: true,
+          },
+        ]}
+        customEmptyState={{
+          title: "No users found",
+          description: isLoading
+            ? "Loading users..."
+            : "No users have been registered yet.",
+          icon: Users,
+        }}
+      />
     </ComponentErrorBoundary>
   );
 }

@@ -311,7 +311,9 @@ describe("User list", () => {
             },
           }
         )
-      ).rejects.toThrow("User does not have the required role to execute this action.");
+      ).rejects.toThrow(
+        "User does not have the required role to execute this action."
+      );
     });
 
     it("allows admin users to list all users", async () => {
@@ -341,7 +343,9 @@ describe("User list", () => {
             },
           }
         )
-      ).rejects.toThrow("User does not have the required role to execute this action.");
+      ).rejects.toThrow(
+        "User does not have the required role to execute this action."
+      );
     });
 
     it("identity manager can see all users and all claims unfiltered", async () => {

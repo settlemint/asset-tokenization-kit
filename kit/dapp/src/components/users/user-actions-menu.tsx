@@ -47,7 +47,9 @@ export function UserActionsMenu({ user }: UserActionsMenuProps) {
           className="h-8 w-8 p-0"
           aria-label={t("management.table.actions.menu")}
         >
-          <span className="sr-only">{t("management.table.actions.openMenu")}</span>
+          <span className="sr-only">
+            {t("management.table.actions.openMenu")}
+          </span>
           <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>

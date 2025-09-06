@@ -107,7 +107,7 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
       return Number.isNaN(parsed) ? 0 : parsed;
     });
 
-    const sortedValues = [...parsedValues].sort((a, b) => a - b);
+    const sortedValues = parsedValues.toSorted((a, b) => a - b);
 
     const operator = tabValue === "range" ? "is between" : "is";
     const newValues =

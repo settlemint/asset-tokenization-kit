@@ -119,7 +119,9 @@ export interface DataTableProps<TData> {
   /** External state handlers for manual state management */
   externalState?: {
     pagination?: PaginationState;
-    onPaginationChange?: (updater: PaginationState | ((old: PaginationState) => PaginationState)) => void;
+    onPaginationChange?: (
+      updater: PaginationState | ((old: PaginationState) => PaginationState)
+    ) => void;
   };
 }
 
@@ -234,22 +236,25 @@ function DataTableComponent<TData>({
     isUsingUrlState && urlState?.routePath
       ? tableState.tableOptions.state
       : externalState
-      ? {
-          rowSelection: localRowSelection,
-          sorting: localSorting,
-          columnFilters: localColumnFilters,
-          columnVisibility: localColumnVisibility,
-          globalFilter: localGlobalFilter,
-          pagination: externalState.pagination ?? { pageIndex: 0, pageSize: initialPageSize ?? 10 },
-        }
-      : {
-          rowSelection: localRowSelection,
-          sorting: localSorting,
-          columnFilters: localColumnFilters,
-          columnVisibility: localColumnVisibility,
-          globalFilter: localGlobalFilter,
-          pagination: { pageIndex: 0, pageSize: initialPageSize ?? 10 },
-        };
+        ? {
+            rowSelection: localRowSelection,
+            sorting: localSorting,
+            columnFilters: localColumnFilters,
+            columnVisibility: localColumnVisibility,
+            globalFilter: localGlobalFilter,
+            pagination: externalState.pagination ?? {
+              pageIndex: 0,
+              pageSize: initialPageSize ?? 10,
+            },
+          }
+        : {
+            rowSelection: localRowSelection,
+            sorting: localSorting,
+            columnFilters: localColumnFilters,
+            columnVisibility: localColumnVisibility,
+            globalFilter: localGlobalFilter,
+            pagination: { pageIndex: 0, pageSize: initialPageSize ?? 10 },
+          };
 
   const stateHandlers =
     isUsingUrlState && urlState?.routePath
@@ -262,24 +267,24 @@ function DataTableComponent<TData>({
           onPaginationChange: tableState.setPagination,
         }
       : externalState
-      ? {
-          onRowSelectionChange: setLocalRowSelection,
-          onSortingChange: setLocalSorting,
-          onColumnFiltersChange: setLocalColumnFilters,
-          onColumnVisibilityChange: setLocalColumnVisibility,
-          onGlobalFilterChange: setLocalGlobalFilter,
-          onPaginationChange: externalState.onPaginationChange ?? (() => {}),
-        }
-      : {
-          onRowSelectionChange: setLocalRowSelection,
-          onSortingChange: setLocalSorting,
-          onColumnFiltersChange: setLocalColumnFilters,
-          onColumnVisibilityChange: setLocalColumnVisibility,
-          onGlobalFilterChange: setLocalGlobalFilter,
-          onPaginationChange: () => {
-            // Local pagination is handled differently
-          },
-        };
+        ? {
+            onRowSelectionChange: setLocalRowSelection,
+            onSortingChange: setLocalSorting,
+            onColumnFiltersChange: setLocalColumnFilters,
+            onColumnVisibilityChange: setLocalColumnVisibility,
+            onGlobalFilterChange: setLocalGlobalFilter,
+            onPaginationChange: externalState.onPaginationChange ?? (() => {}),
+          }
+        : {
+            onRowSelectionChange: setLocalRowSelection,
+            onSortingChange: setLocalSorting,
+            onColumnFiltersChange: setLocalColumnFilters,
+            onColumnVisibilityChange: setLocalColumnVisibility,
+            onGlobalFilterChange: setLocalGlobalFilter,
+            onPaginationChange: () => {
+              // Local pagination is handled differently
+            },
+          };
 
   const table = useReactTable({
     data,
@@ -298,8 +303,10 @@ function DataTableComponent<TData>({
 
     // Server-side pagination configuration
     manualPagination: serverSidePagination?.enabled ?? false,
-    pageCount: serverSidePagination?.enabled 
-      ? Math.ceil(serverSidePagination.totalCount / currentState.pagination.pageSize)
+    pageCount: serverSidePagination?.enabled
+      ? Math.ceil(
+          serverSidePagination.totalCount / currentState.pagination.pageSize
+        )
       : undefined,
 
     initialState: {
