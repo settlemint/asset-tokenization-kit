@@ -1,72 +1,72 @@
 {
-  "extends": ["//"],
-  "tasks": {
-    "codegen:settlemint": {
-      "cache": true,
-      "inputs": ["tsconfig.json", ".dev-reset", "../subgraph/schema.graphql"],
-      "outputs": [
-        "src/lib/settlemint/**",
-        "hasura-schema.graphql",
-        "hasura-env.d.ts",
-        "portal-schema.graphql",
-        "portal-env.d.ts",
-        "blockscout-schema.graphql",
-        "blockscout-env.d.ts",
-        "the-graph-schema-kit.graphql",
-        "the-graph-env-kit.d.ts"
-      ],
-      "passThroughEnv": [
-        "SETTLEMINT_HASURA_ENDPOINT",
-        "SETTLEMINT_HASURA_ADMIN_SECRET",
-        "SETTLEMINT_ACCESS_TOKEN",
-        "SETTLEMINT_INSTANCE",
-        "SETTLEMINT_LOG_LEVEL",
-        "SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT",
-        "VITE_APP_URL",
-        "VITE_EXPLORER_URL",
-        "VITE_SETTLEMINT_LOG_LEVEL"
-      ]
-    },
-    "codegen": {
-      "dependsOn": ["codegen:settlemint", "contracts#compile"],
-      "outputs": ["src/lib/interface-ids.ts"],
-      "inputs": ["tools/generate-interface-ids.ts"]
-    },
-    "build": {
-      "dependsOn": ["codegen"],
-      "outputs": [".output/**", "dist/**"],
-      "inputs": [
-        "src/**/*.{js,jsx,ts,tsx,css}",
-        "public/**",
-        "tsconfig.json",
-        "vite.config.*",
-        "package.json"
-      ]
-    },
-    "publish": {
-      "dependsOn": ["build"]
-    },
-    "artifacts": {},
-    "test": {
-      "dependsOn": ["codegen"],
-      "outputs": []
-    },
-    "test:integration": {
-      "dependsOn": ["codegen", "artifacts", "^test:integration"]
-    },
-    "test:ci": {
-      "dependsOn": ["codegen", "artifacts", "^test:ci"]
-    },
-    "lint": {
-      "dependsOn": ["codegen"],
-      "inputs": [
-        "src/**/*.{js,jsx,ts,tsx}",
-        ".eslintrc*",
-        "eslint.config.*",
-        "package.json",
-        "tsconfig.json"
-      ],
-      "outputs": [".eslintcache"]
-    }
-  }
+	"extends": ["//"],
+	"tasks": {
+		"codegen:settlemint": {
+			"cache": true,
+			"inputs": ["tsconfig.json", ".dev-reset", "../subgraph/schema.graphql"],
+			"outputs": [
+				"src/lib/settlemint/**",
+				"hasura-schema.graphql",
+				"hasura-env.d.ts",
+				"portal-schema.graphql",
+				"portal-env.d.ts",
+				"blockscout-schema.graphql",
+				"blockscout-env.d.ts",
+				"the-graph-schema-kit.graphql",
+				"the-graph-env-kit.d.ts"
+			],
+			"passThroughEnv": [
+				"SETTLEMINT_HASURA_ENDPOINT",
+				"SETTLEMINT_HASURA_ADMIN_SECRET",
+				"SETTLEMINT_ACCESS_TOKEN",
+				"SETTLEMINT_INSTANCE",
+				"SETTLEMINT_LOG_LEVEL",
+				"SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT",
+				"VITE_APP_URL",
+				"VITE_EXPLORER_URL",
+				"VITE_SETTLEMINT_LOG_LEVEL"
+			]
+		},
+		"codegen": {
+			"dependsOn": ["codegen:settlemint", "contracts#compile"],
+			"outputs": ["src/lib/interface-ids.ts"],
+			"inputs": ["tools/generate-interface-ids.ts"]
+		},
+		"build": {
+			"dependsOn": ["codegen"],
+			"outputs": [".output/**", "dist/**"],
+			"inputs": [
+				"src/**/*.{js,jsx,ts,tsx,css}",
+				"public/**",
+				"tsconfig.json",
+				"vite.config.*",
+				"package.json"
+			]
+		},
+		"publish": {
+			"dependsOn": ["build"]
+		},
+		"artifacts": {},
+		"test": {
+			"dependsOn": ["codegen"],
+			"outputs": []
+		},
+		"test:integration": {
+			"dependsOn": ["codegen", "artifacts", "^test:integration"]
+		},
+		"test:ci": {
+			"dependsOn": ["codegen", "artifacts", "^test:ci"]
+		},
+		"lint": {
+			"dependsOn": ["codegen"],
+			"inputs": [
+				"src/**/*.{js,jsx,ts,tsx}",
+				".eslintrc*",
+				"eslint.config.*",
+				"package.json",
+				"tsconfig.json"
+			],
+			"outputs": [".eslintcache"]
+		}
+	}
 }
