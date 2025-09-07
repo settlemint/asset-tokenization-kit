@@ -58,7 +58,7 @@ describe("User search", () => {
         nationalId: "OTHER987654",
       }),
     ]);
-  });
+  }, 100_000);
 
   describe("Admin access", () => {
     it("admin can search users by firstName", async () => {

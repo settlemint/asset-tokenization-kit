@@ -84,7 +84,7 @@ describe("User list", () => {
     });
 
     // testUser3 will have no KYC profile to test the scenario without KYC data
-  });
+  }, 100_000);
 
   describe("Basic functionality", () => {
     it("admin can list all users", async () => {

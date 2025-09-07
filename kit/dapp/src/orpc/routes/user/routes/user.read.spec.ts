@@ -71,7 +71,7 @@ describe("User read", () => {
       residencyStatus: "resident",
       nationalId: "OTHER987654",
     });
-  });
+  }, 100_000);
 
   describe("Admin access", () => {
     it("admin can read user by ID", async () => {

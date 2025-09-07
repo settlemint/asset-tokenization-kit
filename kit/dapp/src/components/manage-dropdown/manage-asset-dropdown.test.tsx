@@ -21,11 +21,24 @@ vi.mock("@/orpc/orpc-client", () => ({
       read: { queryOptions: vi.fn(() => ({ queryKey: ["token", "read"] })) },
       pause: { mutationOptions: vi.fn(() => ({})) },
       unpause: { mutationOptions: vi.fn(() => ({})) },
-      holder: { queryOptions: vi.fn(() => ({ queryKey: ["token", "holder"] })) },
+      holder: {
+        queryOptions: vi.fn(() => ({ queryKey: ["token", "holder"] })),
+      },
+      updateCollateral: { mutationOptions: vi.fn(() => ({})) },
+      setYieldSchedule: { mutationOptions: vi.fn(() => ({})) },
+      burn: { mutationOptions: vi.fn(() => ({})) },
+      grantRole: { mutationOptions: vi.fn(() => ({})) },
+      revokeRole: { mutationOptions: vi.fn(() => ({})) },
+      freezeAddress: { mutationOptions: vi.fn(() => ({})) },
     },
     fixedYieldSchedule: {
-      read: { queryOptions: vi.fn(() => ({ queryKey: ["fixedYieldSchedule", "read"] })) },
+      read: {
+        queryOptions: vi.fn(() => ({
+          queryKey: ["fixedYieldSchedule", "read"],
+        })),
+      },
       topUp: { mutationOptions: vi.fn(() => ({})) },
+      create: { mutationOptions: vi.fn(() => ({})) },
     },
   },
 }));
@@ -93,6 +106,42 @@ vi.mock("./sheets/set-yield-schedule-sheet", () => ({
   }) => (
     <div
       data-testid="set-yield-schedule-sheet"
+      data-open={open}
+      data-asset-id={asset.id}
+    />
+  ),
+}));
+
+vi.mock("./sheets/top-up-denomination-asset-sheet", () => ({
+  TopUpDenominationAssetSheet: ({
+    open,
+    onOpenChange: _onOpenChange,
+    asset,
+  }: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    asset: Token;
+  }) => (
+    <div
+      data-testid="top-up-denomination-asset-sheet"
+      data-open={open}
+      data-asset-id={asset.id}
+    />
+  ),
+}));
+
+vi.mock("./sheets/collateral-sheet", () => ({
+  CollateralSheet: ({
+    open,
+    onOpenChange: _onOpenChange,
+    asset,
+  }: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    asset: Token;
+  }) => (
+    <div
+      data-testid="collateral-sheet"
       data-open={open}
       data-asset-id={asset.id}
     />
