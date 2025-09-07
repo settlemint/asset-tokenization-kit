@@ -6,7 +6,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useSession } from "@/hooks/use-auth";
+import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import { AssetExtensionEnum } from "@atk/zod/asset-extensions";
+import { useQuery } from "@tanstack/react-query";
 import {
   ChevronDown,
   Pause,
@@ -47,7 +51,51 @@ function isCurrentAction({
 export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   const { t } = useTranslation(["tokens", "common"]);
   const [openAction, setOpenAction] = useState<Action | null>(null);
+
+  const { data: session } = useSession();
+
+  // Non-blocking fetch of yield schedule data to get denomination asset
+  const yieldScheduleId = asset.yield?.schedule?.id;
+  const { data: yieldSchedule } = useQuery({
+    ...orpc.fixedYieldSchedule.read.queryOptions({
+      input: { id: yieldScheduleId ?? "" },
+    }),
+    enabled: !!yieldScheduleId,
+  });
+
+  // Fetch denomination asset details when available
+  const denominationAssetId = yieldSchedule?.denominationAsset?.id;
+  const { data: denominationAsset } = useQuery({
+    ...orpc.token.read.queryOptions({
+      input: { tokenAddress: denominationAssetId ?? "" },
+    }),
+    enabled: !!denominationAssetId,
+  });
+
+  // Fetch user's balance of the denomination asset
+  const { data: userDenominationAssetBalance } = useQuery({
+    ...orpc.token.holder.queryOptions({
+      input: {
+        tokenAddress: denominationAssetId ?? "",
+        holderAddress: session?.user?.wallet ?? "",
+      },
+    }),
+    enabled: !!denominationAssetId && !!session?.user?.wallet,
+  });
+
+  // Fetch yield schedule's denomination asset balance
+  const { data: yieldScheduleBalance } = useQuery({
+    ...orpc.token.holder.queryOptions({
+      input: {
+        tokenAddress: denominationAssetId ?? "",
+        holderAddress: yieldScheduleId ?? "",
+      },
+    }),
+    enabled: !!denominationAssetId && !!yieldScheduleId,
+  });
+
   const isPaused = asset.pausable?.paused ?? false;
+
   const actions = useMemo(() => {
     // Check if asset has pausable capability (handles both null and undefined)
     const hasPausableCapability = asset.pausable != null;
@@ -87,7 +135,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
 
     // Set yield schedule only visible for bond tokens without existing schedule
     const canSetYieldSchedule =
-      asset.type === "bond" &&
+      asset.extensions.includes(AssetExtensionEnum.YIELD) &&
       !asset.yield?.schedule &&
       asset.userPermissions?.actions?.setYieldSchedule &&
       !isPaused;
@@ -119,7 +167,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   }, [
     t,
     asset.pausable,
-    asset.type,
+    asset.extensions,
     asset.yield?.schedule,
     asset.userPermissions?.actions,
     asset.collateral,
