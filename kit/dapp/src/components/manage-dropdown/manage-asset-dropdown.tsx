@@ -6,7 +6,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useSession } from "@/hooks/use-auth";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { AssetExtensionEnum } from "@atk/zod/asset-extensions";
@@ -25,6 +24,7 @@ import { CollateralSheet } from "./sheets/collateral-sheet";
 import { MintSheet } from "./sheets/mint-sheet";
 import { PauseUnpauseConfirmationSheet } from "./sheets/pause-unpause-confirmation-sheet";
 import { SetYieldScheduleSheet } from "./sheets/set-yield-schedule-sheet";
+import { TopUpDenominationAssetSheet } from "./sheets/top-up-denomination-asset-sheet";
 
 interface ManageAssetDropdownProps {
   asset: Token; // Keep Token type to maintain API compatibility
@@ -36,7 +36,8 @@ type Action =
   | "mint"
   | "setYieldSchedule"
   | "collateral"
-  | "viewEvents";
+  | "viewEvents"
+  | "topUpDenominationAsset";
 
 function isCurrentAction({
   target,
@@ -51,8 +52,6 @@ function isCurrentAction({
 export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   const { t } = useTranslation(["tokens", "common"]);
   const [openAction, setOpenAction] = useState<Action | null>(null);
-
-  const { data: session } = useSession();
 
   // Non-blocking fetch of yield schedule data to get denomination asset
   const yieldScheduleId = asset.yield?.schedule?.id;
@@ -70,28 +69,6 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
       input: { tokenAddress: denominationAssetId ?? "" },
     }),
     enabled: !!denominationAssetId,
-  });
-
-  // Fetch user's balance of the denomination asset
-  const { data: userDenominationAssetBalance } = useQuery({
-    ...orpc.token.holder.queryOptions({
-      input: {
-        tokenAddress: denominationAssetId ?? "",
-        holderAddress: session?.user?.wallet ?? "",
-      },
-    }),
-    enabled: !!denominationAssetId && !!session?.user?.wallet,
-  });
-
-  // Fetch yield schedule's denomination asset balance
-  const { data: yieldScheduleBalance } = useQuery({
-    ...orpc.token.holder.queryOptions({
-      input: {
-        tokenAddress: denominationAssetId ?? "",
-        holderAddress: yieldScheduleId ?? "",
-      },
-    }),
-    enabled: !!denominationAssetId && !!yieldScheduleId,
   });
 
   const isPaused = asset.pausable?.paused ?? false;
@@ -149,6 +126,17 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
       });
     }
 
+    // Top up denomination asset only visible for assets with existing schedule
+    if (denominationAsset) {
+      arr.push({
+        id: "topUpDenominationAsset",
+        label: t("tokens:actions.topUpDenominationAsset.label"),
+        icon: TrendingUp,
+        openAction: "topUpDenominationAsset",
+        disabled: false,
+      });
+    }
+
     // Collateral management
     const hasCollateralCapability = asset.collateral != null;
     const hasCollateralPermission =
@@ -172,6 +160,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
     asset.userPermissions?.actions,
     asset.collateral,
     isPaused,
+    denominationAsset,
   ]);
 
   const onActionOpenChange = (open: boolean) => {
@@ -235,6 +224,19 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         onOpenChange={onActionOpenChange}
         asset={asset}
       />
+
+      {denominationAsset && yieldSchedule && (
+        <TopUpDenominationAssetSheet
+          open={isCurrentAction({
+            target: "topUpDenominationAsset",
+            current: openAction,
+          })}
+          onOpenChange={onActionOpenChange}
+          asset={asset}
+          denominationAsset={denominationAsset}
+          yieldSchedule={yieldSchedule}
+        />
+      )}
 
       {/* Collateral Management */}
       {asset.collateral != null && (

@@ -74,20 +74,43 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
   // BLOCKCHAIN: Mutation for minting tokens with automatic cache invalidation
   const { mutateAsync: mint, isPending } = useMutation(
     orpc.token.mint.mutationOptions({
-      onSuccess: async () => {
-        // PERFORMANCE: Refresh token data to show updated supply and balances
-        await qc.invalidateQueries({
-          queryKey: orpc.token.read.queryKey({
-            input: { tokenAddress: asset.id },
-          }),
-        });
+      onSuccess: async (_, variables) => {
+        const recipients = Array.isArray(variables.recipients)
+          ? variables.recipients
+          : [variables.recipients];
 
-        // PERFORMANCE: Refresh holders data to show updated balances
-        await qc.invalidateQueries({
-          queryKey: orpc.token.holders.queryKey({
-            input: { tokenAddress: asset.id },
+        // PERFORMANCE: Run all query invalidations in parallel
+        const invalidationPromises = [
+          // Refresh token data to show updated supply and balances
+          qc.invalidateQueries({
+            queryKey: orpc.token.read.queryKey({
+              input: { tokenAddress: asset.id },
+            }),
           }),
-        });
+          // Refresh holders data to show updated balances
+          qc.invalidateQueries({
+            queryKey: orpc.token.holders.queryKey({
+              input: { tokenAddress: asset.id },
+            }),
+          }),
+        ];
+
+        // Add individual recipient holder queries if we have recipients
+        if (recipients && recipients.length > 0) {
+          const recipientInvalidations = recipients.map((recipientAddress: string) =>
+            qc.invalidateQueries({
+              queryKey: orpc.token.holder.queryKey({
+                input: {
+                  tokenAddress: asset.id,
+                  holderAddress: recipientAddress,
+                },
+              }),
+            })
+          );
+          invalidationPromises.push(...recipientInvalidations);
+        }
+
+        await Promise.all(invalidationPromises);
       },
     })
   );
