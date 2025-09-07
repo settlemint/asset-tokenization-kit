@@ -58,19 +58,23 @@ export function SetYieldScheduleSheet({
   const { mutateAsync: setYieldSchedule, isPending: isSetting } = useMutation(
     orpc.token.setYieldSchedule.mutationOptions({
       onSuccess: async (tokenResult) => {
-        // Refresh token data to show updated yield schedule
-        await qc.invalidateQueries({
-          queryKey: orpc.token.read.queryKey({
-            input: { tokenAddress: asset.id },
+        // PERFORMANCE: Run all query invalidations in parallel
+        const invalidationPromises = [
+          // Refresh token data to show updated yield schedule
+          qc.invalidateQueries({
+            queryKey: orpc.token.read.queryKey({
+              input: { tokenAddress: asset.id },
+            }),
           }),
-        });
+          // Also invalidate any yield schedule queries to ensure they refetch
+          qc.invalidateQueries({
+            queryKey: orpc.fixedYieldSchedule.read.queryKey({
+              input: { id: tokenResult.yield?.schedule?.id ?? "" },
+            }),
+          }),
+        ];
 
-        // Also invalidate any yield schedule queries to ensure they refetch
-        await qc.invalidateQueries({
-          queryKey: orpc.fixedYieldSchedule.read.queryKey({
-            input: { id: tokenResult.yield?.schedule?.id ?? "" },
-          }),
-        });
+        await Promise.all(invalidationPromises);
       },
     })
   );

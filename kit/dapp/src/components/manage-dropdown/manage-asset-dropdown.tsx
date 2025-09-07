@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import { AssetExtensionEnum } from "@atk/zod/asset-extensions";
 import {
   ChevronDown,
   Pause,
@@ -21,6 +22,7 @@ import { CollateralSheet } from "./sheets/collateral-sheet";
 import { MintSheet } from "./sheets/mint-sheet";
 import { PauseUnpauseConfirmationSheet } from "./sheets/pause-unpause-confirmation-sheet";
 import { SetYieldScheduleSheet } from "./sheets/set-yield-schedule-sheet";
+import { TopUpDenominationAssetSheet } from "./sheets/top-up-denomination-asset-sheet";
 
 interface ManageAssetDropdownProps {
   asset: Token; // Keep Token type to maintain API compatibility
@@ -32,7 +34,8 @@ type Action =
   | "mint"
   | "setYieldSchedule"
   | "collateral"
-  | "viewEvents";
+  | "viewEvents"
+  | "topUpDenominationAsset";
 
 function isCurrentAction({
   target,
@@ -47,7 +50,9 @@ function isCurrentAction({
 export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   const { t } = useTranslation(["tokens", "common"]);
   const [openAction, setOpenAction] = useState<Action | null>(null);
+
   const isPaused = asset.pausable?.paused ?? false;
+
   const actions = useMemo(() => {
     // Check if asset has pausable capability (handles both null and undefined)
     const hasPausableCapability = asset.pausable != null;
@@ -87,7 +92,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
 
     // Set yield schedule only visible for bond tokens without existing schedule
     const canSetYieldSchedule =
-      asset.type === "bond" &&
+      asset.extensions.includes(AssetExtensionEnum.YIELD) &&
       !asset.yield?.schedule &&
       asset.userPermissions?.actions?.setYieldSchedule &&
       !isPaused;
@@ -97,6 +102,17 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         label: t("tokens:actions.setYieldSchedule.label"),
         icon: TrendingUp,
         openAction: "setYieldSchedule",
+        disabled: false,
+      });
+    }
+
+    const hasYieldSchedule = asset.yield?.schedule;
+    if (hasYieldSchedule) {
+      arr.push({
+        id: "topUpDenominationAsset",
+        label: t("tokens:actions.topUpDenominationAsset.label"),
+        icon: TrendingUp,
+        openAction: "topUpDenominationAsset",
         disabled: false,
       });
     }
@@ -119,7 +135,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   }, [
     t,
     asset.pausable,
-    asset.type,
+    asset.extensions,
     asset.yield?.schedule,
     asset.userPermissions?.actions,
     asset.collateral,
@@ -188,14 +204,20 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         asset={asset}
       />
 
-      {/* Collateral Management */}
-      {asset.collateral != null && (
-        <CollateralSheet
-          open={isCurrentAction({ target: "collateral", current: openAction })}
-          onOpenChange={onActionOpenChange}
-          asset={asset}
-        />
-      )}
+      <TopUpDenominationAssetSheet
+        open={isCurrentAction({
+          target: "topUpDenominationAsset",
+          current: openAction,
+        })}
+        onOpenChange={onActionOpenChange}
+        asset={asset}
+      />
+
+      <CollateralSheet
+        open={isCurrentAction({ target: "collateral", current: openAction })}
+        onOpenChange={onActionOpenChange}
+        asset={asset}
+      />
 
       {/* Change roles is available from the token tab permissions UI */}
     </>

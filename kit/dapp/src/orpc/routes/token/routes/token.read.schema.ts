@@ -2,6 +2,7 @@ import type { AccessControl } from "@/lib/fragments/the-graph/access-control-fra
 import type { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { accessControlRoles } from "@atk/zod/access-control-roles";
 import { assetExtensionArray } from "@atk/zod/asset-extensions";
+import { assetSymbol } from "@atk/zod/asset-symbol";
 import { assetType } from "@atk/zod/asset-types";
 import { bigDecimal } from "@atk/zod/bigdecimal";
 import { decimals } from "@atk/zod/decimals";
@@ -110,6 +111,17 @@ export const RawTokenSchema = z.object({
       faceValue: bigDecimal().describe("The face value of the bond"),
       isMatured: z.boolean().describe("Whether the bond is matured"),
       maturityDate: timestamp().describe("The maturity date of the bond"),
+      denominationAsset: z
+        .object({
+          id: ethereumAddress.describe("The address of the denomination asset"),
+          decimals: decimals().describe(
+            "The decimals of the denomination asset"
+          ),
+          symbol: assetSymbol().describe(
+            "The symbol of the denomination asset"
+          ),
+        })
+        .describe("The denomination asset of the bond"),
     })
     .nullable()
     .describe("The bond of the token"),
