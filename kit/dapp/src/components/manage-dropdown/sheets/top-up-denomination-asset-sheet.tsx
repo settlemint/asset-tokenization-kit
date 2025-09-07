@@ -19,24 +19,23 @@ interface TopUpDenominationAssetSheetProps {
   open: boolean;
   /** Callback when sheet open state changes */
   onOpenChange: (open: boolean) => void;
-  /** Token to create yield schedule for */
+  /** Token with yield schedule to top up denomination asset for */
   asset: Token;
 }
 
 /**
- * Set yield schedule interface for bond tokens.
+ * Top-up denomination asset interface for yield schedule contracts.
  *
  * @remarks
- * BUSINESS LOGIC: Implements yield schedule creation and association workflow
- * that follows a two-step process:
- * 1. Create the fixed yield schedule contract
- * 2. Associate it with the token contract
+ * BUSINESS LOGIC: Implements denomination asset top-up workflow that allows
+ * users to add funds to a yield schedule's denomination asset balance.
+ * This increases the available funds for yield payments.
  *
- * VALIDATION: Ensures dates are logical, rates are reasonable, and intervals
- * are appropriate for the duration.
+ * VALIDATION: Ensures user has sufficient balance of the denomination asset
+ * and amount is valid before allowing the top-up operation.
  *
- * SECURITY: Requires wallet verification for both contract creation and
- * token association to prevent unauthorized yield schedule setup.
+ * SECURITY: Requires wallet verification for the top-up transaction to prevent
+ * unauthorized transfers of denomination assets to the yield schedule.
  */
 export function TopUpDenominationAssetSheet({
   open,
