@@ -93,7 +93,7 @@ const getDb = serverOnly(() => {
     /**
      * Query logging configuration.
      */
-    logger: true,
+    logger: false,
 
     /**
      * Schema definitions for type-safe queries.
