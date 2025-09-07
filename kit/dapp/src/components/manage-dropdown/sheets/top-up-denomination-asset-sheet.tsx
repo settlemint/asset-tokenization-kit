@@ -4,7 +4,6 @@ import { useSession } from "@/hooks/use-auth";
 import { orpc } from "@/orpc/orpc-client";
 import { FixedYieldScheduleTopUpInput } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.top-up.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import type { FixedYieldSchedule } from "@atk/zod/fixed-yield-schedule";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { add, format, from, greaterThan, lessThanOrEqual } from "dnum";
 import { useEffect, useRef } from "react";
@@ -22,8 +21,6 @@ interface TopUpDenominationAssetSheetProps {
   onOpenChange: (open: boolean) => void;
   /** Token to create yield schedule for */
   asset: Token;
-  denominationAsset: Token;
-  yieldSchedule: FixedYieldSchedule;
 }
 
 /**
@@ -45,34 +42,49 @@ export function TopUpDenominationAssetSheet({
   open,
   onOpenChange,
   asset,
-  denominationAsset,
-  yieldSchedule,
 }: TopUpDenominationAssetSheetProps) {
   const { t } = useTranslation(["tokens", "common"]);
   const qc = useQueryClient();
   const { data: session } = useSession();
+  const yieldScheduleId = asset.yield?.schedule?.id;
   const userWallet = session?.user?.wallet;
+
+  const { data: yieldSchedule } = useQuery({
+    ...orpc.fixedYieldSchedule.read.queryOptions({
+      input: { id: yieldScheduleId ?? "" },
+    }),
+    enabled: !!yieldScheduleId,
+  });
+
+  // Fetch denomination asset details when available
+  const denominationAssetId = yieldSchedule?.denominationAsset?.id;
+  const { data: denominationAsset } = useQuery({
+    ...orpc.token.read.queryOptions({
+      input: { tokenAddress: denominationAssetId ?? "" },
+    }),
+    enabled: !!denominationAssetId,
+  });
 
   // Fetch user's balance of the denomination asset
   const { data: userDenominationAssetBalance } = useQuery({
     ...orpc.token.holder.queryOptions({
       input: {
-        tokenAddress: denominationAsset.id,
+        tokenAddress: denominationAsset?.id ?? "",
         holderAddress: userWallet ?? "",
       },
     }),
-    enabled: !!userWallet,
+    enabled: !!userWallet && !!denominationAsset,
   });
 
   // Fetch yield schedule's denomination asset balance
   const { data: yieldScheduleBalance } = useQuery({
     ...orpc.token.holder.queryOptions({
       input: {
-        tokenAddress: denominationAsset.id,
-        holderAddress: yieldSchedule.id,
+        tokenAddress: denominationAsset?.id ?? "",
+        holderAddress: yieldSchedule?.id ?? "",
       },
     }),
-    enabled: !!userWallet,
+    enabled: !!denominationAsset && !!yieldSchedule,
   });
 
   const { mutateAsync: topUp, isPending } = useMutation(
@@ -80,7 +92,7 @@ export function TopUpDenominationAssetSheet({
       onSuccess: async () => {
         await qc.invalidateQueries({
           queryKey: orpc.token.read.queryKey({
-            input: { tokenAddress: denominationAsset.id },
+            input: { tokenAddress: denominationAsset?.id ?? "" },
           }),
         });
 
@@ -88,7 +100,7 @@ export function TopUpDenominationAssetSheet({
         await qc.invalidateQueries({
           queryKey: orpc.token.holder.queryKey({
             input: {
-              tokenAddress: denominationAsset.id,
+              tokenAddress: denominationAsset?.id ?? "",
               holderAddress: userWallet ?? "",
             },
           }),
@@ -98,8 +110,8 @@ export function TopUpDenominationAssetSheet({
         await qc.invalidateQueries({
           queryKey: orpc.token.holder.queryKey({
             input: {
-              tokenAddress: denominationAsset.id,
-              holderAddress: yieldSchedule.id,
+              tokenAddress: denominationAsset?.id ?? "",
+              holderAddress: yieldSchedule?.id ?? "",
             },
           }),
         });
@@ -124,12 +136,15 @@ export function TopUpDenominationAssetSheet({
   }, [open, form]);
 
   // Form validation and calculation helpers
+  const denominationAssetDecimals = denominationAsset?.decimals ?? 0;
+  const denominationAssetSymbol = denominationAsset?.symbol ?? "";
+
   const userBalance =
     userDenominationAssetBalance?.holder?.available ??
-    from(0n, denominationAsset.decimals);
+    from(0n, denominationAssetDecimals);
   const currentYieldScheduleBalance =
     yieldScheduleBalance?.holder?.available ??
-    from(0n, denominationAsset.decimals);
+    from(0n, denominationAssetDecimals);
 
   // CLEANUP: Reset all form state when sheet closes
   const handleClose = () => {
@@ -143,13 +158,13 @@ export function TopUpDenominationAssetSheet({
       {() => {
         const amountFieldValue = form.getFieldValue("amount");
         const amount = amountFieldValue
-          ? from(amountFieldValue, denominationAsset.decimals)
-          : from(0n, denominationAsset.decimals);
+          ? from(amountFieldValue, denominationAssetDecimals)
+          : from(0n, denominationAssetDecimals);
 
         // Validation logic
         const hasValidAmount = greaterThan(
           amount,
-          from(0n, denominationAsset.decimals)
+          from(0n, denominationAssetDecimals)
         );
         const withinBalance = lessThanOrEqual(amount, userBalance);
         const canContinue = () => hasValidAmount && withinBalance;
@@ -158,7 +173,7 @@ export function TopUpDenominationAssetSheet({
         const newYieldScheduleBalance = add(
           currentYieldScheduleBalance,
           amount,
-          denominationAsset.decimals
+          denominationAssetDecimals
         );
 
         // Summary step content
@@ -183,7 +198,7 @@ export function TopUpDenominationAssetSheet({
                   </div>
                   <div className="text-sm font-medium">
                     {format(currentYieldScheduleBalance)}{" "}
-                    {denominationAsset.symbol}
+                    {denominationAssetSymbol}
                   </div>
                 </div>
                 <span className="text-muted-foreground">→</span>
@@ -195,7 +210,7 @@ export function TopUpDenominationAssetSheet({
                     )}
                   </div>
                   <div className="text-sm font-medium">
-                    {format(newYieldScheduleBalance)} {denominationAsset.symbol}
+                    {format(newYieldScheduleBalance)} {denominationAssetSymbol}
                   </div>
                 </div>
               </div>
@@ -206,7 +221,7 @@ export function TopUpDenominationAssetSheet({
                     {t("tokens:actions.topUpDenominationAsset.amountLabel")}
                   </span>
                   <span className="font-medium">
-                    {format(amount)} {denominationAsset.symbol}
+                    {format(amount)} {denominationAssetSymbol}
                   </span>
                 </div>
               </div>
@@ -223,7 +238,7 @@ export function TopUpDenominationAssetSheet({
             description={t(
               "tokens:actions.topUpDenominationAsset.description",
               {
-                symbol: denominationAsset.symbol,
+                symbol: denominationAssetSymbol,
               }
             )}
             submitLabel={t("tokens:actions.topUpDenominationAsset.submit")}
@@ -234,7 +249,7 @@ export function TopUpDenominationAssetSheet({
               const amount = form.getFieldValue("amount");
               const promise = topUp({
                 amount: amount,
-                contract: yieldSchedule.id,
+                contract: yieldSchedule?.id ?? "",
                 walletVerification: verification,
               });
 
@@ -259,8 +274,8 @@ export function TopUpDenominationAssetSheet({
                         label={t(
                           "tokens:actions.topUpDenominationAsset.amountLabel"
                         )}
-                        endAddon={denominationAsset.symbol}
-                        decimals={denominationAsset.decimals}
+                        endAddon={denominationAssetSymbol}
+                        decimals={denominationAssetDecimals}
                         required
                       />
                     )}
@@ -268,7 +283,7 @@ export function TopUpDenominationAssetSheet({
 
                   <div className="mt-3 text-xs text-muted-foreground">
                     {t("tokens:actions.topUpDenominationAsset.available")}:{" "}
-                    {format(userBalance)} {denominationAsset.symbol}
+                    {format(userBalance)} {denominationAssetSymbol}
                   </div>
 
                   {hasValidAmount && !withinBalance && (

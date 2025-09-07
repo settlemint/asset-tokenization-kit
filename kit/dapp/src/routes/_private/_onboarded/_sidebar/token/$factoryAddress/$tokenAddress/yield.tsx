@@ -60,6 +60,26 @@ function RouteComponent() {
     enabled: !!yieldScheduleId,
   });
 
+  // Fetch denomination asset details when available
+  const denominationAssetId = yieldSchedule?.denominationAsset?.id;
+  const { data: denominationAsset } = useQuery({
+    ...orpc.token.read.queryOptions({
+      input: { tokenAddress: denominationAssetId ?? "" },
+    }),
+    enabled: !!denominationAssetId,
+  });
+
+  // Fetch yield schedule's denomination asset balance
+  const { data: yieldScheduleBalance } = useQuery({
+    ...orpc.token.holder.queryOptions({
+      input: {
+        tokenAddress: yieldSchedule?.denominationAsset?.id ?? "",
+        holderAddress: yieldSchedule?.id ?? "",
+      },
+    }),
+    enabled: !!yieldSchedule,
+  });
+
   // Show empty state if no yield schedule exists
   if (!yieldScheduleId) {
     return (
@@ -188,6 +208,13 @@ function RouteComponent() {
           info={t("tokens:yield.fields.denominationAssetInfo")}
           value={yieldSchedule.denominationAsset.id}
           type="address"
+        />
+        <DetailGridItem
+          label={t("tokens:yield.fields.denominationAssetBalance")}
+          info={t("tokens:yield.fields.denominationAssetBalanceInfo")}
+          value={yieldScheduleBalance?.holder?.available}
+          type="currency"
+          currency={{ assetSymbol: denominationAsset?.symbol ?? "" }}
         />
       </DetailGrid>
 

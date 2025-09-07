@@ -6,10 +6,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { AssetExtensionEnum } from "@atk/zod/asset-extensions";
-import { useQuery } from "@tanstack/react-query";
 import {
   ChevronDown,
   Pause,
@@ -52,24 +50,6 @@ function isCurrentAction({
 export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   const { t } = useTranslation(["tokens", "common"]);
   const [openAction, setOpenAction] = useState<Action | null>(null);
-
-  // Non-blocking fetch of yield schedule data to get denomination asset
-  const yieldScheduleId = asset.yield?.schedule?.id;
-  const { data: yieldSchedule } = useQuery({
-    ...orpc.fixedYieldSchedule.read.queryOptions({
-      input: { id: yieldScheduleId ?? "" },
-    }),
-    enabled: !!yieldScheduleId,
-  });
-
-  // Fetch denomination asset details when available
-  const denominationAssetId = yieldSchedule?.denominationAsset?.id;
-  const { data: denominationAsset } = useQuery({
-    ...orpc.token.read.queryOptions({
-      input: { tokenAddress: denominationAssetId ?? "" },
-    }),
-    enabled: !!denominationAssetId,
-  });
 
   const isPaused = asset.pausable?.paused ?? false;
 
@@ -126,8 +106,8 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
       });
     }
 
-    // Top up denomination asset only visible for assets with existing schedule
-    if (denominationAsset) {
+    const hasYieldSchedule = asset.yield?.schedule;
+    if (hasYieldSchedule) {
       arr.push({
         id: "topUpDenominationAsset",
         label: t("tokens:actions.topUpDenominationAsset.label"),
@@ -160,7 +140,6 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
     asset.userPermissions?.actions,
     asset.collateral,
     isPaused,
-    denominationAsset,
   ]);
 
   const onActionOpenChange = (open: boolean) => {
@@ -225,27 +204,20 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         asset={asset}
       />
 
-      {denominationAsset && yieldSchedule && (
-        <TopUpDenominationAssetSheet
-          open={isCurrentAction({
-            target: "topUpDenominationAsset",
-            current: openAction,
-          })}
-          onOpenChange={onActionOpenChange}
-          asset={asset}
-          denominationAsset={denominationAsset}
-          yieldSchedule={yieldSchedule}
-        />
-      )}
+      <TopUpDenominationAssetSheet
+        open={isCurrentAction({
+          target: "topUpDenominationAsset",
+          current: openAction,
+        })}
+        onOpenChange={onActionOpenChange}
+        asset={asset}
+      />
 
-      {/* Collateral Management */}
-      {asset.collateral != null && (
-        <CollateralSheet
-          open={isCurrentAction({ target: "collateral", current: openAction })}
-          onOpenChange={onActionOpenChange}
-          asset={asset}
-        />
-      )}
+      <CollateralSheet
+        open={isCurrentAction({ target: "collateral", current: openAction })}
+        onOpenChange={onActionOpenChange}
+        asset={asset}
+      />
 
       {/* Change roles is available from the token tab permissions UI */}
     </>
