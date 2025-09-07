@@ -103,16 +103,6 @@ export function TopUpDenominationAssetSheet({
             },
           }),
         });
-
-        toast.success(t("tokens:actions.topUpDenominationAsset.success"));
-        onOpenChange(false);
-      },
-      onError: (error) => {
-        toast.error(
-          t("tokens:actions.topUpDenominationAsset.error", {
-            error: error.message,
-          })
-        );
       },
     })
   );
@@ -141,21 +131,11 @@ export function TopUpDenominationAssetSheet({
     yieldScheduleBalance?.holder?.available ??
     from(0n, denominationAsset.decimals);
 
-  // Handle form submission
-  const handleSubmit = async (verification: {
-    secretVerificationCode: string;
-    verificationType?: "OTP" | "PINCODE" | "SECRET_CODES";
-  }) => {
-    try {
-      const amount = form.getFieldValue("amount");
-      await topUp({
-        amount: amount,
-        contract: yieldSchedule.id,
-        walletVerification: verification,
-      });
-    } catch {
-      // Error is handled by mutation onError
-    }
+  // CLEANUP: Reset all form state when sheet closes
+  const handleClose = () => {
+    form.reset();
+    sheetStoreRef.current.setState((s) => ({ ...s, step: "values" }));
+    onOpenChange(false);
   };
 
   return (
@@ -237,7 +217,7 @@ export function TopUpDenominationAssetSheet({
         return (
           <ActionFormSheet
             open={open}
-            onOpenChange={onOpenChange}
+            onOpenChange={handleClose}
             asset={asset}
             title={t("tokens:actions.topUpDenominationAsset.title")}
             description={t(
@@ -250,7 +230,22 @@ export function TopUpDenominationAssetSheet({
             isSubmitting={isPending}
             hasValuesStep={true}
             canContinue={canContinue}
-            onSubmit={handleSubmit}
+            onSubmit={(verification) => {
+              const amount = form.getFieldValue("amount");
+              const promise = topUp({
+                amount: amount,
+                contract: yieldSchedule.id,
+                walletVerification: verification,
+              });
+
+              toast.promise(promise, {
+                loading: t("common:saving"),
+                success: t("common:saved"),
+                error: t("common:error"),
+              });
+
+              handleClose();
+            }}
             store={sheetStoreRef.current}
             showAssetDetailsOnConfirm={false}
             confirm={confirmView}
