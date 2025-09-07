@@ -309,7 +309,7 @@ describe("comprehensive type validation", () => {
       new Date(),
       /123456/,
       Symbol("123456"),
-      BigInt(123_456),
+      123_456n,
       new Error("123456"),
       () => "123456",
     ];

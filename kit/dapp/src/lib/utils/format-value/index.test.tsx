@@ -74,8 +74,8 @@ describe("safeToString", () => {
   });
 
   test("converts bigints to strings", () => {
-    expect(safeToString(BigInt(123))).toBe("123");
-    expect(safeToString(BigInt("9007199254740991"))).toBe("9007199254740991");
+    expect(safeToString(123n)).toBe("123");
+    expect(safeToString(9_007_199_254_740_991n)).toBe("9007199254740991");
   });
 
   test("converts symbols to strings", () => {

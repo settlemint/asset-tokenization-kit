@@ -238,7 +238,7 @@ describe("isAssetSymbol", () => {
       expect(isAssetSymbol(new Date())).toBe(false);
       expect(isAssetSymbol(/BTC/)).toBe(false);
       expect(isAssetSymbol(new Error("BTC"))).toBe(false);
-      expect(isAssetSymbol(BigInt(123))).toBe(false);
+      expect(isAssetSymbol(123n)).toBe(false);
     });
 
     it("should return false for unicode characters", () => {
@@ -376,7 +376,7 @@ describe("getAssetSymbol", () => {
       expect(() => getAssetSymbol(new Date())).toThrow();
       expect(() => getAssetSymbol(/BTC/)).toThrow();
       expect(() => getAssetSymbol(new Error("BTC"))).toThrow();
-      expect(() => getAssetSymbol(BigInt(123))).toThrow();
+      expect(() => getAssetSymbol(123n)).toThrow();
     });
 
     it("should throw for unicode characters", () => {

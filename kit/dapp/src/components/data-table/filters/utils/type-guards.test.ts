@@ -219,7 +219,7 @@ describe("type-guards", () => {
     });
 
     it("should handle BigInt values", () => {
-      const bigInt = BigInt(123);
+      const bigInt = 123n;
       expect(isColumnOption(bigInt)).toBe(false);
       expect(isColumnOptionArray([bigInt])).toBe(false);
       expect(isStringArray([bigInt])).toBe(false);

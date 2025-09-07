@@ -47,7 +47,7 @@ A Helm chart for the blockscout components
 | blockscout-stack.blockscout.env.TXS_STATS_ENABLED | string | `"true"` |  |
 | blockscout-stack.blockscout.env.WEBAPP_URL | string | `"https://explorer.k8s.orb.local"` |  |
 | blockscout-stack.blockscout.image.repository | string | `"ghcr.io/blockscout/blockscout"` |  |
-| blockscout-stack.blockscout.image.tag | string | `"9.0.1"` |  |
+| blockscout-stack.blockscout.image.tag | string | `"9.0.2"` |  |
 | blockscout-stack.blockscout.ingress.className | string | `"atk-nginx"` |  |
 | blockscout-stack.blockscout.ingress.enabled | bool | `true` |  |
 | blockscout-stack.blockscout.ingress.hostname | string | `"explorer.k8s.orb.local"` |  |

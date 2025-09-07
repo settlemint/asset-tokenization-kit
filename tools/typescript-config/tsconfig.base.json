@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "lib": ["ESNext"],
-    "target": "ESNext",
+    "lib": ["ES2023"],
+    "target": "ES2023",
     "module": "Preserve",
     "moduleDetection": "force",
     "jsx": "react-jsx",
