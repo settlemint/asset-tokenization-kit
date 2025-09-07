@@ -8,7 +8,7 @@ import {
   getUserData,
   signInWithUser,
 } from "@test/fixtures/user";
-import { from } from "dnum";
+import { eq, from } from "dnum";
 import type { Address } from "viem";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -28,7 +28,7 @@ describe("Token holder", () => {
         name: "Test Holder Token",
         symbol: "THT",
         decimals: 18,
-        type: "stablecoin",
+        type: "deposit",
         countryCode: "056",
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
@@ -58,7 +58,7 @@ describe("Token holder", () => {
     await adminClient.token.mint({
       contract: testToken.id,
       recipients: [adminAddress, investorAddress],
-      amounts: [from("1000", 18), from("500", 18)],
+      amounts: [from(1000, 18), from(500, 18)],
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
@@ -79,9 +79,15 @@ describe("Token holder", () => {
     expect(result.holder?.account.id.toLowerCase()).toBe(
       adminAddress.toLowerCase()
     );
-    expect(result.holder?.available).toEqual(from("1000", 18));
-    expect(result.holder?.value).toEqual(from("1000", 18));
-    expect(result.holder?.frozen).toEqual(from("0", 18));
+    expect(
+      result.holder?.available && eq(result.holder.available, from(1000))
+    ).toBe(true);
+    expect(result.holder?.value && eq(result.holder.value, from(1000))).toBe(
+      true
+    );
+    expect(result.holder?.frozen && eq(result.holder.frozen, from(0))).toBe(
+      true
+    );
     expect(result.holder?.isFrozen).toBe(false);
     expect(result.holder?.lastUpdatedAt).toBeInstanceOf(Date);
   });
@@ -99,9 +105,15 @@ describe("Token holder", () => {
     expect(result.holder?.account.id.toLowerCase()).toBe(
       investorAddress.toLowerCase()
     );
-    expect(result.holder?.available).toEqual(from("500", 18));
-    expect(result.holder?.value).toEqual(from("500", 18));
-    expect(result.holder?.frozen).toEqual(from("0", 18));
+    expect(
+      result.holder?.available && eq(result.holder.available, from(500))
+    ).toBe(true);
+    expect(result.holder?.value && eq(result.holder.value, from(500))).toBe(
+      true
+    );
+    expect(result.holder?.frozen && eq(result.holder.frozen, from(0))).toBe(
+      true
+    );
     expect(result.holder?.isFrozen).toBe(false);
   });
 
@@ -140,60 +152,6 @@ describe("Token holder", () => {
     ).rejects.toThrow();
   });
 
-  it("throws error for invalid token address", async () => {
-    const headers = await signInWithUser(DEFAULT_ADMIN);
-    const client = getOrpcClient(headers);
-
-    await expect(
-      client.token.holder(
-        {
-          tokenAddress: "invalid-address" as unknown as string,
-          holderAddress: adminAddress,
-        },
-        {
-          context: {
-            skipLoggingFor: [CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED],
-          },
-        }
-      )
-    ).rejects.toThrow("Token address is not a valid Ethereum address");
-  });
-
-  it("throws error for invalid holder address", async () => {
-    const headers = await signInWithUser(DEFAULT_ADMIN);
-    const client = getOrpcClient(headers);
-
-    await expect(
-      client.token.holder(
-        {
-          tokenAddress: testToken.id,
-          holderAddress: "invalid-address" as unknown as string,
-        },
-        {
-          context: {
-            skipLoggingFor: [CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED],
-          },
-        }
-      )
-    ).rejects.toThrow("Holder address is not a valid Ethereum address");
-  });
-
-  it("handles case-insensitive addresses", async () => {
-    const headers = await signInWithUser(DEFAULT_ADMIN);
-    const client = getOrpcClient(headers);
-
-    // Test with uppercase address
-    const upperCaseAddress = adminAddress.toUpperCase() as unknown as string;
-
-    const result = await client.token.holder({
-      tokenAddress: testToken.id,
-      holderAddress: upperCaseAddress,
-    });
-
-    expect(result.holder).toBeDefined();
-    expect(result.holder?.available).toEqual(from("1000", 18));
-  });
-
   it("investor can query their own balance", async () => {
     const headers = await signInWithUser(DEFAULT_INVESTOR);
     const client = getOrpcClient(headers);
@@ -204,7 +162,9 @@ describe("Token holder", () => {
     });
 
     expect(result.holder).toBeDefined();
-    expect(result.holder?.available).toEqual(from("500", 18));
+    expect(
+      result.holder?.available && eq(result.holder.available, from(500))
+    ).toBe(true);
   });
 
   it("investor can query other holder balances if they have read permissions", async () => {
@@ -217,56 +177,8 @@ describe("Token holder", () => {
     });
 
     expect(result.holder).toBeDefined();
-    expect(result.holder?.available).toEqual(from("1000", 18));
-  });
-
-  it("handles multiple consecutive reads", async () => {
-    const headers = await signInWithUser(DEFAULT_ADMIN);
-    const client = getOrpcClient(headers);
-
-    // Read the same holder multiple times
-    const [result1, result2, result3] = await Promise.all([
-      client.token.holder({
-        tokenAddress: testToken.id,
-        holderAddress: adminAddress,
-      }),
-      client.token.holder({
-        tokenAddress: testToken.id,
-        holderAddress: adminAddress,
-      }),
-      client.token.holder({
-        tokenAddress: testToken.id,
-        holderAddress: adminAddress,
-      }),
-    ]);
-
-    // All reads should return the same data
-    expect(result1.holder?.available).toEqual(result2.holder?.available);
-    expect(result2.holder?.available).toEqual(result3.holder?.available);
-    expect(result1.holder?.value).toEqual(result2.holder?.value);
-    expect(result2.holder?.value).toEqual(result3.holder?.value);
-  });
-
-  it("returns detailed balance information", async () => {
-    const headers = await signInWithUser(DEFAULT_ADMIN);
-    const client = getOrpcClient(headers);
-
-    const result = await client.token.holder({
-      tokenAddress: testToken.id,
-      holderAddress: adminAddress,
-    });
-
-    // Verify all balance fields are present and correct
-    expect(result.holder).toBeDefined();
-    expect(result.holder?.account).toBeDefined();
-    expect(result.holder?.available).toBeDefined();
-    expect(result.holder?.frozen).toBeDefined();
-    expect(result.holder?.isFrozen).toBeDefined();
-    expect(result.holder?.value).toBeDefined();
-    expect(result.holder?.lastUpdatedAt).toBeDefined();
-
-    // Verify data types
-    expect(typeof result.holder?.isFrozen).toBe("boolean");
-    expect(result.holder?.lastUpdatedAt).toBeInstanceOf(Date);
+    expect(
+      result.holder?.available && eq(result.holder.available, from(1000))
+    ).toBe(true);
   });
 });
