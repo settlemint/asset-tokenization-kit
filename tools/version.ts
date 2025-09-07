@@ -22,6 +22,7 @@ interface VersionParams {
   refSlug?: string;
   refName?: string;
   shaShort?: string;
+  buildId?: string;
   startPath?: string;
 }
 
@@ -76,7 +77,8 @@ function generateVersionInfo(
   refSlug: string,
   refName: string,
   shaShort: string,
-  baseVersion: string
+  baseVersion: string,
+  buildId?: string
 ): VersionInfo {
   // Check if ref slug matches version pattern (v?[0-9]+\.[0-9]+\.[0-9]+$)
   const versionPattern = /^v?[0-9]+\.[0-9]+\.[0-9]+$/;
@@ -91,7 +93,12 @@ function generateVersionInfo(
   }
 
   if (refName === "main") {
-    const version = `${baseVersion}-main${shaShort.replace(/^v/, "")}`;
+    // Prefer numeric/strict BUILD_ID for better Renovate sorting
+    // Fallback to short SHA, and finally a timestamp to ensure uniqueness
+    const sanitize = (s: string) => s.replace(/[^0-9A-Za-z-]/g, "");
+    const id = sanitize(buildId || "") || sanitize(shaShort || "") || `${Date.now()}`;
+    // Use SemVer pre-release with dot-separated identifiers: -main.<buildid>
+    const version = `${baseVersion}-main.${id}`;
     return {
       tag: "main",
       version,
@@ -118,12 +125,19 @@ export async function getVersionInfo(
     refSlug = process.env.GITHUB_REF_SLUG || "",
     refName = process.env.GITHUB_REF_NAME || "",
     shaShort = process.env.GITHUB_SHA_SHORT || "",
+    buildId = process.env.BUILD_ID || "",
     startPath,
   } = params;
 
   const packageJson = await readRootPackageJson(startPath);
 
-  return generateVersionInfo(refSlug, refName, shaShort, packageJson.version);
+  return generateVersionInfo(
+    refSlug,
+    refName,
+    shaShort,
+    packageJson.version,
+    buildId
+  );
 }
 
 /**

@@ -71,6 +71,8 @@ jobs:
 
       - name: Generate all artifacts
         run: bunx turbo run artifacts --concurrency=100%
+        env:
+          BUILD_ID: ${{ github.run_number }}${{ github.run_attempt }}
 
       - name: Install Playwright browsers
         run: bunx playwright install --with-deps chromium
