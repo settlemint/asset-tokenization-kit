@@ -111,7 +111,8 @@ describe("User search", () => {
       expect(users.length).toBeGreaterThanOrEqual(2);
 
       const foundUsers = users.filter(
-        (u) => u.wallet === testUserData.wallet || u.wallet === otherUserData.wallet
+        (u) =>
+          u.wallet === testUserData.wallet || u.wallet === otherUserData.wallet
       );
       expect(foundUsers.length).toBeGreaterThanOrEqual(2);
     });
@@ -183,7 +184,9 @@ describe("User search", () => {
             },
           }
         )
-      ).rejects.toThrow("User does not have the required role to execute this action.");
+      ).rejects.toThrow(
+        "User does not have the required role to execute this action."
+      );
     });
 
     it("user with proper permissions can search users", async () => {
@@ -249,7 +252,9 @@ describe("User search", () => {
       expect(users).toBeDefined();
       expect(Array.isArray(users)).toBe(true);
 
-      const foundUser = users.find((u) => u.wallet === userWithoutKycData.wallet);
+      const foundUser = users.find(
+        (u) => u.wallet === userWithoutKycData.wallet
+      );
       expect(foundUser).toBeDefined();
       expect(foundUser?.name).toBe(userWithoutKyc.name);
     });
