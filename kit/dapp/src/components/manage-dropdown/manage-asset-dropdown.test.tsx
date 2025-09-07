@@ -21,8 +21,22 @@ vi.mock("@/orpc/orpc-client", () => ({
       read: { queryOptions: vi.fn(() => ({ queryKey: ["token", "read"] })) },
       pause: { mutationOptions: vi.fn(() => ({})) },
       unpause: { mutationOptions: vi.fn(() => ({})) },
+      holder: { queryOptions: vi.fn(() => ({ queryKey: ["token", "holder"] })) },
+    },
+    fixedYieldSchedule: {
+      read: { queryOptions: vi.fn(() => ({ queryKey: ["fixedYieldSchedule", "read"] })) },
+      topUp: { mutationOptions: vi.fn(() => ({})) },
     },
   },
+}));
+
+// Mock auth client and hooks
+vi.mock("@/lib/auth/auth.client", () => ({
+  authClient: {},
+}));
+
+vi.mock("@/hooks/use-auth", () => ({
+  useSession: () => ({ data: null }),
 }));
 
 vi.mock("./sheets/pause-unpause-confirmation-sheet", () => ({
