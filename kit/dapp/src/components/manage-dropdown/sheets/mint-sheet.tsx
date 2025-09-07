@@ -97,15 +97,16 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
 
         // Add individual recipient holder queries if we have recipients
         if (recipients && recipients.length > 0) {
-          const recipientInvalidations = recipients.map((recipientAddress: string) =>
-            qc.invalidateQueries({
-              queryKey: orpc.token.holder.queryKey({
-                input: {
-                  tokenAddress: asset.id,
-                  holderAddress: recipientAddress,
-                },
-              }),
-            })
+          const recipientInvalidations = recipients.map(
+            (recipientAddress: string) =>
+              qc.invalidateQueries({
+                queryKey: orpc.token.holder.queryKey({
+                  input: {
+                    tokenAddress: asset.id,
+                    holderAddress: recipientAddress,
+                  },
+                }),
+              })
           );
           invalidationPromises.push(...recipientInvalidations);
         }

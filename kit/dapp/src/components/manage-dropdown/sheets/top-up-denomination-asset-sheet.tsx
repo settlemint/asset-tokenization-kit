@@ -90,31 +90,35 @@ export function TopUpDenominationAssetSheet({
   const { mutateAsync: topUp, isPending } = useMutation(
     orpc.fixedYieldSchedule.topUp.mutationOptions({
       onSuccess: async () => {
-        await qc.invalidateQueries({
-          queryKey: orpc.token.read.queryKey({
-            input: { tokenAddress: denominationAsset?.id ?? "" },
+        // PERFORMANCE: Run all query invalidations in parallel
+        const invalidationPromises = [
+          // Refresh denomination asset data
+          qc.invalidateQueries({
+            queryKey: orpc.token.read.queryKey({
+              input: { tokenAddress: denominationAsset?.id ?? "" },
+            }),
           }),
-        });
+          // Refresh user's denomination asset balance
+          qc.invalidateQueries({
+            queryKey: orpc.token.holder.queryKey({
+              input: {
+                tokenAddress: denominationAsset?.id ?? "",
+                holderAddress: userWallet ?? "",
+              },
+            }),
+          }),
+          // Refresh yield schedule's balance
+          qc.invalidateQueries({
+            queryKey: orpc.token.holder.queryKey({
+              input: {
+                tokenAddress: denominationAsset?.id ?? "",
+                holderAddress: yieldSchedule?.id ?? "",
+              },
+            }),
+          }),
+        ];
 
-        // Refresh user's denomination asset balance
-        await qc.invalidateQueries({
-          queryKey: orpc.token.holder.queryKey({
-            input: {
-              tokenAddress: denominationAsset?.id ?? "",
-              holderAddress: userWallet ?? "",
-            },
-          }),
-        });
-
-        // Refresh yield schedule's balance
-        await qc.invalidateQueries({
-          queryKey: orpc.token.holder.queryKey({
-            input: {
-              tokenAddress: denominationAsset?.id ?? "",
-              holderAddress: yieldSchedule?.id ?? "",
-            },
-          }),
-        });
+        await Promise.all(invalidationPromises);
       },
     })
   );
@@ -167,6 +171,7 @@ export function TopUpDenominationAssetSheet({
           from(0n, denominationAssetDecimals)
         );
         const withinBalance = lessThanOrEqual(amount, userBalance);
+        const hasZeroBalance = userBalance[0] === 0n;
         const canContinue = () => hasValidAmount && withinBalance;
 
         // Calculate new balance after top-up
@@ -286,11 +291,16 @@ export function TopUpDenominationAssetSheet({
                     {format(userBalance)} {denominationAssetSymbol}
                   </div>
 
-                  {hasValidAmount && !withinBalance && (
+                  {(hasZeroBalance || (hasValidAmount && !withinBalance)) && (
                     <div className="mt-2 text-xs text-destructive">
-                      {t(
-                        "tokens:actions.topUpDenominationAsset.insufficientBalance"
-                      )}
+                      {hasZeroBalance
+                        ? t("tokens:actions.topUpDenominationAsset.noBalance", {
+                            symbol: denominationAssetSymbol,
+                          })
+                        : t(
+                            "tokens:actions.topUpDenominationAsset.insufficientBalance",
+                            { symbol: denominationAssetSymbol }
+                          )}
                     </div>
                   )}
                 </CardContent>

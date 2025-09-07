@@ -44,19 +44,43 @@ export function BurnSheet({
 
   const { mutateAsync: burn, isPending } = useMutation(
     orpc.token.burn.mutationOptions({
-      onSuccess: async () => {
-        await qc.invalidateQueries({
-          queryKey: orpc.token.read.queryKey({
-            input: { tokenAddress: asset.id },
-          }),
-        });
+      onSuccess: async (_, variables) => {
+        const addresses = Array.isArray(variables.addresses)
+          ? variables.addresses
+          : [variables.addresses];
 
-        // Refresh holders data to show updated balances
-        await qc.invalidateQueries({
-          queryKey: orpc.token.holders.queryKey({
-            input: { tokenAddress: asset.id },
+        // PERFORMANCE: Run all query invalidations in parallel
+        const invalidationPromises = [
+          // Refresh token data to show updated supply and balances
+          qc.invalidateQueries({
+            queryKey: orpc.token.read.queryKey({
+              input: { tokenAddress: asset.id },
+            }),
           }),
-        });
+          // Refresh holders data to show updated balances
+          qc.invalidateQueries({
+            queryKey: orpc.token.holders.queryKey({
+              input: { tokenAddress: asset.id },
+            }),
+          }),
+        ];
+
+        // Add individual holder queries for burned addresses if we have addresses
+        if (addresses && addresses.length > 0) {
+          const holderInvalidations = addresses.map((holderAddress: string) =>
+            qc.invalidateQueries({
+              queryKey: orpc.token.holder.queryKey({
+                input: {
+                  tokenAddress: asset.id,
+                  holderAddress: holderAddress,
+                },
+              }),
+            })
+          );
+          invalidationPromises.push(...holderInvalidations);
+        }
+
+        await Promise.all(invalidationPromises);
       },
     })
   );
