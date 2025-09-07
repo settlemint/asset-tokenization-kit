@@ -186,7 +186,7 @@ function RouteComponent() {
             info={t("tokens:fields.faceValueInfo")}
             value={asset.bond.faceValue}
             type="currency"
-            currency={{ assetSymbol: asset.symbol }}
+            currency={{ assetSymbol: asset.bond.denominationAsset.symbol }}
           />
           <DetailGridItem
             label={t("tokens:fields.isMatured")}
