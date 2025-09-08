@@ -111,6 +111,9 @@ export const RawTokenSchema = z.object({
       faceValue: bigDecimal().describe("The face value of the bond"),
       isMatured: z.boolean().describe("Whether the bond is matured"),
       maturityDate: timestamp().describe("The maturity date of the bond"),
+      denominationAssetMaturityAmount: bigDecimal().describe(
+        "The amount of denomination asset needed to mature the bond"
+      ),
       denominationAsset: z
         .object({
           id: ethereumAddress.describe("The address of the denomination asset"),

@@ -47,6 +47,7 @@ const READ_TOKEN_QUERY = theGraphGraphql(
         faceValue
         isMatured
         maturityDate
+        denominationAssetMaturityAmount
         denominationAsset {
           id
           decimals
