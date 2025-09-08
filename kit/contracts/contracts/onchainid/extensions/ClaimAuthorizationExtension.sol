@@ -130,7 +130,9 @@ contract ClaimAuthorizationExtension {
         for (uint256 i = 0; i < contractsLength;) {
             address authContract = _claimAuthorizationContracts[i];
 
-            try IClaimAuthorizer(authContract).isAuthorizedToAddClaim(issuer, topic) returns (bool authorized) {
+            try IClaimAuthorizer(authContract).isAuthorizedToAddClaim(issuer, topic, address(this)) returns (
+                bool authorized
+            ) {
                 if (authorized) {
                     return true;
                 }

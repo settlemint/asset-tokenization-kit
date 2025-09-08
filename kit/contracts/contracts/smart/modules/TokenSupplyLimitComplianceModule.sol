@@ -6,7 +6,7 @@ import { AbstractComplianceModule } from "./AbstractComplianceModule.sol";
 import { ISMART } from "../interface/ISMART.sol";
 import { ISMARTIdentityRegistry } from "../interface/ISMARTIdentityRegistry.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
-import { IERC3643TrustedIssuersRegistry } from "../interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
+import { ISMARTTrustedIssuersRegistry } from "../interface/ISMARTTrustedIssuersRegistry.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { ATKTopics } from "../../system/ATKTopics.sol";
 import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
@@ -459,8 +459,9 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
             revert ComplianceCheckFailed("Token has no base price claim");
         }
 
-        IERC3643TrustedIssuersRegistry issuersRegistry = registry.issuersRegistry();
-        IClaimIssuer[] memory trustedIssuers = issuersRegistry.getTrustedIssuersForClaimTopic(BASE_PRICE_TOPIC_ID);
+        ISMARTTrustedIssuersRegistry issuersRegistry = registry.issuersRegistry();
+        IClaimIssuer[] memory trustedIssuers =
+            issuersRegistry.getTrustedIssuersForClaimTopic(BASE_PRICE_TOPIC_ID, address(tokenIdentity));
 
         // Check each claim against the list of trusted issuers
         for (uint256 i = 0; i < claimIds.length;) {

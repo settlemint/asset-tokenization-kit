@@ -23,4 +23,8 @@ interface IATKIdentityRegistry is ISMARTIdentityRegistry, IATKSystemAccessManage
         address topicSchemeRegistry
     )
         external;
+
+    // Note: isVerifiedForContext has been removed as it's no longer needed.
+    // The isVerified function in ISMARTIdentityRegistry now handles both simple claim topic verification
+    // and the subject-aware trusted issuer queries automatically.
 }

@@ -4,24 +4,27 @@ pragma solidity ^0.8.28;
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IATKTokenFactory } from "./IATKTokenFactory.sol";
-import { ISMART } from "../../smart/interface/ISMART.sol";
-import { ATKTokenAccessManagerProxy } from "../access-manager/ATKTokenAccessManagerProxy.sol";
-import { ISMARTTokenAccessManager } from "../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
-import { ISMARTIdentityRegistry } from "../../smart/interface/ISMARTIdentityRegistry.sol";
-import { ISMARTCompliance } from "../../smart/interface/ISMARTCompliance.sol";
+import { ISMART } from "../../../smart/interface/ISMART.sol";
+import { ATKTokenAccessManagerProxy } from "../access/ATKTokenAccessManagerProxy.sol";
+import { ISMARTTokenAccessManager } from "../../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { ISMARTIdentityRegistry } from "../../../smart/interface/ISMARTIdentityRegistry.sol";
+import { ISMARTCompliance } from "../../../smart/interface/ISMARTCompliance.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
-import { IATKSystem } from "../IATKSystem.sol";
-import { IATKIdentityFactory } from "../identity-factory/IATKIdentityFactory.sol";
-import { ATKPeopleRoles } from "../ATKPeopleRoles.sol";
-import { ATKRoles } from "../ATKRoles.sol";
-import { ATKAssetRoles } from "../../assets/ATKAssetRoles.sol";
+import { IATKSystem } from "../../IATKSystem.sol";
+import { IATKIdentityFactory } from "../../identity-factory/IATKIdentityFactory.sol";
+import { ATKPeopleRoles } from "../../ATKPeopleRoles.sol";
+import { ATKRoles } from "../../ATKRoles.sol";
+import { ATKAssetRoles } from "../../../assets/ATKAssetRoles.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
-import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.sol";
-import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
-import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
-import { ATKTopics } from "../ATKTopics.sol";
-import { IATKTopicSchemeRegistry } from "../topic-scheme-registry/IATKTopicSchemeRegistry.sol";
+import { IWithTypeIdentifier } from "../../../smart/interface/IWithTypeIdentifier.sol";
+import { ATKSystemAccessManaged } from "../../access-manager/ATKSystemAccessManaged.sol";
+import { IATKSystemAccessManaged } from "../../access-manager/IATKSystemAccessManaged.sol";
+import { ATKTopics } from "../../ATKTopics.sol";
+import { IATKTopicSchemeRegistry } from "../../topic-scheme-registry/IATKTopicSchemeRegistry.sol";
+import { TokenTrustedIssuersRegistry } from "../trusted-issuers-registry/TokenTrustedIssuersRegistry.sol";
+import { IATKTrustedIssuersMetaRegistry } from "../../trusted-issuers-registry/IATKTrustedIssuersMetaRegistry.sol";
+import { IATKTrustedIssuersRegistry } from "../../trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
 
 /// @title ATKTokenFactory - Contract for managing token registries with role-based access control
 /// @author SettleMint
@@ -130,6 +133,12 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @return The compliance contract.
     function _compliance() internal view returns (ISMARTCompliance) {
         return ISMARTCompliance(IATKSystem(_systemAddress).compliance());
+    }
+
+    /// @notice Returns the trusted issuers meta registry contract.
+    /// @return The trusted issuers meta registry contract.
+    function _trustedIssuersRegistry() internal view returns (IATKTrustedIssuersRegistry) {
+        return IATKTrustedIssuersRegistry(IATKSystem(_systemAddress).trustedIssuersRegistry());
     }
 
     /// @notice Calculates the salt for CREATE2 deployment.
@@ -302,6 +311,9 @@ abstract contract AbstractATKTokenFactoryImplementation is
         // Set the onchain ID on the token contract
         ISMART(deployedAddress).setOnchainID(deployedTokenIdentityAddress);
 
+        // Deploy and register TokenTrustedIssuersRegistry for this token
+        _deployAndRegisterTokenTrustedIssuersRegistry(deployedAddress, deployedTokenIdentityAddress);
+
         bytes32[] memory roles = new bytes32[](2);
         roles[0] = ATKAssetRoles.GOVERNANCE_ROLE;
         roles[1] = ATKRoles.DEFAULT_ADMIN_ROLE;
@@ -381,6 +393,37 @@ abstract contract AbstractATKTokenFactoryImplementation is
         emit ContractIdentityRegistered(_msgSender(), contractAddress, description);
 
         return contractIdentity;
+    }
+
+    /// @notice Deploys a TokenTrustedIssuersRegistry for a token and registers it with the meta registry
+    /// @dev This function creates a token-specific trusted issuers registry and registers it
+    ///      with the system's meta registry, enabling token-specific trusted issuer management
+    /// @param tokenAddress The address of the token contract
+    /// @param tokenIdentityAddress The address of the token identity contract
+    function _deployAndRegisterTokenTrustedIssuersRegistry(
+        address tokenAddress,
+        address tokenIdentityAddress
+    )
+        internal
+    {
+        // Register the token-specific registry with the meta registry
+        IATKTrustedIssuersRegistry registry = _trustedIssuersRegistry();
+
+        if (IERC165(address(registry)).supportsInterface(type(IATKTrustedIssuersMetaRegistry).interfaceId)) {
+            IATKTrustedIssuersMetaRegistry metaRegistry = IATKTrustedIssuersMetaRegistry(address(registry));
+            // Deploy TokenTrustedIssuersRegistry for this specific token
+            // Use the same trusted forwarder as the factory for consistent meta-transaction support
+            TokenTrustedIssuersRegistry tokenRegistry = new TokenTrustedIssuersRegistry(
+                trustedForwarder(), // Use factory's trusted forwarder for token registries
+                tokenAddress
+            );
+
+            emit TokenTrustedIssuersRegistryCreated(
+                _msgSender(), address(tokenRegistry), tokenAddress, tokenIdentityAddress
+            );
+
+            metaRegistry.setRegistryForSubject(tokenIdentityAddress, address(tokenRegistry));
+        }
     }
 
     // --- ERC165 Overrides ---
