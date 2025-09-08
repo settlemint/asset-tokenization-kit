@@ -1,4 +1,4 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { Identity, Token } from "../../../generated/schema";
 import { Token as TokenTemplate } from "../../../generated/templates";
 import { Token as TokenContract } from "../../../generated/templates/Token/Token";
@@ -30,6 +30,7 @@ export function fetchToken(address: Address): Token {
     token.extensions = [];
     token.implementsERC3643 = false;
     token.implementsSMART = false;
+    token.basePrice = BigDecimal.zero();
 
     token.save();
 

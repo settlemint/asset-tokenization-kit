@@ -160,13 +160,28 @@ function RouteComponent() {
         )}
 
         {basePriceClaim && (
-          <DetailGridItem
-            label={t("tokens:fields.basePrice")}
-            info={t("tokens:fields.basePriceInfo")}
-            value={from(basePriceClaim.amount, Number(basePriceClaim.decimals))}
-            type="currency"
-            currency={{ assetSymbol: basePriceClaim.currencyCode }}
-          />
+          <>
+            <DetailGridItem
+              label={t("tokens:fields.basePrice")}
+              info={t("tokens:fields.basePriceInfo")}
+              value={from([
+                BigInt(basePriceClaim.amount),
+                Number(basePriceClaim.decimals),
+              ])}
+              type="currency"
+              currency={{ assetSymbol: basePriceClaim.currencyCode }}
+            />
+            <DetailGridItem
+              label={t("tokens:fields.totalPrice")}
+              info={t("tokens:fields.totalPriceInfo")}
+              value={from([
+                BigInt(basePriceClaim.amount),
+                Number(basePriceClaim.decimals),
+              ])}
+              type="currency"
+              currency={{ assetSymbol: basePriceClaim.currencyCode }}
+            />
+          </>
         )}
 
         {asset.capped?.cap && (

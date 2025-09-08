@@ -1,4 +1,4 @@
-import { Address, BigInt, log } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, BigInt, log } from "@graphprotocol/graph-ts";
 import {
   Event,
   Token,
@@ -34,6 +34,17 @@ export function decreaseTokenStatsBalanceCount(tokenAddress: Address): void {
   // Create timeseries entry
   const data = createTokenStatsData(state);
   data.save();
+}
+
+/**
+ * Update token stats for total value in base currency
+ * @param token - The token to update stats for
+ */
+export function updateTokenStatsTotalValueInBaseCurrency(token: Token): void {
+  const state = fetchTokenStatsState(Address.fromBytes(token.id));
+  const totalValueInBaseCurrency = token.totalSupply.times(token.basePrice);
+  state.totalValueInBaseCurrency = totalValueInBaseCurrency;
+  state.save();
 }
 
 /**
@@ -77,7 +88,7 @@ export function trackTokenStats(token: Token, event: Event): void {
 /**
  * Fetch or create TokenStatsState entity
  */
-function fetchTokenStatsState(tokenAddress: Address): TokenStatsState {
+export function fetchTokenStatsState(tokenAddress: Address): TokenStatsState {
   let state = TokenStatsState.load(tokenAddress);
 
   if (!state) {
@@ -85,6 +96,7 @@ function fetchTokenStatsState(tokenAddress: Address): TokenStatsState {
     state = new TokenStatsState(tokenAddress);
     state.token = token.id;
     state.balancesCount = 0;
+    state.totalValueInBaseCurrency = BigDecimal.zero();
 
     state.save();
   }
@@ -114,6 +126,9 @@ function createTokenStatsData(state: TokenStatsState): TokenStatsData {
   setBigNumber(tokenStats, "minted", BigInt.zero(), token.decimals);
   setBigNumber(tokenStats, "burned", BigInt.zero(), token.decimals);
   setBigNumber(tokenStats, "transferred", BigInt.zero(), token.decimals);
+  tokenStats.totalValueInBaseCurrency = token.totalSupply.times(
+    token.basePrice
+  );
 
   return tokenStats;
 }

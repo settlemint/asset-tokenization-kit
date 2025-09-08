@@ -151,10 +151,6 @@ async function issueClaims(
   context: InferRouterCurrentContexts<typeof create>,
   errors: Parameters<Parameters<typeof baseRouter.middleware>[0]>[0]["errors"]
 ) {
-  if (!input.isin) {
-    return;
-  }
-
   const sender = context.auth.user;
 
   // Get the token's identity contract address from the graph data
@@ -179,19 +175,21 @@ async function issueClaims(
 
   // ISSUE CLAIM: Add isin claim to token's identity contract
   const results = await Promise.allSettled([
-    issueClaim({
-      user: sender,
-      issuer: userIdentity,
-      walletVerification: input.walletVerification,
-      identity: tokenOnchainID,
-      claim: {
-        topic: ClaimTopic.isin,
-        data: {
-          isin: input.isin,
-        },
-      },
-      portalClient: context.portalClient,
-    }),
+    input.isin
+      ? issueClaim({
+          user: sender,
+          issuer: userIdentity,
+          walletVerification: input.walletVerification,
+          identity: tokenOnchainID,
+          claim: {
+            topic: ClaimTopic.isin,
+            data: {
+              isin: input.isin,
+            },
+          },
+          portalClient: context.portalClient,
+        })
+      : Promise.resolve(),
     (async () => {
       if (!("basePrice" in input)) {
         return;

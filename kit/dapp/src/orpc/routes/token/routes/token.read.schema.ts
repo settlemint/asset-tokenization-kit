@@ -150,29 +150,6 @@ export const RawTokenSchema = z.object({
     .custom<AccessControl>()
     .describe("The access control of the token")
     .optional(),
-  contractCollateral: z
-    .object({
-      amount: bigDecimal().describe(
-        "Real-time collateral amount from contract"
-      ),
-      issuer: ethereumAddress.describe(
-        "Address of the collateral claim issuer"
-      ),
-      expiryTimestamp: z
-        .number()
-        .describe("Expiry timestamp of the collateral claim"),
-      hasValidClaim: z
-        .boolean()
-        .describe("Whether there's a valid collateral claim"),
-      error: z
-        .string()
-        .optional()
-        .describe("Error message if contract query failed"),
-    })
-    .optional()
-    .describe(
-      "Real-time collateral data queried directly from the smart contract"
-    ),
   userPermissions: z
     .object({
       roles: accessControlRoles.describe("The roles of the user for the token"),
@@ -275,6 +252,15 @@ export const RawTokenSchema = z.object({
     })
     .optional()
     .describe("The permissions of the user for the token"),
+  basePrice: bigDecimal().describe("The base price of the token"),
+  stats: z
+    .object({
+      totalValueInBaseCurrency: bigDecimal().describe(
+        "The total value in base currency of the token"
+      ),
+    })
+    .nullable()
+    .describe("The stats of the token"),
 });
 
 /**

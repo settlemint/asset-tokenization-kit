@@ -13,6 +13,7 @@ import {
 } from "../../../generated/schema";
 import { fetchIdentity } from "../../identity/fetch/identity";
 import { fetchIdentityClaimValue } from "../../identity/fetch/identity-claim-value";
+import { updateTokenStatsTotalValueInBaseCurrency } from "../../stats/token-stats";
 import { setBigNumber } from "../../utils/bignumber";
 import { toBigDecimal } from "../../utils/token-decimals";
 import { fetchTokenByIdentity } from "../fetch/token";
@@ -26,6 +27,9 @@ export function increaseTokenSupply(token: Token, amount: BigInt): void {
   );
 
   token.save();
+
+  // Update token stats
+  updateTokenStatsTotalValueInBaseCurrency(token);
 }
 
 export function decreaseTokenSupply(token: Token, amount: BigInt): void {
@@ -37,6 +41,9 @@ export function decreaseTokenSupply(token: Token, amount: BigInt): void {
   );
 
   token.save();
+
+  // Update token stats
+  updateTokenStatsTotalValueInBaseCurrency(token);
 }
 
 export function updateBasePrice(basePriceClaim: IdentityClaim): void {
@@ -52,7 +59,11 @@ export function updateBasePrice(basePriceClaim: IdentityClaim): void {
   }
 
   token.basePriceClaim = basePriceClaim.id;
+  token.basePrice = getTokenBasePrice(basePriceClaim.id);
   token.save();
+
+  // Update token stats
+  updateTokenStatsTotalValueInBaseCurrency(token);
 }
 
 export function getTokenType(tokenFactory: TokenFactory): string {
