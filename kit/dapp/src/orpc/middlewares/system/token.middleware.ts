@@ -174,6 +174,7 @@ export const tokenMiddleware = baseRouter.middleware(
             transfer: false,
             unpause: false,
             updateCollateral: false,
+            withdrawDenominationAsset: false,
           };
 
           // Update based on user roles using the flexible role requirement system
