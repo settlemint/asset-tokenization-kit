@@ -104,6 +104,10 @@ contract SMARTToken is
     /// @dev This allows setting the cap on the token, which is the maximum number of tokens that can be minted.
     bytes32 public constant CAP_MANAGEMENT_ROLE = keccak256("CAP_MANAGEMENT_ROLE");
 
+    /// @notice Role identifier for entities authorized to manage the token's supply.
+    /// @dev This allows minting and burning tokens.
+    bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
+
     /// @notice Constructor for the SMARTToken.
     /// @dev Initializes the token with its core properties, sets up initial compliance modules, collateral proof topic,
     /// and assigns administrative roles.

@@ -7,6 +7,7 @@ import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { SMARTYieldToken } from "./examples/SMARTYieldToken.sol";
 import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
 
 contract SMARTYieldStandardTest is SMARTYieldTest {
     function _setupToken() internal override {
@@ -44,6 +45,8 @@ contract SMARTYieldStandardTest is SMARTYieldTest {
         IAccessControl(accessManager).grantRole(SMARTYieldToken(tokenAddress).FORCED_TRANSFER_ROLE(), tokenIssuer);
         IAccessControl(accessManager).grantRole(SMARTYieldToken(tokenAddress).RECOVERY_ROLE(), tokenIssuer);
         IAccessControl(accessManager).grantRole(SMARTYieldToken(tokenAddress).PAUSER_ROLE(), tokenIssuer);
+        IAccessControl(accessManager).grantRole(SMARTYieldToken(tokenAddress).SUPPLY_MANAGEMENT_ROLE(), tokenIssuer);
+
         vm.stopPrank();
 
         // 2. Create the token's on-chain identity

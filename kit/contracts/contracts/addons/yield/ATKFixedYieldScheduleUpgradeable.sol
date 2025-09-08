@@ -34,6 +34,9 @@ contract ATKFixedYieldScheduleUpgradeable is
     ReentrancyGuardUpgradeable,
     IContractWithIdentity
 {
+    /// @notice Role for managing onchain ID operations
+    bytes32 public constant GOVERNANCE_ROLE = keccak256("GOVERNANCE_ROLE");
+
     /// @notice The address of the ONCHAINID associated with this contract
     address private _onchainID;
 
@@ -51,7 +54,8 @@ contract ATKFixedYieldScheduleUpgradeable is
     }
 
     /// @notice Internal function to check if an account has a specific role on the connected asset (token)
-    /// @dev This function performs the actual call to the token's access manager and reverts if the account doesn't have the role
+    /// @dev This function performs the actual call to the token's access manager and reverts if the account doesn't
+    /// have the role
     /// @param role The asset role identifier to check for
     /// @param account The address of the account to verify
     function _checkAssetRole(bytes32 role, address account) internal view {
@@ -144,20 +148,20 @@ contract ATKFixedYieldScheduleUpgradeable is
 
     /// @notice Pauses all contract operations
     /// @dev Can only be called by addresses with EMERGENCY_ROLE
-    function pause() external onlyRole(ATKAssetRoles.EMERGENCY_ROLE) {
+    function pause() external onlyAssetRole(ATKAssetRoles.EMERGENCY_ROLE) {
         _pause(); // Internal OpenZeppelin Pausable function.
     }
 
     /// @notice Unpauses all contract operations
     /// @dev Can only be called by addresses with EMERGENCY_ROLE
-    function unpause() external onlyRole(ATKAssetRoles.EMERGENCY_ROLE) {
+    function unpause() external onlyAssetRole(ATKAssetRoles.EMERGENCY_ROLE) {
         _unpause(); // Internal OpenZeppelin Pausable function.
     }
 
     /// @notice Sets the onchain ID for this contract
     /// @dev Can only be called by an address with DEFAULT_ADMIN_ROLE
     /// @param onchainID_ The address of the onchain ID contract
-    function setOnchainId(address onchainID_) external onlyRole(ATKAssetRoles.GOVERNANCE_ROLE) {
+    function setOnchainId(address onchainID_) external onlyRole(GOVERNANCE_ROLE) {
         if (onchainID_ == address(0)) revert InvalidOnchainID();
         _onchainID = onchainID_;
     }

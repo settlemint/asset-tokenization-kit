@@ -7,12 +7,75 @@ import { MockedERC20Token } from "../../utils/mocks/MockedERC20Token.sol";
 import { ISMARTFixedYieldSchedule } from
     "../../../contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
 import { ATKFixedYieldScheduleUpgradeable } from "../../../contracts/addons/yield/ATKFixedYieldScheduleUpgradeable.sol";
+import { ISMARTTokenAccessManaged } from
+    "../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManaged.sol";
+import { ISMARTTokenAccessManager } from
+    "../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { ATKAssetRoles } from "../../../contracts/assets/ATKAssetRoles.sol";
 
-contract MockATKToken is MockedERC20Token {
+contract MockAccessManager is ISMARTTokenAccessManager {
+    mapping(bytes32 => mapping(address => bool)) private _roles;
+
+    function hasRole(bytes32 role, address account) external view returns (bool) {
+        return _roles[role][account];
+    }
+
+    function grantRole(bytes32 role, address account) external {
+        _roles[role][account] = true;
+    }
+
+    function revokeRole(bytes32 role, address account) external {
+        _roles[role][account] = false;
+    }
+
+    function renounceRole(bytes32, address) external { }
+
+    function batchGrantRole(bytes32 role, address[] calldata accounts) external {
+        for (uint256 i = 0; i < accounts.length; i++) {
+            _roles[role][accounts[i]] = true;
+        }
+    }
+
+    function batchRevokeRole(bytes32 role, address[] calldata accounts) external {
+        for (uint256 i = 0; i < accounts.length; i++) {
+            _roles[role][accounts[i]] = false;
+        }
+    }
+
+    function grantMultipleRoles(address account, bytes32[] calldata roles) external {
+        for (uint256 i = 0; i < roles.length; i++) {
+            _roles[roles[i]][account] = true;
+        }
+    }
+
+    function revokeMultipleRoles(address account, bytes32[] calldata roles) external {
+        for (uint256 i = 0; i < roles.length; i++) {
+            _roles[roles[i]][account] = false;
+        }
+    }
+
+    function renounceMultipleRoles(bytes32[] calldata roles, address callerConfirmation) external {
+        for (uint256 i = 0; i < roles.length; i++) {
+            _roles[roles[i]][callerConfirmation] = false;
+        }
+    }
+
+    function getRoleAdmin(bytes32) external pure returns (bytes32) {
+        return 0x00;
+    }
+
+    function supportsInterface(bytes4) external pure returns (bool) {
+        return true;
+    }
+}
+
+contract MockATKToken is MockedERC20Token, ISMARTTokenAccessManaged, IERC165 {
     mapping(address => uint256) private _yieldBasisPerUnit;
     mapping(uint256 => uint256) private _totalSupplyAtTimestamp;
     mapping(address => mapping(uint256 => uint256)) private _balanceOfAt;
     IERC20 private _yieldTokenAddress;
+    address private _accessManager;
 
     uint256 private constant DEFAULT_YIELD_BASIS = 1000;
 
@@ -20,11 +83,13 @@ contract MockATKToken is MockedERC20Token {
         string memory name,
         string memory symbol,
         uint8 decimals,
-        address yieldTokenAddr
+        address yieldTokenAddr,
+        address accessManager_
     )
         MockedERC20Token(name, symbol, decimals)
     {
         _yieldTokenAddress = IERC20(yieldTokenAddr);
+        _accessManager = accessManager_;
     }
 
     function setYieldBasisPerUnit(address holder, uint256 basis) external {
@@ -54,12 +119,25 @@ contract MockATKToken is MockedERC20Token {
     function balanceOfAt(address holder, uint256 timestamp) external view returns (uint256) {
         return _balanceOfAt[holder][timestamp] > 0 ? _balanceOfAt[holder][timestamp] : this.balanceOf(holder);
     }
+
+    function hasRole(bytes32 role, address account) external view returns (bool) {
+        return ISMARTTokenAccessManager(_accessManager).hasRole(role, account);
+    }
+
+    function accessManager() external view returns (address) {
+        return _accessManager;
+    }
+
+    function supportsInterface(bytes4 interfaceId) external pure override returns (bool) {
+        return interfaceId == type(ISMARTTokenAccessManaged).interfaceId || interfaceId == type(IERC165).interfaceId;
+    }
 }
 
 contract ATKFixedYieldScheduleTest is Test {
     ATKFixedYieldScheduleUpgradeable public yieldSchedule;
     MockATKToken public atkToken;
     MockedERC20Token public denominationToken;
+    MockAccessManager public accessManager;
 
     address public owner = address(0x1);
     address public user1 = address(0x2);
@@ -82,8 +160,15 @@ contract ATKFixedYieldScheduleTest is Test {
         // Deploy denomination token
         denominationToken = new MockedERC20Token("Denomination", "DNMTN", 6);
 
-        // Deploy mock SMART token
-        atkToken = new MockATKToken("ATK Token", "ATK", 18, address(denominationToken));
+        // Deploy mock access manager
+        accessManager = new MockAccessManager();
+
+        // Deploy mock SMART token with access manager
+        atkToken = new MockATKToken("ATK Token", "ATK", 18, address(denominationToken), address(accessManager));
+
+        // Grant necessary roles to owner for yield schedule operations
+        accessManager.grantRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE, owner);
+        accessManager.grantRole(ATKAssetRoles.EMERGENCY_ROLE, owner);
 
         // Deploy yield schedule directly (bypassing factory for simplicity)
         yieldSchedule = new ATKFixedYieldScheduleUpgradeable(forwarder);
@@ -106,12 +191,6 @@ contract ATKFixedYieldScheduleTest is Test {
         atkToken.setTotalSupplyAt(startDate + 1 days, 1500e18);
         atkToken.setBalanceOfAt(user1, startDate + 1 days, 1000e18);
         atkToken.setBalanceOfAt(user2, startDate + 1 days, 500e18);
-
-        // Grant necessary roles to owner for testing
-        vm.startPrank(owner);
-        yieldSchedule.grantRole(yieldSchedule.SUPPLY_MANAGEMENT_ROLE(), owner);
-        yieldSchedule.grantRole(yieldSchedule.EMERGENCY_ROLE(), owner);
-        vm.stopPrank();
     }
 
     function test_InitialState() public view {
