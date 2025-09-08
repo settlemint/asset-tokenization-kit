@@ -54,6 +54,21 @@ export const RawTokenSchema = z.object({
       identity: z
         .object({
           id: ethereumAddress.describe("The identity contract address"),
+          claims: z
+            .array(
+              z.object({
+                revoked: z.boolean().describe("Whether the claim is revoked"),
+                name: z.string().describe("The name of the claim"),
+                values: z.array(
+                  z.object({
+                    key: z.string().describe("The key of the claim value"),
+                    value: z.string().describe("The value of the claim value"),
+                  })
+                ),
+              })
+            )
+            .describe("The claims of the identity")
+            .optional(),
         })
         .nullable()
         .describe("The identity associated with this token"),

@@ -6,8 +6,13 @@ import {
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
+import { hasDenominationAsset } from "@/lib/utils/features-enabled";
 import { noop } from "@/lib/utils/noop";
 import type { KeysOfUnion } from "@/lib/utils/union";
+import { orpc } from "@/orpc/orpc-client";
+import { useQuery } from "@tanstack/react-query";
+import { useStore } from "@tanstack/react-store";
+import { from } from "dnum";
 import { useTranslation } from "react-i18next";
 
 const commonFields: KeysOfUnion<AssetDesignerFormInputData>[] = [
@@ -16,6 +21,7 @@ const commonFields: KeysOfUnion<AssetDesignerFormInputData>[] = [
   "decimals",
   "isin",
   "countryCode",
+  "basePrice",
 ];
 
 export const AssetBasics = withForm({
@@ -26,7 +32,10 @@ export const AssetBasics = withForm({
   },
   render: function Render({ form, onStepSubmit, onBack }) {
     const { t } = useTranslation(["asset-designer", "asset-types"]);
-
+    const { data: baseCurrency } = useQuery(
+      orpc.settings.read.queryOptions({ input: { key: "BASE_CURRENCY" } })
+    );
+    const type = useStore(form.store, (state) => state.values.type);
     return (
       <FormStepLayout
         title={t("wizard.steps.assetBasics.title")}
@@ -39,7 +48,11 @@ export const AssetBasics = withForm({
             <form.StepSubmitButton
               label={t("form.buttons.next")}
               onStepSubmit={onStepSubmit}
-              validate={commonFields}
+              validate={
+                hasDenominationAsset(type)
+                  ? commonFields.filter((field) => field !== "basePrice")
+                  : commonFields
+              }
               checkRequiredFn={isRequiredField}
             />
           </>
@@ -102,6 +115,25 @@ export const AssetBasics = withForm({
             />
           )}
         />
+        {!hasDenominationAsset(type) && (
+          <form.AppField
+            name="basePrice"
+            children={(field) => (
+              <field.DnumField
+                label={t("form.fields.basePrice.label")}
+                required={isRequiredField("basePrice")}
+                description={t("form.fields.basePrice.description", {
+                  type: t(
+                    `asset-types:types.${form.state.values.type}.nameLowercaseSingular`
+                  ),
+                })}
+                endAddon={baseCurrency ?? ""}
+                decimals={2}
+                placeholder={from(1, 2)}
+              />
+            )}
+          />
+        )}
         <form.AppField
           name="countryCode"
           children={(field) => (

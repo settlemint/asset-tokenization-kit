@@ -2,7 +2,10 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { ClaimTopic } from "@/orpc/helpers/claims/create-claim";
 import { issueClaim } from "@/orpc/helpers/claims/issue-claim";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
+import { userIdentityMiddleware } from "@/orpc/middlewares/system/user-identity.middleware";
+import type { baseRouter } from "@/orpc/procedures/base.router";
 import { systemRouter } from "@/orpc/procedures/system.router";
+import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
 import { getTokenFactory } from "@/orpc/routes/system/token-factory/helpers/factory-context";
 import { tokenCreateHandlerMap } from "@/orpc/routes/token/routes/mutations/create/helpers/handler-map";
 import type {
@@ -69,6 +72,7 @@ export const create = systemRouter.token.create
       },
     })
   )
+  .use(userIdentityMiddleware)
   .handler(async ({ input, context, errors }) => {
     const tokenFactory = getTokenFactory(context, input.type);
     if (!tokenFactory) {
@@ -129,7 +133,7 @@ export const create = systemRouter.token.create
       });
     }
 
-    await issueIsinClaim(token, input, context);
+    await issueClaims(token, input, context, errors);
 
     // Return the complete token details using the read handler
     return await call(
@@ -141,10 +145,11 @@ export const create = systemRouter.token.create
     );
   });
 
-async function issueIsinClaim(
+async function issueClaims(
   token: z.infer<typeof TokenQueryResultSchema>["tokens"][number],
   input: TokenCreateInput,
-  context: InferRouterCurrentContexts<typeof create>
+  context: InferRouterCurrentContexts<typeof create>,
+  errors: Parameters<Parameters<typeof baseRouter.middleware>[0]>[0]["errors"]
 ) {
   if (!input.isin) {
     return;
@@ -156,32 +161,83 @@ async function issueIsinClaim(
   const tokenOnchainID = token.account.identity?.id;
 
   if (!tokenOnchainID) {
-    logger.error(
-      `Token at address ${token.id} does not have an associated identity contract`
-    );
-    return;
+    const errorMessage = `Token at address ${token.id} does not have an associated identity contract`;
+    logger.error(errorMessage);
+    throw errors.INTERNAL_SERVER_ERROR({
+      message: errorMessage,
+    });
   }
 
   const userIdentity = context.userIdentity?.address;
   if (!userIdentity) {
-    logger.error(
-      `Account at address ${context.auth.user.wallet} does not have an associated identity contract`
-    );
-    return;
+    const errorMessage = `Account at address ${context.auth.user.wallet} does not have an associated identity contract`;
+    logger.error(errorMessage);
+    throw errors.INTERNAL_SERVER_ERROR({
+      message: errorMessage,
+    });
   }
 
   // ISSUE CLAIM: Add isin claim to token's identity contract
-  await issueClaim({
-    user: sender,
-    issuer: userIdentity,
-    walletVerification: input.walletVerification,
-    identity: tokenOnchainID,
-    claim: {
-      topic: ClaimTopic.isin,
-      data: {
-        isin: input.isin,
+  const results = await Promise.allSettled([
+    issueClaim({
+      user: sender,
+      issuer: userIdentity,
+      walletVerification: input.walletVerification,
+      identity: tokenOnchainID,
+      claim: {
+        topic: ClaimTopic.isin,
+        data: {
+          isin: input.isin,
+        },
       },
-    },
-    portalClient: context.portalClient,
-  });
+      portalClient: context.portalClient,
+    }),
+    (async () => {
+      if (!("basePrice" in input)) {
+        return;
+      }
+      const currencyCode = await call(
+        settingsRead,
+        {
+          key: "BASE_CURRENCY",
+        },
+        { context }
+      );
+      if (!currencyCode) {
+        throw errors.INTERNAL_SERVER_ERROR({
+          message: `Base currency not set`,
+        });
+      }
+      // ISSUE BASE PRICE CLAIM: Add base price claim to token's identity contract
+      await issueClaim({
+        user: sender,
+        issuer: userIdentity,
+        walletVerification: input.walletVerification,
+        identity: tokenOnchainID,
+        claim: {
+          topic: ClaimTopic.basePrice,
+          data: {
+            amount: input.basePrice,
+            currencyCode,
+            decimals: 2,
+          },
+        },
+        portalClient: context.portalClient,
+      });
+    })(),
+  ]);
+
+  // If any of the claims failed, throw an error
+  if (results.some((result) => result.status === "rejected")) {
+    const errorMessages = results
+      .filter((result) => result.status === "rejected")
+      .map((result): string =>
+        result.reason instanceof Error
+          ? result.reason.message
+          : result.reason.toString()
+      );
+    throw errors.INTERNAL_SERVER_ERROR({
+      message: errorMessages.join("\n"),
+    });
+  }
 }

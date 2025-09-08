@@ -18,6 +18,7 @@
 
 import { TokenBaseSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
 import { AssetTypeEnum } from "@atk/zod/asset-types";
+import { apiBigInt } from "@atk/zod/bigint";
 import { z } from "zod";
 
 /**
@@ -25,4 +26,5 @@ import { z } from "zod";
  */
 export const DepositTokenSchema = TokenBaseSchema.extend({
   type: z.literal(AssetTypeEnum.deposit),
+  basePrice: apiBigInt.describe("The base price of the deposit"),
 });

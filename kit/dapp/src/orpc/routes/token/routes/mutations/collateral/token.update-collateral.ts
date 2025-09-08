@@ -38,7 +38,10 @@ import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permiss
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { call } from "@orpc/server";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { read } from "../../token.read";
+
+const logger = createLogger();
 
 /**
  * ORPC handler for updating token collateral claims.
@@ -90,25 +93,19 @@ export const updateCollateral = tokenRouter.token.updateCollateral
     const onchainID = tokenData.account.identity?.id;
 
     if (!onchainID) {
-      throw errors.INPUT_VALIDATION_FAILED({
-        message: "Token does not have an associated identity contract",
-        data: {
-          errors: [
-            `Token at address ${contract} does not have an associated identity contract`,
-          ],
-        },
+      const errorMessage = `Token at address ${contract} does not have an associated identity contract`;
+      logger.error(errorMessage);
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: errorMessage,
       });
     }
 
     const userIdentity = context.userIdentity?.address;
     if (!userIdentity) {
-      throw errors.INPUT_VALIDATION_FAILED({
-        message: "Account does not have an associated identity contract",
-        data: {
-          errors: [
-            `Account at address ${context.auth.user.wallet} does not have an associated identity contract`,
-          ],
-        },
+      const errorMessage = `Account at address ${context.auth.user.wallet} does not have an associated identity contract`;
+      logger.error(errorMessage);
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: errorMessage,
       });
     }
 

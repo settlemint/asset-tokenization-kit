@@ -29,6 +29,15 @@ const READ_TOKEN_QUERY = theGraphGraphql(
       account {
         identity {
           id
+          claims {
+            id
+            name
+            values {
+              key
+              value
+            }
+            revoked
+          }
         }
       }
       pausable {

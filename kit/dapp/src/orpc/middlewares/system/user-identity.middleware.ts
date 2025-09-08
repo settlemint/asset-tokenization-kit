@@ -12,6 +12,7 @@ const READ_ACCOUNT_QUERY = theGraphGraphql(
       identity {
         id
         claims {
+          revoked
           name
         }
       }
@@ -45,14 +46,18 @@ export const userIdentityMiddleware = baseRouter.middleware(
         account: z.object({
           identity: z.object({
             id: ethereumAddress,
-            claims: z.array(z.object({ name: z.string() })),
+            claims: z.array(
+              z.object({ revoked: z.boolean(), name: z.string() })
+            ),
           }),
         }),
       }),
     });
 
     const userClaimTopics =
-      account?.identity?.claims.map((claim) => claim.name) ?? [];
+      account?.identity?.claims
+        .filter((claim) => !claim.revoked)
+        .map((claim) => claim.name) ?? [];
 
     return next({
       context: {

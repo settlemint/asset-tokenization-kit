@@ -1,6 +1,7 @@
 import { TokenBaseSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
 import { AssetTypeEnum } from "@atk/zod/asset-types";
 import { basisPoints } from "@atk/zod/basis-points";
+import { apiBigInt } from "@atk/zod/bigint";
 import { z } from "zod";
 
 export const FundSchema = z.object({
@@ -14,4 +15,5 @@ export const FundSchema = z.object({
  */
 export const FundTokenSchema = TokenBaseSchema.extend({
   type: z.literal(AssetTypeEnum.fund),
+  basePrice: apiBigInt.describe("The base price of the fund"),
 }).extend(FundSchema.shape);
