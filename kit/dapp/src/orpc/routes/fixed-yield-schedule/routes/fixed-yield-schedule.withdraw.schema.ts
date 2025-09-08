@@ -21,6 +21,9 @@ export const FixedYieldScheduleWithdrawInputSchema =
     to: ethereumAddress.describe(
       "The recipient address for the withdrawn denomination asset"
     ),
+    yieldSchedule: ethereumAddress.describe(
+      "The yield schedule contract address"
+    ),
   });
 
 /**

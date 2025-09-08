@@ -1,5 +1,7 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { systemRouter } from "@/orpc/procedures/system.router";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
+import { tokenRouter } from "@/orpc/procedures/token.router";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 
 /**
  * Portal GraphQL mutation for withdrawing denomination asset from a fixed yield schedule.
@@ -71,9 +73,15 @@ const WITHDRAW_DENOMINATION_ASSET_MUTATION = portalGraphql(`
  * @see {@link FixedYieldScheduleWithdrawInputSchema} for input validation
  * @see {@link FixedYieldScheduleWithdrawOutputSchema} for response structure
  */
-export const withdraw = systemRouter.fixedYieldSchedule.withdraw.handler(
-  async ({ input, context, errors }) => {
-    const { contract, amount, to, walletVerification } = input;
+export const withdraw = tokenRouter.fixedYieldSchedule.withdraw
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.withdrawDenominationAsset,
+      requiredExtensions: ["YIELD"],
+    })
+  )
+  .handler(async ({ input, context, errors }) => {
+    const { amount, to, yieldSchedule, walletVerification } = input;
     const { auth, system } = context;
 
     if (!system) {
@@ -89,7 +97,7 @@ export const withdraw = systemRouter.fixedYieldSchedule.withdraw.handler(
     const transactionHash = await context.portalClient.mutate(
       WITHDRAW_DENOMINATION_ASSET_MUTATION,
       {
-        address: contract,
+        address: yieldSchedule,
         from: sender.wallet,
         amount: amount.toString(),
         to: to,
@@ -104,5 +112,4 @@ export const withdraw = systemRouter.fixedYieldSchedule.withdraw.handler(
     return {
       transactionHash,
     };
-  }
-);
+  });

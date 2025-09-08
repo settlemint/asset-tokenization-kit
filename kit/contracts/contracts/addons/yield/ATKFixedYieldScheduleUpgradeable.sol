@@ -173,12 +173,12 @@ contract ATKFixedYieldScheduleUpgradeable is
 
     /// @inheritdoc IContractWithIdentity
     function canAddClaim(address actor) external view override returns (bool) {
-        return hasRole(ATKAssetRoles.GOVERNANCE_ROLE, actor);
+        return hasRole(GOVERNANCE_ROLE, actor);
     }
 
     /// @inheritdoc IContractWithIdentity
     function canRemoveClaim(address actor) external view override returns (bool) {
-        return hasRole(ATKAssetRoles.GOVERNANCE_ROLE, actor);
+        return hasRole(GOVERNANCE_ROLE, actor);
     }
 
     /// @notice Override from Context and ERC2771Context to correctly identify the transaction sender
