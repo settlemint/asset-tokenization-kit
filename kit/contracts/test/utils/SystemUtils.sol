@@ -3,7 +3,6 @@ pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { MockedComplianceModule } from "./mocks/MockedComplianceModule.sol";
-import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 
 // System
 import { ATKSystemFactory } from "../../contracts/system/ATKSystemFactory.sol";
