@@ -61,7 +61,7 @@ const CONTRACT_ADDRESSES = {
     "0x5e771e1417100000000000000000000000020002",
   ATKIdentityRegistryStorageImplementation:
     "0x5e771e1417100000000000000000000000020003",
-  ATKTrustedIssuersRegistryImplementation:
+  ATKSystemTrustedIssuersRegistryImplementation:
     "0x5e771e1417100000000000000000000000020004",
   ATKIdentityFactoryImplementation:
     "0x5e771e1417100000000000000000000000020005",
@@ -72,18 +72,18 @@ const CONTRACT_ADDRESSES = {
     "0x5e771e1417100000000000000000000000020008",
   ATKTokenAccessManagerImplementation:
     "0x5e771e1417100000000000000000000000020009",
-
-  // System access manager implementation
   ATKSystemAccessManagerImplementation:
-    "0x5e771e141710000000000000000000000002000a",
+    "0x5e771e1417100000000000000000000000020010",
+  ATKTrustedIssuersMetaRegistryImplementation:
+    "0x5e771e1417100000000000000000000000020011",
 
   // Registry implementations
   ATKTokenFactoryRegistryImplementation:
-    "0x5e771e1417100000000000000000000000020010",
+    "0x5e771e1417100000000000000000000000020050",
   ATKComplianceModuleRegistryImplementation:
-    "0x5e771e1417100000000000000000000000020011",
+    "0x5e771e1417100000000000000000000000020051",
   ATKSystemAddonRegistryImplementation:
-    "0x5e771e1417100000000000000000000000020012",
+    "0x5e771e1417100000000000000000000000020052",
 
   // System
   ATKSystemImplementation: "0x5e771e1417100000000000000000000000020087",
@@ -147,8 +147,8 @@ const CONTRACT_FILES = {
     "contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol",
   ATKIdentityRegistryStorageImplementation:
     "contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol",
-  ATKTrustedIssuersRegistryImplementation:
-    "contracts/system/trusted-issuers-registry/ATKTrustedIssuersRegistryImplementation.sol",
+  ATKSystemTrustedIssuersRegistryImplementation:
+    "contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol",
   ATKIdentityFactoryImplementation:
     "contracts/system/identity-factory/ATKIdentityFactoryImplementation.sol",
   ATKIdentityImplementation:
@@ -158,15 +158,17 @@ const CONTRACT_FILES = {
   ATKTopicSchemeRegistryImplementation:
     "contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol",
   ATKTokenAccessManagerImplementation:
-    "contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol",
+    "contracts/system/tokens/access/ATKTokenAccessManagerImplementation.sol",
   ATKSystemAccessManagerImplementation:
     "contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol",
   ATKTokenFactoryRegistryImplementation:
-    "contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol",
+    "contracts/system/tokens/factory/ATKTokenFactoryRegistryImplementation.sol",
   ATKComplianceModuleRegistryImplementation:
     "contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol",
   ATKSystemAddonRegistryImplementation:
     "contracts/system/addons/ATKSystemAddonRegistryImplementation.sol",
+  ATKTrustedIssuersMetaRegistryImplementation:
+    "contracts/system/trusted-issuers-registry/ATKTrustedIssuersMetaRegistryImplementation.sol",
 
   // System
   ATKSystemImplementation: "contracts/system/ATKSystemImplementation.sol",
@@ -501,13 +503,14 @@ class ContractDeployer {
       case "ATKForwarder":
         return [];
 
-      case "ATKSystemFactory":
-        return [
+      case "ATKSystemFactory": {
+        const implementationsTuple = `(${[
           CONTRACT_ADDRESSES.ATKSystemImplementation,
           CONTRACT_ADDRESSES.ATKComplianceImplementation,
           CONTRACT_ADDRESSES.ATKIdentityRegistryImplementation,
           CONTRACT_ADDRESSES.ATKIdentityRegistryStorageImplementation,
-          CONTRACT_ADDRESSES.ATKTrustedIssuersRegistryImplementation,
+          CONTRACT_ADDRESSES.ATKSystemTrustedIssuersRegistryImplementation,
+          CONTRACT_ADDRESSES.ATKTrustedIssuersMetaRegistryImplementation,
           CONTRACT_ADDRESSES.ATKTopicSchemeRegistryImplementation,
           CONTRACT_ADDRESSES.ATKIdentityFactoryImplementation,
           CONTRACT_ADDRESSES.ATKIdentityImplementation,
@@ -517,8 +520,9 @@ class ContractDeployer {
           CONTRACT_ADDRESSES.ATKComplianceModuleRegistryImplementation,
           CONTRACT_ADDRESSES.ATKSystemAddonRegistryImplementation,
           CONTRACT_ADDRESSES.ATKSystemAccessManagerImplementation,
-          forwarderAddress,
-        ];
+        ].join(",")})`;
+        return [implementationsTuple, forwarderAddress];
+      }
 
       default:
         return [forwarderAddress];
@@ -1031,9 +1035,7 @@ class GenesisGenerator {
 
       logger.info(`Complete genesis written to: ${CONTRACTS_GENESIS_FILE}`);
       logger.info(
-        `Total allocations: ${Object.keys(finalGenesis.alloc).length} (${
-          Object.keys(template.alloc || {}).length
-        } from template + ${Object.keys(contractAllocations).length} contracts)`
+        `Total allocations: ${Object.keys(finalGenesis.alloc).length} (${Object.keys(template.alloc || {}).length} from template + ${Object.keys(contractAllocations).length} contracts)`
       );
 
       // Verify the written file can be read back

@@ -5,7 +5,7 @@ import { Proxy } from "@openzeppelin/contracts/proxy/Proxy.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
-import { IATKTokenFactory } from "../system/token-factory/IATKTokenFactory.sol";
+import { IATKTokenFactory } from "../system/tokens/factory/IATKTokenFactory.sol";
 import {
     InvalidTokenFactoryAddress,
     ETHTransfersNotAllowed,
