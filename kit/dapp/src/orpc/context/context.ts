@@ -6,6 +6,7 @@ import type { ValidatedPortalClient } from "@/orpc/middlewares/services/portal.m
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
 import type { SystemContext } from "@/orpc/middlewares/system/system.middleware";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import { EthereumAddress } from "@atk/zod/ethereum-address";
 import type { getHeaders } from "@tanstack/react-start/server";
 
 /**
@@ -137,12 +138,17 @@ export interface Context {
   token?: Token;
 
   /**
-   * User claim topics.
-   * Injected by userClaimsMiddleware for procedures that need to interact with the user's claims.
+   * User identity and claims.
+   * Injected by userClaimsMiddleware for procedures that need to access the user's identity contract and claims.
    * @optional
-   * @see {@link @/orpc/middlewares/system/user-claims.middleware} - User claims middleware configuration
+   * @see {@link @/orpc/middlewares/system/user-identity.middleware} - User identity middleware configuration
    */
-  userClaimTopics?: string[];
+  userIdentity?: {
+    address?: EthereumAddress;
+    claims: {
+      name: string;
+    }[];
+  };
 
   /**
    * Claim topics the authenticated user is authorized to issue as a trusted issuer.

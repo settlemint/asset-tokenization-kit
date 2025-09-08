@@ -32,47 +32,13 @@
  * - Integration with identity registry maintains trust boundaries
  */
 
-import { portalGraphql } from "@/lib/settlemint/portal";
-import { ClaimTopic, createClaim } from "@/orpc/helpers/create-claim";
+import { ClaimTopic } from "@/orpc/helpers/claims/create-claim";
+import { issueClaim } from "@/orpc/helpers/claims/issue-claim";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { call } from "@orpc/server";
-import { getAddress } from "viem";
 import { read } from "../../token.read";
-
-const COLLATERAL_CLAIM_MUTATION = portalGraphql(`
-  mutation AddCollateralClaim(
-    $challengeId: String
-    $challengeResponse: String
-    $address: String!
-    $from: String!
-    $topic: String!
-    $scheme: String!
-    $issuer: String!
-    $signature: String!
-    $data: String!
-    $uri: String!
-  ) {
-    addClaim: ATKContractIdentityImplementationAddClaim(
-      address: $address
-      from: $from
-      challengeId: $challengeId
-      challengeResponse: $challengeResponse
-      input: {
-        _topic: $topic
-        _scheme: $scheme
-        _issuer: $issuer
-        _signature: $signature
-        _data: $data
-        _uri: $uri
-      }
-    ) {
-      transactionHash
-    }
-  }
-`);
 
 /**
  * ORPC handler for updating token collateral claims.
@@ -134,8 +100,8 @@ export const updateCollateral = tokenRouter.token.updateCollateral
       });
     }
 
-    const account = await call(readAccount, {}, { context });
-    if (!account?.identity) {
+    const userIdentity = context.userIdentity?.address;
+    if (!userIdentity) {
       throw errors.INPUT_VALIDATION_FAILED({
         message: "Account does not have an associated identity contract",
         data: {
@@ -146,10 +112,10 @@ export const updateCollateral = tokenRouter.token.updateCollateral
       });
     }
 
-    // USER-ISSUED CLAIM SIGNATURE: Create signature for user-issued claim
-    // The user issues the claim to the identity contract
-    const { signature, topicId, claimData } = await createClaim({
+    // ISSUE CLAIM: Add collateral claim to token's identity contract
+    await issueClaim({
       user: sender,
+      issuer: userIdentity,
       walletVerification,
       identity: onchainID,
       claim: {
@@ -159,26 +125,8 @@ export const updateCollateral = tokenRouter.token.updateCollateral
           expiryTimestamp,
         },
       },
+      portalClient: context.portalClient,
     });
-    // ISSUE CLAIM: Add collateral claim to token's identity contract
-    await context.portalClient.mutate(
-      COLLATERAL_CLAIM_MUTATION,
-      {
-        address: onchainID,
-        from: sender.wallet,
-        topic: topicId.toString(),
-        scheme: "1", // ECDSA
-        issuer: getAddress(account.identity),
-        signature,
-        data: claimData,
-        uri: "", // Empty URI as not required for collateral claims
-      },
-      {
-        sender,
-        code: walletVerification.secretVerificationCode,
-        type: walletVerification.verificationType,
-      }
-    );
 
     // RETURN UPDATED TOKEN DATA: Return the token context
     return await call(read, { tokenAddress: contract }, { context });

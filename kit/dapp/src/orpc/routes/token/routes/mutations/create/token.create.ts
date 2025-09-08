@@ -1,9 +1,8 @@
-import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { ClaimTopic, createClaim } from "@/orpc/helpers/create-claim";
+import { ClaimTopic } from "@/orpc/helpers/claims/create-claim";
+import { issueClaim } from "@/orpc/helpers/claims/issue-claim";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { systemRouter } from "@/orpc/procedures/system.router";
-import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import { getTokenFactory } from "@/orpc/routes/system/token-factory/helpers/factory-context";
 import { tokenCreateHandlerMap } from "@/orpc/routes/token/routes/mutations/create/helpers/handler-map";
 import type {
@@ -16,7 +15,6 @@ import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { call, InferRouterCurrentContexts } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { getAddress } from "viem";
 import { z } from "zod";
 
 const logger = createLogger();
@@ -38,41 +36,6 @@ const FIND_TOKEN_FOR_TRANSACTION_QUERY = theGraphGraphql(`
           id
         }
       }
-    }
-  }
-`);
-
-/**
- * GraphQL mutation to add a claim to an identity contract.
- */
-const ADD_CLAIM_MUTATION = portalGraphql(`
-  mutation AddClaim(
-    $challengeId: String
-    $challengeResponse: String
-    $address: String!
-    $from: String!
-    $topic: String!
-    $scheme: String!
-    $issuer: String!
-    $signature: String!
-    $data: String!
-    $uri: String!
-  ) {
-    addClaim: ATKContractIdentityImplementationAddClaim(
-      address: $address
-      from: $from
-      challengeId: $challengeId
-      challengeResponse: $challengeResponse
-      input: {
-        _topic: $topic
-        _scheme: $scheme
-        _issuer: $issuer
-        _signature: $signature
-        _data: $data
-        _uri: $uri
-      }
-    ) {
-      transactionHash
     }
   }
 `);
@@ -199,18 +162,18 @@ async function issueIsinClaim(
     return;
   }
 
-  const account = await call(readAccount, {}, { context });
-  if (!account?.identity) {
+  const userIdentity = context.userIdentity?.address;
+  if (!userIdentity) {
     logger.error(
       `Account at address ${context.auth.user.wallet} does not have an associated identity contract`
     );
     return;
   }
 
-  // USER-ISSUED CLAIM SIGNATURE: Create signature for user-issued claim
-  // The user issues the claim to the identity contract
-  const { signature, topicId, claimData } = await createClaim({
+  // ISSUE CLAIM: Add isin claim to token's identity contract
+  await issueClaim({
     user: sender,
+    issuer: userIdentity,
     walletVerification: input.walletVerification,
     identity: tokenOnchainID,
     claim: {
@@ -219,24 +182,6 @@ async function issueIsinClaim(
         isin: input.isin,
       },
     },
+    portalClient: context.portalClient,
   });
-  // ISSUE CLAIM: Add isin claim to token's identity contract
-  await context.portalClient.mutate(
-    ADD_CLAIM_MUTATION,
-    {
-      address: tokenOnchainID,
-      from: sender.wallet,
-      topic: topicId.toString(),
-      scheme: "1", // ECDSA
-      issuer: getAddress(account.identity),
-      signature,
-      data: claimData,
-      uri: "", // Empty URI as not required for isin claims
-    },
-    {
-      sender,
-      code: input.walletVerification.secretVerificationCode,
-      type: input.walletVerification.verificationType,
-    }
-  );
 }

@@ -1,6 +1,7 @@
 import { AccessControlFragment } from "@/lib/fragments/the-graph/access-control-fragment";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { baseRouter } from "@/orpc/procedures/base.router";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
 import z from "zod";
 
 const READ_ACCOUNT_QUERY = theGraphGraphql(
@@ -9,6 +10,7 @@ const READ_ACCOUNT_QUERY = theGraphGraphql(
     account(id: $id) {
       id
       identity {
+        id
         claims {
           name
         }
@@ -20,10 +22,10 @@ const READ_ACCOUNT_QUERY = theGraphGraphql(
 );
 
 /**
- * Middleware to inject the user claims into the request context.
+ * Middleware to inject the user identity and claims into the request context.
  * @returns The middleware function.
  */
-export const userClaimsMiddleware = baseRouter.middleware(
+export const userIdentityMiddleware = baseRouter.middleware(
   async ({ next, context, errors }) => {
     if (!context.auth) {
       return next();
@@ -42,6 +44,7 @@ export const userClaimsMiddleware = baseRouter.middleware(
       output: z.object({
         account: z.object({
           identity: z.object({
+            id: ethereumAddress,
             claims: z.array(z.object({ name: z.string() })),
           }),
         }),
@@ -53,7 +56,10 @@ export const userClaimsMiddleware = baseRouter.middleware(
 
     return next({
       context: {
-        userClaimTopics,
+        userIdentity: {
+          address: account?.identity?.id,
+          claims: userClaimTopics,
+        },
       },
     });
   }

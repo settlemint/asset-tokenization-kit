@@ -82,7 +82,7 @@ const READ_TOKEN_QUERY = theGraphGraphql(
 export const tokenMiddleware = baseRouter.middleware(
   async ({ next, context, errors }, input) => {
     // Always fetch fresh token data - no caching
-    const { auth, userClaimTopics, theGraphClient } = context;
+    const { auth, userIdentity, theGraphClient } = context;
 
     // Early authorization check before making expensive queries
     if (!auth?.user.wallet) {
@@ -92,12 +92,12 @@ export const tokenMiddleware = baseRouter.middleware(
       });
     }
 
-    if (!userClaimTopics) {
+    if (!userIdentity?.claims) {
       logger.warn(
-        "userClaimsMiddleware should be called before tokenMiddleware"
+        "userIdentityMiddleware should be called before tokenMiddleware"
       );
       throw errors.INTERNAL_SERVER_ERROR({
-        message: "User claim topics context not set",
+        message: "User identity context not set",
       });
     }
 
