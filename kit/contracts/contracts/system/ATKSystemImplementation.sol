@@ -210,6 +210,7 @@ contract ATKSystemImplementation is
     /// @param initialAdmin_ The address that will be granted the `DEFAULT_ADMIN_ROLE`, giving it administrative control
     /// over this contract.
     /// @param accessManager_ The initial address of the access manager module's logic contract.
+    /// @param impls The initial implementation addresses for all modules and identity types.
     function initialize(
         address initialAdmin_,
         address accessManager_,
