@@ -92,10 +92,13 @@ contract SystemUtils is Test {
     // --- Setup ---
     constructor(address platformAdmin) {
         systemFactory = _deploySystemFactory();
-
+        _labelSystemFactory();
 
         _startBootstrap(platformAdmin);
+        _labelSystemContracts();
+
         _deployComplianceModulesAndGrantRoles(platformAdmin);
+        _labelComplianceModules();
     }
 
     function _deploySystemFactory() internal returns (ATKSystemFactory) {
@@ -220,6 +223,31 @@ contract SystemUtils is Test {
 
         systemAccessManager.grantMultipleRoles(platformAdmin, platformAdminRoles);
         vm.stopPrank();
+    }
+
+    function _labelSystemFactory() internal {
+        vm.label(address(systemFactory), "System Factory");
+    }
+
+    function _labelSystemContracts() internal {
+        vm.label(address(system), "System");
+        vm.label(address(systemAccessManager), "System Access Manager");
+        vm.label(address(compliance), "Compliance");
+        vm.label(address(identityRegistry), "Identity Registry");
+        vm.label(address(identityRegistryStorage), "Identity Registry Storage");
+        vm.label(address(trustedIssuersRegistry), "Trusted Issuers Registry");
+        vm.label(address(topicSchemeRegistry), "Topic Scheme Registry");
+        vm.label(address(identityFactory), "Identity Factory");
+        vm.label(address(complianceModuleRegistry), "Compliance Module Registry");
+        vm.label(address(systemAddonRegistry), "System Addon Registry");
+        vm.label(address(tokenFactoryRegistry), "Token Factory Registry");
+    }
+
+    function _labelComplianceModules() internal {
+        vm.label(address(mockedComplianceModule), "Mocked Compliance Module");
+        vm.label(address(identityVerificationModule), "Identity Verification Module");
+        vm.label(address(countryAllowListComplianceModule), "Country Allow List Compliance Module");
+        vm.label(address(countryBlockListComplianceModule), "Country Block List Compliance Module");
     }
 
     function getTopicId(string memory topicName) public view returns (uint256) {
