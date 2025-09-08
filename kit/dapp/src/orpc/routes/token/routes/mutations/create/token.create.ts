@@ -1,14 +1,25 @@
+import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { ClaimTopic, createClaim } from "@/orpc/helpers/create-claim";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { systemRouter } from "@/orpc/procedures/system.router";
+import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import { getTokenFactory } from "@/orpc/routes/system/token-factory/helpers/factory-context";
 import { tokenCreateHandlerMap } from "@/orpc/routes/token/routes/mutations/create/helpers/handler-map";
-import type { TokenCreateSchema } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
+import type {
+  TokenCreateInput,
+  TokenCreateSchema,
+} from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 import { read } from "@/orpc/routes/token/routes/token.read";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { call } from "@orpc/server";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { call, InferRouterCurrentContexts } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
+import { createLogger } from "@settlemint/sdk-utils/logging";
+import { getAddress } from "viem";
 import { z } from "zod";
+
+const logger = createLogger();
 
 /**
  * GraphQL query to find tokens deployed in a specific transaction.
@@ -22,9 +33,69 @@ const FIND_TOKEN_FOR_TRANSACTION_QUERY = theGraphGraphql(`
       symbol
       decimals
       type
+      account {
+        identity {
+          id
+        }
+      }
     }
   }
 `);
+
+/**
+ * GraphQL mutation to add a claim to an identity contract.
+ */
+const ADD_CLAIM_MUTATION = portalGraphql(`
+  mutation AddClaim(
+    $challengeId: String
+    $challengeResponse: String
+    $address: String!
+    $from: String!
+    $topic: String!
+    $scheme: String!
+    $issuer: String!
+    $signature: String!
+    $data: String!
+    $uri: String!
+  ) {
+    addClaim: ATKContractIdentityImplementationAddClaim(
+      address: $address
+      from: $from
+      challengeId: $challengeId
+      challengeResponse: $challengeResponse
+      input: {
+        _topic: $topic
+        _scheme: $scheme
+        _issuer: $issuer
+        _signature: $signature
+        _data: $data
+        _uri: $uri
+      }
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+// Define the schema for the query result
+const TokenQueryResultSchema = z.object({
+  tokens: z.array(
+    z.object({
+      id: ethereumAddress,
+      name: z.string(),
+      symbol: z.string(),
+      decimals: z.number(),
+      type: z.string(),
+      account: z.object({
+        identity: z
+          .object({
+            id: ethereumAddress,
+          })
+          .optional(),
+      }),
+    })
+  ),
+});
 
 export const create = systemRouter.token.create
   .use(
@@ -69,19 +140,6 @@ export const create = systemRouter.token.create
         deployedInTransaction: transactionHash,
       };
 
-    // Define the schema for the query result
-    const TokenQueryResultSchema = z.object({
-      tokens: z.array(
-        z.object({
-          id: z.string(),
-          name: z.string(),
-          symbol: z.string(),
-          decimals: z.number(),
-          type: z.string(),
-        })
-      ),
-    });
-
     const result = await context.theGraphClient.query(
       FIND_TOKEN_FOR_TRANSACTION_QUERY,
       {
@@ -108,6 +166,8 @@ export const create = systemRouter.token.create
       });
     }
 
+    await issueIsinClaim(token, input, context);
+
     // Return the complete token details using the read handler
     return await call(
       read,
@@ -117,3 +177,66 @@ export const create = systemRouter.token.create
       { context }
     );
   });
+
+async function issueIsinClaim(
+  token: z.infer<typeof TokenQueryResultSchema>["tokens"][number],
+  input: TokenCreateInput,
+  context: InferRouterCurrentContexts<typeof create>
+) {
+  if (!input.isin) {
+    return;
+  }
+
+  const sender = context.auth.user;
+
+  // Get the token's identity contract address from the graph data
+  const tokenOnchainID = token.account.identity?.id;
+
+  if (!tokenOnchainID) {
+    logger.error(
+      `Token at address ${token.id} does not have an associated identity contract`
+    );
+    return;
+  }
+
+  const account = await call(readAccount, {}, { context });
+  if (!account?.identity) {
+    logger.error(
+      `Account at address ${context.auth.user.wallet} does not have an associated identity contract`
+    );
+    return;
+  }
+
+  // USER-ISSUED CLAIM SIGNATURE: Create signature for user-issued claim
+  // The user issues the claim to the identity contract
+  const { signature, topicId, claimData } = await createClaim({
+    user: sender,
+    walletVerification: input.walletVerification,
+    identity: tokenOnchainID,
+    claim: {
+      topic: ClaimTopic.isin,
+      data: {
+        isin: input.isin,
+      },
+    },
+  });
+  // ISSUE CLAIM: Add isin claim to token's identity contract
+  await context.portalClient.mutate(
+    ADD_CLAIM_MUTATION,
+    {
+      address: tokenOnchainID,
+      from: sender.wallet,
+      topic: topicId.toString(),
+      scheme: "1", // ECDSA
+      issuer: getAddress(account.identity),
+      signature,
+      data: claimData,
+      uri: "", // Empty URI as not required for isin claims
+    },
+    {
+      sender,
+      code: input.walletVerification.secretVerificationCode,
+      type: input.walletVerification.verificationType,
+    }
+  );
+}
