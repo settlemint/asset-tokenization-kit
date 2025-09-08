@@ -3,7 +3,6 @@ pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { MockedComplianceModule } from "./mocks/MockedComplianceModule.sol";
-
 // System
 import { ATKSystemFactory } from "../../contracts/system/ATKSystemFactory.sol";
 import { IATKSystem } from "../../contracts/system/IATKSystem.sol";
@@ -66,6 +65,7 @@ import { SMARTIdentityVerificationComplianceModule } from
     "../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
 
 contract SystemUtils is Test {
+    address internal constant TRUSTED_FORWARDER_ADDRESS = address(0);
     // System
     ATKSystemFactory public systemFactory;
     IATKSystem public system;
@@ -91,71 +91,126 @@ contract SystemUtils is Test {
 
     // --- Setup ---
     constructor(address platformAdmin) {
-        // --- Predeployed implementations ---
-        address forwarder = address(0);
+        systemFactory = _deploySystemFactory();
 
-        systemFactory = new ATKSystemFactory(
-            address(new ATKSystemImplementation(forwarder)),
-            address(new ATKComplianceImplementation(forwarder)),
-            address(new ATKIdentityRegistryImplementation(forwarder)),
-            address(new ATKIdentityRegistryStorageImplementation(forwarder)),
-            address(new ATKSystemTrustedIssuersRegistryImplementation(forwarder)),
-            address(new ATKTrustedIssuersMetaRegistryImplementation(forwarder)),
-            address(new ATKTopicSchemeRegistryImplementation(forwarder)),
-            address(new ATKIdentityFactoryImplementation(forwarder)),
-            address(new ATKIdentityImplementation(forwarder)),
-            address(new ATKContractIdentityImplementation(forwarder)),
-            address(new ATKTokenAccessManagerImplementation(forwarder)),
-            address(new ATKTokenFactoryRegistryImplementation(forwarder)),
-            address(new ATKComplianceModuleRegistryImplementation(forwarder)),
-            address(new ATKSystemAddonRegistryImplementation(forwarder)),
-            address(new ATKSystemAccessManagerImplementation(forwarder)),
-            forwarder
+
+        _startBootstrap(platformAdmin);
+        _deployComplianceModulesAndGrantRoles(platformAdmin);
+    }
+
+    function _deploySystemFactory() internal returns (ATKSystemFactory) {
+        (
+            address a0,
+            address a1,
+            address a2,
+            address a3,
+            address a4,
+            address a5,
+            address a6,
+            address a7
+        ) = _deploySystemFactoryPart1();
+        (
+            address a8,
+            address a9,
+            address a10,
+            address a11,
+            address a12,
+            address a13,
+            address a14
+        ) = _deploySystemFactoryPart2();
+
+        return new ATKSystemFactory(
+            a0,
+            a1,
+            a2,
+            a3,
+            a4,
+            a5,
+            a6,
+            a7,
+            a8,
+            a9,
+            a10,
+            a11,
+            a12,
+            a13,
+            a14,
+            TRUSTED_FORWARDER_ADDRESS
         );
-        vm.label(address(systemFactory), "System Factory");
+    }
 
-        vm.startPrank(platformAdmin); // Use admin for initialization and binding
-        // --- During onboarding ---
+    function _deploySystemFactoryPart1()
+        internal
+        returns (
+            address a0,
+            address a1,
+            address a2,
+            address a3,
+            address a4,
+            address a5,
+            address a6,
+            address a7
+        )
+    {
+        a0 = address(new ATKSystemImplementation(TRUSTED_FORWARDER_ADDRESS));
+        a1 = address(new ATKComplianceImplementation(TRUSTED_FORWARDER_ADDRESS));
+        a2 = address(new ATKIdentityRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        a3 = address(new ATKIdentityRegistryStorageImplementation(TRUSTED_FORWARDER_ADDRESS));
+        a4 = address(new ATKSystemTrustedIssuersRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        a5 = address(new ATKTrustedIssuersMetaRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        a6 = address(new ATKTopicSchemeRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        a7 = address(new ATKIdentityFactoryImplementation(TRUSTED_FORWARDER_ADDRESS));
+    }
+
+    function _deploySystemFactoryPart2()
+        internal
+        returns (
+            address a8,
+            address a9,
+            address a10,
+            address a11,
+            address a12,
+            address a13,
+            address a14
+        )
+    {
+        a8 = address(new ATKIdentityImplementation(TRUSTED_FORWARDER_ADDRESS));
+        a9 = address(new ATKContractIdentityImplementation(TRUSTED_FORWARDER_ADDRESS));
+        a10 = address(new ATKTokenAccessManagerImplementation(TRUSTED_FORWARDER_ADDRESS));
+        a11 = address(new ATKTokenFactoryRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        a12 = address(new ATKComplianceModuleRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        a13 = address(new ATKSystemAddonRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        a14 = address(new ATKSystemAccessManagerImplementation(TRUSTED_FORWARDER_ADDRESS));
+    }
+
+    function _startBootstrap(address platformAdmin) internal {
+        vm.startPrank(platformAdmin);
         system = IATKSystem(systemFactory.createSystem());
-        vm.label(address(system), "System");
+
         system.bootstrap();
 
-        // System access manager is already configured during bootstrap
-        // All system contracts are initialized with the same access manager
         systemAccessManager = IATKSystemAccessManager(system.accessManager());
-        vm.label(address(systemAccessManager), "System Access Manager");
+
 
         compliance = ISMARTCompliance(system.compliance());
-        vm.label(address(compliance), "Compliance");
+
         identityRegistry = ISMARTIdentityRegistry(system.identityRegistry());
-        vm.label(address(identityRegistry), "Identity Registry");
         identityRegistryStorage = ISMARTIdentityRegistryStorage(system.identityRegistryStorage());
-        vm.label(address(identityRegistryStorage), "Identity Registry Storage");
         trustedIssuersRegistry = IATKTrustedIssuersRegistry(system.trustedIssuersRegistry());
-        vm.label(address(trustedIssuersRegistry), "Trusted Issuers Registry");
         topicSchemeRegistry = ISMARTTopicSchemeRegistry(system.topicSchemeRegistry());
-        vm.label(address(topicSchemeRegistry), "Topic Scheme Registry");
         identityFactory = IATKIdentityFactory(system.identityFactory());
-        vm.label(address(identityFactory), "Identity Factory");
 
         complianceModuleRegistry = IATKComplianceModuleRegistry(system.complianceModuleRegistry());
-        vm.label(address(complianceModuleRegistry), "Compliance Module Registry");
         systemAddonRegistry = IATKSystemAddonRegistry(system.systemAddonRegistry());
-        vm.label(address(systemAddonRegistry), "System Addon Registry");
         tokenFactoryRegistry = IATKTokenFactoryRegistry(system.tokenFactoryRegistry());
-        vm.label(address(tokenFactoryRegistry), "Token Factory Registry");
+    }
 
-        // --- Deploy Other Contracts ---
+    function _deployComplianceModulesAndGrantRoles(address platformAdmin) internal {
         mockedComplianceModule = new MockedComplianceModule();
-        vm.label(address(mockedComplianceModule), "Mocked Compliance Module");
-        identityVerificationModule = new SMARTIdentityVerificationComplianceModule(forwarder);
-        vm.label(address(identityVerificationModule), "Identity Verification Module");
-        countryAllowListComplianceModule = new CountryAllowListComplianceModule(forwarder);
-        vm.label(address(countryAllowListComplianceModule), "Country Allow List Compliance Module");
-        countryBlockListComplianceModule = new CountryBlockListComplianceModule(forwarder);
-        vm.label(address(countryBlockListComplianceModule), "Country Block List Compliance Module");
+        identityVerificationModule = new SMARTIdentityVerificationComplianceModule(TRUSTED_FORWARDER_ADDRESS);
+        countryAllowListComplianceModule = new CountryAllowListComplianceModule(TRUSTED_FORWARDER_ADDRESS);
+        countryBlockListComplianceModule = new CountryBlockListComplianceModule(TRUSTED_FORWARDER_ADDRESS);
 
-        // Grant necessary roles to platformAdmin in the system access manager
         bytes32[] memory platformAdminRoles = new bytes32[](5);
         platformAdminRoles[0] = ATKPeopleRoles.TOKEN_MANAGER_ROLE;
         platformAdminRoles[1] = ATKPeopleRoles.ADDON_MANAGER_ROLE;
@@ -164,7 +219,6 @@ contract SystemUtils is Test {
         platformAdminRoles[4] = ATKPeopleRoles.IDENTITY_MANAGER_ROLE;
 
         systemAccessManager.grantMultipleRoles(platformAdmin, platformAdminRoles);
-
         vm.stopPrank();
     }
 
