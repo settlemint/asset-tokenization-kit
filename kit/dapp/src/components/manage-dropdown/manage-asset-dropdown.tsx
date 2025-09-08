@@ -10,19 +10,23 @@ import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { AssetExtensionEnum } from "@atk/zod/asset-extensions";
 import {
   ChevronDown,
+  Lock,
   Pause,
   Play,
   Plus,
   Shield,
   TrendingUp,
+  Unlock,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CollateralSheet } from "./sheets/collateral-sheet";
+import { FreezePartialSheet } from "./sheets/freeze-partial-sheet";
 import { MintSheet } from "./sheets/mint-sheet";
 import { PauseUnpauseConfirmationSheet } from "./sheets/pause-unpause-confirmation-sheet";
 import { SetYieldScheduleSheet } from "./sheets/set-yield-schedule-sheet";
 import { TopUpDenominationAssetSheet } from "./sheets/top-up-denomination-asset-sheet";
+import { UnfreezePartialSheet } from "./sheets/unfreeze-partial-sheet";
 
 interface ManageAssetDropdownProps {
   asset: Token; // Keep Token type to maintain API compatibility
@@ -35,7 +39,9 @@ type Action =
   | "setYieldSchedule"
   | "collateral"
   | "viewEvents"
-  | "topUpDenominationAsset";
+  | "topUpDenominationAsset"
+  | "freezePartial"
+  | "unfreezePartial";
 
 function isCurrentAction({
   target,
@@ -86,6 +92,35 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         label: t("tokens:actions.mint.label"),
         icon: Plus,
         openAction: "mint",
+        disabled: false,
+      });
+    }
+
+    // Freeze Tokens - only visible for tokens with custodian extension and permissions
+    const hasCustodianCapability = asset.extensions.includes(
+      AssetExtensionEnum.CUSTODIAN
+    );
+    const canFreezePartial =
+      asset.userPermissions?.actions?.freezePartial && !isPaused;
+    if (hasCustodianCapability && canFreezePartial) {
+      arr.push({
+        id: "freezePartial",
+        label: t("tokens:actions.freezePartial.label"),
+        icon: Lock,
+        openAction: "freezePartial",
+        disabled: false,
+      });
+    }
+
+    // Unfreeze Tokens - only visible for tokens with custodian extension and permissions
+    const canUnfreezePartial =
+      asset.userPermissions?.actions?.unfreezePartial && !isPaused;
+    if (hasCustodianCapability && canUnfreezePartial) {
+      arr.push({
+        id: "unfreezePartial",
+        label: t("tokens:actions.unfreezePartial.label"),
+        icon: Unlock,
+        openAction: "unfreezePartial",
         disabled: false,
       });
     }
@@ -215,6 +250,21 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
 
       <CollateralSheet
         open={isCurrentAction({ target: "collateral", current: openAction })}
+        onOpenChange={onActionOpenChange}
+        asset={asset}
+      />
+
+      <FreezePartialSheet
+        open={isCurrentAction({ target: "freezePartial", current: openAction })}
+        onOpenChange={onActionOpenChange}
+        asset={asset}
+      />
+
+      <UnfreezePartialSheet
+        open={isCurrentAction({
+          target: "unfreezePartial",
+          current: openAction,
+        })}
         onOpenChange={onActionOpenChange}
         asset={asset}
       />

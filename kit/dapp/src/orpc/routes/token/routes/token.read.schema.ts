@@ -213,6 +213,16 @@ export const RawTokenSchema = z.object({
                 .describe(
                   "Whether the user can execute the tokenFreezeAddress action"
                 ),
+              freezePartial: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenFreezePartial action"
+                ),
+              unfreezePartial: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenUnfreezePartial action"
+                ),
               recoverERC20: z
                 .boolean()
                 .describe(

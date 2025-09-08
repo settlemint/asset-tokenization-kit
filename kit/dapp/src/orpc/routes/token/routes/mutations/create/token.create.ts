@@ -1,4 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { getRoleByFieldName } from "@/lib/constants/roles";
+import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
+import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { getTokenFactory } from "@/orpc/routes/system/token-factory/helpers/factory-context";
@@ -13,6 +16,7 @@ import { z } from "zod";
 /**
  * GraphQL query to find tokens deployed in a specific transaction.
  * Used to retrieve the token contract address after deployment.
+ * Includes accessControl field for role management.
  */
 const FIND_TOKEN_FOR_TRANSACTION_QUERY = theGraphGraphql(`
   query findTokenForTransaction($deployedInTransaction: Bytes) {
@@ -22,6 +26,33 @@ const FIND_TOKEN_FOR_TRANSACTION_QUERY = theGraphGraphql(`
       symbol
       decimals
       type
+      accessControl {
+        id
+      }
+    }
+  }
+`);
+
+/**
+ * GraphQL mutation for granting roles on token access manager
+ */
+const TOKEN_GRANT_ROLE_MUTATION = portalGraphql(`
+  mutation TokenGrantRoleMutation(
+    $challengeId: String
+    $challengeResponse: String
+    $address: String!
+    $account: String!
+    $role: String!
+    $from: String!
+  ) {
+    ISMARTTokenAccessManagerGrantRole(
+      challengeId: $challengeId
+      challengeResponse: $challengeResponse
+      address: $address
+      from: $from
+      input: { role: $role, account: $account }
+    ) {
+      transactionHash
     }
   }
 `);
@@ -78,6 +109,11 @@ export const create = systemRouter.token.create
           symbol: z.string(),
           decimals: z.number(),
           type: z.string(),
+          accessControl: z
+            .object({
+              id: z.string(),
+            })
+            .optional(),
         })
       ),
     });
@@ -106,6 +142,55 @@ export const create = systemRouter.token.create
           `Token object is null for transaction ${transactionHash}`
         ),
       });
+    }
+
+    // Grant convenience roles for easier user experience
+    // This allows the creator to immediately pause/unpause, mint/burn, and manage the token
+    try {
+      // Get the token's access manager address from the token object
+      const accessManagerAddress = token.accessControl?.id;
+
+      if (!accessManagerAddress) {
+        throw new Error("Could not retrieve access manager address for token");
+      }
+
+      const convenienceRoles: AccessControlRoles[] = [
+        "emergency", // For pause/unpause operations
+        "supplyManagement", // For mint/burn operations
+        "custodian", // For freeze/forced transfer operations
+        "governance", // For compliance and configuration
+      ];
+
+      // Grant each role individually using the same pattern as the token.grant-role mutation
+      for (const roleName of convenienceRoles) {
+        const roleInfo = getRoleByFieldName(roleName);
+        if (!roleInfo) {
+          console.warn(`Could not find role info for ${roleName}, skipping`);
+          continue;
+        }
+
+        await context.portalClient.mutate(
+          TOKEN_GRANT_ROLE_MUTATION,
+          {
+            address: accessManagerAddress,
+            from: context.auth.user.wallet,
+            account: context.auth.user.wallet,
+            role: roleInfo.bytes,
+          },
+          {
+            sender: context.auth.user,
+            code: input.walletVerification.secretVerificationCode,
+            type: input.walletVerification.verificationType,
+          }
+        );
+      }
+    } catch (error) {
+      // Log the error but don't fail the token creation
+      // The token was successfully created, but convenience roles failed
+      console.warn(
+        "Failed to grant convenience roles after token creation:",
+        error
+      );
     }
 
     // Return the complete token details using the read handler

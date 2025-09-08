@@ -165,6 +165,8 @@ export const tokenMiddleware = baseRouter.middleware(
             approve: false,
             forcedRecover: false,
             freezeAddress: false,
+            freezePartial: false,
+            unfreezePartial: false,
             recoverERC20: false,
             recoverTokens: false,
             redeem: false,
