@@ -103,41 +103,41 @@ contract SystemUtils is Test {
 
     function _deploySystemFactory() internal returns (ATKSystemFactory) {
         (
-            address a0,
-            address a1,
-            address a2,
-            address a3,
-            address a4,
-            address a5,
-            address a6,
-            address a7
+            address atkSystemImpl,
+            address complianceImpl,
+            address identityRegistryImpl,
+            address identityRegistryStorageImpl,
+            address systemTrustedIssuersRegistryImpl,
+            address trustedIssuersMetaRegistryImpl,
+            address topicSchemeRegistryImpl,
+            address identityFactoryImpl
         ) = _deploySystemFactoryPart1();
         (
-            address a8,
-            address a9,
-            address a10,
-            address a11,
-            address a12,
-            address a13,
-            address a14
+            address identityImpl,
+            address contractIdentityImpl,
+            address tokenAccessManagerImpl,
+            address tokenFactoryRegistryImpl,
+            address complianceModuleRegistryImpl,
+            address systemAddonRegistryImpl,
+            address systemAccessManagerImpl
         ) = _deploySystemFactoryPart2();
 
         return new ATKSystemFactory(
-            a0,
-            a1,
-            a2,
-            a3,
-            a4,
-            a5,
-            a6,
-            a7,
-            a8,
-            a9,
-            a10,
-            a11,
-            a12,
-            a13,
-            a14,
+            atkSystemImpl,
+            complianceImpl,
+            identityRegistryImpl,
+            identityRegistryStorageImpl,
+            systemTrustedIssuersRegistryImpl,
+            trustedIssuersMetaRegistryImpl,
+            topicSchemeRegistryImpl,
+            identityFactoryImpl,
+            identityImpl,
+            contractIdentityImpl,
+            tokenAccessManagerImpl,
+            tokenFactoryRegistryImpl,
+            complianceModuleRegistryImpl,
+            systemAddonRegistryImpl,
+            systemAccessManagerImpl,
             TRUSTED_FORWARDER_ADDRESS
         );
     }
@@ -145,45 +145,46 @@ contract SystemUtils is Test {
     function _deploySystemFactoryPart1()
         internal
         returns (
-            address a0,
-            address a1,
-            address a2,
-            address a3,
-            address a4,
-            address a5,
-            address a6,
-            address a7
+            address atkSystemImpl,
+            address complianceImpl,
+            address identityRegistryImpl,
+            address identityRegistryStorageImpl,
+            address systemTrustedIssuersRegistryImpl,
+            address trustedIssuersMetaRegistryImpl,
+            address topicSchemeRegistryImpl,
+            address identityFactoryImpl
         )
     {
-        a0 = address(new ATKSystemImplementation(TRUSTED_FORWARDER_ADDRESS));
-        a1 = address(new ATKComplianceImplementation(TRUSTED_FORWARDER_ADDRESS));
-        a2 = address(new ATKIdentityRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
-        a3 = address(new ATKIdentityRegistryStorageImplementation(TRUSTED_FORWARDER_ADDRESS));
-        a4 = address(new ATKSystemTrustedIssuersRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
-        a5 = address(new ATKTrustedIssuersMetaRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
-        a6 = address(new ATKTopicSchemeRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
-        a7 = address(new ATKIdentityFactoryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        atkSystemImpl = address(new ATKSystemImplementation(TRUSTED_FORWARDER_ADDRESS));
+        complianceImpl = address(new ATKComplianceImplementation(TRUSTED_FORWARDER_ADDRESS));
+        identityRegistryImpl = address(new ATKIdentityRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        identityRegistryStorageImpl = address(new ATKIdentityRegistryStorageImplementation(TRUSTED_FORWARDER_ADDRESS));
+        systemTrustedIssuersRegistryImpl =
+            address(new ATKSystemTrustedIssuersRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        trustedIssuersMetaRegistryImpl = address(new ATKTrustedIssuersMetaRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        topicSchemeRegistryImpl = address(new ATKTopicSchemeRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        identityFactoryImpl = address(new ATKIdentityFactoryImplementation(TRUSTED_FORWARDER_ADDRESS));
     }
 
     function _deploySystemFactoryPart2()
         internal
         returns (
-            address a8,
-            address a9,
-            address a10,
-            address a11,
-            address a12,
-            address a13,
-            address a14
+            address identityImpl,
+            address contractIdentityImpl,
+            address tokenAccessManagerImpl,
+            address tokenFactoryRegistryImpl,
+            address complianceModuleRegistryImpl,
+            address systemAddonRegistryImpl,
+            address systemAccessManagerImpl
         )
     {
-        a8 = address(new ATKIdentityImplementation(TRUSTED_FORWARDER_ADDRESS));
-        a9 = address(new ATKContractIdentityImplementation(TRUSTED_FORWARDER_ADDRESS));
-        a10 = address(new ATKTokenAccessManagerImplementation(TRUSTED_FORWARDER_ADDRESS));
-        a11 = address(new ATKTokenFactoryRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
-        a12 = address(new ATKComplianceModuleRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
-        a13 = address(new ATKSystemAddonRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
-        a14 = address(new ATKSystemAccessManagerImplementation(TRUSTED_FORWARDER_ADDRESS));
+        identityImpl = address(new ATKIdentityImplementation(TRUSTED_FORWARDER_ADDRESS));
+        contractIdentityImpl = address(new ATKContractIdentityImplementation(TRUSTED_FORWARDER_ADDRESS));
+        tokenAccessManagerImpl = address(new ATKTokenAccessManagerImplementation(TRUSTED_FORWARDER_ADDRESS));
+        tokenFactoryRegistryImpl = address(new ATKTokenFactoryRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        complianceModuleRegistryImpl = address(new ATKComplianceModuleRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        systemAddonRegistryImpl = address(new ATKSystemAddonRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        systemAccessManagerImpl = address(new ATKSystemAccessManagerImplementation(TRUSTED_FORWARDER_ADDRESS));
     }
 
     function _startBootstrap(address platformAdmin) internal {
