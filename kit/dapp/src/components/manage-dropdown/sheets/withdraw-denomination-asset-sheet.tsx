@@ -1,5 +1,6 @@
 import { AddressSelectOrInputToggle } from "@/components/address/address-select-or-input-toggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Web3Address } from "@/components/web3/web3-address";
 import { useAppForm } from "@/hooks/use-app-form";
 import { orpc } from "@/orpc/orpc-client";
 import { FixedYieldScheduleWithdrawInput } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.withdraw.schema";
@@ -225,9 +226,7 @@ export function WithdrawDenominationAssetSheet({
                       "tokens:actions.withdrawDenominationAsset.recipientLabel"
                     )}
                   </span>
-                  <span className="font-medium font-mono text-xs">
-                    {toFieldValue}
-                  </span>
+                  <Web3Address address={toFieldValue} />
                 </div>
               </div>
             </CardContent>
