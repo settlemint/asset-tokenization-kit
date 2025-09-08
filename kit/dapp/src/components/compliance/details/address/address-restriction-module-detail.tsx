@@ -104,8 +104,8 @@ export function AddressRestrictionModuleDetail({
       .map((a) => a.toLowerCase());
 
     // Convert to Sets to remove duplicates, then to sorted arrays for comparison
-    const initialUnique = [...new Set(initial)].sort();
-    const currentUnique = [...new Set(current)].sort();
+    const initialUnique = [...new Set(initial)].toSorted();
+    const currentUnique = [...new Set(current)].toSorted();
 
     return (
       initialUnique.length !== currentUnique.length ||

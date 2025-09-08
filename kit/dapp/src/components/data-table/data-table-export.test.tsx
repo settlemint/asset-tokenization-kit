@@ -316,7 +316,7 @@ describe("DataTableExport", () => {
           booleanValue: true,
           dateValue: testDate,
           objectValue: { key: "value" },
-          bigintValue: BigInt(9_007_199_254_740_991),
+          bigintValue: 9_007_199_254_740_991n,
         },
       ];
 

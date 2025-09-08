@@ -155,6 +155,22 @@ export const UserSchema = z.object({
    * Computed field based on identity presence.
    */
   isRegistered: z.boolean().describe("Whether user has on-chain identity"),
+
+  /**
+   * User account creation timestamp.
+   * When the user first registered in the system.
+   */
+  createdAt: z.string().optional().describe("User account creation timestamp"),
+
+  /**
+   * Last login timestamp.
+   * When the user last authenticated to the system.
+   */
+  lastLoginAt: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("Last login timestamp"),
 });
 
 /**

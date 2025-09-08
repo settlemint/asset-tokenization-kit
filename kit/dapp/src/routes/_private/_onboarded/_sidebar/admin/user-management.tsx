@@ -1,6 +1,8 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
+import { UsersTable } from "@/components/users/users-table";
 import { createFileRoute } from "@tanstack/react-router";
+import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
@@ -27,11 +29,15 @@ function UserManagementPage() {
         </p>
       </div>
 
-      <div className="rounded-lg border bg-card p-6">
-        <p className="text-muted-foreground">
-          User management functionality coming soon...
-        </p>
-      </div>
+      <Suspense
+        fallback={
+          <div className="rounded-lg border bg-card p-6">
+            <p className="text-muted-foreground">Loading users...</p>
+          </div>
+        }
+      >
+        <UsersTable />
+      </Suspense>
     </div>
   );
 }

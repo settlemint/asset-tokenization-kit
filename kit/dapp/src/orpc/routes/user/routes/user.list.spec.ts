@@ -84,7 +84,7 @@ describe("User list", () => {
     });
 
     // testUser3 will have no KYC profile to test the scenario without KYC data
-  });
+  }, 100_000);
 
   describe("Basic functionality", () => {
     it("admin can list all users", async () => {
@@ -94,11 +94,13 @@ describe("User list", () => {
       const users = await client.user.list({});
 
       expect(users).toBeDefined();
-      expect(Array.isArray(users)).toBe(true);
-      expect(users.length).toBeGreaterThan(0);
+      expect(users.items).toBeDefined();
+      expect(Array.isArray(users.items)).toBe(true);
+      expect(users.items.length).toBeGreaterThan(0);
+      expect(users.total).toBeGreaterThan(0);
 
       // Check that our test users are included
-      const userIds = users.map((user: User) => user.id);
+      const userIds = users.items.map((user: User) => user.id);
       expect(userIds).toContain(testUser1Data.id);
       expect(userIds).toContain(testUser2Data.id);
       expect(userIds).toContain(testUser3Data.id);
@@ -110,9 +112,9 @@ describe("User list", () => {
 
       const users = await client.user.list({ limit: 5 });
 
-      expect(users.length).toBeGreaterThan(0);
+      expect(users.items.length).toBeGreaterThan(0);
 
-      const user = users[0];
+      const user = users.items[0];
       expect(user).toBeDefined();
 
       if (user) {
@@ -138,7 +140,7 @@ describe("User list", () => {
       const users = await client.user.list({});
 
       // Find our test user with KYC data
-      const userWithKyc = users.find(
+      const userWithKyc = users.items.find(
         (user: User) => user.id === testUser1Data.id
       );
       expect(userWithKyc).toBeDefined();
@@ -159,7 +161,7 @@ describe("User list", () => {
       const users = await client.user.list({});
 
       // Find our test user without KYC data
-      const userWithoutKyc = users.find(
+      const userWithoutKyc = users.items.find(
         (user: User) => user.id === testUser3Data.id
       );
       expect(userWithoutKyc).toBeDefined();
@@ -181,9 +183,9 @@ describe("User list", () => {
 
       const users = await client.user.list({ limit: 10 });
 
-      expect(users.length).toBeGreaterThan(0);
+      expect(users.items.length).toBeGreaterThan(0);
 
-      for (const user of users) {
+      for (const user of users.items) {
         // Every user should have isRegistered field
         expect(typeof user.isRegistered).toBe("boolean");
 
@@ -219,11 +221,11 @@ describe("User list", () => {
       const users = await client.user.list({});
 
       expect(users).toBeDefined();
-      expect(Array.isArray(users)).toBe(true);
-      expect(users.length).toBeGreaterThan(0);
+      expect(Array.isArray(users.items)).toBe(true);
+      expect(users.items.length).toBeGreaterThan(0);
 
       // Users should still have the basic structure even if identity data fails
-      for (const user of users) {
+      for (const user of users.items) {
         expect(user.id).toBeDefined();
         expect(user.email).toBeDefined();
         expect(user.wallet).toBeDefined();
@@ -240,19 +242,19 @@ describe("User list", () => {
 
       // Test limit
       const limitedUsers = await client.user.list({ limit: 2 });
-      expect(limitedUsers.length).toBeLessThanOrEqual(2);
+      expect(limitedUsers.items.length).toBeLessThanOrEqual(2);
 
       // Test offset
       const firstPage = await client.user.list({ limit: 2, offset: 0 });
       const secondPage = await client.user.list({ limit: 2, offset: 2 });
 
-      expect(firstPage.length).toBeLessThanOrEqual(2);
-      expect(secondPage.length).toBeLessThanOrEqual(2);
+      expect(firstPage.items.length).toBeLessThanOrEqual(2);
+      expect(secondPage.items.length).toBeLessThanOrEqual(2);
 
       // Pages should have different users (unless there are fewer than 4 total users)
-      if (firstPage.length === 2 && secondPage.length > 0) {
-        const firstPageIds = firstPage.map((user: User) => user.id);
-        const secondPageIds = secondPage.map((user: User) => user.id);
+      if (firstPage.items.length === 2 && secondPage.items.length > 0) {
+        const firstPageIds = firstPage.items.map((user: User) => user.id);
+        const secondPageIds = secondPage.items.map((user: User) => user.id);
 
         // Should not have overlapping user IDs
         const secondPageSet = new Set(secondPageIds);
@@ -273,11 +275,11 @@ describe("User list", () => {
         limit: 5,
       });
 
-      if (usersByEmail.length > 1) {
-        for (let i = 1; i < usersByEmail.length; i++) {
+      if (usersByEmail.items.length > 1) {
+        for (let i = 1; i < usersByEmail.items.length; i++) {
           expect(
-            usersByEmail[i]?.email.localeCompare(
-              usersByEmail[i - 1]?.email ?? ""
+            usersByEmail.items[i]?.email.localeCompare(
+              usersByEmail.items[i - 1]?.email ?? ""
             )
           ).toBeGreaterThanOrEqual(0);
         }
@@ -291,7 +293,7 @@ describe("User list", () => {
       });
 
       expect(usersByCreated).toBeDefined();
-      expect(usersByCreated.length).toBeGreaterThan(0);
+      expect(usersByCreated.items.length).toBeGreaterThan(0);
     });
   });
 
@@ -321,8 +323,8 @@ describe("User list", () => {
       const users = await client.user.list({});
 
       expect(users).toBeDefined();
-      expect(Array.isArray(users)).toBe(true);
-      expect(users.length).toBeGreaterThan(0);
+      expect(Array.isArray(users.items)).toBe(true);
+      expect(users.items.length).toBeGreaterThan(0);
     });
   });
 
@@ -355,16 +357,16 @@ describe("User list", () => {
       const users = await client.user.list({});
 
       expect(users).toBeDefined();
-      expect(Array.isArray(users)).toBe(true);
-      expect(users.length).toBeGreaterThan(0);
+      expect(Array.isArray(users.items)).toBe(true);
+      expect(users.items.length).toBeGreaterThan(0);
 
       // Verify we can see our test users
-      const userIds = users.map((user: User) => user.id);
+      const userIds = users.items.map((user: User) => user.id);
       expect(userIds).toContain(testUser1Data.id);
       expect(userIds).toContain(testUser2Data.id);
 
       // Verify structure and data access for users with claims
-      users.forEach((user: User) => {
+      users.items.forEach((user: User) => {
         expect(user.id).toBeDefined();
         expect(user.email).toBeDefined();
         expect(user.wallet).toBeDefined();
@@ -389,7 +391,7 @@ describe("User list", () => {
 
       const users = await client.user.list({});
 
-      for (const user of users) {
+      for (const user of users.items) {
         expect(user.wallet).toBeDefined();
         expect(typeof user.wallet).toBe("string");
         // Should be a valid Ethereum address format
@@ -403,7 +405,7 @@ describe("User list", () => {
 
       const users = await client.user.list({});
 
-      for (const user of users) {
+      for (const user of users.items) {
         expect(user.role).toBeDefined();
         expect(typeof user.role).toBe("string");
         expect(user.role).not.toBe(""); // Should not be empty string
@@ -418,12 +420,12 @@ describe("User list", () => {
       const users2 = await client.user.list({ limit: 3 });
 
       // Same users should have same data
-      const commonUsers = users1.filter((user1: User) =>
-        users2.some((user2: User) => user2.id === user1.id)
+      const commonUsers = users1.items.filter((user1: User) =>
+        users2.items.some((user2: User) => user2.id === user1.id)
       );
 
       for (const user1 of commonUsers) {
-        const user2 = users2.find((u: User) => u.id === user1.id);
+        const user2 = users2.items.find((u: User) => u.id === user1.id);
         expect(user2).toBeDefined();
 
         if (user2) {

@@ -47,6 +47,11 @@ const READ_TOKEN_QUERY = theGraphGraphql(
         faceValue
         isMatured
         maturityDate
+        denominationAsset {
+          id
+          decimals
+          symbol
+        }
       }
       fund {
         managementFeeBps

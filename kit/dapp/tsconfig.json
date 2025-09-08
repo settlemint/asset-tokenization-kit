@@ -7,10 +7,10 @@
     "lib": [
       "DOM",
       "DOM.Iterable",
-      "ES2022"
+      "ES2023"
     ],
-    "target": "es2022",
-    "module": "esnext",
+    "target": "es2023",
+    "module": "preserve",
     "jsx": "react-jsx",
     "allowJs": true,
     "sourceMap": true,

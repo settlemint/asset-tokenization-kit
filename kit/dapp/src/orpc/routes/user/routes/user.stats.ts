@@ -98,7 +98,7 @@ function processUserGrowthData(
   }
 
   // Convert to cumulative user growth
-  const sortedDays = [...dailyUserSets.keys()].sort();
+  const sortedDays = [...dailyUserSets.keys()].toSorted();
   const allUsers = new Set<string>();
   const result: { timestamp: string; users: number }[] = [];
 
