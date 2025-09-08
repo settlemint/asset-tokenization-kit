@@ -231,6 +231,9 @@ export const RawTokenSchema = z.object({
                 .describe(
                   "Whether the user can execute the tokenRedeem action"
                 ),
+              mature: z
+                .boolean()
+                .describe("Whether the user can execute the mature action"),
               removeComplianceModule: z
                 .boolean()
                 .describe(

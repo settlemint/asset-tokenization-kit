@@ -25,6 +25,7 @@ export const TOKEN_PERMISSIONS: Record<
   recoverERC20: "emergency",
   recoverTokens: "emergency",
   redeem: "supplyManagement",
+  mature: "governance",
   removeComplianceModule: "governance",
   setCap: "supplyManagement",
   setYieldSchedule: "governance",

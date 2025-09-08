@@ -18,6 +18,7 @@ import { tokenRecoverTokensContract } from "@/orpc/routes/token/routes/mutations
 import { tokenRedeemContract } from "@/orpc/routes/token/routes/mutations/redeem/token.redeem.contract";
 import { tokenTransferContract } from "@/orpc/routes/token/routes/mutations/transfer/token.transfer.contract";
 import { tokenSetYieldScheduleContract } from "@/orpc/routes/token/routes/mutations/yield/token.set-yield-schedule.contract";
+import { tokenMatureContract } from "@/orpc/routes/token/routes/mutations/mature/token.mature.contract";
 
 // Query contracts
 import { tokenActionsContract } from "@/orpc/routes/token/routes/token.actions.contract";
@@ -48,6 +49,7 @@ export const tokenContract = {
   transfer: tokenTransferContract,
   approve: tokenApproveContract,
   redeem: tokenRedeemContract,
+  mature: tokenMatureContract,
   freezeAddress: tokenFreezeAddressContract,
   recoverTokens: tokenRecoverTokensContract,
   forcedRecover: tokenForcedRecoverContract,
@@ -91,6 +93,7 @@ export type TokenContractMutations =
   | "recoverERC20"
   | "recoverTokens"
   | "redeem"
+  | "mature"
   | "removeComplianceModule"
   | "setCap"
   | "updateCollateral"

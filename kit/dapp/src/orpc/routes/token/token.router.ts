@@ -15,6 +15,7 @@ import { forcedRecover } from "@/orpc/routes/token/routes/mutations/recovery/tok
 import { recoverERC20 } from "@/orpc/routes/token/routes/mutations/recovery/token.recover-erc20";
 import { recoverTokens } from "@/orpc/routes/token/routes/mutations/recovery/token.recover-tokens";
 import { redeem } from "@/orpc/routes/token/routes/mutations/redeem/token.redeem";
+import { mature } from "@/orpc/routes/token/routes/mutations/mature/token.mature";
 import { transfer } from "@/orpc/routes/token/routes/mutations/transfer/token.transfer";
 import { setYieldSchedule } from "@/orpc/routes/token/routes/mutations/yield/token.set-yield-schedule";
 import { statsBondStatus } from "@/orpc/routes/token/routes/stats/bond-status";
@@ -49,6 +50,7 @@ const routes = {
   transfer,
   approve,
   redeem,
+  mature,
   freezeAddress,
   recoverTokens,
   forcedRecover,
