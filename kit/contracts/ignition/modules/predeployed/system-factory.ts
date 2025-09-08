@@ -41,7 +41,7 @@ const SystemFactoryModule = buildModule("SystemFactoryModule", (m) => {
   const { systemAddonRegistry } = m.useModule(SystemAddonRegistryModule);
   const { systemAccessManager } = m.useModule(SystemAccessManagerModule);
 
-  const systemFactory = m.contract("ATKSystemFactory", [
+  const implementsTuple = [
     system,
     compliance,
     identityRegistry,
@@ -57,6 +57,10 @@ const SystemFactoryModule = buildModule("SystemFactoryModule", (m) => {
     complianceModuleRegistry,
     systemAddonRegistry,
     systemAccessManager,
+  ];
+
+  const systemFactory = m.contract("ATKSystemFactory", [
+    implementsTuple,
     forwarder,
   ]);
 

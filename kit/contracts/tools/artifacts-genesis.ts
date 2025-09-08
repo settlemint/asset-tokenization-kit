@@ -503,8 +503,8 @@ class ContractDeployer {
       case "ATKForwarder":
         return [];
 
-      case "ATKSystemFactory":
-        return [
+      case "ATKSystemFactory": {
+        const implementationsTuple = `(${[
           CONTRACT_ADDRESSES.ATKSystemImplementation,
           CONTRACT_ADDRESSES.ATKComplianceImplementation,
           CONTRACT_ADDRESSES.ATKIdentityRegistryImplementation,
@@ -520,8 +520,9 @@ class ContractDeployer {
           CONTRACT_ADDRESSES.ATKComplianceModuleRegistryImplementation,
           CONTRACT_ADDRESSES.ATKSystemAddonRegistryImplementation,
           CONTRACT_ADDRESSES.ATKSystemAccessManagerImplementation,
-          forwarderAddress,
-        ];
+        ].join(",")})`;
+        return [implementationsTuple, forwarderAddress];
+      }
 
       default:
         return [forwarderAddress];
@@ -1034,9 +1035,7 @@ class GenesisGenerator {
 
       logger.info(`Complete genesis written to: ${CONTRACTS_GENESIS_FILE}`);
       logger.info(
-        `Total allocations: ${Object.keys(finalGenesis.alloc).length} (${
-          Object.keys(template.alloc || {}).length
-        } from template + ${Object.keys(contractAllocations).length} contracts)`
+        `Total allocations: ${Object.keys(finalGenesis.alloc).length} (${Object.keys(template.alloc || {}).length} from template + ${Object.keys(contractAllocations).length} contracts)`
       );
 
       // Verify the written file can be read back

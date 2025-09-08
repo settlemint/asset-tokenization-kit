@@ -15,6 +15,24 @@ import { IATKSystemAccessManaged } from "./access-manager/IATKSystemAccessManage
 /// because they enable these components to be upgraded in the future without altering the addresses that other parts
 /// of the system use to interact with them, ensuring stability and maintainability.
 interface IATKSystem is IERC165, IATKSystemAccessManaged {
+    // --- Types ---
+    /// @notice Struct that groups all implementation addresses required during initialize
+    struct SystemInitImplementations {
+        address complianceImplementation;
+        address identityRegistryImplementation;
+        address identityRegistryStorageImplementation;
+        address trustedIssuersRegistryImplementation;
+        address trustedIssuersMetaRegistryImplementation;
+        address topicSchemeRegistryImplementation;
+        address identityFactoryImplementation;
+        address identityImplementation;
+        address contractIdentityImplementation;
+        address tokenAccessManagerImplementation;
+        address tokenFactoryRegistryImplementation;
+        address complianceModuleRegistryImplementation;
+        address addonRegistryImplementation;
+    }
+
     // --- Events ---
     // Events are signals emitted by the contract that can be listened to by external applications or other contracts.
     // They are a way to log important state changes or actions.
@@ -127,41 +145,12 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// protocol.
     /// @param initialAdmin_ The address of the initial administrator.
     /// @param accessManager_ The address of the access manager implementation.
-    /// @param complianceImplementation_ The address of the compliance module implementation.
-    /// @param identityRegistryImplementation_ The address of the identity registry module implementation.
-    /// @param identityRegistryStorageImplementation_ The address of the identity registry storage module
-    /// implementation.
-    /// @param trustedIssuersRegistryImplementation_ The address of the trusted issuers registry module implementation.
-    /// @param trustedIssuersMetaRegistryImplementation_ The address of the trusted issuers meta registry module
-    /// implementation.
-    /// @param topicSchemeRegistryImplementation_ The address of the topic scheme registry module implementation.
-    /// @param identityFactoryImplementation_ The address of the identity factory module implementation.
-    /// @param identityImplementation_ The address of the standard identity module implementation.
-    /// @param contractIdentityImplementation_ The address of the contract identity module implementation.
-    /// @param tokenAccessManagerImplementation_ The address of the token access manager module implementation.
-    /// @param tokenFactoryRegistryImplementation_ The address of the token factory registry module implementation.
-    /// @param complianceModuleRegistryImplementation_ The address of the compliance module registry module
-    /// implementation.
-    /// @param addonRegistryImplementation_ The address of the addon registry module implementation.
-
+    /// @param impls The struct containing all initial implementation addresses.
     function initialize(
         address initialAdmin_,
         address accessManager_,
-        address complianceImplementation_,
-        address identityRegistryImplementation_,
-        address identityRegistryStorageImplementation_,
-        address trustedIssuersRegistryImplementation_,
-        address trustedIssuersMetaRegistryImplementation_,
-        address topicSchemeRegistryImplementation_,
-        address identityFactoryImplementation_,
-        address identityImplementation_, // Expected to be IERC734/IIdentity compliant
-        address contractIdentityImplementation_, // Expected to be IERC734/IIdentity compliant
-        address tokenAccessManagerImplementation_, // Expected to be ISMARTTokenAccessManager compliant
-        address tokenFactoryRegistryImplementation_,
-        address complianceModuleRegistryImplementation_,
-        address addonRegistryImplementation_
-    )
-        external;
+        SystemInitImplementations memory impls
+    ) external;
 
     /// @notice Initializes and sets up the entire ATK Protocol system.
     /// @dev This function is responsible for the initial deployment and configuration of the ATK Protocol.
