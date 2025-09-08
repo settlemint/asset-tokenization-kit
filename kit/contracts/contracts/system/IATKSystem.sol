@@ -150,7 +150,8 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
         address initialAdmin_,
         address accessManager_,
         SystemInitImplementations memory impls
-    ) external;
+    )
+        external;
 
     /// @notice Initializes and sets up the entire ATK Protocol system.
     /// @dev This function is responsible for the initial deployment and configuration of the ATK Protocol.

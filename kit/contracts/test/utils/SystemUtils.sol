@@ -113,9 +113,7 @@ contract SystemUtils is Test {
         vm.label(identityRegistryStorageImpl, "ATKIdentityRegistryStorageImplementation");
         address systemTrustedIssuersRegistryImpl =
             address(new ATKSystemTrustedIssuersRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
-        vm.label(
-            systemTrustedIssuersRegistryImpl, "ATKSystemTrustedIssuersRegistryImplementation"
-        );
+        vm.label(systemTrustedIssuersRegistryImpl, "ATKSystemTrustedIssuersRegistryImplementation");
         address trustedIssuersMetaRegistryImpl =
             address(new ATKTrustedIssuersMetaRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
         vm.label(trustedIssuersMetaRegistryImpl, "ATKTrustedIssuersMetaRegistryImplementation");
@@ -167,7 +165,6 @@ contract SystemUtils is Test {
         system.bootstrap();
 
         systemAccessManager = IATKSystemAccessManager(system.accessManager());
-
 
         compliance = ISMARTCompliance(system.compliance());
 

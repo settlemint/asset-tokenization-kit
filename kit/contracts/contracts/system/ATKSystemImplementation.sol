@@ -215,7 +215,10 @@ contract ATKSystemImplementation is
         address initialAdmin_,
         address accessManager_,
         IATKSystem.SystemInitImplementations memory impls
-    ) public initializer {
+    )
+        public
+        initializer
+    {
         __ATKSystemAccessManaged_init(accessManager_);
         __ReentrancyGuard_init();
         __UUPSUpgradeable_init();
@@ -234,7 +237,9 @@ contract ATKSystemImplementation is
         emit IdentityRegistryImplementationUpdated(initialAdmin_, impls.identityRegistryImplementation);
 
         // Validate and set the identity registry storage implementation address.
-        if (impls.identityRegistryStorageImplementation == address(0)) revert IdentityRegistryStorageImplementationNotSet();
+        if (impls.identityRegistryStorageImplementation == address(0)) {
+            revert IdentityRegistryStorageImplementationNotSet();
+        }
         _checkInterface(impls.identityRegistryStorageImplementation, _IDENTITY_REGISTRY_STORAGE_ID); // Ensure it
             // supports ISMARTIdentityRegistryStorage
         _implementations[IDENTITY_REGISTRY_STORAGE] = impls.identityRegistryStorageImplementation;

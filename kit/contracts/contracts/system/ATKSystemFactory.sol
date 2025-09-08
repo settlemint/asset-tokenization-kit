@@ -143,7 +143,10 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// essential for the proper functioning of the `ATKSystem` instances that will be created.
     /// @param implementations The struct containing all implementation addresses required by the system.
     /// @param forwarder_ The address of the trusted forwarder contract to be used for meta-transactions (ERC2771).
-    constructor(SystemImplementations memory implementations, address forwarder_)
+    constructor(
+        SystemImplementations memory implementations,
+        address forwarder_
+    )
         ERC2771Context(forwarder_) // Initializes ERC2771 support with the provided forwarder address.
     {
         // Perform critical checks: ensure no implementation address is the zero address.
@@ -151,21 +154,31 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         if (implementations.atkSystemImplementation == address(0)) revert InvalidSystemImplementation();
         if (implementations.complianceImplementation == address(0)) revert ComplianceImplementationNotSet();
         if (implementations.identityRegistryImplementation == address(0)) revert IdentityRegistryImplementationNotSet();
-        if (implementations.identityRegistryStorageImplementation == address(0)) revert IdentityRegistryStorageImplementationNotSet();
+        if (implementations.identityRegistryStorageImplementation == address(0)) {
+            revert IdentityRegistryStorageImplementationNotSet();
+        }
         if (implementations.systemTrustedIssuersRegistryImplementation == address(0)) {
             revert SystemTrustedIssuersRegistryImplementationNotSet();
         }
-        if (implementations.topicSchemeRegistryImplementation == address(0)) revert TopicSchemeRegistryImplementationNotSet();
+        if (implementations.topicSchemeRegistryImplementation == address(0)) {
+            revert TopicSchemeRegistryImplementationNotSet();
+        }
         if (implementations.identityFactoryImplementation == address(0)) revert IdentityFactoryImplementationNotSet();
         if (implementations.identityImplementation == address(0)) revert IdentityImplementationNotSet();
         if (implementations.contractIdentityImplementation == address(0)) revert ContractIdentityImplementationNotSet();
-        if (implementations.tokenAccessManagerImplementation == address(0)) revert TokenAccessManagerImplementationNotSet();
-        if (implementations.tokenFactoryRegistryImplementation == address(0)) revert TokenFactoryRegistryImplementationNotSet();
+        if (implementations.tokenAccessManagerImplementation == address(0)) {
+            revert TokenAccessManagerImplementationNotSet();
+        }
+        if (implementations.tokenFactoryRegistryImplementation == address(0)) {
+            revert TokenFactoryRegistryImplementationNotSet();
+        }
         if (implementations.complianceModuleRegistryImplementation == address(0)) {
             revert ComplianceModuleRegistryImplementationNotSet();
         }
         if (implementations.addonRegistryImplementation == address(0)) revert AddonRegistryImplementationNotSet();
-        if (implementations.systemAccessManagerImplementation == address(0)) revert SystemAccessManagerImplementationNotSet();
+        if (implementations.systemAccessManagerImplementation == address(0)) {
+            revert SystemAccessManagerImplementationNotSet();
+        }
         if (implementations.trustedIssuersMetaRegistryImplementation == address(0)) {
             revert TrustedIssuersMetaRegistryImplementationNotSet();
         }
@@ -177,7 +190,8 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         DEFAULT_COMPLIANCE_IMPLEMENTATION = implementations.complianceImplementation;
         DEFAULT_IDENTITY_REGISTRY_IMPLEMENTATION = implementations.identityRegistryImplementation;
         DEFAULT_IDENTITY_REGISTRY_STORAGE_IMPLEMENTATION = implementations.identityRegistryStorageImplementation;
-        DEFAULT_SYSTEM_TRUSTED_ISSUERS_REGISTRY_IMPLEMENTATION = implementations.systemTrustedIssuersRegistryImplementation;
+        DEFAULT_SYSTEM_TRUSTED_ISSUERS_REGISTRY_IMPLEMENTATION =
+            implementations.systemTrustedIssuersRegistryImplementation;
         DEFAULT_TOPIC_SCHEME_REGISTRY_IMPLEMENTATION = implementations.topicSchemeRegistryImplementation;
         DEFAULT_IDENTITY_FACTORY_IMPLEMENTATION = implementations.identityFactoryImplementation;
         DEFAULT_IDENTITY_IMPLEMENTATION = implementations.identityImplementation;
@@ -238,10 +252,7 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         });
 
         bytes memory systemCallData = abi.encodeWithSelector(
-            ATKSystemImplementation.initialize.selector,
-            sender,
-            address(systemAccessManagerProxy),
-            initImpls
+            ATKSystemImplementation.initialize.selector, sender, address(systemAccessManagerProxy), initImpls
         );
 
         ERC1967Proxy systemProxy = new ERC1967Proxy(ATK_SYSTEM_IMPLEMENTATION, systemCallData);
