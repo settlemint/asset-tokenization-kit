@@ -869,6 +869,10 @@ type TokenBond @entity(immutable: false) {
   isMatured: Boolean!
   # Token used for denomination/payment
   denominationAsset: Token!
+  # Amount of denomination asset required to fully mature/redeem the bond (human-readable)
+  denominationAssetMaturityAmount: BigDecimal!
+  # Amount of denomination asset required to fully mature/redeem the bond (exact, raw units)
+  denominationAssetMaturityAmountExact: BigInt!
   # Bond-specific statistics
   stats: TokenBondStatsState @derivedFrom(field: "bond")
 }
