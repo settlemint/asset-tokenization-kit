@@ -175,7 +175,7 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             echo "Running Turbo for PR"
-            bunx turbo run ci:gha --concurrency=100% --force
+            bunx turbo run ci:gha --concurrency=100% --affected
           else
             echo "Running full Turbo for main branch"
             bun run ci:gha:main --concurrency=100%
