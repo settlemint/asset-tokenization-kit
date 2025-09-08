@@ -95,50 +95,22 @@ contract SystemUtils is Test {
         // --- Predeployed implementations ---
         address forwarder = address(0);
 
-        IIdentity identityImpl = new ATKIdentityImplementation(forwarder);
-        IIdentity contractIdentityImpl = new ATKContractIdentityImplementation(forwarder);
-
-        ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
-
-        ATKIdentityRegistryStorageImplementation storageImpl = new ATKIdentityRegistryStorageImplementation(forwarder);
-        ATKSystemTrustedIssuersRegistryImplementation issuersImpl =
-            new ATKSystemTrustedIssuersRegistryImplementation(forwarder);
-        ATKComplianceImplementation complianceImpl = new ATKComplianceImplementation(forwarder);
-        ATKIdentityRegistryImplementation registryImpl = new ATKIdentityRegistryImplementation(forwarder);
-        ATKIdentityFactoryImplementation factoryImpl = new ATKIdentityFactoryImplementation(forwarder);
-        ATKTokenAccessManagerImplementation accessManagerImpl = new ATKTokenAccessManagerImplementation(forwarder);
-        ATKTopicSchemeRegistryImplementation topicSchemeRegistryImpl =
-            new ATKTopicSchemeRegistryImplementation(forwarder);
-
-        ATKTokenFactoryRegistryImplementation tokenFactoryRegistryImpl =
-            new ATKTokenFactoryRegistryImplementation(forwarder);
-
-        ATKComplianceModuleRegistryImplementation complianceModuleRegistryImpl =
-            new ATKComplianceModuleRegistryImplementation(forwarder);
-        ATKSystemAddonRegistryImplementation systemAddonRegistryImpl =
-            new ATKSystemAddonRegistryImplementation(forwarder);
-
-        ATKSystemAccessManagerImplementation systemAccessManagerImpl =
-            new ATKSystemAccessManagerImplementation(forwarder);
-        ATKTrustedIssuersMetaRegistryImplementation trustedIssuersMetaRegistryImpl =
-            new ATKTrustedIssuersMetaRegistryImplementation(forwarder);
-
         systemFactory = new ATKSystemFactory(
-            address(systemImplementation),
-            address(complianceImpl),
-            address(registryImpl),
-            address(storageImpl),
-            address(issuersImpl),
-            address(trustedIssuersMetaRegistryImpl),
-            address(topicSchemeRegistryImpl),
-            address(factoryImpl),
-            address(identityImpl),
-            address(contractIdentityImpl),
-            address(accessManagerImpl),
-            address(tokenFactoryRegistryImpl),
-            address(complianceModuleRegistryImpl),
-            address(systemAddonRegistryImpl),
-            address(systemAccessManagerImpl),
+            address(new ATKSystemImplementation(forwarder)),
+            address(new ATKComplianceImplementation(forwarder)),
+            address(new ATKIdentityRegistryImplementation(forwarder)),
+            address(new ATKIdentityRegistryStorageImplementation(forwarder)),
+            address(new ATKSystemTrustedIssuersRegistryImplementation(forwarder)),
+            address(new ATKTrustedIssuersMetaRegistryImplementation(forwarder)),
+            address(new ATKTopicSchemeRegistryImplementation(forwarder)),
+            address(new ATKIdentityFactoryImplementation(forwarder)),
+            address(new ATKIdentityImplementation(forwarder)),
+            address(new ATKContractIdentityImplementation(forwarder)),
+            address(new ATKTokenAccessManagerImplementation(forwarder)),
+            address(new ATKTokenFactoryRegistryImplementation(forwarder)),
+            address(new ATKComplianceModuleRegistryImplementation(forwarder)),
+            address(new ATKSystemAddonRegistryImplementation(forwarder)),
+            address(new ATKSystemAccessManagerImplementation(forwarder)),
             forwarder
         );
         vm.label(address(systemFactory), "System Factory");
