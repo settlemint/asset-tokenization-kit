@@ -30,6 +30,7 @@
 import type { SessionUser } from "@/lib/auth";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import type { Context } from "@/orpc/context/context";
 import { getVerificationId } from "@/orpc/helpers/get-verification-id";
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
@@ -685,7 +686,10 @@ function findTransactionHash(
  * );
  * ```
  */
-export const portalMiddleware = baseRouter.middleware((options) => {
+export const portalMiddleware = baseRouter.middleware<
+  Pick<Context, "portalClient">,
+  unknown
+>((options) => {
   const { context, next, errors } = options;
 
   // If already has our methods, use existing client

@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import type { Context } from "@/orpc/context/context";
 import { baseRouter } from "../../procedures/base.router";
 
 /**
@@ -45,14 +46,15 @@ import { baseRouter } from "../../procedures/base.router";
  * ```
  * @see {@link @/lib/db} - Database configuration and connection
  */
-export const databaseMiddleware = baseRouter.middleware(
-  async ({ context, next }) => {
-    return next({
-      context: {
-        // Use existing database connection if available (e.g., for testing),
-        // otherwise inject the default database instance
-        db: context.db ?? db,
-      },
-    });
-  }
-);
+export const databaseMiddleware = baseRouter.middleware<
+  Pick<Context, "db">,
+  unknown
+>(async ({ context, next }) => {
+  return next({
+    context: {
+      // Use existing database connection if available (e.g., for testing),
+      // otherwise inject the default database instance
+      db: context.db ?? db,
+    },
+  });
+});

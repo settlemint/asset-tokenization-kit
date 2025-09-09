@@ -1,4 +1,5 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { Context } from "@/orpc/context/context";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import z from "zod";
 
@@ -80,59 +81,60 @@ const TrustedIssuerTopicsResponseSchema = z.object({
  *   });
  * ```
  */
-export const trustedIssuerMiddleware = baseRouter.middleware(
-  async ({ next, context, errors }) => {
-    // If user is not authenticated, provide empty array (graceful fallback)
-    if (!context.auth) {
-      return await next({
-        context: {
-          userTrustedIssuerTopics: [],
-        },
-      });
-    }
-
-    const { theGraphClient } = context;
-
-    // Ensure theGraphClient is available
-    if (!theGraphClient) {
-      throw errors.INTERNAL_SERVER_ERROR({
-        message:
-          "theGraphMiddleware should be called before trustedIssuerMiddleware",
-      });
-    }
-
-    try {
-      // Query TheGraph for user's trusted issuer topics
-      const { trustedIssuers } = await theGraphClient.query(
-        READ_USER_TRUSTED_ISSUER_TOPICS_QUERY,
-        {
-          input: { userWallet: context.auth.user.wallet },
-          output: TrustedIssuerTopicsResponseSchema,
-        }
-      );
-
-      // Extract topic names from the response
-      // Note: A user can be registered as a trusted issuer in multiple registries,
-      // but we flatten all topics they can issue across all registries
-      const userTrustedIssuerTopics: string[] = trustedIssuers.flatMap(
-        (issuer) => issuer.claimTopics.map((topic) => topic.name)
-      );
-
-      return await next({
-        context: {
-          userTrustedIssuerTopics,
-        },
-      });
-    } catch {
-      // If the query fails, provide empty array as fallback
-      // This prevents the entire request from failing if TheGraph is unavailable
-      // TODO: Add proper logging middleware for production error tracking
-
-      return await next({
-        context: {
-          userTrustedIssuerTopics: [],
-        },
-      });
-    }
+export const trustedIssuerMiddleware = baseRouter.middleware<
+  Pick<Context, "userTrustedIssuerTopics">,
+  unknown
+>(async ({ next, context, errors }) => {
+  // If user is not authenticated, provide empty array (graceful fallback)
+  if (!context.auth) {
+    return await next({
+      context: {
+        userTrustedIssuerTopics: [],
+      },
+    });
   }
-);
+
+  const { theGraphClient } = context;
+
+  // Ensure theGraphClient is available
+  if (!theGraphClient) {
+    throw errors.INTERNAL_SERVER_ERROR({
+      message:
+        "theGraphMiddleware should be called before trustedIssuerMiddleware",
+    });
+  }
+
+  try {
+    // Query TheGraph for user's trusted issuer topics
+    const { trustedIssuers } = await theGraphClient.query(
+      READ_USER_TRUSTED_ISSUER_TOPICS_QUERY,
+      {
+        input: { userWallet: context.auth.user.wallet },
+        output: TrustedIssuerTopicsResponseSchema,
+      }
+    );
+
+    // Extract topic names from the response
+    // Note: A user can be registered as a trusted issuer in multiple registries,
+    // but we flatten all topics they can issue across all registries
+    const userTrustedIssuerTopics: string[] = trustedIssuers.flatMap((issuer) =>
+      issuer.claimTopics.map((topic) => topic.name)
+    );
+
+    return await next({
+      context: {
+        userTrustedIssuerTopics,
+      },
+    });
+  } catch {
+    // If the query fails, provide empty array as fallback
+    // This prevents the entire request from failing if TheGraph is unavailable
+    // TODO: Add proper logging middleware for production error tracking
+
+    return await next({
+      context: {
+        userTrustedIssuerTopics: [],
+      },
+    });
+  }
+});

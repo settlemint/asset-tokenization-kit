@@ -1,3 +1,4 @@
+import { Context } from "@/orpc/context/context";
 import { baseRouter } from "../../procedures/base.router";
 
 /**
@@ -37,19 +38,20 @@ import { baseRouter } from "../../procedures/base.router";
  * @see {@link ./session.middleware} - Session loading middleware (should run first)
  * @see {@link ../../routes/procedures/auth.contract} - UNAUTHORIZED error definition
  */
-export const authMiddleware = baseRouter.middleware(
-  async ({ context, next, errors }) => {
-    // Check if valid authentication context exists
-    if (context.auth?.user) {
-      // Authentication is valid, proceed with the authenticated context
-      return next({
-        context: {
-          auth: context.auth,
-        },
-      });
-    }
-
-    // No valid authentication found, reject the request
-    throw errors.UNAUTHORIZED();
+export const authMiddleware = baseRouter.middleware<
+  Pick<Context, "auth">,
+  unknown
+>(async ({ context, next, errors }) => {
+  // Check if valid authentication context exists
+  if (context.auth?.user) {
+    // Authentication is valid, proceed with the authenticated context
+    return next({
+      context: {
+        auth: context.auth,
+      },
+    });
   }
-);
+
+  // No valid authentication found, reject the request
+  throw errors.UNAUTHORIZED();
+});

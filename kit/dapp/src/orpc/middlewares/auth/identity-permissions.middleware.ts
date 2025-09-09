@@ -460,11 +460,6 @@ export const identityPermissionsMiddleware = <InputSchema extends z.ZodType>({
       });
     }
 
-    // Extend context with computed permissions for route handler use
-    // Route handlers can access identityPermissions for data filtering and additional checks
-    return next({
-      context: {
-        identityPermissions,
-      },
-    });
+    // Cotinue, user has access
+    return next();
   });

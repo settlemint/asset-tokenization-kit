@@ -145,9 +145,7 @@ export interface Context {
    */
   userIdentity?: {
     address?: EthereumAddress;
-    claims: {
-      name: string;
-    }[];
+    claims: string[];
   };
 
   /**
