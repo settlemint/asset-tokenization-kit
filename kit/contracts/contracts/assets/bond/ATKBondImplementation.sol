@@ -201,7 +201,9 @@ contract ATKBondImplementation is
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE after maturity date
     /// @dev Requires sufficient denomination assets for all potential redemptions
     function mature() external override onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE) {
-        if (block.timestamp < _maturityDate) revert BondNotYetMatured();
+        if (block.timestamp < _maturityDate) {
+            revert BondNotYetMatured(block.timestamp, _maturityDate);
+        }
         if (isMatured) revert BondAlreadyMatured();
 
         uint256 needed = totalDenominationAssetNeeded();
@@ -690,7 +692,7 @@ contract ATKBondImplementation is
         virtual
         override(SMARTCustodianUpgradeable, SMARTHooks)
     {
-        if (!isMatured) revert BondNotYetMatured();
+        if (!isMatured) revert BondNotYetMatured(block.timestamp, _maturityDate);
         if (amount == 0) revert InvalidRedemptionAmount();
 
         super._beforeRedeem(owner, amount);
