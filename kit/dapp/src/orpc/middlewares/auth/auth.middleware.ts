@@ -39,7 +39,7 @@ import { baseRouter } from "../../procedures/base.router";
  * @see {@link ../../routes/procedures/auth.contract} - UNAUTHORIZED error definition
  */
 export const authMiddleware = baseRouter.middleware<
-  Pick<Context, "auth">,
+  Required<Pick<Context, "auth">>,
   unknown
 >(async ({ context, next, errors }) => {
   // Check if valid authentication context exists

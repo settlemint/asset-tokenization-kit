@@ -37,11 +37,15 @@ import { baseRouter } from "../../procedures/base.router";
  * @see {@link @/lib/auth/auth} - Authentication system
  */
 export const sessionMiddleware = baseRouter.middleware<
-  Pick<Context, "auth">,
+  Required<Pick<Context, "auth">>,
   unknown
 >(async ({ context, next }) => {
   if (context.auth) {
-    return next();
+    return next({
+      context: {
+        auth: context.auth,
+      },
+    });
   }
 
   const headers = new Headers();

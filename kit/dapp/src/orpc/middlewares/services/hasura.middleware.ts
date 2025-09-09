@@ -22,7 +22,7 @@ import { baseRouter } from "../../procedures/base.router";
  * ```
  */
 export const hasuraMiddleware = baseRouter.middleware<
-  Pick<Context, "hasuraClient">,
+  Required<Pick<Context, "hasuraClient">>,
   unknown
 >(async ({ context, next }) => {
   return next({

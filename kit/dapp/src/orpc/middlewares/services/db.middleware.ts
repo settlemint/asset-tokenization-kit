@@ -47,7 +47,7 @@ import { baseRouter } from "../../procedures/base.router";
  * @see {@link @/lib/db} - Database configuration and connection
  */
 export const databaseMiddleware = baseRouter.middleware<
-  Pick<Context, "db">,
+  Required<Pick<Context, "db">>,
   unknown
 >(async ({ context, next }) => {
   return next({

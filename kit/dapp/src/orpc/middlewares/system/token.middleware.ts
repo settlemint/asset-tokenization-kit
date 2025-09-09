@@ -93,7 +93,7 @@ const READ_TOKEN_QUERY = theGraphGraphql(
  * @returns The middleware function.
  */
 export const tokenMiddleware = baseRouter.middleware<
-  Pick<Context, "token">,
+  Required<Pick<Context, "token">>,
   unknown
 >(async ({ next, context, errors }, input) => {
   // Always fetch fresh token data - no caching

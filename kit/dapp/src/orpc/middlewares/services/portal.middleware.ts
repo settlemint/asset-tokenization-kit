@@ -687,7 +687,7 @@ function findTransactionHash(
  * ```
  */
 export const portalMiddleware = baseRouter.middleware<
-  Pick<Context, "portalClient">,
+  Required<Pick<Context, "portalClient">>,
   unknown
 >((options) => {
   const { context, next, errors } = options;

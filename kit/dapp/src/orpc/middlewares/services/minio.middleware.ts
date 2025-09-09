@@ -22,7 +22,7 @@ import { baseRouter } from "../../procedures/base.router";
  * ```
  */
 export const minioMiddleware = baseRouter.middleware<
-  Pick<Context, "minioClient">,
+  Required<Pick<Context, "minioClient">>,
   unknown
 >(async ({ context, next }) => {
   return next({

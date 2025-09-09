@@ -179,7 +179,7 @@ export type ValidatedTheGraphClient = ReturnType<
  *   });
  */
 export const theGraphMiddleware = baseRouter.middleware<
-  Pick<Context, "theGraphClient">,
+  Required<Pick<Context, "theGraphClient">>,
   unknown
 >((options) => {
   const { context, next, errors } = options;

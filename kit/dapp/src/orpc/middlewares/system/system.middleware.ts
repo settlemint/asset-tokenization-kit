@@ -150,7 +150,7 @@ export interface SystemContext {
  * @returns The middleware function.
  */
 export const systemMiddleware = baseRouter.middleware<
-  Pick<Context, "system">,
+  Required<Pick<Context, "system">>,
   unknown
 >(async ({ context, next, errors }) => {
   const { theGraphClient } = context;

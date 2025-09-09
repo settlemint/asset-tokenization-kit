@@ -82,7 +82,7 @@ const TrustedIssuerTopicsResponseSchema = z.object({
  * ```
  */
 export const trustedIssuerMiddleware = baseRouter.middleware<
-  Pick<Context, "userTrustedIssuerTopics">,
+  Required<Pick<Context, "userTrustedIssuerTopics">>,
   unknown
 >(async ({ next, context, errors }) => {
   // If user is not authenticated, provide empty array (graceful fallback)
