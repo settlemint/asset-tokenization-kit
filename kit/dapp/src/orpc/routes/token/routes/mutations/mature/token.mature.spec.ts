@@ -11,7 +11,6 @@ import {
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
   DEFAULT_PINCODE,
-  getUserData,
   signInWithUser,
 } from "@test/fixtures/user";
 import { sleep } from "@test/helpers/test-helpers";
@@ -22,19 +21,15 @@ import {
   isAfter,
 } from "date-fns";
 import { from } from "dnum";
-import type { Address } from "viem";
 import { beforeAll, describe, expect, test } from "vitest";
 
 describe("Token mature", () => {
   let depositToken: Awaited<ReturnType<typeof createToken>>;
   let adminClient: OrpcClient;
-  let adminWalletAddress: Address;
 
   beforeAll(async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     adminClient = getOrpcClient(headers);
-    const adminData = await getUserData(DEFAULT_ADMIN);
-    adminWalletAddress = adminData.wallet;
 
     // Deposit token to use as denomination asset
     const depositData = {

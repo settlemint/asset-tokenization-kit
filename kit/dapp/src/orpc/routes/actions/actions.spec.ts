@@ -74,7 +74,7 @@ describe("Actions API", () => {
             ]),
           }),
         });
-        
+
         // Check BigInt fields separately since expect.any(BigInt) doesn't work with bigint primitives
         expect(typeof action.activeAt).toBe("bigint");
 
