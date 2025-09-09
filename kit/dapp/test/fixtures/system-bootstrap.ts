@@ -207,7 +207,13 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
   const issuerOrpcClient = getOrpcClient(await signInWithUser(DEFAULT_ISSUER));
   const issuerMe = await issuerOrpcClient.user.me({});
 
-  const rolesToGrant = TOKEN_MANAGEMENT_REQUIRED_ROLES.filter(
+  // Issuer needs both token management roles and the claimIssuer role
+  const issuerRequiredRoles = [
+    ...TOKEN_MANAGEMENT_REQUIRED_ROLES,
+    "claimIssuer", // Required for issuing claims to user identities
+  ];
+
+  const rolesToGrant = issuerRequiredRoles.filter(
     (role) => issuerMe.userSystemPermissions.roles[role] !== true
   );
 
@@ -219,7 +225,7 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
         verificationType: "PINCODE",
       },
       address: issuerMe.wallet ?? "",
-      role: rolesToGrant,
+      role: rolesToGrant as AccessControlRoles[],
     });
   }
 }

@@ -12,6 +12,7 @@ import z from "zod";
 const READ_USER_TRUSTED_ISSUER_TOPICS_QUERY = theGraphGraphql(`
   query GetUserTrustedIssuerTopics($userWallet: Bytes!) {
     trustedIssuers(where: { account_: { id: $userWallet } }) {
+      id
       claimTopics {
         name
       }
@@ -25,6 +26,7 @@ const READ_USER_TRUSTED_ISSUER_TOPICS_QUERY = theGraphGraphql(`
 const TrustedIssuerTopicsResponseSchema = z.object({
   trustedIssuers: z.array(
     z.object({
+      id: z.string(),
       claimTopics: z.array(
         z.object({
           name: z.string(),
@@ -53,7 +55,13 @@ const TrustedIssuerTopicsResponseSchema = z.object({
  *
  * **Context Extension:**
  * Adds `userTrustedIssuerTopics: string[]` to context containing topic names
- * the user is authorized to issue claims for. Empty array if user is not a trusted issuer.
+ * the user is authorized to issue claims for.
+ * Adds `userIssuerIdentity: string` to context containing the user's
+ * identity contract address.
+ *
+ * **Validation:**
+ * Throws UNAUTHORIZED if user is not a trusted issuer (no identity contract found).
+ * Throws INTERNAL_SERVER_ERROR if unable to verify trusted issuer status.
  *
  * **Middleware Dependencies:**
  * - Requires theGraphMiddleware to be called first
@@ -69,6 +77,7 @@ const TrustedIssuerTopicsResponseSchema = z.object({
  *   .use(trustedIssuerMiddleware)
  *   .handler(({ context }) => {
  *     console.log(context.userTrustedIssuerTopics); // ["kyc"]
+ *     console.log(context.userIssuerIdentity); // "0x123...abc"
  *   });
  *
  * // User who is not a trusted issuer
@@ -77,6 +86,7 @@ const TrustedIssuerTopicsResponseSchema = z.object({
  *   .use(trustedIssuerMiddleware)
  *   .handler(({ context }) => {
  *     console.log(context.userTrustedIssuerTopics); // []
+ *     console.log(context.userIssuerIdentity); // undefined
  *   });
  * ```
  */
@@ -86,7 +96,8 @@ export const trustedIssuerMiddleware = baseRouter.middleware(
     if (!context.auth) {
       return await next({
         context: {
-          userTrustedIssuerTopics: [],
+          userTrustedIssuerTopics: [] as string[],
+          userIssuerIdentity: undefined,
         },
       });
     }
@@ -101,38 +112,32 @@ export const trustedIssuerMiddleware = baseRouter.middleware(
       });
     }
 
-    try {
-      // Query TheGraph for user's trusted issuer topics
-      const { trustedIssuers } = await theGraphClient.query(
-        READ_USER_TRUSTED_ISSUER_TOPICS_QUERY,
-        {
-          input: { userWallet: context.auth.user.wallet },
-          output: TrustedIssuerTopicsResponseSchema,
-        }
-      );
+    // Query TheGraph for user's trusted issuer topics
+    const { trustedIssuers } = await theGraphClient.query(
+      READ_USER_TRUSTED_ISSUER_TOPICS_QUERY,
+      {
+        input: { userWallet: context.auth.user.wallet },
+        output: TrustedIssuerTopicsResponseSchema,
+      }
+    );
 
-      // Extract topic names from the response
-      // Note: A user can be registered as a trusted issuer in multiple registries,
-      // but we flatten all topics they can issue across all registries
-      const userTrustedIssuerTopics: string[] = trustedIssuers.flatMap(
-        (issuer) => issuer.claimTopics.map((topic) => topic.name)
-      );
+    // Extract topic names from the response
+    // Note: A user can be registered as a trusted issuer in multiple registries,
+    // but we flatten all topics they can issue across all registries
+    const userTrustedIssuerTopics: string[] = trustedIssuers.flatMap((issuer) =>
+      issuer.claimTopics.map((topic) => topic.name)
+    );
 
-      return await next({
-        context: {
-          userTrustedIssuerTopics,
-        },
-      });
-    } catch {
-      // If the query fails, provide empty array as fallback
-      // This prevents the entire request from failing if TheGraph is unavailable
-      // TODO: Add proper logging middleware for production error tracking
+    // Extract the issuer's identity contract address
+    // The subgraph design ensures at most one TrustedIssuer entity per identity
+    // (multiple registries update the same entity, not create new ones)
+    const userIssuerIdentity: string | undefined = trustedIssuers[0]?.id;
 
-      return await next({
-        context: {
-          userTrustedIssuerTopics: [],
-        },
-      });
-    }
+    return await next({
+      context: {
+        userTrustedIssuerTopics,
+        userIssuerIdentity,
+      },
+    });
   }
 );

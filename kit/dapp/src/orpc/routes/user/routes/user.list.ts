@@ -10,8 +10,10 @@ import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import type { User } from "@/orpc/routes/user/routes/user.me.schema";
-import { getUserRole } from "@atk/zod/user-roles";
+import {
+  buildUserWithIdentity,
+  buildUserWithoutWallet,
+} from "@/orpc/routes/user/utils/user-response.util";
 import { type AnyColumn, asc, count, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 
@@ -215,23 +217,10 @@ export const list = authRouter.user.list
 
       // Handle users without wallets gracefully
       if (!u.wallet) {
-        return {
-          id: u.id,
-          name:
-            kyc?.firstName && kyc.lastName
-              ? `${kyc.firstName} ${kyc.lastName}`
-              : u.name,
-          email: u.email,
-          role: getUserRole(u.role),
-          wallet: u.wallet, // null
-          firstName: kyc?.firstName,
-          lastName: kyc?.lastName,
-          identity: undefined,
-          claims: [],
-          isRegistered: false,
-          createdAt: u.createdAt?.toISOString(),
-          lastLoginAt: u.lastLoginAt ? u.lastLoginAt.toISOString() : null,
-        } as User;
+        return buildUserWithoutWallet({
+          userData: u,
+          kyc,
+        });
       }
 
       // Look up account data for this user
@@ -248,23 +237,13 @@ export const list = authRouter.user.list
         context.identityPermissions
       );
 
-      return {
-        id: u.id,
-        name:
-          kyc?.firstName && kyc.lastName
-            ? `${kyc.firstName} ${kyc.lastName}`
-            : u.name,
-        email: u.email,
-        role: getUserRole(u.role),
-        wallet: u.wallet,
-        firstName: kyc?.firstName,
-        lastName: kyc?.lastName,
+      return buildUserWithIdentity({
+        userData: u,
+        kyc,
         identity: identity?.id,
         claims: filteredClaims,
         isRegistered: !!identity,
-        createdAt: u.createdAt?.toISOString(),
-        lastLoginAt: u.lastLoginAt ? u.lastLoginAt.toISOString() : null,
-      } as User;
+      });
     });
 
     // Return paginated response format
