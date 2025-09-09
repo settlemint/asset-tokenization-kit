@@ -1,5 +1,4 @@
 import { Bytes } from "@graphprotocol/graph-ts";
-import { TokenStatsState } from "../../generated/schema";
 import { Burnable as BurnableTemplate } from "../../generated/templates";
 import {
   TokenAssetCreated,
@@ -11,6 +10,7 @@ import { fetchAccount } from "../account/fetch/account";
 import { InterfaceIds } from "../erc165/utils/interfaceids";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentity } from "../identity/fetch/identity";
+import { fetchTokenStatsState } from "../stats/token-stats";
 import { updateTokenTypeStatsForTokenCreation } from "../stats/token-type-stats";
 import { fetchBond } from "../token-assets/bond/fetch/bond";
 import { fetchFund } from "../token-assets/fund/fetch/fund";
@@ -59,10 +59,7 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
   token.implementsSMART = tokenFactory.tokenImplementsSMART;
 
   // Initialize TokenStatsState for the new token
-  const tokenStatsState = new TokenStatsState(event.params.tokenAddress);
-  tokenStatsState.token = token.id;
-  tokenStatsState.balancesCount = 0;
-  tokenStatsState.save();
+  fetchTokenStatsState(event.params.tokenAddress);
 
   if (event.params.interfaces.includes(InterfaceIds.ISMARTPausable)) {
     token.pausable = fetchPausable(event.params.tokenAddress).id;

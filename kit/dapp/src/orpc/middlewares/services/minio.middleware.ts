@@ -1,4 +1,5 @@
 import { client as minioClient } from "@/lib/settlemint/minio";
+import type { Context } from "@/orpc/context/context";
 import { baseRouter } from "../../procedures/base.router";
 
 /**
@@ -20,14 +21,15 @@ import { baseRouter } from "../../procedures/base.router";
  *   });
  * ```
  */
-export const minioMiddleware = baseRouter.middleware(
-  async ({ context, next }) => {
-    return next({
-      context: {
-        // Use existing MinIO client if available (e.g., for testing),
-        // otherwise inject the default MinIO client instance
-        minioClient: context.minioClient ?? minioClient,
-      },
-    });
-  }
-);
+export const minioMiddleware = baseRouter.middleware<
+  Required<Pick<Context, "minioClient">>,
+  unknown
+>(async ({ context, next }) => {
+  return next({
+    context: {
+      // Use existing MinIO client if available (e.g., for testing),
+      // otherwise inject the default MinIO client instance
+      minioClient: context.minioClient ?? minioClient,
+    },
+  });
+});
