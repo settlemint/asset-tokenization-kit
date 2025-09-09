@@ -32,7 +32,7 @@ const ADD_CLAIM_MUTATION = portalGraphql(`
     $data: String!
     $uri: String!
   ) {
-    addClaim: ATKContractIdentityImplementationAddClaim(
+    addClaim: ATKIdentityImplementationAddClaim(
       address: $address
       from: $from
       challengeId: $challengeId

@@ -1,13 +1,42 @@
-import { user } from "@/lib/db/schema";
+import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { identityPermissionsMiddleware } from "@/orpc/middlewares/auth/identity-permissions.middleware";
+import {
+  canWriteClaims,
+  identityPermissionsMiddleware,
+} from "@/orpc/middlewares/auth/identity-permissions.middleware";
 import { trustedIssuerMiddleware } from "@/orpc/middlewares/auth/trusted-issuer.middleware";
-import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
+import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { eq } from "drizzle-orm";
+import { encodePacked, getAddress, keccak256 } from "viem";
 import { ClaimsRevokeInputSchema } from "./claims.revoke.schema";
+
+/**
+ * Portal GraphQL mutation for revoking claims from identity contracts.
+ */
+const REVOKE_CLAIM_MUTATION = portalGraphql(`
+  mutation RevokeIdentityClaim(
+    $challengeId: String
+    $challengeResponse: String
+    $address: String!
+    $from: String!
+    $claimId: String!
+  ) {
+    revokeClaim: ATKIdentityImplementationRevokeClaim(
+      address: $address
+      from: $from
+      challengeId: $challengeId
+      challengeResponse: $challengeResponse
+      input: {
+        _claimId: $claimId
+        _identity: $address
+      }
+    ) {
+      transactionHash
+    }
+  }
+`);
 
 /**
  * Claims revoke route handler.
@@ -73,6 +102,7 @@ import { ClaimsRevokeInputSchema } from "./claims.revoke.schema";
 export const revoke = authRouter.user.claims.revoke
   .use(systemMiddleware)
   .use(theGraphMiddleware)
+  .use(portalMiddleware)
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: { any: ["claimIssuer"] },
@@ -84,79 +114,62 @@ export const revoke = authRouter.user.claims.revoke
   .use(trustedIssuerMiddleware)
   .use(
     identityPermissionsMiddleware<typeof ClaimsRevokeInputSchema>({
-      getTargetUserId: ({ input }) => input.targetUserId,
+      getTargetUserId: () => undefined, // No specific user data access needed for claim revocation
     })
   )
-  .use(databaseMiddleware)
   .handler(async ({ context, input, errors }) => {
-    const { targetUserId, claimTopic, reason, walletVerification } = input;
+    const { targetIdentityAddress, claimTopic, reason, walletVerification } =
+      input;
 
-    // Find target user
-    const targetUserResult = await context.db
-      .select({
-        id: user.id,
-        wallet: user.wallet,
-      })
-      .from(user)
-      .where(eq(user.id, targetUserId))
-      .limit(1);
-
-    if (targetUserResult.length === 0) {
-      throw errors.NOT_FOUND({
-        message: `User with ID ${targetUserId} not found`,
-      });
-    }
-
-    const targetUser = targetUserResult[0];
-    if (!targetUser?.wallet) {
-      throw errors.BAD_REQUEST({
-        message: "Target user does not have a wallet address",
-      });
-    }
-
-    // Verify revoker has authentication and wallet
-    if (!context.auth?.user?.wallet) {
+    // Ensure user has an issuer identity
+    if (!context.userIssuerIdentity) {
       throw errors.UNAUTHORIZED({
-        message: "Revoker must have a wallet address",
+        message: "User does not have an issuer identity",
       });
     }
 
-    try {
-      // TODO: Check if claim exists on user's identity
-      // This would involve querying the identity contract to verify the claim exists
-
-      // TODO: Verify revoker has permission to revoke this specific claim
-      // This could check if the revoker was the original issuer or has admin rights
-
-      // TODO: Create revocation transaction
-      // This would involve calling the identity contract's removeClaim function
-      // For now, we'll simulate the revocation process
-
-      // Simulate wallet verification (this would use the actual verification in real implementation)
-      if (walletVerification.secretVerificationCode.length < 4) {
-        throw new Error("Invalid verification code");
-      }
-
-      // TODO: Submit revocation transaction to blockchain
-      // This would involve calling the identity contract to remove the claim
-      // For now, we'll simulate success
-      const mockTransactionHash = `0x${Date.now().toString(16)}${Math.random().toString(16).slice(2)}`;
-
-      return {
-        success: true,
-        transactionHash: mockTransactionHash,
-        claimTopic,
-        targetWallet: targetUser.wallet,
-        reason,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error:
-          error instanceof Error ? error.message : "Unknown error occurred",
-        claimTopic,
-        targetWallet: targetUser.wallet,
-        reason,
-      };
+    // Verify issuer can revoke this specific claim topic
+    // The identityPermissionsMiddleware computes comprehensive permissions combining
+    // blockchain roles and trusted issuer status
+    if (!canWriteClaims([claimTopic], context.identityPermissions)) {
+      throw errors.FORBIDDEN({
+        message: `You are not authorized to revoke claims for topic: ${claimTopic}`,
+        data: {
+          requestedTopic: claimTopic,
+          authorizedTopics: context.identityPermissions.claims.write,
+        },
+      });
     }
+
+    // Calculate the topic ID and claim ID
+    const topicId = BigInt(keccak256(encodePacked(["string"], [claimTopic])));
+    const claimId = keccak256(
+      encodePacked(
+        ["address", "uint256"],
+        [getAddress(context.userIssuerIdentity), topicId]
+      )
+    );
+
+    // Submit claim revocation to blockchain via Portal
+    const result = await context.portalClient.mutate(
+      REVOKE_CLAIM_MUTATION,
+      {
+        address: getAddress(targetIdentityAddress),
+        from: context.auth.user.wallet,
+        claimId: `0x${claimId.slice(2)}`,
+      },
+      {
+        sender: context.auth.user,
+        code: walletVerification.secretVerificationCode,
+        type: walletVerification.verificationType,
+      }
+    );
+
+    return {
+      success: true,
+      transactionHash: result,
+      claimTopic,
+      targetWallet: targetIdentityAddress,
+      reason,
+    };
   });

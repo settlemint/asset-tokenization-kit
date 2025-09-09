@@ -39,9 +39,9 @@ export const RevokableClaimTopicSchema = z.enum([
  */
 export const ClaimsRevokeInputSchema = z.object({
   /**
-   * Target user to revoke the claim from (by internal ID).
+   * Target identity address to revoke the claim from.
    */
-  targetUserId: z.string().describe("Internal user ID to revoke claim from"),
+  targetIdentityAddress: ethereumAddress.describe("Target identity contract address to revoke claim from"),
 
   /**
    * Claim topic to revoke.
