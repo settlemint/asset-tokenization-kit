@@ -3,8 +3,8 @@ import { describe, expect, test } from "vitest";
 import {
   hasAllowlist,
   hasBlocklist,
+  hasDenominationAsset,
   hasFreeze,
-  hasUnderlyingAssets,
   hasYield,
   isMicaEnabledForAsset,
 } from "./features-enabled";
@@ -35,16 +35,16 @@ describe("hasAllowlist", () => {
   });
 });
 
-describe("hasUnderlyingAssets", () => {
-  test("returns true for bond and fund", () => {
-    expect(hasUnderlyingAssets("fund")).toBe(true);
+describe("hasDenominationAsset", () => {
+  test("returns true for bond", () => {
+    expect(hasDenominationAsset("bond")).toBe(true);
   });
 
   test("returns false for other asset types", () => {
-    expect(hasUnderlyingAssets("equity")).toBe(false);
-    expect(hasUnderlyingAssets("stablecoin")).toBe(false);
-    expect(hasUnderlyingAssets("deposit")).toBe(false);
-    expect(hasUnderlyingAssets("bond")).toBe(false);
+    expect(hasDenominationAsset("equity")).toBe(false);
+    expect(hasDenominationAsset("stablecoin")).toBe(false);
+    expect(hasDenominationAsset("deposit")).toBe(false);
+    expect(hasDenominationAsset("fund")).toBe(false);
   });
 });
 

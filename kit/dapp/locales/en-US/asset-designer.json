@@ -34,6 +34,11 @@
       "maturityDateTooEarly": "Maturity date must be after {{minDateTime}}"
     },
     "fields": {
+      "basePrice": {
+        "description": "The base price of the {{type}}",
+        "label": "Base price",
+        "placeholder": "e.g., 1000 USD"
+      },
       "cap": {
         "description": "The maximum number of {{type}} that can be issued",
         "label": "Maximum limit",

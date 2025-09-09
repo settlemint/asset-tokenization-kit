@@ -3,7 +3,7 @@ pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
 import { AbstractATKTokenFactoryImplementation } from
-    "../../system/token-factory/AbstractATKTokenFactoryImplementation.sol";
+    "../../system/tokens/factory/AbstractATKTokenFactoryImplementation.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // Interface imports
@@ -11,7 +11,7 @@ import { IATKDeposit } from "./IATKDeposit.sol";
 import { ISMARTTokenAccessManager } from "../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IATKDepositFactory } from "./IATKDepositFactory.sol";
-import { IATKTokenFactory } from "../../system/token-factory/IATKTokenFactory.sol";
+import { IATKTokenFactory } from "../../system/tokens/factory/IATKTokenFactory.sol";
 
 // Local imports
 import { ATKDepositProxy } from "./ATKDepositProxy.sol";

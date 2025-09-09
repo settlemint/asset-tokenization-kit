@@ -1,14 +1,26 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { ClaimTopic } from "@/orpc/helpers/claims/create-claim";
+import { issueClaim } from "@/orpc/helpers/claims/issue-claim";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
+import { userIdentityMiddleware } from "@/orpc/middlewares/system/user-identity.middleware";
+import type { baseRouter } from "@/orpc/procedures/base.router";
 import { systemRouter } from "@/orpc/procedures/system.router";
+import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
 import { getTokenFactory } from "@/orpc/routes/system/token-factory/helpers/factory-context";
 import { tokenCreateHandlerMap } from "@/orpc/routes/token/routes/mutations/create/helpers/handler-map";
-import type { TokenCreateSchema } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
+import type {
+  TokenCreateInput,
+  TokenCreateSchema,
+} from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 import { read } from "@/orpc/routes/token/routes/token.read";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { call } from "@orpc/server";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { call, InferRouterCurrentContexts } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { z } from "zod";
+
+const logger = createLogger();
 
 /**
  * GraphQL query to find tokens deployed in a specific transaction.
@@ -22,9 +34,34 @@ const FIND_TOKEN_FOR_TRANSACTION_QUERY = theGraphGraphql(`
       symbol
       decimals
       type
+      account {
+        identity {
+          id
+        }
+      }
     }
   }
 `);
+
+// Define the schema for the query result
+const TokenQueryResultSchema = z.object({
+  tokens: z.array(
+    z.object({
+      id: ethereumAddress,
+      name: z.string(),
+      symbol: z.string(),
+      decimals: z.number(),
+      type: z.string(),
+      account: z.object({
+        identity: z
+          .object({
+            id: ethereumAddress,
+          })
+          .optional(),
+      }),
+    })
+  ),
+});
 
 export const create = systemRouter.token.create
   .use(
@@ -35,6 +72,7 @@ export const create = systemRouter.token.create
       },
     })
   )
+  .use(userIdentityMiddleware)
   .handler(async ({ input, context, errors }) => {
     const tokenFactory = getTokenFactory(context, input.type);
     if (!tokenFactory) {
@@ -69,19 +107,6 @@ export const create = systemRouter.token.create
         deployedInTransaction: transactionHash,
       };
 
-    // Define the schema for the query result
-    const TokenQueryResultSchema = z.object({
-      tokens: z.array(
-        z.object({
-          id: z.string(),
-          name: z.string(),
-          symbol: z.string(),
-          decimals: z.number(),
-          type: z.string(),
-        })
-      ),
-    });
-
     const result = await context.theGraphClient.query(
       FIND_TOKEN_FOR_TRANSACTION_QUERY,
       {
@@ -108,6 +133,8 @@ export const create = systemRouter.token.create
       });
     }
 
+    await issueClaims(token, input, context, errors);
+
     // Return the complete token details using the read handler
     return await call(
       read,
@@ -117,3 +144,99 @@ export const create = systemRouter.token.create
       { context }
     );
   });
+
+async function issueClaims(
+  token: z.infer<typeof TokenQueryResultSchema>["tokens"][number],
+  input: TokenCreateInput,
+  context: InferRouterCurrentContexts<typeof create>,
+  errors: Parameters<Parameters<typeof baseRouter.middleware>[0]>[0]["errors"]
+) {
+  const sender = context.auth.user;
+
+  // Get the token's identity contract address from the graph data
+  const tokenOnchainID = token.account.identity?.id;
+
+  if (!tokenOnchainID) {
+    const errorMessage = `Token at address ${token.id} does not have an associated identity contract`;
+    logger.error(errorMessage);
+    throw errors.INTERNAL_SERVER_ERROR({
+      message: errorMessage,
+    });
+  }
+
+  const userIdentity = context.userIdentity?.address;
+  if (!userIdentity) {
+    const errorMessage = `Account at address ${context.auth.user.wallet} does not have an associated identity contract`;
+    logger.error(errorMessage);
+    throw errors.INTERNAL_SERVER_ERROR({
+      message: errorMessage,
+    });
+  }
+
+  // ISSUE CLAIM: Add isin claim to token's identity contract
+  const results = await Promise.allSettled([
+    input.isin
+      ? issueClaim({
+          user: sender,
+          issuer: userIdentity,
+          walletVerification: input.walletVerification,
+          identity: tokenOnchainID,
+          claim: {
+            topic: ClaimTopic.isin,
+            data: {
+              isin: input.isin,
+            },
+          },
+          portalClient: context.portalClient,
+        })
+      : Promise.resolve(),
+    (async () => {
+      if (!("basePrice" in input)) {
+        return;
+      }
+      const currencyCode = await call(
+        settingsRead,
+        {
+          key: "BASE_CURRENCY",
+        },
+        { context }
+      );
+      if (!currencyCode) {
+        throw errors.INTERNAL_SERVER_ERROR({
+          message: `Base currency not set`,
+        });
+      }
+      // ISSUE BASE PRICE CLAIM: Add base price claim to token's identity contract
+      const [amount, decimals] = input.basePrice;
+      await issueClaim({
+        user: sender,
+        issuer: userIdentity,
+        walletVerification: input.walletVerification,
+        identity: tokenOnchainID,
+        claim: {
+          topic: ClaimTopic.basePrice,
+          data: {
+            amount,
+            currencyCode,
+            decimals,
+          },
+        },
+        portalClient: context.portalClient,
+      });
+    })(),
+  ]);
+
+  // If any of the claims failed, throw an error
+  if (results.some((result) => result.status === "rejected")) {
+    const errorMessages = results
+      .filter((result) => result.status === "rejected")
+      .map((result): string =>
+        result.reason instanceof Error
+          ? result.reason.message
+          : result.reason.toString()
+      );
+    throw errors.INTERNAL_SERVER_ERROR({
+      message: errorMessages.join("\n"),
+    });
+  }
+}

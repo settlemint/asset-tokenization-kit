@@ -14,6 +14,7 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
+import { from } from "dnum";
 import { beforeAll, describe, expect, test } from "vitest";
 
 describe("Fixed yield schedule create", async () => {
@@ -38,6 +39,7 @@ describe("Fixed yield schedule create", async () => {
       symbol: "TSDC",
       decimals: 18,
       initialModulePairs: [],
+      basePrice: from("1.00", 2),
     };
 
     stablecoinToken = await createToken(adminClient, {

@@ -43,5 +43,9 @@
     "MONTHLY": "毎月",
     "QUARTERLY": "四半期",
     "YEARLY": "年次"
+  },
+  "dates": {
+    "today": "今日",
+    "yesterday": "昨日"
   }
 }

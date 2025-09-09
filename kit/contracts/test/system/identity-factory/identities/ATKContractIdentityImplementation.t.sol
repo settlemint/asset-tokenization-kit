@@ -60,7 +60,7 @@ contract MockClaimAuthorizer is IClaimAuthorizer, ERC165 {
         authorizedIssuers[issuer][topic] = authorized;
     }
 
-    function isAuthorizedToAddClaim(address issuer, uint256 topic) external view override returns (bool) {
+    function isAuthorizedToAddClaim(address issuer, uint256 topic, address) external view override returns (bool) {
         return authorizedIssuers[issuer][topic];
     }
 
@@ -71,7 +71,7 @@ contract MockClaimAuthorizer is IClaimAuthorizer, ERC165 {
 
 /// @title Failing Claim Authorizer - For testing error handling
 contract FailingClaimAuthorizer is IClaimAuthorizer, ERC165 {
-    function isAuthorizedToAddClaim(address, uint256) external pure override returns (bool) {
+    function isAuthorizedToAddClaim(address, uint256, address) external pure override returns (bool) {
         revert("Always fails");
     }
 
