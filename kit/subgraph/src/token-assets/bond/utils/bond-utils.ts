@@ -1,5 +1,6 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { Token } from "../../../../generated/schema";
+import { fetchToken } from "../../../token/fetch/token";
 import { setBigNumber } from "../../../utils/bignumber";
 import { fetchBond } from "../fetch/bond";
 
@@ -11,8 +12,12 @@ import { fetchBond } from "../fetch/bond";
  * @param bond - The bond entity to update
  * @param token - The token entity representing the bond
  */
-export function updateBondMaturityAmount(token: Token): void {
+export function updateTotalDenominationAssetNeeded(token: Token): void {
   const bond = fetchBond(Address.fromBytes(token.id));
+  const denominationAsset = fetchToken(
+    Address.fromBytes(bond.denominationAsset)
+  );
+  const denominationAssetDecimals = denominationAsset.decimals;
 
   // Calculate the maturity amount in denomination asset units
   // This matches the contract's totalDenominationAssetNeeded() calculation
@@ -23,7 +28,7 @@ export function updateBondMaturityAmount(token: Token): void {
   } else {
     // Calculate: (totalSupply * faceValue) / 10^bondDecimals
     // Note: faceValueExact is already in denomination asset base units
-    const divisor = BigInt.fromI32(10).pow(token.decimals as u8);
+    const divisor = BigInt.fromI32(10).pow(denominationAssetDecimals as u8);
     maturityAmountExact = token.totalSupplyExact
       .times(bond.faceValueExact)
       .div(divisor);
@@ -34,7 +39,7 @@ export function updateBondMaturityAmount(token: Token): void {
     bond,
     "denominationAssetNeeded",
     maturityAmountExact,
-    token.decimals
+    denominationAssetDecimals
   );
 
   bond.save();

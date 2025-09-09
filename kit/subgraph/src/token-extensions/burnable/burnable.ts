@@ -5,7 +5,7 @@ import { updateSystemStatsForSupplyChange } from "../../stats/system-stats";
 import { trackTokenCollateralStats } from "../../stats/token-collateral-stats";
 import { trackTokenStats } from "../../stats/token-stats";
 import { updateTokenTypeStatsForSupplyChange } from "../../stats/token-type-stats";
-import { updateBondMaturityAmount } from "../../token-assets/bond/utils/bond-utils";
+import { updateTotalDenominationAssetNeeded } from "../../token-assets/bond/utils/bond-utils";
 import { decreaseTokenBalanceValue } from "../../token-balance/utils/token-balance-utils";
 import { fetchToken } from "../../token/fetch/token";
 import { decreaseTokenSupply } from "../../token/utils/token-utils";
@@ -54,6 +54,6 @@ export function handleBurnCompleted(event: BurnCompleted): void {
 
   // Update bond maturity amount if this is a bond token
   if (token.bond) {
-    updateBondMaturityAmount(token);
+    updateTotalDenominationAssetNeeded(token);
   }
 }
