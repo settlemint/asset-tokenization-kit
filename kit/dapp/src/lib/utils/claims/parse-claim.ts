@@ -8,11 +8,12 @@ interface IdentityClaim {
 }
 
 /**
- * Parse a claim by topic
+ * Parse a claim by topic, returns undefined if the claim is revoked
  * @param claims The claims to parse
  * @param topic The topic to parse
  * @returns The values of the claim
  */
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 export function parseClaim<T>(
   claims: IdentityClaim[] | undefined,
   topic: string
@@ -20,7 +21,7 @@ export function parseClaim<T>(
   if (!claims) {
     return undefined;
   }
-  const claim = claims.find((claim) => claim.name === topic);
+  const claim = claims.find((claim) => claim.name === topic && !claim.revoked);
   if (!claim) {
     return undefined;
   }
