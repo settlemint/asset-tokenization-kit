@@ -47,8 +47,7 @@ type Action =
   | "viewEvents"
   | "topUpDenominationAsset"
   | "freezePartial"
-  | "unfreezePartial";
-  | "topUpDenominationAsset"
+  | "unfreezePartial"
   | "withdrawDenominationAsset";
 
 function isCurrentAction({

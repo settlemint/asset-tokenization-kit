@@ -20,7 +20,6 @@ import { toast } from "sonner";
 
 const columnHelper = createStrictColumnHelper<User>();
 
-
 /**
  * Users table component for displaying and managing platform users
  * Shows user information, registration status, and actions for each user with chunked loading
