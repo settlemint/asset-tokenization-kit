@@ -1,6 +1,10 @@
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { getAnvilTimeMilliseconds, increaseAnvilTime } from "@/test/anvil";
+import {
+  getAnvilBasedFutureDate,
+  getAnvilTimeMilliseconds,
+  increaseAnvilTime,
+} from "@/test/anvil";
 import {
   errorMessageForCode,
   getOrpcClient,
@@ -14,12 +18,7 @@ import {
   signInWithUser,
 } from "@test/fixtures/user";
 import { sleep } from "@test/helpers/test-helpers";
-import {
-  addMonths,
-  addSeconds,
-  differenceInMilliseconds,
-  isAfter,
-} from "date-fns";
+import { addSeconds, differenceInMilliseconds, isAfter } from "date-fns";
 import { from } from "dnum";
 import { beforeAll, describe, expect, test } from "vitest";
 
@@ -58,8 +57,8 @@ describe("Token mature", () => {
     );
   }, 120_000);
 
-  test.skip("cannot mature bond before maturity date", async () => {
-    const maturityDate = addMonths(new Date(), 1);
+  test("cannot mature bond before maturity date", async () => {
+    const maturityDate = await getAnvilBasedFutureDate(1);
     const bond = await createToken(
       adminClient,
       {
@@ -103,11 +102,11 @@ describe("Token mature", () => {
     ).rejects.toThrow(/BondNotYetMatured/);
   });
 
-  test.skip("regular users cannot mature bond", async () => {
+  test("regular users cannot mature bond", async () => {
     const headers = await signInWithUser(DEFAULT_INVESTOR);
     const client = getOrpcClient(headers);
 
-    const maturityDate = addMonths(new Date(), 1);
+    const maturityDate = await getAnvilBasedFutureDate(1);
     const bond = await createToken(
       adminClient,
       {
@@ -152,7 +151,7 @@ describe("Token mature", () => {
     );
   }, 120_000);
 
-  test.skip("can mature bond after maturity date", async () => {
+  test("can mature bond after maturity date", async () => {
     const timeAtCreate = await getAnvilTimeMilliseconds();
     const bond = await createToken(
       adminClient,
@@ -205,7 +204,7 @@ describe("Token mature", () => {
     expect(result.bond?.isMatured).toBe(true);
   }, 120_000); // Increase timeout for proper blockchain time manipulation
 
-  test.skip("cannot mature already matured bond", async () => {
+  test("cannot mature already matured bond", async () => {
     const timeAtCreate = await getAnvilTimeMilliseconds();
     const bond = await createToken(
       adminClient,
