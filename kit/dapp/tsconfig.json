@@ -75,12 +75,6 @@
             "tadaTurboLocation": "hasura-cache.d.ts"
           },
           {
-            "name": "thegraph-kit",
-            "schema": "the-graph-schema-kit.graphql",
-            "tadaOutputLocation": "the-graph-env-kit.d.ts",
-            "tadaTurboLocation": "the-graph-cache-kit.d.ts"
-          },
-          {
             "name": "portal",
             "schema": "portal-schema.graphql",
             "tadaOutputLocation": "portal-env.d.ts",

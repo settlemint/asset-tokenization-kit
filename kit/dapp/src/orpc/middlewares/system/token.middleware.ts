@@ -80,7 +80,8 @@ const READ_TOKEN_QUERY = theGraphGraphql(
         }
       }
       stats {
-        totalValueInBaseCurrency
+        id
+        balancesCount
       }
     }
   }

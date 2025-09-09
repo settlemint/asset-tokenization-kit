@@ -1,7 +1,7 @@
-import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { getRoleByFieldName } from "@/lib/constants/roles";
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { portalGraphql } from "@/lib/settlemint/portal";
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { ClaimTopic } from "@/orpc/helpers/claims/create-claim";
 import { issueClaim } from "@/orpc/helpers/claims/issue-claim";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
@@ -142,11 +142,18 @@ export const create = systemRouter.token.create
     const TokenQueryResultSchema = z.object({
       tokens: z.array(
         z.object({
-          id: z.string(),
+          id: ethereumAddress,
           name: z.string(),
           symbol: z.string(),
           decimals: z.number(),
           type: z.string(),
+          account: z.object({
+            identity: z
+              .object({
+                id: ethereumAddress,
+              })
+              .optional(),
+          }),
           accessControl: z
             .object({
               id: z.string(),
