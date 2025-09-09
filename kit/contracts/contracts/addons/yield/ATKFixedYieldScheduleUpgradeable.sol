@@ -29,7 +29,6 @@ contract ATKFixedYieldScheduleUpgradeable is
     SMARTFixedYieldScheduleUpgradeable,
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
-    AccessControlUpgradeable,
     PausableUpgradeable,
     ReentrancyGuardUpgradeable,
     IContractWithIdentity
@@ -115,7 +114,6 @@ contract ATKFixedYieldScheduleUpgradeable is
         virtual
         initializer
     {
-        __AccessControl_init();
         __Pausable_init();
         __ReentrancyGuard_init();
 
@@ -133,10 +131,6 @@ contract ATKFixedYieldScheduleUpgradeable is
             revert NoInitialAdmins();
         }
 
-        // Grant the `DEFAULT_ADMIN_ROLE` to the `initialAdmins_`.
-        for (uint256 i = 0; i < initialAdmins_.length; ++i) {
-            _grantRole(DEFAULT_ADMIN_ROLE, initialAdmins_[i]);
-        }
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -252,7 +246,7 @@ contract ATKFixedYieldScheduleUpgradeable is
         public
         view
         virtual
-        override(AccessControlUpgradeable, SMARTFixedYieldScheduleLogic, ERC165Upgradeable, IERC165)
+        override(SMARTFixedYieldScheduleLogic, ERC165Upgradeable, IERC165)
         returns (bool)
     {
         return interfaceId == type(IContractWithIdentity).interfaceId || super.supportsInterface(interfaceId);

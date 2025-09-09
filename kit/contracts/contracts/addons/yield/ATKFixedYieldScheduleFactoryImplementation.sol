@@ -147,11 +147,6 @@ contract ATKFixedYieldScheduleFactoryImplementation is
         // Factory can now set onchain ID without needing governance role
         ATKFixedYieldScheduleUpgradeable(scheduleProxyAddress).setOnchainId(contractIdentity);
 
-        // Renounce the DEFAULT_ADMIN_ROLE that was granted during initialization
-        IAccessControl(scheduleProxyAddress).renounceRole(
-            ATKFixedYieldScheduleUpgradeable(scheduleProxyAddress).DEFAULT_ADMIN_ROLE(), address(this)
-        );
-
         // Emit an event to log the creation of the new schedule proxy.
         emit ATKFixedYieldScheduleCreated(scheduleProxyAddress, _msgSender());
 
