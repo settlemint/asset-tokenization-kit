@@ -10,7 +10,7 @@ import { holder } from "@/orpc/routes/token/routes/token.holder";
 import { read } from "@/orpc/routes/token/routes/token.read";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { call } from "@orpc/server";
-import { from, lessThan } from "dnum";
+import { format, from, lessThan } from "dnum";
 
 /**
  * GraphQL mutation to mature a bond token.
@@ -83,7 +83,7 @@ export const mature = tokenRouter.token.mature
         message: "Insufficient denomination asset balance",
         data: {
           errors: [
-            `Bond contract needs ${requiredAmount} denomination assets but only has ${denominationAssetAmount}`,
+            `Bond contract needs ${format(requiredAmount)} denomination assets but only has ${format(denominationAssetAmount)}`,
           ],
         },
       });
