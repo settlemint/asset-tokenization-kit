@@ -2,6 +2,7 @@ import type { Session, SessionUser } from "@/lib/auth";
 import type { db } from "@/lib/db";
 import type { hasuraClient } from "@/lib/settlemint/hasura";
 import type { client as minioClient } from "@/lib/settlemint/minio";
+import type { IdentityPermissions } from "@/orpc/middlewares/auth/identity-permissions.middleware";
 import type { ValidatedPortalClient } from "@/orpc/middlewares/services/portal.middleware";
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
 import type { SystemContext } from "@/orpc/middlewares/system/system.middleware";
@@ -157,4 +158,12 @@ export interface Context {
    * @see {@link @/orpc/middlewares/auth/trusted-issuer.middleware} - Trusted issuer middleware configuration
    */
   userTrustedIssuerTopics?: string[];
+
+  /**
+   * Identity permissions.
+   * Injected by identityPermissionsMiddleware for procedures that need to access the user's identity permissions.
+   * @optional
+   * @see {@link @/orpc/middlewares/auth/identity-permissions.middleware} - Identity permissions middleware configuration
+   */
+  identityPermissions?: IdentityPermissions;
 }
