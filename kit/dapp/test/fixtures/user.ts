@@ -265,6 +265,11 @@ export async function getUserData(user: User) {
   return userInfo;
 }
 
+export async function getUserWallet(user: User) {
+  const userData = await getUserData(user);
+  return userData.wallet;
+}
+
 export async function createTestUser(name = "test") {
   const user = {
     email: `${randomUUID()}@test.com`,
