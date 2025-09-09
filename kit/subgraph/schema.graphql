@@ -766,8 +766,6 @@ type Token @entity(immutable: false) {
   fund: TokenFund
   # Base price claim for valuation
   basePriceClaim: IdentityClaim
-  # Base price of the token
-  basePrice: BigDecimal!
   # Compliance module configurations
   complianceModuleConfigs: [TokenComplianceModuleConfig!]! @derivedFrom(field: "token")
   # Statistical data

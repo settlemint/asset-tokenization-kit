@@ -110,6 +110,66 @@ describe("TokenStats", () => {
     }
   });
 
+  it("should track balance count and total value in base currency correctly", async () => {
+    const query = theGraphGraphql(
+      `query {
+        tokenStatsStates(orderBy: token__symbol) {
+          token {
+            symbol
+            basePriceClaim {
+              values {
+                key
+                value
+              }
+            }
+            totalSupply
+          }
+          balancesCount
+          totalValueInBaseCurrency
+        }
+      }
+    `
+    );
+    const response = await theGraphClient.request(query, {});
+
+    expect(response.tokenStatsStates).toBeDefined();
+    expect(Array.isArray(response.tokenStatsStates)).toBe(true);
+
+    expect(response.tokenStatsStates.length).toBe(6);
+
+    // Verify that all expected tokens are present with correct balance counts
+    const tokenStats = response.tokenStatsStates;
+    const expectedTokens = [
+      { symbol: "AAPL", balancesCount: 3 },
+      { symbol: "BB", balancesCount: 3 },
+      { symbol: "EURB", balancesCount: 4 },
+      { symbol: "EURD", balancesCount: 6 },
+      { symbol: "USDT", balancesCount: 3 },
+    ];
+
+    for (const expected of expectedTokens) {
+      const found = tokenStats.find(
+        (stat) => stat.token.symbol === expected.symbol
+      );
+      expect(found).toBeDefined();
+      expect(found?.balancesCount).toBe(expected.balancesCount);
+      const basePrice = found?.token.basePriceClaim?.values.find(
+        (value) => value.key === "amount"
+      )?.value;
+      const basePriceDecimals =
+        found?.token.basePriceClaim?.values.find(
+          (value) => value.key === "decimals"
+        )?.value ?? "0";
+      const basePriceParsed =
+        Number(basePrice) / Math.pow(10, Number(basePriceDecimals));
+      const expectedTotalValueInBaseCurrency =
+        basePriceParsed * Number(found?.token.totalSupply);
+      expect(found?.totalValueInBaseCurrency).toBe(
+        expectedTotalValueInBaseCurrency.toString()
+      );
+    }
+  });
+
   it("should have correct total supply in stats", async () => {
     // Get tokens with their current supply
     const tokensQuery = theGraphGraphql(

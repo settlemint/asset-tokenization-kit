@@ -59,7 +59,6 @@ export function updateBasePrice(basePriceClaim: IdentityClaim): void {
   }
 
   token.basePriceClaim = basePriceClaim.id;
-  token.basePrice = getTokenBasePrice(basePriceClaim.id);
   token.save();
 
   // Update token stats

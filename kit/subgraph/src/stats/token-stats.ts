@@ -6,6 +6,7 @@ import {
   TokenStatsState,
 } from "../../generated/schema";
 import { fetchToken } from "../token/fetch/token";
+import { getTokenBasePrice } from "../token/utils/token-utils";
 import { setBigNumber } from "../utils/bignumber";
 
 /**
@@ -42,7 +43,8 @@ export function decreaseTokenStatsBalanceCount(tokenAddress: Address): void {
  */
 export function updateTokenStatsTotalValueInBaseCurrency(token: Token): void {
   const state = fetchTokenStatsState(Address.fromBytes(token.id));
-  const totalValueInBaseCurrency = token.totalSupply.times(token.basePrice);
+  const basePrice = getTokenBasePrice(token.basePriceClaim);
+  const totalValueInBaseCurrency = token.totalSupply.times(basePrice);
   state.totalValueInBaseCurrency = totalValueInBaseCurrency;
   state.save();
 }
@@ -126,9 +128,8 @@ function createTokenStatsData(state: TokenStatsState): TokenStatsData {
   setBigNumber(tokenStats, "minted", BigInt.zero(), token.decimals);
   setBigNumber(tokenStats, "burned", BigInt.zero(), token.decimals);
   setBigNumber(tokenStats, "transferred", BigInt.zero(), token.decimals);
-  tokenStats.totalValueInBaseCurrency = token.totalSupply.times(
-    token.basePrice
-  );
+  const basePrice = getTokenBasePrice(token.basePriceClaim);
+  tokenStats.totalValueInBaseCurrency = token.totalSupply.times(basePrice);
 
   return tokenStats;
 }
