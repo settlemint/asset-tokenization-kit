@@ -75,7 +75,7 @@ const TOKEN_GRANT_ROLE_MUTATION = portalGraphql(`
 `);
 
 // Define the schema for the query result
-const TokenQueryResultSchema = z.object({
+const _TokenQueryResultSchema = z.object({
   tokens: z.array(
     z.object({
       id: ethereumAddress,
@@ -90,6 +90,11 @@ const TokenQueryResultSchema = z.object({
           })
           .optional(),
       }),
+      accessControl: z
+        .object({
+          id: z.string(),
+        })
+        .optional(),
     })
   ),
 });
@@ -138,36 +143,11 @@ export const create = systemRouter.token.create
         deployedInTransaction: transactionHash,
       };
 
-    // Define the schema for the query result
-    const TokenQueryResultSchema = z.object({
-      tokens: z.array(
-        z.object({
-          id: ethereumAddress,
-          name: z.string(),
-          symbol: z.string(),
-          decimals: z.number(),
-          type: z.string(),
-          account: z.object({
-            identity: z
-              .object({
-                id: ethereumAddress,
-              })
-              .optional(),
-          }),
-          accessControl: z
-            .object({
-              id: z.string(),
-            })
-            .optional(),
-        })
-      ),
-    });
-
     const result = await context.theGraphClient.query(
       FIND_TOKEN_FOR_TRANSACTION_QUERY,
       {
         input: queryVariables,
-        output: TokenQueryResultSchema,
+        output: _TokenQueryResultSchema,
       }
     );
 
@@ -212,7 +192,7 @@ export const create = systemRouter.token.create
       for (const roleName of convenienceRoles) {
         const roleInfo = getRoleByFieldName(roleName);
         if (!roleInfo) {
-          console.warn(`Could not find role info for ${roleName}, skipping`);
+          // Could not find role info, skipping
           continue;
         }
 
@@ -231,13 +211,10 @@ export const create = systemRouter.token.create
           }
         );
       }
-    } catch (error) {
+    } catch {
       // Log the error but don't fail the token creation
       // The token was successfully created, but convenience roles failed
-      console.warn(
-        "Failed to grant convenience roles after token creation:",
-        error
-      );
+      // Failed to grant convenience roles after token creation
     }
 
     // Return the complete token details using the read handler
@@ -251,7 +228,7 @@ export const create = systemRouter.token.create
   });
 
 async function issueClaims(
-  token: z.infer<typeof TokenQueryResultSchema>["tokens"][number],
+  token: z.infer<typeof _TokenQueryResultSchema>["tokens"][number],
   input: TokenCreateInput,
   context: InferRouterCurrentContexts<typeof create>,
   errors: Parameters<Parameters<typeof baseRouter.middleware>[0]>[0]["errors"]
