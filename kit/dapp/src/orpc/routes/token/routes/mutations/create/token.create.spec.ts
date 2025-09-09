@@ -310,6 +310,37 @@ describe("Token create", () => {
     });
   }, 100_000);
 
+  test("can create a token with an isin claim", async () => {
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+
+    const result = await client.token.create({
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
+      type: "deposit" as const,
+      name: `Test Deposit ${Date.now()}`,
+      symbol: "TSTD",
+      decimals: 2,
+      initialModulePairs: [],
+      basePrice: dnumFrom("1"),
+      isin: "US0378331005",
+      countryCode: "056",
+    });
+
+    expect(result).toBeDefined();
+    expect(result.id).toBeDefined();
+
+    const isin = result.account.identity?.claims?.find(
+      (c) => c.name === "isin"
+    );
+    expect(isin).toBeDefined();
+    expect(isin?.values.find((v) => v.key === "isin")?.value).toBe(
+      "US0378331005"
+    );
+  });
+
   test("regular users cant create tokens", async () => {
     const headers = await signInWithUser(DEFAULT_INVESTOR);
     const client = getOrpcClient(headers);
