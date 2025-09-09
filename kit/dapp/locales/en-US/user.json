@@ -29,7 +29,10 @@
       "status": {
         "registered": "Registered",
         "pending": "Pending",
-        "notConnected": "Not Connected"
+        "notConnected": "Not Connected",
+        "registeredAriaLabel": "User is registered and verified on-chain",
+        "pendingAriaLabel": "User has connected wallet but is not yet registered on-chain",
+        "notConnectedAriaLabel": "User has not connected a wallet"
       },
       "actions": {
         "viewDetails": "View Details",
@@ -39,7 +42,49 @@
       "search": {
         "placeholder": "Search by name, email, or wallet..."
       },
-      "noWallet": "No wallet"
+      "noWallet": "No wallet",
+      "emptyState": {
+        "title": "No users found",
+        "description": "No users have been registered yet.",
+        "loading": "Loading users..."
+      },
+      "errors": {
+        "loadFailed": "Failed to load users. Please try again.",
+        "navigationFailed": "Failed to navigate to user details"
+      },
+      "fallback": {
+        "never": "Never"
+      }
     }
+  },
+  "tabs": {
+    "details": "Details",
+    "claims": "Claims"
+  },
+  "fields": {
+    "fullName": "Full Name",
+    "fullNameInfo": "User's display name",
+    "email": "Email",
+    "emailInfo": "User's email address",
+    "role": "Role",
+    "roleInfo": "User's system role",
+    "accountCreated": "Account Created",
+    "accountCreatedInfo": "When the user account was created",
+    "lastLogin": "Last Login",
+    "lastLoginInfo": "Most recent login time",
+    "neverLoggedIn": "Never logged in",
+    "walletAddress": "Wallet Address",
+    "walletAddressInfo": "User's connected wallet address",
+    "noWalletConnected": "No wallet connected",
+    "onChainIdentity": "On-chain Identity",
+    "onChainIdentityInfo": "User's on-chain identity contract",
+    "noIdentityRegistered": "No identity registered",
+    "firstName": "First Name",
+    "firstNameInfo": "Legal first name",
+    "lastName": "Last Name",
+    "lastNameInfo": "Legal last name"
+  },
+  "details": {
+    "kycInformation": "KYC Information"
   }
 }

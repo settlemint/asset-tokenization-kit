@@ -10,8 +10,11 @@ import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
 import { assetClassIcon } from "@/hooks/use-asset-class";
 import { useCountries } from "@/hooks/use-countries";
+import { formatValue } from "@/lib/utils/format-value";
 import { noop } from "@/lib/utils/noop";
+import { orpc } from "@/orpc/orpc-client";
 import type { ComplianceModulePairInput } from "@atk/zod/compliance";
+import { useQuery } from "@tanstack/react-query";
 import { Shield } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -32,6 +35,9 @@ export const Summary = withForm({
     const values = form.state.values;
     const Icon = assetClassIcon[values.assetClass];
     const { getCountryByNumericCode } = useCountries();
+    const { data: baseCurrency } = useQuery(
+      orpc.settings.read.queryOptions({ input: { key: "BASE_CURRENCY" } })
+    );
 
     return (
       <FormStepLayout
@@ -81,9 +87,17 @@ export const Summary = withForm({
             <FormSummaryItem
               label={t("form.fields.isin.label")}
               value={values.isin}
-              secret
             />
           )}
+          {"basePrice" in values && values.basePrice ? (
+            <FormSummaryItem
+              label={t("form.fields.basePrice.label")}
+              value={formatValue(values.basePrice, {
+                type: "currency",
+                currency: { assetSymbol: baseCurrency ?? "" },
+              })}
+            />
+          ) : null}
           <FormSummaryItem
             label={t("form.fields.countryCode.label")}
             value={getCountryByNumericCode(values.countryCode) || "-"}

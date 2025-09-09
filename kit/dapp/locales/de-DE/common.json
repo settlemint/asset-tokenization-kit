@@ -43,5 +43,9 @@
     "MONTHLY": "Monatlich",
     "QUARTERLY": "Vierteljährlich",
     "YEARLY": "Jährlich"
+  },
+  "dates": {
+    "today": "Heute",
+    "yesterday": "Gestern"
   }
 }

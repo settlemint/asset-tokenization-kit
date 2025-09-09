@@ -24,6 +24,7 @@ describe("Token update collateral", () => {
       symbol: "TSDC",
       decimals: 18,
       initialModulePairs: [],
+      basePrice: from("1.00", 2),
     };
 
     stablecoinToken = await createToken(
@@ -48,14 +49,14 @@ describe("Token update collateral", () => {
     thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
     thirtyDaysFromNow.setMilliseconds(0);
 
-    const amountExact = 1_000_000n * 10n ** BigInt(stablecoinToken.decimals);
+    const amountExact = from("1000000", stablecoinToken.decimals);
     const result = await client.token.updateCollateral({
       contract: stablecoinToken.id,
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
       },
-      amount: amountExact.toString(),
+      amount: amountExact,
       expiryDays: 30,
     });
 

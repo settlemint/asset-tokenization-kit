@@ -13,5 +13,17 @@
         "success": "KYCプロファイルが正常に更新されました"
       }
     }
+  },
+  "management": {
+    "table": {
+      "status": {
+        "registered": "登録済み",
+        "pending": "保留中",
+        "notConnected": "未接続",
+        "registeredAriaLabel": "ユーザーは登録済みで、オンチェーンで検証されています",
+        "pendingAriaLabel": "ユーザーはウォレットを接続していますが、まだオンチェーンで登録されていません",
+        "notConnectedAriaLabel": "ユーザーはウォレットを接続していません"
+      }
+    }
   }
 }

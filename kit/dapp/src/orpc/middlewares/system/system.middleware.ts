@@ -3,6 +3,7 @@ import {
   AccessControlFragment,
 } from "@/lib/fragments/the-graph/access-control-fragment";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { Context } from "@/orpc/context/context";
 import {
   getComponentId,
   parseSystemComponent,
@@ -148,51 +149,52 @@ export interface SystemContext {
  * Middleware to inject the system context into the request context.
  * @returns The middleware function.
  */
-export const systemMiddleware = baseRouter.middleware(
-  async ({ context, next, errors }) => {
-    const { theGraphClient } = context;
+export const systemMiddleware = baseRouter.middleware<
+  Required<Pick<Context, "system">>,
+  unknown
+>(async ({ context, next, errors }) => {
+  const { theGraphClient } = context;
 
-    if (!theGraphClient) {
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: "theGraphMiddleware should be called before systemMiddleware",
-      });
-    }
-
-    // Always fetch fresh system data - no caching
-    const systemAddressHeader = context.headers["x-system-address"];
-    const systemAddress =
-      typeof systemAddressHeader === "string"
-        ? systemAddressHeader
-        : await call(
-            read,
-            {
-              key: "SYSTEM_ADDRESS" as const,
-            },
-            {
-              context,
-            }
-          );
-    if (!systemAddress) {
-      throw errors.SYSTEM_NOT_CREATED();
-    }
-    const systemContext = await getSystemContext(
-      getEthereumAddress(systemAddress),
-      theGraphClient
-    );
-
-    if (!systemContext) {
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: `System with address '${systemAddress}' not found`,
-      });
-    }
-
-    return next({
-      context: {
-        system: systemContext,
-      },
+  if (!theGraphClient) {
+    throw errors.INTERNAL_SERVER_ERROR({
+      message: "theGraphMiddleware should be called before systemMiddleware",
     });
   }
-);
+
+  // Always fetch fresh system data - no caching
+  const systemAddressHeader = context.headers["x-system-address"];
+  const systemAddress =
+    typeof systemAddressHeader === "string"
+      ? systemAddressHeader
+      : await call(
+          read,
+          {
+            key: "SYSTEM_ADDRESS" as const,
+          },
+          {
+            context,
+          }
+        );
+  if (!systemAddress) {
+    throw errors.SYSTEM_NOT_CREATED();
+  }
+  const systemContext = await getSystemContext(
+    getEthereumAddress(systemAddress),
+    theGraphClient
+  );
+
+  if (!systemContext) {
+    throw errors.INTERNAL_SERVER_ERROR({
+      message: `System with address '${systemAddress}' not found`,
+    });
+  }
+
+  return next({
+    context: {
+      system: systemContext,
+    },
+  });
+});
 
 export const getSystemContext = async (
   systemAddress: EthereumAddress,

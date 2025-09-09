@@ -33,6 +33,11 @@
       "denominationAssetFetch": "We can't load this token. Try selecting a different one or wait a moment."
     },
     "fields": {
+      "basePrice": {
+        "description": "The base price of the {{type}}",
+        "label": "Base price",
+        "placeholder": "e.g., 1000 USD"
+      },
       "cap": {
         "description": "The maximum number of {{type}} that can be issued",
         "label": "Maximum limit",
