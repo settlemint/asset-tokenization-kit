@@ -9,7 +9,6 @@ import {
 import { useFieldContext } from "@/hooks/use-form-contexts";
 import { cn } from "@/lib/utils";
 import {
-  addHours,
   addMinutes,
   addYears,
   format,
@@ -67,10 +66,7 @@ export function DateTimeField({
     (date: Date | undefined) => {
       if (date) {
         const selectedDate = field.state.value;
-        const defaultHours =
-          minDate && isSameDay(date, minDate)
-            ? getHours(addHours(minDate, 1))
-            : 0;
+        const defaultHours = minDate ? getHours(minDate) : 0;
         const defaultMinutes =
           minDate && isSameDay(date, minDate)
             ? getMinutes(addMinutes(minDate, 1))
