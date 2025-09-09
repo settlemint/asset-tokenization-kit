@@ -6,10 +6,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useSession } from "@/hooks/use-auth";
+import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { AssetExtensionEnum } from "@atk/zod/asset-extensions";
+import { useQuery } from "@tanstack/react-query";
+import { greaterThan } from "dnum";
 import {
   ChevronDown,
+  Minus,
   Pause,
   Play,
   Plus,
@@ -23,6 +28,7 @@ import { MintSheet } from "./sheets/mint-sheet";
 import { PauseUnpauseConfirmationSheet } from "./sheets/pause-unpause-confirmation-sheet";
 import { SetYieldScheduleSheet } from "./sheets/set-yield-schedule-sheet";
 import { TopUpDenominationAssetSheet } from "./sheets/top-up-denomination-asset-sheet";
+import { WithdrawDenominationAssetSheet } from "./sheets/withdraw-denomination-asset-sheet";
 
 interface ManageAssetDropdownProps {
   asset: Token; // Keep Token type to maintain API compatibility
@@ -35,7 +41,8 @@ type Action =
   | "setYieldSchedule"
   | "collateral"
   | "viewEvents"
-  | "topUpDenominationAsset";
+  | "topUpDenominationAsset"
+  | "withdrawDenominationAsset";
 
 function isCurrentAction({
   target,
@@ -51,7 +58,63 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   const { t } = useTranslation(["tokens", "common"]);
   const [openAction, setOpenAction] = useState<Action | null>(null);
 
+  const { data: session } = useSession();
+  const userWallet = session?.user?.wallet;
+
   const isPaused = asset.pausable?.paused ?? false;
+  const yieldScheduleId = asset.yield?.schedule?.id;
+
+  // Fetch yield schedule details when available
+  const { data: yieldSchedule } = useQuery({
+    ...orpc.fixedYieldSchedule.read.queryOptions({
+      input: { id: yieldScheduleId ?? "" },
+    }),
+    enabled: !!yieldScheduleId,
+  });
+
+  // Fetch denomination asset details
+  const denominationAssetId = yieldSchedule?.denominationAsset?.id;
+  const { data: denominationAsset } = useQuery({
+    ...orpc.token.read.queryOptions({
+      input: { tokenAddress: denominationAssetId ?? "" },
+    }),
+    enabled: !!denominationAssetId,
+  });
+
+  // Fetch yield schedule's denomination asset balance to check if withdrawal is possible
+  const { data: yieldScheduleBalance } = useQuery({
+    ...orpc.token.holder.queryOptions({
+      input: {
+        tokenAddress: denominationAsset?.id ?? "",
+        holderAddress: yieldSchedule?.id ?? "",
+      },
+    }),
+    enabled: !!denominationAsset && !!yieldSchedule,
+  });
+
+  // Fetch user's balance of the denomination asset
+  const { data: userDenominationAssetBalance } = useQuery({
+    ...orpc.token.holder.queryOptions({
+      input: {
+        tokenAddress: denominationAsset?.id ?? "",
+        holderAddress: userWallet ?? "",
+      },
+    }),
+    enabled: !!userWallet && !!denominationAsset,
+  });
+
+  // Check if yield schedule has denomination assets to withdraw
+  const denominationAssetAvailable =
+    yieldScheduleBalance?.holder?.available?.[0] ?? 0n;
+  const hasWithdrawableAmount = greaterThan(denominationAssetAvailable, 0n);
+
+  // Check if user has denomination assets to top up
+  const userDenominationAssetBalanceAvailable =
+    userDenominationAssetBalance?.holder?.available ?? 0n;
+  const hasTopUpableAmount = greaterThan(
+    userDenominationAssetBalanceAvailable,
+    0n
+  );
 
   const actions = useMemo(() => {
     // Check if asset has pausable capability (handles both null and undefined)
@@ -106,14 +169,28 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
       });
     }
 
-    const hasYieldSchedule = asset.yield?.schedule;
-    if (hasYieldSchedule) {
+    // Top up denomination asset option
+    if (hasTopUpableAmount) {
       arr.push({
         id: "topUpDenominationAsset",
         label: t("tokens:actions.topUpDenominationAsset.label"),
         icon: TrendingUp,
         openAction: "topUpDenominationAsset",
         disabled: false,
+      });
+    }
+
+    // Withdraw denomination asset option
+    const canWithdrawDenominationAsset =
+      asset.userPermissions?.actions?.withdrawDenominationAsset &&
+      hasWithdrawableAmount;
+    if (canWithdrawDenominationAsset) {
+      arr.push({
+        id: "withdrawDenominationAsset",
+        label: t("tokens:actions.withdrawDenominationAsset.label"),
+        icon: Minus,
+        openAction: "withdrawDenominationAsset",
+        disabled: !hasWithdrawableAmount,
       });
     }
 
@@ -140,6 +217,8 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
     asset.userPermissions?.actions,
     asset.collateral,
     isPaused,
+    hasWithdrawableAmount,
+    hasTopUpableAmount,
   ]);
 
   const onActionOpenChange = (open: boolean) => {
@@ -207,6 +286,15 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
       <TopUpDenominationAssetSheet
         open={isCurrentAction({
           target: "topUpDenominationAsset",
+          current: openAction,
+        })}
+        onOpenChange={onActionOpenChange}
+        asset={asset}
+      />
+
+      <WithdrawDenominationAssetSheet
+        open={isCurrentAction({
+          target: "withdrawDenominationAsset",
           current: openAction,
         })}
         onOpenChange={onActionOpenChange}

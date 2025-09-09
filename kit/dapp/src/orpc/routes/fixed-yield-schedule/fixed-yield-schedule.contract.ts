@@ -1,6 +1,7 @@
 import { fixedYieldScheduleCreateContract } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.create.contract";
 import { fixedYieldScheduleReadContract } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.read.contract";
 import { fixedYieldScheduleTopUpContract } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.top-up.contract";
+import { fixedYieldScheduleWithdrawContract } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.withdraw.contract";
 
 /**
  * ORPC contract definition for fixed yield schedule API endpoints.
@@ -52,4 +53,15 @@ export const fixedYieldScheduleContract = {
    * @see {@link ./routes/fixed-yield-schedule.top-up.contract} - Contract implementation
    */
   topUp: fixedYieldScheduleTopUpContract,
+
+  /**
+   * Withdraw denomination asset from a fixed yield schedule.
+   *
+   * Withdraws denomination assets from an existing fixed yield schedule contract
+   * to a specified recipient address.
+   * Returns the transaction hash of the withdraw operation.
+   *
+   * @see {@link ./routes/fixed-yield-schedule.withdraw.contract} - Contract implementation
+   */
+  withdraw: fixedYieldScheduleWithdrawContract,
 };
