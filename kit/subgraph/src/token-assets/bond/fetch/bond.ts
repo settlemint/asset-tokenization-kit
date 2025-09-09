@@ -12,8 +12,8 @@ export function fetchBond(address: Address): TokenBond {
     bond.maturityDate = BigInt.zero();
     bond.isMatured = false;
     bond.denominationAsset = Address.zero();
-    bond.denominationAssetMaturityAmount = BigDecimal.zero();
-    bond.denominationAssetMaturityAmountExact = BigInt.zero();
+    bond.denominationAssetNeeded = BigDecimal.zero();
+    bond.denominationAssetNeededExact = BigInt.zero();
     bond.save();
     BondTemplate.create(address);
   }

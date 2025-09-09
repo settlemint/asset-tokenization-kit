@@ -37,8 +37,8 @@ export function handleBondCreated(event: BondCreated): void {
   bond.maturityDate = event.params.maturityDate;
   bond.isMatured = false;
   bond.denominationAsset = event.params.denominationAsset;
-  bond.denominationAssetMaturityAmount = BigDecimal.zero();
-  bond.denominationAssetMaturityAmountExact = BigInt.zero();
+  bond.denominationAssetNeeded = BigDecimal.zero();
+  bond.denominationAssetNeededExact = BigInt.zero();
   bond.save();
 
   // Create MatureBond action

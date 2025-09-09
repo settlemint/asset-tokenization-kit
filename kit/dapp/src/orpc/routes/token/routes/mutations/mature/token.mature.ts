@@ -76,7 +76,7 @@ export const mature = tokenRouter.token.mature
 
     const denominationAssetAmount =
       denominationAssetBalance.holder?.available ?? from(0);
-    const requiredAmount = token.bond.denominationAssetMaturityAmount;
+    const requiredAmount = token.bond.denominationAssetNeeded;
 
     if (lessThan(denominationAssetAmount, requiredAmount)) {
       throw errors.INPUT_VALIDATION_FAILED({

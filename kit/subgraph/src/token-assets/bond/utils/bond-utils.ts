@@ -32,7 +32,7 @@ export function updateBondMaturityAmount(token: Token): void {
   // Update both human-readable and exact values
   setBigNumber(
     bond,
-    "denominationAssetMaturityAmount",
+    "denominationAssetNeeded",
     maturityAmountExact,
     token.decimals
   );
