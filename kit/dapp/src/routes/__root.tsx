@@ -22,6 +22,8 @@ import type { orpc } from "@/orpc/orpc-client";
 import { Providers } from "@/providers";
 import appCss from "@/styles/app.css?url";
 import { seo } from "@atk/config/metadata";
+import "@fontsource-variable/figtree";
+import "@fontsource-variable/roboto-mono";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { type QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";

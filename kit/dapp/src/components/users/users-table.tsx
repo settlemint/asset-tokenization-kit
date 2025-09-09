@@ -1,14 +1,14 @@
-import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Users } from "lucide-react";
-import { useRouter } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
-import { DataTable } from "@/components/data-table/data-table";
-import "@/components/data-table/filters/types/table-extensions";
 import { DateCell } from "@/components/data-table/cells/date-cell";
 import { UserDisplayCell } from "@/components/data-table/cells/user-display-cell";
+import { DataTable } from "@/components/data-table/data-table";
+import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
@@ -100,7 +100,7 @@ export function UsersTable() {
           params: { userId: user.id },
         });
       } catch {
-        toast.error("Failed to navigate to user details");
+        toast.error(t("management.table.errors.navigationFailed"));
       }
     })();
   };
@@ -115,16 +115,16 @@ export function UsersTable() {
           id: "userDisplay",
           header: t("management.table.columns.name"),
           cell: ({ row }) => <UserDisplayCell user={row.original} />,
+          filterFn: (row, _columnId, filterValue) => {
+            const user = row.original;
+            const displayName = getUserDisplayName(user);
+            return displayName
+              .toLowerCase()
+              .includes((filterValue as string).toLowerCase());
+          },
           meta: {
             displayName: t("management.table.columns.name"),
             type: "text",
-            filterFn: (row, _columnId, filterValue: string) => {
-              const user = row.original;
-              const displayName = getUserDisplayName(user);
-              return displayName
-                .toLowerCase()
-                .includes(filterValue.toLowerCase());
-            },
           },
         }),
         columnHelper.accessor("email", {
@@ -138,10 +138,18 @@ export function UsersTable() {
           id: "status",
           header: t("management.table.columns.status"),
           cell: ({ row }) => <UserStatusBadge user={row.original} />,
+          filterFn: (row, _columnId, filterValue) => {
+            const user = row.original;
+            if (filterValue === "registered") return user.isRegistered;
+            if (filterValue === "pending")
+              return Boolean(user.wallet && !user.isRegistered);
+            if (filterValue === "notConnected") return !user.wallet;
+            return true;
+          },
           meta: {
             displayName: t("management.table.columns.status"),
-            type: "select",
-            filterOptions: [
+            type: "option",
+            options: [
               {
                 label: t("management.table.status.registered"),
                 value: "registered",
@@ -152,14 +160,6 @@ export function UsersTable() {
                 value: "notConnected",
               },
             ],
-            filterFn: (row, _columnId, filterValue: string) => {
-              const user = row.original;
-              if (filterValue === "registered") return user.isRegistered;
-              if (filterValue === "pending")
-                return user.wallet && !user.isRegistered;
-              if (filterValue === "notConnected") return !user.wallet;
-              return true;
-            },
           },
         }),
         columnHelper.display({
@@ -168,7 +168,7 @@ export function UsersTable() {
           cell: ({ row }) => <DateCell value={row.original.createdAt} />,
           meta: {
             displayName: t("management.table.columns.created"),
-            type: "dateRange",
+            type: "date",
           },
         }),
         columnHelper.display({
@@ -177,13 +177,13 @@ export function UsersTable() {
           cell: ({ row }) => (
             <DateCell
               value={row.original.lastLoginAt}
-              fallback="Never"
+              fallback={t("management.table.fallback.never")}
               relative
             />
           ),
           meta: {
             displayName: t("management.table.columns.lastActive"),
-            type: "dateRange",
+            type: "date",
           },
         }),
       ] as ColumnDef<User>[]),
@@ -196,7 +196,7 @@ export function UsersTable() {
       <ComponentErrorBoundary componentName="Users Table">
         <div className="flex items-center justify-center p-8">
           <p className="text-muted-foreground">
-            Failed to load users. Please try again.
+            {t("management.table.errors.loadFailed")}
           </p>
         </div>
       </ComponentErrorBoundary>
@@ -239,10 +239,10 @@ export function UsersTable() {
           },
         ]}
         customEmptyState={{
-          title: "No users found",
+          title: t("management.table.emptyState.title"),
           description: isLoading
-            ? "Loading users..."
-            : "No users have been registered yet.",
+            ? t("management.table.emptyState.loading")
+            : t("management.table.emptyState.description"),
           icon: Users,
         }}
         onRowClick={handleRowClick}

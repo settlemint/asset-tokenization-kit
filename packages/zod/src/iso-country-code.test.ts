@@ -390,7 +390,7 @@ describe("isoCountryCode validator", () => {
           const localizedCodes = Object.keys(localizedCountries);
 
           // Should have the same country codes
-          expect(localizedCodes.sort()).toEqual(countryCodes.sort());
+          expect(localizedCodes.toSorted()).toEqual(countryCodes.toSorted());
         }
       }
     });
@@ -480,14 +480,14 @@ describe("isoCountryCode validator", () => {
       const arCountries = getNumericCountries("ar");
 
       // All should have the same numeric codes
-      expect(Object.keys(enCountries).sort()).toEqual(
-        Object.keys(deCountries).sort()
+      expect(Object.keys(enCountries).toSorted()).toEqual(
+        Object.keys(deCountries).toSorted()
       );
-      expect(Object.keys(enCountries).sort()).toEqual(
-        Object.keys(jaCountries).sort()
+      expect(Object.keys(enCountries).toSorted()).toEqual(
+        Object.keys(jaCountries).toSorted()
       );
-      expect(Object.keys(enCountries).sort()).toEqual(
-        Object.keys(arCountries).sort()
+      expect(Object.keys(enCountries).toSorted()).toEqual(
+        Object.keys(arCountries).toSorted()
       );
     });
 
@@ -562,8 +562,8 @@ describe("isoCountryCode validator", () => {
       expect(sortedEn.length).toBe(sortedDe.length);
 
       // Should have the same country codes (though in different order)
-      const codesEn = sortedEn.map(([code]) => code).sort();
-      const codesDe = sortedDe.map(([code]) => code).sort();
+      const codesEn = sortedEn.map(([code]) => code).toSorted();
+      const codesDe = sortedDe.map(([code]) => code).toSorted();
       expect(codesEn).toEqual(codesDe);
     });
   });
@@ -635,8 +635,8 @@ describe("isoCountryCode validator", () => {
       expect(sortedEn.length).toBe(sortedDe.length);
 
       // Should have the same numeric codes (though in different order)
-      const codesEn = sortedEn.map(([code]) => code).sort();
-      const codesDe = sortedDe.map(([code]) => code).sort();
+      const codesEn = sortedEn.map(([code]) => code).toSorted();
+      const codesDe = sortedDe.map(([code]) => code).toSorted();
       expect(codesEn).toEqual(codesDe);
     });
   });

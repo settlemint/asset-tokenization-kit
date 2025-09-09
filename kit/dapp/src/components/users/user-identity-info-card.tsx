@@ -164,9 +164,9 @@ export function UserIdentityInfoCard({ user }: UserIdentityInfoCardProps) {
         {!user.isRegistered && (
           <div className="bg-muted/50 rounded-lg p-3">
             <p className="text-xs text-muted-foreground">
-              {!user.wallet 
-                ? "User needs to connect a wallet to begin registration process."
-                : "User has connected wallet but identity registration is pending."
+              {user.wallet 
+                ? "User has connected wallet but identity registration is pending."
+                : "User needs to connect a wallet to begin registration process."
               }
             </p>
           </div>

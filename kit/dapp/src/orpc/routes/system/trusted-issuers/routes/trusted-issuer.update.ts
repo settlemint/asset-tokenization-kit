@@ -40,8 +40,8 @@ const UPDATE_ISSUER_TOPICS_MUTATION = portalGraphql(`
       address: $address
       from: $from
       input: {
-        _trustedIssuer: $trustedIssuer
-        _claimTopics: $claimTopics
+        trustedIssuer: $trustedIssuer
+        newClaimTopics: $claimTopics
       }
       challengeId: $challengeId
       challengeResponse: $challengeResponse

@@ -135,7 +135,7 @@ describe("Ethereum Hash Validation", () => {
         expect(() => ethereumHash.parse(true)).toThrow();
         expect(() => ethereumHash.parse(false)).toThrow();
         expect(() => ethereumHash.parse(Symbol("test"))).toThrow();
-        expect(() => ethereumHash.parse(BigInt(123))).toThrow();
+        expect(() => ethereumHash.parse(123n)).toThrow();
       });
 
       test("should have proper error messages for each validation step", () => {

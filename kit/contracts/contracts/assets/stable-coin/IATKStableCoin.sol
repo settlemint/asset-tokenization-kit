@@ -3,9 +3,8 @@ pragma solidity ^0.8.28;
 
 // Interface imports
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ISMART } from "../../smart/interface/ISMART.sol";
+import { IATKToken } from "../../system/tokens/IATKToken.sol";
 
-import { ISMARTTokenAccessManaged } from "../../smart/extensions/access-managed/ISMARTTokenAccessManaged.sol";
 import { ISMARTCustodian } from "../../smart/extensions/custodian/ISMARTCustodian.sol";
 import { ISMARTPausable } from "../../smart/extensions/pausable/ISMARTPausable.sol";
 import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.sol";
@@ -16,8 +15,7 @@ import { ISMARTRedeemable } from "../../smart/extensions/redeemable/ISMARTRedeem
 /// @author SettleMint
 /// @notice Defines the core functionality and extensions for a ATK Stable Coin.
 interface IATKStableCoin is
-    ISMART,
-    ISMARTTokenAccessManaged,
+    IATKToken,
     ISMARTCollateral,
     ISMARTRedeemable,
     ISMARTCustodian,

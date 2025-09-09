@@ -3,10 +3,10 @@ pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { SystemUtils } from "../../utils/SystemUtils.sol";
-import { IATKTokenFactoryRegistry } from "../../../contracts/system/token-factory/IATKTokenFactoryRegistry.sol";
+import { IATKTokenFactoryRegistry } from "../../../contracts/system/tokens/factory/IATKTokenFactoryRegistry.sol";
 import { ATKTokenFactoryRegistryImplementation } from
-    "../../../contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol";
-import { IATKTokenFactory } from "../../../contracts/system/token-factory/IATKTokenFactory.sol";
+    "../../../contracts/system/tokens/factory/ATKTokenFactoryRegistryImplementation.sol";
+import { IATKTokenFactory } from "../../../contracts/system/tokens/factory/IATKTokenFactory.sol";
 import { IWithTypeIdentifier } from "../../../contracts/smart/interface/IWithTypeIdentifier.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";

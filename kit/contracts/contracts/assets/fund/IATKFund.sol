@@ -6,9 +6,8 @@ import { IVotes } from "@openzeppelin/contracts/governance/utils/IVotes.sol";
 
 // Interface imports
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ISMART } from "../../smart/interface/ISMART.sol";
+import { IATKToken } from "../../system/tokens/IATKToken.sol";
 
-import { ISMARTTokenAccessManaged } from "../../smart/extensions/access-managed/ISMARTTokenAccessManaged.sol";
 import { ISMARTCustodian } from "../../smart/extensions/custodian/ISMARTCustodian.sol";
 import { ISMARTPausable } from "../../smart/extensions/pausable/ISMARTPausable.sol";
 import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.sol";
@@ -16,7 +15,7 @@ import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.s
 /// @title Interface for a ATK Fund
 /// @author SettleMint
 /// @notice Defines the core functionality and extensions for a ATK Fund, including voting capabilities.
-interface IATKFund is ISMART, ISMARTTokenAccessManaged, ISMARTCustodian, ISMARTPausable, ISMARTBurnable, IVotes {
+interface IATKFund is IATKToken, ISMARTCustodian, ISMARTPausable, ISMARTBurnable, IVotes {
     /// @notice Emitted when management fees are collected
     /// @param sender The address that collected the management fees
     /// @param amount The amount of tokens minted as management fees

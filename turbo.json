@@ -41,6 +41,7 @@
     "//#version": {
       "cache": false,
       "passThroughEnv": [
+        "BUILD_ID",
         "GITHUB_REF_SLUG",
         "GITHUB_REF_NAME",
         "GITHUB_SHA_SHORT"

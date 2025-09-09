@@ -59,6 +59,9 @@ export const TokenFixedYieldScheduleFragment = theGraphGraphql(
     totalClaimed
     totalUnclaimedYield
     totalYield
+    denominationAsset {
+      id
+    }
     currentPeriod {
       ...TokenFixedYieldSchedulePeriodFragment
     }

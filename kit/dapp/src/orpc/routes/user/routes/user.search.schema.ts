@@ -49,7 +49,7 @@ export const UserSearchInputSchema = z.object({
 
 /**
  * Search-specific user schema with minimal fields for UI components.
- * 
+ *
  * This is a dedicated schema that only includes the essential fields needed
  * for user search results. This approach is safer than using .omit() because:
  * - It won't accidentally expose new fields added to UserSchema
@@ -72,7 +72,7 @@ export const UserSearchResultSchema = z.object({
  *
  * Returns an array of lightweight user objects optimized for:
  * - Dropdown/select components
- * - Autocomplete interfaces  
+ * - Autocomplete interfaces
  * - User picker forms
  * - Quick lookup scenarios
  *

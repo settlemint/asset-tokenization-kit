@@ -7,7 +7,8 @@ import {
     ComplianceImplementationNotSet,
     IdentityRegistryImplementationNotSet,
     IdentityRegistryStorageImplementationNotSet,
-    TrustedIssuersRegistryImplementationNotSet,
+    SystemTrustedIssuersRegistryImplementationNotSet,
+    TrustedIssuersMetaRegistryImplementationNotSet,
     IdentityFactoryImplementationNotSet,
     IdentityImplementationNotSet,
     ContractIdentityImplementationNotSet,
@@ -27,6 +28,7 @@ import { IATKSystemAccessManager } from "./access-manager/IATKSystemAccessManage
 import { ATKPeopleRoles } from "./ATKPeopleRoles.sol";
 import { ATKRoles } from "./ATKRoles.sol";
 import { ATKSystemRoles } from "./ATKSystemRoles.sol";
+import { IATKSystem } from "./IATKSystem.sol";
 
 // --- Contract Definition ---
 
@@ -65,7 +67,11 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// @notice The default contract address for the trusted issuers registry module's logic (implementation).
     /// @dev This address will be passed to newly created `ATKSystem` instances as the initial trusted issuers
     /// registry implementation.
-    address public immutable DEFAULT_TRUSTED_ISSUERS_REGISTRY_IMPLEMENTATION;
+    address public immutable DEFAULT_SYSTEM_TRUSTED_ISSUERS_REGISTRY_IMPLEMENTATION;
+    /// @notice The default contract address for the trusted issuers meta registry module's logic.
+    /// @dev This address will be passed to newly created `ATKSystem` instances as the initial trusted issuers
+    /// meta registry implementation.
+    address public immutable DEFAULT_TRUSTED_ISSUERS_META_REGISTRY_IMPLEMENTATION;
     /// @notice The default contract address for the topic scheme registry module's logic (implementation).
     /// @dev This address will be passed to newly created `ATKSystem` instances as the initial topic scheme
     /// registry implementation.
@@ -107,6 +113,25 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// @dev This allows for easy tracking and retrieval of deployed systems.
     address[] public atkSystems;
 
+    /// @notice Struct collecting all system implementation addresses for constructor input.
+    struct SystemImplementations {
+        address atkSystemImplementation;
+        address complianceImplementation;
+        address identityRegistryImplementation;
+        address identityRegistryStorageImplementation;
+        address systemTrustedIssuersRegistryImplementation;
+        address trustedIssuersMetaRegistryImplementation;
+        address topicSchemeRegistryImplementation;
+        address identityFactoryImplementation;
+        address identityImplementation;
+        address contractIdentityImplementation;
+        address tokenAccessManagerImplementation;
+        address tokenFactoryRegistryImplementation;
+        address complianceModuleRegistryImplementation;
+        address addonRegistryImplementation;
+        address systemAccessManagerImplementation;
+    }
+
     // --- Constructor ---
 
     /// @notice Constructs the `ATKSystemFactory` contract.
@@ -116,83 +141,66 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// It performs crucial checks to ensure that none of the provided implementation addresses are the zero address, as
     /// these are
     /// essential for the proper functioning of the `ATKSystem` instances that will be created.
-    /// @param atkSystemImplementation_ The address of the ATKSystem implementation contract.
-    /// @param complianceImplementation_ The default address for the compliance module's logic contract.
-    /// @param identityRegistryImplementation_ The default address for the identity registry module's logic contract.
-    /// @param identityRegistryStorageImplementation_ The default address for the identity registry storage module's
-    /// logic contract.
-    /// @param trustedIssuersRegistryImplementation_ The default address for the trusted issuers registry module's logic
-    /// contract.
-    /// @param topicSchemeRegistryImplementation_ The default address for the topic scheme registry module's logic
-    /// contract.
-    /// @param identityFactoryImplementation_ The default address for the identity factory module's logic contract.
-    /// @param identityImplementation_ The default address for the standard identity contract's logic (template).
-    /// @param contractIdentityImplementation_ The default address for the contract identity contract's logic
-    /// (template).
-    /// @param tokenAccessManagerImplementation_ The default address for the token access manager contract's logic
-    /// (template).
-    /// @param tokenFactoryRegistryImplementation_ The default address for the token factory registry module's logic
-    /// contract.
-    /// @param complianceModuleRegistryImplementation_ The default address for the compliance module registry module's
-    /// logic contract.
-    /// @param addonRegistryImplementation_ The default address for the addon registry module's logic contract.
-    /// @param systemAccessManagerImplementation_ The default address for the system access manager module's logic
-    /// contract.
+    /// @param implementations The struct containing all implementation addresses required by the system.
     /// @param forwarder_ The address of the trusted forwarder contract to be used for meta-transactions (ERC2771).
     constructor(
-        address atkSystemImplementation_,
-        address complianceImplementation_,
-        address identityRegistryImplementation_,
-        address identityRegistryStorageImplementation_,
-        address trustedIssuersRegistryImplementation_,
-        address topicSchemeRegistryImplementation_,
-        address identityFactoryImplementation_,
-        address identityImplementation_,
-        address contractIdentityImplementation_,
-        address tokenAccessManagerImplementation_,
-        address tokenFactoryRegistryImplementation_,
-        address complianceModuleRegistryImplementation_,
-        address addonRegistryImplementation_,
-        address systemAccessManagerImplementation_,
+        SystemImplementations memory implementations,
         address forwarder_
     )
         ERC2771Context(forwarder_) // Initializes ERC2771 support with the provided forwarder address.
     {
         // Perform critical checks: ensure no implementation address is the zero address.
         // Reverting here prevents deploying a factory that would create non-functional ATKSystem instances.
-        if (atkSystemImplementation_ == address(0)) revert InvalidSystemImplementation();
-        if (complianceImplementation_ == address(0)) revert ComplianceImplementationNotSet();
-        if (identityRegistryImplementation_ == address(0)) revert IdentityRegistryImplementationNotSet();
-        if (identityRegistryStorageImplementation_ == address(0)) revert IdentityRegistryStorageImplementationNotSet();
-        if (trustedIssuersRegistryImplementation_ == address(0)) revert TrustedIssuersRegistryImplementationNotSet();
-        if (topicSchemeRegistryImplementation_ == address(0)) revert TopicSchemeRegistryImplementationNotSet();
-        if (identityFactoryImplementation_ == address(0)) revert IdentityFactoryImplementationNotSet();
-        if (identityImplementation_ == address(0)) revert IdentityImplementationNotSet();
-        if (contractIdentityImplementation_ == address(0)) revert ContractIdentityImplementationNotSet();
-        if (tokenAccessManagerImplementation_ == address(0)) revert TokenAccessManagerImplementationNotSet();
-        if (tokenFactoryRegistryImplementation_ == address(0)) revert TokenFactoryRegistryImplementationNotSet();
-        if (complianceModuleRegistryImplementation_ == address(0)) {
+        if (implementations.atkSystemImplementation == address(0)) revert InvalidSystemImplementation();
+        if (implementations.complianceImplementation == address(0)) revert ComplianceImplementationNotSet();
+        if (implementations.identityRegistryImplementation == address(0)) revert IdentityRegistryImplementationNotSet();
+        if (implementations.identityRegistryStorageImplementation == address(0)) {
+            revert IdentityRegistryStorageImplementationNotSet();
+        }
+        if (implementations.systemTrustedIssuersRegistryImplementation == address(0)) {
+            revert SystemTrustedIssuersRegistryImplementationNotSet();
+        }
+        if (implementations.topicSchemeRegistryImplementation == address(0)) {
+            revert TopicSchemeRegistryImplementationNotSet();
+        }
+        if (implementations.identityFactoryImplementation == address(0)) revert IdentityFactoryImplementationNotSet();
+        if (implementations.identityImplementation == address(0)) revert IdentityImplementationNotSet();
+        if (implementations.contractIdentityImplementation == address(0)) revert ContractIdentityImplementationNotSet();
+        if (implementations.tokenAccessManagerImplementation == address(0)) {
+            revert TokenAccessManagerImplementationNotSet();
+        }
+        if (implementations.tokenFactoryRegistryImplementation == address(0)) {
+            revert TokenFactoryRegistryImplementationNotSet();
+        }
+        if (implementations.complianceModuleRegistryImplementation == address(0)) {
             revert ComplianceModuleRegistryImplementationNotSet();
         }
-        if (addonRegistryImplementation_ == address(0)) revert AddonRegistryImplementationNotSet();
-        if (systemAccessManagerImplementation_ == address(0)) revert SystemAccessManagerImplementationNotSet();
+        if (implementations.addonRegistryImplementation == address(0)) revert AddonRegistryImplementationNotSet();
+        if (implementations.systemAccessManagerImplementation == address(0)) {
+            revert SystemAccessManagerImplementationNotSet();
+        }
+        if (implementations.trustedIssuersMetaRegistryImplementation == address(0)) {
+            revert TrustedIssuersMetaRegistryImplementationNotSet();
+        }
 
         // Set the immutable state variables with the provided addresses.
-        ATK_SYSTEM_IMPLEMENTATION = atkSystemImplementation_;
-        ATK_SYSTEM_ACCESS_MANAGER_IMPLEMENTATION = systemAccessManagerImplementation_;
+        ATK_SYSTEM_IMPLEMENTATION = implementations.atkSystemImplementation;
+        ATK_SYSTEM_ACCESS_MANAGER_IMPLEMENTATION = implementations.systemAccessManagerImplementation;
 
-        DEFAULT_COMPLIANCE_IMPLEMENTATION = complianceImplementation_;
-        DEFAULT_IDENTITY_REGISTRY_IMPLEMENTATION = identityRegistryImplementation_;
-        DEFAULT_IDENTITY_REGISTRY_STORAGE_IMPLEMENTATION = identityRegistryStorageImplementation_;
-        DEFAULT_TRUSTED_ISSUERS_REGISTRY_IMPLEMENTATION = trustedIssuersRegistryImplementation_;
-        DEFAULT_TOPIC_SCHEME_REGISTRY_IMPLEMENTATION = topicSchemeRegistryImplementation_;
-        DEFAULT_IDENTITY_FACTORY_IMPLEMENTATION = identityFactoryImplementation_;
-        DEFAULT_IDENTITY_IMPLEMENTATION = identityImplementation_;
-        DEFAULT_CONTRACT_IDENTITY_IMPLEMENTATION = contractIdentityImplementation_;
-        DEFAULT_TOKEN_ACCESS_MANAGER_IMPLEMENTATION = tokenAccessManagerImplementation_;
-        DEFAULT_TOKEN_FACTORY_REGISTRY_IMPLEMENTATION = tokenFactoryRegistryImplementation_;
-        DEFAULT_COMPLIANCE_MODULE_REGISTRY_IMPLEMENTATION = complianceModuleRegistryImplementation_;
-        DEFAULT_ADDON_REGISTRY_IMPLEMENTATION = addonRegistryImplementation_;
+        DEFAULT_COMPLIANCE_IMPLEMENTATION = implementations.complianceImplementation;
+        DEFAULT_IDENTITY_REGISTRY_IMPLEMENTATION = implementations.identityRegistryImplementation;
+        DEFAULT_IDENTITY_REGISTRY_STORAGE_IMPLEMENTATION = implementations.identityRegistryStorageImplementation;
+        DEFAULT_SYSTEM_TRUSTED_ISSUERS_REGISTRY_IMPLEMENTATION =
+            implementations.systemTrustedIssuersRegistryImplementation;
+        DEFAULT_TOPIC_SCHEME_REGISTRY_IMPLEMENTATION = implementations.topicSchemeRegistryImplementation;
+        DEFAULT_IDENTITY_FACTORY_IMPLEMENTATION = implementations.identityFactoryImplementation;
+        DEFAULT_IDENTITY_IMPLEMENTATION = implementations.identityImplementation;
+        DEFAULT_CONTRACT_IDENTITY_IMPLEMENTATION = implementations.contractIdentityImplementation;
+        DEFAULT_TOKEN_ACCESS_MANAGER_IMPLEMENTATION = implementations.tokenAccessManagerImplementation;
+        DEFAULT_TOKEN_FACTORY_REGISTRY_IMPLEMENTATION = implementations.tokenFactoryRegistryImplementation;
+        DEFAULT_COMPLIANCE_MODULE_REGISTRY_IMPLEMENTATION = implementations.complianceModuleRegistryImplementation;
+        DEFAULT_ADDON_REGISTRY_IMPLEMENTATION = implementations.addonRegistryImplementation;
+        DEFAULT_TRUSTED_ISSUERS_META_REGISTRY_IMPLEMENTATION = implementations.trustedIssuersMetaRegistryImplementation;
 
         FACTORY_FORWARDER = forwarder_; // Store the forwarder address for use by this factory and new systems.
     }
@@ -227,22 +235,24 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         // Deploy a new ATKSystem contract instance.
         // It passes all the default implementation addresses stored in this factory, plus the factory's forwarder
         // address.
+        IATKSystem.SystemInitImplementations memory initImpls = IATKSystem.SystemInitImplementations({
+            complianceImplementation: DEFAULT_COMPLIANCE_IMPLEMENTATION,
+            identityRegistryImplementation: DEFAULT_IDENTITY_REGISTRY_IMPLEMENTATION,
+            identityRegistryStorageImplementation: DEFAULT_IDENTITY_REGISTRY_STORAGE_IMPLEMENTATION,
+            trustedIssuersRegistryImplementation: DEFAULT_SYSTEM_TRUSTED_ISSUERS_REGISTRY_IMPLEMENTATION,
+            trustedIssuersMetaRegistryImplementation: DEFAULT_TRUSTED_ISSUERS_META_REGISTRY_IMPLEMENTATION,
+            topicSchemeRegistryImplementation: DEFAULT_TOPIC_SCHEME_REGISTRY_IMPLEMENTATION,
+            identityFactoryImplementation: DEFAULT_IDENTITY_FACTORY_IMPLEMENTATION,
+            identityImplementation: DEFAULT_IDENTITY_IMPLEMENTATION,
+            contractIdentityImplementation: DEFAULT_CONTRACT_IDENTITY_IMPLEMENTATION,
+            tokenAccessManagerImplementation: DEFAULT_TOKEN_ACCESS_MANAGER_IMPLEMENTATION,
+            tokenFactoryRegistryImplementation: DEFAULT_TOKEN_FACTORY_REGISTRY_IMPLEMENTATION,
+            complianceModuleRegistryImplementation: DEFAULT_COMPLIANCE_MODULE_REGISTRY_IMPLEMENTATION,
+            addonRegistryImplementation: DEFAULT_ADDON_REGISTRY_IMPLEMENTATION
+        });
+
         bytes memory systemCallData = abi.encodeWithSelector(
-            ATKSystemImplementation.initialize.selector,
-            sender,
-            systemAccessManagerProxy,
-            DEFAULT_COMPLIANCE_IMPLEMENTATION,
-            DEFAULT_IDENTITY_REGISTRY_IMPLEMENTATION,
-            DEFAULT_IDENTITY_REGISTRY_STORAGE_IMPLEMENTATION,
-            DEFAULT_TRUSTED_ISSUERS_REGISTRY_IMPLEMENTATION,
-            DEFAULT_TOPIC_SCHEME_REGISTRY_IMPLEMENTATION,
-            DEFAULT_IDENTITY_FACTORY_IMPLEMENTATION,
-            DEFAULT_IDENTITY_IMPLEMENTATION,
-            DEFAULT_CONTRACT_IDENTITY_IMPLEMENTATION,
-            DEFAULT_TOKEN_ACCESS_MANAGER_IMPLEMENTATION,
-            DEFAULT_TOKEN_FACTORY_REGISTRY_IMPLEMENTATION,
-            DEFAULT_COMPLIANCE_MODULE_REGISTRY_IMPLEMENTATION,
-            DEFAULT_ADDON_REGISTRY_IMPLEMENTATION
+            ATKSystemImplementation.initialize.selector, sender, address(systemAccessManagerProxy), initImpls
         );
 
         ERC1967Proxy systemProxy = new ERC1967Proxy(ATK_SYSTEM_IMPLEMENTATION, systemCallData);
@@ -313,8 +323,14 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
 
     /// @notice Returns the default trusted issuers registry implementation address
     /// @return The address of the default trusted issuers registry implementation
-    function defaultTrustedIssuersRegistryImplementation() external view returns (address) {
-        return DEFAULT_TRUSTED_ISSUERS_REGISTRY_IMPLEMENTATION;
+    function defaultSystemTrustedIssuersRegistryImplementation() external view returns (address) {
+        return DEFAULT_SYSTEM_TRUSTED_ISSUERS_REGISTRY_IMPLEMENTATION;
+    }
+
+    /// @notice Returns the default trusted issuers meta registry implementation address
+    /// @return The address of the default trusted issuers meta registry implementation
+    function defaultTrustedIssuersMetaRegistryImplementation() external view returns (address) {
+        return DEFAULT_TRUSTED_ISSUERS_META_REGISTRY_IMPLEMENTATION;
     }
 
     /// @notice Returns the default topic scheme registry implementation address

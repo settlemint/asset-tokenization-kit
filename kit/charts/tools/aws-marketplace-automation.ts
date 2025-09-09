@@ -155,6 +155,14 @@ class AWSMarketplaceAutomation {
   convertToECRFormat(originalImageUrl, ecrPrefix) {
     if (!originalImageUrl) return null;
 
+    // If image already has ECR registry, return as-is (already converted by package-ecr.ts)
+    if (
+      originalImageUrl.includes(this.targetEcrAccount) ||
+      originalImageUrl.startsWith(ecrPrefix)
+    ) {
+      return originalImageUrl;
+    }
+
     // Parse the original image URL
     const parts = originalImageUrl.split(":");
     const imageWithoutTag = parts[0];
@@ -376,78 +384,150 @@ class AWSMarketplaceAutomation {
       for (const originalImage of originalImages) {
         console.log(`🔄 Processing image: ${originalImage}`);
 
-        // Create ECR repository name with full path format: repository/settlemint/{registry}/{image}
-        const imageParts = originalImage.split(":");
-        const imageWithoutTag = imageParts[0];
-        const tag = imageParts[1] || "latest";
+        // Check if image is already in ECR format (from package-ecr.ts)
+        if (originalImage.includes(this.targetEcrAccount)) {
+          // Image already has ECR registry, extract repo name and tag
+          const imageParts = originalImage.split(":");
+          const imageWithoutTag = imageParts[0];
+          const tag = imageParts[1] || "latest";
 
-        let registryPrefix = "";
-        let imagePath = imageWithoutTag;
+          // Extract repo name from ECR URL: 709825985650.dkr.ecr.us-east-1.amazonaws.com/reponame
+          const repoName = imageWithoutTag.replace(
+            `${this.targetEcrPrefix}/`,
+            ""
+          );
+          const ecrImage = `${this.targetEcrPrefix}/${repoName}:${tag}`;
 
-        // Handle different registry formats
-        if (imageWithoutTag.startsWith("docker.io/")) {
-          registryPrefix = "docker.io";
-          imagePath = imageWithoutTag.replace("docker.io/", "");
-        } else if (imageWithoutTag.startsWith("registry.k8s.io/")) {
-          registryPrefix = "registry.k8s.io";
-          imagePath = imageWithoutTag.replace("registry.k8s.io/", "");
-        } else if (imageWithoutTag.startsWith("quay.io/")) {
-          registryPrefix = "quay.io";
-          imagePath = imageWithoutTag.replace("quay.io/", "");
-        } else if (imageWithoutTag.startsWith("ghcr.io/")) {
-          registryPrefix = "ghcr.io";
-          imagePath = imageWithoutTag.replace("ghcr.io/", "");
-        } else {
-          registryPrefix = "docker.io";
-          imagePath = imageWithoutTag;
-        }
-
-        const repoName = `settlemint/${registryPrefix}/${imagePath}`;
-        const ecrImage = `${this.targetEcrPrefix}/${repoName}:${tag}-amd64`;
-
-        try {
-          // Create ECR repository if it doesn't exist
           try {
-            await this.ecr.send(
-              new CreateRepositoryCommand({ repositoryName: repoName })
-            );
-            console.log(`✅ Created ECR repository: ${repoName}`);
+            // Create ECR repository if it doesn't exist
+            try {
+              await this.ecr.send(
+                new CreateRepositoryCommand({ repositoryName: repoName })
+              );
+              console.log(`✅ Created ECR repository: ${repoName}`);
+            } catch (error) {
+              if (error.name !== "RepositoryAlreadyExistsException") {
+                throw error;
+              }
+              console.log(`✓ ECR repository already exists: ${repoName}`);
+            }
+
+            // Convert ECR format back to original for docker pull
+            const originalForPull = this.convertECRToOriginal(originalImage);
+
+            console.log(`📥 Pulling ${originalForPull} (AMD64)`);
+            execSync(`docker pull --platform linux/amd64 ${originalForPull}`, {
+              stdio: "inherit",
+            });
+
+            console.log(`🏷️  Tagging as ${ecrImage}`);
+            execSync(`docker tag ${originalForPull} ${ecrImage}`, {
+              stdio: "inherit",
+            });
+
+            console.log(`📤 Pushing ${ecrImage}`);
+            try {
+              execSync(`docker push ${ecrImage}`, { stdio: "inherit" });
+              console.log(`✅ Successfully uploaded: ${ecrImage}`);
+            } catch (pushError) {
+              if (
+                pushError.message.includes("tag is immutable") ||
+                pushError.message.includes("already exists")
+              ) {
+                console.log(
+                  `⚠️  Image already exists (immutable): ${ecrImage}`
+                );
+              } else {
+                throw pushError;
+              }
+            }
           } catch (error) {
-            if (error.name !== "RepositoryAlreadyExistsException") {
-              throw error;
-            }
-            console.log(`✓ ECR repository already exists: ${repoName}`);
+            console.error(
+              `❌ Failed to upload ${originalImage}:`,
+              error.message
+            );
+            continue;
+          }
+        } else {
+          // Original logic for non-ECR images
+          // Create ECR repository name with full path format: repository/settlemint/{registry}/{image}
+          const imageParts = originalImage.split(":");
+          const imageWithoutTag = imageParts[0];
+          const tag = imageParts[1] || "latest";
+
+          let registryPrefix = "";
+          let imagePath = imageWithoutTag;
+
+          // Handle different registry formats
+          if (imageWithoutTag.startsWith("docker.io/")) {
+            registryPrefix = "docker.io";
+            imagePath = imageWithoutTag.replace("docker.io/", "");
+          } else if (imageWithoutTag.startsWith("registry.k8s.io/")) {
+            registryPrefix = "registry.k8s.io";
+            imagePath = imageWithoutTag.replace("registry.k8s.io/", "");
+          } else if (imageWithoutTag.startsWith("quay.io/")) {
+            registryPrefix = "quay.io";
+            imagePath = imageWithoutTag.replace("quay.io/", "");
+          } else if (imageWithoutTag.startsWith("ghcr.io/")) {
+            registryPrefix = "ghcr.io";
+            imagePath = imageWithoutTag.replace("ghcr.io/", "");
+          } else {
+            registryPrefix = "docker.io";
+            imagePath = imageWithoutTag;
           }
 
-          // Pull, tag, and push image (force AMD64 platform)
-          console.log(`📥 Pulling ${originalImage} (AMD64)`);
-          execSync(`docker pull --platform linux/amd64 ${originalImage}`, {
-            stdio: "inherit",
-          });
+          const repoName = `settlemint/${registryPrefix}/${imagePath}`;
+          const ecrImage = `${this.targetEcrPrefix}/${repoName}:${tag}-amd64`;
 
-          console.log(`🏷️  Tagging as ${ecrImage}`);
-          execSync(`docker tag ${originalImage} ${ecrImage}`, {
-            stdio: "inherit",
-          });
-
-          console.log(`📤 Pushing ${ecrImage}`);
           try {
-            execSync(`docker push ${ecrImage}`, { stdio: "inherit" });
-            console.log(`✅ Successfully uploaded: ${ecrImage}`);
-          } catch (pushError) {
-            if (
-              pushError.message.includes("tag is immutable") ||
-              pushError.message.includes("already exists")
-            ) {
-              console.log(`⚠️  Image already exists (immutable): ${ecrImage}`);
-            } else {
-              throw pushError;
+            // Create ECR repository if it doesn't exist
+            try {
+              await this.ecr.send(
+                new CreateRepositoryCommand({ repositoryName: repoName })
+              );
+              console.log(`✅ Created ECR repository: ${repoName}`);
+            } catch (error) {
+              if (error.name !== "RepositoryAlreadyExistsException") {
+                throw error;
+              }
+              console.log(`✓ ECR repository already exists: ${repoName}`);
             }
+
+            // Pull, tag, and push image (force AMD64 platform)
+            console.log(`📥 Pulling ${originalImage} (AMD64)`);
+            execSync(`docker pull --platform linux/amd64 ${originalImage}`, {
+              stdio: "inherit",
+            });
+
+            console.log(`🏷️  Tagging as ${ecrImage}`);
+            execSync(`docker tag ${originalImage} ${ecrImage}`, {
+              stdio: "inherit",
+            });
+
+            console.log(`📤 Pushing ${ecrImage}`);
+            try {
+              execSync(`docker push ${ecrImage}`, { stdio: "inherit" });
+              console.log(`✅ Successfully uploaded: ${ecrImage}`);
+            } catch (pushError) {
+              if (
+                pushError.message.includes("tag is immutable") ||
+                pushError.message.includes("already exists")
+              ) {
+                console.log(
+                  `⚠️  Image already exists (immutable): ${ecrImage}`
+                );
+              } else {
+                throw pushError;
+              }
+            }
+          } catch (error) {
+            console.error(
+              `❌ Failed to upload ${originalImage}:`,
+              error.message
+            );
+            // Continue with next image instead of throwing
+            continue;
           }
-        } catch (error) {
-          console.error(`❌ Failed to upload ${originalImage}:`, error.message);
-          // Continue with next image instead of throwing
-          continue;
         }
       }
 

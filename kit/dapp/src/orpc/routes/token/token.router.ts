@@ -25,6 +25,7 @@ import { statsVolume } from "@/orpc/routes/token/routes/stats/volume";
 import { statsWalletDistribution } from "@/orpc/routes/token/routes/stats/wallet-distribution";
 import { actions } from "@/orpc/routes/token/routes/token.actions";
 import { events } from "@/orpc/routes/token/routes/token.events";
+import { holder } from "@/orpc/routes/token/routes/token.holder";
 import { holders } from "@/orpc/routes/token/routes/token.holders";
 import { list } from "@/orpc/routes/token/routes/token.list";
 import { read } from "@/orpc/routes/token/routes/token.read";
@@ -36,6 +37,7 @@ const routes = {
   events,
   grantRole,
   revokeRole,
+  holder,
   holders,
   list,
   read,

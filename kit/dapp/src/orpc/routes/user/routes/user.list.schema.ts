@@ -15,7 +15,7 @@ export const UserListInputSchema = ListSchema.extend({
 
 /**
  * Paginated response schema for user listing.
- * 
+ *
  * Follows the same pattern as other paginated endpoints in the system
  * (kyc.list, exchange-rates.list) for consistency.
  */

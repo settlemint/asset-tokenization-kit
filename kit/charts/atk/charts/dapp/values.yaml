@@ -8,7 +8,7 @@ image:
   repository: ghcr.io/settlemint/asset-tokenization-kit
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "2.0.0-main0d06815fc"
+  tag: "2.0.0-main1e32acb7f"
 
 nameOverride: "dapp"
 fullnameOverride: "dapp"

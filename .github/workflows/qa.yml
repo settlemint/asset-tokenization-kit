@@ -137,6 +137,8 @@ jobs:
           (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
         run: |
           bunx turbo run artifacts --concurrency=100%
+        env:
+          BUILD_ID: ${{ github.run_number }}${{ github.run_attempt }}
 
       - name: Run the backend services
         if: |
@@ -178,6 +180,8 @@ jobs:
             echo "Running full Turbo for main branch"
             bun run ci:gha:main --concurrency=100%
           fi
+        env:
+          BUILD_ID: ${{ github.run_number }}.${{ github.run_attempt }}
 
       - name: Store predeployed output
         if: |

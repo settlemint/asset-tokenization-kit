@@ -40,8 +40,8 @@ const CREATE_TRUSTED_ISSUER_MUTATION = portalGraphql(`
       address: $address
       from: $from
       input: {
-        _trustedIssuer: $trustedIssuer
-        _claimTopics: $claimTopics
+        trustedIssuer: $trustedIssuer
+        claimTopics: $claimTopics
       }
       challengeId: $challengeId
       challengeResponse: $challengeResponse

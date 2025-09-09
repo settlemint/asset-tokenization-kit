@@ -102,7 +102,7 @@ describe("equity-classes", () => {
         expect(isEquityClass(true)).toBe(false);
         expect(isEquityClass(false)).toBe(false);
         expect(isEquityClass(Symbol("A"))).toBe(false);
-        expect(isEquityClass(BigInt(1))).toBe(false);
+        expect(isEquityClass(1n)).toBe(false);
       });
 
       test("should return false for objects with toString", () => {

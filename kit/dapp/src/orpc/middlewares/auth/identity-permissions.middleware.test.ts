@@ -59,6 +59,7 @@ describe("Identity permissions middleware", () => {
       tokenFactoryModule: [],
       tokenFactoryRegistryModule: [],
       tokenManager: [],
+      trustedIssuersMetaRegistryModule: [],
       verificationAdmin: [],
       claimIssuer: [],
     });

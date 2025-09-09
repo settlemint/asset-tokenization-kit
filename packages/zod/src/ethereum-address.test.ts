@@ -467,7 +467,7 @@ describe("ethereumAddress", () => {
       expect(isEthereumAddress(true)).toBe(false);
       expect(isEthereumAddress(false)).toBe(false);
       expect(isEthereumAddress(Symbol("test"))).toBe(false);
-      expect(isEthereumAddress(BigInt(123))).toBe(false);
+      expect(isEthereumAddress(123n)).toBe(false);
 
       // Invalid checksummed address
       expect(
@@ -535,7 +535,7 @@ describe("ethereumAddress", () => {
       expect(() => getEthereumAddress(true)).toThrow();
       expect(() => getEthereumAddress(false)).toThrow();
       expect(() => getEthereumAddress(Symbol("test"))).toThrow();
-      expect(() => getEthereumAddress(BigInt(123))).toThrow();
+      expect(() => getEthereumAddress(123n)).toThrow();
 
       // Invalid checksummed address
       expect(() =>

@@ -159,7 +159,7 @@ The central coordinator that manages all protocol components:
 
 - **Purpose**: Manages entities that can issue identity claims
 - **Features**: Issuer validation, topic-specific trust
-- **Implementation**: `ATKTrustedIssuersRegistryImplementation`
+- **Implementation**: `ATKSystemTrustedIssuersRegistryImplementation`
 - **Capability**: Trusted issuers can directly add claims to identities through
   the claim authorization system, which validates their permissions
 

@@ -13,5 +13,78 @@
         "success": "KYCプロファイルが正常に更新されました"
       }
     }
+  },
+  "management": {
+    "table": {
+      "columns": {
+        "name": "名前",
+        "email": "メール",
+        "wallet": "ウォレット",
+        "role": "役割",
+        "status": "ステータス",
+        "created": "作成日",
+        "lastActive": "最終アクティビティ",
+        "actions": "アクション"
+      },
+      "status": {
+        "registered": "登録済み",
+        "pending": "保留中",
+        "notConnected": "未接続",
+        "registeredAriaLabel": "ユーザーは登録され、オンチェーンで検証されています",
+        "pendingAriaLabel": "ユーザーはウォレットを接続しましたが、まだオンチェーンで登録されていません",
+        "notConnectedAriaLabel": "ユーザーはウォレットを接続していません"
+      },
+      "actions": {
+        "viewDetails": "詳細を表示",
+        "menu": "アクションメニュー",
+        "openMenu": "アクションメニューを開く"
+      },
+      "search": {
+        "placeholder": "名前、メール、またはウォレットで検索..."
+      },
+      "noWallet": "ウォレットなし",
+      "emptyState": {
+        "title": "ユーザーが見つかりません",
+        "description": "まだユーザーが登録されていません。",
+        "loading": "ユーザーを読み込んでいます..."
+      },
+      "errors": {
+        "loadFailed": "ユーザーの読み込みに失敗しました。もう一度お試しください。",
+        "navigationFailed": "ユーザー詳細へのナビゲーションに失敗しました"
+      },
+      "fallback": {
+        "never": "なし"
+      }
+    }
+  },
+  "tabs": {
+    "details": "詳細",
+    "claims": "クレーム"
+  },
+  "fields": {
+    "fullName": "フルネーム",
+    "fullNameInfo": "ユーザーの表示名",
+    "email": "メール",
+    "emailInfo": "ユーザーのメールアドレス",
+    "role": "役割",
+    "roleInfo": "ユーザーのシステム役割",
+    "accountCreated": "アカウント作成",
+    "accountCreatedInfo": "アカウントが作成された時期",
+    "lastLogin": "最終ログイン",
+    "lastLoginInfo": "最新のログイン時刻",
+    "neverLoggedIn": "ログインしたことがありません",
+    "walletAddress": "ウォレットアドレス",
+    "walletAddressInfo": "ユーザーの接続されたウォレットアドレス",
+    "noWalletConnected": "ウォレットが接続されていません",
+    "onChainIdentity": "オンチェーンアイデンティティ",
+    "onChainIdentityInfo": "ユーザーのオンチェーンアイデンティティコントラクト",
+    "noIdentityRegistered": "アイデンティティが登録されていません",
+    "firstName": "名",
+    "firstNameInfo": "法的な名",
+    "lastName": "姓",
+    "lastNameInfo": "法的な姓"
+  },
+  "details": {
+    "kycInformation": "KYC情報"
   }
 }

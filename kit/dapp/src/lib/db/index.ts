@@ -54,7 +54,7 @@ export const migrateDatabase = async () => {
     const error = error_ as Error;
     logger.error(`Error migrating the database: ${error.message}`, error);
     // If migration fails the app will not function properly
-    throw new Error(`Database migration failed: ${error.message}`);
+    throw new Error(`Database migration failed: ${error.message}`, error);
   }
 
   try {
@@ -92,10 +92,8 @@ const getDb = serverOnly(() => {
   return drizzle(postgresPool, {
     /**
      * Query logging configuration.
-     * When enabled in development, logs all SQL queries to the console
-     * for debugging and performance analysis.
      */
-    // logger: process.env.NODE_ENV === "development",
+    logger: false,
 
     /**
      * Schema definitions for type-safe queries.

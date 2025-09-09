@@ -218,7 +218,7 @@ export function getNumericCountries(locale: SupportedLocale = "en") {
  */
 export function getCountriesSorted(locale: SupportedLocale = "en") {
   const countries = getCountries(locale);
-  return Object.entries(countries).sort(([, nameA], [, nameB]) =>
+  return Object.entries(countries).toSorted(([, nameA], [, nameB]) =>
     nameA.localeCompare(nameB)
   );
 }
@@ -236,7 +236,7 @@ export function getCountriesSorted(locale: SupportedLocale = "en") {
  */
 export function getNumericCountriesSorted(locale: SupportedLocale = "en") {
   const numericCountries = getNumericCountries(locale);
-  return Object.entries(numericCountries).sort(([, nameA], [, nameB]) =>
+  return Object.entries(numericCountries).toSorted(([, nameA], [, nameB]) =>
     nameA.localeCompare(nameB)
   );
 }

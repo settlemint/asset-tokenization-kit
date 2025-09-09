@@ -13,5 +13,78 @@
         "success": "Das KYC-Profil wurde erfolgreich aktualisiert"
       }
     }
+  },
+  "management": {
+    "table": {
+      "columns": {
+        "name": "Name",
+        "email": "E-Mail",
+        "wallet": "Wallet",
+        "role": "Rolle",
+        "status": "Status",
+        "created": "Erstellt",
+        "lastActive": "Zuletzt aktiv",
+        "actions": "Aktionen"
+      },
+      "status": {
+        "registered": "Registriert",
+        "pending": "Ausstehend",
+        "notConnected": "Nicht verbunden",
+        "registeredAriaLabel": "Benutzer ist registriert und on-chain verifiziert",
+        "pendingAriaLabel": "Benutzer hat Wallet verbunden, ist aber noch nicht on-chain registriert",
+        "notConnectedAriaLabel": "Benutzer hat keine Wallet verbunden"
+      },
+      "actions": {
+        "viewDetails": "Details anzeigen",
+        "menu": "Aktionsmenü",
+        "openMenu": "Aktionsmenü öffnen"
+      },
+      "search": {
+        "placeholder": "Nach Name, E-Mail oder Wallet suchen..."
+      },
+      "noWallet": "Keine Wallet",
+      "emptyState": {
+        "title": "Keine Benutzer gefunden",
+        "description": "Es wurden noch keine Benutzer registriert.",
+        "loading": "Benutzer werden geladen..."
+      },
+      "errors": {
+        "loadFailed": "Benutzer konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+        "navigationFailed": "Navigation zu Benutzerdetails fehlgeschlagen"
+      },
+      "fallback": {
+        "never": "Niemals"
+      }
+    }
+  },
+  "tabs": {
+    "details": "Details",
+    "claims": "Ansprüche"
+  },
+  "fields": {
+    "fullName": "Vollständiger Name",
+    "fullNameInfo": "Anzeigename des Benutzers",
+    "email": "E-Mail",
+    "emailInfo": "E-Mail-Adresse des Benutzers",
+    "role": "Rolle",
+    "roleInfo": "Systemrolle des Benutzers",
+    "accountCreated": "Konto erstellt",
+    "accountCreatedInfo": "Zeitpunkt der Kontoerstellung",
+    "lastLogin": "Letzte Anmeldung",
+    "lastLoginInfo": "Zeitpunkt der letzten Anmeldung",
+    "neverLoggedIn": "Noch nie angemeldet",
+    "walletAddress": "Wallet-Adresse",
+    "walletAddressInfo": "Verbundene Wallet-Adresse des Benutzers",
+    "noWalletConnected": "Keine Wallet verbunden",
+    "onChainIdentity": "On-Chain-Identität",
+    "onChainIdentityInfo": "On-Chain-Identitätsvertrag des Benutzers",
+    "noIdentityRegistered": "Keine Identität registriert",
+    "firstName": "Vorname",
+    "firstNameInfo": "Rechtlicher Vorname",
+    "lastName": "Nachname",
+    "lastNameInfo": "Rechtlicher Nachname"
+  },
+  "details": {
+    "kycInformation": "KYC-Informationen"
   }
 }

@@ -3,8 +3,6 @@ pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { MockedComplianceModule } from "./mocks/MockedComplianceModule.sol";
-import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
-
 // System
 import { ATKSystemFactory } from "../../contracts/system/ATKSystemFactory.sol";
 import { IATKSystem } from "../../contracts/system/IATKSystem.sol";
@@ -14,8 +12,8 @@ import { ATKPeopleRoles } from "../../contracts/system/ATKPeopleRoles.sol";
 // Implementations
 import { ATKIdentityRegistryStorageImplementation } from
     "../../contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol";
-import { ATKTrustedIssuersRegistryImplementation } from
-    "../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersRegistryImplementation.sol";
+import { ATKSystemTrustedIssuersRegistryImplementation } from
+    "../../contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol";
 import { ATKIdentityRegistryImplementation } from
     "../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
 import { ATKComplianceImplementation } from "../../contracts/system/compliance/ATKComplianceImplementation.sol";
@@ -27,34 +25,38 @@ import { ATKIdentityImplementation } from
 import { ATKContractIdentityImplementation } from
     "../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
 import { ATKTokenAccessManagerImplementation } from
-    "../../contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol";
+    "../../contracts/system/tokens/access/ATKTokenAccessManagerImplementation.sol";
 import { ATKSystemAccessManagerImplementation } from
     "../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
 import { ATKTopicSchemeRegistryImplementation } from
     "../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
 import { ATKTokenFactoryRegistryImplementation } from
-    "../../contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol";
+    "../../contracts/system/tokens/factory/ATKTokenFactoryRegistryImplementation.sol";
 import { ATKComplianceModuleRegistryImplementation } from
     "../../contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol";
 import { ATKSystemAddonRegistryImplementation } from
     "../../contracts/system/addons/ATKSystemAddonRegistryImplementation.sol";
+import { ATKTrustedIssuersMetaRegistryImplementation } from
+    "../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersMetaRegistryImplementation.sol";
+import { IATKTrustedIssuersRegistry } from
+    "../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
 
 // Proxies
-import { ATKTokenAccessManagerProxy } from "../../contracts/system/access-manager/ATKTokenAccessManagerProxy.sol";
+import { ATKTokenAccessManagerProxy } from "../../contracts/system/tokens/access/ATKTokenAccessManagerProxy.sol";
 
 // Interfaces
 import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 import { IATKIdentityFactory } from "../../contracts/system/identity-factory/IATKIdentityFactory.sol";
 import { ISMARTCompliance } from "../../contracts/smart/interface/ISMARTCompliance.sol";
-import { IERC3643TrustedIssuersRegistry } from
-    "../../contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 import { ISMARTIdentityRegistryStorage } from "../../contracts/smart/interface/ISMARTIdentityRegistryStorage.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { ISMARTTopicSchemeRegistry } from "../../contracts/smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { IATKComplianceModuleRegistry } from "../../contracts/system/compliance/IATKComplianceModuleRegistry.sol";
 import { IATKSystemAddonRegistry } from "../../contracts/system/addons/IATKSystemAddonRegistry.sol";
-import { IATKTokenFactoryRegistry } from "../../contracts/system/token-factory/IATKTokenFactoryRegistry.sol";
+import { IATKTokenFactoryRegistry } from "../../contracts/system/tokens/factory/IATKTokenFactoryRegistry.sol";
 import { IATKSystemAccessManager } from "../../contracts/system/access-manager/IATKSystemAccessManager.sol";
+import { IATKTrustedIssuersMetaRegistry } from
+    "../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersMetaRegistry.sol";
 
 // Compliance Modules
 import { CountryAllowListComplianceModule } from "../../contracts/smart/modules/CountryAllowListComplianceModule.sol";
@@ -63,6 +65,7 @@ import { SMARTIdentityVerificationComplianceModule } from
     "../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
 
 contract SystemUtils is Test {
+    address internal constant TRUSTED_FORWARDER_ADDRESS = address(0);
     // System
     ATKSystemFactory public systemFactory;
     IATKSystem public system;
@@ -70,7 +73,8 @@ contract SystemUtils is Test {
 
     // Core Contract Instances (now holding proxy addresses)
     ISMARTIdentityRegistryStorage public identityRegistryStorage; // Proxy
-    IERC3643TrustedIssuersRegistry public trustedIssuersRegistry; // Proxy
+    IATKTrustedIssuersRegistry public trustedIssuersRegistry; // Proxy
+    IATKTrustedIssuersMetaRegistry public trustedIssuersMetaRegistry; // Proxy
     ISMARTIdentityRegistry public identityRegistry; // Proxy
     ISMARTCompliance public compliance; // Proxy
     IATKIdentityFactory public identityFactory; // Proxy
@@ -87,95 +91,100 @@ contract SystemUtils is Test {
 
     // --- Setup ---
     constructor(address platformAdmin) {
-        // --- Predeployed implementations ---
-        address forwarder = address(0);
+        systemFactory = _deploySystemFactory();
+        _labelSystemFactory();
 
-        IIdentity identityImpl = new ATKIdentityImplementation(forwarder);
-        IIdentity contractIdentityImpl = new ATKContractIdentityImplementation(forwarder);
+        _startBootstrap(platformAdmin);
+        _labelSystemContracts();
 
-        ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
+        _deployComplianceModulesAndGrantRoles(platformAdmin);
+        _labelComplianceModules();
+    }
 
-        ATKIdentityRegistryStorageImplementation storageImpl = new ATKIdentityRegistryStorageImplementation(forwarder);
-        ATKTrustedIssuersRegistryImplementation issuersImpl = new ATKTrustedIssuersRegistryImplementation(forwarder);
-        ATKComplianceImplementation complianceImpl = new ATKComplianceImplementation(forwarder);
-        ATKIdentityRegistryImplementation registryImpl = new ATKIdentityRegistryImplementation(forwarder);
-        ATKIdentityFactoryImplementation factoryImpl = new ATKIdentityFactoryImplementation(forwarder);
-        ATKTokenAccessManagerImplementation accessManagerImpl = new ATKTokenAccessManagerImplementation(forwarder);
-        ATKTopicSchemeRegistryImplementation topicSchemeRegistryImpl =
-            new ATKTopicSchemeRegistryImplementation(forwarder);
+    function _deploySystemFactory() internal returns (ATKSystemFactory) {
+        address atkSystemImpl = address(new ATKSystemImplementation(TRUSTED_FORWARDER_ADDRESS));
+        vm.label(atkSystemImpl, "ATKSystemImplementation");
+        address complianceImpl = address(new ATKComplianceImplementation(TRUSTED_FORWARDER_ADDRESS));
+        vm.label(complianceImpl, "ATKComplianceImplementation");
+        address identityRegistryImpl = address(new ATKIdentityRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        vm.label(identityRegistryImpl, "ATKIdentityRegistryImplementation");
+        address identityRegistryStorageImpl =
+            address(new ATKIdentityRegistryStorageImplementation(TRUSTED_FORWARDER_ADDRESS));
+        vm.label(identityRegistryStorageImpl, "ATKIdentityRegistryStorageImplementation");
+        address systemTrustedIssuersRegistryImpl =
+            address(new ATKSystemTrustedIssuersRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        vm.label(systemTrustedIssuersRegistryImpl, "ATKSystemTrustedIssuersRegistryImplementation");
+        address trustedIssuersMetaRegistryImpl =
+            address(new ATKTrustedIssuersMetaRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        vm.label(trustedIssuersMetaRegistryImpl, "ATKTrustedIssuersMetaRegistryImplementation");
+        address topicSchemeRegistryImpl = address(new ATKTopicSchemeRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        vm.label(topicSchemeRegistryImpl, "ATKTopicSchemeRegistryImplementation");
+        address identityFactoryImpl = address(new ATKIdentityFactoryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        vm.label(identityFactoryImpl, "ATKIdentityFactoryImplementation");
+        address identityImpl = address(new ATKIdentityImplementation(TRUSTED_FORWARDER_ADDRESS));
+        vm.label(identityImpl, "ATKIdentityImplementation");
+        address contractIdentityImpl = address(new ATKContractIdentityImplementation(TRUSTED_FORWARDER_ADDRESS));
+        vm.label(contractIdentityImpl, "ATKContractIdentityImplementation");
+        address tokenAccessManagerImpl = address(new ATKTokenAccessManagerImplementation(TRUSTED_FORWARDER_ADDRESS));
+        vm.label(tokenAccessManagerImpl, "ATKTokenAccessManagerImplementation");
+        address tokenFactoryRegistryImpl = address(new ATKTokenFactoryRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        vm.label(tokenFactoryRegistryImpl, "ATKTokenFactoryRegistryImplementation");
+        address complianceModuleRegistryImpl =
+            address(new ATKComplianceModuleRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        vm.label(complianceModuleRegistryImpl, "ATKComplianceModuleRegistryImplementation");
+        address systemAddonRegistryImpl = address(new ATKSystemAddonRegistryImplementation(TRUSTED_FORWARDER_ADDRESS));
+        vm.label(systemAddonRegistryImpl, "ATKSystemAddonRegistryImplementation");
+        address systemAccessManagerImpl = address(new ATKSystemAccessManagerImplementation(TRUSTED_FORWARDER_ADDRESS));
+        vm.label(systemAccessManagerImpl, "ATKSystemAccessManagerImplementation");
 
-        ATKTokenFactoryRegistryImplementation tokenFactoryRegistryImpl =
-            new ATKTokenFactoryRegistryImplementation(forwarder);
+        ATKSystemFactory.SystemImplementations memory implementations = ATKSystemFactory.SystemImplementations({
+            atkSystemImplementation: atkSystemImpl,
+            complianceImplementation: complianceImpl,
+            identityRegistryImplementation: identityRegistryImpl,
+            identityRegistryStorageImplementation: identityRegistryStorageImpl,
+            systemTrustedIssuersRegistryImplementation: systemTrustedIssuersRegistryImpl,
+            trustedIssuersMetaRegistryImplementation: trustedIssuersMetaRegistryImpl,
+            topicSchemeRegistryImplementation: topicSchemeRegistryImpl,
+            identityFactoryImplementation: identityFactoryImpl,
+            identityImplementation: identityImpl,
+            contractIdentityImplementation: contractIdentityImpl,
+            tokenAccessManagerImplementation: tokenAccessManagerImpl,
+            tokenFactoryRegistryImplementation: tokenFactoryRegistryImpl,
+            complianceModuleRegistryImplementation: complianceModuleRegistryImpl,
+            addonRegistryImplementation: systemAddonRegistryImpl,
+            systemAccessManagerImplementation: systemAccessManagerImpl
+        });
 
-        ATKComplianceModuleRegistryImplementation complianceModuleRegistryImpl =
-            new ATKComplianceModuleRegistryImplementation(forwarder);
-        ATKSystemAddonRegistryImplementation systemAddonRegistryImpl =
-            new ATKSystemAddonRegistryImplementation(forwarder);
+        return new ATKSystemFactory(implementations, TRUSTED_FORWARDER_ADDRESS);
+    }
 
-        ATKSystemAccessManagerImplementation systemAccessManagerImpl =
-            new ATKSystemAccessManagerImplementation(forwarder);
-
-        systemFactory = new ATKSystemFactory(
-            address(systemImplementation),
-            address(complianceImpl),
-            address(registryImpl),
-            address(storageImpl),
-            address(issuersImpl),
-            address(topicSchemeRegistryImpl),
-            address(factoryImpl),
-            address(identityImpl),
-            address(contractIdentityImpl),
-            address(accessManagerImpl),
-            address(tokenFactoryRegistryImpl),
-            address(complianceModuleRegistryImpl),
-            address(systemAddonRegistryImpl),
-            address(systemAccessManagerImpl),
-            forwarder
-        );
-        vm.label(address(systemFactory), "System Factory");
-
-        vm.startPrank(platformAdmin); // Use admin for initialization and binding
-        // --- During onboarding ---
+    function _startBootstrap(address platformAdmin) internal {
+        vm.startPrank(platformAdmin);
         system = IATKSystem(systemFactory.createSystem());
-        vm.label(address(system), "System");
+
         system.bootstrap();
 
-        // System access manager is already configured during bootstrap
-        // All system contracts are initialized with the same access manager
         systemAccessManager = IATKSystemAccessManager(system.accessManager());
-        vm.label(address(systemAccessManager), "System Access Manager");
 
         compliance = ISMARTCompliance(system.compliance());
-        vm.label(address(compliance), "Compliance");
+
         identityRegistry = ISMARTIdentityRegistry(system.identityRegistry());
-        vm.label(address(identityRegistry), "Identity Registry");
         identityRegistryStorage = ISMARTIdentityRegistryStorage(system.identityRegistryStorage());
-        vm.label(address(identityRegistryStorage), "Identity Registry Storage");
-        trustedIssuersRegistry = IERC3643TrustedIssuersRegistry(system.trustedIssuersRegistry());
-        vm.label(address(trustedIssuersRegistry), "Trusted Issuers Registry");
+        trustedIssuersRegistry = IATKTrustedIssuersRegistry(system.trustedIssuersRegistry());
         topicSchemeRegistry = ISMARTTopicSchemeRegistry(system.topicSchemeRegistry());
-        vm.label(address(topicSchemeRegistry), "Topic Scheme Registry");
         identityFactory = IATKIdentityFactory(system.identityFactory());
-        vm.label(address(identityFactory), "Identity Factory");
 
         complianceModuleRegistry = IATKComplianceModuleRegistry(system.complianceModuleRegistry());
-        vm.label(address(complianceModuleRegistry), "Compliance Module Registry");
         systemAddonRegistry = IATKSystemAddonRegistry(system.systemAddonRegistry());
-        vm.label(address(systemAddonRegistry), "System Addon Registry");
         tokenFactoryRegistry = IATKTokenFactoryRegistry(system.tokenFactoryRegistry());
-        vm.label(address(tokenFactoryRegistry), "Token Factory Registry");
+    }
 
-        // --- Deploy Other Contracts ---
+    function _deployComplianceModulesAndGrantRoles(address platformAdmin) internal {
         mockedComplianceModule = new MockedComplianceModule();
-        vm.label(address(mockedComplianceModule), "Mocked Compliance Module");
-        identityVerificationModule = new SMARTIdentityVerificationComplianceModule(forwarder);
-        vm.label(address(identityVerificationModule), "Identity Verification Module");
-        countryAllowListComplianceModule = new CountryAllowListComplianceModule(forwarder);
-        vm.label(address(countryAllowListComplianceModule), "Country Allow List Compliance Module");
-        countryBlockListComplianceModule = new CountryBlockListComplianceModule(forwarder);
-        vm.label(address(countryBlockListComplianceModule), "Country Block List Compliance Module");
+        identityVerificationModule = new SMARTIdentityVerificationComplianceModule(TRUSTED_FORWARDER_ADDRESS);
+        countryAllowListComplianceModule = new CountryAllowListComplianceModule(TRUSTED_FORWARDER_ADDRESS);
+        countryBlockListComplianceModule = new CountryBlockListComplianceModule(TRUSTED_FORWARDER_ADDRESS);
 
-        // Grant necessary roles to platformAdmin in the system access manager
         bytes32[] memory platformAdminRoles = new bytes32[](5);
         platformAdminRoles[0] = ATKPeopleRoles.TOKEN_MANAGER_ROLE;
         platformAdminRoles[1] = ATKPeopleRoles.ADDON_MANAGER_ROLE;
@@ -184,8 +193,32 @@ contract SystemUtils is Test {
         platformAdminRoles[4] = ATKPeopleRoles.IDENTITY_MANAGER_ROLE;
 
         systemAccessManager.grantMultipleRoles(platformAdmin, platformAdminRoles);
-
         vm.stopPrank();
+    }
+
+    function _labelSystemFactory() internal {
+        vm.label(address(systemFactory), "System Factory");
+    }
+
+    function _labelSystemContracts() internal {
+        vm.label(address(system), "System");
+        vm.label(address(systemAccessManager), "System Access Manager");
+        vm.label(address(compliance), "Compliance");
+        vm.label(address(identityRegistry), "Identity Registry");
+        vm.label(address(identityRegistryStorage), "Identity Registry Storage");
+        vm.label(address(trustedIssuersRegistry), "Trusted Issuers Registry");
+        vm.label(address(topicSchemeRegistry), "Topic Scheme Registry");
+        vm.label(address(identityFactory), "Identity Factory");
+        vm.label(address(complianceModuleRegistry), "Compliance Module Registry");
+        vm.label(address(systemAddonRegistry), "System Addon Registry");
+        vm.label(address(tokenFactoryRegistry), "Token Factory Registry");
+    }
+
+    function _labelComplianceModules() internal {
+        vm.label(address(mockedComplianceModule), "Mocked Compliance Module");
+        vm.label(address(identityVerificationModule), "Identity Verification Module");
+        vm.label(address(countryAllowListComplianceModule), "Country Allow List Compliance Module");
+        vm.label(address(countryBlockListComplianceModule), "Country Block List Compliance Module");
     }
 
     function getTopicId(string memory topicName) public view returns (uint256) {

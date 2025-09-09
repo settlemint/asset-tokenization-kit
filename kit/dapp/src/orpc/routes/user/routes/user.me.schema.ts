@@ -139,7 +139,9 @@ export const UserSchema = z.object({
    * User's on-chain identity address.
    * Only present if the user has registered an identity on-chain.
    */
-  identity: ethereumAddress.optional().describe("User's on-chain identity address"),
+  identity: ethereumAddress
+    .optional()
+    .describe("User's on-chain identity address"),
 
   /**
    * User's on-chain identity claims.
@@ -164,7 +166,11 @@ export const UserSchema = z.object({
    * Last login timestamp.
    * When the user last authenticated to the system.
    */
-  lastLoginAt: z.string().nullable().optional().describe("Last login timestamp"),
+  lastLoginAt: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("Last login timestamp"),
 });
 
 /**

@@ -13,9 +13,8 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
 // Interface imports
 import { ISMARTIdentityRegistry } from "../../smart/interface/ISMARTIdentityRegistry.sol";
-
+import { ISMARTTrustedIssuersRegistry } from "../../smart/interface/ISMARTTrustedIssuersRegistry.sol";
 import { ISMARTIdentityRegistryStorage } from "./../../smart/interface/ISMARTIdentityRegistryStorage.sol";
-import { IERC3643TrustedIssuersRegistry } from "./../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { IATKIdentityRegistry } from "./IATKIdentityRegistry.sol";
 import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
@@ -36,7 +35,7 @@ import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged
 /// identities
 /// and their associated data, adhering to the ERC-3643 standard for tokenized assets.
 /// @dev This implementation relies on separate contracts for storing identity data (`ISMARTIdentityRegistryStorage`)
-/// and for managing trusted claim issuers (`IERC3643TrustedIssuersRegistry`).
+/// and for managing trusted claim issuers (`ISMARTTrustedIssuersRegistry`).
 /// It uses OpenZeppelin's `AccessControlUpgradeable` for role-based access control,
 /// `ERC2771ContextUpgradeable` for meta-transaction support (allowing transactions to be relayed by a trusted
 /// forwarder),
@@ -54,11 +53,11 @@ contract ATKIdentityRegistryImplementation is
     /// such as the mapping from user addresses to their identity contracts and investor country codes.
     /// This separation of logic and storage enhances upgradeability and modularity.
     ISMARTIdentityRegistryStorage private _identityStorage;
-    /// @notice Stores the contract address of the `IERC3643TrustedIssuersRegistry` instance.
+    /// @notice Stores the contract address of the `ISMARTTrustedIssuersRegistry` instance.
     /// @dev This external contract maintains a list of trusted entities (claim issuers) that are authorized
     /// to issue verifiable claims about identities (e.g., KYC/AML status).
     /// The `isVerified` function uses this registry to check the validity of claims.
-    IERC3643TrustedIssuersRegistry private _trustedIssuersRegistry;
+    ISMARTTrustedIssuersRegistry private _trustedIssuersRegistry;
     /// @notice Stores the contract address of the `ISMARTTopicSchemeRegistry` instance.
     /// @dev This external contract maintains the valid topic schemes and their signatures.
     /// The `isVerified` function uses this registry to validate that claim topics are registered before checking
@@ -160,7 +159,7 @@ contract ATKIdentityRegistryImplementation is
     /// @param accessManager The address of the access manager
     /// @param identityStorage_ The address of the deployed `ISMARTIdentityRegistryStorage` contract.
     /// This contract will be used to store all identity data.
-    /// @param trustedIssuersRegistry_ The address of the deployed `IERC3643TrustedIssuersRegistry` contract.
+    /// @param trustedIssuersRegistry_ The address of the deployed `ISMARTTrustedIssuersRegistry` contract.
     /// This contract will be used to verify claims against trusted issuers.
     /// @param topicSchemeRegistry_ The address of the deployed `ISMARTTopicSchemeRegistry` contract.
     /// This contract will be used to validate claim topics against registered schemes.
@@ -183,7 +182,7 @@ contract ATKIdentityRegistryImplementation is
 
         // Validate and set the trusted issuers registry contract address.
         if (trustedIssuersRegistry_ == address(0)) revert InvalidRegistryAddress();
-        _trustedIssuersRegistry = IERC3643TrustedIssuersRegistry(trustedIssuersRegistry_);
+        _trustedIssuersRegistry = ISMARTTrustedIssuersRegistry(trustedIssuersRegistry_);
         emit TrustedIssuersRegistrySet(_msgSender(), address(_trustedIssuersRegistry)); // Use _msgSender()
 
         // Validate and set the topic scheme registry contract address.
@@ -219,14 +218,14 @@ contract ATKIdentityRegistryImplementation is
     /// @dev This function can only be called by an address holding the `REGISTRY_MANAGER_ROLE`.
     /// It performs a check to ensure the new `trustedIssuersRegistry_` address is not the zero address.
     /// Emits a `TrustedIssuersRegistrySet` event upon successful update.
-    /// @param trustedIssuersRegistry_ The new address for the `IERC3643TrustedIssuersRegistry` contract.
+    /// @param trustedIssuersRegistry_ The new address for the `ISMARTTrustedIssuersRegistry` contract.
     function setTrustedIssuersRegistry(address trustedIssuersRegistry_)
         external
         override
         onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
         if (trustedIssuersRegistry_ == address(0)) revert InvalidRegistryAddress();
-        _trustedIssuersRegistry = IERC3643TrustedIssuersRegistry(trustedIssuersRegistry_);
+        _trustedIssuersRegistry = ISMARTTrustedIssuersRegistry(trustedIssuersRegistry_);
         emit TrustedIssuersRegistrySet(_msgSender(), address(_trustedIssuersRegistry));
     }
 
@@ -648,7 +647,8 @@ contract ATKIdentityRegistryImplementation is
         }
 
         // Get trusted issuers for this topic
-        IClaimIssuer[] memory trustedIssuers = _trustedIssuersRegistry.getTrustedIssuersForClaimTopic(claimTopic);
+        IClaimIssuer[] memory trustedIssuers =
+            _trustedIssuersRegistry.getTrustedIssuersForClaimTopic(claimTopic, address(identityToVerify));
         if (trustedIssuers.length == 0) {
             return false; // No trusted issuers for this topic
         }
@@ -722,8 +722,8 @@ contract ATKIdentityRegistryImplementation is
     /// @inheritdoc ISMARTIdentityRegistry
     /// @notice Returns the address of the currently configured trusted issuers registry contract.
     /// @dev This allows external contracts or UIs to discover the location of the trusted issuers list.
-    /// @return The address of the `IERC3643TrustedIssuersRegistry` contract.
-    function issuersRegistry() external view override returns (IERC3643TrustedIssuersRegistry) {
+    /// @return The address of the `ISMARTTrustedIssuersRegistry` contract.
+    function issuersRegistry() external view override returns (ISMARTTrustedIssuersRegistry) {
         return _trustedIssuersRegistry;
     }
 

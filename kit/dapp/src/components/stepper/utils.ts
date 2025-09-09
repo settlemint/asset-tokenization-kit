@@ -123,7 +123,7 @@ export function isStepGroup<StepId, GroupId>(
 }
 
 export function sortByStep<StepId>(steps: Step<StepId>[]): Step<StepId>[] {
-  return steps.sort((a, b) => a.step - b.step);
+  return steps.toSorted((a, b) => a.step - b.step);
 }
 
 export function flattenSteps<StepId, GroupId>(

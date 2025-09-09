@@ -9,7 +9,7 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 
 // Interface imports
 import { ISMARTIdentityRegistryStorage } from "./ISMARTIdentityRegistryStorage.sol";
-import { IERC3643TrustedIssuersRegistry } from "./ERC-3643/IERC3643TrustedIssuersRegistry.sol";
+import { ISMARTTrustedIssuersRegistry } from "./ISMARTTrustedIssuersRegistry.sol";
 import { ISMARTTopicSchemeRegistry } from "./ISMARTTopicSchemeRegistry.sol";
 
 // Struct imports
@@ -27,7 +27,7 @@ import { ExpressionNode } from "./structs/ExpressionNode.sol";
 ///      1. `ISMARTIdentityRegistryStorage`: A separate contract responsible for storing the actual mappings
 ///         between investor addresses, identity contracts, and country codes. This separation of concerns allows
 ///         for upgradability and different storage strategies.
-///      2. `IERC3643TrustedIssuersRegistry`: A contract that maintains a list of trusted entities (claim issuers)
+///      2. `ISMARTTrustedIssuersRegistry`: A contract that maintains a list of trusted entities (claim issuers)
 ///         whose attestations (claims) about an identity are considered valid.
 ///      Operations like registering a new identity or checking if an identity is verified are performed through this
 /// interface.
@@ -47,7 +47,7 @@ interface ISMARTIdentityRegistry is IERC165 {
     /// Registry.
     ///      It's important for users and relying parties to be aware of which issuers are trusted.
     /// @param sender The address of the account (typically the owner or an admin) that initiated this change.
-    /// @param _trustedIssuersRegistry The new address of the contract implementing `IERC3643TrustedIssuersRegistry`.
+    /// @param _trustedIssuersRegistry The new address of the contract implementing `ISMARTTrustedIssuersRegistry`.
     event TrustedIssuersRegistrySet(address indexed sender, address indexed _trustedIssuersRegistry);
 
     /// @notice Emitted when the address of the `TopicSchemeRegistry` contract is successfully set or updated.
@@ -134,7 +134,7 @@ interface ISMARTIdentityRegistry is IERC165 {
      * considered valid.
      *      Updating this address changes the set of authorities recognized for identity verification.
      * @param _trustedIssuersRegistry The address of the new contract that implements the
-     * `IERC3643TrustedIssuersRegistry` interface.
+     * `ISMARTTrustedIssuersRegistry` interface.
      * @custom:emit TrustedIssuersRegistrySet
      */
     function setTrustedIssuersRegistry(address _trustedIssuersRegistry) external;
@@ -283,9 +283,9 @@ interface ISMARTIdentityRegistry is IERC165 {
      * @notice Returns the address of the `TrustedIssuersRegistry` contract currently being used by this Identity
      * Registry.
      * @dev This allows external parties to inspect which trusted issuers list is active for verification purposes.
-     * @return The address of the contract implementing `IERC3643TrustedIssuersRegistry`.
+     * @return The address of the contract implementing `ISMARTTrustedIssuersRegistry`.
      */
-    function issuersRegistry() external view returns (IERC3643TrustedIssuersRegistry);
+    function issuersRegistry() external view returns (ISMARTTrustedIssuersRegistry);
 
     /**
      * @notice Returns the address of the `TopicSchemeRegistry` contract currently being used by this Identity

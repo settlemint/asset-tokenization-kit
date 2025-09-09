@@ -71,7 +71,7 @@ describe("User read", () => {
       residencyStatus: "resident",
       nationalId: "OTHER987654",
     });
-  });
+  }, 100_000);
 
   describe("Admin access", () => {
     it("admin can read user by ID", async () => {
@@ -155,7 +155,9 @@ describe("User read", () => {
             },
           }
         )
-      ).rejects.toThrow("User does not have the required role to execute this action.");
+      ).rejects.toThrow(
+        "User does not have the required role to execute this action."
+      );
     });
 
     it("regular user without 'user:list' permission cannot read other users by wallet", async () => {
@@ -372,7 +374,9 @@ describe("User read", () => {
             },
           }
         )
-      ).rejects.toThrow("User does not have the required role to execute this action.");
+      ).rejects.toThrow(
+        "User does not have the required role to execute this action."
+      );
     });
 
     it("identity manager can see all users and all claims unfiltered", async () => {

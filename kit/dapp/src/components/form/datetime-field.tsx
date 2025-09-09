@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/popover";
 import { useFieldContext } from "@/hooks/use-form-contexts";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { addYears, format } from "date-fns";
 import { CalendarDays } from "lucide-react";
 import { useCallback, useState } from "react";
 import {
@@ -36,7 +36,7 @@ export function DateTimeField({
   description,
   required = false,
   minDate,
-  maxDate,
+  maxDate = addYears(new Date(), 100),
   placeholder,
   hideTime = false,
 }: {
@@ -133,8 +133,8 @@ export function DateTimeField({
               mode="single"
               selected={selectedDate}
               captionLayout="dropdown"
-              startMonth={minDate ?? undefined}
-              endMonth={maxDate ?? undefined}
+              startMonth={minDate}
+              endMonth={maxDate}
               onSelect={handleDateTimeSelectChange}
               disabled={isDateDisabled}
               autoFocus

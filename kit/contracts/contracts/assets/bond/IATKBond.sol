@@ -6,9 +6,8 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 // Interface imports
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ISMART } from "../../smart/interface/ISMART.sol";
+import { IATKToken } from "../../system/tokens/IATKToken.sol";
 
-import { ISMARTTokenAccessManaged } from "../../smart/extensions/access-managed/ISMARTTokenAccessManaged.sol";
 import { ISMARTCustodian } from "../../smart/extensions/custodian/ISMARTCustodian.sol";
 import { ISMARTPausable } from "../../smart/extensions/pausable/ISMARTPausable.sol";
 import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.sol";
@@ -22,8 +21,7 @@ import { ISMARTCapped } from "../../smart/extensions/capped/ISMARTCapped.sol";
 /// @notice Defines the core functionality and extensions for a ATK Bond, including features like redeemability,
 /// historical balances, yield, and capping.
 interface IATKBond is
-    ISMART,
-    ISMARTTokenAccessManaged,
+    IATKToken,
     ISMARTCustodian,
     ISMARTPausable,
     ISMARTBurnable,

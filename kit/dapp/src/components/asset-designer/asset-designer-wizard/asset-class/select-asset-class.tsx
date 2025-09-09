@@ -41,9 +41,9 @@ export const SelectAssetClass = withForm({
                 {t("asset-class:includes")}
               </p>
               <div className="flex flex-wrap gap-1">
-                {assetClass.factories.map((factoryType) => (
+                {assetClass.factories.map((factoryType, i) => (
                   <Badge
-                    key={factoryType.typeId}
+                    key={`${factoryType.typeId}-${i}`}
                     variant="outline"
                     className="text-xs"
                   >

@@ -13,5 +13,78 @@
         "success": "تم تحديث ملف KYC بنجاح"
       }
     }
+  },
+  "management": {
+    "table": {
+      "columns": {
+        "name": "الاسم",
+        "email": "البريد الإلكتروني",
+        "wallet": "المحفظة",
+        "role": "الدور",
+        "status": "الحالة",
+        "created": "تم الإنشاء",
+        "lastActive": "آخر نشاط",
+        "actions": "الإجراءات"
+      },
+      "status": {
+        "registered": "مسجل",
+        "pending": "قيد الانتظار",
+        "notConnected": "غير متصل",
+        "registeredAriaLabel": "المستخدم مسجل ومتحقق منه على البلوكشين",
+        "pendingAriaLabel": "المستخدم ربط المحفظة ولكن لم يسجل بعد على البلوكشين",
+        "notConnectedAriaLabel": "المستخدم لم يربط محفظة"
+      },
+      "actions": {
+        "viewDetails": "عرض التفاصيل",
+        "menu": "قائمة الإجراءات",
+        "openMenu": "فتح قائمة الإجراءات"
+      },
+      "search": {
+        "placeholder": "البحث بالاسم أو البريد الإلكتروني أو المحفظة..."
+      },
+      "noWallet": "لا توجد محفظة",
+      "emptyState": {
+        "title": "لم يتم العثور على مستخدمين",
+        "description": "لم يتم تسجيل أي مستخدمين بعد.",
+        "loading": "جارٍ تحميل المستخدمين..."
+      },
+      "errors": {
+        "loadFailed": "فشل تحميل المستخدمين. يرجى المحاولة مرة أخرى.",
+        "navigationFailed": "فشل الانتقال إلى تفاصيل المستخدم"
+      },
+      "fallback": {
+        "never": "أبداً"
+      }
+    }
+  },
+  "tabs": {
+    "details": "التفاصيل",
+    "claims": "المطالبات"
+  },
+  "fields": {
+    "fullName": "الاسم الكامل",
+    "fullNameInfo": "اسم عرض المستخدم",
+    "email": "البريد الإلكتروني",
+    "emailInfo": "عنوان البريد الإلكتروني للمستخدم",
+    "role": "الدور",
+    "roleInfo": "دور المستخدم في النظام",
+    "accountCreated": "تم إنشاء الحساب",
+    "accountCreatedInfo": "وقت إنشاء الحساب",
+    "lastLogin": "آخر تسجيل دخول",
+    "lastLoginInfo": "وقت آخر تسجيل دخول",
+    "neverLoggedIn": "لم يسجل الدخول مطلقاً",
+    "walletAddress": "عنوان المحفظة",
+    "walletAddressInfo": "عنوان المحفظة المتصلة للمستخدم",
+    "noWalletConnected": "لم يتم ربط محفظة",
+    "onChainIdentity": "الهوية على البلوكشين",
+    "onChainIdentityInfo": "عقد الهوية على البلوكشين للمستخدم",
+    "noIdentityRegistered": "لم يتم تسجيل هوية",
+    "firstName": "الاسم الأول",
+    "firstNameInfo": "الاسم الأول القانوني",
+    "lastName": "الاسم الأخير",
+    "lastNameInfo": "الاسم الأخير القانوني"
+  },
+  "details": {
+    "kycInformation": "معلومات KYC"
   }
 }

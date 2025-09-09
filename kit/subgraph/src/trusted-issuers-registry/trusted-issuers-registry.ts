@@ -1,4 +1,4 @@
-import { Bytes, store } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   ClaimTopicsUpdated as ClaimTopicsUpdatedEvent,
   TrustedIssuerAdded as TrustedIssuerAddedEvent,
@@ -12,7 +12,7 @@ import { fetchTrustedIssuersRegistry } from "./fetch/trusted-issuers-registry";
 export function handleClaimTopicsUpdated(event: ClaimTopicsUpdatedEvent): void {
   fetchEvent(event, "ClaimTopicsUpdated");
 
-  const trustedIssuer = fetchTrustedIssuer(event.params._issuer);
+  const trustedIssuer = fetchTrustedIssuer(event.params._trustedIssuer);
   trustedIssuer.claimTopics = event.params._claimTopics.map<Bytes>(
     (topic) => fetchTopicScheme(topic).id
   );
@@ -23,12 +23,14 @@ export function handleTrustedIssuerAdded(event: TrustedIssuerAddedEvent): void {
   fetchEvent(event, "TrustedIssuerAdded");
 
   const trustedIssuerRegistry = fetchTrustedIssuersRegistry(event.address);
-  const trustedIssuer = fetchTrustedIssuer(event.params._issuer);
+  const trustedIssuer = fetchTrustedIssuer(event.params._trustedIssuer);
   trustedIssuer.registry = trustedIssuerRegistry.id;
   trustedIssuer.deployedInTransaction = event.transaction.hash;
   trustedIssuer.claimTopics = event.params._claimTopics.map<Bytes>(
     (topic) => fetchTopicScheme(topic).id
   );
+  trustedIssuer.addedAt = event.block.timestamp;
+  trustedIssuer.revokedAt = BigInt.zero();
   trustedIssuer.save();
 }
 
@@ -37,6 +39,7 @@ export function handleTrustedIssuerRemoved(
 ): void {
   fetchEvent(event, "TrustedIssuerRemoved");
 
-  const trustedIssuer = fetchTrustedIssuer(event.params._issuer);
-  store.remove("TrustedIssuer", trustedIssuer.id.toHexString());
+  const trustedIssuer = fetchTrustedIssuer(event.params._trustedIssuer);
+  trustedIssuer.revokedAt = event.block.timestamp;
+  trustedIssuer.save();
 }

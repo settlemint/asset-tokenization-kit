@@ -42,7 +42,19 @@
       "search": {
         "placeholder": "Search by name, email, or wallet..."
       },
-      "noWallet": "No wallet"
+      "noWallet": "No wallet",
+      "emptyState": {
+        "title": "No users found",
+        "description": "No users have been registered yet.",
+        "loading": "Loading users..."
+      },
+      "errors": {
+        "loadFailed": "Failed to load users. Please try again.",
+        "navigationFailed": "Failed to navigate to user details"
+      },
+      "fallback": {
+        "never": "Never"
+      }
     }
   },
   "tabs": {

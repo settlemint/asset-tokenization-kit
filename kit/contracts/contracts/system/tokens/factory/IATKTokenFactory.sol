@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
+import { IATKSystemAccessManaged } from "../../access-manager/IATKSystemAccessManaged.sol";
 
 /// @title IATKTokenFactory Interface
 /// @author SettleMint
@@ -54,6 +54,15 @@ interface IATKTokenFactory is IERC165, IATKSystemAccessManaged {
     /// @param contractAddress The address of the contract being registered
     /// @param description Human-readable description of the contract (for indexing/UX)
     event ContractIdentityRegistered(address indexed sender, address indexed contractAddress, string description);
+
+    /// @notice Emitted when a token-specific `TokenTrustedIssuersRegistry` is created and registered
+    /// @param sender The caller initiating the registry creation
+    /// @param registry The deployed registry address
+    /// @param token The token contract address
+    /// @param tokenIdentity The onchain identity address of the token
+    event TokenTrustedIssuersRegistryCreated(
+        address indexed sender, address indexed registry, address indexed token, address tokenIdentity
+    );
 
     /// @notice Initializes the token registry.
     /// @param accessManager The address of the access manager
