@@ -41,7 +41,6 @@ import { holder } from "@/orpc/routes/token/routes/token.holder";
 import { read } from "@/orpc/routes/token/routes/token.read";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { call } from "@orpc/server";
-import { isBefore } from "date-fns";
 import { from, lessThan } from "dnum";
 
 /**
@@ -140,21 +139,12 @@ export const mature = tokenRouter.token.mature
       });
     }
 
-    if (isBefore(new Date(), token.bond.maturityDate)) {
-      throw errors.INPUT_VALIDATION_FAILED({
-        message: "Bond has not reached maturity date",
-        data: {
-          errors: [
-            `Bond cannot be matured until ${token.bond.maturityDate.toISOString()}`,
-          ],
-        },
-      });
-    }
+    const denominationAsset = token.bond.denominationAsset;
 
     const denominationAssetBalance = await call(
       holder,
       {
-        tokenAddress: contract,
+        tokenAddress: denominationAsset.id,
         holderAddress: token.id,
       },
       {

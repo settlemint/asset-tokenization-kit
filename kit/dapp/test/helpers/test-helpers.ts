@@ -96,6 +96,6 @@ export function createDaysParameterTests(
 /**
  * Helper to wait for graph indexing
  */
-export async function waitForGraphSync(delayMs = 2000): Promise<void> {
+export async function sleep(delayMs = 2000): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, delayMs));
 }
