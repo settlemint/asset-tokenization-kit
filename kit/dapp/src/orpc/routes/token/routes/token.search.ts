@@ -42,6 +42,7 @@ const SEARCH_TOKEN_QUERY = theGraphGraphql(`
       pausable {
         paused
       }
+      basePrice
     }
   }
 `);

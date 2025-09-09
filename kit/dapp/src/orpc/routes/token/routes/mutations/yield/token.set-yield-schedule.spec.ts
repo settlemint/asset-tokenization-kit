@@ -14,6 +14,7 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
+import { from } from "dnum";
 import type { Address } from "viem";
 import { beforeAll, describe, expect, test } from "vitest";
 
