@@ -31,17 +31,11 @@ export function MatureConfirmationSheet({
   const { mutateAsync: matureAsset, isPending: isMaturing } = useMutation(
     orpc.token.mature.mutationOptions({
       onSuccess: async () => {
-        // Invalidate both single asset and list queries
-        await Promise.all([
-          queryClient.invalidateQueries({
-            queryKey: orpc.token.read.queryKey({
-              input: { tokenAddress: asset.id },
-            }),
+        await queryClient.invalidateQueries({
+          queryKey: orpc.token.read.queryKey({
+            input: { tokenAddress: asset.id },
           }),
-          queryClient.invalidateQueries({
-            queryKey: orpc.token.list.key(),
-          }),
-        ]);
+        });
       },
     })
   );

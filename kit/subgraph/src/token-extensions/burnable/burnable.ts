@@ -52,7 +52,7 @@ export function handleBurnCompleted(event: BurnCompleted): void {
     trackTokenCollateralStats(token, collateral);
   }
 
-  // Update bond maturity amount if this is a bond token
+  // Update total denomination asset needed on maturity if this is a bond token
   if (token.bond) {
     updateTotalDenominationAssetNeeded(token);
   }
