@@ -40,6 +40,7 @@ describe("Fixed yield schedule top up", async () => {
       symbol: "TDP",
       decimals: 18,
       initialModulePairs: [],
+      basePrice: from("1"),
     };
 
     depositToken = await createToken(

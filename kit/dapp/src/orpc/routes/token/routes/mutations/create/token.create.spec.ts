@@ -20,6 +20,7 @@ describe("Token create", () => {
       name: `Test Stablecoin ${Date.now()}`,
       symbol: "TSTC",
       decimals: 18,
+      basePrice: dnumFrom("2.25", 2),
     } as const;
 
     const result = await client.token.create({
@@ -53,6 +54,7 @@ describe("Token create", () => {
         paused: true,
       },
       totalSupply: dnumFrom("0"),
+      basePrice: dnumFrom("2.25", 2),
     });
   }, 100_000);
 
@@ -67,6 +69,7 @@ describe("Token create", () => {
       decimals: 18,
       managementFeeBps: 100, // 1% management fee
       initialModulePairs: [],
+      basePrice: dnumFrom("1.33", 2),
     };
 
     const result = await client.token.create({
@@ -92,6 +95,7 @@ describe("Token create", () => {
       type: fundData.type,
       name: fundData.name,
       symbol: fundData.symbol,
+      basePrice: dnumFrom("1.33", 2),
     });
   }, 100_000);
 
@@ -106,6 +110,7 @@ describe("Token create", () => {
       symbol: "TSDC",
       decimals: 18,
       initialModulePairs: [],
+      basePrice: dnumFrom("1"),
     };
 
     const stablecoinResult = await client.token.create({
@@ -171,6 +176,7 @@ describe("Token create", () => {
       symbol: "TUSDC",
       decimals: 6, // USDC-like with 6 decimals
       initialModulePairs: [],
+      basePrice: dnumFrom("1.25", 2),
     };
 
     const usdcResult = await client.token.create({
@@ -232,6 +238,7 @@ describe("Token create", () => {
       symbol: "TSTE",
       decimals: 0,
       initialModulePairs: [],
+      basePrice: dnumFrom("1"),
     };
 
     const result = await client.token.create({
@@ -258,6 +265,7 @@ describe("Token create", () => {
       type: equityData.type,
       name: equityData.name,
       symbol: equityData.symbol,
+      basePrice: dnumFrom("1"),
     });
   }, 100_000);
 
@@ -271,6 +279,7 @@ describe("Token create", () => {
       symbol: "TSTD",
       decimals: 2,
       initialModulePairs: [],
+      basePrice: dnumFrom("1"),
     };
 
     const result = await client.token.create({
@@ -297,6 +306,7 @@ describe("Token create", () => {
       type: depositData.type,
       name: depositData.name,
       symbol: depositData.symbol,
+      basePrice: dnumFrom("1"),
     });
   }, 100_000);
 
@@ -315,6 +325,7 @@ describe("Token create", () => {
           name: `Test Stablecoin Investor ${Date.now()}`,
           symbol: "TSTC",
           decimals: 18,
+          basePrice: dnumFrom("1"),
           countryCode: "056", // Belgium numeric code for testing
         },
         {

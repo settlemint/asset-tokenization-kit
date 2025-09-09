@@ -147,13 +147,6 @@ export const tokenMiddleware = baseRouter.middleware(
 
     const tokenContext = TokenSchema.parse({
       ...token,
-      collateral: token.collateral
-        ? {
-            ...token.collateral,
-            collateral: token.collateral.collateral,
-            expiryTimestamp: token.collateral.expiryTimestamp,
-          }
-        : null,
       userPermissions: {
         roles: userRoles,
         // TODO: implement logic which checks if the user is allowed to interact with the token

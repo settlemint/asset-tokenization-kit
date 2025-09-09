@@ -5,6 +5,7 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
+import { from } from "dnum";
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe("Token search", () => {
@@ -25,6 +26,7 @@ describe("Token search", () => {
         decimals: 18,
         type: "stablecoin",
         countryCode: "056",
+        basePrice: from("1"),
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -37,6 +39,7 @@ describe("Token search", () => {
         decimals: 18,
         type: "stablecoin",
         countryCode: "056",
+        basePrice: from("1"),
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -49,6 +52,7 @@ describe("Token search", () => {
         decimals: 18,
         type: "deposit",
         countryCode: "056",
+        basePrice: from("1"),
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",

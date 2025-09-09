@@ -10,6 +10,7 @@ import {
   signInWithUser,
 } from "@test/fixtures/user";
 import { TEST_CONSTANTS } from "@test/helpers/test-helpers";
+import { from } from "dnum";
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe.concurrent("Token Stats: Volume", () => {
@@ -24,6 +25,7 @@ describe.concurrent("Token Stats: Volume", () => {
       decimals: 18,
       type: "deposit",
       countryCode: "056",
+      basePrice: from("1"),
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",

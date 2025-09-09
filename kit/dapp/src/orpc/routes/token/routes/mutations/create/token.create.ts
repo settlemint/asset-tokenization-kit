@@ -207,6 +207,7 @@ async function issueClaims(
         });
       }
       // ISSUE BASE PRICE CLAIM: Add base price claim to token's identity contract
+      const [amount, decimals] = input.basePrice;
       await issueClaim({
         user: sender,
         issuer: userIdentity,
@@ -215,9 +216,9 @@ async function issueClaims(
         claim: {
           topic: ClaimTopic.basePrice,
           data: {
-            amount: input.basePrice,
+            amount,
             currencyCode,
-            decimals: 2,
+            decimals,
           },
         },
         portalClient: context.portalClient,

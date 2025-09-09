@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
@@ -9,6 +8,8 @@ import {
   getUserData,
   signInWithUser,
 } from "@test/fixtures/user";
+import { from } from "dnum";
+import { describe, expect, it } from "vitest";
 
 // TODO: fix tests as part of https://linear.app/settlemint/issue/ENG-3488/subgraphapi-acces-management
 
@@ -22,6 +23,7 @@ describe("Token supply", () => {
       decimals: 18,
       type: "deposit",
       countryCode: "056",
+      basePrice: from("1"),
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
@@ -55,6 +57,7 @@ describe("Token supply", () => {
       decimals: 18,
       type: "deposit",
       countryCode: "056", // Belgium numeric code for testing
+      basePrice: from("1"),
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
@@ -81,6 +84,7 @@ describe("Token supply", () => {
       decimals: 18,
       type: "deposit",
       countryCode: "056", // Belgium numeric code for testing
+      basePrice: from("1"),
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
@@ -107,6 +111,7 @@ describe("Token supply", () => {
       decimals: 18,
       type: "deposit",
       countryCode: "056",
+      basePrice: from("1"),
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",

@@ -10,7 +10,7 @@ import {
   signInWithUser,
 } from "@test/fixtures/user";
 import { TEST_CONSTANTS } from "@test/helpers/test-helpers";
-import { toNumber } from "dnum";
+import { from, toNumber } from "dnum";
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe.concurrent("Token Stats: Bond Status", () => {
@@ -29,6 +29,7 @@ describe.concurrent("Token Stats: Bond Status", () => {
       type: "stablecoin",
       countryCode: "056",
       initialModulePairs: [],
+      basePrice: from("1"),
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",

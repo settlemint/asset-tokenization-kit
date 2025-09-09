@@ -1,6 +1,6 @@
 import { TokenBaseSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
 import { AssetTypeEnum } from "@atk/zod/asset-types";
-import { apiBigInt } from "@atk/zod/bigint";
+import { bigDecimal } from "@atk/zod/bigdecimal";
 import { z } from "zod";
 
 /**
@@ -8,5 +8,5 @@ import { z } from "zod";
  */
 export const StablecoinTokenSchema = TokenBaseSchema.extend({
   type: z.literal(AssetTypeEnum.stablecoin),
-  basePrice: apiBigInt.describe("The base price of the stablecoin"),
+  basePrice: bigDecimal().describe("The base price of the stablecoin"),
 });

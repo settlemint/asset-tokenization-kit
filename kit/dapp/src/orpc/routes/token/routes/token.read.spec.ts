@@ -26,6 +26,7 @@ describe("Token read", () => {
         decimals: 18,
         type: "stablecoin",
         countryCode: "056",
+        basePrice: from("1"),
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
