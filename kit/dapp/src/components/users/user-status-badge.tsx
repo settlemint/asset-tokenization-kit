@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
+import { useTranslation } from "react-i18next";
 
 interface UserStatusBadgeProps {
   user: User;
@@ -10,14 +11,16 @@ interface UserStatusBadgeProps {
  * Displays the current state of user registration and connection with accessibility support
  */
 export function UserStatusBadge({ user }: UserStatusBadgeProps) {
+  const { t } = useTranslation("user");
+
   if (user.isRegistered) {
     return (
       <Badge
         variant="default"
         className="bg-green-500 hover:bg-green-600"
-        aria-label="User is registered and verified on-chain"
+        aria-label={t("management.table.status.registeredAriaLabel")}
       >
-        Registered
+        {t("management.table.status.registered")}
       </Badge>
     );
   }
@@ -27,9 +30,9 @@ export function UserStatusBadge({ user }: UserStatusBadgeProps) {
       <Badge
         variant="secondary"
         className="bg-yellow-500 hover:bg-yellow-600 text-white"
-        aria-label="User has connected wallet but is not yet registered on-chain"
+        aria-label={t("management.table.status.pendingAriaLabel")}
       >
-        Pending Registration
+        {t("management.table.status.pending")}
       </Badge>
     );
   }
@@ -38,9 +41,9 @@ export function UserStatusBadge({ user }: UserStatusBadgeProps) {
     <Badge
       variant="outline"
       className="text-muted-foreground"
-      aria-label="User has not connected a wallet"
+      aria-label={t("management.table.status.notConnectedAriaLabel")}
     >
-      Not Connected
+      {t("management.table.status.notConnected")}
     </Badge>
   );
 }

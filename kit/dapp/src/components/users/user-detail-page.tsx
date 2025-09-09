@@ -4,42 +4,16 @@ import { DetailGrid } from "@/components/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
 import type { TabItemProps } from "@/components/tab-navigation/tab-navigation";
 import { TabNavigation } from "@/components/tab-navigation/tab-navigation";
-import { Badge } from "@/components/ui/badge";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { UserStatusBadge } from "@/components/users/user-status-badge";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 
 interface UserDetailPageProps {
   user: User;
-}
-
-/**
- * Status badge component for user registration status
- */
-function UserStatusBadge({ user }: { user: User }) {
-  if (user.isRegistered) {
-    return (
-      <Badge variant="default" className="bg-green-500 hover:bg-green-600">
-        Registered
-      </Badge>
-    );
-  }
-
-  if (user.wallet) {
-    return (
-      <Badge
-        variant="secondary"
-        className="bg-yellow-500 hover:bg-yellow-600 text-white"
-      >
-        Pending Registration
-      </Badge>
-    );
-  }
-
-  return (
-    <Badge variant="outline" className="text-muted-foreground">
-      Not Connected
-    </Badge>
-  );
 }
 
 /**
