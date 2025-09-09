@@ -66,7 +66,6 @@ describe("Actions API", () => {
           id: expect.stringMatching(/^0x[a-fA-F0-9]+$/),
           name: expect.any(String),
           target: expect.stringMatching(/^0x[a-fA-F0-9]{40}$/),
-          activeAt: expect.any(BigInt),
           status: expect.stringMatching(/^(PENDING|ACTIVE|EXECUTED|EXPIRED)$/),
           executor: expect.objectContaining({
             id: expect.stringMatching(/^0x[a-fA-F0-9]+$/),
@@ -75,10 +74,13 @@ describe("Actions API", () => {
             ]),
           }),
         });
+        
+        // Check BigInt fields separately since expect.any(BigInt) doesn't work with bigint primitives
+        expect(typeof action.activeAt).toBe("bigint");
 
         // Optional fields
         if (action.executedAt !== null) {
-          expect(action.executedAt).toBeInstanceOf(BigInt);
+          expect(typeof action.executedAt).toBe("bigint");
         }
         if (action.executedBy !== null) {
           expect(action.executedBy).toMatch(/^0x[a-fA-F0-9]{40}$/);
