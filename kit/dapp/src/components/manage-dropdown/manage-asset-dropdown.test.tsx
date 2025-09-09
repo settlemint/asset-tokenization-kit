@@ -18,7 +18,13 @@ vi.mock("@/orpc/orpc-client", () => ({
   orpc: {
     token: {
       mint: { mutationOptions: vi.fn(() => ({})) },
-      read: { queryOptions: vi.fn(() => ({ queryKey: ["token", "read"] })) },
+      read: {
+        queryOptions: vi.fn(() => ({ queryKey: ["token", "read"] })),
+        queryKey: vi.fn(() => ["token", "read"]),
+      },
+      list: {
+        key: vi.fn(() => ["token", "list"]),
+      },
       pause: { mutationOptions: vi.fn(() => ({})) },
       unpause: { mutationOptions: vi.fn(() => ({})) },
       holder: {
@@ -27,6 +33,7 @@ vi.mock("@/orpc/orpc-client", () => ({
       updateCollateral: { mutationOptions: vi.fn(() => ({})) },
       setYieldSchedule: { mutationOptions: vi.fn(() => ({})) },
       burn: { mutationOptions: vi.fn(() => ({})) },
+      mature: { mutationOptions: vi.fn(() => ({})) },
       grantRole: { mutationOptions: vi.fn(() => ({})) },
       revokeRole: { mutationOptions: vi.fn(() => ({})) },
       freezeAddress: { mutationOptions: vi.fn(() => ({})) },

@@ -8,7 +8,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { AssetExtensionEnum } from "@atk/zod/asset-extensions";
+import { isAfter } from "date-fns";
 import {
+  CheckCircle,
   ChevronDown,
   Pause,
   Play,
@@ -19,6 +21,7 @@ import {
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CollateralSheet } from "./sheets/collateral-sheet";
+import { MatureConfirmationSheet } from "./sheets/mature-confirmation-sheet";
 import { MintSheet } from "./sheets/mint-sheet";
 import { PauseUnpauseConfirmationSheet } from "./sheets/pause-unpause-confirmation-sheet";
 import { SetYieldScheduleSheet } from "./sheets/set-yield-schedule-sheet";
@@ -35,7 +38,8 @@ type Action =
   | "setYieldSchedule"
   | "collateral"
   | "viewEvents"
-  | "topUpDenominationAsset";
+  | "topUpDenominationAsset"
+  | "mature";
 
 function isCurrentAction({
   target,
@@ -131,6 +135,25 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
       });
     }
 
+    // Mature bond only visible for bond tokens that can be matured
+    const canMatureBond =
+      asset.extensions.includes(AssetExtensionEnum.BOND) &&
+      asset.bond &&
+      !asset.bond.isMatured &&
+      asset.bond.maturityDate &&
+      isAfter(new Date(), asset.bond.maturityDate) &&
+      asset.userPermissions?.actions?.mature &&
+      !isPaused;
+    if (canMatureBond) {
+      arr.push({
+        id: "mature",
+        label: t("tokens:actions.mature.label"),
+        icon: CheckCircle,
+        openAction: "mature",
+        disabled: false,
+      });
+    }
+
     return arr;
   }, [
     t,
@@ -139,6 +162,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
     asset.yield?.schedule,
     asset.userPermissions?.actions,
     asset.collateral,
+    asset.bond,
     isPaused,
   ]);
 
@@ -215,6 +239,12 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
 
       <CollateralSheet
         open={isCurrentAction({ target: "collateral", current: openAction })}
+        onOpenChange={onActionOpenChange}
+        asset={asset}
+      />
+
+      <MatureConfirmationSheet
+        open={isCurrentAction({ target: "mature", current: openAction })}
         onOpenChange={onActionOpenChange}
         asset={asset}
       />
