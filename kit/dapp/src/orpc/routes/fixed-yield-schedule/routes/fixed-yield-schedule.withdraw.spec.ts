@@ -57,6 +57,7 @@ describe("Fixed yield schedule withdraw", async () => {
           verificationType: "PINCODE",
         },
         ...deposit,
+        basePrice: from("1.00", 2),
         countryCode: "056",
       },
       { grantRole: ["supplyManagement", "emergency"], unpause: true }
