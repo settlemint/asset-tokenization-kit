@@ -15,7 +15,7 @@ interface TabBadgeProps {
     | "actions"
     | "allowlist"
     | "blocklist"
-    | "underlying-assets";
+    | "denomination-asset";
 }
 
 /**
@@ -65,8 +65,8 @@ function TabBadgeLoader({
         // TODO: Implement blocklist count query when available
         count = 0;
         break;
-      case "underlying-assets":
-        // TODO: Implement underlying assets count query when available
+      case "denomination-asset":
+        // TODO: Implement denomination asset count query when available
         count = 0;
         break;
     }

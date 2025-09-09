@@ -14,11 +14,8 @@ export const hasAllowlist = (assetType: AssetType): boolean =>
   assetType === "deposit";
 
 /**
- * Checks if an asset type supports underlying assets
+ * Checks if an asset type supports denomination asset functionality
  */
-export const hasUnderlyingAssets = (assetType: AssetType): boolean =>
-  assetType === "fund";
-
 export const hasDenominationAsset = (assetType: AssetType): boolean =>
   assetType === "bond";
 

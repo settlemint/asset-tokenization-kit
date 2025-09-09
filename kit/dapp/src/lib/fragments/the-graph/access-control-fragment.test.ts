@@ -76,6 +76,7 @@ describe("AccessControlFragment", () => {
           "tokenFactoryModule",
           "tokenFactoryRegistryModule",
           "tokenManager",
+          "trustedIssuersMetaRegistryModule",
           "verificationAdmin",
         ];
 
@@ -179,6 +180,7 @@ describe("AccessControlFragment", () => {
         "tokenFactoryModule",
         "tokenFactoryRegistryModule",
         "tokenManager",
+        "trustedIssuersMetaRegistryModule",
         "verificationAdmin",
       ];
 

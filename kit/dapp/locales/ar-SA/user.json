@@ -13,5 +13,17 @@
         "success": "تم تحديث ملف KYC بنجاح"
       }
     }
+  },
+  "management": {
+    "table": {
+      "status": {
+        "registered": "مسجل",
+        "pending": "في الانتظار",
+        "notConnected": "غير متصل",
+        "registeredAriaLabel": "المستخدم مسجل ومتحقق منه على البلوك تشين",
+        "pendingAriaLabel": "المستخدم ربط المحفظة ولكنه غير مسجل بعد على البلوك تشين",
+        "notConnectedAriaLabel": "المستخدم لم يربط محفظة"
+      }
+    }
   }
 }

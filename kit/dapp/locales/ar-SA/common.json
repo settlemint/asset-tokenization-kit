@@ -43,5 +43,9 @@
     "MONTHLY": "شهري",
     "QUARTERLY": "ربع سنوي",
     "YEARLY": "سنوي"
+  },
+  "dates": {
+    "today": "اليوم",
+    "yesterday": "أمس"
   }
 }

@@ -38,7 +38,7 @@ const REMOVE_TRUSTED_ISSUER_MUTATION = portalGraphql(`
       address: $address
       from: $from
       input: {
-        _trustedIssuer: $trustedIssuer
+        trustedIssuer: $trustedIssuer
       }
       challengeId: $challengeId
       challengeResponse: $challengeResponse

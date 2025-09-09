@@ -1,7 +1,7 @@
 import {
   hasAllowlist,
   hasBlocklist,
-  hasUnderlyingAssets,
+  hasDenominationAsset,
   hasYield,
   isMicaEnabledForAsset,
 } from "@/lib/utils/features-enabled";
@@ -27,7 +27,7 @@ export interface TabConfig {
     | "permissions"
     | "allowlist"
     | "blocklist"
-    | "underlyingAssets"
+    | "denominationAsset"
     | "yield"
     | "mica";
   badgeType?:
@@ -36,7 +36,7 @@ export interface TabConfig {
     | "actions"
     | "allowlist"
     | "blocklist"
-    | "underlying-assets";
+    | "denomination-asset";
 }
 
 /**
@@ -114,11 +114,11 @@ export function getAssetTabConfiguration({
   }
 
   // Add underlying assets tab for bonds and funds
-  if (hasUnderlyingAssets(assetType)) {
+  if (hasDenominationAsset(assetType)) {
     tabs.push({
-      tabKey: "underlyingAssets",
-      href: `${baseUrl}/underlying-assets`,
-      badgeType: "underlying-assets",
+      tabKey: "denominationAsset",
+      href: `${baseUrl}/denomination-asset`,
+      badgeType: "denomination-asset",
     });
   }
 

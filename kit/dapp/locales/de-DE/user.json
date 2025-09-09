@@ -13,5 +13,17 @@
         "success": "Das KYC-Profil wurde erfolgreich aktualisiert"
       }
     }
+  },
+  "management": {
+    "table": {
+      "status": {
+        "registered": "Registriert",
+        "pending": "Ausstehend",
+        "notConnected": "Nicht verbunden",
+        "registeredAriaLabel": "Benutzer ist registriert und on-chain verifiziert",
+        "pendingAriaLabel": "Benutzer hat eine Brieftasche verbunden, ist aber noch nicht on-chain registriert",
+        "notConnectedAriaLabel": "Benutzer hat keine Brieftasche verbunden"
+      }
+    }
   }
 }

@@ -133,6 +133,8 @@ export const read = authRouter.user.read
         identity: undefined,
         claims: [],
         isRegistered: false,
+        createdAt: userData.createdAt?.toISOString(),
+        lastLoginAt: userData.lastLoginAt?.toISOString(),
       } as User;
     }
 
@@ -174,5 +176,7 @@ export const read = authRouter.user.read
       identity: identity,
       claims: filteredClaims,
       isRegistered: !!identity,
+      createdAt: userData.createdAt?.toISOString(),
+      lastLoginAt: userData.lastLoginAt?.toISOString(),
     } as User;
   });

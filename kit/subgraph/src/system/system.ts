@@ -1,4 +1,5 @@
 import { Bytes } from "@graphprotocol/graph-ts";
+import { TrustedIssuersMetaRegistry as TrustedIssuersMetaRegistryTemplate } from "../../generated/templates";
 
 import {
   Bootstrapped,
@@ -10,10 +11,11 @@ import {
   IdentityRegistryImplementationUpdated,
   IdentityRegistryStorageImplementationUpdated,
   SystemAddonRegistryImplementationUpdated,
+  SystemTrustedIssuersRegistryImplementationUpdated,
   TokenAccessManagerImplementationUpdated,
   TokenFactoryRegistryImplementationUpdated,
   TopicSchemeRegistryImplementationUpdated,
-  TrustedIssuersRegistryImplementationUpdated,
+  TrustedIssuersMetaRegistryImplementationUpdated,
 } from "../../generated/templates/System/System";
 import { fetchCompliance } from "../compliance/fetch/compliance";
 import { fetchComplianceModuleRegistry } from "../compliance/fetch/compliance-module-registry";
@@ -50,12 +52,25 @@ export function handleBootstrapped(event: Bootstrapped): void {
   identityRegistryStorage.save();
 
   const trustedIssuersRegistry = fetchTrustedIssuersRegistry(
-    event.params.trustedIssuersRegistryProxy
+    event.params.systemTrustedIssuersRegistryProxy
   );
   if (trustedIssuersRegistry.deployedInTransaction.equals(Bytes.empty())) {
     trustedIssuersRegistry.deployedInTransaction = event.transaction.hash;
   }
   trustedIssuersRegistry.save();
+
+  // Create the Trusted Issuers Meta Registry entity and instantiate its template
+  const trustedIssuersMetaRegistry = fetchTrustedIssuersRegistry(
+    event.params.trustedIssuersMetaRegistryProxy
+  );
+  if (trustedIssuersMetaRegistry.deployedInTransaction.equals(Bytes.empty())) {
+    trustedIssuersMetaRegistry.deployedInTransaction = event.transaction.hash;
+  }
+  trustedIssuersMetaRegistry.systemRegistry = trustedIssuersRegistry.id;
+  trustedIssuersMetaRegistry.save();
+  TrustedIssuersMetaRegistryTemplate.create(
+    event.params.trustedIssuersMetaRegistryProxy
+  );
 
   const identityFactory = fetchIdentityFactory(
     event.params.identityFactoryProxy
@@ -110,6 +125,7 @@ export function handleBootstrapped(event: Bootstrapped): void {
   system.identityRegistryStorage = identityRegistryStorage.id;
   system.trustedIssuersRegistry = trustedIssuersRegistry.id;
   system.identityFactory = identityFactory.id;
+  // Note: System currently has no separate field for the meta registry; it is indexed as a TrustedIssuersRegistry entity
   system.topicSchemeRegistry = topicSchemeRegistry.id;
   system.tokenFactoryRegistry = tokenFactoryRegistry.id;
   system.complianceModuleRegistry = complianceModuleRegistry.id;
@@ -160,10 +176,16 @@ export function handleContractIdentityImplementationUpdated(
   fetchEvent(event, "ContractIdentityImplementationUpdated");
 }
 
-export function handleTrustedIssuersRegistryImplementationUpdated(
-  event: TrustedIssuersRegistryImplementationUpdated
+export function handleSystemTrustedIssuersRegistryImplementationUpdated(
+  event: SystemTrustedIssuersRegistryImplementationUpdated
 ): void {
-  fetchEvent(event, "TrustedIssuersRegistryImplementationUpdated");
+  fetchEvent(event, "SystemTrustedIssuersRegistryImplementationUpdated");
+}
+
+export function handleTrustedIssuersMetaRegistryImplementationUpdated(
+  event: TrustedIssuersMetaRegistryImplementationUpdated
+): void {
+  fetchEvent(event, "TrustedIssuersMetaRegistryImplementationUpdated");
 }
 
 export function handleTopicSchemeRegistryImplementationUpdated(

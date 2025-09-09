@@ -26,6 +26,7 @@ describe("Token read", () => {
         decimals: 18,
         type: "stablecoin",
         countryCode: "056",
+        basePrice: from("1.00", 2),
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -218,6 +219,7 @@ describe("Token read", () => {
         tokenFactoryModule: false,
         tokenFactoryRegistryModule: false,
         tokenManager: true,
+        trustedIssuersMetaRegistryModule: false,
         verificationAdmin: false,
       },
       isAllowed: true,
@@ -288,6 +290,7 @@ describe("Token read", () => {
         tokenFactoryModule: false,
         tokenFactoryRegistryModule: false,
         tokenManager: false,
+        trustedIssuersMetaRegistryModule: false,
         verificationAdmin: false,
       },
       isAllowed: true,

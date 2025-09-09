@@ -790,7 +790,7 @@ contract ATKBondImplementation is
     }
 
     // --- IContractWithIdentity Implementation ---
-    // Note: onchainID() is inherited from ISMART via SMARTUpgradeable, but we need to explicitly override due to
+    // Note: onchainID() is inherited from IATKToken via SMARTUpgradeable, but we need to explicitly override due to
     // multiple inheritance
 
     /// @inheritdoc IContractWithIdentity

@@ -110,6 +110,8 @@ type AccessControl @entity(immutable: false) {
   addonRegistryModule: [Account!]!
   # Individual addon module contracts
   addonModule: [Account!]!
+  # Trusted issuers meta registry module contracts
+  trustedIssuersMetaRegistryModule: [Account!]!
 
   # Asset Roles (ATKAssetRoles) - Token-specific permissions
   # Governance operations (voting, proposals)
@@ -472,6 +474,7 @@ type TopicScheme @entity(immutable: false) {
   deployedInTransaction: Bytes!
 }
 
+# Base interface
 type TrustedIssuersRegistry @entity(immutable: false) {
   # Unique identifier - registry contract address
   id: Bytes!
@@ -481,6 +484,28 @@ type TrustedIssuersRegistry @entity(immutable: false) {
   deployedInTransaction: Bytes!
   # List of trusted issuers in this registry
   trustedIssuers: [TrustedIssuer!]! @derivedFrom(field: "registry")
+  # System this registry belongs to
+  system: System
+  # Token this registry belongs to
+  token: Token
+  # System-wide registry reference
+  systemRegistry: TrustedIssuersRegistry
+  # Subject-specific registry mappings
+  subjectRegistries: [SubjectRegistryMapping!]! @derivedFrom(field: "metaRegistry")
+}
+
+# Mapping between a subject and its trusted issuers registry
+type SubjectRegistryMapping @entity(immutable: false) {
+  # Composite key: metaRegistry address + subject address
+  id: Bytes!
+  # Meta registry this mapping belongs to
+  metaRegistry: TrustedIssuersRegistry!
+  # Subject address this registry is for
+  subject: Account!
+  # The trusted issuers registry for this subject
+  registry: TrustedIssuersRegistry!
+  # Transaction hash where this mapping was set
+  deployedInTransaction: Bytes!
 }
 
 type TrustedIssuer @entity(immutable: false) {
@@ -494,6 +519,10 @@ type TrustedIssuer @entity(immutable: false) {
   claimTopics: [TopicScheme!]!
   # Account associated with this trusted issuer identity
   account: Account
+  # Unix timestamp when this issuer was added
+  addedAt: BigInt
+  # Unix timestamp when this issuer was revoked
+  revokedAt: BigInt
 }
 
 type ComplianceModuleRegistry @entity(immutable: false) {
@@ -1339,6 +1368,8 @@ type TokenStatsState @entity(immutable: false) {
   token: Token!
   # Number of accounts holding this token
   balancesCount: Int!
+  # Total value in base FIAT currency
+  totalValueInBaseCurrency: BigDecimal!
 }
 
 type TokenStatsData @entity(timeseries: true) {
@@ -1352,6 +1383,8 @@ type TokenStatsData @entity(timeseries: true) {
   type: String!
   # Number of accounts holding this token
   balancesCount: Int!
+  # Total value in base FIAT currency
+  totalValueInBaseCurrency: BigDecimal!
   # Current total supply (human-readable)
   totalSupply: BigDecimal!
   # Current total supply (exact, raw units)
