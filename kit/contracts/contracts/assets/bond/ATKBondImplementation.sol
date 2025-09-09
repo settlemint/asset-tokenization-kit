@@ -195,6 +195,13 @@ contract ATKBondImplementation is
         return current > needed ? current - needed : 0;
     }
 
+
+    /// @notice Returns the time remaining until the bond matures
+    /// @return The time remaining until the bond matures (0 if time already passed)
+    function timeToMaturity() public view returns (uint256) {
+        return block.timestamp >= _maturityDate ? 0 : _maturityDate - block.timestamp;
+    }
+
     // --- State-Changing Functions ---
 
     /// @notice Closes off the bond at maturity
