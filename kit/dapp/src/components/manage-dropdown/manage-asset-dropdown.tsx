@@ -178,20 +178,20 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         openAction: "topUpDenominationAsset",
         disabled: false,
       });
+    }
 
-      // Withdraw denomination asset option
-      const canWithdrawDenominationAsset =
-        asset.userPermissions?.actions?.withdrawDenominationAsset &&
-        hasWithdrawableAmount;
-      if (canWithdrawDenominationAsset) {
-        arr.push({
-          id: "withdrawDenominationAsset",
-          label: t("tokens:actions.withdrawDenominationAsset.label"),
-          icon: Minus,
-          openAction: "withdrawDenominationAsset",
-          disabled: !hasWithdrawableAmount,
-        });
-      }
+    // Withdraw denomination asset option
+    const canWithdrawDenominationAsset =
+      asset.userPermissions?.actions?.withdrawDenominationAsset &&
+      hasWithdrawableAmount;
+    if (canWithdrawDenominationAsset) {
+      arr.push({
+        id: "withdrawDenominationAsset",
+        label: t("tokens:actions.withdrawDenominationAsset.label"),
+        icon: Minus,
+        openAction: "withdrawDenominationAsset",
+        disabled: !hasWithdrawableAmount,
+      });
     }
 
     // Collateral management
