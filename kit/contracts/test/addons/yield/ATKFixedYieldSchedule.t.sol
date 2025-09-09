@@ -177,7 +177,7 @@ contract ATKFixedYieldScheduleTest is Test {
         address[] memory initialAdmins = new address[](1);
         initialAdmins[0] = owner;
 
-        yieldSchedule.initialize(address(atkToken), startDate, endDate, RATE, INTERVAL, initialAdmins);
+        yieldSchedule.initialize(address(this), address(atkToken), startDate, endDate, RATE, INTERVAL, initialAdmins);
 
         // Setup tokens
         denominationToken.mint(address(this), INITIAL_SUPPLY);
@@ -577,22 +577,26 @@ contract ATKFixedYieldScheduleTest is Test {
         // Invalid start date (in the past)
         ATKFixedYieldScheduleUpgradeable invalidSchedule1 = new ATKFixedYieldScheduleUpgradeable(forwarder);
         vm.expectRevert(ISMARTFixedYieldSchedule.InvalidStartDate.selector);
-        invalidSchedule1.initialize(address(atkToken), block.timestamp - 1, endDate, RATE, INTERVAL, initialAdmins);
+        invalidSchedule1.initialize(
+            address(this), address(atkToken), block.timestamp - 1, endDate, RATE, INTERVAL, initialAdmins
+        );
 
         // Invalid end date (before start)
         ATKFixedYieldScheduleUpgradeable invalidSchedule2 = new ATKFixedYieldScheduleUpgradeable(forwarder);
         vm.expectRevert(ISMARTFixedYieldSchedule.InvalidEndDate.selector);
-        invalidSchedule2.initialize(address(atkToken), startDate, startDate - 1, RATE, INTERVAL, initialAdmins);
+        invalidSchedule2.initialize(
+            address(this), address(atkToken), startDate, startDate - 1, RATE, INTERVAL, initialAdmins
+        );
 
         // Invalid rate (zero)
         ATKFixedYieldScheduleUpgradeable invalidSchedule3 = new ATKFixedYieldScheduleUpgradeable(forwarder);
         vm.expectRevert(ISMARTFixedYieldSchedule.InvalidRate.selector);
-        invalidSchedule3.initialize(address(atkToken), startDate, endDate, 0, INTERVAL, initialAdmins);
+        invalidSchedule3.initialize(address(this), address(atkToken), startDate, endDate, 0, INTERVAL, initialAdmins);
 
         // Invalid interval (zero)
         ATKFixedYieldScheduleUpgradeable invalidSchedule4 = new ATKFixedYieldScheduleUpgradeable(forwarder);
         vm.expectRevert(ISMARTFixedYieldSchedule.InvalidInterval.selector);
-        invalidSchedule4.initialize(address(atkToken), startDate, endDate, RATE, 0, initialAdmins);
+        invalidSchedule4.initialize(address(this), address(atkToken), startDate, endDate, RATE, 0, initialAdmins);
     }
 
     function test_InvalidPeriod() public {
@@ -626,5 +630,81 @@ contract ATKFixedYieldScheduleTest is Test {
             abi.encodeWithSelector(ISMARTFixedYieldSchedule.InsufficientDenominationAssetBalance.selector, 0, 1000e18)
         );
         yieldSchedule.withdrawDenominationAsset(user1, 1000e18);
+    }
+
+    // Test setOnchainId access control
+    function test_SetOnchainId_FactoryCanSet() public {
+        address onchainId = address(0x123);
+
+        // Factory (address(this)) should be able to set onchain ID
+        yieldSchedule.setOnchainId(onchainId);
+
+        assertEq(yieldSchedule.onchainID(), onchainId);
+    }
+
+    function test_SetOnchainId_GovernanceRoleCanSet() public {
+        address onchainId = address(0x456);
+        address governanceUser = address(0x789);
+
+        // Grant governance role to the user
+        accessManager.grantRole(ATKAssetRoles.GOVERNANCE_ROLE, governanceUser);
+
+        // User with governance role should be able to set onchain ID
+        vm.prank(governanceUser);
+        yieldSchedule.setOnchainId(onchainId);
+
+        assertEq(yieldSchedule.onchainID(), onchainId);
+    }
+
+    function test_SetOnchainId_UnauthorizedUserReverts() public {
+        address onchainId = address(0x789);
+
+        // user1 has no governance role and is not the factory
+        vm.prank(user1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTTokenAccessManaged.AccessControlUnauthorizedAccount.selector, user1, ATKAssetRoles.GOVERNANCE_ROLE
+            )
+        );
+        yieldSchedule.setOnchainId(onchainId);
+    }
+
+    function test_SetOnchainId_ZeroAddressReverts() public {
+        vm.expectRevert(ATKFixedYieldScheduleUpgradeable.InvalidOnchainID.selector);
+        yieldSchedule.setOnchainId(address(0));
+    }
+
+    function test_CanAddClaim_FactoryReturnsTrue() public view {
+        // Factory (address(this)) should be able to add claims
+        assertTrue(yieldSchedule.canAddClaim(address(this)));
+    }
+
+    function test_CanAddClaim_GovernanceRoleReturnsTrue() public {
+        address governanceUser = address(0xABC);
+        accessManager.grantRole(ATKAssetRoles.GOVERNANCE_ROLE, governanceUser);
+
+        assertTrue(yieldSchedule.canAddClaim(governanceUser));
+    }
+
+    function test_CanAddClaim_UnauthorizedReturnsFalse() public view {
+        // user1 has no governance role and is not the factory
+        assertFalse(yieldSchedule.canAddClaim(user1));
+    }
+
+    function test_CanRemoveClaim_FactoryReturnsTrue() public view {
+        // Factory (address(this)) should be able to remove claims
+        assertTrue(yieldSchedule.canRemoveClaim(address(this)));
+    }
+
+    function test_CanRemoveClaim_GovernanceRoleReturnsTrue() public {
+        address governanceUser = address(0xDEF);
+        accessManager.grantRole(ATKAssetRoles.GOVERNANCE_ROLE, governanceUser);
+
+        assertTrue(yieldSchedule.canRemoveClaim(governanceUser));
+    }
+
+    function test_CanRemoveClaim_UnauthorizedReturnsFalse() public view {
+        // user1 has no governance role and is not the factory
+        assertFalse(yieldSchedule.canRemoveClaim(user1));
     }
 }

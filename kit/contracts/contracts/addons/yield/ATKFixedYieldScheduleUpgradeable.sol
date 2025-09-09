@@ -34,8 +34,8 @@ contract ATKFixedYieldScheduleUpgradeable is
     ReentrancyGuardUpgradeable,
     IContractWithIdentity
 {
-    /// @notice Role for managing onchain ID operations
-    bytes32 public constant GOVERNANCE_ROLE = keccak256("GOVERNANCE_ROLE");
+    /// @notice The factory address that deployed this contract
+    address private _factory;
 
     /// @notice The address of the ONCHAINID associated with this contract
     address private _onchainID;
@@ -50,6 +50,29 @@ contract ATKFixedYieldScheduleUpgradeable is
     /// @param role The asset role to check for
     modifier onlyAssetRole(bytes32 role) {
         _checkAssetRole(role, _msgSender());
+        _;
+    }
+
+    /// @notice Internal function to check if an account has factory or governance privileges
+    /// @dev This function checks if the account is either the factory that deployed this contract
+    /// or has the governance role on the connected asset token
+    /// @param account The address to check
+    /// @return true if account is factory or has governance role on asset
+    function _hasFactoryOrGovernanceRole(address account) internal view returns (bool) {
+        if (account == _factory) return true;
+
+        ISMARTTokenAccessManaged tokenAccessManaged = ISMARTTokenAccessManaged(address(this.token()));
+        address tokenAccessManager = tokenAccessManaged.accessManager();
+        return ISMARTTokenAccessManager(tokenAccessManager).hasRole(ATKAssetRoles.GOVERNANCE_ROLE, account);
+    }
+
+    /// @dev Modifier to check if sender has factory or governance privileges
+    modifier onlyFactoryOrGovernance() {
+        if (!_hasFactoryOrGovernanceRole(_msgSender())) {
+            revert ISMARTTokenAccessManaged.AccessControlUnauthorizedAccount(
+                _msgSender(), ATKAssetRoles.GOVERNANCE_ROLE
+            );
+        }
         _;
     }
 
@@ -72,6 +95,7 @@ contract ATKFixedYieldScheduleUpgradeable is
 
     /// @notice Initializes the contract when used as an upgradeable proxy.
     /// @dev This function should be called by the proxy contract after deployment to set all configuration.
+    /// @param factory_ Address of the factory contract that deployed this instance.
     /// @param tokenAddress_ Address of the `ISMARTYield` token.
     /// @param startDate_ Start date of the yield schedule.
     /// @param endDate_ End date of the yield schedule.
@@ -79,6 +103,7 @@ contract ATKFixedYieldScheduleUpgradeable is
     /// @param interval_ Duration of each yield interval.
     /// @param initialAdmins_ Array of addresses to be granted `DEFAULT_ADMIN_ROLE`.
     function initialize(
+        address factory_,
         address tokenAddress_,
         uint256 startDate_,
         uint256 endDate_,
@@ -93,6 +118,9 @@ contract ATKFixedYieldScheduleUpgradeable is
         __AccessControl_init();
         __Pausable_init();
         __ReentrancyGuard_init();
+
+        // Store the factory address
+        _factory = factory_;
 
         // Check if token implements ISMARTTokenAccessManaged interface
         if (!IERC165(tokenAddress_).supportsInterface(type(ISMARTTokenAccessManaged).interfaceId)) {
@@ -159,9 +187,9 @@ contract ATKFixedYieldScheduleUpgradeable is
     }
 
     /// @notice Sets the onchain ID for this contract
-    /// @dev Can only be called by an address with DEFAULT_ADMIN_ROLE
+    /// @dev Can only be called by the factory or an address with governance role on the asset
     /// @param onchainID_ The address of the onchain ID contract
-    function setOnchainId(address onchainID_) external onlyRole(GOVERNANCE_ROLE) {
+    function setOnchainId(address onchainID_) external onlyFactoryOrGovernance {
         if (onchainID_ == address(0)) revert InvalidOnchainID();
         _onchainID = onchainID_;
     }
@@ -173,12 +201,12 @@ contract ATKFixedYieldScheduleUpgradeable is
 
     /// @inheritdoc IContractWithIdentity
     function canAddClaim(address actor) external view override returns (bool) {
-        return hasRole(GOVERNANCE_ROLE, actor);
+        return _hasFactoryOrGovernanceRole(actor);
     }
 
     /// @inheritdoc IContractWithIdentity
     function canRemoveClaim(address actor) external view override returns (bool) {
-        return hasRole(GOVERNANCE_ROLE, actor);
+        return _hasFactoryOrGovernanceRole(actor);
     }
 
     /// @notice Override from Context and ERC2771Context to correctly identify the transaction sender

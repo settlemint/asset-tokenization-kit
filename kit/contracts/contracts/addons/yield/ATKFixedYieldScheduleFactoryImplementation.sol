@@ -131,7 +131,7 @@ contract ATKFixedYieldScheduleFactoryImplementation is
         initialAdmins[0] = _msgSender();
         initialAdmins[1] = address(this);
         bytes memory constructorArgs =
-            abi.encode(address(this), address(token), startTime, endTime, rate, interval, initialAdmins);
+            abi.encode(address(this), address(this), address(token), startTime, endTime, rate, interval, initialAdmins);
         bytes memory proxyBytecode = type(ATKFixedYieldProxy).creationCode;
 
         // Predict the address first for validation
@@ -143,16 +143,11 @@ contract ATKFixedYieldScheduleFactoryImplementation is
         // Create contract identity for the yield schedule
         address contractIdentity = _deployContractIdentity(scheduleProxyAddress, country);
 
-        IAccessControl(scheduleProxyAddress).grantRole(
-            ATKFixedYieldScheduleUpgradeable(scheduleProxyAddress).GOVERNANCE_ROLE(), address(this)
-        );
-
         // Set the onchain ID on the yield schedule contract
+        // Factory can now set onchain ID without needing governance role
         ATKFixedYieldScheduleUpgradeable(scheduleProxyAddress).setOnchainId(contractIdentity);
 
-        IAccessControl(scheduleProxyAddress).renounceRole(
-            ATKFixedYieldScheduleUpgradeable(scheduleProxyAddress).GOVERNANCE_ROLE(), address(this)
-        );
+        // Renounce the DEFAULT_ADMIN_ROLE that was granted during initialization
         IAccessControl(scheduleProxyAddress).renounceRole(
             ATKFixedYieldScheduleUpgradeable(scheduleProxyAddress).DEFAULT_ADMIN_ROLE(), address(this)
         );
