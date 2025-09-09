@@ -189,6 +189,13 @@ function RouteComponent() {
             currency={{ assetSymbol: asset.bond.denominationAsset.symbol }}
           />
           <DetailGridItem
+            label={t("tokens:fields.denominationAssetNeeded")}
+            info={t("tokens:fields.denominationAssetNeededInfo")}
+            value={asset.bond.denominationAssetNeeded}
+            type="currency"
+            currency={{ assetSymbol: asset.bond.denominationAsset.symbol }}
+          />
+          <DetailGridItem
             label={t("tokens:fields.isMatured")}
             info={t("tokens:fields.isMaturedInfo")}
             value={asset.bond.isMatured}
@@ -199,6 +206,7 @@ function RouteComponent() {
             info={t("tokens:fields.maturityDateInfo")}
             value={asset.bond.maturityDate}
             type="date"
+            includeTime={true}
             emptyValue={t("tokens:fields.noExpiry")}
           />
         </DetailGrid>
