@@ -143,7 +143,6 @@ contract ATKFixedYieldScheduleFactoryImplementation is
         address contractIdentity = _deployContractIdentity(scheduleProxyAddress, country);
 
         // Set the onchain ID on the yield schedule contract
-        // Factory can now set onchain ID without needing governance role
         ATKFixedYieldScheduleUpgradeable(scheduleProxyAddress).setOnchainId(contractIdentity);
 
         // Emit an event to log the creation of the new schedule proxy.
