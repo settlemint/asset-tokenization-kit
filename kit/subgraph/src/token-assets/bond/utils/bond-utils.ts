@@ -18,6 +18,7 @@ export function updateTotalDenominationAssetNeeded(token: Token): void {
     Address.fromBytes(bond.denominationAsset)
   );
   const denominationAssetDecimals = denominationAsset.decimals;
+  const bondDecimals = token.decimals;
 
   // Calculate the maturity amount in denomination asset units
   // This matches the contract's totalDenominationAssetNeeded() calculation
@@ -28,7 +29,7 @@ export function updateTotalDenominationAssetNeeded(token: Token): void {
   } else {
     // Calculate: (totalSupply * faceValue) / 10^bondDecimals
     // Note: faceValueExact is already in denomination asset base units
-    const divisor = BigInt.fromI32(10).pow(denominationAssetDecimals as u8);
+    const divisor = BigInt.fromI32(10).pow(bondDecimals as u8);
     maturityAmountExact = token.totalSupplyExact
       .times(bond.faceValueExact)
       .div(divisor);
