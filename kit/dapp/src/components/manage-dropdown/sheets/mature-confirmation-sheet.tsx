@@ -92,7 +92,7 @@ export function MatureConfirmationSheet({
                 <div className="text-xs text-muted-foreground mb-2">
                   {t("tokens:details.currentState")}
                 </div>
-                <div className="text-sm font-medium text-blue-600">
+                <div className="text-sm font-medium text-foreground">
                   {t("tokens:status.active")}
                 </div>
               </div>
