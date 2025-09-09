@@ -30,7 +30,8 @@
     },
     "description": "Configure your {{type}} by providing the basic information below.",
     "errors": {
-      "denominationAssetFetch": "We can't load this token. Try selecting a different one or wait a moment."
+      "denominationAssetFetch": "We can't load this token. Try selecting a different one or wait a moment.",
+      "maturityDateTooEarly": "Maturity date must be after {{minDateTime}}"
     },
     "fields": {
       "cap": {

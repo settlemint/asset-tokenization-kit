@@ -8,7 +8,16 @@ import {
 } from "@/components/ui/popover";
 import { useFieldContext } from "@/hooks/use-form-contexts";
 import { cn } from "@/lib/utils";
-import { addYears, format } from "date-fns";
+import {
+  addYears,
+  format,
+  getHours,
+  getMinutes,
+  isAfter,
+  isBefore,
+  isSameDay,
+  startOfDay,
+} from "date-fns";
 import { CalendarDays } from "lucide-react";
 import { useCallback, useState } from "react";
 import {
@@ -56,8 +65,10 @@ export function DateTimeField({
     (date: Date | undefined) => {
       if (date) {
         const selectedDate = field.state.value;
-        const hoursFromTimeInput = selectedDate?.getHours() ?? 0;
-        const minutesFromTimeInput = selectedDate?.getMinutes() ?? 0;
+        const hoursFromTimeInput = selectedDate ? getHours(selectedDate) : 0;
+        const minutesFromTimeInput = selectedDate
+          ? getMinutes(selectedDate)
+          : 0;
 
         const newDate = new Date(date);
         newDate.setHours(hoursFromTimeInput, minutesFromTimeInput, 0, 0);
@@ -93,8 +104,9 @@ export function DateTimeField({
 
   const isDateDisabled = useCallback(
     (date: Date) => {
-      if (minDate && date < minDate) return true;
-      if (maxDate && date > maxDate) return true;
+      const dayToCheck = startOfDay(date);
+      if (minDate && isBefore(dayToCheck, startOfDay(minDate))) return true;
+      if (maxDate && isAfter(dayToCheck, startOfDay(maxDate))) return true;
       return false;
     },
     [minDate, maxDate]
@@ -102,6 +114,30 @@ export function DateTimeField({
 
   const selectedDate = field.state.value;
   const defaultTime = "10:30";
+
+  const getMinTime = useCallback(() => {
+    if (!minDate || !selectedDate) return undefined;
+
+    // Check if selected date is the same day as minDate
+    if (isSameDay(selectedDate, minDate)) {
+      // If it's the same day, return the minDate's time as minimum
+      const hours = getHours(minDate).toString().padStart(2, "0");
+      const minutes = getMinutes(minDate).toString().padStart(2, "0");
+      return `${hours}:${minutes}`;
+    }
+
+    return undefined;
+  }, [minDate, selectedDate]);
+
+  const getMaxTime = useCallback(() => {
+    if (!maxDate || !selectedDate) return undefined;
+    if (isSameDay(selectedDate, maxDate)) {
+      const hours = getHours(maxDate).toString().padStart(2, "0");
+      const minutes = getMinutes(maxDate).toString().padStart(2, "0");
+      return `${hours}:${minutes}`;
+    }
+    return undefined;
+  }, [maxDate, selectedDate]);
 
   return (
     <FieldLayout>
@@ -146,6 +182,8 @@ export function DateTimeField({
           <Input
             type="time"
             step="60"
+            min={getMinTime()}
+            max={getMaxTime()}
             value={
               selectedDate
                 ? selectedDate.toTimeString().slice(0, 5)
