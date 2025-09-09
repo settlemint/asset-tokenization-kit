@@ -48,6 +48,7 @@ describe("Token mature", () => {
           verificationType: "PINCODE",
         },
         ...depositData,
+        basePrice: from("1.00", 2),
         countryCode: "056",
       },
       {
