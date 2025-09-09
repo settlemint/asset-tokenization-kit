@@ -12,7 +12,7 @@ import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
-import { Badge } from "@/components/ui/badge";
+import { UserStatusBadge } from "@/components/users/user-status-badge";
 import { getUserDisplayName } from "@/lib/utils/user-display-name";
 import { orpc } from "@/orpc/orpc-client";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
@@ -20,46 +20,6 @@ import { toast } from "sonner";
 
 const columnHelper = createStrictColumnHelper<User>();
 
-/**
- * Status badge component for user registration status with accessibility support
- */
-function UserStatusBadge({ user }: { user: User }) {
-  const { t } = useTranslation("user");
-
-  if (user.isRegistered) {
-    return (
-      <Badge
-        variant="default"
-        className="bg-green-500 hover:bg-green-600"
-        aria-label={t("management.table.status.registeredAriaLabel")}
-      >
-        {t("management.table.status.registered")}
-      </Badge>
-    );
-  }
-
-  if (user.wallet) {
-    return (
-      <Badge
-        variant="secondary"
-        className="bg-yellow-500 hover:bg-yellow-600 text-white"
-        aria-label={t("management.table.status.pendingAriaLabel")}
-      >
-        {t("management.table.status.pending")}
-      </Badge>
-    );
-  }
-
-  return (
-    <Badge
-      variant="outline"
-      className="text-muted-foreground"
-      aria-label={t("management.table.status.notConnectedAriaLabel")}
-    >
-      {t("management.table.status.notConnected")}
-    </Badge>
-  );
-}
 
 /**
  * Users table component for displaying and managing platform users
