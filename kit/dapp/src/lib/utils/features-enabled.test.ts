@@ -44,7 +44,7 @@ describe("hasDenominationAsset", () => {
     expect(hasDenominationAsset("equity")).toBe(false);
     expect(hasDenominationAsset("stablecoin")).toBe(false);
     expect(hasDenominationAsset("deposit")).toBe(false);
-    expect(hasDenominationAsset("bond")).toBe(false);
+    expect(hasDenominationAsset("fund")).toBe(false);
   });
 });
 
