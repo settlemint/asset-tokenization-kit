@@ -1,5 +1,5 @@
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
-import { getAnvilTimeMilliseconds } from "@/test/anvil";
+import { getAnvilTimeMilliseconds, getAnvilBasedFutureDate } from "@/test/anvil";
 import { TimeIntervalEnum } from "@atk/zod/time-interval";
 import { createFixedYieldSchedule } from "@test/fixtures/fixed-yield-schedule";
 import {
@@ -62,7 +62,7 @@ describe("Token set yield schedule", async () => {
       decimals: 18,
       cap: "1000000",
       faceValue: "1000",
-      maturityDate: new Date("2025-12-31"),
+      maturityDate: await getAnvilBasedFutureDate(12),
       denominationAsset: stablecoinToken.id,
       initialModulePairs: [],
     };

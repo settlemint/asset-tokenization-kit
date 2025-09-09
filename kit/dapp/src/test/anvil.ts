@@ -1,4 +1,5 @@
 import { createLogger } from "@settlemint/sdk-utils/logging";
+import { addMonths } from "date-fns";
 import {
   createTestClient,
   http,
@@ -40,6 +41,18 @@ export async function increaseAnvilTime(seconds: number): Promise<void> {
   logger.info(
     `[ANVIL] Time increase: ${(afterTime - beforeTime) / 1000} seconds`
   );
+}
+
+// Helper function to get a future date based on current anvil blockchain time
+// This ensures maturity dates are always valid relative to blockchain time, not system time
+export async function getAnvilBasedFutureDate(
+  monthsAhead: number
+): Promise<Date> {
+  const currentBlockchainTime = await getAnvilTimeMilliseconds();
+  const currentBlockchainDate = new Date(currentBlockchainTime);
+  const futureDate = addMonths(currentBlockchainDate, monthsAhead);
+
+  return futureDate;
 }
 
 export async function isContractAddress(address: string) {
