@@ -78,7 +78,6 @@ const READ_TOKEN_QUERY = theGraphGraphql(
           id
         }
       }
-      basePrice
       stats {
         totalValueInBaseCurrency
       }

@@ -30,7 +30,7 @@ describe("Token holder", () => {
         decimals: 18,
         type: "deposit",
         countryCode: "056",
-        basePrice: from("1"),
+        basePrice: from("1.00", 2),
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",

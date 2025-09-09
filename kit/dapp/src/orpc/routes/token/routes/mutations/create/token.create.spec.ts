@@ -20,7 +20,6 @@ describe("Token create", () => {
       name: `Test Stablecoin ${Date.now()}`,
       symbol: "TSTC",
       decimals: 18,
-      basePrice: dnumFrom("2.25", 2),
     } as const;
 
     const result = await client.token.create({
@@ -29,6 +28,7 @@ describe("Token create", () => {
         verificationType: "PINCODE",
       },
       ...tokenData,
+      basePrice: dnumFrom("2.25", 2),
       countryCode: "056",
     });
 
@@ -39,9 +39,8 @@ describe("Token create", () => {
     expect(result.name).toBe(tokenData.name);
     expect(result.symbol).toBe(tokenData.symbol);
 
-    const tokens = await client.token.list({});
-    expect(tokens.length).toBeGreaterThan(0);
-    expect(tokens.find((t) => t.id === result.id)).toEqual({
+    const createdToken = await client.token.read({ tokenAddress: result.id });
+    expect(createdToken).toMatchObject({
       id: expect.any(String),
       createdAt: expect.any(Date),
       ...tokenData,
@@ -54,8 +53,16 @@ describe("Token create", () => {
         paused: true,
       },
       totalSupply: dnumFrom("0"),
-      basePrice: dnumFrom("2.25", 2),
     });
+    const basePriceClaim = createdToken.account.identity?.claims?.find(
+      (c) => c.name === "basePrice"
+    );
+    expect(basePriceClaim).toBeDefined();
+    expect(basePriceClaim?.values).toEqual([
+      { key: "amount", value: "225" },
+      { key: "currencyCode", value: "USD" },
+      { key: "decimals", value: "2" },
+    ]);
   }, 100_000);
 
   test("can create a fund token", async () => {
@@ -87,16 +94,23 @@ describe("Token create", () => {
     expect(result.name).toBe(fundData.name);
     expect(result.symbol).toBe(fundData.symbol);
 
-    const tokens = await client.token.list({});
-    const createdFund = tokens.find((t) => t.id === result.id);
+    const createdFund = await client.token.read({ tokenAddress: result.id });
     expect(createdFund).toBeDefined();
     expect(createdFund).toMatchObject({
       id: expect.any(String),
       type: fundData.type,
       name: fundData.name,
       symbol: fundData.symbol,
-      basePrice: dnumFrom("1.33", 2),
     });
+    const basePriceClaim = createdFund.account.identity?.claims?.find(
+      (c) => c.name === "basePrice"
+    );
+    expect(basePriceClaim).toBeDefined();
+    expect(basePriceClaim?.values).toEqual([
+      { key: "amount", value: "133" },
+      { key: "currencyCode", value: "USD" },
+      { key: "decimals", value: "2" },
+    ]);
   }, 100_000);
 
   test("can create a bond token", async () => {
@@ -110,7 +124,7 @@ describe("Token create", () => {
       symbol: "TSDC",
       decimals: 18,
       initialModulePairs: [],
-      basePrice: dnumFrom("1"),
+      basePrice: dnumFrom("1.00", 2),
     };
 
     const stablecoinResult = await client.token.create({
@@ -153,9 +167,8 @@ describe("Token create", () => {
     expect(result.name).toBe(bondData.name);
     expect(result.symbol).toBe(bondData.symbol);
 
-    // Verify the bond appears in the token list
-    const tokens = await client.token.list({});
-    const createdBond = tokens.find((t) => t.id === result.id);
+    // Verify the bond
+    const createdBond = await client.token.read({ tokenAddress: result.id });
     expect(createdBond).toBeDefined();
     expect(createdBond).toMatchObject({
       id: expect.any(String),
@@ -238,7 +251,7 @@ describe("Token create", () => {
       symbol: "TSTE",
       decimals: 0,
       initialModulePairs: [],
-      basePrice: dnumFrom("1"),
+      basePrice: dnumFrom("1.00", 2),
     };
 
     const result = await client.token.create({
@@ -256,17 +269,24 @@ describe("Token create", () => {
     expect(result.name).toBe(equityData.name);
     expect(result.symbol).toBe(equityData.symbol);
 
-    // Verify the equity appears in the token list
-    const tokens = await client.token.list({});
-    const createdEquity = tokens.find((t) => t.id === result.id);
+    // Verify the equity
+    const createdEquity = await client.token.read({ tokenAddress: result.id });
     expect(createdEquity).toBeDefined();
     expect(createdEquity).toMatchObject({
       id: expect.any(String),
       type: equityData.type,
       name: equityData.name,
       symbol: equityData.symbol,
-      basePrice: dnumFrom("1"),
     });
+    const basePriceClaim = createdEquity.account.identity?.claims?.find(
+      (c) => c.name === "basePrice"
+    );
+    expect(basePriceClaim).toBeDefined();
+    expect(basePriceClaim?.values).toEqual([
+      { key: "amount", value: "100" },
+      { key: "currencyCode", value: "USD" },
+      { key: "decimals", value: "2" },
+    ]);
   }, 100_000);
 
   test("can create a deposit token", async () => {
@@ -279,7 +299,7 @@ describe("Token create", () => {
       symbol: "TSTD",
       decimals: 2,
       initialModulePairs: [],
-      basePrice: dnumFrom("1"),
+      basePrice: dnumFrom("1.00", 2),
     };
 
     const result = await client.token.create({
@@ -297,17 +317,24 @@ describe("Token create", () => {
     expect(result.name).toBe(depositData.name);
     expect(result.symbol).toBe(depositData.symbol);
 
-    // Verify the deposit appears in the token list
-    const tokens = await client.token.list({});
-    const createdDeposit = tokens.find((t) => t.id === result.id);
+    // Verify the deposit
+    const createdDeposit = await client.token.read({ tokenAddress: result.id });
     expect(createdDeposit).toBeDefined();
     expect(createdDeposit).toMatchObject({
       id: expect.any(String),
       type: depositData.type,
       name: depositData.name,
       symbol: depositData.symbol,
-      basePrice: dnumFrom("1"),
     });
+    const basePriceClaim = createdDeposit.account.identity?.claims?.find(
+      (c) => c.name === "basePrice"
+    );
+    expect(basePriceClaim).toBeDefined();
+    expect(basePriceClaim?.values).toEqual([
+      { key: "amount", value: "100" },
+      { key: "currencyCode", value: "USD" },
+      { key: "decimals", value: "2" },
+    ]);
   }, 100_000);
 
   test("can create a token with an isin claim", async () => {
@@ -324,7 +351,7 @@ describe("Token create", () => {
       symbol: "TSTD",
       decimals: 2,
       initialModulePairs: [],
-      basePrice: dnumFrom("1"),
+      basePrice: dnumFrom("1.00", 2),
       isin: "US0378331005",
       countryCode: "056",
     });
@@ -356,7 +383,7 @@ describe("Token create", () => {
           name: `Test Stablecoin Investor ${Date.now()}`,
           symbol: "TSTC",
           decimals: 18,
-          basePrice: dnumFrom("1"),
+          basePrice: dnumFrom("1.00", 2),
           countryCode: "056", // Belgium numeric code for testing
         },
         {

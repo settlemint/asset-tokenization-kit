@@ -26,7 +26,7 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
       type: "stablecoin",
       countryCode: "056",
       initialModulePairs: [],
-      basePrice: from("1"),
+      basePrice: from("1.00", 2),
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",

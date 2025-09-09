@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ActionFormSheet } from "./action-form-sheet";
 // Removed unused import of Token
 import { Store } from "@tanstack/store";
@@ -109,6 +109,7 @@ const mockToken = {
   yield: null,
   accessControl: undefined,
   userPermissions: undefined,
+  stats: null,
 } satisfies Parameters<typeof ActionFormSheet>[0]["asset"];
 
 describe("ActionFormSheet", () => {

@@ -129,7 +129,7 @@ export const AssetBasics = withForm({
                 })}
                 endAddon={baseCurrency ?? ""}
                 decimals={2}
-                placeholder={from(1, 2)}
+                placeholder={from("1.00", 2)}
               />
             )}
           />

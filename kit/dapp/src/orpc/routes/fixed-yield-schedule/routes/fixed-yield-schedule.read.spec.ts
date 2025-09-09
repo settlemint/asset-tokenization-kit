@@ -35,7 +35,7 @@ describe("Fixed yield schedule read", async () => {
       symbol: "TSDC",
       decimals: 18,
       initialModulePairs: [],
-      basePrice: from("1"),
+      basePrice: from("1.00", 2),
     };
 
     stablecoinToken = await createToken(adminClient, {

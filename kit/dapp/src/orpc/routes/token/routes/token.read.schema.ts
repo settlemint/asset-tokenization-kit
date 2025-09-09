@@ -252,7 +252,6 @@ export const RawTokenSchema = z.object({
     })
     .optional()
     .describe("The permissions of the user for the token"),
-  basePrice: bigDecimal().describe("The base price of the token"),
   stats: z
     .object({
       totalValueInBaseCurrency: bigDecimal().describe(
