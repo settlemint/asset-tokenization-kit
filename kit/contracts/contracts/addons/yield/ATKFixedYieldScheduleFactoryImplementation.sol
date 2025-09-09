@@ -8,7 +8,6 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { IATKFixedYieldScheduleFactory } from "./IATKFixedYieldScheduleFactory.sol";
 import { ISMARTFixedYieldSchedule } from "../../smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
 import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 // Implementations
 import { AbstractATKSystemAddonFactoryImplementation } from
@@ -131,7 +130,7 @@ contract ATKFixedYieldScheduleFactoryImplementation is
         initialAdmins[0] = _msgSender();
         initialAdmins[1] = address(this);
         bytes memory constructorArgs =
-            abi.encode(address(this), address(this), address(token), startTime, endTime, rate, interval, initialAdmins);
+            abi.encode(address(this), address(token), startTime, endTime, rate, interval, initialAdmins);
         bytes memory proxyBytecode = type(ATKFixedYieldProxy).creationCode;
 
         // Predict the address first for validation

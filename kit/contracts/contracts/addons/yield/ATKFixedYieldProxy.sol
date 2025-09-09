@@ -33,7 +33,6 @@ contract ATKFixedYieldProxy is Proxy {
 
     /// @notice Constructs the ATKFixedYieldProxy.
     /// @param factoryAddress The address of the IATKFixedYieldScheduleFactory contract.
-    /// @param factory The address of the factory that deployed this contract.
     /// @param tokenAddress The address of the ISMARTYield token.
     /// @param startDate The start date of the yield schedule.
     /// @param endDate The end date of the yield schedule.
@@ -42,7 +41,6 @@ contract ATKFixedYieldProxy is Proxy {
     /// @param initialAdmins The initial admins of the yield schedule.
     constructor(
         address factoryAddress,
-        address factory,
         address tokenAddress,
         uint256 startDate,
         uint256 endDate,
@@ -64,7 +62,7 @@ contract ATKFixedYieldProxy is Proxy {
 
         bytes memory initData = abi.encodeWithSelector(
             ATKFixedYieldScheduleUpgradeable.initialize.selector,
-            factory,
+            factoryAddress,
             tokenAddress,
             startDate,
             endDate,
