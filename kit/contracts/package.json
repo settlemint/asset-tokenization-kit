@@ -18,7 +18,6 @@
     "clean:deployments": "rm -Rf ignition/deployments/atk-local",
     "publish": "bun run clean:deployments && settlemint scs hardhat script local --script scripts/hardhat/main.ts",
     "publish:docker": "bash tools/publish-docker.sh",
-    "abi-output": "bash tools/abi-output.sh",
     "test": "settlemint scs foundry test",
     "test:ci": "mkdir -p coverage && settlemint scs foundry coverage --ir-minimum --skip \"s.sol\" --exclude-tests --report lcov --report-file coverage/lcov.info",
     "deploy:remote": "settlemint scs hardhat deploy remote --deployment-id asset-tokenization"
