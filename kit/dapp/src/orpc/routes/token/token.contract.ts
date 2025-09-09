@@ -81,7 +81,7 @@ export const tokenContract = {
 };
 
 // Extract mutation keys for permissions
-export type TokenContractMutations =
+export type TokenAccessManagedMutations =
   | "burn"
   | "create"
   | "grantRole"
@@ -102,4 +102,5 @@ export type TokenContractMutations =
   | "updateCollateral"
   | "setYieldSchedule"
   | "transfer"
-  | "unpause";
+  | "unpause"
+  | "withdrawDenominationAsset";

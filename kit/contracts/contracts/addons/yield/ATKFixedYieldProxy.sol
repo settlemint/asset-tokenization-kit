@@ -62,6 +62,7 @@ contract ATKFixedYieldProxy is Proxy {
 
         bytes memory initData = abi.encodeWithSelector(
             ATKFixedYieldScheduleUpgradeable.initialize.selector,
+            factoryAddress,
             tokenAddress,
             startDate,
             endDate,

@@ -38,6 +38,7 @@ vi.mock("@/orpc/orpc-client", () => ({
         })),
       },
       topUp: { mutationOptions: vi.fn(() => ({})) },
+      withdraw: { mutationOptions: vi.fn(() => ({})) },
       create: { mutationOptions: vi.fn(() => ({})) },
     },
   },

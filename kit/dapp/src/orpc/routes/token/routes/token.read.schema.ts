@@ -254,6 +254,11 @@ export const RawTokenSchema = z.object({
                 .describe(
                   "Whether the user can execute the updateCollateral action"
                 ),
+              withdrawDenominationAsset: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the withdrawDenominationAsset action"
+                ),
             };
             return actionsSchema;
           })()
