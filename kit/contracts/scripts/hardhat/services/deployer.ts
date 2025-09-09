@@ -24,7 +24,8 @@ export type PredeployedContractName = keyof Pick<
   | "compliance"
   | "identityRegistry"
   | "identityRegistryStorage"
-  | "trustedIssuersRegistry"
+  | "systemTrustedIssuersRegistry"
+  | "trustedIssuersMetaRegistry"
   | "topicSchemeRegistry"
   | "identityFactory"
   | "bondFactory"
@@ -269,10 +270,16 @@ export class ATKDeployer {
     return this.getContract("identityRegistryStorage", walletClient);
   }
 
-  public getTrustedIssuersRegistryContract(
+  public getSystemTrustedIssuersRegistryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["trustedIssuersRegistry"] {
-    return this.getContract("trustedIssuersRegistry", walletClient);
+  ): ATKOnboardingContracts["systemTrustedIssuersRegistry"] {
+    return this.getContract("systemTrustedIssuersRegistry", walletClient);
+  }
+
+  public getTrustedIssuersMetaRegistryContract(
+    walletClient?: WalletClient<Transport, Chain, Account>
+  ): ATKOnboardingContracts["trustedIssuersMetaRegistry"] {
+    return this.getContract("trustedIssuersMetaRegistry", walletClient);
   }
 
   public getTopicSchemeRegistryContract(

@@ -85,6 +85,10 @@ export const ADDON_FACTORY_MODULE_ROLE = new RoleConfig(
   "ADDON_FACTORY_MODULE_ROLE",
   "addonModule"
 );
+export const TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE = new RoleConfig(
+  "TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE",
+  "trustedIssuersMetaRegistryModule"
+);
 
 // --- Asset Roles (ATKAssetRoles) ---
 export const GOVERNANCE_ROLE = new RoleConfig("GOVERNANCE_ROLE", "governance");

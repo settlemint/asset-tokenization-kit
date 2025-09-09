@@ -58,6 +58,7 @@ describe("accessControlRoles", () => {
         tokenFactoryModule: false,
         tokenFactoryRegistryModule: false,
         tokenManager: false,
+        trustedIssuersMetaRegistryModule: false,
         verificationAdmin: false,
       };
 
@@ -102,6 +103,7 @@ describe("accessControlRoles", () => {
         tokenFactoryModule: false,
         tokenFactoryRegistryModule: true,
         tokenManager: false,
+        trustedIssuersMetaRegistryModule: false,
         verificationAdmin: true,
       };
 
@@ -155,6 +157,7 @@ describe("accessControlRoles", () => {
       expect(result.tokenAdmin).toBe(false);
       expect(result.tokenFactoryModule).toBe(false);
       expect(result.tokenFactoryRegistryModule).toBe(false);
+      expect(result.trustedIssuersMetaRegistryModule).toBe(false);
       expect(result.verificationAdmin).toBe(false);
     });
 
@@ -285,6 +288,7 @@ describe("accessControlRoles", () => {
         "tokenFactoryModule",
         "tokenFactoryRegistryModule",
         "tokenManager",
+        "trustedIssuersMetaRegistryModule",
         "verificationAdmin",
       ];
 

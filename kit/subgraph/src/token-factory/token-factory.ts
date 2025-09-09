@@ -3,6 +3,7 @@ import { Burnable as BurnableTemplate } from "../../generated/templates";
 import {
   TokenAssetCreated,
   TokenImplementationUpdated,
+  TokenTrustedIssuersRegistryCreated,
 } from "../../generated/templates/TokenFactory/TokenFactory";
 import { fetchAccessControl } from "../access-control/fetch/accesscontrol";
 import { fetchAccount } from "../account/fetch/account";
@@ -21,6 +22,7 @@ import { fetchRedeemable } from "../token-extensions/redeemable/fetch/redeemable
 import { fetchYield } from "../token-extensions/yield/fetch/yield";
 import { fetchToken } from "../token/fetch/token";
 import { getTokenType } from "../token/utils/token-utils";
+import { fetchTrustedIssuersRegistry } from "../trusted-issuers-registry/fetch/trusted-issuers-registry";
 import { fetchTokenFactory } from "./fetch/token-factory";
 
 /**
@@ -112,4 +114,19 @@ export function handleTokenImplementationUpdated(
   event: TokenImplementationUpdated
 ): void {
   fetchEvent(event, "TokenImplementationUpdated");
+}
+
+export function handleTokenTrustedIssuersRegistryCreated(
+  event: TokenTrustedIssuersRegistryCreated
+): void {
+  fetchEvent(event, "TokenTrustedIssuersRegistryCreated");
+
+  const trustedIssuersRegistry = fetchTrustedIssuersRegistry(
+    event.params.registry
+  );
+  trustedIssuersRegistry.token = event.params.token;
+  if (trustedIssuersRegistry.deployedInTransaction.equals(Bytes.empty())) {
+    trustedIssuersRegistry.deployedInTransaction = event.transaction.hash;
+  }
+  trustedIssuersRegistry.save();
 }

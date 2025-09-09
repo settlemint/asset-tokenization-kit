@@ -49,7 +49,7 @@ using predeployed contracts.
    - **Function**: Constructor
    - **Output**: Identity registry storage implementation address
 
-6. **TX**: Deploy ATKTrustedIssuersRegistryImplementation
+6. **TX**: Deploy ATKSystemTrustedIssuersRegistryImplementation
    - **Sender**: Hardhat deployer
    - **Contract**: New deployment
    - **Function**: Constructor
@@ -1171,7 +1171,7 @@ are predeployed and their deployment transactions (TXs 1-44) should be SKIPPED:
 - ATKIdentityRegistryImplementation: 0x5e771e1417100000000000000000000000020002
 - ATKIdentityRegistryStorageImplementation:
   0x5e771e1417100000000000000000000000020003
-- ATKTrustedIssuersRegistryImplementation:
+- ATKSystemTrustedIssuersRegistryImplementation:
   0x5e771e1417100000000000000000000000020004
 - ATKTopicSchemeRegistryImplementation:
   0x5e771e1417100000000000000000000000020008
