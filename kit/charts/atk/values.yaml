@@ -220,7 +220,7 @@ graph-node:
   enabled: true
   image:
     repository: docker.io/graphprotocol/graph-node
-    tag: "v0.40.0"
+    tag: "v0.40.1"
     pullPolicy: IfNotPresent
   initContainers:
     kubectlImage:
