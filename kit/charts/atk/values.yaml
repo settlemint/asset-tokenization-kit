@@ -106,7 +106,7 @@ erpc:
   image:
     registry: ghcr.io
     repository: erpc/erpc
-    tag: "0.0.55"
+    tag: "0.0.56"
     pullPolicy: IfNotPresent
   # Init containers
   initContainers:
