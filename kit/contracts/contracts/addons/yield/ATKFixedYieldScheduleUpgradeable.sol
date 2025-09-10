@@ -51,25 +51,10 @@ contract ATKFixedYieldScheduleUpgradeable is
         _;
     }
 
-    /// @notice Internal function to check if an account has factory or governance privileges
-    /// @dev This function checks if the account is either the factory that deployed this contract
-    /// or has the governance role on the connected asset token
-    /// @param account The address to check
-    /// @return true if account is factory or has governance role on asset
-    function _hasFactoryOrGovernanceRole(address account) internal view returns (bool) {
-        if (account == _factory) return true;
-
-        ISMARTTokenAccessManaged tokenAccessManaged = ISMARTTokenAccessManaged(address(this.token()));
-        address tokenAccessManager = tokenAccessManaged.accessManager();
-        return ISMARTTokenAccessManager(tokenAccessManager).hasRole(ATKAssetRoles.GOVERNANCE_ROLE, account);
-    }
-
     /// @dev Modifier to check if sender has factory or governance privileges
     modifier onlyFactoryOrGovernance() {
-        if (!_hasFactoryOrGovernanceRole(_msgSender())) {
-            revert ISMARTTokenAccessManaged.AccessControlUnauthorizedAccount(
-                _msgSender(), ATKAssetRoles.GOVERNANCE_ROLE
-            );
+        if(_msgSender() != _factory) {
+            _checkAssetRole(ATKAssetRoles.GOVERNANCE_ROLE, _msgSender());
         }
         _;
     }
@@ -80,11 +65,20 @@ contract ATKFixedYieldScheduleUpgradeable is
     /// @param role The asset role identifier to check for
     /// @param account The address of the account to verify
     function _checkAssetRole(bytes32 role, address account) internal view {
-        ISMARTTokenAccessManaged tokenAccessManaged = ISMARTTokenAccessManaged(address(this.token()));
-        address tokenAccessManager = tokenAccessManaged.accessManager();
-        if (!ISMARTTokenAccessManager(tokenAccessManager).hasRole(role, account)) {
+        if (!_hasAssetRole(role, account)) {
             revert ISMARTTokenAccessManaged.AccessControlUnauthorizedAccount(account, role);
         }
+    }
+
+    /// @notice Internal function to check if an account has a specific role on the connected asset (token)
+    /// @dev This function performs the actual call to the token's access manager
+    /// @param role The asset role identifier to check for
+    /// @param account The address of the account to verify
+    /// @return True if the account has the role, false otherwise
+    function _hasAssetRole(bytes32 role, address account) internal view returns (bool) {
+        ISMARTTokenAccessManaged tokenAccessManaged = ISMARTTokenAccessManaged(address(this.token()));
+        address tokenAccessManager = tokenAccessManaged.accessManager();
+        return ISMARTTokenAccessManager(tokenAccessManager).hasRole(role, account);
     }
 
     /// @notice Constructor that sets the trusted forwarder for meta-transactions
@@ -193,12 +187,12 @@ contract ATKFixedYieldScheduleUpgradeable is
 
     /// @inheritdoc IContractWithIdentity
     function canAddClaim(address actor) external view override returns (bool) {
-        return _hasFactoryOrGovernanceRole(actor);
+        return _hasAssetRole(ATKAssetRoles.GOVERNANCE_ROLE, actor);
     }
 
     /// @inheritdoc IContractWithIdentity
     function canRemoveClaim(address actor) external view override returns (bool) {
-        return _hasFactoryOrGovernanceRole(actor);
+        return _hasAssetRole(ATKAssetRoles.GOVERNANCE_ROLE, actor);
     }
 
     /// @notice Override from Context and ERC2771Context to correctly identify the transaction sender

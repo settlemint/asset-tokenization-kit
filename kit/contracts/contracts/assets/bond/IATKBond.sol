@@ -42,7 +42,9 @@ interface IATKBond is
 
     error BondAlreadyMatured();
     /// @notice Error an action is attempted that requires the bond to be matured, but it is not.
-    error BondNotYetMatured();
+    /// @param currentTimestamp The current block timestamp
+    /// @param maturityTimestamp The maturity date timestamp
+    error BondNotYetMatured(uint256 currentTimestamp, uint256 maturityTimestamp);
     /// @notice Error an invalid maturity date was provided during initialization (e.g., in the past).
     error BondInvalidMaturityDate();
     /// @notice Error an invalid denomination asset address was provided (e.g., zero address).

@@ -5,6 +5,7 @@ import {
   PredictAddressOutputSchema,
 } from "@/orpc/routes/system/token-factory/routes/factory.predict-address.schema";
 import { AssetTypeEnum } from "@atk/zod/asset-types";
+import { getUnixTime } from "date-fns";
 import z from "zod";
 import type { PredictHandlerContext } from "./handler-map";
 
@@ -54,6 +55,7 @@ export const bondPredictHandler = async (
       ...input,
       faceValue: input.faceValue.toString(),
       cap: input.cap.toString(),
+      maturityDate: getUnixTime(input.maturityDate).toString(),
     },
     z.object({
       ATKBondFactoryImplementation: z.object({

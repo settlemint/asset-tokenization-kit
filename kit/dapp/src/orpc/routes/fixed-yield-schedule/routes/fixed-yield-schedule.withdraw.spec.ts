@@ -1,5 +1,8 @@
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
-import { getAnvilTimeMilliseconds } from "@/test/anvil";
+import {
+  getAnvilBasedFutureDate,
+  getAnvilTimeMilliseconds,
+} from "@/test/anvil";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { TimeIntervalEnum } from "@atk/zod/time-interval";
 import { getOrpcClient, type OrpcClient } from "@test/fixtures/orpc-client";
@@ -71,7 +74,7 @@ describe("Fixed yield schedule withdraw", async () => {
       decimals: 18,
       cap: "1000000",
       faceValue: "1000",
-      maturityDate: new Date("2025-12-31"),
+      maturityDate: await getAnvilBasedFutureDate(12),
       initialModulePairs: [],
       denominationAsset: depositToken.id,
     };

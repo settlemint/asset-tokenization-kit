@@ -30,6 +30,7 @@ import type { TokenCreateContext } from "@/orpc/routes/token/routes/mutations/cr
 import { createToken } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create";
 import type { TokenCreateInput } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 import { AssetTypeEnum } from "@atk/zod/asset-types";
+import { getUnixTime } from "date-fns";
 
 const CREATE_BOND_MUTATION = portalGraphql(`
   mutation CreateBondMutation(
@@ -82,6 +83,7 @@ export const bondCreateHandler = async (
   // DELEGATION PATTERN: createToken base handler manages verification flow
   // WHY: Consistent verification handling across all token types while allowing
   // type-specific parameter validation and mutation execution
+  const maturityDateUnixSeconds = getUnixTime(input.maturityDate).toString();
   return createToken(input, context, () => {
     return context.portalClient.mutate(
       CREATE_BOND_MUTATION,
@@ -95,7 +97,7 @@ export const bondCreateHandler = async (
         countryCode: input.countryCode,
         cap: input.cap.toString(),
         faceValue: input.faceValue.toString(),
-        maturityDate: input.maturityDate,
+        maturityDate: maturityDateUnixSeconds, // Timestamp needs to be in unix seconds
         denominationAsset: input.denominationAsset,
         initialModulePairs: input.initialModulePairs.map((pair) => ({
           module: pair.module,

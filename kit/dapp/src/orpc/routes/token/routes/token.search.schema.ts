@@ -59,6 +59,7 @@ export const TokenSearchResultSchema = TokenSchema.omit({
   implementsSMART: true,
   stats: true,
   account: true,
+  complianceModuleConfigs: true,
 }).extend({
   account: z
     .object({

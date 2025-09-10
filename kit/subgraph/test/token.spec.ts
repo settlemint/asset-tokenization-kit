@@ -33,7 +33,7 @@ describe("Tokens", () => {
         type: "fund",
         totalSupply: "8",
         totalSupplyExact: "800000000",
-        extensions: ["ACCESS_MANAGED", "BURNABLE", "CUSTODIAN", "PAUSABLE"],
+        extensions: ["ACCESS_MANAGED", "BURNABLE", "CUSTODIAN", "FUND", "PAUSABLE"],
         implementsERC3643: false,
         implementsSMART: true,
       },
@@ -44,6 +44,7 @@ describe("Tokens", () => {
         totalSupplyExact: "117000000000000000000",
         extensions: [
           "ACCESS_MANAGED",
+          "BOND",
           "BURNABLE",
           "CAPPED",
           "CUSTODIAN",

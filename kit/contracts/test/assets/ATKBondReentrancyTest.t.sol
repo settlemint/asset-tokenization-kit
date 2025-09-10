@@ -300,7 +300,8 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
         // Try to redeem before maturity
         vm.startPrank(user1);
-        vm.expectRevert(IATKBond.BondNotYetMatured.selector);
+        uint256 currentTime = block.timestamp;
+        vm.expectRevert(abi.encodeWithSelector(IATKBond.BondNotYetMatured.selector, currentTime, maturityDate));
         bond.redeem(redeemAmount);
         vm.stopPrank();
     }
