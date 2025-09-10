@@ -91,7 +91,7 @@ describe("Token freeze partial", () => {
         countryCode: "056",
       },
       {
-        grantRole: ["supplyManagement", "freezer"],
+        grantRole: ["supplyManagement", "custodian"],
         unpause: true,
       }
     );
@@ -136,15 +136,15 @@ describe("Token freeze partial", () => {
       tokenAddress: stablecoinToken.id,
     });
 
-    const hasFreezerRole =
-      tokenDetails.userPermissions?.roles?.freezer ?? false;
+    const hasCustodianRole =
+      tokenDetails.userPermissions?.roles?.custodian ?? false;
 
-    if (!hasFreezerRole) {
+    if (!hasCustodianRole) {
       // SETUP: Grant freezer role to enable test execution in any environment
       await adminClient.token.grantRole({
         contract: stablecoinToken.id,
         accounts: [adminAddress],
-        role: "freezer",
+        role: "custodian",
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -319,7 +319,7 @@ describe("Token freeze partial", () => {
         countryCode: "056",
       },
       {
-        grantRole: ["freezer"],
+        grantRole: ["custodian"],
       }
     );
 

@@ -91,7 +91,7 @@ describe("Token unfreeze partial", () => {
         countryCode: "056",
       },
       {
-        grantRole: ["supplyManagement", "freezer"],
+        grantRole: ["supplyManagement", "custodian"],
         unpause: true,
       }
     );
@@ -111,14 +111,14 @@ describe("Token unfreeze partial", () => {
       },
     });
 
-    // SECURITY: Grant freezer role to admin for authorized freeze operations
+    // SECURITY: Grant custodian role to admin for authorized freeze operations
     const adminUser = await adminClient.user.me();
     const adminAddress = adminUser.wallet as Address;
 
     await adminClient.token.grantRole({
       contract: stablecoinToken.id,
       accounts: [adminAddress],
-      role: "freezer",
+      role: "custodian",
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
