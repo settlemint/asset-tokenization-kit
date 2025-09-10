@@ -12,7 +12,6 @@ interface AssetTabBadgeProps {
 /**
  * Simple spinner for fallback while loading badge counts
  */
-// TODO: Use skeleton here?
 export function AssetTabBadgeSpinner() {
   return (
     <div

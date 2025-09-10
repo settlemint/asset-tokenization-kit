@@ -14,7 +14,7 @@ export type AssetTabBadgeType =
   | "actions"
   | "allowlist"
   | "blocklist"
-  | "underlying-assets";
+  | "denomination-asset";
 
 export type AssetTabKey =
   | "tokenInformation"
@@ -24,7 +24,7 @@ export type AssetTabKey =
   | "permissions"
   | "allowlist"
   | "blocklist"
-  | "underlyingAssets"
+  | "denominationAsset"
   | "yield";
 
 export type AssetTabRequirement = {
@@ -58,7 +58,9 @@ export const ASSET_TAB_REQUIREMENTS: Record<
 
   // Extension-based tabs
   yield: { extensions: [AssetExtensionEnum.YIELD] },
-  underlyingAssets: { extensions: [AssetExtensionEnum.FUND] },
+  denominationAsset: {
+    extensions: [AssetExtensionEnum.BOND],
+  },
 
   // Compliance-based tabs (placeholder logic)
   allowlist: {
@@ -134,9 +136,9 @@ export function getAssetTabConfiguration({
       badgeType: "blocklist",
     },
     {
-      tabKey: "underlyingAssets",
-      href: `${baseUrl}/underlying-assets`,
-      badgeType: "underlying-assets",
+      tabKey: "denominationAsset",
+      href: `${baseUrl}/denomination-asset`,
+      badgeType: "denomination-asset",
     },
   ];
 

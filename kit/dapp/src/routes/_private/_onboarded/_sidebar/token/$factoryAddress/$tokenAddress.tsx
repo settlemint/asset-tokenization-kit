@@ -188,9 +188,6 @@ function AsyncTabNavigation({
       }),
   });
 
-  // Keep assetType for backwards compatibility with TabBadge
-  // TODO: Update TabBadge to use extensions when ready
-
   // Transform tab configurations to TabItemProps with translations and badges
   const tabs = useMemo(() => {
     if (!tabConfigs) return [];
