@@ -1,27 +1,18 @@
 import { Badge } from "@/components/ui/badge";
-import type { AssetType } from "@atk/zod/asset-types";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { Suspense } from "react";
-import type { Address } from "viem";
+import type { AssetTabBadgeType } from "./asset-tab-configuration";
 
 const logger = createLogger();
 
-interface TabBadgeProps {
-  address: Address;
-  assetType: AssetType;
-  badgeType:
-    | "holders"
-    | "events"
-    | "actions"
-    | "allowlist"
-    | "blocklist"
-    | "denomination-asset";
+interface AssetTabBadgeProps {
+  badgeType: AssetTabBadgeType;
 }
 
 /**
  * Simple spinner for fallback while loading badge counts
  */
-export function TabBadgeSpinner() {
+export function AssetTabBadgeSpinner() {
   return (
     <div
       className="ml-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent text-muted-foreground"
@@ -36,11 +27,7 @@ export function TabBadgeSpinner() {
 /**
  * Component that loads and displays badge counts for asset tabs
  */
-function TabBadgeLoader({
-  address: _address,
-  assetType: _assetType,
-  badgeType,
-}: TabBadgeProps) {
+function AssetTabBadgeLoader({ badgeType }: AssetTabBadgeProps) {
   let count: number | undefined;
 
   try {
@@ -89,10 +76,10 @@ function TabBadgeLoader({
 /**
  * Tab badge component with Suspense wrapper
  */
-export function TabBadge(props: TabBadgeProps) {
+export function AssetTabBadge(props: AssetTabBadgeProps) {
   return (
-    <Suspense fallback={<TabBadgeSpinner />}>
-      <TabBadgeLoader {...props} />
+    <Suspense fallback={<AssetTabBadgeSpinner />}>
+      <AssetTabBadgeLoader {...props} />
     </Suspense>
   );
 }

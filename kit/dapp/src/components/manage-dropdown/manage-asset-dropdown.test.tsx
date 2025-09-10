@@ -36,6 +36,7 @@ vi.mock("@/orpc/orpc-client", () => ({
       updateCollateral: { mutationOptions: vi.fn(() => ({})) },
       setYieldSchedule: { mutationOptions: vi.fn(() => ({})) },
       burn: { mutationOptions: vi.fn(() => ({})) },
+      mature: { mutationOptions: vi.fn(() => ({})) },
       grantRole: { mutationOptions: vi.fn(() => ({})) },
       revokeRole: { mutationOptions: vi.fn(() => ({})) },
       freezeAddress: { mutationOptions: vi.fn(() => ({})) },

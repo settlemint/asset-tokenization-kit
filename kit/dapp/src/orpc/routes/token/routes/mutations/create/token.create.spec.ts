@@ -1,4 +1,5 @@
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
+import { getAnvilBasedFutureDate } from "@/test/anvil";
 import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   DEFAULT_ADMIN,
@@ -6,7 +7,6 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
-import { addYears } from "date-fns";
 import { equal as dnumEqual, from as dnumFrom } from "dnum";
 import { describe, expect, test } from "vitest";
 
@@ -147,7 +147,7 @@ describe("Token create", () => {
       decimals: 18,
       cap: dnumFrom("1000000", 18),
       faceValue: dnumFrom("1000", 18), // 1000 stablecoin scaled to 18 decimals
-      maturityDate: new Date("2025-12-31"),
+      maturityDate: await getAnvilBasedFutureDate(12),
       denominationAsset: stablecoinResult.id,
       initialModulePairs: [],
     };
@@ -215,7 +215,7 @@ describe("Token create", () => {
       decimals: 18, // Bond token has 18 decimals
       cap: cap,
       faceValue: faceValue,
-      maturityDate: addYears(new Date(), 1),
+      maturityDate: await getAnvilBasedFutureDate(12),
       denominationAsset: usdcResult.id,
       initialModulePairs: [],
     };

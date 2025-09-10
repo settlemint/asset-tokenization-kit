@@ -166,6 +166,7 @@ const mockToken = {
       id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
     },
   },
+  complianceModuleConfigs: [],
   redeemable: null,
   bond: null,
   fund: null,

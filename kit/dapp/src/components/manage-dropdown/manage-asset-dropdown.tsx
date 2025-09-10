@@ -11,11 +11,13 @@ import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { AssetExtensionEnum } from "@atk/zod/asset-extensions";
 import { useQuery } from "@tanstack/react-query";
+import { isAfter } from "date-fns";
 import { greaterThan } from "dnum";
 import {
+  CheckCircle,
   ChevronDown,
-  Minus,
   Lock,
+  Minus,
   Pause,
   Play,
   Plus,
@@ -27,12 +29,13 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CollateralSheet } from "./sheets/collateral-sheet";
 import { FreezePartialSheet } from "./sheets/freeze-partial-sheet";
+import { MatureConfirmationSheet } from "./sheets/mature-confirmation-sheet";
 import { MintSheet } from "./sheets/mint-sheet";
 import { PauseUnpauseConfirmationSheet } from "./sheets/pause-unpause-confirmation-sheet";
 import { SetYieldScheduleSheet } from "./sheets/set-yield-schedule-sheet";
 import { TopUpDenominationAssetSheet } from "./sheets/top-up-denomination-asset-sheet";
-import { WithdrawDenominationAssetSheet } from "./sheets/withdraw-denomination-asset-sheet";
 import { UnfreezePartialSheet } from "./sheets/unfreeze-partial-sheet";
+import { WithdrawDenominationAssetSheet } from "./sheets/withdraw-denomination-asset-sheet";
 
 interface ManageAssetDropdownProps {
   asset: Token; // Keep Token type to maintain API compatibility
@@ -46,6 +49,7 @@ type Action =
   | "collateral"
   | "viewEvents"
   | "topUpDenominationAsset"
+  | "mature"
   | "freezePartial"
   | "unfreezePartial"
   | "withdrawDenominationAsset";
@@ -243,6 +247,25 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
       });
     }
 
+    // Mature bond only visible for bond tokens that can be matured
+    const canMatureBond =
+      asset.extensions.includes(AssetExtensionEnum.BOND) &&
+      asset.bond &&
+      !asset.bond.isMatured &&
+      asset.bond.maturityDate &&
+      isAfter(new Date(), asset.bond.maturityDate) &&
+      asset.userPermissions?.actions?.mature &&
+      !isPaused;
+    if (canMatureBond) {
+      arr.push({
+        id: "mature",
+        label: t("tokens:actions.mature.label"),
+        icon: CheckCircle,
+        openAction: "mature",
+        disabled: false,
+      });
+    }
+
     return arr;
   }, [
     t,
@@ -251,6 +274,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
     asset.yield?.schedule,
     asset.userPermissions?.actions,
     asset.collateral,
+    asset.bond,
     isPaused,
     hasWithdrawableAmount,
     hasTopUpableAmount,
@@ -338,6 +362,12 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
 
       <CollateralSheet
         open={isCurrentAction({ target: "collateral", current: openAction })}
+        onOpenChange={onActionOpenChange}
+        asset={asset}
+      />
+
+      <MatureConfirmationSheet
+        open={isCurrentAction({ target: "mature", current: openAction })}
         onOpenChange={onActionOpenChange}
         asset={asset}
       />

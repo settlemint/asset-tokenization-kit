@@ -57,6 +57,7 @@ const READ_TOKEN_QUERY = theGraphGraphql(
         faceValue
         isMatured
         maturityDate
+        denominationAssetNeeded
         denominationAsset {
           id
           decimals
@@ -79,8 +80,15 @@ const READ_TOKEN_QUERY = theGraphGraphql(
           id
         }
       }
-      stats {
+      complianceModuleConfigs {
         id
+        complianceModule {
+          id
+          typeId
+        }
+      }
+      stats {
+        totalValueInBaseCurrency
         balancesCount
       }
     }
@@ -177,6 +185,7 @@ export const tokenMiddleware = baseRouter.middleware<
             recoverERC20: false,
             recoverTokens: false,
             redeem: false,
+            mature: false,
             removeComplianceModule: false,
             setCap: false,
             setYieldSchedule: false,
@@ -186,13 +195,13 @@ export const tokenMiddleware = baseRouter.middleware<
             withdrawDenominationAsset: false,
           };
 
+        const userRoleList = Object.entries(userRoles)
+          .filter(([_, hasRole]) => hasRole)
+          .map(([role]) => role) as AccessControlRoles[];
+
         // Update based on user roles using the flexible role requirement system
         Object.entries(TOKEN_PERMISSIONS).forEach(
           ([action, roleRequirement]) => {
-            const userRoleList = Object.entries(userRoles)
-              .filter(([_, hasRole]) => hasRole)
-              .map(([role]) => role) as AccessControlRoles[];
-
             initialActions[action as keyof typeof TOKEN_PERMISSIONS] =
               satisfiesRoleRequirement(userRoleList, roleRequirement);
           }

@@ -1,4 +1,4 @@
-import { getAnvilTimeMilliseconds } from "@/test/anvil";
+import { getAnvilTimeMilliseconds, getAnvilBasedFutureDate } from "@/test/anvil";
 import { TimeIntervalEnum } from "@atk/zod/time-interval";
 import { createFixedYieldSchedule } from "@test/fixtures/fixed-yield-schedule";
 import { getOrpcClient, type OrpcClient } from "@test/fixtures/orpc-client";
@@ -54,7 +54,7 @@ describe("Fixed yield schedule read", async () => {
       decimals: 18,
       cap: "1000000",
       faceValue: "1000",
-      maturityDate: new Date("2025-12-31"),
+      maturityDate: await getAnvilBasedFutureDate(12),
       initialModulePairs: [],
       denominationAsset: stablecoinToken.id,
     };

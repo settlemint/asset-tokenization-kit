@@ -5,6 +5,7 @@ import { assetExtensionArray } from "@atk/zod/asset-extensions";
 import { assetSymbol } from "@atk/zod/asset-symbol";
 import { assetType } from "@atk/zod/asset-types";
 import { bigDecimal } from "@atk/zod/bigdecimal";
+import { complianceTypeId } from "@atk/zod/compliance";
 import { decimals } from "@atk/zod/decimals";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { timestamp } from "@atk/zod/timestamp";
@@ -126,6 +127,9 @@ export const RawTokenSchema = z.object({
       faceValue: bigDecimal().describe("The face value of the bond"),
       isMatured: z.boolean().describe("Whether the bond is matured"),
       maturityDate: timestamp().describe("The maturity date of the bond"),
+      denominationAssetNeeded: bigDecimal().describe(
+        "The amount of denomination asset needed to mature the bond"
+      ),
       denominationAsset: z
         .object({
           id: ethereumAddress.describe("The address of the denomination asset"),
@@ -150,6 +154,16 @@ export const RawTokenSchema = z.object({
     .custom<AccessControl>()
     .describe("The access control of the token")
     .optional(),
+  complianceModuleConfigs: z
+    .array(
+      z.object({
+        id: ethereumAddress,
+        complianceModule: z.object({
+          typeId: complianceTypeId(),
+        }),
+      })
+    )
+    .describe("Enabled compliance modules for this token"),
   userPermissions: z
     .object({
       roles: accessControlRoles.describe("The roles of the user for the token"),
@@ -230,6 +244,9 @@ export const RawTokenSchema = z.object({
                 .describe(
                   "Whether the user can execute the tokenRedeem action"
                 ),
+              mature: z
+                .boolean()
+                .describe("Whether the user can execute the mature action"),
               removeComplianceModule: z
                 .boolean()
                 .describe(
@@ -269,13 +286,12 @@ export const RawTokenSchema = z.object({
     .describe("The permissions of the user for the token"),
   stats: z
     .object({
-      id: z.string().describe("The ID of the token stats"),
       balancesCount: z
         .number()
         .describe("The number of accounts holding this token"),
-      totalValueInBaseCurrency: bigDecimal()
-        .describe("The total value in base currency of the token")
-        .optional(),
+      totalValueInBaseCurrency: bigDecimal().describe(
+        "The total value in base currency of the token"
+      ),
     })
     .nullable()
     .describe("The stats of the token"),
