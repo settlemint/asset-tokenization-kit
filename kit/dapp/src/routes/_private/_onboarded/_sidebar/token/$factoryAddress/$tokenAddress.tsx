@@ -1,5 +1,6 @@
 import { AssetStatusBadge } from "@/components/assets/asset-status-badge";
-import { TabBadge } from "@/components/assets/tab-badge";
+import { AssetTabBadge } from "@/components/assets/asset-tab-badge";
+import { getAssetTabConfiguration } from "@/components/assets/asset-tab-configuration";
 import {
   assetClassBreadcrumbs,
   createBreadcrumbMetadata,
@@ -7,12 +8,11 @@ import {
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { ManageAssetDropdown } from "@/components/manage-dropdown/manage-asset-dropdown";
-import { getAssetTabConfiguration } from "@/components/tab-navigation/asset-tab-configuration";
 import { TabNavigation } from "@/components/tab-navigation/tab-navigation";
-import { orpc } from "@/orpc/orpc-client";
+import { useTokenLoaderQuery } from "@/hooks/use-token-loader-query";
 import { seo } from "@atk/config/metadata";
+import type { AssetExtension } from "@atk/zod/asset-extensions";
 import {
-  type AssetType,
   getAssetClassFromFactoryTypeId,
   getAssetTypeFromFactoryTypeId,
 } from "@atk/zod/asset-types";
@@ -108,20 +108,8 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const { asset: loaderAsset, factory } = Route.useLoaderData();
   const { factoryAddress, tokenAddress } = Route.useParams();
-
-  // Get asset type from factory
-  const assetType = getAssetTypeFromFactoryTypeId(factory.typeId);
-
-  // Subscribe to live asset so UI reacts to invalidations from actions
-  const { data: queriedAsset } = useQuery(
-    orpc.token.read.queryOptions({
-      input: { tokenAddress },
-    })
-  );
-
-  const asset = queriedAsset ?? loaderAsset;
+  const { asset } = useTokenLoaderQuery();
 
   return (
     <div className="space-y-6 p-6">
@@ -139,7 +127,7 @@ function RouteComponent() {
       <AsyncTabNavigation
         factoryAddress={factoryAddress}
         assetAddress={tokenAddress}
-        assetType={assetType}
+        tokenExtensions={asset.extensions}
       />
 
       <Outlet />
@@ -168,11 +156,11 @@ function TabNavigationSkeleton() {
 function AsyncTabNavigation({
   factoryAddress,
   assetAddress,
-  assetType,
+  tokenExtensions,
 }: {
   factoryAddress: EthereumAddress;
   assetAddress: EthereumAddress;
-  assetType: AssetType;
+  tokenExtensions: AssetExtension[];
 }) {
   const { t } = useTranslation(["tokens", "assets", "common"]);
 
@@ -182,15 +170,19 @@ function AsyncTabNavigation({
       "asset-tab-configuration",
       factoryAddress,
       assetAddress,
-      assetType,
+      tokenExtensions,
     ],
     queryFn: () =>
       getAssetTabConfiguration({
         factoryAddress,
         assetAddress,
-        assetType,
+        tokenExtensions,
+        tokenComplianceModules: [], // TODO: Get from API when available
       }),
   });
+
+  // Keep assetType for backwards compatibility with TabBadge
+  // TODO: Update TabBadge to use extensions when ready
 
   // Transform tab configurations to TabItemProps with translations and badges
   const tabs = useMemo(() => {
@@ -201,17 +193,13 @@ function AsyncTabNavigation({
       name: config.badgeType ? (
         <>
           {t(`tokens:tabs.${config.tabKey}`)}
-          <TabBadge
-            address={assetAddress}
-            assetType={assetType}
-            badgeType={config.badgeType}
-          />
+          <AssetTabBadge badgeType={config.badgeType} />
         </>
       ) : (
         t(`tokens:tabs.${config.tabKey}`)
       ),
     }));
-  }, [tabConfigs, t, assetAddress, assetType]);
+  }, [tabConfigs, t]);
 
   if (!tabConfigs) {
     return <TabNavigationSkeleton />;
