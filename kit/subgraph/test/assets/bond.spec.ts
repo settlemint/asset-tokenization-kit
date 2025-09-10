@@ -8,10 +8,15 @@ describe("Bonds", () => {
         tokens(where: $where, orderBy: name) {
           name
           type
+          totalSupply
+          totalSupplyExact
           bond {
             isMatured
             maturityDate
             faceValue
+            faceValueExact
+            denominationAssetNeeded
+            denominationAssetNeededExact
             denominationAsset {
               name
               decimals
@@ -37,10 +42,15 @@ describe("Bonds", () => {
       {
         name: "Euro Bonds",
         type: "bond",
+        totalSupply: "117",
+        totalSupplyExact: "117000000000000000000",
         bond: {
           isMatured: true,
-          maturityDate: expect.not.stringMatching(/^0$/),
+          maturityDate: "1788982822",
           faceValue: "0.000123",
+          faceValueExact: "123",
+          denominationAssetNeeded: "0.014391",
+          denominationAssetNeededExact: "14391",
           denominationAsset: {
             name: "Euro Deposits",
             decimals: 6,
