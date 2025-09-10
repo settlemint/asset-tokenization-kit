@@ -5,7 +5,7 @@
     "asset-types-deployed": "Asset types deployed",
     "available-asset-types": "Available asset types",
     "choose-asset-types": "Define which types of tokenized assets your platform will support.",
-    "confirm-deployment-description": "You're about to deploy the selected add-ons using your wallet. To authorize this critical action, we need you to confirm your identity.",
+    "confirm-deployment-description": "You're about to deploy the selected asset factories using your wallet. To authorize this critical action, we need you to confirm your identity.",
     "confirm-deployment-title": "Enter your PIN code to continue deployment",
     "deploy": "Deploy asset factories",
     "deploy-assets": "Deploy assets",
