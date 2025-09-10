@@ -86,8 +86,11 @@ describe("Custodian Extension", () => {
           tokens(first: 5) {
             id
             symbol
-            freezer {
+            accessControl {
               id
+              freezer {
+                id
+              }
             }
           }
         }`
@@ -105,8 +108,11 @@ describe("Custodian Extension", () => {
           tokens(first: 5) {
             id
             symbol
-            custodian {
+            accessControl {
               id
+              custodian {
+                id
+              }
             }
           }
         }`
@@ -124,8 +130,11 @@ describe("Custodian Extension", () => {
           tokens(first: 5) {
             id
             symbol
-            emergency {
+            accessControl {
               id
+              emergency {
+                id
+              }
             }
           }
         }`
