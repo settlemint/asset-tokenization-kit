@@ -1,4 +1,3 @@
-import { user } from "@/lib/db/schema";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import {
   filterClaimsForUser,
@@ -9,11 +8,7 @@ import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import {
-  createNullWalletIdentityResult,
-  fetchUserIdentity,
-} from "@/orpc/routes/user/utils/identity.util";
-import { eq } from "drizzle-orm";
+import { fetchUserIdentity } from "@/orpc/routes/user/utils/identity.util";
 import { ClaimsListInputSchema } from "./claims.list.schema";
 
 /**
@@ -49,15 +44,8 @@ import { ClaimsListInputSchema } from "./claims.list.schema";
  *
  * @example
  * ```typescript
- * // Get claims by user ID
- * const claims = await orpc.user.claims.list.query({
- *   type: "userId",
- *   userId: "user-123"
- * });
- *
  * // Get claims by wallet address
  * const claims = await orpc.user.claims.list.query({
- *   type: "wallet",
  *   wallet: "0x1234567890123456789012345678901234567890"
  * });
  * ```
@@ -76,69 +64,22 @@ export const list = authRouter.user.claims.list
   .use(trustedIssuerMiddleware)
   .use(
     identityPermissionsMiddleware<typeof ClaimsListInputSchema>({
-      getTargetUserId: ({ input }) =>
-        input.type === "userId" ? input.userId : undefined,
+      getTargetUserId: () => undefined,
     })
   )
   .use(databaseMiddleware)
-  .handler(async ({ context, input, errors }) => {
-    // Build the query condition based on input type
-    const whereCondition =
-      input.type === "userId"
-        ? eq(user.id, input.userId)
-        : eq(user.wallet, input.wallet);
-
-    // Execute query to find the user
-    const result = await context.db
-      .select({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        wallet: user.wallet,
-      })
-      .from(user)
-      .where(whereCondition)
-      .limit(1);
-
-    if (result.length === 0) {
-      throw errors.NOT_FOUND({
-        message:
-          input.type === "userId"
-            ? `User with ID ${input.userId} not found`
-            : `User with wallet ${input.wallet} not found`,
-      });
-    }
-
-    const userData = result[0];
-    if (!userData) {
-      throw errors.NOT_FOUND({
-        message:
-          input.type === "userId"
-            ? `User with ID ${input.userId} not found`
-            : `User with wallet ${input.wallet} not found`,
-      });
-    }
-
-    // Handle users without wallets
-    if (!userData.wallet) {
-      const identityResult = createNullWalletIdentityResult();
-      return {
-        claims: identityResult.claims,
-        identity: identityResult.identity,
-        isRegistered: identityResult.isRegistered,
-        wallet: userData.wallet,
-      };
-    }
-
+  .handler(async ({ context, input }) => {
     // Fetch identity data from TheGraph
     const identityResult = await fetchUserIdentity({
-      wallet: userData.wallet,
+      wallet: input.wallet,
       context,
     });
 
+    console.log("identityResult", identityResult);
+
     // Filter claims based on user's permissions
     const filteredClaims = filterClaimsForUser(
-      identityResult.claims,
+      identityResult.claims ?? [],
       context.identityPermissions
     );
 
@@ -146,6 +87,6 @@ export const list = authRouter.user.claims.list
       claims: filteredClaims,
       identity: identityResult.identity,
       isRegistered: identityResult.isRegistered,
-      wallet: userData.wallet,
+      wallet: input.wallet,
     };
   });

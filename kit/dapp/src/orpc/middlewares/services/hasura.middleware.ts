@@ -1,4 +1,5 @@
 import { hasuraClient } from "@/lib/settlemint/hasura";
+import type { Context } from "@/orpc/context/context";
 import { baseRouter } from "../../procedures/base.router";
 
 /**
@@ -20,14 +21,15 @@ import { baseRouter } from "../../procedures/base.router";
  *   });
  * ```
  */
-export const hasuraMiddleware = baseRouter.middleware(
-  async ({ context, next }) => {
-    return next({
-      context: {
-        // Use existing Hasura client if available (e.g., for testing),
-        // otherwise inject the default Hasura client instance
-        hasuraClient: context.hasuraClient ?? hasuraClient,
-      },
-    });
-  }
-);
+export const hasuraMiddleware = baseRouter.middleware<
+  Required<Pick<Context, "hasuraClient">>,
+  unknown
+>(async ({ context, next }) => {
+  return next({
+    context: {
+      // Use existing Hasura client if available (e.g., for testing),
+      // otherwise inject the default Hasura client instance
+      hasuraClient: context.hasuraClient ?? hasuraClient,
+    },
+  });
+});

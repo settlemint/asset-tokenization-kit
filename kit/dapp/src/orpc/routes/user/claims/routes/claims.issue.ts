@@ -1,5 +1,8 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { createClaim, type ClaimInfo } from "@/orpc/helpers/create-claim";
+import {
+  createClaim,
+  type ClaimInfo,
+} from "@/orpc/helpers/claims/create-claim";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import {
   canWriteClaims,

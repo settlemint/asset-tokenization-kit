@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Users } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -11,8 +12,11 @@ import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { UserStatusBadge } from "@/components/users/user-status-badge";
+import { getUserDisplayName } from "@/lib/utils/user-display-name";
 import { orpc } from "@/orpc/orpc-client";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
+import { toast } from "sonner";
 
 const columnHelper = createStrictColumnHelper<User>();
 
@@ -22,6 +26,7 @@ const columnHelper = createStrictColumnHelper<User>();
  */
 export function UsersTable() {
   const { t } = useTranslation("user");
+  const router = useRouter();
 
   // Use local pagination state for server-side pagination
   const [pagination, setPagination] = useState({
@@ -45,6 +50,20 @@ export function UsersTable() {
   const users = data?.items ?? [];
   const totalCount = data?.total ?? 0;
 
+  // Handle row click to navigate to user detail
+  const handleRowClick = (user: User) => {
+    void (async () => {
+      try {
+        await router.navigate({
+          to: "/admin/user-management/$userId",
+          params: { userId: user.id },
+        });
+      } catch {
+        toast.error(t("management.table.errors.navigationFailed"));
+      }
+    })();
+  };
+
   /**
    * Defines the column configuration for the users table
    */
@@ -55,9 +74,16 @@ export function UsersTable() {
           id: "userDisplay",
           header: t("management.table.columns.name"),
           cell: ({ row }) => <UserDisplayCell user={row.original} />,
+          filterFn: (row, _columnId, filterValue) => {
+            const user = row.original;
+            const displayName = getUserDisplayName(user);
+            return displayName
+              .toLowerCase()
+              .includes((filterValue as string).toLowerCase());
+          },
           meta: {
             displayName: t("management.table.columns.name"),
-            type: "none",
+            type: "text",
           },
         }),
         columnHelper.accessor("email", {
@@ -71,9 +97,28 @@ export function UsersTable() {
           id: "status",
           header: t("management.table.columns.status"),
           cell: ({ row }) => <UserStatusBadge user={row.original} />,
+          filterFn: (row, _columnId, filterValue) => {
+            const user = row.original;
+            if (filterValue === "registered") return user.isRegistered;
+            if (filterValue === "pending")
+              return Boolean(user.wallet && !user.isRegistered);
+            if (filterValue === "notConnected") return !user.wallet;
+            return true;
+          },
           meta: {
             displayName: t("management.table.columns.status"),
-            type: "none",
+            type: "option",
+            options: [
+              {
+                label: t("management.table.status.registered"),
+                value: "registered",
+              },
+              { label: t("management.table.status.pending"), value: "pending" },
+              {
+                label: t("management.table.status.notConnected"),
+                value: "notConnected",
+              },
+            ],
           },
         }),
         columnHelper.display({
@@ -82,7 +127,7 @@ export function UsersTable() {
           cell: ({ row }) => <DateCell value={row.original.createdAt} />,
           meta: {
             displayName: t("management.table.columns.created"),
-            type: "none",
+            type: "date",
           },
         }),
         columnHelper.display({
@@ -91,13 +136,13 @@ export function UsersTable() {
           cell: ({ row }) => (
             <DateCell
               value={row.original.lastLoginAt}
-              fallback="Never"
+              fallback={t("management.table.fallback.never")}
               relative
             />
           ),
           meta: {
             displayName: t("management.table.columns.lastActive"),
-            type: "none",
+            type: "date",
           },
         }),
       ] as ColumnDef<User>[]),
@@ -110,7 +155,7 @@ export function UsersTable() {
       <ComponentErrorBoundary componentName="Users Table">
         <div className="flex items-center justify-center p-8">
           <p className="text-muted-foreground">
-            Failed to load users. Please try again.
+            {t("management.table.errors.loadFailed")}
           </p>
         </div>
       </ComponentErrorBoundary>
@@ -148,17 +193,18 @@ export function UsersTable() {
         initialPageSize={20}
         initialSorting={[
           {
-            id: "createdAt",
+            id: "created",
             desc: true,
           },
         ]}
         customEmptyState={{
-          title: "No users found",
+          title: t("management.table.emptyState.title"),
           description: isLoading
-            ? "Loading users..."
-            : "No users have been registered yet.",
+            ? t("management.table.emptyState.loading")
+            : t("management.table.emptyState.description"),
           icon: Users,
         }}
+        onRowClick={handleRowClick}
       />
     </ComponentErrorBoundary>
   );

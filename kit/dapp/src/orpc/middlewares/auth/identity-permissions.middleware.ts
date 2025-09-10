@@ -33,6 +33,7 @@ import type { AccessControl } from "@/lib/fragments/the-graph/access-control-fra
 import type { Context } from "@/orpc/context/context";
 import { hasRole } from "@/orpc/helpers/access-control-helpers";
 import { baseRouter } from "@/orpc/procedures/base.router";
+import type { IdentityClaim } from "@atk/zod/claim";
 import type { z } from "zod";
 
 /**
@@ -306,9 +307,9 @@ export function canWriteUserData(permissions: IdentityPermissions): boolean {
  * ```
  */
 export function filterClaimsForUser(
-  claims: string[],
+  claims: IdentityClaim[],
   permissions: IdentityPermissions
-): string[] {
+): IdentityClaim[] {
   // Check if user has universal read access (identity manager)
   if (permissions.claims.read.includes("*")) {
     return claims;
@@ -316,7 +317,9 @@ export function filterClaimsForUser(
 
   // Filter claims to only those the user can read
   if (permissions.claims.read.length > 0) {
-    return claims.filter((claim) => permissions.claims.read.includes(claim));
+    return claims.filter((claim) =>
+      permissions.claims.read.includes(claim.name)
+    );
   }
 
   // Secure default: users with no read permissions see no claims
@@ -415,7 +418,10 @@ export const identityPermissionsMiddleware = <InputSchema extends z.ZodType>({
     input: z.infer<InputSchema>;
   }) => string | undefined;
 }) =>
-  baseRouter.middleware(async ({ context, next, errors }, input) => {
+  baseRouter.middleware<
+    Required<Pick<Context, "identityPermissions">>,
+    unknown
+  >(async ({ context, next, errors }, input) => {
     const { auth, system } = context;
 
     // Ensure user is authenticated - identity operations require valid user context

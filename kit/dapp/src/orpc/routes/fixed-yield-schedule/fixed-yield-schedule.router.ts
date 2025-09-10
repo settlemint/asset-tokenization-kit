@@ -1,6 +1,7 @@
 import { create } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.create";
 import { read } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.read";
 import { topUp } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.top-up";
+import { withdraw } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.withdraw";
 
 /**
  * Fixed yield schedule router configuration.
@@ -57,6 +58,17 @@ const routes = {
    * @see {@link ./routes/fixed-yield-schedule.top-up} - Implementation details
    */
   topUp,
+
+  /**
+   * Withdraw denomination asset from a fixed yield schedule.
+   *
+   * Withdraws denomination assets from an existing fixed yield schedule contract
+   * to a specified recipient address.
+   * Returns the transaction hash of the withdraw operation.
+   *
+   * @see {@link ./routes/fixed-yield-schedule.withdraw} - Implementation details
+   */
+  withdraw,
 };
 
 export default routes;

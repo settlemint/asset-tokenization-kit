@@ -1,4 +1,5 @@
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
+import type { IdentityClaim } from "@atk/zod/claim";
 import { getUserRole } from "@atk/zod/user-roles";
 
 export interface UserData {
@@ -52,7 +53,7 @@ export function buildUserWithIdentity({
   userData: UserData;
   kyc: KycData | null;
   identity: string | undefined;
-  claims: string[];
+  claims: IdentityClaim[];
   isRegistered: boolean;
 }): User {
   return {

@@ -8,7 +8,6 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { IATKFixedYieldScheduleFactory } from "./IATKFixedYieldScheduleFactory.sol";
 import { ISMARTFixedYieldSchedule } from "../../smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
 import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 // Implementations
 import { AbstractATKSystemAddonFactoryImplementation } from
@@ -143,19 +142,8 @@ contract ATKFixedYieldScheduleFactoryImplementation is
         // Create contract identity for the yield schedule
         address contractIdentity = _deployContractIdentity(scheduleProxyAddress, country);
 
-        IAccessControl(scheduleProxyAddress).grantRole(
-            ATKFixedYieldScheduleUpgradeable(scheduleProxyAddress).GOVERNANCE_ROLE(), address(this)
-        );
-
         // Set the onchain ID on the yield schedule contract
         ATKFixedYieldScheduleUpgradeable(scheduleProxyAddress).setOnchainId(contractIdentity);
-
-        IAccessControl(scheduleProxyAddress).renounceRole(
-            ATKFixedYieldScheduleUpgradeable(scheduleProxyAddress).GOVERNANCE_ROLE(), address(this)
-        );
-        IAccessControl(scheduleProxyAddress).renounceRole(
-            ATKFixedYieldScheduleUpgradeable(scheduleProxyAddress).DEFAULT_ADMIN_ROLE(), address(this)
-        );
 
         // Emit an event to log the creation of the new schedule proxy.
         emit ATKFixedYieldScheduleCreated(scheduleProxyAddress, _msgSender());

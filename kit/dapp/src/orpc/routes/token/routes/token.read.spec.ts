@@ -26,6 +26,7 @@ describe("Token read", () => {
         decimals: 18,
         type: "stablecoin",
         countryCode: "056",
+        basePrice: from("1.00", 2),
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -232,6 +233,8 @@ describe("Token read", () => {
         approve: true,
         forcedRecover: true,
         freezeAddress: true,
+        freezePartial: true,
+        unfreezePartial: true,
         recoverERC20: true,
         recoverTokens: true,
         redeem: true,
@@ -242,6 +245,7 @@ describe("Token read", () => {
         transfer: true,
         unpause: true,
         updateCollateral: true,
+        withdrawDenominationAsset: true,
       },
     };
     expect(tokenInfo.userPermissions).toEqual(expectedPermissions);
@@ -302,6 +306,8 @@ describe("Token read", () => {
         approve: true,
         forcedRecover: false,
         freezeAddress: false,
+        freezePartial: false,
+        unfreezePartial: false,
         recoverERC20: false,
         recoverTokens: false,
         redeem: false,
@@ -312,6 +318,7 @@ describe("Token read", () => {
         transfer: true,
         unpause: false,
         updateCollateral: false,
+        withdrawDenominationAsset: false,
       },
     };
     expect(tokenInfo.userPermissions).toEqual(expectedPermissions);

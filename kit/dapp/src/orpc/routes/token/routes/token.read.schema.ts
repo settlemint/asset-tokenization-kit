@@ -54,6 +54,21 @@ export const RawTokenSchema = z.object({
       identity: z
         .object({
           id: ethereumAddress.describe("The identity contract address"),
+          claims: z
+            .array(
+              z.object({
+                revoked: z.boolean().describe("Whether the claim is revoked"),
+                name: z.string().describe("The name of the claim"),
+                values: z.array(
+                  z.object({
+                    key: z.string().describe("The key of the claim value"),
+                    value: z.string().describe("The value of the claim value"),
+                  })
+                ),
+              })
+            )
+            .describe("The claims of the identity")
+            .optional(),
         })
         .nullable()
         .describe("The identity associated with this token"),
@@ -135,29 +150,6 @@ export const RawTokenSchema = z.object({
     .custom<AccessControl>()
     .describe("The access control of the token")
     .optional(),
-  contractCollateral: z
-    .object({
-      amount: bigDecimal().describe(
-        "Real-time collateral amount from contract"
-      ),
-      issuer: ethereumAddress.describe(
-        "Address of the collateral claim issuer"
-      ),
-      expiryTimestamp: z
-        .number()
-        .describe("Expiry timestamp of the collateral claim"),
-      hasValidClaim: z
-        .boolean()
-        .describe("Whether there's a valid collateral claim"),
-      error: z
-        .string()
-        .optional()
-        .describe("Error message if contract query failed"),
-    })
-    .optional()
-    .describe(
-      "Real-time collateral data queried directly from the smart contract"
-    ),
   userPermissions: z
     .object({
       roles: accessControlRoles.describe("The roles of the user for the token"),
@@ -213,6 +205,16 @@ export const RawTokenSchema = z.object({
                 .describe(
                   "Whether the user can execute the tokenFreezeAddress action"
                 ),
+              freezePartial: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenFreezePartial action"
+                ),
+              unfreezePartial: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenUnfreezePartial action"
+                ),
               recoverERC20: z
                 .boolean()
                 .describe(
@@ -252,6 +254,11 @@ export const RawTokenSchema = z.object({
                 .describe(
                   "Whether the user can execute the updateCollateral action"
                 ),
+              withdrawDenominationAsset: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the withdrawDenominationAsset action"
+                ),
             };
             return actionsSchema;
           })()
@@ -260,6 +267,18 @@ export const RawTokenSchema = z.object({
     })
     .optional()
     .describe("The permissions of the user for the token"),
+  stats: z
+    .object({
+      id: z.string().describe("The ID of the token stats"),
+      balancesCount: z
+        .number()
+        .describe("The number of accounts holding this token"),
+      totalValueInBaseCurrency: bigDecimal()
+        .describe("The total value in base currency of the token")
+        .optional(),
+    })
+    .nullable()
+    .describe("The stats of the token"),
 });
 
 /**

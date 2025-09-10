@@ -8,6 +8,7 @@
 
 import type { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { accessControlRoles } from "@atk/zod/access-control-roles";
+import { identityClaim } from "@atk/zod/claim";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { userRoles } from "@atk/zod/user-roles";
 import { verificationType } from "@atk/zod/verification-type";
@@ -58,6 +59,9 @@ const userPermissionsSchema = z.object({
           addonCreate: z
             .boolean()
             .describe("Whether the user can create addons"),
+          claimCreate: z
+            .boolean()
+            .describe("Whether the user can create claims"),
           grantRole: z.boolean().describe("Whether the user can grant roles"),
           revokeRole: z.boolean().describe("Whether the user can revoke roles"),
           complianceModuleCreate: z
@@ -148,7 +152,7 @@ export const UserSchema = z.object({
    * Array of claim names (e.g., "KYC", "ACCREDITATION").
    * Empty array if no identity or no claims.
    */
-  claims: z.array(z.string()).default([]).describe("User's identity claims"),
+  claims: z.array(identityClaim),
 
   /**
    * Whether the user has registered an on-chain identity.

@@ -9,8 +9,11 @@ import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware"
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { encodePacked, getAddress, keccak256 } from "viem";
-import { ClaimsRevokeInputSchema } from "./claims.revoke.schema";
+import { fetchClaimByTopicAndIdentity } from "../../utils/identity.util";
+import {
+  ClaimsRevokeInputSchema,
+  RevokableClaimTopicSchema,
+} from "./claims.revoke.schema";
 
 /**
  * Portal GraphQL mutation for revoking claims from identity contracts.
@@ -22,6 +25,7 @@ const REVOKE_CLAIM_MUTATION = portalGraphql(`
     $address: String!
     $from: String!
     $claimId: String!
+    $identity: String!
   ) {
     revokeClaim: ATKIdentityImplementationRevokeClaim(
       address: $address
@@ -30,7 +34,7 @@ const REVOKE_CLAIM_MUTATION = portalGraphql(`
       challengeResponse: $challengeResponse
       input: {
         _claimId: $claimId
-        _identity: $address
+        _identity: $identity
       }
     ) {
       transactionHash
@@ -72,9 +76,8 @@ const REVOKE_CLAIM_MUTATION = portalGraphql(`
  * ```typescript
  * // Revoke KYC claim
  * const result = await orpc.user.claims.revoke.mutate({
- *   targetUserId: "user-123",
+ *   targetIdentityAddress: "0x1234567890123456789012345678901234567890",
  *   claimTopic: "knowYourCustomer",
- *   reason: "KYC status expired",
  *   walletVerification: {
  *     verificationType: "pin",
  *     secretVerificationCode: "1234"
@@ -83,9 +86,8 @@ const REVOKE_CLAIM_MUTATION = portalGraphql(`
  *
  * // Revoke collateral claim
  * const result = await orpc.user.claims.revoke.mutate({
- *   targetUserId: "user-456",
+ *   targetIdentityAddress: "0x9876543210987654321098765432109876543210",
  *   claimTopic: "collateral",
- *   reason: "Collateral withdrawn",
  *   walletVerification: {
  *     verificationType: "otp",
  *     secretVerificationCode: "123456"
@@ -118,13 +120,25 @@ export const revoke = authRouter.user.claims.revoke
     })
   )
   .handler(async ({ context, input, errors }) => {
-    const { targetIdentityAddress, claimTopic, reason, walletVerification } =
-      input;
+    const { claimTopic, walletVerification, targetIdentityAddress } = input;
 
-    // Ensure user has an issuer identity
-    if (!context.userIssuerIdentity) {
+    // Ensure user has issuer identity
+    const issuerIdentity = context.userIssuerIdentity;
+    if (!issuerIdentity) {
       throw errors.UNAUTHORIZED({
         message: "User does not have an issuer identity",
+      });
+    }
+
+    // Validate that the claim topic is revokable
+    const validTopics = RevokableClaimTopicSchema.options as string[];
+    if (!validTopics.includes(claimTopic)) {
+      throw errors.BAD_REQUEST({
+        message: `Claim topic '${claimTopic}' cannot be revoked via API`,
+        data: {
+          requestedTopic: claimTopic,
+          revokableTopics: validTopics,
+        },
       });
     }
 
@@ -141,22 +155,22 @@ export const revoke = authRouter.user.claims.revoke
       });
     }
 
-    // Calculate the topic ID and claim ID
-    const topicId = BigInt(keccak256(encodePacked(["string"], [claimTopic])));
-    const claimId = keccak256(
-      encodePacked(
-        ["address", "uint256"],
-        [getAddress(context.userIssuerIdentity), topicId]
-      )
-    );
+    // Fetch the claim by topic and identity, with extracted claimId for smart contract use
+    const { extractedClaimId } = await fetchClaimByTopicAndIdentity({
+      claimTopic,
+      identityAddress: targetIdentityAddress,
+      context,
+    });
 
     // Submit claim revocation to blockchain via Portal
     const result = await context.portalClient.mutate(
       REVOKE_CLAIM_MUTATION,
       {
-        address: getAddress(targetIdentityAddress),
+        // Call on issuer's identity (has management key), targeting subject identity via input.identity
+        address: issuerIdentity,
         from: context.auth.user.wallet,
-        claimId: `0x${claimId.slice(2)}`,
+        claimId: extractedClaimId,
+        identity: targetIdentityAddress,
       },
       {
         sender: context.auth.user,
@@ -168,8 +182,6 @@ export const revoke = authRouter.user.claims.revoke
     return {
       success: true,
       transactionHash: result,
-      claimTopic,
-      targetWallet: targetIdentityAddress,
-      reason,
+      claimId: extractedClaimId,
     };
   });

@@ -14,6 +14,7 @@ import {
   buildUserWithIdentity,
   buildUserWithoutWallet,
 } from "@/orpc/routes/user/utils/user-response.util";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { type AnyColumn, asc, count, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 
@@ -26,7 +27,11 @@ const READ_ACCOUNTS_QUERY = theGraphGraphql(`
       identity {
         id
         claims {
+          id
           name
+          revoked
+          issuer { id }
+          values { key value }
         }
       }
     }
@@ -44,7 +49,11 @@ const AccountsResponseSchema = z.object({
           id: z.string(),
           claims: z.array(
             z.object({
+              id: z.string(),
               name: z.string(),
+              revoked: z.boolean(),
+              issuer: z.object({ id: ethereumAddress }),
+              values: z.array(z.object({ key: z.string(), value: z.string() })),
             })
           ),
         })
@@ -227,13 +236,10 @@ export const list = authRouter.user.list
       const account = accountsMap.get(u.wallet.toLowerCase());
       const identity = account?.identity;
 
-      // Get all claims for this user from TheGraph response
-      const allClaims = identity?.claims.map((claim) => claim.name) ?? [];
-
       // Apply role-based claim filtering for UI display
       // This is UI/UX control, not security - claims are publicly verifiable on-chain
-      const filteredClaims = filterClaimsForUser(
-        allClaims,
+      const filteredClaimObjects = filterClaimsForUser(
+        identity?.claims ?? [],
         context.identityPermissions
       );
 
@@ -241,7 +247,7 @@ export const list = authRouter.user.list
         userData: u,
         kyc,
         identity: identity?.id,
-        claims: filteredClaims,
+        claims: filteredClaimObjects,
         isRegistered: !!identity,
       });
     });

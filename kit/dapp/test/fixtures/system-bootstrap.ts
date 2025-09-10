@@ -306,6 +306,42 @@ export async function setDefaultSystemSettings(orpClient: OrpcClient) {
   });
 }
 
+/**
+ * Setup default admin roles for token access managers in integration tests.
+ * This is a convenience function to grant additional roles to the admin user
+ * for easier testing, including the EMERGENCY_ROLE for pause/unpause operations.
+ */
+export async function setupDefaultAdminTokenRoles(
+  orpClient: OrpcClient,
+  tokenAddress: string
+) {
+  const adminMe = await orpClient.user.me({});
+
+  // Grant convenience roles for integration testing
+  // Including EMERGENCY_ROLE so admin can pause/unpause assets
+  const rolesToGrant = [
+    "emergency", // For pause/unpause operations
+    "supplyManagement", // For mint/burn operations
+    "custodian", // For freeze/forced transfer operations
+    "governance", // For compliance and configuration
+  ] as AccessControlRoles[];
+
+  logger.info("Granting token-specific roles to admin for integration tests", {
+    tokenAddress,
+    roles: rolesToGrant,
+  });
+
+  await orpClient.token.grantRole({
+    walletVerification: {
+      secretVerificationCode: DEFAULT_PINCODE,
+      verificationType: "PINCODE",
+    },
+    contract: tokenAddress,
+    address: adminMe.wallet ?? "",
+    roles: rolesToGrant,
+  });
+}
+
 export async function createAndRegisterUserIdentities(orpcClient: OrpcClient) {
   const users = [DEFAULT_ISSUER, DEFAULT_INVESTOR, DEFAULT_ADMIN];
 

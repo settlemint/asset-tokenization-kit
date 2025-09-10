@@ -134,7 +134,7 @@ export const read = authRouter.user.read
 
     // Filter claims based on user's permissions
     const filteredClaims = filterClaimsForUser(
-      identityResult.claims,
+      identityResult.claims ?? [],
       context.identityPermissions
     );
 

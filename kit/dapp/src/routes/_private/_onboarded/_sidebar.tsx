@@ -34,7 +34,7 @@ function LayoutComponent() {
   return (
     <SidebarProvider className="OnboardedSidebar">
       <AppSidebar className="group-data-[side=left]:border-0" />
-      <SidebarInset className="bg-sidebar">
+      <SidebarInset>
         <header className="sticky top-0 z-50 flex justify-between w-full h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 bg-sidebar">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
@@ -47,7 +47,7 @@ function LayoutComponent() {
             <UserDropdown />
           </div>
         </header>
-        <main className="flex min-h-[calc(100vh-90px)] flex-1 flex-col rounded-tl-xl px-8 py-4 bg-background overflow-y-auto">
+        <main className="flex h-[calc(100vh-90px)] flex-col rounded-tl-xl px-8 py-4 bg-background overflow-y-auto">
           <Outlet />
         </main>
       </SidebarInset>

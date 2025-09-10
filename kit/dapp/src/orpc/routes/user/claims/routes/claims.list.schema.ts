@@ -1,19 +1,15 @@
+import { identityClaim } from "@atk/zod/claim";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { z } from "zod";
 
 /**
  * Input schema for claims list endpoint.
  *
- * Supports querying claims for a user by either their internal ID
- * or their wallet address (discriminated union).
+ * Supports querying claims for a user by either their wallet address
+ * or their on-chain identity address.
  */
-export const ClaimsListInputSchema = z.discriminatedUnion("type", [
+export const ClaimsListInputSchema = z.union([
   z.object({
-    type: z.literal("userId"),
-    userId: z.string().describe("Internal user ID to fetch claims for"),
-  }),
-  z.object({
-    type: z.literal("wallet"),
     wallet: ethereumAddress.describe("Wallet address to fetch claims for"),
   }),
 ]);
@@ -25,10 +21,12 @@ export const ClaimsListInputSchema = z.discriminatedUnion("type", [
  */
 export const ClaimsListOutputSchema = z.object({
   /**
-   * Array of claim names for the user.
+   * Array of claims for the user with full information for revocation operations.
    * Empty array if user has no claims or no identity.
    */
-  claims: z.array(z.string()).describe("User's identity claim names"),
+  claims: z
+    .array(identityClaim)
+    .describe("User's identity claims with full information"),
 
   /**
    * User's on-chain identity address.

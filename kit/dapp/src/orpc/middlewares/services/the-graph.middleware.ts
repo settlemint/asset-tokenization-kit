@@ -48,6 +48,7 @@
  * // result.tokens contains ALL tokens, regardless of pagination limits
  */
 import { theGraphClient } from "@/lib/settlemint/the-graph";
+import type { Context } from "@/orpc/context/context";
 import type { TadaDocumentNode } from "gql.tada";
 import { print } from "graphql";
 import {
@@ -177,7 +178,10 @@ export type ValidatedTheGraphClient = ReturnType<
  *     return result.tokens; // Also contains ALL tokens
  *   });
  */
-export const theGraphMiddleware = baseRouter.middleware((options) => {
+export const theGraphMiddleware = baseRouter.middleware<
+  Required<Pick<Context, "theGraphClient">>,
+  unknown
+>((options) => {
   const { context, next, errors } = options;
 
   // Check if the context already has a validated TheGraph client

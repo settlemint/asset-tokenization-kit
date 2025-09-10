@@ -39,19 +39,16 @@ export const RevokableClaimTopicSchema = z.enum([
  */
 export const ClaimsRevokeInputSchema = z.object({
   /**
-   * Target identity address to revoke the claim from.
+   * Address of the identity the claim was made on.
+   * This is the target identity contract that holds the claim.
    */
-  targetIdentityAddress: ethereumAddress.describe("Target identity contract address to revoke claim from"),
-
+  targetIdentityAddress: ethereumAddress.describe(
+    "Target identity contract address that holds the claim"
+  ),
   /**
    * Claim topic to revoke.
    */
   claimTopic: RevokableClaimTopicSchema.describe("Claim topic to revoke"),
-
-  /**
-   * Optional reason for revoking the claim.
-   */
-  reason: z.string().optional().describe("Reason for revoking the claim"),
 
   /**
    * Wallet verification for the revoker.
@@ -82,21 +79,9 @@ export const ClaimsRevokeOutputSchema = z.object({
   error: z.string().optional().describe("Error message if revocation failed"),
 
   /**
-   * The revoked claim topic for confirmation.
+   * Claim ID that was revoked.
    */
-  claimTopic: z.string().describe("The claim topic that was revoked"),
-
-  /**
-   * Target user's wallet address for confirmation.
-   */
-  targetWallet: ethereumAddress.describe(
-    "Wallet address claim was revoked from"
-  ),
-
-  /**
-   * Reason for revocation, if provided.
-   */
-  reason: z.string().optional().describe("Reason for revocation"),
+  claimId: z.string().describe("Claim ID that was revoked"),
 });
 
 export type RevokableClaimTopic = z.infer<typeof RevokableClaimTopicSchema>;

@@ -8,8 +8,6 @@ import { ISMARTFixedYieldSchedule } from
     "../../contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
 import { IATKFixedYieldScheduleFactory } from "../../contracts/addons/yield/IATKFixedYieldScheduleFactory.sol";
 import { TestConstants } from "../Constants.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
-import { ATKFixedYieldScheduleUpgradeable } from "../../contracts/addons/yield/ATKFixedYieldScheduleUpgradeable.sol";
 
 /// @title Helper utilities for SMART Yield tests
 /// @notice Provides common helper functions and utilities for testing yield functionality
@@ -75,9 +73,6 @@ abstract contract SMARTYieldHelpers is Test {
         );
 
         vm.startPrank(tokenIssuer);
-        IAccessControl(yieldSchedule).grantRole(
-            ATKFixedYieldScheduleUpgradeable(yieldSchedule).SUPPLY_MANAGEMENT_ROLE(), tokenIssuer
-        );
         vm.stopPrank();
 
         return yieldSchedule;

@@ -397,9 +397,11 @@ describe("User read", () => {
 
       // If the user has an identity with claims, identity manager should see them all
       if (user.identity && user.claims.length > 0) {
-        user.claims.forEach((claim: string) => {
-          expect(typeof claim).toBe("string");
-          expect(claim.length).toBeGreaterThan(0);
+        user.claims.forEach((claim) => {
+          expect(claim.name).toBeDefined();
+          expect(claim.revoked).toBeDefined();
+          expect(claim.issuer).toBeDefined();
+          expect(claim.values).toBeDefined();
         });
       }
     });

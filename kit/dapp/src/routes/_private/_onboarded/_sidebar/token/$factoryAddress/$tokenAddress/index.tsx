@@ -9,7 +9,9 @@ import { AssetTotalSupplyAreaChart } from "@/components/stats/charts/asset-total
 import { AssetTotalVolumeAreaChart } from "@/components/stats/charts/asset-total-volume-area-chart";
 import { AssetWalletDistributionChart } from "@/components/stats/charts/asset-wallet-distribution-chart";
 import { useTokenLoaderQuery } from "@/hooks/use-token-loader-query";
+import { parseClaim } from "@/lib/utils/claims/parse-claim";
 import { createFileRoute } from "@tanstack/react-router";
+import { from } from "dnum";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -91,6 +93,15 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { asset } = useTokenLoaderQuery();
   const { t } = useTranslation(["tokens", "assets", "common", "stats"]);
+  const isinClaim = parseClaim<{ isin: string }>(
+    asset.account.identity?.claims,
+    "isin"
+  );
+  const basePriceClaim = parseClaim<{
+    amount: string;
+    currencyCode: string;
+    decimals: string;
+  }>(asset.account.identity?.claims, "basePrice");
 
   return (
     <>
@@ -138,6 +149,40 @@ function RouteComponent() {
           value={asset.createdBy.id}
           type="address"
         />
+
+        {isinClaim && (
+          <DetailGridItem
+            label={t("tokens:fields.isin")}
+            info={t("tokens:fields.isinInfo")}
+            value={isinClaim.isin}
+            type="text"
+          />
+        )}
+
+        {basePriceClaim && (
+          <>
+            <DetailGridItem
+              label={t("tokens:fields.basePrice")}
+              info={t("tokens:fields.basePriceInfo")}
+              value={from([
+                BigInt(basePriceClaim.amount),
+                Number(basePriceClaim.decimals),
+              ])}
+              type="currency"
+              currency={{ assetSymbol: basePriceClaim.currencyCode }}
+            />
+            <DetailGridItem
+              label={t("tokens:fields.totalPrice")}
+              info={t("tokens:fields.totalPriceInfo")}
+              value={from(
+                asset.stats?.totalValueInBaseCurrency ?? "0",
+                Number(basePriceClaim.decimals)
+              )}
+              type="currency"
+              currency={{ assetSymbol: basePriceClaim.currencyCode }}
+            />
+          </>
+        )}
 
         {asset.capped?.cap && (
           <DetailGridItem
