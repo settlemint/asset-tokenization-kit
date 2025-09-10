@@ -100,27 +100,47 @@ describe("Token freeze partial", () => {
     expect(stablecoinToken.id).toBeDefined();
     expect(stablecoinToken.type).toBe(stablecoinData.type);
 
-    // Ensure sufficient collateral is set before minting to avoid reverts
-    await adminClient.token.updateCollateral({
-      contract: stablecoinToken.id,
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
-      },
-      amount: from("1000000", stablecoinToken.decimals),
-      expiryDays: 30,
+    // Ensure sufficient collateral is set before minting to avoid reverts (only if supported)
+    const createdTokenDetails = await adminClient.token.read({
+      tokenAddress: stablecoinToken.id,
     });
+    if (createdTokenDetails.extensions.includes("COLLATERAL")) {
+      await adminClient.token.updateCollateral({
+        contract: stablecoinToken.id,
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+        amount: from("1000000", stablecoinToken.decimals),
+        expiryDays: 30,
+      });
+    }
 
     // SETUP: Mint substantial balance to enable multiple freeze operations without depletion
-    await adminClient.token.mint({
-      contract: stablecoinToken.id,
-      recipients: [investorAddress],
-      amounts: [from("10000", stablecoinToken.decimals)],
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
-      },
-    });
+    // Retry mint briefly in case on-chain claim finalization is still indexing
+    {
+      const maxAttempts = 3;
+      let lastError: unknown;
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+          await adminClient.token.mint({
+            contract: stablecoinToken.id,
+            recipients: [investorAddress],
+            amounts: [from("10000", stablecoinToken.decimals)],
+            walletVerification: {
+              secretVerificationCode: DEFAULT_PINCODE,
+              verificationType: "PINCODE",
+            },
+          });
+          lastError = undefined;
+          break;
+        } catch (error) {
+          lastError = error;
+          await new Promise((r) => setTimeout(r, 750));
+        }
+      }
+      if (lastError) throw lastError;
+    }
   });
 
   /**
