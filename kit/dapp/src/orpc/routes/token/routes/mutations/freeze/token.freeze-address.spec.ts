@@ -253,19 +253,25 @@ describe("Token freeze address", () => {
 
   test("cannot freeze address on token without CUSTODIAN extension", async () => {
     // Create a deposit token without CUSTODIAN extension
-    const nonCustodianToken = await createToken(adminClient, {
-      type: "deposit",
-      name: `Non-Custodian Deposit ${Date.now()}`,
-      symbol: "NCD3",
-      decimals: 18,
-      initialModulePairs: [], // No CUSTODIAN extension
-      basePrice: from("1.00", 2),
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
+    const nonCustodianToken = await createToken(
+      adminClient,
+      {
+        type: "deposit",
+        name: `Non-Custodian Deposit ${Date.now()}`,
+        symbol: "NCD3",
+        decimals: 18,
+        initialModulePairs: [], // No CUSTODIAN extension
+        basePrice: from("1.00", 2),
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+        countryCode: "056",
       },
-      countryCode: "056",
-    });
+      {
+        grantRole: ["custodian"],
+      }
+    );
 
     await expect(
       adminClient.token.freezeAddress(

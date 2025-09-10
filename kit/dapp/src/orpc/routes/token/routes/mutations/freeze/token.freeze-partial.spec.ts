@@ -80,14 +80,21 @@ describe("Token freeze partial", () => {
       basePrice: from("1.00", 2),
     };
 
-    stablecoinToken = await createToken(adminClient, {
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
+    stablecoinToken = await createToken(
+      adminClient,
+      {
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+        ...stablecoinData,
+        countryCode: "056",
       },
-      ...stablecoinData,
-      countryCode: "056",
-    });
+      {
+        grantRole: ["supplyManagement", "freezer"],
+        unpause: true,
+      }
+    );
 
     expect(stablecoinToken).toBeDefined();
     expect(stablecoinToken.id).toBeDefined();
@@ -296,19 +303,25 @@ describe("Token freeze partial", () => {
    */
   test("cannot freeze on token without CUSTODIAN extension", async () => {
     // SETUP: Create token without custodian capabilities to test error handling
-    const nonCustodianToken = await createToken(adminClient, {
-      type: "stablecoin",
-      name: `Non-Custodian Token ${Date.now()}`,
-      symbol: "NCT",
-      decimals: 18,
-      initialModulePairs: [], // WHY: Empty pairs exclude CUSTODIAN extension
-      basePrice: from("1.00", 2),
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
+    const nonCustodianToken = await createToken(
+      adminClient,
+      {
+        type: "stablecoin",
+        name: `Non-Custodian Token ${Date.now()}`,
+        symbol: "NCT",
+        decimals: 18,
+        initialModulePairs: [], // WHY: Empty pairs exclude CUSTODIAN extension
+        basePrice: from("1.00", 2),
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+        countryCode: "056",
       },
-      countryCode: "056",
-    });
+      {
+        grantRole: ["freezer"],
+      }
+    );
 
     const freezeAmount = toString(from("100", nonCustodianToken.decimals));
 
