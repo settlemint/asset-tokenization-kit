@@ -92,7 +92,7 @@ describe("Token freeze address", () => {
         countryCode: "056",
       },
       {
-        grantRole: ["supplyManagement"],
+        grantRole: ["supplyManagement", "governance"],
         unpause: true,
       }
     );
@@ -102,6 +102,17 @@ describe("Token freeze address", () => {
     expect(stablecoinToken.type).toBe(tokenData.type);
 
     // PREREQUISITE: Establish token holdings for meaningful freeze testing
+    // Ensure sufficient collateral is set before minting to avoid reverts
+    await adminClient.token.updateCollateral({
+      contract: stablecoinToken.id,
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
+      amount: from("1000000", stablecoinToken.decimals),
+      expiryDays: 30,
+    });
+
     await adminClient.token.mint({
       contract: stablecoinToken.id,
       recipients: [investorAddress],

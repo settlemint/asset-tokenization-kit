@@ -91,7 +91,7 @@ describe("Token unfreeze partial", () => {
         countryCode: "056",
       },
       {
-        grantRole: ["supplyManagement", "custodian"],
+        grantRole: ["supplyManagement", "custodian", "governance"],
         unpause: true,
       }
     );
@@ -101,6 +101,17 @@ describe("Token unfreeze partial", () => {
     expect(stablecoinToken.type).toBe(stablecoinData.type);
 
     // SETUP: Establish substantial token holdings for meaningful freeze/unfreeze testing
+    // Ensure sufficient collateral is set before minting to avoid reverts
+    await adminClient.token.updateCollateral({
+      contract: stablecoinToken.id,
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
+      amount: from("1000000", stablecoinToken.decimals),
+      expiryDays: 30,
+    });
+
     await adminClient.token.mint({
       contract: stablecoinToken.id,
       recipients: [investorAddress],

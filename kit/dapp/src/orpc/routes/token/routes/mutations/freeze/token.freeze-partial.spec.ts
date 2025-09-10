@@ -91,7 +91,7 @@ describe("Token freeze partial", () => {
         countryCode: "056",
       },
       {
-        grantRole: ["supplyManagement", "custodian"],
+        grantRole: ["supplyManagement", "custodian", "governance"],
         unpause: true,
       }
     );
@@ -99,6 +99,17 @@ describe("Token freeze partial", () => {
     expect(stablecoinToken).toBeDefined();
     expect(stablecoinToken.id).toBeDefined();
     expect(stablecoinToken.type).toBe(stablecoinData.type);
+
+    // Ensure sufficient collateral is set before minting to avoid reverts
+    await adminClient.token.updateCollateral({
+      contract: stablecoinToken.id,
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
+      amount: from("1000000", stablecoinToken.decimals),
+      expiryDays: 30,
+    });
 
     // SETUP: Mint substantial balance to enable multiple freeze operations without depletion
     await adminClient.token.mint({
