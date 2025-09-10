@@ -54,9 +54,9 @@ export const ASSET_TAB_REQUIREMENTS: Record<
   holders: {},
   events: {},
   actions: {},
-  permissions: { extensions: [AssetExtensionEnum.ACCESS_MANAGED] },
 
   // Extension-based tabs
+  permissions: { extensions: [AssetExtensionEnum.ACCESS_MANAGED] },
   yield: { extensions: [AssetExtensionEnum.YIELD] },
   denominationAsset: {
     extensions: [AssetExtensionEnum.BOND],
