@@ -251,7 +251,7 @@ hasura:
       app.kubernetes.io/component: hasura
     image:
       repository: docker.io/hasura/graphql-engine
-      tag: v2.48.4
+      tag: v2.48.5
       ## Specify a imagePullPolicy
       ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
       ##
