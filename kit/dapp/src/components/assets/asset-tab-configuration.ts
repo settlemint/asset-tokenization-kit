@@ -81,12 +81,20 @@ export const ASSET_TAB_REQUIREMENTS: Record<
   // example: { extensions: ["YIELD"], complianceModules: ["SomeModule"] }
 };
 
+/**
+ * Checks if the asset satisfies the requirements for a tab.
+ * - For extensions, all required extensions must be present (`every`).
+ * - For compliance modules, at least one required module must be present (`some`).
+ *   This difference is intentional: extensions are strict requirements, while compliance modules
+ *   may be satisfied by any one of the listed modules.
+ */
 export function satisfiesRequirement(
   assetExtensions: AssetExtension[],
   assetComplianceModules: ComplianceTypeId[],
   requirement: AssetTabRequirement
 ): boolean {
-  // Check extensions requirement
+  // Extensions: require ALL listed extensions to be present.
+  // This ensures the tab only appears if the asset fully supports all required features.
   if (requirement.extensions?.length) {
     const hasAllExtensions = requirement.extensions.every((ext) =>
       assetExtensions.includes(ext)
@@ -94,12 +102,13 @@ export function satisfiesRequirement(
     if (!hasAllExtensions) return false;
   }
 
-  // Check compliance modules requirement
+  // Compliance modules: require AT LEAST ONE of the listed modules to be present.
+  // This allows the tab to appear if the asset meets any one of the compliance requirements.
   if (requirement.complianceModules?.length) {
-    const hasAllComplianceModules = requirement.complianceModules.some((m) =>
+    const hasAnyComplianceModule = requirement.complianceModules.some((m) =>
       assetComplianceModules.includes(m)
     );
-    if (!hasAllComplianceModules) return false;
+    if (!hasAnyComplianceModule) return false;
   }
 
   return true;
