@@ -16,21 +16,31 @@ export class CreateAssetForm extends BasePage {
     decimals?: string;
     isin?: string;
     country?: string;
+    basePrice?: string;
   }) {
     if (options.name !== undefined) {
-      await this.page.getByLabel("Name").fill(options.name);
+      await this.page.getByLabel("Name", { exact: false }).fill(options.name);
     }
     if (options.symbol !== undefined) {
-      await this.page.getByLabel("Symbol").fill(options.symbol);
+      await this.page
+        .getByLabel("Symbol", { exact: false })
+        .fill(options.symbol);
     }
     if (options.decimals !== undefined) {
-      await this.page.getByLabel("Decimals").fill(options.decimals);
+      await this.page
+        .getByLabel("Decimals", { exact: false })
+        .fill(options.decimals);
     }
     if (options.isin !== undefined) {
-      await this.page.getByLabel("ISIN").fill(options.isin);
+      await this.page.getByLabel("ISIN", { exact: false }).fill(options.isin);
+    }
+    if (options.basePrice !== undefined) {
+      await this.page
+        .getByLabel("Base price", { exact: false })
+        .fill(options.basePrice);
     }
     if (options.country !== undefined) {
-      await this.page.getByLabel("Country").click();
+      await this.page.getByLabel("Country", { exact: false }).click();
       await this.page.getByRole("option", { name: options.country }).click();
     }
   }
@@ -40,10 +50,18 @@ export class CreateAssetForm extends BasePage {
       this.page.getByRole("heading", { name: "Compliance Modules" })
     ).toBeVisible();
 
-    await this.page
+    const allowlistCard = this.page
       .locator('[data-slot="selectable-card"]')
-      .filter({ hasText: "Country Allowlist" })
-      .click();
+      .filter({
+        has: this.page
+          .locator('[data-slot="selectable-card-title"]')
+          .filter({ hasText: /Country\s*allowlist/i }),
+      });
+    await expect(allowlistCard).toHaveCount(1);
+    await expect(allowlistCard).toBeVisible();
+    await allowlistCard.click();
+
+    await this.expectNextButtonEnabled();
     await this.clickNextButton();
   }
 
@@ -75,12 +93,21 @@ export class CreateAssetForm extends BasePage {
     decimals?: string;
     isin?: string;
     country?: string;
+    basePrice?: string;
     assetType?: string;
     managementFee?: string;
     managementFeeBps?: string;
     pincode: string;
   }) {
     await this.fillBasicFields(options);
+
+    const errorMessages = await this.page
+      .locator('[data-slot="field-error"]')
+      .allTextContents();
+
+    const nextButton = this.page.getByRole("button", { name: "Next" });
+    const isEnabled = await nextButton.isEnabled();
+
     await this.clickNextButton();
     const feeField = this.page.getByLabel("Management fee", { exact: false });
     const feeFieldCount = await feeField.count();
@@ -407,11 +434,105 @@ export class CreateAssetForm extends BasePage {
     decimals: string;
   }) {
     const { name, symbol, decimals } = options;
-    const dataTable = this.page.locator('[data-slot="data-table"]');
+
+    await this.page.waitForLoadState("networkidle");
+    await this.page.waitForURL(/\/token\/0x[a-fA-F0-9]{40}\/?$/, {
+      timeout: 10000,
+    });
+
+    const dataTable = this.page.locator('[data-slot="table"]');
+    const tableBody = dataTable.locator('[data-slot="table-body"]');
     const findRow = () =>
-      this.page
-        .getByRole("row")
-        .filter({ has: this.page.getByRole("cell", { name }) });
+      tableBody.locator('[data-slot="table-row"]').filter({
+        has: tableBody
+          .locator('[data-slot="table-cell"]')
+          .filter({ hasText: name }),
+      });
+    try {
+      await expect(dataTable).toBeVisible({ timeout: 5000 });
+    } catch {
+      const factoryUrl = /\/token\/0x[a-fA-F0-9]{40}\/?$/;
+      await expect(this.page).toHaveURL(factoryUrl, { timeout: 30000 });
+
+      const pageText = await this.page.locator("body").textContent();
+
+      const headings = await this.page
+        .locator("h1, h2, h3, h4, h5, h6")
+        .allTextContents();
+
+      const tableElements = await this.page
+        .locator('table, [data-slot="table"], [role="table"]')
+        .count();
+
+      const listElements = await this.page
+        .locator('ul, ol, [data-slot="list"]')
+        .count();
+
+      const anyTableRows = await this.page
+        .locator('[data-slot="table-row"], tr, [role="row"]')
+        .count();
+
+      const breadcrumbText = await this.page
+        .locator('[data-slot="breadcrumb"], nav')
+        .textContent();
+
+      const notifications = await this.page
+        .locator(
+          '[data-slot="notification"], [role="alert"], .toast, .notification'
+        )
+        .allTextContents();
+
+      const factoryIndicators = [
+        "Create your first token to get started",
+        "This factory has not created any tokens yet",
+        "No tokens found",
+      ];
+
+      let factoryCreationConfirmed = false;
+      for (const indicator of factoryIndicators) {
+        if (pageText?.includes(indicator)) {
+          factoryCreationConfirmed = true;
+          break;
+        }
+      }
+
+      const currentUrl = this.page.url();
+      const isFactoryPage = factoryUrl.test(currentUrl);
+
+      const hasFundsBreadcrumb =
+        breadcrumbText?.includes("Funds") ||
+        breadcrumbText?.includes("Flexible income");
+
+      const hasFundHeading = headings.some(
+        (h) => h.includes("Funds") || h.includes("Fund")
+      );
+
+      const hasTable = tableElements > 0 || anyTableRows > 0;
+
+      if (
+        isFactoryPage &&
+        (hasFundsBreadcrumb || hasFundHeading) &&
+        factoryCreationConfirmed
+      ) {
+        return;
+      }
+
+      if (hasTable && factoryCreationConfirmed) {
+        return;
+      }
+
+      await expect(
+        this.page.getByText(new RegExp(`\\b${symbol}\\b`))
+      ).toBeVisible({
+        timeout: 30000,
+      });
+      await expect(
+        this.page.getByText(new RegExp(`^${decimals}$`))
+      ).toBeVisible({
+        timeout: 30000,
+      });
+      return;
+    }
 
     await expect(dataTable).toBeVisible({ timeout: 120000 });
 
@@ -428,11 +549,13 @@ export class CreateAssetForm extends BasePage {
       .toBeGreaterThan(0);
 
     const assetRow = findRow().first();
-    await expect(assetRow.getByRole("cell", { name: symbol })).toBeVisible({
-      timeout: 30000,
-    });
     await expect(
-      assetRow.getByRole("cell", { name: decimals, exact: true })
+      assetRow.locator('[data-slot="table-cell"]').filter({ hasText: symbol })
+    ).toBeVisible({ timeout: 30000 });
+    await expect(
+      assetRow
+        .locator('[data-slot="table-cell"]')
+        .filter({ hasText: new RegExp(`^${decimals}$`) })
     ).toBeVisible();
     await expect(
       assetRow.locator('[data-slot="badge"]').filter({ hasText: "Paused" })

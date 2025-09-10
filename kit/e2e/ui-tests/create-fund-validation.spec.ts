@@ -9,11 +9,12 @@ test.describe.serial("Fund Creation Validation", () => {
   let adminContext: BrowserContext;
   let adminPages: ReturnType<typeof Pages>;
   let createAssetForm: CreateAssetForm;
+  let adminPage: any;
 
   test.beforeAll(async ({ browser }) => {
     const setupUser = getSetupUser();
     adminContext = await browser.newContext();
-    const adminPage = await adminContext.newPage();
+    adminPage = await adminContext.newPage();
     adminPages = Pages(adminPage);
     createAssetForm = new CreateAssetForm(adminPage);
     await adminPages.signInPage.goto();
@@ -187,22 +188,30 @@ test.describe.serial("Fund Creation Validation", () => {
       name: "",
       symbol: "",
       decimals: "",
+      timestamp: new Date().toISOString(),
     };
+
     test("Create Fund asset", async () => {
       const setupUser = getSetupUser();
+
+      await adminPage.waitForLoadState("networkidle");
+      await adminPage.waitForTimeout(2000);
       await createAssetForm.fillAssetFields({
         name: fundData.name,
         symbol: fundData.symbol,
         decimals: fundData.decimals,
         isin: fundData.isin,
         country: fundData.country,
+        basePrice: fundData.basePrice,
         assetType: fundData.assetType,
         managementFee: fundData.managementFee,
         pincode: setupUser.pincode,
       });
+
       testData.name = fundData.name;
       testData.symbol = fundData.symbol;
       testData.decimals = fundData.decimals;
+
       await createAssetForm.verifyAssetCreated({
         name: testData.name,
         symbol: testData.symbol,
