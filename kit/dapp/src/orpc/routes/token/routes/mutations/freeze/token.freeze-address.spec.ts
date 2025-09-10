@@ -251,22 +251,20 @@ describe("Token freeze address", () => {
     );
   });
 
-  test.skip("cannot freeze address on token without CUSTODIAN extension", async () => {
-    // Create a bond token which might not have CUSTODIAN extension
+  test("cannot freeze address on token without CUSTODIAN extension", async () => {
+    // Create a deposit token without CUSTODIAN extension
     const nonCustodianToken = await createToken(adminClient, {
-      type: "bond",
-      name: `Non-Custodian Bond ${Date.now()}`,
-      symbol: "NCB3",
+      type: "deposit",
+      name: `Non-Custodian Deposit ${Date.now()}`,
+      symbol: "NCD3",
       decimals: 18,
-      initialModulePairs: [], // Try to avoid CUSTODIAN extension
+      initialModulePairs: [], // No CUSTODIAN extension
       basePrice: from("1.00", 2),
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
       },
       countryCode: "056",
-      maturityDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
-      couponRate: 500, // 5% in basis points
     });
 
     await expect(
