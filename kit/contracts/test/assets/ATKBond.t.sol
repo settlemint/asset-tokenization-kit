@@ -393,7 +393,8 @@ contract ATKBondTest is AbstractATKAssetTest {
 
     function test_CannotMatureBeforeMaturityDate() public {
         vm.prank(owner);
-        vm.expectRevert();
+        uint256 currentTime = block.timestamp;
+        vm.expectRevert(abi.encodeWithSelector(IATKBond.BondNotYetMatured.selector, currentTime, maturityDate));
         bond.mature();
     }
 
@@ -528,6 +529,26 @@ contract ATKBondTest is AbstractATKAssetTest {
         assertEq(bond.balanceOf(user1), 0);
         assertEq(denominationAsset.balanceOf(user1), expectedDenominationAssetAmount);
         vm.stopPrank();
+    }
+
+    function test_CannotRedeemBeforeMaturity() public {
+        uint256 redeemAmount = toDecimals(10);
+
+        // Transfer bonds to user1 for redemption attempt
+        vm.startPrank(owner);
+        assertTrue(bond.transfer(user1, redeemAmount), "Transfer failed");
+        vm.stopPrank();
+
+        // Try to redeem before maturity - should fail with specific error parameters
+        vm.startPrank(user1);
+        uint256 currentTime = block.timestamp;
+        vm.expectRevert(abi.encodeWithSelector(IATKBond.BondNotYetMatured.selector, currentTime, maturityDate));
+        bond.redeem(redeemAmount);
+        vm.stopPrank();
+
+        // Verify balance unchanged after failed redemption
+        assertEq(bond.balanceOf(user1), redeemAmount);
+        assertEq(denominationAsset.balanceOf(user1), 0);
     }
 
     // Tests for denomination asset management

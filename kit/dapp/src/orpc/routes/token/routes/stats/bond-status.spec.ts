@@ -2,6 +2,7 @@
  * @vitest-environment node
  */
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
+import { getAnvilBasedFutureDate } from "@/test/anvil";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
@@ -45,7 +46,7 @@ describe.concurrent("Token Stats: Bond Status", () => {
       countryCode: "056",
       cap: "1000000",
       faceValue: "1000",
-      maturityDate: (Date.now() + 365 * 24 * 60 * 60 * 1000).toString(),
+      maturityDate: await getAnvilBasedFutureDate(12),
       denominationAsset: stablecoinToken.id,
       initialModulePairs: [],
       walletVerification: {
