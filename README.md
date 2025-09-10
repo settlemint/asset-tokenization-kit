@@ -92,6 +92,28 @@ portal with the new ABIs.
 bun run dev:reset
 ```
 
+If you need test data to work with, we recommend running the integration tests
+for the dApp.
+
+```bash
+bunx turbo dapp#test:integration
+```
+
+After running the integration tests, you can log in with three different users:
+
+- admin@settlemint.com: This user can perform all actions on tokens, manage
+  settings, and manage users.
+- issuer@settlemint.com: This user can perform all actions on tokens.
+- investor@settlemint.com: This user can only transfer their own tokens.
+
+Each user has the password "settlemint" and a pincode of "123456".
+
+To start the dApp in development mode, run:
+
+```bash
+bunx dev
+```
+
 ### Quality Assurance
 
 The project uses a comprehensive QA suite to ensure code quality and
@@ -154,6 +176,15 @@ bun run codegen
 # Start the dApp in development mode
 bun run dev
 ```
+
+### Debugging the dApp
+
+To debug the dApp in VS Code (or another editor like Cursor), start it using the
+"Tanstack: debug server-side" task in the Debug panel.
+
+Ensure that no other instance of the dApp is running before you start debugging.
+Once started, you can set breakpoints anywhere in the code, inspect variables,
+and more.
 
 ### Testing the contracts / subgraph
 

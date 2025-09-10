@@ -52,7 +52,7 @@
       "outputs": []
     },
     "test:integration": {
-      "dependsOn": ["codegen", "artifacts", "^test:integration"]
+      "dependsOn": ["codegen", "artifacts"]
     },
     "test:ci": {
       "dependsOn": ["codegen", "artifacts", "^test:ci"]
