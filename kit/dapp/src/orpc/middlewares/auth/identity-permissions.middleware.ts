@@ -415,7 +415,10 @@ export const identityPermissionsMiddleware = <InputSchema extends z.ZodType>({
     input: z.infer<InputSchema>;
   }) => string | undefined;
 }) =>
-  baseRouter.middleware(async ({ context, next, errors }, input) => {
+  baseRouter.middleware<
+    Required<Pick<Context, "identityPermissions">>,
+    unknown
+  >(async ({ context, next, errors }, input) => {
     const { auth, system } = context;
 
     // Ensure user is authenticated - identity operations require valid user context

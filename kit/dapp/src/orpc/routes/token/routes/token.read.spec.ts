@@ -26,6 +26,7 @@ describe("Token read", () => {
         decimals: 18,
         type: "stablecoin",
         countryCode: "056",
+        basePrice: from("1.00", 2),
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -57,6 +58,17 @@ describe("Token read", () => {
     expect(token.symbol).toBe("TRT");
     expect(token.decimals).toBe(18);
     expect(token.type).toBe("stablecoin");
+    expect(token.stats?.totalValueInBaseCurrency).toEqual(from("0"));
+    expect(token.stats?.balancesCount).toEqual(0);
+    const basePriceClaim = token.account.identity?.claims?.find(
+      (c) => c.name === "basePrice"
+    );
+    expect(basePriceClaim).toBeDefined();
+    expect(basePriceClaim?.values).toEqual([
+      { key: "amount", value: "100" },
+      { key: "currencyCode", value: "USD" },
+      { key: "decimals", value: "2" },
+    ]);
   });
 
   it("returns correct token metadata", async () => {
@@ -232,6 +244,8 @@ describe("Token read", () => {
         approve: true,
         forcedRecover: true,
         freezeAddress: true,
+        freezePartial: true,
+        unfreezePartial: true,
         recoverERC20: true,
         recoverTokens: true,
         redeem: true,
@@ -242,6 +256,7 @@ describe("Token read", () => {
         transfer: true,
         unpause: true,
         updateCollateral: true,
+        withdrawDenominationAsset: true,
       },
     };
     expect(tokenInfo.userPermissions).toEqual(expectedPermissions);
@@ -302,6 +317,8 @@ describe("Token read", () => {
         approve: true,
         forcedRecover: false,
         freezeAddress: false,
+        freezePartial: false,
+        unfreezePartial: false,
         recoverERC20: false,
         recoverTokens: false,
         redeem: false,
@@ -312,6 +329,7 @@ describe("Token read", () => {
         transfer: true,
         unpause: false,
         updateCollateral: false,
+        withdrawDenominationAsset: false,
       },
     };
     expect(tokenInfo.userPermissions).toEqual(expectedPermissions);

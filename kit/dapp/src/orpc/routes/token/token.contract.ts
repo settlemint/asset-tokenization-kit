@@ -9,6 +9,8 @@ import { tokenAddComplianceModuleContract } from "@/orpc/routes/token/routes/mut
 import { tokenRemoveComplianceModuleContract } from "@/orpc/routes/token/routes/mutations/compliance/token.remove-compliance-module.contract";
 import { tokenCreateContract } from "@/orpc/routes/token/routes/mutations/create/token.create.contract";
 import { tokenFreezeAddressContract } from "@/orpc/routes/token/routes/mutations/freeze/token.freeze-address.contract";
+import { tokenFreezePartialContract } from "@/orpc/routes/token/routes/mutations/freeze/token.freeze-partial.contract";
+import { tokenUnfreezePartialContract } from "@/orpc/routes/token/routes/mutations/freeze/token.unfreeze-partial.contract";
 import { tokenMintContract } from "@/orpc/routes/token/routes/mutations/mint/token.mint.contract";
 import { tokenPauseContract } from "@/orpc/routes/token/routes/mutations/pause/token.pause.contract";
 import { tokenUnpauseContract } from "@/orpc/routes/token/routes/mutations/pause/token.unpause.contract";
@@ -49,6 +51,8 @@ export const tokenContract = {
   approve: tokenApproveContract,
   redeem: tokenRedeemContract,
   freezeAddress: tokenFreezeAddressContract,
+  freezePartial: tokenFreezePartialContract,
+  unfreezePartial: tokenUnfreezePartialContract,
   recoverTokens: tokenRecoverTokensContract,
   forcedRecover: tokenForcedRecoverContract,
   recoverERC20: tokenRecoverERC20Contract,
@@ -77,7 +81,7 @@ export const tokenContract = {
 };
 
 // Extract mutation keys for permissions
-export type TokenContractMutations =
+export type TokenAccessManagedMutations =
   | "burn"
   | "create"
   | "grantRole"
@@ -88,6 +92,8 @@ export type TokenContractMutations =
   | "approve"
   | "forcedRecover"
   | "freezeAddress"
+  | "freezePartial"
+  | "unfreezePartial"
   | "recoverERC20"
   | "recoverTokens"
   | "redeem"
@@ -96,4 +102,5 @@ export type TokenContractMutations =
   | "updateCollateral"
   | "setYieldSchedule"
   | "transfer"
-  | "unpause";
+  | "unpause"
+  | "withdrawDenominationAsset";

@@ -1,4 +1,5 @@
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { z } from "zod";
 
 /**
@@ -56,6 +57,18 @@ export const TokenSearchResultSchema = TokenSchema.omit({
   extensions: true,
   implementsERC3643: true,
   implementsSMART: true,
+  stats: true,
+  account: true,
+}).extend({
+  account: z
+    .object({
+      identity: z
+        .object({
+          id: ethereumAddress.describe("The identity contract address"),
+        })
+        .describe("The identity associated with this token"),
+    })
+    .describe("The account associated with this token"),
 });
 
 /**

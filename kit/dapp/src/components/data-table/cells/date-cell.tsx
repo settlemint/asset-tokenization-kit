@@ -1,4 +1,5 @@
-import { formatDistanceToNow, isToday, isYesterday, format } from "date-fns";
+import { format, formatDistanceToNow, isToday, isYesterday } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 interface DateCellProps {
   value?: string | Date | null;
@@ -15,6 +16,7 @@ export function DateCell({
   fallback = "–",
   relative = false,
 }: DateCellProps) {
+  const { t } = useTranslation("common");
   if (!value) {
     return <span className="text-sm text-muted-foreground">{fallback}</span>;
   }
@@ -27,11 +29,11 @@ export function DateCell({
   if (relative) {
     // Format with relative time for recent dates
     if (isToday(date)) {
-      return <span className="text-sm">Today</span>;
+      return <span className="text-sm">{t("dates.today")}</span>;
     }
 
     if (isYesterday(date)) {
-      return <span className="text-sm">Yesterday</span>;
+      return <span className="text-sm">{t("dates.yesterday")}</span>;
     }
 
     const daysDiff = Math.floor(

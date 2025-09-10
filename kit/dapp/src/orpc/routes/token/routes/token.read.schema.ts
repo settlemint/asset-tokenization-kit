@@ -55,6 +55,21 @@ export const RawTokenSchema = z.object({
       identity: z
         .object({
           id: ethereumAddress.describe("The identity contract address"),
+          claims: z
+            .array(
+              z.object({
+                revoked: z.boolean().describe("Whether the claim is revoked"),
+                name: z.string().describe("The name of the claim"),
+                values: z.array(
+                  z.object({
+                    key: z.string().describe("The key of the claim value"),
+                    value: z.string().describe("The value of the claim value"),
+                  })
+                ),
+              })
+            )
+            .describe("The claims of the identity")
+            .optional(),
         })
         .nullable()
         .describe("The identity associated with this token"),
@@ -224,6 +239,16 @@ export const RawTokenSchema = z.object({
                 .describe(
                   "Whether the user can execute the tokenFreezeAddress action"
                 ),
+              freezePartial: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenFreezePartial action"
+                ),
+              unfreezePartial: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenUnfreezePartial action"
+                ),
               recoverERC20: z
                 .boolean()
                 .describe(
@@ -263,6 +288,11 @@ export const RawTokenSchema = z.object({
                 .describe(
                   "Whether the user can execute the updateCollateral action"
                 ),
+              withdrawDenominationAsset: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the withdrawDenominationAsset action"
+                ),
             };
             return actionsSchema;
           })()
@@ -271,6 +301,17 @@ export const RawTokenSchema = z.object({
     })
     .optional()
     .describe("The permissions of the user for the token"),
+  stats: z
+    .object({
+      balancesCount: z
+        .number()
+        .describe("The number of accounts holding this token"),
+      totalValueInBaseCurrency: bigDecimal().describe(
+        "The total value in base currency of the token"
+      ),
+    })
+    .nullable()
+    .describe("The stats of the token"),
 });
 
 /**

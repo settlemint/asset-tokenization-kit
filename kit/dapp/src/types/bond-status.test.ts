@@ -298,6 +298,7 @@ describe("bond-status types", () => {
         },
         fund: null,
         yield: null,
+        stats: null,
       };
       const mockBondStatus: StatsBondStatusOutput = {
         denominationAssetBalanceAvailable: from(500),
@@ -405,6 +406,7 @@ describe("bond-status types", () => {
         },
         fund: null,
         yield: null,
+        stats: null,
       };
       const mockBondStatus: StatsBondStatusOutput = {
         denominationAssetBalanceAvailable: from(500),
@@ -511,6 +513,7 @@ describe("bond-status types", () => {
         },
         fund: null,
         yield: null,
+        stats: null,
       };
       const mockBondStatusForCalc: StatsBondStatusOutput = {
         denominationAssetBalanceAvailable: from(800),
@@ -619,6 +622,7 @@ describe("bond-status types", () => {
         },
         fund: null,
         yield: null,
+        stats: null,
       };
       const mockBondStatus: StatsBondStatusOutput = {
         denominationAssetBalanceAvailable: from(1000),
