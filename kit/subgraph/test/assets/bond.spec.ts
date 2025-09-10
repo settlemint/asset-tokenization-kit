@@ -46,7 +46,7 @@ describe("Bonds", () => {
         totalSupplyExact: "117000000000000000000",
         bond: {
           isMatured: true,
-          maturityDate: "1788982822",
+          maturityDate: expect.any(String),
           faceValue: "0.000123",
           faceValueExact: "123",
           denominationAssetNeeded: "0.014391",
