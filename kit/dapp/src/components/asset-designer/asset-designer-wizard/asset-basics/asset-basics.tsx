@@ -6,10 +6,10 @@ import {
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
-import { hasDenominationAsset } from "@/lib/utils/features-enabled";
 import { noop } from "@/lib/utils/noop";
 import type { KeysOfUnion } from "@/lib/utils/union";
 import { orpc } from "@/orpc/orpc-client";
+import type { AssetType } from "@atk/zod/asset-types";
 import { useQuery } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
 import { from } from "dnum";
@@ -21,8 +21,9 @@ const commonFields: KeysOfUnion<AssetDesignerFormInputData>[] = [
   "decimals",
   "isin",
   "countryCode",
-  "basePrice",
 ];
+
+const hasBasePrice = (type: AssetType) => type !== "bond";
 
 export const AssetBasics = withForm({
   ...assetDesignerFormOptions,
@@ -49,8 +50,8 @@ export const AssetBasics = withForm({
               label={t("form.buttons.next")}
               onStepSubmit={onStepSubmit}
               validate={
-                hasDenominationAsset(type)
-                  ? commonFields.filter((field) => field !== "basePrice")
+                hasBasePrice(type)
+                  ? [...commonFields, "basePrice" as const]
                   : commonFields
               }
               checkRequiredFn={isRequiredField}
@@ -115,7 +116,7 @@ export const AssetBasics = withForm({
             />
           )}
         />
-        {!hasDenominationAsset(type) && (
+        {!hasBasePrice(type) && (
           <form.AppField
             name="basePrice"
             children={(field) => (

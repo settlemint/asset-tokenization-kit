@@ -81,7 +81,7 @@ export const ASSET_TAB_REQUIREMENTS: Record<
   // example: { extensions: ["YIELD"], complianceModules: ["SomeModule"] }
 };
 
-function satisfiesTabRequirement(
+function satisfiesRequirement(
   assetExtensions: AssetExtension[],
   assetComplianceModules: ComplianceTypeId[],
   requirement: AssetTabRequirement
@@ -143,7 +143,7 @@ export function getAssetTabConfiguration({
   ];
 
   return allTabs.filter((tab) =>
-    satisfiesTabRequirement(
+    satisfiesRequirement(
       assetExtensions,
       assetComplianceModules,
       ASSET_TAB_REQUIREMENTS[tab.tabKey]
