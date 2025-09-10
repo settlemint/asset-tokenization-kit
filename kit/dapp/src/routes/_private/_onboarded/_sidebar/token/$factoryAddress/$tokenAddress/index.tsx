@@ -174,10 +174,7 @@ function RouteComponent() {
             <DetailGridItem
               label={t("tokens:fields.totalPrice")}
               info={t("tokens:fields.totalPriceInfo")}
-              value={from(
-                asset.stats?.totalValueInBaseCurrency ?? "0",
-                Number(basePriceClaim.decimals)
-              )}
+              value={asset.stats?.totalValueInBaseCurrency ?? from("0")}
               type="currency"
               currency={{ assetSymbol: basePriceClaim.currencyCode }}
             />
