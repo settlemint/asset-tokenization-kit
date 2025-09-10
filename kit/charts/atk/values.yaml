@@ -213,14 +213,14 @@ blockscout:
         hostname: explorer.k8s.orb.local
       image:
         repository: ghcr.io/blockscout/frontend
-        tag: "v2.3.1"
+        tag: "v2.3.2"
         pullPolicy: IfNotPresent
 
 graph-node:
   enabled: true
   image:
     repository: docker.io/graphprotocol/graph-node
-    tag: "v0.40.0"
+    tag: "v0.40.1"
     pullPolicy: IfNotPresent
   initContainers:
     kubectlImage:

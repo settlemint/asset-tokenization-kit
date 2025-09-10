@@ -33,4 +33,6 @@ export const TOKEN_PERMISSIONS: Record<
   transfer: { any: [] }, // TODO: requires custodian on a forced transfer (would generate a dedicated endpoint )
   unpause: "emergency",
   updateCollateral: "governance",
+  freezePartial: "custodian",
+  unfreezePartial: "custodian",
 };

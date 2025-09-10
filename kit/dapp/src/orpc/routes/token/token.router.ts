@@ -8,6 +8,8 @@ import { addComplianceModule } from "@/orpc/routes/token/routes/mutations/compli
 import { removeComplianceModule } from "@/orpc/routes/token/routes/mutations/compliance/token.remove-compliance-module";
 import { create } from "@/orpc/routes/token/routes/mutations/create/token.create";
 import { freezeAddress } from "@/orpc/routes/token/routes/mutations/freeze/token.freeze-address";
+import { freezePartial } from "@/orpc/routes/token/routes/mutations/freeze/token.freeze-partial";
+import { unfreezePartial } from "@/orpc/routes/token/routes/mutations/freeze/token.unfreeze-partial";
 import { mint } from "@/orpc/routes/token/routes/mutations/mint/token.mint";
 import { pause } from "@/orpc/routes/token/routes/mutations/pause/token.pause";
 import { unpause } from "@/orpc/routes/token/routes/mutations/pause/token.unpause";
@@ -52,6 +54,8 @@ const routes = {
   redeem,
   mature,
   freezeAddress,
+  freezePartial,
+  unfreezePartial,
   recoverTokens,
   forcedRecover,
   recoverERC20,
