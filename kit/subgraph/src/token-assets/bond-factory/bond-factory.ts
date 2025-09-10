@@ -1,3 +1,4 @@
+import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { BondCreated } from "../../../generated/templates/BondFactory/BondFactory";
 import { fetchAccount } from "../../account/fetch/account";
 import { fetchEvent } from "../../event/fetch/event";
@@ -36,6 +37,8 @@ export function handleBondCreated(event: BondCreated): void {
   bond.maturityDate = event.params.maturityDate;
   bond.isMatured = false;
   bond.denominationAsset = event.params.denominationAsset;
+  bond.denominationAssetNeeded = BigDecimal.zero();
+  bond.denominationAssetNeededExact = BigInt.zero();
   bond.save();
 
   // Create MatureBond action

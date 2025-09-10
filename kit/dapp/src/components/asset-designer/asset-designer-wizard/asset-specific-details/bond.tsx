@@ -5,6 +5,7 @@ import { withForm } from "@/hooks/use-app-form";
 import type { KeysOfUnion } from "@/lib/utils/union";
 import { orpc } from "@/orpc/orpc-client";
 import { useStore } from "@tanstack/react-store";
+import { addMinutes, format, isDate, isSameDay } from "date-fns";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { Address } from "viem";
@@ -89,6 +90,23 @@ export const BondFields = withForm({
 
         <form.AppField
           name="maturityDate"
+          validators={{
+            onChange: ({ value }) => {
+              if (!value || !isDate(value)) return undefined;
+              const minDate = addMinutes(new Date(), 2);
+
+              if (isSameDay(value, minDate) && value < minDate) {
+                return {
+                  message: t("form.errors.maturityDateTooEarly", {
+                    minDateTime: format(minDate, "PPP 'at' HH:mm"),
+                  }),
+                  code: "DATETIME_BEFORE_MINIMUM",
+                };
+              }
+
+              return undefined;
+            },
+          }}
           children={(field) => (
             <field.DateTimeField
               label={t("form.fields.maturityDate.label")}
@@ -96,7 +114,7 @@ export const BondFields = withForm({
               description={t("form.fields.maturityDate.description", {
                 type: t(`asset-types:types.bond.nameLowercaseSingular`),
               })}
-              minDate={new Date()}
+              minDate={addMinutes(new Date(), 2)} // 2 minutes from now
             />
           )}
         />
