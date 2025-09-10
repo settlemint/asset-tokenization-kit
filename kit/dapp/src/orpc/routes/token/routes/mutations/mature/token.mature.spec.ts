@@ -17,7 +17,7 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
-import { sleep } from "@test/helpers/test-helpers";
+import { waitForGraphIndexing } from "@test/helpers/test-helpers";
 import { addSeconds, differenceInMilliseconds, isAfter } from "date-fns";
 import { from } from "dnum";
 import { beforeAll, describe, expect, test } from "vitest";
@@ -348,6 +348,6 @@ async function increaseAnvilTimeToPassMaturityDate(bond: Token) {
 
   if (differenceSeconds > 0) {
     await increaseAnvilTime(differenceSeconds);
-    await sleep(differenceSeconds * 1000);
+    await waitForGraphIndexing();
   }
 }
