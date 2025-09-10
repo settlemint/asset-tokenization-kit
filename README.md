@@ -96,7 +96,12 @@ If you need test data to work with, we recommend running the integration tests
 for the dApp.
 
 ```bash
-bunx turbo dapp#test:integration
+# Navigate to the dApp directory
+cd kit/dapp
+# Generate the required SDK types and GraphQL schemas
+bun run codegen:settlemint
+# Run the dApp integration tests
+bun run test:integration
 ```
 
 After running the integration tests, you can log in with three different users:
@@ -111,7 +116,10 @@ Each user has the password "settlemint" and a pincode of "123456".
 To start the dApp in development mode, run:
 
 ```bash
-bunx dev
+# Navigate to the dApp directory
+cd kit/dapp
+# Start the dApp in development mode
+bun dev
 ```
 
 ### Quality Assurance
@@ -172,7 +180,7 @@ bun run dev:up
 # Navigate to the dApp directory
 cd kit/dapp
 # Generate the required SDK types and GraphQL schemas
-bun run codegen
+bun run codegen:settlemint
 # Start the dApp in development mode
 bun run dev
 ```
