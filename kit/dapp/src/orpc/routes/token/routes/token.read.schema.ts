@@ -205,6 +205,16 @@ export const RawTokenSchema = z.object({
                 .describe(
                   "Whether the user can execute the tokenFreezeAddress action"
                 ),
+              freezePartial: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenFreezePartial action"
+                ),
+              unfreezePartial: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenUnfreezePartial action"
+                ),
               recoverERC20: z
                 .boolean()
                 .describe(
@@ -259,9 +269,13 @@ export const RawTokenSchema = z.object({
     .describe("The permissions of the user for the token"),
   stats: z
     .object({
-      totalValueInBaseCurrency: bigDecimal().describe(
-        "The total value in base currency of the token"
-      ),
+      id: z.string().describe("The ID of the token stats"),
+      balancesCount: z
+        .number()
+        .describe("The number of accounts holding this token"),
+      totalValueInBaseCurrency: bigDecimal()
+        .describe("The total value in base currency of the token")
+        .optional(),
     })
     .nullable()
     .describe("The stats of the token"),

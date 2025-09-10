@@ -80,7 +80,8 @@ const READ_TOKEN_QUERY = theGraphGraphql(
         }
       }
       stats {
-        totalValueInBaseCurrency
+        id
+        balancesCount
       }
     }
   }
@@ -171,6 +172,8 @@ export const tokenMiddleware = baseRouter.middleware<
             approve: false,
             forcedRecover: false,
             freezeAddress: false,
+            freezePartial: false,
+            unfreezePartial: false,
             recoverERC20: false,
             recoverTokens: false,
             redeem: false,

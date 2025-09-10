@@ -129,7 +129,6 @@ contract ATKFixedYieldScheduleUpgradeable is
         if (initialAdmins_.length == 0) {
             revert NoInitialAdmins();
         }
-
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
