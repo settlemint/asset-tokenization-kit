@@ -89,7 +89,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | blockscout.blockscout-stack.blockscout.resources | object | `{}` |  |
 | blockscout.blockscout-stack.frontend.image.pullPolicy | string | `"IfNotPresent"` |  |
 | blockscout.blockscout-stack.frontend.image.repository | string | `"ghcr.io/blockscout/frontend"` |  |
-| blockscout.blockscout-stack.frontend.image.tag | string | `"v2.3.1"` |  |
+| blockscout.blockscout-stack.frontend.image.tag | string | `"v2.3.2"` |  |
 | blockscout.blockscout-stack.frontend.ingress.hostname | string | `"explorer.k8s.orb.local"` |  |
 | blockscout.blockscout-stack.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
 | blockscout.blockscout-stack.podAnnotations."prometheus.io/port" | string | `"4000"` |  |
@@ -198,7 +198,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | graph-node.enabled | bool | `true` |  |
 | graph-node.image.pullPolicy | string | `"IfNotPresent"` |  |
 | graph-node.image.repository | string | `"docker.io/graphprotocol/graph-node"` |  |
-| graph-node.image.tag | string | `"v0.40.0"` |  |
+| graph-node.image.tag | string | `"v0.40.1"` |  |
 | graph-node.initContainers.kubectlImage.pullPolicy | string | `"IfNotPresent"` |  |
 | graph-node.initContainers.kubectlImage.repository | string | `"docker.io/kubesphere/kubectl"` |  |
 | graph-node.initContainers.kubectlImage.tag | string | `"v1.33.4"` |  |
