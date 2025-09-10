@@ -2,6 +2,10 @@ import {
   AssetExtensionEnum,
   type AssetExtension,
 } from "@atk/zod/asset-extensions";
+import {
+  ComplianceTypeIdEnum,
+  type ComplianceTypeId,
+} from "@atk/zod/compliance";
 import type { Address } from "viem";
 
 export type AssetTabBadgeType =
@@ -25,14 +29,14 @@ export type AssetTabKey =
 
 export type AssetTabRequirement = {
   extensions?: AssetExtension[];
-  complianceModules?: string[]; // TODO: Replace with proper compliance module types when API available
+  complianceModules?: ComplianceTypeId[];
 };
 
 export interface AssetTabConfigurationParams {
   factoryAddress: Address;
   assetAddress: Address;
-  tokenExtensions: AssetExtension[];
-  tokenComplianceModules?: string[]; // TODO: Replace with proper type when API available
+  assetExtensions: AssetExtension[];
+  assetComplianceModules: ComplianceTypeId[];
 }
 
 export interface AssetTabConfig {
@@ -58,10 +62,17 @@ export const ASSET_TAB_REQUIREMENTS: Record<
 
   // Compliance-based tabs (placeholder logic)
   allowlist: {
-    complianceModules: ["AllowlistModule"], // TODO: Get actual compliance module names from API
+    complianceModules: [
+      ComplianceTypeIdEnum.IdentityAllowListComplianceModule,
+      ComplianceTypeIdEnum.CountryAllowListComplianceModule,
+    ],
   },
   blocklist: {
-    complianceModules: ["BlocklistModule"], // TODO: Get actual compliance module names from API
+    complianceModules: [
+      ComplianceTypeIdEnum.AddressBlockListComplianceModule,
+      ComplianceTypeIdEnum.IdentityBlockListComplianceModule,
+      ComplianceTypeIdEnum.CountryBlockListComplianceModule,
+    ],
   },
 
   // Future: tabs requiring both extensions and compliance modules
@@ -69,24 +80,22 @@ export const ASSET_TAB_REQUIREMENTS: Record<
 };
 
 function satisfiesTabRequirement(
-  tokenExtensions: AssetExtension[],
-  tokenComplianceModules: string[], // TODO: Replace with proper type when API available
+  assetExtensions: AssetExtension[],
+  assetComplianceModules: ComplianceTypeId[],
   requirement: AssetTabRequirement
 ): boolean {
   // Check extensions requirement
   if (requirement.extensions?.length) {
     const hasAllExtensions = requirement.extensions.every((ext) =>
-      tokenExtensions.includes(ext)
+      assetExtensions.includes(ext)
     );
     if (!hasAllExtensions) return false;
   }
 
   // Check compliance modules requirement
   if (requirement.complianceModules?.length) {
-    // TODO: Implement proper compliance module checking when API is available
-    // For now, use placeholder logic based on asset type patterns
-    const hasAllComplianceModules = requirement.complianceModules.every(
-      (module) => tokenComplianceModules.includes(module)
+    const hasAllComplianceModules = requirement.complianceModules.some((m) =>
+      assetComplianceModules.includes(m)
     );
     if (!hasAllComplianceModules) return false;
   }
@@ -100,8 +109,8 @@ function satisfiesTabRequirement(
 export function getAssetTabConfiguration({
   factoryAddress,
   assetAddress,
-  tokenExtensions,
-  tokenComplianceModules = [], // TODO: Get from API when available
+  assetExtensions,
+  assetComplianceModules = [],
 }: AssetTabConfigurationParams): AssetTabConfig[] {
   const baseUrl = `/token/${factoryAddress}/${assetAddress}`;
 
@@ -133,8 +142,8 @@ export function getAssetTabConfiguration({
 
   return allTabs.filter((tab) =>
     satisfiesTabRequirement(
-      tokenExtensions,
-      tokenComplianceModules,
+      assetExtensions,
+      assetComplianceModules,
       ASSET_TAB_REQUIREMENTS[tab.tabKey]
     )
   );

@@ -69,6 +69,13 @@ const READ_TOKEN_QUERY = theGraphGraphql(
           id
         }
       }
+      complianceModuleConfigs {
+        id
+        complianceModule {
+          id
+          typeId
+        }
+      }
     }
   }
   `,

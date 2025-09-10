@@ -16,6 +16,7 @@ import {
   getAssetClassFromFactoryTypeId,
   getAssetTypeFromFactoryTypeId,
 } from "@atk/zod/asset-types";
+import type { ComplianceTypeId } from "@atk/zod/compliance";
 import {
   type EthereumAddress,
   ethereumAddress,
@@ -127,7 +128,10 @@ function RouteComponent() {
       <AsyncTabNavigation
         factoryAddress={factoryAddress}
         assetAddress={tokenAddress}
-        tokenExtensions={asset.extensions}
+        assetExtensions={asset.extensions}
+        assetComplianceModules={asset.complianceModuleConfigs.map(
+          (m) => m.complianceModule.typeId
+        )}
       />
 
       <Outlet />
@@ -156,11 +160,13 @@ function TabNavigationSkeleton() {
 function AsyncTabNavigation({
   factoryAddress,
   assetAddress,
-  tokenExtensions,
+  assetExtensions,
+  assetComplianceModules,
 }: {
   factoryAddress: EthereumAddress;
   assetAddress: EthereumAddress;
-  tokenExtensions: AssetExtension[];
+  assetComplianceModules: ComplianceTypeId[];
+  assetExtensions: AssetExtension[];
 }) {
   const { t } = useTranslation(["tokens", "assets", "common"]);
 
@@ -170,14 +176,15 @@ function AsyncTabNavigation({
       "asset-tab-configuration",
       factoryAddress,
       assetAddress,
-      tokenExtensions,
+      assetExtensions,
+      assetComplianceModules,
     ],
     queryFn: () =>
       getAssetTabConfiguration({
         factoryAddress,
         assetAddress,
-        tokenExtensions,
-        tokenComplianceModules: [], // TODO: Get from API when available
+        assetExtensions,
+        assetComplianceModules,
       }),
   });
 
