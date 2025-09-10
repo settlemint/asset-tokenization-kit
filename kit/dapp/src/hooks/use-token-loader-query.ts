@@ -49,7 +49,6 @@ export function useTokenLoaderQuery() {
 
   // Use queried data if available, otherwise fall back to loader data
   const asset = queriedAsset ?? loaderAsset;
-
   return {
     asset,
     isLoading,

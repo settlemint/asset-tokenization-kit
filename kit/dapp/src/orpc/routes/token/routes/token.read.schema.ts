@@ -5,6 +5,7 @@ import { assetExtensionArray } from "@atk/zod/asset-extensions";
 import { assetSymbol } from "@atk/zod/asset-symbol";
 import { assetType } from "@atk/zod/asset-types";
 import { bigDecimal } from "@atk/zod/bigdecimal";
+import { complianceTypeId } from "@atk/zod/compliance";
 import { decimals } from "@atk/zod/decimals";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { timestamp } from "@atk/zod/timestamp";
@@ -153,6 +154,16 @@ export const RawTokenSchema = z.object({
     .custom<AccessControl>()
     .describe("The access control of the token")
     .optional(),
+  complianceModuleConfigs: z
+    .array(
+      z.object({
+        id: ethereumAddress,
+        complianceModule: z.object({
+          typeId: complianceTypeId(),
+        }),
+      })
+    )
+    .describe("Enabled compliance modules for this token"),
   userPermissions: z
     .object({
       roles: accessControlRoles.describe("The roles of the user for the token"),

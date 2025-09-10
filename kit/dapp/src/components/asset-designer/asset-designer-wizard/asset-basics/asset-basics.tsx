@@ -3,13 +3,17 @@ import {
   isRequiredField,
   type AssetDesignerFormInputData,
 } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
+import {
+  ASSET_TAB_REQUIREMENTS,
+  satisfiesRequirement,
+} from "@/components/assets/asset-tab-configuration";
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
-import { hasDenominationAsset } from "@/lib/utils/features-enabled";
 import { noop } from "@/lib/utils/noop";
 import type { KeysOfUnion } from "@/lib/utils/union";
 import { orpc } from "@/orpc/orpc-client";
+import { getAssetExtensionsForType } from "@atk/zod/src/asset-extensions";
 import { useQuery } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
 import { from } from "dnum";
@@ -36,6 +40,13 @@ export const AssetBasics = withForm({
       orpc.settings.read.queryOptions({ input: { key: "BASE_CURRENCY" } })
     );
     const type = useStore(form.store, (state) => state.values.type);
+    const extensions = getAssetExtensionsForType(type);
+    const hasDenominationAsset = satisfiesRequirement(
+      extensions,
+      [],
+      ASSET_TAB_REQUIREMENTS.denominationAsset
+    );
+
     return (
       <FormStepLayout
         title={t("wizard.steps.assetBasics.title")}
@@ -49,7 +60,7 @@ export const AssetBasics = withForm({
               label={t("form.buttons.next")}
               onStepSubmit={onStepSubmit}
               validate={
-                hasDenominationAsset(type)
+                hasDenominationAsset
                   ? commonFields.filter((field) => field !== "basePrice")
                   : commonFields
               }
@@ -115,7 +126,7 @@ export const AssetBasics = withForm({
             />
           )}
         />
-        {!hasDenominationAsset(type) && (
+        {!hasDenominationAsset && (
           <form.AppField
             name="basePrice"
             children={(field) => (

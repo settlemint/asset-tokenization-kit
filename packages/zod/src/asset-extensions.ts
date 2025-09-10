@@ -7,6 +7,7 @@
  * @module AssetExtensionValidation
  */
 import { z } from "zod";
+import { AssetTypeEnum, type AssetType } from "./asset-types";
 
 /**
  * Enum-like object for dot notation access to asset extensions.
@@ -297,4 +298,16 @@ export function isAssetExtensionSet(
  */
 export function getAssetExtensionSet(value: unknown): AssetExtensionSet {
   return assetExtensionSet().parse(value);
+}
+
+export function getAssetExtensionsForType(type: AssetType): AssetExtension[] {
+  const typeToExtension: Record<AssetType, AssetExtension[]> = {
+    [AssetTypeEnum.bond]: [AssetExtensionEnum.BOND],
+    [AssetTypeEnum.equity]: [],
+    [AssetTypeEnum.fund]: [AssetExtensionEnum.FUND],
+    [AssetTypeEnum.stablecoin]: [],
+    [AssetTypeEnum.deposit]: [],
+  };
+
+  return typeToExtension[type];
 }

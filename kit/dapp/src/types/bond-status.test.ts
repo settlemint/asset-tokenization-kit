@@ -299,6 +299,7 @@ describe("bond-status types", () => {
         },
         fund: null,
         yield: null,
+        complianceModuleConfigs: [],
         stats: null,
       };
       const mockBondStatus: StatsBondStatusOutput = {
@@ -408,6 +409,7 @@ describe("bond-status types", () => {
         },
         fund: null,
         yield: null,
+        complianceModuleConfigs: [],
         stats: null,
       };
       const mockBondStatus: StatsBondStatusOutput = {
@@ -516,6 +518,7 @@ describe("bond-status types", () => {
         },
         fund: null,
         yield: null,
+        complianceModuleConfigs: [],
         stats: null,
       };
       const mockBondStatusForCalc: StatsBondStatusOutput = {
@@ -626,6 +629,7 @@ describe("bond-status types", () => {
         },
         fund: null,
         yield: null,
+        complianceModuleConfigs: [],
         stats: null,
       };
       const mockBondStatus: StatsBondStatusOutput = {
