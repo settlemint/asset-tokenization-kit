@@ -81,7 +81,7 @@ export const ASSET_TAB_REQUIREMENTS: Record<
   // example: { extensions: ["YIELD"], complianceModules: ["SomeModule"] }
 };
 
-function satisfiesRequirement(
+export function satisfiesRequirement(
   assetExtensions: AssetExtension[],
   assetComplianceModules: ComplianceTypeId[],
   requirement: AssetTabRequirement
