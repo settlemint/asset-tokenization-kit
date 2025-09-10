@@ -81,7 +81,7 @@ const READ_TOKEN_QUERY = theGraphGraphql(
         }
       }
       stats {
-        id
+        totalValueInBaseCurrency
         balancesCount
       }
     }
@@ -188,13 +188,13 @@ export const tokenMiddleware = baseRouter.middleware<
             withdrawDenominationAsset: false,
           };
 
+        const userRoleList = Object.entries(userRoles)
+          .filter(([_, hasRole]) => hasRole)
+          .map(([role]) => role) as AccessControlRoles[];
+
         // Update based on user roles using the flexible role requirement system
         Object.entries(TOKEN_PERMISSIONS).forEach(
           ([action, roleRequirement]) => {
-            const userRoleList = Object.entries(userRoles)
-              .filter(([_, hasRole]) => hasRole)
-              .map(([role]) => role) as AccessControlRoles[];
-
             initialActions[action as keyof typeof TOKEN_PERMISSIONS] =
               satisfiesRoleRequirement(userRoleList, roleRequirement);
           }
