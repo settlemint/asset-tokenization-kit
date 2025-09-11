@@ -103,10 +103,10 @@ describe("Token freeze address", () => {
 
     // PREREQUISITE: Establish token holdings for meaningful freeze testing
     // Ensure sufficient collateral is set before minting to avoid reverts (only if supported)
-    const createdTokenDetails = await adminClient.token.read({
+    const _createdTokenDetails = await adminClient.token.read({
       tokenAddress: stablecoinToken.id,
     });
-    if (createdTokenDetails.extensions.includes("COLLATERAL")) {
+    try {
       await adminClient.token.updateCollateral({
         contract: stablecoinToken.id,
         walletVerification: {
@@ -128,6 +128,20 @@ describe("Token freeze address", () => {
           if (t.collateral?.collateral) break;
           await new Promise((r) => setTimeout(r, 500));
         }
+      }
+    } catch {
+      const t = await adminClient.token.read({
+        tokenAddress: stablecoinToken.id,
+      });
+      if (t.extensions.includes("CAPPED")) {
+        await adminClient.token.setCap({
+          contract: stablecoinToken.id,
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
+          },
+          newCap: from("100000000", stablecoinToken.decimals),
+        });
       }
     }
 
