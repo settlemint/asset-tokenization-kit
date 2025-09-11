@@ -25,12 +25,12 @@
  */
 
 import { getRoleByFieldName } from "@/lib/constants/roles";
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import type { TokenGrantRoleInput } from "@/orpc/routes/token/routes/mutations/access/token.grant-role.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 
 // Single address, single role
 const TOKEN_GRANT_ROLE_MUTATION = portalGraphql(`

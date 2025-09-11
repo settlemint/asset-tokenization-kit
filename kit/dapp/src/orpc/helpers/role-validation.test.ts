@@ -5,8 +5,9 @@
 import type {
   AccessControl,
   AccessControlRoles,
-} from "@/lib/fragments/the-graph/access-control-fragment";
+} from "@atk/zod/access-control-roles";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
+import { zeroAddress } from "viem";
 import { describe, expect, test } from "vitest";
 import { mapUserRoles } from "./role-validation";
 
@@ -300,17 +301,44 @@ describe("role-validation", () => {
         "verificationAdmin",
       ];
 
-      // Create accessControl with user having all roles
-      const accessControl = allRoles.reduce(
-        (acc, role) => {
-          acc[role] = [{ id: mockWallet, isContract: false }];
-          return acc;
-        },
-        { id: "access-manager-address" } as Record<
-          AccessControlRoles,
-          { id: EthereumAddress; isContract: boolean }[]
-        > & { id: string }
-      );
+      // Create a valid AccessControl object with all roles containing the mock wallet
+      const accessControl: AccessControl = {
+        id: zeroAddress,
+        addonManager: [{ id: mockWallet, isContract: false }],
+        addonModule: [{ id: mockWallet, isContract: false }],
+        addonRegistryModule: [{ id: mockWallet, isContract: false }],
+        admin: [{ id: mockWallet, isContract: false }],
+        auditor: [{ id: mockWallet, isContract: false }],
+        burner: [{ id: mockWallet, isContract: false }],
+        capManagement: [{ id: mockWallet, isContract: false }],
+        claimPolicyManager: [{ id: mockWallet, isContract: false }],
+        claimIssuer: [{ id: mockWallet, isContract: false }],
+        complianceAdmin: [{ id: mockWallet, isContract: false }],
+        complianceManager: [{ id: mockWallet, isContract: false }],
+        custodian: [{ id: mockWallet, isContract: false }],
+        emergency: [{ id: mockWallet, isContract: false }],
+        forcedTransfer: [{ id: mockWallet, isContract: false }],
+        freezer: [{ id: mockWallet, isContract: false }],
+        fundsManager: [{ id: mockWallet, isContract: false }],
+        globalListManager: [{ id: mockWallet, isContract: false }],
+        governance: [{ id: mockWallet, isContract: false }],
+        identityManager: [{ id: mockWallet, isContract: false }],
+        identityRegistryModule: [{ id: mockWallet, isContract: false }],
+        minter: [{ id: mockWallet, isContract: false }],
+        organisationIdentityManager: [{ id: mockWallet, isContract: false }],
+        pauser: [{ id: mockWallet, isContract: false }],
+        recovery: [{ id: mockWallet, isContract: false }],
+        saleAdmin: [{ id: mockWallet, isContract: false }],
+        signer: [{ id: mockWallet, isContract: false }],
+        supplyManagement: [{ id: mockWallet, isContract: false }],
+        systemManager: [{ id: mockWallet, isContract: false }],
+        systemModule: [{ id: mockWallet, isContract: false }],
+        tokenAdmin: [{ id: mockWallet, isContract: false }],
+        tokenFactoryModule: [{ id: mockWallet, isContract: false }],
+        tokenFactoryRegistryModule: [{ id: mockWallet, isContract: false }],
+        tokenManager: [{ id: mockWallet, isContract: false }],
+        verificationAdmin: [{ id: mockWallet, isContract: false }],
+      };
 
       const result = mapUserRoles(mockWallet, accessControl);
 

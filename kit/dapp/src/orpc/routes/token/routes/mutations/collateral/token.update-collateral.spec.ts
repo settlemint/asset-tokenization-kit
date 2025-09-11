@@ -1,3 +1,4 @@
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import { getOrpcClient, type OrpcClient } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
@@ -75,15 +76,22 @@ describe("Token update collateral", () => {
     const client = getOrpcClient(headers);
 
     await expect(
-      client.token.updateCollateral({
-        contract: stablecoinToken.id,
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
+      client.token.updateCollateral(
+        {
+          contract: stablecoinToken.id,
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
+          },
+          amount: "1000000",
+          expiryDays: 30,
         },
-        amount: "1000000",
-        expiryDays: 30,
-      })
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
+          },
+        }
+      )
     ).rejects.toThrow();
   });
 });

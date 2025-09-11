@@ -1,9 +1,10 @@
 /**
  * @vitest-environment node
  */
+import type { AccessControlRoles } from "@atk/zod/access-control-roles";
+import type { ResultOf } from "@graphql-typed-document-node/core";
 import { Kind, print } from "graphql";
-import { describe, expect, it } from "vitest";
-import type { AccessControlRoles } from "./access-control-fragment";
+import { describe, expect, expectTypeOf, it } from "vitest";
 import { AccessControlFragment } from "./access-control-fragment";
 
 describe("AccessControlFragment", () => {
@@ -142,51 +143,15 @@ describe("AccessControlFragment", () => {
   });
 
   describe("Type definitions", () => {
-    it("should have correct AccessControlRoles type definition", () => {
-      // This is a compile-time check, but we can verify the structure
-      // The AccessControlRoles type should be a union of all role names
-      const expectedRoles: AccessControlRoles[] = [
-        "addonManager",
-        "addonModule",
-        "addonRegistryModule",
-        "admin",
-        "auditor",
-        "burner",
-        "capManagement",
-        "claimPolicyManager",
-        "claimIssuer",
-        "complianceAdmin",
-        "complianceManager",
-        "custodian",
-        "emergency",
-        "forcedTransfer",
-        "freezer",
-        "fundsManager",
-        "globalListManager",
-        "governance",
-        "identityManager",
-        "identityRegistryModule",
-        "minter",
-        "organisationIdentityManager",
-        "pauser",
-        "recovery",
-        "saleAdmin",
-        "signer",
-        "supplyManagement",
-        "systemManager",
-        "systemModule",
-        "tokenAdmin",
-        "tokenFactoryModule",
-        "tokenFactoryRegistryModule",
-        "tokenManager",
-        "verificationAdmin",
-      ];
+    it("fragment roles match zod roles (compile-time)", () => {
+      // Derive union of role keys from the fragment's inferred result type (excluding top-level id)
+      type FragmentAccessControlRoles = Exclude<
+        keyof NonNullable<NonNullable<ResultOf<typeof AccessControlFragment>>>,
+        "id"
+      >;
 
-      // This verifies that the type system accepts these values
-      expectedRoles.forEach((role) => {
-        const testRole: AccessControlRoles = role;
-        expect(testRole).toBe(role);
-      });
+      // Ensure the fragment-derived role keys equal the zod roles union type
+      expectTypeOf<FragmentAccessControlRoles>().toEqualTypeOf<AccessControlRoles>();
     });
   });
 

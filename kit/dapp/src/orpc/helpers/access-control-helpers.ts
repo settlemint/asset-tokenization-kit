@@ -1,7 +1,7 @@
 import type {
   AccessControl,
   AccessControlRoles,
-} from "@/lib/fragments/the-graph/access-control-fragment";
+} from "@atk/zod/access-control-roles";
 
 /**
  * Type guard to check if a value is an array of objects with id and isContract properties

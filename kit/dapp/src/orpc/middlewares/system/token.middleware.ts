@@ -1,10 +1,10 @@
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { AccessControlFragment } from "@/lib/fragments/the-graph/access-control-fragment";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { isEthereumAddress } from "@atk/zod/ethereum-address";
 import { satisfiesRoleRequirement } from "@atk/zod/role-requirement";
 import { createLogger } from "@settlemint/sdk-utils/logging";

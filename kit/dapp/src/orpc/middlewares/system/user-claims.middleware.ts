@@ -1,4 +1,3 @@
-import { AccessControlFragment } from "@/lib/fragments/the-graph/access-control-fragment";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import z from "zod";
@@ -15,8 +14,7 @@ const READ_ACCOUNT_QUERY = theGraphGraphql(
       }
     }
   }
-  `,
-  [AccessControlFragment]
+  `
 );
 
 /**

@@ -39,7 +39,7 @@ export const roles = [
   "verificationAdmin",
 ] as const;
 
-type AccessControlRoles = (typeof roles)[number];
+export type AccessControlRoles = (typeof roles)[number];
 
 /**
  * Zod schema for validating all possible access control roles.

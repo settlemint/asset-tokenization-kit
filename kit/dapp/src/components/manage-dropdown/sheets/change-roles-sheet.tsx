@@ -3,11 +3,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppForm } from "@/hooks/use-app-form";
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { getAccessControlEntries } from "@/orpc/helpers/access-control-helpers";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import type { RoleRequirement } from "@atk/zod/role-requirement";
 import {
