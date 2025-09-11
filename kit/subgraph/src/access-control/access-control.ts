@@ -6,13 +6,13 @@ import {
 } from "../../generated/templates/AccessControl/AccessControl";
 import { fetchAccount } from "../account/fetch/account";
 import {
-  decreaseAccountRolesCount,
-  increaseAccountRolesCount,
-} from "../account/utils/account-contract-name";
+  decrementAccountRolesCount,
+  incrementAccountRolesCount,
+} from "../account/utils/account-role";
 import { fetchEvent } from "../event/fetch/event";
 import {
-  decreaseTokenRoleCount,
-  increaseTokenRoleCount,
+  decrementTokenRoleCount,
+  incrementTokenRoleCount,
 } from "../token-role/utils/token-role-utils";
 import { fetchAccessControl } from "./fetch/accesscontrol";
 import { getRoleConfigFromBytes } from "./utils/role";
@@ -42,6 +42,7 @@ export function handleRoleGranted(event: RoleGranted): void {
       break;
     }
   }
+
   if (!found) {
     accessControl.set(
       roleConfig.fieldName,
@@ -49,14 +50,15 @@ export function handleRoleGranted(event: RoleGranted): void {
     );
 
     // Update global role count for the account
-    increaseAccountRolesCount(roleHolder.id);
+    incrementAccountRolesCount(event.params.account);
 
     // If this AccessControl belongs to a token, update TokenRole
     const tokenAddress = accessControl.token;
     if (tokenAddress) {
-      increaseTokenRoleCount(tokenAddress, roleHolder.id);
+      incrementTokenRoleCount(tokenAddress, roleHolder.id);
     }
   }
+
   accessControl.save();
 }
 
@@ -75,25 +77,24 @@ export function handleRoleRevoked(event: RoleRevoked): void {
     newValue = value.toBytesArray();
   }
   const newAdmins: Bytes[] = [];
-  let roleWasFound = false;
+  let found = false;
   for (let i = 0; i < newValue.length; i++) {
     if (!newValue[i].equals(roleHolder.id)) {
       newAdmins.push(newValue[i]);
     } else {
-      roleWasFound = true;
+      found = true;
     }
   }
   accessControl.set(roleConfig.fieldName, Value.fromBytesArray(newAdmins));
 
-  // Only update counters if the role was actually found and removed
-  if (roleWasFound) {
+  if (found) {
     // Update global role count for the account
-    decreaseAccountRolesCount(roleHolder.id);
+    decrementAccountRolesCount(event.params.account);
 
     // If this AccessControl belongs to a token, update TokenRole
     const tokenAddress = accessControl.token;
     if (tokenAddress) {
-      decreaseTokenRoleCount(tokenAddress, roleHolder.id);
+      decrementTokenRoleCount(tokenAddress, roleHolder.id);
     }
   }
 

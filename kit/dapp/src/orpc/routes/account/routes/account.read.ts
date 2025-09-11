@@ -12,6 +12,7 @@ const READ_ACCOUNT_QUERY = theGraphGraphql(`
     account(id: $walletAddress) {
       id
       country
+      rolesCount
       identity {
         id
         claims {

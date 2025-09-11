@@ -2,7 +2,7 @@ import { Address, Bytes, store } from "@graphprotocol/graph-ts";
 import { fetchAccount } from "../../account/fetch/account";
 import { fetchTokenRole } from "../fetch/token-role";
 
-export function increaseTokenRoleCount(
+export function incrementTokenRoleCount(
   tokenAddress: Bytes,
   accountAddress: Bytes
 ): void {
@@ -16,7 +16,7 @@ export function increaseTokenRoleCount(
   account.save();
 }
 
-export function decreaseTokenRoleCount(
+export function decrementTokenRoleCount(
   tokenAddress: Bytes,
   accountAddress: Bytes
 ): void {
