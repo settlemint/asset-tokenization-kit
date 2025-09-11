@@ -6,6 +6,7 @@ import type { RoleRequirement } from "@atk/zod/role-requirement";
 import { ORPCError } from "@orpc/server";
 import { retryWhenFailed } from "@settlemint/sdk-utils";
 import { createLogger } from "@settlemint/sdk-utils/logging";
+import { getAuthClient } from "@test/fixtures/auth-client";
 import { DEFAULT_INVESTOR } from "@test/fixtures/user";
 import { getOrpcClient, type OrpcClient } from "./orpc-client";
 import {
@@ -207,6 +208,23 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
   const issuerOrpcClient = getOrpcClient(await signInWithUser(DEFAULT_ISSUER));
   const issuerMe = await issuerOrpcClient.user.me({});
 
+  // First, set the Better Auth role to 'issuer' to grant off-chain permissions
+  // This is required for the { account: ["read"] } permission in offchain-permissions.middleware.ts
+  const authClient = getAuthClient();
+  const adminHeaders = await signInWithUser(DEFAULT_ADMIN);
+  await authClient.admin.setRole(
+    {
+      userId: issuerMe.id,
+      role: "issuer",
+    },
+    {
+      headers: {
+        ...Object.fromEntries(adminHeaders.entries()),
+      },
+    }
+  );
+  logger.info("Set Better Auth role for issuer to 'issuer'");
+
   // Issuer needs both token management roles and the claimIssuer role
   const issuerRequiredRoles = [
     ...TOKEN_MANAGEMENT_REQUIRED_ROLES,
@@ -218,7 +236,7 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
   );
 
   if (rolesToGrant.length > 0) {
-    logger.info("Granting roles to issuer", { roles: rolesToGrant });
+    logger.info("Granting on-chain roles to issuer", { roles: rolesToGrant });
     await orpClient.system.accessManager.grantRole({
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,

@@ -119,28 +119,6 @@ describe("Claims list (integration)", () => {
   });
 
   it("should successfully list filtered claims when user is a trusted issuer", async () => {
-    // Debug: ensure system exists and trusted issuer row includes collateral for this issuer
-    const systems = await adminClient.system.list({});
-    expect(systems.length).toBeGreaterThan(0);
-    const issuerMe = await issuerClient.account.me({});
-    const issuerIdentity = issuerMe?.identity;
-    expect(issuerIdentity).toBeDefined();
-    const trustedIssuers = await adminClient.system.trustedIssuers.list({});
-    const tiMatch = trustedIssuers.find(
-      (t) => t.id?.toLowerCase() === issuerIdentity?.toLowerCase()
-    );
-    expect(tiMatch).toBeDefined();
-    expect(tiMatch?.claimTopics.map((t) => t.name)).toContain("collateral");
-
-    // Wait until issuer can see at least the collateral claim
-    await waitUntil({
-      get: () =>
-        issuerClient.user.claims.list({ wallet: targetUserData.wallet }),
-      until: (result) => result.claims.some((c) => c.name === "collateral"),
-      timeoutMs: 60_000,
-      intervalMs: 1000,
-    });
-
     // Issuer user should only see claims for topics they're trusted issuer for
     const result = await issuerClient.user.claims.list({
       wallet: targetUserData.wallet,

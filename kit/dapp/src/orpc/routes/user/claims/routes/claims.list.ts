@@ -4,7 +4,6 @@ import {
   identityPermissionsMiddleware,
 } from "@/orpc/middlewares/auth/identity-permissions.middleware";
 import { trustedIssuerMiddleware } from "@/orpc/middlewares/auth/trusted-issuer.middleware";
-import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
@@ -67,7 +66,6 @@ export const list = authRouter.user.claims.list
       getTargetUserId: () => undefined,
     })
   )
-  .use(databaseMiddleware)
   .handler(async ({ context, input }) => {
     // Fetch identity data from TheGraph
     const identityResult = await fetchUserIdentity({

@@ -1,6 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import type { Context } from "@/orpc/context/context";
-import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
+import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
 import type { IdentityClaim } from "@atk/zod/claim";
 import { call, ORPCError } from "@orpc/server";
 import { z } from "zod";
