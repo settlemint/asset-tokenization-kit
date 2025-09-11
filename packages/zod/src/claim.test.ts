@@ -13,15 +13,24 @@
  * - Type Safety: Branded type system for claim data integrity
  * - Error Handling: Specific error messages for different validation failures
  *
+ * TYPE SAFETY PATTERNS:
+ * - Optional Chaining: Used with array indexing due to TypeScript strict mode
+ *   (noUncheckedIndexedAccess) which makes array[index] potentially undefined
+ * - Destructuring with Underscore: Intentional unused variable naming (_var)
+ *   prevents linting warnings while clearly communicating intent
+ * - Type Assertions: Strategic use of 'as unknown as T' to test runtime validation
+ *   bypassing compile-time checks to verify Zod catches invalid external data
+ *
+ * WHY STRICT TYPING: Identity claims are critical security components in blockchain
+ * asset tokenization. Type safety prevents runtime errors that could compromise
+ * user verification, compliance validation, and trust chain integrity.
+ *
  * SECURITY: Invalid claims could compromise identity verification systems
  * STANDARD: Ensures claims match subgraph schema and API expectations
  */
 
 import { describe, expect, it } from "bun:test";
 import {
-  type IdentityClaim,
-  type ClaimValue,
-  type ClaimIssuer,
   identityClaim,
   claimValue,
   claimIssuer,
@@ -141,14 +150,23 @@ describe("identityClaim", () => {
     it("should accept a complete valid claim", () => {
       // WHY: Full claim structure with all required fields
       const result = identityClaim.parse(validClaim);
-      
+
       expect(result.id).toBe("0x123abc-42");
       expect(result.name).toBe("KYC Verification");
       expect(result.revoked).toBe(false);
-      expect(result.issuer.id).toBe("0x71C7656EC7ab88b098defB751B7401B5f6d8976F");
+      expect(result.issuer.id).toBe(
+        "0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
+      );
       expect(result.values).toHaveLength(2);
-      expect(result.values[0].key).toBe("name");
-      expect(result.values[0].value).toBe("John Doe");
+      
+      // WHY: Optional chaining prevents runtime errors if array indexing fails
+      // TypeScript's strict mode with noUncheckedIndexedAccess requires this
+      // safety check since array[index] can return undefined. This protects
+      // against out-of-bounds access and maintains type safety throughout
+      // the test suite, especially important for identity claim validation
+      // where data integrity is critical for security compliance.
+      expect(result.values[0]?.key).toBe("name");
+      expect(result.values[0]?.value).toBe("John Doe");
     });
 
     it("should accept claim with empty values array", () => {
@@ -176,41 +194,55 @@ describe("identityClaim", () => {
 
   describe("invalid identity claims", () => {
     it("should reject claim with missing id", () => {
-      const { id, ...claimWithoutId } = validClaim;
-      
+      // WHY: Underscore prefix (_id) signals intentionally unused extracted variable
+      // This destructuring pattern safely removes the 'id' field while clearly
+      // communicating to TypeScript and developers that the extracted value
+      // is intentionally discarded. This prevents "unused variable" linting
+      // warnings while maintaining explicit field removal for test isolation.
+      const { id: _id, ...claimWithoutId } = validClaim;
+
       expect(() => identityClaim.parse(claimWithoutId)).toThrow();
     });
 
     it("should reject claim with missing name", () => {
-      const { name, ...claimWithoutName } = validClaim;
-      
+      // WHY: Consistent destructuring pattern for intentional field removal
+      const { name: _name, ...claimWithoutName } = validClaim;
+
       expect(() => identityClaim.parse(claimWithoutName)).toThrow();
     });
 
     it("should reject claim with missing revoked field", () => {
-      const { revoked, ...claimWithoutRevoked } = validClaim;
-      
+      // WHY: Revoked field is required for claim validity tracking
+      const { revoked: _revoked, ...claimWithoutRevoked } = validClaim;
+
       expect(() => identityClaim.parse(claimWithoutRevoked)).toThrow();
     });
 
     it("should reject claim with missing issuer", () => {
-      const { issuer, ...claimWithoutIssuer } = validClaim;
-      
+      // WHY: Issuer identification is critical for claim trust chain
+      const { issuer: _issuer, ...claimWithoutIssuer } = validClaim;
+
       expect(() => identityClaim.parse(claimWithoutIssuer)).toThrow();
     });
 
     it("should reject claim with missing values", () => {
-      const { values, ...claimWithoutValues } = validClaim;
-      
+      // WHY: Values array is required even if empty for schema consistency
+      const { values: _values, ...claimWithoutValues } = validClaim;
+
       expect(() => identityClaim.parse(claimWithoutValues)).toThrow();
     });
 
     it("should reject claim with non-boolean revoked field", () => {
       const claimWithInvalidRevoked = {
         ...validClaim,
-        revoked: "false" as any,
+        // WHY: Type assertion bypasses TypeScript checks to test runtime validation
+        // Using 'as unknown as boolean' creates invalid data that TypeScript
+        // would normally reject, allowing us to verify that Zod schema validation
+        // catches type mismatches at runtime. This pattern ensures our validation
+        // works even when TypeScript safety is circumvented by external data.
+        revoked: "false" as unknown as boolean,
       };
-      
+
       expect(() => identityClaim.parse(claimWithInvalidRevoked)).toThrow();
     });
 
@@ -221,7 +253,7 @@ describe("identityClaim", () => {
           id: "invalid-address",
         },
       };
-      
+
       expect(() => identityClaim.parse(claimWithInvalidIssuer)).toThrow();
     });
 
@@ -232,7 +264,7 @@ describe("identityClaim", () => {
           { key: "name" }, // Missing value field
         ],
       };
-      
+
       expect(() => identityClaim.parse(claimWithInvalidValues)).toThrow();
     });
   });
@@ -246,9 +278,7 @@ describe("isIdentityClaim", () => {
     issuer: {
       id: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
     },
-    values: [
-      { key: "name", value: "John Doe" },
-    ],
+    values: [{ key: "name", value: "John Doe" }],
   };
 
   it("should return true for valid claim", () => {
@@ -270,9 +300,7 @@ describe("parseIdentityClaim", () => {
     issuer: {
       id: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
     },
-    values: [
-      { key: "name", value: "John Doe" },
-    ],
+    values: [{ key: "name", value: "John Doe" }],
   };
 
   it("should parse valid claim", () => {

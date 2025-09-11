@@ -380,10 +380,12 @@ describe("Identity permissions middleware", () => {
         },
       };
 
-      const filteredClaimNames = filterClaimsForUser(allClaims, permissions);
+      const filteredClaims = filterClaimsForUser(allClaims, permissions);
 
-      expect(filteredClaimNames).toEqual(allClaims.map((c) => c.name));
-      expect(filteredClaimNames).toHaveLength(5);
+      expect(filteredClaims.map((c) => c.name)).toEqual(
+        allClaims.map((c) => c.name)
+      );
+      expect(filteredClaims).toHaveLength(5);
     });
 
     it("returns only KYC claims for KYC trusted issuers", () => {
@@ -398,10 +400,10 @@ describe("Identity permissions middleware", () => {
         },
       };
 
-      const filteredClaimNames = filterClaimsForUser(allClaims, permissions);
+      const filteredClaims = filterClaimsForUser(allClaims, permissions);
 
-      expect(filteredClaimNames).toEqual(["kyc"]);
-      expect(filteredClaimNames).toHaveLength(1);
+      expect(filteredClaims.map((c) => c.name)).toEqual(["kyc"]);
+      expect(filteredClaims).toHaveLength(1);
     });
 
     it("returns only AML claims for AML trusted issuers", () => {
@@ -416,10 +418,10 @@ describe("Identity permissions middleware", () => {
         },
       };
 
-      const filteredClaimNames = filterClaimsForUser(allClaims, permissions);
+      const filteredClaims = filterClaimsForUser(allClaims, permissions);
 
-      expect(filteredClaimNames).toEqual(["aml"]);
-      expect(filteredClaimNames).toHaveLength(1);
+      expect(filteredClaims.map((c) => c.name)).toEqual(["aml"]);
+      expect(filteredClaims).toHaveLength(1);
     });
 
     it("returns multiple claims for multi-topic trusted issuers", () => {
@@ -434,10 +436,10 @@ describe("Identity permissions middleware", () => {
         },
       };
 
-      const filteredClaimNames = filterClaimsForUser(allClaims, permissions);
+      const filteredClaims = filterClaimsForUser(allClaims, permissions);
 
-      expect(filteredClaimNames).toEqual(["kyc", "aml"]);
-      expect(filteredClaimNames).toHaveLength(2);
+      expect(filteredClaims.map((c) => c.name)).toEqual(["kyc", "aml"]);
+      expect(filteredClaims).toHaveLength(2);
     });
 
     it("returns empty array for non-privileged users", () => {
@@ -488,10 +490,10 @@ describe("Identity permissions middleware", () => {
         },
       };
 
-      const filteredClaimNames = filterClaimsForUser(allClaims, permissions);
+      const filteredClaims = filterClaimsForUser(allClaims, permissions);
 
       // Should preserve original order from allClaims
-      expect(filteredClaimNames).toEqual(["kyc", "sanctions"]);
+      expect(filteredClaims.map((c) => c.name)).toEqual(["kyc", "sanctions"]);
     });
 
     it("handles empty claims array", () => {

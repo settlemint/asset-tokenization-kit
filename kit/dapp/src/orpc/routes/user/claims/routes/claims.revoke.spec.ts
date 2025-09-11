@@ -9,7 +9,7 @@ import {
   registerUserIdentity,
   signInWithUser,
 } from "@test/fixtures/user";
-import { waitForGraphSync } from "@test/helpers/test-helpers";
+import { waitForGraphIndexing } from "@test/helpers/test-helpers";
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe("Claims revoke (integration)", () => {
@@ -48,7 +48,7 @@ describe("Claims revoke (integration)", () => {
     }
 
     // Wait for graph sync to ensure identity is indexed
-    await waitForGraphSync();
+    await waitForGraphIndexing();
 
     // Get the target user's identity address
     const targetAccount = await adminClient.account.read({
@@ -85,7 +85,7 @@ describe("Claims revoke (integration)", () => {
     }
 
     // Wait for graph sync before attempting to revoke
-    await waitForGraphSync();
+    await waitForGraphIndexing();
 
     // Now revoke the claim by topic
     const result = await issuerClient.user.claims.revoke({

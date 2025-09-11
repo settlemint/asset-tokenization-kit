@@ -41,7 +41,8 @@ const list = baseContract
   .route({
     method: "GET",
     path: "/user/claims/list",
-    description: "Retrieve claims information for a specific user by ID or wallet address. Returns lightweight claims data without full user profile information.",
+    description:
+      "Retrieve claims information for a specific user by ID or wallet address. Returns lightweight claims data without full user profile information.",
     successDescription: "User claims retrieved successfully",
     tags: ["user", "claims", "identity"],
   })
@@ -64,7 +65,8 @@ const issue = baseContract
   .route({
     method: "POST",
     path: "/user/claims/issue",
-    description: "Issue a new claim to a user's on-chain identity. Requires claimIssuer role and valid wallet verification. Creates signed claim on blockchain.",
+    description:
+      "Issue a new claim to a user's on-chain identity. Requires claimIssuer role and valid wallet verification. Creates signed claim on blockchain.",
     successDescription: "Claim issued successfully",
     tags: ["user", "claims", "identity", "blockchain"],
   })
@@ -87,7 +89,8 @@ const revoke = baseContract
   .route({
     method: "POST",
     path: "/user/claims/revoke",
-    description: "Revoke an existing claim from a user's on-chain identity. Requires claimIssuer role and valid wallet verification. Permanently removes claim from blockchain.",
+    description:
+      "Revoke an existing claim from a user's on-chain identity. Requires claimIssuer role and valid wallet verification. Permanently removes claim from blockchain.",
     successDescription: "Claim revoked successfully",
     tags: ["user", "claims", "identity", "blockchain"],
   })

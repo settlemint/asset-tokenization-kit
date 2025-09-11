@@ -170,7 +170,9 @@ export const ClaimsIssueInputSchema = z.object({
   /**
    * Target identity contract address to issue the claim to.
    */
-  targetIdentityAddress: ethereumAddress.describe("Identity contract address to issue claim to"),
+  targetIdentityAddress: ethereumAddress.describe(
+    "Identity contract address to issue claim to"
+  ),
 
   /**
    * Claim information including topic and data.

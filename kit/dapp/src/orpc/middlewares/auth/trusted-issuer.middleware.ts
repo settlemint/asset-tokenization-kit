@@ -112,14 +112,25 @@ export const trustedIssuerMiddleware = baseRouter.middleware(
       });
     }
 
-    // Query TheGraph for user's trusted issuer topics
-    const { trustedIssuers } = await theGraphClient.query(
-      READ_USER_TRUSTED_ISSUER_TOPICS_QUERY,
-      {
-        input: { userWallet: context.auth.user.wallet },
-        output: TrustedIssuerTopicsResponseSchema,
-      }
-    );
+    // Query TheGraph for user's trusted issuer topics with graceful fallback
+    // In case TheGraph is temporarily unavailable, degrade to empty topics to avoid
+    // blocking unrelated functionality that doesn't strictly require issuer topics.
+    let trustedIssuers: z.infer<
+      typeof TrustedIssuerTopicsResponseSchema
+    >["trustedIssuers"] = [];
+    try {
+      const result = await theGraphClient.query(
+        READ_USER_TRUSTED_ISSUER_TOPICS_QUERY,
+        {
+          input: { userWallet: context.auth.user.wallet },
+          output: TrustedIssuerTopicsResponseSchema,
+        }
+      );
+      trustedIssuers = result.trustedIssuers;
+    } catch {
+      // Graceful degradation: no trusted issuer topics when TheGraph fails
+      trustedIssuers = [];
+    }
 
     // Extract topic names from the response
     // Note: A user can be registered as a trusted issuer in multiple registries,

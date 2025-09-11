@@ -251,6 +251,21 @@ export const issue = authRouter.user.claims.issue
       });
     }
 
+    // Enforce stricter validation: reject unknown fields for known claim types
+    const expectedConversions = CLAIM_TYPE_CONVERSIONS[claim.topic];
+    if (expectedConversions) {
+      const allowedKeys = Object.keys(expectedConversions);
+      const unknownKeys = Object.keys(claim.data).filter(
+        (k) => !allowedKeys.includes(k)
+      );
+      if (unknownKeys.length > 0) {
+        throw errors.BAD_REQUEST({
+          message: `Unknown field(s) in claim data for topic '${claim.topic}': ${unknownKeys.join(", ")}`,
+          data: { topic: claim.topic, unknownKeys, allowedKeys },
+        });
+      }
+    }
+
     // Convert API claim data to internal format
     const claimInfo = convertApiClaimToInternal(claim);
 

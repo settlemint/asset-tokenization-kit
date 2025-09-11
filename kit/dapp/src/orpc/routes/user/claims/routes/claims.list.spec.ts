@@ -9,7 +9,7 @@ import {
   registerUserIdentity,
   signInWithUser,
 } from "@test/fixtures/user";
-import { waitForGraphSync } from "@test/helpers/test-helpers";
+import { waitForGraphIndexing } from "@test/helpers/test-helpers";
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe("Claims list (integration)", () => {
@@ -43,7 +43,7 @@ describe("Claims list (integration)", () => {
     }
 
     // Wait for graph sync to ensure identity is indexed
-    await waitForGraphSync();
+    await waitForGraphIndexing();
 
     // Get the target user's identity address for issuing claims
     const targetAccount = await adminClient.account.read({
@@ -86,7 +86,7 @@ describe("Claims list (integration)", () => {
     });
 
     // Wait for graph sync after setting up claims
-    await waitForGraphSync();
+    await waitForGraphIndexing();
   });
 
   it("should successfully list all claims when user has identityManager role", async () => {
@@ -110,7 +110,7 @@ describe("Claims list (integration)", () => {
 
   it("should successfully list filtered claims when user is a trusted issuer", async () => {
     // Wait for additional graph sync to ensure trusted issuer indexing is complete
-    await waitForGraphSync();
+    await waitForGraphIndexing();
 
     // Issuer user should only see claims for topics they're trusted issuer for
     const result = await issuerClient.user.claims.list({
@@ -141,7 +141,7 @@ describe("Claims list (integration)", () => {
       throw new Error("KYC test user does not have a wallet");
     }
 
-    await waitForGraphSync();
+    await waitForGraphIndexing();
 
     const kycAccount = await adminClient.account.read({
       wallet: kycUserData.wallet,
@@ -165,7 +165,7 @@ describe("Claims list (integration)", () => {
       },
     });
 
-    await waitForGraphSync();
+    await waitForGraphIndexing();
 
     // Issuer should see empty claims array for this user
     const result = await issuerClient.user.claims.list({

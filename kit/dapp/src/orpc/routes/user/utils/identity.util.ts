@@ -241,7 +241,14 @@ export async function fetchClaimByTopicAndIdentity({
   context,
 }: FetchClaimByTopicOptions): Promise<ClaimLookupResult> {
   // Query TheGraph to get claim information by topic and identity
-  const claimData = await context.theGraphClient?.query(
+  if (!context.theGraphClient) {
+    throw new ORPCError("INTERNAL_SERVER_ERROR", {
+      message:
+        "theGraphMiddleware must run before identity utilities can query TheGraph",
+    });
+  }
+
+  const claimData = await context.theGraphClient.query(
     GET_CLAIM_BY_TOPIC_AND_IDENTITY_QUERY,
     {
       input: {
@@ -252,11 +259,7 @@ export async function fetchClaimByTopicAndIdentity({
     }
   );
 
-  if (!claimData) {
-    throw new ORPCError("INTERNAL_SERVER_ERROR", {
-      message: "No claim data found",
-    });
-  }
+  // claimData is guaranteed by validated client + schema
 
   // Check if any claims exist
   if (!claimData.identityClaims || claimData.identityClaims.length === 0) {

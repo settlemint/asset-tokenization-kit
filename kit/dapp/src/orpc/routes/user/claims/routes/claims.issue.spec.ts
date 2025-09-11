@@ -9,7 +9,7 @@ import {
   registerUserIdentity,
   signInWithUser,
 } from "@test/fixtures/user";
-import { waitForGraphSync } from "@test/helpers/test-helpers";
+import { waitForGraphIndexing } from "@test/helpers/test-helpers";
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe("Claims issue (integration)", () => {
@@ -45,7 +45,7 @@ describe("Claims issue (integration)", () => {
     }
 
     // Wait for graph sync to ensure identity is indexed
-    await waitForGraphSync();
+    await waitForGraphIndexing();
 
     // Get the target user's identity address
     const targetAccount = await adminClient.account.read({

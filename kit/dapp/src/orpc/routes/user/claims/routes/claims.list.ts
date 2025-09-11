@@ -75,8 +75,6 @@ export const list = authRouter.user.claims.list
       context,
     });
 
-    console.log("identityResult", identityResult);
-
     // Filter claims based on user's permissions
     const filteredClaims = filterClaimsForUser(
       identityResult.claims ?? [],

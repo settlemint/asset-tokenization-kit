@@ -10,6 +10,7 @@ import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middle
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { fetchClaimByTopicAndIdentity } from "../../utils/identity.util";
+import { ORPCError } from "@orpc/server";
 import {
   ClaimsRevokeInputSchema,
   RevokableClaimTopicSchema,
@@ -156,11 +157,42 @@ export const revoke = authRouter.user.claims.revoke
     }
 
     // Fetch the claim by topic and identity, with extracted claimId for smart contract use
-    const { extractedClaimId } = await fetchClaimByTopicAndIdentity({
-      claimTopic,
-      identityAddress: targetIdentityAddress,
-      context,
-    });
+    let extractedClaimId: string;
+    try {
+      const result = await fetchClaimByTopicAndIdentity({
+        claimTopic,
+        identityAddress: targetIdentityAddress,
+        context,
+      });
+      extractedClaimId = result.extractedClaimId;
+    } catch (error: unknown) {
+      let message = "";
+      if (
+        error &&
+        typeof error === "object" &&
+        "message" in error &&
+        typeof (error as { message: unknown }).message === "string"
+      ) {
+        message = (error as { message: string }).message;
+      }
+      const isMultipleClaims =
+        typeof message === "string" &&
+        message.includes("Multiple active claims");
+      const isBadRequest = error instanceof ORPCError && error.status === 400;
+      if (isMultipleClaims || isBadRequest) {
+        throw errors.BAD_REQUEST({
+          message:
+            `Multiple claims found for topic "${claimTopic}" and identity "${targetIdentityAddress}". ` +
+            `This may be due to duplicate claims. Please contact support or remove duplicates before retrying.`,
+          data: {
+            claimTopic,
+            targetIdentityAddress,
+            issuerIdentity: context.userIssuerIdentity,
+          },
+        });
+      }
+      throw error;
+    }
 
     // Submit claim revocation to blockchain via Portal
     const result = await context.portalClient.mutate(
