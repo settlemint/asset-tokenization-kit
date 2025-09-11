@@ -14,6 +14,7 @@ test.describe.serial("Complete Onboarding Flow", () => {
 
   test.beforeEach(async ({ page }) => {
     onboardingPage = new OnboardingPage(page);
+
     await page.goto("/");
     await page.waitForLoadState("networkidle");
     await onboardingPage.waitForReactHydration();

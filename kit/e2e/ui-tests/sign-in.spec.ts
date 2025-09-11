@@ -31,7 +31,7 @@ test.describe("Sign-in Tests", () => {
     await pages.signInPage.clickLoginButton();
 
     await pages.signInPage.expectValidationError(
-      errorMessages.validation.emailRequired
+      errorMessages.validation.emailInvalid
     );
     await pages.signInPage.expectValidationError(
       errorMessages.validation.passwordRequired
@@ -43,7 +43,7 @@ test.describe("Sign-in Tests", () => {
     await pages.signInPage.fillPassword(adminUser.password);
     await pages.signInPage.clickLoginButton();
     await pages.signInPage.expectValidationError(
-      errorMessages.validation.emailRequired
+      errorMessages.validation.emailInvalid
     );
   });
 

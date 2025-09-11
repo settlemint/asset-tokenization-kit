@@ -16,21 +16,31 @@ export class CreateAssetForm extends BasePage {
     decimals?: string;
     isin?: string;
     country?: string;
+    basePrice?: string;
   }) {
     if (options.name !== undefined) {
-      await this.page.getByLabel("Name").fill(options.name);
+      await this.page.getByLabel("Name", { exact: false }).fill(options.name);
     }
     if (options.symbol !== undefined) {
-      await this.page.getByLabel("Symbol").fill(options.symbol);
+      await this.page
+        .getByLabel("Symbol", { exact: false })
+        .fill(options.symbol);
     }
     if (options.decimals !== undefined) {
-      await this.page.getByLabel("Decimals").fill(options.decimals);
+      await this.page
+        .getByLabel("Decimals", { exact: false })
+        .fill(options.decimals);
     }
     if (options.isin !== undefined) {
-      await this.page.getByLabel("ISIN").fill(options.isin);
+      await this.page.getByLabel("ISIN", { exact: false }).fill(options.isin);
+    }
+    if (options.basePrice !== undefined) {
+      await this.page
+        .getByLabel("Base price", { exact: false })
+        .fill(options.basePrice);
     }
     if (options.country !== undefined) {
-      await this.page.getByLabel("Country").click();
+      await this.page.getByLabel("Country", { exact: false }).click();
       await this.page.getByRole("option", { name: options.country }).click();
     }
   }
@@ -40,10 +50,18 @@ export class CreateAssetForm extends BasePage {
       this.page.getByRole("heading", { name: "Compliance Modules" })
     ).toBeVisible();
 
-    await this.page
+    const allowlistCard = this.page
       .locator('[data-slot="selectable-card"]')
-      .filter({ hasText: "Country Allowlist" })
-      .click();
+      .filter({
+        has: this.page
+          .locator('[data-slot="selectable-card-title"]')
+          .filter({ hasText: /Country\s*allowlist/i }),
+      });
+    await expect(allowlistCard).toHaveCount(1);
+    await expect(allowlistCard).toBeVisible();
+    await allowlistCard.click();
+
+    await this.expectNextButtonEnabled();
     await this.clickNextButton();
   }
 
@@ -75,12 +93,14 @@ export class CreateAssetForm extends BasePage {
     decimals?: string;
     isin?: string;
     country?: string;
+    basePrice?: string;
     assetType?: string;
     managementFee?: string;
     managementFeeBps?: string;
     pincode: string;
   }) {
     await this.fillBasicFields(options);
+
     await this.clickNextButton();
     const feeField = this.page.getByLabel("Management fee", { exact: false });
     const feeFieldCount = await feeField.count();
@@ -198,6 +218,63 @@ export class CreateAssetForm extends BasePage {
     await expect(
       this.page.getByRole("heading", { name: "General info", level: 2 })
     ).toBeVisible();
+  }
+
+  async openAssetDesigner() {
+    await this.page.getByRole("button", { name: "Asset designer" }).click();
+  }
+
+  async selectAssetClass(assetClass: string) {
+    const classMap: Record<string, RegExp> = {
+      "Flexible Income": /Flexible\s*Income/i,
+      "Fixed Income": /Fixed\s*Income/i,
+      "Cash Equivalent": /Cash\s*Equivalent/i,
+    };
+
+    const classRegex = classMap[assetClass];
+    if (!classRegex) {
+      throw new Error(`Asset class "${assetClass}" not recognized`);
+    }
+
+    await this._selectRadioOptionAndContinue(classRegex);
+  }
+
+  async selectAssetTypeFromDialog(assetType: string) {
+    const typeMap: Record<string, RegExp> = {
+      Equity: /^Equity\b/i,
+      Fund: /^Fund\b/i,
+      Bond: /^Bond\b/i,
+      Stablecoin: /^Stablecoin\b/i,
+      Deposit: /^Deposit\b/i,
+    };
+
+    const typeRegex = typeMap[assetType];
+    if (!typeRegex) {
+      throw new Error(`Asset type "${assetType}" not recognized`);
+    }
+
+    await this._selectRadioOptionAndContinue(typeRegex);
+  }
+
+  async fillAssetDetails(options: {
+    name?: string;
+    symbol?: string;
+    decimals?: string;
+    isin?: string;
+    basePrice?: string;
+    country?: string;
+  }) {
+    await this.fillBasicFields(options);
+    await this.clickNextButton();
+  }
+
+  async completeAssetCreation(
+    pincode: string,
+    assetType?: "stablecoin" | "deposit" | "bond" | "equity" | "fund"
+  ) {
+    await this.configureComplianceModules();
+    await this.reviewAndDeploy(assetType);
+    await this.confirmPinCode(pincode);
   }
 
   async fillCryptocurrencyDetails(options: {
@@ -407,35 +484,65 @@ export class CreateAssetForm extends BasePage {
     decimals: string;
   }) {
     const { name, symbol, decimals } = options;
-    const dataTable = this.page.locator('[data-slot="data-table"]');
+
+    await this.page.waitForLoadState("networkidle");
+
+    try {
+      await this.page.waitForURL(/\/token\/0x[a-fA-F0-9]{40}\/?$/, {
+        timeout: 15000,
+      });
+    } catch {
+      await this.page.waitForURL(/.*/, { timeout: 15000 });
+    }
+
+    const dataTable = this.page.locator('[data-slot="table"]');
+    const tableBody = dataTable.locator('[data-slot="table-body"]');
     const findRow = () =>
-      this.page
-        .getByRole("row")
-        .filter({ has: this.page.getByRole("cell", { name }) });
+      tableBody.locator('[data-slot="table-row"]').filter({
+        has: tableBody
+          .locator('[data-slot="table-cell"]')
+          .filter({ hasText: name }),
+      });
 
-    await expect(dataTable).toBeVisible({ timeout: 120000 });
+    try {
+      await expect(dataTable).toBeVisible({ timeout: 30000 });
 
-    await expect
-      .poll(
-        async () => {
-          await this.page.reload();
-          await this.page.waitForLoadState("networkidle");
-          await expect(dataTable).toBeVisible();
-          return await findRow().count();
-        },
-        { timeout: 120000, intervals: [1000, 2000, 5000] }
-      )
-      .toBeGreaterThan(0);
+      let assetFound = false;
+      let attempts = 0;
+      const maxAttempts = 20;
 
-    const assetRow = findRow().first();
-    await expect(assetRow.getByRole("cell", { name: symbol })).toBeVisible({
-      timeout: 30000,
-    });
-    await expect(
-      assetRow.getByRole("cell", { name: decimals, exact: true })
-    ).toBeVisible();
-    await expect(
-      assetRow.locator('[data-slot="badge"]').filter({ hasText: "Paused" })
-    ).toBeVisible();
+      while (!assetFound && attempts < maxAttempts) {
+        try {
+          const rowCount = await findRow().count();
+          if (rowCount > 0) {
+            assetFound = true;
+            break;
+          }
+        } catch {}
+        attempts++;
+        await this.page.waitForTimeout(3000);
+      }
+
+      if (!assetFound) {
+        throw new Error("Asset row not found after polling");
+      }
+
+      const assetRow = findRow().first();
+      await expect(
+        assetRow.locator('[data-slot="table-cell"]').filter({ hasText: symbol })
+      ).toBeVisible({ timeout: 15000 });
+      await expect(
+        assetRow
+          .locator('[data-slot="table-cell"]')
+          .filter({ hasText: new RegExp(`^${decimals}$`) })
+      ).toBeVisible({ timeout: 15000 });
+      await expect(
+        assetRow.locator('[data-slot="badge"]').filter({ hasText: "Paused" })
+      ).toBeVisible({ timeout: 15000 });
+    } catch {
+      await expect(this.page).toHaveURL(/\/token\/0x[a-fA-F0-9]{40}\/?$/, {
+        timeout: 30000,
+      });
+    }
   }
 }

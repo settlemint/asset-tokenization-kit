@@ -9,7 +9,7 @@ RUN mkdir -p /artifacts/abis /artifacts/genesis
 COPY .generated/portal/ /artifacts/abis/
 
 # Copy genesis file only (no allocations file)
-COPY .generated/genesis.json /artifacts/genesis/
+COPY .generated/genesis* /artifacts/genesis/
 
 # Set proper permissions: 755 for directories, 644 for files
 RUN find /artifacts -type d -exec chmod 755 {} + && find /artifacts -type f -exec chmod 644 {} +
