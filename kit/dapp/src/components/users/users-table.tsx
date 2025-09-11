@@ -5,8 +5,6 @@ import { Users } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { DateCell } from "@/components/data-table/cells/date-cell";
-import { UserDisplayCell } from "@/components/data-table/cells/user-display-cell";
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
@@ -70,10 +68,8 @@ export function UsersTable() {
   const columns = useMemo(
     () =>
       withAutoFeatures([
-        columnHelper.display({
-          id: "userDisplay",
+        columnHelper.accessor("wallet", {
           header: t("management.table.columns.name"),
-          cell: ({ row }) => <UserDisplayCell user={row.original} />,
           filterFn: (row, _columnId, filterValue) => {
             const user = row.original;
             const displayName = getUserDisplayName(user);
@@ -83,7 +79,7 @@ export function UsersTable() {
           },
           meta: {
             displayName: t("management.table.columns.name"),
-            type: "text",
+            type: "address",
           },
         }),
         columnHelper.accessor("email", {
@@ -121,28 +117,20 @@ export function UsersTable() {
             ],
           },
         }),
-        columnHelper.display({
-          id: "created",
+        columnHelper.accessor("createdAt", {
           header: t("management.table.columns.created"),
-          cell: ({ row }) => <DateCell value={row.original.createdAt} />,
           meta: {
             displayName: t("management.table.columns.created"),
             type: "date",
+            includeTime: true,
           },
         }),
-        columnHelper.display({
-          id: "lastActive",
+        columnHelper.accessor("lastLoginAt", {
           header: t("management.table.columns.lastActive"),
-          cell: ({ row }) => (
-            <DateCell
-              value={row.original.lastLoginAt}
-              fallback={t("management.table.fallback.never")}
-              relative
-            />
-          ),
           meta: {
             displayName: t("management.table.columns.lastActive"),
             type: "date",
+            includeTime: true,
           },
         }),
       ] as ColumnDef<User>[]),

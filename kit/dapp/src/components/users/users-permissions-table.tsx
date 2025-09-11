@@ -116,6 +116,14 @@ export function UsersPermissionsTable() {
             }),
           },
         }),
+        columnHelper.accessor("lastLoginAt", {
+          header: t("management.table.columns.lastActive"),
+          meta: {
+            displayName: t("management.table.columns.lastActive"),
+            type: "date",
+            includeTime: true,
+          },
+        }),
       ] as ColumnDef<User>[]),
     [t]
   );

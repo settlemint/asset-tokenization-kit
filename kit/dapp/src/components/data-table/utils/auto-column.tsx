@@ -22,6 +22,7 @@ function FormattedCell<TData, TValue>({
         currency: meta?.currency,
         emptyValue: meta?.emptyValue,
         showPrettyName: meta?.showPrettyName,
+        includeTime: meta?.includeTime,
       })}
     </>
   );

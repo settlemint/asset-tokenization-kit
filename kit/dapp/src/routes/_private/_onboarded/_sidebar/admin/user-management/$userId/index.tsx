@@ -65,7 +65,7 @@ function RouteComponent() {
           label={t("user:fields.email")}
           info={t("user:fields.emailInfo")}
         >
-          <CopyToClipboard value={user.email} className="w-full">
+          <CopyToClipboard value={user.email ?? "-"} className="w-full">
             <HoverCard>
               <HoverCardTrigger asChild>
                 <span className="cursor-default truncate">{user.email}</span>
