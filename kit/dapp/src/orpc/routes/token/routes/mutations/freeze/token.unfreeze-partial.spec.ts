@@ -70,11 +70,11 @@ describe("Token unfreeze partial", () => {
     const investorUser = await investorClient.user.me();
     investorAddress = investorUser.wallet as Address;
 
-    // WHY: Stablecoin type inherently includes CUSTODIAN extension for compliance
+    // WHY: Deposit type includes CUSTODIAN and doesn't enforce collateral for mint in tests
     const stablecoinData = {
-      type: "stablecoin" as const,
-      name: `Test Unfreezable Stablecoin ${Date.now()}`,
-      symbol: "TUST",
+      type: "deposit" as const,
+      name: `Test Unfreezable Deposit ${Date.now()}`,
+      symbol: "TUDT",
       decimals: 18,
       initialModulePairs: [],
       basePrice: from("1.00", 2),
