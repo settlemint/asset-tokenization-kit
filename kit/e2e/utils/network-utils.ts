@@ -82,9 +82,6 @@ export class NetworkDebugger {
       };
 
       this.capture.errors.push(error);
-
-      if (request.url().includes("/auth")) {
-      }
     });
   }
 
@@ -125,12 +122,6 @@ export class NetworkDebugger {
           error: error,
         });
       }
-    }
-
-    if (response.status() === 400) {
-    }
-
-    if (response.status() === 500) {
     }
   }
 

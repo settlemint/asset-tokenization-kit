@@ -400,10 +400,6 @@ export class OnboardingPage extends BasePage {
       .fill(kycData.nationalId);
     await this.page.waitForTimeout(300);
 
-    const errorMessages = await this.page
-      .locator('[data-slot="field-error"]')
-      .allTextContents();
-
     await expect(
       this.page.getByRole("button", { name: "Save and continue" })
     ).toBeEnabled({
