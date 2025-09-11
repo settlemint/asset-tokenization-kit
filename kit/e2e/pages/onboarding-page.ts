@@ -210,12 +210,12 @@ export class OnboardingPage extends BasePage {
       this.page.getByRole("heading", { name: "System deployed successfully" })
     ).toBeAttached({ timeout: 120000 });
 
-    const configureAssetsButton = this.page
+    const configureButton = this.page
       .locator("footer.OnboardingStepLayout__footer")
-      .getByRole("button", { name: "Configure system", exact: true });
-    await expect(configureAssetsButton).toBeVisible({ timeout: 120000 });
-    await expect(configureAssetsButton).toBeEnabled({ timeout: 120000 });
-    await configureAssetsButton.click();
+      .getByRole("button", { name: "Configure platform", exact: true });
+    await expect(configureButton).toBeVisible({ timeout: 120000 });
+    await expect(configureButton).toBeEnabled({ timeout: 120000 });
+    await configureButton.click();
     await this.page.waitForLoadState("networkidle");
     await this.waitForReactStateSettle();
   }
@@ -295,11 +295,13 @@ export class OnboardingPage extends BasePage {
     await this.enterPinVerification(pin);
 
     const deployedHeading = this.page.getByRole("heading", {
-      name: "Add-ons deployed",
+      name: "Add-ons Deployed Successfully",
     });
     await expect(deployedHeading).toBeVisible({ timeout: 120000 });
 
-    const continueBtn = this.page.getByRole("button", { name: "Continue" });
+    const continueBtn = this.page.getByRole("button", {
+      name: "Continue to identity setup",
+    });
     await expect(continueBtn).toBeVisible({ timeout: 120000 });
     await continueBtn.click();
     await this.page.waitForLoadState("networkidle");
