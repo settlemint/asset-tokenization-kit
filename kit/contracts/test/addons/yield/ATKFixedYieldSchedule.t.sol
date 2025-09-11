@@ -674,9 +674,9 @@ contract ATKFixedYieldScheduleTest is Test {
         yieldSchedule.setOnchainId(address(0));
     }
 
-    function test_CanAddClaim_FactoryReturnsTrue() public view {
-        // Factory (address(this)) should be able to add claims
-        assertTrue(yieldSchedule.canAddClaim(address(this)));
+    function test_CanAddClaim_FactoryReturnsFalse() public view {
+        // Factory (address(this)) should not be able to add claims
+        assertFalse(yieldSchedule.canAddClaim(address(this)));
     }
 
     function test_CanAddClaim_GovernanceRoleReturnsTrue() public {
@@ -691,9 +691,9 @@ contract ATKFixedYieldScheduleTest is Test {
         assertFalse(yieldSchedule.canAddClaim(user1));
     }
 
-    function test_CanRemoveClaim_FactoryReturnsTrue() public view {
-        // Factory (address(this)) should be able to remove claims
-        assertTrue(yieldSchedule.canRemoveClaim(address(this)));
+    function test_CanRemoveClaim_FactoryReturnsFalse() public view {
+        // Factory (address(this)) should not be able to remove claims
+        assertFalse(yieldSchedule.canRemoveClaim(address(this)));
     }
 
     function test_CanRemoveClaim_GovernanceRoleReturnsTrue() public {

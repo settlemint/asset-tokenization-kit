@@ -22,6 +22,7 @@ import { updateSystemStatsForSupplyChange } from "../stats/system-stats";
 import { trackTokenCollateralStats } from "../stats/token-collateral-stats";
 import { trackTokenStats } from "../stats/token-stats";
 import { updateTokenTypeStatsForSupplyChange } from "../stats/token-type-stats";
+import { updateTotalDenominationAssetNeeded } from "../token-assets/bond/utils/bond-utils";
 import {
   decreaseTokenBalanceValue,
   increaseTokenBalanceValue,
@@ -122,6 +123,11 @@ export function handleMintCompleted(event: MintCompleted): void {
   if (token.collateral) {
     const collateral = fetchCollateral(event.address);
     trackTokenCollateralStats(token, collateral);
+  }
+
+  // Update total denomination asset needed on maturity if this is a bond token
+  if (token.bond) {
+    updateTotalDenominationAssetNeeded(token);
   }
 }
 

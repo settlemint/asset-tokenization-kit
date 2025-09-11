@@ -57,6 +57,7 @@ const READ_TOKEN_QUERY = theGraphGraphql(
         faceValue
         isMatured
         maturityDate
+        denominationAssetNeeded
         denominationAsset {
           id
           decimals
@@ -77,6 +78,13 @@ const READ_TOKEN_QUERY = theGraphGraphql(
         id
         schedule {
           id
+        }
+      }
+      complianceModuleConfigs {
+        id
+        complianceModule {
+          id
+          typeId
         }
       }
       stats {
@@ -177,6 +185,7 @@ export const tokenMiddleware = baseRouter.middleware<
             recoverERC20: false,
             recoverTokens: false,
             redeem: false,
+            mature: false,
             removeComplianceModule: false,
             setCap: false,
             setYieldSchedule: false,
