@@ -155,7 +155,7 @@ export const grantRole = tokenRouter.token.grantRole
       if (!Array.isArray(accounts) || accounts.length === 0) {
         return { accounts: [] };
       }
-      const roleInfo = getRoleByFieldName(role as AccessControlRoles);
+      const roleInfo = getRoleByFieldName(role);
       if (!roleInfo) {
         throw errors.NOT_FOUND({ message: `Role '${role}' not found` });
       }
@@ -207,7 +207,7 @@ export const grantRole = tokenRouter.token.grantRole
         return { accounts: [] };
       }
       const roleInfos = roles
-        .map((r) => getRoleByFieldName(r as AccessControlRoles))
+        .map((r) => getRoleByFieldName(r))
         .filter(Boolean);
       if (roleInfos.length !== roles.length) {
         throw errors.NOT_FOUND({ message: "One or more roles not found" });
