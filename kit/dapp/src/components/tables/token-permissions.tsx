@@ -13,7 +13,6 @@ import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { ChangeRolesSheet } from "@/components/manage-dropdown/sheets/change-roles-sheet";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { getAccessControlEntries } from "@/orpc/helpers/access-control-helpers";
@@ -21,7 +20,7 @@ import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 
 type PermissionRow = {
   id: string;
-  roles: AccessControlRoles[];
+  roles: string[];
 };
 
 const columnHelper = createStrictColumnHelper<PermissionRow>();
@@ -53,7 +52,7 @@ export function TokenPermissionsTable({ token }: { token: Token }) {
     }
     return [...map.entries()].map(([id, roles]) => ({
       id,
-      roles: [...roles.values()],
+      roles: [...roles.values()].map((role) => toLabel(role)),
     }));
   }, [token.accessControl]);
 
@@ -67,25 +66,35 @@ export function TokenPermissionsTable({ token }: { token: Token }) {
             type: "address",
           },
         }),
-        columnHelper.display({
+        columnHelper.accessor("roles", {
           id: "roles",
           header: t("tokens:permissions.columns.roles"),
-          cell: ({ row }) => {
-            const roles = row.original.roles;
-            if (!roles?.length) return <span>-</span>;
-            return (
-              <div className="flex flex-wrap gap-1">
-                {roles.map((r) => (
-                  <Badge key={r} variant="secondary">
-                    {toLabel(r)}
-                  </Badge>
-                ))}
-              </div>
+          filterFn: (
+            row,
+            _id,
+            value: {
+              operator: "include";
+              values: [string[]];
+            }
+          ) => {
+            const roles = new Set(
+              row.original.roles.map((item) => item.toLowerCase())
+            );
+            return value.values[0]?.every((valueFilter) =>
+              roles.has(valueFilter.toLowerCase())
             );
           },
+          enableSorting: true,
+          sortingFn: (rowA, rowB) =>
+            (rowB.original.roles?.length ?? 0) -
+            (rowA.original.roles?.length ?? 0),
           meta: {
             displayName: t("tokens:permissions.columns.roles"),
-            type: "text",
+            type: "multiOption",
+            transformOptionFn: (value) => ({
+              label: value,
+              value: value,
+            }),
           },
         }),
         columnHelper.display({

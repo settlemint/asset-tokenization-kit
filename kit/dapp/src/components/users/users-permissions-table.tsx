@@ -103,6 +103,10 @@ export function UsersPermissionsTable() {
               roles.has(valueFilter.toLowerCase())
             );
           },
+          enableSorting: true,
+          sortingFn: (rowA, rowB) =>
+            (rowB.original.roles?.length ?? 0) -
+            (rowA.original.roles?.length ?? 0),
           meta: {
             displayName: t("permissions.table.columns.role"),
             type: "multiOption",
