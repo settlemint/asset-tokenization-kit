@@ -6,9 +6,8 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 // Interface imports
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ISMART } from "../../smart/interface/ISMART.sol";
+import { IATKToken } from "../../system/tokens/IATKToken.sol";
 
-import { ISMARTTokenAccessManaged } from "../../smart/extensions/access-managed/ISMARTTokenAccessManaged.sol";
 import { ISMARTCustodian } from "../../smart/extensions/custodian/ISMARTCustodian.sol";
 import { ISMARTPausable } from "../../smart/extensions/pausable/ISMARTPausable.sol";
 import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.sol";
@@ -22,8 +21,7 @@ import { ISMARTCapped } from "../../smart/extensions/capped/ISMARTCapped.sol";
 /// @notice Defines the core functionality and extensions for a ATK Bond, including features like redeemability,
 /// historical balances, yield, and capping.
 interface IATKBond is
-    ISMART,
-    ISMARTTokenAccessManaged,
+    IATKToken,
     ISMARTCustodian,
     ISMARTPausable,
     ISMARTBurnable,
@@ -44,7 +42,9 @@ interface IATKBond is
 
     error BondAlreadyMatured();
     /// @notice Error an action is attempted that requires the bond to be matured, but it is not.
-    error BondNotYetMatured();
+    /// @param currentTimestamp The current block timestamp
+    /// @param maturityTimestamp The maturity date timestamp
+    error BondNotYetMatured(uint256 currentTimestamp, uint256 maturityTimestamp);
     /// @notice Error an invalid maturity date was provided during initialization (e.g., in the past).
     error BondInvalidMaturityDate();
     /// @notice Error an invalid denomination asset address was provided (e.g., zero address).

@@ -8,6 +8,8 @@ import { addComplianceModule } from "@/orpc/routes/token/routes/mutations/compli
 import { removeComplianceModule } from "@/orpc/routes/token/routes/mutations/compliance/token.remove-compliance-module";
 import { create } from "@/orpc/routes/token/routes/mutations/create/token.create";
 import { freezeAddress } from "@/orpc/routes/token/routes/mutations/freeze/token.freeze-address";
+import { freezePartial } from "@/orpc/routes/token/routes/mutations/freeze/token.freeze-partial";
+import { unfreezePartial } from "@/orpc/routes/token/routes/mutations/freeze/token.unfreeze-partial";
 import { mint } from "@/orpc/routes/token/routes/mutations/mint/token.mint";
 import { pause } from "@/orpc/routes/token/routes/mutations/pause/token.pause";
 import { unpause } from "@/orpc/routes/token/routes/mutations/pause/token.unpause";
@@ -15,6 +17,7 @@ import { forcedRecover } from "@/orpc/routes/token/routes/mutations/recovery/tok
 import { recoverERC20 } from "@/orpc/routes/token/routes/mutations/recovery/token.recover-erc20";
 import { recoverTokens } from "@/orpc/routes/token/routes/mutations/recovery/token.recover-tokens";
 import { redeem } from "@/orpc/routes/token/routes/mutations/redeem/token.redeem";
+import { mature } from "@/orpc/routes/token/routes/mutations/mature/token.mature";
 import { transfer } from "@/orpc/routes/token/routes/mutations/transfer/token.transfer";
 import { setYieldSchedule } from "@/orpc/routes/token/routes/mutations/yield/token.set-yield-schedule";
 import { statsBondStatus } from "@/orpc/routes/token/routes/stats/bond-status";
@@ -49,7 +52,10 @@ const routes = {
   transfer,
   approve,
   redeem,
+  mature,
   freezeAddress,
+  freezePartial,
+  unfreezePartial,
   recoverTokens,
   forcedRecover,
   recoverERC20,

@@ -8,9 +8,7 @@ import { z } from "zod";
 export const BondSchema = z.object({
   cap: apiBigInt.describe("The cap of the bond"),
   faceValue: apiBigInt.describe("The face value of the bond"),
-  maturityDate: timestamp()
-    .transform((date) => date.getTime().toString())
-    .describe("The maturity date of the bond"),
+  maturityDate: timestamp().describe("The maturity date of the bond"),
   denominationAsset: ethereumAddress.describe(
     "The denomination asset of the bond"
   ),

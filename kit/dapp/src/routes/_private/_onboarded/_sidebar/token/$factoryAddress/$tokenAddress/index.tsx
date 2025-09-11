@@ -1,3 +1,4 @@
+import { BondExtensionDetails } from "@/components/asset-extensions/details/bond";
 import { ChartSkeleton } from "@/components/charts/chart-skeleton";
 import { DetailGrid } from "@/components/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
@@ -9,7 +10,9 @@ import { AssetTotalSupplyAreaChart } from "@/components/stats/charts/asset-total
 import { AssetTotalVolumeAreaChart } from "@/components/stats/charts/asset-total-volume-area-chart";
 import { AssetWalletDistributionChart } from "@/components/stats/charts/asset-wallet-distribution-chart";
 import { useTokenLoaderQuery } from "@/hooks/use-token-loader-query";
+import { parseClaim } from "@/lib/utils/claims/parse-claim";
 import { createFileRoute } from "@tanstack/react-router";
+import { from } from "dnum";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -90,7 +93,22 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { asset } = useTokenLoaderQuery();
-  const { t } = useTranslation(["tokens", "assets", "common", "stats"]);
+  const { t } = useTranslation([
+    "tokens",
+    "assets",
+    "common",
+    "stats",
+    "data-table",
+  ]);
+  const isinClaim = parseClaim<{ isin: string }>(
+    asset.account.identity?.claims,
+    "isin"
+  );
+  const basePriceClaim = parseClaim<{
+    amount: string;
+    currencyCode: string;
+    decimals: string;
+  }>(asset.account.identity?.claims, "basePrice");
 
   return (
     <>
@@ -139,6 +157,37 @@ function RouteComponent() {
           type="address"
         />
 
+        {isinClaim && (
+          <DetailGridItem
+            label={t("tokens:fields.isin")}
+            info={t("tokens:fields.isinInfo")}
+            value={isinClaim.isin}
+            type="text"
+          />
+        )}
+
+        {basePriceClaim && (
+          <>
+            <DetailGridItem
+              label={t("tokens:fields.basePrice")}
+              info={t("tokens:fields.basePriceInfo")}
+              value={from([
+                BigInt(basePriceClaim.amount),
+                Number(basePriceClaim.decimals),
+              ])}
+              type="currency"
+              currency={{ assetSymbol: basePriceClaim.currencyCode }}
+            />
+            <DetailGridItem
+              label={t("tokens:fields.totalPrice")}
+              info={t("tokens:fields.totalPriceInfo")}
+              value={asset.stats?.totalValueInBaseCurrency ?? from("0")}
+              type="currency"
+              currency={{ assetSymbol: basePriceClaim.currencyCode }}
+            />
+          </>
+        )}
+
         {asset.capped?.cap && (
           <DetailGridItem
             label={t("tokens:fields.cap")}
@@ -179,30 +228,7 @@ function RouteComponent() {
         </DetailGrid>
       )}
 
-      {asset.bond && (
-        <DetailGrid title={t("tokens:details.bondInformation")}>
-          <DetailGridItem
-            label={t("tokens:fields.faceValue")}
-            info={t("tokens:fields.faceValueInfo")}
-            value={asset.bond.faceValue}
-            type="currency"
-            currency={{ assetSymbol: asset.bond.denominationAsset.symbol }}
-          />
-          <DetailGridItem
-            label={t("tokens:fields.isMatured")}
-            info={t("tokens:fields.isMaturedInfo")}
-            value={asset.bond.isMatured}
-            type="boolean"
-          />
-          <DetailGridItem
-            label={t("tokens:fields.maturityDate")}
-            info={t("tokens:fields.maturityDateInfo")}
-            value={asset.bond.maturityDate}
-            type="date"
-            emptyValue={t("tokens:fields.noExpiry")}
-          />
-        </DetailGrid>
-      )}
+      {asset.bond && <BondExtensionDetails asset={asset} bond={asset.bond} />}
 
       {asset.fund && (
         <DetailGrid title={t("tokens:details.fundInformation")}>
@@ -216,9 +242,7 @@ function RouteComponent() {
       )}
 
       <section className="space-y-6">
-        <h2 className="text-2xl font-semibold tracking-tight">
-          {t("stats:title")}
-        </h2>
+        <h2 className="text-xl font-medium text-accent">{t("stats:title")}</h2>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {asset.bond && (

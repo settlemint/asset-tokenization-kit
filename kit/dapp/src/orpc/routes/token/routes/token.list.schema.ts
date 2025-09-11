@@ -32,6 +32,19 @@ export const TokenListSchema = z.array(
     extensions: true,
     implementsERC3643: true,
     implementsSMART: true,
+    stats: true,
+    account: true,
+    complianceModuleConfigs: true,
+  }).extend({
+    account: z
+      .object({
+        identity: z
+          .object({
+            id: ethereumAddress.describe("The identity contract address"),
+          })
+          .describe("The identity associated with this token"),
+      })
+      .describe("The account associated with this token"),
   })
 );
 

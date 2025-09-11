@@ -1,5 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { tokenRouter } from "@/orpc/procedures/token.router";
+import { bigDecimal } from "@atk/zod/bigdecimal";
+import { divide, greaterThan, toNumber } from "dnum";
 import { z } from "zod";
 
 /**
@@ -26,9 +28,9 @@ const TOKEN_COLLATERAL_STATS_QUERY = theGraphGraphql(`
 const TokenCollateralStatsResponseSchema = z.object({
   tokenCollateralStats_collection: z.array(
     z.object({
-      collateral: z.number(),
-      collateralAvailable: z.number(),
-      collateralUsed: z.number(),
+      collateral: bigDecimal(),
+      collateralAvailable: bigDecimal(),
+      collateralUsed: bigDecimal(),
     })
   ),
 });
@@ -92,19 +94,21 @@ export const statsCollateralRatio =
 
     // Build collateral buckets
     const buckets = [
-      { name: "collateralAvailable", value: stats.collateralAvailable },
-      { name: "collateralUsed", value: stats.collateralUsed },
+      {
+        name: "collateralAvailable",
+        value: toNumber(stats.collateralAvailable),
+      },
+      { name: "collateralUsed", value: toNumber(stats.collateralUsed) },
     ];
 
     // Calculate collateral ratio (used/total * 100)
-    const collateralRatio =
-      stats.collateral > 0
-        ? (stats.collateralUsed / stats.collateral) * 100
-        : 0;
+    const collateralRatio = greaterThan(stats.collateral, 0)
+      ? toNumber(divide(stats.collateralUsed, stats.collateral)) * 100
+      : 0;
 
     return {
       buckets,
-      totalCollateral: stats.collateral,
+      totalCollateral: toNumber(stats.collateral),
       collateralRatio,
     };
   });

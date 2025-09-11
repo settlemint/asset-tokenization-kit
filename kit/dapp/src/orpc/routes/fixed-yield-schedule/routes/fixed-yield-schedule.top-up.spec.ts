@@ -1,4 +1,4 @@
-import { getAnvilTimeMilliseconds } from "@/test/anvil";
+import { getAnvilTimeMilliseconds, getAnvilBasedFutureDate } from "@/test/anvil";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { TimeIntervalEnum } from "@atk/zod/time-interval";
 import { getOrpcClient, type OrpcClient } from "@test/fixtures/orpc-client";
@@ -40,6 +40,7 @@ describe("Fixed yield schedule top up", async () => {
       symbol: "TDP",
       decimals: 18,
       initialModulePairs: [],
+      basePrice: from("1.00", 2),
     };
 
     depositToken = await createToken(
@@ -63,7 +64,7 @@ describe("Fixed yield schedule top up", async () => {
       decimals: 18,
       cap: "1000000",
       faceValue: "1000",
-      maturityDate: new Date("2025-12-31"),
+      maturityDate: await getAnvilBasedFutureDate(12),
       initialModulePairs: [],
       denominationAsset: depositToken.id,
     };

@@ -1,4 +1,4 @@
-import type { TokenContractMutations } from "@/orpc/routes/token/token.contract";
+import type { TokenAccessManagedMutations } from "@/orpc/routes/token/token.contract";
 import type { RoleRequirement } from "@atk/zod/role-requirement";
 
 /**
@@ -9,7 +9,7 @@ import type { RoleRequirement } from "@atk/zod/role-requirement";
  * Supports complex AND/OR logic for role requirements.
  */
 export const TOKEN_PERMISSIONS: Record<
-  TokenContractMutations,
+  TokenAccessManagedMutations,
   RoleRequirement
 > = {
   burn: "supplyManagement",
@@ -25,10 +25,14 @@ export const TOKEN_PERMISSIONS: Record<
   recoverERC20: "emergency",
   recoverTokens: "emergency",
   redeem: "supplyManagement",
+  mature: "governance",
   removeComplianceModule: "governance",
   setCap: "supplyManagement",
   setYieldSchedule: "governance",
+  withdrawDenominationAsset: "supplyManagement",
   transfer: { any: [] }, // TODO: requires custodian on a forced transfer (would generate a dedicated endpoint )
   unpause: "emergency",
   updateCollateral: "governance",
+  freezePartial: "custodian",
+  unfreezePartial: "custodian",
 };

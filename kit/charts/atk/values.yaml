@@ -106,7 +106,7 @@ erpc:
   image:
     registry: ghcr.io
     repository: erpc/erpc
-    tag: "0.0.55"
+    tag: "0.0.56"
     pullPolicy: IfNotPresent
   # Init containers
   initContainers:
@@ -213,14 +213,14 @@ blockscout:
         hostname: explorer.k8s.orb.local
       image:
         repository: ghcr.io/blockscout/frontend
-        tag: "v2.3.1"
+        tag: "v2.3.2"
         pullPolicy: IfNotPresent
 
 graph-node:
   enabled: true
   image:
     repository: docker.io/graphprotocol/graph-node
-    tag: "v0.40.0"
+    tag: "v0.40.1"
     pullPolicy: IfNotPresent
   initContainers:
     kubectlImage:
@@ -251,7 +251,7 @@ hasura:
       app.kubernetes.io/component: hasura
     image:
       repository: docker.io/hasura/graphql-engine
-      tag: v2.48.4
+      tag: v2.48.5
       ## Specify a imagePullPolicy
       ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
       ##

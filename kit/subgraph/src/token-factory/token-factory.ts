@@ -1,15 +1,16 @@
 import { Bytes } from "@graphprotocol/graph-ts";
-import { TokenStatsState } from "../../generated/schema";
 import { Burnable as BurnableTemplate } from "../../generated/templates";
 import {
   TokenAssetCreated,
   TokenImplementationUpdated,
+  TokenTrustedIssuersRegistryCreated,
 } from "../../generated/templates/TokenFactory/TokenFactory";
 import { fetchAccessControl } from "../access-control/fetch/accesscontrol";
 import { fetchAccount } from "../account/fetch/account";
 import { InterfaceIds } from "../erc165/utils/interfaceids";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentity } from "../identity/fetch/identity";
+import { fetchTokenStatsState } from "../stats/token-stats";
 import { updateTokenTypeStatsForTokenCreation } from "../stats/token-type-stats";
 import { fetchBond } from "../token-assets/bond/fetch/bond";
 import { fetchFund } from "../token-assets/fund/fetch/fund";
@@ -18,9 +19,11 @@ import { fetchCollateral } from "../token-extensions/collateral/fetch/collateral
 import { fetchCustodian } from "../token-extensions/custodian/fetch/custodian";
 import { fetchPausable } from "../token-extensions/pausable/fetch/pausable";
 import { fetchRedeemable } from "../token-extensions/redeemable/fetch/redeemable";
+import { getTokenExtensions } from "../token-extensions/utils/token-extensions-utils";
 import { fetchYield } from "../token-extensions/yield/fetch/yield";
 import { fetchToken } from "../token/fetch/token";
 import { getTokenType } from "../token/utils/token-utils";
+import { fetchTrustedIssuersRegistry } from "../trusted-issuers-registry/fetch/trusted-issuers-registry";
 import { fetchTokenFactory } from "./fetch/token-factory";
 
 /**
@@ -51,16 +54,13 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
   token.createdBy = fetchAccount(event.transaction.from).id;
   token.accessControl = fetchAccessControl(event.params.accessManager).id;
 
-  // Set the token extensions and implemented interfaces from the Factory
-  token.extensions = tokenFactory.tokenExtensions;
+  // Set the token extensions dynamically based on detected interfaces
+  token.extensions = getTokenExtensions(event.params.interfaces);
   token.implementsERC3643 = tokenFactory.tokenImplementsERC3643;
   token.implementsSMART = tokenFactory.tokenImplementsSMART;
 
   // Initialize TokenStatsState for the new token
-  const tokenStatsState = new TokenStatsState(event.params.tokenAddress);
-  tokenStatsState.token = token.id;
-  tokenStatsState.balancesCount = 0;
-  tokenStatsState.save();
+  fetchTokenStatsState(event.params.tokenAddress);
 
   if (event.params.interfaces.includes(InterfaceIds.ISMARTPausable)) {
     token.pausable = fetchPausable(event.params.tokenAddress).id;
@@ -115,4 +115,19 @@ export function handleTokenImplementationUpdated(
   event: TokenImplementationUpdated
 ): void {
   fetchEvent(event, "TokenImplementationUpdated");
+}
+
+export function handleTokenTrustedIssuersRegistryCreated(
+  event: TokenTrustedIssuersRegistryCreated
+): void {
+  fetchEvent(event, "TokenTrustedIssuersRegistryCreated");
+
+  const trustedIssuersRegistry = fetchTrustedIssuersRegistry(
+    event.params.registry
+  );
+  trustedIssuersRegistry.token = event.params.token;
+  if (trustedIssuersRegistry.deployedInTransaction.equals(Bytes.empty())) {
+    trustedIssuersRegistry.deployedInTransaction = event.transaction.hash;
+  }
+  trustedIssuersRegistry.save();
 }

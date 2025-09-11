@@ -1,5 +1,5 @@
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
-import { getAnvilTimeMilliseconds } from "@/test/anvil";
+import { getAnvilTimeMilliseconds, getAnvilBasedFutureDate } from "@/test/anvil";
 import { TimeIntervalEnum } from "@atk/zod/time-interval";
 import { createFixedYieldSchedule } from "@test/fixtures/fixed-yield-schedule";
 import {
@@ -14,6 +14,7 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
+import { from } from "dnum";
 import type { Address } from "viem";
 import { beforeAll, describe, expect, test } from "vitest";
 
@@ -41,6 +42,7 @@ describe("Token set yield schedule", async () => {
       symbol: "TSDC",
       decimals: 18,
       initialModulePairs: [],
+      basePrice: from("1.00", 2),
     };
 
     stablecoinToken = await createToken(adminClient, {
@@ -60,7 +62,7 @@ describe("Token set yield schedule", async () => {
       decimals: 18,
       cap: "1000000",
       faceValue: "1000",
-      maturityDate: new Date("2025-12-31"),
+      maturityDate: await getAnvilBasedFutureDate(12),
       denominationAsset: stablecoinToken.id,
       initialModulePairs: [],
     };
@@ -96,43 +98,54 @@ describe("Token set yield schedule", async () => {
   });
 
   test("can set yield schedule on bond", async () => {
-    // First, expect the call to fail because admin doesn't have the governance role
-    await expect(
-      adminClient.token.setYieldSchedule(
-        {
-          contract: bondToken.id,
-          schedule: yieldSchedule.address,
-          walletVerification: {
-            secretVerificationCode: DEFAULT_PINCODE,
-            verificationType: "PINCODE",
-          },
-        },
-        {
-          context: {
-            skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
-          },
-        }
-      )
-    ).rejects.toThrow(
-      errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
-    );
-
     // Get the admin's wallet address
     const adminUser = await adminClient.user.me();
     const adminAddress = adminUser.wallet;
     expect(adminAddress).toBeDefined();
 
-    // Grant the governance role to the admin
-    await adminClient.token.grantRole({
-      contract: bondToken.id,
-      accounts: [adminAddress as Address],
-      role: "governance",
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
-      },
+    // Check if admin already has governance role
+    const tokenDetails = await adminClient.token.read({
+      tokenAddress: bondToken.id,
     });
 
+    const hasGovernanceRole =
+      tokenDetails.userPermissions?.roles?.governance ?? false;
+
+    if (!hasGovernanceRole) {
+      // If admin doesn't have governance role, expect the call to fail first
+      await expect(
+        adminClient.token.setYieldSchedule(
+          {
+            contract: bondToken.id,
+            schedule: yieldSchedule.address,
+            walletVerification: {
+              secretVerificationCode: DEFAULT_PINCODE,
+              verificationType: "PINCODE",
+            },
+          },
+          {
+            context: {
+              skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
+            },
+          }
+        )
+      ).rejects.toThrow(
+        errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
+      );
+
+      // Grant the governance role to the admin
+      await adminClient.token.grantRole({
+        contract: bondToken.id,
+        accounts: [adminAddress as Address],
+        role: "governance",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+      });
+    }
+
+    // Now the admin should have permissions to set yield schedule
     const yieldScheduleResult = await adminClient.token.setYieldSchedule({
       contract: bondToken.id,
       schedule: yieldSchedule.address,

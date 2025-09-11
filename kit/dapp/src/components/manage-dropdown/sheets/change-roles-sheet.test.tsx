@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ChangeRolesSheet } from "./change-roles-sheet";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { ChangeRolesSheet } from "./change-roles-sheet";
 
 // Import the mocked modules
 import { useAppForm } from "@/hooks/use-app-form";
@@ -166,6 +166,7 @@ const mockToken = {
       id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
     },
   },
+  complianceModuleConfigs: [],
   redeemable: null,
   bond: null,
   fund: null,
@@ -173,6 +174,7 @@ const mockToken = {
   yield: null,
   accessControl: undefined,
   userPermissions: undefined,
+  stats: null,
 } satisfies Parameters<typeof ChangeRolesSheet>[0]["asset"];
 
 describe("ChangeRolesSheet", () => {

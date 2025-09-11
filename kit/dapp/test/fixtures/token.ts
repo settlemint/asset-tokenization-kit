@@ -1,4 +1,5 @@
 import { AccessControlRole } from "@atk/zod/src/access-control-roles";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { DEFAULT_PINCODE } from "@test/fixtures/user";
 import { randomUUID } from "node:crypto";
 import { OrpcClient } from "./orpc-client";
@@ -10,6 +11,7 @@ type TokenActions = {
   unpause?: boolean;
 };
 
+const logger = createLogger({ level: "info" });
 export async function createToken(
   orpClient: OrpcClient,
   input: TokenInput,
@@ -46,7 +48,7 @@ export async function createToken(
 
   if (rolesToGrant.length > 0) {
     const me = await orpClient.user.me({});
-    await orpClient.token.grantRole({
+    const grantRoleResult = await orpClient.token.grantRole({
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
@@ -54,6 +56,12 @@ export async function createToken(
       contract: result.id,
       address: me.wallet ?? "",
       roles: rolesToGrant,
+    });
+
+    logger.info("Granted roles to token", {
+      token: result.id,
+      roles: rolesToGrant,
+      grantRoleResult,
     });
   }
 
@@ -64,6 +72,9 @@ export async function createToken(
         verificationType: "PINCODE",
       },
       contract: result.id,
+    });
+    logger.info("Unpaused token", {
+      token: result.id,
     });
   }
 

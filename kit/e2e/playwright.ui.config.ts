@@ -55,6 +55,12 @@ const uiConfig: PlaywrightTestConfig = {
       dependencies: ["setup"],
     },
     {
+      name: "bond-tests",
+      testMatch: "**/create-bond-validation.spec.ts",
+      fullyParallel: true,
+      dependencies: ["setup"],
+    },
+    {
       name: "cleanup",
       testMatch: "**/global-cleanup.spec.ts",
       fullyParallel: false,

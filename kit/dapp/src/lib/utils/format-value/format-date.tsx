@@ -10,7 +10,8 @@ export function FormatDate({ value, options }: FormatValueProps) {
 
   const dateValue =
     value instanceof Date ? value : new Date(safeToString(value));
-  const includeTime = displayName?.toLowerCase().includes("time");
+  const includeTime =
+    options.includeTime ?? displayName?.toLowerCase().includes("time");
 
   return (
     <span>

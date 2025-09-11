@@ -1,4 +1,3 @@
-import { beforeAll, describe, expect, it } from "vitest";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
@@ -6,6 +5,8 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
+import { from } from "dnum";
+import { beforeAll, describe, expect, it } from "vitest";
 
 describe("Token list", () => {
   let depositToken: Awaited<ReturnType<typeof createToken>>;
@@ -20,6 +21,7 @@ describe("Token list", () => {
       decimals: 18,
       type: "deposit",
       countryCode: "056",
+      basePrice: from("1.00", 2),
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
@@ -31,6 +33,7 @@ describe("Token list", () => {
       decimals: 18,
       type: "stablecoin",
       countryCode: "056",
+      basePrice: from("1.00", 2),
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",

@@ -55,6 +55,7 @@ export function mapUserRoles(
     tokenFactoryModule: false,
     tokenFactoryRegistryModule: false,
     tokenManager: false,
+    trustedIssuersMetaRegistryModule: false,
     verificationAdmin: false,
   };
 

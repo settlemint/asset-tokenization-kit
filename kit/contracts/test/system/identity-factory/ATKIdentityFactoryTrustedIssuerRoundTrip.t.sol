@@ -8,8 +8,8 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
 import { IATKIdentityFactory } from "../../../contracts/system/identity-factory/IATKIdentityFactory.sol";
-import { IERC3643TrustedIssuersRegistry } from
-    "../../../contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
+import { IATKTrustedIssuersRegistry } from
+    "../../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
 import { ISMARTTopicSchemeRegistry } from "../../../contracts/smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
 import { IATKIdentity } from "../../../contracts/system/identity-factory/identities/IATKIdentity.sol";
@@ -64,7 +64,7 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
 
     // System contracts
     IATKIdentityFactory public identityFactory;
-    IERC3643TrustedIssuersRegistry public trustedIssuersRegistry;
+    IATKTrustedIssuersRegistry public trustedIssuersRegistry;
     ISMARTTopicSchemeRegistry public topicSchemeRegistry;
 
     // Test addresses and keys
@@ -169,10 +169,12 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
 
         // Verify the issuer is registered for both topics
         assertTrue(
-            trustedIssuersRegistry.hasClaimTopic(issuerIdentityAddr, kycTopicId), "Issuer not registered for KYC topic"
+            trustedIssuersRegistry.hasClaimTopic(issuerIdentityAddr, kycTopicId, address(0)),
+            "Issuer not registered for KYC topic"
         );
         assertTrue(
-            trustedIssuersRegistry.hasClaimTopic(issuerIdentityAddr, amlTopicId), "Issuer not registered for AML topic"
+            trustedIssuersRegistry.hasClaimTopic(issuerIdentityAddr, amlTopicId, address(0)),
+            "Issuer not registered for AML topic"
         );
 
         // Step 3: The trusted issuers registry is already set as a ClaimAuthorizer during identity creation
@@ -517,10 +519,12 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
 
         // Verify the issuer is registered for both topics
         assertTrue(
-            trustedIssuersRegistry.hasClaimTopic(issuerIdentityAddr, kycTopicId), "Issuer not registered for KYC topic"
+            trustedIssuersRegistry.hasClaimTopic(issuerIdentityAddr, kycTopicId, address(0)),
+            "Issuer not registered for KYC topic"
         );
         assertTrue(
-            trustedIssuersRegistry.hasClaimTopic(issuerIdentityAddr, amlTopicId), "Issuer not registered for AML topic"
+            trustedIssuersRegistry.hasClaimTopic(issuerIdentityAddr, amlTopicId, address(0)),
+            "Issuer not registered for AML topic"
         );
 
         // Step 3: Create and sign claims as the issuer

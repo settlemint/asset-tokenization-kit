@@ -41,15 +41,11 @@ export class NetworkDebugger {
         request.url().includes("/auth/sign-up") ||
         request.url().includes("/api/auth")
       ) {
-        console.log(`🌐 AUTH REQUEST: ${request.method()} ${request.url()}`);
-        console.log(`📝 Headers:`, request.headers());
-
         if (request.postData()) {
           try {
-            const data = JSON.parse(request.postData() || "{}");
-            console.log(`📋 Body:`, { ...data, password: "[REDACTED]" });
+            JSON.parse(request.postData() || "{}");
           } catch (e) {
-            console.log(`📋 Body (raw):`, request.postData());
+            console.error("Error parsing request body", e);
           }
         }
       }
@@ -62,8 +58,6 @@ export class NetworkDebugger {
         response.url().includes("/auth/sign-up") ||
         response.url().includes("/api/auth")
       ) {
-        console.log(`📡 AUTH RESPONSE: ${response.status()} ${response.url()}`);
-
         const matchingRequest = this.capture.requests.find(
           (r) => r.url() === response.url()
         );
@@ -90,11 +84,6 @@ export class NetworkDebugger {
       };
 
       this.capture.errors.push(error);
-
-      if (request.url().includes("/auth")) {
-        console.log(`❌ AUTH REQUEST FAILED: ${request.url()}`);
-        console.log(`🔍 Failure reason:`, request.failure());
-      }
     });
   }
 
@@ -118,26 +107,17 @@ export class NetworkDebugger {
         }
       }
     } catch (e) {
-      console.log(`⚠️  Could not read response body: ${e}`);
+      console.error("Error parsing response body", e);
     }
 
     this.capture.errors.push(error);
 
     if (response.status() === 422) {
-      console.log(`🚨 422 VALIDATION ERROR DETECTED!`);
-      console.log(`🔗 URL: ${response.url()}`);
-      console.log(`📋 Response Body:`, error.body);
-      console.log(`📝 Request Headers:`, request?.headers());
-
       if (request?.postData()) {
         try {
-          const requestData = JSON.parse(request.postData() || "{}");
-          console.log(`📤 Request Data:`, {
-            ...requestData,
-            password: "[REDACTED]",
-          });
+          JSON.parse(request.postData() || "{}");
         } catch (e) {
-          console.log(`📤 Request Data (raw):`, request.postData());
+          console.error("Error parsing request body", e);
         }
       }
 
@@ -148,16 +128,6 @@ export class NetworkDebugger {
           error: error,
         });
       }
-    }
-
-    if (response.status() === 400) {
-      console.log(`⚠️  400 BAD REQUEST: ${response.url()}`);
-      console.log(`📋 Response:`, error.body);
-    }
-
-    if (response.status() === 500) {
-      console.log(`💥 500 SERVER ERROR: ${response.url()}`);
-      console.log(`📋 Response:`, error.body);
     }
   }
 
@@ -296,6 +266,7 @@ export async function getValidationErrors(response: Response): Promise<any> {
     const body = await response.text();
     return JSON.parse(body);
   } catch (e) {
+    console.error("Error parsing response body", e);
     return null;
   }
 }

@@ -5,7 +5,6 @@ import { SMARTFixedYieldScheduleUpgradeable } from
     "../../smart/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleUpgradeable.sol";
 import { SMARTFixedYieldScheduleLogic } from
     "../../smart/extensions/yield/schedules/fixed/internal/SMARTFixedYieldScheduleLogic.sol";
-import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
@@ -15,6 +14,9 @@ import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/int
 
 import { IContractWithIdentity } from "../../system/identity-factory/IContractWithIdentity.sol";
 import { ISMARTFixedYieldSchedule } from "../../smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
+import { ISMARTTokenAccessManaged } from "../../smart/extensions/access-managed/ISMARTTokenAccessManaged.sol";
+import { ISMARTTokenAccessManager } from "../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { ATKAssetRoles } from "../../assets/ATKAssetRoles.sol";
 
 /// @title ATKFixedYieldScheduleUpgradeable
 /// @author SettleMint
@@ -26,17 +28,12 @@ contract ATKFixedYieldScheduleUpgradeable is
     SMARTFixedYieldScheduleUpgradeable,
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
-    AccessControlUpgradeable,
     PausableUpgradeable,
     ReentrancyGuardUpgradeable,
     IContractWithIdentity
 {
-    /// @notice Role for managing token supply operations
-    bytes32 public constant GOVERNANCE_ROLE = keccak256("GOVERNANCE_ROLE");
-    /// @notice Role for managing token supply operations
-    bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
-    /// @notice Role for emergency operations including pausing the contract and ERC20 recovery
-    bytes32 public constant EMERGENCY_ROLE = keccak256("EMERGENCY_ROLE");
+    /// @notice The factory address that deployed this contract
+    address private _factory;
 
     /// @notice The address of the ONCHAINID associated with this contract
     address private _onchainID;
@@ -47,12 +44,50 @@ contract ATKFixedYieldScheduleUpgradeable is
     /// @notice Error thrown when no initial admins are provided
     error NoInitialAdmins();
 
+    /// @dev Modifier to check if the sender has a specific role on the connected asset (token)
+    /// @param role The asset role to check for
+    modifier onlyAssetRole(bytes32 role) {
+        _checkAssetRole(role, _msgSender());
+        _;
+    }
+
+    /// @dev Modifier to check if sender has factory or governance privileges
+    modifier onlyFactoryOrGovernance() {
+        if(_msgSender() != _factory) {
+            _checkAssetRole(ATKAssetRoles.GOVERNANCE_ROLE, _msgSender());
+        }
+        _;
+    }
+
+    /// @notice Internal function to check if an account has a specific role on the connected asset (token)
+    /// @dev This function performs the actual call to the token's access manager and reverts if the account doesn't
+    /// have the role
+    /// @param role The asset role identifier to check for
+    /// @param account The address of the account to verify
+    function _checkAssetRole(bytes32 role, address account) internal view {
+        if (!_hasAssetRole(role, account)) {
+            revert ISMARTTokenAccessManaged.AccessControlUnauthorizedAccount(account, role);
+        }
+    }
+
+    /// @notice Internal function to check if an account has a specific role on the connected asset (token)
+    /// @dev This function performs the actual call to the token's access manager
+    /// @param role The asset role identifier to check for
+    /// @param account The address of the account to verify
+    /// @return True if the account has the role, false otherwise
+    function _hasAssetRole(bytes32 role, address account) internal view returns (bool) {
+        ISMARTTokenAccessManaged tokenAccessManaged = ISMARTTokenAccessManaged(address(this.token()));
+        address tokenAccessManager = tokenAccessManaged.accessManager();
+        return ISMARTTokenAccessManager(tokenAccessManager).hasRole(role, account);
+    }
+
     /// @notice Constructor that sets the trusted forwarder for meta-transactions
     /// @param forwarder The address of the trusted forwarder
     constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) { }
 
     /// @notice Initializes the contract when used as an upgradeable proxy.
     /// @dev This function should be called by the proxy contract after deployment to set all configuration.
+    /// @param factory_ Address of the factory contract that deployed this instance.
     /// @param tokenAddress_ Address of the `ISMARTYield` token.
     /// @param startDate_ Start date of the yield schedule.
     /// @param endDate_ End date of the yield schedule.
@@ -60,6 +95,7 @@ contract ATKFixedYieldScheduleUpgradeable is
     /// @param interval_ Duration of each yield interval.
     /// @param initialAdmins_ Array of addresses to be granted `DEFAULT_ADMIN_ROLE`.
     function initialize(
+        address factory_,
         address tokenAddress_,
         uint256 startDate_,
         uint256 endDate_,
@@ -71,18 +107,21 @@ contract ATKFixedYieldScheduleUpgradeable is
         virtual
         initializer
     {
-        __AccessControl_init();
         __Pausable_init();
         __ReentrancyGuard_init();
+
+        // Store the factory address
+        _factory = factory_;
+
+        // Check if token implements ISMARTTokenAccessManaged interface
+        if (!IERC165(tokenAddress_).supportsInterface(type(ISMARTTokenAccessManaged).interfaceId)) {
+            revert InvalidToken();
+        }
+
         __SMARTFixedYieldSchedule_init(tokenAddress_, startDate_, endDate_, rate_, interval_);
 
         if (initialAdmins_.length == 0) {
             revert NoInitialAdmins();
-        }
-
-        // Grant the `DEFAULT_ADMIN_ROLE` to the `initialAdmins_`.
-        for (uint256 i = 0; i < initialAdmins_.length; ++i) {
-            _grantRole(DEFAULT_ADMIN_ROLE, initialAdmins_[i]);
         }
     }
 
@@ -104,7 +143,7 @@ contract ATKFixedYieldScheduleUpgradeable is
         external
         override
         nonReentrant
-        onlyRole(SUPPLY_MANAGEMENT_ROLE)
+        onlyAssetRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
         whenNotPaused
     {
         _withdrawDenominationAsset(to, amount);
@@ -115,7 +154,7 @@ contract ATKFixedYieldScheduleUpgradeable is
         external
         override
         nonReentrant
-        onlyRole(SUPPLY_MANAGEMENT_ROLE)
+        onlyAssetRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
         whenNotPaused
     {
         _withdrawAllDenominationAsset(to);
@@ -123,20 +162,20 @@ contract ATKFixedYieldScheduleUpgradeable is
 
     /// @notice Pauses all contract operations
     /// @dev Can only be called by addresses with EMERGENCY_ROLE
-    function pause() external onlyRole(EMERGENCY_ROLE) {
+    function pause() external onlyAssetRole(ATKAssetRoles.EMERGENCY_ROLE) {
         _pause(); // Internal OpenZeppelin Pausable function.
     }
 
     /// @notice Unpauses all contract operations
     /// @dev Can only be called by addresses with EMERGENCY_ROLE
-    function unpause() external onlyRole(EMERGENCY_ROLE) {
+    function unpause() external onlyAssetRole(ATKAssetRoles.EMERGENCY_ROLE) {
         _unpause(); // Internal OpenZeppelin Pausable function.
     }
 
     /// @notice Sets the onchain ID for this contract
-    /// @dev Can only be called by an address with DEFAULT_ADMIN_ROLE
+    /// @dev Can only be called by the factory or an address with governance role on the asset
     /// @param onchainID_ The address of the onchain ID contract
-    function setOnchainId(address onchainID_) external onlyRole(GOVERNANCE_ROLE) {
+    function setOnchainId(address onchainID_) external onlyFactoryOrGovernance {
         if (onchainID_ == address(0)) revert InvalidOnchainID();
         _onchainID = onchainID_;
     }
@@ -148,12 +187,12 @@ contract ATKFixedYieldScheduleUpgradeable is
 
     /// @inheritdoc IContractWithIdentity
     function canAddClaim(address actor) external view override returns (bool) {
-        return hasRole(GOVERNANCE_ROLE, actor);
+        return _hasAssetRole(ATKAssetRoles.GOVERNANCE_ROLE, actor);
     }
 
     /// @inheritdoc IContractWithIdentity
     function canRemoveClaim(address actor) external view override returns (bool) {
-        return hasRole(GOVERNANCE_ROLE, actor);
+        return _hasAssetRole(ATKAssetRoles.GOVERNANCE_ROLE, actor);
     }
 
     /// @notice Override from Context and ERC2771Context to correctly identify the transaction sender
@@ -199,7 +238,7 @@ contract ATKFixedYieldScheduleUpgradeable is
         public
         view
         virtual
-        override(AccessControlUpgradeable, SMARTFixedYieldScheduleLogic, ERC165Upgradeable, IERC165)
+        override(SMARTFixedYieldScheduleLogic, ERC165Upgradeable, IERC165)
         returns (bool)
     {
         return interfaceId == type(IContractWithIdentity).interfaceId || super.supportsInterface(interfaceId);

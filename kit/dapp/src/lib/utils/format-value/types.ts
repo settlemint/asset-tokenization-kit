@@ -24,6 +24,7 @@ export interface FormatValueOptions {
 
   emptyValue?: React.ReactNode;
   showPrettyName?: boolean;
+  includeTime?: boolean;
 }
 
 export interface FormatValueProps {

@@ -195,13 +195,21 @@ contract ATKBondImplementation is
         return current > needed ? current - needed : 0;
     }
 
+    /// @notice Returns the time remaining until the bond matures
+    /// @return The time remaining until the bond matures (0 if time already passed)
+    function timeToMaturity() public view returns (uint256) {
+        return block.timestamp > _maturityDate ? 0 : _maturityDate - block.timestamp;
+    }
+
     // --- State-Changing Functions ---
 
     /// @notice Closes off the bond at maturity
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE after maturity date
     /// @dev Requires sufficient denomination assets for all potential redemptions
     function mature() external override onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE) {
-        if (block.timestamp < _maturityDate) revert BondNotYetMatured();
+        if (block.timestamp < _maturityDate) {
+            revert BondNotYetMatured(block.timestamp, _maturityDate);
+        }
         if (isMatured) revert BondAlreadyMatured();
 
         uint256 needed = totalDenominationAssetNeeded();
@@ -690,7 +698,7 @@ contract ATKBondImplementation is
         virtual
         override(SMARTCustodianUpgradeable, SMARTHooks)
     {
-        if (!isMatured) revert BondNotYetMatured();
+        if (!isMatured) revert BondNotYetMatured(block.timestamp, _maturityDate);
         if (amount == 0) revert InvalidRedemptionAmount();
 
         super._beforeRedeem(owner, amount);
@@ -790,7 +798,7 @@ contract ATKBondImplementation is
     }
 
     // --- IContractWithIdentity Implementation ---
-    // Note: onchainID() is inherited from ISMART via SMARTUpgradeable, but we need to explicitly override due to
+    // Note: onchainID() is inherited from IATKToken via SMARTUpgradeable, but we need to explicitly override due to
     // multiple inheritance
 
     /// @inheritdoc IContractWithIdentity

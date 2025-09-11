@@ -290,6 +290,7 @@ describe("bond-status types", () => {
           faceValue: from(1000),
           isMatured: false,
           maturityDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+          denominationAssetNeeded: from(0),
           denominationAsset: {
             id: "0x0000000000000000000000000000000000000001" as `0x${string}`,
             decimals: 18,
@@ -298,6 +299,8 @@ describe("bond-status types", () => {
         },
         fund: null,
         yield: null,
+        complianceModuleConfigs: [],
+        stats: null,
       };
       const mockBondStatus: StatsBondStatusOutput = {
         denominationAssetBalanceAvailable: from(500),
@@ -397,6 +400,7 @@ describe("bond-status types", () => {
           faceValue: from(1000),
           isMatured: false,
           maturityDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+          denominationAssetNeeded: from(0),
           denominationAsset: {
             id: "0x0000000000000000000000000000000000000001" as `0x${string}`,
             decimals: 18,
@@ -405,6 +409,8 @@ describe("bond-status types", () => {
         },
         fund: null,
         yield: null,
+        complianceModuleConfigs: [],
+        stats: null,
       };
       const mockBondStatus: StatsBondStatusOutput = {
         denominationAssetBalanceAvailable: from(500),
@@ -503,6 +509,7 @@ describe("bond-status types", () => {
           faceValue: from(1000),
           isMatured: false,
           maturityDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+          denominationAssetNeeded: from(0),
           denominationAsset: {
             id: "0x0000000000000000000000000000000000000001" as `0x${string}`,
             decimals: 18,
@@ -511,6 +518,8 @@ describe("bond-status types", () => {
         },
         fund: null,
         yield: null,
+        complianceModuleConfigs: [],
+        stats: null,
       };
       const mockBondStatusForCalc: StatsBondStatusOutput = {
         denominationAssetBalanceAvailable: from(800),
@@ -611,6 +620,7 @@ describe("bond-status types", () => {
           faceValue: from(1000),
           isMatured: true,
           maturityDate: new Date(Date.now() - 24 * 60 * 60 * 1000),
+          denominationAssetNeeded: from(0),
           denominationAsset: {
             id: "0x0000000000000000000000000000000000000001" as `0x${string}`,
             decimals: 18,
@@ -619,6 +629,8 @@ describe("bond-status types", () => {
         },
         fund: null,
         yield: null,
+        complianceModuleConfigs: [],
+        stats: null,
       };
       const mockBondStatus: StatsBondStatusOutput = {
         denominationAssetBalanceAvailable: from(1000),

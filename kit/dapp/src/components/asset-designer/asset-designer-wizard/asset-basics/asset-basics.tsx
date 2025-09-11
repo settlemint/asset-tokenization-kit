@@ -3,11 +3,20 @@ import {
   isRequiredField,
   type AssetDesignerFormInputData,
 } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
+import {
+  ASSET_TAB_REQUIREMENTS,
+  satisfiesRequirement,
+} from "@/components/assets/asset-tab-configuration";
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
 import type { KeysOfUnion } from "@/lib/utils/union";
+import { orpc } from "@/orpc/orpc-client";
+import { getAssetExtensionsForType } from "@atk/zod/src/asset-extensions";
+import { useQuery } from "@tanstack/react-query";
+import { useStore } from "@tanstack/react-store";
+import { from } from "dnum";
 import { useTranslation } from "react-i18next";
 
 const commonFields: KeysOfUnion<AssetDesignerFormInputData>[] = [
@@ -16,6 +25,7 @@ const commonFields: KeysOfUnion<AssetDesignerFormInputData>[] = [
   "decimals",
   "isin",
   "countryCode",
+  "basePrice",
 ];
 
 export const AssetBasics = withForm({
@@ -26,6 +36,16 @@ export const AssetBasics = withForm({
   },
   render: function Render({ form, onStepSubmit, onBack }) {
     const { t } = useTranslation(["asset-designer", "asset-types"]);
+    const { data: baseCurrency } = useQuery(
+      orpc.settings.read.queryOptions({ input: { key: "BASE_CURRENCY" } })
+    );
+    const type = useStore(form.store, (state) => state.values.type);
+    const extensions = getAssetExtensionsForType(type);
+    const hasDenominationAsset = satisfiesRequirement(
+      extensions,
+      [],
+      ASSET_TAB_REQUIREMENTS.denominationAsset
+    );
 
     return (
       <FormStepLayout
@@ -39,7 +59,11 @@ export const AssetBasics = withForm({
             <form.StepSubmitButton
               label={t("form.buttons.next")}
               onStepSubmit={onStepSubmit}
-              validate={commonFields}
+              validate={
+                hasDenominationAsset
+                  ? commonFields.filter((field) => field !== "basePrice")
+                  : commonFields
+              }
               checkRequiredFn={isRequiredField}
             />
           </>
@@ -102,6 +126,25 @@ export const AssetBasics = withForm({
             />
           )}
         />
+        {!hasDenominationAsset && (
+          <form.AppField
+            name="basePrice"
+            children={(field) => (
+              <field.DnumField
+                label={t("form.fields.basePrice.label")}
+                required={isRequiredField("basePrice")}
+                description={t("form.fields.basePrice.description", {
+                  type: t(
+                    `asset-types:types.${form.state.values.type}.nameLowercaseSingular`
+                  ),
+                })}
+                endAddon={baseCurrency ?? ""}
+                decimals={2}
+                placeholder={from("1.00", 2)}
+              />
+            )}
+          />
+        )}
         <form.AppField
           name="countryCode"
           children={(field) => (

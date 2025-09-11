@@ -212,7 +212,7 @@ function RouteComponent() {
         <DetailGridItem
           label={t("tokens:yield.fields.denominationAssetBalance")}
           info={t("tokens:yield.fields.denominationAssetBalanceInfo")}
-          value={yieldScheduleBalance?.holder?.available}
+          value={yieldScheduleBalance?.holder?.available ?? 0}
           type="currency"
           currency={{ assetSymbol: denominationAsset?.symbol ?? "" }}
         />

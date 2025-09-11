@@ -1,4 +1,4 @@
-import { getAnvilTimeMilliseconds } from "@/test/anvil";
+import { getAnvilTimeMilliseconds, getAnvilBasedFutureDate } from "@/test/anvil";
 import { TimeIntervalEnum } from "@atk/zod/time-interval";
 import { createFixedYieldSchedule } from "@test/fixtures/fixed-yield-schedule";
 import { getOrpcClient, type OrpcClient } from "@test/fixtures/orpc-client";
@@ -9,6 +9,7 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
+import { from } from "dnum";
 import { beforeAll, describe, expect, test } from "vitest";
 
 describe("Fixed yield schedule read", async () => {
@@ -34,6 +35,7 @@ describe("Fixed yield schedule read", async () => {
       symbol: "TSDC",
       decimals: 18,
       initialModulePairs: [],
+      basePrice: from("1.00", 2),
     };
 
     stablecoinToken = await createToken(adminClient, {
@@ -52,7 +54,7 @@ describe("Fixed yield schedule read", async () => {
       decimals: 18,
       cap: "1000000",
       faceValue: "1000",
-      maturityDate: new Date("2025-12-31"),
+      maturityDate: await getAnvilBasedFutureDate(12),
       initialModulePairs: [],
       denominationAsset: stablecoinToken.id,
     };

@@ -21,7 +21,8 @@ import {
     SystemAlreadyBootstrapped,
     TokenAccessManagerImplementationNotSet,
     TopicSchemeRegistryImplementationNotSet,
-    TrustedIssuersRegistryImplementationNotSet,
+    SystemTrustedIssuersRegistryImplementationNotSet,
+    TrustedIssuersMetaRegistryImplementationNotSet,
     ComplianceModuleRegistryImplementationNotSet,
     AddonRegistryImplementationNotSet,
     TokenFactoryRegistryImplementationNotSet,
@@ -43,14 +44,15 @@ import { IATKTypedImplementationRegistry } from "./IATKTypedImplementationRegist
 import { IATKIdentityFactory } from "./identity-factory/IATKIdentityFactory.sol";
 import { ISMARTTokenAccessManager } from "../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { IATKComplianceModuleRegistry } from "./compliance/IATKComplianceModuleRegistry.sol";
-import { IATKTokenFactoryRegistry } from "./token-factory/IATKTokenFactoryRegistry.sol";
+import { IATKTokenFactoryRegistry } from "./tokens/factory/IATKTokenFactoryRegistry.sol";
 import { IATKIdentityRegistry } from "./identity-registry/IATKIdentityRegistry.sol";
-import { IATKTrustedIssuersRegistry } from "./trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
+import { IATKSystemTrustedIssuersRegistry } from "./trusted-issuers-registry/IATKSystemTrustedIssuersRegistry.sol";
 import { IATKTopicSchemeRegistry } from "./topic-scheme-registry/IATKTopicSchemeRegistry.sol";
 import { IATKCompliance } from "./compliance/IATKCompliance.sol";
 import { IATKIdentityRegistryStorage } from "./identity-registry-storage/IATKIdentityRegistryStorage.sol";
 import { IATKSystemAddonRegistry } from "./addons/IATKSystemAddonRegistry.sol";
 import { IATKSystemAccessManager } from "./access-manager/IATKSystemAccessManager.sol";
+import { IATKTrustedIssuersMetaRegistry } from "./trusted-issuers-registry/IATKTrustedIssuersMetaRegistry.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IATKSystemAccessManaged } from "./access-manager/IATKSystemAccessManaged.sol";
 import { IContractWithIdentity } from "./identity-factory/IContractWithIdentity.sol";
@@ -90,7 +92,7 @@ contract ATKSystemImplementation is
     bytes32 internal constant COMPLIANCE = keccak256("COMPLIANCE");
     bytes32 internal constant IDENTITY_REGISTRY = keccak256("IDENTITY_REGISTRY");
     bytes32 internal constant IDENTITY_REGISTRY_STORAGE = keccak256("IDENTITY_REGISTRY_STORAGE");
-    bytes32 internal constant TRUSTED_ISSUERS_REGISTRY = keccak256("TRUSTED_ISSUERS_REGISTRY");
+    bytes32 internal constant SYSTEM_TRUSTED_ISSUERS_REGISTRY = keccak256("SYSTEM_TRUSTED_ISSUERS_REGISTRY");
     bytes32 internal constant TOPIC_SCHEME_REGISTRY = keccak256("TOPIC_SCHEME_REGISTRY");
     bytes32 internal constant IDENTITY_FACTORY = keccak256("IDENTITY_FACTORY");
     bytes32 internal constant TOKEN_ACCESS_MANAGER = keccak256("TOKEN_ACCESS_MANAGER");
@@ -99,6 +101,7 @@ contract ATKSystemImplementation is
     bytes32 internal constant COMPLIANCE_MODULE_REGISTRY = keccak256("COMPLIANCE_MODULE_REGISTRY");
     bytes32 internal constant ADDON_REGISTRY = keccak256("ADDON_REGISTRY");
     bytes32 internal constant TOKEN_FACTORY_REGISTRY = keccak256("TOKEN_FACTORY_REGISTRY");
+    bytes32 internal constant TRUSTED_ISSUERS_META_REGISTRY = keccak256("TRUSTED_ISSUERS_META_REGISTRY");
 
     // Expected interface IDs used for validating implementation contracts.
     // These are unique identifiers for Solidity interfaces, ensuring that a contract claiming to be, for example,
@@ -107,7 +110,8 @@ contract ATKSystemImplementation is
     bytes4 private constant _COMPLIANCE_ID = type(IATKCompliance).interfaceId;
     bytes4 private constant _IDENTITY_REGISTRY_ID = type(IATKIdentityRegistry).interfaceId;
     bytes4 private constant _IDENTITY_REGISTRY_STORAGE_ID = type(IATKIdentityRegistryStorage).interfaceId;
-    bytes4 private constant _TRUSTED_ISSUERS_REGISTRY_ID = type(IATKTrustedIssuersRegistry).interfaceId;
+    bytes4 private constant _SYSTEM_TRUSTED_ISSUERS_REGISTRY_ID = type(IATKSystemTrustedIssuersRegistry).interfaceId;
+    bytes4 private constant _TRUSTED_ISSUERS_META_REGISTRY_ID = type(IATKTrustedIssuersMetaRegistry).interfaceId;
     bytes4 private constant _TOPIC_SCHEME_REGISTRY_ID = type(IATKTopicSchemeRegistry).interfaceId;
     bytes4 private constant _IDENTITY_FACTORY_ID = type(IATKIdentityFactory).interfaceId;
     bytes4 private constant _IDENTITY_ID = type(IIdentity).interfaceId;
@@ -137,7 +141,10 @@ contract ATKSystemImplementation is
 
     // Addresses for the trusted issuers registry module.
     /// @dev Stores the address of the trusted issuers registry module's proxy contract.
-    address private _trustedIssuersRegistryProxy;
+    address private _systemTrustedIssuersRegistryProxy;
+
+    /// @dev Stores the address of the trusted issuers meta registry proxy contract.
+    address private _trustedIssuersMetaRegistryProxy;
 
     // Addresses for the topic scheme registry module.
     /// @dev Stores the address of the topic scheme registry module's proxy contract.
@@ -203,42 +210,11 @@ contract ATKSystemImplementation is
     /// @param initialAdmin_ The address that will be granted the `DEFAULT_ADMIN_ROLE`, giving it administrative control
     /// over this contract.
     /// @param accessManager_ The initial address of the access manager module's logic contract.
-    /// @param complianceImplementation_ The initial address of the compliance module's logic contract.
-    /// @param identityRegistryImplementation_ The initial address of the identity registry module's logic contract.
-    /// @param identityRegistryStorageImplementation_ The initial address of the identity registry storage module's
-    /// logic contract.
-    /// @param trustedIssuersRegistryImplementation_ The initial address of the trusted issuers registry module's logic
-    /// contract.
-    /// @param topicSchemeRegistryImplementation_ The initial address of the topic scheme registry module's logic
-    /// contract.
-    /// @param identityFactoryImplementation_ The initial address of the identity factory module's logic contract.
-    /// @param identityImplementation_ The initial address of the standard identity contract's logic (template). Must be
-    /// IERC734/IIdentity compliant.
-    /// @param contractIdentityImplementation_ The initial address of the contract identity contract's logic (template).
-    /// Must be
-    /// IERC734/IIdentity compliant.
-    /// @param tokenAccessManagerImplementation_ The initial address of the token access manager contract's logic. Must
-    /// be ISMARTTokenAccessManager compliant.
-    /// @param tokenFactoryRegistryImplementation_ The initial address of the token factory registry module's logic
-    /// contract.
-    /// @param complianceModuleRegistryImplementation_ The initial address of the compliance module registry module's
-    /// logic contract.
-    /// @param addonRegistryImplementation_ The initial address of the addon registry module's logic contract.
+    /// @param impls The initial implementation addresses for all modules and identity types.
     function initialize(
         address initialAdmin_,
         address accessManager_,
-        address complianceImplementation_,
-        address identityRegistryImplementation_,
-        address identityRegistryStorageImplementation_,
-        address trustedIssuersRegistryImplementation_,
-        address topicSchemeRegistryImplementation_,
-        address identityFactoryImplementation_,
-        address identityImplementation_, // Expected to be IERC734/IIdentity compliant
-        address contractIdentityImplementation_, // Expected to be IERC734/IIdentity compliant
-        address tokenAccessManagerImplementation_, // Expected to be ISMARTTokenAccessManager compliant
-        address tokenFactoryRegistryImplementation_,
-        address complianceModuleRegistryImplementation_,
-        address addonRegistryImplementation_
+        IATKSystem.SystemInitImplementations memory impls
     )
         public
         initializer
@@ -248,104 +224,105 @@ contract ATKSystemImplementation is
         __UUPSUpgradeable_init();
 
         // Validate and set the compliance implementation address.
-        if (complianceImplementation_ == address(0)) revert ComplianceImplementationNotSet();
-        _checkInterface(complianceImplementation_, _COMPLIANCE_ID); // Ensure it supports ISMARTCompliance
-        _implementations[COMPLIANCE] = complianceImplementation_;
-        emit ComplianceImplementationUpdated(initialAdmin_, complianceImplementation_);
+        if (impls.complianceImplementation == address(0)) revert ComplianceImplementationNotSet();
+        _checkInterface(impls.complianceImplementation, _COMPLIANCE_ID); // Ensure it supports ISMARTCompliance
+        _implementations[COMPLIANCE] = impls.complianceImplementation;
+        emit ComplianceImplementationUpdated(initialAdmin_, impls.complianceImplementation);
 
         // Validate and set the identity registry implementation address.
-        if (identityRegistryImplementation_ == address(0)) revert IdentityRegistryImplementationNotSet();
-        _checkInterface(identityRegistryImplementation_, _IDENTITY_REGISTRY_ID); // Ensure it supports
+        if (impls.identityRegistryImplementation == address(0)) revert IdentityRegistryImplementationNotSet();
+        _checkInterface(impls.identityRegistryImplementation, _IDENTITY_REGISTRY_ID); // Ensure it supports
             // ISMARTIdentityRegistry
-        _implementations[IDENTITY_REGISTRY] = identityRegistryImplementation_;
-        emit IdentityRegistryImplementationUpdated(initialAdmin_, identityRegistryImplementation_);
+        _implementations[IDENTITY_REGISTRY] = impls.identityRegistryImplementation;
+        emit IdentityRegistryImplementationUpdated(initialAdmin_, impls.identityRegistryImplementation);
 
         // Validate and set the identity registry storage implementation address.
-        if (identityRegistryStorageImplementation_ == address(0)) revert IdentityRegistryStorageImplementationNotSet();
-        _checkInterface(identityRegistryStorageImplementation_, _IDENTITY_REGISTRY_STORAGE_ID); // Ensure it
+        if (impls.identityRegistryStorageImplementation == address(0)) {
+            revert IdentityRegistryStorageImplementationNotSet();
+        }
+        _checkInterface(impls.identityRegistryStorageImplementation, _IDENTITY_REGISTRY_STORAGE_ID); // Ensure it
             // supports ISMARTIdentityRegistryStorage
-        _implementations[IDENTITY_REGISTRY_STORAGE] = identityRegistryStorageImplementation_;
-        emit IdentityRegistryStorageImplementationUpdated(initialAdmin_, identityRegistryStorageImplementation_);
+        _implementations[IDENTITY_REGISTRY_STORAGE] = impls.identityRegistryStorageImplementation;
+        emit IdentityRegistryStorageImplementationUpdated(initialAdmin_, impls.identityRegistryStorageImplementation);
 
         // Validate and set the trusted issuers registry implementation address.
-        if (trustedIssuersRegistryImplementation_ == address(0)) revert TrustedIssuersRegistryImplementationNotSet();
-        _checkInterface(trustedIssuersRegistryImplementation_, _TRUSTED_ISSUERS_REGISTRY_ID); // Ensure it
-            // supports IERC3643TrustedIssuersRegistry
-        _implementations[TRUSTED_ISSUERS_REGISTRY] = trustedIssuersRegistryImplementation_;
-        emit TrustedIssuersRegistryImplementationUpdated(initialAdmin_, trustedIssuersRegistryImplementation_);
+        if (impls.trustedIssuersRegistryImplementation == address(0)) {
+            revert SystemTrustedIssuersRegistryImplementationNotSet();
+        }
+        _checkInterface(impls.trustedIssuersRegistryImplementation, _SYSTEM_TRUSTED_ISSUERS_REGISTRY_ID); // Ensure it
+            // supports ISMARTTrustedIssuersRegistry
+        _implementations[SYSTEM_TRUSTED_ISSUERS_REGISTRY] = impls.trustedIssuersRegistryImplementation;
+        emit SystemTrustedIssuersRegistryImplementationUpdated(
+            initialAdmin_, impls.trustedIssuersRegistryImplementation
+        );
+
+        // Validate and set the trusted issuers meta registry implementation address.
+        if (impls.trustedIssuersMetaRegistryImplementation == address(0)) {
+            revert TrustedIssuersMetaRegistryImplementationNotSet();
+        }
+        _checkInterface(impls.trustedIssuersMetaRegistryImplementation, _TRUSTED_ISSUERS_META_REGISTRY_ID);
+        _implementations[TRUSTED_ISSUERS_META_REGISTRY] = impls.trustedIssuersMetaRegistryImplementation;
 
         // Validate and set the topic scheme registry implementation address.
-        if (topicSchemeRegistryImplementation_ == address(0)) revert TopicSchemeRegistryImplementationNotSet();
-        _checkInterface(topicSchemeRegistryImplementation_, _TOPIC_SCHEME_REGISTRY_ID); // Ensure it supports
+        if (impls.topicSchemeRegistryImplementation == address(0)) revert TopicSchemeRegistryImplementationNotSet();
+        _checkInterface(impls.topicSchemeRegistryImplementation, _TOPIC_SCHEME_REGISTRY_ID); // Ensure it supports
             // ISMARTTopicSchemeRegistry
-        _implementations[TOPIC_SCHEME_REGISTRY] = topicSchemeRegistryImplementation_;
-        emit TopicSchemeRegistryImplementationUpdated(initialAdmin_, topicSchemeRegistryImplementation_);
+        _implementations[TOPIC_SCHEME_REGISTRY] = impls.topicSchemeRegistryImplementation;
+        emit TopicSchemeRegistryImplementationUpdated(initialAdmin_, impls.topicSchemeRegistryImplementation);
 
         // Validate and set the identity factory implementation address.
-        if (identityFactoryImplementation_ == address(0)) revert IdentityFactoryImplementationNotSet();
-        _checkInterface(identityFactoryImplementation_, _IDENTITY_FACTORY_ID); // Ensure it supports
+        if (impls.identityFactoryImplementation == address(0)) revert IdentityFactoryImplementationNotSet();
+        _checkInterface(impls.identityFactoryImplementation, _IDENTITY_FACTORY_ID); // Ensure it supports
             // IATKIdentityFactory
-        _implementations[IDENTITY_FACTORY] = identityFactoryImplementation_;
-        emit IdentityFactoryImplementationUpdated(initialAdmin_, identityFactoryImplementation_);
+        _implementations[IDENTITY_FACTORY] = impls.identityFactoryImplementation;
+        emit IdentityFactoryImplementationUpdated(initialAdmin_, impls.identityFactoryImplementation);
 
         // Validate and set the token access manager implementation address.
-        if (tokenAccessManagerImplementation_ == address(0)) revert TokenAccessManagerImplementationNotSet();
-        _checkInterface(tokenAccessManagerImplementation_, _TOKEN_ACCESS_MANAGER_ID); // Ensure it supports
+        if (impls.tokenAccessManagerImplementation == address(0)) revert TokenAccessManagerImplementationNotSet();
+        _checkInterface(impls.tokenAccessManagerImplementation, _TOKEN_ACCESS_MANAGER_ID); // Ensure it supports
             // ISMARTTokenAccessManager
-        _implementations[TOKEN_ACCESS_MANAGER] = tokenAccessManagerImplementation_;
-        emit TokenAccessManagerImplementationUpdated(initialAdmin_, tokenAccessManagerImplementation_);
+        _implementations[TOKEN_ACCESS_MANAGER] = impls.tokenAccessManagerImplementation;
+        emit TokenAccessManagerImplementationUpdated(initialAdmin_, impls.tokenAccessManagerImplementation);
 
         // Validate and set the standard identity implementation address.
-        if (identityImplementation_ == address(0)) revert IdentityImplementationNotSet();
-        _checkInterface(identityImplementation_, _IIDENTITY_ID); // Ensure it supports OnchainID's
+        if (impls.identityImplementation == address(0)) revert IdentityImplementationNotSet();
+        _checkInterface(impls.identityImplementation, _IIDENTITY_ID); // Ensure it supports OnchainID's
             // IIdentity
-        _implementations[IDENTITY] = identityImplementation_;
-        emit IdentityImplementationUpdated(initialAdmin_, identityImplementation_);
+        _implementations[IDENTITY] = impls.identityImplementation;
+        emit IdentityImplementationUpdated(initialAdmin_, impls.identityImplementation);
 
         // Validate and set the contract identity implementation address.
-        if (contractIdentityImplementation_ == address(0)) revert ContractIdentityImplementationNotSet();
-        _checkInterface(contractIdentityImplementation_, _IIDENTITY_ID); // Ensure it supports OnchainID's
+        if (impls.contractIdentityImplementation == address(0)) revert ContractIdentityImplementationNotSet();
+        _checkInterface(impls.contractIdentityImplementation, _IIDENTITY_ID); // Ensure it supports OnchainID's
             // IIdentity
-        _implementations[CONTRACT_IDENTITY] = contractIdentityImplementation_;
-        emit ContractIdentityImplementationUpdated(initialAdmin_, contractIdentityImplementation_);
+        _implementations[CONTRACT_IDENTITY] = impls.contractIdentityImplementation;
+        emit ContractIdentityImplementationUpdated(initialAdmin_, impls.contractIdentityImplementation);
 
         // Validate and set the compliance module registry implementation address.
-        if (complianceModuleRegistryImplementation_ == address(0)) {
+        if (impls.complianceModuleRegistryImplementation == address(0)) {
             revert ComplianceModuleRegistryImplementationNotSet();
         }
-        _checkInterface(complianceModuleRegistryImplementation_, _COMPLIANCE_MODULE_REGISTRY_ID); // Ensure it
+        _checkInterface(impls.complianceModuleRegistryImplementation, _COMPLIANCE_MODULE_REGISTRY_ID); // Ensure it
             // supports
             // ISMARTComplianceModuleRegistry
-        _implementations[COMPLIANCE_MODULE_REGISTRY] = complianceModuleRegistryImplementation_;
-        emit ComplianceModuleRegistryImplementationUpdated(initialAdmin_, complianceModuleRegistryImplementation_);
+        _implementations[COMPLIANCE_MODULE_REGISTRY] = impls.complianceModuleRegistryImplementation;
+        emit ComplianceModuleRegistryImplementationUpdated(initialAdmin_, impls.complianceModuleRegistryImplementation);
 
         // Validate and set the addon registry implementation address.
-        if (addonRegistryImplementation_ == address(0)) revert AddonRegistryImplementationNotSet();
-        _checkInterface(addonRegistryImplementation_, _ADDON_REGISTRY_ID); // Ensure it supports
+        if (impls.addonRegistryImplementation == address(0)) revert AddonRegistryImplementationNotSet();
+        _checkInterface(impls.addonRegistryImplementation, _ADDON_REGISTRY_ID); // Ensure it supports
             // ISMARTAddonRegistry
-        _implementations[ADDON_REGISTRY] = addonRegistryImplementation_;
-        emit SystemAddonRegistryImplementationUpdated(initialAdmin_, addonRegistryImplementation_);
+        _implementations[ADDON_REGISTRY] = impls.addonRegistryImplementation;
+        emit SystemAddonRegistryImplementationUpdated(initialAdmin_, impls.addonRegistryImplementation);
 
         // Validate and set the token factory registry implementation address.
-        if (tokenFactoryRegistryImplementation_ == address(0)) revert TokenFactoryRegistryImplementationNotSet();
-        _checkInterface(tokenFactoryRegistryImplementation_, _TOKEN_FACTORY_REGISTRY_ID); // Ensure it supports
+        if (impls.tokenFactoryRegistryImplementation == address(0)) revert TokenFactoryRegistryImplementationNotSet();
+        _checkInterface(impls.tokenFactoryRegistryImplementation, _TOKEN_FACTORY_REGISTRY_ID); // Ensure it supports
             // ISMARTTokenFactoryRegistry
-        _implementations[TOKEN_FACTORY_REGISTRY] = tokenFactoryRegistryImplementation_;
-        emit TokenFactoryRegistryImplementationUpdated(initialAdmin_, tokenFactoryRegistryImplementation_);
+        _implementations[TOKEN_FACTORY_REGISTRY] = impls.tokenFactoryRegistryImplementation;
+        emit TokenFactoryRegistryImplementationUpdated(initialAdmin_, impls.tokenFactoryRegistryImplementation);
     }
 
-    /// @notice Authorizes an upgrade to a new implementation contract
-    /// @dev Authorizes an upgrade to a new implementation contract.
-    /// The UUPS upgrade mechanism is used.
-    /// Only the `DEFAULT_ADMIN_ROLE` can authorize an upgrade.
-    /// @param newImplementation The address of the new implementation contract
-    function _authorizeUpgrade(address newImplementation)
-        internal
-        override
-        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
-    { }
-
-    // --- Bootstrap Function ---
     /// @notice Deploys and initializes the proxy contracts for all core ATK modules.
     /// @dev This function is a critical step in setting up the ATKSystem. It should typically be called once by an
     /// admin
@@ -372,8 +349,11 @@ contract ATKSystemImplementation is
         if (_implementations[IDENTITY_REGISTRY_STORAGE] == address(0)) {
             revert IdentityRegistryStorageImplementationNotSet();
         }
-        if (_implementations[TRUSTED_ISSUERS_REGISTRY] == address(0)) {
-            revert TrustedIssuersRegistryImplementationNotSet();
+        if (_implementations[SYSTEM_TRUSTED_ISSUERS_REGISTRY] == address(0)) {
+            revert SystemTrustedIssuersRegistryImplementationNotSet();
+        }
+        if (_implementations[TRUSTED_ISSUERS_META_REGISTRY] == address(0)) {
+            revert TrustedIssuersMetaRegistryImplementationNotSet();
         }
         if (_implementations[TOPIC_SCHEME_REGISTRY] == address(0)) revert TopicSchemeRegistryImplementationNotSet();
         if (_implementations[IDENTITY_FACTORY] == address(0)) revert IdentityFactoryImplementationNotSet();
@@ -419,24 +399,36 @@ contract ATKSystemImplementation is
             new ATKTypedImplementationProxy(address(this), IDENTITY_REGISTRY_STORAGE, identityRegistryStorageData)
         );
 
-        // Deploy the ATKTrustedIssuersRegistryProxy, linking it to this ATKSystem and setting an initial admin.
-        bytes memory trustedIssuersRegistryData =
-            abi.encodeWithSelector(IATKTrustedIssuersRegistry.initialize.selector, _accessManager);
-        address localTrustedIssuersRegistryProxy = address(
-            new ATKTypedImplementationProxy(address(this), TRUSTED_ISSUERS_REGISTRY, trustedIssuersRegistryData)
-        );
-
         // Deploy the ATKTopicSchemeRegistryProxy, linking it to this ATKSystem and using the system access manager.
         bytes memory topicSchemeRegistryData =
             abi.encodeWithSelector(IATKTopicSchemeRegistry.initialize.selector, _accessManager);
         address localTopicSchemeRegistryProxy =
             address(new ATKTypedImplementationProxy(address(this), TOPIC_SCHEME_REGISTRY, topicSchemeRegistryData));
 
+        // Deploy the ATKTrustedIssuersRegistryProxy, linking it to this ATKSystem and setting an initial admin.
+        bytes memory systemTrustedIssuersRegistryData =
+            abi.encodeWithSelector(IATKSystemTrustedIssuersRegistry.initialize.selector, _accessManager);
+        address localSystemTrustedIssuersRegistryProxy = address(
+            new ATKTypedImplementationProxy(
+                address(this), SYSTEM_TRUSTED_ISSUERS_REGISTRY, systemTrustedIssuersRegistryData
+            )
+        );
+
+        // Deploy the ATKTrustedIssuersMetaRegistryProxy
+        bytes memory trustedIssuersMetaRegistryData = abi.encodeWithSelector(
+            IATKTrustedIssuersMetaRegistry.initialize.selector, _accessManager, localSystemTrustedIssuersRegistryProxy
+        );
+        address localTrustedIssuersMetaRegistryProxy = address(
+            new ATKTypedImplementationProxy(
+                address(this), TRUSTED_ISSUERS_META_REGISTRY, trustedIssuersMetaRegistryData
+            )
+        );
+
         bytes memory identityRegistryData = abi.encodeWithSelector(
             IATKIdentityRegistry.initialize.selector,
             _accessManager,
             localIdentityRegistryStorageProxy,
-            localTrustedIssuersRegistryProxy,
+            localTrustedIssuersMetaRegistryProxy,
             localTopicSchemeRegistryProxy
         );
         address localIdentityRegistryProxy =
@@ -452,13 +444,14 @@ contract ATKSystemImplementation is
         // Now that all proxies are created, update the contract's state variables to store their addresses.
         _complianceProxy = localComplianceProxy;
         _identityRegistryStorageProxy = localIdentityRegistryStorageProxy;
-        _trustedIssuersRegistryProxy = localTrustedIssuersRegistryProxy;
+        _systemTrustedIssuersRegistryProxy = localSystemTrustedIssuersRegistryProxy;
         _topicSchemeRegistryProxy = localTopicSchemeRegistryProxy;
         _identityRegistryProxy = localIdentityRegistryProxy;
         _identityFactoryProxy = localIdentityFactoryProxy;
         _complianceModuleRegistryProxy = localComplianceModuleRegistryProxy;
         _tokenFactoryRegistryProxy = localTokenFactoryRegistryProxy;
         _addonRegistryProxy = localAddonRegistryProxy;
+        _trustedIssuersMetaRegistryProxy = localTrustedIssuersMetaRegistryProxy;
 
         // --- Effects (Part 2: Grant roles) ---
         IATKSystemAccessManager(_accessManager).grantRole(
@@ -479,6 +472,10 @@ contract ATKSystemImplementation is
 
         IATKSystemAccessManager(_accessManager).grantRole(
             ATKSystemRoles.ADDON_FACTORY_REGISTRY_MODULE_ROLE, localAddonRegistryProxy
+        );
+
+        IATKSystemAccessManager(_accessManager).grantRole(
+            ATKSystemRoles.TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE, localTrustedIssuersMetaRegistryProxy
         );
 
         // --- Interactions (Part 3: Call methods on newly created proxies to link them) ---
@@ -506,7 +503,7 @@ contract ATKSystemImplementation is
         uint256[] memory identityFactoryClaimTopics = new uint256[](1);
         identityFactoryClaimTopics[0] =
             IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).getTopicId(ATKTopics.TOPIC_CONTRACT_IDENTITY);
-        IATKTrustedIssuersRegistry(localTrustedIssuersRegistryProxy).addTrustedIssuer(
+        IATKSystemTrustedIssuersRegistry(localSystemTrustedIssuersRegistryProxy).addTrustedIssuer(
             IClaimIssuer(identityFactoryIdentity), identityFactoryClaimTopics
         );
 
@@ -522,7 +519,7 @@ contract ATKSystemImplementation is
         uint256[] memory issuerClaimTopics = new uint256[](1);
         issuerClaimTopics[0] =
             IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
-        IATKTrustedIssuersRegistry(localTrustedIssuersRegistryProxy).addTrustedIssuer(
+        IATKSystemTrustedIssuersRegistry(localSystemTrustedIssuersRegistryProxy).addTrustedIssuer(
             IClaimIssuer(localOrganisationIdentity), issuerClaimTopics
         );
 
@@ -535,7 +532,8 @@ contract ATKSystemImplementation is
             _complianceProxy, // These will now use the updated state values
             _identityRegistryProxy,
             _identityRegistryStorageProxy,
-            _trustedIssuersRegistryProxy,
+            _systemTrustedIssuersRegistryProxy,
+            _trustedIssuersMetaRegistryProxy,
             _topicSchemeRegistryProxy,
             _identityFactoryProxy,
             _tokenFactoryRegistryProxy,
@@ -599,17 +597,33 @@ contract ATKSystemImplementation is
 
     /// @notice Sets (updates) the address of the trusted issuers registry module's implementation (logic) contract.
     /// @dev Only callable by an address with the `DEFAULT_ADMIN_ROLE`.
-    /// Reverts if `implementation` is zero or doesn't support `IERC3643TrustedIssuersRegistry`.
+    /// Reverts if `implementation` is zero or doesn't support `ISMARTTrustedIssuersRegistry`.
     /// Emits a `TrustedIssuersRegistryImplementationUpdated` event.
     /// @param implementation_ The new address for the trusted issuers registry logic contract.
-    function setTrustedIssuersRegistryImplementation(address implementation_)
+    function setSystemTrustedIssuersRegistryImplementation(address implementation_)
         public
         onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
     {
-        if (implementation_ == address(0)) revert TrustedIssuersRegistryImplementationNotSet();
-        _checkInterface(implementation_, _TRUSTED_ISSUERS_REGISTRY_ID);
-        _implementations[TRUSTED_ISSUERS_REGISTRY] = implementation_;
-        emit TrustedIssuersRegistryImplementationUpdated(_msgSender(), implementation_);
+        if (implementation_ == address(0)) revert SystemTrustedIssuersRegistryImplementationNotSet();
+        _checkInterface(implementation_, _SYSTEM_TRUSTED_ISSUERS_REGISTRY_ID);
+        _implementations[SYSTEM_TRUSTED_ISSUERS_REGISTRY] = implementation_;
+        emit SystemTrustedIssuersRegistryImplementationUpdated(_msgSender(), implementation_);
+    }
+
+    /// @notice Sets (updates) the address of the trusted issuers meta registry module's implementation (logic)
+    /// contract.
+    /// @dev Only callable by an address with the `DEFAULT_ADMIN_ROLE`.
+    /// Reverts if `implementation` is zero or doesn't support `IATKTrustedIssuersMetaRegistry`.
+    /// Emits a `TrustedIssuersMetaRegistryImplementationUpdated` event.
+    /// @param implementation_ The new address for the trusted issuers meta registry logic contract.
+    function setTrustedIssuersMetaRegistryImplementation(address implementation_)
+        public
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
+    {
+        if (implementation_ == address(0)) revert TrustedIssuersMetaRegistryImplementationNotSet();
+        _checkInterface(implementation_, _TRUSTED_ISSUERS_META_REGISTRY_ID);
+        _implementations[TRUSTED_ISSUERS_META_REGISTRY] = implementation_;
+        emit TrustedIssuersMetaRegistryImplementationUpdated(_msgSender(), implementation_);
     }
 
     /// @notice Sets (updates) the address of the topic scheme registry module's implementation (logic) contract.
@@ -765,6 +779,12 @@ contract ATKSystemImplementation is
         return _implementations[TOKEN_ACCESS_MANAGER];
     }
 
+    /// @notice Returns the address of the trusted issuers meta registry implementation.
+    /// @return The address of the trusted issuers meta registry implementation contract.
+    function trustedIssuersMetaRegistryImplementation() external view returns (address) {
+        return _implementations[TRUSTED_ISSUERS_META_REGISTRY];
+    }
+
     // --- Proxy Getter Functions ---
     // These public view functions allow anyone to query the stable addresses of the proxy contracts for each module.
     // Interactions with the SMART Protocol modules should always go through these proxy addresses.
@@ -790,7 +810,7 @@ contract ATKSystemImplementation is
     /// @notice Gets the address of the trusted issuers registry module's proxy contract.
     /// @return The address of the trusted issuers registry proxy contract.
     function trustedIssuersRegistry() public view returns (address) {
-        return _trustedIssuersRegistryProxy;
+        return _trustedIssuersMetaRegistryProxy;
     }
 
     /// @notice Gets the address of the topic scheme registry module's proxy contract.
@@ -883,7 +903,16 @@ contract ATKSystemImplementation is
         );
     }
 
-    // --- Governance Functions ---
+    /// @notice Authorizes an upgrade to a new implementation contract
+    /// @dev Authorizes an upgrade to a new implementation contract.
+    /// The UUPS upgrade mechanism is used.
+    /// Only the `DEFAULT_ADMIN_ROLE` can authorize an upgrade.
+    /// @param newImplementation The address of the new implementation contract
+    function _authorizeUpgrade(address newImplementation)
+        internal
+        override
+        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
+    { }
 
     // --- Internal Functions (Overrides for ERC2771Context and ERC165/AccessControl) ---
 

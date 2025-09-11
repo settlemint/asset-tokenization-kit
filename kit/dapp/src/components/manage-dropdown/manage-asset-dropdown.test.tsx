@@ -18,18 +18,30 @@ vi.mock("@/orpc/orpc-client", () => ({
   orpc: {
     token: {
       mint: { mutationOptions: vi.fn(() => ({})) },
-      read: { queryOptions: vi.fn(() => ({ queryKey: ["token", "read"] })) },
+      read: {
+        queryOptions: vi.fn(() => ({ queryKey: ["token", "read"] })),
+        queryKey: vi.fn(() => ["token", "read"]),
+      },
+      list: { key: vi.fn(() => ["token", "list"]) },
+      holders: {
+        queryOptions: vi.fn(() => ({ queryKey: ["token", "holders"] })),
+        queryKey: vi.fn(() => ["token", "holders"]),
+      },
       pause: { mutationOptions: vi.fn(() => ({})) },
       unpause: { mutationOptions: vi.fn(() => ({})) },
       holder: {
         queryOptions: vi.fn(() => ({ queryKey: ["token", "holder"] })),
+        queryKey: vi.fn(() => ["token", "holder"]),
       },
       updateCollateral: { mutationOptions: vi.fn(() => ({})) },
       setYieldSchedule: { mutationOptions: vi.fn(() => ({})) },
       burn: { mutationOptions: vi.fn(() => ({})) },
+      mature: { mutationOptions: vi.fn(() => ({})) },
       grantRole: { mutationOptions: vi.fn(() => ({})) },
       revokeRole: { mutationOptions: vi.fn(() => ({})) },
       freezeAddress: { mutationOptions: vi.fn(() => ({})) },
+      freezePartial: { mutationOptions: vi.fn(() => ({})) },
+      unfreezePartial: { mutationOptions: vi.fn(() => ({})) },
     },
     fixedYieldSchedule: {
       read: {
@@ -38,6 +50,7 @@ vi.mock("@/orpc/orpc-client", () => ({
         })),
       },
       topUp: { mutationOptions: vi.fn(() => ({})) },
+      withdraw: { mutationOptions: vi.fn(() => ({})) },
       create: { mutationOptions: vi.fn(() => ({})) },
     },
   },
