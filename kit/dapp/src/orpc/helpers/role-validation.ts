@@ -17,7 +17,7 @@ import { getAccessControlEntries } from "./access-control-helpers";
  * to avoid potential security vulnerabilities like permission gaps or privilege escalations.
  */
 export function mapUserRoles(
-  wallet: EthereumAddress,
+  wallet: EthereumAddress | null,
   accessControl?: AccessControl | null
 ) {
   // Initialize with all roles set to false
@@ -58,6 +58,10 @@ export function mapUserRoles(
     trustedIssuersMetaRegistryModule: false,
     verificationAdmin: false,
   };
+
+  if (!wallet) {
+    return initialUserRoles;
+  }
 
   // Use type-safe helper to get access control entries
   const userRoles = getAccessControlEntries(accessControl).reduce<

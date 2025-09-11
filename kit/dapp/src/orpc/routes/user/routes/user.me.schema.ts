@@ -44,7 +44,6 @@ const onboardingStateSchema = z.object({
 export type OnboardingState = z.infer<typeof onboardingStateSchema>;
 
 const userPermissionsSchema = z.object({
-  roles: accessControlRoles.describe("The roles of the user for the system"),
   actions: z
     .object(
       (() => {
@@ -106,7 +105,7 @@ export const UserSchema = z.object({
    * User's email address.
    * Primary identifier for authentication and communication.
    */
-  email: z.email(),
+  email: z.email().optional(),
 
   /**
    * User's role for offchain access control.
@@ -116,6 +115,13 @@ export const UserSchema = z.object({
    * - investor: Standard user
    */
   role: userRoles().default("investor"),
+
+  /**
+   * User's roles for onchain access control.
+   */
+  roles: accessControlRoles.describe(
+    "The onchain roles of the user for the system"
+  ),
 
   /**
    * User's Ethereum wallet address.

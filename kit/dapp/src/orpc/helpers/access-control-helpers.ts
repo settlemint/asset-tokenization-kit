@@ -2,6 +2,10 @@ import type {
   AccessControl,
   AccessControlRoles,
 } from "@/lib/fragments/the-graph/access-control-fragment";
+import {
+  getEthereumAddress,
+  type EthereumAddress,
+} from "@atk/zod/ethereum-address";
 
 /**
  * Type guard to check if a value is an array of objects with id and isContract properties
@@ -106,4 +110,36 @@ export function getUserRoles(
   }
 
   return roles;
+}
+
+/**
+ * Gets all accounts with roles
+ * @param accessControl - The access control object from The Graph
+ * @returns Array of accounts with roles
+ */
+export function getAccountsWithRoles(
+  accessControl: AccessControl | null | undefined,
+  excludeContracts: boolean = false
+): Array<{ id: EthereumAddress; roles: AccessControlRoles[] }> {
+  const accountsWithRoles: Array<{
+    id: EthereumAddress;
+    roles: AccessControlRoles[];
+  }> = [];
+  for (const [role, accounts] of getAccessControlEntries(accessControl)) {
+    for (const account of accounts) {
+      if (excludeContracts && account.isContract) {
+        continue;
+      }
+      const accountId = getEthereumAddress(account.id);
+      const existingAccount = accountsWithRoles.find(
+        (existing) => existing.id === accountId
+      );
+      if (existingAccount) {
+        existingAccount.roles.push(role);
+      } else {
+        accountsWithRoles.push({ id: accountId, roles: [role] });
+      }
+    }
+  }
+  return accountsWithRoles;
 }

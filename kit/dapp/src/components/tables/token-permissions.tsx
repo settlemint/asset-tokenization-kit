@@ -1,7 +1,6 @@
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
-import type { ColumnDef } from "@tanstack/react-table";
 import { Shield } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -67,7 +66,7 @@ export function TokenPermissionsTable({ token }: { token: Token }) {
             displayName: t("tokens:permissions.columns.address"),
             type: "address",
           },
-        }) as unknown as ColumnDef<PermissionRow>,
+        }),
         columnHelper.display({
           id: "roles",
           header: t("tokens:permissions.columns.roles"),
@@ -84,10 +83,6 @@ export function TokenPermissionsTable({ token }: { token: Token }) {
               </div>
             );
           },
-          enableSorting: true,
-          sortingFn: (rowA, rowB) =>
-            (rowB.original.roles?.length ?? 0) -
-            (rowA.original.roles?.length ?? 0),
           meta: {
             displayName: t("tokens:permissions.columns.roles"),
             type: "text",

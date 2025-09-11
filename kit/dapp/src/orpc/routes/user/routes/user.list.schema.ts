@@ -11,6 +11,14 @@ import { z } from "zod";
  */
 export const UserListInputSchema = ListSchema.extend({
   orderBy: ListSchema.shape.orderBy.default("createdAt"),
+  filters: z
+    .object({
+      hasSystemRole: z
+        .boolean()
+        .optional()
+        .describe("Whether the user has at least one system role"),
+    })
+    .optional(),
 });
 
 /**

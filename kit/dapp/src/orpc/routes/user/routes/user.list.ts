@@ -1,5 +1,8 @@
 import { kycProfiles, user } from "@/lib/db/schema";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import type { Context } from "@/orpc/context/context";
+import { getAccountsWithRoles } from "@/orpc/helpers/access-control-helpers";
+import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import {
   filterClaimsForUser,
@@ -12,7 +15,7 @@ import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { getUserRole } from "@atk/zod/user-roles";
-import { type AnyColumn, asc, count, desc, eq } from "drizzle-orm";
+import { type AnyColumn, asc, count, desc, eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 
 // GraphQL query to fetch multiple accounts by wallet addresses
@@ -145,38 +148,60 @@ export const list = authRouter.user.list
   )
   .use(databaseMiddleware)
   .handler(async ({ context, input }) => {
-    const { limit, offset, orderDirection, orderBy } = input;
+    const {
+      limit: inputLimit,
+      offset,
+      orderDirection,
+      orderBy,
+      filters,
+    } = input;
 
-    // Configure sort direction based on input
-    const order = orderDirection === "desc" ? desc : asc;
+    const limit = inputLimit ?? 1000;
 
-    // Safely access the order column, defaulting to createdAt if invalid
-    const orderColumn =
-      (user[orderBy as keyof typeof user] as AnyColumn | undefined) ??
-      user.createdAt;
+    let total = 0;
+    let queryResult: QueryResultRow[] = [];
+    if (filters?.hasSystemRole) {
+      const result = await getUsersForAccounts({
+        limit,
+        offset,
+        context,
+      });
+      queryResult = result.items;
+      total = result.total;
+    } else {
+      // Configure sort direction based on input
+      const order = orderDirection === "desc" ? desc : asc;
 
-    // Get total count first
-    const totalResult = await context.db.select({ count: count() }).from(user);
+      // Safely access the order column, defaulting to createdAt if invalid
+      const orderColumn =
+        (user[orderBy as keyof typeof user] as AnyColumn | undefined) ??
+        user.createdAt;
 
-    const total = totalResult[0]?.count ?? 0;
+      // Get total count first
+      const totalResult = await context.db
+        .select({ count: count() })
+        .from(user);
 
-    // Execute paginated query with sorting and KYC data
-    const result = await context.db
-      .select({
-        user: user,
-        kyc: {
-          firstName: kycProfiles.firstName,
-          lastName: kycProfiles.lastName,
-        },
-      })
-      .from(user)
-      .leftJoin(kycProfiles, eq(kycProfiles.userId, user.id))
-      .orderBy(order(orderColumn))
-      .limit(limit ?? 1000)
-      .offset(offset);
+      total = totalResult[0]?.count ?? 0;
+
+      // Execute paginated query with sorting and KYC data
+      queryResult = await context.db
+        .select({
+          user: user,
+          kyc: {
+            firstName: kycProfiles.firstName,
+            lastName: kycProfiles.lastName,
+          },
+        })
+        .from(user)
+        .leftJoin(kycProfiles, eq(kycProfiles.userId, user.id))
+        .orderBy(order(orderColumn))
+        .limit(limit)
+        .offset(offset);
+    }
 
     // Extract wallet addresses for TheGraph query, filtering out null values
-    const walletAddresses = result
+    const walletAddresses = queryResult
       .map((row: QueryResultRow) => row.user.wallet)
       .filter(
         (wallet: `0x${string}` | null): wallet is `0x${string}` =>
@@ -210,8 +235,14 @@ export const list = authRouter.user.list
     );
 
     // Transform results to include human-readable roles, onboarding state, and identity data
-    const items = result.map((row: QueryResultRow) => {
+    const items = queryResult.map((row: QueryResultRow) => {
       const { user: u, kyc } = row;
+
+      // User roles from the access control system
+      const roles = mapUserRoles(
+        u.wallet,
+        context.system?.systemAccessManager?.accessControl
+      );
 
       // Handle users without wallets gracefully
       if (!u.wallet) {
@@ -223,6 +254,7 @@ export const list = authRouter.user.list
               : u.name,
           email: u.email,
           role: getUserRole(u.role),
+          roles,
           wallet: u.wallet, // null
           firstName: kyc?.firstName,
           lastName: kyc?.lastName,
@@ -256,6 +288,7 @@ export const list = authRouter.user.list
             : u.name,
         email: u.email,
         role: getUserRole(u.role),
+        roles,
         wallet: u.wallet,
         firstName: kyc?.firstName,
         lastName: kyc?.lastName,
@@ -275,3 +308,60 @@ export const list = authRouter.user.list
       offset,
     };
   });
+
+async function getUsersForAccounts({
+  limit,
+  offset,
+  context,
+}: {
+  limit: number;
+  offset: number;
+  context: Required<Pick<Context, "db" | "system">>;
+}) {
+  const accountsWithSystemRoles =
+    context.system?.systemAccessManager?.accessControl;
+  if (!accountsWithSystemRoles) {
+    return {
+      items: [],
+      total: 0,
+      limit,
+      offset,
+    };
+  }
+  const accounts = getAccountsWithRoles(accountsWithSystemRoles, true);
+  const accountsForPage = accounts.slice(offset, offset + limit);
+  const accountIds = accountsForPage.map((account) => account.id);
+  const total = accounts.length;
+
+  const result = await context.db
+    .select({
+      user: user,
+      kyc: {
+        firstName: kycProfiles.firstName,
+        lastName: kycProfiles.lastName,
+      },
+    })
+    .from(user)
+    .leftJoin(kycProfiles, eq(kycProfiles.userId, user.id))
+    .where(inArray(user.wallet, accountIds));
+
+  return {
+    items: accountsForPage.map((account) => {
+      const user = result.find(
+        (user) => user.user.wallet?.toLowerCase() === account.id.toLowerCase()
+      );
+      if (user) {
+        return user;
+      }
+      return {
+        user: {
+          id: account.id,
+          wallet: account.id,
+          name: account.id,
+        },
+        kyc: null,
+      } as QueryResultRow;
+    }),
+    total,
+  };
+}

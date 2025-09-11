@@ -1,4 +1,5 @@
 import { kycProfiles, user } from "@/lib/db/schema";
+import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import {
   filterClaimsForUser,
@@ -127,6 +128,10 @@ export const read = authRouter.user.read
             : userData.name,
         email: userData.email,
         role: getUserRole(userData.role),
+        roles: mapUserRoles(
+          userData.wallet,
+          context.system?.systemAccessManager?.accessControl
+        ),
         wallet: userData.wallet, // null
         firstName: kyc?.firstName,
         lastName: kyc?.lastName,

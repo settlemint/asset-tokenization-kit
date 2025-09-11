@@ -34,6 +34,14 @@
     "compliance": "Compliance",
     "addons": "Addons",
     "claimTopicsIssuers": "Claim Topics & Issuers",
-    "permissions": "Permissions"
+    "permissions": {
+      "title": "Permissions",
+      "description": "Manage user permissions and blockchain roles for the Asset Tokenization Kit",
+      "adminRequired": {
+        "title": "Admin Access Required",
+        "description": "You need administrator privileges to manage permissions and roles. Please contact your system administrator for access."
+      },
+      "comingSoon": "More permission management features coming soon..."
+    }
   }
 }
