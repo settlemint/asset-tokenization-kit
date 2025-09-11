@@ -15,7 +15,16 @@ import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { getUserRole } from "@atk/zod/user-roles";
-import { type AnyColumn, asc, count, desc, eq, inArray } from "drizzle-orm";
+import {
+  asc,
+  count,
+  desc,
+  eq,
+  ilike,
+  inArray,
+  or,
+  type AnyColumn,
+} from "drizzle-orm";
 import { z } from "zod";
 
 // GraphQL query to fetch multiple accounts by wallet addresses
@@ -195,7 +204,19 @@ export const list = authRouter.user.list
         })
         .from(user)
         .leftJoin(kycProfiles, eq(kycProfiles.userId, user.id))
-        .orderBy(order(orderColumn))
+        .orderBy(
+          ...(orderBy === "wallet"
+            ? [order(kycProfiles.firstName), order(kycProfiles.lastName)]
+            : [order(orderColumn)])
+        )
+        .where(
+          or(
+            ilike(kycProfiles.firstName, `%${filters?.search ?? ""}%`),
+            ilike(kycProfiles.lastName, `%${filters?.search ?? ""}%`),
+            ilike(user.email, `%${filters?.search ?? ""}%`),
+            ilike(user.wallet, `%${filters?.search ?? ""}%`)
+          )
+        )
         .limit(limit)
         .offset(offset);
     }

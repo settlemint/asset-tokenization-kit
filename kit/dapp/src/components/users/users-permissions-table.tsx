@@ -121,7 +121,9 @@ export function UsersPermissionsTable() {
           meta: {
             displayName: t("management.table.columns.lastActive"),
             type: "date",
-            includeTime: true,
+            dateOptions: {
+              relative: true,
+            },
           },
         }),
       ] as ColumnDef<User>[]),

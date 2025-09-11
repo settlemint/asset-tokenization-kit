@@ -118,6 +118,11 @@ export const read = authRouter.user.read
 
     const { user: userData, kyc } = userResult;
 
+    const roles = mapUserRoles(
+      userData.wallet,
+      context.system?.systemAccessManager?.accessControl
+    );
+
     // Handle users without wallets gracefully
     if (!userData.wallet) {
       return {
@@ -128,10 +133,7 @@ export const read = authRouter.user.read
             : userData.name,
         email: userData.email,
         role: getUserRole(userData.role),
-        roles: mapUserRoles(
-          userData.wallet,
-          context.system?.systemAccessManager?.accessControl
-        ),
+        roles,
         wallet: userData.wallet, // null
         firstName: kyc?.firstName,
         lastName: kyc?.lastName,
@@ -175,6 +177,7 @@ export const read = authRouter.user.read
           : userData.name,
       email: userData.email,
       role: getUserRole(userData.role),
+      roles,
       wallet: userData.wallet,
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,

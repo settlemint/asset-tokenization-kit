@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import { Users } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -11,7 +11,6 @@ import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { UserStatusBadge } from "@/components/users/user-status-badge";
-import { getUserDisplayName } from "@/lib/utils/user-display-name";
 import { orpc } from "@/orpc/orpc-client";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { toast } from "sonner";
@@ -31,6 +30,8 @@ export function UsersTable() {
     pageIndex: 0,
     pageSize: 20,
   });
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   // Fetch users data using ORPC with server-side pagination
   const { data, isLoading, error } = useQuery(
@@ -38,8 +39,12 @@ export function UsersTable() {
       input: {
         limit: pagination.pageSize,
         offset: pagination.pageIndex * pagination.pageSize,
-        orderBy: "createdAt",
-        orderDirection: "desc",
+        orderBy: sorting.length > 0 ? sorting[0]?.id : "createdAt",
+        orderDirection:
+          sorting.length > 0 ? (sorting[0]?.desc ? "desc" : "asc") : "desc",
+        filters: {
+          search: globalFilter,
+        },
       },
     })
   );
@@ -70,13 +75,6 @@ export function UsersTable() {
       withAutoFeatures([
         columnHelper.accessor("wallet", {
           header: t("management.table.columns.name"),
-          filterFn: (row, _columnId, filterValue) => {
-            const user = row.original;
-            const displayName = getUserDisplayName(user);
-            return displayName
-              .toLowerCase()
-              .includes((filterValue as string).toLowerCase());
-          },
           meta: {
             displayName: t("management.table.columns.name"),
             type: "address",
@@ -93,14 +91,6 @@ export function UsersTable() {
           id: "status",
           header: t("management.table.columns.status"),
           cell: ({ row }) => <UserStatusBadge user={row.original} />,
-          filterFn: (row, _columnId, filterValue) => {
-            const user = row.original;
-            if (filterValue === "registered") return user.isRegistered;
-            if (filterValue === "pending")
-              return Boolean(user.wallet && !user.isRegistered);
-            if (filterValue === "notConnected") return !user.wallet;
-            return true;
-          },
           meta: {
             displayName: t("management.table.columns.status"),
             type: "option",
@@ -122,7 +112,6 @@ export function UsersTable() {
           meta: {
             displayName: t("management.table.columns.created"),
             type: "date",
-            includeTime: true,
           },
         }),
         columnHelper.accessor("lastLoginAt", {
@@ -130,7 +119,9 @@ export function UsersTable() {
           meta: {
             displayName: t("management.table.columns.lastActive"),
             type: "date",
-            includeTime: true,
+            dateOptions: {
+              relative: true,
+            },
           },
         }),
       ] as ColumnDef<User>[]),
@@ -163,14 +154,17 @@ export function UsersTable() {
         }}
         externalState={{
           pagination,
+          sorting,
           onPaginationChange: setPagination,
+          onGlobalFilterChange: setGlobalFilter,
+          onSortingChange: setSorting,
         }}
         urlState={{
           enabled: false, // Disable URL state since we're managing it manually
         }}
         advancedToolbar={{
-          enableGlobalSearch: false,
-          enableFilters: true, // Re-enable filters now that columns are properly accessible
+          enableGlobalSearch: true, // Search by name (server side)
+          enableFilters: false,
           enableExport: true,
           enableViewOptions: true,
           placeholder: t("management.table.search.placeholder"),
@@ -181,7 +175,7 @@ export function UsersTable() {
         initialPageSize={20}
         initialSorting={[
           {
-            id: "created",
+            id: "createdAt",
             desc: true,
           },
         ]}
