@@ -1,4 +1,4 @@
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
+import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { encodePacked, keccak256 } from "viem";
 
 /**

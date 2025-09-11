@@ -9,7 +9,6 @@
  */
 
 import { kycProfiles, user as userTable } from "@/lib/db/schema";
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
@@ -18,6 +17,7 @@ import { authRouter } from "@/orpc/procedures/auth.router";
 import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
+import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { AssetFactoryTypeIdEnum } from "@atk/zod/asset-types";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { satisfiesRoleRequirement } from "@atk/zod/role-requirement";

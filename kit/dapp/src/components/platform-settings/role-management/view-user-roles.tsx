@@ -8,9 +8,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { client, orpc } from "@/orpc/orpc-client";
 import type { UserSearchResult } from "@/orpc/routes/user/routes/user.search.schema";
+import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { useQuery } from "@tanstack/react-query";
 import { Eye, Search, Shield, User as UserIcon } from "lucide-react";
 import { useMemo, useState } from "react";

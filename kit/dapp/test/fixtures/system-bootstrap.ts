@@ -1,7 +1,7 @@
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { isContractAddress } from "@/test/anvil";
+import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import type { RoleRequirement } from "@atk/zod/role-requirement";
 import { ORPCError } from "@orpc/server";
 import { retryWhenFailed } from "@settlemint/sdk-utils";

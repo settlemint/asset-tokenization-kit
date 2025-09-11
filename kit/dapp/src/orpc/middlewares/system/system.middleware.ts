@@ -1,7 +1,4 @@
-import {
-  type AccessControl,
-  AccessControlFragment,
-} from "@/lib/fragments/the-graph/access-control-fragment";
+import { AccessControlFragment } from "@/lib/fragments/the-graph/access-control-fragment";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { Context } from "@/orpc/context/context";
 import {
@@ -11,6 +8,7 @@ import {
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { read } from "@/orpc/routes/settings/routes/settings.read";
+import type { AccessControl } from "@atk/zod/access-control-roles";
 import type { AddonFactoryTypeId } from "@atk/zod/addon-types";
 import type { AssetFactoryTypeId } from "@atk/zod/asset-types";
 import type { ComplianceTypeId } from "@atk/zod/compliance";
