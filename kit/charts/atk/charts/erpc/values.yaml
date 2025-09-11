@@ -24,7 +24,7 @@ image:
   # -- eRPC image repository
   repository: erpc/erpc
   # -- eRPC image tag (immutable tags are recommended)
-  tag: "0.0.55"
+  tag: "0.0.56"
   # -- eRPC image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
   digest: ""
   # -- eRPC image pull policy
