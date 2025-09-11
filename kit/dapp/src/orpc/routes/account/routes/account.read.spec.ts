@@ -20,6 +20,7 @@ describe("Account read (integration)", () => {
       // Now test reading the same account directly
       const readAccount = await client.account.read({ wallet: account.id });
       expect(readAccount.id).toBe(account.id);
+      expect(readAccount.rolesCount).toBeGreaterThan(0);
     } else {
       // If account.me returns null, we can't test account.read
       expect(account).toBeNull();

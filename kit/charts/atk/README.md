@@ -173,7 +173,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | erpc.image.pullPolicy | string | `"IfNotPresent"` |  |
 | erpc.image.registry | string | `"ghcr.io"` |  |
 | erpc.image.repository | string | `"erpc/erpc"` |  |
-| erpc.image.tag | string | `"0.0.55"` |  |
+| erpc.image.tag | string | `"0.0.56"` |  |
 | erpc.ingress.className | string | `"atk-nginx"` |  |
 | erpc.ingress.enabled | bool | `true` |  |
 | erpc.ingress.hosts[0].host | string | `"rpc.k8s.orb.local"` |  |
@@ -213,7 +213,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | hasura.enabled | bool | `true` |  |
 | hasura.graphql-engine.image.pullPolicy | string | `"IfNotPresent"` |  |
 | hasura.graphql-engine.image.repository | string | `"docker.io/hasura/graphql-engine"` |  |
-| hasura.graphql-engine.image.tag | string | `"v2.48.4"` |  |
+| hasura.graphql-engine.image.tag | string | `"v2.48.5"` |  |
 | hasura.graphql-engine.ingress.hostName | string | `"hasura.k8s.orb.local"` |  |
 | hasura.graphql-engine.initContainers[0].command[0] | string | `"/bin/sh"` |  |
 | hasura.graphql-engine.initContainers[0].command[1] | string | `"-c"` |  |

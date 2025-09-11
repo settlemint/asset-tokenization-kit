@@ -58,6 +58,7 @@ export const read = authRouter.account.read
     // TypeScript ensures the return type matches AccountReadOutput interface
     return {
       id: result.account.id,
+      rolesCount: result.account.rolesCount,
       country: result.account.country
         ? countries.numericToAlpha2(result.account.country)
         : undefined,

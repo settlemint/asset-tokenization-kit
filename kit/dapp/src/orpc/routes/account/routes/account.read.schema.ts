@@ -42,6 +42,11 @@ export const AccountSchema = z.object({
    * Only returns the names of the claims
    */
   claims: z.array(z.string()).optional(),
+
+  /**
+   * Number of roles assigned to the account.
+   */
+  rolesCount: z.number(),
 });
 
 // Define response schema for type-safe GraphQL validation
@@ -52,6 +57,7 @@ export const AccountResponseSchema = z.object({
     .object({
       id: ethereumAddress,
       country: z.number().nullable().optional(),
+      rolesCount: z.number(),
       identity: z
         .object({
           id: ethereumAddress,
