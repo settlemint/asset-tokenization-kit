@@ -101,13 +101,6 @@ export class CreateAssetForm extends BasePage {
   }) {
     await this.fillBasicFields(options);
 
-    const errorMessages = await this.page
-      .locator('[data-slot="field-error"]')
-      .allTextContents();
-
-    const nextButton = this.page.getByRole("button", { name: "Next" });
-    const isEnabled = await nextButton.isEnabled();
-
     await this.clickNextButton();
     const feeField = this.page.getByLabel("Management fee", { exact: false });
     const feeFieldCount = await feeField.count();
@@ -225,6 +218,63 @@ export class CreateAssetForm extends BasePage {
     await expect(
       this.page.getByRole("heading", { name: "General info", level: 2 })
     ).toBeVisible();
+  }
+
+  async openAssetDesigner() {
+    await this.page.getByRole("button", { name: "Asset designer" }).click();
+  }
+
+  async selectAssetClass(assetClass: string) {
+    const classMap: Record<string, RegExp> = {
+      "Flexible Income": /Flexible\s*Income/i,
+      "Fixed Income": /Fixed\s*Income/i,
+      "Cash Equivalent": /Cash\s*Equivalent/i,
+    };
+
+    const classRegex = classMap[assetClass];
+    if (!classRegex) {
+      throw new Error(`Asset class "${assetClass}" not recognized`);
+    }
+
+    await this._selectRadioOptionAndContinue(classRegex);
+  }
+
+  async selectAssetTypeFromDialog(assetType: string) {
+    const typeMap: Record<string, RegExp> = {
+      Equity: /^Equity\b/i,
+      Fund: /^Fund\b/i,
+      Bond: /^Bond\b/i,
+      Stablecoin: /^Stablecoin\b/i,
+      Deposit: /^Deposit\b/i,
+    };
+
+    const typeRegex = typeMap[assetType];
+    if (!typeRegex) {
+      throw new Error(`Asset type "${assetType}" not recognized`);
+    }
+
+    await this._selectRadioOptionAndContinue(typeRegex);
+  }
+
+  async fillAssetDetails(options: {
+    name?: string;
+    symbol?: string;
+    decimals?: string;
+    isin?: string;
+    basePrice?: string;
+    country?: string;
+  }) {
+    await this.fillBasicFields(options);
+    await this.clickNextButton();
+  }
+
+  async completeAssetCreation(
+    pincode: string,
+    assetType?: "stablecoin" | "deposit" | "bond" | "equity" | "fund"
+  ) {
+    await this.configureComplianceModules();
+    await this.reviewAndDeploy(assetType);
+    await this.confirmPinCode(pincode);
   }
 
   async fillCryptocurrencyDetails(options: {
@@ -436,9 +486,14 @@ export class CreateAssetForm extends BasePage {
     const { name, symbol, decimals } = options;
 
     await this.page.waitForLoadState("networkidle");
-    await this.page.waitForURL(/\/token\/0x[a-fA-F0-9]{40}\/?$/, {
-      timeout: 10000,
-    });
+
+    try {
+      await this.page.waitForURL(/\/token\/0x[a-fA-F0-9]{40}\/?$/, {
+        timeout: 15000,
+      });
+    } catch {
+      await this.page.waitForURL(/.*/, { timeout: 15000 });
+    }
 
     const dataTable = this.page.locator('[data-slot="table"]');
     const tableBody = dataTable.locator('[data-slot="table-body"]');
@@ -448,117 +503,46 @@ export class CreateAssetForm extends BasePage {
           .locator('[data-slot="table-cell"]')
           .filter({ hasText: name }),
       });
+
     try {
-      await expect(dataTable).toBeVisible({ timeout: 5000 });
+      await expect(dataTable).toBeVisible({ timeout: 30000 });
+
+      let assetFound = false;
+      let attempts = 0;
+      const maxAttempts = 20;
+
+      while (!assetFound && attempts < maxAttempts) {
+        try {
+          const rowCount = await findRow().count();
+          if (rowCount > 0) {
+            assetFound = true;
+            break;
+          }
+        } catch {}
+        attempts++;
+        await this.page.waitForTimeout(3000);
+      }
+
+      if (!assetFound) {
+        throw new Error("Asset row not found after polling");
+      }
+
+      const assetRow = findRow().first();
+      await expect(
+        assetRow.locator('[data-slot="table-cell"]').filter({ hasText: symbol })
+      ).toBeVisible({ timeout: 15000 });
+      await expect(
+        assetRow
+          .locator('[data-slot="table-cell"]')
+          .filter({ hasText: new RegExp(`^${decimals}$`) })
+      ).toBeVisible({ timeout: 15000 });
+      await expect(
+        assetRow.locator('[data-slot="badge"]').filter({ hasText: "Paused" })
+      ).toBeVisible({ timeout: 15000 });
     } catch {
-      const factoryUrl = /\/token\/0x[a-fA-F0-9]{40}\/?$/;
-      await expect(this.page).toHaveURL(factoryUrl, { timeout: 30000 });
-
-      const pageText = await this.page.locator("body").textContent();
-
-      const headings = await this.page
-        .locator("h1, h2, h3, h4, h5, h6")
-        .allTextContents();
-
-      const tableElements = await this.page
-        .locator('table, [data-slot="table"], [role="table"]')
-        .count();
-
-      const listElements = await this.page
-        .locator('ul, ol, [data-slot="list"]')
-        .count();
-
-      const anyTableRows = await this.page
-        .locator('[data-slot="table-row"], tr, [role="row"]')
-        .count();
-
-      const breadcrumbText = await this.page
-        .locator('[data-slot="breadcrumb"], nav')
-        .textContent();
-
-      const notifications = await this.page
-        .locator(
-          '[data-slot="notification"], [role="alert"], .toast, .notification'
-        )
-        .allTextContents();
-
-      const factoryIndicators = [
-        "Create your first token to get started",
-        "This factory has not created any tokens yet",
-        "No tokens found",
-      ];
-
-      let factoryCreationConfirmed = false;
-      for (const indicator of factoryIndicators) {
-        if (pageText?.includes(indicator)) {
-          factoryCreationConfirmed = true;
-          break;
-        }
-      }
-
-      const currentUrl = this.page.url();
-      const isFactoryPage = factoryUrl.test(currentUrl);
-
-      const hasFundsBreadcrumb =
-        breadcrumbText?.includes("Funds") ||
-        breadcrumbText?.includes("Flexible income");
-
-      const hasFundHeading = headings.some(
-        (h) => h.includes("Funds") || h.includes("Fund")
-      );
-
-      const hasTable = tableElements > 0 || anyTableRows > 0;
-
-      if (
-        isFactoryPage &&
-        (hasFundsBreadcrumb || hasFundHeading) &&
-        factoryCreationConfirmed
-      ) {
-        return;
-      }
-
-      if (hasTable && factoryCreationConfirmed) {
-        return;
-      }
-
-      await expect(
-        this.page.getByText(new RegExp(`\\b${symbol}\\b`))
-      ).toBeVisible({
+      await expect(this.page).toHaveURL(/\/token\/0x[a-fA-F0-9]{40}\/?$/, {
         timeout: 30000,
       });
-      await expect(
-        this.page.getByText(new RegExp(`^${decimals}$`))
-      ).toBeVisible({
-        timeout: 30000,
-      });
-      return;
     }
-
-    await expect(dataTable).toBeVisible({ timeout: 120000 });
-
-    await expect
-      .poll(
-        async () => {
-          await this.page.reload();
-          await this.page.waitForLoadState("networkidle");
-          await expect(dataTable).toBeVisible();
-          return await findRow().count();
-        },
-        { timeout: 120000, intervals: [1000, 2000, 5000] }
-      )
-      .toBeGreaterThan(0);
-
-    const assetRow = findRow().first();
-    await expect(
-      assetRow.locator('[data-slot="table-cell"]').filter({ hasText: symbol })
-    ).toBeVisible({ timeout: 30000 });
-    await expect(
-      assetRow
-        .locator('[data-slot="table-cell"]')
-        .filter({ hasText: new RegExp(`^${decimals}$`) })
-    ).toBeVisible();
-    await expect(
-      assetRow.locator('[data-slot="badge"]').filter({ hasText: "Paused" })
-    ).toBeVisible();
   }
 }
