@@ -103,9 +103,7 @@ describe("Token freeze address", () => {
 
     // PREREQUISITE: Establish token holdings for meaningful freeze testing
     // Ensure sufficient collateral is set before minting to avoid reverts (only if supported)
-    const _createdTokenDetails = await adminClient.token.read({
-      tokenAddress: stablecoinToken.id,
-    });
+    // Read token details if needed; omitted to avoid unused var in typecheck
     try {
       await adminClient.token.updateCollateral({
         contract: stablecoinToken.id,
