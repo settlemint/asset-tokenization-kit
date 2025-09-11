@@ -15,7 +15,6 @@
  * @see {@link @/lib/settlemint/portal} - Portal GraphQL client
  */
 
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
@@ -25,6 +24,7 @@ import { upsert } from "@/orpc/routes/settings/routes/settings.upsert";
 import { grantRole } from "@/orpc/routes/system/access-manager/routes/grant-role";
 import { complianceModuleCreate } from "@/orpc/routes/system/compliance-module/routes/compliance-module.create";
 import { read } from "@/orpc/routes/system/routes/system.read";
+import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";

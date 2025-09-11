@@ -1,6 +1,6 @@
 // @vitest-environment node
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
+import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   DEFAULT_ADMIN,

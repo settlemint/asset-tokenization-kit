@@ -1,7 +1,7 @@
 import { getRoleByFieldName } from "@/lib/constants/roles";
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { ClaimTopic } from "@/orpc/helpers/claims/create-claim";
 import { issueClaim } from "@/orpc/helpers/claims/issue-claim";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";

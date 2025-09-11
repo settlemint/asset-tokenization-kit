@@ -1,4 +1,4 @@
-import type { AccessControl } from "@/lib/fragments/the-graph/access-control-fragment";
+import type { AccessControl } from "@atk/zod/access-control-roles";
 import {
   type EthereumAddress,
   getEthereumAddress,

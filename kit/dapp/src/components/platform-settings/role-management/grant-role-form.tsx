@@ -16,10 +16,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAppForm } from "@/hooks/use-app-form";
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { client, orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { UserSearchResult } from "@/orpc/routes/user/routes/user.search.schema";
+import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Search, Shield } from "lucide-react";
 import { useState } from "react";
