@@ -9,11 +9,12 @@ test.describe.serial("Deposit Creation Validation", () => {
   let adminContext: BrowserContext;
   let adminPages: ReturnType<typeof Pages>;
   let createAssetForm: CreateAssetForm;
+  let adminPage: any;
 
   test.beforeAll(async ({ browser }) => {
     const setupUser = getSetupUser();
     adminContext = await browser.newContext();
-    const adminPage = await adminContext.newPage();
+    adminPage = await adminContext.newPage();
     adminPages = Pages(adminPage);
     createAssetForm = new CreateAssetForm(adminPage);
     await adminPages.signInPage.goto();
@@ -190,17 +191,23 @@ test.describe.serial("Deposit Creation Validation", () => {
     };
     test("Create Deposit asset", async () => {
       const setupUser = getSetupUser();
-      await createAssetForm.fillAssetFields({
+      await adminPage.goto("/");
+      await createAssetForm.openAssetDesigner();
+      await createAssetForm.selectAssetClass("Cash Equivalent");
+      await createAssetForm.selectAssetTypeFromDialog("Deposit");
+      await createAssetForm.fillAssetDetails({
         name: depositData.name,
         symbol: depositData.symbol,
         decimals: depositData.decimals,
         isin: depositData.isin,
+        basePrice: depositData.basePrice,
         country: depositData.country,
-        pincode: setupUser.pincode,
       });
+
       testData.name = depositData.name;
       testData.symbol = depositData.symbol;
       testData.decimals = depositData.decimals;
+      await createAssetForm.completeAssetCreation(setupUser.pincode, "deposit");
       await createAssetForm.verifyAssetCreated({
         name: testData.name,
         symbol: testData.symbol,

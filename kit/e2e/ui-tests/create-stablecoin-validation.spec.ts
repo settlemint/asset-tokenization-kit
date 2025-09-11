@@ -9,11 +9,12 @@ test.describe.serial("Stablecoin Creation Validation", () => {
   let adminContext: BrowserContext;
   let adminPages: ReturnType<typeof Pages>;
   let createAssetForm: CreateAssetForm;
+  let adminPage: any;
 
   test.beforeAll(async ({ browser }) => {
     const setupUser = getSetupUser();
     adminContext = await browser.newContext();
-    const adminPage = await adminContext.newPage();
+    adminPage = await adminContext.newPage();
     adminPages = Pages(adminPage);
     createAssetForm = new CreateAssetForm(adminPage);
     await adminPages.signInPage.goto();
@@ -190,17 +191,26 @@ test.describe.serial("Stablecoin Creation Validation", () => {
     };
     test("Create Stablecoin asset", async () => {
       const setupUser = getSetupUser();
-      await createAssetForm.fillAssetFields({
+      await adminPage.goto("/");
+      await createAssetForm.openAssetDesigner();
+      await createAssetForm.selectAssetClass("Cash Equivalent");
+      await createAssetForm.selectAssetTypeFromDialog("Stablecoin");
+      await createAssetForm.fillAssetDetails({
         name: stablecoinData.name,
         symbol: stablecoinData.symbol,
         decimals: stablecoinData.decimals,
         isin: stablecoinData.isin,
+        basePrice: stablecoinData.basePrice,
         country: stablecoinData.country,
-        pincode: setupUser.pincode,
       });
+
       testData.name = stablecoinData.name;
       testData.symbol = stablecoinData.symbol;
       testData.decimals = stablecoinData.decimals;
+      await createAssetForm.completeAssetCreation(
+        setupUser.pincode,
+        "stablecoin"
+      );
       await createAssetForm.verifyAssetCreated({
         name: testData.name,
         symbol: testData.symbol,
