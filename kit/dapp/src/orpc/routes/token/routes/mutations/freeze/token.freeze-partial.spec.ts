@@ -114,6 +114,19 @@ describe("Token freeze partial", () => {
         amount: from("1000000", stablecoinToken.decimals),
         expiryDays: 30,
       });
+
+      // Wait for collateral to be indexed
+      {
+        const start = Date.now();
+        const timeoutMs = 8000;
+        while (Date.now() - start < timeoutMs) {
+          const t = await adminClient.token.read({
+            tokenAddress: stablecoinToken.id,
+          });
+          if (t.collateral?.collateral) break;
+          await new Promise((r) => setTimeout(r, 500));
+        }
+      }
     }
 
     // SETUP: Mint substantial balance to enable multiple freeze operations without depletion
