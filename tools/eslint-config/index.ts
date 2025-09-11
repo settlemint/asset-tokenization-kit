@@ -266,6 +266,29 @@ export default defineConfig([
   },
 
   // ==========================================================================
+  // 9b. TEST DIRECTORIES - ENSURE TS-AWARE UNUSED VARS
+  // Applies to helpers placed under any test/** folder (not matched by src/**)
+  // ==========================================================================
+  {
+    files: ["**/test/**/*.{ts,mts,cts,tsx}"],
+    plugins: {
+      "@typescript-eslint": tseslint.plugin,
+    },
+    rules: {
+      // Use TS-aware rule and disable the core one in test helpers
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+        },
+      ],
+    },
+  },
+
+  // ==========================================================================
   // 10. CONFIG FILES - MINIMAL RULES
   // ==========================================================================
   {

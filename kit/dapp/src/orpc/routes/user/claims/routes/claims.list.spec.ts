@@ -9,7 +9,7 @@ import {
   registerUserIdentity,
   signInWithUser,
 } from "@test/fixtures/user";
-import { waitForGraphIndexing } from "@test/helpers/test-helpers";
+import { waitUntil } from "@test/helpers/test-helpers";
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe("Claims list (integration)", () => {
@@ -42,8 +42,13 @@ describe("Claims list (integration)", () => {
       throw new Error("Target test user does not have a wallet");
     }
 
-    // Wait for graph sync to ensure identity is indexed
-    await waitForGraphIndexing();
+    // Wait until identity is indexed in the subgraph
+    await waitUntil({
+      get: () => adminClient.account.read({ wallet: targetUserData.wallet }),
+      until: (account) => Boolean(account?.identity),
+      timeoutMs: 60_000,
+      intervalMs: 1000,
+    });
 
     // Get the target user's identity address for issuing claims
     const targetAccount = await adminClient.account.read({
@@ -85,8 +90,13 @@ describe("Claims list (integration)", () => {
       },
     });
 
-    // Wait for graph sync after setting up claims
-    await waitForGraphIndexing();
+    // Wait until both claims are visible in the subgraph
+    await waitUntil({
+      get: () => adminClient.account.read({ wallet: targetUserData.wallet }),
+      until: (account) => (account?.claims?.length ?? 0) >= 2,
+      timeoutMs: 60_000,
+      intervalMs: 1000,
+    });
   });
 
   it("should successfully list all claims when user has identityManager role", async () => {
@@ -109,8 +119,27 @@ describe("Claims list (integration)", () => {
   });
 
   it("should successfully list filtered claims when user is a trusted issuer", async () => {
-    // Wait for additional graph sync to ensure trusted issuer indexing is complete
-    await waitForGraphIndexing();
+    // Debug: ensure system exists and trusted issuer row includes collateral for this issuer
+    const systems = await adminClient.system.list({});
+    expect(systems.length).toBeGreaterThan(0);
+    const issuerMe = await issuerClient.account.me({});
+    const issuerIdentity = issuerMe?.identity;
+    expect(issuerIdentity).toBeDefined();
+    const trustedIssuers = await adminClient.system.trustedIssuers.list({});
+    const tiMatch = trustedIssuers.find(
+      (t) => t.id?.toLowerCase() === issuerIdentity?.toLowerCase()
+    );
+    expect(tiMatch).toBeDefined();
+    expect(tiMatch?.claimTopics.map((t) => t.name)).toContain("collateral");
+
+    // Wait until issuer can see at least the collateral claim
+    await waitUntil({
+      get: () =>
+        issuerClient.user.claims.list({ wallet: targetUserData.wallet }),
+      until: (result) => result.claims.some((c) => c.name === "collateral"),
+      timeoutMs: 60_000,
+      intervalMs: 1000,
+    });
 
     // Issuer user should only see claims for topics they're trusted issuer for
     const result = await issuerClient.user.claims.list({
@@ -141,7 +170,12 @@ describe("Claims list (integration)", () => {
       throw new Error("KYC test user does not have a wallet");
     }
 
-    await waitForGraphIndexing();
+    await waitUntil({
+      get: () => adminClient.account.read({ wallet: kycUserData.wallet }),
+      until: (account) => Boolean(account?.identity),
+      timeoutMs: 60_000,
+      intervalMs: 1000,
+    });
 
     const kycAccount = await adminClient.account.read({
       wallet: kycUserData.wallet,
@@ -165,7 +199,14 @@ describe("Claims list (integration)", () => {
       },
     });
 
-    await waitForGraphIndexing();
+    await waitUntil({
+      get: () => adminClient.account.read({ wallet: kycUserData.wallet }),
+      until: (account) =>
+        (account?.claims?.filter((c) => c.name === "knowYourCustomer").length ??
+          0) >= 1,
+      timeoutMs: 60_000,
+      intervalMs: 1000,
+    });
 
     // Issuer should see empty claims array for this user
     const result = await issuerClient.user.claims.list({
