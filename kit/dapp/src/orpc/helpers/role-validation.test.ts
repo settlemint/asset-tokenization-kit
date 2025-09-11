@@ -2,9 +2,10 @@
  * @vitest-environment node
  */
 
-import type {
-  AccessControl,
-  AccessControlRoles,
+import {
+  roles,
+  type AccessControl,
+  type AccessControlRoles,
 } from "@atk/zod/access-control-roles";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { zeroAddress } from "viem";
@@ -265,87 +266,28 @@ describe("role-validation", () => {
 
     test("should handle all possible roles from AccessControlRoles type", () => {
       // Test that all roles defined in the initial state are handled
-      const allRoles: AccessControlRoles[] = [
-        "addonManager",
-        "addonModule",
-        "addonRegistryModule",
-        "admin",
-        "auditor",
-        "burner",
-        "capManagement",
-        "claimPolicyManager",
-        "claimIssuer",
-        "complianceAdmin",
-        "complianceManager",
-        "custodian",
-        "emergency",
-        "forcedTransfer",
-        "freezer",
-        "fundsManager",
-        "globalListManager",
-        "governance",
-        "identityManager",
-        "identityRegistryModule",
-        "minter",
-        "organisationIdentityManager",
-        "pauser",
-        "recovery",
-        "saleAdmin",
-        "signer",
-        "supplyManagement",
-        "systemManager",
-        "systemModule",
-        "tokenAdmin",
-        "tokenFactoryModule",
-        "tokenFactoryRegistryModule",
-        "tokenManager",
-        "trustedIssuersMetaRegistryModule",
-        "verificationAdmin",
-      ];
+
+      const rolesData: Record<
+        AccessControlRoles,
+        { id: EthereumAddress; isContract: boolean }[]
+      > = {} as Record<
+        AccessControlRoles,
+        { id: EthereumAddress; isContract: boolean }[]
+      >;
+      roles.map((role: AccessControlRoles) => {
+        rolesData[role] = [{ id: mockWallet, isContract: false }];
+      });
 
       // Create a valid AccessControl object with all roles containing the mock wallet
       const accessControl: AccessControl = {
         id: zeroAddress,
-        addonManager: [{ id: mockWallet, isContract: false }],
-        addonModule: [{ id: mockWallet, isContract: false }],
-        addonRegistryModule: [{ id: mockWallet, isContract: false }],
-        admin: [{ id: mockWallet, isContract: false }],
-        auditor: [{ id: mockWallet, isContract: false }],
-        burner: [{ id: mockWallet, isContract: false }],
-        capManagement: [{ id: mockWallet, isContract: false }],
-        claimPolicyManager: [{ id: mockWallet, isContract: false }],
-        claimIssuer: [{ id: mockWallet, isContract: false }],
-        complianceAdmin: [{ id: mockWallet, isContract: false }],
-        complianceManager: [{ id: mockWallet, isContract: false }],
-        custodian: [{ id: mockWallet, isContract: false }],
-        emergency: [{ id: mockWallet, isContract: false }],
-        forcedTransfer: [{ id: mockWallet, isContract: false }],
-        freezer: [{ id: mockWallet, isContract: false }],
-        fundsManager: [{ id: mockWallet, isContract: false }],
-        globalListManager: [{ id: mockWallet, isContract: false }],
-        governance: [{ id: mockWallet, isContract: false }],
-        identityManager: [{ id: mockWallet, isContract: false }],
-        identityRegistryModule: [{ id: mockWallet, isContract: false }],
-        minter: [{ id: mockWallet, isContract: false }],
-        organisationIdentityManager: [{ id: mockWallet, isContract: false }],
-        pauser: [{ id: mockWallet, isContract: false }],
-        recovery: [{ id: mockWallet, isContract: false }],
-        saleAdmin: [{ id: mockWallet, isContract: false }],
-        signer: [{ id: mockWallet, isContract: false }],
-        supplyManagement: [{ id: mockWallet, isContract: false }],
-        systemManager: [{ id: mockWallet, isContract: false }],
-        systemModule: [{ id: mockWallet, isContract: false }],
-        tokenAdmin: [{ id: mockWallet, isContract: false }],
-        tokenFactoryModule: [{ id: mockWallet, isContract: false }],
-        tokenFactoryRegistryModule: [{ id: mockWallet, isContract: false }],
-        tokenManager: [{ id: mockWallet, isContract: false }],
-        verificationAdmin: [{ id: mockWallet, isContract: false }],
+        ...rolesData,
       };
 
       const result = mapUserRoles(mockWallet, accessControl);
 
       // All roles should be true
-      allRoles.forEach((role) => {
+      roles.forEach((role: AccessControlRoles) => {
         expect(result[role]).toBe(true);
       });
     });
