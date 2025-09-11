@@ -52,7 +52,11 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
   token.type = getTokenType(tokenFactory);
   token.createdAt = event.block.timestamp;
   token.createdBy = fetchAccount(event.transaction.from).id;
-  token.accessControl = fetchAccessControl(event.params.accessManager).id;
+
+  const accessControl = fetchAccessControl(event.params.accessManager);
+  token.accessControl = accessControl.id;
+  accessControl.token = token.id;
+  accessControl.save();
 
   // Set the token extensions dynamically based on detected interfaces
   token.extensions = getTokenExtensions(event.params.interfaces);

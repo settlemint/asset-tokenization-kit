@@ -19,6 +19,8 @@ type Account @entity(immutable: false) {
   isLost: Boolean!
   # Reference to the new account created to recover this lost account
   recoveredAccount: Account
+  # Total number of roles this account has across all contracts
+  rolesCount: Int!
   # Statistical data for this account (aggregated metrics)
   stats: AccountStatsState @derivedFrom(field: "account")
 }
@@ -73,6 +75,8 @@ type SystemAccessManager @entity(immutable: false) {
 type AccessControl @entity(immutable: false) {
   # Unique identifier for the access control configuration
   id: Bytes!
+  # Token this access control belongs to (nullable, only for token access controls)
+  token: Token
 
   # Core Admin Role - highest level administrative access
   admin: [Account!]!
@@ -154,6 +158,17 @@ type AccessControl @entity(immutable: false) {
   signer: [Account!]!
   # Manages global allow/block lists
   globalListManager: [Account!]!
+}
+
+type TokenRole @entity(immutable: false) {
+  # Composite key: token address + account address
+  id: Bytes!
+  # Token this role assignment is for
+  token: Token!
+  # Account that has roles on this token
+  account: Account!
+  # Number of roles this account has on this specific token
+  rolesCount: Int!
 }
 
 type System @entity(immutable: false) {
@@ -797,6 +812,8 @@ type Token @entity(immutable: false) {
   basePriceClaim: IdentityClaim
   # Compliance module configurations
   complianceModuleConfigs: [TokenComplianceModuleConfig!]! @derivedFrom(field: "token")
+  # Role assignments for this token
+  tokenRoles: [TokenRole!]! @derivedFrom(field: "token")
   # Statistical data
   stats: TokenStatsState @derivedFrom(field: "token")
   # Distribution statistics

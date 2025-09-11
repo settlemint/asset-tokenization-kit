@@ -12,6 +12,7 @@ export function fetchAccount(address: Address): Account {
       account.isContract = false;
     }
     account.isLost = false;
+    account.rolesCount = 0;
     account.save();
   }
 
