@@ -57,6 +57,26 @@
       }
     }
   },
+  "permissions": {
+    "table": {
+      "columns": {
+        "name": "Name",
+        "role": "Roles"
+      },
+      "errors": {
+        "navigationFailed": "Failed to navigate to user details",
+        "loadFailed": "Failed to load users. Please try again."
+      },
+      "search": {
+        "placeholder": "Search by wallet address..."
+      },
+      "emptyState": {
+        "title": "No users found",
+        "description": "No users have been registered yet.",
+        "loading": "Loading users..."
+      }
+    }
+  },
   "tabs": {
     "details": "Details",
     "claims": "Claims"

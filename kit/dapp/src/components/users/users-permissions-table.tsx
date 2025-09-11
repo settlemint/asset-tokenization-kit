@@ -1,20 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import type { ColumnDef } from "@tanstack/react-table";
+import { type ColumnDef } from "@tanstack/react-table";
 import { Users } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-import { UserDisplayCell } from "@/components/data-table/cells/user-display-cell";
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
-import { Badge } from "@/components/ui/badge";
 import { orpc } from "@/orpc/orpc-client";
-import type { User } from "@/orpc/routes/user/routes/user.me.schema";
+import type { User as UserMe } from "@/orpc/routes/user/routes/user.me.schema";
 import { toast } from "sonner";
+
+interface User extends Omit<UserMe, "roles"> {
+  roles: string[];
+}
 
 const columnHelper = createStrictColumnHelper<User>();
 
@@ -32,18 +34,10 @@ export function UsersPermissionsTable() {
   const { t } = useTranslation("user");
   const router = useRouter();
 
-  // Use local pagination state for server-side pagination
-  const [pagination, setPagination] = useState({
-    pageIndex: 0,
-    pageSize: 20,
-  });
-
   // Fetch users data using ORPC with server-side pagination
   const { data, isLoading, error } = useQuery(
     orpc.user.list.queryOptions({
       input: {
-        limit: pagination.pageSize,
-        offset: pagination.pageIndex * pagination.pageSize,
         orderBy: "createdAt",
         orderDirection: "desc",
         filters: {
@@ -54,8 +48,15 @@ export function UsersPermissionsTable() {
   );
 
   // Extract users and total from the paginated response
-  const users = data?.items ?? [];
-  const totalCount = data?.total ?? 0;
+  const users =
+    data?.items.map(
+      (user): User => ({
+        ...user,
+        roles: Object.entries(user.roles)
+          .filter(([_, hasRole]) => hasRole)
+          .map(([role]) => toLabel(role)),
+      })
+    ) ?? [];
 
   // Handle row click to navigate to user detail
   const handleRowClick = (user: User) => {
@@ -66,7 +67,7 @@ export function UsersPermissionsTable() {
           params: { userId: user.id },
         });
       } catch {
-        toast.error(t("management.table.errors.navigationFailed"));
+        toast.error(t("permissions.table.errors.navigationFailed"));
       }
     })();
   };
@@ -77,36 +78,38 @@ export function UsersPermissionsTable() {
   const columns = useMemo(
     () =>
       withAutoFeatures([
-        columnHelper.display({
-          id: "userDisplay",
-          header: t("management.table.columns.name"),
-          cell: ({ row }) => <UserDisplayCell user={row.original} />,
+        columnHelper.accessor("wallet", {
+          header: t("permissions.table.columns.name"),
           meta: {
-            displayName: t("management.table.columns.name"),
-            type: "text",
+            displayName: t("permissions.table.columns.name"),
+            type: "address",
           },
         }),
-        columnHelper.display({
+        columnHelper.accessor("roles", {
           id: "roles",
-          header: t("management.table.columns.role"),
-          cell: ({ row }) => {
-            const roles = Object.entries(row.original.roles)
-              .filter(([_, hasRole]) => hasRole)
-              .map(([r]) => r);
-            if (!roles?.length) return <span>-</span>;
-            return (
-              <div className="flex flex-wrap gap-1">
-                {roles.map((r) => (
-                  <Badge key={r} variant="secondary">
-                    {toLabel(r)}
-                  </Badge>
-                ))}
-              </div>
+          header: t("permissions.table.columns.role"),
+          filterFn: (
+            row,
+            _id,
+            value: {
+              operator: "include";
+              values: [string[]];
+            }
+          ) => {
+            const roles = new Set(
+              row.original.roles.map((item) => item.toLowerCase())
+            );
+            return value.values[0]?.every((valueFilter) =>
+              roles.has(valueFilter.toLowerCase())
             );
           },
           meta: {
-            displayName: t("management.table.columns.role"),
-            type: "text",
+            displayName: t("permissions.table.columns.role"),
+            type: "multiOption",
+            transformOptionFn: (value) => ({
+              label: value,
+              value: value,
+            }),
           },
         }),
       ] as ColumnDef<User>[]),
@@ -119,7 +122,7 @@ export function UsersPermissionsTable() {
       <ComponentErrorBoundary componentName="Users Table">
         <div className="flex items-center justify-center p-8">
           <p className="text-muted-foreground">
-            {t("management.table.errors.loadFailed")}
+            {t("permissions.table.errors.loadFailed")}
           </p>
         </div>
       </ComponentErrorBoundary>
@@ -127,45 +130,31 @@ export function UsersPermissionsTable() {
   }
 
   return (
-    <ComponentErrorBoundary componentName="Users Table">
+    <ComponentErrorBoundary componentName="User Permissions Table">
       <DataTable
-        name="users"
+        name="users-permissions"
         data={users}
         columns={columns}
         isLoading={isLoading}
-        serverSidePagination={{
-          enabled: true,
-          totalCount,
-        }}
-        externalState={{
-          pagination,
-          onPaginationChange: setPagination,
-        }}
         urlState={{
           enabled: false, // Disable URL state since we're managing it manually
         }}
         advancedToolbar={{
-          enableGlobalSearch: false,
-          enableFilters: true, // Re-enable filters now that columns are properly accessible
+          enableGlobalSearch: true,
+          enableFilters: true,
           enableExport: true,
           enableViewOptions: true,
-          placeholder: t("management.table.search.placeholder"),
+          placeholder: t("permissions.table.search.placeholder"),
         }}
         pagination={{
           enablePagination: true,
         }}
         initialPageSize={20}
-        initialSorting={[
-          {
-            id: "created",
-            desc: true,
-          },
-        ]}
         customEmptyState={{
-          title: t("management.table.emptyState.title"),
+          title: t("permissions.table.emptyState.title"),
           description: isLoading
-            ? t("management.table.emptyState.loading")
-            : t("management.table.emptyState.description"),
+            ? t("permissions.table.emptyState.loading")
+            : t("permissions.table.emptyState.description"),
           icon: Users,
         }}
         onRowClick={handleRowClick}
