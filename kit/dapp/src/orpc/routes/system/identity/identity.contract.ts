@@ -2,6 +2,7 @@ import { baseContract } from "@/orpc/procedures/base.contract";
 import { AccountSchema } from "@/orpc/routes/account/routes/account.read.schema";
 import { IdentityCreateSchema } from "@/orpc/routes/system/identity/routes/identity.create.schema";
 import { IdentityRegisterSchema } from "@/orpc/routes/system/identity/routes/identity.register.schema";
+import claimsContract from "@/orpc/routes/system/identity/claims/claims.contract";
 
 const TAGS = ["system", "identity"];
 
@@ -34,4 +35,5 @@ const identityRegister = baseContract
 export const identityContract = {
   create: identityCreate,
   register: identityRegister,
+  claims: claimsContract,
 };

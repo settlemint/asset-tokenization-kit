@@ -11,6 +11,7 @@ import {
 } from "@test/fixtures/user";
 import { waitUntil } from "@test/helpers/test-helpers";
 import { beforeAll, describe, expect, it } from "vitest";
+import type { IdentityClaim } from "@atk/zod/claim";
 
 describe("Claims list (integration)", () => {
   let adminClient: ReturnType<typeof getOrpcClient>;
@@ -58,9 +59,9 @@ describe("Claims list (integration)", () => {
       throw new Error("Target test user does not have an identity setup");
     }
 
-    // Set up test claims for testing filtering
-    // Issue a KYC claim that only admin can see
-    await adminClient.user.claims.issue({
+    // Set up test claims (no read filtering applied by API)
+    // Issue a KYC claim
+    await adminClient.system.identity.claims.issue({
       targetIdentityAddress: targetAccount.identity,
       claim: {
         topic: "knowYourCustomer",
@@ -74,8 +75,8 @@ describe("Claims list (integration)", () => {
       },
     });
 
-    // Issue a collateral claim that issuer can see
-    await issuerClient.user.claims.issue({
+    // Issue a collateral claim
+    await issuerClient.system.identity.claims.issue({
       targetIdentityAddress: targetAccount.identity,
       claim: {
         topic: "collateral",
@@ -101,7 +102,7 @@ describe("Claims list (integration)", () => {
 
   it("should successfully list all claims when user has identityManager role", async () => {
     // Admin user should see ALL claims (KYC + collateral)
-    const result = await adminClient.user.claims.list({
+    const result = await adminClient.system.identity.claims.list({
       wallet: targetUserData.wallet,
     });
 
@@ -113,14 +114,14 @@ describe("Claims list (integration)", () => {
     expect(result.wallet).toBe(targetUserData.wallet);
 
     // Admin should see both KYC and collateral claims
-    const claimTopics = result.claims.map((claim) => claim.name);
+    const claimTopics = result.claims.map((claim: IdentityClaim) => claim.name);
     expect(claimTopics).toContain("knowYourCustomer");
     expect(claimTopics).toContain("collateral");
   });
 
-  it("should successfully list filtered claims when user is a trusted issuer", async () => {
-    // Issuer user should only see claims for topics they're trusted issuer for
-    const result = await issuerClient.user.claims.list({
+  it("should list all claims regardless of issuer trust", async () => {
+    // Issuer user should see all claims (public on-chain)
+    const result = await issuerClient.system.identity.claims.list({
       wallet: targetUserData.wallet,
     });
 
@@ -131,78 +132,18 @@ describe("Claims list (integration)", () => {
     expect(result.isRegistered).toBe(true);
     expect(result.wallet).toBe(targetUserData.wallet);
 
-    // Issuer should only see collateral claims, not KYC claims
-    const claimTopics = result.claims.map((claim) => claim.name);
+    // Issuer should see both KYC and collateral claims
+    const claimTopics = result.claims.map((claim: IdentityClaim) => claim.name);
     expect(claimTopics).toContain("collateral");
-    expect(claimTopics).not.toContain("knowYourCustomer");
+    expect(claimTopics).toContain("knowYourCustomer");
   });
 
-  it("should not show claims for topics user is not trusted issuer for", async () => {
-    // Create another test user and issue only KYC claims (which issuer cannot see)
-    const kycOnlyUser = await createTestUser("kyc-only-user");
-    const kycUserData = await getUserData(kycOnlyUser.user);
-
-    if (kycUserData.wallet) {
-      await registerUserIdentity(adminClient, kycUserData.wallet);
-    } else {
-      throw new Error("KYC test user does not have a wallet");
-    }
-
-    await waitUntil({
-      get: () => adminClient.account.read({ wallet: kycUserData.wallet }),
-      until: (account) => Boolean(account?.identity),
-      timeoutMs: 60_000,
-      intervalMs: 1000,
-    });
-
-    const kycAccount = await adminClient.account.read({
-      wallet: kycUserData.wallet,
-    });
-    if (!kycAccount?.identity) {
-      throw new Error("KYC test user does not have an identity setup");
-    }
-
-    // Issue only KYC claim (admin only)
-    await adminClient.user.claims.issue({
-      targetIdentityAddress: kycAccount.identity,
-      claim: {
-        topic: "knowYourCustomer",
-        data: {
-          claim: "kyc-verified",
-        },
-      },
-      walletVerification: {
-        verificationType: VerificationType.pincode,
-        secretVerificationCode: "123456",
-      },
-    });
-
-    await waitUntil({
-      get: () => adminClient.account.read({ wallet: kycUserData.wallet }),
-      until: (account) =>
-        (account?.claims?.filter((c) => c.name === "knowYourCustomer").length ??
-          0) >= 1,
-      timeoutMs: 60_000,
-      intervalMs: 1000,
-    });
-
-    // Issuer should see empty claims array for this user
-    const result = await issuerClient.user.claims.list({
-      wallet: kycUserData.wallet,
-    });
-
-    expect(result).toBeDefined();
-    expect(result.claims).toBeInstanceOf(Array);
-    expect(result.claims).toHaveLength(0); // No claims visible to issuer
-    expect(result.identity).toBeDefined();
-    expect(result.isRegistered).toBe(true);
-    expect(result.wallet).toBe(kycUserData.wallet);
-  });
+  // No per-topic filtering: claims are public on-chain; issuer sees all
 
   it("should fail when user doesn't have required role", async () => {
     // Investor user should NOT have identityManager or claimIssuer role
     await expect(
-      investorClient.user.claims.list({
+      investorClient.system.identity.claims.list({
         wallet: targetUserData.wallet,
       })
     ).rejects.toThrow(

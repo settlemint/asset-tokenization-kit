@@ -15,7 +15,6 @@ import {
   ActionsListResponseSchema,
   ActionsListSchema,
 } from "@/orpc/routes/actions/routes/actions.list.schema";
-import claimsContract from "@/orpc/routes/user/claims/claims.contract";
 import { kycContract } from "@/orpc/routes/user/kyc/kyc.contract";
 import { createWalletContract } from "@/orpc/routes/user/routes/mutations/create-wallet.contract";
 import {
@@ -204,6 +203,5 @@ export const userContract = {
   statsGrowthOverTime,
   statsUserCount,
   kyc: kycContract,
-  claims: claimsContract,
   createWallet: createWalletContract,
 };

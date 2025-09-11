@@ -1,14 +1,8 @@
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import {
-  filterClaimsForUser,
-  identityPermissionsMiddleware,
-} from "@/orpc/middlewares/auth/identity-permissions.middleware";
-import { trustedIssuerMiddleware } from "@/orpc/middlewares/auth/trusted-issuer.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { fetchUserIdentity } from "@/orpc/routes/user/utils/identity.util";
-import { ClaimsListInputSchema } from "./claims.list.schema";
 
 /**
  * Claims list route handler.
@@ -31,7 +25,7 @@ import { ClaimsListInputSchema } from "./claims.list.schema";
  *
  * Authentication: Required (uses authenticated router)
  * Permissions: Requires "list" permission on users resource
- * Method: GET /user/claims/list
+ * Method: GET /system/identity/claims/list
  *
  * @param input - Query parameters with either {userId} or {wallet}
  * @param context - Request context with database and TheGraph connections
@@ -44,12 +38,12 @@ import { ClaimsListInputSchema } from "./claims.list.schema";
  * @example
  * ```typescript
  * // Get claims by wallet address
- * const claims = await orpc.user.claims.list.query({
+ * const claims = await orpc.system.identity.claims.list.query({
  *   wallet: "0x1234567890123456789012345678901234567890"
  * });
  * ```
  */
-export const list = authRouter.user.claims.list
+export const list = authRouter.system.identity.claims.list
   .use(systemMiddleware)
   .use(theGraphMiddleware)
   .use(
@@ -60,12 +54,6 @@ export const list = authRouter.user.claims.list
       },
     })
   )
-  .use(trustedIssuerMiddleware)
-  .use(
-    identityPermissionsMiddleware<typeof ClaimsListInputSchema>({
-      getTargetUserId: () => undefined,
-    })
-  )
   .handler(async ({ context, input }) => {
     // Fetch identity data from TheGraph
     const identityResult = await fetchUserIdentity({
@@ -73,14 +61,8 @@ export const list = authRouter.user.claims.list
       context,
     });
 
-    // Filter claims based on user's permissions
-    const filteredClaims = filterClaimsForUser(
-      identityResult.claims ?? [],
-      context.identityPermissions
-    );
-
     return {
-      claims: filteredClaims,
+      claims: identityResult.claims ?? [],
       identity: identityResult.identity,
       isRegistered: identityResult.isRegistered,
       wallet: input.wallet,

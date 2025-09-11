@@ -1,10 +1,5 @@
 import { kycProfiles, user } from "@/lib/db/schema";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import {
-  filterClaimsForUser,
-  identityPermissionsMiddleware,
-} from "@/orpc/middlewares/auth/identity-permissions.middleware";
-import { trustedIssuerMiddleware } from "@/orpc/middlewares/auth/trusted-issuer.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
@@ -15,7 +10,6 @@ import {
   buildUserWithoutWallet,
 } from "@/orpc/routes/user/utils/user-response.util";
 import { eq } from "drizzle-orm";
-import { UserReadInputSchema } from "./user.read.schema";
 
 /**
  * User read route handler.
@@ -65,13 +59,6 @@ export const read = authRouter.user.read
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },
-    })
-  )
-  .use(trustedIssuerMiddleware)
-  .use(
-    identityPermissionsMiddleware<typeof UserReadInputSchema>({
-      getTargetUserId: ({ input }) =>
-        "userId" in input ? input.userId : undefined,
     })
   )
   .use(databaseMiddleware)
@@ -132,18 +119,12 @@ export const read = authRouter.user.read
       context,
     });
 
-    // Filter claims based on user's permissions
-    const filteredClaims = filterClaimsForUser(
-      identityResult.claims ?? [],
-      context.identityPermissions
-    );
-
     // Transform result to include human-readable role and identity data
     return buildUserWithIdentity({
       userData,
       kyc,
       identity: identityResult.identity,
-      claims: filteredClaims,
+      claims: identityResult.claims,
       isRegistered: identityResult.isRegistered,
     });
   });

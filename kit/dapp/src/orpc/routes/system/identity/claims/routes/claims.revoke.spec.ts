@@ -62,7 +62,7 @@ describe("Claims revoke (integration)", () => {
 
   it("should successfully revoke a collateral claim when user has proper permissions", async () => {
     // First issue a claim to later revoke
-    const issueResult = await issuerClient.user.claims.issue({
+    const issueResult = await issuerClient.system.identity.claims.issue({
       targetIdentityAddress,
       claim: {
         topic: "collateral",
@@ -88,7 +88,7 @@ describe("Claims revoke (integration)", () => {
     await waitForGraphIndexing();
 
     // Now revoke the claim by topic
-    const result = await issuerClient.user.claims.revoke({
+    const result = await issuerClient.system.identity.claims.revoke({
       targetIdentityAddress,
       claimTopic: "collateral",
       walletVerification: {
@@ -105,7 +105,7 @@ describe("Claims revoke (integration)", () => {
   it("should fail when user lacks claimIssuer role", async () => {
     // Investor user should NOT have claimIssuer role
     await expect(
-      investorClient.user.claims.revoke({
+      investorClient.system.identity.claims.revoke({
         targetIdentityAddress,
         claimTopic: "collateral",
         walletVerification: {
@@ -120,7 +120,7 @@ describe("Claims revoke (integration)", () => {
 
   it("should fail when user has claimIssuer role but is not a trusted issuer for the claim topic", async () => {
     // Admin issues a KYC claim first so that it exists on-chain
-    await adminClient.user.claims.issue({
+    await adminClient.system.identity.claims.issue({
       targetIdentityAddress,
       claim: {
         topic: "knowYourCustomer",
@@ -136,7 +136,7 @@ describe("Claims revoke (integration)", () => {
 
     // Issuer (not trusted for KYC) attempts to revoke
     await expect(
-      issuerClient.user.claims.revoke({
+      issuerClient.system.identity.claims.revoke({
         targetIdentityAddress,
         claimTopic: "knowYourCustomer",
         walletVerification: {
@@ -144,6 +144,8 @@ describe("Claims revoke (integration)", () => {
           secretVerificationCode: "123456",
         },
       })
-    ).rejects.toThrow("You are not authorized to revoke claims for topic");
+    ).rejects.toThrow(
+      "You are not a trusted issuer for topic: knowYourCustomer"
+    );
   });
 });

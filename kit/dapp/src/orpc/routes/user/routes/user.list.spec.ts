@@ -329,7 +329,7 @@ describe("User list", () => {
   });
 
   describe("Identity permissions middleware", () => {
-    it("forbids users without identity manager role or trusted issuer status", async () => {
+    it("forbids users without identity manager or trusted issuer role", async () => {
       // Regular users without any special permissions cannot see user data
       const headers = await signInWithUser(unauthorizedUser.user);
       const client = getOrpcClient(headers);

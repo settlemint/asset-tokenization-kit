@@ -1,5 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+// import type { Context } from "@/orpc/context/context";
 import { baseRouter } from "@/orpc/procedures/base.router";
+import { getAddress } from "viem";
 import z from "zod";
 
 /**
@@ -37,17 +39,18 @@ const TrustedIssuerTopicsResponseSchema = z.object({
 });
 
 /**
- * Middleware to inject the user's trusted issuer topics into the request context.
+ * Creates middleware to validate trusted issuer permissions for claim topics.
  *
  * This middleware fetches the claim topics that the authenticated user is authorized
- * to issue claims for as a trusted issuer. This is used for authorization in identity
- * management workflows where users should only see claims for topics they can verify.
+ * to issue claims for as a trusted issuer. It can optionally validate against a
+ * specific topic from the request input.
  *
  * **Key Difference from userClaimsMiddleware:**
  * - userClaimsMiddleware: Gets claims the user HAS on their identity (verification status)
  * - trustedIssuerMiddleware: Gets topics the user can ISSUE claims for (authorization scope)
  *
  * **Use Cases:**
+ * - Validating issuer permissions before claim issuance
  * - Identity managers viewing all user claims
  * - KYC officers viewing only KYC-related claims
  * - AML officers viewing only AML-related claims
@@ -58,48 +61,58 @@ const TrustedIssuerTopicsResponseSchema = z.object({
  * the user is authorized to issue claims for.
  * Adds `userIssuerIdentity: string` to context containing the user's
  * identity contract address.
+ * Adds `canIssueTopic: boolean` to context when topicPath is provided, indicating
+ * if the user can issue claims for the requested topic.
  *
  * **Validation:**
- * Throws UNAUTHORIZED if user is not a trusted issuer (no identity contract found).
+ * When topicPath is provided and requireTopic is true, throws FORBIDDEN if user
+ * is not authorized for the specific topic.
  * Throws INTERNAL_SERVER_ERROR if unable to verify trusted issuer status.
  *
  * **Middleware Dependencies:**
  * - Requires theGraphMiddleware to be called first
  * - Works with or without authentication (graceful fallback)
  *
+ * @param options - Configuration options for the middleware
+ * @param options.topicPath - Optional path to the topic in the input (e.g., "claim.topic")
+ * @param options.requireTopic - If true, throws error when user lacks permission for the topic
  * @returns The middleware function that extends context with trusted issuer topics
  *
  * @example
  * ```typescript
- * // User who is a trusted issuer for KYC
+ * // Basic usage - just fetch issuer topics
  * const route = baseRouter
  *   .use(theGraphMiddleware)
- *   .use(trustedIssuerMiddleware)
+ *   .use(trustedIssuerMiddleware())
  *   .handler(({ context }) => {
- *     console.log(context.userTrustedIssuerTopics); // ["kyc"]
- *     console.log(context.userIssuerIdentity); // "0x123...abc"
+ *     console.log(context.userTrustedIssuerTopics); // ["kyc", "aml"]
  *   });
  *
- * // User who is not a trusted issuer
- * const route = baseRouter
+ * // Validate specific topic from input
+ * const issueClaimRoute = baseRouter
  *   .use(theGraphMiddleware)
- *   .use(trustedIssuerMiddleware)
- *   .handler(({ context }) => {
- *     console.log(context.userTrustedIssuerTopics); // []
- *     console.log(context.userIssuerIdentity); // undefined
+ *   .use(trustedIssuerMiddleware({
+ *     topicPath: "claim.topic",
+ *     requireTopic: true
+ *   }))
+ *   .input(z.object({
+ *     claim: z.object({
+ *       topic: z.string()
+ *     })
+ *   }))
+ *   .handler(({ context, input }) => {
+ *     // If we get here, user is authorized for input.claim.topic
+ *     console.log(context.canIssueTopic); // true
  *   });
  * ```
  */
-export const trustedIssuerMiddleware = baseRouter.middleware(
-  async ({ next, context, errors }) => {
+export const trustedIssuerMiddleware = <TInput>(options: {
+  selectTopic: (input: Readonly<TInput>) => string | undefined;
+}) =>
+  baseRouter.middleware(async ({ next, context, errors }, input: TInput) => {
     // If user is not authenticated, provide empty array (graceful fallback)
     if (!context.auth) {
-      return await next({
-        context: {
-          userTrustedIssuerTopics: [] as string[],
-          userIssuerIdentity: undefined,
-        },
-      });
+      throw errors.UNAUTHORIZED({ message: "User not authenticated" });
     }
 
     const { theGraphClient } = context;
@@ -139,10 +152,29 @@ export const trustedIssuerMiddleware = baseRouter.middleware(
       issuer.claimTopics.map((topic) => topic.name)
     );
 
+    const requestedTopic = options.selectTopic(input);
+    if (requestedTopic && !userTrustedIssuerTopics.includes(requestedTopic)) {
+      throw errors.FORBIDDEN({
+        message: `You are not a trusted issuer for topic: ${requestedTopic}`,
+        data: {
+          requestedTopic,
+          authorizedTopics: userTrustedIssuerTopics,
+        },
+      });
+    }
+
     // Extract the issuer's identity contract address
     // The subgraph design ensures at most one TrustedIssuer entity per identity
     // (multiple registries update the same entity, not create new ones)
-    const userIssuerIdentity: string | undefined = trustedIssuers[0]?.id;
+    const userIssuerIdentity = trustedIssuers[0]?.id
+      ? getAddress(trustedIssuers[0].id)
+      : undefined;
+
+    if (!userIssuerIdentity) {
+      throw errors.UNAUTHORIZED({
+        message: "User does not have an issuer identity",
+      });
+    }
 
     return await next({
       context: {
@@ -150,5 +182,4 @@ export const trustedIssuerMiddleware = baseRouter.middleware(
         userIssuerIdentity,
       },
     });
-  }
-);
+  });

@@ -1,6 +1,6 @@
-import { issue } from "@/orpc/routes/user/claims/routes/claims.issue";
-import { list } from "@/orpc/routes/user/claims/routes/claims.list";
-import { revoke } from "@/orpc/routes/user/claims/routes/claims.revoke";
+import { issue } from "@/orpc/routes/system/identity/claims/routes/claims.issue";
+import { list } from "@/orpc/routes/system/identity/claims/routes/claims.list";
+import { revoke } from "@/orpc/routes/system/identity/claims/routes/claims.revoke";
 
 /**
  * Claims router module.
@@ -10,9 +10,9 @@ import { revoke } from "@/orpc/routes/user/claims/routes/claims.revoke";
  * under the user router.
  *
  * Current routes:
- * - list: GET /user/claims/list - Retrieve claims for a specific user
- * - issue: POST /user/claims/issue - Issue a new claim to a user's identity
- * - revoke: POST /user/claims/revoke - Revoke an existing claim from a user's identity
+ * - list: GET /system/identity/claims/list - Retrieve claims for a specific identity
+ * - issue: POST /system/identity/claims/issue - Issue a new claim to an identity
+ * - revoke: POST /system/identity/claims/revoke - Revoke an existing claim from an identity
  *
  * The router provides focused claim management operations without the overhead
  * of full user profile data, making it ideal for claims-specific UI components

@@ -1,47 +1,18 @@
-import { portalGraphql } from "@/lib/settlemint/portal";
+// Revoke flow handled via helper
+import { revokeClaim } from "@/orpc/helpers/claims/revoke-claim";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import {
-  canWriteClaims,
-  identityPermissionsMiddleware,
-} from "@/orpc/middlewares/auth/identity-permissions.middleware";
 import { trustedIssuerMiddleware } from "@/orpc/middlewares/auth/trusted-issuer.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { fetchClaimByTopicAndIdentity } from "../../utils/identity.util";
-import { ORPCError } from "@orpc/server";
+import { fetchClaimByTopicAndIdentity } from "@/orpc/routes/user/utils/identity.util";
 import {
-  ClaimsRevokeInputSchema,
   RevokableClaimTopicSchema,
+  type ClaimsRevokeInput,
 } from "./claims.revoke.schema";
 
-/**
- * Portal GraphQL mutation for revoking claims from identity contracts.
- */
-const REVOKE_CLAIM_MUTATION = portalGraphql(`
-  mutation RevokeIdentityClaim(
-    $challengeId: String
-    $challengeResponse: String
-    $address: String!
-    $from: String!
-    $claimId: String!
-    $identity: String!
-  ) {
-    revokeClaim: ATKIdentityImplementationRevokeClaim(
-      address: $address
-      from: $from
-      challengeId: $challengeId
-      challengeResponse: $challengeResponse
-      input: {
-        _claimId: $claimId
-        _identity: $identity
-      }
-    ) {
-      transactionHash
-    }
-  }
-`);
+import { getAddress } from "viem";
 
 /**
  * Claims revoke route handler.
@@ -62,7 +33,7 @@ const REVOKE_CLAIM_MUTATION = portalGraphql(`
  *
  * Authentication: Required (uses authenticated router)
  * Permissions: Requires "claimIssuer" role
- * Method: POST /user/claims/revoke
+ * Method: POST /system/identity/claims/revoke
  *
  * @param input - Revoke parameters with target user, claim topic, and verification
  * @param context - Request context with database, TheGraph, and auth info
@@ -76,7 +47,7 @@ const REVOKE_CLAIM_MUTATION = portalGraphql(`
  * @example
  * ```typescript
  * // Revoke KYC claim
- * const result = await orpc.user.claims.revoke.mutate({
+ * const result = await orpc.system.identity.claims.revoke.mutate({
  *   targetIdentityAddress: "0x1234567890123456789012345678901234567890",
  *   claimTopic: "knowYourCustomer",
  *   walletVerification: {
@@ -86,7 +57,7 @@ const REVOKE_CLAIM_MUTATION = portalGraphql(`
  * });
  *
  * // Revoke collateral claim
- * const result = await orpc.user.claims.revoke.mutate({
+ * const result = await orpc.system.identity.claims.revoke.mutate({
  *   targetIdentityAddress: "0x9876543210987654321098765432109876543210",
  *   claimTopic: "collateral",
  *   walletVerification: {
@@ -102,7 +73,7 @@ const REVOKE_CLAIM_MUTATION = portalGraphql(`
  * - Only the original issuer or identity manager can revoke claims
  * - Revoked claims are removed from user's active claims list immediately
  */
-export const revoke = authRouter.user.claims.revoke
+export const revoke = authRouter.system.identity.claims.revoke
   .use(systemMiddleware)
   .use(theGraphMiddleware)
   .use(portalMiddleware)
@@ -114,10 +85,9 @@ export const revoke = authRouter.user.claims.revoke
       },
     })
   )
-  .use(trustedIssuerMiddleware)
   .use(
-    identityPermissionsMiddleware<typeof ClaimsRevokeInputSchema>({
-      getTargetUserId: () => undefined, // No specific user data access needed for claim revocation
+    trustedIssuerMiddleware<ClaimsRevokeInput>({
+      selectTopic: (i) => i.claimTopic,
     })
   )
   .handler(async ({ context, input, errors }) => {
@@ -143,73 +113,24 @@ export const revoke = authRouter.user.claims.revoke
       });
     }
 
-    // Verify issuer can revoke this specific claim topic
-    // The identityPermissionsMiddleware computes comprehensive permissions combining
-    // blockchain roles and trusted issuer status
-    if (!canWriteClaims([claimTopic], context.identityPermissions)) {
-      throw errors.FORBIDDEN({
-        message: `You are not authorized to revoke claims for topic: ${claimTopic}`,
-        data: {
-          requestedTopic: claimTopic,
-          authorizedTopics: context.identityPermissions.claims.write,
-        },
-      });
-    }
+    // Authorization for claim topic is enforced by trustedIssuerMiddleware
 
-    // Fetch the claim by topic and identity, with extracted claimId for smart contract use
-    let extractedClaimId: string;
-    try {
-      const result = await fetchClaimByTopicAndIdentity({
-        claimTopic,
-        identityAddress: targetIdentityAddress,
-        context,
-      });
-      extractedClaimId = result.extractedClaimId;
-    } catch (error: unknown) {
-      let message = "";
-      if (
-        error &&
-        typeof error === "object" &&
-        "message" in error &&
-        typeof (error as { message: unknown }).message === "string"
-      ) {
-        message = (error as { message: string }).message;
-      }
-      const isMultipleClaims =
-        typeof message === "string" &&
-        message.includes("Multiple active claims");
-      const isBadRequest = error instanceof ORPCError && error.status === 400;
-      if (isMultipleClaims || isBadRequest) {
-        throw errors.BAD_REQUEST({
-          message:
-            `Multiple claims found for topic "${claimTopic}" and identity "${targetIdentityAddress}". ` +
-            `This may be due to duplicate claims. Please contact support or remove duplicates before retrying.`,
-          data: {
-            claimTopic,
-            targetIdentityAddress,
-            issuerIdentity: context.userIssuerIdentity,
-          },
-        });
-      }
-      throw error;
-    }
+    // Fetch the claim by topic and identity; let utility surface standardized ORPC errors
+    const { extractedClaimId } = await fetchClaimByTopicAndIdentity({
+      claimTopic,
+      identityAddress: targetIdentityAddress,
+      context,
+    });
 
-    // Submit claim revocation to blockchain via Portal
-    const result = await context.portalClient.mutate(
-      REVOKE_CLAIM_MUTATION,
-      {
-        // Call on issuer's identity (has management key), targeting subject identity via input.identity
-        address: issuerIdentity,
-        from: context.auth.user.wallet,
-        claimId: extractedClaimId,
-        identity: targetIdentityAddress,
-      },
-      {
-        sender: context.auth.user,
-        code: walletVerification.secretVerificationCode,
-        type: walletVerification.verificationType,
-      }
-    );
+    // Submit claim revocation via helper
+    const result = await revokeClaim({
+      user: context.auth.user,
+      issuer: getAddress(issuerIdentity),
+      walletVerification,
+      identity: getAddress(targetIdentityAddress),
+      claimId: extractedClaimId,
+      portalClient: context.portalClient,
+    });
 
     return {
       success: true,

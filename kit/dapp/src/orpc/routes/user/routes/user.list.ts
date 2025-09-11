@@ -1,11 +1,6 @@
 import { kycProfiles, user } from "@/lib/db/schema";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import {
-  filterClaimsForUser,
-  identityPermissionsMiddleware,
-} from "@/orpc/middlewares/auth/identity-permissions.middleware";
-import { trustedIssuerMiddleware } from "@/orpc/middlewares/auth/trusted-issuer.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
@@ -148,12 +143,6 @@ export const list = authRouter.user.list
       },
     })
   )
-  .use(trustedIssuerMiddleware)
-  .use(
-    identityPermissionsMiddleware({
-      getTargetUserId: () => undefined, // List operation doesn't target specific user
-    })
-  )
   .use(databaseMiddleware)
   .handler(async ({ context, input }) => {
     const { limit, offset, orderDirection, orderBy } = input;
@@ -236,18 +225,11 @@ export const list = authRouter.user.list
       const account = accountsMap.get(u.wallet.toLowerCase());
       const identity = account?.identity;
 
-      // Apply role-based claim filtering for UI display
-      // This is UI/UX control, not security - claims are publicly verifiable on-chain
-      const filteredClaimObjects = filterClaimsForUser(
-        identity?.claims ?? [],
-        context.identityPermissions
-      );
-
       return buildUserWithIdentity({
         userData: u,
         kyc,
         identity: identity?.id,
-        claims: filteredClaimObjects,
+        claims: identity?.claims ?? [],
         isRegistered: !!identity,
       });
     });
