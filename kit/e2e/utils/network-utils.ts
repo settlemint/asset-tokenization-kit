@@ -44,7 +44,9 @@ export class NetworkDebugger {
         if (request.postData()) {
           try {
             JSON.parse(request.postData() || "{}");
-          } catch (e) {}
+          } catch (e) {
+            console.error("Error parsing request body", e);
+          }
         }
       }
     });
@@ -104,7 +106,9 @@ export class NetworkDebugger {
           error.body = responseBody;
         }
       }
-    } catch (e) {}
+    } catch (e) {
+      console.error("Error parsing response body", e);
+    }
 
     this.capture.errors.push(error);
 
@@ -112,7 +116,9 @@ export class NetworkDebugger {
       if (request?.postData()) {
         try {
           JSON.parse(request.postData() || "{}");
-        } catch (e) {}
+        } catch (e) {
+          console.error("Error parsing request body", e);
+        }
       }
 
       if (request) {
@@ -260,6 +266,7 @@ export async function getValidationErrors(response: Response): Promise<any> {
     const body = await response.text();
     return JSON.parse(body);
   } catch (e) {
+    console.error("Error parsing response body", e);
     return null;
   }
 }
