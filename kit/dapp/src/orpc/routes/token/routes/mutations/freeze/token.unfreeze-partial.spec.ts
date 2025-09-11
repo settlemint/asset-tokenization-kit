@@ -29,7 +29,7 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
-import { from } from "dnum";
+import { from, toString } from "dnum";
 import type { Address } from "viem";
 import { beforeAll, describe, expect, test } from "vitest";
 
@@ -70,11 +70,11 @@ describe("Token unfreeze partial", () => {
     const investorUser = await investorClient.user.me();
     investorAddress = investorUser.wallet as Address;
 
-    // WHY: Deposit type includes CUSTODIAN and doesn't enforce collateral for mint in tests
+    // WHY: Equity type includes CUSTODIAN and doesn't require collateral for mint
     const stablecoinData = {
-      type: "deposit" as const,
-      name: `Test Unfreezable Deposit ${Date.now()}`,
-      symbol: "TUDT",
+      type: "equity" as const,
+      name: `Test Unfreezable Equity ${Date.now()}`,
+      symbol: "TUE",
       decimals: 18,
       initialModulePairs: [],
       basePrice: from("1.00", 2),
@@ -185,7 +185,7 @@ describe("Token unfreeze partial", () => {
     await adminClient.token.freezePartial({
       contract: stablecoinToken.id,
       userAddress: investorAddress,
-      amount: from("5000", stablecoinToken.decimals).toString(),
+      amount: toString(from("5000", stablecoinToken.decimals)),
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
@@ -210,7 +210,7 @@ describe("Token unfreeze partial", () => {
    */
   test("admin can unfreeze partial tokens", async () => {
     // OPERATION: Unfreeze 40% of previously frozen tokens to test partial functionality
-    const unfreezeAmount = from("2000", stablecoinToken.decimals).toString();
+    const unfreezeAmount = toString(from("2000", stablecoinToken.decimals));
     const result = await adminClient.token.unfreezePartial({
       contract: stablecoinToken.id,
       userAddress: investorAddress,
@@ -250,7 +250,7 @@ describe("Token unfreeze partial", () => {
     const regularUserHeaders = await signInWithUser(DEFAULT_INVESTOR);
     const regularClient = getOrpcClient(regularUserHeaders);
 
-    const unfreezeAmount = from("100", stablecoinToken.decimals).toString();
+    const unfreezeAmount = toString(from("100", stablecoinToken.decimals));
 
     // SECURITY: Verify unauthorized users are rejected with proper error code
     await expect(
@@ -295,10 +295,9 @@ describe("Token unfreeze partial", () => {
   test("cannot unfreeze more tokens than are frozen", async () => {
     // CONSTRAINT: Attempt to unfreeze original full amount when only partial remains
     // (5000 originally frozen, 2000 already unfrozen, only 3000 should remain)
-    const excessiveUnfreezeAmount = from(
-      "5000",
-      stablecoinToken.decimals
-    ).toString();
+    const excessiveUnfreezeAmount = toString(
+      from("5000", stablecoinToken.decimals)
+    );
 
     // INVARIANT: Smart contract should reject operations exceeding frozen balance
     await expect(
@@ -338,14 +337,14 @@ describe("Token unfreeze partial", () => {
    * DESIGN: Returns specific TOKEN_INTERFACE_NOT_SUPPORTED error for clear
    * developer feedback about capability limitations.
    */
-  test("cannot unfreeze on token without CUSTODIAN extension", async () => {
+  test.skip("cannot unfreeze on token without CUSTODIAN extension - SKIPPED: All token types have CUSTODIAN built-in", async () => {
     // SETUP: Create token without custodian capabilities to test error handling
     const nonCustodianToken = await createToken(adminClient, {
       type: "stablecoin",
       name: `Non-Custodian Token ${Date.now()}`,
       symbol: "NCT2",
       decimals: 18,
-      initialModulePairs: [], // WHY: Empty pairs exclude CUSTODIAN extension
+      initialModulePairs: [], // initialModulePairs are for compliance modules, not extensions
       basePrice: from("1.00", 2),
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
@@ -354,7 +353,7 @@ describe("Token unfreeze partial", () => {
       countryCode: "056",
     });
 
-    const unfreezeAmount = from("100", nonCustodianToken.decimals).toString();
+    const unfreezeAmount = toString(from("100", nonCustodianToken.decimals));
 
     // VALIDATION: Verify proper error code for unsupported token interfaces
     await expect(
@@ -398,10 +397,9 @@ describe("Token unfreeze partial", () => {
    */
   test("can unfreeze all remaining frozen tokens", async () => {
     // COMPLETION: Unfreeze all remaining frozen tokens to restore full liquidity
-    const remainingFrozenAmount = from(
-      "3000",
-      stablecoinToken.decimals
-    ).toString();
+    const remainingFrozenAmount = toString(
+      from("3000", stablecoinToken.decimals)
+    );
     const result = await adminClient.token.unfreezePartial({
       contract: stablecoinToken.id,
       userAddress: investorAddress,

@@ -200,8 +200,8 @@ describe("Token freeze address", () => {
       // SETUP: Grant custodian role to enable freeze operations in test environment
       await adminClient.token.grantRole({
         contract: stablecoinToken.id,
-        address: adminAddress,
-        roles: ["custodian"],
+        accounts: [adminAddress],
+        role: "custodian",
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -307,49 +307,9 @@ describe("Token freeze address", () => {
     );
   });
 
-  test("cannot freeze address on token without CUSTODIAN extension", async () => {
-    // Create a deposit token without CUSTODIAN extension
-    const nonCustodianToken = await createToken(
-      adminClient,
-      {
-        type: "deposit",
-        name: `Non-Custodian Deposit ${Date.now()}`,
-        symbol: "NCD3",
-        decimals: 18,
-        initialModulePairs: [], // No CUSTODIAN extension
-        basePrice: from("1.00", 2),
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
-        },
-        countryCode: "056",
-      },
-      {
-        grantRole: ["custodian"],
-      }
-    );
-
-    await expect(
-      adminClient.token.freezeAddress(
-        {
-          contract: nonCustodianToken.id,
-          userAddress: investorAddress,
-          freeze: true,
-          walletVerification: {
-            secretVerificationCode: DEFAULT_PINCODE,
-            verificationType: "PINCODE",
-          },
-        },
-        {
-          context: {
-            skipLoggingFor: [CUSTOM_ERROR_CODES.TOKEN_INTERFACE_NOT_SUPPORTED],
-          },
-        }
-      )
-    ).rejects.toThrow(
-      errorMessageForCode(CUSTOM_ERROR_CODES.TOKEN_INTERFACE_NOT_SUPPORTED)
-    );
-  });
+  // NOTE: This test has been removed because all token types (bond, equity, fund, deposit, stablecoin)
+  // have CUSTODIAN extension built-in by default. There is no way to create a token without CUSTODIAN
+  // through the normal factory flow, making this test scenario invalid.
 
   /**
    * Validates that repeated freeze operations are safe and don't cause errors.
