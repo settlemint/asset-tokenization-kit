@@ -227,6 +227,7 @@ export const list = authRouter.user.list
         .orderBy(order(orderColumn))
         .where(
           or(
+            ilike(nameSelect, `%${filters?.search ?? ""}%`),
             ilike(user.email, `%${filters?.search ?? ""}%`),
             ilike(user.wallet, `%${filters?.search ?? ""}%`)
           )
