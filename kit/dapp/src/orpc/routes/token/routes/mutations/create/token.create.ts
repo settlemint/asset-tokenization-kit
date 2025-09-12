@@ -2,7 +2,7 @@ import { getRoleByFieldName } from "@/lib/constants/roles";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import type { AccessControlRoles } from "@atk/zod/access-control-roles";
-import { ClaimTopic } from "@/orpc/helpers/claims/create-claim";
+import type { DynamicClaim } from "@/orpc/helpers/claims/create-claim";
 import { issueClaim } from "@/orpc/helpers/claims/issue-claim";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { userIdentityMiddleware } from "@/orpc/middlewares/system/user-identity.middleware";
@@ -264,11 +264,12 @@ async function issueClaims(
           walletVerification: input.walletVerification,
           identity: tokenOnchainID,
           claim: {
-            topic: ClaimTopic.isin,
+            topicName: "isin",
+            signature: "string isin",
             data: {
               isin: input.isin,
             },
-          },
+          } as DynamicClaim,
           portalClient: context.portalClient,
         })
       : Promise.resolve(),
@@ -296,13 +297,14 @@ async function issueClaims(
         walletVerification: input.walletVerification,
         identity: tokenOnchainID,
         claim: {
-          topic: ClaimTopic.basePrice,
+          topicName: "basePrice",
+          signature: "uint256 amount, string currencyCode, uint8 decimals",
           data: {
             amount,
             currencyCode,
             decimals,
           },
-        },
+        } as DynamicClaim,
         portalClient: context.portalClient,
       });
     })(),

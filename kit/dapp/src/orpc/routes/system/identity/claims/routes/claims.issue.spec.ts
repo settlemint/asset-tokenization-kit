@@ -62,7 +62,7 @@ describe("Claims issue (integration)", () => {
     const result = await issuerClient.system.identity.claims.issue({
       targetIdentityAddress,
       claim: {
-        topic: "collateral",
+        topicName: "collateral",
         data: {
           amount: "1000000000000000000",
           expiryTimestamp: "1735689600",
@@ -88,7 +88,7 @@ describe("Claims issue (integration)", () => {
       investorClient.system.identity.claims.issue({
         targetIdentityAddress,
         claim: {
-          topic: "collateral",
+          topicName: "collateral",
           data: {
             amount: "1000000000000000000",
             expiryTimestamp: "1735689600",
@@ -110,7 +110,7 @@ describe("Claims issue (integration)", () => {
       issuerClient.system.identity.claims.issue({
         targetIdentityAddress,
         claim: {
-          topic: "knowYourCustomer", // KYC topic that issuer is NOT trusted for
+          topicName: "knowYourCustomer", // KYC topic that issuer is NOT trusted for
           data: {
             claim: "verified",
           },
@@ -130,7 +130,7 @@ describe("Claims issue (integration)", () => {
       adminClient.system.identity.claims.issue({
         targetIdentityAddress: "invalid-address",
         claim: {
-          topic: "knowYourCustomer",
+          topicName: "knowYourCustomer",
           data: {
             claim: "verified",
           },

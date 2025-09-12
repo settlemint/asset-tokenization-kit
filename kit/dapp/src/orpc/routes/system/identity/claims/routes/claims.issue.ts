@@ -7,6 +7,8 @@ import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware"
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { topicList } from "@/orpc/routes/system/claim-topics/routes/topic.list";
+import { call } from "@orpc/server";
 import { getAddress } from "viem";
 import type { ClaimsIssueInput } from "./claims.issue.schema";
 
@@ -87,14 +89,30 @@ export const issue = authRouter.system.identity.claims.issue
   )
   .use(
     trustedIssuerMiddleware<ClaimsIssueInput>({
-      selectTopic: (i) => i.claim.topic,
+      selectTopic: (i) => i.claim.topicName,
     })
   )
-  .handler(async ({ context, input }) => {
+  .handler(async ({ context, input, errors }) => {
     const { targetIdentityAddress, claim, walletVerification } = input;
 
-    // Convert API claim data to internal format and issue via helper
-    const claimInfo: ClaimInfo = toClaimInfo(claim);
+    // Validate that the topic exists in the registry and get its signature
+    const topics = await call(
+      topicList,
+      {},
+      {
+        context,
+      }
+    );
+
+    const topicScheme = topics.find((t) => t.name === claim.topicName);
+    if (!topicScheme) {
+      throw errors.BAD_REQUEST({
+        message: `Topic '${claim.topicName}' is not registered in the topic scheme registry`,
+      });
+    }
+
+    // Convert API claim data to internal format with topic signature
+    const claimInfo: ClaimInfo = toClaimInfo(claim, topicScheme.signature);
 
     const transactionHash = await issueClaim({
       user: context.auth.user,
@@ -108,7 +126,7 @@ export const issue = authRouter.system.identity.claims.issue
     return {
       success: true,
       transactionHash,
-      claimTopic: claim.topic,
+      claimTopic: claim.topicName,
       targetWallet: targetIdentityAddress,
     };
   });

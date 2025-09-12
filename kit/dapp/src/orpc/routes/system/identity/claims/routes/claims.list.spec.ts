@@ -64,7 +64,7 @@ describe("Claims list (integration)", () => {
     await adminClient.system.identity.claims.issue({
       targetIdentityAddress: targetAccount.identity,
       claim: {
-        topic: "knowYourCustomer",
+        topicName: "knowYourCustomer",
         data: {
           claim: "kyc-verified",
         },
@@ -79,7 +79,7 @@ describe("Claims list (integration)", () => {
     await issuerClient.system.identity.claims.issue({
       targetIdentityAddress: targetAccount.identity,
       claim: {
-        topic: "collateral",
+        topicName: "collateral",
         data: {
           amount: "1000000000000000000",
           expiryTimestamp: "1735689600",

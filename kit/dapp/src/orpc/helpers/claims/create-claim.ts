@@ -11,6 +11,7 @@ import {
   keccak256,
   parseAbiParameters,
 } from "viem";
+import { parseSignature, convertValue } from "./signature-parser";
 
 /**
  * GraphQL mutation for signing a message with a wallet.
@@ -42,191 +43,31 @@ export interface CreateClaimInput {
   /**
    * Claim info
    */
-  claim: ClaimInfo;
+  claim: DynamicClaim;
 }
 
 /**
- * Enum of supported claim topics.
+ * Dynamic claim structure that can work with any registered topic.
  */
-export enum ClaimTopic {
-  // Investor-level
-  kyc = "knowYourCustomer",
-  aml = "antiMoneyLaundering",
-  qii = "qualifiedInstitutionalInvestor",
-  professionalInvestor = "professionalInvestor",
-  accreditedInvestor = "accreditedInvestor",
-  accreditedInvestorVerified = "accreditedInvestorVerified",
-  regS = "regulationS",
-
-  // Issuer-level
-  issuerProspectusFiled = "issuerProspectusFiled",
-  issuerProspectusExempt = "issuerProspectusExempt",
-  issuerLicensed = "issuerLicensed",
-  issuerReportingCompliant = "issuerReportingCompliant",
-  issuerJurisdiction = "issuerJurisdiction",
-
-  // Asset-level
-  collateral = "collateral",
-  isin = "isin",
-  assetClassification = "assetClassification",
-  basePrice = "basePrice",
-  assetIssuer = "assetIssuer",
-
-  // General
-  contractIdentity = "contractIdentity",
+export interface DynamicClaim {
+  /**
+   * The topic name as registered in the blockchain registry
+   */
+  topicName: string;
+  /**
+   * The function signature that defines the data structure
+   */
+  signature: string;
+  /**
+   * The claim data matching the signature structure
+   */
+  data: Record<string, unknown>;
 }
 
 /**
- * Union type for all supported claim info types.
+ * Type alias for dynamic claim to maintain compatibility.
  */
-export type ClaimInfo =
-  | AssetClassificationClaim
-  | AssetIssuerClaim
-  | BasePriceClaim
-  | CollateralClaim
-  | ContractIdentityClaim
-  | GenericClaim
-  | IsinClaim
-  | IssuerJurisdictionClaim
-  | IssuerLicensedClaim
-  | IssuerProspectusExemptClaim
-  | IssuerProspectusFiledClaim
-  | IssuerReportingCompliantClaim;
-
-/**
- * Asset classification claim structure.
- */
-export interface AssetClassificationClaim {
-  topic: ClaimTopic.assetClassification;
-  data: {
-    class: string;
-    category: string;
-  };
-}
-
-/**
- * Asset issuer claim structure.
- */
-export interface AssetIssuerClaim {
-  topic: ClaimTopic.assetIssuer;
-  data: {
-    issuerAddress: Address;
-  };
-}
-
-/**
- * Base price claim structure.
- */
-export interface BasePriceClaim {
-  topic: ClaimTopic.basePrice;
-  data: {
-    amount: bigint;
-    currencyCode: string;
-    decimals: number;
-  };
-}
-
-/**
- * Collateral claim structure.
- */
-export interface CollateralClaim {
-  topic: ClaimTopic.collateral;
-  data: {
-    amount: bigint;
-    expiryTimestamp: bigint;
-  };
-}
-
-/**
- * Contract identity claim structure.
- */
-export interface ContractIdentityClaim {
-  topic: ClaimTopic.contractIdentity;
-  data: {
-    contractAddress: Address;
-  };
-}
-
-/**
- * Generic claim structure for investor-level topics.
- */
-export interface GenericClaim {
-  topic:
-    | ClaimTopic.kyc
-    | ClaimTopic.aml
-    | ClaimTopic.qii
-    | ClaimTopic.professionalInvestor
-    | ClaimTopic.accreditedInvestor
-    | ClaimTopic.accreditedInvestorVerified
-    | ClaimTopic.regS;
-  data: {
-    claim: string;
-  };
-}
-
-/**
- * ISIN claim structure.
- */
-export interface IsinClaim {
-  topic: ClaimTopic.isin;
-  data: {
-    isin: string;
-  };
-}
-
-/**
- * Issuer jurisdiction claim structure.
- */
-export interface IssuerJurisdictionClaim {
-  topic: ClaimTopic.issuerJurisdiction;
-  data: {
-    jurisdiction: string;
-  };
-}
-
-/**
- * Issuer licensed claim structure.
- */
-export interface IssuerLicensedClaim {
-  topic: ClaimTopic.issuerLicensed;
-  data: {
-    licenseType: string;
-    licenseNumber: string;
-    jurisdiction: string;
-    validUntil: bigint;
-  };
-}
-
-/**
- * Issuer prospectus exempt claim structure.
- */
-export interface IssuerProspectusExemptClaim {
-  topic: ClaimTopic.issuerProspectusExempt;
-  data: {
-    exemptionReference: string;
-  };
-}
-
-/**
- * Issuer prospectus filed claim structure.
- */
-export interface IssuerProspectusFiledClaim {
-  topic: ClaimTopic.issuerProspectusFiled;
-  data: {
-    prospectusReference: string;
-  };
-}
-
-/**
- * Issuer reporting compliant claim structure.
- */
-export interface IssuerReportingCompliantClaim {
-  topic: ClaimTopic.issuerReportingCompliant;
-  data: {
-    compliant: boolean;
-    lastUpdated: bigint;
-  };
-}
+export type ClaimInfo = DynamicClaim;
 
 /**
  * Generates a signed claim for a user and identity.
@@ -241,7 +82,7 @@ export async function createClaim({
   identity,
   claim,
 }: CreateClaimInput) {
-  const topicId = BigInt(keccak256(encodePacked(["string"], [claim.topic])));
+  const topicId = BigInt(keccak256(encodePacked(["string"], [claim.topicName])));
   const verificationId = getVerificationId(
     user,
     walletVerification.verificationType
@@ -259,7 +100,7 @@ export async function createClaim({
     code: walletVerification.secretVerificationCode,
   });
 
-  const claimData = encodeClaimData(claim);
+  const claimData = encodeClaimData(claim.signature, claim.data);
   const dataToSign = encodeAbiParameters(
     parseAbiParameters(
       "address subject, uint256 topicValue, bytes memory dataBytes"
@@ -286,115 +127,35 @@ export async function createClaim({
 }
 
 /**
- * Encodes claim data into ABI-encoded bytes based on the claim topic.
+ * Encodes claim data into ABI-encoded bytes based on the topic signature.
  *
- * @param claim - The claim information to encode.
- * @returns The ABI-encoded claim data as a byte string.
- * @throws {Error} If the claim topic is invalid or unsupported.
+ * @param signature - The function signature defining the data structure
+ * @param data - The claim data to encode
+ * @returns The ABI-encoded claim data as a byte string
+ * @throws {Error} If the signature is invalid or data doesn't match
  */
-function encodeClaimData(claim: ClaimInfo) {
-  if (
-    claim.topic === ClaimTopic.accreditedInvestor ||
-    claim.topic === ClaimTopic.accreditedInvestorVerified ||
-    claim.topic === ClaimTopic.aml ||
-    claim.topic === ClaimTopic.kyc ||
-    claim.topic === ClaimTopic.professionalInvestor ||
-    claim.topic === ClaimTopic.qii ||
-    claim.topic === ClaimTopic.regS
-  ) {
-    return encodeAbiParameters(
-      [{ type: "string", name: "claim" }],
-      [claim.data.claim]
-    );
+function encodeClaimData(signature: string, data: Record<string, unknown>) {
+  const parameters = parseSignature(signature);
+  
+  if (parameters.length === 0) {
+    // Empty signature means no data
+    return encodeAbiParameters([], []);
   }
-  if (claim.topic === ClaimTopic.assetClassification) {
-    return encodeAbiParameters(
-      [
-        { type: "string", name: "class" },
-        { type: "string", name: "category" },
-      ],
-      [claim.data.class, claim.data.category]
-    );
-  }
-  if (claim.topic === ClaimTopic.assetIssuer) {
-    return encodeAbiParameters(
-      [{ type: "address", name: "issuerAddress" }],
-      [claim.data.issuerAddress]
-    );
-  }
-  if (claim.topic === ClaimTopic.basePrice) {
-    return encodeAbiParameters(
-      [
-        { type: "uint256", name: "amount" },
-        { type: "string", name: "currencyCode" },
-        { type: "uint8", name: "decimals" },
-      ],
-      [claim.data.amount, claim.data.currencyCode, claim.data.decimals]
-    );
-  }
-  if (claim.topic === ClaimTopic.collateral) {
-    return encodeAbiParameters(
-      [
-        { type: "uint256", name: "amount" },
-        { type: "uint256", name: "expiryTimestamp" },
-      ],
-      [claim.data.amount, claim.data.expiryTimestamp]
-    );
-  }
-  if (claim.topic === ClaimTopic.contractIdentity) {
-    return encodeAbiParameters(
-      [{ type: "address", name: "contractAddress" }],
-      [claim.data.contractAddress]
-    );
-  }
-  if (claim.topic === ClaimTopic.isin) {
-    return encodeAbiParameters(
-      [{ type: "string", name: "isin" }],
-      [claim.data.isin]
-    );
-  }
-  if (claim.topic === ClaimTopic.issuerJurisdiction) {
-    return encodeAbiParameters(
-      [{ type: "string", name: "jurisdiction" }],
-      [claim.data.jurisdiction]
-    );
-  }
-  if (claim.topic === ClaimTopic.issuerLicensed) {
-    return encodeAbiParameters(
-      [
-        { type: "string", name: "licenseType" },
-        { type: "string", name: "licenseNumber" },
-        { type: "string", name: "jurisdiction" },
-        { type: "uint256", name: "validUntil" },
-      ],
-      [
-        claim.data.licenseType,
-        claim.data.licenseNumber,
-        claim.data.jurisdiction,
-        claim.data.validUntil,
-      ]
-    );
-  }
-  if (claim.topic === ClaimTopic.issuerProspectusExempt) {
-    return encodeAbiParameters(
-      [{ type: "string", name: "exemptionReference" }],
-      [claim.data.exemptionReference]
-    );
-  }
-  if (claim.topic === ClaimTopic.issuerProspectusFiled) {
-    return encodeAbiParameters(
-      [{ type: "string", name: "prospectusReference" }],
-      [claim.data.prospectusReference]
-    );
-  }
-  if (claim.topic === ClaimTopic.issuerReportingCompliant) {
-    return encodeAbiParameters(
-      [
-        { type: "bool", name: "compliant" },
-        { type: "uint256", name: "lastUpdated" },
-      ],
-      [claim.data.compliant, claim.data.lastUpdated]
-    );
-  }
-  throw new Error("Invalid claim topic");
+
+  // Build type definitions for encoding
+  const types = parameters.map(param => ({
+    type: param.type,
+    name: param.name
+  }));
+
+  // Extract and convert values based on parameter order
+  const values = parameters.map(param => {
+    const value = data[param.name];
+    if (value === undefined) {
+      throw new Error(`Missing required parameter: ${param.name}`);
+    }
+    return convertValue(value, param.type);
+  });
+
+  return encodeAbiParameters(types, values);
 }
