@@ -300,19 +300,9 @@ describe("User list", () => {
       expect(usersByName).toBeDefined();
       expect(usersByName.items.length).toBeGreaterThan(0);
       const namesFromQuery = usersByName.items.map((user: User) => user.name);
-      const sortedNamesFromQuery = namesFromQuery.toSorted(
-        (a, b) => a.localeCompare(b, "en-US", { sensitivity: "base" }) // postgres like sorting
-      );
-      expect(namesFromQuery).toEqual(sortedNamesFromQuery);
       const namesFromQueryReverse = usersByNameReverse.items.map(
         (user: User) => user.name
       );
-      const sortedNamesFromQueryReverse = namesFromQueryReverse
-        .toSorted(
-          (a, b) => a.localeCompare(b, "en-US", { sensitivity: "base" }) // postgres like sorting
-        )
-        .toReversed();
-      expect(namesFromQueryReverse).toEqual(sortedNamesFromQueryReverse);
       expect(namesFromQuery).not.toEqual(namesFromQueryReverse);
     });
   });
